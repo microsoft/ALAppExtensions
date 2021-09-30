@@ -41,6 +41,7 @@ page 8889 "Email Attachments"
     {
         area(Processing)
         {
+
             action(Upload)
             {
                 ApplicationArea = All;
@@ -48,7 +49,7 @@ page 8889 "Email Attachments"
                 PromotedCategory = Process;
                 PromotedOnly = true;
                 Image = Attach;
-                Caption = 'Attach File';
+                Caption = 'Add File';
                 ToolTip = 'Attach files, such as documents or images, to the email.';
                 Scope = Page;
                 Visible = not IsMessageRead;
@@ -70,8 +71,8 @@ page 8889 "Email Attachments"
                 PromotedCategory = Process;
                 PromotedOnly = true;
                 Image = Attach;
-                Caption = 'Get Source Attachments';
-                ToolTip = 'Attach a file that was originally attached to the source document.';
+                Caption = 'Add File from Source';
+                ToolTip = 'Attach a file that was originally attached to the source document, such as a Customer Record, Sales Invoice, etc.';
                 Scope = Page;
                 Visible = not IsMessageRead;
 
@@ -80,6 +81,28 @@ page 8889 "Email Attachments"
                     EmailEditor: Codeunit "Email Editor";
                 begin
                     EmailEditor.AttachFromRelatedRecords(EmailMessageId);
+                end;
+            }
+
+            action(WordTemplate)
+            {
+                ApplicationArea = All;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                Image = Word;
+                Caption = 'Add File from Word Template';
+                ToolTip = 'Create and Attach a document using a Word Template.';
+                Scope = Page;
+                Visible = not IsMessageRead;
+
+                trigger OnAction()
+                var
+                    EmailEditor: Codeunit "Email Editor";
+                begin
+                    EmailEditor.AttachFromWordTemplate(EmailMessage, EmailMessageId);
+                    UpdateDeleteEnablement();
+                    CurrPage.Update();
                 end;
             }
 

@@ -11,7 +11,7 @@ pageextension 13676 "OIOUBL-Service Invoice" extends "Service Invoice"
         {
             field("OIOUBL-Contact Role"; "OIOUBL-Contact Role")
             {
-                Tooltip = 'Specifies the role of the contact person at the customer.';
+                Tooltip = 'Specifies the role of the contact person at the customer. This is used in the exported electronic document.';
                 ApplicationArea = Service;
             }
         }
@@ -20,7 +20,7 @@ pageextension 13676 "OIOUBL-Service Invoice" extends "Service Invoice"
         {
             field("Your Reference"; "Your Reference")
             {
-                Tooltip = 'Specifies Your Reference.';
+                Tooltip = 'Specifies Your Reference. This is used in the exported electronic document.';
                 ApplicationArea = Service;
             }
         }
@@ -29,12 +29,12 @@ pageextension 13676 "OIOUBL-Service Invoice" extends "Service Invoice"
         {
             field("OIOUBL-GLN"; "OIOUBL-GLN")
             {
-                Tooltip = 'Specifies the GLN location number for the customer.';
+                Tooltip = 'Specifies the GLN location number for the customer. This is used in the exported electronic document.';
                 ApplicationArea = Service;
             }
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
-                Tooltip = 'Specifies the account code of the customer.';
+                Tooltip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
                 ApplicationArea = Service;
 
                 trigger OnValidate();
@@ -44,7 +44,7 @@ pageextension 13676 "OIOUBL-Service Invoice" extends "Service Invoice"
             }
             field("OIOUBL-Profile Code"; "OIOUBL-Profile Code")
             {
-                Tooltip = 'Specifies the profile that the customer requires for electronic documents.';
+                Tooltip = 'Specifies the profile that the customer requires for electronic documents. This is used in the exported electronic document.';
                 ApplicationArea = Service;
             }
         }

@@ -45,7 +45,7 @@ pageextension 2025 "Image Analysis Setup Ext" extends "Image Analysis Setup"
             action(ViewBlacklistedTags)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'View Blacklisted Attributes';
+                Caption = 'View Blocked Attributes';
                 Enabled = True;
                 Visible = True;
                 Image = Approvals;

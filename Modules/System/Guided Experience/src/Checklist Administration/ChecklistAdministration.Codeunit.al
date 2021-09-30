@@ -79,6 +79,10 @@ codeunit 1995 "Checklist Administration"
             exit;
 
         OldCompletionRequirements := ChecklistItem."Completion Requirements";
+
+        if OldCompletionRequirements = NewCompletionRequirements then
+            exit(false);
+
         if ((OldCompletionRequirements in [OldCompletionRequirements::Anyone, OldCompletionRequirements::Everyone])
             and (NewCompletionRequirements in [NewCompletionRequirements::Anyone, NewCompletionRequirements::Everyone]))
         then
@@ -151,6 +155,8 @@ codeunit 1995 "Checklist Administration"
         ChecklistItemBuffer."Object Type to Run" := GuidedExperienceItem."Object Type to Run";
         ChecklistItemBuffer."Object ID to Run" := GuidedExperienceItem."Object ID to Run";
         ChecklistItemBuffer.Link := GuidedExperienceItem.Link;
+        ChecklistItemBuffer."Spotlight Tour Type" := GuidedExperienceItem."Spotlight Tour Type";
+        ChecklistItemBuffer."Video Url" := GuidedExperienceItem."Video Url";
     end;
 
     local procedure UpdateStatusForUsers(Code: Code[300])

@@ -5,7 +5,7 @@ table 11744 "Cash Desk CZP"
     DataClassification = CustomerContent;
     DrillDownPageID = "Cash Desk List CZP";
     LookupPageID = "Cash Desk List CZP";
-    Permissions = TableData "Bank Account Ledger Entry" = r;
+    Permissions = tabledata "Bank Account Ledger Entry" = r;
 
     fields
     {

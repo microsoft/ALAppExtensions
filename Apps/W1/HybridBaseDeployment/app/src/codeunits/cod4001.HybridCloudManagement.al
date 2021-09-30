@@ -1,7 +1,8 @@
 codeunit 4001 "Hybrid Cloud Management"
 {
     Permissions = tabledata "Webhook Subscription" = rimd,
-                  tabledata "Intelligent Cloud" = rimd;
+                  tabledata "Intelligent Cloud" = rimd,
+                  tabledata "Installed Application" = r;
 
     var
         SubscriptionFormatTxt: Label '%1_IntelligentCloud', Comment = '%1 - The source product id', Locked = true;
@@ -13,9 +14,10 @@ codeunit 4001 "Hybrid Cloud Management"
         MigrationDisabledTelemetryTxt: Label 'Migration disabled. Source Product=%1; Reason=%2', Comment = '%1 - source product, %2 - reason for disabling', Locked = true;
         UserMustBeAbleToScheduleTasksMsg: Label 'You do not have the right permissions to schedule tasks, which is required for running the migration. Please check your permissions and license entitlements before you continue.';
         IntelligentCloudTok: Label 'IntelligentCloud', Locked = true;
-
         CreatingIntegrationRuntimeMsg: Label 'Creating Integration Runtime for Product ID: %1', Comment = '%1 - The source product id', Locked = true;
         CreatedIntegrationRuntimeMsg: Label 'Created Integration Runtime, IRName" %1', Comment = '%1 - Name of Integration Runtime', Locked = true;
+        ReplicationCompletedServiceTypeTxt: Label 'ReplicationCompleted', Locked = true;
+        CannotStartUpgradeDuringCloudMigrationErr: Label 'Upgrade cannot be started because company is under cloud migration.';
 
     procedure CanHandleNotification(SubscriptionId: Text; ProductId: Text): Boolean
     var
@@ -58,6 +60,7 @@ codeunit 4001 "Hybrid Cloud Management"
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         CanCreateCompanies: Boolean;
+        SessionID: Integer;
     begin
         CanCreateCompanies := true;
         OnCanCreateCompanies(CanCreateCompanies);
@@ -67,24 +70,81 @@ codeunit 4001 "Hybrid Cloud Management"
 
         IntelligentCloudSetup.LockTable();
         IntelligentCloudSetup.Get();
+        Clear(IntelligentCloudSetup."Company Creation Session ID");
+        Clear(IntelligentCloudSetup."Company Creation Task ID");
+        Clear(IntelligentCloudSetup."Company Creation Task Error");
         IntelligentCloudSetup."Company Creation Task Status" := IntelligentCloudSetup."Company Creation Task Status"::InProgress;
+        BackupDataPerDatabase(IntelligentCloudSetup);
 
-        IntelligentCloudSetup."Company Creation Task ID" := TaskScheduler.CreateTask(
+        if TaskScheduler.CanCreateTask() then
+            IntelligentCloudSetup."Company Creation Task ID" := TaskScheduler.CreateTask(
             Codeunit::"Create Companies IC",
-            Codeunit::"Handle Create Company Failure", true, '', 0DT);
-
-        IntelligentCloudSetup.Modify();
+            Codeunit::"Handle Create Company Failure", true, '', 0DT)
+        else begin
+            if not Session.StartSession(SessionID, Codeunit::"Create Companies IC", CompanyName()) then
+                Codeunit.Run(Codeunit::"Handle Create Company Failure");
+            IntelligentCloudSetup."Company Creation Session ID" := SessionID;
+        end;
+        Commit();
     end;
 
-    procedure SendMissingScheduleTasksNotification();
+    procedure IsCompanyUnderUpgrade(NewCompanyName: Code[50]): Boolean
     var
-        UserIsNotAbleToScheduleTasks: Notification;
+        HybridCompany: Record "Hybrid Company";
+        HybridCompanyStatus: Record "Hybrid Company Status";
     begin
-        UserIsNotAbleToScheduleTasks.Id := '90b26c2e-df8e-4672-a6d0-b39d4c3a5874';
-        UserIsNotAbleToScheduleTasks.Recall();
-        UserIsNotAbleToScheduleTasks.Message := UserMustBeAbleToScheduleTasksMsg;
-        UserIsNotAbleToScheduleTasks.Scope := NotificationScope::LocalScope;
-        UserIsNotAbleToScheduleTasks.Send();
+        if not IsIntelligentCloudEnabled() then
+            exit(false);
+
+        HybridCompany.SetFilter(Name, '%1', '@' + NewCompanyName);
+        if not HybridCompany.FindFirst() then
+            exit(false);
+
+        if HybridCompanyStatus.Get(HybridCompany.Name) then
+            if HybridCompanyStatus."Upgrade Status" in [HybridCompanyStatus."Upgrade Status"::" ", HybridCompanyStatus."Upgrade Status"::Completed] then
+                exit(false);
+
+        exit(true);
+    end;
+
+    local procedure IsIntelligentCloudEnabled(): Boolean
+    var
+        IntelligentCloud: Record "Intelligent Cloud";
+    begin
+        if not IntelligentCloud.Get() then
+            exit(false);
+
+        exit(IntelligentCloud.Enabled);
+    end;
+
+    procedure BackupDataPerDatabase(var IntelligentCloudSetup: Record "Intelligent Cloud Setup")
+    var
+        Handled: Boolean;
+    begin
+        OnBackupDataPerDatabase(IntelligentCloudSetup."Product ID", Handled);
+        if Handled then
+            exit;
+
+        BackupUpgradeTags(IntelligentCloudSetup);
+    end;
+
+    local procedure BackupUpgradeTags(var IntelligentCloudSetup: Record "Intelligent Cloud Setup")
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        Handled: Boolean;
+        BackupUpgradeTags: Boolean;
+    begin
+        OnBackupUpgradeTags(IntelligentCloudSetup."Product ID", Handled, BackupUpgradeTags);
+
+        if Handled then
+            exit;
+
+        if not BackupUpgradeTags then
+            exit;
+
+        IntelligentCloudSetup."Upgrade Tag Backup ID" := UpgradeTag.BackupUpgradeTags();
+        IntelligentCloudSetup.Modify();
+        Commit();
     end;
 
     [Scope('OnPrem')]
@@ -109,6 +169,8 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridDeployment: Codeunit "Hybrid Deployment";
     begin
         SendTraceTag('SmbMig-001', GetTelemetryCategory(), Verbosity::Normal, StrSubstNo(MigrationDisabledTelemetryTxt, SourceProduct, Reason), DataClassification::SystemMetadata);
+        RestoreDataPerDatabaseTables(HybridReplicationSummary."Run ID", SourceProduct);
+
         if NeedsCleanup then begin
             HybridDeployment.Initialize(SourceProduct);
             HybridDeployment.DisableReplication();
@@ -127,15 +189,45 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridReplicationSummary.Source := CopyStr(GetHybridProductName(SourceProduct), 1, 250);
         HybridReplicationSummary.SetDetails(Reason);
         HybridReplicationSummary.Insert();
+
         Commit(); // Manual commit in case subscriber to the call below crashes
 
         OnAfterDisableMigration(SourceProduct);
     end;
 
     [Scope('OnPrem')]
-    procedure FinishDataLakeMigration(HybridReplicationSummary: Record "Hybrid Replication Summary")
+    procedure RepairCompanionTableRecordConsistency()
+    var
+        AllObj: Record AllObj;
+        InstalledApplication: Record "Installed Application";
+        CompanionTableRecordConsistencyRepair: DotNet CompanionTableRecordConsistencyRepair;
     begin
-        OnAfterDataLakeMigration(HybridReplicationSummary);
+        Session.LogMessage('0000FJ1', 'Starting Repair of Companion Tables', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        CompanionTableRecordConsistencyRepair := CompanionTableRecordConsistencyRepair.CompanionTableRecordConsistencyRepair();
+        AllObj.SetRange("Object Type", AllObj."Object Type"::"TableExtension");
+        if InstalledApplication.FindSet() then
+            repeat
+                AllObj.SetRange("App Runtime Package ID", InstalledApplication."Runtime Package ID");
+                if AllObj.FindFirst() then begin
+                    Session.LogMessage('0000FJ2', StrSubstNo('Staring Repair of Companion Tables for Package ID %1', InstalledApplication."Package ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+                    CompanionTableRecordConsistencyRepair.UpdateCompanionTablesInAppWithMissingRecords(InstalledApplication."Runtime Package ID");
+                    Session.LogMessage('0000FJ3', StrSubstNo('Completed Repair of Companion Tables for Package ID %1', InstalledApplication."Package ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+                end;
+            until InstalledApplication.Next() = 0;
+
+        Session.LogMessage('0000FJ4', 'Completed Repair of Companion Tables', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+    end;
+
+    [Scope('OnPrem')]
+    procedure FinishDataLakeMigration(HybridReplicationSummary: Record "Hybrid Replication Summary")
+    var
+        SesssionID: Integer;
+        Handled: Boolean;
+    begin
+        OnAfterDataLakeMigration(HybridReplicationSummary, Handled);
+
+        if Handled then
+            exit;
 
         if TaskScheduler.CanCreateTask() then begin
             // Schedule a task to cleanup the Azure Data Lake migration.
@@ -143,7 +235,23 @@ codeunit 4001 "Hybrid Cloud Management"
             TaskScheduler.CreateTask(Codeunit::"Data Lake Migration Cleanup", 0, true, CompanyName(), CurrentDateTime() + 60000);
             SendTraceTag('SmbMig-002', GetTelemetryCategory(), Verbosity::Normal, 'Scheduled task to clean up Azure Data Lake migration.');
         end else
-            SendTraceTag('SmbMig-003', GetTelemetryCategory(), Verbosity::Warning, 'Unable to schedule task to clean up Azure Data Lake migration.');
+            if not Session.StartSession(SesssionID, Codeunit::"Data Lake Migration Cleanup", CompanyName()) then
+                SendTraceTag('SmbMig-003', GetTelemetryCategory(), Verbosity::Warning, 'Unable to schedule task to clean up Azure Data Lake migration.');
+    end;
+
+    local procedure RestoreDataPerDatabaseTables(RunId: Text[50]; SourceProduct: Text)
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        Handled: Boolean;
+    begin
+        OnRestoreDataPerDatabalseTables(Handled, RunId, SourceProduct);
+        if Handled then
+            exit;
+
+        IntelligentCloudSetup.Get();
+        if IntelligentCloudSetup."Upgrade Tag Backup ID" <> 0 then
+            UpgradeTag.RestoreUpgradeTagsFromBackup(IntelligentCloudSetup."Upgrade Tag Backup ID", true);
     end;
 
     procedure GetTelemetryCategory(): Text
@@ -367,6 +475,73 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridReplicationSummary.CreateInProgressRecord(RunId, ReplicationType);
     end;
 
+    procedure CheckFixDataOnReplicationCompleted(NotificationText: Text): Boolean
+    var
+        JsonManagement: Codeunit "JSON Management";
+        ServiceType: Text;
+        FixData: Boolean;
+        Handled: Boolean;
+    begin
+        OnHandleFixDataOnReplicationCompleted(Handled, FixData);
+        if Handled then
+            exit(FixData);
+
+        JsonManagement.InitializeObject(NotificationText);
+        JsonManagement.GetStringPropertyValueByName('ServiceType', ServiceType);
+        if not (ReplicationCompletedServiceTypeTxt = ServiceType) then
+            exit(false);
+
+        exit(true);
+    end;
+
+    procedure RestoreDefaultMigrationTableMappings(DeleteExisting: Boolean)
+    var
+        MigrationTableMapping: Record "Migration Table Mapping";
+        IntellingentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if DeleteExisting then
+            MigrationTableMapping.DeleteAll();
+
+        if IntellingentCloudSetup.Get() then;
+
+        OnInsertDefaultTableMappings(IntellingentCloudSetup."Product ID", DeleteExisting);
+    end;
+
+    procedure SendMissingScheduleTasksNotification();
+    var
+        UserIsNotAbleToScheduleTasks: Notification;
+    begin
+        UserIsNotAbleToScheduleTasks.Id := '90b26c2e-df8e-4672-a6d0-b39d4c3a5874';
+        UserIsNotAbleToScheduleTasks.Recall();
+        UserIsNotAbleToScheduleTasks.Message := UserMustBeAbleToScheduleTasksMsg;
+        UserIsNotAbleToScheduleTasks.Scope := NotificationScope::LocalScope;
+        UserIsNotAbleToScheduleTasks.Send();
+    end;
+
+    procedure ScheduleDataFixOnReplicationCompleted(RunId: Text[50]; SubscriptionId: Text; NotificationText: Text)
+    var
+        ReplicationRunCompletedArg: Record "Replication Run Completed Arg";
+        NotificationOutStream: OutStream;
+        SessionID: Integer;
+    begin
+        ReplicationRunCompletedArg."Run ID" := RunId;
+        ReplicationRunCompletedArg."Subscription ID" := SubscriptionId;
+        ReplicationRunCompletedArg.Insert();
+        ReplicationRunCompletedArg."Notification Text".CreateOutStream(NotificationOutStream);
+        NotificationOutStream.WriteText(NotificationText);
+        ReplicationRunCompletedArg.Modify();
+
+        if TaskScheduler.CanCreateTask() then
+            ReplicationRunCompletedArg.TaskId := TaskScheduler.CreateTask(Codeunit::"Fix Data OnRun Completed", Codeunit::"Handle Fix Data Failure", true, CompanyName(), CurrentDateTime() + 4000, ReplicationRunCompletedArg.RecordId)
+        else begin
+            Session.StartSession(SessionID, Codeunit::"Fix Data OnRun Completed", CompanyName(), ReplicationRunCompletedArg);
+            ReplicationRunCompletedArg."Session Id" := SessionID;
+        end;
+
+        ReplicationRunCompletedArg.Modify();
+        Commit();
+    end;
+
     local procedure AddWebhookSubscription(SubscriptionId: Text[150]; ClientState: Text[50])
     var
         WebhookSubscription: Record "Webhook Subscription";
@@ -378,6 +553,7 @@ codeunit 4001 "Hybrid Cloud Management"
         WebhookSubscription."Client State" := ClientState;
         WebhookSubscription."Company Name" := CopyStr(CompanyName(), 1, 30);
         WebhookSubscription."Run Notification As" := UserSecurityId();
+
         WebhookSubscription."Subscription ID" := SubscriptionId;
 
         if SubscriptionExists then
@@ -410,7 +586,7 @@ codeunit 4001 "Hybrid Cloud Management"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterDataLakeMigration(HybridReplicationSummary: Record "Hybrid Replication Summary")
+    local procedure OnAfterDataLakeMigration(HybridReplicationSummary: Record "Hybrid Replication Summary"; var Handled: Boolean)
     begin
     end;
 
@@ -495,8 +671,33 @@ codeunit 4001 "Hybrid Cloud Management"
     end;
 
     [IntegrationEvent(false, false)]
+    procedure OnHandleFixDataOnReplicationCompleted(var Handled: Boolean; var FixData: Boolean)
+    begin
+    end;
+
+
+    [IntegrationEvent(false, false)]
     local procedure OnCanCreateCompanies(var CanCreateCompanies: Boolean)
     begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCanStartupgrade(var Handled: Boolean)
+    begin
+    end;
+
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnCanStartUpgrade', '', false, false)]
+    local procedure CanStartUpgrade(CompanyName: Text)
+    var
+        Handled: Boolean;
+    begin
+        OnCanStartupgrade(Handled);
+        if Handled then
+            exit;
+
+        if IsIntelligentCloudEnabled() then
+            Error(CannotStartUpgradeDuringCloudMigrationErr);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnBeforeEnableReplication', '', false, false)]
@@ -523,6 +724,9 @@ codeunit 4001 "Hybrid Cloud Management"
         WebhookSubscription: Record "Webhook Subscription";
         FilterStr: Text;
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         FilterStr := StrSubstNo(SubscriptionFormatTxt, '*') + '|' + StrSubstNo(ServiceSubscriptionFormatTxt, '*');
         WebhookSubscription.SetFilter("Subscription ID", FilterStr);
 
@@ -544,6 +748,9 @@ codeunit 4001 "Hybrid Cloud Management"
         FilterStr: Text;
         ReplacementCompanyName: Text[30];
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         FilterStr := StrSubstNo(SubscriptionFormatTxt, '*') + '|' + StrSubstNo(ServiceSubscriptionFormatTxt, '*');
         WebhookSubscription.SetRange("Company Name", Rec.Name);
         WebhookSubscription.SetFilter("Subscription ID", FilterStr);
@@ -560,6 +767,8 @@ codeunit 4001 "Hybrid Cloud Management"
 
             WebhookSubscription.ModifyAll("Company Name", ReplacementCompanyName);
         end;
+
+        CleanupSetupTables(Rec);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnRegister', '', false, false)]
@@ -576,6 +785,14 @@ codeunit 4001 "Hybrid Cloud Management"
         AssistedSetup.Add(Info.Id(), PAGE::"Hybrid Cloud Setup Wizard", DataSyncWizardPageNameTxt, AssistedSetupGroup::ReadyForBusiness, '', "Video Category"::Uncategorized, HelpLinkTxt, Description);
         if PermissionManager.IsIntelligentCloud() then
             AssistedSetup.Complete(PAGE::"Hybrid Cloud Setup Wizard");
+    end;
+
+    local procedure CleanupSetupTables(Company: Record Company)
+    var
+        HybridCompanyStatus: Record "Hybrid Company Status";
+    begin
+        if HybridCompanyStatus.Get(Company.Name) then
+            HybridCompanyStatus.Delete();
     end;
 
     procedure OpenWizardAction(OpenWizardNotification: Notification)
@@ -598,5 +815,30 @@ codeunit 4001 "Hybrid Cloud Management"
     begin
         // We warn at 50 GB. The number is based on experience from current runs.
         exit(50);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBackupDataPerDatabase(ProductID: Text[250]; var Handled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBackupUpgradeTags(ProductID: Text[250]; var Handled: Boolean; var BackupUpgradeTags: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnRestoreDataPerDatabalseTables(var Handled: Boolean; RunId: Text[50]; SourceProduct: Text)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnInvokeDataUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary"; var Handled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnInsertDefaultTableMappings(ProductID: Text[250]; DeleteExisting: Boolean)
+    begin
     end;
 }

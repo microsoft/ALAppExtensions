@@ -1,11 +1,14 @@
 codeunit 31322 "VAT Statement Line Handler CZL"
 {
-    [EventSubscriber(ObjectType::Table, Database::"VAT Statement Line", 'OnCheckVATStmtTemplateUserRestrictions', '', false, false)]
-    local procedure CheckVATStmtTemplateUserRestrictions(StatementTemplateName: Code[10])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::VATStmtManagement, 'OnBeforeOpenStmt', '', false, false)]
+    local procedure JournalTemplateUserRestrictionsOnBeforeOpenStmt(var VATStatementLine: Record "VAT Statement Line")
     var
-        DummyUserSetupLineCZL: Record "User Setup Line CZL";
         UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+        UserSetupLineTypeCZL: Enum "User Setup Line Type CZL";
+        JournalTemplateName: Code[10];
     begin
-        UserSetupAdvManagementCZL.CheckJournalTemplate(DummyUserSetupLineCZL.Type::"VAT Statement", StatementTemplateName);
+        JournalTemplateName := VATStatementLine.GetRangeMax("Statement Template Name");
+        UserSetupLineTypeCZL := UserSetupLineTypeCZL::"VAT Statement";
+        UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, JournalTemplateName);
     end;
 }

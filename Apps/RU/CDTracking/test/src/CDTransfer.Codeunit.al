@@ -455,13 +455,19 @@ codeunit 147103 "CD Transfer"
     end;
 
     local procedure ReserveDTFromPO(var TransferHeader: Record "Transfer Header"; var PurchaseHeader: Record "Purchase Header"; var Item: Record Item; var Location: Record Location; SerialNo: Code[20]; LotNo: Code[20]; PackageNo: Code[50]; Qty: Integer)
+    var
+        TrackingSpecification: Record "Tracking Specification";
+        ReservEntryFor: Record "Reservation Entry";
     begin
-        CreateReservEntry.CreateReservEntryFrom(
-            5741, 0, TransferHeader."No.", '', 0, 10000, 1, SerialNo, LotNo, PackageNo);
+        TrackingSpecification.InitTrackingSpecification(5741, 0, TransferHeader."No.", '', 0, 10000, '', '', 1);
+        TrackingSpecification."Serial No." := SerialNo;
+        TrackingSpecification."Lot No." := LotNo;
+        TrackingSpecification."Package No." := PackageNo;
+        CreateReservEntry.CreateReservEntryFrom(TrackingSpecification);
         CreateReservEntry.CreateEntry(
             Item."No.", '', Location.Code, '', CalcDate('<+1D>', WorkDate()), CalcDate('<+5D>', WorkDate()), 0, "Reservation Status"::Reservation);
-        CreateReservEntry.CreateReservEntryFor(
-            39, 1, PurchaseHeader."No.", '', 0, 10000, 1, Qty, Qty, SerialNo, LotNo, PackageNo);
+        ReservEntryFor.CopyTrackingFromSpec(TrackingSpecification);
+        CreateReservEntry.CreateReservEntryFor(39, 1, PurchaseHeader."No.", '', 0, 10000, 1, Qty, Qty, ReservEntryFor);
         CreateReservEntry.CreateEntry(
             Item."No.", '', Location.Code, '', CalcDate('<+1D>', WorkDate()), CalcDate('<+5D>', WorkDate()), 0, "Reservation Status"::Reservation);
     end;
@@ -470,7 +476,7 @@ codeunit 147103 "CD Transfer"
     var
         AutoReserve: Boolean;
     begin
-        ReservationManagement.SetTransferLine(TransferLine, "Transfer Direction"::Outbound);
+        ReservationManagement.SetReservSource(TransferLine, "Transfer Direction"::Outbound);
         TransferLine.TestField("Shipment Date");
         ReservationManagement.AutoReserveToShip(AutoReserve, '', TransferLine."Shipment Date", Quantity, Quantity);
     end;

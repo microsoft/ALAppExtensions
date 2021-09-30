@@ -105,6 +105,9 @@ codeunit 20297 "Use Case Symbols Handler"
     [EventSubscriber(ObjectType::Table, DATABASE::"Tax Use Case", 'OnAfterInsertEvent', '', false, false)]
     procedure OnAfterInsertTaxUseCase(RunTrigger: Boolean; var Rec: Record "Tax Use Case")
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if not RunTrigger then
             exit;
 
@@ -128,6 +131,9 @@ codeunit 20297 "Use Case Symbols Handler"
         ScriptSymbolLookup: Record "Script Symbol Lookup";
         UseCaseAttributeMapping: Record "Use Case Attribute Mapping";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if not RunTrigger then
             exit;
         ScriptSymbolLookup.SetFilter("Source Type", '%1|%2', ScriptSymbolLookup."Source Type"::"Attribute Table", ScriptSymbolLookup."Source Type"::"Tax Attributes");
@@ -146,6 +152,9 @@ codeunit 20297 "Use Case Symbols Handler"
         UseCaseComponentCalculation: Record "Use Case Component Calculation";
         ScriptSymbolLookup: Record "Script Symbol Lookup";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if not RunTrigger then
             exit;
         ScriptSymbolLookup.SetFilter("Source Type", '%1|%2', ScriptSymbolLookup."Source Type"::Component, ScriptSymbolLookup."Source Type"::"Component Percent");

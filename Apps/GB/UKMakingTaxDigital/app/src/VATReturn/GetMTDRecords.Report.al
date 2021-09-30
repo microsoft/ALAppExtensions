@@ -11,6 +11,7 @@ report 10530 "Get MTD Records"
     {
         dataitem(DataItem1040000; Integer)
         {
+            DataItemTableView = sorting(Number);
             MaxIteration = 1;
         }
     }

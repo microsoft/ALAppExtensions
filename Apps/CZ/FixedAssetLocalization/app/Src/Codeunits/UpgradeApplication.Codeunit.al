@@ -11,15 +11,23 @@ codeunit 31241 "Upgrade Application CZF"
     var
     begin
         DataUpgradeMgt.SetUpgradeInProgress();
-
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZF.GetDataVersion180PerDatabaseUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZF.GetDataVersion180PerDatabaseUpgradeTag());
+        SetDatabaseUpgradeTags();
     end;
 
     trigger OnUpgradePerCompany()
     begin
         DataUpgradeMgt.SetUpgradeInProgress();
+        SetCompanyUpgradeTags();
+    end;
 
+    local procedure SetDatabaseUpgradeTags();
+    begin
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZF.GetDataVersion180PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZF.GetDataVersion180PerDatabaseUpgradeTag());
+    end;
+
+    local procedure SetCompanyUpgradeTags();
+    begin
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZF.GetDataVersion180PerCompanyUpgradeTag()) then
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZF.GetDataVersion180PerCompanyUpgradeTag());
     end;

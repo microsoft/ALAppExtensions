@@ -7,9 +7,9 @@ table 1808 "Aggregated Assisted Setup"
 {
     Access = Internal;
     Caption = 'Aggregated Assisted Setup';
-    ObsoleteState = Pending;
+    ObsoleteState = Removed;
     ObsoleteReason = 'Data available in Assisted Setup already- extensions also register in the same table.';
-    ObsoleteTag = '16.0';
+    ObsoleteTag = '19.0';
 
     fields
     {
@@ -57,7 +57,7 @@ table 1808 "Aggregated Assisted Setup"
         field(18; "Record ID"; RecordID)
         {
             Caption = 'Record ID';
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
         }
     }
 

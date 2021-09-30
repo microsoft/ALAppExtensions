@@ -38,6 +38,11 @@ codeunit 148101 "SAF-T Wizard Tests"
         SAFTMappingRange.Get(DefaultLbl);
         SAFTSetupWizard.MappingType.SetValue(SAFTMappingRange."Mapping Type"::"Two Digit Standard Account");
         SAFTSetupWizard.ActionNext.Invoke();
+        // TFS ID 405028: Accounting Period, Starting Date and Ending Date fields are visible in the SAF-T Setup Wizard page
+        Assert.IsTrue(SAFTSetupWizard.AccountingPeriod.Visible(), 'Accounting period field is not visible');
+        Assert.IsTrue(SAFTSetupWizard.StartingDate.Visible(), 'Starting date field is not visible');
+        Assert.IsTrue(SAFTSetupWizard.EndingDate.Visible(), 'Ending date field is not visible');
+
         SAFTMapping.SetRange("Mapping Type", SAFTMapping."Mapping Type"::"Two Digit Standard Account");
         Assert.RecordIsNotEmpty(SAFTMapping);
         Assert.IsTrue(VATCode.Count() > OldVATCodeQty, 'No new VAT Codes been inserted');

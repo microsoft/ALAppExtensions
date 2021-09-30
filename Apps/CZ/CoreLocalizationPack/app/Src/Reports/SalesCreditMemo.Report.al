@@ -333,10 +333,10 @@ report 31190 "Sales Credit Memo CZL"
                     column(UnitofMeasure_SalesCrMemoLine; "Unit of Measure")
                     {
                     }
-                    column(UnitPrice_SalesCrMemoLineCaption; FieldCaption("Unit Price"))
+                    column(UnitPrice_SalesCrMemoLineCaption; UnitPriceExclVATLbl)
                     {
                     }
-                    column(UnitPrice_SalesCrMemoLine; "Unit Price")
+                    column(UnitPrice_SalesCrMemoLine; UnitPriceExclVAT)
                     {
                     }
                     column(LineDiscount_SalesCrMemoLineCaption; FieldCaption("Line Discount %"))
@@ -363,6 +363,11 @@ report 31190 "Sales Credit Memo CZL"
                     column(InvDiscountAmount_SalesCrMemoLine; "Inv. Discount Amount")
                     {
                     }
+
+                    trigger OnAfterGetRecord()
+                    begin
+                        UnitPriceExclVAT := 100 * "Sales Cr.Memo Line"."Unit Price" / (100 + "Sales Cr.Memo Line"."VAT %");
+                    end;
                 }
                 dataitem(VATCounter; "Integer")
                 {
@@ -583,6 +588,7 @@ report 31190 "Sales Credit Memo CZL"
         PaymentSymbolLabel: array[2] of Text;
         DocumentLbl: Text;
         CalculatedExchRate: Decimal;
+        UnitPriceExclVAT: Decimal;
         NoOfCopies: Integer;
         NoOfLoops: Integer;
         LogInteraction: Boolean;
@@ -611,6 +617,7 @@ report 31190 "Sales Credit Memo CZL"
         VATAmtLbl: Label 'VAT Amount';
         TotalLbl: Label 'total';
         VATLbl: Label 'VAT';
+        UnitPriceExclVATLbl: Label 'Unit Price Excl. VAT';
         Type3TextLbl: Label 'Correction of tax base in case of bad debt';
         [InDataSet]
         LogInteractionEnable: Boolean;

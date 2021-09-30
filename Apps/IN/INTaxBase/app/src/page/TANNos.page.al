@@ -42,10 +42,10 @@ page 18548 "T.A.N. Nos."
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     TANNoLbl: Label 'Code eq %1', Comment = '%1= T.A.N. No.';
                 begin
-                    ODataUtility.EditWorksheetInExcel(
+                    EditinExcel.EditPageInExcel(
                         'TAN Nos',
                         CurrPage.ObjectId(false),
                         StrSubstNo(TANNoLbl, Rec.Code));

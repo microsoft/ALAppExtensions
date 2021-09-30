@@ -284,6 +284,9 @@ codeunit 3903 "Retention Policy Setup Impl."
         RetenPolAllowedTblImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";
         TableFilters: JsonArray;
     begin
+        if RetentionPolicySetup.IsTemporary() then
+            exit;
+
         RetentionPolicySetup.CalcFields("Table Caption");
         if not RetenPolAllowedTables.IsAllowedTable(RetentionPolicySetup."Table ID") then
             RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(TableNotAllowedErrorLbl, RetentionPolicySetup."Table ID", RetentionPolicySetup."Table Caption"));

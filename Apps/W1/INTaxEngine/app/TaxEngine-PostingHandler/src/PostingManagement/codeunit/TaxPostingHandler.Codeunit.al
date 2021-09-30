@@ -51,6 +51,9 @@ codeunit 20345 "Tax Posting Handler"
         UseCase: Record "Tax Use Case";
         CompanyInformation: Record "Company Information";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if not CompanyInformation.get() then
             exit;
 
@@ -213,6 +216,9 @@ codeunit 20345 "Tax Posting Handler"
         ScriptSymbolLookup: Record "Script Symbol Lookup";
         LookupEntityMgmt: Codeunit "Lookup Entity Mgmt.";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         ScriptVariable.Reset();
         ScriptVariable.SetRange("Script ID", Rec."Posting Script ID");
         if not ScriptVariable.IsEmpty() then

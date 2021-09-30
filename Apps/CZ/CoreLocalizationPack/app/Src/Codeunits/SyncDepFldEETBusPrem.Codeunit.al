@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31136 "Sync.Dep.Fld-EETBusPrem CZL"
 {
@@ -54,7 +55,8 @@ codeunit 31136 "Sync.Dep.Fld-EETBusPrem CZL"
         if not EETBusinessPremisesCZL.Get(EETBusinessPremises.Code) then begin
             EETBusinessPremisesCZL.Init();
             EETBusinessPremisesCZL.Code := EETBusinessPremises.Code;
-            EETBusinessPremisesCZL.Insert();
+            EETBusinessPremisesCZL.SystemId := EETBusinessPremises.SystemId;
+            EETBusinessPremisesCZL.Insert(false, true);
         end;
         EETBusinessPremisesCZL.Description := EETBusinessPremises.Description;
         EETBusinessPremisesCZL.Identification := EETBusinessPremises.Identification;
@@ -129,7 +131,8 @@ codeunit 31136 "Sync.Dep.Fld-EETBusPrem CZL"
         if not EETBusinessPremises.Get(EETBusinessPremisesCZL.Code) then begin
             EETBusinessPremises.Init();
             EETBusinessPremises.Code := EETBusinessPremisesCZL.Code;
-            EETBusinessPremises.Insert();
+            EETBusinessPremises.SystemId := EETBusinessPremisesCZL.SystemId;
+            EETBusinessPremises.Insert(false, true);
         end;
         EETBusinessPremises.Description := EETBusinessPremisesCZL.Description;
         EETBusinessPremises.Identification := EETBusinessPremisesCZL.Identification;
@@ -164,3 +167,4 @@ codeunit 31136 "Sync.Dep.Fld-EETBusPrem CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

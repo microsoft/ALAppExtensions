@@ -102,7 +102,6 @@ table 18247 "Journal Bank Charges"
         {
             Caption = 'HSN/SAC Code';
             DataClassification = CustomerContent;
-            Editable = false;
             TableRelation = "HSN/SAC".Code where("GST Group Code" = field("GST Group Code"));
         }
         field(18; "GST Bill to/Buy From State"; Code[10])

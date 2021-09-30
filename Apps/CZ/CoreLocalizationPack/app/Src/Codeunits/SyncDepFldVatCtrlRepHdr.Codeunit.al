@@ -55,7 +55,8 @@ codeunit 31177 "Sync.Dep.Fld-VatCtrlRepHdr CZL"
         if not VATCtrlReportHeaderCZL.Get(Rec."No.") then begin
             VATCtrlReportHeaderCZL.Init();
             VATCtrlReportHeaderCZL."No." := Rec."No.";
-            VATCtrlReportHeaderCZL.Insert(false);
+            VATCtrlReportHeaderCZL.SystemId := Rec.SystemId;
+            VATCtrlReportHeaderCZL.Insert(false, true);
         end;
         VATCtrlReportHeaderCZL.Description := Rec.Description;
         VATCtrlReportHeaderCZL."Report Period" := Rec."Report Period";
@@ -138,7 +139,8 @@ codeunit 31177 "Sync.Dep.Fld-VatCtrlRepHdr CZL"
         if not VATControlReportHeader.Get(Rec."No.") then begin
             VATControlReportHeader.Init();
             VATControlReportHeader."No." := Rec."No.";
-            VATControlReportHeader.Insert(false);
+            VATControlReportHeader.SystemId := rec.SystemId;
+            VATControlReportHeader.Insert(false, true);
         end;
         VATControlReportHeader.Description := Rec.Description;
         VATControlReportHeader."Report Period" := Rec."Report Period";

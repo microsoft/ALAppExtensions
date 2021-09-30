@@ -353,6 +353,8 @@ report 11769 "VAT Statement CZL"
                         VATEntry.SetFilter("VAT Settlement No. CZL", SettlementNoFilter);
                     VATEntry.SetClosedFilterCZL(VATStatementReportSelection);
 
+#if not CLEAN19
+#pragma warning disable AL0432
                     case VATStatementLine."Prepayment Type" of
                         VATStatementLine."Prepayment Type"::"Not Prepayment":
                             VATEntry.SetRange("Prepayment Type", VATEntry."Prepayment Type"::" ");
@@ -364,6 +366,8 @@ report 11769 "VAT Statement CZL"
                             VATEntry.SetRange("Prepayment Type");
                     end;
 
+#pragma warning restore AL0432
+#endif
                     SecondVATEntry.Reset();
                     SecondVATEntry.CopyFilters(VATEntry);
                     Amount := 0;
@@ -378,13 +382,15 @@ report 11769 "VAT Statement CZL"
                                 VATEntry.CalcSums(Base, "Additional-Currency Base");
                                 Amount := ConditionalAdd(0, VATEntry.Base, VATEntry."Additional-Currency Base");
                             end;
+#if not CLEAN19
 #pragma warning disable AL0432
                         VATStatementLine."Amount Type"::"Adv. Base": // This value is discontinued and should no longer be used.
-#pragma warning restore
                             begin
                                 VATEntry.CalcSums("Advance Base", "Additional-Currency Base");
                                 Amount := ConditionalAdd(0, VATEntry."Advance Base", VATEntry."Additional-Currency Base");
                             end;
+#pragma warning restore AL0432
+#endif
                         VATStatementLine."Amount Type"::"Unrealized Amount":
                             begin
                                 VATEntry.CalcSums("Remaining Unrealized Amount", "Add.-Curr. Rem. Unreal. Amount");

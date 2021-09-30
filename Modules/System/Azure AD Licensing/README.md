@@ -48,6 +48,7 @@ end;
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure ResetSubscribedSKU(): Boolean
 ```
 #### Return Value
@@ -61,6 +62,7 @@ procedure ResetSubscribedSKU(): Boolean
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure NextSubscribedSKU(): Boolean
 ```
 #### Return Value
@@ -74,6 +76,7 @@ procedure NextSubscribedSKU(): Boolean
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure SubscribedSKUCapabilityStatus(): Text
 ```
 #### Return Value
@@ -87,6 +90,7 @@ procedure SubscribedSKUCapabilityStatus(): Text
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure SubscribedSKUConsumedUnits(): Integer
 ```
 #### Return Value
@@ -100,6 +104,7 @@ procedure SubscribedSKUConsumedUnits(): Integer
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure SubscribedSKUObjectId(): Text
 ```
 #### Return Value
@@ -113,6 +118,7 @@ procedure SubscribedSKUObjectId(): Text
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure SubscribedSKUPrepaidUnitsInEnabledState(): Integer
 ```
 #### Return Value
@@ -126,6 +132,7 @@ procedure SubscribedSKUPrepaidUnitsInEnabledState(): Integer
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure SubscribedSKUPrepaidUnitsInSuspendedState(): Integer
 ```
 #### Return Value
@@ -139,6 +146,7 @@ The number of prepaid licenses that are suspended for the subscribed SKU. If the
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure SubscribedSKUPrepaidUnitsInWarningState(): Integer
 ```
 #### Return Value
@@ -152,6 +160,7 @@ procedure SubscribedSKUPrepaidUnitsInWarningState(): Integer
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure SubscribedSKUId(): Text
 ```
 #### Return Value
@@ -165,6 +174,7 @@ procedure SubscribedSKUId(): Text
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure SubscribedSKUPartNumber(): Text
 ```
 #### Return Value
@@ -178,6 +188,7 @@ procedure SubscribedSKUPartNumber(): Text
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure ResetServicePlans()
 ```
 ### NextServicePlan (Method) <a name="NextServicePlan"></a> 
@@ -187,6 +198,7 @@ procedure ResetServicePlans()
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure NextServicePlan(): Boolean
 ```
 #### Return Value
@@ -200,6 +212,7 @@ procedure NextServicePlan(): Boolean
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure ServicePlanCapabilityStatus(): Text
 ```
 #### Return Value
@@ -213,6 +226,7 @@ procedure ServicePlanCapabilityStatus(): Text
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure ServicePlanId(): Text
 ```
 #### Return Value
@@ -226,6 +240,7 @@ procedure ServicePlanId(): Text
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure ServicePlanName(): Text
 ```
 #### Return Value
@@ -239,6 +254,7 @@ procedure ServicePlanName(): Text
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure IncludeUnknownPlans(): Boolean
 ```
 #### Return Value
@@ -253,6 +269,7 @@ procedure IncludeUnknownPlans(): Boolean
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure SetIncludeUnknownPlans(IncludeUnknownPlans: Boolean)
 ```
 #### Parameters
@@ -268,6 +285,7 @@ The value to be set to the flag.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure SetTestInProgress(TestInProgress: Boolean)
 ```
 #### Parameters

@@ -282,7 +282,7 @@ table 31272 "Compensation Header CZC"
     begin
         TestField(Status, Status::Open);
         Validate("Incoming Document Entry No.", 0);
-        CompensationApprovMgtCZC.DeleteApprovalEntryForRecord(Rec);
+        DeleteRecordInApprovalRequest();
 
         CompensationLineCZC.SetRange("Compensation No.", "No.");
         CompensationLineCZC.DeleteAll(true);
@@ -389,7 +389,7 @@ table 31272 "Compensation Header CZC"
         CompensationHeaderCZC: Record "Compensation Header CZC";
     begin
         CompensationHeaderCZC.Copy(Rec);
-        OnCheckCompensationPrintRestrictions();
+        CheckCompensationPrintRestrictions();
         CompensationHeaderCZC.FindFirst();
         CompensReportSelectionsCZC.SetRange(Usage, CompensReportSelectionsCZC.Usage::Compensation);
         CompensReportSelectionsCZC.SetFilter("Report ID", '<>0');
@@ -492,18 +492,86 @@ table 31272 "Compensation Header CZC"
         exit(not Vendor."Disable Search by Name");
     end;
 
+    procedure CheckCompensationReleaseRestrictions()
+    begin
+#if not CLEAN19
+#pragma warning disable AL0432
+#endif
+        OnCheckCompensationReleaseRestrictions();
+#if not CLEAN19
+#pragma warning restore AL0432
+
+#endif
+        CompensationApprovMgtCZC.PrePostApprovalCheckCompensation(Rec);
+    end;
+
+    procedure CheckCompensationPostRestrictions()
+    begin
+#if not CLEAN19
+#pragma warning disable AL0432
+#endif
+        OnCheckCompensationPostRestrictions();
+#if not CLEAN19
+#pragma warning restore AL0432
+#endif
+    end;
+
+    procedure CheckCompensationPrintRestrictions()
+    begin
+#if not CLEAN19
+#pragma warning disable AL0432
+#endif
+        OnCheckCompensationPrintRestrictions();
+#if not CLEAN19
+#pragma warning restore AL0432
+#endif
+    end;
+
+    local procedure DeleteRecordInApprovalRequest()
+    var
+        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeDeleteRecordInApprovalRequest(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        ApprovalsMgmt.OnDeleteRecordInApprovalRequest(RecordId);
+    end;
+
     [IntegrationEvent(true, false)]
+#if not CLEAN19
+    [Obsolete('The event will be changed to local. Use the CheckCompensationReleaseRestrictions function instead.', '19.0')]
     procedure OnCheckCompensationReleaseRestrictions()
+#else
+    local procedure OnCheckCompensationReleaseRestrictions()
+#endif
     begin
     end;
 
     [IntegrationEvent(true, false)]
+#if not CLEAN19
+    [Obsolete('The event will be changed to local. Use the CheckCompensationPostRestrictions function instead.', '19.0')]
     procedure OnCheckCompensationPostRestrictions()
+#else
+    local procedure OnCheckCompensationPostRestrictions()
+#endif
     begin
     end;
 
     [IntegrationEvent(true, false)]
+#if not CLEAN19
+    [Obsolete('The event will be changed to local. Use the CheckCompensationPrintRestrictions function instead.', '19.0')]
     procedure OnCheckCompensationPrintRestrictions()
+#else
+    local procedure OnCheckCompensationPrintRestrictions()
+#endif
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeDeleteRecordInApprovalRequest(var CompensationHeaderCZC: Record "Compensation Header CZC"; var IsHandled: Boolean);
     begin
     end;
 }

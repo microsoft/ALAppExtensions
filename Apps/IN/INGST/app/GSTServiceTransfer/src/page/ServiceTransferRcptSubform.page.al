@@ -27,6 +27,16 @@ page 18359 "Service Transfer Rcpt. Subform"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the amount of service received.';
                 }
+                field("GST Group Code"; Rec."GST Group Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the GST Group code for the calculation of GST on Service line.';
+                }
+                field("SAC Code"; Rec."SAC Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the SAC code for the calculation of GST on Service line.';
+                }
                 field(Shipped; Rec.Shipped)
                 {
                     ApplicationArea = Basic, Suite;

@@ -20,4 +20,20 @@ enum 1990 "Guided Experience Type"
     {
         Caption = 'Learn', Locked = true;
     }
+    value(3; Tour)
+    {
+        Caption = 'Tour', Locked = true;
+    }
+    value(4; "Spotlight Tour")
+    {
+        Caption = 'Spotlight Tour', Locked = true;
+    }
+    value(5; Video)
+    {
+        Caption = 'Video', Locked = true;
+    }
+    value(6; "Application Feature")
+    {
+        Caption = 'Application Feature', Locked = true;
+    }
 }

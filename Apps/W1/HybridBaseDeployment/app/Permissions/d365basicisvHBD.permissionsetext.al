@@ -9,5 +9,6 @@ permissionsetextension 4001 "D365 BASIC ISV - HBD" extends "D365 BASIC ISV"
                   tabledata "Post Migration Checklist" = RIMD,
                   tabledata "Migration Table Mapping" = RIMD,
                   tabledata "Intelligent Cloud Not Migrated" = RIMD,
-                  tabledata "User Mapping Work" = RIMD;
+                  tabledata "User Mapping Work" = RIMD,
+                  tabledata "Replication Run Completed Arg" = RIMD;
 }

@@ -121,5 +121,8 @@ table 8888 "Email Outbox"
         key(Status; Status)
         {
         }
+        key(StatusMessageId;  "Message Id",Status)
+        {
+        }
     }
 }

@@ -40,12 +40,12 @@ tableextension 13645 "OIOUBL-Sales&Receivables Setup" extends "Sales & Receivabl
     {
     }
 
+#if not CLEAN17
     var
         SetupOIOUBLQst: Label 'OIOUBL path of the OIOMXL file is missing. Do you want to update it now?';
         MissingSetupOIOUBLErr: Label 'OIOUBL path of the OIOMXL file is missing. Please Correct it.';
 
     local procedure IsOIOUBLPathSetupAvailble("Document Type": Option Quote,Order,Invoice,"Credit Memo","Blanket Order","Return Order","Finance Charge",Reminder): Boolean;
-#if not CLEAN17
     var
         FileMgt: Codeunit "File Management";
     begin
@@ -64,11 +64,6 @@ tableextension 13645 "OIOUBL-Sales&Receivables Setup" extends "Sales & Receivabl
                 exit(TRUE);
         end;
     end;
-#else
-    begin
-        exit(true);
-    end;
-#endif
 
     procedure VerifyAndSetOIOUBLSetupPath("Document Type": Option Quote,Order,Invoice,"Credit Memo","Blanket Order","Return Order","Finance Charge",Reminder);
     var
@@ -88,5 +83,6 @@ tableextension 13645 "OIOUBL-Sales&Receivables Setup" extends "Sales & Receivabl
         if NOT IsOIOUBLPathSetupAvailble("Document Type") then
             ERROR(MissingSetupOIOUBLErr);
     end;
+#endif
 
 }

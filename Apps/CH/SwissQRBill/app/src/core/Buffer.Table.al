@@ -436,6 +436,20 @@ table 11510 "Swiss QR-Bill Buffer"
         OnAfterValidateIBAN(IBAN);
     end;
 
+    local procedure ValidateBankAccountIBAN(BankAccountNo: Code[20])
+    var
+        BankAccount: Record "Bank Account";
+    begin
+        if BankAccount.Get(BankAccountNo) then
+            if "IBAN Type" = "IBAN Type"::"QR-IBAN" then begin
+                BankAccount.TestField("Swiss QR-Bill IBAN");
+                IBAN := SwissQRBillMgt.FormatIBAN(BankAccount."Swiss QR-Bill IBAN");
+            end else begin
+                BankAccount.TestField(IBAN);
+                IBAN := SwissQRBillMgt.FormatIBAN(BankAccount.IBAN);
+            end;
+    end;
+
     internal procedure SetCreditorInfo(Customer: Record Customer)
     begin
         "Creditor Name" := CopyStr(Customer.Name, 1, MaxStrLen("Creditor Name"));
@@ -609,6 +623,8 @@ table 11510 "Swiss QR-Bill Buffer"
                 SetUltimateDebitorInfo(Customer);
 
         LoadSourceRecordBillingInformation(SwissQRBillLayout);
+        if PaymentMethod."Swiss QR-Bill Bank Account No." <> '' then
+            ValidateBankAccountIBAN(PaymentMethod."Swiss QR-Bill Bank Account No.");
     end;
 
     local procedure LoadAdditionalInformation(SwissQRBillLayout: Record "Swiss QR-Bill Layout")

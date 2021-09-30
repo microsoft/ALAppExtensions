@@ -1,6 +1,6 @@
 codeunit 31118 "EET Management CZL"
 {
-    Permissions = TableData "EET Entry CZL" = rimd;
+    Permissions = tabledata "EET Entry CZL" = rimd;
 
     var
         TempErrorMessage: Record "Error Message" temporary;
@@ -149,6 +149,7 @@ codeunit 31118 "EET Management CZL"
     local procedure OnCreateSimpleEETEntryOnBeforeInsertEETEntry(var EETEntryCZL: Record "EET Entry CZL")
     begin
     end;
+#if not CLEAN18
 
 #pragma warning disable AL0432
     [Obsolete('The temporary subscriber to prevent activation of new and obsolete services at the same time.', '18.0')]
@@ -175,5 +176,6 @@ codeunit 31118 "EET Management CZL"
         end;
     end;
 #pragma warning restore AL0432
+#endif
 }
 

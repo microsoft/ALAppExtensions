@@ -161,7 +161,6 @@ page 20364 "Tax Engine Setup Wizard"
                 var
                     TaxJsonSingleInstance: Codeunit "Tax Json Single Instance";
                 begin
-                    TaxJsonSingleInstance.ClearValues();
                     FinishAction();
                     TaxJsonSingleInstance.OpenReplcedTaxUseCases();
                 end;
@@ -228,7 +227,7 @@ page 20364 "Tax Engine Setup Wizard"
         if AppendOrReplace = AppendOrReplace::Replace then
             ClearTaxEngineSetup();
 
-        TaxEngineAssistedSetup.SetupTaxEngine();
+        TaxEngineAssistedSetup.SetupTaxEngineWithUseCases();
         AssistedSetup.Complete(Page::"Tax Engine Setup Wizard");
         CurrPage.Close();
     end;
@@ -310,8 +309,12 @@ page 20364 "Tax Engine Setup Wizard"
     local procedure ClearTaxEngineSetup()
     var
         TaxType: Record "Tax Type";
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
     begin
-        TaxType.DeleteAll(true);
+        if not TaxType.IsEmpty() then begin
+            TaxTypeObjectHelper.DisableSelectedTaxTypes(TaxType);
+            TaxType.DeleteAll(true);
+        end;
     end;
 
     local procedure StepValidation(): Boolean

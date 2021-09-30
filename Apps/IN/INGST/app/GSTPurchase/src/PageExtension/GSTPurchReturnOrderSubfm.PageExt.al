@@ -7,6 +7,7 @@ pageextension 18091 "GST Purch. Return Order Subfm" extends "Purchase Return Ord
             trigger OnAfterValidate()
             begin
                 SaveRecords();
+                FormatLine();
             end;
         }
 #if not CLEAN17
@@ -49,12 +50,41 @@ pageextension 18091 "GST Purch. Return Order Subfm" extends "Purchase Return Ord
                 CalculateTax.CallTaxEngineOnPurchaseLine(Rec, xRec);
             end;
         }
+        modify(Type)
+        {
+            Trigger OnAfterValidate()
+            begin
+                FormatLine();
+            end;
+        }
         addafter("Qty. to Assign")
         {
             field("GST Group Code"; Rec."GST Group Code")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies an identifier for the GST group  used to calculate and post GST.';
+                Editable = IsHSNSACEditable;
+                ToolTip = 'Specifies an identifier for the GST group used to calculate and post GST.';
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnPurchaseLine(Rec, xRec);
+                end;
+            }
+            field("HSN/SAC Code"; Rec."HSN/SAC Code")
+            {
+                ApplicationArea = Basic, Suite;
+                Editable = IsHSNSACEditable;
+                ToolTip = 'Specifies the HSN/SAC code for the calculation of GST on Purchase line.';
+
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnPurchaseLine(Rec, xRec);
+                end;
             }
             field("GST Group Type"; Rec."GST Group Type")
             {
@@ -124,4 +154,19 @@ pageextension 18091 "GST Purch. Return Order Subfm" extends "Purchase Return Ord
     begin
         CurrPage.SaveRecord();
     end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        FormatLine();
+    end;
+
+    local procedure FormatLine()
+    var
+        GSTPurchaseSubscribers: Codeunit "GST Purchase Subscribers";
+    begin
+        GSTPurchaseSubscribers.SetHSNSACEditable(Rec, IsHSNSACEditable);
+    end;
+
+    var
+        IsHSNSACEditable: Boolean;
 }

@@ -3,6 +3,12 @@ codeunit 148076 "Cash Document Attachments CZP"
     Subtype = Test;
     TestPermissions = Disabled;
 
+    trigger OnRun()
+    begin
+        // [FEATURE] [Cash Desk] [Document Attachments]
+        isInitialized := false;
+    end;
+
     var
         CashDeskCZP: Record "Cash Desk CZP";
         CashDeskUserCZP: Record "Cash Desk User CZP";
@@ -15,12 +21,17 @@ codeunit 148076 "Cash Document Attachments CZP"
         LibraryRandom: Codeunit "Library - Random";
         LibraryCashDeskCZP: Codeunit "Library - Cash Desk CZP";
         LibraryCashDocumentCZP: Codeunit "Library - Cash Document CZP";
+        CashDocumentTypeCZP: Enum "Cash Document Type CZP";
         isInitialized: Boolean;
 
     local procedure Initialize()
+    var
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Cash Document Attachments CZP");
         if isInitialized then
             exit;
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Cash Document Attachments CZP");
 
         LibraryCashDeskCZP.CreateCashDeskCZP(CashDeskCZP);
         LibraryCashDeskCZP.SetupCashDeskCZP(CashDeskCZP, false);
@@ -28,6 +39,7 @@ codeunit 148076 "Cash Document Attachments CZP"
 
         isInitialized := true;
         Commit();
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Cash Document Attachments CZP");
     end;
 
     [Test]
@@ -38,10 +50,8 @@ codeunit 148076 "Cash Document Attachments CZP"
         RecordRef: RecordRef;
         TextOutStream: OutStream;
         DocumentInStream: InStream;
-        CashDocumentTypeCZP: Enum "Cash Document Type CZP";
     begin
         // [SCENARIO] Create random text document and attach to Cash Document
-        // [FEATURE] Document Attachment
         Initialize();
 
         // [GIVEN] New receipt Cash Document created
@@ -68,17 +78,11 @@ codeunit 148076 "Cash Document Attachments CZP"
         // [THEN] Verify file type
         Assert.AreEqual(8, DocumentAttachment."File Type", 'File type is not Other.');
 
-        // [THEN] Verify table ID
-        Assert.AreEqual(11732, DocumentAttachment."Table ID", 'Table Id does not match with Cash Document Header CZP');
-
-        // [THEN] Verify record no
-        Assert.AreEqual(CashDocumentHeaderCZP."No.", DocumentAttachment."No.", 'No. does not match with' + CashDocumentHeaderCZP."No.");
-
         // [THEN] Verify attached date
         Assert.IsTrue(DocumentAttachment."Attached Date" > 0DT, 'Missing attach date');
 
         // [THEN] Verify doc ref id is not null
-        Assert.IsTrue(DocumentAttachment."Document Reference ID".HasValue, 'Document reference ID is null.');
+        Assert.IsTrue(DocumentAttachment."Document Reference ID".HasValue(), 'Document reference ID is null.');
     end;
 
     [Test]
@@ -87,8 +91,10 @@ codeunit 148076 "Cash Document Attachments CZP"
         DocumentAttachment: Record "Document Attachment";
     begin
         // [SCENARIO] Print Cash Document as attached PDF
-        // [FEATURE] Document Attachment
         Initialize();
+
+        // [GIVEN] New receipt Cash Document created
+        LibraryCashDocumentCZP.CreateCashDocument(CashDocumentHeaderCZP, CashDocumentLineCZP, CashDocumentTypeCZP::Receipt, CashDeskCZP."No.");
 
         // [GIVEN] Release Cash Document
         CashDocumentReleaseCZP.Run(CashDocumentHeaderCZP);
@@ -97,10 +103,10 @@ codeunit 148076 "Cash Document Attachments CZP"
         CashDocumentHeaderCZP.PrintToDocumentAttachment();
         RecallNotificationsForRecord(CashDocumentHeaderCZP);
 
-        // [THEN] Two document attachments expected
+        // [THEN] One document attachment expected
         DocumentAttachment.SetRange("Table ID", Database::"Cash Document Header CZP");
         DocumentAttachment.SetRange("No.", CashDocumentHeaderCZP."No.");
-        Assert.AreEqual(2, DocumentAttachment.Count(), 'Two attachments were expected for this record.');
+        Assert.AreEqual(1, DocumentAttachment.Count(), 'One attachment was expected for this record.');
     end;
 
     [Test]
@@ -109,8 +115,17 @@ codeunit 148076 "Cash Document Attachments CZP"
         DocumentAttachment: Record "Document Attachment";
     begin
         // [SCENARIO] Delete Cash Document with document attached
-        // [FEATURE] Document Attachment
         Initialize();
+
+        // [GIVEN] New receipt Cash Document created
+        LibraryCashDocumentCZP.CreateCashDocument(CashDocumentHeaderCZP, CashDocumentLineCZP, CashDocumentTypeCZP::Receipt, CashDeskCZP."No.");
+
+        // [GIVEN] Release Cash Document
+        CashDocumentReleaseCZP.Run(CashDocumentHeaderCZP);
+
+        // [GIVEN] Print Cash Document as PDF
+        CashDocumentHeaderCZP.PrintToDocumentAttachment();
+        RecallNotificationsForRecord(CashDocumentHeaderCZP);
 
         // [WHEN] Deleted Cash Document
         CashDocumentHeaderCZP.Delete();
@@ -125,10 +140,8 @@ codeunit 148076 "Cash Document Attachments CZP"
     procedure PostCashDocumentAttachDocument()
     var
         DocumentAttachment: Record "Document Attachment";
-        CashDocumentTypeCZP: Enum "Cash Document Type CZP";
     begin
         // [SCENARIO] Post Cash Document with document attached
-        // [FEATURE] Document Attachment
         Initialize();
 
         // [GIVEN] New receipt Cash Document created
@@ -139,7 +152,7 @@ codeunit 148076 "Cash Document Attachments CZP"
         // [GIVEN] Release Cash Document
         CashDocumentReleaseCZP.Run(CashDocumentHeaderCZP);
 
-        // [WHEN] Print Cash Document as PDF
+        // [GIVEN] Print Cash Document as PDF
         CashDocumentHeaderCZP.PrintToDocumentAttachment();
         RecallNotificationsForRecord(CashDocumentHeaderCZP);
 
@@ -162,20 +175,27 @@ codeunit 148076 "Cash Document Attachments CZP"
         DocumentAttachment: Record "Document Attachment";
     begin
         // [SCENARIO] Print Posted Cash Document as attached PDF
-        // [FEATURE] Document Attachment
         Initialize();
 
-        // [GIVEN] Get posted cash document
+        // [GIVEN] New receipt Cash Document created
+        Clear(CashDocumentHeaderCZP);
+        Clear(CashDocumentLineCZP);
+        LibraryCashDocumentCZP.CreateCashDocument(CashDocumentHeaderCZP, CashDocumentLineCZP, CashDocumentTypeCZP::Receipt, CashDeskCZP."No.");
+
+        // [GIVEN] Post Cash Document
+        CashDocumentPostCZP.Run(CashDocumentHeaderCZP);
+
+        // [GIVEN] Get Posted Cash Document
         PostedCashDocumentHdrCZP.Get(CashDocumentHeaderCZP."Cash Desk No.", CashDocumentHeaderCZP."No.");
 
-        // [WHEN] Print Cash Document as PDF
+        // [WHEN] Print Posted Cash Document as PDF
         PostedCashDocumentHdrCZP.PrintToDocumentAttachment();
         RecallNotificationsForRecord(PostedCashDocumentHdrCZP);
 
-        // [THEN] Two document attachments expected
+        // [THEN] One document attachment expected
         DocumentAttachment.SetRange("Table ID", Database::"Posted Cash Document Hdr. CZP");
         DocumentAttachment.SetRange("No.", PostedCashDocumentHdrCZP."No.");
-        Assert.AreEqual(2, DocumentAttachment.Count(), 'Two attachments were expected for this record.');
+        Assert.AreEqual(1, DocumentAttachment.Count(), 'One attachment was expected for this record.');
     end;
 
     local procedure RecallNotificationsForRecord(ToRecallRecVariant: Variant)

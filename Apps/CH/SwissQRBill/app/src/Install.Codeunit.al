@@ -117,6 +117,7 @@ codeunit 11517 "Swiss QR-Bill Install"
         PurchaseHeader: Record "Purchase Header";
         Company: Record Company;
         GenJournalLine: Record "Gen. Journal Line";
+        BankAccount: Record "Bank Account";
         DataClassificationMgt: Codeunit "Data Classification Mgt.";
     begin
         Company.Get(CompanyName());
@@ -130,7 +131,9 @@ codeunit 11517 "Swiss QR-Bill Install"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Swiss QR-Bill Layout");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Swiss QR-Bill Setup");
         DataClassificationMgt.SetFieldToNormal(Database::"Company Information", CompanyInformation.FieldNo("Swiss QR-Bill IBAN"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Bank Account", BankAccount.FieldNo("Swiss QR-Bill IBAN"));
         DataClassificationMgt.SetFieldToNormal(Database::"Payment Method", PaymentMethod.FieldNo("Swiss QR-Bill Layout"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Payment Method", PaymentMethod.FieldNo("Swiss QR-Bill Bank Account No."));
 
         DataClassificationMgt.SetFieldToNormal(Database::"Incoming Document", IncomingDocument.FieldNo("Swiss QR-Bill"));
         DataClassificationMgt.SetFieldToNormal(Database::"Incoming Document", IncomingDocument.FieldNo("Swiss QR-Bill Unstr. Message"));

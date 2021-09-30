@@ -2,7 +2,9 @@ pageextension 31011 "Customer Posting Groups CZL" extends "Customer Posting Grou
 {
     actions
     {
-        addlast(navigation)
+#pragma warning disable AL0432
+        addlast(Navigation)
+#pragma warning restore AL0432
         {
             group("Posting Group CZL")
             {

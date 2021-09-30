@@ -3,7 +3,9 @@ page 20248 "Tax Types"
     PageType = List;
     ApplicationArea = Basic, Suite;
     UsageCategory = Lists;
+    CardPageId = "Tax Type";
     SourceTable = "Tax Type";
+    Editable = false;
     layout
     {
         area(Content)
@@ -139,6 +141,20 @@ page 20248 "Tax Types"
                     //and ruleset doesn't allow  to create a action without the OnAction trigger
                 end;
             }
+            action("ImportTaxTypeFromLibrary")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Import Tax Type From Library';
+                Image = Import;
+                ToolTip = 'Imports the Tax Type from the set of library of tax types.';
+                trigger OnAction()
+                var
+                    TaxEngineAssistedSetup: Codeunit "Tax Engine Assisted Setup";
+                begin
+                    TaxEngineAssistedSetup.OnImportTaxTypeFromLibrary(Rec.Code);
+                    CurrPage.Update(true);
+                end;
+            }
             action(EnableSelected)
             {
                 Caption = 'Enable Selected Tax Types';
@@ -173,8 +189,26 @@ page 20248 "Tax Types"
                     TaxTypeObjectHelper.DisableSelectedTaxTypes(TaxType);
                 end;
             }
+            action(ArchivedLogs)
+            {
+                Caption = 'Archived Logs';
+                ToolTip = 'Opens archival logs.';
+                ApplicationArea = Basic, Suite;
+                Image = Archive;
+                Promoted = true;
+                PromotedCategory = Process;
+                trigger OnAction();
+                var
+                    i: Integer;
+                begin
+                    i := 0;
+                    //blank OnAction created as we have a subscriber of this action in Use Case mgmt codeunit 
+                    //and ruleset doesn't allow  to create a action without the OnAction trigger
+                end;
+            }
         }
     }
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterExportTaxTypes(var TaxType: Record "Tax Type")
     begin

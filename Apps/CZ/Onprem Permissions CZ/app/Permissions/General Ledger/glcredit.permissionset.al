@@ -1,3 +1,4 @@
+#if not CLEAN18
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -20,3 +21,4 @@ permissionset 11708 "GL-CREDIT"
                   tabledata "Posted Credit Header" = R,
                   tabledata "Posted Credit Line" = R;
 }
+#endif

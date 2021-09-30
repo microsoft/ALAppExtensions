@@ -3,6 +3,12 @@ codeunit 148090 "Compensations CZC"
     Subtype = Test;
     TestPermissions = Disabled;
 
+    trigger OnRun()
+    begin
+        // [FEATURE] [Compensations]
+        isInitialized := false;
+    end;
+
     var
         CompensationsSetupCZC: Record "Compensations Setup CZC";
         Assert: Codeunit Assert;
@@ -10,15 +16,19 @@ codeunit 148090 "Compensations CZC"
         LibraryERM: Codeunit "Library - ERM";
         LibraryRandom: Codeunit "Library - Random";
         LibrarySales: Codeunit "Library - Sales";
+        LibraryPurchase: Codeunit "Library - Purchase";
         CompensationSourceTypeCZC: Enum "Compensation Source Type CZC";
         isInitialized: Boolean;
-        BlockingEntriesErr: Label 'Compensation Amount (LCY) must be equal to ''0''  in Cust. Ledger Entry:';
 
     local procedure Initialize()
+    var
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Compensations CZC");
         LibraryRandom.Init();
         if isInitialized then
             exit;
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Compensations CZC");
 
         CompensationsSetupCZC.Get();
         CompensationsSetupCZC."Compensation Nos." := LibraryERM.CreateNoSeriesCode();
@@ -31,6 +41,7 @@ codeunit 148090 "Compensations CZC"
 
         isInitialized := true;
         Commit();
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Compensations CZC");
     end;
 
     [Test]
@@ -53,13 +64,13 @@ codeunit 148090 "Compensations CZC"
         CustLedgerEntry: Record "Cust. Ledger Entry";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin
-        // [FEATURE] Compensations Release
+        // [SCENARIO] Compensations Release
         Initialize();
 
-        // [GIVEN] New compensation header created
-        CreateCompensationHeader(CompensationHeaderCZC);
+        // [GIVEN] New compensation header has been created
+        CreateCompensationHeader(CompensationHeaderCZC, CompensationSourceTypeCZC);
 
-        // [GIVEN] New compensation lines created
+        // [GIVEN] New compensation lines has been created
         case CompensationSourceTypeCZC of
             CompensationLineCZC1."Source Type"::Customer:
                 begin
@@ -81,7 +92,7 @@ codeunit 148090 "Compensations CZC"
                 end;
         end;
 
-        // [GIVEN] Balance compensation lines
+        // [GIVEN] Compensation lines has been balanced
         if Abs(CompensationLineCZC1."Amount (LCY)") > Abs(CompensationLineCZC2."Amount (LCY)") then
             LibraryCompensationCZC.UpdateCompensationLine(CompensationLineCZC1, -CompensationLineCZC2."Amount (LCY)")
         else
@@ -90,14 +101,14 @@ codeunit 148090 "Compensations CZC"
         // [WHEN] Release compensation
         ReleaseCompensation(CompensationHeaderCZC);
 
-        // [THEN] Compensation is released
+        // [THEN] Compensation will be released
         CompensationHeaderCZC.Get(CompensationHeaderCZC."No.");
         CompensationHeaderCZC.TestField(Status, CompensationHeaderCZC.Status::Released);
 
         // [WHEN] Reopen compensation
         Reopen(CompensationHeaderCZC);
 
-        // [THEN] Compensation is open
+        // [THEN] Compensation will be open
         CompensationHeaderCZC.TestField(Status, CompensationHeaderCZC.Status::Open);
     end;
 
@@ -122,13 +133,13 @@ codeunit 148090 "Compensations CZC"
         CustLedgerEntry: Record "Cust. Ledger Entry";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin
-        // [FEATURE] Compensations Posting
+        // [SCENARIO] Compensations Posting
         Initialize();
 
-        // [GIVEN] New compensation header created
-        CreateCompensationHeader(CompensationHeaderCZC);
+        // [GIVEN] New compensation header has been created
+        CreateCompensationHeader(CompensationHeaderCZC, CompensationSourceTypeCZC);
 
-        // [GIVEN] New compensation lines created
+        // [GIVEN] New compensation lines has been created
         case CompensationSourceTypeCZC of
             CompensationLineCZC1."Source Type"::Customer:
                 begin
@@ -150,7 +161,7 @@ codeunit 148090 "Compensations CZC"
                 end;
         end;
 
-        // [GIVEN] Balance compensation lines
+        // [GIVEN] Compensation lines has been balanced
         if Abs(CompensationLineCZC1."Amount (LCY)") > Abs(CompensationLineCZC2."Amount (LCY)") then
             LibraryCompensationCZC.UpdateCompensationLine(CompensationLineCZC1, -CompensationLineCZC2."Amount (LCY)")
         else
@@ -159,10 +170,11 @@ codeunit 148090 "Compensations CZC"
         // [GIVEN] Post compensation
         PostCompensation(CompensationHeaderCZC);
 
-        // [THEN] Posted compensation exists
+        // [THEN] Posted compensation will exists
         PostedCompensationHeaderCZC.Get(CompensationHeaderCZC."No.");
     end;
 
+    [Test]
     [HandlerFunctions('ModalPageCompensationProposalHandler')]
     procedure AutomaticSuggestCompensationLines()
     var
@@ -173,18 +185,18 @@ codeunit 148090 "Compensations CZC"
         PostedDocNo: array[2] of Code[20];
         Amount: array[2] of Decimal;
     begin
-        // [FEATURE] Suggest Compensations
+        // [SCENARIO] Suggest Compensation
         Initialize();
 
-        // [GIVEN] New compensation header created
-        CreateCompensationHeader(CompensationHeaderCZC);
+        // [GIVEN] New compensation header has been created
+        CreateCompensationHeader(CompensationHeaderCZC, CompensationSourceTypeCZC::Customer);
 
-        // [GIVEN] Created and posted sales invoice
+        // [GIVEN] Sales Invoice has been created and posted
         CreateSalesInvoice(SalesHeader, SalesLine, CompensationHeaderCZC."Company No.");
         Amount[1] := SalesLine."Amount Including VAT";
         PostedDocNo[1] := PostSalesDocument(SalesHeader);
 
-        // [GIVEN] Created and posted sales credit memo
+        // [GIVEN] Sales Credit Memo has been created and posted
         CreateSalesCreditMemo(SalesHeader, SalesLine, CompensationHeaderCZC."Company No.");
         Amount[2] := SalesLine."Amount Including VAT";
         PostedDocNo[2] := PostSalesDocument(SalesHeader);
@@ -192,20 +204,21 @@ codeunit 148090 "Compensations CZC"
         // [WHEN] Suggest compensation lines
         LibraryCompensationCZC.RunSuggestCompensationLines(CompensationHeaderCZC);
 
-        // [THEN] Compensation line to sales credit memo exists
+        // [THEN] Compensation line to sales credit memo will exist
         CompensationLineCZC.SetRange("Compensation No.", CompensationHeaderCZC."No.");
         CompensationLineCZC.FindSet();
         CompensationLineCZC.TestField("Document Type", CompensationLineCZC."Document Type"::"Credit Memo");
         CompensationLineCZC.TestField("Document No.", PostedDocNo[2]);
         CompensationLineCZC.TestField(Amount, -Amount[2]);
 
-        // [THEN] Compensation line to sales invoice exists
+        // [THEN] Compensation line to sales invoice will exists
         CompensationLineCZC.Next();
         CompensationLineCZC.TestField("Document Type", CompensationLineCZC."Document Type"::Invoice);
         CompensationLineCZC.TestField("Document No.", PostedDocNo[1]);
         CompensationLineCZC.TestField(Amount, Amount[1]);
     end;
 
+    [Test]
     [HandlerFunctions('ModalPageCompensationProposalHandler')]
     procedure BlockingEntriesOnReleasedCompensations()
     var
@@ -216,52 +229,55 @@ codeunit 148090 "Compensations CZC"
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
     begin
-        // [FEATURE] Compensations Blocking entries
+        // [SCENARIO] Compensations Blocking entries
         Initialize();
 
-        // [GIVEN] First compensation header created
-        CreateCompensationHeader(CompensationHeaderCZC1);
+        // [GIVEN] Compensation header has been created
+        CreateCompensationHeader(CompensationHeaderCZC1, CompensationSourceTypeCZC::Customer);
 
-        // [GIVEN] Created and posted sales invoice
+        // [GIVEN] Sales invoice has been created and posted
         CreateSalesInvoice(SalesHeader, SalesLine, CompensationHeaderCZC1."Company No.");
         PostSalesDocument(SalesHeader);
 
-        // [GIVEN] Created and posted sales invoice
+        // [GIVEN] Sales invoice has been created and posted
         CreateSalesCreditMemo(SalesHeader, SalesLine, CompensationHeaderCZC1."Company No.");
         PostSalesDocument(SalesHeader);
 
-        // [GIVEN] Suggest compensation lines
+        // [GIVEN] Compensation lines has been suggested
         LibraryCompensationCZC.RunSuggestCompensationLines(CompensationHeaderCZC1);
         CompensationLineCZC1.Get(CompensationHeaderCZC1."No.", 10000);
         CompensationLineCZC2.Get(CompensationHeaderCZC1."No.", 20000);
 
-        // [GIVEN] Balance compensation lines
+        // [GIVEN] Compensation lines has been balanced
         if Abs(CompensationLineCZC1."Amount (LCY)") > Abs(CompensationLineCZC2."Amount (LCY)") then
             LibraryCompensationCZC.UpdateCompensationLine(CompensationLineCZC1, -CompensationLineCZC2."Amount (LCY)")
         else
             LibraryCompensationCZC.UpdateCompensationLine(CompensationLineCZC2, -CompensationLineCZC1."Amount (LCY)");
 
-        // [GIVEN] Released first Compensation document
+        // [GIVEN] Compensation document has been released
         ReleaseCompensation(CompensationHeaderCZC1);
 
-        // [GIVEN] Created second Compensation document with same customer
-        CreateCompensationHeaderWithCustomer(CompensationHeaderCZC2, CompensationHeaderCZC1."Company No.");
+        // [GIVEN] Compensation header has been created with the same customer
+        CreateCompensationHeader(CompensationHeaderCZC2, CompensationSourceTypeCZC::Customer);
+        CompensationHeaderCZC2.Validate("Company No.", CompensationHeaderCZC1."Company No.");
+        CompensationHeaderCZC2.Modify(false);
 
         // [WHEN] Suggest compensation lines
-        asserterror LibraryCompensationCZC.RunSuggestCompensationLines(CompensationHeaderCZC2);
+        LibraryCompensationCZC.RunSuggestCompensationLines(CompensationHeaderCZC2);
 
-        // [THEN] Suggest compensation lines fails
-        Assert.ExpectedError(BlockingEntriesErr);
+        // [THEN] No compensation line will exist
+        CompensationLineCZC2.SetRange("Compensation No.", CompensationHeaderCZC2."No.");
+        Assert.AreEqual(0, CompensationLineCZC2.Count(), 'No compensation line was expected for this compensation.');
     end;
 
-    local procedure CreateCompensationHeader(var CompensationHeaderCZC: Record "Compensation Header CZC")
+    local procedure CreateCompensationHeader(var CompensationHeaderCZC: Record "Compensation Header CZC"; CompensationSourceTypeCZC: Enum "Compensation Source Type CZC")
     begin
-        CreateCompensationHeaderWithCustomer(CompensationHeaderCZC, LibrarySales.CreateCustomerNo());
-    end;
-
-    local procedure CreateCompensationHeaderWithCustomer(var CompensationHeaderCZC: Record "Compensation Header CZC"; CustomerNo: Code[20])
-    begin
-        LibraryCompensationCZC.CreateCompensationHeader(CompensationHeaderCZC, CustomerNo);
+        case CompensationSourceTypeCZC of
+            CompensationSourceTypeCZC::Customer:
+                LibraryCompensationCZC.CreateCompensationHeader(CompensationHeaderCZC, CompensationSourceTypeCZC, LibrarySales.CreateCustomerNo());
+            CompensationSourceTypeCZC::Vendor:
+                LibraryCompensationCZC.CreateCompensationHeader(CompensationHeaderCZC, CompensationSourceTypeCZC, LibraryPurchase.CreateVendorNo());
+        end;
     end;
 
     local procedure CreateCompensationLine(var CompensationLineCZC: Record "Compensation Line CZC"; CompensationHeaderCZC: Record "Compensation Header CZC";

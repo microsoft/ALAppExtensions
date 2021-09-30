@@ -6,23 +6,6 @@ Contains the page that enables a user to pick which new features to use.
  
 
 
-## Feature Data Error Handler (Codeunit 2613)
-
- Error handler codeunit used by the task scheduler during feature data update.
- 
-
-### OnLogError (Event) <a name="OnLogError"></a> 
-#### Syntax
-```
-[IntegrationEvent(false, false)]
-local procedure OnLogError(FeatureDataUpdateStatus: Record "Feature Data Update Status")
-```
-#### Parameters
-*FeatureDataUpdateStatus ([Record "Feature Data Update Status"]())* 
-
-
-
-
 ## Feature Data Update (Interface)
 
  Interface defines methods for feature data update task management.
@@ -30,7 +13,7 @@ local procedure OnLogError(FeatureDataUpdateStatus: Record "Feature Data Update 
 
 ### IsDataUpdateRequired (Method) <a name="IsDataUpdateRequired"></a> 
 
- Searches the database for data that must be updated before the feature can be enabled. 
+ Searches the database for data that must be updated before the feature can be enabled.
  
 
 #### Syntax
@@ -93,6 +76,23 @@ procedure GetTaskDescription()TaskDescription: Text
 
 The process description
 
+## Feature Data Error Handler (Codeunit 2613)
+
+ Error handler codeunit used by the task scheduler during feature data update.
+ 
+
+### OnLogError (Event) <a name="OnLogError"></a> 
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+local procedure OnLogError(FeatureDataUpdateStatus: Record "Feature Data Update Status")
+```
+#### Parameters
+*FeatureDataUpdateStatus ([Record "Feature Data Update Status"]())* 
+
+
+
+
 ## Feature Management Facade (Codeunit 2611)
 
  This codeunit provides public functions for feature management.
@@ -119,7 +119,7 @@ if the feature is fully enabled
 ### AfterValidateEnabled (Method) <a name="AfterValidateEnabled"></a> 
 
  Updates the status in "Feature Data Update Status" records related to all companies.
- Also sends the notification reminding user to sign in again after feature is enabled/disabled. 
+ Also sends the notification reminding user to sign in again after feature is enabled/disabled.
  
 
 #### Syntax
@@ -253,11 +253,33 @@ procedure UpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update St
 
 
 
+### OnAfterUpdateData (Event) <a name="OnAfterUpdateData"></a> 
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnAfterUpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status")
+```
+#### Parameters
+*FeatureDataUpdateStatus ([Record "Feature Data Update Status"]())* 
+
+
+
+### OnBeforeUpdateData (Event) <a name="OnBeforeUpdateData"></a> 
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnBeforeUpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status")
+```
+#### Parameters
+*FeatureDataUpdateStatus ([Record "Feature Data Update Status"]())* 
+
+
+
 ### OnBeforeScheduleTask (Event) <a name="OnBeforeScheduleTask"></a> 
 #### Syntax
 ```
 [IntegrationEvent(false, false)]
-local procedure OnBeforeScheduleTask(FeatureDataUpdateStatus: Record "Feature Data Update Status"; var DoNotScheduleTask: Boolean; var TaskId: Guid)
+internal procedure OnBeforeScheduleTask(FeatureDataUpdateStatus: Record "Feature Data Update Status"; var DoNotScheduleTask: Boolean; var TaskId: Guid)
 ```
 #### Parameters
 *FeatureDataUpdateStatus ([Record "Feature Data Update Status"]())* 
@@ -276,14 +298,14 @@ local procedure OnBeforeScheduleTask(FeatureDataUpdateStatus: Record "Feature Da
 #### Syntax
 ```
 [IntegrationEvent(false, false)]
-local procedure OnGetImplementation(FeatureDataUpdateStatus: Record "Feature Data Update Status"; var FeatureDataUpdate: interface "Feature Data Update"; var ImplementedId: Text[50])
+internal procedure OnGetImplementation(FeatureDataUpdateStatus: Record "Feature Data Update Status"; var FeatureDataUpdate: interface "Feature Data Update"; var ImplementedId: Text[50])
 ```
 #### Parameters
 *FeatureDataUpdateStatus ([Record "Feature Data Update Status"]())* 
 
 
 
-*FeatureDataUpdate ([interface]())* 
+*FeatureDataUpdate ([interface "Feature Data Update"]())* 
 
 
 

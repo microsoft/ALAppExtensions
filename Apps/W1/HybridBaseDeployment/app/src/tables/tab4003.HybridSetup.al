@@ -112,6 +112,24 @@ table 4003 "Intelligent Cloud Setup"
             Description = 'The latest version of Intelligent Cloud pipeline available.';
             DataClassification = SystemMetadata;
         }
+
+        field(21; "Upgrade Tag Backup ID"; Integer)
+        {
+            Description = 'Upgrade Tag Backup ID';
+            DataClassification = SystemMetadata;
+        }
+
+        field(22; "Schedule Upgrade"; Boolean)
+        {
+            Description = 'Schedule Upgrade';
+            DataClassification = SystemMetadata;
+        }
+
+        field(23; "Company Creation Session ID"; Integer)
+        {
+            Description = 'The ID of the session that was intiated to create companies from the setup wizard.';
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

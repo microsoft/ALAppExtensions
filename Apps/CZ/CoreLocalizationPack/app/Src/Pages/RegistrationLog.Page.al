@@ -58,30 +58,35 @@ page 11756 "Registration Log CZL"
                     ApplicationArea = Basic, Suite;
                     Editable = false;
                     ToolTip = 'Specifies the name of customer or vendor was verified.';
+                    Visible = false;
                 }
                 field("Verified Address"; Rec."Verified Address")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
                     ToolTip = 'Specifies the address of customer or vendor was verified.';
+                    Visible = false;
                 }
                 field("Verified City"; Rec."Verified City")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
                     ToolTip = 'Specifies the city of customer or vendor was verified.';
+                    Visible = false;
                 }
                 field("Verified Post Code"; Rec."Verified Post Code")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
                     ToolTip = 'Specifies the post code of customer or vendor was verified.';
+                    Visible = false;
                 }
                 field("Verified VAT Registration No."; Rec."Verified VAT Registration No.")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
                     ToolTip = 'Specifies the VAT registration number of customer or vendor was verified.';
+                    Visible = false;
                 }
                 field("User ID"; Rec."User ID")
                 {
@@ -100,6 +105,12 @@ page 11756 "Registration Log CZL"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies verified result';
                     Visible = false;
+                }
+                field("Detail Status"; Rec."Detail Status")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Tooltip = 'Specifies the status of the detail.';
+                    Enabled = DetailExist;
                 }
             }
         }
@@ -120,6 +131,7 @@ page 11756 "Registration Log CZL"
                 RunObject = Codeunit "Reg. Lookup Ext. Data CZL";
                 ToolTip = 'Verify a Registration number. If the number is verified the Status field contains the value Valid.';
             }
+#if not CLEAN19
             action("Update Card")
             {
                 ApplicationArea = Basic, Suite;
@@ -129,16 +141,48 @@ page 11756 "Registration Log CZL"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 ToolTip = 'Update verified data to card.';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The ARES Update report is discontinued, use the Registration Log Details page instead.';
+                ObsoleteTag = '19.0';
 
                 trigger OnAction()
                 begin
+#pragma warning disable AL0432
                     Rec.UpdateCard();
+#pragma warning restore AL0432
+                end;
+            }
+#endif
+            action(ValidationDetail)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Validation Detail';
+                Enabled = DetailExist;
+                Image = List;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                ToolTip = 'Open the list of fields that have been processed by the registration number validation service.';
+
+                trigger OnAction()
+                begin
+                    Rec.OpenModifyDetails();
                 end;
             }
         }
     }
+
     trigger OnOpenPage()
     begin
         if Rec.FindFirst() then;
     end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        DetailExist := Rec."Detail Status" <> Rec."Detail Status"::"Not Verified";
+    end;
+
+    var
+        DetailExist: Boolean;
 }

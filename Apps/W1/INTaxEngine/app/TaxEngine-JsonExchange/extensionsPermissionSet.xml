@@ -11,5 +11,25 @@
       <ExecutePermission>No</ExecutePermission>
       <SecurityFilter />
     </Permission>
+    <Permission>
+      <ObjectID>20361</ObjectID>
+      <ObjectType>TableData</ObjectType>
+      <ReadPermission>Yes</ReadPermission>
+      <InsertPermission>Yes</InsertPermission>
+      <ModifyPermission>Yes</ModifyPermission>
+      <DeletePermission>Yes</DeletePermission>
+      <ExecutePermission>No</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectID>20362</ObjectID>
+      <ObjectType>TableData</ObjectType>
+      <ReadPermission>Yes</ReadPermission>
+      <InsertPermission>Yes</InsertPermission>
+      <ModifyPermission>Yes</ModifyPermission>
+      <DeletePermission>Yes</DeletePermission>
+      <ExecutePermission>No</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
   </PermissionSet>
 </PermissionSets>

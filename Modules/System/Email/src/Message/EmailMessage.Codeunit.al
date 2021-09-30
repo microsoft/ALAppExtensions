@@ -140,6 +140,15 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
+    /// Deletes the contents of the currently selected attachment.
+    /// </summary>
+    /// <returns>Returns true if contents was successfully deleted, otherwise false.</returns>
+    procedure Attachments_DeleteContent(): Boolean
+    begin
+        exit(EmailMessageImpl.Attachments_DeleteContent());
+    end;
+
+    /// <summary>
     /// Finds the first attachment of the email message.
     /// </summary>
     /// <returns>True if there is any attachment; otherwise - false.</returns>
@@ -219,6 +228,18 @@ codeunit 8904 "Email Message"
     procedure Attachments_IsInline(): Boolean
     begin
         exit(EmailMessageImpl.Attachments_IsInline());
+    end;
+
+    /// <summary>
+    /// Integration event to provide the stream of data for a given MediaID. If attachment content has been deleted, this event makes it possible to provide 
+    /// the data from elsewhere.
+    /// </summary>
+    /// <param name="MediaID">Id of the underlying media field that contains the attachment data.</param>
+    /// <param name="InStream">Stream to that should pointed to the attachment data.</param>
+    /// <param name="Handled">Was the attachment content added to the stream.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnGetAttachmentContent(MediaID: Guid; var InStream: Instream; var Handled: Boolean)
+    begin
     end;
 
     var

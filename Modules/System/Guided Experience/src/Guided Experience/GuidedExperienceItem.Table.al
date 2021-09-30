@@ -129,6 +129,11 @@ table 1990 "Guided Experience Item"
             Caption = 'Icon';
             DataClassification = OrganizationIdentifiableInformation;
         }
+        field(21; "Spotlight Tour Type"; Enum "Spotlight Tour Type")
+        {
+            Caption = 'Spotlight Tour Type';
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

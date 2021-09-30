@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 query 11700 "Appl.Acr. Cust.Post.Groups CZL"
 {
@@ -41,3 +42,4 @@ query 11700 "Appl.Acr. Cust.Post.Groups CZL"
         }
     }
 }
+#endif

@@ -37,9 +37,9 @@ table 1807 "Assisted Setup Log"
             Caption = 'Invoked Action';
             OptionCaption = ' ,Video,Help,Tour,Assisted Setup';
             OptionMembers = " ",Video,Help,Tour,"Assisted Setup";
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Only videos opened are logged.';
-            ObsoleteTag = '16.0';
+            ObsoleteTag = '19.0';
         }
     }
 

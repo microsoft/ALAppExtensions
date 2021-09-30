@@ -1,7 +1,7 @@
 codeunit 31083 "EET Management CZP"
 {
-    Permissions = TableData "Posted Cash Document Hdr. CZP" = rm,
-                  TableData "EET Entry CZL" = rimd;
+    Permissions = tabledata "Posted Cash Document Hdr. CZP" = rm,
+                  tabledata "EET Entry CZL" = rimd;
 
     var
         EETManagementCZL: Codeunit "EET Management CZL";
@@ -85,7 +85,9 @@ codeunit 31083 "EET Management CZP"
     local procedure GetAppliedDocumentAmount(CashDocumentLineCZP: Record "Cash Document Line CZP"): Decimal
     var
 #if not CLEAN18
+#pragma warning disable AL0432
         SalesAdvanceLetterLine: Record "Sales Advance Letter Line";
+#pragma warning restore AL0432
 #endif
         CustLedgerEntry: Record "Cust. Ledger Entry";
         AppliedDocumentAmount: Decimal;
@@ -116,7 +118,9 @@ codeunit 31083 "EET Management CZP"
         EETCashRegisterCZL: Record "EET Cash Register CZL";
         EETEntryCZL: Record "EET Entry CZL";
 #if not CLEAN18
+#pragma warning disable AL0432
         AdvanceLink: Record "Advance Link";
+#pragma warning restore AL0432
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
 #endif
         OriginalDocumentAmountLCY: Decimal;
@@ -161,6 +165,7 @@ codeunit 31083 "EET Management CZP"
                     SetFilterVATEntry(CustLedgerEntry."Document No.", CustLedgerEntry."Posting Date", VATEntry);
                 end;
 #if not CLEAN18
+#pragma warning disable AL0432
             CashDocumentLineCZP.IsAdvancePayment():
                 begin
                     CustLedgerEntry.SetCurrentKey("Document No.", "Posting Date");
@@ -192,6 +197,7 @@ codeunit 31083 "EET Management CZP"
                     if VATEntry.FindLast() then
                         VATEntry.SetRange("Transaction No.", VATEntry."Transaction No.");
                 end;
+#pragma warning restore AL0432
 #endif
         end;
 
@@ -231,8 +237,10 @@ codeunit 31083 "EET Management CZP"
             repeat
                 TempVATEntry.Base := TempVATEntry.GetVATBaseCZL();
 #if not CLEAN18
+#pragma warning disable AL0432
                 if TempVATEntry."Prepayment Type" = TempVATEntry."Prepayment Type"::Advance then
                     TempVATEntry.Base := TempVATEntry."Advance Base";
+#pragma warning restore AL0432
 #endif
                 TempVATEntry.Amount := TempVATEntry.GetVATAmountCZL();
 

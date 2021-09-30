@@ -24,8 +24,8 @@ codeunit 1164 "COHUB API Request"
         RecRef: RecordRef;
         EntityBaseUrl: Text;
         AccessToken: Text;
-        EnviromentName: Text;
-        EnviromentNameAndEnviroment: Text;
+        EnvironmentName: Text;
+        EnvironmentNameAndEnvironment: Text;
         UserTaskUrl: Text;
     begin
         EntityBaseUrl := GetEntityBaseUrl(COHUBCompanyEndpoint);
@@ -33,9 +33,9 @@ codeunit 1164 "COHUB API Request"
         UserTaskUrl := EntityBaseUrl + StrSubstNo(UserTaskCompleteLbl, TaskId);
 
         COHUBEnviroment.Get(COHUBCompanyEndpoint."Enviroment No.");
-        COHUBCore.GetEnviromentNameAndEnviroment(COHUBEnviroment, EnviromentName, EnviromentNameAndEnviroment);
+        COHUBCore.GetEnviromentNameAndEnviroment(COHUBEnviroment, EnvironmentName, EnvironmentNameAndEnvironment);
 
-        if not GetGuestAccessToken(COHUBCore.GetResourceUrl(), EnviromentName, AccessToken, RecRef) then
+        if not GetGuestAccessToken(COHUBCore.GetResourceUrl(), EnvironmentName, AccessToken, RecRef) then
             exit(false);
 
         exit(InvokeSecuredWebApiPostRequest(UserTaskUrl, AccessToken, APIResponse, RecRef))
@@ -49,15 +49,15 @@ codeunit 1164 "COHUB API Request"
         COHUBCore: Codeunit "COHUB Core";
         RecRef: RecordRef;
         AccessToken: Text;
-        EnviromentName: Text;
-        EnviromentNameAndEnviroment: Text;
+        EnvironmentName: Text;
+        EnvironmentNameAndEnvirnoment: Text;
         ResourceUrl: Text;
     begin
         RecRef.GetTable(COHUBEnviroment);
         ResourceUrl := COHUBCore.GetResourceUrl();
-        COHUBCore.GetEnviromentNameAndEnviroment(COHUBEnviroment, EnviromentName, EnviromentNameAndEnviroment);
-        CompanyAPIUrl := COHUBCore.GetFixedWebServicesUrl() + 'v2.0/' + EnviromentNameAndEnviroment + '/ODataV4/Company';
-        if not GetGuestAccessToken(ResourceUrl, EnviromentName, AccessToken, RecRef) then
+        COHUBCore.GetEnviromentNameAndEnviroment(COHUBEnviroment, EnvironmentName, EnvironmentNameAndEnvirnoment);
+        CompanyAPIUrl := COHUBCore.GetFixedWebServicesUrl() + 'v2.0/' + EnvironmentNameAndEnvirnoment + '/ODataV4/Company';
+        if not GetGuestAccessToken(ResourceUrl, EnvironmentName, AccessToken, RecRef) then
             exit(false);
 
         exit(InvokeSecuredWebApiGetRequest(CompanyAPIUrl, AccessToken, APIResponse, RecRef));
@@ -94,17 +94,17 @@ codeunit 1164 "COHUB API Request"
         EntityBaseUrl: Text;
         CuesAPIUrl: Text;
         AccessToken: Text;
-        EnviromentName: Text;
-        EnviromentNameAndEnviroment: Text;
+        EnvironmentName: Text;
+        EnvironmentNameAndEnvironment: Text;
     begin
         EntityBaseUrl := GetEntityBaseUrl(COHUBCompanyEndpoint);
         RecRef.GetTable(COHUBCompanyEndpoint);
         CuesAPIUrl := EntityBaseUrl + CueAPISuffix;
 
         COHUBEnviroment.Get(COHUBCompanyEndpoint."Enviroment No.");
-        COHUBCore.GetEnviromentNameAndEnviroment(COHUBEnviroment, EnviromentName, EnviromentNameAndEnviroment);
+        COHUBCore.GetEnviromentNameAndEnviroment(COHUBEnviroment, EnvironmentName, EnvironmentNameAndEnvironment);
 
-        if not GetGuestAccessToken(COHUBCore.GetResourceUrl(), EnviromentName, AccessToken, RecRef) then
+        if not GetGuestAccessToken(COHUBCore.GetResourceUrl(), EnvironmentName, AccessToken, RecRef) then
             exit(false);
 
         exit(InvokeSecuredWebApiGetRequest(CuesAPIUrl, AccessToken, APIResponse, RecRef));
@@ -238,14 +238,14 @@ codeunit 1164 "COHUB API Request"
 
     [Scope('OnPrem')]
     [NonDebuggable]
-    local procedure GetGuestAccessToken(ResourceUrl: Text; EnviromentName: Text; var AccessToken: Text; RecRef: RecordRef): Boolean
+    local procedure GetGuestAccessToken(ResourceUrl: Text; EnvironmentName: Text; var AccessToken: Text; RecRef: RecordRef): Boolean
     var
         AzureADMgt: Codeunit "Azure AD Mgt.";
         COHUBCore: Codeunit "COHUB Core";
     begin
-        AccessToken := AzureADMgt.GetGuestAccessToken(ResourceUrl, EnviromentName);
+        AccessToken := AzureADMgt.GetGuestAccessToken(ResourceUrl, EnvironmentName);
         if AccessToken = '' then begin
-            COHUBCore.LogFailure(StrSubstNo(ErrorAcquiringTokenTxt, EnviromentName), RecRef);
+            COHUBCore.LogFailure(StrSubstNo(ErrorAcquiringTokenTxt, EnvironmentName), RecRef);
             exit(false);
         end;
 

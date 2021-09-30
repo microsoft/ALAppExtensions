@@ -1,11 +1,14 @@
 codeunit 31319 "Whse. Journal Line Handler CZL"
 {
-    [EventSubscriber(ObjectType::Table, Database::"Warehouse Journal Line", 'OnCheckWhseJournalTemplateUserRestrictions', '', false, false)]
-    local procedure CheckWhseJournalTemplateUserRestrictions(JournalTemplateName: Code[10])
+    [EventSubscriber(ObjectType::Table, Database::"Warehouse Journal Line", 'OnBeforeOpenJnl', '', false, false)]
+    local procedure JournalTemplateUserRestrictionsOnBeforeOpenJnl(var WarehouseJournalLine: Record "Warehouse Journal Line")
     var
-        DummyUserSetupLineCZL: Record "User Setup Line CZL";
         UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+        UserSetupLineTypeCZL: Enum "User Setup Line Type CZL";
+        JournalTemplateName: Code[10];
     begin
-        UserSetupAdvManagementCZL.CheckJournalTemplate(DummyUserSetupLineCZL.Type::"Whse. Journal", JournalTemplateName);
+        JournalTemplateName := WarehouseJournalLine.GetRangeMax("Journal Template Name");
+        UserSetupLineTypeCZL := UserSetupLineTypeCZL::"Whse. Journal";
+        UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, JournalTemplateName);
     end;
 }

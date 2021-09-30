@@ -14,7 +14,7 @@ table 20232 "Entity Attribute Mapping"
         field(2; "Entity ID"; Integer)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Entry ID';
+            Caption = 'Entity ID';
         }
         field(3; "Attribute Name"; Text[2000])
         {
@@ -97,9 +97,26 @@ table 20232 "Entity Attribute Mapping"
         GenericAttribute: Record "Tax Attribute";
     begin
         GetTaxAttribute(GenericAttribute);
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(GenericAttribute."Tax Type");
         "Attribute Name" := GenericAttribute.Name;
 
         ID := CreateGuid();
+    end;
+
+    trigger OnModify()
+    var
+        GenericAttribute: Record "Tax Attribute";
+    begin
+        GetTaxAttribute(GenericAttribute);
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(GenericAttribute."Tax Type");
+    end;
+
+    trigger OnDelete()
+    var
+        GenericAttribute: Record "Tax Attribute";
+    begin
+        GetTaxAttribute(GenericAttribute);
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(GenericAttribute."Tax Type");
     end;
 
     local procedure GetTaxAttribute(var GenericAttribute: Record "Tax Attribute")

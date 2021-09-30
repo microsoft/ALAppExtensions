@@ -518,7 +518,7 @@ report 11723 "Cust.- Bal. Reconciliation CZL"
         DueDateCaptionLbl: Label 'Due Date';
         CustomerCaptionTxt: Label 'Customer';
         VendorCaptionTxt: Label 'Vendor';
-        SubjectTxt: Label 'Subject: Receivables reconcilitation at %1', Comment = '%1 = Reconcile Date';
+        SubjectTxt: Label 'Subject: Receivables reconciliation at %1', Comment = '%1 = Reconcile Date';
         Header1Txt: Label 'In accordance with par. 29 of the Act No. 563/1991 Coll. on Accounting as amended';
         Header2Txt: Label 'We ask you to agree and confirm the status of our receivables on %1', Comment = '%1 = Reconcile Date';
         Confirmation1Txt: Label 'Please confirm your balance to %1. If we do not receive your reply within that period, we will consider receivables status approved.', Comment = '%1 = Return Date';

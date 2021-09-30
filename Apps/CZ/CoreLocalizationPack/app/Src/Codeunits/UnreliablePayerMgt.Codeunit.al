@@ -69,7 +69,7 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
             exit(false);
         end;
 
-        Clear(VATRegNoList);
+        ClearVATRegNoList();
         if AddVATRegNoToList(Vendor."VAT Registration No.") then
             exit(ImportUnrPayerStatus(true));
     end;
@@ -138,6 +138,11 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
         end;
         CompanyInformation.Get();
         UnreliablePayerServiceSetupRead := true;
+    end;
+
+    procedure ClearVATRegNoList()
+    begin
+        Clear(VATRegNoList);
     end;
 
     procedure AddVATRegNoToList(VATRegNo: Code[20]): Boolean
@@ -354,12 +359,12 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure  OnBeforeConfirmProcess(ConfirmQuestion: Text; var IsHandled: Boolean);
+    local procedure OnBeforeConfirmProcess(ConfirmQuestion: Text; var IsHandled: Boolean);
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure  OnIsConfirmDialogAllowed(var IsAllowed: Boolean)
+    local procedure OnIsConfirmDialogAllowed(var IsAllowed: Boolean)
     begin
     end;
 

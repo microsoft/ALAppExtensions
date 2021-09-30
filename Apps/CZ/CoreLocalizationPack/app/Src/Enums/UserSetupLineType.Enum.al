@@ -66,11 +66,11 @@ enum 11725 "User Setup Line Type CZL"
     {
         Caption = 'Whse. Worksheet';
     }
-    value(18; "Paym. Order")
+    value(18; "Payment Order")
     {
         Caption = 'Payment Order';
     }
-    value(19; "Bank Stmt")
+    value(19; "Bank Statement")
     {
         Caption = 'Bank Statement';
     }

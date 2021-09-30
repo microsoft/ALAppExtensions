@@ -1,3 +1,4 @@
+#if not CLEAN19
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -11,6 +12,9 @@ table 2889 "Query Navigation Validation"
     DataClassification = SystemMetadata;
     Extensible = false;
     TableType = Temporary;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The SmartList Designer is not supported in Business Central.';
+    ObsoleteTag = '19.0';
 
     fields
     {
@@ -41,3 +45,4 @@ table 2889 "Query Navigation Validation"
         }
     }
 }
+#endif

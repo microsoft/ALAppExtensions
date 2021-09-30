@@ -55,7 +55,8 @@ codeunit 31172 "Sync.Dep.Fld-VatCtrlRepSec CZL"
         if not VATCtrlReportSectionCZL.Get(Rec.Code) then begin
             VATCtrlReportSectionCZL.Init();
             VATCtrlReportSectionCZL."Code" := Rec.Code;
-            VATCtrlReportSectionCZL.Insert(false);
+            VATCtrlReportSectionCZL.SystemId := Rec.SystemId;
+            VATCtrlReportSectionCZL.Insert(false, true);
         end;
         VATCtrlReportSectionCZL.Description := Rec.Description;
         VATCtrlReportSectionCZL."Group By" := Rec."Group By";
@@ -130,7 +131,8 @@ codeunit 31172 "Sync.Dep.Fld-VatCtrlRepSec CZL"
         if not VATControlReportSection.Get(Rec.Code) then begin
             VATControlReportSection.Init();
             VATControlReportSection."Code" := Rec.Code;
-            VATControlReportSection.Insert(false);
+            VATControlReportSection.SystemId := Rec.SystemId;
+            VATControlReportSection.Insert(false, true);
         end;
         VATControlReportSection.Description := Rec.Description;
         VATControlReportSection."Group By" := Rec."Group By";

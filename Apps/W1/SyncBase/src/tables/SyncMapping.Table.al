@@ -8,7 +8,7 @@ table 2402 "Sync Mapping"
     {
         field(1; "Internal ID"; RecordID)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
         }
         field(2; "External Id"; Guid)
         {

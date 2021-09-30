@@ -140,10 +140,9 @@ page 8882 "Email Outbox"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
+                Enabled = HasSourceRecord;
 
                 trigger OnAction()
-                var
-                    EmailImpl: Codeunit "Email Impl";
                 begin
                     EmailImpl.ShowSourceRecord(Rec."Message Id");
                 end;
@@ -218,6 +217,11 @@ page 8882 "Email Outbox"
         NoEmailsInOutbox := false;
     end;
 
+    trigger OnAfterGetCurrRecord()
+    begin
+        HasSourceRecord := EmailImpl.HasSourceRecord(Rec."Message Id");
+    end;
+
     trigger OnDeleteRecord(): Boolean
     var
         EmailOutbox: Record "Email Outbox";
@@ -225,6 +229,7 @@ page 8882 "Email Outbox"
         if EmailOutbox.Get(Rec.Id) then
             EmailOutbox.Delete(true);
 
+        HasSourceRecord := false;
         FailedStatus := false;
         NoEmailsInOutbox := true;
     end;
@@ -268,5 +273,7 @@ page 8882 "Email Outbox"
         NoEmailsInOutbox: Boolean;
         [InDataSet]
         FailedStatus: Boolean;
+        [InDataSet]
+        HasSourceRecord: Boolean;
         EmailConnectorHasBeenUninstalledMsg: Label 'The email extension that was used to send this email has been uninstalled. To view information about the email account, you must reinstall the extension.';
 }

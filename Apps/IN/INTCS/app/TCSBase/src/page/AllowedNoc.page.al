@@ -57,10 +57,10 @@ page 18807 "Allowed NOC"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     CodeLbl: Label 'Code''%1''', Comment = '%1= Customer No.';
                 begin
-                    ODataUtility.EditWorksheetInExcel('Allowed NOC', CurrPage.ObjectId(false), StrSubstNo(CodeLbl, Rec."Customer No."));
+                    EditinExcel.EditPageInExcel('Allowed NOC', CurrPage.ObjectId(false), StrSubstNo(CodeLbl, Rec."Customer No."));
                 end;
             }
         }

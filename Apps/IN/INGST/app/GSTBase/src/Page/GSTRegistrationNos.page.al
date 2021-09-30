@@ -54,9 +54,9 @@ page 18004 "GST Registration Nos."
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                 begin
-                    ODataUtility.EditWorksheetInExcel(
+                    EditinExcel.EditPageInExcel(
                         'GST Registration Nos.',
                         CurrPage.ObjectId(false),
                         StrSubstNo(CodeValueLbl,

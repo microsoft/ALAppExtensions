@@ -73,6 +73,43 @@ codeunit 130444 "Word Templates Related Test"
     end;
 
     [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestCreateTemplateWithIdenticalFieldCaptions()
+    var
+        WordTemplatesImpl: Codeunit "Word Template Impl.";
+        RelatedTableIds: List of [Integer];
+        RelatedTableCodes: List of [Code[5]];
+        MergeFields: List of [Text];
+    begin
+        // [SCENARIO] Creation of document template with identical field captions appends a number to identical fields.
+        PermissionsMock.Set('Word Templates Edit');
+
+        // [Given] Related table IDs and codes
+        RelatedTableIds.Add(Database::"Word Templates Test Table 3");
+        RelatedTableCodes.Add('TEST');
+
+        // [WHEN] Run create document with related table ids and codes and save zip to temp blob
+        WordTemplatesImpl.Create(Database::"Word Templates Test Table 2", RelatedTableIds, RelatedTableCodes);
+
+        // [THEN] Verify the Merge fields are set correctly
+        WordTemplatesImpl.GetMergeFields(MergeFields);
+
+        Assert.IsTrue(MergeFields.Contains('No.'), 'No. should have been part of the Merge Fields.');
+        Assert.IsTrue(MergeFields.Contains('Value'), 'Value should have been part of the Merge Fields.');
+        Assert.IsTrue(MergeFields.Contains('Child Id'), 'Child Id should have been part of the Merge Fields.');
+        Assert.IsTrue(MergeFields.Contains('Child Code'), 'Child Code should have been part of the Merge Fields.');
+        Assert.IsTrue(MergeFields.Contains('Test Value'), 'Test Value should have been part of the Merge Fields.');
+        Assert.IsTrue(MergeFields.Contains('Test Value_2'), 'Test Value_2 should have been part of the Merge Fields.');
+        Assert.IsTrue(MergeFields.Contains('Value_2'), 'Value_2 should have been part of the Merge Fields.');
+
+        Assert.IsTrue(MergeFields.Contains('TEST_Id'), 'No should have been part of the Merge Fields.');
+        Assert.IsTrue(MergeFields.Contains('TEST_Value'), 'TEST_Value should have been part of the Merge Fields.');
+        Assert.IsTrue(MergeFields.Contains('TEST_Value_2'), 'TEST_Value_2 should have been part of the Merge Fields.');
+        Assert.IsTrue(MergeFields.Contains('TEST_Value_3'), 'TEST_Value_3 should have been part of the Merge Fields.');
+        Assert.IsTrue(MergeFields.Contains('TEST_Test Value'), 'TEST_Test Value should have been part of the Merge Fields.');
+    end;
+
+    [Test]
     procedure TestGenerateCode()
     var
         WordTemplateImpl: Codeunit "Word Template Impl.";
@@ -124,6 +161,147 @@ codeunit 130444 "Word Templates Related Test"
         Assert.AreEqual('', WordTemplateImpl.GenerateCode(''), 'Generated code should be empty');
         Assert.AreEqual('', WordTemplateImpl.GenerateCode('ÆØÅ'), 'Generated code should be empty');
         Assert.AreEqual('', WordTemplateImpl.GenerateCode('123'), 'Generated code should be empty');
+    end;
+
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGetByPrimaryKeyInteger()
+    var
+        WordTemplatesTestTable2: Record "Word Templates Test Table 2";
+        WordTemplateImpl: Codeunit "Word Template Impl.";
+        RecordRef: RecordRef;
+        Found: Boolean;
+    begin
+        // [SCENARIO] GetByPrimaryKey returns true and the correct record when using an integer PK.
+        PermissionsMock.Set('Word Templates Edit');
+
+        // [GIVEN] Table with integer primary key.
+        WordTemplatesTestTable2."No." := 10;
+        WordTemplatesTestTable2.Value := 'VALUE';
+        WordTemplatesTestTable2.Insert();
+
+        // [WHEN] Getting record by primary key with integer.
+        RecordRef.Open(Database::"Word Templates Test Table 2");
+        Found := WordTemplateImpl.GetByPrimaryKey(RecordRef, 10);
+
+        // [THEN] The correct record is found.
+        Assert.IsTrue(Found, 'The record should have been found.');
+        Assert.AreEqual(10, RecordRef.Field(1).Value(), 'The no of the record found shold be 10.');
+        Assert.AreEqual('VALUE', RecordRef.Field(2).Value(), 'The value should be VALUE.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGetByPrimaryKeyGuid()
+    var
+        WordTemplatesTestTable3: Record "Word Templates Test Table 3";
+        WordTemplateImpl: Codeunit "Word Template Impl.";
+        RecordRef: RecordRef;
+        Id: Guid;
+        Found: Boolean;
+        WrongIdMsg: Label 'The id should be %1.', Locked = true;
+    begin
+        // [SCENARIO] GetByPrimaryKey returns true and the correct record when using an guid PK.
+        PermissionsMock.Set('Word Templates Edit');
+
+        // [GIVEN] Table with guid primary key.
+        Id := CreateGuid();
+        WordTemplatesTestTable3.Id := Id;
+        WordTemplatesTestTable3.Value := 'VALUE';
+        WordTemplatesTestTable3.Insert();
+        RecordRef.Open(Database::"Word Templates Test Table 3");
+
+        // [WHEN] Getting record by primary key with guid.
+        Found := WordTemplateImpl.GetByPrimaryKey(RecordRef, Id);
+
+        // [THEN] The correct record is found.
+        Assert.IsTrue(Found, 'The record should have been found.');
+        Assert.AreEqual(Id, RecordRef.Field(1).Value(), StrSubstNo(WrongIdMsg, Id));
+        Assert.AreEqual('VALUE', RecordRef.Field(2).Value(), 'The value should be VALUE.');
+    end;
+
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGetByPrimaryKeyCode()
+    var
+        WordTemplatesTestTable4: Record "Word Templates Test Table 4";
+        WordTemplateImpl: Codeunit "Word Template Impl.";
+        RecordRef: RecordRef;
+        Code: Code[30];
+        Found: Boolean;
+    begin
+        // [SCENARIO] GetByPrimaryKey returns true and the correct record when using an code PK.
+        PermissionsMock.Set('Word Templates Edit');
+
+        // [GIVEN] Table with code primary key.
+        Code := 'CODE';
+        WordTemplatesTestTable4.Code := Code;
+        WordTemplatesTestTable4.Value := 'VALUE';
+        WordTemplatesTestTable4.Insert();
+        RecordRef.Open(Database::"Word Templates Test Table 4");
+
+        // [WHEN] Getting record by primary key with code.
+        Found := WordTemplateImpl.GetByPrimaryKey(RecordRef, Code);
+
+        // [THEN] The correct record is found.
+        Assert.IsTrue(Found, 'The record should have been found.');
+        Assert.AreEqual('CODE', RecordRef.Field(1).Value(), 'The code should be CODE');
+        Assert.AreEqual('VALUE', RecordRef.Field(2).Value(), 'The value should be VALUE.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGetByPrimaryKeyBigInteger()
+    var
+        WordTemplatesTestTable5: Record "Word Templates Test Table 5";
+        WordTemplateImpl: Codeunit "Word Template Impl.";
+        RecordRef: RecordRef;
+        PrimaryKey: BigInteger;
+        Found: Boolean;
+    begin
+        // [SCENARIO] GetByPrimaryKey returns true and the correct record when using an big integer PK.
+        PermissionsMock.Set('Word Templates Edit');
+
+        // [GIVEN] Table with big integer primary key.
+        PrimaryKey := 1000L;
+        WordTemplatesTestTable5.Id := PrimaryKey;
+        WordTemplatesTestTable5.Value := 'VALUE';
+        WordTemplatesTestTable5.Insert();
+        RecordRef.Open(Database::"Word Templates Test Table 5");
+
+        // [WHEN] Getting record by primary key with big integer.
+        Found := WordTemplateImpl.GetByPrimaryKey(RecordRef, PrimaryKey);
+
+        // [THEN] The correct record is found.
+        Assert.IsTrue(Found, 'The record should have been found.');
+        Assert.AreEqual(PrimaryKey, RecordRef.Field(1).Value(), 'The key should be the correct generated key.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGetByPrimaryKeyUnsupportedType()
+    var
+        WordTemplatesTestTable2: Record "Word Templates Test Table 2";
+        WordTemplateImpl: Codeunit "Word Template Impl.";
+        RecordRef: RecordRef;
+        Found: Boolean;
+    begin
+        // [SCENARIO] GetByPrimaryKey returns false when using an unsupported (text) PK.
+        PermissionsMock.Set('Word Templates Edit');
+
+        // [GIVEN] Table with text primary key.
+        WordTemplatesTestTable2."No." := 10;
+        WordTemplatesTestTable2.Value := 'VALUE';
+        WordTemplatesTestTable2.Insert();
+
+        // [WHEN] Getting primary key with unsupported (text) datatype.
+        RecordRef.Open(Database::"Word Templates Test Table 2");
+        Found := WordTemplateImpl.GetByPrimaryKey(RecordRef, 'TEXT');
+
+        // [THEN] The record is not found.
+        Assert.IsFalse(Found, 'The record should not have been found.');
     end;
 
     [Test]
@@ -295,6 +473,68 @@ codeunit 130444 "Word Templates Related Test"
         Assert.AreEqual(WordTemplateRelatedRec.Count(), 1, 'There should only be one related table added.');
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandlerFalse')]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestLoadDocumentAndMergeWithRelatedTables()
+    var
+        WordTemplateRec: Record "Word Template";
+        RelatedTable: Record "Word Templates Related Table";
+        Base64: Codeunit "Base64 Convert";
+        Document: Codeunit "Temp Blob";
+        WordTemplate: Codeunit "Word Template";
+        OutputText: Text;
+        OutStream: OutStream;
+        InStream: InStream;
+    begin
+        // [SCENARIO] Create, load and merge Word template with two related tables and verify that the output contains the data of all tables
+
+        // [GIVEN] Document from base64 and Word template with related tables
+        Document.CreateOutStream(OutStream, TextEncoding::UTF8);
+        Base64.FromBase64(GetTemplateDocument(), OutStream);
+        Document.CreateInStream(InStream, TextEncoding::UTF8);
+
+        WordTemplateRec.Code := 'TEST';
+        WordTemplateRec."Table ID" := Database::"Word Templates Test Table 2";
+        WordTemplateRec.Template.ImportStream(InStream, 'Template');
+        WordTemplateRec.Insert();
+
+        RelatedTable.Code := WordTemplateRec.Code;
+        RelatedTable."Field No." := 3;
+        RelatedTable."Related Table Code" := 'TESTA';
+        RelatedTable."Related Table ID" := Database::"Word Templates Test Table 3";
+        RelatedTable.Insert();
+
+        RelatedTable.Init();
+        RelatedTable.Code := WordTemplateRec.Code;
+        RelatedTable."Field No." := 4;
+        RelatedTable."Related Table Code" := 'TESTB';
+        RelatedTable."Related Table ID" := Database::"Word Templates Test Table 4";
+        RelatedTable.Insert();
+
+        // [GIVEN] Parent and child tables are initialized with data
+        InitTestTables('Child1', 'Child2', 'Parent1', 'CODE1', 1);
+        InitTestTables('Child3', 'Child4', 'Parent2', 'CODE2', 2);
+
+        // [GIVEN] Word templates edit permissions
+        PermissionsMock.Set('Word Templates Edit');
+
+        // [WHEN] Load document from stream and merge
+        WordTemplate.Load(WordTemplateRec.Code);
+        WordTemplate.Merge(false, Enum::"Word Templates Save Format"::Text);
+
+        // [THEN] Check document for related and parent table values
+        WordTemplate.GetDocument(InStream);
+        InStream.Read(OutputText);
+
+        Assert.IsTrue(OutputText.Contains('Child1'), 'Child1 is missing from the document');
+        Assert.IsTrue(OutputText.Contains('Child2'), 'Child2 is missing from the document');
+        Assert.IsTrue(OutputText.Contains('Child3'), 'Child3 is missing from the document');
+        Assert.IsTrue(OutputText.Contains('Child4'), 'Child4 is missing from the document');
+        Assert.IsTrue(OutputText.Contains('Parent1'), 'Parent1 is missing from the document');
+        Assert.IsTrue(OutputText.Contains('Parent2'), 'Parent2 is missing from the document');
+    end;
+
     [ConfirmHandler]
     procedure ConfirmHandlerFalse(Question: Text[1024]; var Reply: Boolean)
     begin
@@ -311,6 +551,27 @@ codeunit 130444 "Word Templates Related Test"
     procedure MessageHandlerRelatedTableExists(Message: Text[1024])
     begin
         Assert.AreEqual('The related entity already exists.', Message, 'Message is not as expected.');
+    end;
+
+    local procedure InitTestTables(Value1: Text[100]; Value2: Text[100]; Value3: Text[100]; Code: Code[30]; No: Integer)
+    var
+        WordTemplatesTestTable2: Record "Word Templates Test Table 2";
+        WordTemplatesTestTable3: Record "Word Templates Test Table 3";
+        WordTemplatesTestTable4: Record "Word Templates Test Table 4";
+    begin
+        WordTemplatesTestTable3.Id := CreateGuid();
+        WordTemplatesTestTable3.Value := Value1;
+        WordTemplatesTestTable3.Insert();
+
+        WordTemplatesTestTable4.Code := Code;
+        WordTemplatesTestTable4.Value := Value2;
+        WordTemplatesTestTable4.Insert();
+
+        WordTemplatesTestTable2."No." := No;
+        WordTemplatesTestTable2."Child Code" := WordTemplatesTestTable4.Code;
+        WordTemplatesTestTable2."Child Id" := WordTemplatesTestTable3.Id;
+        WordTemplatesTestTable2.Value := Value3;
+        WordTemplatesTestTable2.Insert();
     end;
 
     local procedure GetTemplateDocument(): Text

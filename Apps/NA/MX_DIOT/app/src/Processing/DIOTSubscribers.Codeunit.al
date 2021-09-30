@@ -54,6 +54,12 @@ codeunit 27022 "DIOT Subscribers"
         GenJnlLine."DIOT Type of Operation" := PurchHeader."DIOT Type of Operation";
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice", 'OnPostLinesOnBeforeGenJnlLinePost', '', false, false)]
+    local procedure TransferDIOTTypeOfOperationOnPostLinesOnBeforeGenJnlLinePost(var GenJnlLine: Record "Gen. Journal Line"; PurchHeader: Record "Purchase Header");
+    begin
+        GenJnlLine."DIOT Type of Operation" := PurchHeader."DIOT Type of Operation";
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::Vendor, 'OnAfterInsertEvent', '', false, false)]
     local procedure ModifyDIOTTypeOfOperationOnInsertVendor(var Rec: Record Vendor; RunTrigger: Boolean)
     var
@@ -69,6 +75,14 @@ codeunit 27022 "DIOT Subscribers"
             exit;
         Rec.Validate("DIOT Type of Operation", PurchaseAndPayablesSetup."Default Vendor DIOT Type");
         Rec.Modify(true);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType', '', false, false)]
+    local procedure AssignDIOTTypeOnValidatePurchaseHeaderPayToVendorNo(Vendor: Record Vendor; var PurchaseHeader: Record "Purchase Header"; var xPurchaseHeader: Record "Purchase Header")
+    begin
+        if PurchaseHeader."Pay-to Vendor No." = '' then
+            exit;
+        PurchaseHeader."DIOT Type of Operation" := Vendor."DIOT Type of Operation";
     end;
 
     local procedure CheckCountryCodeDIOTOperationType(Vendor: Record Vendor)

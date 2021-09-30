@@ -46,9 +46,35 @@ codeunit 31057 "Gen.Jnl. - Post Acc. Group CZL"
         exit(BalanceCheckAccountGroupConsistent);
     end;
 
+    procedure CheckAccountGroupTransactionConsistent()
+    var
+        AccountGroupConsistentErr: Label 'You cannot post an entry with accounts from different circuits.';
+    begin
+        if not IsAcountGroupTransactionConsistent() then
+            Error(AccountGroupConsistentErr);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeStartPosting', '', false, false)]
     local procedure ClearBalanceCheckAccountAmount()
     begin
         Clear(BalanceCheckAccountGroupAmount);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Batch", 'OnBeforeCommit', '', false, false)]
+    local procedure CheckAccountGroupTransactionConsistentOnGenJnlPost()
+    begin
+        CheckAccountGroupTransactionConsistent();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterFinalizePostingOnBeforeCommit', '', false, false)]
+    local procedure CheckAccountGroupTransactionConsistentOnSalesPost()
+    begin
+        CheckAccountGroupTransactionConsistent();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnFinalizePostingOnBeforeCommit', '', false, false)]
+    local procedure CheckAccountGroupTransactionConsistentOnPurchPost()
+    begin
+        CheckAccountGroupTransactionConsistent();
     end;
 }

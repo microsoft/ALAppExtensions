@@ -41,10 +41,13 @@ codeunit 31113 "Post. Prev. Event Handler CZL"
     local procedure FillDocumentEntryOnAfterFillDocumentEntry(var DocumentEntry: Record "Document Entry")
     begin
         GetAllTables();
+#if not CLEAN18
         DeleteObsoleteTables(DocumentEntry);
+#endif
         PostingPreviewEventHandler.InsertDocumentEntry(TempEETEntryCZL, DocumentEntry);
     end;
 
+#if not CLEAN18
     [Obsolete('Moved to Core Localization for Czech.', '18.0')]
     local procedure DeleteObsoleteTables(var DocumentEntry: Record "Document Entry")
     var
@@ -57,6 +60,7 @@ codeunit 31113 "Post. Prev. Event Handler CZL"
         DocumentEntry.CopyFilters(DummyDocumentEntry);
     end;
 
+#endif
     local procedure GetAllTables()
     var
         PostPrevTableHandlerCZL: Codeunit "Post. Prev. Table Handler CZL";

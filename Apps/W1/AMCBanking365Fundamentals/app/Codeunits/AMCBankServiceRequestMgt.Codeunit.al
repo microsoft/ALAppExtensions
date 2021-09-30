@@ -21,6 +21,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         DataPathTxt: Label '//return/pack/data', Locked = true;
         BankPathTxt: Label '//return/pack/bank', Locked = true;
         PackPathTxt: Label '//return/pack', Locked = true;
+        FeatureConsentErr: Label 'The AMC Banking 365 Fundamentals feature is not enabled. You can enable the feature on the AMC Banking Setup page by turning on the Enabled toggle, or by using the assisted setup guide.';
 
     procedure CreateEnvelope(VAR requestDocXML: XmlDocument; VAR EnvXmlElement: XmlElement; Username: Text; Password: Text; UsernameTokenValue: Text);
     var
@@ -173,12 +174,17 @@ codeunit 20118 "AMC Bank Service Request Mgt."
 
     procedure ExecuteWebServiceRequest(Var Handled: Boolean; Var WebRequestMessage: HttpRequestMessage; Var ResponseMessage: HttpResponseMessage; webCall: Text; AppCaller: text[30]; CheckHttpStatus: Boolean): Boolean;
     var
+        AMCBankingSetup: Record "AMC Banking Setup";
         ClientHttp: HttpClient;
         RequestHttpContent: HttpContent;
         ProcessingWindow: Dialog;
     begin
         if (Handled) then //Only used for mockup for testautomation
             exit(true);
+
+        AMCBankingSetup.Get();
+        if not AMCBankingSetup."AMC Enabled" then
+            Error(FeatureConsentErr);
 
         if GlobalProgressDialogEnabled then
             ProcessingWindow.Open(ProcessingWindowMsg);

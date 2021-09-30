@@ -48,6 +48,15 @@ codeunit 9987 "Word Template"
     end;
 
     /// <summary>
+    /// Gets size for the resulting document.
+    /// </summary>
+    /// <returns>The size for the resulting document in bytes.</returns>
+    procedure GetDocumentSize(): Integer
+    begin
+        exit(WordTemplateImpl.GetDocumentSize());
+    end;
+
+    /// <summary>
     /// Creates a template with the fields of a table. The table is selected by the user via a popup window.
     /// </summary>
     procedure Create()

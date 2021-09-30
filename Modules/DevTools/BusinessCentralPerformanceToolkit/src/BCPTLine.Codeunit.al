@@ -18,6 +18,9 @@ codeunit 149005 "BCPT Line"
     var
         BCPTLine: Record "BCPT Line";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if Rec."Line No." = 0 then begin
             BCPTLine.SetAscending("Line No.", true);
             BCPTLine.SetRange("BCPT Code", Rec."BCPT Code");
@@ -34,6 +37,9 @@ codeunit 149005 "BCPT Line"
     var
         BCPTLogEntry: Record "BCPT Log Entry";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         BCPTLogEntry.SetRange("BCPT Code", Rec."BCPT Code");
         BCPTLogEntry.SetRange("BCPT Line No.", Rec."Line No.");
         BCPTLogEntry.DeleteAll(true);
@@ -44,6 +50,9 @@ codeunit 149005 "BCPT Line"
     var
         NewNoOfSessions: Integer;
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if Rec."No. of Sessions" = xRec."No. of Sessions" then
             exit;
 

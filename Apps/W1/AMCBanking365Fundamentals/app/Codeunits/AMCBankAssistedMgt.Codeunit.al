@@ -53,34 +53,6 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         exit(BuildNumber);
     end;
 
-    [Obsolete('This method is obsolete. A new RunBasisSetup overload is available, with the an extra parameters (TempOnlineBankAccLink: Record "Online Bank Acc. Link") to control which bank account should be updated.', '16.0')]
-    procedure RunBasisSetup(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
-                            UpdBank: Boolean; UpdPayMeth: Boolean; BankCountryCode: Code[10]; PaymCountryCode: Code[10];
-                            UpdDataExchDef: Boolean; UpdCreditTransfer: Boolean; UpdPositivePay: Boolean; UpdateStatementImport: Boolean; UpdCreditAdvice: Boolean; ApplVer: Text; BuildNo: Text;
-                            UpdBankClearStd: Boolean; UpdBankAccounts: Boolean; CallLicenseServer: Boolean): Boolean;
-    var
-        TempOnlineBankAccLink: Record "Online Bank Acc. Link" temporary;
-    begin
-
-        clear(TempOnlineBankAccLink);
-        RunBasisSetupV162(UpdURL, URLSChanged, SignupURL, ServiceURL, SupportURL,
-                      UpdBank, UpdPayMeth, BankCountryCode, PaymCountryCode,
-                      UpdDataExchDef, UpdCreditTransfer, UpdPositivePay, UpdateStatementImport, UpdCreditAdvice, ApplVer, BuildNo,
-                      UpdBankClearStd, UpdBankAccounts, TempOnlineBankAccLink, CallLicenseServer); //Call new version of RunBasisSetup
-    end;
-
-    [Obsolete('This method is obsolete. A new RunBasisSetupV162 is available, with the TempOnlineBankAccLink passed by var.', '16.2')]
-    procedure RunBasisSetup(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
-                                    UpdBank: Boolean; UpdPayMeth: Boolean; BankCountryCode: Code[10]; PaymCountryCode: Code[10];
-                                    UpdDataExchDef: Boolean; UpdCreditTransfer: Boolean; UpdPositivePay: Boolean; UpdateStatementImport: Boolean; UpdCreditAdvice: Boolean; ApplVer: Text; BuildNo: Text;
-                                    UpdBankClearStd: Boolean; UpdBankAccounts: Boolean; TempOnlineBankAccLink: Record "Online Bank Acc. Link"; CallLicenseServer: Boolean): Boolean;
-    begin
-        RunBasisSetupV162(UpdURL, URLSChanged, SignupURL, ServiceURL, SupportURL,
-                              UpdBank, UpdPayMeth, BankCountryCode, PaymCountryCode,
-                              UpdDataExchDef, UpdCreditTransfer, UpdPositivePay, UpdateStatementImport, UpdCreditAdvice, ApplVer, BuildNo,
-                              UpdBankClearStd, UpdBankAccounts, TempOnlineBankAccLink, CallLicenseServer); //Call new version of RunBasisSetup
-    end;
-
     procedure RunBasisSetupV162(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
                             UpdBank: Boolean; UpdPayMeth: Boolean; BankCountryCode: Code[10]; PaymCountryCode: Code[10];
                             UpdDataExchDef: Boolean; UpdCreditTransfer: Boolean; UpdPositivePay: Boolean; UpdateStatementImport: Boolean; UpdCreditAdvice: Boolean; ApplVer: Text; BuildNo: Text;
@@ -232,14 +204,6 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         exit(BasisSetupRanOK);
     end;
 
-    [Obsolete('This method is obsolete. A new GetModuleInfoFromWebservice overload is available', '16.2')]
-    procedure GetDataExchDefsFromWebservice(DataExchDefFilter: Text; ApplVersion: Text; BuildNumber: Text; Timeout: Integer): Boolean;
-    var
-        TempBlobRequestBody: Codeunit "Temp Blob";
-    begin
-        exit(GetDataExchDefsFromWebservice(DataExchDefFilter, ApplVersion, BuildNumber, Timeout, AMCBankServMgt.GetAppCaller()));
-    end;
-
     procedure GetDataExchDefsFromWebservice(DataExchDefFilter: Text; ApplVersion: Text; BuildNumber: Text; Timeout: Integer; AppCaller: Text[30]): Boolean;
     var
         TempBlobRequestBody: Codeunit "Temp Blob";
@@ -248,17 +212,6 @@ codeunit 20117 "AMC Bank Assisted Mgt."
             exit(GetDataExchangeData(TempBlobRequestBody, DataExchDefFilter))
         else
             exit(false)
-    end;
-
-    [Obsolete('This method is obsolete. A new GetModuleInfoFromWebservice overload is available', '16.0')]
-    procedure GetModuleInfoFromWebservice(Var XTLUrl: Text; Var Solution: Text; Timeout: Integer): Boolean;
-    var
-        ModuleResponseMessage: HttpResponseMessage;
-        SignUpUrl: Text;
-        SupportUrl: Text;
-    begin
-        //Get reponse and XTLUrl and Solution
-        exit(GetModuleInfoFromWebservice(XTLUrl, SignUpUrl, SupportUrl, Solution, Timeout));
     end;
 
     procedure GetModuleInfoFromWebservice(Var XTLUrl: Text; Var SignUpUrl: Text; var SupportUrl: Text; Var Solution: Text; Timeout: Integer): Boolean;
@@ -325,6 +278,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
             exit(true);
     end;
 
+    [NonDebuggable]
     local procedure PrepareSOAPRequestBodyModuleCreate(var BodyRequestMessage: HttpRequestMessage);
     var
         AMCBankServiceSetup: Record "AMC Banking Setup";
@@ -499,6 +453,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         exit(false);
     end;
 
+    [NonDebuggable]
     local procedure PrepareSOAPRequestBodyDataExchangeDef(var DataExchRequestMessage: HttpRequestMessage; ApplVersion: Text; BuildNumber: Text);
     var
         AMCBankingSetup: Record "AMC Banking Setup";
@@ -638,17 +593,6 @@ codeunit 20117 "AMC Bank Assisted Mgt."
 
     [IntegrationEvent(false, false)]
     procedure OnOpenAssistedSetupPage(var BankDataConvServPPVisible: Boolean; var BankDataConvServCREMVisible: Boolean; var UpdPayMethVisible: Boolean; var UpdBankClearStdVisible: Boolean)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    //To update extra things that standard does not.
-    [Obsolete('This IntegrationEvent is obsolete. A new OnAfterRunBasisSetupV16 IntegrationEvent is available, with the an extra parameters (TempOnlineBankAccLink: Record "Online Bank Acc. Link") to control which bank account should be updated.', '16.0')]
-    procedure OnAfterRunBasisSetup(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
-                                   UpdBank: Boolean; UpdPayMeth: Boolean; CountryCode: Code[10]; PaymCountryCode: Code[10];
-                                   UpdDataExchDef: Boolean; UpdCreditTransfer: Boolean; UpdPositivePay: Boolean; UpdateStatementImport: Boolean;
-                                   UpdCreditAdvice: Boolean; ApplVer: Text; BuildNo: Text;
-                                   UpdBankClearStd: Boolean; UpdBankAccounts: Boolean; CallLicenseServer: Boolean)
     begin
     end;
 

@@ -8,6 +8,7 @@ pageextension 18445 "GST Service Cr. Memo Subform" extends "Service Credit Memo 
             begin
                 CurrPage.SaveRecord();
                 CalculateTax.CallTaxEngineOnServiceLine(Rec, xRec);
+                FormatLine();
             end;
         }
         modify("Unit Price")
@@ -41,6 +42,13 @@ pageextension 18445 "GST Service Cr. Memo Subform" extends "Service Credit Memo 
                 CalculateTax.CallTaxEngineOnServiceLine(Rec, xRec);
             end;
         }
+        modify(Type)
+        {
+            Trigger OnAfterValidate()
+            begin
+                FormatLine();
+            end;
+        }
         addafter("Line Amount")
         {
             field("GST Place Of Supply"; Rec."GST Place Of Supply")
@@ -49,23 +57,33 @@ pageextension 18445 "GST Service Cr. Memo Subform" extends "Service Credit Memo 
                 Editable = false;
                 ToolTip = 'Specifies on which location state code system should consider for GST calculation in case of sale of product or service.';
             }
-            field("GST Group Code"; Rec."GST Group Code")
-            {
-                ApplicationArea = Basic, Suite;
-                Editable = false;
-                ToolTip = 'Specifies an identifier for the GST Group  used to calculate and post GST.';
-            }
             field("GST Group Type"; Rec."GST Group Type")
             {
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 ToolTip = 'Specifies that the GST Group assigned for goods or service.';
             }
+            field("GST Group Code"; Rec."GST Group Code")
+            {
+                ApplicationArea = Basic, Suite;
+                Editable = IsHSNSACEditable;
+                ToolTip = 'Specifies an identifier for the GST Group  used to calculate and post GST.';
+                trigger OnValidate()
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnServiceLine(Rec, xRec);
+                end;
+            }
             field("HSN/SAC Code"; Rec."HSN/SAC Code")
             {
                 ApplicationArea = Basic, Suite;
-                Editable = false;
+                Editable = IsHSNSACEditable;
                 ToolTip = 'Specifies an unique identifier for the type of HSN or SAC that is used to calculate and post GST.';
+                trigger OnValidate()
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnServiceLine(Rec, xRec);
+                end;
             }
             field("GST Jurisdiction Type"; Rec."GST Jurisdiction Type")
             {
@@ -120,6 +138,19 @@ pageextension 18445 "GST Service Cr. Memo Subform" extends "Service Credit Memo 
 
         }
     }
+    trigger OnAfterGetCurrRecord()
+    begin
+        FormatLine();
+    end;
+
+    local procedure FormatLine()
+    var
+        GSTServiceValidations: Codeunit "GST Service Validations";
+    begin
+        GSTServiceValidations.SetHSNSACEditable(Rec, IsHSNSACEditable);
+    end;
+
     var
         CalculateTax: Codeunit "Calculate Tax";
+        IsHSNSACEditable: Boolean;
 }

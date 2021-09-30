@@ -1,7 +1,13 @@
 codeunit 148071 "Cash Desk Sales CZP"
 {
     Subtype = Test;
-    TestPermissions = NonRestrictive;
+    TestPermissions = Disabled;
+
+    trigger OnRun()
+    begin
+        // [FEATURE] [Cash Desk] [Sales]
+        isInitialized := false;
+    end;
 
     var
         CashDeskCZP: Record "Cash Desk CZP";
@@ -15,10 +21,14 @@ codeunit 148071 "Cash Desk Sales CZP"
         isInitialized: Boolean;
 
     local procedure Initialize()
+    var
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Cash Desk Sales CZP");
         LibraryRandom.Init();
         if isInitialized then
             exit;
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Cash Desk Sales CZP");
 
         LibraryCashDeskCZP.CreateCashDeskCZP(CashDeskCZP);
         LibraryCashDeskCZP.SetupCashDeskCZP(CashDeskCZP, false);
@@ -26,6 +36,7 @@ codeunit 148071 "Cash Desk Sales CZP"
 
         isInitialized := true;
         Commit();
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Cash Desk Sales CZP");
     end;
 
     [Test]
@@ -60,7 +71,6 @@ codeunit 148071 "Cash Desk Sales CZP"
         PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
         PostDocNo: Code[20];
     begin
-        // [FEATURE] Cash Desk
         Initialize();
 
         // [GIVEN] New Payment method is created and used in Sales Invoice
@@ -148,7 +158,6 @@ codeunit 148071 "Cash Desk Sales CZP"
         PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
         PostDocNo: Code[20];
     begin
-        // [FEATURE] Cash Desk
         Initialize();
 
         // [GIVEN] New Payment method is created and used in Sales Credit Memo

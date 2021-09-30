@@ -27,8 +27,9 @@ codeunit 31162 "Sync.Dep.Fld-GLSetup CZL"
     begin
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
-#if not CLEAN17
+
         SyncDepFldUtilities.SyncFields(Rec."Use VAT Date", Rec."Use VAT Date CZL", PreviousRecord."Use VAT Date", PreviousRecord."Use VAT Date CZL");
+#if not CLEAN17
         SyncDepFldUtilities.SyncFields(Rec."Allow VAT Posting From", Rec."Allow VAT Posting From CZL", PreviousRecord."Allow VAT Posting From", PreviousRecord."Allow VAT Posting From CZL");
         SyncDepFldUtilities.SyncFields(Rec."Allow VAT Posting To", Rec."Allow VAT Posting To CZL", PreviousRecord."Allow VAT Posting To", PreviousRecord."Allow VAT Posting To CZL");
         SyncDepFldUtilities.SyncFields(Rec."Dont Check Dimension", Rec."Do Not Check Dimensions CZL", PreviousRecord."Dont Check Dimension", PreviousRecord."Do Not Check Dimensions CZL");
@@ -51,7 +52,7 @@ codeunit 31162 "Sync.Dep.Fld-GLSetup CZL"
         Rec."Acc. Schedule Results Nos." := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Acc. Schedule Results Nos."));
         Rec."Acc. Schedule Results Nos. CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Acc. Schedule Results Nos. CZL"));
     end;
-#if not CLEAN17
+
     [EventSubscriber(ObjectType::Table, Database::"General Ledger Setup", 'OnAfterInsertEvent', '', false, false)]
     local procedure SyncOnAfterInsertGeneralLedgerSetup(var Rec: Record "General Ledger Setup")
     begin
@@ -79,10 +80,11 @@ codeunit 31162 "Sync.Dep.Fld-GLSetup CZL"
             StatutoryReportingSetupCZL.Init();
             StatutoryReportingSetupCZL.Insert(false);
         end;
+#if not CLEAN17
         StatutoryReportingSetupCZL."Company Official Nos." := Rec."Company Officials Nos.";
         StatutoryReportingSetupCZL.Modify(false);
+#endif
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statutory Reporting Setup CZL");
     end;
-#endif
 }
 #endif

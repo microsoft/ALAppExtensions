@@ -20,6 +20,7 @@ Use this module to do the following:
 #### Syntax
 ```
 [TryFunction]
+[NonDebuggable]
 procedure GetOAuthAccessToken(ConsumerKey: Text; ConsumerSecret: Text; RequestTokenUrl: Text; CallbackUrl: Text; var AccessTokenKey: Text; var AccessTokenSecret: Text)
 ```
 #### Parameters
@@ -55,6 +56,7 @@ The OAuth response token secret.
 #### Syntax
 ```
 [TryFunction]
+[NonDebuggable]
 procedure GetOAuthAccessToken(ConsumerKey: Text; ConsumerSecret: Text; RequestTokenUrl: Text; Verifier: Text; RequestTokenKey: Text; RequestTokenSecret: Text; var AccessTokenKey: Text; var AccessTokenSecret: Text)
 ```
 #### Parameters
@@ -98,6 +100,7 @@ Exit parameter containing the OAuth response token secret.
 #### Syntax
 ```
 [TryFunction]
+[NonDebuggable]
 procedure GetAuthorizationHeader(ConsumerKey: Text; ConsumerSecret: Text; RequestTokenKey: Text; RequestTokenSecret: Text; RequestUrl: Text; RequestMethod: Enum "Http Request Type"; var AuthorizationHeader: Text)
 ```
 #### Parameters

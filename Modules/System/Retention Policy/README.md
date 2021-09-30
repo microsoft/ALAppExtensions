@@ -5,7 +5,7 @@ Administrators can define retention policies to specify how frequently they want
 
  The table is used as a parameter table for the DeleteRecords method on the Reten. Pol Deleting interface.
 
- if "Indirect Permission Required" is true and the implementation does not have the required indirect permissions, 
+ if "Indirect Permission Required" is true and the implementation does not have the required indirect permissions,
  then "Skip Event Indirect Perm. Req." should be set to false. This will allow a subscriber to handle the deletion.
 
  if there are more records to be deleted than as indicated by "Max. Number of Rec. to Delete",
@@ -30,7 +30,7 @@ Administrators can define retention policies to specify how frequently they want
 
  The Retention Periods table is used to define retention periods.
  You define a retention period by selecting one of the default values in the Retention Period field, or by selecting the Custom value and providing a date formula.
- The date formula must result in a date that is at least two days before the current date. 
+ The date formula must result in a date that is at least two days before the current date.
  
 
 
@@ -93,173 +93,6 @@ procedure IsLocked(): Boolean
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True if the line is locked.
-
-## Apply Retention Policy (Codeunit 3910)
-
- This codeunit provides functions to apply a retention policy.
- 
-
-### ApplyRetentionPolicy (Method) <a name="ApplyRetentionPolicy"></a> 
-
- Applies all enabled, non-manual retention polices. This will delete records according to the settings defined in the Retention Policy Setup table.
- 
-
-#### Syntax
-```
-procedure ApplyRetentionPolicy(UserInvokedRun: Boolean)
-```
-#### Parameters
-*UserInvokedRun ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
-
-Use this value to indicate whether the user initiated the function call or an automated process did. This value is later passed in the event OnApplyRetentionPolicyRecordLimitExceeded.
-
-### ApplyRetentionPolicy (Method) <a name="ApplyRetentionPolicy"></a> 
-
- Applies the given Retention Policy. This will delete records according to the settings defined in the Retention Policy Setup table.
- 
-
-#### Syntax
-```
-procedure ApplyRetentionPolicy(RetentionPolicySetup: Record "Retention Policy Setup"; UserInvokedRun: Boolean)
-```
-#### Parameters
-*RetentionPolicySetup ([Record "Retention Policy Setup"]())* 
-
-This is the setup record which defines the retention policy to apply.
-
-*UserInvokedRun ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
-
-Use this value to indicate whether the user initiated the functioncall or an automated process did. This value is later passed in the event OnApplyRetentionPolicyRecordLimitExceeded.
-
-### GetExpiredRecordCount (Method) <a name="GetExpiredRecordCount"></a> 
-
- Returns the number of expired records for the given Retention Policy Setup record. These records would be deleted if the Retention Policy was applied.
- 
-
-#### Syntax
-```
-procedure GetExpiredRecordCount(RetentionPolicySetup: Record "Retention Policy Setup"): Integer
-```
-#### Parameters
-*RetentionPolicySetup ([Record "Retention Policy Setup"]())* 
-
-This is the setup record which defines the retention policy for which the expired records will be counted.
-
-#### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
-
-The number of records which are expired.
-### SetWhereOlderExpirationDateFilter (Method) <a name="SetWhereOlderExpirationDateFilter"></a> 
-
- This method places a filter on the record reference where records are older than the ExpirationDate. The filter excludes any record where the date field specified in DateFieldNo has no value.
- 
-
-#### Syntax
-```
-procedure SetWhereOlderExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
-```
-#### Parameters
-*DateFieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
-
-The date or datetime field the filter will be placed on.
-
-*ExpirationDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
-
-The expiration date used in the filter.
-
-*RecRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
-
-The record reference on which the filter will be placed.
-
-*FilterGroup ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
-
-The filtergroup in which the filter will be placed.
-
-*NullDateReplacementValue ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
-
-The date to be used to determine whether a record has expired when the date or datetime value of the record is 0D.
-
-### SetWhereNewerExpirationDateFilter (Method) <a name="SetWhereNewerExpirationDateFilter"></a> 
-
- This method places a filter on the record reference where records are newer than the ExpirationDate. The filter excludes any record where the date field specified in DateFieldNo has no value.
- 
-
-#### Syntax
-```
-procedure SetWhereNewerExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
-```
-#### Parameters
-*DateFieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
-
-The date or datetime field the filter will be placed on.
-
-*ExpirationDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
-
-The expiration date used in the filter.
-
-*RecRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
-
-The record reference on whic the filter will be placed.
-
-*FilterGroup ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
-
-The filtergroup in which the filter will be placed.
-
-*NullDateReplacementValue ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
-
-The date to be used to determine whether a record has expired when the date or datetime value of the record is 0D.
-
-### OnApplyRetentionPolicyRecordLimitExceeded (Event) <a name="OnApplyRetentionPolicyRecordLimitExceeded"></a> 
-
- This event is raised once the maximum number of records which can be deleted in a single run is reached. The limit is defined internally and cannot be changed. The event can be used to schedule a new run to delete the remaining records.
- 
-
-#### Syntax
-```
-[IntegrationEvent(false, false)]
-internal procedure OnApplyRetentionPolicyRecordLimitExceeded(CurrTableId: Integer; NumberOfRecordsRemainingToBeDeleted: Integer; ApplyAllRetentionPolicies: Boolean; UserInvokedRun: Boolean; var Handled: Boolean)
-```
-#### Parameters
-*CurrTableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
-
-Specifies the Id of the table on which the limit was reached.
-
-*NumberOfRecordsRemainingToBeDeleted ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
-
-Show the number of records remaining to be deleted for the table specified in CurrTableId.
-
-*ApplyAllRetentionPolicies ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
-
-Specifies where the interupted run was for all retention policies or only one retention policy.
-
-*UserInvokedRun ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
-
-Specifies whether the run was initiated by a user or not.
-
-*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
-
-
-
-### OnApplyRetentionPolicyIndirectPermissionRequired (Event) <a name="OnApplyRetentionPolicyIndirectPermissionRequired"></a> 
-
- This event is raised when the user applying the retention policy has indirect permissions to delete records in the table.
- A subscriber to this event with indirect permissions can delete the records on behalf of the user.
- 
-
-#### Syntax
-```
-[IntegrationEvent(false, false)]
-internal procedure OnApplyRetentionPolicyIndirectPermissionRequired(var RecRef: RecordRef; var Handled: Boolean)
-```
-#### Parameters
-*RecRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
-
-The record reference which contains the expired records to be deleted.
-
-*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
-
-Indicates whether the event has been handled.
-
 
 ## Reten. Pol. Deleting (Interface)
 
@@ -498,10 +331,176 @@ The expiration date and time are calculated based on this date and time.
 
 The expiration date and time.
 
+## Apply Retention Policy (Codeunit 3910)
+
+ This codeunit provides functions to apply a retention policy.
+ 
+
+### ApplyRetentionPolicy (Method) <a name="ApplyRetentionPolicy"></a> 
+
+ Applies all enabled, non-manual retention polices. This will delete records according to the settings defined in the Retention Policy Setup table.
+ 
+
+#### Syntax
+```
+procedure ApplyRetentionPolicy(UserInvokedRun: Boolean)
+```
+#### Parameters
+*UserInvokedRun ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Use this value to indicate whether the user initiated the function call or an automated process did. This value is later passed in the event OnApplyRetentionPolicyRecordLimitExceeded.
+
+### ApplyRetentionPolicy (Method) <a name="ApplyRetentionPolicy"></a> 
+
+ Applies the given Retention Policy. This will delete records according to the settings defined in the Retention Policy Setup table.
+ 
+
+#### Syntax
+```
+procedure ApplyRetentionPolicy(RetentionPolicySetup: Record "Retention Policy Setup"; UserInvokedRun: Boolean)
+```
+#### Parameters
+*RetentionPolicySetup ([Record "Retention Policy Setup"]())* 
+
+This is the setup record which defines the retention policy to apply.
+
+*UserInvokedRun ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Use this value to indicate whether the user initiated the functioncall or an automated process did. This value is later passed in the event OnApplyRetentionPolicyRecordLimitExceeded.
+
+### GetExpiredRecordCount (Method) <a name="GetExpiredRecordCount"></a> 
+
+ Returns the number of expired records for the given Retention Policy Setup record. These records would be deleted if the Retention Policy was applied.
+ 
+
+#### Syntax
+```
+procedure GetExpiredRecordCount(RetentionPolicySetup: Record "Retention Policy Setup"): Integer
+```
+#### Parameters
+*RetentionPolicySetup ([Record "Retention Policy Setup"]())* 
+
+This is the setup record which defines the retention policy for which the expired records will be counted.
+
+#### Return Value
+*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+
+The number of records which are expired.
+### SetWhereOlderExpirationDateFilter (Method) <a name="SetWhereOlderExpirationDateFilter"></a> 
+
+ This method places a filter on the record reference where records are older than the ExpirationDate. The filter excludes any record where the date field specified in DateFieldNo has no value.
+ 
+
+#### Syntax
+```
+procedure SetWhereOlderExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
+```
+#### Parameters
+*DateFieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The date or datetime field the filter will be placed on.
+
+*ExpirationDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+
+The expiration date used in the filter.
+
+*RecRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+
+The record reference on which the filter will be placed.
+
+*FilterGroup ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The filtergroup in which the filter will be placed.
+
+*NullDateReplacementValue ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+
+The date to be used to determine whether a record has expired when the date or datetime value of the record is 0D.
+
+### SetWhereNewerExpirationDateFilter (Method) <a name="SetWhereNewerExpirationDateFilter"></a> 
+
+ This method places a filter on the record reference where records are newer than the ExpirationDate. The filter excludes any record where the date field specified in DateFieldNo has no value.
+ 
+
+#### Syntax
+```
+procedure SetWhereNewerExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
+```
+#### Parameters
+*DateFieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The date or datetime field the filter will be placed on.
+
+*ExpirationDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+
+The expiration date used in the filter.
+
+*RecRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+
+The record reference on whic the filter will be placed.
+
+*FilterGroup ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The filtergroup in which the filter will be placed.
+
+*NullDateReplacementValue ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+
+The date to be used to determine whether a record has expired when the date or datetime value of the record is 0D.
+
+### OnApplyRetentionPolicyRecordLimitExceeded (Event) <a name="OnApplyRetentionPolicyRecordLimitExceeded"></a> 
+
+ This event is raised once the maximum number of records which can be deleted in a single run is reached. The limit is defined internally and cannot be changed. The event can be used to schedule a new run to delete the remaining records.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnApplyRetentionPolicyRecordLimitExceeded(CurrTableId: Integer; NumberOfRecordsRemainingToBeDeleted: Integer; ApplyAllRetentionPolicies: Boolean; UserInvokedRun: Boolean; var Handled: Boolean)
+```
+#### Parameters
+*CurrTableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+Specifies the Id of the table on which the limit was reached.
+
+*NumberOfRecordsRemainingToBeDeleted ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+Show the number of records remaining to be deleted for the table specified in CurrTableId.
+
+*ApplyAllRetentionPolicies ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Specifies where the interupted run was for all retention policies or only one retention policy.
+
+*UserInvokedRun ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Specifies whether the run was initiated by a user or not.
+
+*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+
+
+### OnApplyRetentionPolicyIndirectPermissionRequired (Event) <a name="OnApplyRetentionPolicyIndirectPermissionRequired"></a> 
+
+ This event is raised when the user applying the retention policy has indirect permissions to delete records in the table.
+ A subscriber to this event with indirect permissions can delete the records on behalf of the user.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnApplyRetentionPolicyIndirectPermissionRequired(var RecRef: RecordRef; var Handled: Boolean)
+```
+#### Parameters
+*RecRef ([RecordRef](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/recordref/recordref-data-type))* 
+
+The record reference which contains the expired records to be deleted.
+
+*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Indicates whether the event has been handled.
+
 
 ## Reten. Pol. Allowed Tables (Codeunit 3905)
 
- This codeunit is used to manage the list of allowed tables for which retention policies can be set up. 
+ This codeunit is used to manage the list of allowed tables for which retention policies can be set up.
  Extensions can only approve the tables they create. Extensions cannot approve tables from other extensions.
  
 
@@ -660,7 +659,7 @@ True if the table is in the list of allowed tables. False if the table is not in
 ### AddTableFilterToJsonArray (Method) <a name="AddTableFilterToJsonArray"></a> 
 
  This helper method is used to build an array of table filters which will be inserted automatically when creating a retention policy for the allowed table.
- You must first build up the array by calling this helper function and adding all relevant table filter information before passing the JsonArray to the AddAllowedTable method. 
+ You must first build up the array by calling this helper function and adding all relevant table filter information before passing the JsonArray to the AddAllowedTable method.
  
 
 #### Syntax
@@ -695,7 +694,7 @@ A record reference containing the filters to be added to the retention policy se
 ### AddTableFilterToJsonArray (Method) <a name="AddTableFilterToJsonArray"></a> 
 
  This helper method is used to build an array of table filters which will be inserted automatically when creating a retention policy for the allowed table.
- You must first build up the array by calling this helper function and adding all relevant table filter information before passing the JsonArray to the AddAllowedTable method. 
+ You must first build up the array by calling this helper function and adding all relevant table filter information before passing the JsonArray to the AddAllowedTable method.
  
 
 #### Syntax
@@ -1235,7 +1234,7 @@ Category used for creating log entries concerning applying retention policies.
 
 ## Retention Policy Log Message Type (Enum 3902)
 
- Specifies the type of log message. 
+ Specifies the type of log message.
  
 
 ### Error (value: 0)

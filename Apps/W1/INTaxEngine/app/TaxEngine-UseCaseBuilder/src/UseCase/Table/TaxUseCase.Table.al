@@ -239,5 +239,5 @@ table 20306 "Tax Use Case"
 
     var
         EmptyGuid: Guid;
-        UseCaseStatusLbl: Label 'You cannot enable a use with status %1', Comment = '%1 = Status';
+        UseCaseStatusLbl: Label 'You cannot enable a use case with status %1', Comment = '%1 = Status';
 }

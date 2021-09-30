@@ -1,6 +1,6 @@
 codeunit 31072 "User Setup Adv. Management CZL"
 {
-    Permissions = TableData "User Setup" = m;
+    Permissions = tabledata "User Setup" = m;
     TableNo = "User Setup";
 
     trigger OnRun()
@@ -14,8 +14,10 @@ codeunit 31072 "User Setup Adv. Management CZL"
         JournalPermErr: Label 'Access to journal %1 is not allowed in extended user check.', Comment = '%1 = journal template code';
         ReqWkshPermErr: Label 'Access to worksheet %1 is not allowed in extended user check.', Comment = '%1 = journal template code';
         VATStmtPermErr: Label 'Access to statement %1 is not allowed in extended user check.', Comment = '%1 = journal template code';
+#if not CLEAN19
         PaymOrdDeniedErr: Label 'Access to payment orders of bank account %1 is not allowed in extended user check.', Comment = '%1 = bank account number';
         BankStmtDeniedErr: Label 'Access to bank statements of bank account %1 is not allowed in extended user check.', Comment = '%1 = bank account number';
+#endif
 
     [TryFunction]
     procedure CheckJournalTemplate(Type: Enum "User Setup Line Type CZL"; JournalTemplateCode: Code[10])
@@ -292,6 +294,8 @@ codeunit 31072 "User Setup Adv. Management CZL"
         TempUserID := CopyStr(UserId, 1, MaxStrLen(TempUserID));
     end;
 
+#if not CLEAN19
+    [Obsolete('Moved to Banking Documents Localization for Czech.', '19.0')]
     procedure CheckBankAccountNo(Type: Enum "User Setup Line Type CZL"; BankAccNo: Code[20])
     var
         UserSetupLineCZL: Record "User Setup Line CZL";
@@ -302,13 +306,14 @@ codeunit 31072 "User Setup Adv. Management CZL"
 
         if not CheckUserSetupLineCZL(UserSetup."User ID", Type, BankAccNo) then
             case true of
-                (Type = UserSetupLineCZL.Type::"Paym. Order") and UserSetup."Check Payment Orders":
+                (Type = UserSetupLineCZL.Type::"Payment Order") and UserSetup."Check Payment Orders":
                     Error(PaymOrdDeniedErr, BankAccNo);
-                (Type = UserSetupLineCZL.Type::"Bank Stmt") and UserSetup."Check Bank Statements":
+                (Type = UserSetupLineCZL.Type::"Bank Statement") and UserSetup."Check Bank Statements":
                     Error(BankStmtDeniedErr, BankAccNo);
             end;
     end;
 
+#endif
     procedure CheckWhseNetChangeTemplate(var ItemJournalLine: Record "Item Journal Line"): Boolean
     var
         UserSetupLineCZL: Record "User Setup Line CZL";
@@ -366,14 +371,14 @@ codeunit 31072 "User Setup Adv. Management CZL"
         exit(CheckUserSetupLineCZL(UserSetup."User ID", UserSetupLineCZL.Type::"Release Location (quantity decrease)", LocationCode));
     end;
 
-    local procedure CheckUserSetupLineCZL(UserCode: Code[50]; Type: Enum "User Setup Line Type CZL"; CodeName: Code[20]): Boolean
+    procedure CheckUserSetupLineCZL(UserCode: Code[50]; Type: Enum "User Setup Line Type CZL"; CodeName: Code[20]): Boolean
     var
         UserSetupLineCZL: Record "User Setup Line CZL";
     begin
         UserSetupLineCZL.SetRange("User ID", UserCode);
         UserSetupLineCZL.SetRange(Type, Type);
         UserSetupLineCZL.SetRange("Code / Name", CodeName);
-        exit(not UserSetupLineCZL.IsEmpty)
+        exit(not UserSetupLineCZL.IsEmpty())
     end;
 
     procedure IsCheckAllowed(): Boolean

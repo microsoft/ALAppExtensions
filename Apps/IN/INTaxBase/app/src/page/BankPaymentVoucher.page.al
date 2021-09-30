@@ -1059,6 +1059,7 @@ page 18550 "Bank Payment Voucher"
                     Image = ViewPostedOrder;
                     Promoted = true;
                     PromotedCategory = Category9;
+                    ShortCutKey = 'Ctrl+Alt+F9';
                     ToolTip = 'Review the different types of entries that will be created when you post the document or journal.';
 
                     trigger OnAction()

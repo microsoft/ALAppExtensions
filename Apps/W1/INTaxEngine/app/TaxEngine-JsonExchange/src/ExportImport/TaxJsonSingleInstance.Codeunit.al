@@ -1,36 +1,84 @@
 codeunit 20367 "Tax Json Single Instance"
 {
-    SingleInstance = true;
-    procedure ClearValues()
+    procedure UpdateReplacedUseCase(TaxUseCase: Record "Tax Use Case")
+    var
+        UpgradedUseCases: Record "Upgraded Use Cases";
     begin
-        TempUseCase.Reset();
-        if not TempUseCase.IsEmpty() then
-            TempUseCase.DeleteAll();
+        if UpgradedUseCases.Get(TaxUseCase.ID) then
+            exit;
+
+        UpgradedUseCases.Init();
+        UpgradedUseCases."Use Case ID" := TaxUseCase.ID;
+        UpgradedUseCases.Insert();
     end;
 
-    procedure UpdateReplacedUseCase(TaxUseCase: Record "Tax Use Case")
+    procedure UpdateReplacedTaxType(TaxType: Record "Tax Type")
+    var
+        UpgradedTaxTypes: Record "Upgraded Tax Types";
     begin
-        if TempUseCase.Get(TaxUseCase.ID) then
+        if UpgradedTaxTypes.Get(TaxType.Code) then
             exit;
-        TempUseCase.Init();
-        TempUseCase := TaxUseCase;
-        TempUseCase.Insert();
+
+        UpgradedTaxTypes.Init();
+        UpgradedTaxTypes."Tax Type" := TaxType.Code;
+        UpgradedTaxTypes.Insert();
     end;
 
     procedure OpenReplcedTaxUseCases()
+    var
+        TempTaxUseCase: Record "Tax Use Case" temporary;
+        TaxUseCase: Record "Tax Use Case";
+        UpgradedUseCases: Record "Upgraded Use Cases";
     begin
         if not GuiAllowed then
             exit;
+        if UpgradedUseCases.FindSet() then
+            repeat
+                TaxUseCase.Get(UpgradedUseCases."Use Case ID");
+
+                TempTaxUseCase.Init();
+                TempTaxUseCase := TaxUseCase;
+                TempTaxUseCase.Insert();
+            until UpgradedUseCases.Next() = 0;
+
         Commit();
-        TempUseCase.Reset();
-        if TempUseCase.FindSet() then begin
-            Message(UseCaseReplacedMsg);
-            Page.Run(Page::"Use Cases", TempUseCase);
+        TempTaxUseCase.Reset();
+        if TempTaxUseCase.FindSet() then begin
+            if not HideDialog then
+                Message(UseCaseReplacedMsg);
+            Page.Run(Page::"Use Cases", TempTaxUseCase);
         end;
     end;
 
+    procedure OpenReplacedTaxTypes()
     var
-        TempUseCase: Record "Tax Use Case" temporary;
-        UseCaseReplacedMsg: Label 'We have updated some use cases which were modified by you. please export these use cases and apply your changes manually.';
+        TempTaxType: Record "Tax Type" temporary;
+        TaxType: Record "Tax Type";
+        UpgradedTaxTypes: Record "Upgraded Tax Types";
+    begin
+        if not GuiAllowed then
+            exit;
+        if UpgradedTaxTypes.FindSet() then
+            repeat
+                TaxType.Get(UpgradedTaxTypes."Tax Type");
 
+                TempTaxType.Init();
+                TempTaxType := TaxType;
+                TempTaxType.Insert();
+            until UpgradedTaxTypes.Next() = 0;
+
+        Commit();
+        TempTaxType.Reset();
+        if TempTaxType.FindSet() then
+            Page.Run(Page::"Tax Types", TempTaxType);
+    end;
+
+    procedure SetHideDialog(NewHideDialog: Boolean)
+    begin
+        HideDialog := NewHideDialog;
+    end;
+
+    var
+        HideDialog: Boolean;
+        UseCaseReplacedMsg: Label 'We have upgraded some use cases which were modified by you. you can export these use cases and apply your changes manually.';
 }

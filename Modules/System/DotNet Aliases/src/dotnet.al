@@ -504,6 +504,12 @@ dotnet
         type("Microsoft.Dynamics.Nav.DocumentService.Types.IDocumentService"; "IDocumentService")
         {
         }
+        type("Microsoft.Dynamics.Nav.DocumentService.Types.ConflictBehavior"; "ConflictBehavior")
+        {
+        }
+        type("Microsoft.Dynamics.Nav.DocumentService.Types.UploadedDocument"; "UploadedDocument")
+        {
+        }
     }
 
     assembly("Microsoft.Dynamics.Nav.EtwListener")
@@ -768,16 +774,6 @@ dotnet
         }
 
         type("Microsoft.Dynamics.Nav.Runtime.Designer.NavDesignerALCopyResponse"; "NavDesignerALCopyResponse")
-        {
-        }
-    }
-
-    assembly("Microsoft.Dynamics.Nav.O365ActionableMessageWrapper")
-    {
-        Culture = 'neutral';
-        PublicKeyToken = '31bf3856ad364e35';
-
-        type("Microsoft.Dynamics.Nav.O365ActionableMessageWrapper.ActionableMessage"; "ActionableMessage")
         {
         }
     }
@@ -1561,6 +1557,10 @@ dotnet
         {
         }
 
+        type("System.Collections.Generic.SortedDictionary`2"; "GenericSortedDictionary2")
+        {
+        }
+
         type("System.Diagnostics.FileVersionInfo"; "FileVersionInfo")
         {
         }
@@ -1797,6 +1797,30 @@ dotnet
         {
         }
 
+        type("System.Drawing.GraphicsUnit"; "GraphicsUnit")
+        {
+        }
+
+        type("System.Drawing.Imaging.EncoderParameters"; "EncoderParameters")
+        {
+        }
+
+        type("System.Drawing.Imaging.EncoderParameter"; "EncoderParameter")
+        {
+        }
+
+        type("System.Drawing.Imaging.EncoderParameter[]"; "EncoderParameterList")
+        {
+        }
+
+        type("System.Drawing.Imaging.ImageCodecInfo"; "ImageCodecInfo")
+        {
+        }
+
+        type("System.Drawing.Imaging.Encoder"; "Encoder")
+        {
+        }
+
         type("System.Drawing.Image"; "Image")
         {
         }
@@ -1931,10 +1955,6 @@ dotnet
         Version = '4.0.0.0';
         Culture = 'neutral';
         PublicKeyToken = 'b03f5f7f11d50a3a';
-
-        type("System.Security.Cryptography.Xml.DataObject"; DataObject)
-        {
-        }
 
         type("System.Security.Cryptography.Xml.KeyInfo"; "KeyInfo")
         {

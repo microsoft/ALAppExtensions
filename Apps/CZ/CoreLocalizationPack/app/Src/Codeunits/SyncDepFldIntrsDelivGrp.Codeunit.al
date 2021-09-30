@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31213 "Sync.Dep.Fld-IntrsDelivGrp CZL"
 {
@@ -54,7 +55,8 @@ codeunit 31213 "Sync.Dep.Fld-IntrsDelivGrp CZL"
         if not IntrastatDeliveryGroupCZL.Get(Rec.Code) then begin
             IntrastatDeliveryGroupCZL.Init();
             IntrastatDeliveryGroupCZL.Code := Rec.Code;
-            IntrastatDeliveryGroupCZL.Insert(false);
+            IntrastatDeliveryGroupCZL.SystemId := Rec.SystemId;
+            IntrastatDeliveryGroupCZL.Insert(false, true);
         end;
         IntrastatDeliveryGroupCZL.Description := Rec.Description;
         IntrastatDeliveryGroupCZL.Modify(false);
@@ -127,7 +129,8 @@ codeunit 31213 "Sync.Dep.Fld-IntrsDelivGrp CZL"
         if not IntrastatDeliveryGroup.Get(Rec.Code) then begin
             IntrastatDeliveryGroup.Init();
             IntrastatDeliveryGroup.Code := CopyStr(Rec.Code, 1, MaxStrLen(IntrastatDeliveryGroup.Code));
-            IntrastatDeliveryGroup.Insert(false);
+            IntrastatDeliveryGroup.SystemId := Rec.SystemId;
+            IntrastatDeliveryGroup.Insert(false, true);
         end;
         IntrastatDeliveryGroup.Description := CopyStr(Rec.Description, 1, MaxStrLen(IntrastatDeliveryGroup.Description));
         IntrastatDeliveryGroup.Modify(false);
@@ -160,3 +163,4 @@ codeunit 31213 "Sync.Dep.Fld-IntrsDelivGrp CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

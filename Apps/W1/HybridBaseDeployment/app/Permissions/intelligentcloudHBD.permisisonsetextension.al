@@ -9,5 +9,6 @@ permissionsetextension 4003 "INTELLIGENT CLOUD - HBD" extends "INTELLIGENT CLOUD
                   tabledata "Post Migration Checklist" = RIMD,
                   tabledata "Migration Table Mapping" = RIMD,
                   tabledata "Intelligent Cloud Not Migrated" = RIMD,
-                  tabledata "User Mapping Work" = RIMD;
+                  tabledata "User Mapping Work" = RIMD,
+                  tabledata "Replication Run Completed Arg" = RIMD;
 }

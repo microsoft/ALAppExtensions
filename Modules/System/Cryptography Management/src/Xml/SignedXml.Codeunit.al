@@ -112,23 +112,6 @@ codeunit 1460 SignedXml
     end;
 
     /// <summary>
-    /// Initializes a new instance of the DataObject class.
-    /// </summary>
-    procedure InitializeDataObject()
-    begin
-        SignedXmlImpl.InitializeDataObject();
-    end;
-
-    /// <summary>
-    /// Adds a xml element of DataObject object to the list of objects to be signed.
-    /// </summary>
-    /// <param name="DataObjectXmlElement">The xml element of DataObject to add to the list of objects to be signed.</param>
-    procedure AddObject(DataObjectXmlElement: XmlElement)
-    begin
-        SignedXmlImpl.AddObject(DataObjectXmlElement);
-    end;
-
-    /// <summary>
     /// Adds a AddXmlDsigExcC14NTransformToReference object to the list of transforms to be performed on the data before passing it to the digest algorithm.
     /// </summary>
     procedure AddXmlDsigExcC14NTransformToReference()

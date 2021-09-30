@@ -57,7 +57,8 @@ codeunit 31179 "Sync.Dep.Fld-VatCtrlRepEnL CZL"
             VATCtrlReportEntLinkCZL."VAT Ctrl. Report No." := Rec."Control Report No.";
             VATCtrlReportEntLinkCZL."Line No." := Rec."Line No.";
             VATCtrlReportEntLinkCZL."VAT Entry No." := Rec."VAT Entry No.";
-            VATCtrlReportEntLinkCZL.Insert(false);
+            VATCtrlReportEntLinkCZL.SystemId := Rec.SystemId;
+            VATCtrlReportEntLinkCZL.Insert(false, true);
         end;
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl. Report Ent. Link CZL");
     end;
@@ -130,7 +131,8 @@ codeunit 31179 "Sync.Dep.Fld-VatCtrlRepEnL CZL"
             VATCtrlRepVATEntryLink."Control Report No." := Rec."VAT Ctrl. Report No.";
             VATCtrlRepVATEntryLink."Line No." := Rec."Line No.";
             VATCtrlRepVATEntryLink."VAT Entry No." := Rec."VAT Entry No.";
-            VATCtrlRepVATEntryLink.Insert(false);
+            VATCtrlRepVATEntryLink.SystemId := Rec.SystemId;
+            VATCtrlRepVATEntryLink.Insert(false, true);
         end;
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"VAT Ctrl.Rep. - VAT Entry Link");
     end;

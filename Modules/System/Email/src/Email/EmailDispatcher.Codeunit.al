@@ -28,6 +28,7 @@ codeunit 8888 "Email Dispatcher"
     var
         EmailMessage: Record "Email Message";
         SendEmail: Codeunit "Send Email";
+        Email: Codeunit Email;
         ClientTypeMgt: Codeunit "Client Type Management";
         Dimensions: Dictionary of [Text, Text];
     begin
@@ -60,6 +61,7 @@ codeunit 8888 "Email Dispatcher"
 
                 Rec.Delete();
                 EmailMessageImpl.MarkAsRead();
+                Commit();
             end
             else begin
                 Dimensions.Add('ErrorText', GetLastErrorText(true));
@@ -77,15 +79,7 @@ codeunit 8888 "Email Dispatcher"
         end;
 
         if (ClientTypeMgt.GetCurrentClientType() = ClientType::Background) then
-            if FireOnAfterSendEmail(Rec."Message Id", Success) then;
-    end;
-
-    [TryFunction]
-    local procedure FireOnAfterSendEmail(MessageID: Guid; Success: Boolean)
-    var
-        Email: Codeunit Email;
-    begin
-        Email.OnAfterSendEmail(MessageID, Success);
+            Email.OnAfterSendEmail(Rec."Message Id", Success);
     end;
 
     local procedure InsertToSentEmail(EmailOutbox: Record "Email Outbox")

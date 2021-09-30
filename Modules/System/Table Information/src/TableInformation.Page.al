@@ -12,7 +12,7 @@ page 8700 "Table Information"
     AdditionalSearchTerms = 'Database,Size,Storage';
     PageType = List;
     ApplicationArea = All;
-    Extensible = false;
+    Extensible = true;
     UsageCategory = Lists;
     SourceTable = "Table Information";
     SourceTableView = sorting("Size (KB)") order(descending);

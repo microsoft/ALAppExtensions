@@ -42,6 +42,34 @@ codeunit 4008 "Hybrid BC Management"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnSetAllUpgradeTags', '', false, false)]
+    local procedure HandleSetAllUpgradeTags(NewCompanyName: Text; var SkipSetAllUpgradeTags: Boolean)
+    var
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        if SkipSetAllUpgradeTags then
+            exit;
+
+        if not GetBCProductEnabled() then
+            exit;
+
+        SkipSetAllUpgradeTags := HybridCloudManagement.IsCompanyUnderUpgrade(NewCompanyName);
+    end;
+
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnBackupUpgradeTags', '', false, false)]
+    local procedure BackupUpgradeTags(ProductID: Text[250]; var Handled: Boolean; var BackupUpgradeTags: Boolean)
+    begin
+        if Handled then
+            exit;
+
+        if not GetBCProductEnabled() then
+            exit;
+
+        // Don't set handled to allow the others to override
+        BackupUpgradeTags := true;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnReplicationRunCompleted', '', false, false)]
     local procedure UpdateStatusOnHybridReplicationCompleted(RunId: Text[50]; SubscriptionId: Text; NotificationText: Text)
     var
@@ -76,5 +104,19 @@ codeunit 4008 "Hybrid BC Management"
 
                 HybridReplicationDetail.Modify();
             until HybridReplicationDetail.Next() = 0;
+    end;
+
+    local procedure GetBCProductEnabled(): Boolean
+    var
+        InteligentCloudSetup: Record "Intelligent Cloud Setup";
+        HybridBCWizard: Codeunit "Hybrid BC Wizard";
+    begin
+        if not InteligentCloudSetup.Get() then
+            exit(false);
+
+        if not (InteligentCloudSetup."Product ID" = HybridBCWizard.ProductId()) then
+            exit(false);
+
+        exit(true);
     end;
 }

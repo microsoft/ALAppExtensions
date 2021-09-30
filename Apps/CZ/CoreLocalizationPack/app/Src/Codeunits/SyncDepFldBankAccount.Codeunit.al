@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31200 "Sync.Dep.Fld-BankAccount CZL"
 {
@@ -29,3 +30,4 @@ codeunit 31200 "Sync.Dep.Fld-BankAccount CZL"
         SyncDepFldUtilities.SyncFields(Rec."Exclude from Exch. Rate Adj.", Rec."Excl. from Exch. Rate Adj. CZL", PreviousRecord."Exclude from Exch. Rate Adj.", PreviousRecord."Excl. from Exch. Rate Adj. CZL");
     end;
 }
+#endif

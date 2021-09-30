@@ -27,7 +27,9 @@ codeunit 13646 "OIOUBL-Management"
     procedure ExportXMLFile(DocNo: Code[20]; SourceFile: Text[1024]; FolderPath: Text);
     var
         OIOUBLFileEvents: Codeunit "OIOUBL-File Events";
+#if not CLEAN17
         FilePath: Text;
+#endif
         FileName: Text;
         IsHandled: Boolean;
     begin

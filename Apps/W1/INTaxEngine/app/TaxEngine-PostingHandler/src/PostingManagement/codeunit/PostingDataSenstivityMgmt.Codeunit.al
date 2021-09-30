@@ -4,6 +4,7 @@ codeunit 20348 "Posting Data Senstivity Mgmt."
     local procedure OnAfterClassifyPostingSpecificTables()
     begin
         ClassifyTablesToNormal();
+        ClassifyCompanyConfidentialFields();
     end;
 
     local procedure ClassifyTablesToNormal()
@@ -18,5 +19,17 @@ codeunit 20348 "Posting Data Senstivity Mgmt."
         DataClassificationMgt: Codeunit "Data Classification Mgt.";
     begin
         DataClassificationMgt.SetTableFieldsToNormal(TableNo);
+    end;
+
+    local procedure ClassifyCompanyConfidentialFields()
+    var
+        TaxPostingKeysBuffer: Record "Tax Posting Keys Buffer";
+        TransactionPostingBuffer: Record "Transaction Posting Buffer";
+        DataClassificationMgt: Codeunit "Data Classification Mgt.";
+    begin
+        SetTableFieldsToNormal(Database::"Tax Posting Keys Buffer");
+        SetTableFieldsToNormal(Database::"Transaction Posting Buffer");
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"Tax Posting Keys Buffer", TaxPostingKeysBuffer.FieldNo("Record ID"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"Transaction Posting Buffer", TransactionPostingBuffer.FieldNo("Tax Record ID"));
     end;
 }

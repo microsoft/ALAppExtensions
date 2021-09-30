@@ -7,6 +7,13 @@ codeunit 148114 "Test Upgrade FR"
         Assert: Codeunit Assert;
         CountryCodeTxt: Label 'FR', Locked = true;
 
+    local procedure Initialize()
+    var
+        UpgradeTagLibrary: Codeunit "Upgrade Tag Library";
+    begin
+        UpgradeTagLibrary.DeleteAllUpgradeTags();
+    end;
+
     [Test]
     procedure UpgradeSetsDetailedCustomerLedgerEntries()
     var
@@ -18,6 +25,7 @@ codeunit 148114 "Test Upgrade FR"
     begin
         // [SCENARIO] Data migration for FR correctly updates customer ledger entries.
         // [GIVEN] The base records exist and have an anticipated code upgrade
+        Initialize();
         Customer.FindFirst();
         DetailedCustLedgEntry.Init();
         DetailedCustLedgEntry."Entry No." := 1337;
@@ -45,6 +53,7 @@ codeunit 148114 "Test Upgrade FR"
     begin
         // [SCENARIO] Data migration for FR correctly updates vendor ledger entries.
         // [GIVEN] The base records exist and have an anticipated code upgrade
+        Initialize();
         Vendor.FindFirst();
         DetailedVendorLedgEntry.Init();
         DetailedVendorLedgEntry."Entry No." := 1337;

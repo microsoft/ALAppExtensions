@@ -15,6 +15,10 @@ pageextension 31139 "Intrastat Journal CZL" extends "Intrastat Journal"
                 ToolTip = 'Specifies the Specific movement code of the Intrastat journal line.';
             }
         }
+#if CLEAN19
+        moveafter("Country/Region Code"; "Country/Region of Origin Code")
+        moveafter("Area"; "Shpt. Method Code")
+#endif
         addafter("Supplementary Units")
         {
             field("Supplem. UoM Code CZL"; Rec."Supplem. UoM Code CZL")
@@ -100,7 +104,9 @@ pageextension 31139 "Intrastat Journal CZL" extends "Intrastat Journal"
                 end;
             }
         }
+#pragma warning disable AL0432
         addfirst(reporting)
+#pragma warning restore AL0432
         {
             action("Test Report CZL")
             {

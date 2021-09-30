@@ -76,6 +76,7 @@ table 1917 "MigrationQB Config"
         end;
     end;
 
+    [NonDebuggable]
     procedure InitializeOnlineConfig(AccessToken: Text; RealmId: Text)
     begin
         if not Get() then begin
@@ -90,7 +91,7 @@ table 1917 "MigrationQB Config"
         IsolatedStorage.Set('Migration QB Access Token', AccessToken, DataScope::Company);
     end;
 
-    [Obsolete('Do not use. Replaced with InitializeOnlineConfig() for OAuth 2.0 implementation.','15.4')]
+    [Obsolete('Do not use. Replaced with InitializeOnlineConfig() for OAuth 2.0 implementation.', '15.4')]
     procedure InitializeOnlineSetup(TokenKey: Text; TokenSecret: Text; RealmId: Text)
     var
         CryptographyManagement: Codeunit "Cryptography Management";

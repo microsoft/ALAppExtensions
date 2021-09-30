@@ -55,6 +55,10 @@ page 30014 "APIV2 - Accounts"
                 {
                     Caption = 'Direct Posting';
                 }
+                field(netChange; "Net Change")
+                {
+                    Caption = 'Net Change';
+                }
                 field(lastModifiedDateTime; SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';

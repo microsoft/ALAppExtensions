@@ -526,4 +526,28 @@ codeunit 18440 "GST Service Validations"
             until ServiceLine.Next() = 0;
     end;
 
+    procedure SetHSNSACEditable(ServiceLine: Record "Service Line"; var IsEditable: Boolean)
+    var
+        Item: Record Item;
+        IsHandled: Boolean;
+    begin
+        IsEditable := false;
+        OnBeforeServiceLineHSNSACEditable(ServiceLine, IsEditable, IsHandled);
+        if IsHandled then
+            exit;
+
+        if ServiceLine.Type = ServiceLine.Type::Item then begin
+            if Item.Get(ServiceLine."No.") then
+                if Item.Type in [Item.Type::Inventory, Item.Type::"Non-Inventory"] then
+                    IsEditable := false
+                else
+                    IsEditable := true
+        end else
+            IsEditable := true;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeServiceLineHSNSACEditable(ServiceLine: Record "Service Line"; var IsEditable: Boolean; var IsHandled: Boolean)
+    begin
+    end;
 }

@@ -373,7 +373,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
     [Test]
     procedure TestInvalidateHeadlines()
     var
-        MySettings: TestPage "My Settings";
+        UserSettings: TestPage "User Settings";
     begin
         Initialize();
 
@@ -383,16 +383,16 @@ codeunit 139600 "Test Essential Bus. Headlines"
         Assert.IsFalse(EssentialBusinessHeadline.IsEmpty(), 'expected the headlines not to be deleted when not changing workdate nor language');
 
         // [WHEN] We change the date to the same one
-        MySettings.OpenEdit();
-        MySettings.NewWorkdate.Value(Format(WorkDate()));
-        MySettings.OK().Invoke();
+        UserSettings.OpenEdit();
+        UserSettings."Work Date".Value(Format(WorkDate()));
+        UserSettings.OK().Invoke();
         // [THEN] Nothing happens
         Assert.IsFalse(EssentialBusinessHeadline.IsEmpty(), 'expected the headlines not to be deleted when changing workdate to the same workdate');
 
         // [WHEN] We change the date
-        MySettings.OpenEdit();
-        MySettings.NewWorkdate.Value(Format(0D));
-        MySettings.OK().Invoke();
+        UserSettings.OpenEdit();
+        UserSettings."Work Date".Value(Format(0D));
+        UserSettings.OK().Invoke();
         // [THEN] Headlines are invalidated
         Assert.IsTrue(EssentialBusinessHeadline.IsEmpty(), 'expected the headlines to be deleted when changing workdate');
     end;

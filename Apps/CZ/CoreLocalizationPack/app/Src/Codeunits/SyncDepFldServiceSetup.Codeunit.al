@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AL0603
+#if not CLEAN18
+#pragma warning disable AL0432, AL0603
 codeunit 31165 "Sync.Dep.Fld-ServiceSetup CZL"
 {
     ObsoleteState = Pending;
@@ -22,16 +23,21 @@ codeunit 31165 "Sync.Dep.Fld-ServiceSetup CZL"
         PreviousRecord: Record "Service Mgt. Setup";
         SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
         PreviousRecordRef: RecordRef;
+#if not CLEAN17
         DepFieldInt, NewFieldInt : Integer;
+#endif
     begin
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
 
+#if not CLEAN17
         DepFieldInt := Rec."Default VAT Date";
         NewFieldInt := Rec."Default VAT Date CZL".AsInteger();
         SyncDepFldUtilities.SyncFields(DepFieldInt, NewFieldInt, PreviousRecord."Default VAT Date", PreviousRecord."Default VAT Date CZL".AsInteger());
         Rec."Default VAT Date" := DepFieldInt;
         Rec."Default VAT Date CZL" := NewFieldInt;
+#endif
         SyncDepFldUtilities.SyncFields(Rec."Allow Alter Cust. Post. Groups", Rec."Allow Alter Posting Groups CZL", PreviousRecord."Allow Alter Cust. Post. Groups", PreviousRecord."Allow Alter Posting Groups CZL");
     end;
 }
+#endif

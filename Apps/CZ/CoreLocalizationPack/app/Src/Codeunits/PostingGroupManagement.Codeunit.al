@@ -26,10 +26,6 @@ codeunit 31034 "Posting Group Management CZL"
                 CheckPostingGroupChangeInServiceHeader(NewPostingGroup, OldPostingGroup);
             Database::"Bank Acc. Reconciliation Line":
                 CheckPostingGroupChangeInBankAccReconLine(NewPostingGroup, OldPostingGroup, Variant);
-            Database::"Sales Advance Letter Header":
-                CheckPostingGroupChangeInSalesAdvLetterHeader(NewPostingGroup, OldPostingGroup);
-            Database::"Purch. Advance Letter Header":
-                CheckPostingGroupChangeInPurchAdvLetterHeader(NewPostingGroup, OldPostingGroup);
             else begin
                     OnCheckPostingGroupChange(NewPostingGroup, OldPostingGroup, SourceRecordRef, CheckedPostingGroup, CustomerVendorNo);
                     case CheckedPostingGroup of
@@ -88,16 +84,6 @@ codeunit 31034 "Posting Group Management CZL"
             else
                 BankAccReconciliationLine.FieldError(BankAccReconciliationLine."Account Type");
         end;
-    end;
-
-    local procedure CheckPostingGroupChangeInSalesAdvLetterHeader(NewPostingGroup: Code[20]; OldPostingGroup: Code[20])
-    begin
-        CheckCustomerPostingGroupChange(NewPostingGroup, OldPostingGroup);
-    end;
-
-    local procedure CheckPostingGroupChangeInPurchAdvLetterHeader(NewPostingGroup: Code[20]; OldPostingGroup: Code[20])
-    begin
-        CheckVendorPostingGroupChange(NewPostingGroup, OldPostingGroup);
     end;
 
     procedure CheckCustomerPostingGroupChange(NewPostingGroup: Code[20]; OldPostingGroup: Code[20])

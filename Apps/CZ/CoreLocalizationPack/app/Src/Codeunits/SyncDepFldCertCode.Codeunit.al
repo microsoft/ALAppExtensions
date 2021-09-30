@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31208 "Sync.Dep.Fld-CertCode CZL"
 {
@@ -54,7 +55,8 @@ codeunit 31208 "Sync.Dep.Fld-CertCode CZL"
         if not CertificateCodeCZL.Get(Rec.Code) then begin
             CertificateCodeCZL.Init();
             CertificateCodeCZL.Code := Rec.Code;
-            CertificateCodeCZL.Insert(false);
+            CertificateCodeCZL.SystemId := Rec.SystemId;
+            CertificateCodeCZL.Insert(false, true);
         end;
         CertificateCodeCZL.Description := Rec.Description;
         CertificateCodeCZL.Modify(false);
@@ -127,7 +129,8 @@ codeunit 31208 "Sync.Dep.Fld-CertCode CZL"
         if not CertificateCZCode.Get(Rec.Code) then begin
             CertificateCZCode.Init();
             CertificateCZCode.Code := CopyStr(Rec.Code, 1, MaxStrLen(CertificateCZCode.Code));
-            CertificateCZCode.Insert(false);
+            CertificateCZCode.SystemId := Rec.SystemId;
+            CertificateCZCode.Insert(false, true);
         end;
         CertificateCZCode.Description := CopyStr(Rec.Description, 1, MaxStrLen(CertificateCZCode.Description));
         CertificateCZCode.Modify(false);
@@ -160,3 +163,4 @@ codeunit 31208 "Sync.Dep.Fld-CertCode CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

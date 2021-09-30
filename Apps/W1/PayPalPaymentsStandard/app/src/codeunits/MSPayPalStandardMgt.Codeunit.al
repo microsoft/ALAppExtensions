@@ -223,6 +223,9 @@ codeunit 1070 "MS - PayPal Standard Mgt."
     var
         PaymentMethod: Record "Payment Method";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         RegisterPayPalPaymentMethod(PaymentMethod);
     end;
 

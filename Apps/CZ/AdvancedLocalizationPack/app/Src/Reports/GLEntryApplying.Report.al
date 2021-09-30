@@ -4,7 +4,7 @@ report 31132 "G/L Entry Applying CZA"
     RDLCLayout = './Src/Reports/GLEntryApplying.rdl';
     ApplicationArea = Basic, Suite;
     Caption = 'G/L Entry Applying';
-    Permissions = TableData "G/L Entry" = rm;
+    Permissions = tabledata "G/L Entry" = rm;
     UsageCategory = Tasks;
 
     dataset

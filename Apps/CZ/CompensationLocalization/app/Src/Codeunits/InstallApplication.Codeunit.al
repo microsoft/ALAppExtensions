@@ -2,6 +2,22 @@
 codeunit 31270 "Install Application CZC"
 {
     Subtype = Install;
+    Permissions = tabledata "Compensations Setup CZC" = im,
+                  tabledata "Compensation Header CZC" = im,
+                  tabledata "Compensation Line CZC" = im,
+                  tabledata "Posted Compensation Header CZC" = im,
+                  tabledata "Posted Compensation Line CZC" = im,
+                  tabledata "Source Code" = i,
+                  tabledata "Compens. Report Selections CZC" = i,
+                  tabledata "Source Code Setup" = m,
+                  tabledata "Cust. Ledger Entry" = m,
+                  tabledata "Vendor Ledger Entry" = m,
+                  tabledata "Gen. Journal Line" = m,
+                  tabledata "Posted Gen. Journal Line" = m;
+
+    var
+        InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
+        AppInfo: ModuleInfo;
 
     trigger OnInstallAppPerDatabase()
     begin
@@ -10,18 +26,40 @@ codeunit 31270 "Install Application CZC"
 
     trigger OnInstallAppPerCompany()
     begin
-        if not InitializeDone() then
+        if not InitializeDone() then begin
+            BindSubscription(InstallApplicationsMgtCZL);
+            CopyUsage();
             CopyData();
-
+            UnbindSubscription(InstallApplicationsMgtCZL);
+        end;
         CompanyInitialize();
     end;
 
     local procedure InitializeDone(): boolean
-    var
-        AppInfo: ModuleInfo;
     begin
         NavApp.GetCurrentModuleInfo(AppInfo);
         exit(AppInfo.DataVersion() <> Version.Create('0.0.0.0'));
+    end;
+
+    local procedure CopyPermission();
+    begin
+        NavApp.GetCurrentModuleInfo(AppInfo);
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Credits Setup", Database::"Compensations Setup CZC");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Credit Report Selections", Database::"Compens. Report Selections CZC");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Credit Header", Database::"Compensation Line CZC");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Credit Line", Database::"Compensation Line CZC");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Posted Credit Header", Database::"Posted Compensation Header CZC");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Posted Credit Line", Database::"Posted Compensation Line CZC");
+    end;
+
+    local procedure CopyUsage();
+    begin
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Credits Setup", Database::"Compensations Setup CZC");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Credit Report Selections", Database::"Compens. Report Selections CZC");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Credit Header", Database::"Compensation Line CZC");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Credit Line", Database::"Compensation Line CZC");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Posted Credit Header", Database::"Posted Compensation Header CZC");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Posted Credit Line", Database::"Posted Compensation Line CZC");
     end;
 
     local procedure CopyData()
@@ -51,21 +89,21 @@ codeunit 31270 "Install Application CZC"
     local procedure CopyCompensationSetup();
     var
         CreditsSetup: Record "Credits Setup";
-        CompensationSetupCZC: Record "Compensations Setup CZC";
+        CompensationsSetupCZC: Record "Compensations Setup CZC";
     begin
         if CreditsSetup.Get() then begin
-            if not CompensationSetupCZC.Get() then begin
-                CompensationSetupCZC.Init();
-                CompensationSetupCZC.Insert();
+            if not CompensationsSetupCZC.Get() then begin
+                CompensationsSetupCZC.Init();
+                CompensationsSetupCZC.Insert();
             end;
-            CompensationSetupCZC."Compensation Nos." := CreditsSetup."Credit Nos.";
-            CompensationSetupCZC."Compensation Bal. Account No." := CreditsSetup."Credit Bal. Account No.";
-            CompensationSetupCZC."Max. Rounding Amount" := CreditsSetup."Max. Rounding Amount";
-            CompensationSetupCZC."Debit Rounding Account" := CreditsSetup."Debit Rounding Account";
-            CompensationSetupCZC."Credit Rounding Account" := CreditsSetup."Credit Rounding Account";
-            CompensationSetupCZC."Compensation Proposal Method" := CreditsSetup."Credit Proposal By";
-            CompensationSetupCZC."Show Empty when not Found" := CreditsSetup."Show Empty when not Found";
-            CompensationSetupCZC.Modify(false);
+            CompensationsSetupCZC."Compensation Nos." := CreditsSetup."Credit Nos.";
+            CompensationsSetupCZC."Compensation Bal. Account No." := CreditsSetup."Credit Bal. Account No.";
+            CompensationsSetupCZC."Max. Rounding Amount" := CreditsSetup."Max. Rounding Amount";
+            CompensationsSetupCZC."Debit Rounding Account" := CreditsSetup."Debit Rounding Account";
+            CompensationsSetupCZC."Credit Rounding Account" := CreditsSetup."Credit Rounding Account";
+            CompensationsSetupCZC."Compensation Proposal Method" := CreditsSetup."Credit Proposal By";
+            CompensationsSetupCZC."Show Empty when not Found" := CreditsSetup."Show Empty when not Found";
+            CompensationsSetupCZC.Modify(false);
         end;
     end;
 
@@ -112,7 +150,8 @@ codeunit 31270 "Install Application CZC"
                 if not CompensationHeaderCZC.Get(CreditHeader."No.") then begin
                     CompensationHeaderCZC.Init();
                     CompensationHeaderCZC."No." := CreditHeader."No.";
-                    CompensationHeaderCZC.Insert();
+                    CompensationHeaderCZC.SystemId := CreditHeader.SystemId;
+                    CompensationHeaderCZC.Insert(false, true);
                 end;
                 CompensationHeaderCZC.Description := CreditHeader.Description;
                 CompensationHeaderCZC."Company No." := CreditHeader."Company No.";
@@ -148,7 +187,8 @@ codeunit 31270 "Install Application CZC"
                     CompensationLineCZC.Init();
                     CompensationLineCZC."Compensation No." := CreditLine."Credit No.";
                     CompensationLineCZC."Line No." := CreditLine."Line No.";
-                    CompensationLineCZC.Insert();
+                    CompensationLineCZC.SystemId := CreditLine.SystemId;
+                    CompensationLineCZC.Insert(false, true);
                 end;
                 CompensationLineCZC."Source Type" := CreditLine."Source Type";
                 CompensationLineCZC."Source No." := CreditLine."Source No.";
@@ -187,7 +227,8 @@ codeunit 31270 "Install Application CZC"
                 if not PostedCompensationHeaderCZC.Get(PostedCreditHeader."No.") then begin
                     PostedCompensationHeaderCZC.Init();
                     PostedCompensationHeaderCZC."No." := PostedCreditHeader."No.";
-                    PostedCompensationHeaderCZC.Insert();
+                    PostedCompensationHeaderCZC.SystemId := PostedCreditHeader.SystemId;
+                    PostedCompensationHeaderCZC.Insert(false, true);
                 end;
                 PostedCompensationHeaderCZC.Description := PostedCreditHeader.Description;
                 PostedCompensationHeaderCZC."Company No." := PostedCreditHeader."Company No.";
@@ -221,7 +262,8 @@ codeunit 31270 "Install Application CZC"
                     PostedCompensationLineCZC.Init();
                     PostedCompensationLineCZC."Compensation No." := PostedCreditLine."Credit No.";
                     PostedCompensationLineCZC."Line No." := PostedCreditLine."Line No.";
-                    PostedCompensationLineCZC.Insert();
+                    PostedCompensationLineCZC.SystemId := PostedCreditLine.SystemId;
+                    PostedCompensationLineCZC.Insert(false, true);
                 end;
                 PostedCompensationLineCZC."Source Type" := PostedCreditLine."Source Type";
                 PostedCompensationLineCZC."Source No." := PostedCreditLine."Source No.";
@@ -260,41 +302,13 @@ codeunit 31270 "Install Application CZC"
             until PostedGenJournalLine.Next() = 0;
     end;
 
-    local procedure CopyPermission();
-    begin
-        InsertTableDataPermissions(Database::"Credits Setup", Database::"Compensations Setup CZC");
-        InsertTableDataPermissions(Database::"Credit Report Selections", Database::"Compens. Report Selections CZC");
-        InsertTableDataPermissions(Database::"Credit Header", Database::"Compensation Line CZC");
-        InsertTableDataPermissions(Database::"Credit Line", Database::"Compensation Line CZC");
-        InsertTableDataPermissions(Database::"Posted Credit Header", Database::"Posted Compensation Header CZC");
-        InsertTableDataPermissions(Database::"Posted Credit Line", Database::"Posted Compensation Line CZC");
-    end;
-
-    local procedure InsertTableDataPermissions(OldTableID: Integer; NewTableID: Integer)
-    var
-        Permission: Record Permission;
-        NewPermission: Record Permission;
-    begin
-        Permission.SetRange("Object Type", Permission."Object Type"::"Table Data");
-        Permission.SetRange("Object ID", OldTableID);
-        if not Permission.FindSet() then
-            exit;
-        repeat
-            if not NewPermission.Get(Permission."Role ID", Permission."Object Type", Permission."Object ID") then begin
-                NewPermission.Init();
-                NewPermission := Permission;
-                NewPermission."Object ID" := NewTableID;
-                NewPermission.Insert();
-            end;
-        until Permission.Next() = 0;
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure CompanyInitialize()
     var
         DataClassEvalHandlerCZC: Codeunit "Data Class. Eval. Handler CZC";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        InitCompensationsSetup();
         InitCompensationSourceCode();
         InitCompensationReportSelections();
 #if not CLEAN18
@@ -303,6 +317,16 @@ codeunit 31270 "Install Application CZC"
 
         DataClassEvalHandlerCZC.ApplyEvaluationClassificationsForPrivacy();
         UpgradeTag.SetAllUpgradeTags();
+    end;
+
+    local procedure InitCompensationsSetup()
+    var
+        CompensationsSetupCZC: Record "Compensations Setup CZC";
+    begin
+        if CompensationsSetupCZC.Get() then
+            exit;
+        CompensationsSetupCZC.Init();
+        CompensationsSetupCZC.Insert();
     end;
 
     local procedure InitCompensationSourceCode()

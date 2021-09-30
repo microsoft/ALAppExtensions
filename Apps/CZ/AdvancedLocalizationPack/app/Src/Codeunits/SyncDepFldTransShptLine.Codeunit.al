@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AA0072
+#if not CLEAN18
+#pragma warning disable AL0432, AA0072
 codeunit 31249 "Sync.Dep.Fld-TransShptLine CZA"
 {
     Access = Internal;
@@ -38,3 +39,4 @@ codeunit 31249 "Sync.Dep.Fld-TransShptLine CZA"
         Rec."Gen.Bus.Post.Group Receive CZA" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Gen.Bus.Post.Group Receive CZA"));
     end;
 }
+#endif

@@ -79,12 +79,17 @@ page 31136 "VAT Statement Preview Line CZL"
                     ToolTip = 'Specifies when the VAT entry will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
                     Visible = false;
                 }
+#if not CLEAN19
                 field("Prepayment Type"; Rec."Prepayment Type")
                 {
                     ApplicationArea = Prepayments;
                     ToolTip = 'Specifies the VAT statement prepayment type.';
                     Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by Advance Payments Localization for Czech.';
+                    ObsoleteTag = '19.0';
                 }
+#endif
                 field("Tax Jurisdiction Code"; Rec."Tax Jurisdiction Code")
                 {
                     ApplicationArea = VAT;

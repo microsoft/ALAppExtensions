@@ -3,9 +3,9 @@ codeunit 18319 "GST Journal Management"
     var
         LastGSTJournalLine: Record "GST Journal Line";
         OpenFromBatch: Boolean;
-        GSTJournalTemplateDescriptionLbl: Label '%1 journal', Comment = '%1 = Journal Template Type';
-        GSTJournalBatchNameLbl: Label 'DEFAULT', Locked = true;
-        GSTJournalBatchDescriptionLbl: Label 'Default Journal', Locked = true;
+        Text001Lbl: Label '%1 journal', Comment = '%1 = Journal Template Type';
+        Text004Lbl: Label 'DEFAULT', Locked = true;
+        Text005Lbl: Label 'Default Journal', Locked = true;
 
     procedure OpenGSTJnl(var CurrentGSTJnlBatchName: Code[10]; var GSTJnlLine: Record "GST Journal Line")
     begin
@@ -78,7 +78,7 @@ codeunit 18319 "GST Journal Management"
                     GSTJournalTemplate.Init();
                     GSTJournalTemplate.Type := FormTemplate;
                     GSTJournalTemplate.Name := FORMAT(GSTJournalTemplate.Type, MAXSTRLEN(GSTJournalTemplate.Name));
-                    GSTJournalTemplate.Description := STRSUBSTNO(GSTJournalTemplateDescriptionLbl, GSTJournalTemplate.Type);
+                    GSTJournalTemplate.Description := STRSUBSTNO(Text001Lbl, GSTJournalTemplate.Type);
                     GSTJournalTemplate.Validate(Type);
                     GSTJournalTemplate.Insert();
                     Commit();
@@ -111,8 +111,8 @@ codeunit 18319 "GST Journal Management"
             GSTJournalBatch.Init();
             GSTJournalBatch."Journal Template Name" := CurrentGSTTemplateName;
             GSTJournalBatch.SetupNewBatch();
-            GSTJournalBatch.Name := GSTJournalBatchNameLbl;
-            GSTJournalBatch.Description := GSTJournalBatchDescriptionLbl;
+            GSTJournalBatch.Name := Text004Lbl;
+            GSTJournalBatch.Description := Text005Lbl;
             GSTJournalBatch.Insert(true);
             Commit();
         end;

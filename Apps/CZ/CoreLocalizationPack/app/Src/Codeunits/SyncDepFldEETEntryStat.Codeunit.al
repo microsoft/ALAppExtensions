@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31139 "Sync.Dep.Fld-EETEntryStat CZL"
 {
@@ -54,7 +55,8 @@ codeunit 31139 "Sync.Dep.Fld-EETEntryStat CZL"
         if not EETEntryStatusLogCZL.Get(EETEntryStatus."Entry No.") then begin
             EETEntryStatusLogCZL.Init();
             EETEntryStatusLogCZL."Entry No." := EETEntryStatus."Entry No.";
-            EETEntryStatusLogCZL.Insert();
+            EETEntryStatusLogCZL.SystemId := EETEntryStatus.SystemId;
+            EETEntryStatusLogCZL.Insert(false, true);
         end;
         EETEntryStatusLogCZL."EET Entry No." := EETEntryStatus."EET Entry No.";
         EETEntryStatusLogCZL.Description := EETEntryStatus.Description;
@@ -130,7 +132,8 @@ codeunit 31139 "Sync.Dep.Fld-EETEntryStat CZL"
         if not EETEntryStatus.Get(EETEntryStatusLogCZL."Entry No.") then begin
             EETEntryStatus.Init();
             EETEntryStatus."Entry No." := EETEntryStatusLogCZL."Entry No.";
-            EETEntryStatus.Insert();
+            EETEntryStatus.SystemId := EETEntryStatusLogCZL.SystemId;
+            EETEntryStatus.Insert(false, true);
         end;
         EETEntryStatus."EET Entry No." := EETEntryStatusLogCZL."EET Entry No.";
         EETEntryStatus.Description := EETEntryStatusLogCZL.Description;
@@ -166,3 +169,4 @@ codeunit 31139 "Sync.Dep.Fld-EETEntryStat CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

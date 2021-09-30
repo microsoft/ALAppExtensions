@@ -8,7 +8,7 @@ codeunit 4014 "Notification Handler"
         RecievedWebhookNotificationMsg: Label 'Recieved Webhook Notification from Cloud Migration Service. Subscription ID %1', Locked = true;
         ProcessingServiceNotificationMsg: Label 'Processing Service Notification', Locked = true;
         ProcessingNotificationMsg: Label 'Processing Notification', Locked = true;
-        HybridReplicationStatusMsg: Label 'Parsing Replication Summary. Status is: %1', Locked = true;
+        HybridReplicationStatusMsg: Label 'Parsing Replication Summary. Status: %1, Replication type: %2', Locked = true;
         ProcessingCleanupNotificationMsg: Label 'Recieved Cleanup Notification from Replication Service. Disabling Cloud Migration.', Locked = true;
 
     [EventSubscriber(ObjectType::Table, Database::"Webhook Notification", 'OnAfterInsertEvent', '', false, false)]
@@ -16,6 +16,9 @@ codeunit 4014 "Notification Handler"
     var
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         Session.LogMessage('0000EUX', StrSubstNo(RecievedWebhookNotificationMsg, Rec."Subscription ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
         SelectLatestVersion();
 
@@ -40,7 +43,11 @@ codeunit 4014 "Notification Handler"
         NotificationStream.ReadText(NotificationText);
 
         ParseReplicationSummary(HybridReplicationSummary, NotificationText);
-        HybridCloudManagement.OnReplicationRunCompleted(HybridReplicationSummary."Run ID", WebhookNotification."Subscription ID", NotificationText);
+
+        if HybridCloudManagement.CheckFixDataOnReplicationCompleted(NotificationText) then
+            HybridCloudManagement.ScheduleDataFixOnReplicationCompleted(HybridReplicationSummary."Run ID", WebhookNotification."Subscription ID", NotificationText)
+        else
+            HybridCloudManagement.OnReplicationRunCompleted(HybridReplicationSummary."Run ID", WebhookNotification."Subscription ID", NotificationText);
     end;
 
     local procedure HandleServiceNotification(var WebhookNotification: Record "Webhook Notification")
@@ -99,8 +106,8 @@ codeunit 4014 "Notification Handler"
 
         if not HybridReplicationSummary.Get(Value) then begin
             HybridReplicationSummary.Init();
-            HybridReplicationSummary."Run ID" := CopyStr(Value, 1, 50);
-            HybridReplicationSummary.Source := CopyStr(HybridCloudManagement.GetChosenProductName(), 1, 250);
+            HybridReplicationSummary."Run ID" := CopyStr(Value, 1, MaxStrLen(HybridReplicationSummary."Run ID"));
+            HybridReplicationSummary.Source := CopyStr(HybridCloudManagement.GetChosenProductName(), 1, MaxStrLen(HybridReplicationSummary.Source));
             HybridReplicationSummary.Insert();
         end;
 
@@ -115,7 +122,7 @@ codeunit 4014 "Notification Handler"
             if not Evaluate(HybridReplicationSummary.ReplicationType, Value) then;
 
         if JsonManagement.GetStringPropertyValueByName('Status', Value) then begin
-            Session.LogMessage('0000EV0', StrSubstNo(HybridReplicationStatusMsg, Format(Value)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+            Session.LogMessage('0000EV0', StrSubstNo(HybridReplicationStatusMsg, Format(Value), Format(HybridReplicationSummary.ReplicationType)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
             if not Evaluate(HybridReplicationSummary.Status, Value) then;
         end;
 

@@ -39,9 +39,11 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnAfterCalcSL', '', false, false)]
     local procedure OnAfterCalcSL(FADepreciationBook: Record "FA Depreciation Book"; BookValue: Decimal; var ExitValue: Decimal; var IsHandled: Boolean; var RemainingLife: Decimal)
     begin
+#if not CLEAN18
         if not FADepreciationBook."Keep Depr. Ending Date" then
             exit; // RemainingLife already calculated in Base Application
 
+#endif
         if not FADepreciationBook."Keep Deprec. Ending Date CZF" then
             RemainingLife += CalcDeprBreakDays(FADepreciationBook, 0D, 0D, true);
         if RemainingLife < 1 then begin

@@ -13,7 +13,7 @@ pageextension 13683 "OIOUBL-Posted Serv Invoice Sub" extends "Posted Service Inv
             {
                 Visible = false;
                 ApplicationArea = Service;
-                ToolTip = 'Specifies the account code of the customer.';
+                ToolTip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
             }
         }
     }

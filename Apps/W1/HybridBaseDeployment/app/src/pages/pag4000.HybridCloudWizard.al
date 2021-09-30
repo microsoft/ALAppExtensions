@@ -1,4 +1,4 @@
-﻿page 4000 "Hybrid Cloud Setup Wizard"
+page 4000 "Hybrid Cloud Setup Wizard"
 {
     Caption = 'Cloud Migration Setup';
     AdditionalSearchTerms = 'migration,data migration,cloud migration,intelligent,cloud,sync,replication,hybrid';
@@ -164,6 +164,7 @@
                     }
                 }
             }
+
             group(Step3)
             {
                 Caption = '';
@@ -256,6 +257,7 @@
                             ApplicationArea = Basic, Suite;
                             ShowCaption = false;
                         }
+
                     }
                 }
                 group("4.2")
@@ -315,10 +317,15 @@
                 }
             }
 
+#if not CLEAN19
             group(Step6)
             {
                 Caption = '';
                 Visible = false;
+
+                ObsoleteReason = 'Scheduling is not supported and will be removed';
+                ObsoleteState = Pending;
+                ObsoleteTag = '19.0';
 
                 group("Para6.1")
                 {
@@ -460,6 +467,7 @@
                     }
                 }
             }
+#endif
 
             group(StepFinish)
             {
@@ -566,6 +574,7 @@
                     AssistedSetup.Complete(Page::"Hybrid Cloud Setup Wizard");
                     Rec.Validate("Replication User", UserId());
                     Rec.Modify();
+                    HybridCloudManagement.RestoreDefaultMigrationTableMappings(false);
                     CurrPage.Close();
 
                     HybridCloudManagement.CreateCompanies();
@@ -672,7 +681,7 @@
         NoCompaniesSelectedErr: Label 'You must select at least one company to replicate to continue.';
         DoneWithSignupMsg: Label 'Redirecting to SaaS Business Central solution.';
         NotificationIdTxt: Label 'ce917438-506c-4724-9b01-13c1b860e851', Locked = true;
-        RunWizardPermissionErr: Label 'You do not have permissions to execute this task. Contact your system administrator.';
+        RunWizardPermissionErr: Label 'You do not have permissions to run the cloud migration setup. You must be a licensed user, and your user account must have the SUPER permission set.';
         CannotEnableReplicationForCompanyErr: Label 'You must start the cloud migration from a different company than where you are currently signed in. Change the company to a different one.';
         OpenCloudMigrationPageQst: Label 'The migration has now been set up.\\ Would you like to open the Cloud Migration Management page to manage your data migrations?';
         BlankProductIdErr: Label 'The ID of the specified product is blank. If you see this message again, contact technical support.';

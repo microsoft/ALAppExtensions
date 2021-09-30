@@ -189,6 +189,9 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
     var
         PaymentMethod: Record "Payment Method";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         RegisterWorldPayPaymentMethod(PaymentMethod);
     end;
 

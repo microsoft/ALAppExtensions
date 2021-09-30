@@ -11,7 +11,7 @@ pageextension 13659 "OIOUBL-Issued Reminder Lines" extends "Issued Reminder Line
         {
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
-                Tooltip = 'Specifies the account code of the customer.';
+                Tooltip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
         }

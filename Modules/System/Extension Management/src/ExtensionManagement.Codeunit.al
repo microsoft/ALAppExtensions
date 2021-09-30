@@ -13,7 +13,9 @@ codeunit 2504 "Extension Management"
     var
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
+#if not CLEAN17
         ExtensionMarketplace: Codeunit "Extension Marketplace";
+#endif
 
     /// <summary>
     /// Installs an extension, based on its PackageId and Locale Identifier.
@@ -126,6 +128,7 @@ codeunit 2504 "Extension Management"
         exit(ExtensionInstallationImpl.IsInstalledByAppId(AppId));
     end;
 
+#if not CLEAN17
     /// <summary>
     /// Retrieves a list of all the Deployment Status Entries
     /// </summary>
@@ -135,6 +138,7 @@ codeunit 2504 "Extension Management"
     begin
         ExtensionOperationImpl.GetAllExtensionDeploymentStatusEntries(NavAppTenantOperation);
     end;
+#endif
 
     /// <summary>
     /// Retrieves a list of all the Deployment Status Entries
@@ -234,18 +238,32 @@ codeunit 2504 "Extension Management"
     /// <param name="DeployTo">The version that the extension will be deployed to.</param>
     procedure UploadExtensionToVersion(FileStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To")
     begin
-        ExtensionOperationImpl.DeployAndUploadExtension(FileStream, lcid, DeployTo);
+        UploadExtensionToVersion(FileStream, lcid, DeployTo, "Extension Sync Mode"::Add);
     end;
 
+    /// <summary>
+    /// Uploads an extension to current version, next minor or next major, using a File Stream and based on the Locale Identifier.
+    /// This method is only applicable in SaaS environment.
+    /// </summary>
+    /// <param name="FileStream">The File Stream containing the extension to be uploaded.</param>
+    /// <param name="lcid">The Locale Identifier.</param>
+    /// <param name="DeployTo">The version that the extension will be deployed to.</param>
+    /// <param name="SyncMode">The desired sync mode.</param>
+    procedure UploadExtensionToVersion(FileStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To"; SyncMode: Enum "Extension Sync Mode")
+    begin
+        ExtensionOperationImpl.DeployAndUploadExtension(FileStream, lcid, DeployTo, SyncMode);
+    end;
+
+#if not CLEAN17
     /// <summary>
     /// Returns a link to appsource market page
     /// </summary>
     /// <returns></returns>
     [Obsolete('Replaced by "Extension Marketplace".GetMarketplaceEmbeddedUrl procedure.', '17.0')]
     PROCEDURE GetMarketplaceEmbeddedUrl(): Text;
-    BEGIN
-        EXIT(ExtensionMarketplace.GetMarketplaceEmbeddedUrl());
-    END;
+    begin
+        exit(ExtensionMarketplace.GetMarketplaceEmbeddedUrl());
+    end;
 
     /// <summary>
     /// Extraxts the message type from appsource response.
@@ -253,10 +271,10 @@ codeunit 2504 "Extension Management"
     /// <param name="JObject">Appsourece response payload as a json object</param>
     /// <returns></returns>
     [Obsolete('Replaced by "Extension Marketplace".GetMessageType procedure.', '17.0')]
-    PROCEDURE GetMessageType(JObject: DotNet JObject): Text;
-    BEGIN
-        EXIT(ExtensionMarketplace.GetMessageType(JObject));
-    END;
+    procedure GetMessageType(JObject: DotNet JObject): Text;
+    begin
+        exit(ExtensionMarketplace.GetMessageType(JObject));
+    end;
 
     /// <summary>
     /// Extraxts the appsource application ID from appsource response.
@@ -264,10 +282,10 @@ codeunit 2504 "Extension Management"
     /// <param name="JObject">Appsourece response payload as a json object</param>
     /// <returns>Application Id in text format</returns>
     [Obsolete('Replaced by "Extension Marketplace".GetApplicationIdFromData procedure.', '17.0')]
-    PROCEDURE GetApplicationIdFromData(JObject: DotNet JObject): Text;
-    BEGIN
+    procedure GetApplicationIdFromData(JObject: DotNet JObject): Text;
+    begin
         exit(ExtensionMarketplace.GetApplicationIdFromData(JObject));
-    END;
+    end;
 
     /// <summary>
     /// Extraxts the package ID from appsource response.
@@ -275,10 +293,10 @@ codeunit 2504 "Extension Management"
     /// <param name="ApplicationId">Appsource market application ID</param>
     /// <returns>Package ID as a GUID</returns>
     [Obsolete('Replaced by "Extension Marketplace".MapMarketplaceIdToPackageId procedure.', '17.0')]
-    PROCEDURE MapMarketplaceIdToPackageId(ApplicationId: Text): GUID;
-    BEGIN
+    procedure MapMarketplaceIdToPackageId(ApplicationId: Text): GUID;
+    begin
         exit(ExtensionMarketplace.MapMarketplaceIdToPackageId(ApplicationId));
-    END;
+    end;
 
     /// <summary>
     /// Extracts the telemetry URL from appsource response.
@@ -286,20 +304,31 @@ codeunit 2504 "Extension Management"
     /// <param name="JObject">Appsourece response payload as a json object</param>
     /// <returns></returns>
     [Obsolete('Replaced by "Extension Marketplace".GetTelementryUrlFromData procedure.', '17.0')]
-    PROCEDURE GetTelementryUrlFromData(JObject: DotNet JObject): Text;
-    BEGIN
+    procedure GetTelementryUrlFromData(JObject: DotNet JObject): Text;
+    begin
         exit(ExtensionMarketplace.GetTelementryUrlFromData(JObject));
-    END;
+    end;
 
     /// <summary>
-    /// Extraxts the app ID from appsource response.
+    /// Extracts the app ID from appsource response.
     /// </summary>
     /// <param name="ApplicationId">Appsource market application ID</param>
     /// <returns></returns>
     [Obsolete('Replaced by "Extension Marketplace".MapMarketplaceIdToAppId procedure.', '17.0')]
-    PROCEDURE MapMarketplaceIdToAppId(ApplicationId: Text): GUID;
-    BEGIN
+    procedure MapMarketplaceIdToAppId(ApplicationId: Text): GUID;
+    begin
         exit(ExtensionMarketplace.MapMarketplaceIdToAppId(ApplicationId));
-    END;
+    end;
+#endif
+
+    /// <summary>
+    /// Returns the Name of the app given the App Id.
+    /// </summary>
+    /// <param name="AppId">The unique identifier of the app.</param>
+    /// <returns>The name of the app.</returns>
+    procedure GetAppName(AppId: Guid): Text
+    begin
+        exit(ExtensionOperationImpl.GetAppName(AppId))
+    end;
 }
 

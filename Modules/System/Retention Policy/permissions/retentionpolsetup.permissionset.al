@@ -1,3 +1,4 @@
+#if not CLEAN18
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,7 +7,6 @@
 /// <summary>
 /// this permission set is required to create retention policies
 /// </summary>
-#if not CLEAN18
 permissionset 3903 "RETENTION POL. SETUP"
 {
     Access = Public;
