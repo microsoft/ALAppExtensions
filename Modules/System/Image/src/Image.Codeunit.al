@@ -14,6 +14,17 @@ codeunit 3971 Image
         ImageImpl: Codeunit "Image Impl.";
 
     /// <summary>
+    /// Clears the entire drawing surface and fills it with the specified background color.
+    /// </summary>
+    /// <param name="Red">Red value.</param>
+    /// <param name="Green">Green value.</param>
+    /// <param name="Blue">Blue value.</param>
+    procedure Clear(Red: Integer; Green: Integer; Blue: Integer)
+    begin
+        ImageImpl.Clear(Red, Green, Blue);
+    end;
+
+    /// <summary>
     /// Crops the image based on a rectangle specified by the user. 
     /// The resulting crop will be a hole-cut in the image made by the rectangle.
     /// </summary>

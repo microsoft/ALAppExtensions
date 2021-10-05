@@ -125,6 +125,28 @@ codeunit 135135 "Image Tests"
     end;
 
     [Test]
+    procedure ClearTest()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        OutStream: OutStream;
+        ImageAsBase64ClearTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAAAcSURBVChTY/zPwABEhAETlCYIRhXiBUQqZGAAAD2cAhKD+AbjAAAAAElFTkSuQmCC', Locked = true;
+    begin
+        // [Given] base64 encoded data, create image
+        Image.FromBase64(ImageAsBase64Txt);
+
+        // [When] Clearing image
+        Image.Clear(255, 0, 0);
+
+        // [Then] verify image
+        Assert.AreEqual(Image.ToBase64(), ImageAsBase64ClearTxt, 'Clear failed');
+
+        // [Then] save to stream
+        TempBlob.CreateOutStream(OutStream);
+        Image.Save(OutStream);
+        Assert.AreNotEqual(0, TempBlob.Length(), 'Image was not saved');
+    end;
+
+    [Test]
     procedure ResizeTest()
     var
         TempBlob: Codeunit "Temp Blob";

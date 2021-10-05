@@ -25,6 +25,37 @@ codeunit 3970 "Image Impl."
         FormatTxt: Label 'Image input data is in wrong format';
         ImageCatTxt: Label 'Image Module', Locked = true;
 
+    procedure Clear(Red: Integer; Green: Integer; Blue: Integer)
+    var
+        Rectangle: DotNet Rectangle;
+        Image: DotNet Image;
+        Graphics: DotNet Graphics;
+        GraphicsUnit: DotNet GraphicsUnit;
+        BitmapDst: DotNet Bitmap;
+        Color: DotNet Color;
+        InStream: InStream;
+        CurrentWidth, CurrentHeight : Integer;
+    begin
+        CurrentWidth := GetWidth();
+        CurrentHeight := GetHeight();
+
+        TempBlob.CreateInStream(InStream);
+        Image := Image.FromStream(InStream);
+
+        Rectangle := Rectangle.Rectangle(0, 0, CurrentWidth, CurrentHeight);
+
+        BitmapDst := BitmapDst.Bitmap(CurrentWidth, CurrentHeight);
+        Graphics := Graphics.FromImage(BitmapDst);
+
+        Color.FromArgb(255, Red, Green, Blue);
+        Graphics.Clear(Color);
+        Graphics.DrawImage(Image, Rectangle, Rectangle, GraphicsUnit::Pixel);
+        Graphics.Dispose();
+
+        EncodeToImage(BitmapDst);
+        BitmapDst.Dispose();
+    end;
+
     procedure Crop(X: Integer; Y: Integer; Width: Integer; Height: Integer)
     var
         DstRectangle: DotNet Rectangle;
