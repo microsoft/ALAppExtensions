@@ -46,5 +46,6 @@
       }
     ],
     "contextSensitiveHelpUrl": "https://docs.microsoft.com/dynamics365/business-central/",
+    "showMyCode": true,
     "runtime": "7.0"
   }
