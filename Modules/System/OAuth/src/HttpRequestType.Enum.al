@@ -55,7 +55,7 @@ enum 1289 "Http Request Type"
     /// </summary>
     value(5; HEAD)
     {
-        Caption = 'HEAD', Locked = true;;
+        Caption = 'HEAD', Locked = true;
     }
 
     /// <summary>
@@ -63,6 +63,6 @@ enum 1289 "Http Request Type"
     /// </summary>
     value(6; OPTIONS)
     {
-        Caption = 'OPTIONS', Locked = true;;
+        Caption = 'OPTIONS', Locked = true;
     }
 }

@@ -59,7 +59,9 @@ pageextension 10538 "MTD OAuth 2.0 Setup" extends "OAuth 2.0 Setup"
     end;
 
     var
+        [NonDebuggable]
         ClientID: Text;
+        [NonDebuggable]
         ClientSecret: Text;
         IsSaas: Boolean;
         IsMTD: Boolean;

@@ -136,6 +136,7 @@ table 4511 "SMTP Account"
             if IsolatedStorage.Delete(Rec."Password Key") then;
     end;
 
+    [NonDebuggable]
     procedure SetPassword(Password: Text)
     begin
         if IsNullGuid(Rec."Password Key") then

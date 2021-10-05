@@ -9,6 +9,13 @@ codeunit 148111 "Test Upgrade ES"
         CountryCodeTxt: Label 'ES', Locked = true;
         TestCertTxt: Label 'MIIFMQIBAzCCBPcGCSqGSIb3DQEHAaCCBOgEggTkMIIE4DCCAv8GCSqGSIb3DQEHBqCCAvAwggLsAgEAMIIC5QYJKoZIhvcNAQcBMBwGCiqGSIb3DQEMAQYwDgQInoKB6qoKZIQCAggAgIICuF9ZKEqoyo2dKPmAYqXL+Cf35+SDMgXxhRc89HKDXQ4va5umT+wBsy51FRxRahSiKksHmqRSLfZwTKEcQvSaOTyJdT0pL4uV5WNajrneiqw8JbdJYK57YLqol+92doBECbPMxQwZUuC2oZo3cyWJJBi3ehIqEOeSfYVBcDDCQrGy+ggmKfcYeDwjS9XDCnBO9xgl462J2w02tm/KW1rC1926xyVvmzspTdL0QFSc6t810oZ/f9L4/F04mRdvlbuR7RU09jHFSzLm5D2ybtXJd/B9YhwwGNQkfp/dPxq17Z7b4usEjXJWO7TwJtduOGXadznQJIVihWZBYBsqVI3mABh5FVZWrwdPGhfVOaeDhvAiqpKLA2+aewFuT7unaKSsjoOGHFvHF4RiiTCR/ag+2sHQPqpSUQJdlQjmiZ1F8tbpzuhJdBLY/i5Iqs13sk3zPrwP1oqwv9Xp3gd6hjktHNWyTrI/0LZct9REvJznOeLnKct0EhWuDuY4L24ZRjrMgBqNCgkm4hcUfhiOAlbYaMMVFWbUzA+6dEgwcltIp1gSZbhj8aB8MP/1fT8VjyhJsSE4p6wsqsgTpd27zsenJcLgyu7COjSstmkQ3qeIwNS/x9zuEinxzA7t3II1kROJz0nTqtQi4IgcBjb/2DiD2QwCLD4NvbbR7hWjDrUTOgtmgxrhn3qfsemDe2bQw3/ZJkKZrJO9fJzkhwXQWv7aj+4Nf1wxYIOcxKp30lB3zcKrTlBkNsmZDnVNEU7UwN8qAWkMyvWdyZaBW1TgbVer1D+YSGxXMqPesm7IJ+HBYJBUuC6xyXmOJ8QScNcIWHUDFUpb2Hg2Vw64y7nyPgxdb3C9zquM2TPAKUKEQylOGwTtzgd+73wVvoqLZbo0DXe9ZXrT/GRlac1mFP0lbF1GoAYOGgSbJoWF8jCCAdkGCSqGSIb3DQEHAaCCAcoEggHGMIIBwjCCAb4GCyqGSIb3DQEMCgECoIIBhjCCAYIwHAYKKoZIhvcNAQwBAzAOBAhJN3StWPRixwICCAAEggFg42+YWXJTaw52YnkoBFZMN5zWdMa6HlsJHV4FYbaCKE8NKTuxKibLWU/f0qgOJwo9fxy503Xz22wnEL7xRU2B9JblrlGrHlix0mswt/QU4rjhfzpYIv6kfOIHE8zKacQYdy2zDUXax54gX+Dj8m2dE22l+gCRZHqkYymV1nMdWJsqFRAiV2EsSwGLLZovYqp0/fVUxry7bYUCnu+yj9wkYr53LZ9O4EFUePDoJXMvGasPeB7876xDnVWdzQA6jZne0syZ8tH6q7/0wckPn0SvFfhphYqHFKlCc0FDCk/Nsxjod0A1PZz8HMueHJO1Jo3oODYMktI+HVCAC9UUqcmrW4jBBczEzKtCPyDgZkiP6xYU5AHUcBomHO94KHE5X5mZdgXblTRM1zc0uJS2CrBx4jc59s28S/bWABKduqNcczEnBuLyUsYKxX5/WkTmqSPdaJkU2xrfA/PcOTUodzYJVTElMCMGCSqGSIb3DQEJFTEWBBTxYMwv+lUDqlEPcjZoIfCnM5GzbzAxMCEwCQYFKw4DAhoFAAQU+06w2rleuz30pmANAqG7IHZX8q0ECF8gd+t0FeE8AgIIAA==';
 
+    local procedure Initialize()
+    var
+        UpgradeTagLibrary: Codeunit "Upgrade Tag Library";
+    begin
+        UpgradeTagLibrary.DeleteAllUpgradeTags();
+    end;
+
     [Test]
     procedure VerifyEmployeeTableUpgraded()
     var
@@ -18,6 +25,7 @@ codeunit 148111 "Test Upgrade ES"
     begin
         // [SCENARIO] Employee name fields get transformed during the upgrade process
         // [GIVEN] Employee records exist
+        Initialize();
         Employee.Init();
         Employee."No." := 'Test';
         Employee."First Name" := 'First';
@@ -45,6 +53,7 @@ codeunit 148111 "Test Upgrade ES"
     begin
         // [SCENARIO] No taxable VAT Entries get modified during the upgrade process
         // [GIVEN] A 'No Taxable Type' VAT Posting Setup record exists
+        Initialize();
         VATPostingSetup.Init();
         VATPostingSetup."VAT Bus. Posting Group" := 'BUS';
         VATPostingSetup."VAT Prod. Posting Group" := 'PROD';
@@ -76,6 +85,7 @@ codeunit 148111 "Test Upgrade ES"
     begin
         // [SCENARIO] SII Setup fields get transformed during the upgrade process
         // [GIVEN] SII Setup records exist
+        Initialize();
         SIISetup.Init();
         SIISetup."Primary Key" := '1';
         SIISetup.Insert();
@@ -95,6 +105,7 @@ codeunit 148111 "Test Upgrade ES"
         SourceTableMapping: Record "Source Table Mapping";
     begin
         // [SCENARIO] ES table mapping for 15.0 to 16.0 upgrade
+        Initialize();
         LibraryHybridBCLast.InitializeMapping(15.0);
 
         // [WHEN] The extension is installed
@@ -110,6 +121,7 @@ codeunit 148111 "Test Upgrade ES"
         SourceTableMapping: Record "Source Table Mapping";
     begin
         // [SCENARIO] ES table mapping for 15.0 to 16.0 upgrade
+        Initialize();
         LibraryHybridBCLast.InitializeMapping(15.0);
 
         // [WHEN] The extension is installed
@@ -133,6 +145,7 @@ codeunit 148111 "Test Upgrade ES"
         // [SCENARIO] The certificate from the SII Setup staging table is correctly loaded
         // into the Isolated Certificate table. The "Certificate Code" field on the SII Setup
         // is set correctly.
+        Initialize();
         HybridReplicationSummary.Init();
 
         // [GIVEN] A staging record has been created and transformed
@@ -172,6 +185,7 @@ codeunit 148111 "Test Upgrade ES"
         // [SCENARIO] All Staging Report Selections where Usage = 58 should be set to 100
         // All Staging Report Selections where Usage = 59 should be set to 101
         // [GIVEN] Some Staging records have been created
+        Initialize();
         StgReportSelections.DeleteAll();
         StgReportSelections.Init();
         StgReportSelections.Usage := 57;
@@ -220,6 +234,7 @@ codeunit 148111 "Test Upgrade ES"
     begin
         // [SCENARIO] All Report Selections where Usage = 58 should be set to 100
         // All Report Selections where Usage = 59 should be set to 101
+        Initialize();
         HybridReplicationSummary.Init();
 
         // [GIVEN] Some Staging records have been created and transformed

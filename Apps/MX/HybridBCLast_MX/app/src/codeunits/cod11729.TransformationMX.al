@@ -51,11 +51,16 @@ codeunit 11729 "Transformation MX"
     local procedure TransformDataExchDef()
     var
         StgDataExchDef: Record "Stg Data Exch Def MX";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
         DataExchDefType: Enum "Data Exchange Definition Type";
     begin
         // This code is based on app upgrade logic for NA.
         // Matching file: .\App\Layers\NA\BaseApp\Upgrade\UPGDataExchDefinition.Codeunit.al
         // Based on commit: 2c1c901e
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetGenJnlLineEFTExportSequenceNoUpgradeTag()) then
+            exit;
+
         StgDataExchDef.SetRange(Type, 5);
         StgDataExchDef.ModifyAll(Type, DataExchDefType::"EFT Payment Export");
 

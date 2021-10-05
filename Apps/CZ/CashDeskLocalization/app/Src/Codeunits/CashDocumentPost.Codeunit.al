@@ -1,8 +1,8 @@
 #pragma warning disable AL0432
 codeunit 11729 "Cash Document-Post CZP"
 {
-    Permissions = TableData "Posted Cash Document Hdr. CZP" = i,
-                  TableData "Posted Cash Document Line CZP" = im;
+    Permissions = tabledata "Posted Cash Document Hdr. CZP" = i,
+                  tabledata "Posted Cash Document Line CZP" = im;
     TableNo = "Cash Document Header CZP";
 
     trigger OnRun()
@@ -13,7 +13,7 @@ codeunit 11729 "Cash Document-Post CZP"
     begin
         OnBeforePostCashDoc(Rec);
         if not PreviewMode then
-            Rec.OnCheckCashDocPostRestrictions();
+            Rec.CheckCashDocPostRestrictions();
 
         CashDocumentHeaderCZP := Rec;
         CashDocumentHeaderCZP.TestField(CashDocumentHeaderCZP."Cash Desk No.");
@@ -57,7 +57,9 @@ codeunit 11729 "Cash Document-Post CZP"
         PostedCashDocumentHdrCZP.Insert();
         OnAfterPostedCashDocHeaderInsert(PostedCashDocumentHdrCZP, CashDocumentHeaderCZP);
 
+#if not CLEAN17
         GenJnlPostLine.SetPostFromCashReq(true);
+#endif
         PostHeader();
         PostLines();
 #if not CLEAN18

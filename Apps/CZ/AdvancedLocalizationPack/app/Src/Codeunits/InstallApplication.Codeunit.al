@@ -2,6 +2,32 @@
 codeunit 31250 "Install Application CZA"
 {
     Subtype = Install;
+    Permissions = tabledata "Inventory Setup" = m,
+                  tabledata "Manufacturing Setup" = m,
+                  tabledata "Assembly Setup" = m,
+                  tabledata "Assembly Header" = m,
+                  tabledata "Assembly Line" = m,
+                  tabledata "Posted Assembly Header" = m,
+                  tabledata "Posted Assembly Line" = m,
+                  tabledata "Nonstock Item Setup" = m,
+                  tabledata "Item Ledger Entry" = m,
+                  tabledata "Value Entry" = m,
+                  tabledata "Capacity Ledger Entry" = m,
+                  tabledata "Item Journal Line" = m,
+                  tabledata "Transfer Route" = m,
+                  tabledata "Transfer Header" = m,
+                  tabledata "Transfer Line" = m,
+                  tabledata "Transfer Shipment Header" = m,
+                  tabledata "Transfer Shipment Line" = m,
+                  tabledata "Transfer Receipt Header" = m,
+                  tabledata "Transfer Receipt Line" = m,
+                  tabledata "Detailed G/L Entry CZA" = im,
+                  tabledata "G/L Entry" = m,
+                  tabledata "Default Dimension" = m;
+
+    var
+        InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
+        AppInfo: ModuleInfo;
 
     trigger OnInstallAppPerDatabase()
     begin
@@ -10,18 +36,30 @@ codeunit 31250 "Install Application CZA"
 
     trigger OnInstallAppPerCompany()
     begin
-        if not InitializeDone() then
+        if not InitializeDone() then begin
+            BindSubscription(InstallApplicationsMgtCZL);
+            CopyUsage();
             CopyData();
-
+            UnbindSubscription(InstallApplicationsMgtCZL);
+        end;
         CompanyInitialize();
     end;
 
     local procedure InitializeDone(): boolean
-    var
-        AppInfo: ModuleInfo;
     begin
         NavApp.GetCurrentModuleInfo(AppInfo);
         exit(AppInfo.DataVersion() <> Version.Create('0.0.0.0'));
+    end;
+
+    local procedure CopyPermission();
+    begin
+        NavApp.GetCurrentModuleInfo(AppInfo);
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Detailed G/L Entry", Database::"Detailed G/L Entry CZA");
+    end;
+
+    local procedure CopyUsage();
+    begin
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Detailed G/L Entry", Database::"Detailed G/L Entry CZA");
     end;
 
     local procedure CopyData()
@@ -47,30 +85,7 @@ codeunit 31250 "Install Application CZA"
         CopyTransferReceiptLine();
         CopyDetailedGLEntry();
         CopyGLEntry();
-    end;
-
-    local procedure CopyPermission();
-    begin
-        InsertTableDataPermissions(Database::"Detailed G/L Entry", Database::"Detailed G/L Entry CZA");
-    end;
-
-    local procedure InsertTableDataPermissions(OldTableID: Integer; NewTableID: Integer)
-    var
-        Permission: Record Permission;
-        NewPermission: Record Permission;
-    begin
-        Permission.SetRange("Object Type", Permission."Object Type"::"Table Data");
-        Permission.SetRange("Object ID", OldTableID);
-        if not Permission.FindSet() then
-            exit;
-        repeat
-            if not NewPermission.Get(Permission."Role ID", Permission."Object Type", NewTableID) then begin
-                NewPermission.Init();
-                NewPermission := Permission;
-                NewPermission."Object ID" := NewTableID;
-                if NewPermission.Insert() then;
-            end;
-        until Permission.Next() = 0;
+        CopyDefaultDimension();
     end;
 
     local procedure CopyInventorySetup();
@@ -309,7 +324,8 @@ codeunit 31250 "Install Application CZA"
                 if not DetailedGLEntryCZA.Get(DetailedGLEntry."Entry No.") then begin
                     DetailedGLEntryCZA.Init();
                     DetailedGLEntryCZA."Entry No." := DetailedGLEntry."Entry No.";
-                    DetailedGLEntryCZA.Insert();
+                    DetailedGLEntryCZA.SystemId := DetailedGLEntry.SystemId;
+                    DetailedGLEntryCZA.Insert(false, true);
                 end;
                 DetailedGLEntryCZA."G/L Entry No." := DetailedGLEntry."G/L Entry No.";
                 DetailedGLEntryCZA."Applied G/L Entry No." := DetailedGLEntry."Applied G/L Entry No.";
@@ -336,6 +352,37 @@ codeunit 31250 "Install Application CZA"
                 GLEntry."Applied Amount CZA" := GLEntry."Applied Amount";
                 GLEntry.Modify(false);
             until GLEntry.Next() = 0;
+    end;
+
+    local procedure CopyDefaultDimension();
+    var
+        DefaultDimension: Record "Default Dimension";
+    begin
+        if DefaultDimension.FindSet(true) then
+            repeat
+                if DefaultDimension."Automatic Create" then begin
+                    DefaultDimension."Automatic Create CZA" := DefaultDimension."Automatic Create";
+                    DefaultDimension."Dim. Description Field ID CZA" := DefaultDimension."Dimension Description Field ID";
+                    DefaultDimension."Dim. Description Format CZA" := DefaultDimension."Dimension Description Format";
+                    DefaultDimension."Dim. Description Update CZA" := DefaultDimension."Dimension Description Update";
+                    case DefaultDimension."Automatic Cr. Value Posting" of
+                        DefaultDimension."Automatic Cr. Value Posting"::" ":
+                            DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::" ";
+                        DefaultDimension."Automatic Cr. Value Posting"::"No Code":
+                            DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"No Code";
+                        DefaultDimension."Automatic Cr. Value Posting"::"Same Code":
+                            DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"Same Code";
+                        DefaultDimension."Automatic Cr. Value Posting"::"Code Mandatory":
+                            DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"Code Mandatory";
+                    end;
+                    Clear(DefaultDimension."Automatic Create");
+                    Clear(DefaultDimension."Dimension Description Field ID");
+                    Clear(DefaultDimension."Dimension Description Format");
+                    Clear(DefaultDimension."Dimension Description Update");
+                    Clear(DefaultDimension."Automatic Cr. Value Posting");
+                    DefaultDimension.Modify(false);
+                end;
+            until DefaultDimension.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

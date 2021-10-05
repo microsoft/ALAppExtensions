@@ -225,9 +225,10 @@ codeunit 139652 "Library - Hybrid Management"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnAfterDataLakeMigration', '', false, false)]
-    local procedure HandleOnFinishAdlMigration(HybridReplicationSummary: Record "Hybrid Replication Summary")
+    local procedure HandleOnFinishAdlMigration(HybridReplicationSummary: Record "Hybrid Replication Summary"; var Handled: Boolean)
     begin
         AdlCleanedUp := true;
+        Handled := true;
     end;
 
     procedure GetActualReplicationType(): Integer

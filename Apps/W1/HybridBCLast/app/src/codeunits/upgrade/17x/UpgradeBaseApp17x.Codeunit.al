@@ -45,7 +45,12 @@ codeunit 4054 "Upgrade BaseApp 17x"
         Item: Record Item;
         ItemVariant: Record "Item Variant";
         ItemVariant2: Record "Item Variant";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetItemVariantItemIdUpgradeTag()) then
+            exit;
+
         if ItemVariant.FindSet() then
             repeat
                 if Item.Get(ItemVariant."Item No.") then
@@ -55,6 +60,8 @@ codeunit 4054 "Upgrade BaseApp 17x"
                         ItemVariant2.Modify();
                     end;
             until ItemVariant.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetItemVariantItemIdUpgradeTag());
     end;
 
     local procedure UpgradeIntegrationTableMapping()
@@ -119,7 +126,9 @@ codeunit 4054 "Upgrade BaseApp 17x"
         ConfigTemplateHeader: Record "Config. Template Header";
         ConfigTemplateLine: Record "Config. Template Line";
         CustomerTempl: Record "Customer Templ.";
+#if not CLEAN18
         CustomerTemplate: Record "Customer Template";
+#endif
         ConfigValidateManagement: Codeunit "Config. Validate Management";
         TemplateRecordRef: RecordRef;
         TemplateFieldRef: FieldRef;
@@ -143,11 +152,13 @@ codeunit 4054 "Upgrade BaseApp 17x"
                 end;
             until ConfigTemplateHeader.Next() = 0;
 
+#if not CLEAN18
         if CustomerTemplate.FindSet() then
             repeat
                 if InsertNewCustomerTemplate(CustomerTempl, CustomerTemplate.Code, CustomerTemplate.Description) then
                     UpdateNewCustomerTemplateFromConversionTemplate(CustomerTempl, CustomerTemplate);
             until CustomerTemplate.Next() = 0;
+#endif
     end;
 
     local procedure UpgradeItemTemplates()
@@ -247,6 +258,7 @@ codeunit 4054 "Upgrade BaseApp 17x"
         exit(true);
     end;
 
+#if not CLEAN18
     local procedure UpdateNewCustomerTemplateFromConversionTemplate(var CustomerTempl: Record "Customer Templ."; CustomerTemplate: Record "Customer Template")
     begin
         CustomerTempl."Territory Code" := CustomerTemplate."Territory Code";
@@ -268,6 +280,7 @@ codeunit 4054 "Upgrade BaseApp 17x"
         CustomerTempl."Allow Line Disc." := CustomerTemplate."Allow Line Disc.";
         CustomerTempl.Modify();
     end;
+#endif
 
     local procedure UpgradeContactMobilePhoneNo()
     begin

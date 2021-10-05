@@ -1,7 +1,7 @@
 #pragma warning disable AL0432
 codeunit 31097 "Substitute Report Handler CZL"
 {
-    Permissions = TableData "NAV App Installed App" = r;
+    Permissions = tabledata "NAV App Installed App" = r;
 
     var
         InstructionMgt: Codeunit "Instruction Mgt.";
@@ -20,9 +20,9 @@ codeunit 31097 "Substitute Report Handler CZL"
 #if not CLEAN17
                 Report::"Accounting Sheets CZL":
                     NewReportId := Report::"Accounting Sheets";
+#endif
                 Report::"Balance Sheet CZL":
                     NewReportId := Report::"Balance Sheet";
-#endif
                 Report::"Adjust Exchange Rates CZL":
                     NewReportId := Report::"Adjust Exchange Rates";
                 Report::"Calc. and Post VAT Settl. CZL":
@@ -36,9 +36,9 @@ codeunit 31097 "Substitute Report Handler CZL"
 #if not CLEAN17
                 Report::"G/L VAT Reconciliation CZL":
                     NewReportId := Report::"G/L VAT Reconciliation CZ";
+#endif
                 Report::"Income Statement CZL":
                     NewReportId := Report::"Income Statement";
-#endif
                 Report::"VAT Statement CZL":
                     NewReportId := Report::"VAT Statement";
                 Report::"Batch Post Sales Orders CZL":
@@ -70,9 +70,9 @@ codeunit 31097 "Substitute Report Handler CZL"
 #if not CLEAN17
                 Report::"Accounting Sheets":
                     NewReportId := Report::"Accounting Sheets CZL";
+#endif
                 Report::"Balance Sheet":
                     NewReportId := Report::"Balance Sheet CZL";
-#endif
                 Report::"Adjust Exchange Rates":
                     NewReportId := Report::"Adjust Exchange Rates CZL";
                 Report::"Calc. and Post VAT Settlement":
@@ -86,9 +86,9 @@ codeunit 31097 "Substitute Report Handler CZL"
 #if not CLEAN17
                 Report::"G/L VAT Reconciliation CZ":
                     NewReportId := Report::"G/L VAT Reconciliation CZL";
+#endif
                 Report::"Income Statement":
                     NewReportId := Report::"Income Statement CZL";
-#endif
                 Report::"VAT Statement":
                     NewReportId := Report::"VAT Statement CZL";
                 Report::"Batch Post Sales Orders":

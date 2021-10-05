@@ -7,6 +7,7 @@ pageextension 18147 "GST Sales. Cr. Memo Subfrm Ext" extends "Sales Cr. Memo Sub
             trigger OnAfterValidate()
             begin
                 SaveRecords();
+                FormatLine();
             end;
         }
         Modify("Quantity")
@@ -26,12 +27,74 @@ pageextension 18147 "GST Sales. Cr. Memo Subfrm Ext" extends "Sales Cr. Memo Sub
                 CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
             end;
         }
+        modify(Type)
+        {
+            Trigger OnAfterValidate()
+            begin
+                FormatLine();
+            end;
+        }
+        modify("Line Discount %")
+        {
+            Trigger OnAfterValidate()
+            var
+                CalculateTax: Codeunit "Calculate Tax";
+            begin
+                CurrPage.SaveRecord();
+                CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+            end;
+        }
+        modify("Line Discount Amount")
+        {
+            Trigger OnAfterValidate()
+            var
+                CalculateTax: Codeunit "Calculate Tax";
+            begin
+                CurrPage.SaveRecord();
+                CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+            end;
+        }
         addafter("Qty. to Assign")
         {
+            field("GST Place Of Supply"; Rec."GST Place Of Supply")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the GST Place of Supply. For example Bill-to Address, Ship-to Address, Location Address etc.';
+
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
+            }
             field("GST Group Code"; Rec."GST Group Code")
             {
                 ApplicationArea = Basic, Suite;
+                Editable = IsHSNSACEditable;
                 ToolTip = 'Specifies an unique identifier for the GST group code used to calculate and post GST.';
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
+            }
+            field("HSN/SAC Code"; Rec."HSN/SAC Code")
+            {
+                ApplicationArea = Basic, Suite;
+                Editable = IsHSNSACEditable;
+                ToolTip = 'Specifies the HSN/SAC code for the calculation of GST on Sales line.';
+
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
             }
             field("GST Group Type"; Rec."GST Group Type")
             {
@@ -50,17 +113,29 @@ pageextension 18147 "GST Sales. Cr. Memo Subfrm Ext" extends "Sales Cr. Memo Sub
                     CurrPage.SaveRecord();
                     CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
                 end;
-
             }
             field("GST Jurisdiction Type"; Rec."GST Jurisdiction Type")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the type related to GST jurisdiction. For example, interstate/intrastate.';
             }
-            field("GST Credit"; Rec."GST Credit")
+            field("Price Exclusive of Tax"; Rec."Price Inclusive of Tax")
+            {
+                ApplicationArea = all;
+                ToolTip = 'Specifies if the price in inclusive of tax for the line.';
+
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
+            }
+            field("Unit Price Incl. of Tax"; Rec."Unit Price Incl. of Tax")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies if the GST credit has to be availed or not.';
+                ToolTip = 'Specifies unit prices are inclusive of tax on the line.';
 
                 trigger OnValidate()
                 var
@@ -76,4 +151,19 @@ pageextension 18147 "GST Sales. Cr. Memo Subfrm Ext" extends "Sales Cr. Memo Sub
     begin
         CurrPage.SaveRecord();
     end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        FormatLine();
+    end;
+
+    local procedure FormatLine()
+    var
+        GSTSalesValidation: Codeunit "GST Sales Validation";
+    begin
+        GSTSalesValidation.SetHSNSACEditable(Rec, IsHSNSACEditable);
+    end;
+
+    var
+        IsHSNSACEditable: Boolean;
 }

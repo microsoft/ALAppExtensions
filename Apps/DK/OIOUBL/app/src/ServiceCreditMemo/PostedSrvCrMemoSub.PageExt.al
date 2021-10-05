@@ -13,7 +13,7 @@ pageextension 13681 "OIOUBL-Posted Srv Cr Memo Sub" extends "Posted Serv. Cr. Me
             {
                 Visible = false;
                 ApplicationArea = Service;
-                ToolTip = 'Specifies the account code of the customer.';
+                ToolTip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
             }
         }
     }

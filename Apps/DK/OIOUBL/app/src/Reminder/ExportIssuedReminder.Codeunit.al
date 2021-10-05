@@ -105,7 +105,9 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
         ContactInfo: Record Contact;
         RBMgt: Codeunit "File Management";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
+#if not CLEAN17
         EnvironmentInfo: Codeunit "Environment Information";
+#endif
         XMLdocOut: XmlDocument;
         XMLCurrNode: XmlElement;
         CurrencyCode: Code[10];
@@ -114,7 +116,9 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
         TaxAmount: Decimal;
         TotalTaxAmount: Decimal;
         TotalAmount: Decimal;
+#if not CLEAN17
         DocumentType: Option "Quote","Order","Invoice","Credit Memo","Blanket Order","Return Order","Finance Charge","Reminder";
+#endif
         OutputFile: File;
         FileOutstream: Outstream;
     begin

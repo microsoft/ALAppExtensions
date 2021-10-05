@@ -234,6 +234,7 @@ table 1950 "LP Machine Learning Setup"
         exit(CurrentDateTime() - "Last Background Analysis" < 7 * 24 * 60 * 60 * 1000);
     end;
 
+    [NonDebuggable]
     [Scope('OnPrem')]
     procedure SaveApiUri(ApiUriText: Text[250])
     var
@@ -254,6 +255,7 @@ table 1950 "LP Machine Learning Setup"
             IsolatedStorage.SetEncrypted(ApiUriKeyGUID, ApiUriText, DataScope::Company);
     end;
 
+    [NonDebuggable]
     [Scope('OnPrem')]
     procedure GetApiUri(): Text[250]
     VAR
@@ -267,6 +269,7 @@ table 1950 "LP Machine Learning Setup"
                 exit(CopyStr(ApiUriValue, 1, 250));
     end;
 
+    [NonDebuggable]
     [Scope('OnPrem')]
     procedure SaveApiKey(ApiKeyText: Text[200])
     VAR
@@ -286,6 +289,7 @@ table 1950 "LP Machine Learning Setup"
             IsolatedStorage.SetEncrypted(ApiKeyKeyGUID, ApiKeyText, DataScope::Company);
     end;
 
+    [NonDebuggable]
     [Scope('OnPrem')]
     procedure GetApiKey(): Text[200]
     VAR

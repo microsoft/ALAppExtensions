@@ -51,10 +51,10 @@ page 18685 "Acknowledgement Setup"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     FinancialYearLbl: Label 'Code eq %1', Comment = '%1 = Financial Year';
                 begin
-                    ODataUtility.EditWorksheetInExcel('Acknowledgement Setup', CurrPage.ObjectId(false), StrSubstNo(FinancialYearLbl, Rec."Financial Year"));
+                    EditinExcel.EditPageInExcel('Acknowledgement Setup', CurrPage.ObjectId(false), StrSubstNo(FinancialYearLbl, Rec."Financial Year"));
                 end;
             }
         }

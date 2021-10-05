@@ -6,8 +6,6 @@ codeunit 18006 "GST Statistics"
         var GSTAmount: Decimal)
     var
         PurchaseLine: Record "Purchase Line";
-        i: Integer;
-        RecordIDList: List of [RecordID];
     begin
         Clear(GSTAmount);
 
@@ -15,11 +13,8 @@ codeunit 18006 "GST Statistics"
         PurchaseLine.SetRange("Document no.", PurchaseHeader."No.");
         if PurchaseLine.FindSet() then
             repeat
-                RecordIDList.Add(PurchaseLine.RecordId());
+                GSTAmount += GetGSTAmount(PurchaseLine.RecordId());
             until PurchaseLine.Next() = 0;
-
-        for i := 1 to RecordIDList.Count() do
-            GSTAmount += GetGSTAmount(RecordIDList.Get(i));
     end;
 
     procedure GetStatisticsPostedPurchInvAmount(
@@ -27,19 +22,14 @@ codeunit 18006 "GST Statistics"
         var GSTAmount: Decimal)
     var
         PurchInvLine: Record "Purch. Inv. Line";
-        i: Integer;
-        RecordIDList: List of [RecordID];
     begin
         Clear(GSTAmount);
 
         PurchInvLine.SetRange("Document No.", PurchInvHeader."No.");
         if PurchInvLine.FindSet() then
             repeat
-                RecordIDList.Add(PurchInvLine.RecordId());
+                GSTAmount += GetGSTAmount(PurchInvLine.RecordId());
             until PurchInvLine.Next() = 0;
-
-        for i := 1 to RecordIDList.Count() do
-            GSTAmount += GetGSTAmount(RecordIDList.Get(i));
     end;
 
     procedure GetStatisticsPostedPurchCrMemoAmount(
@@ -47,19 +37,14 @@ codeunit 18006 "GST Statistics"
         var GSTAmount: Decimal)
     var
         PurchCrMemoLine: Record "Purch. Cr. Memo Line";
-        i: Integer;
-        RecordIDList: List of [RecordID];
     begin
         Clear(GSTAmount);
 
         PurchCrMemoLine.SetRange("Document No.", PurchCrMemoHeader."No.");
         if PurchCrMemoLine.FindSet() then
             repeat
-                RecordIDList.Add(PurchCrMemoLine.RecordId());
+                GSTAmount += GetGSTAmount(PurchCrMemoLine.RecordId());
             until PurchCrMemoLine.Next() = 0;
-
-        for i := 1 to RecordIDList.Count() do
-            GSTAmount += GetGSTAmount(RecordIDList.Get(i));
     end;
 
     local procedure GetGSTAmount(RecID: RecordID): Decimal
@@ -88,8 +73,6 @@ codeunit 18006 "GST Statistics"
         var GSTAmount: Decimal)
     var
         SalesLine: Record "Sales Line";
-        i: Integer;
-        RecordIDList: List of [RecordID];
     begin
         Clear(GSTAmount);
 
@@ -97,11 +80,8 @@ codeunit 18006 "GST Statistics"
         SalesLine.SetRange("Document no.", SalesHeader."No.");
         if SalesLine.FindSet() then
             repeat
-                RecordIDList.Add(SalesLine.RecordId());
+                GSTAmount += GetGSTAmount(SalesLine.RecordId());
             until SalesLine.Next() = 0;
-
-        for i := 1 to RecordIDList.Count() do
-            GSTAmount += GetGSTAmount(RecordIDList.Get(i));
     end;
 
     procedure GetStatisticsPostedSalesInvAmount(
@@ -109,19 +89,14 @@ codeunit 18006 "GST Statistics"
         var GSTAmount: Decimal)
     var
         SalesInvLine: Record "Sales Invoice Line";
-        i: Integer;
-        RecordIDList: List of [RecordID];
     begin
         Clear(GSTAmount);
 
         SalesInvLine.SetRange("Document No.", SalesInvHeader."No.");
         if SalesInvLine.FindSet() then
             repeat
-                RecordIDList.Add(SalesInvLine.RecordId());
+                GSTAmount += GetGSTAmount(SalesInvLine.RecordId());
             until SalesInvLine.Next() = 0;
-
-        for i := 1 to RecordIDList.Count() do
-            GSTAmount += GetGSTAmount(RecordIDList.Get(i));
     end;
 
     procedure GetStatisticsPostedSalesCrMemoAmount(
@@ -129,37 +104,81 @@ codeunit 18006 "GST Statistics"
         var GSTAmount: Decimal)
     var
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
-        i: Integer;
-        RecordIDList: List of [RecordID];
     begin
         Clear(GSTAmount);
 
         SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
         if SalesCrMemoLine.FindSet() then
             repeat
-                RecordIDList.Add(SalesCrMemoLine.RecordId());
+                GSTAmount += GetGSTAmount(SalesCrMemoLine.RecordId());
             until SalesCrMemoLine.Next() = 0;
+    end;
 
-        for i := 1 to RecordIDList.Count() do
-            GSTAmount += GetGSTAmount(RecordIDList.Get(i));
+    local procedure GetPurchaseStatisticsAmountExcludingChargeItem(
+        PurchaseHeader: Record "Purchase Header";
+        var GSTAmount: Decimal)
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        Clear(GSTAmount);
+
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document no.", PurchaseHeader."No.");
+        if PurchaseLine.FindSet() then
+            repeat
+                if (PurchaseLine.Type <> PurchaseLine.Type::"Charge (Item)") and (not PurchaseLine."GST Reverse Charge") then
+                    GSTAmount += GetGSTAmount(PurchaseLine.RecordId());
+            until PurchaseLine.Next() = 0;
+    end;
+
+    local procedure GetStatisticsPostedPurchInvAmountExcludingChargeItem(
+        PurchInvHeader: Record "Purch. Inv. Header";
+        var GSTAmount: Decimal)
+    var
+        PurchInvLine: Record "Purch. Inv. Line";
+    begin
+        Clear(GSTAmount);
+
+        PurchInvLine.SetRange("Document No.", PurchInvHeader."No.");
+        if PurchInvLine.FindSet() then
+            repeat
+                if (PurchInvLine.Type <> PurchInvLine.Type::"Charge (Item)") and (not PurchInvLine."GST Reverse Charge") then
+                    GSTAmount += GetGSTAmount(PurchInvLine.RecordId);
+            until PurchInvLine.Next() = 0;
+    end;
+
+    local procedure GetStatisticsPostedPurchCrMemoAmountExcludingChargeItem(
+        PurchCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
+        var GSTAmount: Decimal)
+    var
+        PurchCrMemoLine: Record "Purch. Cr. Memo Line";
+    begin
+        Clear(GSTAmount);
+
+        PurchCrMemoLine.SetRange("Document No.", PurchCrMemoHeader."No.");
+        if PurchCrMemoLine.FindSet() then
+            repeat
+                if (PurchCrMemoLine.Type <> PurchCrMemoLine.Type::"Charge (Item)") and (not PurchCrMemoLine."GST Reverse Charge") then
+                    GSTAmount += GetGSTAmount(PurchCrMemoLine.RecordId());
+            until PurchCrMemoLine.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPurchaseHeaderGSTAmount', '', false, false)]
     local procedure OnGetPurchaseHeaderGSTAmount(PurchaseHeader: Record "Purchase Header"; var GSTAmount: Decimal)
     begin
-        GetPurchaseStatisticsAmount(PurchaseHeader, GSTAmount);
+        GetPurchaseStatisticsAmountExcludingChargeItem(PurchaseHeader, GSTAmount);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPurchInvHeaderGSTAmount', '', false, false)]
     local procedure OnGetPurchInvHeaderGSTAmount(PurchInvHeader: Record "Purch. Inv. Header"; var GSTAmount: Decimal)
     begin
-        GetStatisticsPostedPurchInvAmount(PurchInvHeader, GSTAmount);
+        GetStatisticsPostedPurchInvAmountExcludingChargeItem(PurchInvHeader, GSTAmount)
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPurchCrMemoHeaderGSTAmount', '', false, false)]
     local procedure OnGetPurchCrMemoHeaderGSTAmount(PurchCrMemoHeader: Record "Purch. Cr. Memo Hdr."; var GSTAmount: Decimal)
     begin
-        GetStatisticsPostedPurchCrMemoAmount(PurchCrMemoHeader, GSTAmount);
+        GetStatisticsPostedPurchCrMemoAmountExcludingChargeItem(PurchCrMemoHeader, GSTAmount);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetSalesHeaderGSTAmount', '', false, false)]

@@ -72,9 +72,9 @@ page 18243 "Bank Charge Deemed Value Setup"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                 begin
-                    ODataUtility.EditWorksheetInExcel(
+                    EditinExcel.EditPageInExcel(
                         'Bank Charges',
                         CurrPage.ObjectId(false),
                         StrSubstNo(BankChargeMsg, Rec."Bank Charge Code"));

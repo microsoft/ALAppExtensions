@@ -235,6 +235,7 @@ page 31162 "Cash Document List CZP"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Preview Posting';
                     Image = ViewPostedOrder;
+                    ShortCutKey = 'Ctrl+Alt+F9';
                     ToolTip = 'Review the result of the posting lines before the actual posting.';
 
                     trigger OnAction()

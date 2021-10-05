@@ -6,11 +6,11 @@
 codeunit 132578 "Password Handler Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
     var
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
         InsufficientPassLngthErr: Label 'The password must contain at least %1 characters.', Comment = '%1 = the number of characters';
         PasswordIsNotStrongErr: Label 'The generated password must be strong.';
         PasswordIsStrongErr: Label 'The generated password must not be strong.';
@@ -25,6 +25,7 @@ codeunit 132578 "Password Handler Test"
         Length: Integer;
     begin
         // [SCENARIO] An eight character long strong password can be generated.
+        PermissionsMock.Set('Password Exec');
 
         // [GIVEN] The length of the password is set to eight.
         Length := 8;
@@ -48,6 +49,7 @@ codeunit 132578 "Password Handler Test"
         Length: Integer;
     begin
         // [SCENARIO] A one hundred character long strong password can be generated.
+        PermissionsMock.Set('Password Exec');
 
         // [GIVEN] The length of the password is set to one hundred.
         Length := 100;
@@ -70,12 +72,14 @@ codeunit 132578 "Password Handler Test"
         Length: Integer;
     begin
         // [SCENARIO] A password with less than eight characters cannot be generated.
+        PermissionsMock.Set('Password Exec');
 
         // [GIVEN] The length of the password is set to seven.
         Length := 7;
 
         // [WHEN] The password is generated.
         asserterror PasswordHandler.GeneratePassword(Length);
+        Assert.ExpectedError('The password must contain at least 8 characters.');
 
         // [THEN] The error: 'The password must contain at least 8 characters.' is thrown.
         Assert.ExpectedError(StrSubstNo(InsufficientPassLngthErr, 8));
@@ -91,6 +95,7 @@ codeunit 132578 "Password Handler Test"
     begin
         // [SCENARIO] If the minimum length of the password is set to sixteen in the event,
         // a password with less than sixteen characters cannot be generated.
+        PermissionsMock.Set('Password Exec');
 
         // [GIVEN] The subsciber is bound to the event.        
         BindSubscription(PasswordHandlerTest);
@@ -100,6 +105,7 @@ codeunit 132578 "Password Handler Test"
 
         // [WHEN] The password is generated.
         asserterror PasswordHandler.GeneratePassword(Length);
+        Assert.ExpectedError('The password must contain at least 16 characters.');
 
         // [THEN] The error: 'The password must contain at least 16 characters.' is thrown.
         Assert.ExpectedError(StrSubstNo(InsufficientPassLngthErr, 16));
@@ -113,6 +119,7 @@ codeunit 132578 "Password Handler Test"
         Password: Text;
     begin
         // [SCENARIO] A password with less than eight characters is not considered to be strong.
+        PermissionsMock.Set('Password Exec');
 
         // [GIVEN] A password that is less than eight characters long.
         Password := 'Pass1@';
@@ -131,6 +138,7 @@ codeunit 132578 "Password Handler Test"
     begin
         // [SCENARIO] If the minimum length of the password is set to sixteen in the event,
         // a password with less than sixteen characters is not considered to be strong.
+        PermissionsMock.Set('Password Exec');
 
         // [GIVEN] A fifteen character long strong password is generated.
         Password := PasswordHandler.GeneratePassword(15);
@@ -151,6 +159,7 @@ codeunit 132578 "Password Handler Test"
     begin
         // [SCENARIO] A strong passord must contain characters from all the character sets:
         // uppercase, lowercase, digits, special characters.
+        PermissionsMock.Set('Password Exec');
 
         // [GIVEN] A password without any uppercase characters.
         Password := 'password1@';
@@ -183,6 +192,7 @@ codeunit 132578 "Password Handler Test"
     begin
         // [SCENARIO] A strong passord must not contain sequences of characters.
         // For example, 123, aaa, CBD.
+        PermissionsMock.Set('Password Exec');
 
         NoSequencesMsg := 'Password must contain sequences of 3 or more characters that are the same or consecutive.';
 

@@ -7,12 +7,15 @@ codeunit 31308 "Res.Jnl.Check Line Handler CZL"
             UserSetupAdvManagementCZL.CheckResJournalLine(ResJournalLine);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Res. Journal Line", 'OnCheckResJournalTemplateUserRestrictions', '', false, false)]
-    local procedure CheckResJournalTemplateUserRestrictions(JournalTemplateName: Code[10])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::ResJnlManagement, 'OnBeforeOpenJnl', '', false, false)]
+    local procedure JournalTemplateUserRestrictionsOnBeforeOpenJnl(var ResJournalLine: Record "Res. Journal Line")
     var
-        DummyUserSetupLineCZL: Record "User Setup Line CZL";
+        UserSetupLineTypeCZL: Enum "User Setup Line Type CZL";
+        JournalTemplateName: Code[10];
     begin
-        UserSetupAdvManagementCZL.CheckJournalTemplate(DummyUserSetupLineCZL.Type::"Resource Journal", JournalTemplateName);
+        JournalTemplateName := ResJournalLine.GetRangeMax("Journal Template Name");
+        UserSetupLineTypeCZL := UserSetupLineTypeCZL::"Resource Journal";
+        UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, JournalTemplateName);
     end;
 
     var

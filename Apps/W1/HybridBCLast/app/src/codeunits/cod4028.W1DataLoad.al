@@ -7,6 +7,7 @@ codeunit 4028 "W1 Data Load"
         LoadTableData_16x(HybridReplicationSummary, CountryCode, 16.0);
         LoadTableData_17x(HybridReplicationSummary, CountryCode, 17.0);
         LoadTableData_18x(HybridReplicationSummary, CountryCode, 18.0);
+        LoadTableData_19x(HybridReplicationSummary, CountryCode, 19.0);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Company Handler", 'OnLoadTableDataForVersion', '', false, false)]
@@ -47,6 +48,15 @@ codeunit 4028 "W1 Data Load"
         OnAfterW1DataLoadForVersion(HybridReplicationSummary, CountryCode, TargetVersion);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Company Handler", 'OnLoadTableDataForVersion', '', false, false)]
+    local procedure LoadTableData_19x(HybridReplicationSummary: Record "Hybrid Replication Summary"; CountryCode: Text; TargetVersion: Decimal)
+    begin
+        if TargetVersion <> 19.0 then
+            exit;
+
+        OnAfterW1DataLoadForVersion(HybridReplicationSummary, CountryCode, TargetVersion);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Management", 'OnLoadNonCompanyTableDataForVersion', '', false, false)]
     local procedure LoadNonCompanyTableData_15x(HybridReplicationSummary: Record "Hybrid Replication Summary"; CountryCode: Text; TargetVersion: Decimal)
     begin
@@ -69,6 +79,25 @@ codeunit 4028 "W1 Data Load"
     local procedure LoadNonCompanyTableData_17x(HybridReplicationSummary: Record "Hybrid Replication Summary"; CountryCode: Text; TargetVersion: Decimal)
     begin
         if TargetVersion <> 17.0 then
+            exit;
+
+        OnAfterW1DataLoadNonCompanyForVersion(CountryCode, TargetVersion);
+    end;
+
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Management", 'OnLoadNonCompanyTableDataForVersion', '', false, false)]
+    local procedure LoadNonCompanyTableData_18x(HybridReplicationSummary: Record "Hybrid Replication Summary"; CountryCode: Text; TargetVersion: Decimal)
+    begin
+        if TargetVersion <> 18.0 then
+            exit;
+
+        OnAfterW1DataLoadNonCompanyForVersion(CountryCode, TargetVersion);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Management", 'OnLoadNonCompanyTableDataForVersion', '', false, false)]
+    local procedure LoadNonCompanyTableData_19x(HybridReplicationSummary: Record "Hybrid Replication Summary"; CountryCode: Text; TargetVersion: Decimal)
+    begin
+        if TargetVersion <> 19.0 then
             exit;
 
         OnAfterW1DataLoadNonCompanyForVersion(CountryCode, TargetVersion);

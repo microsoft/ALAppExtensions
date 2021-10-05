@@ -48,7 +48,9 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
 #endif
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         FromFile: Text[1024];
+#if not CLEAN17
         DocumentType: Option "Quote","Order","Invoice","Credit Memo","Blanket Order","Return Order","Finance Charge","Reminder";
+#endif
     begin
         FromFile := CreateXML(ServiceCrMemoHeader);
 

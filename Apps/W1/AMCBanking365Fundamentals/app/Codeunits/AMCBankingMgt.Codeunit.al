@@ -39,11 +39,6 @@ codeunit 20105 "AMC Banking Mgt."
         AMCBankingPmtTypeCode9Tok: Label 'EurAcc2AccSepa', Locked = true;
         AMCBankingPmtTypeDesc9Txt: Label 'SEPA credit transfer';
         NoDetailsMsg: Label 'The log does not contain any more details.';
-        ResultPathTxt: Label '/amc:%1/return/syslog[syslogtype[text()="error"]]', Locked = true;
-        FinstaPathTxt: Label '/amc:%1/return/finsta/statement/finstatransus', Locked = true;
-        HeaderErrPathTxt: Label '/amc:%1/return/header/result[text()="error"]', Locked = true;
-        ConvErrPathTxt: Label '/amc:%1/return/pack/convertlog[syslogtype[text()="error"]]', Locked = true;
-        DataPathTxt: Label '/amc:%1/return/pack/data/text()', Locked = true;
 
     procedure InitDefaultURLs(var AMCBankServiceSetup: Record "AMC Banking Setup")
     begin
@@ -68,21 +63,6 @@ codeunit 20105 "AMC Banking Mgt."
     procedure GetNamespace(): Text
     begin
         exit('http://' + ApiVersion() + '.soap.xml.link.amc.dk/');
-    end;
-
-    [Scope('OnPrem')]
-    [Obsolete('This method is obsolete. A new GetSupportURL overload is available, which is called with an XmlDocument instead of a XmlNode object', '16.2')]
-    procedure GetSupportURL(XmlNode: XmlNode): Text
-    var
-        AMCBankingSetup: Record "AMC Banking Setup";
-        SupportXmlDoc: XmlDocument;
-    begin
-        if (XmlNode.GetDocument(SupportXmlDoc)) then
-            exit(GetSupportURL(SupportXmlDoc))
-        else begin
-            AMCBankingSetup.GET();
-            EXIT(AMCBankingSetup."Support URL");
-        end;
     end;
 
     procedure GetSupportURL(SupportXmlDoc: XmlDocument): Text;
@@ -122,36 +102,6 @@ codeunit 20105 "AMC Banking Mgt."
             if not AMCBankServiceSetup.Get() or not AMCBankServiceSetup.HasPassword() then
                 Error(MissingCredentialsErr, AMCBankServiceSetup.TableCaption());
         end;
-    end;
-
-    [Obsolete('This method is obsolete and it will be removed.', '16.2')]
-    procedure GetErrorXPath(ResponseNode: Text): Text
-    begin
-        exit(StrSubstNo(ResultPathTxt, ResponseNode));
-    end;
-
-    [Obsolete('This method is obsolete and it will be removed. A new version is avalable in AMCBankingServiceRequest.', '16.2')]
-    procedure GetFinstaXPath(ResponseNode: Text): Text
-    begin
-        exit(StrSubstNo(FinstaPathTxt, ResponseNode));
-    end;
-
-    [Obsolete('This method is obsolete and it will be removed.', '16.2')]
-    procedure GetHeaderErrXPath(ResponseNode: Text): Text
-    begin
-        exit(StrSubstNo(HeaderErrPathTxt, ResponseNode));
-    end;
-
-    [Obsolete('This method is obsolete and it will be removed. A new version is avalable in AMCBankingServiceRequest.', '16.2')]
-    procedure GetConvErrXPath(ResponseNode: Text): Text
-    begin
-        exit(StrSubstNo(ConvErrPathTxt, ResponseNode));
-    end;
-
-    [Obsolete('This method is obsolete and it will be removed. A new version is avalable in AMCBankingServiceRequest.', '16.2')]
-    procedure GetDataXPath(ResponseNode: Text): Text
-    begin
-        exit(StrSubstNo(DataPathTxt, ResponseNode));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]

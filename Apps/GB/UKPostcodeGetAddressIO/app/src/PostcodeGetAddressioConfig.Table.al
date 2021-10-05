@@ -19,6 +19,7 @@ table 9092 "Postcode GetAddress.io Config"
         key(Key1; "Primary Key") { }
     }
 
+    [NonDebuggable]
     [Scope('OnPrem')]
     procedure GetAPIKey(APIKeyGUID: Guid): Text
     var
@@ -30,6 +31,7 @@ table 9092 "Postcode GetAddress.io Config"
         EXIT(APIPassword);
     end;
 
+    [NonDebuggable]
     [Scope('OnPrem')]
     procedure SaveAPIKey(var APIKeyGUID: Guid; APIKeyValue: Text[250])
     var

@@ -16,6 +16,22 @@ codeunit 18351 "Validate Service Trans. Price"
         TaxCaseExecution.HandleEvent('OnAfterTransferPrireUpdate', Rec, '', 0);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Service Transfer Line", 'OnAfterValidateEvent', 'GST Group Code', false, false)]
+    local procedure CallTaxEngineOnGSTGroupCode(var Rec: Record "Service Transfer Line")
+    var
+        TaxCaseExecution: Codeunit "Use Case Execution";
+    begin
+        TaxCaseExecution.HandleEvent('OnAfterTransferPrireUpdate', Rec, '', 0);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Transfer Line", 'OnAfterValidateEvent', 'SAC Code', false, false)]
+    local procedure CallTaxEngineOnSACCode(var Rec: Record "Service Transfer Line")
+    var
+        TaxCaseExecution: Codeunit "Use Case Execution";
+    begin
+        TaxCaseExecution.HandleEvent('OnAfterTransferPrireUpdate', Rec, '', 0);
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Tax Transaction Value", 'OnBeforeTableFilterApplied', '', false, false)]
     local procedure OnBeforeTableFilterApplied(var TaxRecordID: RecordID; LineNoFilter: Integer; DocumentNoFilter: Text)
     var

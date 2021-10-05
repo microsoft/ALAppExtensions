@@ -16,6 +16,22 @@ pageextension 11778 "Blanket Sales Ord. Subform CZL" extends "Blanket Sales Orde
                 ToolTip = 'Specifies the statistic indication code.';
                 Visible = false;
             }
+            field("Net Weight CZL"; Rec."Net Weight")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the net weight of the item.';
+                Visible = false;
+            }
         }
+#if CLEAN19
+        modify("Tax Area Code")
+        {
+            Visible = false;
+        }
+        modify("Tax Group Code")
+        {
+            Visible = false;
+        }
+#endif
     }
 }

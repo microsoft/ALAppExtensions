@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31203 "Sync.Dep.Fld-ConstSymbol CZL"
 {
@@ -54,7 +55,8 @@ codeunit 31203 "Sync.Dep.Fld-ConstSymbol CZL"
         if not ConstantSymbolCZL.Get(Rec.Code) then begin
             ConstantSymbolCZL.Init();
             ConstantSymbolCZL.Code := Rec.Code;
-            ConstantSymbolCZL.Insert(false);
+            ConstantSymbolCZL.SystemId := Rec.SystemId;
+            ConstantSymbolCZL.Insert(false, true);
         end;
         ConstantSymbolCZL.Description := Rec.Description;
         ConstantSymbolCZL.Modify(false);
@@ -127,7 +129,8 @@ codeunit 31203 "Sync.Dep.Fld-ConstSymbol CZL"
         if not ConstantSymbol.Get(Rec.Code) then begin
             ConstantSymbol.Init();
             ConstantSymbol.Code := Rec.Code;
-            ConstantSymbol.Insert(false);
+            ConstantSymbol.SystemId := Rec.SystemId;
+            ConstantSymbol.Insert(false, true);
         end;
         ConstantSymbol.Description := CopyStr(Rec.Description, 1, MaxStrLen(ConstantSymbol.Description));
         ConstantSymbol.Modify(false);
@@ -160,3 +163,4 @@ codeunit 31203 "Sync.Dep.Fld-ConstSymbol CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

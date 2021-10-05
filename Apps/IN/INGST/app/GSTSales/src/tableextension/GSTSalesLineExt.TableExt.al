@@ -12,7 +12,6 @@ tableextension 18151 "GST Sales Line Ext" extends "Sales Line"
             Caption = 'GST Group Code';
             DataClassification = CustomerContent;
             TableRelation = "GST Group";
-            Editable = false;
         }
         field(18143; "GST Group Type"; Enum "GST Group Type")
         {
@@ -25,7 +24,6 @@ tableextension 18151 "GST Sales Line Ext" extends "Sales Line"
             Caption = 'HSN/SAC Code';
             TableRelation = "HSN/SAC".Code where("GST Group Code" = field("GST Group Code"));
             DataClassification = CustomerContent;
-            Editable = false;
             trigger OnValidate()
             begin
                 TestStatusOpen();

@@ -73,9 +73,9 @@ page 18001 "GST Group"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                 begin
-                    ODataUtility.EditWorksheetInExcel('GST Group',
+                    EditinExcel.EditPageInExcel('GST Group',
                     CurrPage.ObjectId(false),
                     Rec.GetFilter(Code));
                 end;

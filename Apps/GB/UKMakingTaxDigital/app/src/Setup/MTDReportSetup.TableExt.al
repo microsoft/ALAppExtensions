@@ -103,6 +103,18 @@ tableextension 10539 "MTD Report Setup" extends "VAT Report Setup"
 #endif
             ObsoleteReason = 'Replaced by configurable Fraud Prevention Headers Setup page';
         }
+        field(10539; "MTD Enabled"; Boolean)
+        {
+            Caption = 'Enabled';
+
+            trigger OnValidate()
+            var
+                CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+            begin
+                if not xRec."MTD Enabled" and "MTD Enabled" then
+                    "MTD Enabled" := CustomerConsentMgt.ConfirmUserConsent();
+            end;
+        }
     }
 
     internal procedure GetMTDOAuthSetupCode(): Code[20]

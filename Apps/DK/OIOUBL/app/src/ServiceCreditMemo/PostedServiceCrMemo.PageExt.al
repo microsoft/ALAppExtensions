@@ -11,7 +11,7 @@ pageextension 13680 "OIOUBL-Posted Service Cr Memo" extends "Posted Service Cred
         {
             field("OIOUBL-Contact Role"; "OIOUBL-Contact Role")
             {
-                Tooltip = 'Specifies the role of the contact person at the customer.';
+                Tooltip = 'Specifies the role of the contact person at the customer. This is used in the exported electronic document.';
                 Editable = False;
                 ApplicationArea = Service;
             }
@@ -21,7 +21,7 @@ pageextension 13680 "OIOUBL-Posted Service Cr Memo" extends "Posted Service Cred
         {
             field("Your Reference"; "Your Reference")
             {
-                Tooltip = 'Specifies the customer''s reference.';
+                Tooltip = 'Specifies the customer''s reference. This is used in the exported electronic document.';
                 ApplicationArea = Service;
                 Editable = False;
             }
@@ -31,19 +31,19 @@ pageextension 13680 "OIOUBL-Posted Service Cr Memo" extends "Posted Service Cred
         {
             field("OIOUBL-GLN"; "OIOUBL-GLN")
             {
-                Tooltip = 'Specifies the GLN location number for the customer, based on the GLN field in the original sales order.';
+                Tooltip = 'Specifies the GLN location number for the customer, based on the GLN field in the original sales order. This is used in the exported electronic document.';
                 ApplicationArea = Service;
                 Editable = False;
             }
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
-                Tooltip = 'Specifies the account code of the customer who you will send the invoice to.';
+                Tooltip = 'Specifies the account code of the customer who you will send the invoice to. This is used in the exported electronic document.';
                 ApplicationArea = Service;
                 Editable = False;
             }
             field("OIOUBL-Profile Code"; "OIOUBL-Profile Code")
             {
-                Tooltip = 'Specifies the profile that this customer requires for electronic documents.';
+                Tooltip = 'Specifies the profile that this customer requires for electronic documents. This is used in the exported electronic document.';
                 ApplicationArea = Service;
                 Editable = False;
             }

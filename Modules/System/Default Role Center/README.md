@@ -50,7 +50,7 @@ Handled pattern
  
 
 
-## BLANK (Profile )
+## BLANK (Profile)
 
  Empty profile to use in case no other profile is present when system is initializing.
  

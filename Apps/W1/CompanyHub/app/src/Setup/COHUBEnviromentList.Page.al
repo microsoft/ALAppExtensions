@@ -4,7 +4,7 @@ page 1166 "COHUB Enviroment List"
     ApplicationArea = All;
     UsageCategory = Administration;
     SourceTable = "COHUB Enviroment";
-    Caption = 'Enviroments';
+    Caption = 'Environments';
     Editable = false;
     CardPageId = "COHUB Enviroment Card";
 
@@ -18,13 +18,13 @@ page 1166 "COHUB Enviroment List"
                 field("No."; Rec."No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the No. of the enviroment.';
+                    ToolTip = 'Specifies the No. of the environment.';
                 }
 
                 field("Name"; Rec."Name")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the name of the enviroment.';
+                    ToolTip = 'Specifies the name of the environment.';
                 }
 
                 field("Phone No."; Rec."Contact Phone No.")
@@ -57,7 +57,7 @@ page 1166 "COHUB Enviroment List"
             action(ImportEnviroments)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Import Enviroments';
+                Caption = 'Import Environments';
                 Image = Import;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -76,13 +76,13 @@ page 1166 "COHUB Enviroment List"
             action(ExportEnviroments)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Export Enviroments';
+                Caption = 'Export Environments';
                 Image = Import;
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                ToolTip = 'Exports the list of enviroments.';
+                ToolTip = 'Exports the list of environments.';
 
                 trigger OnAction()
                 var
@@ -95,10 +95,10 @@ page 1166 "COHUB Enviroment List"
             action("Groups")
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Enviroment Groups';
+                Caption = 'Environment Groups';
                 Image = CustomerGroup;
                 RunObject = page "COHUB Group List";
-                ToolTip = 'Show enviroment groups.';
+                ToolTip = 'Show environment groups.';
                 Visible = true;
                 Promoted = true;
                 PromotedCategory = Process;

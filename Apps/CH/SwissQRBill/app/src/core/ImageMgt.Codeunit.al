@@ -1,6 +1,6 @@
 codeunit 11514 "Swiss QR-Bill Image Mgt."
 {
-    internal procedure GenerateSwissQRCodeImage(SourceText: Text; QRImageTempBlob: Codeunit "Temp Blob"): Boolean
+    procedure GenerateSwissQRCodeImage(SourceText: Text; QRImageTempBlob: Codeunit "Temp Blob"): Boolean
     var
         SwissQRBillSetup: Record "Swiss QR-Bill Setup";
         SwissCrossTempBlob: Codeunit "Temp Blob";

@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31220 "Sync.Dep.Fld-ItemChrgAsgmS CZL"
 {
@@ -30,3 +31,4 @@ codeunit 31220 "Sync.Dep.Fld-ItemChrgAsgmS CZL"
         SyncDepFldUtilities.SyncFields(Rec."Incl. in Intrastat Stat. Value", Rec."Incl. in Intrastat S.Value CZL", PreviousRecord."Incl. in Intrastat Stat. Value", PreviousRecord."Incl. in Intrastat S.Value CZL");
     end;
 }
+#endif

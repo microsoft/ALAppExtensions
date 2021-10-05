@@ -10,7 +10,7 @@ page 2026 "Image Analysis Tags"
     DeleteAllowed = false;
     InsertAllowed = false;
     Caption = 'Image Analyzer Attributes';
-    PromotedActionCategories = 'New,Process,Report,Confidence Score,Blacklist', Comment = 'Blacklist is used to prevent the selected attributes from being suggested in the future.';
+    PromotedActionCategories = 'New,Process,Report,Confidence Score,Blocklist', Comment = 'Blocklist is used to prevent the selected attributes from being suggested in the future.';
 
     layout
     {
@@ -158,11 +158,11 @@ page 2026 "Image Analysis Tags"
 
             group(BlacklistGroup)
             {
-                Caption = 'Blacklist';
+                Caption = 'Blocklist';
                 action(ViewBlacklistedTags)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'View Blacklisted Attributes';
+                    Caption = 'View Blocked Attributes';
                     Enabled = True;
                     Visible = True;
                     Image = Approvals;

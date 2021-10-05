@@ -17,6 +17,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         CopyGenJournalParameters: Record "Copy Gen. Journal Parameters";
         CustLedgerEntry: Record "Cust. Ledger Entry";
         Customer: Record Customer;
+        CustomerTempl: Record "Customer Templ.";
         DepreciationBook: Record "Depreciation Book";
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
@@ -60,6 +61,8 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         PurchInvLine: Record "Purch. Inv. Line";
         PurchRcptHeader: Record "Purch. Rcpt. Header";
         PurchRcptLine: Record "Purch. Rcpt. Line";
+        RegistrationLog: Record "Registration Log CZL";
+        RegistrationLogDetail: Record "Registration Log Detail CZL";
         ReminderHeader: Record "Reminder Header";
         Resource: Record Resource;
         ResponsibilityCenter: Record "Responsibility Center";
@@ -109,13 +112,20 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         Vendor: Record Vendor;
         VendorBankAccount: Record "Vendor Bank Account";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
+        VendorTempl: Record "Vendor Templ.";
         DataClassificationMgt: Codeunit "Data Classification Mgt.";
     begin
         Company.Get(CompanyName());
         if not Company."Evaluation Company" then
             exit;
 
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Extension CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule File Mapping CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Result Col. CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Result Hdr. CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Result Hist. CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Result Line CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Result Value CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Certificate Code CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Commodity CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Commodity Setup CZL");
@@ -131,6 +141,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Intrastat Delivery Group CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Invt. Movement Template CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Registration Log CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Registration Log Detail CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Reg. No. Service Config CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Specific Movement CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Statistic Indication CZL");
@@ -154,6 +165,15 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"VIES Declaration Line CZL");
 
         DataClassificationMgt.SetFieldToPersonal(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Created By"));
+        DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log CZL", RegistrationLog.FieldNo("Verified City"));
+        DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log CZL", RegistrationLog.FieldNo("Verified Post Code"));
+        DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log CZL", RegistrationLog.FieldNo("Verified VAT Registration No."));
+        DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log CZL", RegistrationLog.FieldNo("Verified Address"));
+        DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log CZL", RegistrationLog.FieldNo("Verified Name"));
+        DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log CZL", RegistrationLog.FieldNo("User ID"));
+        DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log CZL", RegistrationLog.FieldNo("Registration No."));
+        DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log Detail CZL", RegistrationLogDetail.FieldNo(Response));
+        DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log Detail CZL", RegistrationLogDetail.FieldNo("Current Value"));
 
         DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Entry No."));
         DataClassificationMgt.SetFieldToCompanyConfidential(Database::"EET Entry CZL", EETEntryCZL.FieldNo("Cash Register Type"));
@@ -192,6 +212,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Acc. Schedule Line", AccScheduleLine.FieldNo("Calc CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Acc. Schedule Line", AccScheduleLine.FieldNo("Row Correction CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Acc. Schedule Line", AccScheduleLine.FieldNo("Assets/Liabilities Type CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Acc. Schedule Line", AccScheduleLine.FieldNo("Source Table CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Acc. Schedule Name", AccScheduleName.FieldNo("Acc. Schedule Type CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Bank Account", BankAccount.FieldNo("Excl. from Exch. Rate Adj. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Company Information", CompanyInformation.FieldNo("Default Bank Account Code CZL"));
@@ -203,9 +224,11 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Cust. Ledger Entry", CustLedgerEntry.FieldNo("VAT Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Customer, Customer.FieldNo("Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Customer, Customer.FieldNo("Tax Registration No. CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::Customer, Customer.FieldNo("Validate Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Customer, Customer.FieldNo("Transaction Type CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Customer, Customer.FieldNo("Transaction Specification CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Customer, Customer.FieldNo("Transport Method CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Customer Templ.", CustomerTempl.FieldNo("Validate Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Depreciation Book", DepreciationBook.FieldNo("Mark Reclass. as Correct. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Detailed Cust. Ledg. Entry", DetailedCustLedgEntry.FieldNo("Customer Posting Group CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Detailed Cust. Ledg. Entry", DetailedCustLedgEntry.FieldNo("Appl. Across Post. Groups CZL"));
@@ -222,6 +245,8 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Rounding Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Closed Per. Entry Pos.Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("User Checks Allowed CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Shared Account Schedule CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Acc. Schedule Results Nos. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"General Posting Setup", GeneralPostingSetup.FieldNo("Invt. Rounding Adj. Acc. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Gen. Journal Line", GenJournalLine.FieldNo("VAT Delay CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Gen. Journal Line", GenJournalLine.FieldNo("VAT Currency Factor CZL"));
@@ -528,6 +553,8 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Source Code Setup", SourceCodeSetup.FieldNo("Purchase VAT Delay CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Source Code Setup", SourceCodeSetup.FieldNo("Sales VAT Delay CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Source Code Setup", SourceCodeSetup.FieldNo("VAT LCY Correction CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Source Code Setup", SourceCodeSetup.FieldNo("Close Balance Sheet CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Source Code Setup", SourceCodeSetup.FieldNo("Open Balance Sheet CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Stockkeeping Unit", StockkeepingUnit.FieldNo("Gen. Prod. Posting Group CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Tariff Number", TariffNumber.FieldNo("Statement Code CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Tariff Number", TariffNumber.FieldNo("VAT Stat. UoM Code CZL"));
@@ -606,6 +633,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Template", VATStatementTemplate.FieldNo("Allow Comments/Attachments CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Vendor, Vendor.FieldNo("Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Vendor, Vendor.FieldNo("Tax Registration No. CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::Vendor, Vendor.FieldNo("Validate Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Vendor, Vendor.FieldNo("Last Unreliab. Check Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Vendor, Vendor.FieldNo("VAT Unreliable Payer CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Vendor, Vendor.FieldNo("Disable Unreliab. Check CZL"));
@@ -614,5 +642,6 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::Vendor, Vendor.FieldNo("Transport Method CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Vendor Bank Account", VendorBankAccount.FieldNo("Third Party Bank Account CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Vendor Ledger Entry", VendorLedgerEntry.FieldNo("VAT Date CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Vendor Templ.", VendorTempl.FieldNo("Validate Registration No. CZL"));
     end;
 }

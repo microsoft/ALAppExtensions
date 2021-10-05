@@ -1,7 +1,7 @@
 codeunit 31279 "Compensation Management CZC"
 {
-    Permissions = TableData "Cust. Ledger Entry" = rm,
-                  TableData "Vendor Ledger Entry" = rm;
+    Permissions = tabledata "Cust. Ledger Entry" = rm,
+                  tabledata "Vendor Ledger Entry" = rm;
 
     var
         ApplyDocManuallyMsg: Label 'Document was not applied with 0 remaining amount, you have to apply it manually.';
@@ -62,7 +62,11 @@ codeunit 31279 "Compensation Management CZC"
                 begin
                     CustLedgerEntry.Get(CompensationLineCZC."Source Entry No.");
                     CustLedgerEntry.TestField(Prepayment, false);
+#if not CLEAN19
+#pragma warning disable AL0432
                     CustLedgerEntry.TestField("Prepayment Type", CustLedgerEntry."Prepayment Type"::" ");
+#pragma warning restore AL0432
+#endif
                     if AppliesToID <> '' then begin
                         CustLedgerEntry.Validate("Applies-to ID", AppliesToID);
                         CustLedgerEntry."Amount to Apply" := CompensationLineCZC.Amount;
@@ -76,7 +80,11 @@ codeunit 31279 "Compensation Management CZC"
                 begin
                     VendorLedgerEntry.Get(CompensationLineCZC."Source Entry No.");
                     VendorLedgerEntry.TestField(Prepayment, false);
+#if not CLEAN19
+#pragma warning disable AL0432
                     VendorLedgerEntry.TestField("Prepayment Type", VendorLedgerEntry."Prepayment Type"::" ");
+#pragma warning restore AL0432
+#endif
                     if AppliesToID <> '' then begin
                         VendorLedgerEntry.Validate("Applies-to ID", AppliesToID);
                         VendorLedgerEntry."Amount to Apply" := CompensationLineCZC.Amount;

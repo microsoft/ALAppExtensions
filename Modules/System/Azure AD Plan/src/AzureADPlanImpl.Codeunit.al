@@ -78,17 +78,17 @@ codeunit 9018 "Azure AD Plan Impl."
         ServicePlanIdValue: Variant;
     begin
         if not IsNull(GraphUser.AssignedPlans()) then
-            foreach AssignedPlan IN GraphUser.AssignedPlans() do
+            foreach AssignedPlan in GraphUser.AssignedPlans() do
                 if Format(AssignedPlan.CapabilityStatus()) = 'Enabled' then begin
                     ServicePlanIdValue := AssignedPlan.ServicePlanId();
                     if IsBCServicePlan(ServicePlanIdValue) then
-                        exit(TRUE);
+                        exit(true);
                 end;
 
         if IsDeviceRole(GraphUser) then
             exit(true);
 
-        exit(FALSE);
+        exit(false);
     end;
 
     [NonDebuggable]
@@ -148,7 +148,7 @@ codeunit 9018 "Azure AD Plan Impl."
         GraphUser: DotNet UserInfo;
         UserPlanExists: Boolean;
     begin
-        if not User.GET(UserSecurityID) then
+        if not User.Get(UserSecurityID) then
             exit;
 
         if not AzureADGraphUser.GetGraphUser(UserSecurityID, GraphUser) then
@@ -570,6 +570,30 @@ codeunit 9018 "Azure AD Plan Impl."
             DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
 
         exit(TempPlan."Role Center ID");
+    end;
+
+    [NonDebuggable]
+    procedure AssignDelegatedAdminPlanAndUserGroups()
+    var
+        UserPlan: Record "User Plan";
+        AzureADPlan: Codeunit "Azure AD Plan";
+        PlanIds: Codeunit "Plan Ids";
+        UserPermissions: Codeunit "User Permissions";
+        UserGroupsAdded: Boolean;
+    begin
+        // Have any plans been added to this user in O365, since last time he logged-in to NAV?
+        // For each plan assigned to the user in Office
+        UserPlan.Init();
+        UserPlan."Plan ID" := PlanIds.GetDelegatedAdminPlanId();
+        UserPlan."User Security ID" := UserSecurityID();
+        UserPlan.Insert();
+        AzureADPlan.OnUpdateUserAccessForSaaS(UserPlan."User Security ID", UserGroupsAdded);
+
+        // Only remove SUPER if other permissions are granted (to avoid user lockout)
+        if UserGroupsAdded then begin
+            UserPermissions.RemoveSuperPermissions(UserSecurityID());
+            Commit(); 
+        end;
     end;
 
     [NonDebuggable]

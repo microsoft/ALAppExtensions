@@ -56,7 +56,8 @@ codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
             CashDeskUserCZP.Init();
             CashDeskUserCZP."Cash Desk No." := Rec."Cash Desk No.";
             CashDeskUserCZP."User ID" := Rec."User ID";
-            CashDeskUserCZP.Insert(false);
+            CashDeskUserCZP.SystemId := Rec.SystemId;
+            CashDeskUserCZP.Insert(false, true);
         end;
         CashDeskUserCZP.Create := Rec.Create;
         CashDeskUserCZP.Issue := Rec.Issue;
@@ -134,7 +135,8 @@ codeunit 31126 "Sync.Dep.Fld-CashDeskUser CZP"
             CashDeskUser.Init();
             CashDeskUser."Cash Desk No." := Rec."Cash Desk No.";
             CashDeskUser."User ID" := Rec."User ID";
-            CashDeskUser.Insert(false);
+            CashDeskUser.SystemId := Rec.SystemId;
+            CashDeskUser.Insert(false, true);
         end;
         CashDeskUser.Create := Rec.Create;
         CashDeskUser.Issue := Rec.Issue;

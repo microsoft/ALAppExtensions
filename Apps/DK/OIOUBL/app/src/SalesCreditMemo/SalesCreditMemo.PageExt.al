@@ -13,25 +13,25 @@ pageextension 13660 "OIOUBL-Sales Credit Memo" extends "Sales Credit Memo"
             field("OIOUBL-Sell-to Contact Phone No."; "OIOUBL-Sell-to Contact Phone No.")
             {
                 Caption = 'Contact Phone No.';
-                Tooltip = 'Specifies the telephone number of the contact person at the customer.';
+                Tooltip = 'Specifies the telephone number of the contact person at the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
             field("OIOUBL-Sell-to Contact Fax No."; "OIOUBL-Sell-to Contact Fax No.")
             {
                 Caption = 'Contact Fax No.';
-                Tooltip = 'Specifies the fax number of the contact person at the customer.';
+                Tooltip = 'Specifies the fax number of the contact person at the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
             field("OIOUBL-Sell-to Contact E-Mail"; "OIOUBL-Sell-to Contact E-Mail")
             {
                 Caption = 'Contact E-Mail';
-                Tooltip = 'Specifies the email address of the contact person at the customer.';
+                Tooltip = 'Specifies the email address of the contact person at the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
             field("OIOUBL-Sell-to Contact Role"; "OIOUBL-Sell-to Contact Role")
             {
                 Caption = 'Contact Role';
-                Tooltip = 'Specifies the role of the contact person at the customer.';
+                Tooltip = 'Specifies the role of the contact person at the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
         }
@@ -40,12 +40,12 @@ pageextension 13660 "OIOUBL-Sales Credit Memo" extends "Sales Credit Memo"
         {
             field("OIOUBL-GLN"; "OIOUBL-GLN")
             {
-                Tooltip = 'Specifies the GLN location number for the customer.';
+                Tooltip = 'Specifies the GLN location number for the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
-                Tooltip = 'Specifies the account code of the customer.';
+                Tooltip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
 
                 trigger OnValidate();
@@ -55,7 +55,7 @@ pageextension 13660 "OIOUBL-Sales Credit Memo" extends "Sales Credit Memo"
             }
             field("OIOUBL-Profile Code"; "OIOUBL-Profile Code")
             {
-                Tooltip = 'Specifies the profile that the customer requires for electronic documents.';
+                Tooltip = 'Specifies the profile that the customer requires for electronic documents. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
         }

@@ -7,12 +7,15 @@ codeunit 31317 "FA Jnl. Check Line Handler CZL"
             UserSetupAdvManagementCZL.CheckGeneralJournalLine(GenJnlLine);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"FA Journal Line", 'OnCheckFAJournalLineUserRestrictions', '', false, false)]
-    local procedure CheckFAJournalTemplateUserRestrictions(JournalTemplateName: Code[10])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::FAJnlManagement, 'OnBeforeOpenJournal', '', false, false)]
+    local procedure JournalTemplateUserRestrictionsOnBeforeOpenJournal(var FAJournalLine: Record "FA Journal Line")
     var
-        DummyUserSetupLineCZL: Record "User Setup Line CZL";
+        UserSetupLineTypeCZL: Enum "User Setup Line Type CZL";
+        JournalTemplateName: Code[10];
     begin
-        UserSetupAdvManagementCZL.CheckJournalTemplate(DummyUserSetupLineCZL.Type::"FA Journal", JournalTemplateName);
+        JournalTemplateName := FAJournalLine.GetRangeMax("Journal Template Name");
+        UserSetupLineTypeCZL := UserSetupLineTypeCZL::"FA Journal";
+        UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, JournalTemplateName);
     end;
 
 

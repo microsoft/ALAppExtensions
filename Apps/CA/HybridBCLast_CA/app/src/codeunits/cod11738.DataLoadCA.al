@@ -24,7 +24,12 @@ codeunit 11738 "Data Load CA"
         DataExchDef: Record "Data Exch. Def";
         StgDataExchDef: Record "Stg Data Exch Def CA";
         W1DataLoad: Codeunit "W1 Data Load";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetGenJnlLineEFTExportSequenceNoUpgradeTag()) then
+            exit;
+
         if StgDataExchDef.FindSet(false, false) then
             repeat
                 DataExchDef.SetRange(Code, StgDataExchDef.Code);
@@ -37,5 +42,7 @@ codeunit 11738 "Data Load CA"
         W1DataLoad.OnAfterCompanyTableLoad(StgDataExchDef.RecordId().TableNo(), HybridReplicationSummary."Synced Version");
         StgDataExchDef.Reset();
         StgDataExchDef.DeleteAll();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetGenJnlLineEFTExportSequenceNoUpgradeTag());
     end;
 }

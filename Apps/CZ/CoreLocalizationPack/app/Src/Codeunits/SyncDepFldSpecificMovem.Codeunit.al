@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31214 "Sync.Dep.Fld-SpecificMovem CZL"
 {
@@ -54,7 +55,8 @@ codeunit 31214 "Sync.Dep.Fld-SpecificMovem CZL"
         if not SpecificMovementCZL.Get(Rec.Code) then begin
             SpecificMovementCZL.Init();
             SpecificMovementCZL.Code := Rec.Code;
-            SpecificMovementCZL.Insert(false);
+            SpecificMovementCZL.SystemId := Rec.SystemId;
+            SpecificMovementCZL.Insert(false, true);
         end;
         SpecificMovementCZL.Description := Rec.Description;
         SpecificMovementCZL.Modify(false);
@@ -127,7 +129,8 @@ codeunit 31214 "Sync.Dep.Fld-SpecificMovem CZL"
         if not SpecificMovement.Get(Rec.Code) then begin
             SpecificMovement.Init();
             SpecificMovement.Code := CopyStr(Rec.Code, 1, MaxStrLen(SpecificMovement.Code));
-            SpecificMovement.Insert(false);
+            SpecificMovement.SystemId := Rec.SystemId;
+            SpecificMovement.Insert(false, true);
         end;
         SpecificMovement.Description := CopyStr(Rec.Description, 1, MaxStrLen(SpecificMovement.Description));
         SpecificMovement.Modify(false);
@@ -160,3 +163,4 @@ codeunit 31214 "Sync.Dep.Fld-SpecificMovem CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

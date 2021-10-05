@@ -1,12 +1,16 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31210 "Sync.Dep.Fld-UnrPaySvcSet CZL"
 {
+#if not CLEAN17
     Permissions = tabledata "Electronically Govern. Setup" = rimd,
                   tabledata "Unrel. Payer Service Setup CZL" = rimd;
+#endif
     ObsoleteState = Pending;
     ObsoleteReason = 'This codeunit will be removed after removing feature from Base Application.';
     ObsoleteTag = '18.0';
 
+#if not CLEAN17
     [EventSubscriber(ObjectType::Table, Database::"Electronically Govern. Setup", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenameElectronicallyGovernSetup(var Rec: Record "Electronically Govern. Setup"; var xRec: Record "Electronically Govern. Setup")
     var
@@ -54,7 +58,8 @@ codeunit 31210 "Sync.Dep.Fld-UnrPaySvcSet CZL"
         if not UnrelPayerServiceSetupCZL.Get(Rec."Primary Key") then begin
             UnrelPayerServiceSetupCZL.Init();
             UnrelPayerServiceSetupCZL."Primary Key" := Rec."Primary Key";
-            UnrelPayerServiceSetupCZL.Insert(false);
+            UnrelPayerServiceSetupCZL.SystemId := Rec.SystemId;
+            UnrelPayerServiceSetupCZL.Insert(false, true);
         end;
         UnrelPayerServiceSetupCZL."Public Bank Acc.Chck.Star.Date" := Rec."Public Bank Acc.Chck.Star.Date";
         UnrelPayerServiceSetupCZL."Public Bank Acc.Check Limit" := Rec."Public Bank Acc.Check Limit";
@@ -129,7 +134,8 @@ codeunit 31210 "Sync.Dep.Fld-UnrPaySvcSet CZL"
         if not ElectronicallyGovernSetup.Get(Rec."Primary Key") then begin
             ElectronicallyGovernSetup.Init();
             ElectronicallyGovernSetup."Primary Key" := Rec."Primary Key";
-            ElectronicallyGovernSetup.Insert(false);
+            ElectronicallyGovernSetup.SystemId := Rec.SystemId;
+            ElectronicallyGovernSetup.Insert(false, true);
         end;
         ElectronicallyGovernSetup."Public Bank Acc.Chck.Star.Date" := Rec."Public Bank Acc.Chck.Star.Date";
         ElectronicallyGovernSetup."Public Bank Acc.Check Limit" := Rec."Public Bank Acc.Check Limit";
@@ -163,4 +169,6 @@ codeunit 31210 "Sync.Dep.Fld-UnrPaySvcSet CZL"
     begin
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
+#endif
 }
+#endif

@@ -1,11 +1,14 @@
 codeunit 31321 "Requisition Line Handler CZL"
 {
-    [EventSubscriber(ObjectType::Table, Database::"Requisition Line", 'OnCheckReqWorksheetTemplateUserRestrictions', '', false, false)]
-    local procedure CheckReqJournalTemplateUserRestrictions(WorksheetTemplateName: Code[10])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::ReqJnlManagement, 'OnBeforeOpenJnl', '', false, false)]
+    local procedure JournalTemplateUserRestrictionsOnBeforeOpenJnl(var ReqLine: Record "Requisition Line")
     var
-        DummyUserSetupLineCZL: Record "User Setup Line CZL";
         UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+        UserSetupLineTypeCZL: Enum "User Setup Line Type CZL";
+        JournalTemplateName: Code[10];
     begin
-        UserSetupAdvManagementCZL.CheckJournalTemplate(DummyUserSetupLineCZL.Type::"Req. Worksheet", WorksheetTemplateName);
+        JournalTemplateName := ReqLine.GetRangeMax("Worksheet Template Name");
+        UserSetupLineTypeCZL := UserSetupLineTypeCZL::"Req. Worksheet";
+        UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, JournalTemplateName);
     end;
 }

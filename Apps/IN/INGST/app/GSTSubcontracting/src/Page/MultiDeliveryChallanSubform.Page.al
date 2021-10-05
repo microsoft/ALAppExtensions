@@ -60,6 +60,16 @@ page 18473 "Multi Delivery Challan Subform"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the component rework quantity.';
                 }
+                field("GST Group Code"; Rec."GST Group Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the GST Group code for the calculation of GST on Delivery Challan line.';
+                }
+                field("HSN/SAC Code"; Rec."HSN/SAC Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the HSN/SAC code for the calculation of GST on Delivery Challan line.';
+                }
                 field("Last Date"; Rec."Last Date")
                 {
                     ApplicationArea = Basic, Suite;

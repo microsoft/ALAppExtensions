@@ -169,10 +169,9 @@ page 12 "Email Viewer"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
+                Enabled = HasSourceRecord;
 
                 trigger OnAction()
-                var
-                    EmailImpl: Codeunit "Email Impl";
                 begin
                     EmailImpl.ShowSourceRecord(Rec."Message Id");
                 end;
@@ -199,6 +198,7 @@ page 12 "Email Viewer"
         else
             CurrPage.Caption(PageCaptionTxt); // fallback to default caption
 
+        HasSourceRecord := EmailImpl.HasSourceRecord(Rec."Message Id");
         IsHTMLFormatted := EmailMessage.IsBodyHTMLFormatted();
         HasAttachments := EmailMessage.Attachments_First();
         CurrPage.Attachments.Page.UpdateValues(EmailMessage.GetId());
@@ -227,10 +227,12 @@ page 12 "Email Viewer"
         EmailAccount: Record "Email Account";
         EmailMessage: Codeunit "Email Message Impl.";
         EmailViewer: Codeunit "Email Viewer";
+        EmailImpl: Codeunit "Email Impl";
         FromDisplayName: Text;
         ToRecipient, CcRecipient, BccRecipient : Text;
         EmailSubject: Text;
         EmailBody: Text;
+        HasSourceRecord: Boolean;
         [InDataSet]
         IsHTMLFormatted, HasAttachments : Boolean;
         FromDisplayNameLbl: Label '%1 (%2)', Comment = '%1 - Account Name, %2 - Email address', Locked = true;

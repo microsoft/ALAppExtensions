@@ -118,6 +118,14 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
         case ValueEntry."Entry Type" of
             ValueEntry."Entry Type"::"Direct Cost":
                 begin
+#if CLEAN18
+                    if (ExpCostToPost <> 0) or (ExpCostToPostACY <> 0) then
+                        Sender.InitInvtPostBuf(
+                          ValueEntry,
+                          GlobalInvtPostBuf."Account Type"::"Inventory (Interim)",
+                          GetInvtPostBufferAccTypeForGLCorrection(ValueEntry, GlobalInvtPostBuf."Account Type"::"Invt. Accrual (Interim)"),
+                          ExpCostToPost, ExpCostToPostACY, true);
+#else
                     if (ExpCostToPost <> 0) or (ExpCostToPostACY <> 0) then begin
 #pragma warning disable AL0432
                         Sender.SetCorrectionForExpCost(true, ValueEntry."Expected Cost");
@@ -131,6 +139,7 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
                         Sender.SetCorrectionForExpCost(false, ValueEntry."Expected Cost");
 #pragma warning restore AL0432
                     end;
+#endif
                     if (CostToPost <> 0) or (CostToPostACY <> 0) then
                         Sender.InitInvtPostBuf(
                           ValueEntry,
@@ -141,6 +150,14 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
                 end;
             ValueEntry."Entry Type"::Revaluation:
                 begin
+#if CLEAN18
+                    if (ExpCostToPost <> 0) or (ExpCostToPostACY <> 0) then
+                        Sender.InitInvtPostBuf(
+                            ValueEntry,
+                            GlobalInvtPostBuf."Account Type"::"Inventory (Interim)",
+                            GetInvtPostBufferAccTypeForGLCorrection(ValueEntry, GlobalInvtPostBuf."Account Type"::"Invt. Accrual (Interim)"),
+                            ExpCostToPost, ExpCostToPostACY, true);
+#else
                     if (ExpCostToPost <> 0) or (ExpCostToPostACY <> 0) then begin
 #pragma warning disable AL0432
                         Sender.SetCorrectionForExpCost(true, ValueEntry."Expected Cost");
@@ -154,6 +171,7 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
                         Sender.SetCorrectionForExpCost(false, ValueEntry."Expected Cost");
 #pragma warning restore AL0432
                     end;
+#endif
                     if (CostToPost <> 0) or (CostToPostACY <> 0) then
                         Sender.InitInvtPostBuf(
                             ValueEntry,
@@ -174,6 +192,14 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
         case ValueEntry."Entry Type" of
             ValueEntry."Entry Type"::"Direct Cost":
                 begin
+#if CLEAN18
+                    if (ExpCostToPost <> 0) or (ExpCostToPostACY <> 0) then
+                        Sender.InitInvtPostBuf(
+                            ValueEntry,
+                            GlobalInvtPostBuf."Account Type"::"Inventory (Interim)",
+                            GetInvtPostBufferAccTypeForGLCorrection(ValueEntry, GlobalInvtPostBuf."Account Type"::"COGS (Interim)"),
+                            ExpCostToPost, ExpCostToPostACY, true);
+#else
                     if (ExpCostToPost <> 0) or (ExpCostToPostACY <> 0) then begin
 #pragma warning disable AL0432
                         Sender.SetCorrectionForExpCost(true, ValueEntry."Expected Cost");
@@ -187,6 +213,7 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
                         Sender.SetCorrectionForExpCost(false, ValueEntry."Expected Cost");
 #pragma warning restore AL0432
                     end;
+#endif
                     if (CostToPost <> 0) or (CostToPostACY <> 0) then
                         Sender.InitInvtPostBuf(
                             ValueEntry,
@@ -197,6 +224,14 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
                 end;
             ValueEntry."Entry Type"::Revaluation:
                 begin
+#if CLEAN18
+                    if (ExpCostToPost <> 0) or (ExpCostToPostACY <> 0) then
+                        Sender.InitInvtPostBuf(
+                            ValueEntry,
+                            GlobalInvtPostBuf."Account Type"::"Inventory (Interim)",
+                            GetInvtPostBufferAccTypeForGLCorrection(ValueEntry, GlobalInvtPostBuf."Account Type"::"COGS (Interim)"),
+                            ExpCostToPost, ExpCostToPostACY, true);
+#else
                     if (ExpCostToPost <> 0) or (ExpCostToPostACY <> 0) then begin
 #pragma warning disable AL0432
                         Sender.SetCorrectionForExpCost(true, ValueEntry."Expected Cost");
@@ -210,6 +245,7 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
                         Sender.SetCorrectionForExpCost(false, ValueEntry."Expected Cost");
 #pragma warning restore AL0432
                     end;
+#endif
                     if (CostToPost <> 0) or (CostToPostACY <> 0) then
                         Sender.InitInvtPostBuf(
                             ValueEntry,
@@ -231,9 +267,11 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
             ValueEntry."Entry Type"::"Direct Cost":
                 begin
                     if (ExpCostToPost <> 0) or (ExpCostToPostACY <> 0) then begin
+#if not CLEAN18
 #pragma warning disable AL0432
                         Sender.SetCorrectionForExpCost(true, ValueEntry."Expected Cost");
 #pragma warning restore AL0432
+#endif
                         Sender.InitInvtPostBuf(
                             ValueEntry,
                             GlobalInvtPostBuf."Account Type"::"Inventory (Interim)",
@@ -244,9 +282,11 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
                             GlobalInvtPostBuf."Account Type"::"AccWIPChange CZL",
                             GetInvtPostBufferAccTypeForGLCorrection(ValueEntry, GlobalInvtPostBuf."Account Type"::"WIP Inventory"),
                             ExpCostToPost, ExpCostToPostACY, true);
+#if not CLEAN18
 #pragma warning disable AL0432
                         Sender.SetCorrectionForExpCost(false, ValueEntry."Expected Cost");
 #pragma warning restore AL0432
+#endif
                     end;
                     if (CostToPost <> 0) or (CostToPostACY <> 0) then begin
                         Sender.InitInvtPostBuf(
@@ -264,6 +304,14 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
                 end;
             ValueEntry."Entry Type"::Revaluation:
                 begin
+#if CLEAN18
+                    if (ExpCostToPost <> 0) or (ExpCostToPostACY <> 0) then
+                        Sender.InitInvtPostBuf(
+                            ValueEntry,
+                            GlobalInvtPostBuf."Account Type"::"Inventory (Interim)",
+                            GetInvtPostBufferAccTypeForGLCorrection(ValueEntry, GlobalInvtPostBuf."Account Type"::"WIP Inventory"),
+                            ExpCostToPost, ExpCostToPostACY, true);
+#else
                     if (ExpCostToPost <> 0) or (ExpCostToPostACY <> 0) then begin
 #pragma warning disable AL0432
                         Sender.SetCorrectionForExpCost(true, ValueEntry."Expected Cost");
@@ -277,6 +325,7 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
                         Sender.SetCorrectionForExpCost(false, ValueEntry."Expected Cost");
 #pragma warning restore AL0432
                     end;
+#endif
                     if (CostToPost <> 0) or (CostToPostACY <> 0) then
                         Sender.InitInvtPostBuf(
                             ValueEntry,
@@ -465,7 +514,7 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
 
         SourceCodeSetup.Get();
         CloseIncomeStatement := GLEntry."Source Code" = SourceCodeSetup."Close Income Statement";
-        CloseEntry := CloseIncomeStatement or (GLEntry."Source Code" = SourceCodeSetup."Close Balance Sheet");
+        CloseEntry := CloseIncomeStatement or (GLEntry."Source Code" = SourceCodeSetup."Close Balance Sheet CZL");
         CloseEntry := (GLEntry."Source Code" <> '') and CloseEntry;
 
         IsCorrection := (GLEntry."Credit Amount" < 0) or (GLEntry."Debit Amount" < 0);

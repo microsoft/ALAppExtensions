@@ -138,9 +138,9 @@ page 18003 "GST Posting Setup"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                 begin
-                    ODataUtility.EditWorksheetInExcel(
+                    EditinExcel.EditPageInExcel(
                         'GST Posting Setup',
                         CurrPage.ObjectId(false),
                         StrSubstNo(CodeValueLbl,

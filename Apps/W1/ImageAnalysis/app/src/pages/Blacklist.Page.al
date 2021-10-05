@@ -7,7 +7,7 @@ page 2027 "Image Analysis Blacklist"
 {
     PageType = List;
     SourceTable = "MS - Img. Analyzer Blacklist";
-    Caption = 'Image Analyzer Blacklisted Attributes';
+    Caption = 'Image Analyzer Blocked Attributes';
     InsertAllowed = false;
     ModifyAllowed = false;
 

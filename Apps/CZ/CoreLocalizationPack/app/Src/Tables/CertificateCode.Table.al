@@ -4,7 +4,7 @@ table 31132 "Certificate Code CZL"
     DataPerCompany = false;
     DataCaptionFields = "Code", Description;
     LookupPageID = "Certificate Code List CZL";
-    Permissions = TableData "Isolated Certificate" = r;
+    Permissions = tabledata "Isolated Certificate" = r;
 
     fields
     {

@@ -338,11 +338,28 @@ page 20252 "Tax Rates"
     {
         area(Processing)
         {
+            action(DeleteAllRates)
+            {
+                Caption = 'Delete All';
+                Image = ExportToExcel;
+                ApplicationArea = Basic, Suite;
+                PromotedCategory = Process;
+                Promoted = true;
+                PromotedOnly = true;
+                ToolTip = 'Deletes all tax rates for the tax type.';
+                trigger OnAction();
+                var
+                    TaxSetupMatrixMgmt: Codeunit "Tax Setup Matrix Mgmt.";
+                begin
+                    TaxSetupMatrixMgmt.DeleteAllTaxRates(GlobalTaxType, false);
+                end;
+            }
             action(ExportToExcel)
             {
                 Caption = 'Export To Excel';
                 Image = ExportToExcel;
                 ApplicationArea = Basic, Suite;
+                PromotedCategory = Process;
                 Promoted = true;
                 ToolTip = 'Exports the tax rates to Excel.';
                 trigger OnAction();
@@ -357,7 +374,9 @@ page 20252 "Tax Rates"
                 Caption = 'Import From Excel';
                 Image = ImportExcel;
                 ApplicationArea = Basic, Suite;
+                PromotedCategory = Process;
                 Promoted = true;
+                PromotedOnly = true;
                 ToolTip = 'Import the tax rates from Excel.';
                 trigger OnAction();
                 var
@@ -413,14 +432,12 @@ page 20252 "Tax Rates"
             TaxSetupMatrixMgmt.InitializeRateValue(Rec, GlobalTaxType);
             TaxSetupMatrixMgmt.FillColumnValue(ID, AttributeValue, RangeAttribute, AttributeID);
             AttributeValue[Index] := CurrentCellValue;
-            CurrPage.SaveRecord();
         end else begin
             TaxRateValue.SetRange("Config ID", ID);
             if TaxRateValue.IsEmpty() then begin
                 TaxSetupMatrixMgmt.InitializeRateValue(Rec, GlobalTaxType);
                 TaxSetupMatrixMgmt.FillColumnValue(ID, AttributeValue, RangeAttribute, AttributeID);
                 AttributeValue[Index] := CurrentCellValue;
-                CurrPage.SaveRecord();
             end;
         end;
     end;
@@ -437,6 +454,9 @@ page 20252 "Tax Rates"
 
         if UpdateRecord then
             TaxSetupMatrixMgmt.UpdateTaxConfigurationValue(ID, GlobalTaxType, AttributeID, ColumnIndex, AttributeValue, RangeAttribute);
+
+        if UpdateRecord then
+            CurrPage.Update(true);
     end;
 
     var

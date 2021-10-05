@@ -55,6 +55,8 @@ codeunit 20365 "Use Case Archival Mgmt."
     begin
         TaxJsonSerialization.ExportUseCases(UseCase, JArray);
         JArray.WriteTo(JsonText);
+        if StrLen(JsonText) = 0 then
+            exit;
         TempBlob.CreateOutStream(OStream);
         OStream.WriteText(JsonText);
         FileText := UseCase."Tax Type" + '.json';
@@ -94,6 +96,8 @@ codeunit 20365 "Use Case Archival Mgmt."
         EntityJsonSerialization.SetCanExportUseCases(Confirm(ExportUseCaseQst));
         EntityJsonSerialization.ExportTaxTypes(TaxType, JArray);
         JArray.WriteTo(JsonText);
+        if StrLen(JsonText) = 0 then
+            exit;
         TempBlob.CreateOutStream(OStream);
         OStream.WriteText(JsonText);
         FileText := StrSubstNo(TaxConfigLbl, CompanyName());
@@ -125,7 +129,7 @@ codeunit 20365 "Use Case Archival Mgmt."
     var
         TaxUseCase: Record "Tax Use Case";
         TypeHelper: Codeunit "Type Helper";
-        RestoreUseCaseQst: Label 'If you restore this version and current version will be deleted. Do you want continue ?';
+        RestoreUseCaseQst: Label 'If you restore this version then current version will be deleted. Do you want continue ?';
         IStream: InStream;
         OldVersion: Decimal;
         JsonText: Text;
@@ -134,15 +138,23 @@ codeunit 20365 "Use Case Archival Mgmt."
             exit;
 
         TaxUseCase.Get(UseCaseArchivalLogEntry."Case ID");
-        TaxUseCase.Validate(Status, TaxUseCase.Status::Draft);
-        TaxUseCase.Modify();
         OldVersion := TaxUseCase."Minor Version";
-        TaxUseCase.Delete(true);
+        if TaxUseCase.Status = TaxUseCase.Status::Draft then
+            OldVersion -= 1
+        else begin
+            TaxUseCase.Validate(Status, TaxUseCase.Status::Draft);
+            TaxUseCase.Modify();
+        end;
 
         UseCaseArchivalLogEntry.CalcFields("Configuration Data");
         UseCaseArchivalLogEntry."Configuration Data".CreateInStream(IStream);
         JsonText := TypeHelper.ReadAsTextWithSeparator(IStream, '');
         RestoreUseCase(JsonText, UseCaseArchivalLogEntry."Case ID", OldVersion);
+    end;
+
+    procedure SetIfChangedByMicrosoft(NewChangedByMicrosoft: Boolean)
+    begin
+        ChangedByMicrosoft := NewChangedByMicrosoft;
     end;
 
     local procedure RestoreUseCase(JsonText: Text; CaseID: Guid; OldVersion: Decimal)
@@ -165,6 +177,15 @@ codeunit 20365 "Use Case Archival Mgmt."
             Page.Run(PAGE::"Use Case Card", TaxUseCase);
     end;
 
+    local procedure ExportModifiedUseCases()
+    var
+        TaxUseCase: Record "Tax Use Case";
+    begin
+        TaxUseCase.SetFilter("Minor Version", '<>%1', 0);
+        if not TaxUseCase.IsEmpty() then
+            ExportUseCases(TaxUseCase);
+    end;
+
     local procedure ArchiveUseCase(var TaxUseCase: Record "Tax Use Case")
     begin
         CreateArchivalLog(TaxUseCase);
@@ -179,29 +200,25 @@ codeunit 20365 "Use Case Archival Mgmt."
         UseCaseArchivalLogEntry."Case ID" := TaxUseCase.ID;
         UseCaseArchivalLogEntry.Description := TaxUseCase.Description;
         UseCaseArchivalLogEntry."Log Date-Time" := CurrentDateTime;
-        if TaxUseCase."Major Version" = 0 then
-            UseCaseArchivalLogEntry."Major Version" := GetNextVersionID(TaxUseCase."Major Version")
-        else
-            UseCaseArchivalLogEntry."Major Version" := TaxUseCase."Major Version";
-
-        UseCaseArchivalLogEntry."Minor Version" := GetNextVersionID(TaxUseCase."Minor Version");
+        UseCaseArchivalLogEntry."Major Version" := TaxUseCase."Major Version";
+        UseCaseArchivalLogEntry."Minor Version" := TaxUseCase."Minor Version";
         UseCaseArchivalLogEntry."Configuration Data".CreateOutStream(OStream);
-        OStream.WriteText(GetUseCaseJsonText(TaxUseCase.ID));
-        UseCaseArchivalLogEntry."Active Version" := true;
-        TaxUseCase."Changed By" := ChangedByPartnerLbl; //TODO: to be discussed about using changed by as Microsoft.
         UseCaseArchivalLogEntry."Changed by" := TaxUseCase."Changed By";
+        OStream.WriteText(GetUseCaseJsonText(TaxUseCase.ID));
         UseCaseArchivalLogEntry."User ID" := copystr(UserId(), 1, 50);
         UseCaseArchivalLogEntry.Insert(true);
 
         UpdateTaxUseCase(TaxUseCase, UseCaseArchivalLogEntry);
     end;
 
-    local procedure UpdateTaxUseCase(var TaxUseCase: Record "Tax Use Case"; UseCaseArchivalLogEntry: Record "Use Case Archival Log Entry")
+    local procedure UpdateTaxUseCase(
+        var TaxUseCase: Record "Tax Use Case";
+        UseCaseArchivalLogEntry: Record "Use Case Archival Log Entry")
     begin
         RemoveIsActiveFromLastLog(TaxUseCase.ID, UseCaseArchivalLogEntry."Entry No.");
         TaxUseCase.Validate("Effective From", UseCaseArchivalLogEntry."Log Date-Time");
         TaxUseCase.Validate("Major Version", UseCaseArchivalLogEntry."Major Version");
-        TaxUseCase.Validate("Minor Version", UseCaseArchivalLogEntry."Minor Version");
+        TaxUseCase.Validate("Minor Version", GetNextVersionID(UseCaseArchivalLogEntry."Minor Version"));
         TaxUseCase.Validate("Changed By", ChangedByPartnerLbl);
     end;
 
@@ -234,16 +251,22 @@ codeunit 20365 "Use Case Archival Mgmt."
         exit(CurrentVersion + 1);
     end;
 
+    [EventSubscriber(ObjectType::Page, Page::"Tax Engine Setup Wizard", 'OnAfterActionEvent', 'ExportModified', false, false)]
+    local procedure OnAfterExportModified()
+    begin
+        ExportModifiedUseCases();
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Tax Use Case", 'OnBeforeValidateEvent', 'Status', false, false)]
     local procedure OnAfterValidateEnableEvent(var Rec: Record "Tax Use Case"; var xRec: Record "Tax Use Case")
     begin
         if xRec.Status = Rec.Status then
             exit;
 
-        if rec.Status = Rec.Status::Released then
-            ArchiveUseCase(Rec)
-        else
-            rec.Validate(Enable, false);
+        if Rec.Status = Rec.Status::Draft then begin
+            ArchiveUseCase(Rec);
+            Rec.Validate(Enable, false);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Tax Types", 'OnAfterExportTaxTypes', '', false, false)]
@@ -295,6 +318,7 @@ codeunit 20365 "Use Case Archival Mgmt."
     end;
 
     var
+        ChangedByMicrosoft: Boolean;
         ChangedByPartnerLbl: Label 'Partner';
         ExportUseCaseQst: Label 'Do you want to Export Use Cases as well?';
 }

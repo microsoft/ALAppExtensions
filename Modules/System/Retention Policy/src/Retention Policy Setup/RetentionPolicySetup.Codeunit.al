@@ -146,6 +146,9 @@ codeunit 3902 "Retention Policy Setup"
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         RetentionPolicyLog.LogError(RetentionPolicySetupImpl.LogCategory(), StrSubstNo(RetenPolSetupRenameErr, xRec."Table Id", Rec."Table Id"));
     end;
 
@@ -155,6 +158,9 @@ codeunit 3902 "Retention Policy Setup"
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         RetentionPolicySetupImpl: Codeunit "Retention Policy Setup Impl.";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         RetentionPolicyLog.LogError(RetentionPolicySetupImpl.LogCategory(), StrSubstNo(RetenPolSetupLineRenameErr, xRec."Table Id", Rec."Table Id"));
     end;
 

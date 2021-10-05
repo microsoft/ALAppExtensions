@@ -20,6 +20,10 @@ page 18493 "Subcontracting Order Subform"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the document type of this document.';
+                    trigger OnValidate()
+                    begin
+                        FormatLine();
+                    end;
                 }
                 field("No."; Rec."No.")
                 {
@@ -30,6 +34,7 @@ page 18493 "Subcontracting Order Subform"
                     begin
                         Rec.ShowShortcutDimCode(ShortcutDimCode);
                         NoOnAfterValidate();
+                        FormatLine();
                     end;
                 }
                 field("Cross-Reference No."; Rec."Cross-Reference No.")
@@ -518,7 +523,26 @@ page 18493 "Subcontracting Order Subform"
                 field("GST Group Code"; Rec."GST Group Code")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies GST group code.';
+                    Editable = IsHSNSACEditable;
+                    ToolTip = 'Specifies the GST Group code for the calculation of GST on Transaction line.';
+                    trigger OnValidate()
+                    var
+                        CalculateTax: Codeunit "Calculate Tax";
+                    begin
+                        CalculateTax.CallTaxEngineOnPurchaseLine(Rec, xRec);
+                    end;
+                }
+                field("HSN/SAC Code"; Rec."HSN/SAC Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = IsHSNSACEditable;
+                    ToolTip = 'Specifies the HSN/SAC code for the calculation of GST on Transaction line.';
+                    trigger OnValidate()
+                    var
+                        CalculateTax: Codeunit "Calculate Tax";
+                    begin
+                        CalculateTax.CallTaxEngineOnPurchaseLine(Rec, xRec);
+                    end;
                 }
                 field("GST Group Type"; Rec."GST Group Type")
                 {
@@ -992,4 +1016,19 @@ page 18493 "Subcontracting Order Subform"
         SubOrderDetailsReceiptList.SetTableView(PurchaseLine);
         SubOrderDetailsReceiptList.RunModal();
     end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        FormatLine();
+    end;
+
+    local procedure FormatLine()
+    var
+        GSTPurchaseSubscribers: Codeunit "GST Purchase Subscribers";
+    begin
+        GSTPurchaseSubscribers.SetHSNSACEditable(Rec, IsHSNSACEditable);
+    end;
+
+    var
+        IsHSNSACEditable: Boolean;
 }

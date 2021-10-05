@@ -1,7 +1,7 @@
 codeunit 31237 "FA History Management CZF"
 {
-    Permissions = TableData "Fixed Asset" = m,
-                  TableData "FA History Entry CZF" = im;
+    Permissions = tabledata "Fixed Asset" = m,
+                  tabledata "FA History Entry CZF" = im;
 
     var
         FASetup: Record "FA Setup";

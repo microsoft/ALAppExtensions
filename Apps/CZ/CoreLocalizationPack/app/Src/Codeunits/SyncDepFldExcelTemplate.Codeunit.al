@@ -57,7 +57,8 @@ codeunit 31190 "Sync.Dep.Fld-ExcelTemplate CZL"
         if not ExcelTemplateCZL.Get(Rec.Code) then begin
             ExcelTemplateCZL.Init();
             ExcelTemplateCZL.Code := Rec.Code;
-            ExcelTemplateCZL.Insert(false);
+            ExcelTemplateCZL.SystemId := Rec.SystemId;
+            ExcelTemplateCZL.Insert(false, true);
         end;
         ExcelTemplateCZL.Description := Rec.Description;
         ExcelTemplateCZL.Sheet := Rec.Sheet;
@@ -141,7 +142,8 @@ codeunit 31190 "Sync.Dep.Fld-ExcelTemplate CZL"
         if not ExcelTemplate.Get(Rec.Code) then begin
             ExcelTemplate.Init();
             ExcelTemplate.Code := Rec.Code;
-            ExcelTemplate.Insert(false);
+            ExcelTemplate.SystemId := Rec.SystemId;
+            ExcelTemplate.Insert(false, true);
         end;
         ExcelTemplate.Description := Rec.Description;
         ExcelTemplate.Sheet := Rec.Sheet;

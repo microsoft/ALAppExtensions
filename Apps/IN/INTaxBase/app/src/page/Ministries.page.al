@@ -47,10 +47,10 @@ page 18546 "Ministries"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     MinistryCodeLbl: Label 'Code eq %1', Comment = '%1= Ministry Code';
                 begin
-                    ODataUtility.EditWorksheetInExcel(
+                    EditinExcel.EditPageInExcel(
                         'Ministries',
                         CurrPage.ObjectId(false),
                         StrSubstNo(MinistryCodeLbl, Rec.Code));

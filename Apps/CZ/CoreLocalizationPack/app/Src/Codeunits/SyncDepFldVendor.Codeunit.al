@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31151 "Sync.Dep.Fld-Vendor CZL"
 {
@@ -27,6 +28,7 @@ codeunit 31151 "Sync.Dep.Fld-Vendor CZL"
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
 
+#if not CLEAN17
         DepFieldTxt := Rec."Registration No.";
         NewFieldTxt := Rec."Registration No. CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Registration No.", PreviousRecord."Registration No. CZL");
@@ -38,6 +40,7 @@ codeunit 31151 "Sync.Dep.Fld-Vendor CZL"
         Rec."Tax Registration No." := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Tax Registration No."));
         Rec."Tax Registration No. CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Tax Registration No. CZL"));
         SyncDepFldUtilities.SyncFields(Rec."Disable Uncertainty Check", Rec."Disable Unreliab. Check CZL", PreviousRecord."Disable Uncertainty Check", PreviousRecord."Disable Unreliab. Check CZL");
+#endif        
         DepFieldTxt := Rec."Transaction Type";
         NewFieldTxt := Rec."Transaction Type CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Transaction Type", PreviousRecord."Transaction Type CZL");
@@ -55,3 +58,4 @@ codeunit 31151 "Sync.Dep.Fld-Vendor CZL"
         Rec."Transport Method CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Transport Method CZL"));
     end;
 }
+#endif

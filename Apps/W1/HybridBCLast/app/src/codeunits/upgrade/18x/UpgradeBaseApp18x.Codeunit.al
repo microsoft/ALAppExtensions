@@ -1,5 +1,8 @@
 codeunit 4056 "Upgrade BaseApp 18x"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '19.0';
     Permissions = tabledata "Sales Shipment Line" = rmid, tabledata "Purch. Rcpt. Line" = rmid, tabledata "Dimension Set Entry" = rmid;
 
     var
@@ -29,15 +32,16 @@ codeunit 4056 "Upgrade BaseApp 18x"
         if TargetVersion <> 18.0 then
             exit;
 
+#if not CLEAN19
         UpdateBusinessRelation();
-        UpgradeIntegrationTableMappingFilterForOpportunities();
+#endif
         UpgradeIntegrationFieldMappingForOpportunities();
         UpgradeIntegrationFieldMappingForContacts();
         UpgradeAPIs();
         UpgradePostCodeServiceKey();
         UpgradeIntrastatJnlLine(CountryCode);
-        UpgradeDimensionSetEntry();
         UpgradeWordTemplateTables();
+        UpgradeDocumentDefaultLineType();
     end;
 
     local procedure UpgradeAPIs()
@@ -47,26 +51,42 @@ codeunit 4056 "Upgrade BaseApp 18x"
         UpgradePurchaseOrderEntityBuffer();
     end;
 
+#if not CLEAN19
     local procedure UpdateBusinessRelation()
     var
         Contact: Record Contact;
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetContactBusinessRelationUpgradeTag()) then
+            exit;
+
         Contact.SetRange("Business Relation", '');
         if Contact.FindSet(true, false) then
             repeat
                 Contact.UpdateBusinessRelation();
                 if Contact.Modify() then;
             until Contact.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetContactBusinessRelationUpgradeTag());
     end;
+#endif
 
     internal procedure UpgradeWordTemplateTables()
     var
         WordTemplate: Codeunit "Word Template";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetDefaultWordTemplateAllowedTablesUpgradeTag()) then
+            exit;
+
         WordTemplate.AddTable(Database::Contact);
         WordTemplate.AddTable(Database::Customer);
         WordTemplate.AddTable(Database::Item);
         WordTemplate.AddTable(Database::Vendor);
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetDefaultWordTemplateAllowedTablesUpgradeTag());
     end;
 
     local procedure UpgradeSalesShipmentLineDocumentId()
@@ -74,7 +94,12 @@ codeunit 4056 "Upgrade BaseApp 18x"
         SalesShipmentHeader: Record "Sales Shipment Header";
         SalesShipmentLine: Record "Sales Shipment Line";
         EnvironmentInformation: codeunit "Environment Information";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetNewSalesShipmentLineUpgradeTag()) then
+            exit;
+
         if EnvironmentInformation.IsSaaS() then
             if SalesShipmentLine.Count() > GetSafeRecordCountForSaaSUpgrade() then
                 exit;
@@ -85,6 +110,8 @@ codeunit 4056 "Upgrade BaseApp 18x"
                 SalesShipmentLine.SetRange("Document No.", SalesShipmentHeader."No.");
                 SalesShipmentLine.ModifyAll("Document Id", SalesShipmentHeader.SystemId);
             until SalesShipmentHeader.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetNewSalesShipmentLineUpgradeTag());
     end;
 
     local procedure LoadForwardLinks()
@@ -137,35 +164,18 @@ codeunit 4056 "Upgrade BaseApp 18x"
         exit(TargetMediaRepository.Insert());
     end;
 
-    local procedure UpgradeIntegrationTableMappingFilterForOpportunities()
-    var
-        IntegrationTableMapping: Record "Integration Table Mapping";
-        Opportunity: Record Opportunity;
-        CRMSetupDefaults: Codeunit "CRM Setup Defaults";
-        OldTableFilter: Text;
-        NewTableFilter: Text;
-    begin
-        IntegrationTableMapping.SetRange(Name, 'OPPORTUNITY');
-        IntegrationTableMapping.SetRange("Table ID", Database::Opportunity);
-        IntegrationTableMapping.SetRange("Integration Table ID", Database::"CRM Opportunity");
-        if IntegrationTableMapping.FindFirst() then begin
-            OldTableFilter := IntegrationTableMapping.GetTableFilter();
-            if OldTableFilter = '' then begin
-                Opportunity.SetFilter(Status, '%1|%2', Opportunity.Status::"Not Started", Opportunity.Status::"In Progress");
-                NewTableFilter := CRMSetupDefaults.GetTableFilterFromView(Database::Opportunity, Opportunity.TableCaption(), Opportunity.GetView());
-                IntegrationTableMapping.SetTableFilter(NewTableFilter);
-                IntegrationTableMapping.Modify();
-            end;
-        end;
-    end;
-
     local procedure UpgradeIntegrationFieldMappingForOpportunities()
     var
         IntegrationTableMapping: Record "Integration Table Mapping";
         IntegrationFieldMapping: Record "Integration Field Mapping";
         TempOpportunity: Record Opportunity temporary;
         TempCRMOpportunity: Record "CRM Opportunity" temporary;
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetIntegrationFieldMappingForOpportunitiesUpgradeTag()) then
+            exit;
+
         IntegrationTableMapping.SetRange(Name, 'OPPORTUNITY');
         IntegrationTableMapping.SetRange("Table ID", Database::Opportunity);
         IntegrationTableMapping.SetRange("Integration Table ID", Database::"CRM Opportunity");
@@ -181,6 +191,8 @@ codeunit 4056 "Upgrade BaseApp 18x"
                     IntegrationFieldMapping.Direction::ToIntegrationTable,
                     '', true, false);
         end;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetIntegrationFieldMappingForOpportunitiesUpgradeTag());
     end;
 
     local procedure UpgradeIntegrationFieldMappingForContacts()
@@ -188,7 +200,12 @@ codeunit 4056 "Upgrade BaseApp 18x"
         IntegrationTableMapping: Record "Integration Table Mapping";
         IntegrationFieldMapping: Record "Integration Field Mapping";
         TempContact: Record Contact temporary;
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetIntegrationFieldMappingForContactsUpgradeTag()) then
+            exit;
+
         IntegrationTableMapping.SetRange(Name, GetContactIntegrationTableMappingName());
         IntegrationTableMapping.SetRange("Table ID", Database::Contact);
         IntegrationTableMapping.SetRange("Integration Table ID", Database::"CRM Contact");
@@ -204,6 +221,8 @@ codeunit 4056 "Upgrade BaseApp 18x"
                 IntegrationFieldMapping.Modify();
             end;
         end;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetIntegrationFieldMappingForContactsUpgradeTag());
     end;
 
     local procedure UpgradePurchRcptLineDocumentId()
@@ -211,7 +230,12 @@ codeunit 4056 "Upgrade BaseApp 18x"
         PurchRcptHeader: Record "Purch. Rcpt. Header";
         PurchRcptLine: Record "Purch. Rcpt. Line";
         EnvironmentInformation: codeunit "Environment Information";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetNewPurchRcptLineUpgradeTag()) then
+            exit;
+
         if EnvironmentInformation.IsSaaS() then
             if PurchRcptLine.Count() > GetSafeRecordCountForSaaSUpgrade() then
                 exit;
@@ -222,6 +246,8 @@ codeunit 4056 "Upgrade BaseApp 18x"
                 PurchRcptLine.SetRange("Document No.", PurchRcptHeader."No.");
                 PurchRcptLine.ModifyAll("Document Id", PurchRcptHeader.SystemId);
             until PurchRcptHeader.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetNewPurchRcptLineUpgradeTag());
     end;
 
     local procedure GetContactIntegrationTableMappingName(): Text
@@ -237,9 +263,14 @@ codeunit 4056 "Upgrade BaseApp 18x"
     local procedure UpgradePostCodeServiceKey()
     var
         PostCodeServiceConfig: Record "Postcode Service Config";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+        UpgradeTag: Codeunit "Upgrade Tag";
         IsolatedStorageManagement: Codeunit "Isolated Storage Management";
         IsolatedStorageValue: Text;
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetPostCodeServiceKeyUpgradeTag()) then
+            exit;
+
         if not PostCodeServiceConfig.Get() then
             exit;
 
@@ -252,13 +283,20 @@ codeunit 4056 "Upgrade BaseApp 18x"
             IsolatedStorageValue := 'Disabled';
 
         PostCodeServiceConfig.SaveServiceKey(IsolatedStorageValue);
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetPostCodeServiceKeyUpgradeTag());
     end;
 
     local procedure UpgradeIntrastatJnlLine(CountryCode: Text)
     var
         IntrastatJnlLine: Record "Intrastat Jnl. Line";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
         if CountryCode = ITCountryCodeTxt then
+            exit;
+
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetIntrastatJnlLinePartnerIDUpgradeTag()) THEN
             exit;
 
         IntrastatJnlLine.SetRange(Type, IntrastatJnlLine.Type::Shipment);
@@ -268,56 +306,55 @@ codeunit 4056 "Upgrade BaseApp 18x"
                 IntrastatJnlLine."Partner VAT ID" := IntrastatJnlLine.GetPartnerID();
                 IntrastatJnlLine.Modify();
             until IntrastatJnlLine.Next() = 0;
-    end;
 
-    local procedure UpgradeDimensionSetEntry()
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-        DimensionSetEntry: Record "Dimension Set Entry";
-    begin
-        if GeneralLedgerSetup.Get() then begin
-            if GeneralLedgerSetup."Shortcut Dimension 3 Code" <> '' then begin
-                DimensionSetEntry.SetRange("Dimension Code", GeneralLedgerSetup."Shortcut Dimension 3 Code");
-                DimensionSetEntry.ModifyAll("Global Dimension No.", 3);
-            end;
-            if GeneralLedgerSetup."Shortcut Dimension 4 Code" <> '' then begin
-                DimensionSetEntry.SetRange("Dimension Code", GeneralLedgerSetup."Shortcut Dimension 4 Code");
-                DimensionSetEntry.ModifyAll("Global Dimension No.", 4);
-            end;
-            if GeneralLedgerSetup."Shortcut Dimension 5 Code" <> '' then begin
-                DimensionSetEntry.SetRange("Dimension Code", GeneralLedgerSetup."Shortcut Dimension 5 Code");
-                DimensionSetEntry.ModifyAll("Global Dimension No.", 5);
-            end;
-            if GeneralLedgerSetup."Shortcut Dimension 6 Code" <> '' then begin
-                DimensionSetEntry.SetRange("Dimension Code", GeneralLedgerSetup."Shortcut Dimension 6 Code");
-                DimensionSetEntry.ModifyAll("Global Dimension No.", 6);
-            end;
-            if GeneralLedgerSetup."Shortcut Dimension 7 Code" <> '' then begin
-                DimensionSetEntry.SetRange("Dimension Code", GeneralLedgerSetup."Shortcut Dimension 7 Code");
-                DimensionSetEntry.ModifyAll("Global Dimension No.", 7);
-            end;
-            if GeneralLedgerSetup."Shortcut Dimension 8 Code" <> '' then begin
-                DimensionSetEntry.SetRange("Dimension Code", GeneralLedgerSetup."Shortcut Dimension 8 Code");
-                DimensionSetEntry.ModifyAll("Global Dimension No.", 8);
-            end;
-        end;
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetIntrastatJnlLinePartnerIDUpgradeTag());
     end;
 
     local procedure UpgradePurchaseOrderEntityBuffer()
     var
         PurchaseHeader: Record "Purchase Header";
         GraphMgtPurchOrderBuffer: Codeunit "Graph Mgt - Purch Order Buffer";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetNewPurchaseOrderEntityBufferUpgradeTag()) then
+            exit;
+
         PurchaseHeader.SETRANGE("Document Type", PurchaseHeader."Document Type"::Order);
         IF PurchaseHeader.FindSet() THEN
             repeat
                 GraphMgtPurchOrderBuffer.InsertOrModifyFromPurchaseHeader(PurchaseHeader);
             until PurchaseHeader.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetNewPurchaseOrderEntityBufferUpgradeTag());
     end;
 
     local procedure GetSafeRecordCountForSaaSUpgrade(): Integer
     begin
         exit(300000);
+    end;
+
+    local procedure UpgradeDocumentDefaultLineType()
+    var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetDocumentDefaultLineTypeUpgradeTag()) then
+            exit;
+
+        if SalesReceivablesSetup.Get() then begin
+            SalesReceivablesSetup."Document Default Line Type" := SalesReceivablesSetup."Document Default Line Type"::Item;
+            SalesReceivablesSetup.Modify();
+        end;
+
+        if PurchasesPayablesSetup.Get() then begin
+            PurchasesPayablesSetup."Document Default Line Type" := PurchasesPayablesSetup."Document Default Line Type"::Item;
+            PurchasesPayablesSetup.Modify();
+        end;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetDocumentDefaultLineTypeUpgradeTag());
     end;
 }
 

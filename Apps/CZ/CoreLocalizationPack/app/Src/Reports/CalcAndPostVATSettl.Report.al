@@ -5,7 +5,7 @@ report 11971 "Calc. and Post VAT Settl. CZL"
     AdditionalSearchTerms = 'settle vat value added tax,report vat value added tax';
     ApplicationArea = Basic, Suite;
     Caption = 'Calculate and Post VAT Settlement';
-    Permissions = TableData "VAT Entry" = imd;
+    Permissions = tabledata "VAT Entry" = imd;
     UsageCategory = ReportsAndAnalysis;
 
     dataset
@@ -260,8 +260,12 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                                     if VATEntryLocal."Country/Region Code" <> "VAT Entry"."Country/Region Code" then
                                         PrintCountrySubTotal := 1;
                                     "VAT Entry".Next(-1);
+#if not CLEAN19
+#pragma warning disable AL0432
                                     if ("VAT Entry".Base = 0) and ("VAT Entry"."Advance Base" <> 0) then
                                         "VAT Entry".Base := "VAT Entry"."Advance Base";
+#pragma warning restore AL0432
+#endif
                                 end else
                                     PrintCountrySubTotal := 1;
                                 SetRange(Number, PrintCountrySubTotal);
@@ -271,8 +275,12 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                         begin
                             if not PrintVATEntries then
                                 CurrReport.Skip();
+#if not CLEAN19
+#pragma warning disable AL0432
                             if (Base = 0) and ("Advance Base" <> 0) then
                                 Base := "Advance Base";
+#pragma warning restore AL0432
+#endif
                             VATEntryDocumentNo := "Document No.";
                             VATEntryDocumentType := Format("Document Type");
                         end;
@@ -355,7 +363,13 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                             VATEntry2: Record "VAT Entry";
                         begin
                             // Calculate amount and base
+#if CLEAN19
+                            VATEntry.CalcSums(Base, Amount, "Additional-Currency Base", "Additional-Currency Amount");
+#else
+#pragma warning disable AL0432
                             VATEntry.CalcSums(Base, Amount, "Additional-Currency Base", "Additional-Currency Amount", "Advance Base");
+#pragma warning restore AL0432
+#endif
                             ReversingEntry := false;
 
                             // Balancing entries to VAT accounts
@@ -391,8 +405,7 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                                 "VAT Posting Setup"."VAT Calculation Type"::"Normal VAT",
                                 "VAT Posting Setup"."VAT Calculation Type"::"Full VAT":
                                     begin
-                                        GenJournalLine."Account No." :=
-                                          "VAT Posting Setup".GetVATAccountNoCZL(VATEntry.Type, VATEntry."Advance Letter No." <> '');
+                                        GenJournalLine."Account No." := GetVATAccountNo(VATEntry, "VAT Posting Setup");
                                         CopyAmounts(GenJournalLine, VATEntry);
                                         if PostSettlement then
                                             PostGenJnlLine(GenJournalLine);
@@ -403,8 +416,7 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                                     case VATType of
                                         VATEntry.Type::Purchase:
                                             begin
-                                                GenJournalLine."Account No." :=
-                                                  "VAT Posting Setup".GetVATAccountNoCZL(VATEntry.Type, VATEntry."Advance Letter No." <> '');
+                                                GenJournalLine."Account No." := GetVATAccountNo(VATEntry, "VAT Posting Setup");
                                                 CopyAmounts(GenJournalLine, VATEntry);
                                                 if PostSettlement then
                                                     PostGenJnlLine(GenJournalLine);
@@ -417,8 +429,7 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                                             end;
                                         VATEntry.Type::Sale:
                                             begin
-                                                GenJournalLine."Account No." :=
-                                                  "VAT Posting Setup".GetVATAccountNoCZL(VATEntry.Type, VATEntry."Advance Letter No." <> '');
+                                                GenJournalLine."Account No." := GetVATAccountNo(VATEntry, "VAT Posting Setup");
                                                 CopyAmounts(GenJournalLine, VATEntry);
                                                 if PostSettlement then
                                                     PostGenJnlLine(GenJournalLine);
@@ -489,10 +500,14 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                         VATEntry.SetFilter("VAT Date CZL", VATDateFilter);
                         VATEntry.SetRange("VAT Bus. Posting Group", "VAT Posting Setup"."VAT Bus. Posting Group");
                         VATEntry.SetRange("VAT Prod. Posting Group", "VAT Posting Setup"."VAT Prod. Posting Group");
+#if not CLEAN19
+#pragma warning disable AL0432
                         if Advance.Number = 1 then
                             VATEntry.SetRange("Advance Letter No.", '')
                         else
                             VATEntry.SetFilter("Advance Letter No.", '<>%1', '');
+#pragma warning restore AL0432
+#endif
 
                         case "VAT Posting Setup"."VAT Calculation Type" of
                             "VAT Posting Setup"."VAT Calculation Type"::"Normal VAT",
@@ -838,7 +853,13 @@ report 11971 "Calc. and Post VAT Settl. CZL"
     begin
         GenJournalLine.Amount := -VATEntry.Amount;
         GenJournalLine."VAT Amount" := -VATEntry.Amount;
+#if CLEAN19
+        GenJournalLine."VAT Base Amount" := -VATEntry.Base;
+#else
+#pragma warning disable AL0432
         GenJournalLine."VAT Base Amount" := -VATEntry.Base - VATEntry."Advance Base";
+#pragma warning restore AL0432
+#endif
         GenJournalLine."Source Currency Code" := GeneralLedgerSetup."Additional Reporting Currency";
         GenJournalLine."Source Currency Amount" := -VATEntry."Additional-Currency Amount";
         GenJournalLine."Source Curr. VAT Amount" := -VATEntry."Additional-Currency Amount";
@@ -893,6 +914,47 @@ report 11971 "Calc. and Post VAT Settl. CZL"
             (GeneralPostingType = GeneralPostingType::Sale));
     end;
 
+    procedure GetVATAccountNo(VATEntry: Record "VAT Entry"; VATPostingSetup: Record "VAT Posting Setup"): Code[20]
+    var
+        VATAccountNo: Code[20];
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeGetVATAccountNo(VATEntry, VATPostingSetup, VATAccountNo, IsHandled);
+        if IsHandled then
+            exit(VATAccountNo);
+
+#if not CLEAN19
+#pragma warning disable AL0432
+        if VATEntry."Advance Letter No." <> '' then
+            case VATEntry.Type of
+                VATEntry.Type::Purchase:
+                    begin
+                        VATPostingSetup.TestField("Purch. Advance VAT Account");
+                        exit(VATPostingSetup."Purch. Advance VAT Account");
+                    end;
+                VATEntry.Type::Sale:
+                    begin
+                        VATPostingSetup.TestField("Sales Advance VAT Account");
+                        exit(VATPostingSetup."Sales Advance VAT Account");
+                    end;
+            end;
+#pragma warning restore AL0432
+#endif
+        case VATEntry.Type of
+            VATEntry.Type::Purchase:
+                begin
+                    VATPostingSetup.TestField("Purchase VAT Account");
+                    exit(VATPostingSetup."Purchase VAT Account");
+                end;
+            VATEntry.Type::Sale:
+                begin
+                    VATPostingSetup.TestField("Sales VAT Account");
+                    exit(VATPostingSetup."Sales VAT Account");
+                end;
+        end;
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterPreReport()
     begin
@@ -910,6 +972,11 @@ report 11971 "Calc. and Post VAT Settl. CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterIncrementGenPostingType(OldGenPostingType: Enum "General Posting Type"; var NewGenPostingType: Enum "General Posting Type")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetVATAccountNo(VATEntry: Record "VAT Entry"; VATPostingSetup: Record "VAT Posting Setup"; var VATAccountNo: Code[20]; var IsHandled: Boolean)
     begin
     end;
 }

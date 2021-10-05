@@ -21,8 +21,15 @@ codeunit 10710 "Upg No Taxable ES"
     end;
 
     local procedure UpdateNoTaxableEntries()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetUpdateNoTaxableEntriesTag()) then
+            exit;
+
         Codeunit.Run(Codeunit::"No Taxable - Generate Entries");
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetUpdateNoTaxableEntriesTag());
     end;
 }
 

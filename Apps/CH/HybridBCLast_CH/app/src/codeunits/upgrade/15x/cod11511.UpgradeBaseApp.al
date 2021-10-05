@@ -24,7 +24,12 @@ codeunit 11511 "Upgrade BaseApp"
     local procedure UpdateItems()
     var
         Item: Record Item;
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetItemCategoryOnItemAPIUpgradeTag()) then
+            exit;
+
         with Item do begin
             FilterGroup(-1);
             SetRange("Sale blocked", true);
@@ -36,5 +41,7 @@ codeunit 11511 "Upgrade BaseApp"
                     if Modify() then;
                 until Next() = 0;
         end;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetItemCategoryOnItemAPIUpgradeTag());
     end;
 }

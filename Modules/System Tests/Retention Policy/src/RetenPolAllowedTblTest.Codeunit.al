@@ -12,6 +12,7 @@ codeunit 138703 "Reten. Pol. Allowed Tbl. Test"
 
     var
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
         TableIdinFilterNotListLbl: Label 'Table %1 appears in the filter but not in the list', Locked = true;
         DatefieldIsWrongLbl: Label 'The datefield number is wrong for table %1', Locked = true;
         MandatoryMinRetentionDaysLbl: Label 'The mandatory minimum number of retention days is wrong for table %1', Locked = true;
@@ -23,6 +24,7 @@ codeunit 138703 "Reten. Pol. Allowed Tbl. Test"
     var
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
         // execute
         // verify
@@ -37,6 +39,7 @@ codeunit 138703 "Reten. Pol. Allowed Tbl. Test"
     var
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
         Assert.IsTrue(RetenPolAllowedTables.IsAllowedTable(Database::"Retention Policy Test Data 3"), 'should be allowed');
 
@@ -56,6 +59,7 @@ codeunit 138703 "Reten. Pol. Allowed Tbl. Test"
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
         AllowedTables: List of [Integer];
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
 
         // execute
@@ -79,6 +83,7 @@ codeunit 138703 "Reten. Pol. Allowed Tbl. Test"
         TableId: Integer;
         i: integer;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
         RetenPolAllowedTables.GetAllowedTables(AllowedTables);
 
@@ -103,6 +108,7 @@ codeunit 138703 "Reten. Pol. Allowed Tbl. Test"
         RetentionPolicyLogEntry: Record "Retention Policy Log Entry";
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
 
         // execute
@@ -119,6 +125,7 @@ codeunit 138703 "Reten. Pol. Allowed Tbl. Test"
     var
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
 
         // execute
@@ -136,6 +143,7 @@ codeunit 138703 "Reten. Pol. Allowed Tbl. Test"
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
         ExpirationDate: Date;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
 
         // execute
@@ -152,6 +160,7 @@ codeunit 138703 "Reten. Pol. Allowed Tbl. Test"
         MaxExpirationDateFormula: DateFormula;
         ExpirationDate: Date;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
         Evaluate(MaxExpirationDateFormula, StrSubstNo(MaxDateDateFormulaTxt, 9999 - Date2DMY(Today(), 3)));
 

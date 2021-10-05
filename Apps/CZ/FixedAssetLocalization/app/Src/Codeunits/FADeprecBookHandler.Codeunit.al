@@ -139,10 +139,32 @@ codeunit 31239 "FA Deprec. Book Handler CZF"
 
     [EventSubscriber(ObjectType::Page, Page::"Fixed Asset Card", 'OnAfterLoadDepreciationBooks', '', false, false)]
     local procedure ShowDeprBooksOnAfterLoadDepreciationBooks(var Simple: Boolean)
-    var
-        ExtensionManagement: Codeunit "Extension Management";
     begin
-        if not ExtensionManagement.IsInstalledByAppId('c81764a5-be79-4d50-ba3e-4ade02073780') then // only if test application "Tests-Fixed Asset" is not installed
+        if not IsInstalledByAppId('c81764a5-be79-4d50-ba3e-4ade02073780') then // only if test application "Tests-Fixed Asset" is not installed
             Simple := false;
+    end;
+
+    local procedure IsInstalledByAppId(AppID: Guid): Boolean
+    var
+        NAVAppInstalledApp: Record "NAV App Installed App";
+    begin
+        exit(NAVAppInstalledApp.Get(AppID));
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"FA Depreciation Book", 'OnBeforeValidateEvent', 'FA Posting Group', false, false)]
+    local procedure CheckFALedgerEntriesExistOnBeforeFAPostingGroup(var Rec: Record "FA Depreciation Book"; var xRec: Record "FA Depreciation Book")
+    var
+        FALedgerEntry: Record "FA Ledger Entry";
+        FAPostingGroupCanNotBeChangedErr: Label 'FA Posting Group can not be changed if there is at least one FA Entry for Fixed Asset and Deprecation Book.';
+    begin
+        if Rec."FA Posting Group" = xRec."FA Posting Group" then
+            exit;
+        if Rec."FA No." = '' then
+            exit;
+        FALedgerEntry.SetCurrentKey("FA No.", "Depreciation Book Code");
+        FALedgerEntry.SetRange("FA No.", Rec."FA No.");
+        FALedgerEntry.SetRange("Depreciation Book Code", Rec."Depreciation Book Code");
+        if not FALedgerEntry.IsEmpty() then
+            Error(FAPostingGroupCanNotBeChangedErr);
     end;
 }

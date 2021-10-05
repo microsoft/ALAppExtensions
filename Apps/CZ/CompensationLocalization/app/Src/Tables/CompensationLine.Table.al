@@ -116,7 +116,11 @@ table 31273 "Compensation Line CZC"
                             if CustLedgerEntry."Entry No." <> 0 then begin
                                 CustLedgerEntry.TestField(Open, true);
                                 CustLedgerEntry.TestField(Prepayment, false);
+#if not CLEAN19
+#pragma warning disable AL0432
                                 CustLedgerEntry.TestField("Prepayment Type", CustLedgerEntry."Prepayment Type"::" ");
+#pragma warning restore AL0432
+#endif
                             end;
                             CustLedgerEntry.TestField("Compensation Amount (LCY) CZC", 0);
                             "Source No." := CustLedgerEntry."Customer No.";
@@ -142,7 +146,11 @@ table 31273 "Compensation Line CZC"
                             if VendorLedgerEntry."Entry No." <> 0 then begin
                                 VendorLedgerEntry.TestField(Open, true);
                                 VendorLedgerEntry.TestField(Prepayment, false);
+#if not CLEAN19
+#pragma warning disable AL0432
                                 VendorLedgerEntry.TestField("Prepayment Type", VendorLedgerEntry."Prepayment Type"::" ");
+#pragma warning restore AL0432
+#endif
                             end;
                             VendorLedgerEntry.TestField("Compensation Amount (LCY) CZC", 0);
                             "Source No." := VendorLedgerEntry."Vendor No.";

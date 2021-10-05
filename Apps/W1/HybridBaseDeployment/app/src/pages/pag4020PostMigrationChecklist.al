@@ -65,9 +65,12 @@ page 4020 "Post Migration Checklist"
                         {
                             ApplicationArea = Basic, Suite;
                             ShowCaption = false;
+                            ToolTip = 'Use actions ''Rebuild Coupling Table'' and ''Use Certificate Authentication'' to complete the setup of the connection to Dynamics 365 Sales.';
+
                             trigger OnDrillDown()
                             begin
-                                Page.Run(Page::"CRM Connection Setup Wizard");
+                                if Confirm(ResetSalesConnectionInstructionsTxt) then
+                                    Page.Run(Page::"CRM Connection Setup");
                             end;
                         }
                     }
@@ -290,6 +293,7 @@ page 4020 "Post Migration Checklist"
         DisableMigrationTxt: Label '2. Disable the Cloud Migration.';
         UsersPermissionsSetupTxt: Label '3. Setup Users and permissions within Business Central.';
         DefineMappingsTxt: Label '4. Define User Mappings.';
-        ResetSalesConnectionTxt: Label '5. Resetup D365 Sales Connection.';
+        ResetSalesConnectionTxt: Label '5. Resetup Dynamics 365 Sales Connection.';
+        ResetSalesConnectionInstructionsTxt: Label 'You must choose actions ''Rebuild Coupling Table'' and ''Use Certificate Authentication'' on the page ''Microsoft Dynamics 365 Connection Setup'' to complete the setup of the connection to Dynamics 365 Sales.\Choose Yes to open the setup page.';
 
 }

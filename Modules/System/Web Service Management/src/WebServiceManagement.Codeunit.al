@@ -21,7 +21,7 @@ codeunit 9750 "Web Service Management"
     /// <param name="ObjectId">The ID of the object.</param>
     /// <param name="ObjectName">The name of the object.</param>
     /// <param name="Published">Indicates whether the web service is published or not.</param>
-    [Obsolete('Method scope will be moved down to On-Prem. This function does not work in SaaS.', '16.0')]
+    [Scope('OnPrem')]
     procedure CreateWebService(ObjectType: Option; ObjectId: Integer; ObjectName: Text; Published: Boolean)
     begin
         WebServiceManagementImpl.CreateWebService(ObjectType, ObjectId, ObjectName, Published);

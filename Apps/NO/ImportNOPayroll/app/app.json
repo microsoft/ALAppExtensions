@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Get data exchange definitions for the Norwegian payroll service.",
     "description":  "Get data exchange definitions for the Huldt & Lillevik payroll service in Norway.",
-    "version":  "18.2.0.0",
+    "version":  "19.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2005800",
@@ -17,8 +17,8 @@
     "screenshots":  [
 
                     ],
-    "platform":  "18.0.0.0",
+    "platform":  "19.0.0.0",
     "target":  "OnPrem",
     "showMyCode":  false,
-    "application":  "18.2.0.0"
+    "application":  "19.0.0.0"
 }

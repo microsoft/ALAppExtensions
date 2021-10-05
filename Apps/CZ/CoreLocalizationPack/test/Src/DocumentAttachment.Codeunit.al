@@ -3,6 +3,12 @@ codeunit 148061 "Document Attachment CZL"
     Subtype = Test;
     TestPermissions = Disabled;
 
+    trigger OnRun()
+    begin
+        // [FEATURE] [Core] [Document Attachments]
+        isInitialized := false;
+    end;
+
     var
         VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL";
         VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL";
@@ -11,12 +17,17 @@ codeunit 148061 "Document Attachment CZL"
         isInitialized: Boolean;
 
     local procedure Initialize()
+    var
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Document Attachment CZL");
         if isInitialized then
             exit;
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Document Attachment CZL");
 
         isInitialized := true;
         Commit();
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Document Attachment CZL");
     end;
 
     [Test]
@@ -29,15 +40,14 @@ codeunit 148061 "Document Attachment CZL"
         DocumentInStream: InStream;
     begin
         // [SCENARIO] Create random text document and attach to VIES Declaration
-        // [FEATURE] Document Attachment
         Initialize();
 
-        // [GIVEN] New VIES Declaration created
+        // [GIVEN] New VIES Declaration has been created
         VIESDeclarationHeaderCZL.Init();
         VIESDeclarationHeaderCZL."No." := CopyStr(LibraryRandom.RandText(20), 1, 20);
         VIESDeclarationHeaderCZL.Insert();
 
-        // [GIVEN] New text document created
+        // [GIVEN] New text document has been created
         TempBlob.CreateOutStream(TextOutStream);
         TextOutStream.WriteText(LibraryRandom.RandText(1000));
 
@@ -46,28 +56,22 @@ codeunit 148061 "Document Attachment CZL"
         TempBlob.CreateInStream(DocumentInStream);
         DocumentAttachment.SaveAttachmentFromStream(DocumentInStream, RecordRef, 'random.txt');
 
-        // [THEN] One document attachment expected
+        // [THEN] One document will be attached
         DocumentAttachment.SetRange("Table ID", Database::"VIES Declaration Header CZL");
         DocumentAttachment.SetRange("No.", VIESDeclarationHeaderCZL."No.");
         Assert.AreEqual(1, DocumentAttachment.Count(), 'One attachment was expected for this record.');
 
-        // [THEN] Verify user security id
+        // [THEN] Document will be attached by current user
         DocumentAttachment.FindFirst();
         Assert.AreEqual(UserSecurityId(), DocumentAttachment."Attached By", 'AttachedBy is not eqal to USERSECURITYID');
 
-        // [THEN] Verify file type
+        // [THEN] Document attachment will be type text
         Assert.AreEqual(8, DocumentAttachment."File Type", 'File type is not Other.');
 
-        // [THEN] Verify table ID
-        Assert.AreEqual(31075, DocumentAttachment."Table ID", 'Table Id does not match with VIES Declaration Header CZL');
-
-        // [THEN] Verify record no
-        Assert.AreEqual(VIESDeclarationHeaderCZL."No.", DocumentAttachment."No.", 'No. does not match with' + VIESDeclarationHeaderCZL."No.");
-
-        // [THEN] Verify attached date
+        // [THEN] Document attachment will have date and time
         Assert.IsTrue(DocumentAttachment."Attached Date" > 0DT, 'Missing attach date');
 
-        // [THEN] Verify doc ref id is not null
+        // [THEN] Document attachment will have content
         Assert.IsTrue(DocumentAttachment."Document Reference ID".HasValue, 'Document reference ID is null.');
     end;
 
@@ -78,10 +82,14 @@ codeunit 148061 "Document Attachment CZL"
         CompanyOfficialCZL: Record "Company Official CZL";
     begin
         // [SCENARIO] Print VIES Declaration as attached PDF
-        // [FEATURE] Document Attachment
         Initialize();
 
-        // [WHEN] Authorized employee filled
+        // [GIVEN] New VIES Declaration has been created
+        VIESDeclarationHeaderCZL.Init();
+        VIESDeclarationHeaderCZL."No." := CopyStr(LibraryRandom.RandText(20), 1, 20);
+        VIESDeclarationHeaderCZL.Insert();
+
+        // [GIVEN] Authorized employee has been filled
         CompanyOfficialCZL.Init();
         CompanyOfficialCZL."No." := 'EMPL0001';
         CompanyOfficialCZL.Insert();
@@ -92,25 +100,41 @@ codeunit 148061 "Document Attachment CZL"
         VIESDeclarationHeaderCZL.PrintToDocumentAttachment();
         RecallNotificationsForRecord(VIESDeclarationHeaderCZL);
 
-        // [THEN] Two document attachments expected
+        // [THEN] One document will be attached
         DocumentAttachment.SetRange("Table ID", Database::"VIES Declaration Header CZL");
         DocumentAttachment.SetRange("No.", VIESDeclarationHeaderCZL."No.");
-        Assert.AreEqual(2, DocumentAttachment.Count(), 'Two attachments were expected for this record.');
+        Assert.AreEqual(1, DocumentAttachment.Count(), 'One attachment was expected for this record.');
     end;
 
     [Test]
     procedure VIESDeclarationAttachDocumentIsDeleted()
     var
         DocumentAttachment: Record "Document Attachment";
+        CompanyOfficialCZL: Record "Company Official CZL";
     begin
         // [SCENARIO] Delete document attachment when deteled VIES Declaration
-        // [FEATURE] Document Attachment
         Initialize();
 
-        // [WHEN] Deleted VIES Declaration
+        // [GIVEN] New VIES Declaration has been created
+        VIESDeclarationHeaderCZL.Init();
+        VIESDeclarationHeaderCZL."No." := CopyStr(LibraryRandom.RandText(20), 1, 20);
+        VIESDeclarationHeaderCZL.Insert();
+
+        // [GIVEN] Authorized employee has been filled
+        CompanyOfficialCZL.Init();
+        CompanyOfficialCZL."No." := 'EMPL0002';
+        CompanyOfficialCZL.Insert();
+        VIESDeclarationHeaderCZL."Authorized Employee No." := CompanyOfficialCZL."No.";
+        VIESDeclarationHeaderCZL.Modify();
+
+        // [GIVEN] VIES Declaration has been printed as PDF
+        VIESDeclarationHeaderCZL.PrintToDocumentAttachment();
+        RecallNotificationsForRecord(VIESDeclarationHeaderCZL);
+
+        // [WHEN] Delete VIES Declaration
         VIESDeclarationHeaderCZL.Delete();
 
-        // [THEN] No document attachment expected
+        // [THEN] No document will be attached
         DocumentAttachment.SetRange("Table ID", Database::"VIES Declaration Header CZL");
         DocumentAttachment.SetRange("No.", VIESDeclarationHeaderCZL."No.");
         Assert.AreEqual(0, DocumentAttachment.Count(), 'No attachment was expected for this record.');
@@ -125,46 +149,39 @@ codeunit 148061 "Document Attachment CZL"
         TextOutStream: OutStream;
         DocumentInStream: InStream;
     begin
-        // [SCENARIO] Create random text document and attach to VAT Ctrl. Report
-        // [FEATURE] Document Attachment
+        // [SCENARIO] Create random text document and attach to VAT Control Report
         Initialize();
 
-        // [GIVEN] New VIES Declaration created
+        // [GIVEN] New VAT Control Report has been created
         VATCtrlReportHeaderCZL.Init();
         VATCtrlReportHeaderCZL."No." := CopyStr(LibraryRandom.RandText(20), 1, 20);
         VATCtrlReportHeaderCZL.Insert();
 
-        // [GIVEN] New text document created
+        // [GIVEN] New text document has been created
         TempBlob.CreateOutStream(TextOutStream);
         TextOutStream.WriteText(LibraryRandom.RandText(1000));
 
-        // [WHEN] Attach document to VIES Declaration
+        // [WHEN] Attach document to VAT Control Report
         RecordRef.GetTable(VATCtrlReportHeaderCZL);
         TempBlob.CreateInStream(DocumentInStream);
         DocumentAttachment.SaveAttachmentFromStream(DocumentInStream, RecordRef, 'random.txt');
 
-        // [THEN] One document attachment expected
+        // [THEN] One document will be attached
         DocumentAttachment.SetRange("Table ID", Database::"VAT Ctrl. Report Header CZL");
         DocumentAttachment.SetRange("No.", VATCtrlReportHeaderCZL."No.");
         Assert.AreEqual(1, DocumentAttachment.Count(), 'One attachment was expected for this record.');
 
-        // [THEN] Verify user security id
+        // [THEN] Document will be attached by current user
         DocumentAttachment.FindFirst();
         Assert.AreEqual(UserSecurityId(), DocumentAttachment."Attached By", 'AttachedBy is not eqal to USERSECURITYID');
 
-        // [THEN] Verify file type
+        // [THEN] Document attachment will be type text
         Assert.AreEqual(8, DocumentAttachment."File Type", 'File type is not Other.');
 
-        // [THEN] Verify table ID
-        Assert.AreEqual(31106, DocumentAttachment."Table ID", 'Table Id does not match with VAT Ctrl. Report Header CZL');
-
-        // [THEN] Verify record no
-        Assert.AreEqual(VATCtrlReportHeaderCZL."No.", DocumentAttachment."No.", 'No. does not match with' + VATCtrlReportHeaderCZL."No.");
-
-        // [THEN] Verify attached date
+        // [THEN] Document attachment will have date and time
         Assert.IsTrue(DocumentAttachment."Attached Date" > 0DT, 'Missing attach date');
 
-        // [THEN] Verify doc ref id is not null
+        // [THEN] Document attachment will have content
         Assert.IsTrue(DocumentAttachment."Document Reference ID".HasValue, 'Document reference ID is null.');
     end;
 
@@ -173,18 +190,22 @@ codeunit 148061 "Document Attachment CZL"
     var
         DocumentAttachment: Record "Document Attachment";
     begin
-        // [SCENARIO] Print VAT Ctrl. Report as attached PDF
-        // [FEATURE] Document Attachment
+        // [SCENARIO] Print VAT Control Report as attached PDF
         Initialize();
 
-        // [WHEN] Print VIES Declaration as PDF
+        // [GIVEN] New VAT Control Report has been created
+        VATCtrlReportHeaderCZL.Init();
+        VATCtrlReportHeaderCZL."No." := CopyStr(LibraryRandom.RandText(20), 1, 20);
+        VATCtrlReportHeaderCZL.Insert();
+
+        // [WHEN] Print VAT Control Report as PDF
         VATCtrlReportHeaderCZL.PrintToDocumentAttachment();
         RecallNotificationsForRecord(VATCtrlReportHeaderCZL);
 
-        // [THEN] Two document attachments expected
+        // [THEN] One document will be attached
         DocumentAttachment.SetRange("Table ID", Database::"VAT Ctrl. Report Header CZL");
         DocumentAttachment.SetRange("No.", VATCtrlReportHeaderCZL."No.");
-        Assert.AreEqual(2, DocumentAttachment.Count(), 'Two attachments were expected for this record.');
+        Assert.AreEqual(1, DocumentAttachment.Count(), 'One attachment was expected for this record.');
     end;
 
     [Test]
@@ -192,14 +213,22 @@ codeunit 148061 "Document Attachment CZL"
     var
         DocumentAttachment: Record "Document Attachment";
     begin
-        // [SCENARIO] Delete document attachment when deteled VAT Ctrl. Report
-        // [FEATURE] Document Attachment
+        // [SCENARIO] Delete document attachment when deteled VAT Control Report
         Initialize();
 
-        // [WHEN] Deleted VIES Declaration
+        // [GIVEN] New VAT Control Report has been created
+        VATCtrlReportHeaderCZL.Init();
+        VATCtrlReportHeaderCZL."No." := CopyStr(LibraryRandom.RandText(20), 1, 20);
+        VATCtrlReportHeaderCZL.Insert();
+
+        // [GIVEN] VAT Control Report has been printed as PDF
+        VATCtrlReportHeaderCZL.PrintToDocumentAttachment();
+        RecallNotificationsForRecord(VATCtrlReportHeaderCZL);
+
+        // [WHEN] Delete VAT Control Report
         VATCtrlReportHeaderCZL.Delete();
 
-        // [THEN] No document attachment expected
+        // [THEN] No document will be attached
         DocumentAttachment.SetRange("Table ID", Database::"VAT Ctrl. Report Header CZL");
         DocumentAttachment.SetRange("No.", VATCtrlReportHeaderCZL."No.");
         Assert.AreEqual(0, DocumentAttachment.Count(), 'No attachment was expected for this record.');

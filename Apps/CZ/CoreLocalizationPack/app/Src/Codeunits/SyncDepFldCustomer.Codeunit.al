@@ -1,4 +1,4 @@
-#if not CLEAN17
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31150 "Sync.Dep.Fld-Customer CZL"
 {
@@ -28,6 +28,7 @@ codeunit 31150 "Sync.Dep.Fld-Customer CZL"
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
 
+#if not CLEAN17
         DepFieldTxt := Rec."Registration No.";
         NewFieldTxt := Rec."Registration No. CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Registration No.", PreviousRecord."Registration No. CZL");
@@ -38,6 +39,7 @@ codeunit 31150 "Sync.Dep.Fld-Customer CZL"
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Tax Registration No.", PreviousRecord."Tax Registration No. CZL");
         Rec."Tax Registration No." := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Tax Registration No."));
         Rec."Tax Registration No. CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Tax Registration No. CZL"));
+#endif
         DepFieldTxt := Rec."Transaction Type";
         NewFieldTxt := Rec."Transaction Type CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Transaction Type", PreviousRecord."Transaction Type CZL");

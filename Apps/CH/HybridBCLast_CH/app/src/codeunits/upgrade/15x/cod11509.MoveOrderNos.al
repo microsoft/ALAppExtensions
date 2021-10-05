@@ -13,13 +13,19 @@ codeunit 11509 "Move Order Nos CH"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Company Handler", 'OnUpgradePerCompanyDataForVersion', '', false, false)]
     local procedure OnCompanyMigrationUpgrade(TargetVersion: Decimal)
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
         if TargetVersion <> 15.0 then
             exit;
 
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetPhysInvntOrdersUpgradeTag()) then
+            exit;
+
         LoadInventorySetup();
         LoadSourceCodeSetup();
-        MoveCurrencyISOCode();
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetPhysInvntOrdersUpgradeTag());
     end;
 
     local procedure LoadInventorySetup()
@@ -41,19 +47,5 @@ codeunit 11509 "Move Order Nos CH"
             SourceCodeSetup."Phys. Invt. Orders" := SourceCodeSetup."Phys. Invt. Order";
             SourceCodeSetup.Modify();
         end;
-    end;
-
-    local procedure MoveCurrencyISOCode()
-    var
-        Currency: Record "Currency";
-    begin
-        with Currency do begin
-            SetFilter("ISO Currency Code", '<>%1', '');
-            If FindSet(true, false) then
-                repeat
-                    "ISO Code" := "ISO Currency Code";
-                    Modify();
-                until Next() = 0;
-        END;
     end;
 }

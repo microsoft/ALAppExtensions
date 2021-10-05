@@ -260,6 +260,7 @@ codeunit 4513 "SMTP Connector Impl."
         exit(true);
     end;
 
+    [NonDebuggable]
     internal procedure CreateAccount(var SMTPAccount: Record "SMTP Account"; Password: Text; var EmailAccount: Record "Email Account")
     var
         NewSMTPAccount: Record "SMTP Account";
@@ -322,7 +323,6 @@ codeunit 4513 "SMTP Connector Impl."
     var
         SMTPAccounts: Record "SMTP Account";
     begin
-        SMTPAccounts.ChangeCompany(CompanyName);
         SMTPAccounts.ModifyAll(Server, '');
     end;
 

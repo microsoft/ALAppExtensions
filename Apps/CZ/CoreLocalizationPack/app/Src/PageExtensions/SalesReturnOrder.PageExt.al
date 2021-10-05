@@ -21,6 +21,7 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the VAT date of the original document.';
+                Visible = false;
             }
         }
         addafter("VAT Registration No.")

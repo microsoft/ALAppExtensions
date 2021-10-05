@@ -70,7 +70,7 @@ codeunit 20294 "Use Case Mgmt."
     begin
         if TaxUseCase.FindSet() then
             repeat
-                TaxUseCase.Validate(Status, TaxUseCase.Status::Draft);
+                TaxUseCase.Status := TaxUseCase.Status::Draft;
                 TaxUseCase.Validate(Enable, false);
                 TaxUseCase.Modify(true);
             until TaxUseCase.Next() = 0;
@@ -78,6 +78,17 @@ codeunit 20294 "Use Case Mgmt."
 
     [EventSubscriber(ObjectType::Page, Page::"Tax Types", 'OnAfterActionEvent', 'UseCases', false, false)]
     local procedure OnAfterActionUseCases(var Rec: Record "Tax Type")
+    var
+        TaxUseCase: Record "Tax Use Case";
+    begin
+        TaxUseCase.FilterGroup(4);
+        TaxUseCase.SetRange("Tax Type", Rec.Code);
+        TaxUseCase.FilterGroup(0);
+        Page.Run(Page::"Use Cases", TaxUseCase);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Tax Type", 'OnAfterActionEvent', 'UseCases', false, false)]
+    local procedure OnAfterActionTaxTypeUseCases(var Rec: Record "Tax Type")
     var
         TaxUseCase: Record "Tax Use Case";
     begin

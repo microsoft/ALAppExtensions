@@ -58,11 +58,13 @@ codeunit 1807 "Assisted Setup Upgrade"
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
         GuidedExperienceType: Enum "Guided Experience Type";
         ManualSetupCategory: Enum "Manual Setup Category";
+        SpotlightTourType: Enum "Spotlight Tour Type";
+        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
     begin
         GuidedExperienceImpl.Insert(AssistedSetup.Name, CopyStr(AssistedSetup.Name, 1, 50), AssistedSetup.Description,
             0, AssistedSetup."App ID", GuidedExperienceType::"Assisted Setup", ObjectType::Page, AssistedSetup."Page ID",
             '', AssistedSetup."Group Name", AssistedSetup."Video Url", AssistedSetup."Video Category",
-            AssistedSetup."Help Url", ManualSetupCategory::Uncategorized, '', false);
+            AssistedSetup."Help Url", ManualSetupCategory::Uncategorized, '', SpotlightTourType::None, SpotlightTourTexts, false);
 
         GuidedExperienceItem.SetRange("Guided Experience Type", GuidedExperienceItem."Guided Experience Type"::"Assisted Setup");
         GuidedExperienceItem.SetRange("Object Type to Run", GuidedExperienceItem."Object Type to Run"::Page);
@@ -73,14 +75,8 @@ codeunit 1807 "Assisted Setup Upgrade"
 
     local procedure InsertTranslations(GuidedExperienceItem: Record "Guided Experience Item"; AssistedSetup: Record "Assisted Setup")
     var
-        Translation: Record Translation;
-        TranslationAPI: Codeunit Translation;
+        Translation: Codeunit Translation;
     begin
-        Translation.SetRange(SystemId, AssistedSetup.SystemId);
-        Translation.SetRange("Table ID", Database::"Assisted Setup");
-        if Translation.FindSet() then
-            repeat
-                TranslationAPI.Set(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title), Translation."Language ID", Translation.Value);
-            until Translation.Next() = 0;
+        Translation.Copy(AssistedSetup, AssistedSetup.FieldNo(Name), GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title));
     end;
 }

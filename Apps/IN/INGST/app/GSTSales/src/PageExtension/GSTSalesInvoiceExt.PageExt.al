@@ -219,6 +219,18 @@ pageextension 18148 "GST Sales Invoice Ext" extends "Sales Invoice"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the transportation mode e.g. by road, by air etc.';
             }
+            field("Post GST to Customer"; Rec."Post GST to Customer")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if the GST amount post to Customer';
+                trigger OnValidate()
+                var
+                    GSTSalesValidation: Codeunit "GST Sales Validation";
+                begin
+                    CurrPage.SaveRecord();
+                    GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
+                end;
+            }
         }
     }
     actions

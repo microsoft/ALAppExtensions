@@ -88,6 +88,7 @@ codeunit 1160 "COHUB Install"
             exit;
 
         AllProfile.SetRange("Role Center ID", Page::"Business Manager Role Center");
+        AllProfile.SetRange(Scope, AllProfile.Scope::Tenant);
         AllProfile.FindFirst();
 
         UserGroup.Code := CompanyHubCode;

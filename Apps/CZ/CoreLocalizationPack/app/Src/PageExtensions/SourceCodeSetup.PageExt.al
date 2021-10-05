@@ -23,5 +23,18 @@ pageextension 11784 "Source Code Setup CZL" extends "Source Code Setup"
                 ToolTip = 'Specifies the source code for VAT correction in LCY.';
             }
         }
+        addafter("Close Income Statement")
+        {
+            field("Close Balance Sheet CZL"; Rec."Close Balance Sheet CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the source code for close balance sheet.';
+            }
+            field("Open Balance Sheet CZL"; Rec."Open Balance Sheet CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the source code for open balance sheet.';
+            }
+        }
     }
 }

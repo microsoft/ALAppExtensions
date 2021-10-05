@@ -106,28 +106,4 @@ codeunit 139796 "Test Upgrade CZ"
 
         Assert.AreEqual(0, StgVATPostingSetup.Count(), 'Staging table should be emptied.');
     end;
-
-    [Test]
-    procedure VerifySalesAndRecSetupUpgraded()
-    var
-        SalesAndRecSetup: Record "Sales & Receivables Setup";
-        HybridReplicationSummary: Record "Hybrid Replication Summary";
-        W1CompanyHandler: Codeunit "W1 Company Handler";
-    begin
-        // [SCENARIO] "Copy Line Descr. To G/L Entry" field on Sales & Receivables Setup get set
-        // [GIVEN] Sales & Receivables Setup record exists
-        SalesAndRecSetup.DeleteAll();
-        SalesAndRecSetup.Init();
-        SalesAndRecSetup."Primary Key" := '1';
-        SalesAndRecSetup."G/L Entry as Doc. Lines (Acc.)" := true;
-        SalesAndRecSetup.Insert();
-
-        // [WHEN] The upgrade trigger is called
-        HybridReplicationSummary.Init();
-        W1CompanyHandler.OnUpgradePerCompanyDataForVersion(HybridReplicationSummary, CountryCodeTxt, 16.0);
-
-        // [THEN] The corresponding name fields are populated in the "Sales & Receivables Setup" record
-        SalesAndRecSetup.Get('1');
-        Assert.AreEqual(true, SalesAndRecSetup."Copy Line Descr. To G/L Entry", SalesAndRecSetup.FieldName("Copy Line Descr. To G/L Entry"));
-    end;
 }

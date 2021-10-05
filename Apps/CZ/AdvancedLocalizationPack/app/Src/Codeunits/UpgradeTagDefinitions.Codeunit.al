@@ -5,6 +5,7 @@ codeunit 31261 "Upgrade Tag Definitions CZA"
     begin
         PerDatabaseUpgradeTags.Add(GetDataVersion180PerDatabaseUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetDataVersion182PerDatabaseUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetDataVersion183PerDatabaseUpgradeTag());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
@@ -12,6 +13,7 @@ codeunit 31261 "Upgrade Tag Definitions CZA"
     begin
         PerCompanyUpgradeTags.Add(GetDataVersion180PerCompanyUpgradeTag());
         PerCompanyUpgradeTags.Add(GetDataVersion182PerCompanyUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetDataVersion183PerCompanyUpgradeTag());
     end;
 
     procedure GetDataVersion180PerDatabaseUpgradeTag(): Code[250]
@@ -24,6 +26,11 @@ codeunit 31261 "Upgrade Tag Definitions CZA"
         exit('CZA-UpgradeAdvancedLocalizationPackForCzech-PerDatabase-18.2');
     end;
 
+    procedure GetDataVersion183PerDatabaseUpgradeTag(): Code[250]
+    begin
+        exit('CZA-UpgradeAdvancedLocalizationPackForCzech-PerDatabase-18.3');
+    end;
+
     procedure GetDataVersion180PerCompanyUpgradeTag(): Code[250]
     begin
         exit('CZA-UpgradeAdvancedLocalizationPackForCzech-PerCompany-18.0');
@@ -32,5 +39,10 @@ codeunit 31261 "Upgrade Tag Definitions CZA"
     procedure GetDataVersion182PerCompanyUpgradeTag(): Code[250]
     begin
         exit('CZA-UpgradeAdvancedLocalizationPackForCzech-PerCompany-18.2');
+    end;
+
+    procedure GetDataVersion183PerCompanyUpgradeTag(): Code[250]
+    begin
+        exit('CZA-UpgradeAdvancedLocalizationPackForCzech-PerCompany-18.3');
     end;
 }

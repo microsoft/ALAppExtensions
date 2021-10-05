@@ -16,7 +16,7 @@ This module is meant for on-premises use only.
  
 
 ### GetGraphUser (Method) <a name="GetGraphUser"></a> 
-    
+
  Gets the Azure AD user with the given security ID.
  
 
@@ -24,6 +24,7 @@ This module is meant for on-premises use only.
 ```
 [Scope('OnPrem')]
 [TryFunction]
+[NonDebuggable]
 procedure GetGraphUser(UserSecurityId: Guid; var User: DotNet UserInfo)
 ```
 #### Parameters
@@ -36,7 +37,7 @@ The user's security ID.
 The Azure AD user.
 
 ### GetGraphUser (Method) <a name="GetGraphUser"></a> 
-    
+
  Gets the Azure AD user with the given security ID.
  
 
@@ -44,6 +45,7 @@ The Azure AD user.
 ```
 [Scope('OnPrem')]
 [TryFunction]
+[NonDebuggable]
 procedure GetGraphUser(UserSecurityId: Guid; ForceFetchFromGraph: Boolean; var User: DotNet UserInfo)
 ```
 #### Parameters
@@ -67,6 +69,7 @@ The Azure AD user.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetObjectId(UserSecurityId: Guid): Text
 ```
 #### Parameters
@@ -83,13 +86,14 @@ The user's security ID.
 ### GetUserAuthenticationObjectId (Method) <a name="GetUserAuthenticationObjectId"></a> 
 User with Security ID UserSecurityId does not exist.
 
-    
+
  Gets the user's authentication object ID.
  
 
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetUserAuthenticationObjectId(UserSecurityId: Guid): Text
 ```
 #### Parameters
@@ -102,13 +106,14 @@ The user's security ID.
 
 The user's authentication object ID.
 ### TryGetUserAuthenticationObjectId (Method) <a name="TryGetUserAuthenticationObjectId"></a> 
-    
+
  Tries to get the user's authentication object ID.
  
 
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure TryGetUserAuthenticationObjectId(UserSecurityId: Guid; var AuthenticationObjectId: Text): Boolean
 ```
 #### Parameters
@@ -125,13 +130,14 @@ Var parameter that hold the user's authention object ID.
 
 True if the call was successful; otherwise - false.
 ### GetUser (Method) <a name="GetUser"></a> 
-    
+
  Gets the user from a given Authentication object ID.
  
 
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetUser(AuthenticationObjectID: Text; var User: Record User): Boolean
 ```
 #### Parameters
@@ -148,13 +154,14 @@ The user that has provided Authentication object ID.
 
 True if the user was found, false otherwise.
 ### UpdateUserFromAzureGraph (Method) <a name="UpdateUserFromAzureGraph"></a> 
-    
+
  Updates the user record with information from Azure AD.
  
 
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure UpdateUserFromAzureGraph(var User: Record User; var AzureADUser: DotNet UserInfo): Boolean
 ```
 #### Parameters
@@ -171,7 +178,7 @@ The Azure AD user.
 
 True if the user record has been updated. Otherwise, false.
 ### GetAuthenticationEmail (Method) <a name="GetAuthenticationEmail"></a> 
-    
+
  Gets the authentication email of the provided Graph user.
  
 
@@ -180,6 +187,7 @@ Authentication email corresponds to userPrincipalName property on the Graph user
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetAuthenticationEmail(GraphUser: DotNet UserInfo): Text[250]
 ```
 #### Parameters
@@ -192,7 +200,7 @@ The Azure AD user.
 
 The authentication email of the provided Graph user. Can be used to assign to "Authentication Email" field on the User table.
 ### GetDisplayName (Method) <a name="GetDisplayName"></a> 
-    
+
  Gets the display name of the provided Graph user.
  
 
@@ -201,6 +209,7 @@ Display name corresponds to displayName property on the Graph user.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetDisplayName(GraphUser: DotNet UserInfo): Text[50]
 ```
 #### Parameters
@@ -213,7 +222,7 @@ The Azure AD user.
 
 The display name of the provided Graph user. Can be used to assign to "User Name" field on the User table.
 ### GetContactEmail (Method) <a name="GetContactEmail"></a> 
-    
+
  Gets the contact email of the provided Graph user.
  
 
@@ -222,6 +231,7 @@ Contact email corresponds to Mail property on the Graph user.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetContactEmail(GraphUser: DotNet UserInfo): Text[250]
 ```
 #### Parameters
@@ -234,7 +244,7 @@ The Azure AD user.
 
 The contact email of the provided Graph user. Can be used to assign to "Contact Email" field on the User table.
 ### GetFullName (Method) <a name="GetFullName"></a> 
-    
+
  Gets the full name of the provided Graph user.
  
 
@@ -243,6 +253,7 @@ Full name is composed from the combination of givenName and surname properties o
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetFullName(GraphUser: DotNet UserInfo): Text[80]
 ```
 #### Parameters
@@ -255,18 +266,19 @@ The Azure AD user.
 
 The full name of the provided Graph user. Can be used to assign to "Full Name" field on the User table.
 ### GetPreferredLanguageID (Method) <a name="GetPreferredLanguageID"></a> 
-    
+
  Gets the preferred language ID of the provided Graph user.
  
 
 
- Preferred language ID is derived from preferredLanguage property on the Graph user. 
+ Preferred language ID is derived from preferredLanguage property on the Graph user.
  If the preferred language is not set or it is set to a language that is not supported in Business Central, the function returns 0.
  
 
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetPreferredLanguageID(GraphUser: DotNet UserInfo): Integer
 ```
 #### Parameters
@@ -279,15 +291,16 @@ The Azure AD user.
 
 The preferred language ID of the provided Graph user. Can be used to set the preferred language using the Language module.
 ### EnsureAuthenticationEmailIsNotInUse (Method) <a name="EnsureAuthenticationEmailIsNotInUse"></a> 
-    
+
  Ensures that an email address specified for authorization is not already in use by another database user.
- If it is, all the database users with this authentication email address are updated and their email 
+ If it is, all the database users with this authentication email address are updated and their email
  addresses are updated the ones that are specified in Azure AD.
  
 
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure EnsureAuthenticationEmailIsNotInUse(AuthenticationEmail: Text)
 ```
 #### Parameters
@@ -303,6 +316,7 @@ The authentication email address.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure SetTestInProgress(TestInProgress: Boolean)
 ```
 #### Parameters

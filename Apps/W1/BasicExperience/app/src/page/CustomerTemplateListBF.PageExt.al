@@ -1,3 +1,4 @@
+#if not CLEAN18
 pageextension 20619 "Customer Template List BF" extends "Customer Template List"
 {
     layout
@@ -12,3 +13,4 @@ pageextension 20619 "Customer Template List BF" extends "Customer Template List"
         }
     }
 }
+#endif

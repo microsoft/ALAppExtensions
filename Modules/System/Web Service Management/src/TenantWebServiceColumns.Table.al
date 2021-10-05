@@ -36,11 +36,11 @@ table 6711 "Tenant Web Service Columns"
         field(5; TenantWebServiceID; RecordID)
         {
             Caption = 'Tenant Web Service ID';
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
         }
         field(6; "Data Item Caption"; Text[250])
         {
-            CalcFormula = Lookup (AllObjWithCaption."Object Caption" WHERE("Object Type" = CONST(Table),
+            CalcFormula = Lookup(AllObjWithCaption."Object Caption" WHERE("Object Type" = CONST(Table),
                                                                            "Object ID" = FIELD("Data Item")));
             Caption = 'Table';
             FieldClass = FlowField;
@@ -51,7 +51,7 @@ table 6711 "Tenant Web Service Columns"
         }
         field(8; "Field Caption"; Text[250])
         {
-            CalcFormula = Lookup (Field."Field Caption" WHERE(TableNo = FIELD("Data Item"),
+            CalcFormula = Lookup(Field."Field Caption" WHERE(TableNo = FIELD("Data Item"),
                                                               "No." = FIELD("Field Number")));
             Caption = 'Field Caption';
             FieldClass = FlowField;

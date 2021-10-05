@@ -35,6 +35,26 @@ tableextension 11753 "Tariff Number CZL" extends "Tariff Number"
             Caption = 'Supplementary Unit of Measure Code';
             TableRelation = "Unit of Measure";
             DataClassification = CustomerContent;
+#if CLEAN18
+
+            trigger OnValidate()
+            var
+                UnitofMeasure: Record "Unit of Measure";
+            begin
+                if "Suppl. Unit of Meas. Code CZL" = '' then
+                    "Supplementary Units" := false
+                else
+                    "Supplementary Units" := UnitofMeasure.Get("Suppl. Unit of Meas. Code CZL");
+            end;
+#endif            
         }
     }
+#if CLEAN18
+    keys
+    {
+        key(Key11700; "Suppl. Unit of Meas. Code CZL")
+        {
+        }
+    }
+#endif
 }

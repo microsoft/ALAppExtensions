@@ -14,7 +14,7 @@ You can use this module to:
 
 ### ReadValue (Method) <a name="ReadValue"></a> 
 
- Reads the value of the capture 
+ Reads the value of the capture
  
 
 #### Syntax
@@ -33,7 +33,7 @@ The value of the capture.
 
 ### ReadValue (Method) <a name="ReadValue"></a> 
 
- Reads the value of the group 
+ Reads the value of the group
  
 
 #### Syntax
@@ -52,7 +52,7 @@ The value of the group.
 
 ### ReadValue (Method) <a name="ReadValue"></a> 
 
- Reads the value of the match 
+ Reads the value of the match
  
 
 #### Syntax
@@ -71,7 +71,7 @@ The value of the match.
 
 ### GetRegexOptions (Method) <a name="GetRegexOptions"></a> 
 
- Gets the integer-representation of the combined regex options. 
+ Gets the integer-representation of the combined regex options.
  
 
 #### Syntax
@@ -85,7 +85,7 @@ An integer for the combined regex options.
 
 ## Regex (Codeunit 3960)
 
- Provides functionality to use regular expressions to match text, split text, replace text etc.  
+ Provides functionality to use regular expressions to match text, split text, replace text etc.
  
 
 ### GetCacheSize (Method) <a name="GetCacheSize"></a> 
@@ -826,7 +826,7 @@ procedure GetHashCode(): Integer
 A hash code for the current object.
 ### Escape (Method) <a name="Escape"></a> 
 
- Escapes a minimal set of characters (\, *, +, ?, |, {, [, (,), ^, $, ., #, and white space) by replacing them with their escape codes. 
+ Escapes a minimal set of characters (\, *, +, ?, |, {, [, (,), ^, $, ., #, and white space) by replacing them with their escape codes.
  
 
 #### Syntax
@@ -862,7 +862,7 @@ The input string containing the text to convert.
 A string of characters with any escaped characters converted to their unescaped form.
 ### Groups (Method) <a name="Groups"></a> 
 
- Get the Groups for one particular Match  
+ Get the Groups for one particular Match
  
 
 #### Syntax
@@ -880,7 +880,7 @@ Groups Record to write the resulting Groups to.
 
 ### Captures (Method) <a name="Captures"></a> 
 
- Get the Captures for one particular Group  
+ Get the Captures for one particular Group
  
 
 #### Syntax
@@ -918,3 +918,25 @@ The replacement pattern to use.
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
 The expanded version of the replacement parameter.
+
+## RegexOptions (Enum 3962)
+### None (value: 0)
+
+### IgnoreCase (value: 1)
+
+### Multiline (value: 2)
+
+### ExplicitCapture (value: 4)
+
+### Compiled (value: 8)
+
+### Singleline (value: 16)
+
+### IgnorePatternWhitespace (value: 32)
+
+### RightToLeft (value: 64)
+
+### ECMAScript (value: 256)
+
+### CultureInvariant (value: 512)
+

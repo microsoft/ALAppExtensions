@@ -8,7 +8,6 @@ codeunit 132598 "Navigation Bar Sub. Test"
     EventSubscriberInstance = Manual;
     SingleInstance = true;
     Subtype = Test;
-    TestPermissions = NonRestrictive;
 
     [Test]
     procedure TestAdvancedSettingsShowsUpOnOpenRoleBasedSetupExperience()
@@ -16,8 +15,6 @@ codeunit 132598 "Navigation Bar Sub. Test"
         SystemActionTriggers: Codeunit "System Action Triggers";
         AdvancedSettings: TestPage "Advanced Settings";
     begin
-        Initialize();
-
         // [WHEN] system action OpenGeneralSetupExperience is triggered
         AdvancedSettings.Trap();
         SystemActionTriggers.OpenGeneralSetupExperience();
@@ -32,8 +29,6 @@ codeunit 132598 "Navigation Bar Sub. Test"
         SystemActionTriggers: Codeunit "System Action Triggers";
         AssistedSetup: TestPage "Assisted Setup";
     begin
-        Initialize();
-
         // [WHEN] system action OpenRoleBasedSetupExperience is triggered
         AssistedSetup.Trap();
         SystemActionTriggers.OpenRoleBasedSetupExperience();
@@ -41,10 +36,4 @@ codeunit 132598 "Navigation Bar Sub. Test"
         // [THEN] Assisted setup is opened
         AssistedSetup.Close();
     end;
-
-    local procedure Initialize();
-    begin
-    end;
-
-
 }

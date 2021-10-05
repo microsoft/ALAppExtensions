@@ -6,7 +6,7 @@ Contains functionality that retrieves data about the geographical location of a 
  `
  Geolocation.SetHighAccuracy(true);
  if Geolocation.RequestGeolocation() then
-    Geolocation.GetGeolocation(Latitude, Longitude);        
+    Geolocation.GetGeolocation(Latitude, Longitude);
  `
 
 ### RequestGeolocation (Method) <a name="RequestGeolocation"></a> 

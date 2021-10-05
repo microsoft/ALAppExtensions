@@ -1,6 +1,6 @@
 codeunit 31028 "Instruction Mgt. CZL"
 {
-    Permissions = TableData "My Notifications" = rimd;
+    Permissions = tabledata "My Notifications" = rimd;
 
     var
         InstructionMgt: Codeunit "Instruction Mgt.";

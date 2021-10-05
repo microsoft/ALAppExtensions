@@ -551,6 +551,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
             JArray.Add(CurrentJToken);
     end;
 
+    [NonDebuggable]
     local procedure InvokeQuickBooksRESTRequest(Request: Text; EntityName: Text; var JToken: JsonToken): Boolean
     var
         BaseUrlTxt: Label 'https://quickbooks.api.intuit.com', Locked = true;

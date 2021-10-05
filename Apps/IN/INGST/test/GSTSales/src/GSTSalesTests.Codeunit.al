@@ -6,6 +6,7 @@ codeunit 18196 "GST Sales Tests"
         LibrarySales: Codeunit "Library - Sales";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryGST: Codeunit "Library GST";
+        LibraryGSTSales: Codeunit "Library GST Sales";
         LibraryRandom: Codeunit "Library - Random";
         LibraryERM: Codeunit "Library - ERM";
         LibraryJournals: Codeunit "Library - Journals";
@@ -39,6 +40,68 @@ codeunit 18196 "GST Sales Tests"
         PostedDocumentNoLbl: Label 'PostedDocumentNo';
         ReverseDocumentNoLbl: Label 'ReverseDocumentNo';
         PriceInclusiveOfTaxLbl: Label 'WithPIT';
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromSalesInvoiceForRegisteredCustomerInterStatePIT()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Check if the system is handling Tax Value Calculation when Price is Inclusive of GST in case of Inter-state Sales of Goods through Sale Invoice.
+        // [FEATURE] [Sales Invoice] [Inter-State GST,Registered Customer]
+
+        // [GIVEN] Created GST Setup and tax rates for Registered Customer with Interstate Jurisdiction and Price Incusive of Tax Setup
+        CreateGSTSetup(GSTCustomeType::Registered, GSTGroupType::Goods, false);
+        InitializeShareStep(false, false);
+        SalesWithPriceInclusiveOfTax(true);
+
+        // [WHEN] Create and Post Sales Invoice with GST and Line Type as Item for Interstate Juridisction
+        PostedDocumentNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine,
+            LineType::Item,
+            DocumentType::Invoice);
+
+        // [THEN] Verify GST Ledger Entries and Detailed GST Entries
+        VerifyGSTEntries(PostedDocumentNo, Database::"Sales Invoice Header");
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromSalesInvoiceForRegisteredCustomerIntraStatePIT()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Check if the system is handling Tax Value Calculation when Price is Inclusive of GST in case of Intra-state Sales of Goods through Sale Invoice.
+        // [FEATURE] [Sales Invoice] [Intra-State GST,Registered Customer]
+
+        // [GIVEN] Created GST Setup and tax rates for Registered Customer with Intrastate Jurisdiction and Price Incusive of Tax Setup
+        CreateGSTSetup(GSTCustomeType::Registered, GSTGroupType::Goods, true);
+        InitializeShareStep(false, false);
+        SalesWithPriceInclusiveOfTax(true);
+
+        // [WHEN] Create and Post Sales Invoice with GST and Line Type as Item for Intrastate Juridisction
+        PostedDocumentNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine,
+            LineType::Item,
+            DocumentType::Invoice);
+
+        // [THEN] Verify GST Ledger Entries and Detailed GST Entries
+        VerifyGSTEntries(PostedDocumentNo, Database::"Sales Invoice Header");
+    end;
 
     [Test]
     [HandlerFunctions('TaxRatePageHandler')]
@@ -3328,19 +3391,6 @@ codeunit 18196 "GST Sales Tests"
         StorageBoolean.Set(PriceInclusiveOfTaxLbl, WithPIT);
     end;
 
-    local procedure CreatePITSetupForItem(ItemNo: Code[20])
-    var
-        SalesPrice: Record "Sales Price";
-    begin
-        SalesPrice.Init();
-        SalesPrice.Validate("Sales Type", SalesPrice."Sales Type"::Customer);
-        SalesPrice.Validate("Sales Code", Storage.Get(CustomerNoLbl));
-        SalesPrice.Validate("Item No.", ItemNo);
-        SalesPrice.Validate("Unit Price", LibraryRandom.RandDec(3, 2));
-        SalesPrice.Validate("Price Inclusive of Tax", true);
-        SalesPrice.Insert(true);
-    end;
-
     local procedure CreateAndPostSalesDocumentFromCopyDocument(
             var SalesHeader: Record "Sales Header";
             DocumentType: Enum "Sales Document Type")
@@ -3581,7 +3631,6 @@ codeunit 18196 "GST Sales Tests"
             GeneralLedgerSetup.Modify();
         end;
 
-        
         CustomerNo := Storage.Get(CustomerNoLbl);
         LocationCode := CopyStr(Storage.Get(LocationCodeLbl), 1, MaxStrLen(LocationCode));
         CreateSalesHeaderWithGST(SalesHeader, CustomerNo, DocumentType, LocationCode);
@@ -3604,10 +3653,10 @@ codeunit 18196 "GST Sales Tests"
         CustomerNo := Storage.Get(CustomerNoLbl);
         LocationCode := CopyStr(Storage.Get(LocationCodeLbl), 1, MaxStrLen(LocationCode));
         CreateSalesHeaderWithGST(SalesHeader, CustomerNo, DocumentType, LocationCode);
-                          CreateSalesLineWithGST(SalesHeader, SalesLine, LineType, LibraryRandom.RandDecInRange(2, 10, 0), StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl));
+        CreateSalesLineWithGST(SalesHeader, SalesLine, LineType, LibraryRandom.RandDecInRange(2, 10, 0), StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl));
         SalesHeader.Validate("Applies-to Doc. Type", SalesHeader."Applies-to Doc. Type"::Payment);
         SalesHeader.Validate("Applies-to Doc. No.", Storage.Get(PaymentDocNoLbl));
-                  
+
         PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
         exit(PostedDocumentNo);
     end;
@@ -3632,14 +3681,14 @@ codeunit 18196 "GST Sales Tests"
         end;
         if StorageBoolean.ContainsKey(POSLbl) then begin
             POS := StorageBoolean.Get(POSLbl);
-                          if POS then begin
-                              SalesHeader.Validate("GST Invoice", true);
-                              SalesHeader.Validate("POS Out Of India", true);
+            if POS then begin
+                SalesHeader.Validate("GST Invoice", true);
+                SalesHeader.Validate("POS Out Of India", true);
             end;
         end;
-                      SalesHeader.Modify(true);
-    end;              
-              
+        SalesHeader.Modify(true);
+    end;
+
     local procedure CreateSalesLineWithGST(
         var SalesHeader: Record "Sales Header";
         var SalesLine: Record "Sales Line";
@@ -3667,10 +3716,6 @@ codeunit 18196 "GST Sales Tests"
                     LineTypeNo := LibraryGST.CreateFixedAssetWithGSTDetails(VATPostingSetup, (Storage.Get(GSTGroupCodeLbl)), (Storage.Get(HSNSACCodeLbl)), true, Exempted);
             end;
 
-            if StorageBoolean.ContainsKey(PriceInclusiveOfTaxLbl) then
-                if StorageBoolean.Get(PriceInclusiveOfTaxLbl) = true then
-                    CreatePITSetupForItem(LineTypeNo);
-
             LibrarySales.CreateSalesLine(SalesLine, SalesHeader, LineType, LineTypeno, Quantity);
             SalesLine.Validate("VAT Prod. Posting Group", VATPostingsetup."VAT Prod. Posting Group");
             if StorageBoolean.ContainsKey(PartialShipLbl) then begin
@@ -3683,6 +3728,12 @@ codeunit 18196 "GST Sales Tests"
                 SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
                 LibraryGST.UpdateLineDiscAccInGeneralPostingSetup(SalesLine."Gen. Bus. Posting Group", SalesLine."Gen. Prod. Posting Group");
             end;
+
+            if StorageBoolean.ContainsKey(PriceInclusiveOfTaxLbl) then
+                if StorageBoolean.Get(PriceInclusiveOfTaxLbl) = true then
+                    SalesLine.Validate("Price Inclusive of Tax", true);
+            SalesLine.Validate("Unit Price Incl. of Tax", LibraryRandom.RandInt(10000));
+
             SalesLine.Validate("Unit Price", LibraryRandom.RandInt(10000));
             SalesLine.Modify(true);
             CalculateGSTOnSalesLine(SalesLine);
@@ -3774,8 +3825,8 @@ codeunit 18196 "GST Sales Tests"
                     CreateVoucherAccountSetup(Type, LocationCode);
                 end;
             Type::"Contra Voucher", Type::"Cash Receipt Voucher":
-                                                                   begin
-                                                                       LibraryERM.CreateGLAccount(GLAccount);
+                begin
+                    LibraryERM.CreateGLAccount(GLAccount);
                     Storage.Set(AccountNoLbl, GLAccount."No.");
                     Storage.Set(AccountTypeLbl, Format(AccountType::"G/L Account"));
                     CreateVoucherAccountSetup(Type, LocationCode);
@@ -3854,6 +3905,11 @@ codeunit 18196 "GST Sales Tests"
 
         Assert.AreNotEqual(CustLedgerEntry.Amount, CustLedgerEntry."Remaining Amount",
             StrSubstNo(VerifyErr, CustLedgerEntry.FieldName("Remaining Amount"), CustLedgerEntry.TableCaption));
+    end;
+
+    local procedure VerifyGSTEntries(DocumentNo: Code[20]; TableID: Integer)
+    begin
+        LibraryGSTSales.VerifyGSTEntries(DocumentNo, TableID, ComponentPerArray);
     end;
 
     local procedure VerifyAdvPaymentUnapplied()

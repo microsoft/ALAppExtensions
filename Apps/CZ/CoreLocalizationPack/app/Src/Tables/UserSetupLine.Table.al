@@ -32,9 +32,9 @@ table 11797 "User Setup Line CZL"
             else
             if (Type = Const("Bank Account")) "Bank Account"
             else
-            if (Type = Const("Paym. Order")) "Bank Account"
+            if (Type = Const("Payment Order")) "Bank Account"
             else
-            if (Type = Const("Bank Stmt")) "Bank Account"
+            if (Type = Const("Bank Statement")) "Bank Account"
             else
             if (Type = Const("General Journal")) "Gen. Journal Template"
             else

@@ -1,3 +1,9 @@
+#if not CLEAN18
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 permissionset 11709 "GL-CREDIT,POST"
 {
     Access = Public;
@@ -15,3 +21,4 @@ permissionset 11709 "GL-CREDIT,POST"
                   tabledata "Posted Credit Header" = RIm,
                   tabledata "Posted Credit Line" = RIm;
 }
+#endif

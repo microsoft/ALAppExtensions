@@ -66,10 +66,10 @@ page 18662 "TDS Cust Concessional Codes"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     CustomerEditLbl: Label 'Code eq %1', Comment = '%1 = Customer No.';
                 begin
-                    ODataUtility.EditWorksheetInExcel('Customer Concessional Codes', CurrPage.ObjectId(false), StrSubstNo(CustomerEditLbl, Rec."Customer No."));
+                    EditinExcel.EditPageInExcel('Customer Concessional Codes', CurrPage.ObjectId(false), StrSubstNo(CustomerEditLbl, Rec."Customer No."));
                 end;
             }
         }

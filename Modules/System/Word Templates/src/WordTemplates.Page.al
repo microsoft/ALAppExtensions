@@ -14,7 +14,8 @@ page 9989 "Word Templates"
     SourceTable = "Word Template";
     PromotedActionCategories = 'New,Process';
     InsertAllowed = false;
-    Permissions = tabledata "Word Template" = rmd;
+    Permissions = tabledata "Word Template" = rmd,
+                  tabledata "Word Templates Related Table" = r;
     Extensible = false;
 
     layout
@@ -68,6 +69,17 @@ page 9989 "Word Templates"
                         CurrPage.Update(true);
                     end;
                 }
+            }
+        }
+
+        area(Factboxes)
+        {
+            part("Word Template Related"; "Word Templates Related Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Related Entities';
+                SubPageLink = Code = Field(Code);
+                Editable = false;
             }
         }
     }
@@ -148,8 +160,34 @@ page 9989 "Word Templates"
                 var
                     WordTemplateSelectionWizard: Page "Word Template Selection Wizard";
                 begin
+                    WordTemplateSelectionWizard.SetIsUnknownSource();
                     WordTemplateSelectionWizard.SetTemplate(Rec);
                     WordTemplateSelectionWizard.Run();
+                end;
+            }
+
+            action(RelatedTables)
+            {
+                ApplicationArea = All;
+                Image = EditLines;
+                Promoted = true;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+                Caption = 'Edit related entities';
+                ToolTip = 'Edit the related entities for the selected Word template.';
+
+                trigger OnAction()
+                var
+                    WordTemplateRelatedTable: Record "Word Templates Related Table";
+                    WordTemplateRelatedList: Page "Word Templates Related List";
+                begin
+                    WordTemplateRelatedTable.SetRange(Code, Rec.Code);
+                    WordTemplateRelatedList.SetTableView(WordTemplateRelatedTable);
+                    WordTemplateRelatedList.SetTableNo(Rec."Table ID");
+                    WordTemplateRelatedList.LookupMode(true);
+                    WordTemplateRelatedList.RunModal();
+                    CurrPage.Update();
                 end;
             }
         }

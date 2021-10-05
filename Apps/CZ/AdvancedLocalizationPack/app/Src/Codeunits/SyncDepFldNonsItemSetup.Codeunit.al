@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AA0072
+#if not CLEAN18
+#pragma warning disable AL0432, AA0072
 codeunit 31286 "Sync.Dep.Fld-NonsItemSetup CZA"
 {
     Access = Internal;
@@ -36,3 +37,4 @@ codeunit 31286 "Sync.Dep.Fld-NonsItemSetup CZA"
                 Rec."No. Format" := Rec."No. Format"::"Vendor Item No.";
     end;
 }
+#endif

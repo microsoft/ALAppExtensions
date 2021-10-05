@@ -35,6 +35,105 @@ For on-premises versions, you can also use this module to do the following:
 
 
 # Public Objects
+## Signature Key (Table 1461)
+
+ Represents the key of asymmetric algorithm.
+ 
+
+### FromXmlString (Method) <a name="FromXmlString"></a> 
+
+ Saves an key value from the key information from an XML string.
+ 
+
+#### Syntax
+```
+procedure FromXmlString(XmlString: Text)
+```
+#### Parameters
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The XML string containing key information.
+
+### ToXmlString (Method) <a name="ToXmlString"></a> 
+
+ Gets an XML string containing the key of the saved key value.
+ 
+
+#### Syntax
+```
+procedure ToXmlString(): Text
+```
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+An XML string containing the key of the saved key value.
+
+## SignatureAlgorithm (Interface)
+### FromXmlString (Method) <a name="FromXmlString"></a> 
+#### Syntax
+```
+procedure FromXmlString(XmlString: Text)
+```
+#### Parameters
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+
+
+### SignData (Method) <a name="SignData"></a> 
+#### Syntax
+```
+procedure SignData(DataInStream: InStream; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+```
+#### Parameters
+*DataInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+
+
+*SignatureOutStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+
+
+### ToXmlString (Method) <a name="ToXmlString"></a> 
+#### Syntax
+```
+procedure ToXmlString(IncludePrivateParameters: Boolean): Text
+```
+#### Parameters
+*IncludePrivateParameters ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+
+
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+
+### VerifyData (Method) <a name="VerifyData"></a> 
+#### Syntax
+```
+procedure VerifyData(DataInStream: InStream; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+```
+#### Parameters
+*DataInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+
+
+*SignatureInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+
+
 ## Cryptography Management (Codeunit 1266)
 
  Provides helper functions for encryption and hashing.
@@ -320,6 +419,59 @@ Base64 hashed value.
 
 #### Syntax
 ```
+procedure SignData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+```
+#### Parameters
+*InputString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Input string for signing.
+
+*SignatureKey ([Record "Signature Key"]())* 
+
+The private key to use in the hash algorithm.
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureOutStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The stream to write the signature for the specified string.
+
+### SignData (Method) <a name="SignData"></a> 
+
+ Computes the hash value of the specified data and signs it.
+ 
+
+#### Syntax
+```
+procedure SignData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+```
+#### Parameters
+*DataInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of input data.
+
+*SignatureKey ([Record "Signature Key"]())* 
+
+The private key to use in the hash algorithm.
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureOutStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The stream to write the signature for the specified input data.
+
+### SignData (Method) <a name="SignData"></a> 
+
+ Computes the hash value of the specified string and signs it.
+ 
+
+#### Syntax
+```
+[Obsolete('Replaced by SignData with SignatureKey parameter.', '18.0')]
 procedure SignData(InputString: Text; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
 ```
 #### Parameters
@@ -346,6 +498,7 @@ The stream to write the output to.
 
 #### Syntax
 ```
+[Obsolete('Replaced by SignData with SignatureKey parameter.', '18.0')]
 procedure SignData(DataStream: InStream; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA5122; SignatureStream: OutStream)
 ```
 #### Parameters
@@ -372,6 +525,67 @@ The stream to write the output to.
 
 #### Syntax
 ```
+procedure VerifyData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+```
+#### Parameters
+*InputString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Input string.
+
+*SignatureKey ([Record "Signature Key"]())* 
+
+The public key to use in the hash algorithm.
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of signature.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the signature is valid; otherwise, false.
+### VerifyData (Method) <a name="VerifyData"></a> 
+
+ Verifies that a digital signature is valid.
+ 
+
+#### Syntax
+```
+procedure VerifyData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+```
+#### Parameters
+*DataInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of input data.
+
+*SignatureKey ([Record "Signature Key"]())* 
+
+The public key to use in the hash algorithm.
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of signature.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the signature is valid; otherwise, false.
+### VerifyData (Method) <a name="VerifyData"></a> 
+
+ Verifies that a digital signature is valid.
+ 
+
+#### Syntax
+```
+[Obsolete('Replaced by SignData with SignatureKey parameter.', '18.0')]
 procedure VerifyData(InputString: Text; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
 ```
 #### Parameters
@@ -402,6 +616,7 @@ True if the digital signature is valid.
 
 #### Syntax
 ```
+[Obsolete('Replaced by SignData with SignatureKey parameter.', '18.0')]
 procedure VerifyData(DataStream: InStream; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
 ```
 #### Parameters
@@ -587,6 +802,86 @@ Represents the input instream data to decrypt
 
 Represents the output instream decrypted data
 
+
+## DSACryptoServiceProvider (Codeunit 1447)
+
+ Defines a wrapper object to access the cryptographic service provider (CSP) implementation of the DSA algorithm.
+ 
+
+### ToXmlString (Method) <a name="ToXmlString"></a> 
+
+ Creates and returns an XML string representation of the current DSA object.
+ 
+
+#### Syntax
+```
+procedure ToXmlString(IncludePrivateParameters: Boolean): Text
+```
+#### Parameters
+*IncludePrivateParameters ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+true to include private parameters; otherwise, false.
+
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+An XML string encoding of the current DSA object.
+### SignData (Method) <a name="SignData"></a> 
+
+ Computes the hash value of the specified stream using the specified hash algorithm and signs the resulting hash value.
+ 
+
+#### Syntax
+```
+procedure SignData(XmlString: Text; DataInStream: InStream; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+```
+#### Parameters
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The XML string containing DSA key information.
+
+*DataInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The input stream to hash and sign.
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+The hash algorithm to use to create the hash value.
+
+*SignatureOutStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The DSA signature stream for the specified data.
+
+### VerifyData (Method) <a name="VerifyData"></a> 
+
+ Verifies that a digital signature is valid by calculating the hash value of the specified stream using the specified hash algorithm and comparing it to the provided signature.
+ 
+
+#### Syntax
+```
+procedure VerifyData(XmlString: Text; DataInStream: InStream; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+```
+#### Parameters
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The XML string containing DSA key information.
+
+*DataInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The input stream of data that was signed.
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+The name of the hash algorithm used to create the hash value of the data.
+
+*SignatureInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of signature data to be verified.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the signature is valid; otherwise, false.
 
 ## Rfc2898DeriveBytes (Codeunit 1378)
 
@@ -897,6 +1192,86 @@ The value to decrypt.
 
 Plain text.
 
+## RSACryptoServiceProvider (Codeunit 1445)
+
+ Performs asymmetric encryption and decryption using the implementation of the RSA algorithm provided by the cryptographic service provider (CSP).
+ 
+
+### ToXmlString (Method) <a name="ToXmlString"></a> 
+
+ Creates and returns an XML string containing the key of the current RSA object.
+ 
+
+#### Syntax
+```
+procedure ToXmlString(IncludePrivateParameters: Boolean): Text
+```
+#### Parameters
+*IncludePrivateParameters ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+true to include a public and private RSA key; false to include only the public key.
+
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+An XML string containing the key of the current RSA object.
+### SignData (Method) <a name="SignData"></a> 
+
+ Computes the hash value of the specified data and signs it.
+ 
+
+#### Syntax
+```
+procedure SignData(XmlString: Text; DataInStream: InStream; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+```
+#### Parameters
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The XML string containing RSA key information.
+
+*DataInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The input stream to hash and sign.
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+The hash algorithm to use to create the hash value.
+
+*SignatureOutStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The RSA signature stream for the specified data.
+
+### VerifyData (Method) <a name="VerifyData"></a> 
+
+ Verifies that a digital signature is valid by determining the hash value in the signature using the provided public key and comparing it to the hash value of the provided data.
+ 
+
+#### Syntax
+```
+procedure VerifyData(XmlString: Text; DataInStream: InStream; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+```
+#### Parameters
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The XML string containing RSA key information.
+
+*DataInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The input stream of data that was signed.
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+The name of the hash algorithm used to create the hash value of the data.
+
+*SignatureInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of signature data to be verified.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the signature is valid; otherwise, false.
+
 ## X509Certificate2 (Codeunit 1286)
 
  Provides helper functions to work with the X509Certificate2 class.
@@ -1116,10 +1491,388 @@ Certificate Password
 Certificate details in json
 
 
+## SignedXml (Codeunit 1460)
+
+ Provides a functionality to singing an xml document.
+ 
+
+### InitializeSignedXml (Method) <a name="InitializeSignedXml"></a> 
+
+ Initializes a new instance of the SignedXml class from the specified XML document.
+ 
+
+#### Syntax
+```
+procedure InitializeSignedXml(SigningXmlDocument: XmlDocument)
+```
+#### Parameters
+*SigningXmlDocument ([XmlDocument]())* 
+
+The XmlDocument object to use to initialize the new instance of SignedXml.
+
+### InitializeSignedXml (Method) <a name="InitializeSignedXml"></a> 
+
+ Initializes a new instance of the SignedXml class from the specified XmlElement object.
+ 
+
+#### Syntax
+```
+procedure InitializeSignedXml(SigningXmlElement: XmlElement)
+```
+#### Parameters
+*SigningXmlElement ([XmlElement]())* 
+
+The XmlElement object to use to initialize the new instance of SignedXml.
+
+### SetSigningKey (Method) <a name="SetSigningKey"></a> 
+
+ Sets the key used for signing a SignedXml object.
+ 
+
+#### Syntax
+```
+procedure SetSigningKey(var SignatureKey: Record "Signature Key")
+```
+#### Parameters
+*SignatureKey ([Record "Signature Key"]())* 
+
+The key used for signing the SignedXml object.
+
+### InitializeReference (Method) <a name="InitializeReference"></a> 
+
+ Initializes a new instance of the Reference class with the specified Uri.
+ 
+
+#### Syntax
+```
+procedure InitializeReference(Uri: Text)
+```
+#### Parameters
+*Uri ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The Uri with which to initialize the new instance of Reference.
+
+### SetDigestMethod (Method) <a name="SetDigestMethod"></a> 
+
+ Sets the digest method Uniform Resource Identifier (URI) of the current Reference.
+ 
+
+#### Syntax
+```
+procedure SetDigestMethod(DigestMethod: Text)
+```
+#### Parameters
+*DigestMethod ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The digest method URI of the current Reference. The default value is http://www.w3.org/2001/04/xmlenc#sha256.
+
+### AddXmlDsigExcC14NTransformToReference (Method) <a name="AddXmlDsigExcC14NTransformToReference"></a> 
+
+ Adds a XmlDsigExcC14NTransform object to the list of transforms to be performed on the data before passing it to the digest algorithm.
+ 
+
+#### Syntax
+```
+procedure AddXmlDsigExcC14NTransformToReference(InclusiveNamespacesPrefixList: Text)
+```
+#### Parameters
+*InclusiveNamespacesPrefixList ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+A string that contains namespace prefixes to canonicalize using the standard canonicalization algorithm.
+
+### SetCanonicalizationMethod (Method) <a name="SetCanonicalizationMethod"></a> 
+
+ Sets the canonicalization algorithm that is used before signing for the current SignedInfo object.
+ 
+
+#### Syntax
+```
+procedure SetCanonicalizationMethod(CanonicalizationMethod: Text)
+```
+#### Parameters
+*CanonicalizationMethod ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The canonicalization algorithm used before signing for the current SignedInfo object.
+
+### SetXmlDsigExcC14NTransformAsCanonicalizationMethod (Method) <a name="SetXmlDsigExcC14NTransformAsCanonicalizationMethod"></a> 
+
+ Sets the XmlDsigExcC14NTransform as canonicalization algorithm that is used before signing for the current SignedInfo object.
+ 
+
+#### Syntax
+```
+procedure SetXmlDsigExcC14NTransformAsCanonicalizationMethod(InclusiveNamespacesPrefixList: Text)
+```
+#### Parameters
+*InclusiveNamespacesPrefixList ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+A string that contains namespace prefixes to canonicalize using the standard canonicalization algorithm.
+
+### SetSignatureMethod (Method) <a name="SetSignatureMethod"></a> 
+
+ Sets the name of the algorithm used for signature generation and validation for the current SignedInfo object.
+ 
+
+#### Syntax
+```
+procedure SetSignatureMethod(SignatureMethod: Text)
+```
+#### Parameters
+*SignatureMethod ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The name of the algorithm used for signature generation and validation for the current SignedInfo object.
+
+### InitializeKeyInfo (Method) <a name="InitializeKeyInfo"></a> 
+
+ Initializes a new instance of the KeyInfo class.
+ 
+
+#### Syntax
+```
+procedure InitializeKeyInfo()
+```
+### AddClause (Method) <a name="AddClause"></a> 
+
+ Adds a xml element of KeyInfoNode to the collection of KeyInfoClause.
+ 
+
+#### Syntax
+```
+procedure AddClause(KeyInfoNodeXmlElement: XmlElement)
+```
+#### Parameters
+*KeyInfoNodeXmlElement ([XmlElement]())* 
+
+The xml element of KeyInfoNode to add to the collection of KeyInfoClause.
+
+### ComputeSignature (Method) <a name="ComputeSignature"></a> 
+
+ Computes an Xml digital signature from Xml document.
+ 
+
+#### Syntax
+```
+procedure ComputeSignature()
+```
+### GetXml (Method) <a name="GetXml"></a> 
+
+ Returns the Xml representation of a signature.
+ 
+
+#### Syntax
+```
+procedure GetXml(): XmlElement
+```
+#### Return Value
+*[XmlElement]()*
+
+The Xml representation of the signature.
+### GetXmlDsigDSAUrl (Method) <a name="GetXmlDsigDSAUrl"></a> 
+
+ Represents the Uniform Resource Identifier (URI) for the standard DSA algorithm for XML digital signatures.
+ 
+
+#### Syntax
+```
+procedure GetXmlDsigDSAUrl(): Text[250]
+```
+#### Return Value
+*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The value http://www.w3.org/2000/09/xmldsig#dsa-sha1.
+### GetXmlDsigExcC14NTransformUrl (Method) <a name="GetXmlDsigExcC14NTransformUrl"></a> 
+
+ Represents the Uniform Resource Identifier (URI) for exclusive XML canonicalization.
+ 
+
+#### Syntax
+```
+procedure GetXmlDsigExcC14NTransformUrl(): Text[250]
+```
+#### Return Value
+*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The value http://www.w3.org/2001/10/xml-exc-c14n#.
+### GetXmlDsigHMACSHA1Url (Method) <a name="GetXmlDsigHMACSHA1Url"></a> 
+
+ Represents the Uniform Resource Identifier (URI) for the standard HMACSHA1 algorithm for XML digital signatures.
+ 
+
+#### Syntax
+```
+procedure GetXmlDsigHMACSHA1Url(): Text[250]
+```
+#### Return Value
+*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The value http://www.w3.org/2000/09/xmldsig#hmac-sha1.
+### GetXmlDsigRSASHA1Url (Method) <a name="GetXmlDsigRSASHA1Url"></a> 
+
+ Represents the Uniform Resource Identifier (URI) for the standard RSA signature method for XML digital signatures.
+ 
+
+#### Syntax
+```
+procedure GetXmlDsigRSASHA1Url(): Text[250]
+```
+#### Return Value
+*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The value http://www.w3.org/2000/09/xmldsig#rsa-sha1.
+### GetXmlDsigRSASHA256Url (Method) <a name="GetXmlDsigRSASHA256Url"></a> 
+
+ Represents the Uniform Resource Identifier (URI) for the RSA SHA-256 signature method variation for XML digital signatures.
+ 
+
+#### Syntax
+```
+procedure GetXmlDsigRSASHA256Url(): Text[250]
+```
+#### Return Value
+*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The value http://www.w3.org/2001/04/xmldsig-more#rsa-sha256.
+### GetXmlDsigRSASHA384Url (Method) <a name="GetXmlDsigRSASHA384Url"></a> 
+
+ Represents the Uniform Resource Identifier (URI) for the RSA SHA-384 signature method variation for XML digital signatures.
+ 
+
+#### Syntax
+```
+procedure GetXmlDsigRSASHA384Url(): Text[250]
+```
+#### Return Value
+*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The value http://www.w3.org/2001/04/xmldsig-more#rsa-sha384.
+### GetXmlDsigRSASHA512Url (Method) <a name="GetXmlDsigRSASHA512Url"></a> 
+
+ Represents the Uniform Resource Identifier (URI) for the RSA SHA-512 signature method variation for XML digital signatures.
+ 
+
+#### Syntax
+```
+procedure GetXmlDsigRSASHA512Url(): Text[250]
+```
+#### Return Value
+*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The value http://www.w3.org/2001/04/xmldsig-more#rsa-sha512.
+### GetXmlDsigSHA1Url (Method) <a name="GetXmlDsigSHA1Url"></a> 
+
+ Represents the Uniform Resource Identifier (URI) for the standard SHA1 digest method for XML digital signatures.
+ 
+
+#### Syntax
+```
+procedure GetXmlDsigSHA1Url(): Text[250]
+```
+#### Return Value
+*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The value http://www.w3.org/2000/09/xmldsig#sha1.
+### GetXmlDsigSHA256Url (Method) <a name="GetXmlDsigSHA256Url"></a> 
+
+ Represents the Uniform Resource Identifier (URI) for the standard SHA256 digest method for XML digital signatures.
+ 
+
+#### Syntax
+```
+procedure GetXmlDsigSHA256Url(): Text[250]
+```
+#### Return Value
+*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The value http://www.w3.org/2001/04/xmlenc#sha256.
+### GetXmlDsigSHA384Url (Method) <a name="GetXmlDsigSHA384Url"></a> 
+
+ Represents the Uniform Resource Identifier (URI) for the standard SHA384 digest method for XML digital signatures.
+ 
+
+#### Syntax
+```
+procedure GetXmlDsigSHA384Url(): Text[250]
+```
+#### Return Value
+*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The value http://www.w3.org/2001/04/xmldsig-more#sha384.
+### GetXmlDsigSHA512Url (Method) <a name="GetXmlDsigSHA512Url"></a> 
+
+ Represents the Uniform Resource Identifier (URI) for the standard SHA512 digest method for XML digital signatures.
+ 
+
+#### Syntax
+```
+procedure GetXmlDsigSHA512Url(): Text[250]
+```
+#### Return Value
+*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The value http://www.w3.org/2001/04/xmlenc#sha512.
+
 ## Data Encryption Management (Page 9905)
 
  Exposes functionality that allows super users for on-premises versions to enable or disable encryption, import, export or change the encryption key.
  
+
+
+## Hash Algorithm (Enum 1445)
+
+ Specifies the types of hash algorithm.
+ 
+
+### MD5 (value: 0)
+
+
+ Specifies the MD5 hash algorithm
+ 
+
+### SHA1 (value: 1)
+
+
+ Specifies the SHA1 hash algorithm
+ 
+
+### SHA256 (value: 2)
+
+
+ Specifies the SHA256 hash algorithm
+ 
+
+### SHA384 (value: 3)
+
+
+ Specifies the SHA384 hash algorithm
+ 
+
+### SHA512 (value: 4)
+
+
+ Specifies the SHA512 hash algorithm
+ 
+
+
+## SignatureAlgorithm (Enum 1446)
+
+ Specifies the types of asymmetric algorithms.
+ 
+
+### RSA (value: 0)
+
+
+ Specifies the RSA algorithm implemented by RSACryptoServiceProvider
+ 
+
+### DSA (value: 1)
+
+
+ Specifies the DSA algorithm implemented by DSACryptoServiceProvider
+ 
+
+
+## Signature Key Value Type (Enum 1447)
+### XmlString (value: 0)
 
 
 ## X509 Content Type (Enum 1286)

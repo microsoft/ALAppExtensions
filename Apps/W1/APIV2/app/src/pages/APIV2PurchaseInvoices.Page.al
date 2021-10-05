@@ -334,6 +334,24 @@ page 30042 "APIV2 - Purchase Invoices"
                     Caption = 'Pay To Post Code';
                     Editable = false;
                 }
+                field(shortcutDimension1Code; "Shortcut Dimension 1 Code")
+                {
+                    Caption = 'Shortcut Dimension 1 Code';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Shortcut Dimension 1 Code"));
+                    end;
+                }
+                field(shortcutDimension2Code; "Shortcut Dimension 2 Code")
+                {
+                    Caption = 'Shortcut Dimension 2 Code';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Shortcut Dimension 2 Code"));
+                    end;
+                }
                 field(currencyId; "Currency Id")
                 {
                     Caption = 'Currency Id';
@@ -382,7 +400,7 @@ page 30042 "APIV2 - Purchase Invoices"
                         RegisterFieldSet(FieldNo("Currency Code"));
                     end;
                 }
-                                field(orderId; "Order Id")
+                field(orderId; "Order Id")
                 {
                     Caption = 'Order Id';
                     Editable = false;

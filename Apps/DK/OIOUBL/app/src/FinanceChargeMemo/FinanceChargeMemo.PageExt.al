@@ -11,17 +11,17 @@ pageextension 13661 "OIOUBL-Finance Charge Memo" extends "Finance Charge Memo"
         {
             field("OIOUBL-Contact Phone No."; "OIOUBL-Contact Phone No.")
             {
-                Tooltip = 'Specifies the telephone number of the contact person at the customer.';
+                Tooltip = 'Specifies the telephone number of the contact person at the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
             field("OIOUBL-Contact Fax No."; "OIOUBL-Contact Fax No.")
             {
-                Tooltip = 'Specifies the fax number of the contact person at the customer.';
+                Tooltip = 'Specifies the fax number of the contact person at the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
             field("OIOUBL-Contact E-Mail"; "OIOUBL-Contact E-Mail")
             {
-                Tooltip = 'Specifies the email address of the contact person at the customer.';
+                Tooltip = 'Specifies the email address of the contact person at the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
             field("OIOUBL-Contact Role"; "OIOUBL-Contact Role")
@@ -35,12 +35,12 @@ pageextension 13661 "OIOUBL-Finance Charge Memo" extends "Finance Charge Memo"
         {
             field("OIOUBL-GLN"; "OIOUBL-GLN")
             {
-                Tooltip = 'Specifies the GLN location number for the customer, based on the GLN field in the original sales order.';
+                Tooltip = 'Specifies the GLN location number for the customer, based on the GLN field in the original sales order. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
-                Tooltip = 'Specifies the account code of the customer who you will send the invoice to.';
+                Tooltip = 'Specifies the account code of the customer who you will send the invoice to. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
 
                 trigger OnValidate();

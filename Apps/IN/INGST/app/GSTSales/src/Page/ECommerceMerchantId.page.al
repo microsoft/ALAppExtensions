@@ -48,9 +48,9 @@ page 18141 "E-Commerce Merchant Id"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                 begin
-                    ODataUtility.EditWorksheetInExcel(
+                    EditinExcel.EditPageInExcel(
                         'e-Commerce Merchant Id',
                         CurrPage.ObjectId(false),
                         StrSubstNo(CustomerNumLbl, Rec."Customer No."));

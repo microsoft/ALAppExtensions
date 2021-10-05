@@ -6,12 +6,12 @@ codeunit 148004 "Library - Compensation CZC"
         CompensationManagementCZC: Codeunit "Compensation Management CZC";
         ReleaseCompensDocumentCZC: Codeunit "Release Compens. Document CZC";
 
-    procedure CreateCompensationHeader(var CompensationHeaderCZC: Record "Compensation Header CZC"; CompanyNo: Code[20])
+    procedure CreateCompensationHeader(var CompensationHeaderCZC: Record "Compensation Header CZC"; SourceType: Enum "Compensation Source Type CZC"; CompanyNo: Code[20])
     begin
         CompensationHeaderCZC.Init();
         CompensationHeaderCZC.Insert(true);
 
-        UpdateCompensationHeader(CompensationHeaderCZC, CompanyNo, WorkDate());
+        UpdateCompensationHeader(CompensationHeaderCZC, SourceType, CompanyNo, WorkDate());
     end;
 
     procedure CreateCompensationLine(var CompensationLineCZC: Record "Compensation Line CZC"; CompensationHeaderCZC: Record "Compensation Header CZC";
@@ -110,8 +110,14 @@ codeunit 148004 "Library - Compensation CZC"
         CompensationManagementCZC.SuggestCompensationLines(CompensationHeaderCZC);
     end;
 
-    procedure UpdateCompensationHeader(var CompensationHeaderCZC: Record "Compensation Header CZC"; CompanyNo: Code[20]; DocumentDate: Date)
+    procedure UpdateCompensationHeader(var CompensationHeaderCZC: Record "Compensation Header CZC"; CompanyType: Enum "Compensation Source Type CZC"; CompanyNo: Code[20]; DocumentDate: Date)
     begin
+        case CompanyType of
+            CompanyType::Customer:
+                CompensationHeaderCZC.Validate("Company Type", CompensationHeaderCZC."Company Type"::Customer);
+            CompanyType::Vendor:
+                CompensationHeaderCZC.Validate("Company Type", CompensationHeaderCZC."Company Type"::Vendor);
+        end;
         CompensationHeaderCZC.Validate("Company No.", CompanyNo);
         CompensationHeaderCZC.Validate("Document Date", DocumentDate);
         CompensationHeaderCZC.Modify(true);

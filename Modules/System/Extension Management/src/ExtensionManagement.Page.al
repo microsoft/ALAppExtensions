@@ -166,7 +166,7 @@ page 2500 "Extension Management"
                 {
                     ApplicationArea = All;
                     Caption = 'Download Source';
-                    Enabled = IsTenantExtension AND "Show My Code";
+                    Enabled = IsTenantExtension;
                     Image = ExportFile;
                     Promoted = true;
                     PromotedOnly = true;

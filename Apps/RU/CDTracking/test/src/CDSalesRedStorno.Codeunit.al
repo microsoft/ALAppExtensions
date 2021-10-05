@@ -1,11 +1,7 @@
 codeunit 147101 "CD Sales Red Storno"
 {
     Subtype = Test;
-
-    trigger OnRun()
-    begin
-        isInitialized := false;
-    end;
+    TestPermissions = NonRestrictive;
 
     var
         LibraryPurchase: Codeunit "Library - Purchase";

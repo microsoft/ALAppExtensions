@@ -14,6 +14,14 @@ codeunit 11752 "Customer Handler CZL"
         Rec.CheckOpenCustomerLedgerEntriesCZL();
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::Customer, 'OnBeforeIsContactUpdateNeeded', '', false, false)]
+    local procedure CheckChangeOnBeforeIsContactUpdateNeeded(Customer: Record Customer; xCustomer: Record Customer; var UpdateNeeded: Boolean)
+    begin
+        UpdateNeeded := UpdateNeeded or
+            (Customer."Registration No. CZL" <> xCustomer."Registration No. CZL") or
+            (Customer."Tax Registration No. CZL" <> xCustomer."Tax Registration No. CZL");
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Cust. Ledger Entry", 'OnAfterCopyCustLedgerEntryFromGenJnlLine', '', false, false)]
     local procedure UpdateEntryOnAfterCopyCustLedgerEntryFromGenJnlLine(var CustLedgerEntry: Record "Cust. Ledger Entry"; GenJournalLine: Record "Gen. Journal Line")
     begin

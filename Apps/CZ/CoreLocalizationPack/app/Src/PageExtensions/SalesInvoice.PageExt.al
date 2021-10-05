@@ -13,6 +13,7 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the VAT date of the original document.';
+                Visible = false;
             }
         }
         addafter(Control203)

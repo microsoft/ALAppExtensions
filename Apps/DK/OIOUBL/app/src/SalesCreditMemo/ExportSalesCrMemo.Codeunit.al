@@ -48,7 +48,9 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         EnvironmentInfo: Codeunit "Environment Information";
 #endif
         FromFile: Text[1024];
+#if not CLEAN17
         DocumentType: Option "Quote","Order","Invoice","Credit Memo","Blanket Order","Return Order","Finance Charge","Reminder";
+#endif
     begin
         FromFile := CreateXML(SalesCrMemoHeader);
 

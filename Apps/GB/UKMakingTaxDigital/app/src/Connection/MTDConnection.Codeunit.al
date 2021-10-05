@@ -47,6 +47,7 @@ codeunit 10537 "MTD Connection"
         NoContentStatusCodeErr: Label 'No Content.statusCode in json response', Locked = true;
         EmptyStatusCodeErr: Label 'Empty status code in json response', Locked = true;
         CannotParseResponseErr: Label 'Cannot parse the http error response', Locked = true;
+        FeatureConsentErr: Label 'The Making Tax Digital feature is not enabled. To enable it, on the VAT Report Setup page, on the Making Tax Digital FastTab, turn on the Enabled toggle.';
 
     internal procedure InvokeRequest_SubmitVATReturn(var ResponseJson: Text; var RequestJson: Text; var HttpError: Text; ResetFraudPreventionSessionHeaders: Boolean): Boolean
     begin
@@ -110,9 +111,14 @@ codeunit 10537 "MTD Connection"
     local procedure CheckOAuthConfigured(OpenSetup: Boolean)
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
+        VATReportSetup: Record "VAT Report Setup";
         MTDOAuth20Mgt: Codeunit "MTD OAuth 2.0 Mgt";
         OAuth20SetupCode: code[20];
     begin
+        VATReportSetup.Get();
+        if not VATReportSetup."MTD Enabled" then
+            Error(FeatureConsentErr);
+
         if IsOAuthConfigured() then
             exit;
 

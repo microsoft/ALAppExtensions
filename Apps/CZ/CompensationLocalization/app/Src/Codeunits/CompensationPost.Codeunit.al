@@ -1,7 +1,7 @@
 codeunit 31269 "Compensation - Post CZC"
 {
-    Permissions = TableData "Posted Compensation Header CZC" = i,
-                  TableData "Posted Compensation Line CZC" = i;
+    Permissions = tabledata "Posted Compensation Header CZC" = i,
+                  tabledata "Posted Compensation Line CZC" = i;
     TableNo = "Compensation Header CZC";
 
     trigger OnRun()
@@ -11,7 +11,7 @@ codeunit 31269 "Compensation - Post CZC"
         i: Integer;
     begin
         OnBeforePostCompensationCZC(Rec);
-        Rec.OnCheckCompensationPostRestrictions();
+        Rec.CheckCompensationPostRestrictions();
 
         if Rec.Status <> Rec.Status::Released then
             Codeunit.Run(Codeunit::"Release Compens. Document CZC", Rec);
@@ -140,7 +140,9 @@ codeunit 31269 "Compensation - Post CZC"
         Text002Err: Label 'There is nothing to post.';
         Text008Msg: Label 'Posting lines              #2######.', Comment = '%2 = progress bar';
         Text009Msg: Label 'Compensation %1.', Comment = '%1 = Number of Compensations';
+#if not CLEAN18
         DuplicityFoundErr: Label '%1 %2 was found. Resolve this before issue banking document.', Comment = '%1 = TableCaption, %2 = No.';
+#endif
         PreviewMode: Boolean;
 
     local procedure CheckRoundingAccounts(Balance: Decimal)
@@ -166,6 +168,7 @@ codeunit 31269 "Compensation - Post CZC"
         PreviewMode := NewPreviewMode;
     end;
 
+#if not CLEAN18
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Compensation - Post CZC", 'OnBeforePostCompensationCZC', '', false, false)]
     local procedure CheckObsoleteOnBeforePostCompensationCZC(var CompensationHeaderCZC: Record "Compensation Header CZC")
@@ -185,7 +188,7 @@ codeunit 31269 "Compensation - Post CZC"
             Error(DuplicityFoundErr, DuplicitCompensationHeaderCZC.TableCaption(), DuplicitCompensationHeaderCZC."No.");
     end;
 #pragma warning restore
-
+#endif
     [IntegrationEvent(false, false)]
     local procedure OnBeforePostCompensationCZC(var CompensationHeaderCZC: Record "Compensation Header CZC")
     begin

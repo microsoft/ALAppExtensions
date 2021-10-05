@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31221 "Sync.Dep.Fld-PostGenJnlLn CZL"
 {
@@ -69,3 +70,4 @@ codeunit 31221 "Sync.Dep.Fld-PostGenJnlLn CZL"
         Rec."SWIFT Code CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."SWIFT Code CZL"));
     end;
 }
+#endif

@@ -7,17 +7,13 @@ codeunit 132911 "Azure AD Graph User Test"
 {
     Subtype = Test;
     EventSubscriberInstance = Manual;
-    TestPermissions = Disabled;
-
-    trigger OnRun()
-    begin
-    end;
 
     var
         AzureADGraphUser: Codeunit "Azure AD Graph User";
         AzureADGraphUserTest: Codeunit "Azure AD Graph User Test";
         LibraryAssert: Codeunit "Library Assert";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
+        PermissionsMock: Codeunit "Permissions Mock";
         MockGraphQuery: DotNet MockGraphQuery;
 
         NewAADUserIdLbl: Label '6D59EA6C-BD8c-4694-A839-FE5C70089021';
@@ -68,7 +64,6 @@ codeunit 132911 "Azure AD Graph User Test"
         CurrentUserPreferredLanguageLbl: Label 'Current User Preferred Language';
         NewAADUserPreferredLanguageLbl: Label 'New User Preferred Language';
 
-    [Normal]
     local procedure Initialize()
     var
         UserProperty: Record "User Property";
@@ -130,7 +125,6 @@ codeunit 132911 "Azure AD Graph User Test"
             NewAADUserEmailLbl, UpdatedUser7PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
     end;
 
-    [Normal]
     local procedure CreateAzureADUser(var UserInfo: DotNet UserInfo; UserSecurityId: Guid; ObjectId: Text; Surname: Text; DisplayName: Text; Email: Text; PrincipalName: Text; GivenName: Text; PreferredLanguage: Text; AccountEnabled: Boolean)
     begin
         CreateUserProperty(UserSecurityId, ObjectId);
@@ -167,7 +161,6 @@ codeunit 132911 "Azure AD Graph User Test"
         UserInfo.AccountEnabled := AccountEnabled;
     end;
 
-    [Normal]
     local procedure InsertUser(var User: Record User; UserSecurityId: Guid; Enabled: Boolean; FullName: Text; ContactEmail: Text; AuthenticationEmail: Text; UserName: Text)
     begin
         User.Init();
@@ -194,6 +187,9 @@ codeunit 132911 "Azure AD Graph User Test"
         GraphUser: DotNet UserInfo;
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD User View');
 
         // [WHEN] Retrieving the graph user for the current user's security id
         AzureADGraphUser.GetGraphUser(UserSecurityId(), GraphUser);
@@ -231,9 +227,13 @@ codeunit 132911 "Azure AD Graph User Test"
     begin
         Initialize();
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD User View');
+
         // [WHEN] Retrieving the graph user for an inexistent user
         // [THEN] An error should occur, as the user does not exist
         asserterror AzureADGraphUser.GetGraphUser(CreateGuid(), GraphUser);
+        LibraryAssert.ExpectedError('The user with the security ID');
 
         TearDown();
     end;
@@ -246,6 +246,9 @@ codeunit 132911 "Azure AD Graph User Test"
         GraphUser: DotNet UserInfo;
     begin
         Initialize();
+        
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD User View');
 
         // [WHEN] Retrieving the graph user for a newly inserted Azure AD Graph user with a valid object id
         AzureADGraphUser.GetGraphUser(NewAADUserIdLbl, GraphUser);
@@ -283,9 +286,13 @@ codeunit 132911 "Azure AD Graph User Test"
     begin
         Initialize();
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD User View');
+
         // [WHEN] Retrieving the graph user for a newly inserted Azure AD Graph user with an invalid object id
         // [THEN] An error should occur
         asserterror AzureADGraphUser.GetGraphUser(AADUserIdWithEmptyObjectIdLbl, GraphUser);
+        LibraryAssert.ExpectedError('An Azure Active Directory user');
 
         TearDown();
     end;
@@ -298,6 +305,9 @@ codeunit 132911 "Azure AD Graph User Test"
         GraphUserObjectId: Text;
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD User View');
 
         // [WHEN] Getting the object id of the graph user
         GraphUserObjectId := AzureADGraphUser.GetObjectId(UserSecurityId());
@@ -315,9 +325,13 @@ codeunit 132911 "Azure AD Graph User Test"
     begin
         Initialize();
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD User View');
+
         // [WHEN] Getting the object id of the graph user
         // [THEN] An error should occur, as the user does not exist
         asserterror AzureADGraphUser.GetObjectId(CreateGuid());
+        LibraryAssert.ExpectedError('The user with the security ID');
 
         TearDown();
     end;
@@ -330,6 +344,9 @@ codeunit 132911 "Azure AD Graph User Test"
         GraphObjectId: Text;
     begin
         Initialize();
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD User View');
 
         // [WHEN] Getting the object id of the graph user
         GraphObjectId := AzureADGraphUser.GetObjectId(NewAADUserIdLbl);
@@ -347,9 +364,13 @@ codeunit 132911 "Azure AD Graph User Test"
     begin
         Initialize();
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD User View');
+
         // [WHEN] Trying to get the user authentication object ID for an inexistent user
         // [THEN] An error should occur
         asserterror AzureADGraphUser.GetUserAuthenticationObjectId(CreateGuid());
+        LibraryAssert.ExpectedError('The user with the security ID');
 
         TearDown();
     end;

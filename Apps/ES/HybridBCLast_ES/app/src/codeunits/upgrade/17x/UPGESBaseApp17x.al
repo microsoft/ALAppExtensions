@@ -29,12 +29,19 @@ codeunit 10737 "UPG ES BaseApp 17X"
     local procedure UpgradeGLAccountAPIType()
     var
         GLAccount: Record "G/L Account";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetGLAccountAPITypeUpgradeTag()) then
+            exit;
+
         GLAccount.SetRange("Account Type", GLAccount."Account Type"::Posting);
         GLAccount.ModifyAll("API Account Type", GLAccount."API Account Type"::Posting);
 
         GLAccount.Reset();
         GLAccount.SetRange("Account Type", GLAccount."Account Type"::Heading);
         GLAccount.ModifyAll("API Account Type", GLAccount."API Account Type"::Heading);
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetGLAccountAPITypeUpgradeTag());
     end;
 }
