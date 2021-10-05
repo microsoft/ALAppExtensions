@@ -98,6 +98,15 @@ codeunit 3971 Image
     end;
 
     /// <summary>
+    /// Rotates, flips, or rotates and flips the Image.
+    /// </summary>
+    /// <param name="RotateFlipType">The type of rotation and flip.</param>
+    procedure RotateFlip(RotateFlipType: Enum "Rotate Flip Type")
+    begin
+        ImageImpl.RotateFlip(RotateFlipType);
+    end;
+
+    /// <summary>
     /// Saves the image to the specified stream in the specified format.
     /// </summary>
     /// <param name="OutStream">A Stream that will store the image data.</param>

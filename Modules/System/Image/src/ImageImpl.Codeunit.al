@@ -197,6 +197,17 @@ codeunit 3970 "Image Impl."
         exit(Image.Height());
     end;
 
+    procedure RotateFlip(RotateFlipType: Enum "Rotate Flip Type")
+    var
+        Image: DotNet Image;
+        InStream: InStream;
+    begin
+        TempBlob.CreateInStream(InStream);
+        Image := Image.FromStream(InStream);
+        Image.RotateFlip(RotateFlipType.AsInteger());
+        EncodeToImage(Image);
+    end;
+
     procedure Save(OutStream: OutStream)
     var
         InStream: InStream;

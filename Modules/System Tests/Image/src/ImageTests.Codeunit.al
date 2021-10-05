@@ -160,6 +160,32 @@ codeunit 135135 "Image Tests"
     end;
 
     [Test]
+    procedure RotateFlipTest()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        RotateFlipType: Enum "Rotate Flip Type";
+        OutStream: OutStream;
+        ImageAsBase64HorizontalTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAIAAADzBuo/AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAAUSURBVBhXY6AS+P//PxqDQsDAAADP2QX7LebCcQAAAABJRU5ErkJggg==', Locked = true;
+        ImageAsBase64VerticalTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAKCAIAAADzWwNnAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAAXSURBVBhXYyAP/P//H8oiDpCqHgoYGADezwX75D+gjQAAAABJRU5ErkJggg==', Locked = true;
+    begin
+        // [Given] base64 encoded data, create image
+        Image.FromBase64(ImageAsBase64HorizontalTxt);
+
+        // [When] rotate image
+        Image.RotateFlip(RotateFlipType::Rotate90FlipNone);
+
+        // [Then] verify image
+        Assert.AreEqual(5, Image.GetWidth(), 'Incorrect width');
+        Assert.AreEqual(10, Image.GetHeight(), 'Incorrect height');
+        Assert.AreEqual(Image.ToBase64(), ImageAsBase64VerticalTxt, 'RotateFlip failed');
+
+        // [Then] save to stream
+        TempBlob.CreateOutStream(OutStream);
+        Image.Save(OutStream);
+        Assert.AreNotEqual(0, TempBlob.Length(), 'Image was not saved');
+    end;
+
+    [Test]
     procedure CropTest()
     var
         TempBlob: Codeunit "Temp Blob";
