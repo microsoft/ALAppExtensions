@@ -20,11 +20,18 @@ codeunit 4051 "Upg Mig Named Forward Links"
         LoadForwardLinks();
     end;
 
-    local procedure LoadForwardLinks()
+    procedure LoadForwardLinks()
     var
         NamedForwardLink: Record "Named Forward Link";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
     begin
+        IF UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetLoadNamedForwardLinksUpgradeTag()) THEN
+            exit;
+
         NamedForwardLink.Load();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetLoadNamedForwardLinksUpgradeTag());
     end;
 }
 

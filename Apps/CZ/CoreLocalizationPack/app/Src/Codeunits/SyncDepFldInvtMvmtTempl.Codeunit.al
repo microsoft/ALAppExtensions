@@ -55,7 +55,8 @@ codeunit 31180 "Sync.Dep.Fld-InvtMvmtTempl CZL"
         if not InvtMovementTemplateCZL.Get(Rec.Name) then begin
             InvtMovementTemplateCZL.Init();
             InvtMovementTemplateCZL.Name := Rec.Name;
-            InvtMovementTemplateCZL.Insert(false);
+            InvtMovementTemplateCZL.SystemId := Rec.SystemId;
+            InvtMovementTemplateCZL.Insert(false, true);
         end;
         InvtMovementTemplateCZL.Description := Rec.Description;
         InvtMovementTemplateCZL."Entry Type" := Rec."Entry Type";
@@ -130,7 +131,8 @@ codeunit 31180 "Sync.Dep.Fld-InvtMvmtTempl CZL"
         if not WhseNetChangeTemplate.Get(Rec.Name) then begin
             WhseNetChangeTemplate.Init();
             WhseNetChangeTemplate.Name := Rec.Name;
-            WhseNetChangeTemplate.Insert(false);
+            WhseNetChangeTemplate.SystemId := Rec.SystemId;
+            WhseNetChangeTemplate.Insert(false, true);
         end;
         WhseNetChangeTemplate.Description := CopyStr(Rec.Description, 1, MaxStrLen(WhseNetChangeTemplate.Description));
         WhseNetChangeTemplate."Entry Type" := Rec."Entry Type";

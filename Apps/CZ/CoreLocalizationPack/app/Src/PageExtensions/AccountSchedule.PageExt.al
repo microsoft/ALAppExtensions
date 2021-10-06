@@ -82,33 +82,47 @@ pageextension 11782 "Account Schedule CZL" extends "Account Schedule"
     }
     actions
     {
-        addlast("O&ther")
+#if CLEAN19
+        addafter("F&unctions")
         {
-            action("Set up Custom Functions CZL")
+            group("Other CZL")
             {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Set up Custom Functions';
-                Ellipsis = true;
-                Image = NewSum;
-                RunObject = Page "Acc. Schedule Extensions CZL";
-                ToolTip = 'Specifies acc. schedule extensions page';
-            }
-            action("File Mapping CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'File Mapping';
-                Image = ExportToExcel;
-                ToolTip = 'File Mapping allows to set up export to Excel. You can see three dots next to the field with Amount.';
+                Caption = 'O&ther';
 
-                trigger OnAction()
-                var
-                    AccScheuledFileMappingCZL: Page "Acc. Schedule File Mapping CZL";
-                begin
-                    AccScheuledFileMappingCZL.SetAccSchedName(Rec."Schedule Name");
-                    AccScheuledFileMappingCZL.RunModal();
-                end;
+#else
+#pragma warning disable AL0432
+        addlast("O&ther")
+#pragma warning restore AL0432
+        {
+#endif
+                action("Set up Custom Functions CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Set up Custom Functions';
+                    Ellipsis = true;
+                    Image = NewSum;
+                    RunObject = Page "Acc. Schedule Extensions CZL";
+                    ToolTip = 'Specifies acc. schedule extensions page';
+                }
+                action("File Mapping CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'File Mapping';
+                    Image = ExportToExcel;
+                    ToolTip = 'File Mapping allows to set up export to Excel. You can see three dots next to the field with Amount.';
+
+                    trigger OnAction()
+                    var
+                        AccScheuledFileMappingCZL: Page "Acc. Schedule File Mapping CZL";
+                    begin
+                        AccScheuledFileMappingCZL.SetAccSchedName(Rec."Schedule Name");
+                        AccScheuledFileMappingCZL.RunModal();
+                    end;
+                }
             }
+#if CLEAN19
         }
+#endif
         addlast(processing)
         {
             group("Results Group CZL")

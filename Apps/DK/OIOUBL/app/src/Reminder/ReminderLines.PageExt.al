@@ -12,7 +12,7 @@ pageextension 13657 "OIOUBL-ReminderLines" extends "Reminder Lines"
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
                 ApplicationArea = Basic, Suite;
-                Tooltip = 'Specifies the account code of the customer.';
+                Tooltip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
                 Visible = false;
             }
         }

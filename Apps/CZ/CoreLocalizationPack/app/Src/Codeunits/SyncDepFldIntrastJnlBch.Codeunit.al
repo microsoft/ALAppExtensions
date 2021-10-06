@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31222 "Sync.Dep.Fld-IntrastJnlBch CZL"
 {
@@ -40,3 +41,4 @@ codeunit 31222 "Sync.Dep.Fld-IntrastJnlBch CZL"
         Rec."Statement Type CZL" := "Intrastat Statement Type CZL".FromInteger(NewFieldInt);
     end;
 }
+#endif

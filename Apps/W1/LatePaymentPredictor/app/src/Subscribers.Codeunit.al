@@ -105,6 +105,9 @@ codeunit 1952 "LP Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"LP Machine Learning Setup", 'OnAfterModifyEvent', '', false, false)]
     local procedure SendTraceTagOnLatePaymentPredictionStateChanged(Rec: Record "LP Machine Learning Setup"; xRec: Record "LP Machine Learning Setup"; RunTrigger: Boolean)
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if not GuiAllowed() then
             exit;
 

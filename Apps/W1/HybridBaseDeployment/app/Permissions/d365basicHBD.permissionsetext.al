@@ -9,5 +9,6 @@ permissionsetextension 4000 "D365 BASIC - HBD" extends "D365 BASIC"
                   tabledata "Post Migration Checklist" = RIMD,
                   tabledata "Migration Table Mapping" = RIMD,
                   tabledata "Intelligent Cloud Not Migrated" = RIMD,
-                  tabledata "User Mapping Work" = RIMD;
+                  tabledata "User Mapping Work" = RIMD,
+                  tabledata "Replication Run Completed Arg" = RIMD;
 }

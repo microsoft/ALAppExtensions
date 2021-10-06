@@ -16,6 +16,12 @@ page 20101 "AMC Banking Setup"
         {
             group(General)
             {
+                field(Enabled; Rec."AMC Enabled")
+                {
+                    Caption = 'Enabled';
+                    ToolTip = 'Specifies whether the AMC Banking 365 Fundamentals feature is enabled.';
+                    ApplicationArea = Basic, Suite;
+                }
                 group(User)
                 {
                     Caption = 'User information';
@@ -220,6 +226,7 @@ page 20101 "AMC Banking Setup"
 
     var
         AMCBankServMgt: Codeunit "AMC Banking Mgt.";
+        [NonDebuggable]
         PasswordText: Text[50];
         CheckedEncryption: Boolean;
         CopyBCLicenseQst: Label 'Do you want to copy the License %1 to the User name field?';

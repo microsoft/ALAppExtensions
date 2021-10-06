@@ -23,8 +23,14 @@ codeunit 10034 "Upg. IRS 1099 MX"
     local procedure RunIRS1099DIV2018Changes()
     var
         UpgradeIRS1099FormBoxes: Codeunit "Upgrade IRS 1099 Form Boxes";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.Get1099DIV2018UpgradeTag()) then
+            exit;
+
         UpgradeIRS1099FormBoxes.Run();
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.Get1099DIV2018UpgradeTag());
     end;
 }
 

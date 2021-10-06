@@ -1,3 +1,4 @@
+#if not CLEAN18
 //#pragma warning disable AL0432,AL0603
 codeunit 31212 "Sync.Dep.Fld-ShipmntMethod CZL"
 {
@@ -37,3 +38,4 @@ codeunit 31212 "Sync.Dep.Fld-ShipmntMethod CZL"
         SyncDepFldUtilities.SyncFields(Rec."Adjustment %", Rec."Adjustment % CZL", PreviousRecord."Adjustment %", PreviousRecord."Adjustment % CZL");
     end;
 }
+#endif

@@ -2,7 +2,7 @@ table 31248 "FA History Entry CZF"
 {
     Caption = 'FA History Entry';
     LookupPageID = "FA History Entries CZF";
-    Permissions = TableData "FA History Entry CZF" = i;
+    Permissions = tabledata "FA History Entry CZF" = i;
 
     fields
     {

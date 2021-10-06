@@ -148,6 +148,18 @@ pageextension 18146 "GST Sales Credit Memo Ext" extends "Sales Credit Memo"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the sale return type. For example, Sales cancellation';
             }
+            field("Post GST to Customer"; Rec."Post GST to Customer")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if the GST amount post to Customer';
+                trigger OnValidate()
+                var
+                    GSTSalesValidation: Codeunit "GST Sales Validation";
+                begin
+                    CurrPage.SaveRecord();
+                    GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
+                end;
+            }
         }
     }
     actions

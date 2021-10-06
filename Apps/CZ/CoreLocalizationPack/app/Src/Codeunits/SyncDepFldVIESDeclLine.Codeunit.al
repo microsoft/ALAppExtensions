@@ -56,7 +56,8 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
             VIESDeclarationLineCZL.Init();
             VIESDeclarationLineCZL."VIES Declaration No." := Rec."VIES Declaration No.";
             VIESDeclarationLineCZL."Line No." := Rec."Line No.";
-            VIESDeclarationLineCZL.Insert(false);
+            VIESDeclarationLineCZL.SystemId := Rec.SystemId;
+            VIESDeclarationLineCZL.Insert(false, true);
         end;
         VIESDeclarationLineCZL."Trade Type" := Rec."Trade Type";
         VIESDeclarationLineCZL."Line Type" := Rec."Line Type";
@@ -148,7 +149,8 @@ codeunit 31141 "Sync.Dep.Fld-VIESDeclLine CZL"
             VIESDeclarationLine.Init();
             VIESDeclarationLine."VIES Declaration No." := Rec."VIES Declaration No.";
             VIESDeclarationLine."Line No." := Rec."Line No.";
-            VIESDeclarationLine.Insert(false);
+            VIESDeclarationLine.SystemId := Rec.SystemId;
+            VIESDeclarationLine.Insert(false, true);
         end;
         VIESDeclarationLine."Trade Type" := Rec."Trade Type";
         VIESDeclarationLine."Line Type" := Rec."Line Type";

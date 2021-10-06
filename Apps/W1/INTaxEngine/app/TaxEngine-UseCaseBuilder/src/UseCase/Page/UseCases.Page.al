@@ -141,6 +141,20 @@ page 20310 "Use Cases"
                     //and ruleset doesn't allow  to create a action without the OnAction trigger
                 end;
             }
+            action("ImportUseCaseFromLibrary")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Import Use Case from Library';
+                Image = Import;
+                ToolTip = 'Imports the Use Case from the set of library of use cases.';
+                trigger OnAction()
+                var
+                    UseCaseExecution: Codeunit "Use Case Execution";
+                begin
+                    UseCaseExecution.OnImportUseCaseOnDemand(Rec."Tax Type", Rec.ID);
+                    CurrPage.Update(true);
+                end;
+            }
             action(ArchivedLogs)
             {
                 Caption = 'Archived Logs';

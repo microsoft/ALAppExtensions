@@ -10,12 +10,14 @@ permissionset 154 "System Application - Admin"
 
     IncludedPermissionSets = "System Application - Basic",
                              "Company - Edit",
-                             "D365 EXTENSION MGT",
                              "D365 BACKUP/RESTORE",
                              "D365 SNAPSHOT DEBUG",
                              "Email - Admin",
                              "Exten. Mgt. - Admin",
+#if not CLEAN19
                              "EXCEL EXPORT ACTION",
+#endif
+                             "Edit in Excel-Admin",
                              "Feature Key - Admin",
                              "Permissions & Licenses - Edit",
                              "Retention Policy - Admin",

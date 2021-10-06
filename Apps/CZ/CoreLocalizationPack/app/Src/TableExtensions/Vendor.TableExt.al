@@ -13,16 +13,21 @@ tableextension 11702 "Vendor CZL" extends Vendor
                 RegistrationLogCZL: Record "Registration Log CZL";
                 RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
                 ResultRecordRef: RecordRef;
+                LogNotVerified: Boolean;
             begin
                 if not RegistrationNoMgtCZL.CheckRegistrationNo("Registration No. CZL", "No.", Database::Vendor) then
                     exit;
-                if "Registration No. CZL" <> xRec."Registration No. CZL" then begin
-                    RegistrationLogMgtCZL.LogVendor(Rec);
+
+                LogNotVerified := true;
+                if "Registration No. CZL" <> xRec."Registration No. CZL" then
                     if RegNoServiceConfigCZL.RegNoSrvIsEnabled() then begin
+                        LogNotVerified := false;
                         RegistrationLogMgtCZL.ValidateRegNoWithARES(ResultRecordRef, Rec, "No.", RegistrationLogCZL."Account Type"::Vendor);
                         ResultRecordRef.SetTable(Rec);
                     end;
-                end;
+
+                if LogNotVerified then
+                    RegistrationLogMgtCZL.LogVendor(Rec);
             end;
         }
         field(11771; "Tax Registration No. CZL"; Text[20])
@@ -34,6 +39,11 @@ tableextension 11702 "Vendor CZL" extends Vendor
             begin
                 RegistrationNoMgtCZL.CheckTaxRegistrationNo("Tax Registration No. CZL", "No.", Database::Vendor);
             end;
+        }
+        field(11772; "Validate Registration No. CZL"; Boolean)
+        {
+            Caption = 'Validate Registration No.';
+            DataClassification = CustomerContent;
         }
         field(11767; "Last Unreliab. Check Date CZL"; Date)
         {
@@ -63,19 +73,19 @@ tableextension 11702 "Vendor CZL" extends Vendor
         {
             Caption = 'Transaction Type';
             TableRelation = "Transaction Type";
-            DataClassification = CustomerContent;            
+            DataClassification = CustomerContent;
         }
         field(31071; "Transaction Specification CZL"; Code[10])
         {
             Caption = 'Transaction Specification';
             TableRelation = "Transaction Specification";
-            DataClassification = CustomerContent;            
+            DataClassification = CustomerContent;
         }
         field(31072; "Transport Method CZL"; Code[10])
         {
             Caption = 'Transport Method';
             TableRelation = "Transport Method";
-            DataClassification = CustomerContent;            
+            DataClassification = CustomerContent;
         }
     }
     keys
@@ -90,6 +100,7 @@ tableextension 11702 "Vendor CZL" extends Vendor
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
         RegistrationNoMgtCZL: Codeunit "Registration No. Mgt. CZL";
+        RegistrationNo: Text[20];
 
     procedure ImportUnrPayerStatusCZL()
     begin
@@ -161,5 +172,15 @@ tableextension 11702 "Vendor CZL" extends Vendor
             if ContactBusinessRelation.FindFirst() then
                 exit(ContactBusinessRelation."No.");
         end;
+    end;
+
+    internal procedure SaveRegistrationNoCZL()
+    begin
+        RegistrationNo := "Registration No. CZL"
+    end;
+
+    internal procedure GetSavedRegistrationNoCZL(): Text[20]
+    begin
+        exit(RegistrationNo);
     end;
 }

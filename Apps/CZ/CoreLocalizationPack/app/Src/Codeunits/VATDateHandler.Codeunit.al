@@ -1,6 +1,6 @@
 codeunit 11742 "VAT Date Handler CZL"
 {
-    
+
     Permissions = tabledata "G/L Entry" = m,
                   tabledata "VAT Entry" = m,
                   tabledata "Sales Invoice Header" = m,

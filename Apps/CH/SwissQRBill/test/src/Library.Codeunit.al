@@ -186,6 +186,16 @@ codeunit 148090 "Swiss QR-Bill Test Library"
         end;
     end;
 
+    internal procedure CreatePaymentMethodWithQRBillBank(QRBillBankAccountNo: Code[20]): Code[10]
+    var
+        PaymentMethod: Record "Payment Method";
+    begin
+        LibraryERM.CreatePaymentMethod(PaymentMethod);
+        PaymentMethod.Validate("Swiss QR-Bill Bank Account No.", QRBillBankAccountNo);
+        PaymentMethod.Modify(true);
+        exit(PaymentMethod.Code);
+    end;
+
     internal procedure CreateCurrency(ISOCode: Code[3]): Code[10]
     var
         Currency: Record Currency;
@@ -194,6 +204,17 @@ codeunit 148090 "Swiss QR-Bill Test Library"
         Currency."ISO Code" := ISOCode;
         Currency.Modify();
         exit(Currency.Code);
+    end;
+
+    internal procedure CreateBankAccount(IBAN: Code[50]; QRIBAN: Code[50]): Code[20]
+    var
+        BankAccount: Record 270;
+    begin
+        LibraryERM.CreateBankAccount(BankAccount);
+        BankAccount.IBAN := IBAN;
+        BankAccount."Swiss QR-Bill IBAN" := QRIBAN;
+        BankAccount.Modify(true);
+        exit(BankAccount."No.");
     end;
 
     internal procedure UpdateDefaultLayout(NewLayout: Code[20])
@@ -225,6 +246,16 @@ codeunit 148090 "Swiss QR-Bill Test Library"
             Validate("Swiss QR-Bill IBAN", 'CH5800791123000889012');
             Modify();
         end;
+    end;
+
+    internal procedure UpdateCompanyIBANAndQRIBAN(IBAN: Code[50]; QRIBAN: Code[50])
+    var
+        CompanyInformation: Record "Company Information";
+    begin
+        CompanyInformation.Get();
+        CompanyInformation.VALIDATE(IBAN, IBAN);
+        CompanyInformation.VALIDATE("Swiss QR-Bill IBAN", QRIBAN);
+        CompanyInformation.Modify(true);
     end;
 
     local procedure FindDefaultVATPostingSetup(var VATPostingSetup: Record "VAT Posting Setup")

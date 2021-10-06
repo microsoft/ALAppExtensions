@@ -45,9 +45,13 @@ table 20234 "Tax Attribute Value Mapping"
         GenericAttribute: Record "Tax Attribute";
         GenericAttributeValue: Record "Tax Attribute Value";
         AttributeValueMapping: Record "Tax Attribute Value Mapping";
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
     begin
         GenericAttribute.SetRange(ID, "Attribute ID");
         GenericAttribute.FindFirst();
+
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(GenericAttribute."Tax Type");
+
         if GenericAttribute.Type = GenericAttribute.Type::Option then
             Exit;
 

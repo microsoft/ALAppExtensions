@@ -57,14 +57,6 @@ page 20002 "APIV1 - Aut. Extensions"
                 {
                     Caption = 'versionRevision', Locked = true;
                 }
-                field(scope; GetExtensionScope())
-                {
-                    Caption = 'scope', Locked = true;
-                    Editable = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'The scope of the extension has been replaced by the publishedAs property.';
-                    ObsoleteTag = '16.0';
-                }
                 field(isInstalled; isExtensionInstalled)
                 {
                     Caption = 'isInstalled', Locked = true;

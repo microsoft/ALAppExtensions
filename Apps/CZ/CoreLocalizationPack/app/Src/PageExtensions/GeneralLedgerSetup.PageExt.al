@@ -48,24 +48,38 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
                 }
             }
         }
-        addlast(Other)
+#if CLEAN19
+        addlast(content)
         {
-            field("User Checks Allowed CZL"; Rec."User Checks Allowed CZL")
+            group("Other CZL")
             {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies whether extended user controls will be activated based on User setup.';
+                Caption = 'Other';
+
+#else
+#pragma warning disable AL0432
+        addlast(Other)
+#pragma warning restore AL0432
+        {
+#endif
+                field("User Checks Allowed CZL"; Rec."User Checks Allowed CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether extended user controls will be activated based on User setup.';
+                }
+                field("Closed Per. Entry Pos.Date CZL"; Rec."Closed Per. Entry Pos.Date CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the posting date of closed period entries in inventory adjustement';
+                }
+                field("Rounding Date CZL"; Rec."Rounding Date CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the date for the inventory rounding adjustment by inventory adjustement';
+                }
             }
-            field("Closed Per. Entry Pos.Date CZL"; Rec."Closed Per. Entry Pos.Date CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the posting date of closed period entries in inventory adjustement';
-            }
-            field("Rounding Date CZL"; Rec."Rounding Date CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the date for the inventory rounding adjustment by inventory adjustement';
-            }
+#if CLEAN19
         }
+#endif
         addlast(Reporting)
         {
             field("Shared Account Schedule CZL"; Rec."Shared Account Schedule CZL")

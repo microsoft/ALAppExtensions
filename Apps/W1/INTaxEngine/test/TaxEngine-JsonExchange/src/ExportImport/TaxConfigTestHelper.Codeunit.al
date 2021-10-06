@@ -216,7 +216,7 @@ codeunit 137701 "Tax Config. Test Helper"
         JsonText += '"CaseID":"{8B8CAACA-798D-4BA5-8ED3-7A2C778121CB}",';
         JsonText += '"UseCaseName": "Calculate tax on Sales Order Line",';
         JsonText += '"Condition": "VERSION(1) SORTING(Field1,Field3,Field4) WHERE(Field6=1(<>''),Field89=1(<>''),Field90=1(<>''))",';
-        JsonText += '"TaxType": "GST",';
+        JsonText += '"TaxType": "VAT",';
         JsonText += '"IsTaxTypeRoot": true';
         JsonText += '}';
         JsonText += ']';

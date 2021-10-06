@@ -36,6 +36,7 @@ table 1665 "MS Ceridian Payroll Setup"
     {
     }
 
+    [NonDebuggable]
     [Scope('OnPrem')]
     procedure SavePassword(var PasswordKey: Guid; PasswordText: Text);
     var

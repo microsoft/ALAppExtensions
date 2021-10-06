@@ -23,12 +23,19 @@ codeunit 11303 "Copy Line Des. To G/L Entry BE"
     local procedure SetCopyLineDescrToGLEntries()
     var
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetCopyInvNoToPmtRefTag()) then
+            exit;
+
         PurchasesPayablesSetup.SetRange("Copy Line Descr. to G/L Entry", false);
         if PurchasesPayablesSetup.FindFirst() then begin
             PurchasesPayablesSetup."Copy Line Descr. to G/L Entry" := true;
             PurchasesPayablesSetup.Modify();
         end;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetCopyInvNoToPmtRefTag());
     end;
 }
 

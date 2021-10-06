@@ -106,7 +106,7 @@ codeunit 135003 "Feature Key Test"
         PermissionsMock.Set('Feature Key Admin');
         Initialize();
         // [GIVEN] 'One Way' Feature 'X' is enabled, no FeatureDataUpdateStatus for Company 'A'
-        ID := 'ItemReference';
+        ID := 'UnitGroupMapping';
         FeatureKey.Get(ID);
         FeatureKey.TestField("Is One Way");
         FeatureKey.Validate(Enabled, FeatureKey.Enabled::"All Users");
@@ -137,7 +137,7 @@ codeunit 135003 "Feature Key Test"
         Initialize();
         BindSubscription(FeatureKeyTestHandler);
         // [GIVEN] 'One Way' Feature 'X' is disabled 
-        ID := 'ItemReference';
+        ID := 'UnitGroupMapping';
         FeatureKeyTestHandler.Set('', false);
 
         // [GIVEN] Open "Feature Management" page on 'X'
@@ -149,7 +149,7 @@ codeunit 135003 "Feature Key Test"
 
         // [THEN] "Schedule Feature Data Update" open where is just a Description 'Cannot enable...',
         Descr := LibraryVariableStorage.DequeueText(); // from ScheduleDataUpdateModalHandler
-        Assert.AreEqual(StrSubstNo(NotImplementedMsg, 'ItemReference'), Descr, 'Description is wrong');
+        Assert.AreEqual(StrSubstNo(NotImplementedMsg, 'UnitGroupMapping'), Descr, 'Description is wrong');
         // [THEN]  Controls "Review Data" and "I accept..." are not visible
         Assert.IsFalse(LibraryVariableStorage.DequeueBoolean(), 'ReviewData is visible');
         Assert.IsFalse(LibraryVariableStorage.DequeueBoolean(), 'Agree is visible');
@@ -171,7 +171,7 @@ codeunit 135003 "Feature Key Test"
         Initialize();
         BindSubscription(FeatureKeyTestHandler);
         // [GIVEN] 'One Way' Feature 'X' is disabled 
-        ID := 'ItemReference';
+        ID := 'UnitGroupMapping';
         FeatureKeyTestHandler.Set(ID, false);
 
         // [GIVEN] Open "Feature Management" page on 'X'
@@ -181,15 +181,15 @@ codeunit 135003 "Feature Key Test"
         // [WHEN] Enable feature and answer yes to 'One Way' confirmation 
         FeatureManagement.EnabledFor.Value(Format(FeatureKey.Enabled::"All Users"));
 
-        // [THEN] "Schedule Feature Data Update" open where is Description 'ItemReference...',
+        // [THEN] "Schedule Feature Data Update" open where is Description 'UnitGroupMapping...',
         Descr := LibraryVariableStorage.DequeueText(); // from ScheduleDataUpdateModalHandler
         Assert.AreEqual(ID + '...', Descr, 'Description is wrong');
         // [THEN]  Controls "Review Data" and "I accept..." are visible
         Assert.IsTrue(LibraryVariableStorage.DequeueBoolean(), 'ReviewData is not visible');
         Assert.IsTrue(LibraryVariableStorage.DequeueBoolean(), 'Agree is not visible');
         // [WHEN] Review Data // done in ScheduleDataUpdateModalHandler
-        // [THEN] Message: 'ItemReference Data'
-        Assert.AreEqual('ItemReference Data', LibraryVariableStorage.DequeueText(), 'review data message');
+        // [THEN] Message: 'UnitGroupMapping Data'
+        Assert.AreEqual('UnitGroupMapping Data', LibraryVariableStorage.DequeueText(), 'review data message');
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -209,7 +209,7 @@ codeunit 135003 "Feature Key Test"
         Initialize();
         BindSubscription(FeatureKeyTestHandler);
         // [GIVEN] 'One Way' Feature 'X' is disabled 
-        ID := 'ItemReference';
+        ID := 'UnitGroupMapping';
         FeatureKeyTestHandler.Set(ID, false);
 
         // [GIVEN] Open "Feature Management" page on 'X'
@@ -219,7 +219,7 @@ codeunit 135003 "Feature Key Test"
         // [WHEN] Enable feature and answer yes to 'One Way' confirmation 
         FeatureManagement.EnabledFor.Value(Format(FeatureKey.Enabled::"All Users"));
 
-        // [THEN] "Schedule Feature Data Update" open where is Description 'ItemReference...',
+        // [THEN] "Schedule Feature Data Update" open where is Description 'UnitGroupMapping...',
         Descr := LibraryVariableStorage.DequeueText(); // from ScheduleDataUpdateUpdateModalHandler
         Assert.AreEqual(ID + '...', Descr, 'Description is wrong');
         // [THEN]  Controls "Review Data" and "I accept..." are visible

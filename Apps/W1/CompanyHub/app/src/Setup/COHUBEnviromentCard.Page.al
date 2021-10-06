@@ -5,7 +5,7 @@ page 1165 "COHUB Enviroment Card"
     UsageCategory = Administration;
     SourceTable = "COHUB Enviroment";
     DataCaptionExpression = Rec.Name;
-    Caption = 'Enviroment Link';
+    Caption = 'Environment Link';
 
     layout
     {
@@ -18,36 +18,36 @@ page 1165 "COHUB Enviroment Card"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'No.';
-                    ToolTip = 'Specifies the number of the enviroment.';
+                    ToolTip = 'Specifies the number of the environment.';
                 }
 
                 field(Name; Rec.Name)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Name';
-                    ToolTip = 'Specifies the enviroment''s name.';
+                    ToolTip = 'Specifies the environment''s name.';
                 }
 
                 field("Privacy Blocked"; Rec."Privacy Blocked")
                 {
                     Caption = 'Privacy Blocked';
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies if the companies from this enviroment are blocked for privacy reasons.';
+                    ToolTip = 'Specifies if the companies from this environment are blocked for privacy reasons.';
                 }
 
                 field("Include Demo Companies"; Rec."Include Demo Companies")
                 {
                     Caption = 'Include Demo Companies';
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies if the demo companies from this enviroment should be included or not.';
+                    ToolTip = 'Specifies if the demo companies from this environment should be included or not.';
                 }
 
                 field(Link; Rec.Link)
                 {
-                    Caption = 'Enviroment Link';
+                    Caption = 'Environment Link';
                     ApplicationArea = Basic, Suite;
                     MultiLine = true;
-                    ToolTip = 'Specifies the link used to access the enviroment''s companies.';
+                    ToolTip = 'Specifies the link used to access the environment''s companies.';
                 }
 
                 field("Group Code"; Rec."Group Code")

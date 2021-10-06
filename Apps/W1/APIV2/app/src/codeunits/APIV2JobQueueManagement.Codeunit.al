@@ -40,6 +40,9 @@ codeunit 30005 "APIV2 - Job Queue Management"
     var
         JobQueueEntryBuffer: Record "Job Queue Entry Buffer";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if JobQueueEntryBuffer.Get(Rec.SystemId) then
             if Rec.Status = Rec.Status::Error then
                 JobQueueEntryBuffer.Delete();

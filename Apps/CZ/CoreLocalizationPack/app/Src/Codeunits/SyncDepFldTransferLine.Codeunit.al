@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31217 "Sync.Dep.Fld-TransferLine CZL"
 {
@@ -44,3 +45,4 @@ codeunit 31217 "Sync.Dep.Fld-TransferLine CZL"
         Rec."Country/Reg. of Orig. Code CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Country/Reg. of Orig. Code CZL"));
     end;
 }
+#endif

@@ -19,6 +19,12 @@ pageextension 31248 "Fixed Asset Card CZF" extends "Fixed Asset Card"
     }
     actions
     {
+#if CLEAN18
+        modify(Acquire)
+        {
+            Visible = false;
+        }
+#endif
         addlast(History)
         {
             action(FAHistoryCZF)

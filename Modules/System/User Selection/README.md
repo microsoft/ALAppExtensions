@@ -3,7 +3,7 @@ Provides a page where you look up and select one or more registered users. For e
 # Public Objects
 ## User Selection (Codeunit 9843)
 
- Provides basic functionality to open a search page and validate user information. 
+ Provides basic functionality to open a search page and validate user information.
  
 
 ### Open (Method) <a name="Open"></a> 

@@ -127,6 +127,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
         AMCBankingSetup.Init();
         AMCBankingSetup.Validate("User Name", UserNameAMC);
         AMCBankingSetup.SavePassword(PasswordAMC);
+        AMCBankingSetup."AMC Enabled" := true;
         AMCBankingSetup.Insert();
         AMCBankingSetup.SetURLsToDefault();
 
@@ -586,6 +587,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
         AMCBankingSetup.Validate("User Name",
           LibraryUtility.GenerateRandomCode(AMCBankingSetup.FieldNo("User Name"), DATABASE::"AMC Banking Setup"));
         AMCBankingSetup.SavePassword(GenerateRandomPassword());
+        AMCBankingSetup."AMC Enabled" := true;
         AMCBankingSetup.Insert(true);
     end;
 

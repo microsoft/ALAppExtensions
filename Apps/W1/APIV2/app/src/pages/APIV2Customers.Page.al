@@ -129,6 +129,29 @@ page 30009 "APIV2 - Customers"
                         RegisterFieldSet(FieldNo("Home Page"));
                     end;
                 }
+                field(salespersonCode; "Salesperson Code")
+                {
+                    Caption = 'Salesperson Code';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Salesperson Code"));
+                    end;
+                }
+                field(balanceDue; "Balance Due")
+                {
+                    Caption = 'Balance Due';
+                    Editable = false;
+                }
+                field(creditLimit; "Credit Limit (LCY)")
+                {
+                    Caption = 'Credit Limit';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Credit Limit (LCY)"));
+                    end;
+                }
                 field(taxLiable; "Tax Liable")
                 {
                     Caption = 'Tax Liable';

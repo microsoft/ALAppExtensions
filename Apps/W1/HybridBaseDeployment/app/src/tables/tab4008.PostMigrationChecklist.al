@@ -28,7 +28,7 @@ table 4008 "Post Migration Checklist"
         }
         field(5; "D365 Sales"; Boolean)
         {
-            Description = 'D365 Sales is setup';
+            Description = 'Connection to Dynamics 365 Sales is set up';
             DataClassification = SystemMetadata;
         }
         field(6; "Define User Mappings"; Boolean)

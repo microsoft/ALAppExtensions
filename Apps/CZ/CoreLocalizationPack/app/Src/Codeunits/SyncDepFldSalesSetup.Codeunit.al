@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AL0603
+#if not CLEAN19
+#pragma warning disable AL0432, AL0603
 codeunit 31163 "Sync.Dep.Fld-SalesSetup CZL"
 {
     ObsoleteState = Pending;
@@ -32,6 +33,9 @@ codeunit 31163 "Sync.Dep.Fld-SalesSetup CZL"
         SyncDepFldUtilities.SyncFields(DepField, NewFieldInt, PreviousRecord."Default VAT Date", PreviousRecord."Default VAT Date CZL".AsInteger());
         Rec."Default VAT Date" := DepField;
         Rec."Default VAT Date CZL" := NewFieldInt;
+#if not CLEAN18
         SyncDepFldUtilities.SyncFields(Rec."Allow Alter Posting Groups", Rec."Allow Alter Posting Groups CZL", PreviousRecord."Allow Alter Posting Groups", PreviousRecord."Allow Alter Posting Groups CZL");
+#endif        
     end;
 }
+#endif

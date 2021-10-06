@@ -9,5 +9,7 @@ PermissionSet 9992 "Upgrade Tags - Read"
     Assignable = false;
 
     Permissions = tabledata Company = r,
-                  tabledata "Upgrade Tags" = r;
+                  tabledata "Upgrade Tags" = r,
+                  tabledata "Upgrade Tag Backup" = r,
+                  tabledata "Intelligent Cloud" = r;
 }

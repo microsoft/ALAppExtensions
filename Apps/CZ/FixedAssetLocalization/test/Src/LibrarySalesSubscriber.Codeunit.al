@@ -1,3 +1,4 @@
+#if not CLEAN18
 codeunit 148077 "Library Sales Subscriber CZF"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Library - Sales", 'OnAfterCreateSalesLineWithShipmentDate', '', false, false)]
@@ -11,3 +12,4 @@ codeunit 148077 "Library Sales Subscriber CZF"
         FAExtendedPostingGroup.DeleteAll();
     end;
 }
+#endif

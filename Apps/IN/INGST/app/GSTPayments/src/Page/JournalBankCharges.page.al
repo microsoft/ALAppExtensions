@@ -74,6 +74,26 @@ page 18247 "Journal Bank Charges"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the amount in local currency as defined in company information.';
                 }
+                field("GST Group Code"; Rec."GST Group Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the GST Group code for the calculation of GST on Bank Charges line.';
+
+                    trigger OnValidate()
+                    begin
+                        CurrPage.SaveRecord();
+                    end;
+                }
+                field("HSN/SAC Code"; Rec."HSN/SAC Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the HSN/SAC code for the calculation of GST on Bank Charges line.';
+
+                    trigger OnValidate()
+                    begin
+                        CurrPage.SaveRecord();
+                    end;
+                }
                 field("GST Credit"; Rec."GST Credit")
                 {
                     ApplicationArea = Basic, Suite;

@@ -1,8 +1,12 @@
+#if not CLEAN19
 report 11799 "ARES Update CZL"
 {
     Caption = 'ARES Update';
     ProcessingOnly = true;
     UsageCategory = None;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The page Registration Log Details should be used instead';
+    ObsoleteTag = '19.0';
 
     requestpage
     {
@@ -19,7 +23,6 @@ report 11799 "ARES Update CZL"
                         ApplicationArea = Basic, Suite;
                         Caption = 'Type';
                         Editable = false;
-                        OptionCaption = 'Customer,Vendor,Contact';
                         ToolTip = 'Specifies type of update';
                     }
                     field(No; AccountNo)
@@ -123,7 +126,7 @@ report 11799 "ARES Update CZL"
         GlobalRecordVariant: Variant;
         FieldUpdateMask: array[10] of Boolean;
         FieldType: Option ,Name,Address,City,PostCode,VATRegNo,All;
-        AccountType: Option Customer,Vendor,Contact;
+        AccountType: Enum "Reg. Log Account Type CZL";
         AccountNo: Code[20];
         RegistrationNo: Text[20];
 
@@ -192,3 +195,4 @@ report 11799 "ARES Update CZL"
             FieldUpdateMask[FieldType::All] := false;
     end;
 }
+#endif

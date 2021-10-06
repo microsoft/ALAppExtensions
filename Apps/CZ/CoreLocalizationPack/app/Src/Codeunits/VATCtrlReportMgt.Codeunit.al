@@ -1,10 +1,10 @@
 codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
 {
-    Permissions = TableData "VAT Entry" = rm,
-                  TableData "VAT Posting Setup" = r,
-                  TableData "VAT Ctrl. Report Header CZL" = rimd,
-                  TableData "VAT Ctrl. Report Line CZL" = rimd,
-                  TableData "VAT Ctrl. Report Section CZL" = r;
+    Permissions = tabledata "VAT Entry" = rm,
+                  tabledata "VAT Posting Setup" = r,
+                  tabledata "VAT Ctrl. Report Header CZL" = rimd,
+                  tabledata "VAT Ctrl. Report Line CZL" = rimd,
+                  tabledata "VAT Ctrl. Report Section CZL" = r;
 
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
@@ -238,11 +238,19 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
 
                 TempVATEntry.Base := 0;
                 TempVATEntry.Amount := 0;
+#if not CLEAN19
+#pragma warning disable AL0432
                 TempVATEntry."Advance Base" := 0;
+#pragma warning restore AL0432                
+#endif
                 repeat
                     TempVATEntry.Base += TempGlobalVATEntry.Base;
                     TempVATEntry.Amount += TempGlobalVATEntry.Amount;
+#if not CLEAN19
+#pragma warning disable AL0432
                     TempVATEntry."Advance Base" += TempGlobalVATEntry."Advance Base";
+#pragma warning restore AL0432
+#endif
 
                     if TempGlobalVATEntry."Entry No." <> TempVATEntry."Entry No." then begin
                         TempVATCtrlReportEntLinkCZL."VAT Ctrl. Report No." := '';
@@ -296,11 +304,15 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                     if TempGlobalVATEntry."VAT Calculation Type" = TempGlobalVATEntry."VAT Calculation Type"::"Reverse Charge VAT" then
                         TempDocumentBudgetBuffer.Amount += TempGlobalVATEntry.Base
                     else
+#if not CLEAN19
+#pragma warning disable AL0432
                         if (TempGlobalVATEntry."Prepayment Type" = TempGlobalVATEntry."Prepayment Type"::Advance) and
                            (TempGlobalVATEntry."Advance Base" <> 0)
                         then
                             TempDocumentBudgetBuffer.Amount += (TempGlobalVATEntry."Advance Base" + TempGlobalVATEntry.Amount)
                         else
+#pragma warning restore AL0432
+#endif
                             TempDocumentBudgetBuffer.Amount += (TempGlobalVATEntry.Base + TempGlobalVATEntry.Amount);
                 until TempGlobalVATEntry.Next() = 0;
                 TempDocumentBudgetBuffer.Insert();
@@ -373,8 +385,12 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         if not TempVATCtrlReportBufferCZL.FindFirst() then
             InsertVATCtrlReportBuffer(TempVATCtrlReportBufferCZL, VATEntry, VATPostingSetup, SectionCode, CommodityCode)
         else begin
+#if not CLEAN19
+#pragma warning disable AL0432
             if VATEntry."Advance Base" <> 0 then
                 VATEntry.Base += VATEntry."Advance Base";
+#pragma warning restore AL0432
+#endif
             TempVATCtrlReportBufferCZL."Total Base" += VATEntry.Base;
             TempVATCtrlReportBufferCZL."Total Amount" += VATEntry.Amount;
             TempVATCtrlReportBufferCZL.Modify();
@@ -419,8 +435,12 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         TempVATCtrlReportBufferCZL."Supplies Mode Code" := VATPostingSetup."Supplies Mode Code CZL".AsInteger();
         TempVATCtrlReportBufferCZL."Corrections for Bad Receivable" := VATPostingSetup."Corrections Bad Receivable CZL";
         TempVATCtrlReportBufferCZL."Ratio Use" := VATPostingSetup."Ratio Coefficient CZL";
+#if not CLEAN19
+#pragma warning disable AL0432
         if VATEntry."Advance Base" <> 0 then
             VATEntry.Base += VATEntry."Advance Base";
+#pragma warning restore AL0432
+#endif
         TempVATCtrlReportBufferCZL."Total Base" := VATEntry.Base;
         TempVATCtrlReportBufferCZL."Total Amount" := VATEntry.Amount;
         TempVATCtrlReportBufferCZL.Insert();
@@ -461,7 +481,13 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         TempDropShptPostBuffer.Reset();
         TempDropShptPostBuffer.DeleteAll();
 
+#if CLEAN19
+        if VATEntry.Base <> 0 then
+#else
+#pragma warning disable AL0432
         if (VATEntry.Base <> 0) or (VATEntry."Advance Base" <> 0) then
+#pragma warning restore AL0432
+#endif
             case SectionCode of
                 'A1':
                     begin
@@ -493,10 +519,14 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         if not TempDropShptPostBuffer.FindFirst() then begin
             TempDropShptPostBuffer.Init();
             TempDropShptPostBuffer."Order No." := '';
+#if not CLEAN19
+#pragma warning disable AL0432
             if VATEntry."Advance Base" <> 0 then
                 TempDropShptPostBuffer.Quantity := VATEntry."Advance Base"
             else
-                TempDropShptPostBuffer.Quantity := VATEntry.Base;
+#pragma warning restore AL0432
+#endif
+            TempDropShptPostBuffer.Quantity := VATEntry.Base;
             TempDropShptPostBuffer."Quantity (Base)" := VATEntry.Amount;
             TempDropShptPostBuffer.Insert();
         end;

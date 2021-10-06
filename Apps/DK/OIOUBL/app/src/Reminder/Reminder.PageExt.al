@@ -11,22 +11,22 @@ pageextension 13656 "OIOUBL-Reminder" extends Reminder
         {
             field("OIOUBL-Contact Phone No."; "OIOUBL-Contact Phone No.")
             {
-                Tooltip = 'Specifies the telephone number of the contact person at the customer.';
+                Tooltip = 'Specifies the telephone number of the contact person at the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
             field("OIOUBL-Contact Fax No."; "OIOUBL-Contact Fax No.")
             {
-                Tooltip = 'Specifies the fax number of the contact person at the customer.';
+                Tooltip = 'Specifies the fax number of the contact person at the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
             field("OIOUBL-Contact E-Mail"; "OIOUBL-Contact E-Mail")
             {
-                Tooltip = 'Specifies the email address of the contact person at the customer.';
+                Tooltip = 'Specifies the email address of the contact person at the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
             field("OIOUBL-Contact Role"; "OIOUBL-Contact Role")
             {
-                Tooltip = 'Specifies the role of the contact person at the customer.';
+                Tooltip = 'Specifies the role of the contact person at the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
         }
@@ -35,12 +35,12 @@ pageextension 13656 "OIOUBL-Reminder" extends Reminder
         {
             field("OIOUBL-GLN"; "OIOUBL-GLN")
             {
-                Tooltip = 'Specifies the GLN location number for the customer.';
+                Tooltip = 'Specifies the GLN location number for the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
             }
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
-                Tooltip = 'Specifies the account code of the customer.';
+                Tooltip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
                 ApplicationArea = Basic, Suite;
 
                 trigger OnValidate();

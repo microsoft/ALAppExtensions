@@ -81,7 +81,6 @@ codeunit 1072 "MS - PayPal Create Demo Data"
         if not MSPayPalStandardAccount.Insert(true) then
             exit;
 
-        MSPayPalStandardAccount.Enabled := true;
         MSPayPalStandardAccount."Always Include on Documents" := true;
         if MSPayPalStandardAccount.Modify(true) then;
     end;

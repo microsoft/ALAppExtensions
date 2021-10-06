@@ -126,13 +126,11 @@ codeunit 148081 "MTDTestOAuthWebService"
         InvokeRetrievePayments(false);
 
         Assert.ExpectedMessage(StrSubstNo('%1\%2', OAuthNotConfiguredErr, OpenSetupQst), LibraryVariableStorage.DequeueText());
-        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure ParseErrors_Basic()
     begin
         // [SCENARIO 258181] Parsing of basic HMRC json error response in case of error code = 400\403\404
@@ -161,7 +159,6 @@ codeunit 148081 "MTDTestOAuthWebService"
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure ParseErrors_Advanced()
     var
         Value: array[6] of Text;
@@ -186,13 +183,11 @@ codeunit 148081 "MTDTestOAuthWebService"
             InvokeRequestMsg + ' ' + RetrieveVATPaymentsTxt,
             StrSubstNo('HTTP error %1 (%2). %3\%4\%5 (path %6)', Value[5], Value[6], Value[1], Value[2], Value[3], Value[4]),
             true);
-        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure ParseErrors_Error429_TooManyReq()
     var
         Value: array[2] of Text;
@@ -212,13 +207,11 @@ codeunit 148081 "MTDTestOAuthWebService"
             InvokeRequestMsg + ' ' + RetrieveVATPaymentsTxt,
             StrSubstNo('HTTP error %1 (%2). %3', 429, Value[2], Value[1]),
             true);
-        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure MTDConnection_InvokeRequest_RefreshAccessToken_Negative()
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
@@ -238,19 +231,16 @@ codeunit 148081 "MTDTestOAuthWebService"
 
         HttpError := 'HTTP error 401 (Unauthorized)\invalid client id or secret';
 
-        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         Assert.IsFalse(MTDConnection.InvokeRequest_RefreshAccessToken(ActualMessage, true), '');
         Assert.AreEqual(STRSUBSTNO('%1\%2%3', RefreshFailedTxt, ReasonTxt, HttpError), ActualMessage, '');
         // TFS 324828: Access Token Due DateTime is not changed
         OAuth20Setup.Find();
         OAuth20Setup.TestField("Access Token Due DateTime", AccessTokenDueDateTime);
-        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure MTDConnection_InvokeRequest_RefreshAccessToken_Positive()
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
@@ -264,18 +254,15 @@ codeunit 148081 "MTDTestOAuthWebService"
         Initialize();
         LibraryMakingTaxDigital.CreateOAuthSetup(
             OAuth20Setup, OAuth20Setup.Status::Enabled, '/MockServicePacket399', CurrentDateTime() + 60 * 60 * 1000); // now + 1 hour
-        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         Assert.IsTrue(MTDConnection.InvokeRequest_RefreshAccessToken(ActualMessage, true), '');
 
         Assert.AreEqual(RefreshSuccessfulTxt, ActualMessage, '');
         VerifyAccessTokenDueDateTime(OAuth20Setup, 2); // TFS 324828
-        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure MTDConnection_InvokeRequest_RefreshAccessToken_Positive_ExpireInSec()
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
@@ -289,18 +276,15 @@ codeunit 148081 "MTDTestOAuthWebService"
         Initialize();
         LibraryMakingTaxDigital.CreateOAuthSetup(
             OAuth20Setup, OAuth20Setup.Status::Enabled, '/MockServicePacket398', CurrentDateTime() + 60 * 60 * 1000); // now + 1 hour
-        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         Assert.IsTrue(MTDConnection.InvokeRequest_RefreshAccessToken(ActualMessage, true), '');
 
         Assert.AreEqual(RefreshSuccessfulTxt, ActualMessage, '');
         VerifyAccessTokenDueDateTime(OAuth20Setup, 4); // TFS 324828
-        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure FraudPreventionHeaders_WebClient()
     begin
         // [FEATURE] [Fraud Prevention]
@@ -310,7 +294,6 @@ codeunit 148081 "MTDTestOAuthWebService"
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure FraudPreventionHeaders_WinClient()
     begin
         // [FEATURE] [Fraud Prevention]
@@ -320,7 +303,6 @@ codeunit 148081 "MTDTestOAuthWebService"
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure FraudPreventionHeaders_BatchClient()
     begin
         // [FEATURE] [Fraud Prevention]
@@ -339,6 +321,7 @@ codeunit 148081 "MTDTestOAuthWebService"
 
         LibraryMakingTaxDigital.SetOAuthSetupSandbox(true);
         LibraryMakingTaxDigital.SetupDefaultFPHeaders();
+        LibraryMakingTaxDigital.EnableFeatureConsent(true);
         LibrarySetupStorage.Save(Database::"VAT Report Setup");
     end;
 
@@ -350,7 +333,6 @@ codeunit 148081 "MTDTestOAuthWebService"
         asserterror InvokeRetrievePayments(true);
 
         VerifyParseErrorScenario(ExpectedMessage);
-        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         LibraryVariableStorage.AssertEmpty();
     end;
 
@@ -363,7 +345,6 @@ codeunit 148081 "MTDTestOAuthWebService"
         RetrieveVATReturnPeriodsForGivenClientType(GivenClientType);
 
         VerifyDefaultFPHeadersInLatestHttpLog(GivenClientType);
-        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         LibraryVariableStorage.AssertEmpty();
     end;
 
@@ -374,7 +355,6 @@ codeunit 148081 "MTDTestOAuthWebService"
         NewCount: Integer;
         ModifiedCount: Integer;
     begin
-        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         MTDMgt.RetrievePayments(WorkDate(), WorkDate(), TotalCount, NewCount, ModifiedCount, ShowMessage);
     end;
 
@@ -387,7 +367,6 @@ codeunit 148081 "MTDTestOAuthWebService"
     begin
         TestClientTypeSubscriber.SetClientType(GivenClientType);
         BindSubscription(TestClientTypeSubscriber);
-        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         Assert.IsTrue(MTDConnection.InvokeRequest_RetrieveVATReturnPeriods(WorkDate(), WorkDate(), ResponseJson, HttpError, false), '');
     end;
 

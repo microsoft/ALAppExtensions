@@ -5,7 +5,7 @@ xmlport 11760 "Unreliable Payer List CZL"
     Direction = Import;
     Encoding = UTF8;
     FormatEvaluate = Xml;
-    Permissions = TableData "Unreliable Payer Entry CZL" = rimd;
+    Permissions = tabledata "Unreliable Payer Entry CZL" = rimd;
     UseDefaultNamespace = true;
     UseRequestPage = false;
 

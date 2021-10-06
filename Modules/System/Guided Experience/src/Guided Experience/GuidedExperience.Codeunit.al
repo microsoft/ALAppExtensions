@@ -28,11 +28,14 @@ codeunit 1990 "Guided Experience"
         GuidedExperienceType: Enum "Guided Experience Type";
         AssistedSetupGroup: Enum "Assisted Setup Group";
         VideoCategory: Enum "Video Category";
+        SpotlighTourType: Enum "Spotlight Tour Type";
+        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
     begin
         NavApp.GetCallerModuleInfo(CallerModuleInfo);
 
         GuidedExperienceImpl.Insert(Title, ShortTitle, Description, ExpectedDuration, CallerModuleInfo.Id, GuidedExperienceType::"Manual Setup",
-            ObjectTypeToRun, ObjectIDToRun, '', AssistedSetupGroup::Uncategorized, '', VideoCategory::Uncategorized, '', ManualSetupCategory, Keywords, true);
+            ObjectTypeToRun, ObjectIDToRun, '', AssistedSetupGroup::Uncategorized, '', VideoCategory::Uncategorized, '', ManualSetupCategory,
+            Keywords, SpotlighTourType::None, SpotlightTourTexts, true);
     end;
 
     /// <summary>Inserts an assisted setup page.</summary>
@@ -51,19 +54,24 @@ codeunit 1990 "Guided Experience"
         CallerModuleInfo: ModuleInfo;
         GuidedExperienceType: Enum "Guided Experience Type";
         ManualSetupCategory: Enum "Manual Setup Category";
+        SpotlighTourType: Enum "Spotlight Tour Type";
+        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
     begin
         NavApp.GetCallerModuleInfo(CallerModuleInfo);
 
         GuidedExperienceImpl.Insert(Title, ShortTitle, Description, ExpectedDuration, CallerModuleInfo.Id, GuidedExperienceType::"Assisted Setup",
-            ObjectTypeToRun, ObjectIDToRun, '', AssistedSetupGroup, VideoUrl, VideoCategory, HelpUrl, ManualSetupCategory::Uncategorized, '', true);
+            ObjectTypeToRun, ObjectIDToRun, '', AssistedSetupGroup, VideoUrl, VideoCategory, HelpUrl, ManualSetupCategory::Uncategorized, '',
+            SpotlighTourType::None, SpotlightTourTexts, true);
     end;
 
+#if not CLEAN19
     /// <summary>Inserts a learn page.</summary>
     /// <param name="Title">The title of the learn page.</param>
     /// <param name="ShortTitle">A short title used for the checklist.</param>
     /// <param name="Description">The description of the learn page.</param>
     /// <param name="ExpectedDuration">How many minutes the learn page would take to read.</param>
     /// <param name="PageID">The ID of the learn page.</param>
+    [Obsolete('Use InsertManualSetup instead.', '19.0')]
     procedure InsertLearnPage(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; PageID: Integer)
     var
         CallerModuleInfo: ModuleInfo;
@@ -71,12 +79,16 @@ codeunit 1990 "Guided Experience"
         AssistedSetupGroup: Enum "Assisted Setup Group";
         VideoCategory: Enum "Video Category";
         ManualSetupCategory: Enum "Manual Setup Category";
+        SpotlighTourType: Enum "Spotlight Tour Type";
+        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
     begin
         NavApp.GetCallerModuleInfo(CallerModuleInfo);
 
         GuidedExperienceImpl.Insert(Title, ShortTitle, Description, ExpectedDuration, CallerModuleInfo.Id, GuidedExperienceType::Learn,
-            ObjectType::Page, PageID, '', AssistedSetupGroup::Uncategorized, '', VideoCategory::Uncategorized, '', ManualSetupCategory::Uncategorized, '', true);
+            ObjectType::Page, PageID, '', AssistedSetupGroup::Uncategorized, '', VideoCategory::Uncategorized, '',
+            ManualSetupCategory::Uncategorized, '', SpotlighTourType::None, SpotlightTourTexts, true);
     end;
+#endif
 
     /// <summary>Inserts a learn link.</summary>
     /// <param name="Title">The title of the learn link.</param>
@@ -91,13 +103,112 @@ codeunit 1990 "Guided Experience"
         AssistedSetupGroup: Enum "Assisted Setup Group";
         VideoCategory: Enum "Video Category";
         ManualSetupCategory: Enum "Manual Setup Category";
+        SpotlighTourType: Enum "Spotlight Tour Type";
+        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
         ObjectType: ObjectType;
     begin
         NavApp.GetCallerModuleInfo(CallerModuleInfo);
 
         GuidedExperienceImpl.Insert(Title, ShortTitle, Description, ExpectedDuration, CallerModuleInfo.Id, GuidedExperienceType::Learn,
-            ObjectType, 0, Link, AssistedSetupGroup::Uncategorized, '', VideoCategory::Uncategorized, '', ManualSetupCategory::Uncategorized, '', true);
+            ObjectType, 0, Link, AssistedSetupGroup::Uncategorized, '', VideoCategory::Uncategorized, '', ManualSetupCategory::Uncategorized,
+            '', SpotlighTourType::None, SpotlightTourTexts, true);
     end;
+
+    /// <summary>Inserts a tour for a page.</summary>
+    /// <param name="Title">The title of the tour.</param>
+    /// <param name="ShortTitle">A short title used for the checklist.</param>
+    /// <param name="Description">The description of the tour.</param>
+    /// <param name="ExpectedDuration">How many minutes the user should expect to spend taking the tour.</param>
+    /// <param name="PageID">The ID of the page that the tour is run on.</param>
+    procedure InsertTour(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; PageID: Integer)
+    var
+        CallerModuleInfo: ModuleInfo;
+        GuidedExperienceType: Enum "Guided Experience Type";
+        AssistedSetupGroup: Enum "Assisted Setup Group";
+        VideoCategory: Enum "Video Category";
+        ManualSetupCategory: Enum "Manual Setup Category";
+        SpotlighTourType: Enum "Spotlight Tour Type";
+        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
+        ObjectType: ObjectType;
+    begin
+        NavApp.GetCallerModuleInfo(CallerModuleInfo);
+
+        GuidedExperienceImpl.Insert(Title, ShortTitle, Description, ExpectedDuration, CallerModuleInfo.Id,
+            GuidedExperienceType::Tour, ObjectType::Page, PageID, '', AssistedSetupGroup::Uncategorized, '',
+            VideoCategory::Uncategorized, '', ManualSetupCategory::Uncategorized, '', SpotlighTourType::None, SpotlightTourTexts, true);
+    end;
+
+    /// <summary>Inserts a spotlight tour for a page.</summary>
+    /// <param name="Title">The title of the manual setup.</param>
+    /// <param name="ShortTitle">A short title used for the checklist.</param>
+    /// <param name="Description">The description of the manual setup.</param>
+    /// <param name="ExpectedDuration">How many minutes the tour is expected to take.</param>
+    /// <param name="PageID">The ID of the page that the spotlight tour will be run on.</param>
+    /// <param name="SpotlightTourType">The type of spotlight tour.</param>
+    /// <param name="SpotlightTourTexts">The texts that will be displayed during the spotlight tour.</param>
+    procedure InsertSpotlightTour(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; PageID: Integer; SpotlighTourType: Enum "Spotlight Tour Type"; SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text])
+    var
+        CallerModuleInfo: ModuleInfo;
+        GuidedExperienceType: Enum "Guided Experience Type";
+        AssistedSetupGroup: Enum "Assisted Setup Group";
+        VideoCategory: Enum "Video Category";
+        ManualSetupCategory: Enum "Manual Setup Category";
+    begin
+        NavApp.GetCallerModuleInfo(CallerModuleInfo);
+
+        GuidedExperienceImpl.Insert(Title, ShortTitle, Description, ExpectedDuration, CallerModuleInfo.Id, GuidedExperienceType::"Spotlight Tour",
+            ObjectType::Page, PageID, '', AssistedSetupGroup::Uncategorized, '', VideoCategory::Uncategorized, '', ManualSetupCategory::Uncategorized,
+            '', SpotlighTourType, SpotlightTourTexts, true);
+    end;
+
+    /// <summary>Inserts a guided experience item for an application feature.</summary>
+    /// <param name="Title">The title of the application feature.</param>
+    /// <param name="ShortTitle">A short title used for the checklist.</param>
+    /// <param name="Description">The description of the application feature.</param>
+    /// <param name="ExpectedDuration">How many minutes the user should expect to spend .</param>
+    /// <param name="ObjectTypeToRun">The object type to run for the application feature.</param>
+    /// <param name="ObjectIDToRun">The object ID to run for the application feature.</param>
+    procedure InsertApplicationFeature(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer)
+    var
+        CallerModuleInfo: ModuleInfo;
+        GuidedExperienceType: Enum "Guided Experience Type";
+        AssistedSetupGroup: Enum "Assisted Setup Group";
+        VideoCategory: Enum "Video Category";
+        ManualSetupCategory: Enum "Manual Setup Category";
+        SpotlighTourType: Enum "Spotlight Tour Type";
+        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
+    begin
+        NavApp.GetCallerModuleInfo(CallerModuleInfo);
+
+        GuidedExperienceImpl.Insert(Title, ShortTitle, Description, ExpectedDuration, CallerModuleInfo.Id,
+            GuidedExperienceType::"Application Feature", ObjectTypeToRun, ObjectIDToRun, '', AssistedSetupGroup::Uncategorized, '',
+            VideoCategory::Uncategorized, '', ManualSetupCategory::Uncategorized, '', SpotlighTourType::None, SpotlightTourTexts, true);
+    end;
+
+    /// <summary>Inserts a guided experience item for a video.</summary>
+    /// <param name="Title">The title of the video.</param>
+    /// <param name="ShortTitle">A short title used for the checklist.</param>
+    /// <param name="Description">The description of the video.</param>
+    /// <param name="ExpectedDuration">The duration of the video in minutes.</param>
+    /// <param name="VideoUrl">The URL of the video.</param>
+    /// <param name="VideoCategory">The category of the video.</param>
+    procedure InsertVideo(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; VideoURL: Text[250]; VideoCategory: Enum "Video Category")
+    var
+        CallerModuleInfo: ModuleInfo;
+        GuidedExperienceType: Enum "Guided Experience Type";
+        AssistedSetupGroup: Enum "Assisted Setup Group";
+        ManualSetupCategory: Enum "Manual Setup Category";
+        SpotlighTourType: Enum "Spotlight Tour Type";
+        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
+        ObjectType: ObjectType;
+    begin
+        NavApp.GetCallerModuleInfo(CallerModuleInfo);
+
+        GuidedExperienceImpl.Insert(Title, ShortTitle, Description, ExpectedDuration, CallerModuleInfo.Id, GuidedExperienceType::Video,
+            ObjectType, 0, '', AssistedSetupGroup::Uncategorized, VideoURL, VideoCategory, '', ManualSetupCategory::Uncategorized,
+            '', SpotlighTourType::None, SpotlightTourTexts, true);
+    end;
+
 
     /// <summary>Opens the Manual Setup page containing the setup guides.</summary>
     procedure OpenManualSetupPage()
@@ -215,7 +326,7 @@ codeunit 1990 "Guided Experience"
     end;
 
     /// <summary>Removes a guided experience item.</summary>
-    /// <param name="GuidedExperienceType">The type of setup object.</param>/// /// 
+    /// <param name="GuidedExperienceType">The type of setup object.</param>
     /// <param name="ObjectType">The object type that identifies the guided experience item.</param>
     /// <param name="ObjectID">The object ID that identifies the guided experience item.</param>
     /// <remarks>The OnRegister subscriber which adds this guided experience item needs to be removed first.</remarks>
@@ -225,12 +336,24 @@ codeunit 1990 "Guided Experience"
     end;
 
     /// <summary>Removes a guided experience item.</summary>
-    /// <param name="GuidedExperienceType">The type of setup object.</param>/// /// 
+    /// <param name="GuidedExperienceType">The type of guided experience item.</param>
     /// <param name="Link">The link that identifies the guided experience item.</param>
     /// <remarks>The OnRegister subscriber which adds this guided experience item needs to be removed first.</remarks>
     procedure Remove(GuidedExperienceType: Enum "Guided Experience Type"; Link: Text[250])
     begin
         GuidedExperienceImpl.Remove(GuidedExperienceType, Link);
+    end;
+
+    /// <summary>
+    /// Removes a guided experience item.
+    /// </summary>
+    /// <param name="GuidedExperienceType">The type of guided experience item.</param>
+    /// <param name="ObjectType">The object type of the guided experience item.</param>
+    /// <param name="ObjectID">The object ID of the guided experience item.</param>
+    /// <param name="SpotlightTourType">The type of spotlight tour of the guided experience item.</param>
+    procedure Remove(GuidedExperienceType: Enum "Guided Experience Type"; ObjectType: ObjectType; ObjectID: Integer; SpotlightTourType: Enum "Spotlight Tour Type")
+    begin
+        GuidedExperienceImpl.Remove(GuidedExperienceType, ObjectType, ObjectID, SpotlightTourType);
     end;
 
     /// <summary>Notifies that the list of assisted setups is being gathered, and that new items might be added.</summary>
@@ -271,6 +394,14 @@ codeunit 1990 "Guided Experience"
     /// </summary>
     [IntegrationEvent(true, false)]
     internal procedure OnRegisterManualSetup();
+    begin
+    end;
+
+    /// <summary>
+    /// The event that is raised so that subscribers can add the new guided experience items.
+    /// </summary>
+    [IntegrationEvent(true, false)]
+    internal procedure OnRegisterGuidedExperienceItem();
     begin
     end;
 }

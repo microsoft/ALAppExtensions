@@ -5,7 +5,7 @@ codeunit 40016 "Hybrid Company Initialize"
     trigger OnRun()
     begin
         Codeunit.Run(Codeunit::"Company-Initialize");
-        Rec.Validate("Company Initialization Status", "Company Initialization Status"::Initialized);
+        Rec.Validate("Company Initialization Status", Rec."Company Initialization Status"::Initialized);
         Clear(Rec."Company Initialization Task");
         Rec.Modify();
     end;

@@ -12,7 +12,7 @@ pageextension 13671 "OIOUBL-BlanketSalesOrderSub" extends "Blanket Sales Order S
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
                 ApplicationArea = Advanced;
-                Tooltip = 'Specifies the account code of the customer.';
+                Tooltip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
                 Visible = False;
             }
         }

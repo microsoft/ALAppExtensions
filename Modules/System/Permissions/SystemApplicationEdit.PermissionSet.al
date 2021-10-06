@@ -12,8 +12,11 @@ PermissionSet 22 "System Application - Edit"
                              "Cues and KPIs - Edit",
                              "Data Classification - Edit",
                              "Email - Edit",
+                             "Guided Experience - Edit",
                              "Language - Edit",
+#if not CLEAN19
                              "SL Designer Subscribers - Edit",
+#endif
                              "Translation - Edit",
                              "Word Templates - Edit";
 }

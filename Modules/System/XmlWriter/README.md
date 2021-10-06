@@ -21,6 +21,26 @@ Use this module to do the following:
 ```
 procedure WriteStartDocument()
 ```
+### WriteProcessingInstruction (Method) <a name="WriteProcessingInstruction"></a> 
+
+ Writes the Processing Instruction.
+ 
+
+This function reinitializes the XML Writer.
+
+#### Syntax
+```
+procedure WriteProcessingInstruction(Name: Text; "Text": Text)
+```
+#### Parameters
+*Name ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The name of the processing instruction.
+
+*Text ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The text to include in the processing instruction.
+
 ### WriteStartElement (Method) <a name="WriteStartElement"></a> 
 
  Writes the specified start tag.
@@ -74,6 +94,20 @@ The local name of the element.
 *ElementValue ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
 
 The value of the element.
+
+### WriteString (Method) <a name="WriteString"></a> 
+
+ Writes the given text content.
+ 
+
+#### Syntax
+```
+procedure WriteString(ElementText: Text)
+```
+#### Parameters
+*ElementText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Text to write.
 
 ### WriteEndElement (Method) <a name="WriteEndElement"></a> 
 
@@ -153,7 +187,7 @@ procedure WriteEndDocument()
 ```
 ### ToBigText (Method) <a name="ToBigText"></a> 
 
- Writes the text within Xml Writer to the BigText variable. 
+ Writes the text within Xml Writer to the BigText variable.
  
 
 #### Syntax

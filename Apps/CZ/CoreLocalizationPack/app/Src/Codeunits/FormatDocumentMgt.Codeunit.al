@@ -47,4 +47,22 @@ codeunit 11701 "Format Document Mgt. CZL"
         CopyArray(PaymentSymbol, TempPaymentSymbol, 1, 2);
         CopyArray(PaymentSymbolLabel, TempPaymentSymbolLabel, 1, 2);
     end;
+#if not CLEAN19
+#if CLEAN17
+#pragma warning disable AL0432
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Format Document", 'OnGetDocumentFooterText', '', false, false)]
+    local procedure OnGetDocumentFooterText(LanguageCode: Code[10]; var DocumentFooterText: Text[250]);
+    begin
+        DocumentFooterText := CopyStr(GetDocumentFooterText(LanguageCode), 1, 250);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Format Document", 'OnSetPaymentSymbols', '', false, false)]
+    local procedure OnSetPaymentSymbols(var PaymentSymbol: array[2] of Text; var PaymentSymbolLabel: array[2] of Text; VariableSymbol: Code[10]; VariableSymbolCaption: Text[80]; ConstantSymbol: Code[10]; ConstantSymbolCaption: Text[80]; SpecificSymbol: Code[10]; SpecificSymbolCaption: Text[80])
+    begin
+        SetPaymentSymbols(PaymentSymbol, PaymentSymbolLabel, VariableSymbol, VariableSymbolCaption, ConstantSymbol, ConstantSymbolCaption, SpecificSymbol, SpecificSymbolCaption);
+    end;
+#pragma warning restore AL0432    
+#endif
+#endif
 }

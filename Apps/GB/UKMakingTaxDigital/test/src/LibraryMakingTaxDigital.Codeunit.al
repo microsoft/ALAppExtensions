@@ -26,6 +26,15 @@ codeunit 148080 "Library - Making Tax Digital"
         RetrieveReturnsMsg: Label 'Retrieve submitted VAT returns successful';
         ConfirmHeadersMsg: Label 'HMRC requires additional information that will be used to uniquely identify your request. The following fraud prevention headers will be sent:';
 
+    internal procedure EnableFeatureConsent(Enable: Boolean)
+    var
+        VATReportSetup: Record "VAT Report Setup";
+    begin
+        VATReportSetup.Get();
+        VATReportSetup."MTD Enabled" := Enable;
+        VATReportSetup.Modify();
+    end;
+
     internal procedure EnableSaaS(Enable: Boolean)
     var
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";

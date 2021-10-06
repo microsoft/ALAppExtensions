@@ -65,6 +65,19 @@ page 2507 "Upload And Deploy Extension"
                     LanguageName := LanguageManagement.GetWindowsLanguageName(LanguageID);
                 end;
             }
+            field(SyncMode; SyncModeValue)
+            {
+                ApplicationArea = All;
+                Caption = 'Schema Sync Mode';
+                ToolTip = 'Specifies how to update the database schema for the extension. The Add option will warn you if the schemas are incompatible and will not apply the change. Force Sync will overwrite the current schema with the new version without warning. Force Sync can lead to data loss.';
+
+                trigger OnValidate()
+                begin
+                    if SyncModeValue = SyncModeValue::"Force Sync" then
+                        if not Confirm(ForceSyncQst, false) then
+                            SyncModeValue := SyncModeValue::Add;
+                end;
+            }
             field(Disclaimer; DisclaimerLbl)
             {
                 ApplicationArea = All;
@@ -124,7 +137,7 @@ page 2507 "Upload And Deploy Extension"
                     if FilePath = '' then
                         Message(ExtensionNotUploadedMsg)
                     else begin
-                        ExtensionOperationImpl.DeployAndUploadExtension(FileStream, LanguageID, DeployToValue);
+                        ExtensionOperationImpl.DeployAndUploadExtension(FileStream, LanguageID, DeployToValue, SyncModeValue);
                         CurrPage.Close();
                     end;
                 end;
@@ -160,6 +173,8 @@ page 2507 "Upload And Deploy Extension"
         FilePath: Text;
         LanguageName: Text;
         LanguageID: Integer;
+        SyncModeValue: Enum "Extension Sync Mode";
+        ForceSyncQst: Label 'Are you sure that you want to force the schema update for this extension? Forcing schema updates can lead to unintentional data loss if invoked improperly.';
         DialogTitleTxt: Label 'Select .APP';
         AppFileFilterTxt: Label 'Extension Files|*.app', Locked = true;
         ExtensionNotUploadedMsg: Label 'Please upload an extension file before clicking "Deploy" button.';

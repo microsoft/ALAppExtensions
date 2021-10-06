@@ -22,6 +22,7 @@ codeunit 18001 "GST Base Validation"
         VendGSTARNErr: Label 'Either Vendor GST Registration No. or ARN No. in Vendor should have a value.';
         OrderAddressGSTARNErr: Label 'Either Order Address GST Registration No. or ARN No. in Order Address should have a value.';
         CustGSTARNErr: Label 'Either Customer GST Registration No. or ARN No. in Customer should have a value.';
+        PostGSTtoCustErr: Label 'Only allow for GST Customer type SEZ Development & SEZ Unit.';
 
     //Same Functon in Called in GST Sales
     procedure CheckGSTRegistrationNo(StateCode: Code[10]; RegistrationNo: Code[20]; PANNo: Code[20])
@@ -105,6 +106,7 @@ codeunit 18001 "GST Base Validation"
     [EventSubscriber(ObjectType::Table, Database::"GST Ledger Entry", 'OnAfterInsertEvent', '', false, false)]
     local procedure UpdateGSTLedgerEntryOnafterInsertEvent(var Rec: Record "GST Ledger Entry"; RunTrigger: Boolean)
     var
+        GSTPostingManagement: Codeunit "GST Posting Management";
         SignFactor: Integer;
         DocTypeEnum: Enum "Document Type Enum";
         TransTypeEnum: Enum "Transaction Type Enum";
@@ -126,6 +128,9 @@ codeunit 18001 "GST Base Validation"
 
         Rec."GST Base Amount" := Abs(Rec."GST Base Amount") * SignFactor;
         Rec."GST Amount" := Abs(Rec."GST Amount") * SignFactor;
+        if GSTPostingManagement.GetPaytoVendorNo() <> '' then
+            Rec."Source No." := GSTPostingManagement.GetPaytoVendorNo();
+
         Rec.Modify();
     end;
 
@@ -231,6 +236,12 @@ codeunit 18001 "GST Base Validation"
                 Rec."Source Type" := Rec."Source Type"::Customer;
 
         Rec."Executed Use Case ID" := GSTPostingManagement.GetUseCaseID();
+        if GSTPostingManagement.GetPaytoVendorNo() <> '' then
+            Rec."Source No." := GSTPostingManagement.GetPaytoVendorNo();
+
+        if GSTPostingManagement.GetBuyerSellerRegNo() <> '' then
+            Rec."Buyer/Seller Reg. No." := GSTPostingManagement.GetBuyerSellerRegNo();
+
         Rec.Modify();
 
         GSTPostingManagement.SetRecord(Rec); //if Called from tax engine
@@ -303,9 +314,11 @@ codeunit 18001 "GST Base Validation"
             (Rec."Original Doc. Type" in [Rec."Original Doc. Type"::Invoice, Rec."Original Doc. Type"::"Credit Memo"])
         then
             UpdateGSTTrackingFromToEntryNo(DetailedGSTLedgerEntry."Entry No.");
+
+        if GSTPostingManagement.GetBuyerSellerStateCode() <> '' then
+            Rec."Buyer/Seller State Code" := GSTPostingManagement.GetBuyerSellerStateCode();
     end;
 
-    //Company Information Validation - Subscribers 
     [EventSubscriber(ObjectType::Table, Database::"Company Information", 'OnAfterValidateEvent', 'P.A.N. No.', false, false)]
     local procedure ValidatePANNoOnAfterValidateEvent(var Rec: Record "Company Information")
     begin
@@ -553,6 +566,14 @@ codeunit 18001 "GST Base Validation"
             exit;
 
         GenJnlLine.TestField("GST Group Code", '');
+    end;
+
+    //Customer Subscribers
+    [EventSubscriber(ObjectType::Table, Database::Customer, 'OnAfterValidateEvent', 'Post GST to Customer', False, False)]
+    local procedure ValidatePostGSTtoCustomerOnAfterValidateEvent(var Rec: Record Customer)
+    begin
+        if not (Rec."GST Customer Type" In [Rec."GST Customer Type"::"SEZ Development", Rec."GST Customer Type"::"SEZ Unit"]) then
+            Error(PostGSTtoCustErr)
     end;
 
     local procedure CheckGSTRegBlankInRef(PANNO: Code[20])

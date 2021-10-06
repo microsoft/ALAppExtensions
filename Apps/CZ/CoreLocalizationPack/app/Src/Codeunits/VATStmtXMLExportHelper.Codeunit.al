@@ -1,6 +1,6 @@
 codeunit 11787 "VAT Stmt XML Export Helper CZL"
 {
-    Permissions = TableData "Object Options" = imd;
+    Permissions = tabledata "Object Options" = imd;
 
     var
         OptionPathTxt: Label '/ReportParameters/Options/Field[@name="%1"]', Comment = '%1=name attribute', Locked = true;

@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AA0072
+#if not CLEAN18
+#pragma warning disable AL0432, AA0072
 codeunit 31281 "Sync.Dep.Fld-ManufactSetup CZA"
 {
     Access = Internal;
@@ -34,3 +35,4 @@ codeunit 31281 "Sync.Dep.Fld-ManufactSetup CZA"
         SyncDepFldUtilities.SyncFields(Rec."Exact Cost Rev.Manda. (Cons.)", Rec."Exact Cost Rev.Mand. Cons. CZA", PreviousRecord."Exact Cost Rev.Manda. (Cons.)", PreviousRecord."Exact Cost Rev.Mand. Cons. CZA");
     end;
 }
+#endif

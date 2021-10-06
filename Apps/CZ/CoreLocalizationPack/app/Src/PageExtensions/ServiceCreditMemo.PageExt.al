@@ -2,6 +2,14 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
 {
     layout
     {
+        addbefore("Posting Date")
+        {
+            field("Posting Description CZL"; Rec."Posting Description")
+            {
+                ApplicationArea = Service;
+                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
+            }
+        }
         addafter("Posting Date")
         {
             field("VAT Date CZL"; Rec."VAT Date CZL")
@@ -10,26 +18,17 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
             }
         }
-        addafter("VAT Registration No.")
-        {
-            field("Registration No. CZL"; Rec."Registration No. CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of vendor.';
-            }
-            field("Tax Registration No. CZL"; Rec."Tax Registration No. CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the secondary VAT registration number for the vendor.';
-                Importance = Additional;
-            }
-        }
         addafter("Prices Including VAT")
         {
             field("Customer Posting Group CZL"; Rec."Customer Posting Group")
             {
                 ApplicationArea = Service;
                 ToolTip = 'Specifies the customer''s market type to link business transakcions to.';
+            }
+            field("Reason Code CZL"; Rec."Reason Code")
+            {
+                ApplicationArea = Service;
+                ToolTip = 'Specifies the reason code on the entry.';
             }
         }
         addafter("Currency Code")
@@ -72,6 +71,32 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies that entry will be excluded from intrastat.';
+            }
+            field("VAT Registration No. CZL"; Rec."VAT Registration No.")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+            }
+            field("Registration No. CZL"; Rec."Registration No. CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the registration number of vendor.';
+            }
+            field("Tax Registration No. CZL"; Rec."Tax Registration No. CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the secondary VAT registration number for the vendor.';
+                Importance = Additional;
+            }
+            field("Language Code CZL"; Rec."Language Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the language to be used on printouts for this document.';
+            }
+            field("VAT Country/Region Code CZL"; Rec."VAT Country/Region Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT country/region code of customer.';
             }
         }
         addafter("Assigned User ID")

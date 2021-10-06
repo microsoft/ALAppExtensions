@@ -14,6 +14,14 @@ table 2888 "SmartList Designer Handler"
     DataPerCompany = false;
     DataClassification = SystemMetadata;
     Extensible = false;
+#if not CLEAN19
+    ObsoleteState = Pending;
+    ObsoleteTag = '19.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '22.0';
+#endif
+    ObsoleteReason = 'The SmartList Designer is not supported in Business Central.';
 
     fields
     {
@@ -46,6 +54,7 @@ table 2888 "SmartList Designer Handler"
         }
     }
 
+#if not CLEAN19
     trigger OnInsert()
     begin
         if PrimaryKey <> '' then
@@ -54,4 +63,5 @@ table 2888 "SmartList Designer Handler"
 
     var
         SingleValueOnlyErr: Label 'The table only supports a single record whose primary key is the empty string';
+#endif
 }

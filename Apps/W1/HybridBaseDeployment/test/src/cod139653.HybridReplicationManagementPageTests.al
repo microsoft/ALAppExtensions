@@ -199,28 +199,6 @@ codeunit 139653 "Replication Mgt Page Tests"
     end;
 
     [Test]
-    procedure ManageCustomTablesIsNotVisibleIfUnsupported()
-    var
-        ReplicationManagementPage: TestPage "Intelligent Cloud Management";
-        ExpectedRunId: Text;
-        ExpectedSource: Text;
-    begin
-        // [SCENARIO] User doesn't have ability to manage custom tables for unsupported products
-
-        // [GIVEN] The intelligent cloud is set up for a product that doesn't support custom table mapping
-        Initialize(true);
-        SetupIntelligentCloud(ExpectedRunId, ExpectedSource);
-        LibraryHybridManagement.SetTableMappingEnabled(false);
-
-        // [WHEN] User Opens up the Hybrid Replication Management Page.
-        ReplicationManagementPage.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
-
-        // [THEN] The manage custom tables action is not visible
-        Assert.IsFalse(ReplicationManagementPage.ManageCustomTables.Visible(), 'Manage Custom Tables should not be visible.');
-    end;
-
-    [Test]
     procedure TestOpenManageCustomTables()
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";

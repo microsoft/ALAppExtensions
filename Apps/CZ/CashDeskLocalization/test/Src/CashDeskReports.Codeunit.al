@@ -1,7 +1,13 @@
 codeunit 148074 "Cash Desk Reports CZP"
 {
     Subtype = Test;
-    TestPermissions = NonRestrictive;
+    TestPermissions = Disabled;
+
+    trigger OnRun()
+    begin
+        // [FEATURE] [Cash Desk] [Reports]
+        isInitialized := false;
+    end;
 
     var
         CashDeskCZP: Record "Cash Desk CZP";
@@ -12,15 +18,18 @@ codeunit 148074 "Cash Desk Reports CZP"
         LibraryRandom: Codeunit "Library - Random";
         LibraryCashDeskCZP: Codeunit "Library - Cash Desk CZP";
         LibraryCashDocumentCZP: Codeunit "Library - Cash Document CZP";
-        RowNotFoundErr: Label 'There is no dataset row corresponding to Element Name %1 with value %2.', Comment = '%1 = Field Caption, %2 = Field Value;';
         isInitialized: Boolean;
 
     local procedure Initialize()
+    var
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Cash Desk Reports CZP");
         LibraryRandom.Init();
         LibraryVariableStorage.Clear();
         if isInitialized then
             exit;
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Cash Desk Reports CZP");
 
         LibraryCashDeskCZP.CreateCashDeskCZP(CashDeskCZP);
         LibraryCashDeskCZP.SetupCashDeskCZP(CashDeskCZP, true);
@@ -28,6 +37,7 @@ codeunit 148074 "Cash Desk Reports CZP"
 
         isInitialized := true;
         Commit();
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Cash Desk Reports CZP");
     end;
 
     [Test]
@@ -55,7 +65,6 @@ codeunit 148074 "Cash Desk Reports CZP"
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
     begin
-        // [FEATURE] Cash Desk
         Initialize();
 
         // [GIVEN] Create Cash Document
@@ -65,12 +74,17 @@ codeunit 148074 "Cash Desk Reports CZP"
         // [WHEN] Print Cash Document
         PrintCashDocument(CashDocumentHeaderCZP);
 
-        // [THEN] Verify
-        LibraryReportDataset.LoadDataSetFile();
-        LibraryReportDataset.SetRange('No_CashDocumentHeader', CashDocumentHeaderCZP."No.");
-        if not LibraryReportDataset.GetNextRow() then
-            Error(RowNotFoundErr, 'No_CashDocumentHeader', CashDocumentHeaderCZP."No.");
-        LibraryReportDataset.AssertCurrentRowValueEquals('AmountIncludingVAT_CashDocumentLine', CashDocumentLineCZP."Amount Including VAT");
+        // [THEN] Report dataset will contain Amount Including VAT
+        case CashDocType of
+            CashDocType::Receipt:
+                LibraryReportDataset.RunReportAndLoad(Report::"Receipt Cash Document CZP", CashDocumentHeaderCZP, '');
+            CashDocType::Withdrawal:
+                LibraryReportDataset.RunReportAndLoad(Report::"Withdrawal Cash Document CZP", CashDocumentHeaderCZP, '');
+        end;
+        LibraryReportDataset.AssertElementWithValueExists('AmountIncludingVAT_CashDocumentLine', CashDocumentLineCZP."Amount Including VAT");
+
+        // [THEN] Report dataset will contain Cash Document No.
+        LibraryReportDataset.AssertElementWithValueExists('No_CashDocumentHeader', CashDocumentHeaderCZP."No.");
     end;
 
     [Test]
@@ -99,7 +113,6 @@ codeunit 148074 "Cash Desk Reports CZP"
         CashDocumentLineCZP: Record "Cash Document Line CZP";
         PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
     begin
-        // [FEATURE] Cash Desk
         Initialize();
 
         // [GIVEN] Create Receipt Cash Document
@@ -113,27 +126,17 @@ codeunit 148074 "Cash Desk Reports CZP"
         // [WHEN] Print Posted Cash Document
         PrintPostedCashDocument(PostedCashDocumentHdrCZP);
 
-        // [THEN] Verify
-        LibraryReportDataset.LoadDataSetFile();
-        LibraryReportDataset.SetRange('No_PostedCashDocumentHeader', PostedCashDocumentHdrCZP."No.");
-        if not LibraryReportDataset.GetNextRow() then
-            Error(RowNotFoundErr, 'No_PostedCashDocumentHeader', PostedCashDocumentHdrCZP."No.");
+        // [THEN] Report dataset will contain Amount Including VAT
         case CashDocType of
-            CashDocumentHeaderCZP."Document Type"::Receipt:
-                begin
-                    LibraryReportDataset.GetNextRow();
-                    LibraryReportDataset.AssertCurrentRowValueEquals('DebitAmount_GLEntry', CashDocumentLineCZP.Amount);
-                    LibraryReportDataset.GetNextRow();
-                    LibraryReportDataset.AssertCurrentRowValueEquals('CreditAmount_GLEntry', CashDocumentLineCZP.Amount);
-                end;
-            CashDocumentHeaderCZP."Document Type"::Withdrawal:
-                begin
-                    LibraryReportDataset.GetNextRow();
-                    LibraryReportDataset.AssertCurrentRowValueEquals('CreditAmount_GLEntry', CashDocumentLineCZP.Amount);
-                    LibraryReportDataset.GetNextRow();
-                    LibraryReportDataset.AssertCurrentRowValueEquals('DebitAmount_GLEntry', CashDocumentLineCZP.Amount);
-                end;
+            CashDocType::Receipt:
+                LibraryReportDataset.RunReportAndLoad(Report::"Posted Rcpt. Cash Document CZP", PostedCashDocumentHdrCZP, '');
+            CashDocType::Withdrawal:
+                LibraryReportDataset.RunReportAndLoad(Report::"Posted Wdrl. Cash Document CZP", PostedCashDocumentHdrCZP, '');
         end;
+        LibraryReportDataset.AssertElementWithValueExists('AmountIncludingVAT_PostedCashDocumentLine', CashDocumentLineCZP."Amount Including VAT");
+
+        // [THEN] Report dataset will contain Posted Cash Document No.
+        LibraryReportDataset.AssertElementWithValueExists('No_PostedCashDocumentHeader', PostedCashDocumentHdrCZP."No.");
     end;
 
     [Test]
@@ -144,22 +147,23 @@ codeunit 148074 "Cash Desk Reports CZP"
         CashDocumentLineCZP: Record "Cash Document Line CZP";
         PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
     begin
-        // [SCENARIO] Check that correct Amount is present on Receipt Cash Desk Book Report after posting Receipt Cash Document
-        // [FEATURE] Cash Desk
+        // [SCENARIO] Check that correct Amounts are present on Cash Desk Book Report
+
+        // [GIVEN] Initialize new new Cash Desk
         isInitialized := false;
         Initialize();
 
         // [GIVEN] Create Receipt Cash Document
+        LibraryCashDocumentCZP.CreateCashDocumentHeaderCZP(CashDocumentHeaderCZP, CashDocumentHeaderCZP."Document Type"::Receipt, CashDeskCZP."No.");
+
+        // [GIVEN] Create Cash Desk Event
         LibraryCashDeskCZP.CreateCashDeskEventCZP(
           CashDeskEventCZP, CashDeskCZP."No.", CashDocumentHeaderCZP."Document Type"::Receipt,
           CashDeskEventCZP."Account Type"::"G/L Account", LibraryCashDocumentCZP.GetNewGLAccountNo(true));
-        LibraryCashDocumentCZP.CreateCashDocumentHeaderCZP(CashDocumentHeaderCZP, CashDocumentHeaderCZP."Document Type"::Receipt, CashDeskCZP."No.");
 
-        // [GIVEN] Create Receipt Cash Document Line 1
+        // [GIVEN] Create Receipt Cash Document Lines
         LibraryCashDocumentCZP.CreateCashDocumentLineCZPWithCashDeskEvent(
           CashDocumentLineCZP, CashDocumentHeaderCZP, CashDeskEventCZP.Code, LibraryRandom.RandInt(Round(CashDeskCZP."Cash Receipt Limit" / 10, 1, '<')));
-
-        // [GIVEN] Create Receipt Cash Document Line 2
         LibraryCashDocumentCZP.CreateCashDocumentLineCZPWithCashDeskEvent(
           CashDocumentLineCZP, CashDocumentHeaderCZP, CashDeskEventCZP.Code, LibraryRandom.RandInt(Round(CashDeskCZP."Cash Receipt Limit" / 10, 1, '<')));
 
@@ -179,20 +183,20 @@ codeunit 148074 "Cash Desk Reports CZP"
         CashDeskCZP.SetFilter("Date Filter", '%1..%2', CalcDate('<-1D>', WorkDate()), CalcDate('<1D>', WorkDate()));
         LibraryCashDeskCZP.PrintCashDeskBook(true, CashDeskCZP);
 
-        // [THEN] Verify amounts
-        LibraryReportDataset.LoadDataSetFile();
-        LibraryReportDataset.SetRange('CashDesk_No', CashDeskCZP."No.");
-        if not LibraryReportDataset.GetNextRow() then
-            Error(RowNotFoundErr, 'CashDesk_No', CashDeskCZP."No.");
+        // [THEN] Report dataset will contain Cash Desk No.
+        LibraryReportDataset.RunReportAndLoad(Report::"Cash Desk Book CZP", CashDeskCZP, '');
+        LibraryReportDataset.AssertElementWithValueExists('CashDesk_No', CashDeskCZP."No.");
 
+        // [THEN] Report dataset will contain Receipt Amout equal to Receipt document
         PostedCashDocumentHdrCZP.SetRange("Cash Desk No.", CashDeskCZP."No.");
         PostedCashDocumentHdrCZP.FindFirst();
         PostedCashDocumentHdrCZP.CalcFields("Amount Including VAT");
-        LibraryReportDataset.AssertCurrentRowValueEquals('Receipt', PostedCashDocumentHdrCZP."Amount Including VAT");
+        LibraryReportDataset.AssertElementWithValueExists('Receipt', PostedCashDocumentHdrCZP."Amount Including VAT");
+
+        // [THEN] Report dataset will contain Payment Amout equal to Wihdrwal document
         PostedCashDocumentHdrCZP.FindLast();
         PostedCashDocumentHdrCZP.CalcFields("Amount Including VAT");
-        LibraryReportDataset.GetNextRow();
-        LibraryReportDataset.AssertCurrentRowValueEquals('Payment', PostedCashDocumentHdrCZP."Amount Including VAT");
+        LibraryReportDataset.AssertElementWithValueExists('Payment', PostedCashDocumentHdrCZP."Amount Including VAT");
     end;
 
     local procedure CreateCashDocument(var CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var CashDocumentLineCZP: Record "Cash Document Line CZP";

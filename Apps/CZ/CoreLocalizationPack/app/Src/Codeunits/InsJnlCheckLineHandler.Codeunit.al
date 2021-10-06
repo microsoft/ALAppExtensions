@@ -7,12 +7,15 @@ codeunit 31314 "Ins. Jnl.CheckLine Handler CZL"
             UserSetupAdvManagementCZL.CheckInsuranceJournalLine(InsuranceJnlLine);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Insurance Journal Line", 'OnCheckInsuranceJournalTemplateUserRestrictions', '', false, false)]
-    local procedure CheckInsuranceJournallTemplateUserRestrictions(JournalTemplateName: Code[10])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::InsuranceJnlManagement, 'OnBeforeOpenJournal', '', false, false)]
+    local procedure JournalTemplateUserRestrictionsOnBeforeOpenJournal(var InsuranceJournalLine: Record "Insurance Journal Line")
     var
-        DummyUserSetupLineCZL: Record "User Setup Line CZL";
+        UserSetupLineTypeCZL: Enum "User Setup Line Type CZL";
+        JournalTemplateName: Code[10];
     begin
-        UserSetupAdvManagementCZL.CheckJournalTemplate(DummyUserSetupLineCZL.Type::"Insurance Journal", JournalTemplateName);
+        JournalTemplateName := InsuranceJournalLine.GetRangeMax("Journal Template Name");
+        UserSetupLineTypeCZL := UserSetupLineTypeCZL::"Insurance Journal";
+        UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, JournalTemplateName);
     end;
 
     var

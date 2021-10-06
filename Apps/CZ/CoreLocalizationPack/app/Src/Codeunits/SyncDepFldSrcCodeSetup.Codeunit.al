@@ -1,4 +1,4 @@
-#if not CLEAN17
+#if not CLEAN19
 #pragma warning disable AL0432
 codeunit 31192 "Sync.Dep.Fld-SrcCodeSetup CZL"
 {
@@ -28,6 +28,7 @@ codeunit 31192 "Sync.Dep.Fld-SrcCodeSetup CZL"
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
 
+#if not CLEAN17
         DepFieldTxt := Rec."Sales VAT Delay";
         NewFieldTxt := Rec."Sales VAT Delay CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Sales VAT Delay", PreviousRecord."Sales VAT Delay CZL");
@@ -38,6 +39,17 @@ codeunit 31192 "Sync.Dep.Fld-SrcCodeSetup CZL"
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Purchase VAT Delay", PreviousRecord."Purchase VAT Delay CZL");
         Rec."Purchase VAT Delay" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Purchase VAT Delay"));
         Rec."Purchase VAT Delay CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Purchase VAT Delay CZL"));
+#endif
+        DepFieldTxt := Rec."Close Balance Sheet";
+        NewFieldTxt := Rec."Close Balance Sheet CZL";
+        SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Close Balance Sheet", PreviousRecord."Close Balance Sheet CZL");
+        Rec."Close Balance Sheet" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Close Balance Sheet"));
+        Rec."Close Balance Sheet CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Close Balance Sheet CZL"));
+        DepFieldTxt := Rec."Open Balance Sheet";
+        NewFieldTxt := Rec."Open Balance Sheet CZL";
+        SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Open Balance Sheet", PreviousRecord."Open Balance Sheet CZL");
+        Rec."Open Balance Sheet" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Open Balance Sheet"));
+        Rec."Open Balance Sheet CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Open Balance Sheet CZL"));
     end;
 }
 #endif

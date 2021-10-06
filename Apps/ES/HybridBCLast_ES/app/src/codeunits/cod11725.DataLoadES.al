@@ -25,7 +25,12 @@ codeunit 11725 "Data Load ES"
         ReportSelections: Record "Report Selections";
         StgReportSelections: Record "Stg Report Selections";
         W1DataLoad: Codeunit "W1 Data Load";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetUpdateReportSelectionsTag()) then
+            exit;
+
         StgReportSelections.SetRange(Usage, 100);
         if StgReportSelections.FindSet(false, false) then
             repeat
@@ -48,6 +53,7 @@ codeunit 11725 "Data Load ES"
         W1DataLoad.OnAfterCompanyTableLoad(StgReportSelections.RecordId().TableNo(), HybridReplicationSummary."Synced Version");
         StgReportSelections.Reset();
         StgReportSelections.DeleteAll();
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetUpdateReportSelectionsTag());
     end;
 
     local procedure MoveCertificateToIsolatedCertificate(HybridReplicationSummary: Record "Hybrid Replication Summary")
@@ -55,6 +61,8 @@ codeunit 11725 "Data Load ES"
         SIISetup: Record "SII Setup";
         StgSIISetup: Record "Stg SII Setup";
         IsolatedCertificate: Record "Isolated Certificate";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
         TempBlob: Codeunit "Temp Blob";
         CertificateManagement: Codeunit "Certificate Management";
         W1DataLoad: Codeunit "W1 Data Load";
@@ -63,6 +71,9 @@ codeunit 11725 "Data Load ES"
         // This code is based on app upgrade logic for ES.
         // Matching file: .\App\Layers\ES\BaseApp\Upgrade\UPGSIICertificate.Codeunit.al
         // Based on commit: 2c1c901e
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetUpdateSIICertificateTag()) then
+            exit;
+
         if StgSIISetup.FindFirst() and SIISetup.FindFirst() then begin
             StgSIISetup.Calcfields(Certificate);
             MoveCertificate := (StgSIISetup.Certificate.HasValue()) and (SIISetup."Certificate Code" = '');
@@ -82,5 +93,7 @@ codeunit 11725 "Data Load ES"
 
         W1DataLoad.OnAfterCompanyTableLoad(StgSIISetup.RecordId().TableNo(), HybridReplicationSummary."Synced Version");
         StgSIISetup.DeleteAll();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetUpdateSIICertificateTag());
     end;
 }

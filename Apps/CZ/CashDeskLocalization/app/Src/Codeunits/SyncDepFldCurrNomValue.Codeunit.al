@@ -56,7 +56,8 @@ codeunit 31127 "Sync.Dep.Fld-CurrNomValue CZP"
             CurrencyNominalValueCZP.Init();
             CurrencyNominalValueCZP."Currency Code" := Rec."Currency Code";
             CurrencyNominalValueCZP."Nominal Value" := Rec.Value;
-            CurrencyNominalValueCZP.Insert(false);
+            CurrencyNominalValueCZP.SystemId := Rec.SystemId;
+            CurrencyNominalValueCZP.Insert(false, true);
         end;
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Currency Nominal Value CZP");
     end;
@@ -128,7 +129,8 @@ codeunit 31127 "Sync.Dep.Fld-CurrNomValue CZP"
             CurrencyNominalValue.Init();
             CurrencyNominalValue."Currency Code" := Rec."Currency Code";
             CurrencyNominalValue.Value := Rec."Nominal Value";
-            CurrencyNominalValue.Insert(false);
+            CurrencyNominalValue.SystemId := Rec.SystemId;
+            CurrencyNominalValue.Insert(false, true);
         end;
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Currency Nominal Value");
     end;

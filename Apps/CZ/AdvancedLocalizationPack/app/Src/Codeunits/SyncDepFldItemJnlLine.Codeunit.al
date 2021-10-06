@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AA0072
+#if not CLEAN18
+#pragma warning disable AL0432, AA0072
 codeunit 31285 "Sync.Dep.Fld-ItemJnlLine CZA"
 {
     Access = Internal;
@@ -38,3 +39,4 @@ codeunit 31285 "Sync.Dep.Fld-ItemJnlLine CZA"
         SyncDepFldUtilities.SyncFields(Rec."Currency Factor", Rec."Currency Factor CZA", PreviousRecord."Currency Factor", PreviousRecord."Currency Factor CZA");
     end;
 }
+#endif

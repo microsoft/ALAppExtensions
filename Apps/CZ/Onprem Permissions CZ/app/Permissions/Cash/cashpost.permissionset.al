@@ -1,3 +1,4 @@
+#if not CLEAN18
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -13,6 +14,9 @@ permissionset 11704 "CASH-POST"
     ObsoleteReason = 'Moved to Cash Desk Localization for Czech.';
     ObsoleteTag = '18.0';
 
+#if CLEAN17
+    Permissions = tabledata "Company Information" = R;
+#else
     Permissions = tabledata "Cash Desk Event" = R,
                   tabledata "Cash Desk Report Selections" = R,
                   tabledata "Cash Desk User" = R,
@@ -21,4 +25,6 @@ permissionset 11704 "CASH-POST"
                   tabledata "Currency Nominal Value" = R,
                   tabledata "Posted Cash Document Header" = RI,
                   tabledata "Posted Cash Document Line" = RI;
+#endif
 }
+#endif

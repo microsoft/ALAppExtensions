@@ -55,7 +55,8 @@ codeunit 31176 "Sync.Dep.Fld-VatPeriod CZL"
         if not VATPeriodCZL.Get(Rec."Starting Date") then begin
             VATPeriodCZL.Init();
             VATPeriodCZL."Starting Date" := Rec."Starting Date";
-            VATPeriodCZL.Insert(false);
+            VATPeriodCZL.SystemId := Rec.SystemId;
+            VATPeriodCZL.Insert(false, true);
         end;
         VATPeriodCZL.Name := Rec.Name;
         VATPeriodCZL."New VAT Year" := Rec."New VAT Year";
@@ -130,7 +131,8 @@ codeunit 31176 "Sync.Dep.Fld-VatPeriod CZL"
         if not VATPeriod.Get(Rec."Starting Date") then begin
             VATPeriod.Init();
             VATPeriod."Starting Date" := Rec."Starting Date";
-            VATPeriod.Insert(false);
+            VATPeriod.SystemId := Rec.SystemId;
+            VATPeriod.Insert(false, true);
         end;
         VATPeriod.Name := Rec.Name;
         VATPeriod."New VAT Year" := Rec."New VAT Year";

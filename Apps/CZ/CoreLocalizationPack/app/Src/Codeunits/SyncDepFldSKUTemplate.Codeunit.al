@@ -56,7 +56,8 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
             StockkeepingUnitTemplateCZL.Init();
             StockkeepingUnitTemplateCZL."Item Category Code" := Rec."Item Category Code";
             StockkeepingUnitTemplateCZL."Location Code" := Rec."Location Code";
-            StockkeepingUnitTemplateCZL.Insert(false);
+            StockkeepingUnitTemplateCZL.SystemId := Rec.SystemId;
+            StockkeepingUnitTemplateCZL.Insert(false, true);
         end;
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template CZL");
     end;
@@ -128,7 +129,8 @@ codeunit 31143 "Sync.Dep.Fld-SKUTemplate CZL"
             StockkeepingUnitTemplate.Init();
             StockkeepingUnitTemplate."Item Category Code" := Rec."Item Category Code";
             StockkeepingUnitTemplate."Location Code" := Rec."Location Code";
-            StockkeepingUnitTemplate.Insert(false);
+            StockkeepingUnitTemplate.SystemId := Rec.SystemId;
+            StockkeepingUnitTemplate.Insert(false, true);
         end;
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Stockkeeping Unit Template");
     end;

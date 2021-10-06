@@ -2,45 +2,81 @@
 codeunit 31107 "Upgrade Application CZP"
 {
     Subtype = Upgrade;
+    Permissions = tabledata "Cash Desk User CZP" = m,
+                  tabledata "Cash Desk Event CZP" = m,
+                  tabledata "Cash Document Line CZP" = m,
+                  tabledata "Posted Cash Document Hdr. CZP" = m,
+                  tabledata "Posted Cash Document Line CZP" = m;
 
     var
         DataUpgradeMgt: Codeunit "Data Upgrade Mgt.";
         UpgradeTag: Codeunit "Upgrade Tag";
         UpgradeTagDefinitionsCZP: Codeunit "Upgrade Tag Definitions CZP";
+        InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
+        AppInfo: ModuleInfo;
 
     trigger OnUpgradePerDatabase()
     begin
         DataUpgradeMgt.SetUpgradeInProgress();
-
-        UpdatePermission();
-
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion173PerDatabaseUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion173PerDatabaseUpgradeTag());
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerDatabaseUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerDatabaseUpgradeTag());
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion180PerDatabaseUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion180PerDatabaseUpgradeTag());
+        UpgradePermission();
+        SetDatabaseUpgradeTags();
     end;
 
     trigger OnUpgradePerCompany()
     begin
         DataUpgradeMgt.SetUpgradeInProgress();
-
-        UpdateCashDeskEvent();
-        UpdateCashDeskUser();
-        UpdateCashDocumentLine();
-        UpdatePostedCashDocumentHeader();
-        UpdatePostedCashDocumentLine();
-
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion173PerCompanyUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion173PerCompanyUpgradeTag());
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerCompanyUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerCompanyUpgradeTag());
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion180PerCompanyUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion180PerCompanyUpgradeTag());
+        BindSubscription(InstallApplicationsMgtCZL);
+        UpgradeUsage();
+        UpgradeData();
+        UnbindSubscription(InstallApplicationsMgtCZL);
+        SetCompanyUpgradeTags();
     end;
 
-    local procedure UpdateCashDeskUser();
+    local procedure UpgradePermission()
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerDatabaseUpgradeTag()) then
+            exit;
+
+        NavApp.GetCurrentModuleInfo(AppInfo);
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Cash Document Header", Database::"Cash Document Header CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Cash Document Line", Database::"Cash Document Line CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Posted Cash Document Header", Database::"Posted Cash Document Hdr. CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Posted Cash Document Line", Database::"Posted Cash Document Line CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Currency Nominal Value", Database::"Currency Nominal Value CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Bank Account", Database::"Cash Desk CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Cash Desk User", Database::"Cash Desk User CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Cash Desk Event", Database::"Cash Desk Event CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Cash Desk Cue", Database::"Cash Desk Cue CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Cash Desk Report Selections", Database::"Cash Desk Rep. Selections CZP");
+    end;
+
+    local procedure UpgradeUsage()
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerDatabaseUpgradeTag()) then
+            exit;
+
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Cash Document Header", Database::"Cash Document Header CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Cash Document Line", Database::"Cash Document Line CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Posted Cash Document Header", Database::"Posted Cash Document Hdr. CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Posted Cash Document Line", Database::"Posted Cash Document Line CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Currency Nominal Value", Database::"Currency Nominal Value CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Bank Account", Database::"Cash Desk CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Cash Desk User", Database::"Cash Desk User CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Cash Desk Event", Database::"Cash Desk Event CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Cash Desk Cue", Database::"Cash Desk Cue CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Cash Desk Report Selections", Database::"Cash Desk Rep. Selections CZP");
+    end;
+
+    local procedure UpgradeData()
+    begin
+        UpgradeCashDeskEvent();
+        UpgradeCashDeskUser();
+        UpgradeCashDocumentLine();
+        UpgradePostedCashDocumentHeader();
+        UpgradePostedCashDocumentLine();
+    end;
+
+    local procedure UpgradeCashDeskUser();
     var
         CashDeskUser: Record "Cash Desk User";
         CashDeskUserCZP: Record "Cash Desk User CZP";
@@ -57,7 +93,7 @@ codeunit 31107 "Upgrade Application CZP"
             until CashDeskUser.Next() = 0;
     end;
 
-    local procedure UpdateCashDeskEvent();
+    local procedure UpgradeCashDeskEvent();
     var
         CashDeskEvent: Record "Cash Desk Event";
         CashDeskEventCZP: Record "Cash Desk Event CZP";
@@ -74,7 +110,7 @@ codeunit 31107 "Upgrade Application CZP"
             until CashDeskEvent.Next() = 0;
     end;
 
-    local procedure UpdateCashDocumentLine();
+    local procedure UpgradeCashDocumentLine();
     var
         CashDocumentLine: Record "Cash Document Line";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
@@ -100,7 +136,7 @@ codeunit 31107 "Upgrade Application CZP"
             until CashDocumentLine.Next() = 0;
     end;
 
-    local procedure UpdatePostedCashDocumentHeader();
+    local procedure UpgradePostedCashDocumentHeader();
     var
         PostedCashDocumentHeader: Record "Posted Cash Document Header";
         PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
@@ -117,7 +153,7 @@ codeunit 31107 "Upgrade Application CZP"
             until PostedCashDocumentHeader.Next() = 0;
     end;
 
-    local procedure UpdatePostedCashDocumentLine();
+    local procedure UpgradePostedCashDocumentLine();
     var
         PostedCashDocumentLine: Record "Posted Cash Document Line";
         PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
@@ -134,39 +170,23 @@ codeunit 31107 "Upgrade Application CZP"
             until PostedCashDocumentLine.Next() = 0;
     end;
 
-    local procedure UpdatePermission()
+    local procedure SetDatabaseUpgradeTags();
     begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerDatabaseUpgradeTag()) then
-            exit;
-
-        InsertTableDataPermissions(Database::"Cash Document Header", Database::"Cash Document Header CZP");
-        InsertTableDataPermissions(Database::"Cash Document Line", Database::"Cash Document Line CZP");
-        InsertTableDataPermissions(Database::"Posted Cash Document Header", Database::"Posted Cash Document Hdr. CZP");
-        InsertTableDataPermissions(Database::"Posted Cash Document Line", Database::"Posted Cash Document Line CZP");
-        InsertTableDataPermissions(Database::"Currency Nominal Value", Database::"Currency Nominal Value CZP");
-        InsertTableDataPermissions(Database::"Bank Account", Database::"Cash Desk CZP");
-        InsertTableDataPermissions(Database::"Cash Desk User", Database::"Cash Desk User CZP");
-        InsertTableDataPermissions(Database::"Cash Desk Event", Database::"Cash Desk Event CZP");
-        InsertTableDataPermissions(Database::"Cash Desk Cue", Database::"Cash Desk Cue CZP");
-        InsertTableDataPermissions(Database::"Cash Desk Report Selections", Database::"Cash Desk Rep. Selections CZP");
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion173PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion173PerDatabaseUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerDatabaseUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion180PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion180PerDatabaseUpgradeTag());
     end;
 
-    local procedure InsertTableDataPermissions(OldTableID: Integer; NewTableID: Integer)
-    var
-        Permission: Record Permission;
-        NewPermission: Record Permission;
+    local procedure SetCompanyUpgradeTags();
     begin
-        Permission.SetRange("Object Type", Permission."Object Type"::"Table Data");
-        Permission.SetRange("Object ID", OldTableID);
-        if not Permission.FindSet() then
-            exit;
-        repeat
-            if not NewPermission.Get(Permission."Role ID", Permission."Object Type", Permission."Object ID") then begin
-                NewPermission.Init();
-                NewPermission := Permission;
-                NewPermission."Object ID" := NewTableID;
-                NewPermission.Insert();
-            end;
-        until Permission.Next() = 0;
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion173PerCompanyUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion173PerCompanyUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerCompanyUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerCompanyUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion180PerCompanyUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion180PerCompanyUpgradeTag());
     end;
 }

@@ -61,16 +61,23 @@ table 1450 "MS - Yodlee Bank Service Setup"
         {
 
             trigger OnValidate();
+            var
+                CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
             begin
-                TESTFIELD("Bank Feed Import Format");
-                IF NOT MSYodleeServiceMgt.HasCustomCredentialsInAzureKeyVault() THEN BEGIN
-                    HasCobrandEnvironmentName("Cobrand Environment Name");
-                    HasCobrandName("Cobrand Name");
-                    HasCobrandPassword("Cobrand Password");
-                    TESTFIELD("Service URL");
-                    TESTFIELD("Bank Acc. Linking URL");
-                END;
-                TESTFIELD("User Profile Email Address");
+                if not xRec."Enabled" and Rec."Enabled" then
+                    Rec."Enabled" := CustomerConsentMgt.ConfirmUserConsent();
+
+                if Rec.Enabled then begin
+                    TESTFIELD("Bank Feed Import Format");
+                    IF NOT MSYodleeServiceMgt.HasCustomCredentialsInAzureKeyVault() THEN BEGIN
+                        HasCobrandEnvironmentName("Cobrand Environment Name");
+                        HasCobrandName("Cobrand Name");
+                        HasCobrandPassword("Cobrand Password");
+                        TESTFIELD("Service URL");
+                        TESTFIELD("Bank Acc. Linking URL");
+                    END;
+                    TESTFIELD("User Profile Email Address");
+                end;
             end;
         }
         field(21; "Log Web Requests"; Boolean)
@@ -213,6 +220,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
         EXIT('');
     end;
 
+    [NonDebuggable]
     procedure GetCobrandPassword(PasswordKey: Guid): Text;
     var
         CompanyInformationMgt: Codeunit "Company Information Mgt.";
@@ -248,6 +256,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
         EXIT('');
     end;
 
+    [NonDebuggable]
     procedure GetPassword(PasswordKey: Guid): Text;
     var
         PasswordValue: Text;
@@ -266,6 +275,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
             IsolatedStorage.Delete(PasswordKey, DataScope::Company);
     end;
 
+    [NonDebuggable]
     procedure HasPassword(PasswordKey: Guid): Boolean;
     var
         PasswordValue: Text;
@@ -286,6 +296,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
         EXIT(GetCobrandName(NameKey) <> '');
     end;
 
+    [NonDebuggable]
     procedure HasCobrandPassword(PasswordKey: Guid): Boolean;
     begin
         EXIT(GetCobrandPassword(PasswordKey) <> '');

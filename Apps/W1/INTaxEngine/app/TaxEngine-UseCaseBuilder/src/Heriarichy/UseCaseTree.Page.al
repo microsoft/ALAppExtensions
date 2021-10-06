@@ -148,6 +148,20 @@ page 20298 "Use Case Tree"
                     RunPageOnRec = true;
                     ToolTip = 'Indent nodes between a Begin and the matching End one level to make the list easier to read.';
                 }
+                action("ImportUseCaseFromLibrary")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Import Use Case from Library';
+                    Image = Indent;
+                    ToolTip = 'Imports the Use Case from the set of library of use cases.';
+                    trigger OnAction()
+                    var
+                        UseCaseExecution: Codeunit "Use Case Execution";
+                    begin
+                        UseCaseExecution.OnImportUseCaseOnDemand(Rec."Tax Type", Rec."Use Case ID");
+                        CurrPage.Update(true);
+                    end;
+                }
                 action("Export Nodes")
                 {
                     ApplicationArea = Basic, Suite;
@@ -204,6 +218,7 @@ page 20298 "Use Case Tree"
         ObjectIDNotFoundErr: Label 'Error : Table ID %1 not found', Comment = '%1=Table Id';
         ConditionLbl: Label 'Condition : %1', Comment = '%1 = condtion as text';
         ExitMsg: Label 'Always';
+        UseCaseNotImportedLbl: Label 'Use case is not Imported.';
 
     local procedure FormatLine()
     var
@@ -224,8 +239,10 @@ page 20298 "Use Case Tree"
             TaxEntityName := '';
 
         if Rec."Use Case ID" <> EmptyGuid then begin
-            UseCase.Get(Rec."Use Case ID");
-            UseCaseName := UseCase.Description;
+            if UseCase.Get(Rec."Use Case ID") then
+                UseCaseName := UseCase.Description
+            else
+                UseCaseName := UseCaseNotImportedLbl;
         end else
             UseCaseName := '';
     end;

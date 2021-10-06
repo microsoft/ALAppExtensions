@@ -41,6 +41,9 @@ codeunit 1073 "MS - PayPal Webhook Management"
         AccountID: Text[250];
         BackgroundSessionAllowed: Boolean;
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         Session.LogMessage('00008IP', ProcessingWebhookNotificationTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
 
         AccountID := LOWERCASE(Rec."Subscription ID");

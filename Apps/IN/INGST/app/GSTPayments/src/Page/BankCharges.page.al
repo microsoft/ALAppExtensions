@@ -73,9 +73,9 @@ page 18244 "Bank Charges"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                 begin
-                    ODataUtility.EditWorksheetInExcel(
+                    EditinExcel.EditPageInExcel(
                         'Bank Charges',
                         CurrPage.ObjectId(false),
                         StrSubstNo(BankChargeMsg, Rec."Code"));

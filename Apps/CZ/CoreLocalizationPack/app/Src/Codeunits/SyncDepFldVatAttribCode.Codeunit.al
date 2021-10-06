@@ -56,7 +56,8 @@ codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
             VATAttributeCodeCZL.Init();
             VATAttributeCodeCZL."VAT Statement Template Name" := Rec."VAT Statement Template Name";
             VATAttributeCodeCZL."Code" := Rec."Code";
-            VATAttributeCodeCZL.Insert(false);
+            VATAttributeCodeCZL.SystemId := Rec.SystemId;
+            VATAttributeCodeCZL.Insert(false, true);
         end;
         VATAttributeCodeCZL.Description := Rec.Description;
         VATAttributeCodeCZL."XML Code" := Rec."XML Code";
@@ -131,7 +132,8 @@ codeunit 31185 "Sync.Dep.Fld-VatAttribCode CZL"
             VATAttributeCode.Init();
             VATAttributeCode."VAT Statement Template Name" := Rec."VAT Statement Template Name";
             VATAttributeCode."Code" := Rec."Code";
-            VATAttributeCode.Insert(false);
+            VATAttributeCode.SystemId := Rec.SystemId;
+            VATAttributeCode.Insert(false, true);
         end;
         VATAttributeCode.Description := CopyStr(Rec.Description, 1, MaxStrLen(VATAttributeCode.Description));
         VATAttributeCode."XML Code" := Rec."XML Code";

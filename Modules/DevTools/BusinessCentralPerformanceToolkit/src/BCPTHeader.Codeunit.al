@@ -46,6 +46,9 @@ codeunit 149004 "BCPT Header"
         BCPTLine: Record "BCPT Line";
         BCPTLogEntry: Record "BCPT Log Entry";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         BCPTLine.SetRange("BCPT Code", Rec."Code");
         BCPTLine.DeleteAll(true);
 

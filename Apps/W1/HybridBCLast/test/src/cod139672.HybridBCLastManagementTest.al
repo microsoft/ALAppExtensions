@@ -121,65 +121,70 @@ codeunit 139672 "Hybrid BC Last Management Test"
         // [WHEN] A call to get upgrade versions is called
         W1Management.GetSupportedUpgradeVersions(TargetVersions);
 
-        // [THEN] The 15.0, 16.0 and 17.0 target upgrade versions are returned
+        // [THEN] The 15.0, 16.0, 17.0, 18.0 and 19.0 target upgrade versions are returned
         Assert.IsTrue(TargetVersions.Contains(15.0), '15.0 not returned as target version');
         Assert.IsTrue(TargetVersions.Contains(16.0), '16.0 not returned as target version');
         Assert.IsTrue(TargetVersions.Contains(17.0), '17.0 not returned as target version');
         Assert.IsTrue(TargetVersions.Contains(18.0), '18.0 not returned as target version');
-        Assert.AreEqual(4, TargetVersions.Count(), 'Incorrect number of target versions returned.');
+        Assert.IsTrue(TargetVersions.Contains(19.0), '19.0 not returned as target version');
+        Assert.AreEqual(5, TargetVersions.Count(), 'Incorrect number of target versions returned.');
 
         // [GIVEN] Migration is set up with BC 14.9 as source
-        TargetVersions.RemoveRange(1, 4);
+        TargetVersions.RemoveRange(1, 5);
         Initialize(14.0);
 
         // [WHEN] A call to get upgrade versions is called
         W1Management.GetSupportedUpgradeVersions(TargetVersions);
 
-        // [THEN] The 15.0, 16.0, 17.0 and 18.0 target upgrade versions are returned
+        // [THEN] The 15.0, 16.0, 17.0, 18.0 and 19.0 target upgrade versions are returned
         Assert.IsTrue(TargetVersions.Contains(15.0), '15.0 not returned as target version');
         Assert.IsTrue(TargetVersions.Contains(16.0), '16.0 not returned as target version');
         Assert.IsTrue(TargetVersions.Contains(17.0), '17.0 not returned as target version');
         Assert.IsTrue(TargetVersions.Contains(18.0), '18.0 not returned as target version');
-        Assert.AreEqual(4, TargetVersions.Count(), 'Incorrect number of target versions returned.');
+        Assert.IsTrue(TargetVersions.Contains(19.0), '19.0 not returned as target version');
+        Assert.AreEqual(5, TargetVersions.Count(), 'Incorrect number of target versions returned.');
 
         // [GIVEN] Migration is set up with BC 15.0 as source
-        TargetVersions.RemoveRange(1, 4);
+        TargetVersions.RemoveRange(1, 5);
         Initialize(15.0);
 
         // [WHEN] A call to get upgrade versions is called
         W1Management.GetSupportedUpgradeVersions(TargetVersions);
 
-        // [THEN] Only 16.0, 17.0 and 18.0target upgrade versions are returned
+        // [THEN] The 16.0, 17.0, 18.0 and 19.0 target upgrade versions are returned
         Assert.IsTrue(TargetVersions.Contains(16.0), '16.0 not returned as target version');
         Assert.IsTrue(TargetVersions.Contains(17.0), '17.0 not returned as target version');
         Assert.IsTrue(TargetVersions.Contains(18.0), '18.0 not returned as target version');
-        Assert.AreEqual(3, TargetVersions.Count(), 'Incorrect number of target versions returned.');
+        Assert.IsTrue(TargetVersions.Contains(19.0), '19.0 not returned as target version');
+        Assert.AreEqual(4, TargetVersions.Count(), 'Incorrect number of target versions returned.');
 
         // [GIVEN] Migration is set up with BC 15.6 as source
-        TargetVersions.RemoveRange(1, 3);
+        TargetVersions.RemoveRange(1, 4);
         Initialize(15.6);
 
         // [WHEN] A call to get upgrade versions is called
         W1Management.GetSupportedUpgradeVersions(TargetVersions);
 
-        // [THEN] Only 16.0, 17.0 and 18.0 target upgrade versions are returned
+        // [THEN] The 16.0, 17.0, 18.0 and 19.0 target upgrade versions are returned
         Assert.IsTrue(TargetVersions.Contains(16.0), '16.0 not returned as target version');
         Assert.IsTrue(TargetVersions.Contains(17.0), '17.0 not returned as target version');
         Assert.IsTrue(TargetVersions.Contains(18.0), '18.0 not returned as target version');
-        Assert.AreEqual(3, TargetVersions.Count(), 'Incorrect number of target versions returned.');
+        Assert.IsTrue(TargetVersions.Contains(19.0), '19.0 not returned as target version');
+        Assert.AreEqual(4, TargetVersions.Count(), 'Incorrect number of target versions returned.');
 
         // [GIVEN] Migration is set up with BC 16.0 as source
-        TargetVersions.RemoveRange(1, 3);
+        TargetVersions.RemoveRange(1, 4);
         Initialize(16.0);
 
         // [WHEN] A call to get upgrade versions is called
         W1Management.GetSupportedUpgradeVersions(TargetVersions);
 
-        // [THEN] Only 17.0 and 18.0 target upgrade versions are returned
+        // [THEN] The 17.0, 18.0 and 19.0 target upgrade versions are returned
         Assert.IsTrue(TargetVersions.Contains(17.0), '17.0 not returned as target version');
         Assert.IsTrue(TargetVersions.Contains(18.0), '18.0 not returned as target version');
-        Assert.AreEqual(2, TargetVersions.Count(), 'Incorrect number of target versions returned.');
-        TargetVersions.RemoveRange(1, 2);
+        Assert.IsTrue(TargetVersions.Contains(19.0), '19.0 not returned as target version');
+        Assert.AreEqual(3, TargetVersions.Count(), 'Incorrect number of target versions returned.');
+        TargetVersions.RemoveRange(1, 3);
 
         // [GIVEN] Migration is set up with BC 17.0 as source
         Initialize(17.0);
@@ -187,13 +192,25 @@ codeunit 139672 "Hybrid BC Last Management Test"
         // [WHEN] A call to get upgrade versions is called
         W1Management.GetSupportedUpgradeVersions(TargetVersions);
 
-        // [THEN] Only 18.0 target upgrade version is returned
+        // [THEN] The 18.0 and 19.0 target upgrade versions are returned
         Assert.IsTrue(TargetVersions.Contains(18.0), '18.0 not returned as target version');
+        Assert.IsTrue(TargetVersions.Contains(19.0), '19.0 not returned as target version');
+        Assert.AreEqual(2, TargetVersions.Count(), 'Incorrect number of target versions returned.');
+        TargetVersions.RemoveRange(1, 2);
+
+        // [GIVEN] Migration is set up with BC 18.0 as source
+        Initialize(18.0);
+
+        // [WHEN] A call to get upgrade versions is called
+        W1Management.GetSupportedUpgradeVersions(TargetVersions);
+
+        // [THEN] Only 19.0 target upgrade version is returned
+        Assert.IsTrue(TargetVersions.Contains(19.0), '19.0 not returned as target version');
         Assert.AreEqual(1, TargetVersions.Count(), 'Incorrect number of target versions returned.');
         TargetVersions.RemoveRange(1, 1);
 
         // [GIVEN] Migration is set up with BC 18.0 as source
-        Initialize(18.0);
+        Initialize(19.0);
 
         // [WHEN] A call to get upgrade versions is called
         W1Management.GetSupportedUpgradeVersions(TargetVersions);
@@ -211,6 +228,7 @@ codeunit 139672 "Hybrid BC Last Management Test"
         // [SCENARIO] Upgrade paths are completed in the correct order: Upgrade in place, Transform, then Load Data from staging
         Initialize(14.3);
         HybridReplicationSummary.Init();
+        HybridReplicationSummary.Insert();
 
         // [WHEN] The company upgrade is triggered
         W1CompanyHandler.Run(HybridReplicationSummary);
@@ -219,7 +237,8 @@ codeunit 139672 "Hybrid BC Last Management Test"
         LibraryHybridBCLast.VerifyEventOrder(15.0, false); // 15x upgrade
         LibraryHybridBCLast.VerifyEventOrder(16.0, false); // 16x upgrade
         LibraryHybridBCLast.VerifyEventOrder(17.0, false); // 17x upgrade
-        LibraryHybridBCLast.VerifyEventOrder(18.0, true); // 18x upgrade
+        LibraryHybridBCLast.VerifyEventOrder(18.0, false); // 18x upgrade
+        LibraryHybridBCLast.VerifyEventOrder(19.0, true); // 19x upgrade
     end;
 
     [Test]
@@ -231,6 +250,7 @@ codeunit 139672 "Hybrid BC Last Management Test"
         // [SCENARIO] Upgrade paths are completed in the correct order: Upgrade in place, Transform, then Load Data from staging
         Initialize(15.4);
         HybridReplicationSummary.Init();
+        HybridReplicationSummary.Insert();
 
         // [WHEN] The company upgrade is triggered
         W1CompanyHandler.Run(HybridReplicationSummary);
@@ -238,7 +258,8 @@ codeunit 139672 "Hybrid BC Last Management Test"
         // [THEN] The upgrade events are called in the correct order.
         LibraryHybridBCLast.VerifyEventOrder(16.0, false); // 16x upgrade
         LibraryHybridBCLast.VerifyEventOrder(17.0, false); // 17x upgrade
-        LibraryHybridBCLast.VerifyEventOrder(18.0, true); // 18x upgrade
+        LibraryHybridBCLast.VerifyEventOrder(18.0, false); // 18x upgrade
+        LibraryHybridBCLast.VerifyEventOrder(19.0, true); // 19x upgrade
     end;
 
     [Test]
@@ -250,19 +271,23 @@ codeunit 139672 "Hybrid BC Last Management Test"
         // [SCENARIO] Upgrade paths are completed in the correct order: Upgrade in place, Transform, then Load Data from staging
         Initialize(16.5);
         HybridReplicationSummary.Init();
+        HybridReplicationSummary.Insert();
 
         // [WHEN] The company upgrade is triggered
         W1CompanyHandler.Run(HybridReplicationSummary);
 
         // [THEN] The upgrade events are called in the correct order.
         LibraryHybridBCLast.VerifyEventOrder(17.0, false); // 17x upgrade
-        LibraryHybridBCLast.VerifyEventOrder(18.0, true); // 18x upgrade
+        LibraryHybridBCLast.VerifyEventOrder(18.0, false); // 18x upgrade
+        LibraryHybridBCLast.VerifyEventOrder(19.0, true); // 19x upgrade
     end;
 
     local procedure Initialize(BCVersion: Decimal)
     var
         HybridBCLastSetup: Record "Hybrid BC Last Setup";
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        HybridCompanyStatus: Record "Hybrid Company Status";
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
     begin
         LibraryHybridBCLast.ClearGlobalVariables();
 
@@ -271,6 +296,12 @@ codeunit 139672 "Hybrid BC Last Management Test"
             IntelligentCloudSetup.Insert();
         end;
 
+        HybridReplicationSummary.DeleteAll();
+        HybridCompanyStatus.DeleteAll();
+        HybridCompanyStatus.Name := CompanyName();
+        HybridCompanyStatus.Replicated := true;
+        HybridCompanyStatus."Upgrade Status" := HybridCompanyStatus."Upgrade Status"::Pending;
+        HybridCompanyStatus.Insert();
         IntelligentCloudSetup."Source BC Version" := BCVersion;
         IntelligentCloudSetup.Modify();
 

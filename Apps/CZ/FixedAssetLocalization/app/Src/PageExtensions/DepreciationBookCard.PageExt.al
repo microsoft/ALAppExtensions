@@ -39,6 +39,11 @@ pageextension 31145 "Depreciation Book Card CZF" extends "Depreciation Book Card
                 ApplicationArea = FixedAssets;
                 ToolTip = 'Specifies if disposal the same type of FA entries will be used.';
             }
+            field("Mark Errors as Corrections CZF"; Rec."Mark Errors as Corrections")
+            {
+                ApplicationArea = FixedAssets;
+                ToolTip = 'Specifies if the correction will be posted on the same side of account (credit, debit).';
+            }
         }
     }
 }

@@ -50,6 +50,7 @@ codeunit 4015 "Hybrid GP Wizard"
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         JsonManagement: Codeunit "JSON Management";
         ServiceType: Text;
+        SesssionID: Integer;
     begin
         if HybridCloudManagement.CanHandleNotification(SubscriptionId, ProductIdTxt) then begin
             // Do not process migration data for a diagnostic run since there should be none
@@ -65,13 +66,19 @@ codeunit 4015 "Hybrid GP Wizard"
                         HybridCompany.SetRange(Replicate, true);
                         if HybridCompany.FindSet() then
                             repeat
-                                TaskScheduler.CreateTask(
-                                    Codeunit::"GP Cloud Migration", 0, true, HybridCompany."Name", CurrentDateTime() + 5000);
+                                if TaskScheduler.CanCreateTask() then
+                                    TaskScheduler.CreateTask(
+                                        Codeunit::"GP Cloud Migration", 0, true, HybridCompany.Name, CurrentDateTime() + 5000)
+                                else
+                                    Session.StartSession(SesssionID, Codeunit::"GP Cloud Migration", HybridCompany.Name)
                             until HybridCompany.Next() = 0;
                     end;
                 else
-                    TaskScheduler.CreateTask(
-                        Codeunit::"Install GP SmartLists", 0, true, CompanyName(), CurrentDateTime() + 1000);
+                    if not TaskScheduler.CanCreateTask() then
+                        TaskScheduler.CreateTask(
+                            Codeunit::"Install GP SmartLists", 0, true, CompanyName(), CurrentDateTime() + 1000)
+                    else
+                        Session.StartSession(SesssionID, Codeunit::"Install GP SmartLists", CompanyName())
             end;
         end;
     end;

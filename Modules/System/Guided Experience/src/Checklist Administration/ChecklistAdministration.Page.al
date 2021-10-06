@@ -54,8 +54,8 @@ page 1992 "Checklist Administration"
             group("Object to Run")
             {
                 Visible = (Code <> '') and (Code <> '0')
-                    and (("Guided Experience Type" = "Guided Experience Type"::"Assisted Setup")
-                    or ("Guided Experience Type" = "Guided Experience Type"::"Manual Setup"));
+                    and ("Object Type to Run" <> "Object Type to Run"::Uninitialized)
+                    and ("Object ID to Run" <> 0);
                 ShowCaption = false;
 
                 field(ObjectCaption; ObjectCaption)
@@ -68,14 +68,41 @@ page 1992 "Checklist Administration"
             }
             group(URL)
             {
-                Visible = (Code <> '') and (Code <> '0') and ("Guided Experience Type" = "Guided Experience Type"::Learn);
+                Visible = (Code <> '') and (Code <> '0') and (Link <> '');
                 ShowCaption = false;
 
                 field(Link; Link)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the link that the checklist item will open.';
+                    Caption = 'Link to open';
                     Editable = false;
+                }
+            }
+            group(VideoURL)
+            {
+                Visible = (Code <> '') and (Code <> '0') and ("Video Url" <> '');
+                ShowCaption = false;
+
+                field("Video Url"; "Video Url")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the URL of the video that the checklist item will open.';
+                    Editable = false;
+                    Caption = 'Video URL';
+                }
+            }
+            group("Spotlight Tour")
+            {
+                Visible = (Code <> '') and (Code <> '0')
+                    and ("Spotlight Tour Type" <> "Spotlight Tour Type"::None);
+
+                field("Spotlight Tour Type"; "Spotlight Tour Type")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the type of spotlight tour that the checklist item will run.';
+                    Editable = false;
+                    Caption = 'Spotlight Tour Type';
                 }
             }
             group("Checklist Item Details")
@@ -120,7 +147,7 @@ page 1992 "Checklist Administration"
             part(Users; "Checklist Item Users")
             {
                 ApplicationArea = All;
-                SubPageLink = Code = field(Code);
+                SubPageLink = Code = field(Code), "Assigned to User" = const(true);
                 Visible = (Code <> '') and (Code <> '0') and ("Completion Requirements" = "Completion Requirements"::"Specific users");
             }
         }

@@ -86,7 +86,7 @@ procedure IsFinancials(): Boolean
 True if the application family is Financials, false otherwise.
 ### IsSaaSInfrastructure (Method) <a name="IsSaaSInfrastructure"></a> 
 
- Checks if the deployment infrastucture is SaaS (Software as a Service). 
+ Checks if the deployment infrastucture is SaaS (Software as a Service).
  Note: This function will return false in a Docker container.
  
 

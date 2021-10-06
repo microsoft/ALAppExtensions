@@ -8,7 +8,7 @@ page 1450 "MS - Yodlee Bank Service Setup"
     PromotedActionCategories = 'New,Process,Report,Page,Encryption,Bank';
     ShowFilter = false;
     SourceTable = "MS - Yodlee Bank Service Setup";
-    UsageCategory = Tasks;
+    UsageCategory = Administration;
     ApplicationArea = Basic, Suite;
 
     layout

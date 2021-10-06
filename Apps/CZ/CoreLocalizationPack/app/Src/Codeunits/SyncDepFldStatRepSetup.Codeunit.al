@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AL0603
+#if not CLEAN18
+#pragma warning disable AL0432, AL0603
 codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
 {
     Permissions = tabledata "Stat. Reporting Setup" = rimd,
@@ -35,8 +36,10 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         if not StatutoryReportingSetupCZL.Get(Rec."Primary Key") then begin
             StatutoryReportingSetupCZL.Init();
             StatutoryReportingSetupCZL."Primary Key" := Rec."Primary Key";
-            StatutoryReportingSetupCZL.Insert(false);
+            StatutoryReportingSetupCZL.SystemId := Rec.SystemId;
+            StatutoryReportingSetupCZL.Insert(false, true);
         end;
+#if not CLEAN17
         StatutoryReportingSetupCZL."Company Trade Name" := Rec."Company Trade Name";
         StatutoryReportingSetupCZL."Company Trade Name Appendix" := Rec."Company Trade Name Appendix";
         StatutoryReportingSetupCZL."Municipality No." := Rec."Municipality No.";
@@ -77,6 +80,7 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         StatutoryReportingSetupCZL."VIES Decl. Auth. Employee No." := Rec."VIES Decl. Auth. Employee No.";
         StatutoryReportingSetupCZL."VIES Decl. Filled Employee No." := Rec."VIES Decl. Filled by Empl. No.";
         StatutoryReportingSetupCZL."VIES Number of Lines" := Rec."VIES Number of Lines";
+#endif
         StatutoryReportingSetupCZL."Transaction Type Mandatory" := Rec."Transaction Type Mandatory";
         StatutoryReportingSetupCZL."Transaction Spec. Mandatory" := Rec."Transaction Spec. Mandatory";
         StatutoryReportingSetupCZL."Transport Method Mandatory" := Rec."Transport Method Mandatory";
@@ -127,8 +131,10 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         if not StatReportingSetup.Get(Rec."Primary Key") then begin
             StatReportingSetup.Init();
             StatReportingSetup."Primary Key" := Rec."Primary Key";
-            StatReportingSetup.Insert(false);
+            StatReportingSetup.SystemId := Rec.SystemId;
+            StatReportingSetup.Insert(false, true);
         end;
+#if not CLEAN17
         StatReportingSetup."Company Trade Name" := Rec."Company Trade Name";
         StatReportingSetup."Company Trade Name Appendix" := Rec."Company Trade Name Appendix";
         StatReportingSetup."Municipality No." := Rec."Municipality No.";
@@ -170,6 +176,7 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         StatReportingSetup."VIES Decl. Auth. Employee No." := Rec."VIES Decl. Auth. Employee No.";
         StatReportingSetup."VIES Decl. Filled by Empl. No." := Rec."VIES Decl. Filled Employee No.";
         StatReportingSetup."VIES Number of Lines" := Rec."VIES Number of Lines";
+#endif
         StatReportingSetup."Transaction Type Mandatory" := Rec."Transaction Type Mandatory";
         StatReportingSetup."Transaction Spec. Mandatory" := Rec."Transaction Spec. Mandatory";
         StatReportingSetup."Transport Method Mandatory" := Rec."Transport Method Mandatory";
@@ -194,8 +201,9 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         CompanyInformation.ChangeCompany(Rec.CurrentCompany);
         if not CompanyInformation.Get() then begin
             CompanyInformation.Init();
-            CompanyInformation.Insert(false);
+            CompanyInformation.Insert();
         end;
+#if not CLEAN17
         CompanyInformation."Primary Business Activity" := Rec."Primary Business Activity";
         CompanyInformation."Court Authority No." := Rec."Court Authority No.";
         CompanyInformation."Tax Authority No." := Rec."Tax Authority No.";
@@ -206,6 +214,7 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         CompanyInformation."Accounting Manager No." := Rec."Accounting Manager No.";
         CompanyInformation."Finance Manager No." := Rec."Finance Manager No.";
         CompanyInformation.Modify(false);
+#endif
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Company Information");
 
         UnbindSubscription(SyncLoopingHelper);
@@ -213,10 +222,12 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         GeneralLedgerSetup.ChangeCompany(Rec.CurrentCompany);
         if not GeneralLedgerSetup.Get() then begin
             GeneralLedgerSetup.Init();
-            GeneralLedgerSetup.Insert(false);
+            GeneralLedgerSetup.Insert();
         end;
+#if not CLEAN17
         GeneralLedgerSetup."Company Officials Nos." := Rec."Company Official Nos.";
         GeneralLedgerSetup.Modify(false);
+#endif
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"General Ledger Setup");
     end;
 
@@ -227,3 +238,4 @@ codeunit 31117 "Sync.Dep.Fld-StatRepSetup CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

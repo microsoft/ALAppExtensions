@@ -52,7 +52,7 @@ table 20336 "Transaction Posting Buffer"
         }
         field(11; "Tax Record ID"; RecordId)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Tax Record ID';
         }
         field(12; "Currency Code"; Code[20])

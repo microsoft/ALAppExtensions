@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AL0603,AA0072
+#if not CLEAN18
+#pragma warning disable AL0432, AL0603, AA0072
 codeunit 31293 "Sync.Dep.Fld-PostCompensLn CZC"
 {
     Access = Internal;
@@ -53,7 +54,8 @@ codeunit 31293 "Sync.Dep.Fld-PostCompensLn CZC"
             PostedCompensationLineCZC.Init();
             PostedCompensationLineCZC."Compensation No." := Rec."Credit No.";
             PostedCompensationLineCZC."Line No." := Rec."Line No.";
-            PostedCompensationLineCZC.Insert(false);
+            PostedCompensationLineCZC.SystemId := Rec.SystemId;
+            PostedCompensationLineCZC.Insert(false, true);
         end;
         PostedCompensationLineCZC."Source Type" := Rec."Source Type";
         PostedCompensationLineCZC."Source No." := Rec."Source No.";
@@ -148,7 +150,8 @@ codeunit 31293 "Sync.Dep.Fld-PostCompensLn CZC"
             PostedCreditLine.Init();
             PostedCreditLine."Credit No." := Rec."Compensation No.";
             PostedCreditLine."Line No." := Rec."Line No.";
-            PostedCreditLine.Insert(false);
+            PostedCreditLine.SystemId := Rec.SystemId;
+            PostedCreditLine.Insert(false, true);
         end;
         PostedCreditLine."Source Type" := Rec."Source Type";
         PostedCreditLine."Source No." := Rec."Source No.";
@@ -202,3 +205,4 @@ codeunit 31293 "Sync.Dep.Fld-PostCompensLn CZC"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

@@ -159,6 +159,7 @@ codeunit 148170 "Elster ERM Batch Reports"
         SalesVATAdvanceNotif.Get(No);
         SalesVATAdvanceNotif.Validate("Incl. VAT Entries (Period)", SalesVATAdvanceNotif."Incl. VAT Entries (Period)"::"Within Period");
         SalesVATAdvanceNotif.Validate("Incl. VAT Entries (Closing)", SalesVATAdvanceNotif."Incl. VAT Entries (Closing)"::"Open and Closed");
+        SalesVATAdvanceNotif.Validate(Period, SalesVATAdvanceNotif.Period::Month);
         SalesVATAdvanceNotif.Modify(true);
         LibraryVariableStorage.Enqueue(SalesVATAdvanceNotif."Starting Date");
         LibraryVariableStorage.Enqueue(SalesVATAdvanceNotif."Incl. VAT Entries (Period)");
@@ -173,6 +174,7 @@ codeunit 148170 "Elster ERM Batch Reports"
 
         // [THEN] Stan can see the following values in the VAT statement preview page
         // [THEN] "Period" = "Within Period", "Selection" = "Open and Close", "Date filter" = "01.01.2020"
+        // TFS ID 404200: A date filter passed to the VAT Statemenet Preview page from the Sales VAT Adv. Notification Card page correctly
         // Verified in VatStatementPreviewVerifyFiltersPageHandler
 
         LibraryVariableStorage.AssertEmpty();
@@ -351,8 +353,11 @@ codeunit 148170 "Elster ERM Batch Reports"
 
     [PageHandler]
     procedure VatStatementPreviewVerifyFiltersPageHandler(var VATStatementPreview: TestPage "VAT Statement Preview")
+    var
+        StartingDate: Date;
     begin
-        VATStatementPreview.DateFilter.AssertEquals(StrSubstNo('%1..', LibraryVariableStorage.DequeueDate()));
+        StartingDate := LibraryVariableStorage.DequeueDate();
+        VATStatementPreview.DateFilter.AssertEquals(StrSubstNo('%1..%2', StartingDate, CalcDate('<CM>', StartingDate)));
         VATStatementPreview.PeriodSelection.AssertEquals(LibraryVariableStorage.DequeueInteger());
         VATStatementPreview.Selection.AssertEquals(LibraryVariableStorage.DequeueInteger());
     end;

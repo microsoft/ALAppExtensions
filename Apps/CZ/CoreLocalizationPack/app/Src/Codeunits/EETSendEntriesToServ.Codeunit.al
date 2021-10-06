@@ -1,6 +1,6 @@
 codeunit 31119 "EET Send Entries To Serv. CZL"
 {
-    Permissions = TableData "EET Entry CZL" = r;
+    Permissions = tabledata "EET Entry CZL" = r;
 
     trigger OnRun()
     begin

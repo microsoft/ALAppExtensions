@@ -84,6 +84,82 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
+    [HandlerFunctions('ConsentConfirmYes,MessageHandler')]
+    procedure TestWebhookIsCreatedWhenSettingupAccount();
+    var
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        WebhookSubscription: Record "Webhook Subscription";
+        PayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
+    begin
+        Initialize();
+        CreatePayPalStandardAccount(MSPayPalStandardAccount);
+
+        PayPalStandardSetup.OPENEDIT();
+        LibraryVariableStorage.Enqueue(ExchangeWithExternalServicesMsg);
+        PayPalStandardSetup.Enabled.SETVALUE(TRUE);
+        PayPalStandardSetup.CLOSE();
+
+        WebhookSubscription.SETRANGE("Subscription ID", MSPayPalStandardAccount."Account ID");
+        WebhookSubscription.SETFILTER("Created By", StrSubstNo('*%1*', PayPalCreatedByTok));
+
+        Assert.IsTrue(
+          NOT WebhookSubscription.IsEmpty(),
+          STRSUBSTNO(WebhookUpdateSubscriptionErrorTxt, MSPayPalStandardAccount."Account ID"));
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageHandler,ConsentConfirmYes')]
+    procedure TestWebhookIsUpdatedAfterModifyingAccount();
+    var
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        WebhookSubscription: Record "Webhook Subscription";
+        PayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
+        newAcountId: Text[250];
+    begin
+        Initialize();
+        CreateDefaultPayPalStandardAccount(MSPayPalStandardAccount);
+
+        newAcountId := CopyStr(MSPayPalStandardAccount."Account ID" + '1', 1, 250);
+
+        PayPalStandardSetup.OPENEDIT();
+        PayPalStandardSetup."Account ID".SETVALUE(newAcountId);
+        PayPalStandardSetup.CLOSE();
+
+        WebhookSubscription.SETRANGE("Subscription ID", newAcountId);
+        WebhookSubscription.SETFILTER("Created By", StrSubstNo('*%1*', PayPalCreatedByTok));
+
+        Assert.IsTrue(
+          NOT WebhookSubscription.IsEmpty(),
+          STRSUBSTNO(WebhookCreateSubscriptionErrorTxt, newAcountId));
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes')]
+    procedure TestWebhookIsDeletedAfterModifyingAccountToEmpty();
+    var
+        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
+        WebhookSubscription: Record "Webhook Subscription";
+        PayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
+    begin
+        Initialize();
+        CreateDefaultPayPalStandardAccount(MSPayPalStandardAccount);
+
+        LibraryVariableStorage.Enqueue(TRUE);
+
+        PayPalStandardSetup.OPENEDIT();
+        PayPalStandardSetup.Enabled.SETVALUE(FALSE);
+        PayPalStandardSetup."Account ID".SETVALUE('');
+        PayPalStandardSetup.CLOSE();
+
+        WebhookSubscription.SETRANGE("Subscription ID", MSPayPalStandardAccount."Account ID");
+        WebhookSubscription.SETFILTER("Created By", '*%1*', PayPalCreatedByTok);
+
+        Assert.IsFalse(
+          NOT WebhookSubscription.IsEmpty(),
+          STRSUBSTNO(WebhookDeleteSubscriptionErrorTxt, MSPayPalStandardAccount."Account ID"));
+    end;
+
+    [Test]
     [HandlerFunctions('AccountSetupPageModalPageHandler,ConfirmHandler,SelectPaymentServiceTypeHandler')]
     procedure TestCreateNewPaymentService();
     var
@@ -230,6 +306,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
+    [HandlerFunctions('ConsentConfirmYes')]
     procedure TestCannotEnableWithoutAccountID();
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
@@ -245,6 +322,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
+    [HandlerFunctions('ConsentConfirmYes')]
     procedure TestCannotBlankAccountIDWhenEnabled();
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
@@ -397,6 +475,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
+    [HandlerFunctions('ConsentConfirmYes')]
     procedure TestServiceConnectionListShowsEnabledPaymentServices();
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
@@ -412,7 +491,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('AccountSetupPageModalPageHandler,MessageHandler')]
+    [HandlerFunctions('AccountSetupPageModalPageHandler,MessageHandler,ConsentConfirmYes')]
     procedure TestServiceConnectionListOpensPaymentServicesSetupCard();
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
@@ -438,7 +517,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('SelectPaymentServiceModalPageHandler')]
+    [HandlerFunctions('SelectPaymentServiceModalPageHandler,ConsentConfirmYes')]
     procedure TestSelectingStandardPayPalService();
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
@@ -468,7 +547,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConsentConfirmYes')]
     procedure TestOnlyOneAlwaysIncludedStandardPayPalService();
     var
         MSPayPalStandardAccount1: Record "MS - PayPal Standard Account";
@@ -517,110 +596,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('SalesInvoiceReportRequestPageHandler,MessageHandler')]
-    procedure TestSalesInvoiceReportSingleInvoice();
-    var
-        TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
-        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
-        DummyPaymentMethod: Record "Payment Method";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
-    begin
-        Initialize();
-
-        // Setup
-        CreateDefaultPayPalStandardAccount(MSPayPalStandardAccount);
-        CreatePaymentMethod(DummyPaymentMethod, FALSE);
-        CreateAndPostSalesInvoice(SalesInvoiceHeader, DummyPaymentMethod);
-        TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument, SalesInvoiceHeader);
-
-        TempPaymentReportingArgument.SetRange("Payment Service ID", TempPaymentReportingArgument.GetPayPalServiceID());
-        TempPaymentReportingArgument.FindFirst();
-
-        // Exercise
-        SalesInvoiceHeader.SETRECFILTER();
-        COMMIT();
-        REPORT.RUN(REPORT::"Sales - Invoice", TRUE, FALSE, SalesInvoiceHeader);
-
-        // Verify
-        VerifyPaymentServiceIsInReportDataset(TempPaymentReportingArgument);
-        VerifyPayPalURL(TempPaymentReportingArgument, MSPayPalStandardAccount, SalesInvoiceHeader);
-    end;
-
-    [Test]
-    [HandlerFunctions('SalesInvoiceReportRequestPageHandler,MessageHandler')]
-    procedure TestSalesInvoiceReportMultipleInvoices();
-    var
-        TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
-        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
-        DummyPaymentMethod: Record "Payment Method";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        SalesInvoiceHeader2: Record "Sales Invoice Header";
-        TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
-        TempPaymentReportingArgument2: Record "Payment Reporting Argument" temporary;
-    begin
-        Initialize();
-        SalesInvoiceHeader.DELETEALL();
-
-        // Setup
-        CreateDefaultPayPalStandardAccount(MSPayPalStandardAccount);
-        CreatePaymentMethod(DummyPaymentMethod, FALSE);
-        CreateAndPostSalesInvoice(SalesInvoiceHeader, DummyPaymentMethod);
-        CreateAndPostSalesInvoice(SalesInvoiceHeader2, DummyPaymentMethod);
-        TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument, SalesInvoiceHeader);
-        TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument2, SalesInvoiceHeader2);
-
-        TempPaymentReportingArgument.SetRange("Payment Service ID", TempPaymentReportingArgument.GetPayPalServiceID());
-        TempPaymentReportingArgument.FindFirst();
-
-        TempPaymentReportingArgument2.SetRange("Payment Service ID", TempPaymentReportingArgument2.GetPayPalServiceID());
-        TempPaymentReportingArgument2.FindFirst();
-
-        // Exercise
-        SalesInvoiceHeader.SETFILTER("No.", '%1..%2', SalesInvoiceHeader."No.", SalesInvoiceHeader2."No.");
-        COMMIT();
-        REPORT.RUN(REPORT::"Sales - Invoice", TRUE, FALSE, SalesInvoiceHeader);
-
-        // Verify
-        VerifyPaymentServiceIsInReportDataset(TempPaymentReportingArgument);
-        VerifyPaymentServiceIsInReportDataset(TempPaymentReportingArgument2);
-
-        VerifyPayPalURL(TempPaymentReportingArgument, MSPayPalStandardAccount, SalesInvoiceHeader);
-        VerifyPayPalURL(TempPaymentReportingArgument2, MSPayPalStandardAccount, SalesInvoiceHeader2);
-    end;
-
-    [Test]
-    [HandlerFunctions('SalesInvoiceReportRequestPageHandler,MessageHandler')]
-    procedure TestSalesInvoiceReportChangeTargetURL();
-    var
-        TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
-        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
-        DummyPaymentMethod: Record "Payment Method";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
-    begin
-        Initialize();
-
-        // Setup
-        CreateDefaultPayPalStandardAccount(MSPayPalStandardAccount);
-        MSPayPalStandardAccount.SetTargetURL(NewTargetURLTxt);
-        CreatePaymentMethod(DummyPaymentMethod, FALSE);
-        CreateAndPostSalesInvoice(SalesInvoiceHeader, DummyPaymentMethod);
-        TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument, SalesInvoiceHeader);
-
-        // Exercise
-        COMMIT();
-        SalesInvoiceHeader.SETRECFILTER();
-        REPORT.RUN(REPORT::"Sales - Invoice", TRUE, FALSE, SalesInvoiceHeader);
-
-        // Verify
-        VerifyPaymentServiceIsInReportDataset(TempPaymentReportingArgument);
-        TempPaymentReportingArgument.FINDFIRST();
-        VerifyPayPalURL(TempPaymentReportingArgument, MSPayPalStandardAccount, SalesInvoiceHeader);
-    end;
-
-    [Test]
-    [HandlerFunctions('EMailDialogHandler,MessageHandler')]
+    [HandlerFunctions('EMailDialogHandler,MessageHandler,ConsentConfirmYes')]
     procedure TestCoverLetterPaymentLinkSMTPSetup(); // To be removed together with deprecated SMTP objects
     var
         LibraryEmailFeature: Codeunit "Library - Email Feature";
@@ -630,7 +606,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('EmailEditorHandler,MessageHandler,CloseEmailEditorHandler')]
+    [HandlerFunctions('EmailEditorHandler,MessageHandler,CloseEmailEditorHandler,ConsentConfirmYes')]
     procedure TestCoverLetterPaymentLink();
     var
         LibraryEmailFeature: Codeunit "Library - Email Feature";
@@ -676,7 +652,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConsentConfirmYes')]
     procedure TestYourReferenceIsIncludedInTheLink();
     var
         TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
@@ -763,7 +739,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConsentConfirmYes')]
     procedure TestInsertDemoPayPalAccountDoesNothingIfTheAccountExist();
     var
         MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
@@ -796,83 +772,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
-    procedure TestWebhookIsCreatedWhenSettingupAccount();
-    var
-        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
-        WebhookSubscription: Record "Webhook Subscription";
-        PayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
-    begin
-        Initialize();
-        CreatePayPalStandardAccount(MSPayPalStandardAccount);
-
-        PayPalStandardSetup.OPENEDIT();
-        LibraryVariableStorage.Enqueue(ExchangeWithExternalServicesMsg);
-        PayPalStandardSetup.Enabled.SETVALUE(TRUE);
-        PayPalStandardSetup.CLOSE();
-
-        WebhookSubscription.SETRANGE("Subscription ID", MSPayPalStandardAccount."Account ID");
-        WebhookSubscription.SETFILTER("Created By", StrSubstNo('*%1*', PayPalCreatedByTok));
-
-        Assert.IsTrue(
-          NOT WebhookSubscription.IsEmpty(),
-          STRSUBSTNO(WebhookUpdateSubscriptionErrorTxt, MSPayPalStandardAccount."Account ID"));
-    end;
-
-    [Test]
-    [HandlerFunctions('MessageHandler')]
-    procedure TestWebhookIsUpdatedAfterModifyingAccount();
-    var
-        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
-        WebhookSubscription: Record "Webhook Subscription";
-        PayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
-        newAcountId: Text[250];
-    begin
-        Initialize();
-        CreateDefaultPayPalStandardAccount(MSPayPalStandardAccount);
-
-        newAcountId := CopyStr(MSPayPalStandardAccount."Account ID" + '1', 1, 250);
-
-        PayPalStandardSetup.OPENEDIT();
-        PayPalStandardSetup."Account ID".SETVALUE(newAcountId);
-        PayPalStandardSetup.CLOSE();
-
-        WebhookSubscription.SETRANGE("Subscription ID", newAcountId);
-        WebhookSubscription.SETFILTER("Created By", StrSubstNo('*%1*', PayPalCreatedByTok));
-
-        Assert.IsTrue(
-          NOT WebhookSubscription.IsEmpty(),
-          STRSUBSTNO(WebhookCreateSubscriptionErrorTxt, newAcountId));
-    end;
-
-    [Test]
-    [HandlerFunctions('ConfirmHandler,MessageHandler')]
-    procedure TestWebhookIsDeletedAfterModifyingAccountToEmpty();
-    var
-        MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
-        WebhookSubscription: Record "Webhook Subscription";
-        PayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
-    begin
-        Initialize();
-        CreateDefaultPayPalStandardAccount(MSPayPalStandardAccount);
-
-        LibraryVariableStorage.Enqueue(TRUE);
-
-        PayPalStandardSetup.OPENEDIT();
-        PayPalStandardSetup.Enabled.SETVALUE(FALSE);
-        PayPalStandardSetup."Account ID".SETVALUE('');
-        PayPalStandardSetup.CLOSE();
-
-        WebhookSubscription.SETRANGE("Subscription ID", MSPayPalStandardAccount."Account ID");
-        WebhookSubscription.SETFILTER("Created By", '*%1*', PayPalCreatedByTok);
-
-        Assert.IsFalse(
-          NOT WebhookSubscription.IsEmpty(),
-          STRSUBSTNO(WebhookDeleteSubscriptionErrorTxt, MSPayPalStandardAccount."Account ID"));
-    end;
-
-    [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConsentConfirmYes')]
     procedure TestPaymentNotificationUrlIsIncludedInTheLink();
     var
         TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
@@ -902,7 +802,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConsentConfirmYes')]
     procedure TestPaymentNotificationDoesNothingIfPendingStatus();
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
@@ -925,7 +825,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConsentConfirmYes')]
     procedure TestPaymentNotificationDoesNothingIfMissingInvoice();
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
@@ -949,7 +849,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConsentConfirmYes')]
     procedure TestPaymentNotificationMarksInvoiceAsPartlyPaid();
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
@@ -976,7 +876,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConsentConfirmYes')]
     procedure TestPaymentNotificationMarksInvoiceAsFullyPaid();
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
@@ -999,7 +899,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,ConsentConfirmYes')]
     procedure TestPaymentNotificationMarksInvoiceAsOverPaid();
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
@@ -1245,7 +1145,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
         GetCustomBodyLayout(CustomReportLayout);
 
-	ReportSelections.Reset();
+        ReportSelections.Reset();
         ReportSelections.SetRange(Usage, NativeReports.PostedSalesInvoiceReportId());
         ReportSelections.FINDFIRST();
         ReportSelections.VALIDATE("Use for Email Attachment", TRUE);
@@ -1545,15 +1445,6 @@ codeunit 139500 "MS - PayPal Standard Tests"
         SelectPaymentService.OK().INVOKE();
     end;
 
-    [RequestPageHandler]
-    procedure SalesInvoiceReportRequestPageHandler(var SalesInvoice: TestRequestPage "Sales - Invoice");
-    var
-        LibraryReportDataset: Codeunit "Library - Report Dataset";
-    begin
-        DatasetFileName := LibraryReportDataset.GetFileName();
-        SalesInvoice.SAVEASXML(LibraryReportDataset.GetParametersFileName(), DatasetFileName);
-    end;
-
     [ConfirmHandler]
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean);
     begin
@@ -1583,6 +1474,13 @@ codeunit 139500 "MS - PayPal Standard Tests"
     procedure CloseEmailEditorHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
     begin
         Choice := 1;
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure ConsentConfirmYes(var CustConsentConfirmation: TestPage "Cust. Consent Confirmation")
+    begin
+        CustConsentConfirmation.Accept.Invoke();
     end;
 
     local procedure BindActiveDirectoryMockEvents();

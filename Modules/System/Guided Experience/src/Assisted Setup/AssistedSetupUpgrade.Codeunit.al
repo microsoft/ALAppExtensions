@@ -58,11 +58,13 @@ codeunit 1807 "Assisted Setup Upgrade"
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
         GuidedExperienceType: Enum "Guided Experience Type";
         ManualSetupCategory: Enum "Manual Setup Category";
+        SpotlightTourType: Enum "Spotlight Tour Type";
+        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
     begin
         GuidedExperienceImpl.Insert(AssistedSetup.Name, CopyStr(AssistedSetup.Name, 1, 50), AssistedSetup.Description,
             0, AssistedSetup."App ID", GuidedExperienceType::"Assisted Setup", ObjectType::Page, AssistedSetup."Page ID",
             '', AssistedSetup."Group Name", AssistedSetup."Video Url", AssistedSetup."Video Category",
-            AssistedSetup."Help Url", ManualSetupCategory::Uncategorized, '', false);
+            AssistedSetup."Help Url", ManualSetupCategory::Uncategorized, '', SpotlightTourType::None, SpotlightTourTexts, false);
 
         GuidedExperienceItem.SetRange("Guided Experience Type", GuidedExperienceItem."Guided Experience Type"::"Assisted Setup");
         GuidedExperienceItem.SetRange("Object Type to Run", GuidedExperienceItem."Object Type to Run"::Page);

@@ -2,7 +2,7 @@ report 11795 "Income Statement CZL"
 {
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/IncomeStatement.rdl';
-    AccessByPermission = TableData "G/L Account" = R;
+    AccessByPermission = tabledata "G/L Account" = R;
     ApplicationArea = Basic, Suite;
     Caption = 'Income Statement';
     UsageCategory = ReportsAndAnalysis;

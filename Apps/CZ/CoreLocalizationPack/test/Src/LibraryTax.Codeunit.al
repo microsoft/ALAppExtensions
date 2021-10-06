@@ -27,6 +27,15 @@ Codeunit 148003 "Library - Tax CZL"
         CommoditySetupCZL.Insert(true);
     end;
 
+    procedure CreateDefaultVATControlReportSections(Force: Boolean)
+    var
+        VATCtrlReportSectionCZL: Record "VAT Ctrl. Report Section CZL";
+    begin
+        if Force then
+            VATCtrlReportSectionCZL.DeleteAll();
+        CreateDefaultVATControlReportSections();
+    end;
+
     procedure CreateDefaultVATControlReportSections()
     var
         VATCtrlReportSectionCZL: Record "VAT Ctrl. Report Section CZL";
@@ -125,12 +134,12 @@ Codeunit 148003 "Library - Tax CZL"
 
     procedure CreateStatReportingSetup()
     var
-        StatReportingSetup: Record "Stat. Reporting Setup";
+        StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
     begin
-        StatReportingSetup.Reset();
-        if not StatReportingSetup.FindFirst() then begin
-            StatReportingSetup.Init();
-            StatReportingSetup.Insert();
+        StatutoryReportingSetupCZL.Reset();
+        if not StatutoryReportingSetupCZL.FindFirst() then begin
+            StatutoryReportingSetupCZL.Init();
+            StatutoryReportingSetupCZL.Insert();
         end;
     end;
 
@@ -140,6 +149,14 @@ Codeunit 148003 "Library - Tax CZL"
     begin
         FindCompanyOfficials(CompanyOfficialCZL);
         exit(CompanyOfficialCZL."No.");
+    end;
+
+    procedure GetDateFromLastOpenVATPeriod(): Date
+    var
+        VATPeriodCZL: Record "VAT Period CZL";
+    begin
+        FindLastOpenVATPeriod(VATPeriodCZL);
+        exit(VATPeriodCZL."Starting Date");
     end;
 
     procedure GetInvalidVATRegistrationNo(): Text[20]
@@ -155,6 +172,14 @@ Codeunit 148003 "Library - Tax CZL"
     procedure GetPublicBankAccountNo(): Code[30]
     begin
         exit('86-5211550267/0100');
+    end;
+
+    procedure GetSimplifiedTaxDocumentLimit(): Decimal
+    var
+        StatutoryReportingSetup: Record "Statutory Reporting Setup CZL";
+    begin
+        StatutoryReportingSetup.Get();
+        exit(StatutoryReportingSetup."Simplified Tax Document Limit");
     end;
 
     procedure GetValidVATRegistrationNo(): Text[20]
@@ -222,6 +247,13 @@ Codeunit 148003 "Library - Tax CZL"
         VATPeriodCZL.FindFirst();
     end;
 
+    procedure FindLastOpenVATPeriod(var VATPeriodCZL: Record "VAT Period CZL")
+    begin
+        VATPeriodCZL.Reset();
+        VATPeriodCZL.SetRange(Closed, false);
+        VATPeriodCZL.FindLast();
+    end;
+
     procedure FindVATStatementTemplate(var VATStatementTemplate: Record "VAT Statement Template")
     begin
         VATStatementTemplate.Reset();
@@ -282,6 +314,11 @@ Codeunit 148003 "Library - Tax CZL"
     begin
         Commit();
         Report.Run(Report::"Create VAT Period CZL", true, false);
+    end;
+
+    procedure RunExportVATCtrlReport(VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL"; var TempBlob: Codeunit "Temp Blob")
+    begin
+        VATCtrlReportHeaderCZL.ExportToXMLBlobCZL(TempBlob);
     end;
 
     procedure RunExportVATStatement(StmtTempName: Code[10]; StmtName: Code[10]; var TempBlob: Codeunit "Temp Blob")
@@ -373,15 +410,9 @@ Codeunit 148003 "Library - Tax CZL"
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
     begin
         StatutoryReportingSetupCZL.Get();
-        StatutoryReportingSetupCZL."Tax Office Number" := '461';
-        StatutoryReportingSetupCZL."Tax Office Region Number" := '3003';
-        StatutoryReportingSetupCZL."VAT Stat. Auth. Employee No." := GetCompanyOfficialsNo();
-        StatutoryReportingSetupCZL."VAT Stat. Filled Employee No." := GetCompanyOfficialsNo();
-        StatutoryReportingSetupCZL."VAT Statement Country Name" := 'CESKO';
+        StatutoryReportingSetupCZL."VAT Control Report XML Format" := Enum::"VAT Ctrl. Report Format CZL"::"03_01_03";
         StatutoryReportingSetupCZL."VAT Control Report Nos." := LibraryERM.CreateNoSeriesCode();
         StatutoryReportingSetupCZL."Simplified Tax Document Limit" := 10000;
-        StatutoryReportingSetupCZL."Data Box ID" := 'ad57cf71';
-        StatutoryReportingSetupCZL."VAT Control Report E-mail" := 'test@test.cz';
         StatutoryReportingSetupCZL.Modify();
     end;
 
@@ -427,7 +458,7 @@ Codeunit 148003 "Library - Tax CZL"
         GeneralLedgerSetup: Record "General Ledger Setup";
     begin
         GeneralLedgerSetup.Get();
-        GeneralLedgerSetup.Validate("Use VAT Date CZL", UseVATDate);
+        GeneralLedgerSetup."Use VAT Date CZL" := UseVATDate;
         GeneralLedgerSetup.Modify();
     end;
 

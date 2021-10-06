@@ -31,19 +31,6 @@ page 4008 "Intelligent Cloud Stat Factbox"
                     InstructionalText = 'Migration Statistics';
                     ShowCaption = true;
 
-                    field("Source Product"; SourceProduct)
-                    {
-                        Caption = 'Source Product';
-                        ToolTip = 'Specifies the selected source product for the migration.';
-                        Enabled = false;
-                        Editable = false;
-                        ApplicationArea = Basic, Suite;
-                        Visible = false;
-                        ObsoleteState = Pending;
-                        ObsoleteReason = 'Not used.';
-                        ObsoleteTag = '16.1';
-                    }
-
                     field("Total Successful Tables"; TotalSuccessfulTables)
                     {
                         ApplicationArea = Basic, Suite;

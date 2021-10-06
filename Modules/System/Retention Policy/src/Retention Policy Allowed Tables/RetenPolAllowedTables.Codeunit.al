@@ -261,6 +261,9 @@ codeunit 3905 "Reten. Pol. Allowed Tables"
     var
         RetenPolAllowedTblImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         RetenPolAllowedTblImpl.VerifyInsertAllowed(Rec."Table Id");
     end;
 
@@ -270,6 +273,9 @@ codeunit 3905 "Reten. Pol. Allowed Tables"
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         RetentionPolicyLogCategory: Enum "Retention Policy Log Category";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         RetentionPolicyLog.LogError(RetentionPolicyLogCategory::"Retention Policy - Setup", StrSubstNo(RetenPolAllowedTblRenameErr, xRec."Table Id", Rec."Table Id"));
     end;
 
@@ -278,6 +284,9 @@ codeunit 3905 "Reten. Pol. Allowed Tables"
     var
         RetenPolAllowedTblImpl: Codeunit "Reten. Pol. Allowed Tbl. Impl.";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         RetenPolAllowedTblImpl.VerifyModifyAllowed(Rec."Table Id");
     end;
 }

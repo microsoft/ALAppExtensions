@@ -51,17 +51,29 @@ codeunit 31039 "Purchase Posting Handler CZL"
                     AccountNo := VATPostingSetup."Purch. VAT Curr. Exch. Acc CZL";
                     if PurchaseHeader."Prices Including VAT" then
                         CalcAmt := InvoicePostBuffer.Amount -
+#if CLEAN18
+                        0
+#else
                           Round(InvoicePostBuffer."Ext. Amount" - InvoicePostBuffer."Ext. VAT Difference (LCY)",
                             Currency."Amount Rounding Precision")
+#endif
                     else
                         CalcAmt := (InvoicePostBuffer.Amount -
+#if CLEAN18
+                        0);
+#else
                            (Round(InvoicePostBuffer."Ext. Amount", Currency."Amount Rounding Precision")));
+#endif
                 end;
             AmtType::VAT:
                 begin
                     CalcAmt := InvoicePostBuffer."VAT Amount" -
+#if CLEAN18
+                        0;
+#else
                        Round(InvoicePostBuffer."Ext. Amount Including VAT" - InvoicePostBuffer."Ext. Amount" +
                          InvoicePostBuffer."Ext. VAT Difference (LCY)", Currency."Amount Rounding Precision");
+#endif
                     if CalcAmt < 0 then
                         AccountNo := Currency."Realized Gains Acc."
                     else
@@ -89,9 +101,9 @@ codeunit 31039 "Purchase Posting Handler CZL"
         GenJournalLine."System-Created Entry" := InvoicePostBuffer."System-Created Entry";
         GenJournalLine."Source Currency Code" := PurchaseHeader."Currency Code";
         if IsCorrection then
-            GenJournalLine.Correction := not InvoicePostBuffer.Correction
+            GenJournalLine.Correction := not InvoicePostBuffer."Correction CZL"
         else
-            GenJournalLine.Correction := InvoicePostBuffer.Correction;
+            GenJournalLine.Correction := InvoicePostBuffer."Correction CZL";
         GenJournalLine."Gen. Posting Type" := GenJournalLine."Gen. Posting Type"::Purchase;
         GenJournalLine."Gen. Bus. Posting Group" := InvoicePostBuffer."Gen. Bus. Posting Group";
         GenJournalLine."Gen. Prod. Posting Group" := InvoicePostBuffer."Gen. Prod. Posting Group";
@@ -135,32 +147,41 @@ codeunit 31039 "Purchase Posting Handler CZL"
                 // Normal VAT
                 GenJournalLine.Quantity := InvoicePostBuffer.Quantity;
                 if PurchaseHeader."Prices Including VAT" then begin
+#if not CLEAN18
                     GenJournalLine.Amount := Round(InvoicePostBuffer."Ext. Amount" - InvoicePostBuffer."Ext. VAT Difference (LCY)",
                         Currency."Amount Rounding Precision");
+
                     GenJournalLine."VAT Amount" := Round(InvoicePostBuffer."Ext. Amount Including VAT" - InvoicePostBuffer."Ext. Amount" +
                         InvoicePostBuffer."Ext. VAT Difference (LCY)", Currency."Amount Rounding Precision");
+#endif
                     GenJournalLine."VAT Base Amount" := GenJournalLine.Amount;
                     GenJournalLine."Source Currency Amount" := Round(InvoicePostBuffer."Amount (ACY)", Currency."Amount Rounding Precision");
                     GenJournalLine."Source Curr. VAT Amount" :=
                       Round(InvoicePostBuffer."VAT Amount (ACY)", Currency."Amount Rounding Precision");
                     GenJournalLine."Source Curr. VAT Base Amount" :=
                       Round(InvoicePostBuffer."VAT Base Amount (ACY)", Currency."Amount Rounding Precision");
+#if not CLEAN18
                     GenJournalLine."VAT Difference" :=
                       Round(InvoicePostBuffer."Ext. VAT Difference (LCY)", Currency."Amount Rounding Precision");
                     GenJournalLine."VAT Difference (LCY)" := GenJournalLine."VAT Difference";
+#endif
                 end else begin
+#if not CLEAN18
                     GenJournalLine.Amount := Round(InvoicePostBuffer."Ext. Amount", Currency."Amount Rounding Precision");
                     GenJournalLine."VAT Amount" := Round(InvoicePostBuffer."Ext. Amount Including VAT" - InvoicePostBuffer."Ext. Amount" +
                         InvoicePostBuffer."Ext. VAT Difference (LCY)", Currency."Amount Rounding Precision");
+#endif
                     GenJournalLine."VAT Base Amount" := GenJournalLine.Amount;
                     GenJournalLine."Source Currency Amount" := Round(InvoicePostBuffer."Amount (ACY)", Currency."Amount Rounding Precision");
                     GenJournalLine."Source Curr. VAT Amount" :=
                       Round(InvoicePostBuffer."VAT Amount (ACY)", Currency."Amount Rounding Precision");
                     GenJournalLine."Source Curr. VAT Base Amount" :=
                       Round(InvoicePostBuffer."VAT Base Amount (ACY)", Currency."Amount Rounding Precision");
+#if not CLEAN18
                     GenJournalLine."VAT Difference" :=
                       Round(InvoicePostBuffer."Ext. VAT Difference (LCY)", Currency."Amount Rounding Precision");
                     GenJournalLine."VAT Difference (LCY)" := GenJournalLine."VAT Difference";
+#endif
                 end;
             end else begin
                 // Reverse Charge VAT
@@ -212,7 +233,7 @@ codeunit 31039 "Purchase Posting Handler CZL"
         GenJournalLine."Account No." := AccountNo;
         GenJournalLine."System-Created Entry" := InvoicePostBuffer."System-Created Entry";
         GenJournalLine."Source Currency Code" := PurchaseHeader."Currency Code";
-        GenJournalLine.Correction := InvoicePostBuffer.Correction;
+        GenJournalLine.Correction := InvoicePostBuffer."Correction CZL";
         GenJournalLine."Gen. Posting Type" := GenJournalLine."Gen. Posting Type"::" ";
         GenJournalLine."Tax Area Code" := InvoicePostBuffer."Tax Area Code";
         GenJournalLine."Tax Liable" := InvoicePostBuffer."Tax Liable";
@@ -292,10 +313,14 @@ codeunit 31039 "Purchase Posting Handler CZL"
         if PurchaseLine.FindSet(false, false) then
             repeat
                 if VATPostingSetup.Get(PurchaseLine."VAT Bus. Posting Group", PurchaseLine."VAT Prod. Posting Group") then
+#if CLEAN19
+                    if VATPostingSetup."Reverse Charge Check CZL" = ReverseChargeCheckCZL::"Limit Check" then begin
+#else
                     if VATPostingSetup."Reverse Charge Check CZL" = ReverseChargeCheckCZL::"Limit Check" then
                         if not ((PurchaseLine.Type = PurchaseLine.Type::"G/L Account") and
                                 (VATPostingSetup."Purch. Ded. VAT Base Adj. Acc." = PurchaseLine."No."))
                         then begin
+#endif
                             PurchaseLine.TestField("Tariff No. CZL");
                             if TariffNumber.Get(PurchaseLine."Tariff No. CZL") then
                                 if TariffNumber."VAT Stat. UoM Code CZL" <> '' then

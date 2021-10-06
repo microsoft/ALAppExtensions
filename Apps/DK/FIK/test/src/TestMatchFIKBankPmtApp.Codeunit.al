@@ -199,7 +199,7 @@ Codeunit 148033 TestMatchFIKBankPmtApp
     END;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
+    [HandlerFunctions('MessageHandler,PostAndReconcilePageHandler')]
     PROCEDURE TestMatchFIKEntryIsPaid();
     VAR
         BankAccReconciliation: Record "Bank Acc. Reconciliation";
@@ -218,6 +218,7 @@ Codeunit 148033 TestMatchFIKBankPmtApp
         // Create an Invoice and make a Payment to it
         CreateNewBankPaymentApp(BankAccReconciliation);
         InsertBankPaymentAppLine(BankAccReconciliation, Amount, DocumentNo);
+        GetLinesAndUpdateBankAccRecStmEndingBalance(BankAccReconciliation);
         CODEUNIT.RUN(CODEUNIT::FIK_MatchBankRecLines, BankAccReconciliation);
 
         // Post the Bank Account Reconciliation
@@ -384,6 +385,31 @@ Codeunit 148033 TestMatchFIKBankPmtApp
     BEGIN
         EXIT(StatusText + ' - ' + CreateFIKDescription(DocumentNo));
     END;
+
+    local procedure GetLinesAndUpdateBankAccRecStmEndingBalance(var BankAccRecon: Record "Bank Acc. Reconciliation")
+    var
+        BankAccRecLine: Record "Bank Acc. Reconciliation Line";
+        TotalLinesAmount: Decimal;
+    begin
+        BankAccRecLine.LinesExist(BankAccRecon);
+        repeat
+            TotalLinesAmount += BankAccRecLine."Statement Amount";
+        until BankAccRecLine.Next() = 0;
+        UpdateBankAccRecStmEndingBalance(BankAccRecon, BankAccRecon."Balance Last Statement" + TotalLinesAmount);
+    end;
+
+    local procedure UpdateBankAccRecStmEndingBalance(var BankAccRecon: Record "Bank Acc. Reconciliation"; NewStmEndingBalance: Decimal)
+    begin
+        BankAccRecon.Validate("Statement Ending Balance", NewStmEndingBalance);
+        BankAccRecon.Modify();
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure PostAndReconcilePageHandler(var PostPmtsAndRecBankAcc: TestPage "Post Pmts and Rec. Bank Acc.")
+    begin
+        PostPmtsAndRecBankAcc.OK().Invoke();
+    end;
 
     [MessageHandler]
     PROCEDURE MessageHandler(Msg: Text[1024]);

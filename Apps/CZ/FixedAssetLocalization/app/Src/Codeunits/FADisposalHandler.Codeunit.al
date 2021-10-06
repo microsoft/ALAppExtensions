@@ -941,8 +941,32 @@ codeunit 31235 "FA Disposal Handler CZF"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calc. G/L Acc. Where-Used", 'OnAfterFillTableBuffer', '', false, false)]
+    local procedure AddSetupTableOnAfterFillTableBuffer(var TableBuffer: Record "Integer")
+    var
+        CalcGLAccWhereUsed: Codeunit "Calc. G/L Acc. Where-Used";
+    begin
+        CalcGLAccWhereUsed.AddTable(TableBuffer, Database::"FA Extended Posting Group CZF");
+#if not CLEAN18
+#pragma warning disable AL0432
+        if TableBuffer.Get(Database::"FA Extended Posting Group") then
+            if not IsTestingEnvironment() then
+                TableBuffer.Delete();
+#pragma warning restore AL0432
+#endif
+    end;
+
+#if not CLEAN18
+    local procedure IsTestingEnvironment(): Boolean
+    var
+        NAVAppInstalledApp: Record "NAV App Installed App";
+    begin
+        exit(NAVAppInstalledApp.Get('fa3e2564-a39e-417f-9be6-c0dbe3d94069')); // application "Tests-ERM"
+    end;
+
+#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calc. G/L Acc. Where-Used", 'OnShowExtensionPage', '', false, false)]
-    local procedure ShowSetupFormOnGLAccWhereUsed(GLAccountWhereUsed: Record "G/L Account Where-Used")
+    local procedure ShowSetupPageOnGLAccWhereUsed(GLAccountWhereUsed: Record "G/L Account Where-Used")
     var
         FAExtendedPostingGroupCZF: Record "FA Extended Posting Group CZF";
     begin

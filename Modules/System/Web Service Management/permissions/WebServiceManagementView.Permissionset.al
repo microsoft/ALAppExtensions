@@ -5,7 +5,7 @@
 
 permissionset 6711 "Web Service Management - View"
 {
-    Access = Internal;
+    Access = Public;
     Assignable = false;
 
     IncludedPermissionSets = "Web Service Management - Read";

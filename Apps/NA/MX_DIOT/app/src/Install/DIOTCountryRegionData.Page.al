@@ -1,7 +1,7 @@
 page 27033 "DIOT Country/Region Data"
 {
     PageType = List;
-    ApplicationArea = Basic, Suite;
+    ApplicationArea = BasicMX;
     UsageCategory = Lists;
     SourceTable = "DIOT Country/Region Data";
 
@@ -13,19 +13,19 @@ page 27033 "DIOT Country/Region Data"
             {
                 field("Country/Region Code"; "Country/Region Code")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = BasicMX;
                     Caption = 'Country/Region Code';
                     ToolTip = 'Specifies the DIOT specific country/region code.';
                 }
                 field(Nationality; Nationality)
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = BasicMX;
                     Caption = 'Nationality';
                     ToolTip = 'Specifies the DIOT specific nationality.';
                 }
                 field("BC Country/Region Code"; "BC Country/Region Code")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = BasicMX;
                     Caption = 'BC Country Code';
                     ToolTip = 'Specifies the Business Central country/region code.';
                 }

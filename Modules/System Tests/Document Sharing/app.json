@@ -1,0 +1,38 @@
+{
+    "id":  "9ae38593-679f-4ab9-9ddd-0e0066c6f5b5",
+    "name":  "Document Sharing Tests",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Tests for the Document Sharing module.",
+    "version":  "19.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "a6444d0e-47ec-49c1-bb18-173e54b498d3",
+                             "name":  "Document Sharing Service",
+                             "publisher":  "Microsoft",
+                             "version":  "19.0.0.0"
+                         },
+                         {
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "name":  "Library Assert",
+                             "publisher":  "Microsoft",
+                             "version":  "19.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "19.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  132593,
+                         "to":  132593
+                     }
+                 ],
+    "target":  "OnPrem"
+}

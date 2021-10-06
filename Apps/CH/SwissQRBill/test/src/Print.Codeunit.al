@@ -15,6 +15,7 @@ codeunit 148092 "Swiss QR-Bill Test Print"
         LibraryUtility: Codeunit "Library - Utility";
         LibraryRandom: Codeunit "Library - Random";
         SwissQRBillMgt: Codeunit "Swiss QR-Bill Mgt.";
+        LibrarySetupStorage: Codeunit "Library - Setup Storage";
         ReportType: Enum "Swiss QR-Bill Reports";
         IBANType: Enum "Swiss QR-Bill IBAN Type";
         ReferenceType: Enum "Swiss QR-Bill Payment Reference Type";
@@ -610,6 +611,178 @@ codeunit 148092 "Swiss QR-Bill Test Print"
         end;
     end;
 
+    [Test]
+    [HandlerFunctions('QRBillPrintRPH')]
+    procedure Print_PostedSalesInvoice_BlankedBankAccountQRIBAN()
+    var
+        SalesInvoiceHeader: Record 112;
+    begin
+        // [FEATURE] [UI] [Print] [QR-IBAN] [Payment Method]
+        // [SCENARIO 259169] An error occurs on missing QR-IBAN value in bank account specified in payment method
+        Initialize();
+
+        // [GIVEN] QR-Bills are setup with QR-IBAN by default
+        EnableReport(ReportType::"Posted Sales Invoice", true);
+        SwissQRBillTestLibrary.UpdateDefaultLayout(
+          SwissQRBillTestLibrary.CreateQRLayout(IBANType::"QR-IBAN", ReferenceType::"QR Reference", '', ''));
+        // [GIVEN] Bank Account "B" with blanked QR-IBAN value
+        // [GIVEN] Posted sales invoice with payment method having QR-Bill Bank Account No. = "B"
+        SwissQRBillTestLibrary.CreatePostSalesInvoice(
+          SalesInvoiceHeader, '', 100, '',
+          SwissQRBillTestLibrary.CreatePaymentMethodWithQRBillBank(SwissQRBillTestLibrary.CreateBankAccount('', '')));
+
+        // [WHEN] Print QR-Bill for the invoice
+        asserterror PrintPostedSalesInvoice(SalesInvoiceHeader);
+
+        // [THEN] An error occurs on missing QR-IBAN value in Bank Account "B"
+        Assert.ExpectedErrorCode('TestField');
+        Assert.ExpectedError('QR-IBAN must have a value in Bank Account');
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillPrintRPH')]
+    procedure Print_PostedSalesInvoice_BlankedBankAccountIBAN()
+    var
+        SalesInvoiceHeader: Record 112;
+    begin
+        // [FEATURE] [UI] [Print] [IBAN] [Payment Method]
+        // [SCENARIO 259169] An error occurs on missing IBAN value in bank account specified in payment method
+        Initialize();
+
+        // [GIVEN] QR-Bills are setup with IBAN by default
+        EnableReport(ReportType::"Posted Sales Invoice", true);
+        SwissQRBillTestLibrary.UpdateDefaultLayout(
+          SwissQRBillTestLibrary.CreateQRLayout(IBANType::IBAN, ReferenceType::"Creditor Reference (ISO 11649)", '', ''));
+        // [GIVEN] Bank Account "B" with blanked IBAN value
+        // [GIVEN] Posted sales invoice with payment method having QR-Bill Bank Account No. = "B"
+        SwissQRBillTestLibrary.CreatePostSalesInvoice(
+          SalesInvoiceHeader, '', 100, '',
+          SwissQRBillTestLibrary.CreatePaymentMethodWithQRBillBank(SwissQRBillTestLibrary.CreateBankAccount('', '')));
+
+        // [WHEN] Print QR-Bill for the invoice
+        asserterror PrintPostedSalesInvoice(SalesInvoiceHeader);
+
+        // [THEN] An error occurs on missing IBAN value in Bank Account "B"
+        Assert.ExpectedErrorCode('TestField');
+        Assert.ExpectedError('IBAN must have a value in Bank Account');
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillPrintRPH')]
+    procedure Print_PostedSalesInvoice_BlankedCompanyQRIBAN()
+    var
+        SalesInvoiceHeader: Record 112;
+    begin
+        // [FEATURE] [UI] [Print] [QR-IBAN]
+        // [SCENARIO 259169] An error occurs on missing QR-IBAN value in company information
+        Initialize();
+
+        // [GIVEN] QR-Bills are setup with QR-IBAN by default
+        EnableReport(ReportType::"Posted Sales Invoice", true);
+        SwissQRBillTestLibrary.UpdateDefaultLayout(
+          SwissQRBillTestLibrary.CreateQRLayout(IBANType::"QR-IBAN", ReferenceType::"QR Reference", '', ''));
+        // [GIVEN] Company information with blanked QR-IBAN value
+        SwissQRBillTestLibrary.UpdateCompanyIBANAndQRIBAN('', '');
+        // [GIVEN] Posted sales invoice with payment method having blanked QR-Bill Bank Account No.
+        SwissQRBillTestLibrary.CreatePostSalesInvoice(
+          SalesInvoiceHeader, '', 100, '',
+          SwissQRBillTestLibrary.CreatePaymentMethodWithQRBillBank(SwissQRBillTestLibrary.CreateBankAccount('', '')));
+
+        // [WHEN] Print QR-Bill for the invoice
+        asserterror PrintPostedSalesInvoice(SalesInvoiceHeader);
+
+        // [THEN] An error occurs on missing QR-IBAN value in company information
+        Assert.ExpectedErrorCode('TestField');
+        Assert.ExpectedError('QR-IBAN must have a value in Company Information');
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillPrintRPH')]
+    procedure Print_PostedSalesInvoice_BlankedCompanyIBAN()
+    var
+        SalesInvoiceHeader: Record 112;
+    begin
+        // [FEATURE] [UI] [Print] [IBAN]
+        // [SCENARIO 259169] An error occurs on missing IBAN value in company information
+        Initialize();
+
+        // [GIVEN] QR-Bills are setup with IBAN by default
+        EnableReport(ReportType::"Posted Sales Invoice", true);
+        SwissQRBillTestLibrary.UpdateDefaultLayout(
+          SwissQRBillTestLibrary.CreateQRLayout(IBANType::IBAN, ReferenceType::"Creditor Reference (ISO 11649)", '', ''));
+        // [GIVEN] Company information with blanked IBAN value
+        SwissQRBillTestLibrary.UpdateCompanyIBANAndQRIBAN('', '');
+        // [GIVEN] Posted sales invoice with payment method having blanked QR-Bill Bank Account No.
+        SwissQRBillTestLibrary.CreatePostSalesInvoice(
+          SalesInvoiceHeader, '', 100, '',
+          SwissQRBillTestLibrary.CreatePaymentMethodWithQRBillBank(SwissQRBillTestLibrary.CreateBankAccount('', '')));
+
+        // [WHEN] Print QR-Bill for the invoice
+        asserterror PrintPostedSalesInvoice(SalesInvoiceHeader);
+
+        // [THEN] An error occurs on missing QR-IBAN value in company information
+        Assert.ExpectedErrorCode('TestField');
+        Assert.ExpectedError('IBAN must have a value in Company Information');
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillPrintRPH')]
+    procedure Print_PostedSalesInvoice_BankAccountQRIBAN()
+    var
+        SalesInvoiceHeader: Record 112;
+        QRIBAN: Code[50];
+    begin
+        // [FEATURE] [UI] [Print] [QR-IBAN] [Payment Method]
+        // [SCENARIO 259169] Print posted sales invoice with QR-IBAN value from bank account specified in payment method
+        Initialize();
+
+        // [GIVEN] QR-Bills are setup with QR-IBAN by default
+        EnableReport(ReportType::"Posted Sales Invoice", true);
+        SwissQRBillTestLibrary.UpdateDefaultLayout(
+          SwissQRBillTestLibrary.CreateQRLayout(IBANType::"QR-IBAN", ReferenceType::"QR Reference", '', ''));
+        // [GIVEN] Bank Account "B" with QR-IBAN = "X"
+        // [GIVEN] Posted sales invoice with payment method having QR-Bill Bank Account No. = "B"
+        QRIBAN := LibraryUtility.GenerateGUID();
+        SwissQRBillTestLibrary.CreatePostSalesInvoice(
+          SalesInvoiceHeader, '', 100, '',
+          SwissQRBillTestLibrary.CreatePaymentMethodWithQRBillBank(SwissQRBillTestLibrary.CreateBankAccount('', QRIBAN)));
+
+        // [WHEN] Print QR-Bill for the invoice
+        PrintPostedSalesInvoice(SalesInvoiceHeader);
+
+        // [THEN] QR-Bill has been printed with creditor IBAN = "X"
+        VerifyReportDatasetCreditorInfo(SwissQRBillMgt.FormatIBAN(QRIBAN));
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillPrintRPH')]
+    procedure Print_PostedSalesInvoice_BankAccountIBAN()
+    var
+        SalesInvoiceHeader: Record 112;
+        IBAN: Code[50];
+    begin
+        // [FEATURE] [UI] [Print] [IBAN] [Payment Method]
+        // [SCENARIO 259169] Print posted sales invoice with IBAN value from bank account specified in payment method
+        Initialize();
+
+        // [GIVEN] QR-Bills are setup with IBAN by default
+        EnableReport(ReportType::"Posted Sales Invoice", true);
+        SwissQRBillTestLibrary.UpdateDefaultLayout(
+          SwissQRBillTestLibrary.CreateQRLayout(IBANType::IBAN, ReferenceType::"Creditor Reference (ISO 11649)", '', ''));
+        // [GIVEN] Bank Account "B" with IBAN = "X"
+        // [GIVEN] Posted sales invoice with payment method having QR-Bill Bank Account No. = "B"
+        IBAN := LibraryUtility.GenerateGUID();
+        SwissQRBillTestLibrary.CreatePostSalesInvoice(
+          SalesInvoiceHeader, '', 100, '',
+          SwissQRBillTestLibrary.CreatePaymentMethodWithQRBillBank(SwissQRBillTestLibrary.CreateBankAccount(IBAN, '')));
+
+        // [WHEN] Print QR-Bill for the invoice
+        PrintPostedSalesInvoice(SalesInvoiceHeader);
+
+        // [THEN] QR-Bill has been printed with creditor IBAN = "X"
+        VerifyReportDatasetCreditorInfo(SwissQRBillMgt.FormatIBAN(IBAN));
+    end;
+
     local procedure Initialize()
     var
         DummyReportSelections: Record "Report Selections";
@@ -617,6 +790,7 @@ codeunit 148092 "Swiss QR-Bill Test Print"
         ClearReportSelections(DummyReportSelections.Usage::"S.Invoice");
         ClearReportSelections(DummyReportSelections.Usage::"SM.Invoice");
         LibraryVariableStorage.Clear();
+        LibrarySetupStorage.Restore();
 
         if IsInitialized then
             exit;
@@ -624,6 +798,7 @@ codeunit 148092 "Swiss QR-Bill Test Print"
 
         SwissQRBillTestLibrary.UpdateDefaultVATPostingSetup(10);
         SwissQRBillTestLibrary.UpdateCompanyQRIBAN();
+        LibrarySetupStorage.Save(Database::"Company Information");
     end;
 
     local procedure PageDrillDown(ReportTypeFilter: Enum "Swiss QR-Bill Reports")
@@ -727,7 +902,11 @@ codeunit 148092 "Swiss QR-Bill Test Print"
         end;
     end;
 
-    local procedure VerifyReportEnabling(var SwissQRBillReports: Record "Swiss QR-Bill Reports"; ExpectedCount: Integer; ExpectedCurrentType: Enum "Swiss QR-Bill Reports"; Enable: Boolean; SalesInvoice: Boolean; ServiceInvoice: Boolean; Reminder: Boolean; FinCharge: Boolean)
+    local procedure VerifyReportEnabling(var SwissQRBillReports: Record "Swiss QR-Bill Reports"; ExpectedCount: Integer; ExpectedCurrentType: Enum "Swiss QR-Bill Reports"; Enable: Boolean;
+                                                                                                                                                  SalesInvoice: Boolean;
+                                                                                                                                                  ServiceInvoice: Boolean;
+                                                                                                                                                  Reminder: Boolean;
+                                                                                                                                                  FinCharge: Boolean)
     var
         EnabledReportsCount: Integer;
     begin

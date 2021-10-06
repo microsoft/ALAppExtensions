@@ -15,6 +15,7 @@ permissionset 66 "System Tables - Basic"
                              "Metadata - Read",
                              "Permissions & Licenses - Read",
                              "Power BI - Read",
+                             "Reporting - Edit",
                              "Satisfaction Survey - View",
                              "Session - Read",
                              "System Execute - Basic",
@@ -36,8 +37,6 @@ permissionset 66 "System Tables - Basic"
                   tabledata "Object Options" = Rimd,
                   tabledata "OData Edm Type" = Rimd,
                   tabledata "Record Link" = RIMD,
-                  tabledata "Report Layout" = RIMD,
-                  tabledata "Report Layout Definition" = R,
                   tabledata "Scheduled Task" = R,
                   tabledata "Send-To Program" = RIMD,
                   tabledata Session = Rimd,
@@ -46,7 +45,5 @@ permissionset 66 "System Tables - Basic"
                   tabledata "Style Sheet" = RIMD,
                   tabledata "System Object" = Rimd,
                   tabledata "Tenant Profile Page Metadata" = Rimd,
-                  tabledata "Tenant Report Layout" = R,
-                  tabledata "Tenant Report Layout Selection" = RIMD,
                   tabledata "Token Cache" = Rimd;
 }

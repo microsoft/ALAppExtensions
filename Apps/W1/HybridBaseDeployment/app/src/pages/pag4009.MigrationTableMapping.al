@@ -138,6 +138,29 @@ page 4009 "Migration Table Mapping"
                 end;
             }
 
+            action(RestoreDefaultMappings)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Restore Default Mappings';
+                Image = Restore;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'Delete the current migration table mappings and replace them with the default mappings.';
+
+                trigger OnAction()
+                var
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+                begin
+                    if not Confirm(ResetToDefaultsQst) then
+                        exit;
+
+                    HybridCloudManagement.RestoreDefaultMigrationTableMappings(true);
+                    CurrPage.Update();
+                end;
+            }
+
             action(DeleteAllForExtension)
             {
                 ApplicationArea = All;
@@ -207,4 +230,6 @@ page 4009 "Migration Table Mapping"
     var
         ExtensionName: Text[250];
         NoTablesInExtensionMsg: Label 'No tables exist in the specified extension.';
+        ResetToDefaultsQst: Label 'All current table mappings for Cloud Migration will be deleted and replaced with the default values.\\Do you want to continue?';
+
 }

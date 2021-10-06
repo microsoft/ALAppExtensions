@@ -127,6 +127,22 @@ codeunit 18469 "Subcontracting Subscribers"
         TaxCaseExecution.HandleEvent('OnAfterGSTBaseAmountUpdate', Rec, '', 0);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Delivery Challan Line", 'OnAfterValidateEvent', 'GST Group Code', false, false)]
+    local procedure CalculateTaxDeliveryChallanLineGSTGroupCode(var Rec: Record "Delivery Challan Line")
+    var
+        TaxCaseExecution: Codeunit "Use Case Execution";
+    begin
+        TaxCaseExecution.HandleEvent('OnAfterGSTBaseAmountUpdate', Rec, '', 0);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Delivery Challan Line", 'OnAfterValidateEvent', 'HSN/SAC Code', false, false)]
+    local procedure CalculateTaxDeliveryChallanHSNSACCode(var Rec: Record "Delivery Challan Line")
+    var
+        TaxCaseExecution: Codeunit "Use Case Execution";
+    begin
+        TaxCaseExecution.HandleEvent('OnAfterGSTBaseAmountUpdate', Rec, '', 0);
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Tax Transaction Value", 'OnBeforeTableFilterApplied', '', false, false)]
     local procedure OnBeforeTableFilterAppliedDeliveryChallanLine(var TaxRecordID: RecordID; LineNoFilter: Integer; DocumentNoFilter: Text)
     var
@@ -149,6 +165,22 @@ codeunit 18469 "Subcontracting Subscribers"
 
     [EventSubscriber(ObjectType::Table, Database::"GST Liability Line", 'OnAfterValidateEvent', 'GST Base Amount', false, false)]
     local procedure HandleGSTLiabilityLineUseCase(var Rec: Record "GST Liability Line")
+    var
+        TaxCaseExecution: Codeunit "Use Case Execution";
+    begin
+        TaxCaseExecution.HandleEvent('OnAfterGSTBaseAmountUpdate', Rec, '', 0);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"GST Liability Line", 'OnAfterValidateEvent', 'GST Group Code', false, false)]
+    local procedure CalculateGSTLiabilityLineGSTGroupCode(var Rec: Record "GST Liability Line")
+    var
+        TaxCaseExecution: Codeunit "Use Case Execution";
+    begin
+        TaxCaseExecution.HandleEvent('OnAfterGSTBaseAmountUpdate', Rec, '', 0);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"GST Liability Line", 'OnAfterValidateEvent', 'HSN/SAC Code', false, false)]
+    local procedure CalculateGSTLiabilityLineHSNSACCode(var Rec: Record "GST Liability Line")
     var
         TaxCaseExecution: Codeunit "Use Case Execution";
     begin

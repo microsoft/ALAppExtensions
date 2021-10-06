@@ -1,0 +1,25 @@
+{
+  "id": "40d64215-8abc-4d96-87dc-2894e5431115",
+  "name": "DK Core",
+  "publisher": "Microsoft",
+  "version": "19.0.0.0",
+  "brief": "Provides standard local functionality in Business Central for Denmark.",
+  "description": "Provides standard local functionality in Business Central for Denmark.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://docs.microsoft.com/en-us/dynamics365/business-central/localfunctionality/denmark/denmark-local-functionality",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "./ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://docs.microsoft.com/en-us/dynamics365/business-central/localfunctionality/denmark/denmark-local-functionality",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "19.0.0.0",
+  "application": "19.0.0.0",
+  "idRanges": [
+    {
+      "from": 13600,
+      "to": 13699
+    }
+  ],
+  "runtime": "8.0"
+}

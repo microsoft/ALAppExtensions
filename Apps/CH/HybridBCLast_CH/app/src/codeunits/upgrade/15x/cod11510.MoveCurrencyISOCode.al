@@ -23,14 +23,21 @@ codeunit 11510 "Move Currency ISO Code"
     local procedure MoveCurrencyISOCode()
     var
         Currency: Record "Currency";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetMoveCurrencyISOCodeTag()) then
+            exit;
+
         with Currency do begin
             SetFilter("ISO Currency Code", '<>%1', '');
-            If FindSet(true, false) then
+            if FindSet(true, false) then
                 repeat
                     "ISO Code" := "ISO Currency Code";
                     Modify();
                 until Next() = 0;
         end;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetMoveCurrencyISOCodeTag());
     end;
 }

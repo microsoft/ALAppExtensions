@@ -274,6 +274,9 @@ codeunit 1080 "MS - Wallet Mgt."
     var
         PaymentMethod: Record "Payment Method";
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         RegisterWalletPaymentMethod(PaymentMethod);
     end;
 

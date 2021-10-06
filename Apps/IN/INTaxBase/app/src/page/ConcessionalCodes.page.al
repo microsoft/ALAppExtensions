@@ -43,10 +43,10 @@ page 18544 "Concessional Codes"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     ConcessionalCodeLbl: Label 'Code eq %1', Comment = '%1= Concessional Code';
                 begin
-                    ODataUtility.EditWorksheetInExcel(
+                    EditinExcel.EditPageInExcel(
                         'Concessional Codes',
                         CurrPage.ObjectId(false),
                         StrSubstNo(ConcessionalCodeLbl, Rec.Code));

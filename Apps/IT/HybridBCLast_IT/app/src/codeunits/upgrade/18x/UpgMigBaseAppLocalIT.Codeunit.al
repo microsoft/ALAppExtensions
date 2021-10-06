@@ -19,7 +19,12 @@ codeunit 12106 "Upg Mig BaseApp Local IT"
     local procedure UpgradeIntrastatJnlLine(CountryCode: Text)
     var
         IntrastatJnlLine: Record "Intrastat Jnl. Line";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetIntrastatJnlLinePartnerIDUpgradeTag()) THEN
+            exit;
+
         if CountryCode <> ITCountryCodeTxt then
             exit;
 
@@ -28,6 +33,8 @@ codeunit 12106 "Upg Mig BaseApp Local IT"
                 IntrastatJnlLine."Partner VAT ID" := IntrastatJnlLine."VAT Registration No.";
                 IntrastatJnlLine.Modify();
             until IntrastatJnlLine.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetIntrastatJnlLinePartnerIDUpgradeTag());
     end;
 }
 

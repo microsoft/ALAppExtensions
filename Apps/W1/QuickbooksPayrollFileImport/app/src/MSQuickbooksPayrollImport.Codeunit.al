@@ -203,7 +203,7 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
                     END;
                     IF TransactionDescriptionFieldNo <> -1 THEN
                         TempImportGLTransaction.Description :=
-                          COPYSTR(TempCSVBuffer.GetValueOfLineAt(TransactionDescriptionFieldNo),
+                          COPYSTR(TempCSVBuffer.GetValueOfLineAt(TransactionDescriptionFieldNo, True),
                             1, MAXSTRLEN(TempImportGLTransaction.Description));
                     EntryNo += 1;
                     TempImportGLTransaction."Entry No." := EntryNo;

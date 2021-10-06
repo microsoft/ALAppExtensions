@@ -13,7 +13,7 @@ pageextension 13677 "OIOUBL-Service Invoice Subform" extends "Service Invoice Su
             {
                 ApplicationArea = Service;
                 Visible = false;
-                ToolTip = 'Specifies the account code of the customer.';
+                ToolTip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
             }
         }
     }

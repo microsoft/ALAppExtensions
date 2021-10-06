@@ -209,6 +209,9 @@ codeunit 4509 "Email - Outlook API Helper"
     [EventSubscriber(ObjectType::Table, Database::"Email - Outlook API Setup", 'OnBeforeDeleteEvent', '', false, false)]
     local procedure OnDeleteOutlookAPIAccount(var Rec: Record "Email - Outlook API Setup")
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if IsolatedStorage.Contains(Rec.ClientId, DataScope::Module) then
             IsolatedStorage.Delete(Rec.ClientId, DataScope::Module);
 

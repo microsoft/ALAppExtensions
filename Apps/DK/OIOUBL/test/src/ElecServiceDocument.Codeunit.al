@@ -1572,7 +1572,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
             exit;
 
         UpdateServiceSetup();
-        UpdateGeneralLedgerSetup();
         UpdateOIOUBLCountryRegionCode();
 
         isInitialized := true;
@@ -1903,17 +1902,15 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
     local procedure GetAmountsServiceInvoiceLines(ServiceInvHeaderNo: Code[20]; var LineExtensionAmounts: List of [Decimal]; var PriceAmounts: List of [Decimal]; var TotalAllowanceChargeAmount: Decimal)
     var
-        GeneralLedgerSetup: Record "General Ledger Setup";
         ServiceInvoiceLine: Record "Service Invoice Line";
     begin
-        GeneralLedgerSetup.Get();
         TotalAllowanceChargeAmount := 0;
         with ServiceInvoiceLine do begin
             SetRange("Document No.", ServiceInvHeaderNo);
             FindSet();
             repeat
                 LineExtensionAmounts.Add(Amount + "Inv. Discount Amount");
-                PriceAmounts.Add(Round((Amount + "Inv. Discount Amount") / Quantity, GeneralLederSetup."Unit-Amount Rounding Permissions"));
+                PriceAmounts.Add(Round((Amount + "Inv. Discount Amount") / Quantity));
                 TotalAllowanceChargeAmount += "Inv. Discount Amount";
             until Next() = 0;
         end;
@@ -1921,11 +1918,9 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
     local procedure GetAmountsServiceInvoiceLinesPricesInclVAT(ServiceInvHeaderNo: Code[20]; var LineExtensionAmounts: List of [Decimal]; var PriceAmounts: List of [Decimal]; var TotalAllowanceChargeAmount: Decimal)
     var
-        GeneralLedgerSetup: Record "General Ledger Setup";
         ServiceInvoiceLine: Record "Service Invoice Line";
         ExclVATFactor: Decimal;
     begin
-        GeneralLedgerSetup.Get();
         TotalAllowanceChargeAmount := 0;
         with ServiceInvoiceLine do begin
             SetRange("Document No.", ServiceInvHeaderNo);
@@ -1933,7 +1928,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
             repeat
                 ExclVATFactor := 1 + "VAT %" / 100;
                 LineExtensionAmounts.Add(Amount + Round("Inv. Discount Amount" / ExclVATFactor));
-                PriceAmounts.Add(Round((Amount + Round("Inv. Discount Amount" / ExclVATFactor)) / Quantity, GeneralLederSetup."Unit-Amount Rounding Permissions"));
+                PriceAmounts.Add(Round((Amount + Round("Inv. Discount Amount" / ExclVATFactor)) / Quantity));
                 TotalAllowanceChargeAmount += Round("Inv. Discount Amount" / ExclVATFactor);
             until Next() = 0;
         end;
@@ -1941,17 +1936,15 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
     local procedure GetAmountsServiceCrMemoLines(ServiceCrMemoHeaderNo: Code[20]; var LineExtensionAmounts: List of [Decimal]; var PriceAmounts: List of [Decimal]; var TotalAllowanceChargeAmount: Decimal)
     var
-        GeneralLedgerSetup: Record "General Ledger Setup";
         ServiceCrMemoLine: Record "Service Cr.Memo Line";
     begin
-        GeneralLedgerSetup.Get();
         TotalAllowanceChargeAmount := 0;
         with ServiceCrMemoLine do begin
             SetRange("Document No.", ServiceCrMemoHeaderNo);
             FindSet();
             repeat
                 LineExtensionAmounts.Add(Amount + "Inv. Discount Amount");
-                PriceAmounts.Add(Round((Amount + "Inv. Discount Amount") / Quantity, GeneralLederSetup."Unit-Amount Rounding Permissions"));
+                PriceAmounts.Add(Round((Amount + "Inv. Discount Amount") / Quantity));
                 TotalAllowanceChargeAmount += "Inv. Discount Amount";
             until Next() = 0;
         end;
@@ -2120,17 +2113,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
             Validate("OIOUBL-Service Cr. Memo Path", TemporaryPath());
             Modify(true);
         end;
-    end;
-
-    local procedure UpdateGeneralLedgerSetup();
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-    begin
-        // Make sure that G/L Setup has move then 2 decimal places
-        GeneralLedgerSetup.Get();
-        GeneralLedgerSetup.Validate("Unit-Amount Decimal Places", '2:5');
-        GeneralLedgerSetup.Validate("Unit-Amount Rounding Precision", 0.00001);
-        GeneralLedgerSetup.Modify(true);
     end;
 
     local procedure UpdateCompanySwiftCode()

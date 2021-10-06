@@ -13,7 +13,7 @@ pageextension 13679 "OIOUBL-Service Credit Memo Sub" extends "Service Credit Mem
             {
                 ApplicationArea = Service;
                 Visible = false;
-                ToolTip = 'Specifies the account code of the customer.';
+                ToolTip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
             }
         }
     }

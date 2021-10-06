@@ -219,7 +219,7 @@ page 31277 "Posted Compensation Card CZC"
                 }
                 action(SelectIncomingDoc)
                 {
-                    AccessByPermission = TableData "Incoming Document" = R;
+                    AccessByPermission = tabledata "Incoming Document" = R;
                     ApplicationArea = Basic, Suite;
                     Caption = 'Select Incoming Document';
                     Enabled = not HasIncomingDocument;

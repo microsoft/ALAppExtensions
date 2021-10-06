@@ -1,6 +1,6 @@
 codeunit 31381 "G/L Entry - Edit CZA"
 {
-    Permissions = TableData "G/L Entry" = rim;
+    Permissions = tabledata "G/L Entry" = rim;
     TableNo = "G/L Entry";
 
     trigger OnRun()

@@ -207,5 +207,10 @@ tableextension 18144 "GST Sales Cr.Memo Header Ext" extends "Sales Cr.Memo Heade
             Caption = 'Cancel Reason';
             DataClassification = CustomerContent;
         }
+        field(18180; "Post GST to Customer"; Boolean)
+        {
+            Caption = 'Post GST to Customer';
+            DataClassification = CustomerContent;
+        }
     }
 }

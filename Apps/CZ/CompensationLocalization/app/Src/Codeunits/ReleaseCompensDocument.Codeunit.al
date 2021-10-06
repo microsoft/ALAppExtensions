@@ -13,7 +13,9 @@ codeunit 31278 "Release Compens. Document CZC"
         CompensationHeaderCZC: Record "Compensation Header CZC";
         CompensationsSetupCZC: Record "Compensations Setup CZC";
         MustBeLessOrEqualErr: Label '%1 must be less or equal to %2.', Comment = '%1 = Compensation Balance (LCY) FieldCaption, %2 = Max. Rounding Amount FieldCaption';
+#if not CLEAN19
         UseChangedLedgerEntryQst: Label '%1 %2 %3 is already used. Do you want to use it for Compensation?', Comment = '%1 = Customer/Vendor LE TableCaption, %2 = Entry No. FieldCption, %3 = Entry No.';
+#endif
         CurrencyFactorErr: Label 'All lines with currency %1 must have the same currency factor.', Comment = '%1 = Currency Code';
         ApprovalProcessReleaseErr: Label 'This document can only be released when the approval process is complete.';
         ApprovalProcessReopenErr: Label 'The approval process must be cancelled or completed to reopen this document.';
@@ -24,7 +26,7 @@ codeunit 31278 "Release Compens. Document CZC"
             exit;
 
         OnBeforeReleaseCompensationCZC(CompensationHeaderCZC);
-        CompensationHeaderCZC.OnCheckCompensationReleaseRestrictions();
+        CompensationHeaderCZC.CheckCompensationReleaseRestrictions();
         CheckCompensationBalance(CompensationHeaderCZC);
         CheckCompensationLines(CompensationHeaderCZC);
 
@@ -92,26 +94,34 @@ codeunit 31278 "Release Compens. Document CZC"
                     CompensationLineCZC."Source Type"::Customer:
                         if CompensationLineCZC."Source Entry No." <> 0 then begin
                             CustLedgerEntry.Get(CompensationLineCZC."Source Entry No.");
-                            CustLedgerEntry.CalcFields("Amount on Payment Order (LCY)");
                             CustLedgerEntry.TestField(Prepayment, false);
+#if not CLEAN19
+#pragma warning disable AL0432
                             CustLedgerEntry.TestField("Prepayment Type", CustLedgerEntry."Prepayment Type"::" ");
+                            CustLedgerEntry.CalcFields("Amount on Payment Order (LCY)");
                             if CustLedgerEntry."Amount on Payment Order (LCY)" <> 0 then
                                 if not Confirm(UseChangedLedgerEntryQst, false,
                                      CustLedgerEntry.TableCaption, CustLedgerEntry.FieldCaption("Entry No."), CustLedgerEntry."Entry No.")
                                 then
                                     CustLedgerEntry.TestField("Amount on Payment Order (LCY)", 0);
+#pragma warning restore AL0432
+#endif
                         end;
                     CompensationLineCZC."Source Type"::Vendor:
                         if CompensationLineCZC."Source Entry No." <> 0 then begin
                             VendorLedgerEntry.Get(CompensationLineCZC."Source Entry No.");
-                            VendorLedgerEntry.CalcFields("Amount on Payment Order (LCY)");
                             VendorLedgerEntry.TestField(Prepayment, false);
+#if not CLEAN19
+#pragma warning disable AL0432
                             VendorLedgerEntry.TestField("Prepayment Type", VendorLedgerEntry."Prepayment Type"::" ");
+                            VendorLedgerEntry.CalcFields("Amount on Payment Order (LCY)");
                             if VendorLedgerEntry."Amount on Payment Order (LCY)" <> 0 then
                                 if not Confirm(UseChangedLedgerEntryQst, false,
                                      VendorLedgerEntry.TableCaption, VendorLedgerEntry.FieldCaption("Entry No."), VendorLedgerEntry."Entry No.")
                                 then
                                     VendorLedgerEntry.TestField("Amount on Payment Order (LCY)", 0);
+#pragma warning restore AL0432
+#endif
                         end;
                 end;
             until CompensationLineCZC.Next() = 0;
