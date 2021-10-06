@@ -30,6 +30,12 @@
                              "version":  "19.0.0.0"
                          },
                          {
+                            "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+                            "name": "Library Variable Storage",
+                            "publisher": "Microsoft",
+                            "version": "18.3.0.0"
+                         },
+                         {
                              "id":  "0846d207-5dec-4c1b-afd8-6a25e1e14b9d",
                              "name":  "Base64 Convert",
                              "publisher":  "Microsoft",
@@ -67,7 +73,7 @@
                     },
                     {
                         "from":  132611,
-                        "to":  132611
+                        "to":  132613
                     }
                  ]
 }
