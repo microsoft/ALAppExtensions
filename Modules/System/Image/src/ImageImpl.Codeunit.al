@@ -14,18 +14,22 @@ codeunit 3970 "Image Impl."
         HeightErr: Label 'Parameter Height must be greater than 0';
         XErr: Label 'Parameter X must be between 0 and image width';
         YErr: Label 'Parameter Y must be between 0 and image height';
+        AlphaErr: Label 'Parameter Alpha must be between 0 and 255';
+        RedErr: Label 'Parameter Red must be between 0 and 255';
+        GreenErr: Label 'Parameter Green must be between 0 and 255';
+        BlueErr: Label 'Parameter Blue must be between 0 and 255';
         FormatErr: Label 'Image is not in valid format';
-        ImageToLargeErr: Label 'Input image to large. Max allowed size is 5 MB';
+        ImageTooLargeErr: Label 'Input image too large. Max allowed size is 5 MB';
         UnsupportedFormatErr: Label 'Format is currently not supported';
         QualityEncodeGuidTxt: Label '1d5be4b5-fa4a-452d-9cdd-5db35105e7eb', Locked = true;
         ImageCroppedTxt: Label 'Image cropped to x: %1, y: %2, width: %3, height: %4, format: %5', Locked = true;
         ImageResizeTxt: Label 'Image with width: %1, height: %2, format: %3 was resized', Locked = true;
         ImageCreatedTxt: Label 'Image created with size: %1, width: %2, height: %3, format: %4', Locked = true;
-        ImageToLargeTxt: Label 'Image uploaded with size: %1', Locked = true;
+        ImageTooLargeTxt: Label 'Image uploaded with size: %1', Locked = true;
         FormatTxt: Label 'Image input data is in wrong format';
         ImageCatTxt: Label 'Image Module', Locked = true;
 
-    procedure Clear(Red: Integer; Green: Integer; Blue: Integer)
+    procedure Clear(Alpha: Integer; Red: Integer; Green: Integer; Blue: Integer)
     var
         Rectangle: DotNet Rectangle;
         Image: DotNet Image;
@@ -39,6 +43,15 @@ codeunit 3970 "Image Impl."
         CurrentWidth := GetWidth();
         CurrentHeight := GetHeight();
 
+        if (Alpha < 0) or (Alpha > 255) then
+            Error(AlphaErr);
+        if (Red < 0) or (Red > 255) then
+            Error(RedErr);
+        if (Green < 0) or (Green > 255) then
+            Error(GreenErr);
+        if (Blue < 0) or (Blue > 255) then
+            Error(BlueErr);
+
         TempBlob.CreateInStream(InStream);
         Image := Image.FromStream(InStream);
 
@@ -47,7 +60,7 @@ codeunit 3970 "Image Impl."
         BitmapDst := BitmapDst.Bitmap(CurrentWidth, CurrentHeight);
         Graphics := Graphics.FromImage(BitmapDst);
 
-        Color.FromArgb(255, Red, Green, Blue);
+        Color.FromArgb(Alpha, Red, Green, Blue);
         Graphics.Clear(Color);
         Graphics.DrawImage(Image, Rectangle, Rectangle, GraphicsUnit::Pixel);
         Graphics.Dispose();
@@ -165,7 +178,7 @@ codeunit 3970 "Image Impl."
 
     procedure GetFormat(): Enum "Image Format"
     var
-        Format: DotnEt ImageFormat;
+        Format: DotNet ImageFormat;
         Image: DotNet Image;
         EnumFormat: Enum "Image Format";
         InStream: InStream;
@@ -253,14 +266,14 @@ codeunit 3970 "Image Impl."
         Size, Width, Height : Integer;
     begin
         if TempBlob.Length() > 5000000 then begin
-            Session.LogMessage('0000FMA', StrSubstNo(ImageToLargeTxt, TempBlob.Length()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageCatTxt);
-            Clear(TempBlob);
-            Error(ImageToLargeErr);
+            Session.LogMessage('0000FMA', StrSubstNo(ImageTooLargeTxt, TempBlob.Length()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageCatTxt);
+            System.Clear(TempBlob);
+            Error(ImageTooLargeErr);
         end;
 
         if not CreateImage(Image, InStream) then begin
             Session.LogMessage('0000FMB', FormatTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageCatTxt);
-            Clear(TempBlob);
+            System.Clear(TempBlob);
             Error(FormatErr);
         end;
 
@@ -292,7 +305,7 @@ codeunit 3970 "Image Impl."
 
     local procedure EncodeToImage(Bitmap: DotNet Bitmap)
     var
-        EncoderParameters: Dotnet EncoderParameters;
+        EncoderParameters: DotNet EncoderParameters;
         EncoderParameterArray: DotNet Array;
         EncoderParameter: DotNet EncoderParameter;
         Encoder: DotNet Encoder;

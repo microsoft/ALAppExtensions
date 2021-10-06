@@ -130,20 +130,36 @@ codeunit 135135 "Image Tests"
         TempBlob: Codeunit "Temp Blob";
         OutStream: OutStream;
         ImageAsBase64ClearTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAAAcSURBVChTY/zPwABEhAETlCYIRhXiBUQqZGAAAD2cAhKD+AbjAAAAAElFTkSuQmCC', Locked = true;
+        CurrentWidth, CurrentHeight : Integer;
     begin
         // [Given] base64 encoded data, create image
         Image.FromBase64(ImageAsBase64Txt);
+        CurrentWidth := Image.GetWidth();
+        CurrentHeight := Image.GetHeight();
 
-        // [When] Clearing image
+        // [When] clearing image
         Image.Clear(255, 0, 0);
 
         // [Then] verify image
-        Assert.AreEqual(Image.ToBase64(), ImageAsBase64ClearTxt, 'Clear failed');
+        Assert.AreEqual(CurrentWidth, Image.GetWidth(), 'Incorrect width');
+        Assert.AreEqual(CurrentHeight, Image.GetHeight(), 'Incorrect height');
+        Assert.AreEqual(ImageAsBase64ClearTxt, Image.ToBase64(), 'Clear failed');
 
         // [Then] save to stream
         TempBlob.CreateOutStream(OutStream);
         Image.Save(OutStream);
         Assert.AreNotEqual(0, TempBlob.Length(), 'Image was not saved');
+    end;
+
+    [Test]
+    procedure InvalidClearTest()
+    begin
+        // [Given] base64 encoded data, create image
+        Image.FromBase64(ImageAsBase64Txt);
+
+        // [Then] Fail to do invalid resizing 
+        asserterror Image.Clear(-1, 0, 0);
+        Assert.ExpectedError('Parameter Red must be between 0 and 255');
     end;
 
     [Test]
@@ -189,17 +205,43 @@ codeunit 135135 "Image Tests"
         OutStream: OutStream;
         ImageAsBase64HorizontalTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAIAAADzBuo/AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAAUSURBVBhXY6AS+P//PxqDQsDAAADP2QX7LebCcQAAAABJRU5ErkJggg==', Locked = true;
         ImageAsBase64VerticalTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAKCAIAAADzWwNnAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAAXSURBVBhXYyAP/P//H8oiDpCqHgoYGADezwX75D+gjQAAAABJRU5ErkJggg==', Locked = true;
+        CurrentWidth, CurrentHeight : Integer;
     begin
         // [Given] base64 encoded data, create image
         Image.FromBase64(ImageAsBase64HorizontalTxt);
+        CurrentWidth := Image.GetWidth();
+        CurrentHeight := Image.GetHeight();
 
         // [When] rotate image
         Image.RotateFlip(RotateFlipType::Rotate90FlipNone);
 
         // [Then] verify image
-        Assert.AreEqual(5, Image.GetWidth(), 'Incorrect width');
-        Assert.AreEqual(10, Image.GetHeight(), 'Incorrect height');
-        Assert.AreEqual(Image.ToBase64(), ImageAsBase64VerticalTxt, 'RotateFlip failed');
+        Assert.AreEqual(CurrentHeight, Image.GetWidth(), 'Incorrect width');
+        Assert.AreEqual(CurrentWidth, Image.GetHeight(), 'Incorrect height');
+        Assert.AreEqual(ImageAsBase64VerticalTxt, Image.ToBase64(), 'RotateFlip failed');
+
+        // [Then] save to stream
+        TempBlob.CreateOutStream(OutStream);
+        Image.Save(OutStream);
+        Assert.AreNotEqual(0, TempBlob.Length(), 'Image was not saved');
+    end;
+
+    [Test]
+    procedure RotateFlip360Test()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        RotateFlipType: Enum "Rotate Flip Type";
+        OutStream: OutStream;
+    begin
+        // [Given] base64 encoded datam create image
+        Image.FromBase64(ImageAsBase64Txt);
+
+        // [When] rotate image 360 degrees
+        Image.RotateFlip(RotateFlipType::Rotate180FlipNone);
+        Image.RotateFlip(RotateFlipType::Rotate180FlipNone);
+
+        // [Then] verify image
+        Assert.AreEqual(ImageAsBase64Txt, Image.ToBase64(), 'RotateFlip failed');
 
         // [Then] save to stream
         TempBlob.CreateOutStream(OutStream);

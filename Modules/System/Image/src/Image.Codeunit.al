@@ -16,12 +16,24 @@ codeunit 3971 Image
     /// <summary>
     /// Clears the entire drawing surface and fills it with the specified background color.
     /// </summary>
-    /// <param name="Red">Red value.</param>
-    /// <param name="Green">Green value.</param>
-    /// <param name="Blue">Blue value.</param>
+    /// <param name="Alpha">The alpha component. Valid values are 0 through 255.</param>
+    /// <param name="Red">The red component. Valid values are 0 through 255.</param>
+    /// <param name="Green">The green component. Valid values are 0 through 255.</param>
+    /// <param name="Blue">The blue component. Valid values are 0 through 255.</param>
+    procedure Clear(Alpha: Integer; Red: Integer; Green: Integer; Blue: Integer)
+    begin
+        ImageImpl.Clear(Alpha, Red, Green, Blue);
+    end;
+
+    /// <summary>
+    /// Clears the entire drawing surface and fills it with the specified background color.
+    /// </summary>
+    /// <param name="Red">The red component. Valid values are 0 through 255.</param>
+    /// <param name="Green">The green component. Valid values are 0 through 255.</param>
+    /// <param name="Blue">The blue component. Valid values are 0 through 255.</param>
     procedure Clear(Red: Integer; Green: Integer; Blue: Integer)
     begin
-        ImageImpl.Clear(Red, Green, Blue);
+        Clear(255, Red, Green, Blue);
     end;
 
     /// <summary>
