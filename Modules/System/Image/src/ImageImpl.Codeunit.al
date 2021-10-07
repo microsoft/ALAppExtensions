@@ -31,11 +31,8 @@ codeunit 3970 "Image Impl."
 
     procedure Clear(Alpha: Integer; Red: Integer; Green: Integer; Blue: Integer)
     var
-        Rectangle: DotNet Rectangle;
         Image: DotNet Image;
         Graphics: DotNet Graphics;
-        GraphicsUnit: DotNet GraphicsUnit;
-        BitmapDst: DotNet Bitmap;
         Color: DotNet Color;
         InStream: InStream;
         CurrentWidth, CurrentHeight : Integer;
@@ -55,18 +52,13 @@ codeunit 3970 "Image Impl."
         TempBlob.CreateInStream(InStream);
         Image := Image.FromStream(InStream);
 
-        Rectangle := Rectangle.Rectangle(0, 0, CurrentWidth, CurrentHeight);
+        Graphics := Graphics.FromImage(Image);
 
-        BitmapDst := BitmapDst.Bitmap(CurrentWidth, CurrentHeight);
-        Graphics := Graphics.FromImage(BitmapDst);
-
-        Color.FromArgb(Alpha, Red, Green, Blue);
+        Color := Color.FromArgb(Alpha, Red, Green, Blue);
         Graphics.Clear(Color);
-        Graphics.DrawImage(Image, Rectangle, Rectangle, GraphicsUnit::Pixel);
         Graphics.Dispose();
 
-        EncodeToImage(BitmapDst);
-        BitmapDst.Dispose();
+        EncodeToImage(Image);
     end;
 
     procedure Crop(X: Integer; Y: Integer; Width: Integer; Height: Integer)
@@ -283,7 +275,6 @@ codeunit 3970 "Image Impl."
         Width := GetWidth();
         Height := GetHeight();
         Session.LogMessage('0000FLP', StrSubstNo(ImageCreatedTxt, Size, Width, Height, GetFormatAsString()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageCatTxt);
-
     end;
 
     [TryFunction]
@@ -323,5 +314,4 @@ codeunit 3970 "Image Impl."
         TempBlob.CreateOutStream(OutStream);
         Bitmap.Save(OutStream, ImageCodec, EncoderParameters);
     end;
-
 }

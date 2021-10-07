@@ -129,7 +129,7 @@ codeunit 135135 "Image Tests"
     var
         TempBlob: Codeunit "Temp Blob";
         OutStream: OutStream;
-        ImageAsBase64ClearTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAAAcSURBVChTY/zPwABEhAETlCYIRhXiBUQqZGAAAD2cAhKD+AbjAAAAAElFTkSuQmCC', Locked = true;
+        ImageAsBase64ClearTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwgAADsIBFShKgAAAACNJREFUKFN9x7ENAAAIwKD+/7TOMpiw0PTx8PDw8PDw8PBHLbfKY51z/cP9AAAAAElFTkSuQmCC', Locked = true;
         CurrentWidth, CurrentHeight : Integer;
     begin
         // [Given] base64 encoded data, create image
@@ -204,7 +204,7 @@ codeunit 135135 "Image Tests"
         RotateFlipType: Enum "Rotate Flip Type";
         OutStream: OutStream;
         ImageAsBase64HorizontalTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAIAAADzBuo/AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAAUSURBVBhXY6AS+P//PxqDQsDAAADP2QX7LebCcQAAAABJRU5ErkJggg==', Locked = true;
-        ImageAsBase64VerticalTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAKCAIAAADzWwNnAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAAXSURBVBhXYyAP/P//H8oiDpCqHgoYGADezwX75D+gjQAAAABJRU5ErkJggg==', Locked = true;
+        ImageAsBase64VerticalTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAKCAIAAADzWwNnAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAScwAAEnMBjCK5BwAAABdJREFUGFdjIA/8//8fyiIOkKoeChgYAN7PBfvkP6CNAAAAAElFTkSuQmCCAABJRU5ErkJggg==', Locked = true;
         CurrentWidth, CurrentHeight : Integer;
     begin
         // [Given] base64 encoded data, create image
@@ -232,15 +232,22 @@ codeunit 135135 "Image Tests"
         TempBlob: Codeunit "Temp Blob";
         RotateFlipType: Enum "Rotate Flip Type";
         OutStream: OutStream;
+        CurrentWidth, CurrentHeight : Integer;
     begin
-        // [Given] base64 encoded datam create image
+        // [Given] base64 encoded data, create image
         Image.FromBase64(ImageAsBase64Txt);
+        CurrentWidth := Image.GetWidth();
+        CurrentHeight := Image.GetHeight();
 
         // [When] rotate image 360 degrees
-        Image.RotateFlip(RotateFlipType::Rotate180FlipNone);
-        Image.RotateFlip(RotateFlipType::Rotate180FlipNone);
+        Image.RotateFlip(RotateFlipType::Rotate90FlipNone);
+        Image.RotateFlip(RotateFlipType::Rotate90FlipNone);
+        Image.RotateFlip(RotateFlipType::Rotate90FlipNone);
+        Image.RotateFlip(RotateFlipType::Rotate90FlipNone);
 
         // [Then] verify image
+        Assert.AreEqual(CurrentHeight, Image.GetWidth(), 'Incorrect width');
+        Assert.AreEqual(CurrentWidth, Image.GetHeight(), 'Incorrect height');
         Assert.AreEqual(ImageAsBase64Txt, Image.ToBase64(), 'RotateFlip failed');
 
         // [Then] save to stream
