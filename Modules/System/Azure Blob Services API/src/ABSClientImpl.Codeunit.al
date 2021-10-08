@@ -116,11 +116,16 @@ codeunit 9051 "ABS Client Impl."
     procedure PutBlobBlockBlobUI(OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
         OperationResponse: Codeunit "ABS Operation Response";
+        TempBlob: Codeunit "Temp Blob";
         Filename: Text;
         SourceStream: InStream;
+        ChooseFileTitleMsg: Label 'Choose the file to upload.';
     begin
-        if UploadIntoStream('*.*', SourceStream) then
+        Filename := FileManagement.BLOBImportWithFilter(TempBlob, ChooseFileTitleMsg, '', 'All Files (*.*)|*.*', '*.*');
+        if Filename <> '' then begin 
+            TempBlob.CreateInStream(SourceStream);
             OperationResponse := PutBlobBlockBlobStream(Filename, SourceStream, OptionalParameters);
+        end;
 
         exit(OperationResponse);
     end;
