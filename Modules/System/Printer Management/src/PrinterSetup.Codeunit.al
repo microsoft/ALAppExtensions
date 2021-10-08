@@ -11,16 +11,16 @@ codeunit 2616 "Printer Setup"
     Access = Public;
 
     /// <summary>
-    /// Retrieves the Printer Type for a printer.
+    /// Gets the type of a printer.
     /// </summary>
-    /// <param name="PrinterType">The Printer Type</param>
-    /// <param name="Device">The Device property value for the printer.</param>
+    /// <param name="Printer">The printer.</param>
+    /// <returns>The printer type.</returns>
     [Scope('OnPrem')]
-    procedure GetPrinterCategory(var PrinterType: Enum "Printer Type"; Device: Text[50])
+    procedure GetPrinterType(Printer: Record Printer): Enum "Printer Type"
     var
         PrinterSetupImpl: Codeunit "Printer Setup Impl.";
     begin
-        PrinterSetupImpl.GetPrinterCategory(PrinterType, Device);
+        exit(PrinterSetupImpl.GetPrinterType(Printer));
     end;
 
     /// <summary>
