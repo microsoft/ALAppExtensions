@@ -35,11 +35,7 @@ codeunit 3970 "Image Impl."
         Graphics: DotNet Graphics;
         Color: DotNet Color;
         InStream: InStream;
-        CurrentWidth, CurrentHeight : Integer;
     begin
-        CurrentWidth := GetWidth();
-        CurrentHeight := GetHeight();
-
         if (Alpha < 0) or (Alpha > 255) then
             Error(AlphaErr);
         if (Red < 0) or (Red > 255) then
