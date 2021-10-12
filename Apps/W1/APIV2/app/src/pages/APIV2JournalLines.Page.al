@@ -193,14 +193,15 @@ page 30049 "APIV2 - JournalLines"
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
+        GenJournalBatch: Record "Gen. Journal Batch";
         TempGenJournalLine: Record "Gen. Journal Line" temporary;
     begin
         TempGenJournalLine.Reset();
         TempGenJournalLine.Copy(Rec);
 
         Clear(Rec);
-        GraphMgtJournalLines.SetJournalLineTemplateAndBatch(
-          Rec, LibraryAPIGeneralJournal.GetBatchNameFromId(TempGenJournalLine.GetFilter("Journal Batch Id")));
+        GenJournalBatch.GetBySystemId(TempGenJournalLine.GetFilter("Journal Batch Id"));
+        GraphMgtJournalLines.SetJournalLineTemplateAndBatchV2(Rec, GenJournalBatch);
         LibraryAPIGeneralJournal.InitializeLine(
           Rec, TempGenJournalLine."Line No.", TempGenJournalLine."Document No.", TempGenJournalLine."External Document No.");
 
@@ -240,7 +241,8 @@ page 30049 "APIV2 - JournalLines"
 
     trigger OnOpenPage()
     begin
-        GraphMgtJournalLines.SetJournalLineFiltersV1(Rec);
+        Rec.SetRange("Document Type", Rec."Document Type"::" ");
+        Rec.SetRange("Account Type", Rec."Account Type"::"G/L Account", Rec."Account Type"::"Bank Account");
     end;
 
     var

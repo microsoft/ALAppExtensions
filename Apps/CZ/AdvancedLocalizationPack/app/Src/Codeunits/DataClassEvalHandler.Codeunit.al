@@ -13,6 +13,7 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         AssemblyLine: Record "Assembly Line";
         AssemblySetup: Record "Assembly Setup";
         CapacityLedgerEntry: Record "Capacity Ledger Entry";
+        DefaultDimension: Record "Default Dimension";
         GLEntry: Record "G/L Entry";
         InventorySetup: Record "Inventory Setup";
         ItemJournalLine: Record "Item Journal Line";
@@ -39,6 +40,11 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         DataClassificationMgt.SetFieldToNormal(Database::"Assembly Line", AssemblyLine.FieldNo("Gen. Bus. Posting Group CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Assembly Setup", AssemblySetup.FieldNo("Default Gen.Bus.Post. Grp. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Capacity Ledger Entry", CapacityLedgerEntry.FieldNo("User ID CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Default Dimension", DefaultDimension.FieldNo("Automatic Create CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Default Dimension", DefaultDimension.FieldNo("Dim. Description Field ID CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Default Dimension", DefaultDimension.FieldNo("Dim. Description Format CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Default Dimension", DefaultDimension.FieldNo("Dim. Description Update CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Default Dimension", DefaultDimension.FieldNo("Auto. Create Value Posting CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("Closed at Date CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("Applies-to ID CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("Amount to Apply CZA"));

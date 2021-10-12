@@ -2,7 +2,9 @@ pageextension 31002 "Phys. Invt. Ledger Entries CZL" extends "Phys. Inventory Le
 {
     actions
     {
+#pragma warning disable AL0432
         addlast(reporting)
+#pragma warning restore AL0432
         {
             action(PhysInventoryDocumentCZL)
             {

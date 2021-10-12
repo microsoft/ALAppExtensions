@@ -1,5 +1,9 @@
 codeunit 10032 "Upg. Mig. Sales Tax CA"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '19.0';
+
     trigger OnRun()
     begin
     end;
@@ -25,8 +29,13 @@ codeunit 10032 "Upg. Mig. Sales Tax CA"
         PurchCrMemoLine: Record "Purch. Cr. Memo Line";
         ServiceInvoiceLine: Record "Service Invoice Line";
         ServiceCrMemoLine: Record "Service Cr.Memo Line";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
+        UpgradeTag: Codeunit "Upgrade Tag";
         Positive: Boolean;
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetSalesTaxDiffPositiveFieldUpgradeTag()) THEN
+            exit;
+
         if SalesTaxAmountDifference.FindSet(true) then
             repeat
                 Positive := true;
@@ -122,5 +131,7 @@ codeunit 10032 "Upg. Mig. Sales Tax CA"
                     if SalesTaxAmountDifference.Modify() then;
                 end;
             until SalesTaxAmountDifference.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetSalesTaxDiffPositiveFieldUpgradeTag());
     end;
 }

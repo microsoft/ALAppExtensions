@@ -14,6 +14,7 @@ codeunit 148086 "MTDTestOAuth"
     end;
 
     var
+        LibrarySetupStorage: Codeunit "Library - Setup Storage";
         LibraryMakingTaxDigital: Codeunit "Library - Making Tax Digital";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         Assert: Codeunit Assert;
@@ -316,6 +317,7 @@ codeunit 148086 "MTDTestOAuth"
     local procedure Initialize()
     begin
         LibraryVariableStorage.Clear();
+        LibrarySetupStorage.Restore();
 
         if IsInitialized then
             exit;
@@ -323,6 +325,8 @@ codeunit 148086 "MTDTestOAuth"
 
         LibraryMakingTaxDigital.SetOAuthSetupSandbox(true);
         LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(false, '', '');
+        LibraryMakingTaxDigital.EnableFeatureConsent(true);
+        LibrarySetupStorage.Save(Database::"VAT Report Setup");
     end;
 
     local procedure InvokeRetrievePayments(ShowMessage: Boolean)

@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31138 "Sync.Dep.Fld-EETEntry CZL"
 {
@@ -54,7 +55,8 @@ codeunit 31138 "Sync.Dep.Fld-EETEntry CZL"
         if not EETEntryCZL.Get(EETEntry."Entry No.") then begin
             EETEntryCZL.Init();
             EETEntryCZL."Entry No." := EETEntry."Entry No.";
-            EETEntryCZL.Insert();
+            EETEntryCZL.SystemId := EETEntry.SystemId;
+            EETEntryCZL.Insert(false, true);
         end;
         EETEntryCZL."Cash Register Type" := "EET Cash Register Type CZL".FromInteger(EETEntry."Source Type");
         EETEntryCZL."Cash Register No." := EETEntry."Source No.";
@@ -160,7 +162,8 @@ codeunit 31138 "Sync.Dep.Fld-EETEntry CZL"
         if not EETEntry.Get(EETEntryCZL."Entry No.") then begin
             EETEntry.Init();
             EETEntry."Entry No." := EETEntryCZL."Entry No.";
-            EETEntry.Insert();
+            EETEntry.SystemId := EETEntryCZL.SystemId;
+            EETEntry.Insert(false, true);
         end;
         EETEntry."Source Type" := EETEntryCZL."Cash Register Type".AsInteger();
         EETEntry."Source No." := EETEntryCZL."Cash Register No.";
@@ -226,3 +229,4 @@ codeunit 31138 "Sync.Dep.Fld-EETEntry CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

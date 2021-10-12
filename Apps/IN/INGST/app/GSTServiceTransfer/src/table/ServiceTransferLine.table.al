@@ -115,13 +115,17 @@ table 18351 "Service Transfer Line"
         {
             Caption = 'GST Group Code';
             DataClassification = CustomerContent;
-            Editable = false;
+            TableRelation = "GST Group" where("GST Group Type" = filter(Service));
+            trigger OnValidate()
+            begin
+                Rec."SAC Code" := '';
+            end;
         }
         field(12; "SAC Code"; Code[10])
         {
             Caption = 'SAC Code';
             DataClassification = CustomerContent;
-            Editable = false;
+            TableRelation = "HSN/SAC".Code where("GST Group Code" = field("GST Group Code"));
         }
         field(16; "GST Rounding Type"; enum "GST Inv Rounding Type")
         {

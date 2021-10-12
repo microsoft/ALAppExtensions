@@ -28,6 +28,9 @@ report 31077 "Suggest VIES Declaration CZL"
                 trigger OnAfterGetRecord()
                 begin
                     UpdateProgressBar();
+                    if not IncludingAdvancePayments then
+                        if VATEntrySale.IsAdvanceEntryCZL() then
+                            CurrReport.Skip();
                     AddVIESDeclarationLine(VATEntrySale);
                 end;
             }
@@ -50,9 +53,13 @@ report 31077 "Suggest VIES Declaration CZL"
                 trigger OnAfterGetRecord()
                 begin
                     UpdateProgressBar();
+                    if not IncludingAdvancePayments then
+                        if VATEntryPurchase.IsAdvanceEntryCZL() then
+                            CurrReport.Skip();
                     AddVIESDeclarationLine(VATEntryPurchase);
                 end;
             }
+#if not CLEAN19
             dataitem("VAT Posting Setup"; "VAT Posting Setup")
             {
                 DataItemTableView = sorting("VAT Bus. Posting Group", "VAT Prod. Posting Group");
@@ -68,7 +75,9 @@ report 31077 "Suggest VIES Declaration CZL"
 
                         SetFilters(VATEntryAdvance);
                         SetRange(Base);
+#pragma warning disable AL0432
                         SetFilter("Advance Base", '<>%1', 0);
+#pragma warning restore AL0432
 
                         RecordNo := 0;
                         NoOfRecords := Count;
@@ -87,6 +96,8 @@ report 31077 "Suggest VIES Declaration CZL"
                     SetRange("EU Service", true);
                 end;
             }
+#endif
+
             trigger OnPreDataItem()
             var
                 VIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
@@ -248,10 +259,14 @@ report 31077 "Suggest VIES Declaration CZL"
             VIESDeclarationLineCZL."Country/Region Code" := VATEntry."Country/Region Code";
             VIESDeclarationLineCZL."VAT Registration No." := VATEntry."VAT Registration No.";
             VIESDeclarationLineCZL."Registration No." := VATEntry."Registration No. CZL";
+#if not CLEAN19
+#pragma warning disable AL0432
             if VATEntry."Advance Base" <> 0 then
                 VIESDeclarationLineCZL."Amount (LCY)" := -VATEntry."Advance Base"
             else
-                VIESDeclarationLineCZL."Amount (LCY)" := -VATEntry.Base;
+#pragma warning restore AL0432
+#endif
+            VIESDeclarationLineCZL."Amount (LCY)" := -VATEntry.Base;
             VIESDeclarationLineCZL."EU 3-Party Trade" := VATEntry."EU 3-Party Trade";
             VIESDeclarationLineCZL."EU 3-Party Intermediate Role" := VATEntry."EU 3-Party Intermed. Role CZL";
             if VIESDeclarationLineCZL."EU 3-Party Trade" and VIESDeclarationLineCZL."EU 3-Party Intermediate Role" then

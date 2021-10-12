@@ -214,7 +214,7 @@ codeunit 139810 "APIV2 - Countries/Regions E2E"
         LibraryGraphMgt.VerifyIDInJson(CountryRegionJSON);
         VerifyPropertyInJSON(CountryRegionJSON, 'code', CountryRegion.Code);
         VerifyPropertyInJSON(CountryRegionJSON, 'displayName', CountryRegion.Name);
-        VerifyPropertyInJSON(CountryRegionJSON, 'addressFormat', Format(CountryRegion."Address Format"));
+        // VerifyPropertyInJSON(CountryRegionJSON, 'addressFormat', Format(CountryRegion."Address Format"));
     end;
 }
 

@@ -63,6 +63,34 @@ codeunit 148088 "MTDTestMisc"
         Assert.IsTrue(MTDLiability[1].DiffersFromLiability(MTDLiability[2]), '');
     end;
 
+    [Test]
+    [HandlerFunctions('CustConsentConfirmationYesMPH')]
+    procedure VATReportSetupFeatureConsentConfirm()
+    var
+        VATReportSetup: Record "VAT Report Setup";
+    begin
+        // [FEATURE] [Customer Consent]
+        // [SCENARIO 407087] Confirm feature consent on toggling "Enable" checkbox on VAT Report Setup
+        VATReportSetup.Get();
+        VATReportSetup.Validate("MTD Enabled", false);
+        VATReportSetup.Validate("MTD Enabled", true);
+        VATReportSetup.TestField("MTD Enabled", true);
+    end;
+
+    [Test]
+    [HandlerFunctions('CustConsentConfirmationNoMPH')]
+    procedure VATReportSetupFeatureConsentDeny()
+    var
+        VATReportSetup: Record "VAT Report Setup";
+    begin
+        // [FEATURE] [Customer Consent]
+        // [SCENARIO 407087] Deny feature consent on toggling "Enable" checkbox on VAT Report Setup
+        VATReportSetup.Get();
+        VATReportSetup.Validate("MTD Enabled", false);
+        VATReportSetup.Validate("MTD Enabled", true);
+        VATReportSetup.TestField("MTD Enabled", false);
+    end;
+
     local procedure MockAndGetVATPayment(var MTDPayment: Record "MTD Payment"; StartDate: Date; EndDate: Date; EntryNo: Integer; ReceivedDate: Date; NewAmount: Decimal)
     begin
         LibraryMakingTaxDigital.MockVATPayment(MTDPayment, StartDate, EndDate, EntryNo, ReceivedDate, NewAmount);
@@ -72,5 +100,17 @@ codeunit 148088 "MTDTestMisc"
     begin
         LibraryMakingTaxDigital.MockVATLiability(
           MTDLiability, StartDate, EndDate, MTDLiability.Type::"VAT Return Debit Charge", OriginalAmount, OutstandingAmount, DueDate);
+    end;
+
+    [ModalPageHandler]
+    procedure CustConsentConfirmationYesMPH(var CustConsentConfirmation: TestPage "Cust. Consent Confirmation")
+    begin
+        CustConsentConfirmation.Accept.Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure CustConsentConfirmationNoMPH(var CustConsentConfirmation: TestPage "Cust. Consent Confirmation")
+    begin
+        CustConsentConfirmation.Cancel.Invoke();
     end;
 }

@@ -18,15 +18,18 @@ codeunit 4057 "Upg Mig User Callouts"
     local procedure PopulateUserCallouts()
     var
         User: Record User;
-        UserCallouts: Record "User Callouts";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+        UserSettings: Codeunit "User Settings";
     begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetUserCalloutsUpgradeTag()) then
+            exit;
+
         if User.FindSet() then
             repeat
-                if not UserCallouts.Get(User."User Security ID") then begin
-                    UserCallouts."User Security ID" := User."User Security ID";
-                    UserCallouts.Enabled := false;
-                    UserCallouts.Insert();
-                end;
+                UserSettings.DisableTeachingTips(User."User Security ID");
             until (User.Next() = 0);
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetUserCalloutsUpgradeTag());
     end;
 }

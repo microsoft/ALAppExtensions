@@ -92,6 +92,8 @@ codeunit 134414 "Service Connection Test"
             AMCBankingSetup.Init();
             AMCBankingSetup.Insert();
         end;
+        AMCBankingSetup."AMC Enabled" := true;
+        AMCBankingSetup.Modify();
     end;
 
     local procedure ServiceExist(Desc: Text): Boolean

@@ -5,9 +5,9 @@
 
 codeunit 132909 "Azure AD User Management Test"
 {
-    Permissions = TableData "User Property" = rimd;
+    Permissions = TableData "User Property" = rimd,
+                  TableData "User" = r;
     Subtype = Test;
-    TestPermissions = NonRestrictive;
     EventSubscriberInstance = Manual;
 
     trigger OnRun()
@@ -17,6 +17,7 @@ codeunit 132909 "Azure AD User Management Test"
 
     var
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
+        PermissionsMock: Codeunit "Permissions Mock";
         AzureADUserManagementImpl: Codeunit "Azure AD User Mgmt. Impl.";
         AzureADGraphUser: Codeunit "Azure AD Graph User";
         LibraryAssert: Codeunit "Library Assert";
@@ -49,6 +50,9 @@ codeunit 132909 "Azure AD User Management Test"
 
         // [GIVEN] The user record's state is disabled
         DisableUserAccount(UserSecurityId);
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD User Mgt Exec');
 
         // [WHEN] Running Azure AD User Management
         AzureADUserManagementImpl.Run(UserSecurityId);
@@ -108,6 +112,9 @@ codeunit 132909 "Azure AD User Management Test"
         // [GIVEN] It is the first time that the test user logs in
         UserLoginTestLibrary.DeleteAllLoginInformation(UserId);
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD User Mgt Exec');           
+
         // [WHEN] Running Azure AD User Management on the user
         AzureADUserManagementTest.RunAzureADUserManagement(UserId);
 
@@ -155,7 +162,7 @@ codeunit 132909 "Azure AD User Management Test"
         AzureADPlanTestLibrary.AssignUserToPlan(UserSecurityId(), PlanId);
 
         // [GIVEN] There is an entry in the User Property table for the test user 
-        // [GIVEN] The User Authentication Object Id for the test user is not empty  
+        // [GIVEN] The User Authentication Object Id for the test user is not empty
         UserProperty.Init();
         UserProperty."User Security ID" := UserSecurityId();
         UserProperty."Authentication Object ID" := UserSecurityId();
@@ -164,6 +171,9 @@ codeunit 132909 "Azure AD User Management Test"
         // [GIVEN] It is not the first time that the test user logs in
         UserLoginTestLibrary.InsertUserLogin(UserSecurityId(), 0D, CurrentDateTime(), 0DT);
 
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD User Mgt Exec');
+        
         // [WHEN] Running Azure AD User Management on the user
         AzureADUserManagementTest.RunAzureADUserManagement(UserSecurityId());
 
@@ -218,6 +228,9 @@ codeunit 132909 "Azure AD User Management Test"
 
         // [GIVEN] It is the first time that the test user logs in
         UserLoginTestLibrary.DeleteAllLoginInformation(UserId);
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD User Mgt Exec');
 
         // [WHEN] Running Azure AD User Management on the user
         AzureADUserManagementTest.RunAzureADUserManagement(UserId);
@@ -288,6 +301,9 @@ codeunit 132909 "Azure AD User Management Test"
 
         // [GIVEN] It is the first time that the test user logs in
         UserLoginTestLibrary.DeleteAllLoginInformation(UserId);
+
+        // Verify the module highest permission level is sufficient ignore non Tables
+        PermissionsMock.Set('AAD User Mgt Exec');
 
         // [WHEN] Running Azure AD User Management on the user
         AzureADUserManagementTest.RunAzureADUserManagement(UserId);
@@ -411,8 +427,6 @@ codeunit 132909 "Azure AD User Management Test"
         LibraryAssert.IsTrue(User.IsEmpty(), 'User got created');
 
         UnbindSubscription(AzureADUserManagementTest);
-
-
         // create new users + modify some of the old ones + remove some old ones
 
         // run the wizard to sync and verify changes
@@ -429,16 +443,6 @@ codeunit 132909 "Azure AD User Management Test"
     procedure SetupMockGraphQuery()
     begin
         MockGraphQuery := MockGraphQuery.MockGraphQuery();
-    end;
-
-    local procedure InsertUserProperty(UserSecurityId: Guid)
-    var
-        UserProperty: Record "User Property";
-    begin
-        UserProperty.Init();
-        UserProperty."User Security ID" := UserSecurityId;
-        UserProperty."Authentication Object ID" := UserSecurityId;
-        UserProperty.Insert();
     end;
 
     procedure AddGraphUser(UserId: Text)

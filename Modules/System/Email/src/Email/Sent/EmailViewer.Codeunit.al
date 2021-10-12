@@ -80,13 +80,19 @@ codeunit 8907 "Email Viewer"
             Error(EmailMessageDoesNotExistMsg);
     end;
 
-    procedure RefreshSentMailForUser(AccountId: Guid; NewerThan: DateTime; var SentEmailForUser: Record "Sent Email" temporary)
+    procedure RefreshSentMailForUser(AccountId: Guid; NewerThan: DateTime; SourceTableID: Integer; SourceSystemID: Guid; var SentEmailForUser: Record "Sent Email" temporary)
     var
         SentEmail: Record "Sent Email";
         EmailAccountImpl: Codeunit "Email Account Impl.";
+        EmailImpl: Codeunit "Email Impl";
     begin
         if not SentEmailForUser.IsEmpty() then
             SentEmailForUser.DeleteAll();
+
+        if SourceTableID <> 0 then begin
+            EmailImpl.GetSentEmailsForRecord(SourceTableID, SourceSystemID, SentEmailForUser);
+            exit;
+        end;
 
         if not EmailAccountImpl.IsUserEmailAdmin() then
             SentEmail.SetRange("User Security Id", UserSecurityId());

@@ -10,10 +10,14 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
         {
             Visible = false;
         }
+#if not CLEAN19
+#pragma warning disable AL0432
         modify("Prepayment Type")
         {
             Visible = false;
         }
+#pragma warning restore AL0432
+#endif
         addafter("Amount Type")
         {
             field("G/L Amount Type CZL"; Rec."G/L Amount Type CZL")
@@ -103,8 +107,7 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
                 Promoted = true;
                 PromotedCategory = Process;
                 RunObject = Page "VAT Statement Preview CZL";
-                RunPageLink = "Statement Template Name" = field("Statement Template Name"),
-                                  Name = field("Statement Name");
+                RunPageLink = "Statement Template Name" = field("Statement Template Name"), Name = field("Statement Name");
                 ToolTip = 'Preview the VAT statement report.';
             }
         }

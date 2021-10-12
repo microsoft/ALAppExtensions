@@ -56,7 +56,8 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
             PostedCashDocumentHeaderCZP.Init();
             PostedCashDocumentHeaderCZP."Cash Desk No." := Rec."Cash Desk No.";
             PostedCashDocumentHeaderCZP."No." := Rec."No.";
-            PostedCashDocumentHeaderCZP.Insert(false);
+            PostedCashDocumentHeaderCZP.SystemId := Rec.SystemId;
+            PostedCashDocumentHeaderCZP.Insert(false, true);
         end;
         PostedCashDocumentHeaderCZP."Pay-to/Receive-from Name" := Rec."Pay-to/Receive-from Name";
         PostedCashDocumentHeaderCZP."Pay-to/Receive-from Name 2" := Rec."Pay-to/Receive-from Name 2";
@@ -163,7 +164,8 @@ codeunit 31133 "Sync.Dep.Fld-PostCashDocHd CZP"
             PostedCashDocumentHeader.Init();
             PostedCashDocumentHeader."Cash Desk No." := Rec."Cash Desk No.";
             PostedCashDocumentHeader."No." := Rec."No.";
-            PostedCashDocumentHeader.Insert(false);
+            PostedCashDocumentHeader.SystemId := Rec.SystemId;
+            PostedCashDocumentHeader.Insert(false, true);
         end;
         PostedCashDocumentHeader."Pay-to/Receive-from Name" := Rec."Pay-to/Receive-from Name";
         PostedCashDocumentHeader."Pay-to/Receive-from Name 2" := Rec."Pay-to/Receive-from Name 2";

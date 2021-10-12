@@ -27,5 +27,10 @@ tableextension 18016 "GST Customer Ext" extends Customer
             Caption = 'ARN No.';
             DataClassification = CustomerContent;
         }
+        field(18005; "Post GST to Customer"; Boolean)
+        {
+            Caption = 'Post GST to Customer';
+            DataClassification = CustomerContent;
+        }
     }
 }

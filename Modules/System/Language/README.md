@@ -220,6 +220,20 @@ procedure LookupWindowsLanguageId(var LanguageId: Integer)
 
 Exit parameter that holds the chosen language ID.
 
+### LookupLanguageCode (Method) <a name="LookupLanguageCode"></a> 
+
+ Opens a list of the languages that are available for the application so that the user can choose a language.
+ 
+
+#### Syntax
+```
+procedure LookupLanguageCode(var LanguageCode: Code[10])
+```
+#### Parameters
+*LanguageCode ([Code[10]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+
+Exit parameter that holds the chosen language code.
+
 ### GetParentLanguageId (Method) <a name="GetParentLanguageId"></a> 
 
  Gets the parent language ID based on Windows Culture Info.

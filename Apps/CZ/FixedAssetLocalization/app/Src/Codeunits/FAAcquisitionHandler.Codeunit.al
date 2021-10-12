@@ -50,53 +50,8 @@ codeunit 31236 "FA Acquisition Handler CZF"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Jnl.-Check Line", 'OnAfterCheckGenJnlLine', '', false, false)]
     local procedure CheckAcquisitionAsCustom2OnAfterCheckGenJnlLine(var GenJnlLine: Record "Gen. Journal Line")
-    var
-        VATAmountErr: Label '%1 + %2 must be %3.', Comment = '%1 = VAT Amount, %2 = VAT Base Amount, %3 = Amount';
-        BalanceVATAmountErr: Label '%1 + %2 must be -%3.', Comment = '%1 = VAT Amount, %2 = VAT Base Amount, %3 = Amount';
     begin
         FASetup.Get();
-        if ((GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::"Custom 2") and FASetup."FA Acquisition As Custom 2 CZF") then begin
-            if GenJnlLine."Account No." <> '' then
-                if GenJnlLine."Account Type" = GenJnlLine."Account Type"::"Fixed Asset" then
-                    if (GenJnlLine."Gen. Bus. Posting Group" <> '') or (GenJnlLine."Gen. Prod. Posting Group" <> '') or
-                       (GenJnlLine."VAT Bus. Posting Group" <> '') or (GenJnlLine."VAT Prod. Posting Group" <> '')
-                    then
-                        GenJnlLine.TestField("Gen. Posting Type");
-            if (GenJnlLine."Gen. Posting Type" <> GenJnlLine."Gen. Posting Type"::" ") and
-               (GenJnlLine."VAT Posting" = GenJnlLine."VAT Posting"::"Automatic VAT Entry")
-            then begin
-                if GenJnlLine."VAT Amount" + GenJnlLine."VAT Base Amount" <> GenJnlLine.Amount then
-                    Error(
-                      VATAmountErr, GenJnlLine.FieldCaption("VAT Amount"), GenJnlLine.FieldCaption("VAT Base Amount"),
-                      GenJnlLine.FieldCaption(Amount));
-                if GenJnlLine."Currency Code" <> '' then
-                    if GenJnlLine."VAT Amount (LCY)" + GenJnlLine."VAT Base Amount (LCY)" <> GenJnlLine."Amount (LCY)" then
-                        Error(
-                          VATAmountErr, GenJnlLine.FieldCaption("VAT Amount (LCY)"),
-                          GenJnlLine.FieldCaption("VAT Base Amount (LCY)"), GenJnlLine.FieldCaption("Amount (LCY)"));
-            end;
-
-            if GenJnlLine."Bal. Account No." <> '' then
-                if GenJnlLine."Bal. Account Type" = GenJnlLine."Bal. Account Type"::"Fixed Asset" then
-                    if (GenJnlLine."Bal. Gen. Bus. Posting Group" <> '') or (GenJnlLine."Bal. Gen. Prod. Posting Group" <> '') or
-                       (GenJnlLine."Bal. VAT Bus. Posting Group" <> '') or (GenJnlLine."Bal. VAT Prod. Posting Group" <> '')
-                    then
-                        GenJnlLine.TestField("Bal. Gen. Posting Type");
-            if (GenJnlLine."Bal. Gen. Posting Type" <> GenJnlLine."Bal. Gen. Posting Type"::" ") and
-               (GenJnlLine."VAT Posting" = GenJnlLine."VAT Posting"::"Automatic VAT Entry")
-            then begin
-                if GenJnlLine."Bal. VAT Amount" + GenJnlLine."Bal. VAT Base Amount" <> -GenJnlLine.Amount then
-                    Error(
-                      BalanceVATAmountErr, GenJnlLine.FieldCaption("Bal. VAT Amount"), GenJnlLine.FieldCaption("Bal. VAT Base Amount"),
-                      GenJnlLine.FieldCaption(Amount));
-                if GenJnlLine."Currency Code" <> '' then
-                    if GenJnlLine."Bal. VAT Amount (LCY)" + GenJnlLine."Bal. VAT Base Amount (LCY)" <> -GenJnlLine."Amount (LCY)" then
-                        Error(
-                          BalanceVATAmountErr, GenJnlLine.FieldCaption("Bal. VAT Amount (LCY)"),
-                          GenJnlLine.FieldCaption("Bal. VAT Base Amount (LCY)"), GenJnlLine.FieldCaption("Amount (LCY)"));
-            end;
-        end;
-
         if ((GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::"Acquisition Cost") and FASetup."FA Acquisition As Custom 2 CZF") then
             if (GenJnlLine."Insurance No." <> '') and (GenJnlLine."Depreciation Book Code" <> FASetup."Insurance Depr. Book") then
                 GenJnlLine.TestField("Insurance No.", '');
@@ -116,6 +71,80 @@ codeunit 31236 "FA Acquisition Handler CZF"
                     if GenJnlLine."FA Posting Type" <> GenJnlLine."FA Posting Type"::Maintenance then
                         GenJnlLine.FieldError(Quantity, FieldErrorText);
             end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Jnl.-Check Line", 'OnBeforeCheckBalAccountNo', '', false, false)]
+    local procedure CheckAcquisitionAsCustom2OnBeforeCheckBalAccountNo(var GenJournalLine: Record "Gen. Journal Line"; var FANo: Code[20]; var IsHandled: Boolean)
+    var
+        BalanceVATAmountErr: Label '%1 + %2 must be -%3.', Comment = '%1 = VAT Amount, %2 = VAT Base Amount, %3 = Amount';
+    begin
+        if IsHandled then
+            exit;
+
+        if GenJournalLine."Bal. Account Type" <> GenJournalLine."Bal. Account Type"::"Fixed Asset" then
+            exit;
+
+        FASetup.Get();
+        if ((GenJournalLine."FA Posting Type" = GenJournalLine."FA Posting Type"::"Custom 2") and FASetup."FA Acquisition As Custom 2 CZF") then begin
+            if GenJournalLine."Bal. Account No." <> '' then
+                if GenJournalLine."Bal. Account Type" = GenJournalLine."Bal. Account Type"::"Fixed Asset" then
+                    if (GenJournalLine."Bal. Gen. Bus. Posting Group" <> '') or (GenJournalLine."Bal. Gen. Prod. Posting Group" <> '') or
+                       (GenJournalLine."Bal. VAT Bus. Posting Group" <> '') or (GenJournalLine."Bal. VAT Prod. Posting Group" <> '')
+                    then
+                        GenJournalLine.TestField("Bal. Gen. Posting Type");
+            if (GenJournalLine."Bal. Gen. Posting Type" <> GenJournalLine."Bal. Gen. Posting Type"::" ") and
+               (GenJournalLine."VAT Posting" = GenJournalLine."VAT Posting"::"Automatic VAT Entry")
+            then begin
+                if GenJournalLine."Bal. VAT Amount" + GenJournalLine."Bal. VAT Base Amount" <> -GenJournalLine.Amount then
+                    Error(
+                      BalanceVATAmountErr, GenJournalLine.FieldCaption("Bal. VAT Amount"), GenJournalLine.FieldCaption("Bal. VAT Base Amount"),
+                      GenJournalLine.FieldCaption(Amount));
+                if GenJournalLine."Currency Code" <> '' then
+                    if GenJournalLine."Bal. VAT Amount (LCY)" + GenJournalLine."Bal. VAT Base Amount (LCY)" <> -GenJournalLine."Amount (LCY)" then
+                        Error(
+                          BalanceVATAmountErr, GenJournalLine.FieldCaption("Bal. VAT Amount (LCY)"),
+                          GenJournalLine.FieldCaption("Bal. VAT Base Amount (LCY)"), GenJournalLine.FieldCaption("Amount (LCY)"));
+            end;
+            FANo := GenJournalLine."Bal. Account No.";
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Jnl.-Check Line", 'OnBeforeCheckAccountNo', '', false, false)]
+    local procedure CheckAcquisitionAsCustom2OnBeforeCheckAccountNo(var GenJournalLine: Record "Gen. Journal Line"; var FANo: Code[20]; var IsHandled: Boolean)
+    var
+        VATAmountErr: Label '%1 + %2 must be %3.', Comment = '%1 = VAT Amount, %2 = VAT Base Amount, %3 = Amount';
+    begin
+        if IsHandled then
+            exit;
+
+        if GenJournalLine."Account Type" <> GenJournalLine."Account Type"::"Fixed Asset" then
+            exit;
+
+        FASetup.Get();
+        if ((GenJournalLine."FA Posting Type" = GenJournalLine."FA Posting Type"::"Custom 2") and FASetup."FA Acquisition As Custom 2 CZF") then begin
+            if GenJournalLine."Account No." <> '' then
+                if GenJournalLine."Account Type" = GenJournalLine."Account Type"::"Fixed Asset" then
+                    if (GenJournalLine."Gen. Bus. Posting Group" <> '') or (GenJournalLine."Gen. Prod. Posting Group" <> '') or
+                       (GenJournalLine."VAT Bus. Posting Group" <> '') or (GenJournalLine."VAT Prod. Posting Group" <> '')
+                    then
+                        GenJournalLine.TestField("Gen. Posting Type");
+            if (GenJournalLine."Gen. Posting Type" <> GenJournalLine."Gen. Posting Type"::" ") and
+               (GenJournalLine."VAT Posting" = GenJournalLine."VAT Posting"::"Automatic VAT Entry")
+            then begin
+                if GenJournalLine."VAT Amount" + GenJournalLine."VAT Base Amount" <> GenJournalLine.Amount then
+                    Error(
+                      VATAmountErr, GenJournalLine.FieldCaption("VAT Amount"), GenJournalLine.FieldCaption("VAT Base Amount"),
+                      GenJournalLine.FieldCaption(Amount));
+                if GenJournalLine."Currency Code" <> '' then
+                    if GenJournalLine."VAT Amount (LCY)" + GenJournalLine."VAT Base Amount (LCY)" <> GenJournalLine."Amount (LCY)" then
+                        Error(
+                          VATAmountErr, GenJournalLine.FieldCaption("VAT Amount (LCY)"),
+                          GenJournalLine.FieldCaption("VAT Base Amount (LCY)"), GenJournalLine.FieldCaption("Amount (LCY)"));
+            end;
+            FANo := GenJournalLine."Account No.";
+            IsHandled := true;
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Jnl.-Check Line", 'OnAfterCheckFAJnlLine', '', false, false)]
@@ -226,4 +255,15 @@ codeunit 31236 "FA Acquisition Handler CZF"
         FAAcquisitionAsCustom2 := FASetup."FA Acquisition As Custom 2 CZF";
         IsHandled := true;
     end;
+#if CLEAN18
+
+    [EventSubscriber(ObjectType::Page, Page::"Fixed Asset Card", 'OnBeforeShowAcquisitionNotification', '', false, false)]
+    local procedure BlockNotificationOnBeforeShowAcquisitionNotification(var Acquirable: Boolean; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        Acquirable := false;
+        IsHandled := true;
+    end;
+#endif
 }

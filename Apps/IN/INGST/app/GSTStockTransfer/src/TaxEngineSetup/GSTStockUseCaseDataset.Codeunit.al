@@ -28,5 +28,5 @@ codeunit 18395 "GST Stock UseCase Dataset"
 
     var
         GSTOnStockTransferUseCasesLbl: Label 'GST On Stock Transfer Use Cases';
-        UseCaseTreeLbl: Label 'Use Case Tree Place holder';
+        UseCaseTreeLbl: Label 'Old Use Case Tree Place holder';
 }

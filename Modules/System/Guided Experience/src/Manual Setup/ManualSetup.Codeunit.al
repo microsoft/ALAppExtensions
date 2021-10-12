@@ -32,9 +32,12 @@ codeunit 1875 "Manual Setup"
         GuidedExperienceType: Enum "Guided Experience Type";
         AssistedSetupGroup: Enum "Assisted Setup Group";
         VideoCategory: Enum "Video Category";
+        SpotlightTourType: Enum "Spotlight Tour Type";
+        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
     begin
         GuidedExperienceImpl.Insert(Name, CopyStr(Name, 1, 50), Description, 0, ExtensionId, GuidedExperienceType::"Manual Setup",
-            ObjectType::Page, RunPage, '', AssistedSetupGroup::Uncategorized, '', VideoCategory::Uncategorized, '', Category, Keywords, true);
+            ObjectType::Page, RunPage, '', AssistedSetupGroup::Uncategorized, '', VideoCategory::Uncategorized, '', Category,
+            Keywords, SpotlightTourType::None, SpotlightTourTexts, true);
     end;
 
     /// <summary>Opens the Manual Setup page with the setup guides in it.</summary>

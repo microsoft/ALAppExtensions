@@ -13,12 +13,19 @@ codeunit 11009 "Move Order Nos DE"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Company Handler", 'OnUpgradePerCompanyDataForVersion', '', false, false)]
     local procedure OnCompanyMigrationUpgrade(TargetVersion: Decimal)
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
         if TargetVersion <> 15.0 then
             exit;
 
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetPhysInvntOrdersUpgradeTag()) then
+            exit;
+
         LoadInventorySetup();
         LoadSourceCodeSetup();
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetPhysInvntOrdersUpgradeTag());
     end;
 
     local procedure LoadInventorySetup()

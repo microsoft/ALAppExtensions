@@ -11,9 +11,10 @@ codeunit 148093 "Swiss QR-Bill Test Misc"
         Assert: Codeunit Assert;
         SwissQRBillMgt: Codeunit "Swiss QR-Bill Mgt.";
         SwissQRBillTestLibrary: Codeunit "Swiss QR-Bill Test Library";
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         IBANType: Enum "Swiss QR-Bill IBAN Type";
         ReferenceType: Enum "Swiss QR-Bill Payment Reference Type";
-
+        ChangeQRBillBankAccountQst: Label 'Do you want to copy Bal. Acount No. to the QR-Bill Bank Account No.?';
 
     [Test]
     [Scope('OnPrem')]
@@ -263,6 +264,126 @@ codeunit 148093 "Swiss QR-Bill Test Misc"
         SwissQRBillLayoutPage.Close();
     end;
 
+    [Test]
+    procedure PaymentMethodQRBillBankAccountUI()
+    var
+        PaymentMethod: Record "Payment Method";
+        PaymentMethods: TestPage "Payment Methods";
+        BankAccountNo: Code[20];
+    begin
+        // [FEATURE] [UT] [UI] [Payment Method]
+        // [SCENARIO 259169] Payment Methods page contains QR-Bill Bank Account No. field
+        BankAccountNo := SwissQRBillTestLibrary.CreateBankAccount('', '');
+        PaymentMethod.Get(SwissQRBillTestLibrary.CreatePaymentMethodWithQRBillBank(BankAccountNo));
+        PaymentMethod.SetRecFilter();
+
+        PaymentMethods.Trap();
+        Page.Run(Page::"Payment Methods", PaymentMethod);
+        PaymentMethods."Swiss QR-Bill Bank Account No.".AssertEquals(BankAccountNo);
+
+        BankAccountNo := SwissQRBillTestLibrary.CreateBankAccount('', '');
+        PaymentMethods."Swiss QR-Bill Bank Account No.".SetValue(BankAccountNo);
+        PaymentMethods.Close();
+        PaymentMethod.Find();
+        PaymentMethod.TestField("Swiss QR-Bill Bank Account No.", BankAccountNo);
+    end;
+
+    [Test]
+    procedure QRBillBankAccountIsCopiedFromBalAccSilent()
+    var
+        PaymentMethod: Record "Payment Method";
+        BankAccountNo: Code[20];
+    begin
+        // [FEATURE] [UI] [Payment Method]
+        // [SCENARIO 259169] System copies Bal Account No. into QR-Bill Bank Account No. field in case of blanked QR-Bill Bank Account No.
+        BankAccountNo := SwissQRBillTestLibrary.CreateBankAccount('', '');
+        PaymentMethod.Validate("Bal. Account Type", PaymentMethod."Bal. Account Type"::"Bank Account");
+
+        PaymentMethod.Validate("Bal. Account No.", BankAccountNo);
+
+        PaymentMethod.TestField("Swiss QR-Bill Bank Account No.", BankAccountNo);
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    procedure QRBillBankAccountIsNotClearedOnBlankBalAccSilent()
+    var
+        PaymentMethod: Record "Payment Method";
+        BankAccountNo: Code[20];
+    begin
+        // [FEATURE] [UI] [Payment Method]
+        // [SCENARIO 259169] QR-Bill Bank Account No. is not cleared on blank Bal. Account No.
+        BankAccountNo := SwissQRBillTestLibrary.CreateBankAccount('', '');
+        PaymentMethod.Validate("Bal. Account Type", PaymentMethod."Bal. Account Type"::"Bank Account");
+        PaymentMethod.Validate("Bal. Account No.", BankAccountNo);
+        PaymentMethod.Validate("Swiss QR-Bill Bank Account No.", BankAccountNo);
+
+        PaymentMethod.Validate("Bal. Account No.", '');
+
+        PaymentMethod.TestField("Swiss QR-Bill Bank Account No.", BankAccountNo);
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure ConfirmQRBillBankAccountCopyFromBalAccPositive()
+    var
+        PaymentMethod: Record "Payment Method";
+        BankAccountNo: Code[20];
+    begin
+        // [FEATURE] [UI] [Payment Method]
+        // [SCENARIO 259169] System confirms to copy Bal Account No. into QR-Bill Bank Account No. (accept confirm)
+        PaymentMethod.Validate("Bal. Account Type", PaymentMethod."Bal. Account Type"::"Bank Account");
+        PaymentMethod.Validate("Swiss QR-Bill Bank Account No.", SwissQRBillTestLibrary.CreateBankAccount('', ''));
+
+        BankAccountNo := SwissQRBillTestLibrary.CreateBankAccount('', '');
+        LibraryVariableStorage.Enqueue(true); // confirm copy
+        PaymentMethod.Validate("Bal. Account No.", BankAccountNo);
+
+        PaymentMethod.TestField("Swiss QR-Bill Bank Account No.", BankAccountNo);
+        Assert.AreEqual(ChangeQRBillBankAccountQst, LibraryVariableStorage.DequeueText(), '');
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure ConfirmQRBillBankAccountCopyFromBalAccNegative()
+    var
+        PaymentMethod: Record "Payment Method";
+        BankAccountNo: Code[20];
+    begin
+        // [FEATURE] [UI] [Payment Method]
+        // [SCENARIO 259169] System confirms to copy Bal Account No. into QR-Bill Bank Account No. (deny confirm)
+        PaymentMethod.Validate("Bal. Account Type", PaymentMethod."Bal. Account Type"::"Bank Account");
+        BankAccountNo := SwissQRBillTestLibrary.CreateBankAccount('', '');
+        PaymentMethod.Validate("Swiss QR-Bill Bank Account No.", BankAccountNo);
+
+        LibraryVariableStorage.Enqueue(false); // deny copy
+        PaymentMethod.Validate("Bal. Account No.", SwissQRBillTestLibrary.CreateBankAccount('', ''));
+
+        PaymentMethod.TestField("Swiss QR-Bill Bank Account No.", BankAccountNo);
+        Assert.AreEqual(ChangeQRBillBankAccountQst, LibraryVariableStorage.DequeueText(), '');
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    procedure NoConfirmQRBillBankAccountCopyFromBalAccTheSameValue()
+    var
+        PaymentMethod: Record "Payment Method";
+        BankAccountNo: Code[20];
+    begin
+        // [FEATURE] [UI] [Payment Method]
+        // [SCENARIO 259169] There is no confirm to copy Bal Account No. into QR-Bill Bank Account No. in case of the same value
+        PaymentMethod.Validate("Bal. Account Type", PaymentMethod."Bal. Account Type"::"Bank Account");
+        BankAccountNo := SwissQRBillTestLibrary.CreateBankAccount('', '');
+        PaymentMethod.Validate("Swiss QR-Bill Bank Account No.", BankAccountNo);
+
+        PaymentMethod.Validate("Bal. Account No.", BankAccountNo);
+
+        PaymentMethod.TestField("Swiss QR-Bill Bank Account No.", BankAccountNo);
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
     [ModalPageHandler]
     procedure QRBillLayoutMPH(var QRBillLayoutPage: TestPage "Swiss QR-Bill Layout")
     begin
@@ -291,5 +412,12 @@ codeunit 148093 "Swiss QR-Bill Test Misc"
     [ModalPageHandler]
     procedure GLSetupMPH(var GLSetupPage: TestPage "General Ledger Setup")
     begin
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text; var Reply: Boolean);
+    begin
+        LibraryVariableStorage.Enqueue(Question);
+        Reply := LibraryVariableStorage.DequeueBoolean();
     end;
 }

@@ -11,8 +11,8 @@ pageextension 13668 "OIOUBL-Sales Invoice Subform" extends "Sales Invoice Subfor
         {
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
-                Tooltip = 'Specifies the account code of the customer.';
-                ApplicationArea = Basic,Suite;
+                Tooltip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
+                ApplicationArea = Basic, Suite;
             }
         }
     }

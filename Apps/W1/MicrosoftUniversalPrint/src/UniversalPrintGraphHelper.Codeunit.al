@@ -362,3 +362,4 @@ codeunit 2752 "Universal Print Graph Helper"
         InvokeWebRequestFailedDetailedTelemetryTxt: Label 'Invoking web request has failed. Status %1, Message %2, Response Details %3', Locked = true;
         UniversalPrintPortalUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2153618', Locked = true;
 }
+

@@ -187,11 +187,20 @@ report 11757 "Documentation for VAT CZL"
                     begin
                         VATBase := 0;
                         VATAmount := 0;
+#if CLEAN19
+                        CalculatedVATBase := VATEntry.Base;
+#else
                         CalculatedVATBase := CalcVATBase("VAT Entry");
+#endif
                         CalculatedVATAmount := CalcVATAmount("VAT Entry");
 
+#if CLEAN19
+                        if VATEntry.Base <> CalculatedVATBase then
+                            CalculatedVATBase := VATEntry.Base;
+#else
                         if CalcVATBase("VAT Entry") <> CalculatedVATBase then
                             VATBase := CalcVATBase("VAT Entry");
+#endif
                         if Amount <> CalculatedVATAmount then
                             VATAmount := Amount;
 
@@ -201,7 +210,13 @@ report 11757 "Documentation for VAT CZL"
                         VATEntrySubtotalAmt[4] += "Additional-Currency Amount";
 
                         VATEntry.SetFilter("VAT Calculation Type", '<>%1', VATEntry."VAT Calculation Type"::"Reverse Charge VAT");
+#if CLEAN19
+                        VATEntry.CalcSums(Base, Amount, "Additional-Currency Base", "Additional-Currency Amount");
+#else
+#pragma warning disable AL0432
                         VATEntry.CalcSums(Base, Amount, "Additional-Currency Base", "Additional-Currency Amount", "Advance Base");
+#pragma warning restore AL0432
+#endif
 
                         case "VAT Posting Setup"."VAT Calculation Type" of
                             "VAT Posting Setup"."VAT Calculation Type"::"Normal VAT",
@@ -464,11 +479,15 @@ report 11757 "Documentation for VAT CZL"
         if VATPeriodCZL.Get(StartDateReq) then;
     end;
 
+#if not CLEAN19
+#pragma warning disable AL0432
     local procedure CalcVATBase(VATEntry: Record "VAT Entry"): Decimal
     begin
         exit(VATEntry.Base + VATEntry."Advance Base");
     end;
 
+#pragma warning restore AL0432
+#endif
     local procedure CalcVATAmount(VATEntry: Record "VAT Entry"): Decimal
     begin
         exit(VATEntry.Amount);
@@ -480,7 +499,11 @@ report 11757 "Documentation for VAT CZL"
         CalculatedVATAmount1: Decimal;
     begin
         if not UseAmtsInAddCurr then begin
+#if CLEAN19
+            CalculatedVATBase1 := VATEntry.Base;
+#else
             CalculatedVATBase1 := CalcVATBase(VATEntry);
+#endif            
             CalculatedVATAmount1 := CalcVATAmount(VATEntry);
         end else begin
             CalculatedVATBase1 := VATEntry."Additional-Currency Base";

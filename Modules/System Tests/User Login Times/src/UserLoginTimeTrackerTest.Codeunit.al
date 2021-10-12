@@ -8,16 +8,13 @@ codeunit 130044 "User Login Time Tracker Test"
     // Tests for the User Login Time Tracker codeunit
 
     Subtype = Test;
-    TestPermissions = NonRestrictive;
-
-    trigger OnRun()
-    begin
-    end;
+    Permissions = tabledata "User Login" = rim;
 
     var
         LibraryAssert: Codeunit "Library Assert";
         UserLoginTimeTracker: Codeunit "User Login Time Tracker";
         UserLoginTestLibrary: Codeunit "User Login Test Library";
+        PermissionsMock: Codeunit "Permissions Mock";
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -30,12 +27,11 @@ codeunit 130044 "User Login Time Tracker Test"
     begin
         // [GIVEN] A new user
         UserSecId := CreateGuid();
-
         User.Init();
         User."User Security ID" := UserSecId;
         User.Insert();
 
-        if User.Get(UserSecId) then;
+        PermissionsMock.Set('User Login View');
 
         // [WHEN] Checking whether the current user has logged in before
         IsFirstLogin := UserLoginTimeTracker.IsFirstLogin(User."User Security ID");
@@ -66,6 +62,8 @@ codeunit 130044 "User Login Time Tracker Test"
     begin
         // [GIVEN] The User Login table is empty
         UserLogin.DeleteAll();
+
+        PermissionsMock.Set('User Login View');
 
         // [GIVEN] Three dates - one in the past, one in the future, and one denoting the current date
         PastDate := CalcDate('<-1D>');
@@ -113,6 +111,8 @@ codeunit 130044 "User Login Time Tracker Test"
     begin
         // [GIVEN] The User Login table is empty
         UserLogin.DeleteAll();
+
+        PermissionsMock.Set('User Login View');
 
         // [GIVEN] Three dates - one in the past, one in the future, and one denoting the current date
         PastDateTime := CreateDateTime(CalcDate('<-1D>'), 0T);
@@ -170,6 +170,8 @@ codeunit 130044 "User Login Time Tracker Test"
         // [GIVEN] The User Login table is empty
         UserLogin.DeleteAll();
 
+        PermissionsMock.Set('User Login View');
+
         // [WHEN] Getting the penultimate login date of the current user
         PenultimateLoginDateTime := UserLoginTimeTracker.GetPenultimateLoginDateTime();
 
@@ -196,6 +198,8 @@ codeunit 130044 "User Login Time Tracker Test"
         // [GIVEN] The User Login table is empty
         UserLogin.DeleteAll();
 
+        PermissionsMock.Set('User Login View');
+
         // [WHEN] Calling CreateOrUpdateLoginInfo
         UserLoginTimeTracker.CreateOrUpdateLoginInfo();
 
@@ -216,7 +220,7 @@ codeunit 130044 "User Login Time Tracker Test"
         // [THEN] The User Login table should still contain a single record
         LibraryAssert.AreEqual(1, UserLogin.Count(), 'The User Login table should contain a single entry');
 
-        if UserLogin.FindSet() then;
+        if UserLogin.FindFirst() then;
 
         // [THEN] The fields of the User Login table should be properly assigned	
         LibraryAssert.AreEqual(UserSecurityId(), UserLogin."User SID", 'The user security ID is incorrect');

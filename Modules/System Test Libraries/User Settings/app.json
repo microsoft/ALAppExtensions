@@ -1,0 +1,36 @@
+{
+    "id":  "198640cf-2290-4f02-a9a6-05fd62cfa0e1",
+    "name":  "User Settings Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Test objects for the User Settings module.",
+    "description":  "Test objects for User Settings module.",
+    "version":  "19.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                        {
+                            "id":  "7b9b59f5-a68d-4271-b11a-0d3b9c0938dd",
+                            "name":  "User Settings",
+                            "publisher":  "Microsoft",
+                            "version":  "19.0.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "idRanges": [
+        {
+            "from": 132000,
+            "to": 132000
+        },
+        {
+            "from": 135040,
+            "to": 135040
+        }
+    ],
+    "platform":  "19.0.0.0",
+    "target":  "OnPrem"
+}

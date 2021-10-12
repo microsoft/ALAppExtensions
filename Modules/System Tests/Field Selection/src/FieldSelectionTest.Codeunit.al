@@ -9,6 +9,7 @@ codeunit 135036 "Field Selection Test"
 
     var
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
 
     [Test]
     [HandlerFunctions('FieldLookupFilteredRecordPageHandler')]
@@ -18,6 +19,7 @@ codeunit 135036 "Field Selection Test"
         FieldSelection: Codeunit "Field Selection";
     begin
         // [SCENARIO] Filters set on the Field record are respected.
+        PermissionsMock.Set('Field Selection Read');
         // [GIVEN] Filters have been set on the Field Record.
         Field.SetRange(TableNo, Database::"Test Table A");
         // [WHEN] Open function is called
@@ -33,6 +35,7 @@ codeunit 135036 "Field Selection Test"
         FieldSelection: Codeunit "Field Selection";
     begin
         // [SCENARIO] A field can be selected.
+        PermissionsMock.Set('Field Selection Read');
         // [GIVEN] User selects OK
         // [THEN] Open function returns true
         Assert.IsTrue(FieldSelection.Open(Field), 'A field was expected to be selected.');
@@ -50,6 +53,7 @@ codeunit 135036 "Field Selection Test"
         FieldSelection: Codeunit "Field Selection";
     begin
         // [SCENARIO] A field can be selected.
+        PermissionsMock.Set('Field Selection Read');
         // [GIVEN] User selects OK
         // [THEN] Open function returns true
         Assert.IsTrue(FieldSelection.Open(TempField), 'A field was expected to be selected.');
@@ -67,6 +71,7 @@ codeunit 135036 "Field Selection Test"
         FieldSelection: Codeunit "Field Selection";
     begin
         // [SCENARIO] A field can be selected.
+        PermissionsMock.Set('Field Selection Read');
         // [GIVEN] User selects OK
         // [THEN] Open function returns false
         Assert.IsFalse(FieldSelection.Open(Field), 'No field was expected to be selected');

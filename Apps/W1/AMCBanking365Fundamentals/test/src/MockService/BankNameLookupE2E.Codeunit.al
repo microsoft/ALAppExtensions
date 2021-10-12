@@ -31,6 +31,7 @@ codeunit 135084 "Bank Name Lookup E2E"
     procedure RequestBankListFromWebService()
     var
         AMCBankBanks: Record "AMC Bank Banks";
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
         AMCBankImpBankListHndl: Codeunit "AMC Bank Imp.BankList Hndl";
     begin
         // [SCENARIO] Send a request for the bank list supported by the conversion service
@@ -43,7 +44,7 @@ codeunit 135084 "Bank Name Lookup E2E"
         AMCBankBanks.DeleteAll();
 
         // Exercise
-        AMCBankImpBankListHndl.GetBankListFromWebService(true, '', 20000);
+        AMCBankImpBankListHndl.GetBankListFromWebService(true, '', 20000, AMCBankingMgt.GetAppCaller());
 
         // Verify
         Assert.RecordIsNotEmpty(AMCBankBanks);
@@ -54,6 +55,7 @@ codeunit 135084 "Bank Name Lookup E2E"
     procedure RequestBankListFromWebServiceWithCountryFilter()
     var
         AMCBankBanks: Record "AMC Bank Banks";
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
         AMCBankImpBankListHndl: Codeunit "AMC Bank Imp.BankList Hndl";
     begin
         // [SCENARIO] Send a request for the bank list supported by the conversion service with a country filter
@@ -67,7 +69,7 @@ codeunit 135084 "Bank Name Lookup E2E"
         AMCBankBanks.DeleteAll();
 
         // Exercise
-        AMCBankImpBankListHndl.GetBankListFromWebService(true, 'GB', 20000);
+        AMCBankImpBankListHndl.GetBankListFromWebService(true, 'GB', 20000, AMCBankingMgt.GetAppCaller());
 
         AMCBankBanks.SetRange("Country/Region Code", 'GB');
 
@@ -80,6 +82,7 @@ codeunit 135084 "Bank Name Lookup E2E"
     procedure RequestBankListFromWebServiceWithWrongCountryFilter()
     var
         AMCBankBanks: Record "AMC Bank Banks";
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
         AMCBankImpBankListHndl: Codeunit "AMC Bank Imp.BankList Hndl";
     begin
         // [SCENARIO] Send a request for the bank list supported by the conversion service with a wrong country filter
@@ -92,7 +95,7 @@ codeunit 135084 "Bank Name Lookup E2E"
         AMCBankBanks.DeleteAll();
 
         // Exercise
-        asserterror AMCBankImpBankListHndl.GetBankListFromWebService(true, 'XX', 20000);
+        asserterror AMCBankImpBankListHndl.GetBankListFromWebService(true, 'XX', 20000, AMCBankingMgt.GetAppCaller());
         Assert.ExpectedError(CountrCodeErr);
 
         // Verify

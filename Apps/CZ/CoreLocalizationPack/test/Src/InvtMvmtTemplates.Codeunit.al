@@ -3,6 +3,13 @@ codeunit 148053 "Invt. Mvmt. Templates CZL"
     Subtype = Test;
     TestPermissions = Disabled;
 
+
+    trigger OnRun()
+    begin
+        // [FEATURE] [Core] [Inventory Movement Templates]
+        isInitialized := false;
+    end;
+
     var
         PositiveInvtMovementTemplateCZL: Record "Invt. Movement Template CZL";
         NegativeInvtMovementTemplateCZL: Record "Invt. Movement Template CZL";
@@ -23,10 +30,14 @@ codeunit 148053 "Invt. Mvmt. Templates CZL"
         TemplateMustBeEmptyErr: Label 'Inventory Movement Template must be equal to %1  in Item Document Header', Comment = '%1 = expected value of template';
 
     local procedure Initialize();
+    var
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Invt. Mvmt. Templates CZL");
         LibraryRandom.Init();
         if isInitialized then
             exit;
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Invt. Mvmt. Templates CZL");
 
         PositiveInvtMovementTemplateCZL.Init();
         PositiveInvtMovementTemplateCZL.Name := CopyStr(LibraryRandom.RandText(10), 1, 10);
@@ -51,27 +62,27 @@ codeunit 148053 "Invt. Mvmt. Templates CZL"
 
         isInitialized := true;
         Commit();
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Invt. Mvmt. Templates CZL");
     end;
 
     [Test]
     procedure ValidateInvtMovementTemplateItemJournal()
     begin
-        // [FEATURE] Invt Movement Templates
+        // [SCENARIO] Validate Inventory Movement Template in Item Journal
         Initialize();
 
-        // [GIVEN] New Item Journal Template created
+        // [GIVEN] New Item Journal Batch has been created
         LibraryInventory.CreateItemJournalTemplate(ItemJournalTemplate);
-
-        // [GIVEN] New Item Journal Batch created
         LibraryInventory.CreateItemJournalBatch(ItemJournalBatch, ItemJournalTemplate.Name);
 
-        // [GIVEN] New Item Journal Line created
+        // [GIVEN] New Item Journal Line has been created
         LibraryInventory.CreateItemJournalLine(ItemJournalLine, ItemJournalTemplate.Name, ItemJournalBatch.Name,
                             ItemJournalLine."Entry Type"::"Negative Adjmt.", LibraryInventory.CreateItemNo(), LibraryRandom.RandDec(1000, 2));
 
-        // [WHEN] Validate Invt. Movement positive Template
+        // [WHEN] Validate Inventory Movement positive Template
         ItemJournalLine.Validate("Invt. Movement Template CZL", PositiveInvtMovementTemplateCZL.Name);
-        // [THEN] Item Journal Line is updated
+
+        // [THEN] Item Journal Line will be updated
         Assert.AreEqual(PositiveInvtMovementTemplateCZL."Gen. Bus. Posting Group", ItemJournalLine."Gen. Bus. Posting Group", ItemJournalLine.FieldCaption(ItemJournalLine."Gen. Bus. Posting Group"));
         Assert.AreEqual(PositiveInvtMovementTemplateCZL."Entry Type", ItemJournalLine."Entry Type", ItemJournalLine.FieldCaption(ItemJournalLine."Entry Type"));
     end;
@@ -79,31 +90,49 @@ codeunit 148053 "Invt. Mvmt. Templates CZL"
     [Test]
     procedure ValidatePhysInventoryPositiveItemJournal()
     begin
-        // [FEATURE] Invt Movement Templates
+        // [SCENARIO] Validate positive Inventory Movement Template in Item Journal of Phycical Inventory
         Initialize();
 
-        // [GIVEN] Item Journal Template is Physical Inventory
+        // [GIVEN] New Item Journal Template of Phycical Inventory has been created
+        LibraryInventory.CreateItemJournalTemplate(ItemJournalTemplate);
         ItemJournalTemplate.Type := ItemJournalTemplate.Type::"Phys. Inventory";
         ItemJournalTemplate.Modify();
 
-        // [GIVEN] Item Journal Line has Qty. (Calculated)
-        ItemJournalLine."Qty. (Calculated)" := LibraryRandom.RandDecInRange(101, 200, 2);
+        // [GIVEN] New Item Journal Batch has been created
+        LibraryInventory.CreateItemJournalBatch(ItemJournalBatch, ItemJournalTemplate.Name);
 
-        // [GIVEN] Item Journal Line is Physical Inventory
+        // [GIVEN] New Item Journal Line of Phycical Inventory has been created
+        LibraryInventory.CreateItemJournalLine(ItemJournalLine, ItemJournalTemplate.Name, ItemJournalBatch.Name,
+                            ItemJournalLine."Entry Type"::"Negative Adjmt.", LibraryInventory.CreateItemNo(), 0);
         ItemJournalLine."Phys. Inventory" := true;
+        ItemJournalLine."Qty. (Calculated)" := LibraryRandom.RandDecInRange(101, 200, 2);
 
         // [WHEN] Validate Qty. (Phys. Inventory) higher
         ItemJournalLine.Validate("Qty. (Phys. Inventory)", LibraryRandom.RandDecInRange(201, 300, 2));
 
-        // [THEN] Item Journal Line is updated
+        // [THEN] Item Journal Line will be updated
         Assert.AreEqual(InventorySetup."Def.Tmpl. for Phys.Pos.Adj CZL", ItemJournalLine."Invt. Movement Template CZL", ItemJournalLine.FieldCaption(ItemJournalLine."Invt. Movement Template CZL"));
     end;
 
     [Test]
     procedure ValidatePhysInventoryNegativeItemJournal()
     begin
-        // [FEATURE] Invt Movement Templates
+        // [SCENARIO] Validate negative Inventory Movement Template in Item Journal of Phycical Inventory
         Initialize();
+
+        // [GIVEN] New Item Journal Template of Phycical Inventory has been created
+        LibraryInventory.CreateItemJournalTemplate(ItemJournalTemplate);
+        ItemJournalTemplate.Type := ItemJournalTemplate.Type::"Phys. Inventory";
+        ItemJournalTemplate.Modify();
+
+        // [GIVEN] New Item Journal Batch has been created
+        LibraryInventory.CreateItemJournalBatch(ItemJournalBatch, ItemJournalTemplate.Name);
+
+        // [GIVEN] New Item Journal Line of Phycical Inventory has been created
+        LibraryInventory.CreateItemJournalLine(ItemJournalLine, ItemJournalTemplate.Name, ItemJournalBatch.Name,
+                            ItemJournalLine."Entry Type"::"Positive Adjmt.", LibraryInventory.CreateItemNo(), 0);
+        ItemJournalLine."Phys. Inventory" := true;
+        ItemJournalLine."Qty. (Calculated)" := LibraryRandom.RandDecInRange(101, 200, 2);
 
         // [WHEN] Validate Qty. (Phys. Inventory) lower
         ItemJournalLine.Validate("Qty. (Phys. Inventory)", LibraryRandom.RandDecInRange(1, 100, 2));
@@ -115,32 +144,40 @@ codeunit 148053 "Invt. Mvmt. Templates CZL"
     [Test]
     procedure ValidateInvtMovementPositiveTemplateJobJournal()
     begin
-        // [FEATURE] Invt Movement Templates
+        // [SCENARIO] Validate Inventory Movement positive Template in Job Journal
         Initialize();
 
-        // [GIVEN] New Job created
+        // [GIVEN] New Job Task Line has been created
         LibraryJob.CreateJob(Job);
-
-        // [GIVEN] New Job Task Line created
         LibraryJob.CreateJobTask(Job, JobTask);
 
-        // [GIVEN] New Item Journal Line created
+        // [GIVEN] New Job Journal Line has been created
         LibraryJob.CreateJobJournalLine(JobJournalLine."Line Type"::Billable, JobTask, JobJournalLine);
 
-        // [WHEN] Try validate Invt. Movement Positive Template
+        // [WHEN] Validate Inventory Movement positive Template
         asserterror JobJournalLine.Validate("Invt. Movement Template CZL", PositiveInvtMovementTemplateCZL.Name);
+
+        // [THEN] Error on Entry Type will occurs
+        Assert.ExpectedError('Entry Type must be equal to ''Negative Adjmt.''  in Inventory Movement Template');
     end;
 
     [Test]
     procedure ValidateInvtMovementNegativeTemplateJobJournal()
     begin
-        // [FEATURE] Invt Movement Templates
+        // [SCENARIO] Validate Inventory Movement negative Template in Job Journal
         Initialize();
 
-        // [WHEN] Validate Invt. Movement Negative Template
+        // [GIVEN] New Job Task Line has been created
+        LibraryJob.CreateJob(Job);
+        LibraryJob.CreateJobTask(Job, JobTask);
+
+        // [GIVEN] New Job Journal Line has been created
+        LibraryJob.CreateJobJournalLine(JobJournalLine."Line Type"::Billable, JobTask, JobJournalLine);
+
+        // [WHEN] Validate Inventory Movement negative Template
         JobJournalLine.Validate("Invt. Movement Template CZL", NegativeInvtMovementTemplateCZL.Name);
 
-        // [THEN] Job Journal Line is updated
+        // [THEN] Job Journal Line will be updated
         Assert.AreEqual(NegativeInvtMovementTemplateCZL."Gen. Bus. Posting Group", JobJournalLine."Gen. Bus. Posting Group", JobJournalLine.FieldCaption(JobJournalLine."Gen. Bus. Posting Group"));
     end;
 

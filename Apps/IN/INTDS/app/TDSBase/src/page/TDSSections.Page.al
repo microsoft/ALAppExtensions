@@ -70,10 +70,10 @@ page 18695 "TDS Sections"
 
                     trigger OnAction()
                     var
-                        ODataUtility: Codeunit ODataUtility;
+                        EditinExcel: Codeunit "Edit in Excel";
                         TDSSectionLbl: Label 'Code eq %1', Comment = '%1 = TDS Section Code';
                     begin
-                        ODataUtility.EditWorksheetInExcel('Sections', CurrPage.ObjectId(false), StrSubstNo(TDSSectionLbl, Rec.Code));
+                        EditinExcel.EditPageInExcel('Sections', CurrPage.ObjectId(false), StrSubstNo(TDSSectionLbl, Rec.Code));
                     end;
                 }
                 action(ClearFilter)

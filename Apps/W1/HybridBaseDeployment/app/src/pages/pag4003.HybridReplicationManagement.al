@@ -104,29 +104,64 @@ page 4003 "Intelligent Cloud Management"
                 trigger OnAction()
                 var
                     HybridReplicationSummary: Record "Hybrid Replication Summary";
-                    IntelligentCloudSetup: Record "Intelligent Cloud Setup";
                     HybridCloudManagement: Codeunit "Hybrid Cloud Management";
                     AdditionalProcessesRunning: Boolean;
                     ErrorMessage: Text;
+                    CompaniesNotCreated: Boolean;
                 begin
                     AdditionalProcessesRunning := false;
-                    if IntelligentCloudSetup.Get() then
-                        CompanyCreationTaskID := IntelligentCloudSetup."Company Creation Task ID";
-                    if CompanyCreationInProgress() then
-                        Error(CompanyNotCreatedErr);
+                    if not CanRunReplication(ErrorMessage) then
+                        Error(ErrorMessage);
+
                     if CompanyCreationFailed(ErrorMessage) then
                         Error(CompanyCreationFailedErr, ErrorMessage);
-                    if CompanyCreationNotComplete() then
+
+                    CompaniesNotCreated := CompanyCreationInProgress();
+                    if not CompaniesNotCreated then
+                        CompaniesNotCreated := CompanyCreationNotComplete();
+
+                    if CompaniesNotCreated then
                         Error(CompanyNotCreatedErr);
-                    if not CanRunReplication() then
-                        Error(CannotRunReplicationErr);
+
                     CheckAdditionalProcesses(AdditionalProcessesRunning, ErrorMessage);
                     if AdditionalProcessesRunning then
                         Error(ErrorMessage);
+
                     if Dialog.Confirm(RunReplicationConfirmQst, false) then begin
                         HybridCloudManagement.RunReplication(HybridReplicationSummary.ReplicationType::Normal);
                         Message(RunReplicationTxt);
                     end;
+                end;
+            }
+
+            action(RunDataUpgrade)
+            {
+                Enabled = IsSuper and IsSetupComplete;
+                Visible = not IsOnPrem;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Run Data Upgrade Now';
+                ToolTip = 'Manually start the upgrade after cloud migration.';
+                Promoted = true;
+                PromotedCategory = Process;
+                Image = Process;
+
+                trigger OnAction()
+                var
+                    HybridReplicationSummary: Record "Hybrid Replication Summary";
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+                    Handled: Boolean;
+                    ErrorMessage: Text;
+                begin
+                    if IsReplicationInProgress(ErrorMessage) then
+                        Error(ErrorMessage);
+
+                    HybridReplicationSummary.SetFilter("End Time", '>%1', Rec."End Time");
+                    if HybridReplicationSummary.FindFirst() then
+                        Error(CannotStartUpgradeFromOldRunErr);
+
+                    HybridCloudManagement.OnInvokeDataUpgrade(Rec, Handled);
+                    if not Handled then
+                        Error(UpgradeNotExecutedErr);
                 end;
             }
 
@@ -152,8 +187,8 @@ page 4003 "Intelligent Cloud Management"
                         Error(CompanyNotCreatedErr);
                     if CompanyCreationFailed(ErrorMessage) then
                         Error(CompanyCreationFailedErr, ErrorMessage);
-                    if not CanRunReplication() then
-                        Error(CannotRunReplicationErr);
+                    if not CanRunReplication(ErrorMessage) then
+                        Error(ErrorMessage);
 
                     HybridCloudManagement.RunReplication(DummyHybridReplicationSummary.ReplicationType::Diagnostic);
                 end;
@@ -175,6 +210,11 @@ page 4003 "Intelligent Cloud Management"
                     HybridCloudManagement: Codeunit "Hybrid Cloud Management";
                 begin
                     SelectLatestVersion();
+                    if Rec.Status = Rec.Status::UpgradePending then begin
+                        CurrPage.Update();
+                        exit;
+                    end;
+
                     if CanRefresh() then begin
                         HybridCloudManagement.RefreshReplicationStatus();
                         LastRefresh := CurrentDateTime();
@@ -338,10 +378,30 @@ page 4003 "Intelligent Cloud Management"
                 Image = Setup;
             }
 
+            action(RepairCompanionTableRecordConsistency)
+            {
+                Enabled = IsSuper and IsMigratedCompany;
+                Visible = not IsOnPrem;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Repair Companion Table Records';
+                ToolTip = 'Repair Companion Table Records';
+                Promoted = false;
+                Image = Database;
+
+                trigger OnAction()
+                var
+                    HybridCloudManagement: codeunit "Hybrid Cloud Management";
+                begin
+                    HybridCloudManagement.RepairCompanionTableRecordConsistency();
+                end;
+            }
+
             action(ManageCustomTables)
             {
-                Enabled = IsSuper and IsSetupComplete;
-                Visible = not IsOnPrem and CustomTablesEnabled;
+                Enabled = IsSuper;
+                Visible = not IsOnPrem;
+                Promoted = true;
+                PromotedCategory = Process;
                 ApplicationArea = Basic, Suite;
                 Caption = 'Manage Custom Tables';
                 ToolTip = 'Manage custom table mappings for the migration.';
@@ -375,14 +435,10 @@ page 4003 "Intelligent Cloud Management"
         UserPermissions: Codeunit "User Permissions";
         EnvironmentInfo: Codeunit "Environment Information";
         IntelligentCloudNotifier: Codeunit "Intelligent Cloud Notifier";
-        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
         IsSuper := UserPermissions.IsSuper(UserSecurityId());
         if not IsSuper then
             SendUserIsNotSuperNotification();
-
-        if not TaskScheduler.CanCreateTask() then
-            HybridCloudManagement.SendMissingScheduleTasksNotification();
 
         IsOnPrem := NOT EnvironmentInfo.IsSaaS();
         if (not PermissionManager.IsIntelligentCloud()) and (not IsOnPrem) then
@@ -396,15 +452,13 @@ page 4003 "Intelligent Cloud Management"
         CanShowUpdateReplicationCompanies(UpdateReplicationCompaniesEnabled);
         CanMapCustomTables(CustomTablesEnabled);
 
-        if IntelligentCloudSetup.Get() then begin
+        if IntelligentCloudSetup.Get() then
             HybridDeployment.Initialize(IntelligentCloudSetup."Product ID");
-            CompanyCreationTaskID := IntelligentCloudSetup."Company Creation Task ID";
-        end;
 
         IntelligentCloudNotifier.ShowICUpdateNotification();
         WarnAboutNonInitializedCompanies();
 
-        if not FindSet() then
+        if not Rec.FindSet() then
             exit;
     end;
 
@@ -470,36 +524,75 @@ page 4003 "Intelligent Cloud Management"
         exit(CurrentDateTime() - LastRefresh > AllowedRefreshPeriod);
     end;
 
-    local procedure CanRunReplication(): Boolean
+    local procedure CanRunReplication(var Reason: Text): Boolean
+    begin
+        if IsReplicationInProgress(Reason) then
+            exit(false);
+
+        exit(VerifyCanReplicateCompanies(Reason));
+    end;
+
+    local procedure IsReplicationInProgress(var Reason: Text): Boolean
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
     begin
-        HybridReplicationSummary.SetRange(Status, Status::InProgress);
+        HybridReplicationSummary.SetRange(Status, Rec.Status::InProgress);
         HybridReplicationSummary.SetFilter("Start Time", '>%1', (CurrentDateTime() - 86400000));
-        if not HybridReplicationSummary.IsEmpty() then
-            exit(false);
+        if not HybridReplicationSummary.IsEmpty() then begin
+            Reason := MigraitonAlreadyInProgressErr;
+            exit(true);
+        end;
+
+        exit(false);
+    end;
+
+    local procedure VerifyCanReplicateCompanies(var Reason: Text): Boolean
+    var
+        HybridCompany: Record "Hybrid Company";
+        HybridCompanyStatus: Record "Hybrid Company Status";
+    begin
+        HybridCompany.SetRange(Replicate, true);
+        if not HybridCompany.FindSet() then
+            exit(true);
+
+        repeat
+            if HybridCompanyStatus.Get(HybridCompany.Name) then
+                if HybridCompanyStatus.Replicated then
+                    if HybridCompanyStatus."Upgrade Status" in [HybridCompanyStatus."Upgrade Status"::Completed, HybridCompanyStatus."Upgrade Status"::Started, HybridCompanyStatus."Upgrade Status"::Failed] then begin
+                        Reason := StrSubstNo(CompanyUnderUpgradeErr, HybridCompany.Name, HybridCompanyStatus."Upgrade Status");
+                        exit(false);
+                    end;
+        until HybridCompany.Next() = 0;
+
         exit(true);
     end;
 
     local procedure CompanyCreationInProgress(): Boolean
     var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         ScheduledTask: Record "Scheduled Task";
     begin
-        exit(ScheduledTask.Get(CompanyCreationTaskID));
+        if not IntelligentCloudSetup.Get() then
+            exit(false);
+        if not IsNullGuid(IntelligentCloudSetup."Company Creation Task ID") then
+            exit(ScheduledTask.Get(IntelligentCloudSetup."Company Creation Task ID"));
+
+        if IntelligentCloudSetup."Company Creation Session ID" <> 0 then
+            exit(Session.IsSessionActive(IntelligentCloudSetup."Company Creation Session ID"));
     end;
 
     local procedure CompanyCreationNotComplete(): Boolean
     var
         AssistedCompanySetupStatus: Record "Assisted Company Setup Status";
         HybridCompany: Record "Hybrid Company";
-        SetupStatus: Option " ","Completed","In Progress","Error","Missing Permission";
+        SetupStatus: Enum "Company Setup Status";
     begin
         HybridCompany.Reset();
         HybridCompany.SetRange(Replicate, true);
         if HybridCompany.FindSet() then
             repeat
                 if AssistedCompanySetupStatus.Get(HybridCompany.Name) then begin
-                    SetupStatus := AssistedCompanySetupStatus.GetCompanySetupStatus(CopyStr(HybridCompany.Name, 1, 30));
+                    SetupStatus := AssistedCompanySetupStatus.GetCompanySetupStatusValue(CopyStr(HybridCompany.Name, 1, 30));
                     if SetupStatus <> SetupStatus::Completed then
                         exit(true);
                 end;
@@ -510,11 +603,32 @@ page 4003 "Intelligent Cloud Management"
     local procedure CompanyCreationFailed(var ErrorMessage: Text): Boolean
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        Company: Record "Company";
+        HybridCompany: Record "Hybrid Company";
+        AssistedCompanySetupStatus: Record "Assisted Company Setup Status";
+        CompanySetupStatus: Enum "Company Setup Status";
     begin
         if IntelligentCloudSetup.Get() then begin
             ErrorMessage := IntelligentCloudSetup."Company Creation Task Error";
             exit((IntelligentCloudSetup."Company Creation Task Status" = IntelligentCloudSetup."Company Creation Task Status"::Failed));
         end;
+
+        HybridCompany.SetRange(Replicate, true);
+        if not HybridCompany.FindSet() then
+            exit(false);
+
+        repeat
+            if not Company.Get(HybridCompany.Name) then begin
+                ErrorMessage := StrSubstNo(CompanyWasNotCreatedErr, Company.Name);
+                exit(true);
+            end;
+
+            CompanySetupStatus := AssistedCompanySetupStatus.GetCompanySetupStatusValue(Company.Name);
+            if not (CompanySetupStatus = CompanySetupStatus::Completed) then begin
+                ErrorMessage := StrSubstNo(CompanySetupIsNotcompleteErr, Company.Name, CompanySetupStatus);
+                exit(true);
+            end;
+        until HybridCompany.Next() = 0;
         exit(false);
     end;
 
@@ -575,7 +689,6 @@ page 4003 "Intelligent Cloud Management"
     var
         HybridDeployment: Codeunit "Hybrid Deployment";
         LastRefresh: DateTime;
-        CompanyCreationTaskID: Guid;
         IsSetupComplete: Boolean;
         IsSuper: Boolean;
         IsOnPrem: Boolean;
@@ -591,7 +704,7 @@ page 4003 "Intelligent Cloud Management"
         RegenerateNewKeyConfirmQst: Label 'Are you sure you want to generate new integration runtime key?';
         CompanyNotCreatedErr: Label 'Cannot run migration since the background task has not finished creating companies yet.';
         CompanyCreationFailedErr: Label 'Company creation failed with error %1. Please fix this and re-run the Cloud Migration Setup wizard.', Comment = '%1 - the error message';
-        CannotRunReplicationErr: Label 'A migration is already in progress.';
+        MigraitonAlreadyInProgressErr: Label 'A migration is already in progress.';
         RunReplicationTxt: Label 'Migration has been successfully triggered. You can track the status on the management page.';
         IntegrationKeyTxt: Label 'Primary key for the integration runtime is: %1', Comment = '%1 = Integration Runtime Key';
         NewIntegrationKeyTxt: Label 'New Primary key for the integration runtime is: %1', Comment = '%1 = Integration Runtime Key';
@@ -600,11 +713,13 @@ page 4003 "Intelligent Cloud Management"
         ResetTriggeredTxt: Label 'Reset has been successfully triggered. All migration enabled data will be reset in the next migration run.';
         TablesReadyForReplicationMsg: Label 'All tables have been successfully prepared for migration.';
         NonInitializedCompaniesMsg: Label 'One or more companies have been successfully migrated but are not yet initialized. Manage the companies in the Hybrid Companies List page.';
-
+        CompanyUnderUpgradeErr: Label 'Cloud migration can’t be run, because an upgrade has started on company %1 (upgrade status: %2). Either exclude the company from migration or delete it, then try migration again.', Comment = '%1 - Name of company, %2 Status of upgrade for company';
         OpenPageMsg: Label 'Open page';
-
         UserMustBeSuperMsg: Label 'You must have the SUPER permission set to run this wizard.';
-
         IntelligentCloudIsDisabledMsg: Label 'Cloud migration has been disabled. To start the migration again, you must complete the wizard.';
         IntelligentCloudNotSetupMsg: Label 'Cloud migration was not set up. To migrate data to the cloud, complete the wizard.';
+        UpgradeNotExecutedErr: Label 'Upgrade was not run, because there were no extensions capable of handling the upgrade.';
+        CannotStartUpgradeFromOldRunErr: Label 'The selected summary is not from the latest replication run. To start the upgrade, select the summary from the lastest run.';
+        CompanyWasNotCreatedErr: Label 'Company creation failed. Errors could be found on the assisted setup page. Company name is: %1.', Comment = '%1 - Company name';
+        CompanySetupIsNotcompleteErr: Label 'The company %1 was not setup correctly. Current setup status: %2', Comment = '%1 - Company name, %2 - Company Status';
 }

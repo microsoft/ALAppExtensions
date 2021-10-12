@@ -578,13 +578,12 @@ table 11732 "Cash Document Header CZP"
     var
         CashDocumentLineCZP: Record "Cash Document Line CZP";
         CashDocumentPostCZP: Codeunit "Cash Document-Post CZP";
-        CashDocumentApprovMgtCZP: Codeunit "Cash Document Approv. Mgt. CZP";
     begin
         TestField(Status, Status::Open);
         if not ConfirmManagement.GetResponseOrDefault(DeleteQst, false) then
             Error('');
 
-        CashDocumentApprovMgtCZP.DeleteApprovalEntryForRecord(Rec);
+        DeleteRecordInApprovalRequest();
 
         CashDeskManagementCZP.CheckCashDesks();
         if not UserSetupManagement.CheckRespCenter(3, "Responsibility Center") then
@@ -1229,13 +1228,66 @@ table 11732 "Cash Document Header CZP"
         exit("EET Transaction");
     end;
 
+    procedure CheckCashDocReleaseRestrictions()
+    var
+        CashDocumentApprovMgtCZP: Codeunit "Cash Document Approv. Mgt. CZP";
+    begin
+#if not CLEAN19
+#pragma warning disable AL0432
+#endif
+        OnCheckCashDocReleaseRestrictions();
+#if not CLEAN19
+#pragma warning restore AL0432
+#endif
+        CashDocumentApprovMgtCZP.PrePostApprovalCheckCashDoc(Rec)
+    end;
+
+    procedure CheckCashDocPostRestrictions()
+    begin
+#if not CLEAN19
+#pragma warning disable AL0432
+#endif
+        OnCheckCashDocPostRestrictions();
+#if not CLEAN19
+#pragma warning restore AL0432
+#endif
+    end;
+
+    local procedure DeleteRecordInApprovalRequest()
+    var
+        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeDeleteRecordInApprovalRequest(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        ApprovalsMgmt.OnDeleteRecordInApprovalRequest(RecordId);
+    end;
+
     [IntegrationEvent(true, false)]
+#if not CLEAN19
+    [Obsolete('The event will be changed to local. Use the CheckCashDocReleaseRestrictions function instead.', '19.0')]
     procedure OnCheckCashDocReleaseRestrictions()
+#else
+    local procedure OnCheckCashDocReleaseRestrictions()
+#endif
     begin
     end;
 
     [IntegrationEvent(true, false)]
+#if not CLEAN19
+    [Obsolete('The event will be changed to local. Use the CheckCashDocPostRestrictions function instead.', '19.0')]
     procedure OnCheckCashDocPostRestrictions()
+#else
+    local procedure OnCheckCashDocPostRestrictions()
+#endif
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeDeleteRecordInApprovalRequest(var CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var IsHandled: Boolean);
     begin
     end;
 

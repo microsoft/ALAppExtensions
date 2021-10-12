@@ -25,6 +25,17 @@ page 11754 "Unrel. Payer Service Setup CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies if the service is enabled.';
+
+                    trigger OnValidate()
+                    var
+                        CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+                    begin
+                        if Rec.Enabled = xRec.Enabled then
+                            exit;
+
+                        if Rec.Enabled then
+                            Rec.Enabled := CustomerConsentMgt.ConfirmUserConsent();
+                    end;
                 }
             }
             group(Parameters)

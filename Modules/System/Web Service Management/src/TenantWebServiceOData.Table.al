@@ -19,7 +19,7 @@ table 6710 "Tenant Web Service OData"
         field(1; TenantWebServiceID; RecordID)
         {
             Caption = 'Tenant Web Service ID';
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
         }
         field(2; ODataSelectClause; BLOB)
         {

@@ -31,7 +31,7 @@ True if the camera is available, the user took a picture and decided to use it, 
 The provided variant is not of type record.
 
 
- Adds a picture from the camera to the field of type 'Media'or 'MediaSet' on the provided record. 
+ Adds a picture from the camera to the field of type 'Media'or 'MediaSet' on the provided record.
  
 
 

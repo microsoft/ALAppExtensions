@@ -213,7 +213,10 @@ codeunit 139866 "APIV2 - Contacts E2E"
         LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'state', Contact.County);
         LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'country', Contact."Country/Region Code");
         LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'postalCode', Contact."Post Code");
+#if not CLEAN19
         LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'businessRelation', Contact."Business Relation");
+#endif
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'contactBusinessRelation', Format(Contact."Contact Business Relation"));
     end;
 
     local procedure GetComplexContactJSON(var Contact: Record "Contact"): Text

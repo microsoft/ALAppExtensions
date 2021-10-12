@@ -55,7 +55,8 @@ codeunit 31157 "Sync.Dep.Fld-DocFooter CZL"
         if not DocumentFooterCZL.Get(Rec."Language Code") then begin
             DocumentFooterCZL.Init();
             DocumentFooterCZL."Language Code" := Rec."Language Code";
-            DocumentFooterCZL.Insert(false);
+            DocumentFooterCZL.SystemId := Rec.SystemId;
+            DocumentFooterCZL.Insert(false, true);
         end;
         DocumentFooterCZL."Footer Text" := Rec."Footer Text";
         DocumentFooterCZL.Modify(false);
@@ -128,7 +129,8 @@ codeunit 31157 "Sync.Dep.Fld-DocFooter CZL"
         if not DocumentFooter.Get(Rec."Language Code") then begin
             DocumentFooter.Init();
             DocumentFooter."Language Code" := Rec."Language Code";
-            DocumentFooter.Insert(false);
+            DocumentFooter.SystemId := Rec.SystemId;
+            DocumentFooter.Insert(false, true);
         end;
         DocumentFooter."Footer Text" := CopyStr(Rec."Footer Text", 1, MaxStrLen(DocumentFooter."Footer Text"));
         DocumentFooter.Modify(false);

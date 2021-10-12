@@ -22,7 +22,8 @@ codeunit 3725 "Assisted Setup"
     procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group")
     begin
         GuidedExperienceImpl.Insert(CopyStr(AssistantName, 1, 2048), CopyStr(AssistantName, 1, 50), '', 0, ExtensionId, GuidedExperienceType::"Assisted Setup",
-            ObjectType::Page, PageID, '', GroupName, '', VideoCategory::Uncategorized, '', ManualSetupCategory::Uncategorized, '', true);
+            ObjectType::Page, PageID, '', GroupName, '', VideoCategory::Uncategorized, '', ManualSetupCategory::Uncategorized, '',
+            SpotlightTourType::None, SpotlightTourTexts, true);
     end;
 
     /// <summary>Adds an assisted setup record from a given extension so that it can be shown in the list.</summary>
@@ -36,7 +37,8 @@ codeunit 3725 "Assisted Setup"
     procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group"; VideoLink: Text[250]; HelpLink: Text[250])
     begin
         GuidedExperienceImpl.Insert(CopyStr(AssistantName, 1, 2048), CopyStr(AssistantName, 1, 50), '', 0, ExtensionId, GuidedExperienceType::"Assisted Setup",
-            ObjectType::Page, PageID, '', GroupName, VideoLink, VideoCategory::Uncategorized, HelpLink, ManualSetupCategory::Uncategorized, '', true);
+            ObjectType::Page, PageID, '', GroupName, VideoLink, VideoCategory::Uncategorized, HelpLink, ManualSetupCategory::Uncategorized, '',
+            SpotlightTourType::None, SpotlightTourTexts, true);
     end;
 
     /// <summary>Adds an assisted setup record from a given extension so that it can be shown in the list.</summary>
@@ -51,7 +53,8 @@ codeunit 3725 "Assisted Setup"
     procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group"; VideoLink: Text[250]; VideoCategory: Enum "Video Category"; HelpLink: Text[250])
     begin
         GuidedExperienceImpl.Insert(CopyStr(AssistantName, 1, 2048), CopyStr(AssistantName, 1, 50), '', 0, ExtensionId, GuidedExperienceType::"Assisted Setup",
-            ObjectType::Page, PageID, '', GroupName, VideoLink, VideoCategory, HelpLink, ManualSetupCategory::Uncategorized, '', true);
+            ObjectType::Page, PageID, '', GroupName, VideoLink, VideoCategory, HelpLink, ManualSetupCategory::Uncategorized, '',
+            SpotlightTourType::None, SpotlightTourTexts, true);
     end;
 
     /// <summary>Adds an assisted setup record from a given extension so that it can be shown in the list.</summary>
@@ -66,19 +69,9 @@ codeunit 3725 "Assisted Setup"
     [Obsolete('Replaced by Insert in the Guided Experience codeunit.', '18.0')]
     procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group"; VideoLink: Text[250]; VideoCategory: Enum "Video Category"; HelpLink: Text[250]; Description: Text[1024])
     begin
-        GuidedExperienceImpl.Insert(CopyStr(AssistantName, 1, 2048), CopyStr(AssistantName, 1, 50), Description, 0, ExtensionId, GuidedExperienceType::"Assisted Setup",
-            ObjectType::Page, PageID, '', GroupName, VideoLink, VideoCategory, HelpLink, ManualSetupCategory::Uncategorized, '', true);
-    end;
-
-    /// <summary>Adds the translation for the name of the setup.</summary>
-    /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
-    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
-    /// <param name="LanguageID">The language ID for which the translation is made.</param>
-    /// <param name="TranslatedName">The translated text of the name.</param>
-    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
-    procedure AddTranslation(ExtensionID: Guid; PageID: Integer; LanguageID: Integer; TranslatedName: Text)
-    begin
-        AddTranslation(PageID, LanguageID, TranslatedName);
+        GuidedExperienceImpl.Insert(CopyStr(AssistantName, 1, 2048), CopyStr(AssistantName, 1, 50), Description, 0, ExtensionId,
+            GuidedExperienceType::"Assisted Setup", ObjectType::Page, PageID, '', GroupName, VideoLink, VideoCategory, HelpLink,
+            ManualSetupCategory::Uncategorized, '', SpotlightTourType::None, SpotlightTourTexts, true);
     end;
 
     /// <summary>Adds the translation for the name of the setup.</summary>
@@ -92,32 +85,12 @@ codeunit 3725 "Assisted Setup"
     end;
 
     /// <summary>Checks whether a user has already completed the setup.</summary>
-    /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
-    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
-    /// <returns>Returns true if the given setup guide has been completed by the user, otherwise false.</returns> 
-    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
-    procedure IsComplete(ExtensionID: Guid; PageID: Integer): Boolean
-    begin
-        exit(IsComplete(PageID));
-    end;
-
-    /// <summary>Checks whether a user has already completed the setup.</summary>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
     /// <returns>Returns true if the given setup guide has been completed by the user, otherwise false.</returns> 
     [Obsolete('Replaced by IsAssistedSetupComplete(ObjectType, ObjectID) in the Guided Experience codeunit.', '18.0')]
     procedure IsComplete(PageID: Integer): Boolean
     begin
         exit(GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, PageID));
-    end;
-
-    /// <summary>Checks whether an assisted setup guide exists.</summary>
-    /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
-    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
-    /// <returns>True if an assisted setup guide for provided extension and page IDs exists; false otherwise.</returns>
-    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
-    procedure Exists(ExtensionID: Guid; PageID: Integer): Boolean
-    begin
-        exit(Exists(PageID));
     end;
 
     /// <summary>Checks whether an assisted setup guide exists.</summary>
@@ -130,32 +103,12 @@ codeunit 3725 "Assisted Setup"
     end;
 
     /// <summary>Checks whether as assisted setup guide exists but has not been completed.</summary>
-    /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
-    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
-    /// <returns>True if it exists and is incomplete, false otherwise.</returns>
-    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
-    procedure ExistsAndIsNotComplete(ExtensionID: Guid; PageID: Integer): Boolean
-    begin
-        exit(ExistsAndIsNotComplete(PageID));
-    end;
-
-    /// <summary>Checks whether as assisted setup guide exists but has not been completed.</summary>
     /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
     /// <returns>True if it exists and is incomplete, false otherwise.</returns>
     [Obsolete('Replaced by AssistedSetupExistsAndIsNotComplete(ObjectType, ObjectID) in the Guided Experience codeunit.', '18.0')]
     procedure ExistsAndIsNotComplete(PageID: Integer): Boolean
     begin
         exit(GuidedExperience.AssistedSetupExistsAndIsNotComplete(ObjectType::Page, PageID));
-    end;
-
-    /// <summary>Sets the status of the assisted setup to Complete.</summary>
-    /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
-    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
-    /// <remarks>This is typically called from inside the assisted setup guide when the setup is finished.</remarks>
-    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
-    procedure Complete(ExtensionID: Guid; PageID: Integer)
-    begin
-        Complete(PageID);
     end;
 
     /// <summary>Sets the status of the assisted setup to Complete.</summary>
@@ -173,15 +126,6 @@ codeunit 3725 "Assisted Setup"
     procedure Reset(PageID: Integer)
     begin
         GuidedExperience.ResetAssistedSetup(ObjectType::Page, PageID);
-    end;
-
-    /// <summary>Issues the call to execute the setup.</summary>
-    /// <param name="ExtensionID">The app ID of the extension to which the setup belongs.</param>
-    /// <param name="PageID">The ID of the page to open when the user clicks the setup.</param>
-    [Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
-    procedure Run(ExtensionID: Guid; PageID: Integer)
-    begin
-        Run(PageID);
     end;
 
     /// <summary>Issues the call to start the setup.</summary>
@@ -258,5 +202,7 @@ codeunit 3725 "Assisted Setup"
         GuidedExperienceType: Enum "Guided Experience Type";
         VideoCategory: Enum "Video Category";
         ManualSetupCategory: Enum "Manual Setup Category";
+        SpotlightTourType: Enum "Spotlight Tour Type";
+        SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text];
 }
 #endif

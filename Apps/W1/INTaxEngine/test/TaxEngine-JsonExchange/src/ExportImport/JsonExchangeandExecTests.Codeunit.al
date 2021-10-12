@@ -20,7 +20,6 @@ codeunit 137700 "Json Exchange and Exec. Tests"
         LHSLookup: Boolean;
         IsComponentFormulaLookup: Boolean;
         TaxTypeLbl: Label 'VAT';
-        TreeCodeLbl: Label 'VAT-000001';
 
     [Test]
     [HandlerFunctions('TaxTypePageHandler,RateSetupPageHandler,TaxAttributesPageHandler,TaxComponentsPageHandler,TaxEntitiesPageHandler,TaxTypePageHandler,TaxRatePageHandler,UseCasePageHandler,UseCaseConditionHandler,UseCaseConditionLookup,UseCaseConditionTableFilter,ComputationScriptHandler,ScriptVariablesHandler,InsertRecordHandler,TaxPostingSetupHandler,AttributeMappingSwitchStatementHandler,FieldLookupHandler,ArchivalLogsHandler,ScriptSymbolHandler,UseCaseRestoreCnfrmHandler,LoopThruRecordHandler,UseCaseCardPageHandler,ActionStringExprHandler,ActionRoundNumberHandler,ActionReplaceSubstringDlgHandler,ActionNumberExpressionHandler,ActionNumberCalculationHandler,ActionMessageHandler,ActionLengthOfStringHandler,ActionFindSubStringInStringHandler,ActionFindIntervalBetDateHandler,ActionExtractSubStringFrmPosHandler,ActionExtractSubStringFrmIndexHandler,ActionExtractDatePartHandler,ActionDateToDateTimeHandler,DateCalculationHandler,ConvertCaseHandler,ComponentExpreHandler,ComponentFormulaExpHandler,TaxComponentsModalPageHandler,TaxAttributeValuesHandler,TaxAttributeValuesModalHandler,TaxEntitiesHandler')]
@@ -529,6 +528,7 @@ codeunit 137700 "Json Exchange and Exec. Tests"
         UseCaseCard.PostingSetup.Invoke();
 
         UseCaseCard.Status.SetValue('Released');
+        UseCaseCard.Status.SetValue('Draft');
 
         UseCaseCard.ExportUseCase.Invoke();
         UseCaseCard.ArchivedLogs.Invoke();
@@ -1031,12 +1031,14 @@ codeunit 137700 "Json Exchange and Exec. Tests"
         TaxType: Record "Tax Type";
         TaxUseCase: Record "Tax Use Case";
         UseCaseMgmt: Codeunit "Use Case Mgmt.";
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
     begin
         TaxType.SetHideDialog(true);
         TaxType.SetRange(Code, TaxTypeLbl);
         if TaxType.FindFirst() then begin
             TaxUseCase.SetRange("Tax Type", TaxTypeLbl);
             UseCaseMgmt.DisableSelectedUseCases(TaxUseCase);
+            TaxTypeObjectHelper.DisableSelectedTaxTypes(TaxType);
             TaxType.Delete(true);
         end;
         JText := TaxConfigTestHelper.GetJsonInText();
@@ -1053,15 +1055,10 @@ codeunit 137700 "Json Exchange and Exec. Tests"
 
     local procedure ImportTaxUseCaseTree()
     var
-        UseCaseTreeNode: Record "Use Case Tree Node";
         JText: Text;
     begin
-        UseCaseTreeNode.SetFilter(Code, '%1', TreeCodeLbl);
-        UseCaseTreeNode.SetRange("Is Tax Type Root", true);
-        if UseCaseTreeNode.IsEmpty() then begin
-            JText := TaxConfigTestHelper.GetUseCaseTree();
-            UseCaseTreeIndent.ReadUseCaseTree(JText);
-            UseCaseTreeIndent.Indent();
-        end;
+        JText := TaxConfigTestHelper.GetUseCaseTree();
+        UseCaseTreeIndent.ReadUseCaseTree(JText);
+        UseCaseTreeIndent.Indent();
     end;
 }

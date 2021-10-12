@@ -159,6 +159,20 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
         exit(Amount);
     end;
 
+    procedure IsAdvanceEntryCZL(): Boolean
+    var
+        AdvanceEntry: Boolean;
+    begin
+        AdvanceEntry := false;
+#if not CLEAN19
+#pragma warning disable AL0432
+        AdvanceEntry := "Advance Letter No." <> '';
+#pragma warning restore AL0432
+#endif
+        OnAfterGetIsAdvanceEntryCZL(Rec, AdvanceEntry);
+        exit(AdvanceEntry);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterSetVATStatementLineFiltersCZL(var VATEntry: Record "VAT Entry"; VATStatementLine: Record "VAT Statement Line")
     begin
@@ -171,6 +185,11 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
 
     [IntegrationEvent(false, false)]
     local procedure OnSetVATStatementReportSelectionFilterCaseCZL(var VATEntry: Record "VAT Entry"; VATStatementReportSelection: Enum "VAT Statement Report Selection"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetIsAdvanceEntryCZL(VATEntry: Record "VAT Entry"; var AdvanceEntry: Boolean)
     begin
     end;
 }

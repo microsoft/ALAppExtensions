@@ -31,12 +31,15 @@ codeunit 31379 "Gen. Jnl.-Apply Handler CZA"
                 AccBalance := true;
             end;
 
+#if CLEAN19
+        if AccType = AccType::"G/L Account" then
+            ApplyGLEntryCZA(GenJnlLine, AccNo, AccBalance);
+#else
         if AccType = AccType::"G/L Account" then begin
             ApplyGLEntryCZA(GenJnlLine, AccNo, AccBalance);
-#if not CLEAN19
             GenJnlLine."Message to Recipient" := '0'; // Disable BaseApp ApplyGLEntry flag to prevent duplicate Apply G/L Entry.
-#endif
         end;
+#endif
     end;
 
     local procedure ApplyGLEntryCZA(var GenJournalLine: Record "Gen. Journal Line"; AccNo: Code[20]; AccBalance: Boolean)

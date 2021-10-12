@@ -6,8 +6,11 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         {
             Caption = 'GST Group Code';
             TableRelation = "GST Group";
-            Editable = false;
             DataClassification = CustomerContent;
+            trigger OnValidate()
+            begin
+                Rec."HSN/SAC Code" := '';
+            end;
         }
         field(18081; "GST Group Type"; enum "GST Group Type")
         {
@@ -109,9 +112,8 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         {
             Caption = 'HSN/SAC Code';
             DataClassification = CustomerContent;
-            Editable = false;
+            TableRelation = "HSN/SAC".Code where("GST Group Code" = field("GST Group Code"));
         }
-
         field(18113; Subcontracting; Boolean)
         {
             Caption = 'Subcontracting';

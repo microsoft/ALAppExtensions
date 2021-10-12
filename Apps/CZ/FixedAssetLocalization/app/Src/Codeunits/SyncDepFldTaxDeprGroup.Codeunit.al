@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AL0603,AA0072
+#if not CLEAN18
+#pragma warning disable AL0432, AL0603, AA0072
 codeunit 31299 "Sync.Dep.Fld-TaxDeprGroup CZF"
 {
     Access = Internal;
@@ -53,7 +54,8 @@ codeunit 31299 "Sync.Dep.Fld-TaxDeprGroup CZF"
             DepreciationGroupCZF.Init();
             DepreciationGroupCZF.Code := Rec.Code;
             DepreciationGroupCZF."Starting Date" := Rec."Starting Date";
-            DepreciationGroupCZF.Insert(false);
+            DepreciationGroupCZF.SystemId := Rec.SystemId;
+            DepreciationGroupCZF.Insert(false, true);
         end;
         DepreciationGroupCZF.Description := Rec.Description;
         DepreciationGroupCZF."Depreciation Group" := Rec."Depreciation Group";
@@ -142,7 +144,8 @@ codeunit 31299 "Sync.Dep.Fld-TaxDeprGroup CZF"
             DepreciationGroup.Init();
             DepreciationGroup.Code := Rec.Code;
             DepreciationGroup."Starting Date" := Rec."Starting Date";
-            DepreciationGroup.Insert(false);
+            DepreciationGroup.SystemId := Rec.SystemId;
+            DepreciationGroup.Insert(false, true);
         end;
         DepreciationGroup.Description := Rec.Description;
         DepreciationGroup."Depreciation Group" := Rec."Depreciation Group";
@@ -187,3 +190,4 @@ codeunit 31299 "Sync.Dep.Fld-TaxDeprGroup CZF"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

@@ -213,7 +213,7 @@ page 9996 "Word Template Selection Wizard"
             action(Finish)
             {
                 ApplicationArea = All;
-                Visible = Step = Step::Overview;
+                Visible = (Step = Step::Overview) or (not FromUnknownSource and SkipOverview);
                 Image = NextRecord;
                 InFooterBar = true;
                 ToolTip = ' ';
@@ -221,17 +221,25 @@ page 9996 "Word Template Selection Wizard"
                 trigger OnAction()
                 var
                     WordTemplates: Codeunit "Word Template";
+                    InStream: InStream;
                 begin
                     WordTemplates.Load(Rec.Code);
                     WordTemplates.Merge(Data, SplitDocuments, SaveFormat);
-                    WordTemplates.DownloadDocument();
+                    if AsDocumentStream then begin
+                        DocumentData.CreateOutStream(DocumentStream);
+                        WordTemplates.GetDocument(InStream);
+                        CopyStream(DocumentStream, InStream);
+                    end else
+                        WordTemplates.DownloadDocument();
+
+                    FinishedWizard := true;
                     CurrPage.Close();
                 end;
             }
             action(Next)
             {
                 ApplicationArea = All;
-                Visible = Step <> Step::Overview;
+                Visible = (Step <> Step::Overview) and ((FromUnknownSource) or (not FromUnknownSource and not SkipOverview));
                 Enabled = WordTemplatesExist;
                 Image = NextRecord;
                 InFooterBar = true;
@@ -240,12 +248,27 @@ page 9996 "Word Template Selection Wizard"
                 trigger OnAction()
                 var
                     RecordRef: RecordRef;
+                    FieldRef: FieldRef;
+                    SystemId: Guid;
                 begin
                     if Step = Step::Template then begin
-                        if not DataIntialized then begin
-                            RecordRef.Open(Rec."Table ID");
-                            Data := RecordRef;
-                        end;
+                        if not DataIntialized then
+                            if WithBusinessContactRelation then begin
+                                DictOfRecords.Get(Rec."Table ID", SystemId);
+                                RecordRef.Open(Rec."Table ID");
+                                FieldRef := RecordRef.Field(RecordRef.SystemIdNo);
+                                FieldRef.SetRange(SystemId);
+                                Data := RecordRef;
+                                DataIntialized := true;
+                            end else begin
+                                RecordRef.Open(Rec."Table ID");
+                                Data := RecordRef;
+                            end;
+
+                        RecordRef := Data;
+                        NumberOfRecords := RecordRef.Count();
+                        RecordName := RecordRef.Caption();
+                        SkipOverview := NumberOfRecords = 1;
                         Step := Step::Output;
                         exit;
                     end;
@@ -255,7 +278,11 @@ page 9996 "Word Template Selection Wizard"
                         NumberOfRecords := RecordRef.Count();
                         RecordName := RecordRef.Caption();
 
-                        Step := Step::Overview;
+                        // If user do not know the known source, then always show overview.
+                        // Otherwise, only show overview when there are multiple records.
+                        If (FromUnknownSource) or (not FromUnknownSource and not SkipOverview) then
+                            Step := Step::Overview;
+
                         exit;
                     end;
                 end;
@@ -270,6 +297,7 @@ page 9996 "Word Template Selection Wizard"
 
                 trigger OnAction()
                 begin
+                    SkipOverview := false;
                     if Step = Step::Output then begin
                         Step := Step::Template;
                         exit;
@@ -316,6 +344,9 @@ page 9996 "Word Template Selection Wizard"
     begin
         SaveFormat := SaveFormat::Docx;
         WordTemplatesExist := not Rec.IsEmpty();
+        FinishedWizard := false;
+        SkipOverview := false;
+        FromUnknownSource := false;
     end;
 
     /// <summary>
@@ -358,12 +389,81 @@ page 9996 "Word Template Selection Wizard"
         SingleRecordSelected := RecordRef.Count() = 1;
         DataIntialized := true;
         FiltersSet := true;
+        WithBusinessContactRelation := false;
 
         Rec.SetRange("Table ID", TableId);
     end;
 
+    /// <summary>
+    /// Set the entities that user can select to create the word template
+    /// </summary>
+    /// <param name="Dict">Dictionary of TableId to SystemId entries</param>
+    internal procedure SetData(Dict: Dictionary of [Integer, Guid])
     var
+        I: Integer;
+        FilterBuilder: TextBuilder;
+    begin
+        for I := 1 to Dict.Count() do begin
+            FilterBuilder.Append(Format(Dict.Keys().Get(I)));
+            if I <> Dict.Count() then
+                FilterBuilder.Append('|');
+        end;
+        DictOfRecords := Dict;
+        DataIntialized := false;
+        SingleRecordSelected := true;
+        WithBusinessContactRelation := true;
+
+        Rec.SetFilter("Table ID", FilterBuilder.ToText());
+    end;
+
+    /// <summary>
+    /// Get the document format.
+    /// </summary>
+    /// <returns>The format as a text.</returns>
+    internal procedure GetDocumentFormat(): Text;
+    begin
+        exit(Text.LowerCase(Format(SaveFormat)));
+    end;
+
+    /// <summary>
+    /// Get the word template stored in the Blob.
+    /// </summary>
+    /// <param name="InStream">Stream that will contain the word template.</param>
+    internal procedure GetDocumentStream(var InStream: InStream)
+    begin
+        DocumentData.CreateInStream(InStream);
+    end;
+
+    /// <summary>
+    /// Save the word template into a Blob, that can then be retrived by a stream.
+    /// </summary>
+    internal procedure SaveAsDocumentStream()
+    begin
+        AsDocumentStream := true;
+    end;
+
+    /// <summary>
+    /// Returns if the user completed the dialog to add a word template.
+    /// </summary>
+    /// <returns>True if completed otherwise false.</returns>
+    internal procedure WasDialogCompleted(): Boolean
+    begin
+        exit(FinishedWizard);
+    end;
+
+    /// <summary>
+    /// Ensures that user is presented with the overview tab if the wizard is run without a source record.
+    /// </summary>
+    internal procedure SetIsUnknownSource()
+    begin
+        FromUnknownSource := true;
+    end;
+
+    var
+        DocumentData: Codeunit "Temp Blob";
+        DocumentStream: OutStream;
         Data: Variant;
+        DictOfRecords: Dictionary of [Integer, Guid];
         DataIntialized, FiltersSet, SingleRecordSelected : Boolean;
         WordTemplatesExist: Boolean;
         TableId: Integer;
@@ -372,6 +472,13 @@ page 9996 "Word Template Selection Wizard"
         SaveFormat: Enum "Word Templates Save Format";
         Step: Option Template,Output,Overview;
         SplitDocuments: Boolean;
+        AsDocumentStream: Boolean;
+        FinishedWizard: Boolean;
+        WithBusinessContactRelation: Boolean;
+        [InDataSet]
+        SkipOverview: Boolean;
+        [InDataSet]
+        FromUnknownSource: Boolean;
         NoSourceRecordErr: Label 'This template is not associated with an entity and hence it can only be applied programmatically.';
         SetFiltersLbl: Label 'Set filters';
 }

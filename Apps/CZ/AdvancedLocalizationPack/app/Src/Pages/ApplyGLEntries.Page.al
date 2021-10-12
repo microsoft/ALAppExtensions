@@ -5,7 +5,7 @@ page 31284 "Apply G/L Entries CZA"
     DeleteAllowed = false;
     InsertAllowed = false;
     PageType = Worksheet;
-    Permissions = TableData "G/L Entry" = m;
+    Permissions = tabledata "G/L Entry" = m;
     SourceTable = "G/L Entry";
 
     layout

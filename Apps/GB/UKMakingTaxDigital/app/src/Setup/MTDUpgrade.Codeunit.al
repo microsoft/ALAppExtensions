@@ -15,6 +15,7 @@ codeunit 10540 "MTD Upgrade"
     begin
         UpgradeVATReportSetup();
         UpgradeDailyLimit();
+        UpgradeFeatureConsentCheckbox();
     end;
 
     local procedure UpgradeVATReportSetup()
@@ -81,4 +82,19 @@ codeunit 10540 "MTD Upgrade"
         end;
     end;
 #endif
+
+    local procedure UpgradeFeatureConsentCheckbox()
+    var
+        VATReportSetup: Record "VAT Report Setup";
+    begin
+        if UpgradeTag.HasUpgradeTag(MTDMgt.GetFeatureConsentCheckboxTag()) then
+            exit;
+
+        if VATReportSetup.Get() then begin
+            VATReportSetup."MTD Enabled" := true;
+            if VATReportSetup.Modify() then;
+        end;
+
+        UpgradeTag.SetUpgradeTag(MTDMgt.GetFeatureConsentCheckboxTag());
+    end;
 }

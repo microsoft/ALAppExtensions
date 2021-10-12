@@ -19,6 +19,10 @@ codeunit 18001 "GST Base Validation"
         VendGSTTypeErr: Label 'You can select POS Out Of India field on header only if GST Vendor Type is Registered.';
         AccountingPeriodErr: Label 'GST Accounting Period does not exist for the given Date %1.', Comment = '%1 = Posting Date';
         PeriodClosedErr: Label 'Accounting Period has been closed till %1, Document Posting Date must be greater than or equal to %2.', Comment = '%1 = Last Closed Date ; %2 = Document Posting Date';
+        VendGSTARNErr: Label 'Either Vendor GST Registration No. or ARN No. in Vendor should have a value.';
+        OrderAddressGSTARNErr: Label 'Either Order Address GST Registration No. or ARN No. in Order Address should have a value.';
+        CustGSTARNErr: Label 'Either Customer GST Registration No. or ARN No. in Customer should have a value.';
+        PostGSTtoCustErr: Label 'Only allow for GST Customer type SEZ Development & SEZ Unit.';
 
     //Same Functon in Called in GST Sales
     procedure CheckGSTRegistrationNo(StateCode: Code[10]; RegistrationNo: Code[20]; PANNo: Code[20])
@@ -102,6 +106,7 @@ codeunit 18001 "GST Base Validation"
     [EventSubscriber(ObjectType::Table, Database::"GST Ledger Entry", 'OnAfterInsertEvent', '', false, false)]
     local procedure UpdateGSTLedgerEntryOnafterInsertEvent(var Rec: Record "GST Ledger Entry"; RunTrigger: Boolean)
     var
+        GSTPostingManagement: Codeunit "GST Posting Management";
         SignFactor: Integer;
         DocTypeEnum: Enum "Document Type Enum";
         TransTypeEnum: Enum "Transaction Type Enum";
@@ -123,6 +128,9 @@ codeunit 18001 "GST Base Validation"
 
         Rec."GST Base Amount" := Abs(Rec."GST Base Amount") * SignFactor;
         Rec."GST Amount" := Abs(Rec."GST Amount") * SignFactor;
+        if GSTPostingManagement.GetPaytoVendorNo() <> '' then
+            Rec."Source No." := GSTPostingManagement.GetPaytoVendorNo();
+
         Rec.Modify();
     end;
 
@@ -228,6 +236,12 @@ codeunit 18001 "GST Base Validation"
                 Rec."Source Type" := Rec."Source Type"::Customer;
 
         Rec."Executed Use Case ID" := GSTPostingManagement.GetUseCaseID();
+        if GSTPostingManagement.GetPaytoVendorNo() <> '' then
+            Rec."Source No." := GSTPostingManagement.GetPaytoVendorNo();
+
+        if GSTPostingManagement.GetBuyerSellerRegNo() <> '' then
+            Rec."Buyer/Seller Reg. No." := GSTPostingManagement.GetBuyerSellerRegNo();
+
         Rec.Modify();
 
         GSTPostingManagement.SetRecord(Rec); //if Called from tax engine
@@ -297,12 +311,14 @@ codeunit 18001 "GST Base Validation"
         if (DetailedGSTLedgerEntry."Transaction Type" = DetailedGSTLedgerEntry."Transaction Type"::Purchase) and
             (DetailedGSTLedgerEntry."Entry Type" = DetailedGSTLedgerEntry."Entry Type"::"Initial Entry") and
             (DetailedGSTLedgerEntry.Type = DetailedGSTLedgerEntry.Type::Item) and
-            (Rec."Original Doc. Type" in [Rec."Original Doc. Type"::Invoice,Rec."Original Doc. Type"::"Credit Memo"])
+            (Rec."Original Doc. Type" in [Rec."Original Doc. Type"::Invoice, Rec."Original Doc. Type"::"Credit Memo"])
         then
             UpdateGSTTrackingFromToEntryNo(DetailedGSTLedgerEntry."Entry No.");
+
+        if GSTPostingManagement.GetBuyerSellerStateCode() <> '' then
+            Rec."Buyer/Seller State Code" := GSTPostingManagement.GetBuyerSellerStateCode();
     end;
 
-    //Company Information Validation - Subscribers 
     [EventSubscriber(ObjectType::Table, Database::"Company Information", 'OnAfterValidateEvent', 'P.A.N. No.', false, false)]
     local procedure ValidatePANNoOnAfterValidateEvent(var Rec: Record "Company Information")
     begin
@@ -550,6 +566,14 @@ codeunit 18001 "GST Base Validation"
             exit;
 
         GenJnlLine.TestField("GST Group Code", '');
+    end;
+
+    //Customer Subscribers
+    [EventSubscriber(ObjectType::Table, Database::Customer, 'OnAfterValidateEvent', 'Post GST to Customer', False, False)]
+    local procedure ValidatePostGSTtoCustomerOnAfterValidateEvent(var Rec: Record Customer)
+    begin
+        if not (Rec."GST Customer Type" In [Rec."GST Customer Type"::"SEZ Development", Rec."GST Customer Type"::"SEZ Unit"]) then
+            Error(PostGSTtoCustErr)
     end;
 
     local procedure CheckGSTRegBlankInRef(PANNO: Code[20])
@@ -1126,5 +1150,60 @@ codeunit 18001 "GST Base Validation"
                     GSTBaseAmount := DetailedGSTLedgerEntry."GST Base Amount";
                 GSTAmount += DetailedGSTLedgerEntry."GST Amount";
             until DetailedGSTLedgerEntry.Next() = 0;
+    end;
+
+    procedure CheckGSTRegistrationNo(TransactionType: Enum "Transaction Type Enum"; DocType: Enum "Sales Document Type"; DocNo: Code[20])
+    var
+        SalesHeader: Record "Sales Header";
+        PurchaseHeader: Record "Purchase Header";
+        ServiceHeader: Record "Service Header";
+        Customer: Record "Customer";
+        Vendor: Record "Vendor";
+        OrderAddress: Record "Order Address";
+    begin
+        case TransactionType of
+            TransactionType::Purchase:
+                begin
+                    PurchaseHeader.Get(DocType, DocNo);
+                    if (PurchaseHeader."Order Address Code" <> '') and
+                        not (PurchaseHeader."GST Vendor Type" In [PurchaseHeader."GST Vendor Type"::Unregistered, PurchaseHeader."GST Vendor Type"::Import])
+                    then begin
+                        if PurchaseHeader."Order Address GST Reg. No." = '' then
+                            if OrderAddress.Get(PurchaseHeader."Buy-from Vendor No.", PurchaseHeader."Order Address Code") then
+                                if OrderAddress."ARN No." = '' then
+                                    Error(OrderAddressGSTARNErr);
+                    end else
+                        if PurchaseHeader."GST Vendor Type" In
+                            [PurchaseHeader."GST Vendor Type"::Registered,
+                            PurchaseHeader."GST Vendor Type"::Exempted,
+                            PurchaseHeader."GST Vendor Type"::Composite,
+                            PurchaseHeader."GST Vendor Type"::SEZ]
+                        then
+                            if PurchaseHeader."Vendor GST Reg. No." = '' then
+                                if Vendor.GET(PurchaseHeader."Buy-from Vendor No.") then
+                                    if Vendor."ARN No." = '' then
+                                        Error(VendGSTARNErr);
+                end;
+            TransactionType::Sales:
+                begin
+                    SalesHeader.Get(DocType, DocNo);
+                    if not (SalesHeader."GST Customer Type" In [SalesHeader."GST Customer Type"::Unregistered, SalesHeader."GST Customer Type"::Export]) then
+                        if SalesHeader."Customer GST Reg. No." = '' then
+                            if Customer.Get(SalesHeader."Sell-to Customer No.") then
+                                if (Customer."ARN No." = '') or (SalesHeader."Bill-to Customer No." <> '') then
+                                    if Customer.Get(SalesHeader."Bill-to Customer No.") then
+                                        if Customer."ARN No." = '' then
+                                            Error(CustGSTARNErr);
+                end;
+            TransactionType::Service:
+                begin
+                    ServiceHeader.Get(DocType, DocNo);
+                    if not (ServiceHeader."GST Customer Type" In [ServiceHeader."GST Customer Type"::Unregistered, ServiceHeader."GST Customer Type"::Export]) then
+                        if ServiceHeader."Customer GST Reg. No." = '' then
+                            if Customer.Get(ServiceHeader."Customer No.") then
+                                if Customer."ARN No." = '' then
+                                    Error(CustGSTARNErr);
+                end;
+        end;
     end;
 }

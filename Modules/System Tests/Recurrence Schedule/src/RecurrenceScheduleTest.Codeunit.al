@@ -13,6 +13,7 @@ codeunit 134691 "Recurrence Schedule Test"
     var
         Assert: Codeunit "Library Assert";
         Any: Codeunit Any;
+        PermissionsMock: Codeunit "Permissions Mock";
 
     [Test]
     [Scope('OnPrem')]
@@ -22,6 +23,7 @@ codeunit 134691 "Recurrence Schedule Test"
         RecurrenceID: Guid;
     begin
         // [SCENARIO] Proper Error when Recurance is missing.
+        PermissionsMock.Set('Recurrence View');
         // [GIVEN] A missing Recurrence
         // [WHEN] Next occurrence is calculated with the first occurrence as last
         ASSERTERROR RecurrenceSchedule.CalculateNextOccurrence(RecurrenceID, 0DT);
@@ -41,6 +43,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Get the next few daily recurrences with a start date in the future and without an end date
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date in the future
         StartTime := RandTime();
@@ -75,6 +78,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Get the next few daily recurrences with a start date in the future and an end date
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date in the future
         StartTime := RandTime();
@@ -114,6 +118,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Get the next few daily recurrences with today as start date and an end date. Recurs everyday
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date in the today
         StartTime := RandTime();
@@ -143,6 +148,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Get the next few daily recurrences with today as start date and an end date. Recurs every other day
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date in the today
         StartTime := RandTime();
@@ -177,6 +183,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Get the next few daily recurrences with today as start date and an end date. Recurs every 123 days
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date in the today
         StartTime := RandTime();
@@ -221,6 +228,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Get the next few daily recurrences with 10 days before today as start date and an end date. Recurs every day
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date in the past
         StartTime := RandTime();
@@ -260,6 +268,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Get the next few daily recurrences with 10 days before today as start date and an end date. Recurs every 21 days
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date
         StartTime := RandTime();
@@ -297,6 +306,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a weekly recurrence with no time, date or days and calculate next occurrence.
+        PermissionsMock.Set('Recurrence View');
 
         // [WHEN] Create weekly recurrence no date and time
         RecurrenceID := RecurrenceSchedule.CreateWeekly(0T, 0D, 0D, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE);
@@ -318,6 +328,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a weekly recurrence with start time but no date or days and calculate next occurrence
+        PermissionsMock.Set('Recurrence View');
 
         // [WHEN] Create weekly recurrence no date
         RecurrenceID := RecurrenceSchedule.CreateWeekly(Time(), 0D, 0D, 0, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE);
@@ -339,6 +350,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a weekly recurrence with start time, date and end date but no days and calculate next occurrence
+        PermissionsMock.Set('Recurrence View');
 
         // [WHEN] Create weekly recurrence no days
         RecurrenceID := RecurrenceSchedule.CreateWeekly(Time(), Today(), Today() + 10, 1, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE);
@@ -362,6 +374,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a weekly recurrence to repeat weekly on Monday and calculate next occurrences
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date
         StartTime := RandTime();
@@ -401,6 +414,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a weekly recurrence to repeat weekly on Monday and Sunday and calculate next occurrences
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date tuesday
         StartTime := RandTime();
@@ -440,6 +454,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a weekly recurrence to repeat weekly on Monday and Sunday and calculate next occurrences
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date tuesday
         StartTime := RandTime();
@@ -479,6 +494,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a weekly recurrence to repeat weekly on Monday, Wednesday and Sunday and calculate next occurrences
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date
         StartTime := RandTime();
@@ -526,6 +542,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a weekly recurrence to repeat weekly on Monday, Wednesday and Sunday and calculate next occurrences
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date
         StartTime := RandTime();
@@ -568,6 +585,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a weekly recurrence to repeat weekly on Monday, Wednesday and Sunday and calculate next occurrences
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date
         StartTime := RandTime();
@@ -615,6 +633,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a weekly recurrence to repeat weekly on Monday and calculate next occurrences
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date
         StartTime := RandTime();
@@ -652,6 +671,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a weekly recurrence to repeat weekly on Monday and calculate next occurrences
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date
         StartTime := RandTime();
@@ -689,6 +709,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a monthly recurrence to repeat weekly on Monday and calculate next occurrences
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date
         StartTime := RandTime();
@@ -716,6 +737,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a monthly recurrence to repeat weekly on Monday and calculate next occurrences
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date
         StartTime := RandTime();
@@ -743,6 +765,7 @@ codeunit 134691 "Recurrence Schedule Test"
         StartDay: Date;
     begin
         // [SCENARIO] Create a monthly recurrence to with different weak and day  occurrences
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date
         StartTime := RandTime();
@@ -790,6 +813,7 @@ codeunit 134691 "Recurrence Schedule Test"
         StartDay: Date;
     begin
         // [SCENARIO] Create a monthly recurrence to with different weak and day occurrences where statday is in the past
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date
         StartTime := RandTime();
@@ -849,6 +873,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a monthly recurrence that last for a long time
+        PermissionsMock.Set('Recurrence View');
         // [GIVEN] A start time and date
         StartTime := RandTime();
         StartDay := DMY2DATE(1, 5, 2019);
@@ -898,6 +923,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a yearly recurrence that will start this year
+        PermissionsMock.Set('Recurrence View');
         // [GIVEN] A start time and date
         StartTime := RandTime();
         StartDay := DMY2DATE(1, 5, 2019);
@@ -926,6 +952,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a monthly recurrence that will start next year
+        PermissionsMock.Set('Recurrence View');
         // [GIVEN] A start time and date
         StartTime := RandTime();
         StartDay := DMY2DATE(1, 5, 2019);
@@ -954,6 +981,7 @@ codeunit 134691 "Recurrence Schedule Test"
         StartDay: Date;
     begin
         // [SCENARIO] Create a Yearly recurrence to with different weak and day occurrences
+        PermissionsMock.Set('Recurrence View');
 
         // [GIVEN] A start time and date
         StartTime := RandTime();
@@ -1027,6 +1055,7 @@ codeunit 134691 "Recurrence Schedule Test"
         NextOccurrence: DateTime;
     begin
         // [SCENARIO] Create a yearly recurrence that last for a long time
+        PermissionsMock.Set('Recurrence View');
         // [GIVEN] A start time and date
         StartTime := RandTime();
         StartDay := DMY2DATE(1, 6, 2018);
@@ -1068,6 +1097,7 @@ codeunit 134691 "Recurrence Schedule Test"
         Counter: Integer;
     begin
         // [SCENARIO] Create a yearly recurrence that last for a long time
+        PermissionsMock.Set('Recurrence View');
         // [GIVEN] A start time and date
         StartTime := RandTime();
         StartDay := DMY2DATE(1, 6, 2018);

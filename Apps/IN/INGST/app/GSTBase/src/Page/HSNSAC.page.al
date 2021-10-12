@@ -53,9 +53,9 @@ page 18005 "HSN/SAC"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                 begin
-                    ODataUtility.EditWorksheetInExcel(
+                    EditinExcel.EditPageInExcel(
                         'HSNSAC',
                         CurrPage.ObjectId(false),
                         Rec.GetFilter(Code));

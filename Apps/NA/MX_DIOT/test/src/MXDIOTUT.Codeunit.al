@@ -519,6 +519,22 @@ codeunit 148041 "MX DIOT UT"
         VerifyDIOTBufferAmount(TempDIOTReportBuffer, Vendor."No.", Vendor."DIOT Type of Operation"::Others, BaseAmountConceptNo, ExpectedBaseAmount);
     end;
 
+    [Test]
+    procedure DIOTTypeInheritsFromVendorToPurchDoc()
+    var
+        Vendor: Record Vendor;
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        // [SCENARIO 405454] "DIOT Type" inherits from vendor to purchase document
+
+        Initialize();
+        LibraryPurchase.CreateVendor(Vendor);
+        Vendor.Validate("DIOT Type of Operation", Vendor."DIOT Type of Operation"::"Prof. Services");
+        Vendor.Modify(true);
+        PurchaseHeader.Validate("Buy-from Vendor No.", Vendor."No.");
+        PurchaseHeader.TestField("DIOT Type of Operation", Vendor."DIOT Type of Operation");
+    end;
+
     local procedure Initialize()
     begin
         Clear(DIOTDataManagement);

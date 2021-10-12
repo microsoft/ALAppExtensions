@@ -4,10 +4,10 @@ codeunit 4025 "GP Cloud Migration"
     var
         AssistedCompanySetupStatus: Record "Assisted Company Setup Status";
         HelperFunctions: Codeunit "Helper Functions";
-        SetupStatus: Option " ","Completed","In Progress","Error","Missing Permission";
+        SetupStatus: Enum "Company Setup Status";
     begin
         if AssistedCompanySetupStatus.Get(CompanyName()) then begin
-            SetupStatus := AssistedCompanySetupStatus.GetCompanySetupStatus(CopyStr(CompanyName(), 1, 30));
+            SetupStatus := AssistedCompanySetupStatus.GetCompanySetupStatusValue(CopyStr(CompanyName(), 1, 30));
             if SetupStatus = SetupStatus::Completed then
                 InitiateGPMigration()
             else

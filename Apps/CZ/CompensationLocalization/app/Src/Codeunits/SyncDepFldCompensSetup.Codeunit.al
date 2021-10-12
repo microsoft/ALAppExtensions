@@ -1,4 +1,5 @@
-#pragma warning disable AL0603,AL0432,AA0072
+#if not CLEAN18
+#pragma warning disable AL0603, AL0432, AA0072
 codeunit 31291 "Sync.Dep.Fld-CompensSetup CZC"
 {
     Access = Internal;
@@ -52,7 +53,8 @@ codeunit 31291 "Sync.Dep.Fld-CompensSetup CZC"
         if not CompensationSetupCZC.Get(Rec."Primary Key") then begin
             CompensationSetupCZC.Init();
             CompensationSetupCZC."Primary Key" := Rec."Primary Key";
-            CompensationSetupCZC.Insert(false);
+            CompensationSetupCZC.SystemId := Rec.SystemId;
+            CompensationSetupCZC.Insert(false, true);
         end;
         CompensationSetupCZC."Compensation Nos." := Rec."Credit Nos.";
         CompensationSetupCZC."Compensation Bal. Account No." := Rec."Credit Bal. Account No.";
@@ -131,7 +133,8 @@ codeunit 31291 "Sync.Dep.Fld-CompensSetup CZC"
         if not CreditsSetup.Get(Rec."Primary Key") then begin
             CreditsSetup.Init();
             CreditsSetup."Primary Key" := Rec."Primary Key";
-            CreditsSetup.Insert(false);
+            CreditsSetup.SystemId := Rec.SystemId;
+            CreditsSetup.Insert(false, true);
         end;
         CreditsSetup."Credit Nos." := Rec."Compensation Nos.";
         CreditsSetup."Credit Bal. Account No." := Rec."Compensation Bal. Account No.";
@@ -170,3 +173,4 @@ codeunit 31291 "Sync.Dep.Fld-CompensSetup CZC"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

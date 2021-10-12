@@ -12,7 +12,7 @@ pageextension 18162 "GST Finance Charge Memo Lines" extends "Finance Charge Memo
             field("GST Group Code"; Rec."GST Group Code")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies an identifier for the GST group  used to calculate and post GST.';
+                ToolTip = 'Specifies an identifier for the GST group used to calculate and post GST.';
 
                 trigger OnValidate()
                 var
@@ -20,11 +20,6 @@ pageextension 18162 "GST Finance Charge Memo Lines" extends "Finance Charge Memo
                 begin
                     CalculateTax.CallTaxEngineOnFinanceChargeMemoLine(Rec, xRec);
                 end;
-            }
-            field("GST Group Type"; Rec."GST Group Type")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies if the GST group is assigned for goods or service.';
             }
             field("HSN/SAC Code"; Rec."HSN/SAC Code")
             {
@@ -37,6 +32,11 @@ pageextension 18162 "GST Finance Charge Memo Lines" extends "Finance Charge Memo
                 begin
                     CalculateTax.CallTaxEngineOnFinanceChargeMemoLine(Rec, xRec);
                 end;
+            }
+            field("GST Group Type"; Rec."GST Group Type")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if the GST group is assigned for goods or service.';
             }
             field("GST Jurisdiction Type"; Rec."GST Jurisdiction Type")
             {

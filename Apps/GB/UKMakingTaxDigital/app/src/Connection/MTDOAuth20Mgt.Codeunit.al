@@ -73,6 +73,9 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeDeleteEvent', '', true, true)]
     local procedure OnBeforeDeleteEvent(var Rec: Record "OAuth 2.0 Setup")
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if not IsMTDOAuthSetup(Rec) then
             exit;
 
@@ -112,6 +115,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
           ServiceConnection, OAuth20Setup.RecordId(), ServiceConnectionSetupLbl, '', PAGE::"OAuth 2.0 Setup");
     end;
 
+    [NonDebuggable]
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRequestAuthoizationCode', '', true, true)]
     local procedure OnBeforeRequestAuthoizationCode(OAuth20Setup: Record "OAuth 2.0 Setup"; var Processed: Boolean)
     begin
@@ -124,6 +128,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         Hyperlink(OAuth20Mgt.GetAuthorizationURL(OAuth20Setup, GetToken(OAuth20Setup."Client ID", OAuth20Setup.GetTokenDataScope())));
     end;
 
+    [NonDebuggable]
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRequestAccessToken', '', true, true)]
     local procedure OnBeforeRequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
@@ -167,6 +172,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         end;
     end;
 
+    [NonDebuggable]
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRefreshAccessToken', '', true, true)]
     local procedure OnBeforeRefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
@@ -196,6 +202,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
             SaveTokens(OAuth20Setup, TokenDataScope, AccessToken, RefreshToken);
     end;
 
+    [NonDebuggable]
     local procedure SaveTokens(var OAuth20Setup: Record "OAuth 2.0 Setup"; TokenDataScope: DataScope; AccessToken: Text; RefreshToken: Text)
     var
         TypeHelper: Codeunit "Type Helper";
@@ -213,6 +220,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         Commit(); // need to prevent rollback to save new keys
     end;
 
+    [NonDebuggable]
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeInvokeRequest', '', true, true)]
     local procedure OnBeforeInvokeRequest(var OAuth20Setup: Record "OAuth 2.0 Setup"; RequestJSON: Text; var ResponseJSON: Text; var HttpError: Text; var Result: Boolean; var Processed: Boolean; RetryOnCredentialsFailure: Boolean)
     begin
@@ -229,6 +237,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
                 GetToken(OAuth20Setup."Access Token", OAuth20Setup.GetTokenDataScope()), RetryOnCredentialsFailure);
     end;
 
+    [NonDebuggable]
     local procedure UpdateClientTokens(var OAuth20Setup: Record "OAuth 2.0 Setup")
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
@@ -262,6 +271,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
             OAuth20Setup.Modify();
     end;
 
+    [NonDebuggable]
     internal procedure SetToken(var TokenKey: Guid; TokenValue: Text; TokenDataScope: DataScope) NewToken: Boolean
     begin
         if IsNullGuid(TokenKey) then
@@ -275,6 +285,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
             IsolatedStorage.Set(TokenKey, TokenValue, TokenDataScope);
     end;
 
+    [NonDebuggable]
     local procedure GetToken(TokenKey: Guid; TokenDataScope: DataScope) TokenValue: Text
     begin
         if not HasToken(TokenKey, TokenDataScope) then

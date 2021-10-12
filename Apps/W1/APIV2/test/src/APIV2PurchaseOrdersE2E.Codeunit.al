@@ -21,7 +21,12 @@ codeunit 139851 "APIV2 - Purchase Orders E2E"
         LibraryERM: Codeunit "Library - ERM";
         LibrarySmallBusiness: Codeunit "Library - Small Business";
         OrderServiceNameTxt: Label 'purchaseOrders', Locked = true;
+        ActionRecieveAndInvoiceTxt: Label 'Microsoft.NAV.receiveAndInvoice', Locked = true;
+        NotEmptyResponseErr: Label 'Response body should be empty.', Locked = true;
+        OrderStillExistsErr: Label 'The purchase order still exists.', Locked = true;
         DiscountAmountFieldTxt: Label 'discountAmount', Locked = true;
+        CannotFindInvoiceErr: Label 'Cannot find the invoice.', Locked = true;
+        InvoiceStatusErr: Label 'The invoice status is incorrect.', Locked = true;
 
     local procedure Initialize()
     begin
@@ -584,6 +589,49 @@ codeunit 139851 "APIV2 - Purchase Orders E2E"
         Assert.AreEqual(0, PurchaseHeader."Invoice Discount Amount", 'Invoice discount Amount was not set');
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestActionRecieveAndInvoice()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        Vendor: Record Vendor;
+        OrderId: Guid;
+        OrderNo: Code[20];
+        OrderNoSeries: Code[20];
+        ReceivingNo: Code[20];
+        ResponseText: Text;
+        TargetURL: Text;
+    begin
+        // [SCENARIO] User can recieve and invoice a purchase order through the API.
+
+        // [GIVEN] Create vendors and a Purchase order with lines
+        LibraryPurchase.CreateVendorWithAddress(Vendor);
+        CreateOrderWithLines(Vendor, PurchaseHeader);
+        OrderId := PurchaseHeader.SystemId;
+        OrderNo := PurchaseHeader."No.";
+        OrderNoSeries := PurchaseHeader."No. Series";
+        ReceivingNo := PurchaseHeader."Receiving No.";
+        Commit();
+
+        // [WHEN] A POST request is made to the API.
+        TargetURL :=
+          LibraryGraphMgt.CreateTargetURLWithSubpage(OrderId, Page::"APIV2 - Purchase Orders", OrderServiceNameTxt, ActionRecieveAndInvoiceTxt);
+        LibraryGraphMgt.PostToWebServiceAndCheckResponseCode(TargetURL, '', ResponseText, 204);
+
+        // [THEN] Response should be empty
+        Assert.AreEqual('', ResponseText, NotEmptyResponseErr);
+
+        // [THEN] Order is deleted
+        Assert.IsFalse(PurchaseHeader.GetBySystemId(OrderId), OrderStillExistsErr);
+
+
+        // [THEN] Posted sales invoice is created
+        VerifyPostedInvoiceCreated(OrderNo, OrderNoSeries);
+
+        // [THEN] Record was deleted from Sales Oreder Entity Buffer
+        VerifyPurchOrderEntityBufferDeletedAfterPosting(OrderNo);
+    end;
+
     local procedure CreateOrderJSONWithAddress(BuyFromVendor: Record "Vendor"; PayToVendor: Record "Vendor"; ShipToVendor: Record "Vendor"; OrderDate: Date; PostingDate: Date): Text
     var
         OrderJSON: Text;
@@ -677,4 +725,27 @@ codeunit 139851 "APIV2 - Purchase Orders E2E"
           'Could not find sales Order number');
         LibraryGraphMgt.VerifyIDInJson(ResponseText);
     end;
+
+    local procedure VerifyPostedInvoiceCreated(OrderNo: Code[20]; OrderNoSeries: Code[20])
+    var
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PurchInvEntityAggregate: Record "Purch. Inv. Entity Aggregate";
+    begin
+        PurchInvHeader.SetCurrentKey("Order No.");
+        PurchInvHeader.SetRange("Pre-Assigned No. Series", '');
+        PurchInvHeader.SetRange("Order No. Series", OrderNoSeries);
+        PurchInvHeader.SetRange("Order No.", OrderNo);
+        Assert.IsTrue(PurchInvHeader.FindFirst(), CannotFindInvoiceErr);
+        PurchInvEntityAggregate.SetRange(Id, PurchInvHeader.SystemId);
+        Assert.IsTrue(PurchInvEntityAggregate.FindFirst(), CannotFindInvoiceErr);
+        Assert.AreEqual(PurchInvEntityAggregate.Status::Open, PurchInvEntityAggregate.Status, InvoiceStatusErr);
+    end;
+
+    local procedure VerifyPurchOrderEntityBufferDeletedAfterPosting(OrderNo: Code[20])
+    var
+        PurchaseOrderEntityBuffer: Record "Purchase Order Entity Buffer";
+    begin
+        Assert.IsFalse(PurchaseOrderEntityBuffer.Get(OrderNo), 'Purchase Order Entity buffer was supposed to be deleted after posting.');
+    end;
+
 }

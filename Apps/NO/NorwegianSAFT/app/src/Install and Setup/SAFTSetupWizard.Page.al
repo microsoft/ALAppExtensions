@@ -4,6 +4,8 @@ page 10674 "SAF-T Setup Wizard"
     PageType = NavigatePage;
     SourceTable = "SAF-T Mapping Range";
     RefreshOnActivate = true;
+    ApplicationArea = Basic, Suite;
+    UsageCategory = Administration;
 
     layout
     {
@@ -106,19 +108,16 @@ page 10674 "SAF-T Setup Wizard"
                     field(AccountingPeriod; "Accounting Period")
                     {
                         ApplicationArea = Basic, Suite;
-                        Visible = AccountingPeriodVisible;
                         Caption = 'Accounting Period';
                     }
                     field(StartingDate; "Starting Date")
                     {
                         ApplicationArea = Basic, Suite;
-                        Visible = DateRangeVisible;
                         Caption = 'Starting Date';
                     }
                     field(EndingDate; "Ending Date")
                     {
                         ApplicationArea = Basic, Suite;
-                        Visible = DateRangeVisible;
                         Caption = 'Ending Date';
                     }
                 }
@@ -428,8 +427,6 @@ page 10674 "SAF-T Setup Wizard"
         SourceCodeMappingVisible: Boolean;
         TopBannerVisible: Boolean;
         SAFTStandardAccMappingSelected: Boolean;
-        AccountingPeriodVisible: Boolean;
-        DateRangeVisible: Boolean;
         MappingSourceImported: Boolean;
         MappingTypeSpecified: Boolean;
         GLAccountsMapped: Text[20];

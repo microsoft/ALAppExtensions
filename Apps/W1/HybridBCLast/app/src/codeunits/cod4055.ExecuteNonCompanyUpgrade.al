@@ -13,12 +13,21 @@ codeunit 4055 "Execute Non-Company Upgrade"
 
     local procedure TryExecuteNonCompanyUpgrade(HybridReplicationSummary: Record "Hybrid Replication Summary")
     var
+        HybridCompanyStatus: Record "Hybrid Company Status";
         TenantManagement: Codeunit "Environment Information";
         W1Management: Codeunit "W1 Management";
         CountryCode: Text;
         TargetVersion: Decimal;
         TargetVersions: List of [Decimal];
     begin
+        HybridCompanyStatus.Get('');
+        if HybridCompanyStatus."Upgrade Status" <> HybridCompanyStatus."Upgrade Status"::Pending then
+            Error(WrongUpgradeStatusForDataPerCompanyErr, HybridCompanyStatus."Upgrade Status");
+
+        HybridCompanyStatus."Upgrade Status" := HybridCompanyStatus."Upgrade Status"::Started;
+        HybridCompanyStatus.Modify();
+        Commit();
+
         CountryCode := TenantManagement.GetApplicationFamily();
         W1Management.GetSupportedUpgradeVersions(TargetVersions);
 
@@ -30,5 +39,13 @@ codeunit 4055 "Execute Non-Company Upgrade"
             W1Management.OnTransformNonCompanyTableDataForVersion(CountryCode, TargetVersion);
             W1Management.OnLoadNonCompanyTableDataForVersion(HybridReplicationSummary, CountryCode, TargetVersion);
         end;
+        Commit();
+
+        HybridCompanyStatus.Get('');
+        HybridCompanyStatus."Upgrade Status" := HybridCompanyStatus."Upgrade Status"::Completed;
+        HybridCompanyStatus.Modify();
     end;
+
+    var
+        WrongUpgradeStatusForDataPerCompanyErr: Label 'Wrong upgrade status for Data Per company. Expected Pending, actual %1.', Comment = '%1 Upgrade status, values can be Pending, Started, Completed, Failed.';
 }

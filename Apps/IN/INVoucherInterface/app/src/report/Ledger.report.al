@@ -284,6 +284,7 @@ report 18932 "Ledger"
                         GLEntry2.SetCurrentKey(GLEntry2."Posting Date", GLEntry2."Source Code", GLEntry2."Transaction No.");
                         GLEntry2.SetRange(GLEntry2."Posting Date", "G/L Entry"."Posting Date");
                         GLEntry2.SetRange(GLEntry2."Transaction No.", "G/L Entry"."Transaction No.");
+                        GLEntry2.SetRange(GLEntry2."G/L Account No.", "G/L Entry"."G/L Account No.");
                         GLEntry2.FindLast();
                         if not (GLEntry2."Entry No." = "G/L Entry"."Entry No.") then
                             CurrReport.Break();

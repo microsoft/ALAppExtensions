@@ -316,6 +316,24 @@ page 30066 "APIV2 - Purchase Orders"
                         RegisterFieldSet(FieldNo("Ship-to Post Code"));
                     end;
                 }
+                field(shortcutDimension1Code; "Shortcut Dimension 1 Code")
+                {
+                    Caption = 'Shortcut Dimension 1 Code';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Shortcut Dimension 1 Code"));
+                    end;
+                }
+                field(shortcutDimension2Code; "Shortcut Dimension 2 Code")
+                {
+                    Caption = 'Shortcut Dimension 2 Code';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Shortcut Dimension 2 Code"));
+                    end;
+                }
                 field(currencyId; "Currency Id")
                 {
                     Caption = 'Currency Id';
@@ -602,6 +620,7 @@ page 30066 "APIV2 - Purchase Orders"
         CannotEnablePricesIncludeTaxErr: Label 'The "pricesIncludeTax" cannot be set to true if VAT Calculation Type is Sales Tax.', Comment = 'pricesIncludeTax is a field name and should not be translated.';
         PaymentTermsIdDoesNotMatchAPaymentTermsErr: Label 'The "paymentTermsId" does not match to a Payment Terms.', Comment = 'paymentTermsId is a field name and should not be translated.';
         ShipmentMethodIdDoesNotMatchAShipmentMethodErr: Label 'The "shipmentMethodId" does not match to a Shipment Method.', Comment = 'shipmentMethodId is a field name and should not be translated.';
+        CannotFindOrderErr: Label 'The order cannot be found.';
         DiscountAmountSet: Boolean;
         InvoiceDiscountAmount: Decimal;
         BlankGUID: Guid;
@@ -693,5 +712,52 @@ page 30066 "APIV2 - Purchase Orders"
 
         GraphMgtPurchOrderBuffer.PropagateOnModify(Rec, TempFieldBuffer);
         Find();
+    end;
+
+    local procedure GetOrder(var PurchaseHeader: Record "Purchase Header")
+    begin
+        if not PurchaseHeader.GetBySystemId(Id) then
+            Error(CannotFindOrderErr);
+    end;
+
+    local procedure PostInvoice(var PurchaseHeader: Record "Purchase Header"; var PurchInvHeader: Record "Purch. Inv. Header")
+    var
+        LinesInstructionMgt: Codeunit "Lines Instruction Mgt.";
+        OrderNo: Code[20];
+        OrderNoSeries: Code[20];
+    begin
+        LinesInstructionMgt.PurchaseCheckAllLinesHaveQuantityAssigned(PurchaseHeader);
+        OrderNo := PurchaseHeader."No.";
+        OrderNoSeries := PurchaseHeader."No. Series";
+        PurchaseHeader.Receive := true;
+        PurchaseHeader.Invoice := true;
+        PurchaseHeader.SendToPosting(Codeunit::"Purch.-Post");
+        PurchInvHeader.SetCurrentKey("Order No.");
+        PurchInvHeader.SetRange("Order No.", OrderNo);
+        PurchInvHeader.SetRange("Order No. Series", OrderNoSeries);
+        PurchInvHeader.SetRange("Pre-Assigned No.", '');
+        PurchInvHeader.FindFirst();
+    end;
+
+    local procedure SetActionResponse(var ActionContext: WebServiceActionContext; InvoiceId: Guid)
+    var
+    begin
+        ActionContext.SetObjectType(ObjectType::Page);
+        ActionContext.SetObjectId(Page::"APIV2 - Purchase Invoices");
+        ActionContext.AddEntityKey(FieldNo(Id), InvoiceId);
+        ActionContext.SetResultCode(WebServiceActionResultCode::Deleted);
+    end;
+
+    [ServiceEnabled]
+    [Scope('Cloud')]
+    procedure ReceiveAndInvoice(var ActionContext: WebServiceActionContext)
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PurchInvAggregator: Codeunit "Purch. Inv. Aggregator";
+    begin
+        GetOrder(PurchaseHeader);
+        PostInvoice(PurchaseHeader, PurchInvHeader);
+        SetActionResponse(ActionContext, PurchInvAggregator.GetPurchaseInvoiceHeaderId(PurchInvHeader));
     end;
 }

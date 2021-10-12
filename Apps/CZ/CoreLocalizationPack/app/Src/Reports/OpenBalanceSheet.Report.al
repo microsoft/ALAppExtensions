@@ -2,7 +2,7 @@ report 11755 "Open Balance Sheet CZL"
 {
     ApplicationArea = Basic, Suite;
     Caption = 'Open Balance Sheet';
-    Permissions = TableData "G/L Entry" = m;
+    Permissions = tabledata "G/L Entry" = m;
     ProcessingOnly = true;
     UsageCategory = Tasks;
 
@@ -105,7 +105,7 @@ report 11755 "Open Balance Sheet CZL"
                             if (TempEntryNoAmountBuffer.Amount <> 0) or (TempEntryNoAmountBuffer.Amount2 <> 0) then begin
                                 GenJournalLine."Line No." := GenJournalLine."Line No." + 10000;
                                 GenJournalLine."Account No." := "G/L Account No.";
-                                GenJournalLine."Source Code" := SourceCodeSetup."Open Balance Sheet";
+                                GenJournalLine."Source Code" := SourceCodeSetup."Open Balance Sheet CZL";
                                 GenJournalLine."Reason Code" := GenJournalBatch."Reason Code";
                                 GenJournalLine.Validate(Amount, -TempEntryNoAmountBuffer.Amount);
                                 GenJournalLine."Source Currency Amount" := -TempEntryNoAmountBuffer.Amount2;
@@ -171,7 +171,7 @@ report 11755 "Open Balance Sheet CZL"
                     GenJournalLine."Shortcut Dimension 2 Code" := '';
                     GenJournalLine."Line No." := GenJournalLine."Line No." + 10000;
                     GenJournalLine."Account No." := OpeningBalanceSheetGLAccount."No.";
-                    GenJournalLine."Source Code" := SourceCodeSetup."Open Balance Sheet";
+                    GenJournalLine."Source Code" := SourceCodeSetup."Open Balance Sheet CZL";
                     GenJournalLine."Reason Code" := GenJournalBatch."Reason Code";
                     GenJournalLine."Currency Code" := '';
                     GenJournalLine."Additional-Currency Posting" :=

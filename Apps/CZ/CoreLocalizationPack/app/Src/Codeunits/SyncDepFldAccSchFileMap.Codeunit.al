@@ -59,7 +59,8 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
             AccScheduleFileMappingCZL."Schedule Column Layout Name" := Rec."Schedule Column Layout Name";
             AccScheduleFileMappingCZL."Schedule Column No." := Rec."Schedule Column No.";
             AccScheduleFileMappingCZL."Excel Cell" := Rec."Excel Cell";
-            AccScheduleFileMappingCZL.Insert(false);
+            AccScheduleFileMappingCZL.SystemId := Rec.SystemId;
+            AccScheduleFileMappingCZL.Insert(false, true);
         end;
         AccScheduleFileMappingCZL."Excel Row No." := Rec."Excel Row No.";
         AccScheduleFileMappingCZL."Excel Column No." := Rec."Excel Column No.";
@@ -139,7 +140,8 @@ codeunit 31191 "Sync.Dep.Fld-AccSchFileMap CZL"
             StatementFileMapping."Schedule Column Layout Name" := Rec."Schedule Column Layout Name";
             StatementFileMapping."Schedule Column No." := Rec."Schedule Column No.";
             StatementFileMapping."Excel Cell" := Rec."Excel Cell";
-            StatementFileMapping.Insert(false);
+            StatementFileMapping.SystemId := Rec.SystemId;
+            StatementFileMapping.Insert(false, true);
         end;
         StatementFileMapping."Excel Row No." := Rec."Excel Row No.";
         StatementFileMapping."Excel Column No." := Rec."Excel Column No.";

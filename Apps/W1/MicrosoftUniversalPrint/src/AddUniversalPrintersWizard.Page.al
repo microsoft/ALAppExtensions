@@ -42,7 +42,7 @@ page 2752 "Add Universal Printers Wizard"
 
                 group("Para0.1")
                 {
-                    Caption = 'Welcome to Universal Print Setup (Preview)';
+                    Caption = 'Welcome to Universal Print Setup';
                     label("Para0.1.1")
                     {
                         ApplicationArea = All;

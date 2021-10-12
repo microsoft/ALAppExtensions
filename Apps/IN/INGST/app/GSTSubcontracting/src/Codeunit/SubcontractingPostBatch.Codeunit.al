@@ -87,8 +87,8 @@ codeunit 18467 "Subcontracting Post Batch"
     var
         Item: Record Item;
         ItemTrackingCode: Record "Item Tracking Code";
+        ItemTrackingSetup: Record "Item Tracking Setup";
         ItemTrackingManagement: Codeunit "Item Tracking Management";
-        SubcontractPost: Codeunit "Subcontracting Post";
 
         Inbound: Boolean;
         SNRequired: Boolean;
@@ -139,14 +139,15 @@ codeunit 18467 "Subcontracting Post Batch"
         if Item."Item Tracking Code" <> '' then begin
             Inbound := false;
             ItemTrackingCode.Code := Item."Item Tracking Code";
-            ItemTrackingManagement.GetItemTrackingSettings(
+            ItemTrackingManagement.GetItemTrackingSetup(
                 ItemTrackingCode,
-                SubcontractPost.ItemJournalLineEntryTypeEnum2EntryTypeOption(ItemJnlLine."Entry Type"),
+                ItemJnlLine."Entry Type",
                 Inbound,
-                SNRequired,
-                LotRequired,
-                SNInfoRequired,
-                LotInfoRequired);
+                ItemTrackingSetup);
+            SNRequired := ItemTrackingSetup."Serial No. Required";
+            LotRequired := ItemTrackingSetup."Lot No. Required";
+            SNInfoRequired := ItemTrackingSetup."Serial No. Info Required";
+            LotInfoRequired := ItemTrackingSetup."Lot No. Info Required";
 
             CheckTrackingLine := (SNRequired = false) and (LotRequired = false);
             QuantitySent := 0;

@@ -1,11 +1,12 @@
 codeunit 31320 "Whse. Worksht.Line Handler CZL"
 {
-    [EventSubscriber(ObjectType::Table, Database::"Whse. Worksheet Line", 'OnCheckWhseWorksheetTemplateUserRestrictions', '', false, false)]
-    local procedure CheckWhseWorksheetTemplateUserRestrictions(WorksheetTemplateName: Code[10])
+    [EventSubscriber(ObjectType::Table, Database::"Whse. Worksheet Line", 'OnBeforeCheckTemplateName', '', false, false)]
+    local procedure JournalTemplateUserRestrictionsOnBeforeCheckTemplateName(var WkshTemplateName: Code[10])
     var
-        DummyUserSetupLineCZL: Record "User Setup Line CZL";
         UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+        UserSetupLineTypeCZL: Enum "User Setup Line Type CZL";
     begin
-        UserSetupAdvManagementCZL.CheckJournalTemplate(DummyUserSetupLineCZL.Type::"Whse. Worksheet", WorksheetTemplateName);
+        UserSetupLineTypeCZL := UserSetupLineTypeCZL::"Whse. Worksheet";
+        UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, WkshTemplateName);
     end;
 }

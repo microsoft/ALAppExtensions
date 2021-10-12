@@ -1,7 +1,7 @@
 #pragma warning disable AL0432
 codeunit 31245 "Substitute Report Handler CZF"
 {
-    Permissions = TableData "NAV App Installed App" = r;
+    Permissions = tabledata "NAV App Installed App" = r;
 
     var
         InstructionMgt: Codeunit "Instruction Mgt.";

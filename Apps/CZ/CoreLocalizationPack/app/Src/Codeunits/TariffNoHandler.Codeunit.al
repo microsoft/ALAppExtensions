@@ -1,3 +1,4 @@
+#if not CLEAN19
 #pragma warning disable AL0432
 codeunit 11782 "Tariff No. Handler CZL"
 {
@@ -166,7 +167,7 @@ codeunit 11782 "Tariff No. Handler CZL"
             until PurchaseLine.Next() = 0;
     end;
 
-    [Obsolete('Opimized: moved to "Sales Posting Handler CZL" codeunit.', '18.0')]
+    [Obsolete('Optimized: moved to "Sales Posting Handler CZL" codeunit.', '18.0')]
     local procedure GetListItemNo(var TempInvtBuf2: Record "Inventory Buffer" temporary; TempInvtBuf: Record "Inventory Buffer" temporary): Text
     var
         ItemNoText: Text;
@@ -209,7 +210,7 @@ codeunit 11782 "Tariff No. Handler CZL"
             until ServiceLine.Next() = 0;
     end;
 
-    [Obsolete('Opimized: moved to "Sales Posting Handler CZL" codeunit.', '18.0')]
+    [Obsolete('Optimized: moved to "Sales Posting Handler CZL" codeunit.', '18.0')]
     local procedure GetQtyToInvoice(SalesLine: Record "Sales Line"; Ship: Boolean): Decimal
     var
         AllowedQtyToInvoice: Decimal;
@@ -225,3 +226,4 @@ codeunit 11782 "Tariff No. Handler CZL"
     var
         ReverseChargeCheckCZL: Enum "Reverse Charge Check CZL";
 }
+#endif

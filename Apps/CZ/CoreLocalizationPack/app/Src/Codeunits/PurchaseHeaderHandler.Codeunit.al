@@ -1,4 +1,3 @@
-#pragma warning disable AL0432
 codeunit 11744 "Purchase Header Handler CZL"
 {
     var
@@ -61,7 +60,7 @@ codeunit 11744 "Purchase Header Handler CZL"
             PurchaseHeader.Validate("Transport Method", Vendor."Transport Method CZL");
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNo', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType', '', false, false)]
     local procedure UpdateBankInfoAndRegNosOnValidatePurchaseHeaderPayToVendorNo(var PurchaseHeader: Record "Purchase Header"; Vendor: Record Vendor)
     var
         CompanyInformation: Record "Company Information";
@@ -87,6 +86,7 @@ codeunit 11744 "Purchase Header Handler CZL"
         Rec.Validate("VAT Currency Code CZL", Rec."Currency Code");
     end;
 
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeValidateEvent', 'Currency Factor', false, false)]
     local procedure UpdateVATCurrencyfactorCZLOnBeforeCurrencyFactorValidate(var Rec: Record "Purchase Header"; var xRec: Record "Purchase Header"; CurrFieldNo: Integer)
     begin
@@ -96,6 +96,7 @@ codeunit 11744 "Purchase Header Handler CZL"
             Rec.CopyRecCurrencyFactortoxRecCurrencyFactor(Rec, xRec); // Elimination of double run function (synchro)
         end;
     end;
+#pragma warning restore AL0432
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterUpdateCurrencyFactor', '', false, false)]
     local procedure OnAfterUpdateCurrencyFactor(var PurchaseHeader: Record "Purchase Header")
@@ -120,7 +121,7 @@ codeunit 11744 "Purchase Header Handler CZL"
         PurchaseHeader."Bank Account No. CZL" := SourcePurchaseHeader."Bank Account No. CZL";
         PurchaseHeader."Bank Branch No. CZL" := SourcePurchaseHeader."Bank Branch No. CZL";
         PurchaseHeader."IBAN CZL" := SourcePurchaseHeader."IBAN CZL";
-        PurchaseHeader."SWIFT Code CZL" := SourcePurchaseHeader."SWIFT Code";
+        PurchaseHeader."SWIFT Code CZL" := SourcePurchaseHeader."SWIFT Code CZL";
         PurchaseHeader."Transit No. CZL" := SourcePurchaseHeader."Transit No. CZL";
     end;
 
@@ -133,4 +134,12 @@ codeunit 11744 "Purchase Header Handler CZL"
                     PurchLine."Physical Transfer CZL" := PurchHeader."Physical Transfer CZL";
         end;
     end;
+#if CLEAN17
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnGetVATCurrencyFactor', '', false, false)]
+    local procedure ReturnVATCurrencyFactorCZLOnGetVATCurrencyFactor(Rec: Record "Purchase Header"; var VATCurrencyFactor: Decimal)
+    begin
+        VATCurrencyFactor := Rec."VAT Currency Factor CZL";
+    end;
+#endif
 }

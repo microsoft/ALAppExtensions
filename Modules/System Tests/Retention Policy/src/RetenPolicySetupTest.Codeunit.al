@@ -10,6 +10,7 @@ codeunit 138701 "Reten. Policy Setup Test"
     var
         Any: Codeunit Any;
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         MinExpirationDateErr: Label 'The expiration date for this retention policy must be equal to or before %1.', Comment = '%1 = Date';
         RetentionPolicySetupLineLockedErr: Label 'The retention policy setup for table %1, %2 has mandatory filters that cannot be modified.', Comment = '%1 = table number, %2 = table caption';
@@ -28,6 +29,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicy: Codeunit "Retention Policy Setup";
         FilterView: Text;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPolicySetupLine."Table ID" := Database::"Retention Policy Test Data";
 
@@ -45,6 +47,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicy: Codeunit "Retention Policy Setup";
         FilterText: Text;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPolicySetupLine."Table ID" := Database::"Retention Policy Test Data";
 
@@ -64,6 +67,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         FilterView: Text;
         FilterText: Text;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPolicySetupLine."Table ID" := Database::"Retention Policy Test Data";
 
@@ -90,6 +94,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         FilterView: Text;
         FilterText: Text;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPolicySetupLine."Table ID" := Database::"Retention Policy Test Data";
         LibraryVariableStorage.AssertEmpty();
@@ -119,6 +124,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         FilterView: Text;
         FilterText: Text;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         UseDateTime := CurrentDateTime();
         RetentionPolicySetupLine."Table ID" := Database::"Retention Policy Test Data";
@@ -147,6 +153,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         FilterView: Text;
         FilterText: Text;
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPolicySetupLine."Table ID" := Database::"Retention Policy Test Data";
         LibraryVariableStorage.AssertEmpty();
@@ -171,6 +178,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetup: Record "Retention Policy Setup";
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         RetentionPolicySetup.DeleteAll(true);
         RetentionPolicySetupLine.DeleteAll(true);
         // setup
@@ -202,6 +210,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetup: Record "Retention Policy Setup";
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         RetentionPolicySetup.DeleteAll(true);
         RetentionPolicySetupLine.DeleteAll(true);
         // setup
@@ -232,6 +241,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPolicySetup: Record "Retention Policy Setup";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
         RetentionPeriod.Validate(Code, Format(RetentionPeriod."Retention Period"::"1 Week"));
         RetentionPeriod.Validate("Retention Period", RetentionPeriod."Retention Period"::"1 Week");
@@ -256,6 +266,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPolicySetup: Record "Retention Policy Setup";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
         RetentionPeriod.Validate(Code, UpperCase(Any.AlphabeticText(MaxStrLen(RetentionPeriod.Code))));
         RetentionPeriod.Validate("Retention Period", RetentionPeriod."Retention Period"::"Custom");
@@ -278,6 +289,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
         RetentionPeriod.Validate(Code, Format(RetentionPeriod."Retention Period"::"1 Week"));
         RetentionPeriod.Validate("Retention Period", RetentionPeriod."Retention Period"::"1 Week");
@@ -303,6 +315,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPeriod: Record "Retention Period";
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
         RetentionPeriod.Validate(Code, UpperCase(Any.AlphabeticText(MaxStrLen(RetentionPeriod.Code))));
         RetentionPeriod.Validate("Retention Period", RetentionPeriod."Retention Period"::"Custom");
@@ -325,6 +338,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetup: Record "Retention Policy Setup";
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPolicySetup."Table Id" := Database::"Retention Policy Test Data";
         RetentionPolicySetup.Insert();
@@ -346,6 +360,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetup: Record "Retention Policy Setup";
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPolicySetup."Table Id" := Database::"Retention Policy Test Data";
         RetentionPolicySetup.Insert();
@@ -372,6 +387,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetup: Record "Retention Policy Setup";
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPolicySetup."Table Id" := Database::"Retention Policy Test Data";
         RetentionPolicySetup.Insert();
@@ -394,6 +410,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetup: Record "Retention Policy Setup";
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPolicySetup."Table Id" := Database::"Retention Policy Test Data";
         RetentionPolicySetup.Insert();
@@ -413,6 +430,7 @@ codeunit 138701 "Reten. Policy Setup Test"
     var
         RetentionPolicySetup: Record "Retention Policy Setup";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // Setup
         RetentionPolicySetup."Table Id" := Database::"Retention Policy Test Data";
         RetentionPolicySetup.Insert();
@@ -431,6 +449,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
         RetentionPolicyTestData4: Record "Retention Policy Test Data 4";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
         // setup is handled by installer:
         RetentionPolicySetup.SetRange("Table Id", Database::"Retention Policy Test Data 4");
@@ -467,6 +486,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetup: Record "Retention Policy Setup";
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
         // most setup is handled by installer:
         RetentionPolicySetup.SetRange("Table Id", Database::"Retention Policy Test Data");
@@ -492,6 +512,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetup: Record "Retention Policy Setup";
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         RetentionPolicySetup.DeleteAll(true); // delete setup + lines + locked lines
         RetentionPolicySetupLine.DeleteAll(true); // delete orphaned lines
         // setup
@@ -525,6 +546,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
         RetentionPeriod: Record "Retention Period";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         RetentionPolicySetup.DeleteAll(true); // delete setup + lines + locked lines
         RetentionPolicySetupLine.DeleteAll(true); // delete orphaned lines
         // setup
@@ -551,6 +573,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
         RetentionPeriod: Record "Retention Period";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         RetentionPolicySetup.DeleteAll(true); // delete setup + lines + locked lines
         RetentionPolicySetupLine.DeleteAll(true); // delete orphaned lines
         // setup
@@ -579,6 +602,7 @@ codeunit 138701 "Reten. Policy Setup Test"
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
         RetentionPeriod: Record "Retention Period";
     begin
+        PermissionsMock.Set('Retention Pol. Admin');
         // setup
         RetentionPolicySetup.DeleteAll(true); // delete setup + lines + locked lines
         RetentionPolicySetupLine.DeleteAll(true); // delete orphaned lines

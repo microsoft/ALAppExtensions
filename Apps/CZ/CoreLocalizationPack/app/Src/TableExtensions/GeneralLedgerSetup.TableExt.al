@@ -93,48 +93,45 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
             Caption = 'User Checks Allowed';
             DataClassification = CustomerContent;
         }
+        field(31085; "Shared Account Schedule CZL"; Code[10])
+        {
+            Caption = 'Shared Account Schedule';
+            DataClassification = CustomerContent;
+            TableRelation = "Acc. Schedule Name";
+        }
+        field(31086; "Acc. Schedule Results Nos. CZL"; Code[20])
+        {
+            Caption = 'Acc. Schedule Results Nos.';
+            DataClassification = CustomerContent;
+            TableRelation = "No. Series";
+        }
     }
 
     procedure InitVATDateCZL()
+    var
+        VATDateHandlerCZL: Codeunit "VAT Date Handler CZL";
     begin
-        InitVATDateFromRecordCZL(Database::"G/L Entry");
-        InitVATDateFromRecordCZL(Database::"Gen. Journal Line");
-        InitVATDateFromRecordCZL(Database::"VAT Entry");
-        InitVATDateFromRecordCZL(Database::"Sales Header");
-        InitVATDateFromRecordCZL(Database::"Sales Invoice Header");
-        InitVATDateFromRecordCZL(Database::"Sales Cr.Memo Header");
-        InitVATDateFromRecordCZL(Database::"Sales Header Archive");
-        InitVATDateFromRecordCZL(Database::"Purchase Header");
-        InitVATDateFromRecordCZL(Database::"Purch. Inv. Header");
-        InitVATDateFromRecordCZL(Database::"Purch. Cr. Memo Hdr.");
-        InitVATDateFromRecordCZL(Database::"Purchase Header Archive");
-        InitVATDateFromRecordCZL(Database::"Service Header");
-        InitVATDateFromRecordCZL(Database::"Service Invoice Header");
-        InitVATDateFromRecordCZL(Database::"Service Cr.Memo Header");
-        InitVATDateFromRecordCZL(Database::"Cust. Ledger Entry");
-        InitVATDateFromRecordCZL(Database::"Vendor Ledger Entry");
-        InitVATDateFromRecordCZL(Database::"VAT Ctrl. Report Line CZL");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"G/L Entry");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Gen. Journal Line");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"VAT Entry");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Sales Header");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Sales Invoice Header");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Sales Cr.Memo Header");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Sales Header Archive");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Purchase Header");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Purch. Inv. Header");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Purch. Cr. Memo Hdr.");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Purchase Header Archive");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Service Header");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Service Invoice Header");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Service Cr.Memo Header");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Cust. Ledger Entry");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Vendor Ledger Entry");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"VAT Ctrl. Report Line CZL");
         OnAfterInitVATDateCZL();
     end;
 
-    procedure InitVATDateFromRecordCZL(TableNo: Integer)
-    var
-        DataTypeManagement: Codeunit "Data Type Management";
-        RecordRef: RecordRef;
-        PostingDateFieldRef: FieldRef;
-        VATDateFieldRef: FieldRef;
-    begin
-        RecordRef.Open(TableNo);
-        DataTypeManagement.FindFieldByName(RecordRef, VATDateFieldRef, 'VAT Date');
-        DataTypeManagement.FindFieldByName(RecordRef, PostingDateFieldRef, 'Posting Date');
-        VATDateFieldRef.SetRange(0D);
-        PostingDateFieldRef.SetFilter('<>%1', 0D);
-        if RecordRef.FindSet(true) then
-            repeat
-                VATDateFieldRef.Value := PostingDateFieldRef.Value;
-                RecordRef.Modify();
-            until RecordRef.Next() = 0;
-    end;
+    
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterInitVATDateCZL()

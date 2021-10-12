@@ -2,7 +2,7 @@ report 11754 "Close Balance Sheet CZL"
 {
     ApplicationArea = Basic, Suite;
     Caption = 'Close Balance Sheet';
-    Permissions = TableData "G/L Entry" = m;
+    Permissions = tabledata "G/L Entry" = m;
     ProcessingOnly = true;
     UsageCategory = Tasks;
 
@@ -105,7 +105,7 @@ report 11754 "Close Balance Sheet CZL"
                             if (TempEntryNoAmountBuffer.Amount <> 0) or (TempEntryNoAmountBuffer.Amount2 <> 0) then begin
                                 GenJournalLine."Line No." := GenJournalLine."Line No." + 10000;
                                 GenJournalLine."Account No." := "G/L Account No.";
-                                GenJournalLine."Source Code" := SourceCodeSetup."Close Balance Sheet";
+                                GenJournalLine."Source Code" := SourceCodeSetup."Close Balance Sheet CZL";
                                 GenJournalLine."Reason Code" := GenJournalBatch."Reason Code";
                                 GenJournalLine.Correction := false;
                                 GenJournalLine.Validate(Amount, -TempEntryNoAmountBuffer.Amount);
@@ -172,7 +172,7 @@ report 11754 "Close Balance Sheet CZL"
                     GenJournalLine."Shortcut Dimension 2 Code" := '';
                     GenJournalLine."Line No." := GenJournalLine."Line No." + 10000;
                     GenJournalLine."Account No." := ClosingBalanceSheetGLAccount."No.";
-                    GenJournalLine."Source Code" := SourceCodeSetup."Close Balance Sheet";
+                    GenJournalLine."Source Code" := SourceCodeSetup."Close Balance Sheet CZL";
                     GenJournalLine."Reason Code" := GenJournalBatch."Reason Code";
                     GenJournalLine."Currency Code" := '';
                     GenJournalLine."Additional-Currency Posting" :=

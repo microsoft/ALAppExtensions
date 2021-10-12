@@ -4,6 +4,7 @@ codeunit 20135 "Symbol Data Senstivity Mgmt."
     local procedure OnAfterClassifySymbolSpecificTables()
     begin
         ClassifyTablesToNormal();
+        ClassifyCompanyConfidentialFields();
     end;
 
     local procedure ClassifyTablesToNormal()
@@ -18,5 +19,17 @@ codeunit 20135 "Symbol Data Senstivity Mgmt."
         DataClassificationMgt: Codeunit "Data Classification Mgt.";
     begin
         DataClassificationMgt.SetTableFieldsToNormal(TableNo);
+    end;
+
+    local procedure ClassifyCompanyConfidentialFields()
+    var
+        ScriptSymbolValue: Record "Script Symbol Value";
+        ScriptSymbolMemberValue: Record "Script Symbol Member Value";
+        DataClassificationMgt: Codeunit "Data Classification Mgt.";
+    begin
+        SetTableFieldsToNormal(Database::"Script Symbol Value");
+        SetTableFieldsToNormal(Database::"Script Symbol Member Value");
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"Script Symbol Value", ScriptSymbolValue.FieldNo("RecordID Value"));
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"Script Symbol Member Value", ScriptSymbolMemberValue.FieldNo("RecordID Value"));
     end;
 }

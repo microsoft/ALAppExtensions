@@ -65,7 +65,13 @@ report 31005 "Cash Flow Date List CZL"
                 column(GLBudget; Values[CashFlowForecastEntry."Source Type"::"G/L Budget".AsInteger()])
                 {
                 }
+#if CLEAN19
+                column(PurchaseAdvances; Values[13]) // value(13; "Purchase Advance Letters")
+#else
+#pragma warning disable AL0432
                 column(PurchaseAdvances; Values[CashFlowForecastEntry."Source Type"::"Purchase Advance Letters".AsInteger()])
+#pragma warning restore AL0432
+#endif
                 {
                 }
                 column(EditionPeriod_Number; Number)

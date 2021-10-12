@@ -30,14 +30,35 @@ codeunit 1460 SignedXml
     begin
         SignedXmlImpl.InitializeSignedXml(SigningXmlElement);
     end;
-
+#if not CLEAN19
     /// <summary>
     /// Sets the key used for signing a SignedXml object.
     /// </summary>
     /// <param name="SignatureKey">The key used for signing the SignedXml object.</param>
+    [Obsolete('Replaced by SetSigningKey function with XmlString parameter.', '19.1')]
     procedure SetSigningKey(var SignatureKey: Record "Signature Key")
     begin
         SignedXmlImpl.SetSigningKey(SignatureKey);
+    end;
+#endif
+
+    /// <summary>
+    /// Sets the key used for signing a SignedXml object.
+    /// </summary>
+    /// <param name="XmlString">The XML string containing key information.</param>
+    procedure SetSigningKey(XmlString: Text)
+    begin
+        SignedXmlImpl.SetSigningKey(XmlString);
+    end;
+
+    /// <summary>
+    /// Sets the key used for signing a SignedXml object.
+    /// </summary>
+    /// <param name="XmlString">The XML string containing key information.</param>
+    /// <param name="SignatureAlgorithm">The type of asymmetric algorithms.</param>
+    procedure SetSigningKey(XmlString: Text; SignatureAlgorithm: Enum SignatureAlgorithm)
+    begin
+        SignedXmlImpl.SetSigningKey(XmlString, SignatureAlgorithm);
     end;
 
     /// <summary>
@@ -67,20 +88,6 @@ codeunit 1460 SignedXml
         SignedXmlImpl.AddXmlDsigExcC14NTransformToReference(InclusiveNamespacesPrefixList);
     end;
 
-    /// <summary>
-    /// Adds a AddXmlDsigExcC14NTransformToReference object to the list of transforms to be performed on the data before passing it to the digest algorithm.
-    /// </summary>
-    procedure AddXmlDsigExcC14NTransformToReference()
-    begin
-        SignedXmlImpl.AddXmlDsigExcC14NTransformToReference();
-    end;
-    /// <summary>
-    /// Adds a AddXmlDsigEnvelopedSignatureTransform object to the list of transforms to be performed on the data before passing it to the digest algorithm.
-    /// </summary>
-    procedure AddXmlDsigEnvelopedSignatureTransform()
-    begin
-        SignedXmlImpl.AddXmlDsigEnvelopedSignatureTransform();
-    end;
     /// <summary>
     /// Sets the canonicalization algorithm that is used before signing for the current SignedInfo object.
     /// </summary>
@@ -135,20 +142,43 @@ codeunit 1460 SignedXml
     end;
 
     /// <summary>
+    /// Initializes a new instance of the DataObject class.
+    /// </summary>
+    procedure InitializeDataObject()
+    begin
+        SignedXmlImpl.InitializeDataObject();
+    end;
+
+    /// <summary>
+    /// Adds a xml element of DataObject object to the list of objects to be signed.
+    /// </summary>
+    /// <param name="DataObjectXmlElement">The xml element of DataObject to add to the list of objects to be signed.</param>
+    procedure AddObject(DataObjectXmlElement: XmlElement)
+    begin
+        SignedXmlImpl.AddObject(DataObjectXmlElement);
+    end;
+
+    /// <summary>
+    /// Adds a AddXmlDsigExcC14NTransformToReference object to the list of transforms to be performed on the data before passing it to the digest algorithm.
+    /// </summary>
+    procedure AddXmlDsigExcC14NTransformToReference()
+    begin
+        SignedXmlImpl.AddXmlDsigExcC14NTransformToReference();
+    end;
+    /// <summary>
+    /// Adds a AddXmlDsigEnvelopedSignatureTransform object to the list of transforms to be performed on the data before passing it to the digest algorithm.
+    /// </summary>
+    procedure AddXmlDsigEnvelopedSignatureTransform()
+    begin
+        SignedXmlImpl.AddXmlDsigEnvelopedSignatureTransform();
+    end;
+
+    /// <summary>
     /// Computes an Xml digital signature from Xml document.
     /// </summary>
     procedure ComputeSignature()
     begin
         SignedXmlImpl.ComputeSignature();
-    end;
-
-    /// <summary>
-    /// Returns the Xml representation of a signature.
-    /// </summary>
-    /// <returns>The Xml representation of the signature.</returns>
-    procedure GetXml(): XmlElement
-    begin
-        exit(SignedXmlImpl.GetXml());
     end;
 
     /// <summary>
@@ -180,6 +210,15 @@ codeunit 1460 SignedXml
     procedure CheckSignature(X509CertBase64Value: Text; X509CertPassword: Text; VerifySignatureOnly: Boolean): Boolean
     begin
         exit(SignedXmlImpl.CheckSignature(X509CertBase64Value, X509CertPassword, VerifySignatureOnly));
+    end;
+
+    /// <summary>
+    /// Returns the Xml representation of a signature.
+    /// </summary>
+    /// <returns>The Xml representation of the signature.</returns>
+    procedure GetXml(): XmlElement
+    begin
+        exit(SignedXmlImpl.GetXml());
     end;
 
     /// <summary>

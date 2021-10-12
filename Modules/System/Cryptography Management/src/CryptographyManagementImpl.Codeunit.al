@@ -348,6 +348,16 @@ codeunit 1279 "Cryptography Management Impl."
         exit(ConvertByteHashToString(HashBytes));
     end;
 
+    procedure GenerateBase64KeyedHash(InputString: Text; "Key": Text; HashAlgorithmType: Option HMACMD5,HMACSHA1,HMACSHA256,HMACSHA384,HMACSHA512): Text
+    var
+        HashBytes: DotNet Array;
+        Convert: DotNet Convert;
+    begin
+        if not GenerateKeyedHashBytes(HashBytes, InputString, Convert.FromBase64String(Key), HashAlgorithmType) then
+            exit('');
+        exit(ConvertByteHashToString(HashBytes));
+    end;
+
     procedure SignData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
     var
         TempBlob: Codeunit "Temp Blob";

@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AL0603
+#if not CLEAN18
+#pragma warning disable AL0432, AL0603
 codeunit 31306 "Sync.Dep.Fld-GenJnlTempl CZL"
 {
     ObsoleteState = Pending;
@@ -29,3 +30,4 @@ codeunit 31306 "Sync.Dep.Fld-GenJnlTempl CZL"
         SyncDepFldUtilities.SyncFields(Rec."Not Check Doc. Type", Rec."Not Check Doc. Type CZL", PreviousRecord."Not Check Doc. Type", PreviousRecord."Not Check Doc. Type CZL");
     end;
 }
+#endif

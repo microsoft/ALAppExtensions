@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 permissionset 66 "System Tables - Basic"
 {
     Access = Internal;
@@ -5,10 +10,12 @@ permissionset 66 "System Tables - Basic"
     Caption = 'Basic User (All Inclusive)';
 
     IncludedPermissionSets = "Company - Read",
+                             "Device - Read",
                              "Media - View",
                              "Metadata - Read",
                              "Permissions & Licenses - Read",
                              "Power BI - Read",
+                             "Reporting - Edit",
                              "Satisfaction Survey - View",
                              "Session - Read",
                              "System Execute - Basic",
@@ -22,7 +29,6 @@ permissionset 66 "System Tables - Basic"
                   tabledata Chart = R,
                   tabledata "Code Coverage" = Rimd,
                   tabledata "Configuration Package File" = RIMD,
-                  tabledata Device = Rimd,
                   tabledata "Document Service" = R,
                   tabledata Drive = Rimd,
                   tabledata "Event Subscription" = Rimd,
@@ -31,8 +37,6 @@ permissionset 66 "System Tables - Basic"
                   tabledata "Object Options" = Rimd,
                   tabledata "OData Edm Type" = Rimd,
                   tabledata "Record Link" = RIMD,
-                  tabledata "Report Layout" = RIMD,
-                  tabledata "Report Layout Definition" = R,
                   tabledata "Scheduled Task" = R,
                   tabledata "Send-To Program" = RIMD,
                   tabledata Session = Rimd,
@@ -41,7 +45,5 @@ permissionset 66 "System Tables - Basic"
                   tabledata "Style Sheet" = RIMD,
                   tabledata "System Object" = Rimd,
                   tabledata "Tenant Profile Page Metadata" = Rimd,
-                  tabledata "Tenant Report Layout" = R,
-                  tabledata "Tenant Report Layout Selection" = RIMD,
                   tabledata "Token Cache" = Rimd;
 }

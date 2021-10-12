@@ -39,7 +39,7 @@ table 2028 "MS - Image Analyzer Tags"
         {
             Caption = 'Action to Perform';
             OptionMembers = " ",Category,Attribute,Blacklist;
-            OptionCaption = 'Ignore,Use as category,Use as attribute,Add to blacklist';
+            OptionCaption = 'Ignore,Use as category,Use as attribute,Add to blocklist';
 
             trigger OnValidate()
             begin

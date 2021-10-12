@@ -251,7 +251,11 @@ codeunit 4019 "GP Item Migrator"
         else
             ExpirationDate := GPItemTransactions.ExpirationDate;
 
-        TempTrackingSpecification.SetTracking(GPItemTransactions.SerialNumber, GPItemTransactions.LotNumber, 0D, ExpirationDate);
+        TempTrackingSpecification."Serial No." := GPItemTransactions.SerialNumber;
+        TempTrackingSpecification."Lot No." := GPItemTransactions.LotNumber;
+        TempTrackingSpecification."Warranty Date" := 0D;
+        TempTrackingSpecification."Expiration Date" := ExpirationDate;
+
         LastEntryNo += 1;
         TempTrackingSpecification."Entry No." := LastEntryNo;
         TempTrackingSpecification."Creation Date" := ItemJnlLine."Posting Date";

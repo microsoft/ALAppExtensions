@@ -2,6 +2,19 @@
 codeunit 31240 "Install Application CZF"
 {
     Subtype = Install;
+    Permissions = tabledata "Classification Code CZF" = im,
+                  tabledata "Tax Depreciation Group CZF" = im,
+                  tabledata "FA Extended Posting Group CZF" = im,
+                  tabledata "FA History Entry CZF" = im,
+                  tabledata "FA Setup" = m,
+                  tabledata "Fixed Asset" = m,
+                  tabledata "Depreciation Book" = m,
+                  tabledata "FA Posting Group" = m,
+                  tabledata "FA Allocation" = m;
+
+    var
+        InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
+        AppInfo: ModuleInfo;
 
     trigger OnInstallAppPerDatabase()
     begin
@@ -10,18 +23,36 @@ codeunit 31240 "Install Application CZF"
 
     trigger OnInstallAppPerCompany()
     begin
-        if not InitializeDone() then
+        if not InitializeDone() then begin
+            BindSubscription(InstallApplicationsMgtCZL);
+            CopyUsage();
             CopyData();
-
+            UnbindSubscription(InstallApplicationsMgtCZL);
+        end;
         CompanyInitialize();
     end;
 
     local procedure InitializeDone(): boolean
-    var
-        AppInfo: ModuleInfo;
     begin
         NavApp.GetCurrentModuleInfo(AppInfo);
         exit(AppInfo.DataVersion() <> Version.Create('0.0.0.0'));
+    end;
+
+    local procedure CopyPermission();
+    begin
+        NavApp.GetCurrentModuleInfo(AppInfo);
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"FA Extended Posting Group", Database::"FA Extended Posting Group CZF");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Classification Code", Database::"Classification Code CZF");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"FA History Entry", Database::"FA History Entry CZF");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Depreciation Group", Database::"Tax Depreciation Group CZF");
+    end;
+
+    local procedure CopyUsage();
+    begin
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"FA Extended Posting Group", Database::"FA Extended Posting Group CZF");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Classification Code", Database::"Classification Code CZF");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"FA History Entry", Database::"FA History Entry CZF");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Depreciation Group", Database::"Tax Depreciation Group CZF");
     end;
 
     local procedure CopyData()
@@ -62,7 +93,8 @@ codeunit 31240 "Install Application CZF"
                 if not ClassificationCodeCZF.Get(ClassificationCode.Code) then begin
                     ClassificationCodeCZF.Init();
                     ClassificationCodeCZF.Code := ClassificationCode.Code;
-                    ClassificationCodeCZF.Insert();
+                    ClassificationCodeCZF.SystemId := ClassificationCode.SystemId;
+                    ClassificationCodeCZF.Insert(false, true);
                 end;
                 ClassificationCodeCZF.Description := ClassificationCode.Description;
                 ClassificationCodeCZF."Classification Type" := ClassificationCode."Classification Type";
@@ -81,7 +113,8 @@ codeunit 31240 "Install Application CZF"
                     TaxDepreciationGroupCZF.Init();
                     TaxDepreciationGroupCZF.Code := DepreciationGroup.Code;
                     TaxDepreciationGroupCZF."Starting Date" := DepreciationGroup."Starting Date";
-                    TaxDepreciationGroupCZF.Insert();
+                    TaxDepreciationGroupCZF.SystemId := DepreciationGroup.SystemId;
+                    TaxDepreciationGroupCZF.Insert(false, true);
                 end;
                 TaxDepreciationGroupCZF.Description := DepreciationGroup.Description;
                 TaxDepreciationGroupCZF."Depreciation Group" := DepreciationGroup."Depreciation Group";
@@ -166,7 +199,8 @@ codeunit 31240 "Install Application CZF"
                     FAExtendedPostingGroupCZF."FA Posting Group Code" := FAExtendedPostingGroup."FA Posting Group Code";
                     FAExtendedPostingGroupCZF."FA Posting Type" := FAExtendedPostingGroup."FA Posting Type";
                     FAExtendedPostingGroupCZF.Code := FAExtendedPostingGroup.Code;
-                    FAExtendedPostingGroupCZF.Insert();
+                    FAExtendedPostingGroupCZF.SystemId := FAExtendedPostingGroup.SystemId;
+                    FAExtendedPostingGroupCZF.Insert(false, true);
                 end;
                 FAExtendedPostingGroupCZF."Book Val. Acc. on Disp. (Gain)" := FAExtendedPostingGroup."Book Val. Acc. on Disp. (Gain)";
                 FAExtendedPostingGroupCZF."Book Val. Acc. on Disp. (Loss)" := FAExtendedPostingGroup."Book Val. Acc. on Disp. (Loss)";
@@ -199,7 +233,8 @@ codeunit 31240 "Install Application CZF"
                 if not FAHistoryEntryCZF.Get(FAHistoryEntry."Entry No.") then begin
                     FAHistoryEntryCZF.Init();
                     FAHistoryEntryCZF."Entry No." := FAHistoryEntry."Entry No.";
-                    FAHistoryEntryCZF.Insert();
+                    FAHistoryEntryCZF.SystemId := FAHistoryEntry.SystemId;
+                    FAHistoryEntryCZF.Insert(false, true);
                 end;
                 FAHistoryEntryCZF.Type := FAHistoryEntry.Type + 1;
                 FAHistoryEntryCZF."FA No." := FAHistoryEntry."FA No.";
@@ -211,33 +246,6 @@ codeunit 31240 "Install Application CZF"
                 FAHistoryEntryCZF."User ID" := FAHistoryEntry."User ID";
                 FAHistoryEntryCZF.Modify(false);
             until FAHistoryEntry.Next() = 0;
-    end;
-
-    local procedure CopyPermission();
-    begin
-        InsertTableDataPermissions(Database::"FA Extended Posting Group", Database::"FA Extended Posting Group CZF");
-        InsertTableDataPermissions(Database::"Classification Code", Database::"Classification Code CZF");
-        InsertTableDataPermissions(Database::"FA History Entry", Database::"FA History Entry CZF");
-        InsertTableDataPermissions(Database::"Depreciation Group", Database::"Tax Depreciation Group CZF");
-    end;
-
-    local procedure InsertTableDataPermissions(OldTableID: Integer; NewTableID: Integer)
-    var
-        Permission: Record Permission;
-        NewPermission: Record Permission;
-    begin
-        Permission.SetRange("Object Type", Permission."Object Type"::"Table Data");
-        Permission.SetRange("Object ID", OldTableID);
-        if not Permission.FindSet() then
-            exit;
-        repeat
-            if not NewPermission.Get(Permission."Role ID", Permission."Object Type", Permission."Object ID") then begin
-                NewPermission.Init();
-                NewPermission := Permission;
-                NewPermission."Object ID" := NewTableID;
-                NewPermission.Insert();
-            end;
-        until Permission.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

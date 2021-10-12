@@ -11,6 +11,7 @@ codeunit 139800 "APIV2 - Items E2E"
     end;
 
     var
+        LibraryERM: Codeunit "Library - ERM";
         LibraryRapidStart: Codeunit "Library - Rapid Start";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryRandom: Codeunit "Library - Random";
@@ -462,6 +463,180 @@ codeunit 139800 "APIV2 - Items E2E"
     end;
 
     [Test]
+    procedure TestPatchItemWithGenProdPostingGroup()
+    var
+        Item: Record "Item";
+        NewGenProductPostingGroup: Record "Gen. Product Posting Group";
+        ItemGUID: Guid;
+        TargetURL: Text;
+        ItemJSON: Text;
+        Response: Text;
+    begin
+        // [SCENARIO] An item gets reassigned to a different GenProdPostingGroup via a PATCH request
+        // [GIVEN] an item with a Gen. Prod. Post. Group
+        Initialize();
+
+        LibraryInventory.CreateItemWithoutVAT(Item);
+        ItemGUID := Item.SystemId;
+        Commit();
+        Assert.AreNotEqual('', Item."Gen. Prod. Posting Group", 'A gen. product posting group was not assigned to the new item.');
+        Assert.AreNotEqual('', ItemGUID, 'The item was not created.');
+
+        // [GIVEN] a new Gen. Prod. Post. Group
+        LibraryERM.CreateGenProdPostingGroup(NewGenProductPostingGroup);
+        Assert.AreNotEqual(Item."Gen. Prod. Posting Group", NewGenProductPostingGroup."Code", 'The new gen. prod posting group has the same id as the previous.');
+        Commit();
+
+        // [WHEN] reassigning via PATCH to this new group
+        ItemJSON := LibraryGraphMgt.AddPropertytoJSON('', 'generalProductPostingGroupCode', NewGenProductPostingGroup."Code");
+        TargetURL := LibraryGraphMgt.CreateTargetURL(ItemGUID, Page::"APIV2 - Items", ServiceNameTxt);
+        LibraryGraphMgt.PatchToWebService(TargetURL, ItemJSON, Response);
+
+        // [THEN] the change should be propagated
+        Item.GetBySystemId(ItemGUID);
+        Assert.AreEqual(Item."Gen. Prod. Posting Group Id", NewGenProductPostingGroup.SystemId, 'The item is not reassigned to the created gen. prod. post. group.');
+    end;
+
+    [Test]
+    procedure TestPatchItemWithInventoryPostingGroup()
+    var
+        Item: Record "Item";
+        NewInventoryPostingGroup: Record "Inventory Posting Group";
+        ItemGUID: Guid;
+        TargetURL: Text;
+        ItemJSON: Text;
+        Response: Text;
+    begin
+        // [SCENARIO] An item gets reassigned to a different InventoryPostingGroup via a PATCH request
+        // [GIVEN] an item with an Inventory Post. Group
+        Initialize();
+
+        LibraryInventory.CreateItemWithoutVAT(Item);
+        ItemGUID := Item.SystemId;
+        Commit();
+        Assert.AreNotEqual('', Item."Inventory Posting Group", 'An inventory posting group was not assigned to the new item.');
+        Assert.AreNotEqual('', ItemGUID, 'The item was not created.');
+
+        // [GIVEN] a new Inventory Post. Group
+        LibraryInventory.CreateInventoryPostingGroup(NewInventoryPostingGroup);
+        Assert.AreNotEqual(Item."Inventory Posting Group", NewInventoryPostingGroup."Code", 'The new inventory posting group has the same id as the previous.');
+        Commit();
+
+        // [WHEN] reassigning via PATCH to this new group
+        ItemJSON := LibraryGraphMgt.AddPropertytoJSON('', 'inventoryPostingGroupCode', NewInventoryPostingGroup."Code");
+        TargetURL := LibraryGraphMgt.CreateTargetURL(ItemGUID, Page::"APIV2 - Items", ServiceNameTxt);
+        LibraryGraphMgt.PatchToWebService(TargetURL, ItemJSON, Response);
+
+        // [THEN] the change should be propagated
+        Item.GetBySystemId(ItemGUID);
+        Assert.AreEqual(Item."Inventory Posting Group Id", NewInventoryPostingGroup.SystemId, 'The item is not reassigned to the created inventory post. group.');
+    end;
+
+    [Test]
+    procedure TestUnassignGenProdPostingGroup()
+    var
+        Item: Record "Item";
+        ItemJSON: Text;
+        TargetURL: Text;
+        ItemGUID: Guid;
+        Response: Text;
+    begin
+        // [SCENARIO] An item with a gen. prod. posting group is removed from that group via a PATCH request
+        // [GIVEN] an item with a gen. prod. posting group
+        Initialize();
+        LibraryInventory.CreateItemWithoutVAT(Item);
+        ItemGUID := Item.SystemId;
+        Commit();
+        Assert.IsFalse(IsNullGuid(Item."Gen. Prod. Posting Group Id"), 'Item should be assigned to a gen. prod. posting group.');
+
+        // [WHEN] removing it from the group via a PATCH request
+        ItemJSON := LibraryGraphMgt.AddPropertytoJSON('', 'generalProductPostingGroupCode', '');
+        TargetURL := LibraryGraphMgt.CreateTargetURL(ItemGUID, Page::"APIV2 - Items", ServiceNameTxt);
+        LibraryGraphMgt.PatchToWebService(TargetURL, ItemJSON, Response);
+
+        // [THEN] it should have gen. prod. posting group id and code unassigned
+        Item.GetBySystemId(ItemGUID);
+        Assert.IsTrue(IsNullGuid(Item."Gen. Prod. Posting Group Id"), 'General product posting group id should be null after being unassigned.');
+        Assert.AreEqual('', Item."Gen. Prod. Posting Group", 'General product posting group code should be empty after being unassigned.');
+    end;
+
+    [Test]
+    procedure TestUnassignInventoryPostingGroup()
+    var
+        Item: Record "Item";
+        ItemJSON: Text;
+        TargetURL: Text;
+        ItemGUID: Guid;
+        Response: Text;
+    begin
+        // [SCENARIO] An item with an inventory posting group is removed from that group via a PATCH request
+        // [GIVEN] an item with an inventory posting group
+        Initialize();
+        LibraryInventory.CreateItemWithoutVAT(Item);
+        ItemGUID := Item.SystemId;
+        Commit();
+        Assert.IsFalse(IsNullGuid(Item."Inventory Posting Group Id"), 'Item should be assigned to an inventory posting group.');
+
+        // [WHEN] removing it from the group via a PATCH request
+        ItemJSON := LibraryGraphMgt.AddPropertytoJSON('', 'inventoryPostingGroupCode', '');
+        TargetURL := LibraryGraphMgt.CreateTargetURL(ItemGUID, Page::"APIV2 - Items", ServiceNameTxt);
+        LibraryGraphMgt.PatchToWebService(TargetURL, ItemJSON, Response);
+
+        // [THEN] it should have inventory posting group id and code unassigned
+        Item.GetBySystemId(ItemGUID);
+        Assert.IsTrue(IsNullGuid(Item."Inventory Posting Group Id"), 'Inventory posting group id should be null after being unassigned.');
+        Assert.AreEqual('', Item."Inventory Posting Group", 'Inventory posting group code should be empty after being unassigned.');
+    end;
+
+    [Test]
+    procedure TestGetRelatedEntities()
+    var
+        Item: Record "Item";
+        GenProductPostingGroup: Record "Gen. Product Posting Group";
+        InventoryPostingGroup: Record "Inventory Posting Group";
+        JSONManagement: Codeunit "JSON Management";
+        ItemGUID: Guid;
+        GenProdPostGroupId: Text;
+        InventoryPostGroupId: Text;
+        TargetURL: Text;
+        Response: Text;
+        ResponseId: Text;
+        JObject: Dotnet JObject;
+    begin
+        // [SCENARIO] Create an item with Gen. Prod. Post. Group and Inventory Post. Group. Verify they can be read from the response when expanding them.
+        // [GIVEN] an Item, with a Gen. Prod. Post. Group and with and Inventory Post. Group
+        Initialize();
+        LibraryInventory.CreateItemWithoutVAT(Item);
+
+        // [GIVEN] Item's GUID
+        ItemGUID := Item.SystemId;
+        Assert.AreNotEqual('', ItemGUID, 'ItemGUID should not be empty');
+        Commit();
+
+        // [GIVEN] it's Gen. Prod. Post. Group
+        GenProductPostingGroup.Get(Item."Gen. Prod. Posting Group");
+        GenProdPostGroupId := FormatGuid(GenProductPostingGroup.SystemId);
+
+        // [GIVEN] and it's Inventory Post. Group
+        InventoryPostingGroup.Get(Item."Inventory Posting Group");
+        InventoryPostGroupId := FormatGuid(InventoryPostingGroup.SystemId);
+
+        // [WHEN] GETting the item with this relations expanded
+        TargetURL := LibraryGraphMgt.CreateTargetURL(ItemGUID, Page::"APIV2 - Items", ServiceNameTxt);
+        TargetURL += '?$expand=generalProductPostingGroup,inventoryPostingGroup';
+        LibraryGraphMgt.GetFromWebService(Response, TargetURL);
+
+        // [THEN] the response should include them as properties
+        LibraryGraphMgt.GetComplexPropertyFromJSON(Response, 'generalProductPostingGroup', JObject);
+        JSONManagement.GetStringPropertyValueFromJObjectByName(JObject, 'id', ResponseId);
+        Assert.AreEqual(GenProdPostGroupId, LowerCase(ResponseId), 'The id of the gen. prod. post. group is not the one on the response.');
+
+        LibraryGraphMgt.GetComplexPropertyFromJSON(Response, 'inventoryPostingGroup', JObject);
+        JSONManagement.GetStringPropertyValueFromJObjectByName(JObject, 'id', ResponseId);
+        Assert.AreEqual(InventoryPostGroupId, LowerCase(ResponseId), 'The id of the inventory post. group is not the one on the response.');
+    end;
+
+    [Test]
     procedure TestModifyItemInventory()
     var
         Item: Record "Item";
@@ -590,6 +765,11 @@ codeunit 139800 "APIV2 - Items E2E"
 
         Item.Get(ItemNo);
         Assert.AreEqual(Format(ItemCategory.Code), Item."Item Category Code", 'Item category code is wrong');
+    end;
+
+    local procedure FormatGuid(Value: Guid): Text
+    begin
+        exit(LowerCase(LibraryGraphMgt.StripBrackets(Format(Value, 0, 9))));
     end;
 
     local procedure CreateSimpleItem(): Code[20]

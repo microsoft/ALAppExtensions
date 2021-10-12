@@ -8,5 +8,11 @@ tableextension 18685 "Source Code Setup" extends "Source Code Setup"
             DataClassification = CustomerContent;
             TableRelation = "Source Code";
         }
+        field(18686; "TDS Above Threshold Opening"; code[10])
+        {
+            Caption = 'TDS Over & Above Threshold Opening';
+            DataClassification = CustomerContent;
+            TableRelation = "Source Code";
+        }
     }
 }

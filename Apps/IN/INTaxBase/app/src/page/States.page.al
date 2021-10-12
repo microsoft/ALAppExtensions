@@ -47,10 +47,10 @@ page 18547 "States"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     StateCodeLbl: Label 'Code eq %1', Comment = '%1= State Code';
                 begin
-                    ODataUtility.EditWorksheetInExcel(
+                    EditinExcel.EditPageInExcel(
                         'States',
                         CurrPage.ObjectId(false),
                         StrSubstNo(StateCodeLbl, Rec.Code));

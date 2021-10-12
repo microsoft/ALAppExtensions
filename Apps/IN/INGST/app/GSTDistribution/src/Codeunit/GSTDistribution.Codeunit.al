@@ -222,7 +222,6 @@ codeunit 18200 "GST Distribution"
         GSTDistributionHeader: Record "GST Distribution Header";
         GSTPostingSetup: Record "GST Posting Setup";
         Location: Record "Location";
-        GSTCreditType: Enum "GST Credit";
     begin
         GSTDistributionHeader.Get(DistributionNo);
 
@@ -253,7 +252,7 @@ codeunit 18200 "GST Distribution"
                     DistComponentAmount."Distribution No." := DistributionNo;
                     DistComponentAmount."GST Component Code" := DetailedGSTLedgerEntry."GST Component Code";
                     DistComponentAmount."To Location Code" := GSTDistributionHeader."From Location Code";
-                    DistComponentAmount."GST Credit" := GSTCreditType;
+                    DistComponentAmount."GST Credit" := GSTDistributionHeader."Dist. Credit Type";
                     DistComponentAmount.Type := DistComponentAmount.Type::"G/L Account";
                     if GSTDistributionHeader."Dist. Credit Type" = GSTDistributionHeader."Dist. Credit Type"::Availment then
                         DistComponentAmount."No." := GSTPostingSetup."Receivable Acc. (Dist)"
@@ -417,7 +416,7 @@ codeunit 18200 "GST Distribution"
                         if DetailedGSTLedgerEntry."GST Jurisdiction Type" = DetailedGSTLedgerEntry."GST Jurisdiction Type"::Interstate then
                             DetailedGSTDistEntry."Distribution Jurisdiction" := DetailedGSTLedgerEntry."GST Jurisdiction Type"::Interstate
                         else
-                            DetailedGSTDistEntry."Distribution Jurisdiction" := GSTDistributionLine."Distribution Jurisdiction"::Intrastate;
+                            DetailedGSTDistEntry."Distribution Jurisdiction" := GSTDistributionLine."Distribution Jurisdiction";
 
                         DetailedGSTDistEntry."Location Distribution %" := GSTDistributionLine."Distribution %";
                         DetailedGSTDistEntry."Distributed Component Code" := DetailedGSTLedgerEntry."GST Component Code";
@@ -544,10 +543,10 @@ codeunit 18200 "GST Distribution"
         else
             GSTComponentDistribution.SetRange("Intrastate Distribution", true);
 
-        if GSTComponentDistribution.IsEmpty() then
+        if GSTComponentDistribution.Findfirst() then
+            exit(GetComponentID(GSTComponentDistribution."Distribution Component Code"))
+        else
             Error(ToGSTCompErr, GSTComponentCode, JurisdictionType);
-
-        exit(GetComponentID(GSTComponentCode));
     end;
 
     local procedure GetComponentID(GSTComponentCode: Code[30]): Integer

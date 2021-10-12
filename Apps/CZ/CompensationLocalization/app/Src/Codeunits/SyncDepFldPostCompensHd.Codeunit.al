@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AL0603,AA0072
+#if not CLEAN18
+#pragma warning disable AL0432, AL0603, AA0072
 codeunit 31292 "Sync.Dep.Fld-PostCompensHd CZC"
 {
     Access = Internal;
@@ -52,7 +53,8 @@ codeunit 31292 "Sync.Dep.Fld-PostCompensHd CZC"
         if not PostedCompensationHeaderCZC.Get(Rec."No.") then begin
             PostedCompensationHeaderCZC.Init();
             PostedCompensationHeaderCZC."No." := Rec."No.";
-            PostedCompensationHeaderCZC.Insert(false);
+            PostedCompensationHeaderCZC.SystemId := Rec.SystemId;
+            PostedCompensationHeaderCZC.Insert(false, true);
         end;
         PostedCompensationHeaderCZC.Description := Rec.Description;
         PostedCompensationHeaderCZC."Company No." := Rec."Company No.";
@@ -141,7 +143,8 @@ codeunit 31292 "Sync.Dep.Fld-PostCompensHd CZC"
         if not PostedCreditHeader.Get(Rec."No.") then begin
             PostedCreditHeader.Init();
             PostedCreditHeader."No." := Rec."No.";
-            PostedCreditHeader.Insert(false);
+            PostedCreditHeader.SystemId := Rec.SystemId;
+            PostedCreditHeader.Insert(false, true);
         end;
         PostedCreditHeader.Description := Rec.Description;
         PostedCreditHeader."Company No." := Rec."Company No.";
@@ -190,3 +193,4 @@ codeunit 31292 "Sync.Dep.Fld-PostCompensHd CZC"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

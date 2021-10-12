@@ -1,5 +1,8 @@
 codeunit 11700 "Acc. Schedule Management CZL"
 {
+    var
+        AccSChedExtensionMgtCZL: Codeunit "Acc. Sched. Extension Mgt. CZL";
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::AccSchedManagement, 'OnAfterCalcCellValue', '', false, false)]
     local procedure CalcCZLOnAfterCalcCellValue(var AccSchedLine: Record "Acc. Schedule Line"; var Result: Decimal)
     begin
@@ -15,6 +18,9 @@ codeunit 11700 "Acc. Schedule Management CZL"
                     AccSchedLine."Calc CZL"::Never:
                         Result := 0;
                 end;
+            AccSchedLine."Totaling Type"::"Constant CZL":
+                if not Evaluate(Result, AccSchedLine.Totaling) then
+                    ;
         end;
     end;
 
@@ -91,6 +97,104 @@ codeunit 11700 "Acc. Schedule Management CZL"
                 end;
         end;
         IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::AccSchedManagement, 'OnAfterCalcCellValue', '', false, false)]
+    local procedure ExtendedOnAfterCalcCellValue(var AccSchedLine: Record "Acc. Schedule Line"; var SourceAccScheduleLine: Record "Acc. Schedule Line"; var ColumnLayout: Record "Column Layout"; var Result: Decimal)
+    var
+        StartDate: Date;
+        EndDate: Date;
+    begin
+        case AccSchedLine."Totaling Type" of
+            AccSchedLine."Totaling Type"::"Custom CZL":
+                begin
+                    AccSchedLine.CopyFilters(SourceAccScheduleLine);
+                    StartDate := SourceAccScheduleLine.GetRangeMin("Date Filter");
+                    EndDate := SourceAccScheduleLine.GetRangeMax("Date Filter");
+                    Result := AccSChedExtensionMgtCZL.CalcCustomFunc(AccSchedLine, ColumnLayout, StartDate, EndDate);
+                end;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::AccSchedManagement, 'OnBeforeDrillDownOnAccounts', '', false, false)]
+    local procedure ExtendedOnBeforeDrillDownOnAccounts(var AccScheduleLine: Record "Acc. Schedule Line"; var TempColumnLayout: Record "Column Layout")
+    begin
+        if AccScheduleLine.Totaling = '' then
+            exit;
+        if AccScheduleLine."Totaling Type" = AccScheduleLine."Totaling Type"::"Custom CZL" then
+            AccSChedExtensionMgtCZL.DrillDownAmount(
+              AccScheduleLine,
+              TempColumnLayout,
+              CopyStr(AccScheduleLine.Totaling, 1, 20),
+              AccScheduleLine.GetRangeMin("Date Filter"),
+              AccScheduleLine.GetRangeMax("Date Filter"));
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::AccSchedManagement, 'OnBeforeDrillDownOnGLAccount', '', false, false)]
+    local procedure ExtendedOnBeforeDrillDownOnGLAccount(var AccScheduleLine: Record "Acc. Schedule Line"; var IsHandled: Boolean)
+    begin
+        if AccScheduleLine."Totaling Type" = AccScheduleLine."Totaling Type"::"Custom CZL" then
+            IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::AccSchedManagement, 'OnCalcCellValueInAccSchedLinesOnBeforeShowError', '', false, false)]
+    local procedure ExtendedOnCalcCellValueInAccSchedLinesOnBeforeShowError(SourceAccScheduleLine: Record "Acc. Schedule Line"; var AccScheduleLine: Record "Acc. Schedule Line"; var ColumnLayout: Record "Column Layout"; CalcAddCurr: Boolean; StartDate: Date; EndDate: Date; var CellValue: Decimal; var Result: Decimal; var IsHandled: Boolean)
+    begin
+        if AccSChedExtensionMgtCZL.FindSharedAccountSchedule(SourceAccScheduleLine, AccScheduleLine, ColumnLayout, CalcAddCurr, CellValue, StartDate, EndDate, Result) then
+            IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::AccSchedManagement, 'OnBeforeDrillDownFromOverviewPage', '', false, false)]
+    local procedure ExtendedOnBeforeDrillDownFromOverviewPage(var AccScheduleLine: Record "Acc. Schedule Line"; var TempColumnLayout: Record "Column Layout"; var IsHandled: Boolean)
+    var
+        SourceAccScheduleLine: Record "Acc. Schedule Line";
+        AccSchedPageDrillDownCZL: Page "Acc. Sched.Page.Drill-Down CZL";
+    begin
+        if AccScheduleLine."Totaling Type" <> AccScheduleLine."Totaling Type"::Formula then
+            exit;
+
+        SourceAccScheduleLine.Copy(AccScheduleLine);
+        AccSchedPageDrillDownCZL.InitParameters(SourceAccScheduleLine, TempColumnLayout);
+        AccSchedPageDrillDownCZL.Run();
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Name", 'OnBeforeDeleteEvent', '', false, false)]
+    local procedure ResultHeaderOnBeforeDeleteEvent(var Rec: Record "Acc. Schedule Name")
+    var
+        AccScheduleResultHeader: Record "Acc. Schedule Result Hdr. CZL";
+        ConfirmManagement: Codeunit "Confirm Management";
+        DeleteQst: Label '%1 has results. Do you want to delete it anyway?', Comment = '%1 = Description';
+    begin
+        if Rec.IsResultsExistCZL(Rec.Name) then
+            if ConfirmManagement.GetResponseOrDefault(StrSubStNo(DeleteQst, Rec.GetRecordDescriptionCZL(Rec.Name)), true) then begin
+                AccScheduleResultHeader.SetRange("Acc. Schedule Name", Rec.Name);
+                AccScheduleResultHeader.DeleteAll(true);
+            end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Line", 'OnBeforeValidateEvent', 'Totaling Type', false, false)]
+    local procedure TotalingTypeOnBeforeValidateEvent(var Rec: Record "Acc. Schedule Line"; var xRec: Record "Acc. Schedule Line")
+    begin
+        if (xRec."Totaling Type" = Rec."Totaling Type"::Formula) and (Rec."Totaling Type" <> Rec."Totaling Type"::Formula) then
+            Rec.Totaling := '';
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Line", 'OnAfterValidateEvent', 'Totaling', false, false)]
+    local procedure TotalingOnAfterValidateEvent(var Rec: Record "Acc. Schedule Line"; var xRec: Record "Acc. Schedule Line")
+    var
+        Value: Decimal;
+        EvaluateErr: Label 'It''s not possible assign value:%1 of field: %2 to data type decimal!', Comment = '%1 = Totaling, %2 = FieldCaption';
+    begin
+        case Rec."Totaling Type" of
+            Rec."Totaling Type"::"Constant CZL":
+                if Rec.Totaling <> '' then
+                    if not Evaluate(Value, Rec.Totaling) then
+                        Error(EvaluateErr, Rec.Totaling, Rec.FieldCaption(Totaling));
+        end;
+
+        if Rec."Totaling Type" <> Rec."Totaling Type"::"Custom CZL" then
+            AccSchedExtensionMgtCZL.ValidateFormula(Rec);
     end;
 
     procedure CalcCorrectionCell(var AccScheduleLine: Record "Acc. Schedule Line"; var ColumnLayout: Record "Column Layout"; CalcAddCurr: Boolean): Decimal

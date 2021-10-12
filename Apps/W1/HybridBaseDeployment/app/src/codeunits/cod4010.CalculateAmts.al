@@ -2,7 +2,6 @@ codeunit 4010 CalculateAmounts
 {
     trigger OnRun()
     begin
-
     end;
 
     var

@@ -20,6 +20,7 @@ For on-premises versions, you can also use this module to do the following:
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure IsPlanAssigned(PlanGUID: Guid): Boolean
 ```
 #### Parameters
@@ -38,7 +39,7 @@ true if the given plan has users assigned to it.
 
 #### Syntax
 ```
-[Scope('OnPrem')]
+[NonDebuggable]
 procedure IsPlanAssignedToUser(PlanGUID: Guid): Boolean
 ```
 #### Parameters
@@ -57,7 +58,7 @@ true if the given plan is assigned to the current user.
 
 #### Syntax
 ```
-[Scope('OnPrem')]
+[NonDebuggable]
 procedure IsPlanAssignedToUser(PlanGUID: Guid; UserGUID: Guid): Boolean
 ```
 #### Parameters
@@ -81,6 +82,7 @@ true if the given plan is assigned to the given user.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure IsGraphUserEntitledFromServicePlan(var GraphUser: DotNet UserInfo): Boolean
 ```
 #### Parameters
@@ -96,18 +98,19 @@ True if the given user is entitled from the service plan.
 OnRemoveUserGroupsForUserAndPlan
 
 
- Updates plans for user.
+ Updates license plans for a user.
  
 
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUser: DotNet UserInfo)
 ```
 #### Parameters
 *UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
 
-The user to update.
+The user for whom to update license information.
 
 *GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
 
@@ -117,18 +120,19 @@ The graph user corresponding to the user to update, and containing the informati
 OnRemoveUserGroupsForUserAndPlan
 
 
- Updates plans for user.
+ Updates license plans for a user.
  
 
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUser: DotNet UserInfo; AppendPermissionsOnNewPlan: Boolean; RemovePermissionsOnDeletePlan: Boolean)
 ```
 #### Parameters
 *UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
 
-The user to update.
+The user for whom to update license information.
 
 *GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
 
@@ -146,35 +150,38 @@ Remove permissions when removing the plan for the user.
 OnRemoveUserGroupsForUserAndPlan
 
 
- Updates plans for user.
+ Updates license plans for a user.
  
 
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure UpdateUserPlans(UserSecurityId: Guid)
 ```
 #### Parameters
 *UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
 
-The user to update.
+The user for whom to update license information.
 
 ### UpdateUserPlans (Method) <a name="UpdateUserPlans"></a> 
 OnRemoveUserGroupsForUserAndPlan
 
 
- Updates plans for user.
+ Updates license plans for a user.
  
 
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
+[Obsolete('Replaced with an overload accepting the RemovePlansOnDeleteUser parameter', '18.0')]
 procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissionsOnNewPlan: Boolean; RemovePermissionsOnDeletePlan: Boolean)
 ```
 #### Parameters
 *UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
 
-The user to update.
+The user for whom to update license information.
 
 *AppendPermissionsOnNewPlan ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
@@ -183,6 +190,35 @@ Append permissions from the new plan to the user.
 *RemovePermissionsOnDeletePlan ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
 Remove permissions when removing the plan for the user.
+
+### UpdateUserPlans (Method) <a name="UpdateUserPlans"></a> 
+OnRemoveUserGroupsForUserAndPlan
+
+
+ Updates license plans for a user.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissionsOnNewPlan: Boolean; RemovePermissionsOnDeletePlan: Boolean; RemovePlansOnDeleteUser: Boolean)
+```
+#### Parameters
+*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The user for whom to update license information.
+
+*AppendPermissionsOnNewPlan ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Add permissions from the new license plan to the user. Existing permissions will not be affected.
+
+*RemovePermissionsOnDeletePlan ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Remove permissions when removing a license plan for a user.
+
+*RemovePlansOnDeleteUser ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Remove license plans when a user is deleted in Office 365.
 
 ### UpdateUserPlans (Method) <a name="UpdateUserPlans"></a> 
 OnRemoveUserGroupsForUserAndPlan
@@ -194,6 +230,7 @@ OnRemoveUserGroupsForUserAndPlan
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure UpdateUserPlans()
 ```
 ### RefreshUserPlanAssignments (Method) <a name="RefreshUserPlanAssignments"></a> 
@@ -206,6 +243,7 @@ OnRemoveUserGroupsForUserAndPlan
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure RefreshUserPlanAssignments(UserSecurityId: Guid)
 ```
 #### Parameters
@@ -222,6 +260,7 @@ The user to update.
 ```
 [Scope('OnPrem')]
 [TryFunction]
+[NonDebuggable]
 procedure TryGetAzureUserPlanRoleCenterId(var RoleCenterID: Integer; UserSecurityId: Guid)
 ```
 #### Parameters
@@ -241,6 +280,7 @@ The user GUID.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure DoPlansExist(): Boolean
 ```
 #### Return Value
@@ -255,6 +295,7 @@ Returns true if at least one plan exist.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure DoUserPlansExist(): Boolean
 ```
 #### Return Value
@@ -269,6 +310,7 @@ Returns true if at least one user is assigned to a plan.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure DoesPlanExist(PlanGUID: Guid): Boolean
 ```
 #### Parameters
@@ -288,6 +330,7 @@ Returns true if the given plan exists.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure DoesUserHavePlans(UserSecurityId: Guid): Boolean
 ```
 #### Parameters
@@ -307,6 +350,7 @@ Returns true if the given user has at least one plan.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetAvailablePlansCount(): Integer
 ```
 #### Return Value
@@ -323,6 +367,7 @@ The OnCanCurrentUserManagePlansAndGroups event to ensure this API is called with
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure CheckMixedPlans()
 ```
 ### CheckMixedPlans (Method) <a name="CheckMixedPlans"></a> 
@@ -333,6 +378,7 @@ procedure CheckMixedPlans()
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure CheckMixedPlans(PlanNamesPerUser: Dictionary of [Text, List of [Text]]; ErrorOutForAdmin: Boolean)
 ```
 #### Parameters
@@ -346,12 +392,13 @@ Specifies if an error (instead of a message) should be shown for an admin when t
 
 ### MixedPlansExist (Method) <a name="MixedPlansExist"></a> 
 
- Returns true if there are incompatible plans in the system. 
+ Returns true if there are incompatible plans in the system.
  
 
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure MixedPlansExist(): Boolean
 ```
 #### Return Value
@@ -366,6 +413,7 @@ Returns true if there are incompatible plans in the system.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetPlanNames(GraphUser: DotNet UserInfo; var PlanNames: List of [Text])
 ```
 #### Parameters
@@ -385,6 +433,7 @@ The names of the plans that are assigned to the user in Office 365.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetPlanNames(UserSecID: Guid; var PlanNames: List of [Text])
 ```
 #### Parameters
@@ -404,6 +453,7 @@ The plan names of plans assigned to the Office 365 user.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure GetPlanIDs(GraphUser: DotNet UserInfo; var PlanIDs: List of [Guid])
 ```
 #### Parameters
@@ -422,6 +472,7 @@ The IDs of the plans that are assigned to the user in Office 365.
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure CheckIfPlansDifferent(GraphUser: DotNet UserInfo; UserSecID: Guid): Boolean
 ```
 #### Parameters
@@ -437,6 +488,25 @@ The security ID of the user to get plans for.
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True, if the plans differ, false otherwise.
+### IsBCServicePlan (Method) <a name="IsBCServicePlan"></a> 
+
+ Checks whether a given service plan is a Business Central service Plan
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure IsBCServicePlan(ServicePlanId: Guid): Boolean
+```
+#### Parameters
+*ServicePlanId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The plan to check.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True, if the service plan is a Business Central Plan, false otherwise.
 ### SetTestInProgress (Method) <a name="SetTestInProgress"></a> 
 
  Sets this codeunit in test mode (for running unit tests).
@@ -445,6 +515,7 @@ True, if the plans differ, false otherwise.
 #### Syntax
 ```
 [Scope('OnPrem')]
+[NonDebuggable]
 procedure SetTestInProgress(EnableTestability: Boolean)
 ```
 #### Parameters
@@ -462,6 +533,7 @@ True to enable the test mode.
 ```
 [IntegrationEvent(false, false)]
 [Scope('OnPrem')]
+[NonDebuggable]
 internal procedure OnRemoveUserGroupsForUserAndPlan(PlanID: Guid; UserSecurityID: Guid)
 ```
 #### Parameters
@@ -483,6 +555,7 @@ The user to remove.
 ```
 [IntegrationEvent(false, false)]
 [Scope('OnPrem')]
+[NonDebuggable]
 internal procedure OnUpdateUserAccessForSaaS(UserSecurityID: Guid; var UserGroupsAdded: Boolean)
 ```
 #### Parameters
@@ -504,6 +577,7 @@ Whether the user groups were updated
 ```
 [IntegrationEvent(false, false)]
 [Scope('OnPrem')]
+[NonDebuggable]
 internal procedure OnCanCurrentUserManagePlansAndGroups(var CanManage: Boolean)
 ```
 #### Parameters
@@ -532,7 +606,7 @@ procedure GetBasicPlanId(): Guid
 The ID for the Dynamics 365 Business Central Basic Financials plan.
 ### GetTeamMemberPlanId (Method) <a name="GetTeamMemberPlanId"></a> 
 
- Returns the ID for the Dynamics 365 for Team Members plan.
+ Returns the ID for the Dynamics 365 Business Central Team Member plan.
  
 
 #### Syntax
@@ -542,7 +616,7 @@ procedure GetTeamMemberPlanId(): Guid
 #### Return Value
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
-The ID for the Dynamics 365 for Team Members plan.
+The ID for the Dynamics 365 Business Central Team Member plan.
 ### GetEssentialPlanId (Method) <a name="GetEssentialPlanId"></a> 
 
  Returns the ID for the Dynamics 365 Business Central Essentials plan.

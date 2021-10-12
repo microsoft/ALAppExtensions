@@ -88,7 +88,17 @@ table 1995 "Checklist Item Buffer"
         field(16; "Assigned To"; Text[50])
         {
             Caption = 'Assigned To';
-            DataClassification = EndUserIdentifiableInformation;
+            DataClassification = SystemMetadata;
+        }
+        field(17; "Spotlight Tour Type"; Enum "Spotlight Tour Type")
+        {
+            Caption = 'Spotlight Tour Type';
+            DataClassification = SystemMetadata;
+        }
+        field(18; "Video Url"; Text[250])
+        {
+            Caption = 'Video';
+            DataClassification = OrganizationIdentifiableInformation;
         }
     }
 

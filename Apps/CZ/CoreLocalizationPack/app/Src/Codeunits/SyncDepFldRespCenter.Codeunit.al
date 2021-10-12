@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31207 "Sync.Dep.Fld-RespCenter CZL"
 {
@@ -34,3 +35,4 @@ codeunit 31207 "Sync.Dep.Fld-RespCenter CZL"
         Rec."Default Bank Account Code CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Default Bank Account Code CZL"));
     end;
 }
+#endif

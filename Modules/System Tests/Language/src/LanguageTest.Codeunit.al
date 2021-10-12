@@ -10,11 +10,11 @@ codeunit 130043 "Language Test"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;
-    TestPermissions = NonRestrictive;
 
     var
         Assert: Codeunit "Library Assert";
         Language: Codeunit Language;
+        PermissionsMock: Codeunit "Permissions Mock";
         IsInitialized: Boolean;
         LanguageNotFoundErr: Label 'The language %1 could not be found.', Locked = true;
 
@@ -25,6 +25,7 @@ codeunit 130043 "Language Test"
         LanguageTest: Codeunit "Language Test";
         LanguageCode: Code[10];
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup. A event subscriber for OnGetUserLanguageCode is present.
         Init();
         BindSubscription(LanguageTest);
@@ -45,6 +46,7 @@ codeunit 130043 "Language Test"
     var
         LanguageCode: Code[10];
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup. No event subscriber for OnGetUserLanguageCode is present. 
         // Global language is set to Bulgarian
         Init();
@@ -63,6 +65,7 @@ codeunit 130043 "Language Test"
     var
         LanguageId: Integer;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -79,6 +82,7 @@ codeunit 130043 "Language Test"
     var
         LanguageId: Integer;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -95,6 +99,7 @@ codeunit 130043 "Language Test"
     var
         LanguageId: Integer;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -111,6 +116,7 @@ codeunit 130043 "Language Test"
     var
         LanguageId: Integer;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -127,6 +133,7 @@ codeunit 130043 "Language Test"
     var
         LanguageId: Integer;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -143,6 +150,7 @@ codeunit 130043 "Language Test"
     var
         LanguageId: Integer;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -159,6 +167,7 @@ codeunit 130043 "Language Test"
     var
         LanguageCode: Code[10];
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -175,6 +184,7 @@ codeunit 130043 "Language Test"
     var
         LanguageCode: Code[10];
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -191,6 +201,7 @@ codeunit 130043 "Language Test"
     var
         LanguageCode: Code[10];
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -207,6 +218,7 @@ codeunit 130043 "Language Test"
     var
         LanguageName: Text;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -223,6 +235,7 @@ codeunit 130043 "Language Test"
     var
         LanguageName: Text;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -239,6 +252,7 @@ codeunit 130043 "Language Test"
     var
         LanguageName: Text;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -255,6 +269,7 @@ codeunit 130043 "Language Test"
     var
         LanguageName: Text;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -271,6 +286,7 @@ codeunit 130043 "Language Test"
     var
         LanguageName: Text;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -287,6 +303,7 @@ codeunit 130043 "Language Test"
     var
         LanguageName: Text;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -301,12 +318,14 @@ codeunit 130043 "Language Test"
     [Scope('OnPrem')]
     procedure GetDefaultApplicationLanguageId()
     begin
+        PermissionsMock.Set('Language Edit');
         Assert.AreEqual(1033, Language.GetDefaultApplicationLanguageId(), 'Wrong default application id'); // en-US
     end;
 
     [Test]
     procedure ValidateApplicationLanguageIdInvalidId()
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -321,6 +340,7 @@ codeunit 130043 "Language Test"
     [Scope('OnPrem')]
     procedure ValidateApplicationLanguageIdValidId()
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup, no errors so far
         Init();
         ClearLastError();
@@ -336,6 +356,7 @@ codeunit 130043 "Language Test"
     [Scope('OnPrem')]
     procedure ValidateWindowsLanguageIdInvalidId()
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
 
@@ -350,6 +371,7 @@ codeunit 130043 "Language Test"
     [Scope('OnPrem')]
     procedure ValidateWindowsLanguageIdValidId()
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup
         Init();
         ClearLastError();
@@ -368,6 +390,7 @@ codeunit 130043 "Language Test"
     var
         LanguageId: Integer;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup and no preselected language
         Init();
         LanguageId := 0; // invalid language ID
@@ -386,6 +409,7 @@ codeunit 130043 "Language Test"
     var
         LanguageId: Integer;
     begin
+        PermissionsMock.Set('Language Edit');
         // [Given] A typical language setup and preselected language
         Init();
         LanguageId := 1033; // en-US

@@ -53,10 +53,10 @@ page 18808 "Customer Concessional Codes"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     CodeLbl: Label 'Code eq ''%1''', Comment = '%1=Customer No.';
                 begin
-                    ODataUtility.EditWorksheetInExcel('Customer Concessional Codes', CurrPage.ObjectId(false), StrSubstNo(CodeLbl, Rec."customer No."));
+                    EditinExcel.EditPageInExcel('Customer Concessional Codes', CurrPage.ObjectId(false), StrSubstNo(CodeLbl, Rec."customer No."));
                 end;
             }
         }

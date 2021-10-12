@@ -211,5 +211,10 @@ tableextension 18148 "GST Sales Invoice Header Ext" extends "Sales Invoice Heade
             Caption = 'Mode of Transport';
             DataClassification = CustomerContent;
         }
+        field(18180; "Post GST to Customer"; Boolean)
+        {
+            Caption = 'Post GST to Customer';
+            DataClassification = CustomerContent;
+        }
     }
 }

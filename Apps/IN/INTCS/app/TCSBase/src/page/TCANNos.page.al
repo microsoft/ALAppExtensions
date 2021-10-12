@@ -42,10 +42,10 @@ page 18809 "T.C.A.N. Nos."
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     TCANNoLbl: Label 'Code eq %1', Comment = '%1 = T.C.A.N No.';
                 begin
-                    ODataUtility.EditWorksheetInExcel('T.C.A.N. No.', CurrPage.ObjectId(false), StrSubstNo(TCANNoLbl, Rec.Code));
+                    EditinExcel.EditPageInExcel('T.C.A.N. No.', CurrPage.ObjectId(false), StrSubstNo(TCANNoLbl, Rec.Code));
                 end;
             }
         }

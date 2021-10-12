@@ -21,6 +21,7 @@ codeunit 1436 "Headlines Install"
     local procedure ApplyEvaluationClassificationsForPrivacy()
     var
         Company: Record Company;
+        EssBusinessHeadlinePerUsr: Record "Ess. Business Headline Per Usr";
         DataClassificationMgt: Codeunit "Data Classification Mgt.";
     begin
         Company.Get(CompanyName());
@@ -29,6 +30,8 @@ codeunit 1436 "Headlines Install"
 
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Ess. Business Headline Per Usr");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Headline Details Per User");
+
+        DataClassificationMgt.SetFieldToCompanyConfidential(Database::"Ess. Business Headline Per Usr", EssBusinessHeadlinePerUsr.FieldNo("VAT Return Period Record Id"));
     end;
 
 }

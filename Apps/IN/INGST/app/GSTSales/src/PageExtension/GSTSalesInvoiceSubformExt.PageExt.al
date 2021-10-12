@@ -7,6 +7,7 @@ pageextension 18149 "GST Sales Invoice Subform Ext" extends "Sales Invoice Subfo
             trigger OnAfterValidate()
             begin
                 SaveRecords();
+                FormatLine();
             end;
         }
         Modify("Quantity")
@@ -17,6 +18,33 @@ pageextension 18149 "GST Sales Invoice Subform Ext" extends "Sales Invoice Subfo
             end;
         }
         modify("Location Code")
+        {
+            Trigger OnAfterValidate()
+            var
+                CalculateTax: Codeunit "Calculate Tax";
+            begin
+                CurrPage.SaveRecord();
+                CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+            end;
+        }
+        modify(Type)
+        {
+            Trigger OnAfterValidate()
+            begin
+                FormatLine();
+            end;
+        }
+        modify("Line Discount %")
+        {
+            Trigger OnAfterValidate()
+            var
+                CalculateTax: Codeunit "Calculate Tax";
+            begin
+                CurrPage.SaveRecord();
+                CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+            end;
+        }
+        modify("Line Discount Amount")
         {
             Trigger OnAfterValidate()
             var
@@ -80,6 +108,19 @@ pageextension 18149 "GST Sales Invoice Subform Ext" extends "Sales Invoice Subfo
                     CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
                 end;
             }
+            field("Unit Price Incl. of Tax"; Rec."Unit Price Incl. of Tax")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies unit prices are inclusive of tax on the line.';
+
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
+            }
             field("GST Credit"; Rec."GST Credit")
             {
                 ApplicationArea = Basic, Suite;
@@ -107,7 +148,20 @@ pageextension 18149 "GST Sales Invoice Subform Ext" extends "Sales Invoice Subfo
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies an identifier for the GST group used to calculate and post GST.';
-                
+                Editable = IsHSNSACEditable;
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
+            }
+            field("HSN/SAC Code"; Rec."HSN/SAC Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the HSN/SAC code for the calculation of GST on Sales line.';
+                Editable = IsHSNSACEditable;
                 trigger OnValidate()
                 var
                     CalculateTax: Codeunit "Calculate Tax";
@@ -140,4 +194,19 @@ pageextension 18149 "GST Sales Invoice Subform Ext" extends "Sales Invoice Subfo
     begin
         CurrPage.SaveRecord();
     end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        FormatLine();
+    end;
+
+    local procedure FormatLine()
+    var
+        GSTSalesValidation: Codeunit "GST Sales Validation";
+    begin
+        GSTSalesValidation.SetHSNSACEditable(Rec, IsHSNSACEditable);
+    end;
+
+    var
+        IsHSNSACEditable: Boolean;
 }

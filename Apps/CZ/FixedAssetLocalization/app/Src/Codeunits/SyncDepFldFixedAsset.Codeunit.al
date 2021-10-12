@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AA0072
+#if not CLEAN18
+#pragma warning disable AL0432, AA0072
 codeunit 31297 "Sync.Dep.Fld-Fixed Asset CZF"
 {
     Access = Internal;
@@ -37,3 +38,4 @@ codeunit 31297 "Sync.Dep.Fld-Fixed Asset CZF"
         Rec."Tax Deprec. Group Code CZF" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Tax Deprec. Group Code CZF"));
     end;
 }
+#endif

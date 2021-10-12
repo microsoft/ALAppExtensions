@@ -3,6 +3,12 @@ codeunit 148091 "Compensations Reports CZC"
     Subtype = Test;
     TestPermissions = Disabled;
 
+    trigger OnRun()
+    begin
+        // [FEATURE] [Compensations] [Reports]
+        isInitialized := false;
+    end;
+
     var
         CompensationsSetupCZC: Record "Compensations Setup CZC";
         LibraryCompensationCZC: Codeunit "Library - Compensation CZC";
@@ -10,14 +16,19 @@ codeunit 148091 "Compensations Reports CZC"
         LibraryRandom: Codeunit "Library - Random";
         LibraryReportDataset: Codeunit "Library - Report Dataset";
         LibrarySales: Codeunit "Library - Sales";
+        LibraryPurchase: Codeunit "Library - Purchase";
         CompensationSourceTypeCZC: Enum "Compensation Source Type CZC";
         isInitialized: Boolean;
 
     local procedure Initialize()
+    var
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Compensations Reports CZC");
         LibraryRandom.Init();
         if isInitialized then
             exit;
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Compensations Reports CZC");
 
         CompensationsSetupCZC.Get();
         CompensationsSetupCZC."Compensation Nos." := LibraryERM.CreateNoSeriesCode();
@@ -30,6 +41,7 @@ codeunit 148091 "Compensations Reports CZC"
 
         isInitialized := true;
         Commit();
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Compensations Reports CZC");
     end;
 
     [Test]
@@ -54,13 +66,13 @@ codeunit 148091 "Compensations Reports CZC"
         CustLedgerEntry: Record "Cust. Ledger Entry";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin
-        // [FEATURE] Compensations Reports
+        // [SCENARIO] Print Compensation Report
         Initialize();
 
-        // [GIVEN] New compensation header created
-        CreateCompensationHeader(CompensationHeaderCZC);
+        // [GIVEN] New compensation header has been created
+        CreateCompensationHeader(CompensationHeaderCZC, CompensationSourceTypeCZC);
 
-        // [GIVEN] New compensation lines created
+        // [GIVEN] New compensation lines has been created
         case CompensationSourceTypeCZC of
             CompensationLineCZC1."Source Type"::Customer:
                 begin
@@ -82,23 +94,23 @@ codeunit 148091 "Compensations Reports CZC"
                 end;
         end;
 
-        // [GIVEN] Balance compensation lines
+        // [GIVEN] Compensation lines has been balanced
         if Abs(CompensationLineCZC1."Amount (LCY)") > Abs(CompensationLineCZC2."Amount (LCY)") then
             LibraryCompensationCZC.UpdateCompensationLine(CompensationLineCZC1, -CompensationLineCZC2."Amount (LCY)")
         else
             LibraryCompensationCZC.UpdateCompensationLine(CompensationLineCZC2, -CompensationLineCZC1."Amount (LCY)");
 
-        // [GIVEN] Call print compensation
+        // [GIVEN] Compensation has been printed
         PrintCompensation(CompensationHeaderCZC);
 
         // [WHEN] Print compensation
         CompensationHeaderCZC.SetRecFilter();
         LibraryReportDataset.RunReportAndLoad(LibraryCompensationCZC.GetCompensationReport(), CompensationHeaderCZC, '');
 
-        // [THEN] Report is printed
+        // [THEN] Report dataset will contain Compensation Header No.
         LibraryReportDataset.AssertElementWithValueExists('CompensationHeader_No', CompensationHeaderCZC."No.");
 
-        // [THEN] Printed amounts are correct
+        // [THEN] Report dataset will contain Compensation Lines Amount
         case CompensationSourceTypeCZC of
             CompensationLineCZC1."Source Type"::Customer:
                 begin
@@ -136,13 +148,13 @@ codeunit 148091 "Compensations Reports CZC"
         CustLedgerEntry: Record "Cust. Ledger Entry";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin
-        // [FEATURE] Compensations Reports
+        // [SCENARIO] Print Posted Compensation Reports
         Initialize();
 
-        // [GIVEN] New compensation header created
-        CreateCompensationHeader(CompensationHeaderCZC);
+        // [GIVEN] New compensation header hase been created
+        CreateCompensationHeader(CompensationHeaderCZC, CompensationSourceTypeCZC);
 
-        // [GIVEN] New compensation lines created
+        // [GIVEN] New compensation lines has been created
         case CompensationSourceTypeCZC of
             CompensationLineCZC1."Source Type"::Customer:
                 begin
@@ -164,16 +176,16 @@ codeunit 148091 "Compensations Reports CZC"
                 end;
         end;
 
-        // [GIVEN] Balance compensation lines
+        // [GIVEN] Compensation lines has been balanced
         if Abs(CompensationLineCZC1."Amount (LCY)") > Abs(CompensationLineCZC2."Amount (LCY)") then
             LibraryCompensationCZC.UpdateCompensationLine(CompensationLineCZC1, -CompensationLineCZC2."Amount (LCY)")
         else
             LibraryCompensationCZC.UpdateCompensationLine(CompensationLineCZC2, -CompensationLineCZC1."Amount (LCY)");
 
-        // [GIVEN] Post compensation
+        // [GIVEN] Compensation has been posted
         PostCompensation(CompensationHeaderCZC);
 
-        // [GIVEN] Call print posted compensation
+        // [GIVEN] Posted Compensation has been printed
         PostedCompensationHeaderCZC.Get(CompensationHeaderCZC."No.");
         PrintPostedCompensation(PostedCompensationHeaderCZC);
 
@@ -181,10 +193,10 @@ codeunit 148091 "Compensations Reports CZC"
         PostedCompensationHeaderCZC.SetRecFilter();
         LibraryReportDataset.RunReportAndLoad(LibraryCompensationCZC.GetPostedCompensationReport(), PostedCompensationHeaderCZC, '');
 
-        // [THEN] Report is printed
+        // [THEN] Report dataset will contain Compensation Header No.
         LibraryReportDataset.AssertElementWithValueExists('CompensationHeader_No', CompensationHeaderCZC."No.");
 
-        // [THEN] Printed amounts are correct
+        // [THEN] Report dataset will contain Compensation Lines Amount
         case CompensationSourceTypeCZC of
             CompensationLineCZC1."Source Type"::Customer:
                 begin
@@ -199,9 +211,14 @@ codeunit 148091 "Compensations Reports CZC"
         end;
     end;
 
-    local procedure CreateCompensationHeader(var CompensationHeaderCZC: Record "Compensation Header CZC")
+    local procedure CreateCompensationHeader(var CompensationHeaderCZC: Record "Compensation Header CZC"; CompensationSourceTypeCZC: Enum "Compensation Source Type CZC")
     begin
-        LibraryCompensationCZC.CreateCompensationHeader(CompensationHeaderCZC, LibrarySales.CreateCustomerNo());
+        case CompensationSourceTypeCZC of
+            CompensationSourceTypeCZC::Customer:
+                LibraryCompensationCZC.CreateCompensationHeader(CompensationHeaderCZC, CompensationSourceTypeCZC, LibrarySales.CreateCustomerNo());
+            CompensationSourceTypeCZC::Vendor:
+                LibraryCompensationCZC.CreateCompensationHeader(CompensationHeaderCZC, CompensationSourceTypeCZC, LibraryPurchase.CreateVendorNo());
+        end;
     end;
 
     local procedure CreateCompensationLine(var CompensationLineCZC: Record "Compensation Line CZC"; CompensationHeaderCZC: Record "Compensation Header CZC";

@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AA0072
+#if not CLEAN18
+#pragma warning disable AL0432, AA0072
 codeunit 31296 "Sync.Dep.Fld-FA Depr.Book CZF"
 {
     Access = Internal;
@@ -40,3 +41,4 @@ codeunit 31296 "Sync.Dep.Fld-FA Depr.Book CZF"
         SyncDepFldUtilities.SyncFields(Rec.Prorated, Rec."Prorated CZF", PreviousRecord.Prorated, PreviousRecord."Prorated CZF");
     end;
 }
+#endif

@@ -17,6 +17,14 @@ codeunit 11753 "Vendor Handler CZL"
         Rec.CheckVendorLedgerOpenEntriesCZL();
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::Vendor, 'OnBeforeIsContactUpdateNeeded', '', false, false)]
+    local procedure CheckChangeOnBeforeIsContactUpdateNeeded(Vendor: Record Vendor; xVendor: Record Vendor; var UpdateNeeded: Boolean)
+    begin
+        UpdateNeeded := UpdateNeeded or
+            (Vendor."Registration No. CZL" <> xVendor."Registration No. CZL") or
+            (Vendor."Tax Registration No. CZL" <> xVendor."Tax Registration No. CZL");
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Vendor Ledger Entry", 'OnAfterCopyVendLedgerEntryFromGenJnlLine', '', false, false)]
     local procedure UpdateEntryOnAfterCopyVendorLedgerEntryFromGenJnlLine(var VendorLedgerEntry: Record "Vendor Ledger Entry"; GenJournalLine: Record "Gen. Journal Line")
     begin

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 permissionset 11700 "BANK-DOCUMENT"
 {
     Access = Public;
@@ -6,7 +11,9 @@ permissionset 11700 "BANK-DOCUMENT"
 
     Permissions = tabledata "Bank Statement Header" = RIMD,
                   tabledata "Bank Statement Line" = RIMD,
+#if not CLEAN18
                   tabledata "Constant Symbol" = R,
+#endif
                   tabledata "Payment Order Header" = RIMD,
                   tabledata "Payment Order Line" = RIMD;
 }

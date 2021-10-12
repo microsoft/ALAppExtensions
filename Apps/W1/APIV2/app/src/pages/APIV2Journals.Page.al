@@ -32,6 +32,10 @@ page 30016 "APIV2 - Journals"
                 {
                     Caption = 'Display Name';
                 }
+                field(templateDisplayName; "Journal Template Name")
+                {
+                    Caption = 'Template Display Name';
+                }
                 field(lastModifiedDateTime; SystemModifiedAt)
                 {
                     Caption = 'Last  Modified Date Time';
@@ -65,9 +69,20 @@ page 30016 "APIV2 - Journals"
         "Journal Template Name" := GraphMgtJournal.GetDefaultJournalLinesTemplateName();
     end;
 
-    trigger OnOpenPage()
+    trigger OnFindRecord(Which: Text): Boolean
+    var
+        TemplateNameFilter: Text[10];
+        IdFilter: Text;
     begin
-        SetRange("Journal Template Name", GraphMgtJournal.GetDefaultJournalLinesTemplateName());
+        TemplateNameFilter := CopyStr(GetFilter("Journal Template Name"), 1, 10);
+        IdFilter := GetFilter(SystemId);
+        if IdFilter <> '' then
+            exit(Rec.GetBySystemId(IdFilter));
+
+        if TemplateNameFilter = '' then
+            TemplateNameFilter := GraphMgtJournal.GetDefaultJournalLinesTemplateName();
+        Rec.SetRange("Journal Template Name", TemplateNameFilter);
+        exit(Rec.FindSet());
     end;
 
     var
@@ -107,7 +122,6 @@ page 30016 "APIV2 - Journals"
     local procedure SetActionResponse(var ActionContext: WebServiceActionContext; GenJournalBatchId: Guid)
     var
     begin
-
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(Page::"APIV2 - Journals");
         ActionContext.AddEntityKey(FieldNo(SystemId), GenJournalBatchId);

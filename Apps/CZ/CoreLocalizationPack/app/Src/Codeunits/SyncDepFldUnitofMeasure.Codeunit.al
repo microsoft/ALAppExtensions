@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31215 "Sync.Dep.Fld-UnitofMeasure CZL"
 {
@@ -34,3 +35,4 @@ codeunit 31215 "Sync.Dep.Fld-UnitofMeasure CZL"
         Rec."Tariff Number UOM Code CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Tariff Number UOM Code CZL"));
     end;
 }
+#endif

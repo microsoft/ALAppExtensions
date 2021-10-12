@@ -73,6 +73,9 @@ codeunit 1083 "MS - Wallet Webhook Management"
         TotalAmount: Decimal;
         PayerEmail: Text;
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         Session.LogMessage('00008IE', ProcessingWebhookNotificationTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
 
         SubscriptionID := LOWERCASE(Rec."Subscription ID");
@@ -578,6 +581,9 @@ codeunit 1083 "MS - Wallet Webhook Management"
     [EventSubscriber(ObjectType::Table, Database::"MS - Wallet Merchant Account", 'OnBeforeDeleteEvent', '', false, false)]
     local procedure OnBeforeDeleteMSWalletAccount(var Rec: Record "MS - Wallet Merchant Account"; RunTrigger: Boolean);
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         CheckMSWalletAccountWithOpenInvoices();
     end;
 

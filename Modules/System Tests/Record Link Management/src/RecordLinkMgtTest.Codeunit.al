@@ -6,11 +6,12 @@
 codeunit 132508 "Record Link Mgt. Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
+    Permissions = tabledata "Record Link" = rmd;
 
     var
         RecordLinkManagement: Codeunit "Record Link Management";
         Assert: Codeunit "Library Assert";
+        PermissionsMock: Codeunit "Permissions Mock";
 
     trigger OnRun()
     begin
@@ -27,6 +28,7 @@ codeunit 132508 "Record Link Mgt. Test"
         Text: Text;
         Byte: Byte;
     begin
+        PermissionsMock.Set('Record Link View');
         // [WHEN] WriteNote is invoked with a text
         RecordLinkManagement.WriteNote(RecordLink, 'My note for the link');
 
@@ -56,6 +58,7 @@ codeunit 132508 "Record Link Mgt. Test"
         RecordLink: Record "Record Link";
         Text: Text;
     begin
+        PermissionsMock.Set('Record Link View');
         // [GIVEN] Some text is written to the record Link
         RecordLinkManagement.WriteNote(RecordLink, 'My note for the link');
 
@@ -78,6 +81,7 @@ codeunit 132508 "Record Link Mgt. Test"
         RecLinkCount: Integer;
     begin
         BindSubscription(OnAfterCopyLinksMonitor);
+        PermissionsMock.Set('Record Link View');
 
         // [GIVEN] A new record is created to set record links on
         FromRecordLinkRecordTest.DeleteAll();
@@ -91,12 +95,16 @@ codeunit 132508 "Record Link Mgt. Test"
         // [GIVEN] Assign the record link to a record
         RecordLink."Record ID" := FromRecordLinkRecordTest.RecordId();
         RecordLinkManagement.WriteNote(RecordLink, 'My note for Rec A');
+
         // [GIVEN] The record link has Notify set to TRUE
         RecordLink.Validate(Notify, true);
         RecordLink.Validate(Created, CurrentDateTime());
         RecordLink.Validate("User ID", UserId());
         RecordLink.Validate(Company, CompanyName());
+        PermissionsMock.Stop();
         RecordLink.Insert(true);
+        PermissionsMock.Start();
+        PermissionsMock.Set('Record Link View');
 
         // [GIVEN] A different instance of the table
         ToRecordLinkRecordTest.Init();
@@ -114,8 +122,8 @@ codeunit 132508 "Record Link Mgt. Test"
         Assert.AreNotEqual(NewRecordLink."Link ID", RecordLink."Link ID", 'New record link should be created with anew id.');
 
         // [THEN] The record link on the other instance has the same text
-        NewRecordLink.SETRANGE("Record ID", ToRecordLinkRecordTest.RecordId());
-        NewRecordLink.FINDFIRST();
+        NewRecordLink.SetRange("Record ID", ToRecordLinkRecordTest.RecordId());
+        NewRecordLink.FindFirst();
         Assert.AreEqual('', RecordLinkManagement.ReadNote(NewRecordLink), 'Mismatch in the text read.');
 
         // [THEN] The record link on the other instance has Notify set to False
@@ -129,12 +137,17 @@ codeunit 132508 "Record Link Mgt. Test"
         RecordLink: Record "Record Link";
         EmptyRecordId: RecordID;
     begin
+        PermissionsMock.Set('Record Link View');
         // [GIVEN] Some text is written to the record Link
         RecordLink.DeleteAll();
+
         RecordLinkManagement.WriteNote(RecordLink, 'My note for the link');
 
         // [GIVEN] Insert the record link
+        PermissionsMock.Stop();
         RecordLink.Insert(true);
+        PermissionsMock.Start();
+        PermissionsMock.Set('Record Link View');
 
         // [GIVEN] Ensure that Record link has no record id
         RecordLink.VALIDATE("Record ID", EmptyRecordId);
