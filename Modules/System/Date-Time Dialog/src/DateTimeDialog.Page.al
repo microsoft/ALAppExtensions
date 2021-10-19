@@ -33,7 +33,7 @@ page 684 "Date-Time Dialog"
                 ApplicationArea = All;
                 Caption = 'Time';
                 ToolTip = 'Specifies the time of day.';
-                Visible = TimeVisible;
+                Visible = not TimeHidden;
             }
         }
     }
@@ -45,9 +45,8 @@ page 684 "Date-Time Dialog"
     var
         DateValue: Date;
         TimeValue: Time;
-
         [InDataSet]
-        TimeVisible: Boolean;
+        TimeHidden: Boolean;
 
     /// <summary>
     /// Setter method to initialize the Date and Time fields on the page.
@@ -57,7 +56,6 @@ page 684 "Date-Time Dialog"
     begin
         DateValue := DT2Date(DateTime);
         TimeValue := DT2Time(DateTime);
-        TimeVisible := true;
     end;
 
     /// <summary>
@@ -70,13 +68,20 @@ page 684 "Date-Time Dialog"
     end;
 
     /// <summary>
+    /// Method for hiding the time on the page.
+    /// </summary>
+    procedure UseDateOnly()
+    begin
+        TimeHidden := true;
+    end;
+
+    /// <summary>
     /// Setter method to initialize the Date on the page.
     /// </summary>
     /// <param name="Date">The value to set.</param>
     procedure SetDate(Date: Date)
     begin
         DateValue := Date;
-        TimeVisible := false;
     end;
 
     /// <summary>
