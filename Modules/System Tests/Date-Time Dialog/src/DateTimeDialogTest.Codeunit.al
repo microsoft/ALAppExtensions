@@ -79,6 +79,7 @@ codeunit 134684 "Date-Time Dialog Test"
         DateTimeDialog: Page "Date-Time Dialog";
     begin
         // [GIVEN] DateTimeDialog is initialized with an arbitrary value.
+        DateTimeDialog.UseDateOnly();
         DateTimeDialog.SetDate(22221212D);
 
         // [WHEN] The page is run.
@@ -95,6 +96,7 @@ codeunit 134684 "Date-Time Dialog Test"
         DateTimeDialog: Page "Date-Time Dialog";
     begin
         // [GIVEN] DateTimeDialog is initialized with the blank value.
+        DateTimeDialog.UseDateOnly();
         DateTimeDialog.SetDate(0D);
 
         // [WHEN] The page is run.
