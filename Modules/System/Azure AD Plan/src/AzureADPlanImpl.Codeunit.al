@@ -578,7 +578,6 @@ codeunit 9018 "Azure AD Plan Impl."
         UserPlan: Record "User Plan";
         AzureADPlan: Codeunit "Azure AD Plan";
         PlanIds: Codeunit "Plan Ids";
-        UserPermissions: Codeunit "User Permissions";
         UserGroupsAdded: Boolean;
     begin
         // Have any plans been added to this user in O365, since last time he logged-in to NAV?
@@ -589,11 +588,11 @@ codeunit 9018 "Azure AD Plan Impl."
         UserPlan.Insert();
         AzureADPlan.OnUpdateUserAccessForSaaS(UserPlan."User Security ID", UserGroupsAdded);
 
-        // Only remove SUPER if other permissions are granted (to avoid user lockout)
-        if UserGroupsAdded then begin
-            UserPermissions.RemoveSuperPermissions(UserSecurityID());
-            Commit(); 
-        end;
+        // Don't remove SUPER permissions until we have a better story around permission assignment for DAs
+        //if UserGroupsAdded then begin
+        //UserPermissions.RemoveSuperPermissions(UserSecurityID());
+        //Commit();
+        //end;
     end;
 
     [NonDebuggable]

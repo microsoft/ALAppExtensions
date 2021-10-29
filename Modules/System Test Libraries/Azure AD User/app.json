@@ -21,12 +21,16 @@
     "screenshots":  [
 
                     ],
-    "idRanges": [
-        {
-            "from": 132911,
-            "to": 132911
-        }
-    ],
+    "idRanges":  [
+                     { 
+                         "from": 132911, 
+                         "to": 132911
+                     },
+                     {
+                         "from":  132915,
+                         "to":  132915
+                     }
+                 ],
     "platform":  "19.0.0.0",
     "target":  "OnPrem"
 }

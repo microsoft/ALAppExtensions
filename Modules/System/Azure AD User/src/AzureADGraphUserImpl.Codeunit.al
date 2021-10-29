@@ -238,7 +238,12 @@ codeunit 9011 "Azure AD Graph User Impl."
     procedure IsUserDelegatedAdmin(): Boolean
     var
         UserAccountHelper: DotNet NavUserAccountHelper;
+        IsUserDelegatedAdmin, Handled : Boolean;
     begin
+        OnIsUserDelegatedAdmin(IsUserDelegatedAdmin, Handled);
+        if Handled then
+            exit(IsUserDelegatedAdmin);
+
         exit(UserAccountHelper.IsUserDelegatedAdmin());
     end;
 
@@ -340,6 +345,11 @@ codeunit 9011 "Azure AD Graph User Impl."
                 LanguageId := LanguageManagement.GetLanguageId(LanguageCode);
 
         exit(LanguageId);
+    end;
+
+    [InternalEvent(false)]
+    local procedure OnIsUserDelegatedAdmin(var IsUserDelegatedAdmin: Boolean; var Handled: Boolean)
+    begin
     end;
 }
 

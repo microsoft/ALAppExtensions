@@ -40,11 +40,29 @@
                              "publisher":  "Microsoft",
                              "name":  "Library Variable Storage",
                              "version":  "19.0.0.0"
+                         },
+                         {
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "name":  "Library Assert",
+                             "publisher":  "Microsoft",
+                             "version":  "19.0.0.0"
+                         },
+                         {
+                             "id": "67aadf15-618d-415f-8bfe-8309b657b4fb",
+                             "name": "Azure AD User Test Library",
+                             "publisher": "Microsoft",
+                             "version":  "19.0.0.0"
+                         },
+                         {
+                            "id": "cc58a557-79ae-473d-9fef-3045a2289c00",
+                            "name": "Azure AD User Management Test Library",
+                            "publisher": "Microsoft",
+                            "version":  "19.0.0.0"
                         },
                         {
-                            "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-                            "name":  "Library Assert",
-                            "publisher":  "Microsoft",
+                            "id": "cc441290-a967-4601-9a7d-b4209339415b",
+                            "name": "Environment Information Test Library",
+                            "publisher": "Microsoft",
                             "version":  "19.0.0.0"
                         }
                      ],

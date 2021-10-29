@@ -140,6 +140,7 @@ codeunit 9996 "Upgrade Tag Impl."
         UpgradeTagBackup: Record "Upgrade Tag Backup";
         UpgradeTags: Record "Upgrade Tags";
         NewUpgradeTags: Record "Upgrade Tags";
+        ExistingUpgradeTags: Record "Upgrade Tags";
         UpgradeTagInStream: InStream;
         UpgradeTagsJsonArray: JsonArray;
         UpgradeTagJsonToken: JsonToken;
@@ -160,12 +161,16 @@ codeunit 9996 "Upgrade Tag Impl."
             UpgradeTags.DeleteAll();
 
         foreach UpgradeTagJsonToken in UpgradeTagsJsonArray do begin
+            Clear(UpgradeTags);
             UpgradeTagJsonObject := UpgradeTagJsonToken.AsObject();
             RestoreUpgradeTagFromJson(UpgradeTagJsonObject, NewUpgradeTags);
-            if not UpgradeTags.GetBySystemId(NewUpgradeTags.SystemId) then begin
+            if not UpgradeTags.Get(NewUpgradeTags.Tag, NewUpgradeTags.Company) then begin
                 UpgradeTags.TransferFields(NewUpgradeTags, true);
-                UpgradeTags.SystemId := NewUpgradeTags.SystemId;
-                UpgradeTags.Insert(true, true);
+                if not ExistingUpgradeTags.GetBySystemId(NewUpgradeTags.SystemId) then begin
+                    UpgradeTags.SystemId := NewUpgradeTags.SystemId;
+                    UpgradeTags.Insert(true, true);
+                end else
+                    UpgradeTags.Insert(true);
             end;
         end;
 

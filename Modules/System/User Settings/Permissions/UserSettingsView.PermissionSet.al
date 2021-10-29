@@ -13,7 +13,8 @@ permissionset 9176 "User Settings - View"
                              "User Selection - Read",
                              "User Login Times - View",
                              "User Permissions - Read",
-                             "AAD User Management - Exec";
+                             "AAD User Management - Exec",
+                             "Azure AD User - View";
 
     Permissions = tabledata "All Profile" = r,
                   tabledata Company = r,
