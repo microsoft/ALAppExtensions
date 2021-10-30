@@ -552,7 +552,10 @@ codeunit 1996 "Checklist Banner"
         if not GuidedExperienceImpl.IsObjectToRunValid(GuidedExperienceItem."Object Type to Run", GuidedExperienceItem."Object ID to Run") then
             exit;
 
-        if GuidedExperienceItem."Guided Experience Type" = GuidedExperienceItem."Guided Experience Type"::"Manual Setup" then begin
+        if GuidedExperienceItem."Guided Experience Type" in
+            [GuidedExperienceItem."Guided Experience Type"::"Manual Setup",
+            GuidedExperienceItem."Guided Experience Type"::"Application Feature"]
+        then begin
             RunObject(GuidedExperienceItem."Object Type to Run", GuidedExperienceItem."Object ID to Run");
             UpdateChecklistItemUserStatus(ChecklistItemBuffer, UserId(), ChecklistItemStatus::Started);
         end else

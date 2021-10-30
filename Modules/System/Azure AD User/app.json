@@ -36,6 +36,13 @@
                              "version":  "19.0.0.0"
                          }
                      ],
+    "internalsVisibleTo": [
+        {
+            "id": "67aadf15-618d-415f-8bfe-8309b657b4fb",
+            "name": "Azure AD User Test Library",
+            "publisher": "Microsoft"
+        }
+    ],
     "screenshots":  [
 
                     ],

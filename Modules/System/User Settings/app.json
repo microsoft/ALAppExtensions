@@ -51,19 +51,25 @@
                             "id":  "c56e3ef4-7ab0-4636-ae87-013a62f12213",
                             "name":  "User Permissions",
                             "publisher":  "Microsoft",
-                            "version":  "19.0.0.0"
-                        },
-                        {
-                            "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
-                            "name":  "DotNet Aliases",
+                             "version":  "19.0.0.0"
+                         },
+                         {
+                             "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "name":  "DotNet Aliases",
+                             "publisher":  "Microsoft",
+                             "version":  "19.0.0.0"
+                         },
+                         {
+                             "id":  "574d5c26-62d4-4541-bc36-0fbbaed0072a",
+                             "name":  "Azure AD User Management",
+                             "publisher":  "Microsoft",
+                             "version":  "19.0.0.0"
+                         },
+                         {
+                            "id":  "f2cc2ef8-949f-47d1-85b8-10bd6f8bc61c",
+                            "name":  "Azure AD User",
                             "publisher":  "Microsoft",
                             "version":  "19.0.0.0"
-                        },
-                        {
-                            "id": "574d5c26-62d4-4541-bc36-0fbbaed0072a",
-                            "name": "Azure AD User Management",
-                            "publisher": "Microsoft",
-                            "version": "19.0.0.0"
                         }
                      ],
     "internalsVisibleTo": [

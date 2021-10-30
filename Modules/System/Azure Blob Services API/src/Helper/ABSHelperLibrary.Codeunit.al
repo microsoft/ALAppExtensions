@@ -192,7 +192,7 @@ codeunit 9043 "ABS Helper Library"
         Clear(FldNo);
         Fld.Reset();
         Fld.SetRange(TableNo, TableNo);
-        Fld.SetRange(FieldName, CopyStr(FldName, 1, MaxStrLen(Fld.FieldName)));
+        Fld.SetRange(FieldName, FldName);
         if Fld.FindFirst() then
             FldNo := Fld."No.";
         exit(FldNo <> 0);

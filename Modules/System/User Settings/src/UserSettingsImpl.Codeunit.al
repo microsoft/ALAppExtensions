@@ -80,15 +80,15 @@ codeunit 9175 "User Settings Impl."
         AllProfile.SetRange(Enabled, true);
         AllProfile.SetFilter(Description, '<> %1', DescriptionFilterTxt);
         if AllProfile.FindSet() then
-        repeat
-            TempAllProfile := AllProfile;
-            if IsNullGuid(TempAllProfile."App ID") then
-                TempAllProfile."App Name" := UserCreatedAppNameTxt;
-            TempAllProfile.Insert(); 
-        until AllProfile.Next() = 0;
+            repeat
+                TempAllProfile := AllProfile;
+                if IsNullGuid(TempAllProfile."App ID") then
+                    TempAllProfile."App Name" := UserCreatedAppNameTxt;
+                TempAllProfile.Insert();
+            until AllProfile.Next() = 0;
     end;
 
-    procedure GetUserSettings(UserSecurityID: Guid; var UserSettingsRec : Record "User Settings")
+    procedure GetUserSettings(UserSecurityID: Guid; var UserSettingsRec: Record "User Settings")
     var
         UserPersonalization: Record "User Personalization";
         ExtraSettings: Record "Extra Settings";
@@ -104,7 +104,7 @@ codeunit 9175 "User Settings Impl."
         UserSettingsRec."Profile ID" := UserPersonalization."Profile ID";
         UserSettingsRec."App ID" := UserPersonalization."App ID";
         UserSettingsRec.Scope := UserPersonalization.Scope;
-        
+
         if UserSettingsRec."Profile ID" = '' then begin
             AllProfile.SetRange("Default Role Center", true);
             AllProfile.SetRange(Enabled, true);
@@ -119,7 +119,7 @@ codeunit 9175 "User Settings Impl."
         UserSettingsRec."Language ID" := UserPersonalization."Language ID";
         UserSettingsRec."Locale ID" := UserPersonalization."Locale ID";
         UserSettingsRec."Time Zone" := UserPersonalization."Time Zone";
-        
+
         UserSettingsRec.Company := UserPersonalization.Company;
 
         UserSettingsRec."Last Login" := UserLoginTimeTracker.GetPenultimateLoginDateTime();
@@ -131,7 +131,7 @@ codeunit 9175 "User Settings Impl."
         UserSettingsRec."Teaching Tips" := ExtraSettings."Teaching Tips";
 
         if not UserSettingsRec.Insert() then
-           UserSettingsRec.Modify();
+            UserSettingsRec.Modify();
     end;
 
     procedure RefreshUserSettings(var UserSettings: Record "User Settings")
@@ -139,7 +139,7 @@ codeunit 9175 "User Settings Impl."
         GetUserSettings(UserSettings."User Security ID", UserSettings);
     end;
 
-    procedure UpdateUserSettings(OldSettings : Record "User Settings"; NewSettings : Record "User Settings") 
+    procedure UpdateUserSettings(OldSettings: Record "User Settings"; NewSettings: Record "User Settings")
     var
         UserSettings: Codeunit "User Settings";
     begin
@@ -151,7 +151,7 @@ codeunit 9175 "User Settings Impl."
             UpdateOtherUsersSettings(NewSettings);
     end;
 
-    local procedure UpdateOtherUsersSettings(NewUserSettings : Record "User Settings")
+    local procedure UpdateOtherUsersSettings(NewUserSettings: Record "User Settings")
     var
         UserPersonalization: Record "User Personalization";
         ExtraSettings: Record "Extra Settings";
@@ -172,7 +172,7 @@ codeunit 9175 "User Settings Impl."
         ExtraSettings.Modify();
     end;
 
-    local procedure UpdateCurrentUsersSettings(OldSettings : Record "User Settings"; NewSettings : Record "User Settings") 
+    local procedure UpdateCurrentUsersSettings(OldSettings: Record "User Settings"; NewSettings: Record "User Settings")
     var
 #if not CLEAN19
         AllProfile: Record "All Profile";
@@ -187,7 +187,7 @@ codeunit 9175 "User Settings Impl."
         ShouldRefreshSession: Boolean;
     begin
         sessionSetting.Init();
-            
+
         if OldSettings."Language ID" <> NewSettings."Language ID" then begin
 #if not CLEAN19
             UserSettings.OnBeforeLanguageChange(OldSettings."Language ID", NewSettings."Language ID");
@@ -195,12 +195,12 @@ codeunit 9175 "User Settings Impl."
             sessionSetting.LanguageId := NewSettings."Language ID";
             ShouldRefreshSession := true;
         end;
-        
+
         if OldSettings."Locale ID" <> NewSettings."Locale ID" then begin
             sessionSetting.LocaleId := NewSettings."Locale ID";
             ShouldRefreshSession := true;
         end;
-        
+
         if OldSettings."Time Zone" <> NewSettings."Time Zone" then begin
             ShouldRefreshSession := true;
             sessionSetting.Timezone := NewSettings."Time Zone";
@@ -231,7 +231,7 @@ codeunit 9175 "User Settings Impl."
         end;
 
         if AllProfile.Get(NewSettings.Scope, NewSettings."App ID", NewSettings."Profile ID") then;
-            UserSettings.OnAfterQueryClosePage(NewSettings."Language ID", NewSettings."Locale ID", NewSettings."Time Zone", NewSettings.Company, AllProfile);
+        UserSettings.OnAfterQueryClosePage(NewSettings."Language ID", NewSettings."Locale ID", NewSettings."Time Zone", NewSettings.Company, AllProfile);
 #else
         if OldSettings."Work Date" <> NewSettings."Work Date" then
             WorkDate(NewSettings."Work Date");
@@ -251,7 +251,7 @@ codeunit 9175 "User Settings Impl."
     var
         Company: Record Company;
     begin
-        if Company.Get(CompanyName) then 
+        if Company.Get(CompanyName) then
             exit(GetCompanyDisplayName(Company))
     end;
 
@@ -419,11 +419,12 @@ codeunit 9175 "User Settings Impl."
     procedure CheckPermissions(var UserSettings: Record "User Settings")
     var
         AzureADUserManagement: Codeunit "Azure AD User Management";
+        AzureADGraphUser: Codeunit "Azure AD Graph User";
         EnvironmentInformation: Codeunit "Environment Information";
         UserPermissions: Codeunit "User Permissions";
     begin
         if (UserSettings.Count() > 1) or (UserSettings."User Security ID" <> UserSecurityId()) then begin
-            if EnvironmentInformation.IsSaaSInfrastructure() and not AzureADUserManagement.IsUserTenantAdmin() then
+            if EnvironmentInformation.IsSaaSInfrastructure() and (not AzureADUserManagement.IsUserTenantAdmin()) and (not AzureADGraphUser.IsUserDelegatedAdmin()) then
                 Error(NotEnoughPermissionsErr);
             if EnvironmentInformation.IsOnPrem() and not UserPermissions.IsSuper(UserSecurityId()) then
                 Error(NotEnoughPermissionsErr);
@@ -433,11 +434,12 @@ codeunit 9175 "User Settings Impl."
     procedure CheckPermissions(var UserPersonalization: Record "User Personalization")
     var
         AzureADUserManagement: Codeunit "Azure AD User Management";
+        AzureADGraphUser: Codeunit "Azure AD Graph User";
         EnvironmentInformation: Codeunit "Environment Information";
         UserPermissions: Codeunit "User Permissions";
     begin
         if (UserPersonalization.Count() > 1) or (UserPersonalization."User SID" <> UserSecurityId()) then begin
-            if EnvironmentInformation.IsSaaSInfrastructure() and not AzureADUserManagement.IsUserTenantAdmin() then
+            if EnvironmentInformation.IsSaaSInfrastructure() and (not AzureADUserManagement.IsUserTenantAdmin()) and (not AzureADGraphUser.IsUserDelegatedAdmin()) then
                 Error(NotEnoughPermissionsErr);
             if EnvironmentInformation.IsOnPrem() and not UserPermissions.IsSuper(UserSecurityId()) then
                 Error(NotEnoughPermissionsErr);
