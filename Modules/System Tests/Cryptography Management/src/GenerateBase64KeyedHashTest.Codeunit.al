@@ -1,7 +1,6 @@
-codeunit 132590 "GenerateBase64KeyedHash Test"
+codeunit 132603 "GenerateBase64KeyedHash Test"
 {
     // [FEATURE] [GenerateBase64KeyedHash] 
-
     Subtype = Test;
 
     [Test]
@@ -25,7 +24,6 @@ codeunit 132590 "GenerateBase64KeyedHash Test"
 
         // [WHEN] Calculate signature
         LF := 10;
-
         stringtosign := 'AWS4-HMAC-SHA256' + format(LF) + '20150830T123600Z' + format(LF) + '20150830/us-east-1/iam/aws4_request' + format(LF) + 'f536975d06c0309214f805bb90ccff089219ecd68b2577efef23edd43b7e1a59';
 
         kSecret := 'wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY';
@@ -36,13 +34,13 @@ codeunit 132590 "GenerateBase64KeyedHash Test"
 
         xlSignature := signature(stringtosign, kSecret, ldate, Region, Service, aws4_request).ToLower();
 
-        // [THEN] Verify Result 
+        // [THEN] Calulcated signature is the same 
         LibraryAssert.AreEqual(ExpectedSignature, xlSignature, 'Failed to sing text with GenerateBase64KeyedHash');
     end;
 
-    procedure signature(stringtosign: Text; kSecret: Text; lDate: Text; Region: Text; Service: Text; aws4_request: Text): text
+    local procedure signature(stringtosign: Text; kSecret: Text; lDate: Text; Region: Text; Service: Text; aws4_request: Text): text
     var
-        culCryptographyManagement: Codeunit "Cryptography Management";
+        CryptographyManagement: Codeunit "Cryptography Management";
         HashBytes: Text;
         kDate: text;
         kRegion: Text;
@@ -50,11 +48,11 @@ codeunit 132590 "GenerateBase64KeyedHash Test"
         kSigning: Text;
     begin
         kSecret := 'AWS4' + kSecret;
-        kDate := culCryptographyManagement.GenerateHashAsBase64String(ldate, kSecret, 2);
-        kRegion := culCryptographyManagement.GenerateBase64KeyedHashAsBase64String(Region, kDate, 2);
-        kService := culCryptographyManagement.GenerateBase64KeyedHashAsBase64String(Service, kRegion, 2);
-        kSigning := culCryptographyManagement.GenerateBase64KeyedHashAsBase64String(aws4_request, kService, 2);
-        HashBytes := culCryptographyManagement.GenerateBase64KeyedHash(stringtosign, kSigning, 2);
+        kDate := CryptographyManagement.GenerateHashAsBase64String(ldate, kSecret, 2);
+        kRegion := CryptographyManagement.GenerateBase64KeyedHashAsBase64String(Region, kDate, 2);
+        kService := CryptographyManagement.GenerateBase64KeyedHashAsBase64String(Service, kRegion, 2);
+        kSigning := CryptographyManagement.GenerateBase64KeyedHashAsBase64String(aws4_request, kService, 2);
+        HashBytes := CryptographyManagement.GenerateBase64KeyedHash(stringtosign, kSigning, 2);
         exit(HashBytes);
     end;
 

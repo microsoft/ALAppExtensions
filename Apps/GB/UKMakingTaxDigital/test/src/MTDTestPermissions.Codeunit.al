@@ -119,10 +119,9 @@ codeunit 148090 "MTD Test Permissions"
     begin
         RecordRef.GetTable(RecVariant);
         RecordRef.FindFirst();
-        // doesn't work in 18.x:
-        // asserterror RecordRef.Insert();
-        // asserterror RecordRef.Modify();
-        // asserterror RecordRef.Delete();
+        asserterror RecordRef.Insert();
+        asserterror RecordRef.Modify();
+        asserterror RecordRef.Delete();
     end;
 
     local procedure VerifyRM(RecVariant: Variant)
@@ -132,9 +131,8 @@ codeunit 148090 "MTD Test Permissions"
         RecordRef.GetTable(RecVariant);
         RecordRef.FindFirst();
         RecordRef.Modify();
-        // doesn't work in 18.x
-        // asserterror RecordRef.Insert();
-        // asserterror RecordRef.Delete();
+        asserterror RecordRef.Insert();
+        asserterror RecordRef.Delete();
     end;
 
     local procedure VerifyRIMD(RecVariant: Variant)

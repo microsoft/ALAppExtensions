@@ -23,7 +23,6 @@ codeunit 134685 "Email Test"
         EmailMessageCannotBeEditedErr: Label 'The email message has already been sent and cannot be edited.';
         EmailMessageQueuedCannotDeleteAttachmentErr: Label 'Cannot delete the attachment because the email has been queued to be sent.';
         EmailMessageSentCannotDeleteAttachmentErr: Label 'Cannot delete the attachment because the email has already been sent.';
-        SourceRecordErr: Label 'Could not find the source for this email.';
         AccountNameLbl: Label '%1 (%2)', Locked = true;
         NoRelatedAttachmentsErr: Label 'Did not find any attachments related to this email.';
 
@@ -794,17 +793,14 @@ codeunit 134685 "Email Test"
         CreateEmail(EmailMessage);
         Email.SaveAsDraft(EmailMessage, EmailOutbox);
 
-        // [And] The Show Source Document button is visible 
+        // [When] The Email Outbox page is opened.
         EmailOutboxTestPage.Trap();
         EmailOutboxPage.SetRecord(EmailOutbox);
         EmailOutboxPage.Run();
 
+        // [Then] The Show Source action is visible and disabled.
         Assert.IsTrue(EmailOutboxTestPage.ShowSourceRecord.Visible(), 'Show Source Record action should be visible');
-
-        // [When] Show Source Document button is clicked
-        // [Then] An error appears
-        Asserterror EmailOutboxTestPage.ShowSourceRecord.Invoke();
-        Assert.ExpectedError(SourceRecordErr);
+        Assert.IsFalse(EmailOutboxTestPage.ShowSourceRecord.Enabled(), 'Show Source Record action should be disabled');
     end;
 
 
@@ -834,17 +830,14 @@ codeunit 134685 "Email Test"
         CreateEmail(EmailMessage);
         Email.SaveAsDraft(EmailMessage, EmailOutbox);
 
-        // [And] The Show Source Document button is visible 
+        // [When] The Email Outbox page is opened.
         EmailOutboxTestPage.Trap();
         EmailOutboxPage.SetRecord(EmailOutbox);
         EmailOutboxPage.Run();
 
+        // [Then] The Show Source action is visible and disabled.
         Assert.IsTrue(EmailOutboxTestPage.ShowSourceRecord.Visible(), 'Show Source Record action should be visible');
-
-        // [When] Show Source Document button is clicked
-        // [Then] An error appears
-        Asserterror EmailOutboxTestPage.ShowSourceRecord.Invoke();
-        Assert.ExpectedError(SourceRecordErr);
+        Assert.IsFalse(EmailOutboxTestPage.ShowSourceRecord.Enabled(), 'Show Source Record action should be disabled');
     end;
 
     [Test]
@@ -1142,6 +1135,7 @@ codeunit 134685 "Email Test"
     procedure SendEmailInBackgroundSuccessSubscriberFailsTest()
     var
         Account: Record "Email Account";
+        EmailOutbox: Record "Email Outbox";
         EmailMessage: Codeunit "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
         TestClientType: Codeunit "Test Client Type Subscriber";
@@ -1179,6 +1173,9 @@ codeunit 134685 "Email Test"
         Assert.AreEqual(MessageID, EmailMessage.GetId(), 'A different Email was expected');
         Assert.IsTrue(Status, 'The email should have been sent');
 
+        EmailOutbox.SetRange("Message Id", EmailMessage.GetId());
+        Assert.IsTrue(EmailOutbox.IsEmpty(), 'Email outbox should have been deleted.');
+
         UnBindSubscription(EmailTest);
         UnBindSubscription(TestClientType);
     end;
@@ -1204,6 +1201,125 @@ codeunit 134685 "Email Test"
 
         asserterror EmailViewer.EditAndSend(SentEmail);
         Assert.ExpectedError(EmailMessageOpenPermissionErr);
+    end;
+
+    [Test]
+    procedure GetSourceRecordInOutbox()
+    var
+        SourceEmailOutbox, EmailOutbox : Record "Email Outbox";
+        TempEmailOutbox: Record "Email Outbox" temporary;
+        EmailMessage: Codeunit "Email Message";
+        Any: Codeunit Any;
+        EmailTest: Codeunit "Email Test";
+        MessageIds: List of [Guid];
+        SystemId: Guid;
+        TableId: Integer;
+        NumberOfEmails, i : Integer;
+    begin
+        BindSubscription(EmailTest);
+
+        PermissionsMock.Set('Email Edit');
+
+        // [Scenario] Emails with source document, GetEmailOutboxForRecord procedure will return Outbox Emails
+        // [Given] Source Record - Email Outbox used as a source record for test email
+        CreateEmail(EmailMessage);
+        Email.SaveAsDraft(EmailMessage, SourceEmailOutbox);
+        TableId := Database::"Email Outbox";
+        SystemId := SourceEmailOutbox.SystemId;
+
+        // [When] Several emails are created and saved as draft
+        NumberOfEmails := Any.IntegerInRange(2, 5);
+
+        for i := 1 to NumberOfEmails do begin
+            Clear(EmailOutbox);
+            CreateEmailWithSource(EmailMessage, TableId, SystemId);
+            Email.SaveAsDraft(EmailMessage, EmailOutbox);
+            MessageIds.Add(EmailMessage.GetId());
+        end;
+
+        // [Then] GetEmailOutboxForRecord procedure return related Email Outbox
+        Email.GetEmailOutboxForRecord(SourceEmailOutbox, TempEmailOutbox);
+        Assert.AreEqual(NumberOfEmails, TempEmailOutbox.Count(), 'Email Outbox count is not equal to Number of Emails created.');
+
+        for i := 1 to NumberOfEmails do begin
+            TempEmailOutbox.SetCurrentKey("Message Id");
+            TempEmailOutbox.SetRange("Message Id", MessageIds.Get(i));
+            Assert.AreEqual(1, TempEmailOutbox.Count(), 'Did not find the email in Email Outbox');
+        end;
+    end;
+
+    [Test]
+    procedure GetEmailOutboxRecordStatus()
+    var
+        EmailOutbox: Record "Email Outbox";
+        EmailMessage: Codeunit "Email Message";
+        Any: Codeunit Any;
+        EmailTest: Codeunit "Email Test";
+        EmailStatus: Enum "Email Status";
+        TableId: Integer;
+        SystemId: Guid;
+    begin
+        BindSubscription(EmailTest);
+
+        PermissionsMock.Set('Email Edit');
+
+        // [Scenario] Emails with source document, GetOutboxEmailRecordStatus will return Outbox Email Status
+        // [Given] An Email with table id and source system id
+        TableId := Any.IntegerInRange(1, 10000);
+        SystemId := Any.GuidValue();
+
+        // [When] The email is created and saved as draft
+        CreateEmailWithSource(EmailMessage, TableId, SystemId);
+
+        // [When] The email is created and saved as draft
+        Email.SaveAsDraft(EmailMessage, EmailOutbox);
+
+        // [Then] Email Status of created Email Outbox record is equal to GetOutboxEmailRecordStatus result
+        EmailStatus := Email.GetOutboxEmailRecordStatus(EmailOutbox."Message Id");
+        Assert.AreEqual(EmailStatus, EmailOutbox.Status, 'Email Status should be the same as on Email Outbox record');
+    end;
+
+    [Test]
+    procedure GetSentEmailsForRecordByVariant()
+    var
+        TempSentEmail: Record "Sent Email" temporary;
+        Account: Record "Email Account";
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        Any: Codeunit Any;
+        SystemId: Guid;
+        TableId, NumberOfEmails, i : Integer;
+        MessageIds: List of [Guid];
+    begin
+        // [Scenario] When successfuly sending an email with source, GetSentEmailsForRecord return related Sent Emails. 
+        PermissionsMock.Set('Email Edit');
+
+        // [Given] An email with source and an email account
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(Account);
+        TableId := Database::"Email Account";
+        SystemId := Account.SystemId;
+
+        NumberOfEmails := Any.IntegerInRange(2, 5);
+
+        for i := 1 to NumberOfEmails do begin
+            CreateEmailWithSource(EmailMessage, TableId, SystemId);
+            Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
+            MessageIds.Add(EmailMessage.GetId());
+
+            // [When] The email is Sent
+            Assert.IsTrue(Email.Send(EmailMessage, Account), 'Sending an email should have succeeded');
+        end;
+
+        // [Then] GetSentEmailsForRecord procedure return related Sent Email records
+        Email.GetSentEmailsForRecord(Account, TempSentEmail);
+        Assert.AreEqual(NumberOfEmails, TempSentEmail.Count(), 'Sent Emails count is not equal to Number of Emails sent.');
+
+        for i := 1 to NumberOfEmails do begin
+            TempSentEmail.SetCurrentKey("Message Id");
+            TempSentEmail.SetRange("Message Id", MessageIds.Get(i));
+            Assert.AreEqual(1, TempSentEmail.Count(), 'Did not find the email in Sent Emails ');
+        end;
     end;
 
     local procedure CreateEmail(var EmailMessage: Codeunit "Email Message")

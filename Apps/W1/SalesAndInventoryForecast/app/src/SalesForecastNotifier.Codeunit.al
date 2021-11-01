@@ -49,6 +49,9 @@ codeunit 1854 "Sales Forecast Notifier"
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterInsertEvent', '', false, false)]
     local procedure OnAfterTableInsert(var Rec: Record "Purchase Header"; RunTrigger: Boolean)
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         if ActiveDocumentVendor = Rec."Buy-from Vendor No." then
             CreateStockoutNotification(Rec);
     end;
@@ -282,14 +285,14 @@ codeunit 1854 "Sales Forecast Notifier"
     local procedure InitializeSalesForecastQuery(var SalesForecastQuery: Query "Sales Forecast Query"; PurchaseHeader: Record "Purchase Header"): Boolean
     var
         MSSalesForecastSetup: Record "MS - Sales Forecast Setup";
-        PeriodFormManagement: Codeunit PeriodFormManagement;
+        PeriodPageManagement: Codeunit PeriodPageManagement;
         StockoutWarningDate: Date;
     begin
         if not MSSalesForecastSetup.Get() then
             exit(false);
 
         StockoutWarningDate :=
-          PeriodFormManagement.MoveDateByPeriod(WorkDate(), MSSalesForecastSetup."Period Type",
+          PeriodPageManagement.MoveDateByPeriod(WorkDate(), MSSalesForecastSetup."Period Type",
             MSSalesForecastSetup."Stockout Warning Horizon");
 
         SalesForecastQuery.SetRange(VendorNo, PurchaseHeader."Buy-from Vendor No.");

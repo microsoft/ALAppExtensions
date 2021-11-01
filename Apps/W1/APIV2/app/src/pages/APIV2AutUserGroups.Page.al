@@ -6,10 +6,8 @@ page 30003 "APIV2 - Aut. User Groups"
     EntityCaption = 'User Group';
     EntitySetCaption = 'User Groups';
     DelayedInsert = true;
-    DeleteAllowed = false;
     EntityName = 'userGroup';
     EntitySetName = 'userGroups';
-    InsertAllowed = false;
     PageType = API;
     SourceTable = "User Group";
     Extensible = false;
@@ -29,7 +27,6 @@ page 30003 "APIV2 - Aut. User Groups"
                 field("code"; Code)
                 {
                     Caption = 'Code';
-                    Editable = false;
                 }
                 field(displayName; Name)
                 {
@@ -42,6 +39,21 @@ page 30003 "APIV2 - Aut. User Groups"
                 field(assignToAllNewUsers; "Assign to All New Users")
                 {
                     Caption = 'Assign To All New Users';
+                }
+                part(defaultProfile; "APIV2 - Aut. Profiles")
+                {
+                    Caption = 'Default Profile';
+                    EntityName = 'profile';
+                    EntitySetName = 'profiles';
+                    Multiplicity = ZeroOrOne;
+                    SubPageLink = "Profile ID" = field("Default Profile ID"), "App ID" = field("Default Profile App ID"), Scope = field("Default Profile Scope");
+                }
+                part(userGroupPermissions; "APIV2 - Aut. User Group Perm.")
+                {
+                    Caption = 'User Group Permissions';
+                    EntityName = 'userGroupPermission';
+                    EntitySetName = 'userGroupPermissions';
+                    SubPageLink = "User Group Code" = field(Code);
                 }
             }
         }

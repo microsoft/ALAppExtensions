@@ -54,9 +54,9 @@ page 18202 "GST Component Dist. List"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                 begin
-                    ODataUtility.EditWorksheetInExcel(
+                    EditinExcel.EditPageInExcel(
                         'GST Component Distribution',
                         CurrPage.ObjectId(false),
                         StrSubstNo(GstComponentCodeMsg, Rec."GST Component code"));

@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31209 "Sync.Dep.Fld-IsolCert CZL"
 {
@@ -34,3 +35,4 @@ codeunit 31209 "Sync.Dep.Fld-IsolCert CZL"
         Rec."Certificate Code CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Certificate Code CZL"));
     end;
 }
+#endif

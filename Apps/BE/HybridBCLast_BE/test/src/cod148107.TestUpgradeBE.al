@@ -7,6 +7,13 @@ codeunit 148107 "Test Upgrade BE"
         Assert: Codeunit Assert;
         CountryCodeTxt: Label 'BE', Locked = true;
 
+    local procedure Initialize()
+    var
+        UpgradeTagLibrary: Codeunit "Upgrade Tag Library";
+    begin
+        UpgradeTagLibrary.DeleteAllUpgradeTags();
+    end;
+
     [Test]
     procedure UpgradeSetsPurchPayableSetup()
     var
@@ -16,6 +23,7 @@ codeunit 148107 "Test Upgrade BE"
     begin
         // [SCENARIO] Data migration for BE runs the correct upgrade code for the purch payables setup table.
         // [GIVEN] A purchase payables setup record exists and has an anticipated code upgrade
+        Initialize();
         PurchasePayablesSetup.Get();
         PurchasePayablesSetup."Copy Line Descr. to G/L Entry" := false;
         PurchasePayablesSetup.Modify();
@@ -37,6 +45,7 @@ codeunit 148107 "Test Upgrade BE"
     begin
         // [SCENARIO] Data migration for BE runs the correct upgrade code for the currency iso code field.
         // [GIVEN] A Currency record exists with the old ISO field populated
+        Initialize();
         Currency.FindFirst();
         Currency."ISO Currency Code" := 'NEW';
         Currency.Modify();
@@ -59,6 +68,7 @@ codeunit 148107 "Test Upgrade BE"
     begin
         // [SCENARIO] Data migration for BE runs the correct upgrade code for the Country/Region iso code field.
         // [GIVEN] A Country/Region record exists with the old ISO field populated
+        Initialize();
         CountryRegion.FindFirst();
         CountryRegion."ISO Country/Region Code" := 'NE';
         CountryRegion.Modify();

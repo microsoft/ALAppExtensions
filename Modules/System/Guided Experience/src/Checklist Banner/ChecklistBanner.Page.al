@@ -13,6 +13,7 @@ page 1990 "Checklist Banner"
     SourceTableTemporary = true;
     RefreshOnActivate = true;
     Extensible = false;
+    Permissions = tabledata Company = r;
 
     // ---------------------IMPORTANT---------------------------
     // ---------------------------------------------------------
@@ -146,7 +147,20 @@ page 1990 "Checklist Banner"
                 ApplicationArea = All;
                 Caption = 'Get started';
                 ToolTip = 'Get started';
-                Visible = not IsChecklistInProgress and not IsChecklistDisplayed and not AreAllItemsCompletedOrSkipped;
+                Visible = not IsEvaluationCompany and not IsChecklistInProgress and not IsChecklistDisplayed and not AreAllItemsCompletedOrSkipped;
+                Image = AssessFinanceCharges;
+
+                trigger OnAction()
+                begin
+                    OnChecklistStart();
+                end;
+            }
+            action(ShowMe)
+            {
+                ApplicationArea = All;
+                Caption = 'Show demo tours';
+                ToolTip = 'Show demo tours';
+                Visible = IsEvaluationCompany and not IsChecklistInProgress and not IsChecklistDisplayed and not AreAllItemsCompletedOrSkipped;
                 Image = AssessFinanceCharges;
 
                 trigger OnAction()
@@ -159,7 +173,7 @@ page 1990 "Checklist Banner"
                 ApplicationArea = All;
                 Caption = 'Got it';
                 ToolTip = 'Got it';
-                Visible = AreAllItemsCompletedOrSkipped;
+                Visible = not IsEvaluationCompany and AreAllItemsCompletedOrSkipped;
                 Image = AssessFinanceCharges;
 
                 trigger OnAction()
@@ -173,7 +187,7 @@ page 1990 "Checklist Banner"
                 ApplicationArea = All;
                 Caption = 'Skip checklist';
                 ToolTip = 'Skip checklist';
-                Visible = IsChecklistInProgress and not AreAllItemsCompletedOrSkipped;
+                Visible = not IsEvaluationCompany and IsChecklistInProgress and not AreAllItemsCompletedOrSkipped;
                 Image = AssessFinanceCharges;
 
                 trigger OnAction()
@@ -205,8 +219,43 @@ page 1990 "Checklist Banner"
                 Caption = 'Start';
                 ToolTip = 'Start';
                 Scope = Repeater;
-                Visible = IsChecklistInProgress and ((Status = Status::"Not Started") or (Status = Status::Skipped));
+                Visible = IsChecklistInProgress and ((Status = Status::"Not Started") or (Status = Status::Skipped))
+                    and (("Guided Experience Type" = "Guided Experience Type"::"Assisted Setup")
+                    or ("Guided Experience Type" = "Guided Experience Type"::"Manual Setup")
+                    or ("Guided Experience Type" = "Guided Experience Type"::"Application Feature")
+                    or ("Guided Experience Type" = "Guided Experience Type"::Learn));
                 Image = AssessFinanceCharges;
+
+                trigger OnAction()
+                begin
+                    ExecuteChecklistItem();
+                end;
+            }
+            action(TaskStartTour)
+            {
+                ApplicationArea = All;
+                Caption = 'Start tour';
+                ToolTip = 'Start tour';
+                Scope = Repeater;
+                Visible = IsChecklistInProgress and ((Status = Status::"Not Started") or (Status = Status::Skipped))
+                    and (("Guided Experience Type" = "Guided Experience Type"::Tour)
+                    or ("Guided Experience Type" = "Guided Experience Type"::"Spotlight Tour"));
+                Image = AssessFinanceCharges;
+
+                trigger OnAction()
+                begin
+                    ExecuteChecklistItem();
+                end;
+            }
+            action(TaskWatch)
+            {
+                ApplicationArea = All;
+                Caption = 'Play video';
+                ToolTip = 'Play video';
+                Scope = Repeater;
+                Image = Start;
+                Visible = IsChecklistInProgress and ((Status = Status::"Not Started") or (Status = Status::Skipped))
+                    and ("Guided Experience Type" = "Guided Experience Type"::Video);
 
                 trigger OnAction()
                 begin
@@ -255,6 +304,10 @@ page 1990 "Checklist Banner"
         ChecklistBanner: Codeunit "Checklist Banner";
         ChecklistImplementation: Codeunit "Checklist Implementation";
         ChecklistStatus: Enum "Checklist Status";
+        [RunOnClient]
+        [WithEvents]
+        Tour: DotNet Tour;
+        IsEvaluationCompany: Boolean;
         IsChecklistInProgress: Boolean;
         AreAllItemsCompletedOrSkipped: Boolean;
         IsChecklistDisplayed: Boolean;
@@ -271,16 +324,13 @@ page 1990 "Checklist Banner"
         ChecklistSkipCount: Integer;
         ChecklistTotalCount: Integer;
 
-    trigger OnInit()
-    begin
-        UpdateLabelTexts();
-    end;
-
     trigger OnOpenPage()
     begin
-        ChecklistBanner.OnChecklistBannerOpen(Rec, IsChecklistInProgress, IsChecklistDisplayed);
+        SetIsEvaluationCompany();
 
-        SetChecklistRecord();
+        InitializeTour();
+
+        ChecklistBanner.OnChecklistBannerOpen(Rec, IsChecklistInProgress, IsChecklistDisplayed);
 
         SetCounts();
         AreAllItemsCompletedOrSkipped := AreAllChecklistItemsCompletedOrSkipped();
@@ -288,17 +338,25 @@ page 1990 "Checklist Banner"
         if Rec.Count > 0 then
             UpdateLabelTexts();
 
+        SetChecklistRecord();
+
         ChecklistItemBuffer.Copy(Rec, true);
+
+        CurrPage.Update(false);
     end;
 
     trigger OnAfterGetCurrRecord()
     begin
-        IsChecklistItemStarted := Status = Status::Started;
+        IsChecklistItemStarted := (Status = Status::Started) and
+            (not ("Guided Experience Type" in ["Guided Experience Type"::Tour, "Guided Experience Type"::"Spotlight Tour"]));
     end;
 
     trigger OnAfterGetRecord()
     begin
         MarkChecklistItemAsCompleted := Status = Status::Completed;
+
+        IsChecklistItemStarted := (Status = Status::Started) and
+            (not ("Guided Experience Type" in ["Guided Experience Type"::Tour, "Guided Experience Type"::"Spotlight Tour"]));
     end;
 
     trigger OnClosePage()
@@ -307,15 +365,43 @@ page 1990 "Checklist Banner"
             ChecklistImplementation.SetChecklistVisibility(UserId(), false);
     end;
 
+    trigger Tour::TourEnded(PageId: Integer; Completed: Boolean; Data: Text)
+    begin
+        MarkTourAsDone(Data);
+
+        exit;
+    end;
+
+    trigger Tour::SpotlightTourEnded(PageId: Integer; SpotlightTour: DotNet SpotlightTour; Completed: Boolean; Data: Text)
+    begin
+        MarkTourAsDone(Data);
+
+        exit;
+    end;
+
+    local procedure InitializeTour()
+    begin
+        if Tour.IsAvailable() then
+            Tour := Tour.Create();
+    end;
+
+    local procedure SetIsEvaluationCompany()
+    var
+        Company: Record Company;
+    begin
+        if Company.Get(CompanyName()) then
+            IsEvaluationCompany := Company."Evaluation Company";
+    end;
+
     local procedure OnChecklistStart()
     begin
         ChecklistBanner.UpdateUserChecklistStatus(UserId(), ChecklistStatus::"In progress");
 
-        SetChecklistRecord();
-
         SetChecklistStatusAndLabels(true, true, AreAllChecklistItemsCompletedOrSkipped());
 
-        CurrPage.Update();
+        SetChecklistRecord();
+
+        CurrPage.Update(false);
     end;
 
     local procedure SetChecklistRecord()
@@ -344,14 +430,14 @@ page 1990 "Checklist Banner"
 
     local procedure UpdateLabelTexts()
     begin
-        ChecklistBanner.UpdateBannerLabels(Rec, TitleTxt, TitleCollapsedTxt, HeaderTxt, HeaderCollapsedTxt, DescriptionTxt, IsChecklistInProgress, AreAllItemsCompletedOrSkipped);
+        ChecklistBanner.UpdateBannerLabels(IsEvaluationCompany, Rec, TitleTxt, TitleCollapsedTxt, HeaderTxt, HeaderCollapsedTxt, DescriptionTxt, IsChecklistInProgress, AreAllItemsCompletedOrSkipped);
     end;
 
     local procedure CheckForChecklistCompletion()
     begin
         AreAllItemsCompletedOrSkipped := AreAllChecklistItemsCompletedOrSkipped();
 
-        if AreAllItemsCompletedOrSkipped then begin
+        if AreAllItemsCompletedOrSkipped and not IsEvaluationCompany then begin
             ChecklistBanner.UpdateUserChecklistStatus(UserId(), ChecklistStatus::Completed);
             IsChecklistDisplayed := false;
         end;
@@ -397,8 +483,29 @@ page 1990 "Checklist Banner"
             if ChecklistItemBuffer.Code = Rec.Code then
                 IsLastChecklistItem := true;
 
-        if ChecklistBanner.ExecuteChecklistItem(Rec, IsLastChecklistItem) then
+        if ChecklistBanner.ExecuteChecklistItem(Rec, Tour, IsLastChecklistItem, IsEvaluationCompany) then
             ChecklistCompletionCount += 1;
+
+        CheckForChecklistCompletion();
+
+        UpdateLabelTexts();
+    end;
+
+    local procedure MarkTourAsDone(Data: Text)
+    var
+        ChecklistItemCode: Code[300];
+    begin
+        if not Evaluate(ChecklistItemCode, Data) then
+            exit;
+
+        if Rec.Code <> ChecklistItemCode then begin
+            Rec.SetRange(Code, ChecklistItemCode);
+            if Rec.FindFirst() then;
+        end;
+
+        ChecklistBanner.UpdateChecklistItemUserStatus(Rec, UserId(), Rec.Status::Completed);
+
+        ChecklistCompletionCount += 1;
 
         CheckForChecklistCompletion();
 

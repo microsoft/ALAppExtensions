@@ -13,7 +13,7 @@ page 9 Languages
     ApplicationArea = All;
     PageType = List;
     SourceTable = Language;
-    UsageCategory = Lists;
+    UsageCategory = Administration;
     ContextSensitiveHelpPage = 'ui-change-basic-settings#language';
 
     layout

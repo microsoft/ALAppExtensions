@@ -57,7 +57,8 @@ codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
             VATStatementAttachmentCZL."VAT Statement Template Name" := Rec."VAT Statement Template Name";
             VATStatementAttachmentCZL."VAT Statement Name" := Rec."VAT Statement Name";
             VATStatementAttachmentCZL."Line No." := Rec."Line No.";
-            VATStatementAttachmentCZL.Insert(false);
+            VATStatementAttachmentCZL.SystemId := Rec.SystemId;
+            VATStatementAttachmentCZL.Insert(false, true);
         end;
         VATStatementAttachmentCZL.Date := Rec.Date;
         VATStatementAttachmentCZL.Description := Rec.Description;
@@ -136,7 +137,8 @@ codeunit 31187 "Sync.Dep.Fld-VatStmtAttach CZL"
             VATStatementAttachment."VAT Statement Template Name" := Rec."VAT Statement Template Name";
             VATStatementAttachment."VAT Statement Name" := Rec."VAT Statement Name";
             VATStatementAttachment."Line No." := Rec."Line No.";
-            VATStatementAttachment.Insert(false);
+            VATStatementAttachment.SystemId := Rec.SystemId;
+            VATStatementAttachment.Insert(false, true);
         end;
         VATStatementAttachment.Date := Rec.Date;
         VATStatementAttachment.Description := Rec.Description;

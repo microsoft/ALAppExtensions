@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AA0072
+#if not CLEAN18
+#pragma warning disable AL0432, AA0072
 codeunit 31288 "Sync.Dep.Fld-CustLedgEntry CZC"
 {
     Access = Internal;
@@ -27,3 +28,4 @@ codeunit 31288 "Sync.Dep.Fld-CustLedgEntry CZC"
         SyncDepFldUtilities.SyncFields(Rec.Compensation, Rec."Compensation CZC", PreviousRecord.Compensation, PreviousRecord."Compensation CZC");
     end;
 }
+#endif

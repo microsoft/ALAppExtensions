@@ -10,6 +10,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
     end;
 
     var
+        AMCBankingSetup: Record "AMC Banking Setup";
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryERM: Codeunit "Library - ERM";
@@ -988,6 +989,15 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         LibraryVariableStorage.Clear();
         if IsInitialized then
             exit;
+
+        if not AMCBankingSetup.Get() then begin
+            AMCBankingSetup.Init();
+            AMCBankingSetup.Insert(true);
+            Commit();
+        end;
+
+        AMCBankingSetup."AMC Enabled" := true;
+        AMCBankingSetup.Modify();
 
         CurrTxt := 'EUR';
         IBANTxt := '15415024154';

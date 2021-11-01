@@ -53,7 +53,7 @@ table 20132 "Script Symbol Value"
         }
         field(113; "RecordID Value"; RecordID)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'RecordID Value';
         }
         field(114; "DateTime Value"; DateTime)

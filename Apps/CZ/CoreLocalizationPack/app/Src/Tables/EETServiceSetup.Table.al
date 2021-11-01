@@ -61,9 +61,14 @@ table 31125 "EET Service Setup CZL"
 
             trigger OnValidate()
             var
+                CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                 JobQEntryCreatedQst: Label 'Job queue entry for sending electronic sales records has been created.\\Do you want to open the Job Queue Entries window?';
             begin
                 if Enabled then begin
+                    if not CustomerConsentMgt.ConfirmUserConsent() then begin
+                        Enabled := false;
+                        exit;
+                    end;
                     ScheduleJobQueueEntry();
                     if ConfirmManagement.GetResponse(JobQEntryCreatedQst, false) then
                         ShowJobQueueEntry();

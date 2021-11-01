@@ -83,16 +83,6 @@ page 1801 "Assisted Setup"
                             Video.Play("Video Url");
                     end;
                 }
-                field(GroupName; "Assisted Setup Group")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Group';
-                    ToolTip = 'Group Name';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'The groups now appear as headings in the page, so this column is redundant.';
-                    ObsoleteTag = '16.0';
-                }
                 field(TranslatedName; TranslatedNameValue)
                 {
                     Caption = 'Translated Name';

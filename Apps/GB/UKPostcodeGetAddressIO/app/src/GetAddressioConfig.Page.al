@@ -80,6 +80,7 @@ page 9142 "GetAddress.io Config"
     end;
 
     var
+        [NonDebuggable]
         APIKeyText: Text[250];
         TermsAndCondsRead: Boolean;
         EmptyAPIKeyErr: Label 'You must provide an API key.';

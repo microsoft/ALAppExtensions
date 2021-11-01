@@ -48,7 +48,9 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
 #endif
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         FromFile: Text[1024];
+#if not CLEAN17
         DocumentType: Option "Quote","Order","Invoice","Credit Memo";
+#endif
     begin
         FromFile := CreateXML(ServiceInvoiceHeader);
 

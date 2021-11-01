@@ -11,7 +11,7 @@ codeunit 8700 "Table Information Cache Impl."
 
     var
         ProgressDialogLbl: Label 'Progress: @1@@@@@@@@@@', Comment = 'The string should always end with @1@@@@@@@@@@.';
-        CrossCompanyDataLbl: Label '(Cross-Company Data)';
+        CrossCompanyDataLbl: Label '(Cross-Company Data)', MaxLength = 30;
 
     procedure RefreshTableInformationCache()
     var

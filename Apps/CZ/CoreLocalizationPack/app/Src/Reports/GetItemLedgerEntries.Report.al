@@ -1,7 +1,7 @@
 report 31006 "Get Item Ledger Entries CZL"
 {
     Caption = 'Get Item Ledger Entries';
-    Permissions = TableData "General Posting Setup" = imd;
+    Permissions = tabledata "General Posting Setup" = imd;
     ProcessingOnly = true;
 
     dataset

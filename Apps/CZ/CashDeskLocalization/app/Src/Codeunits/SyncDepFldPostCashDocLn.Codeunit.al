@@ -57,7 +57,8 @@ codeunit 31134 "Sync.Dep.Fld-PostCashDocLn CZP"
             PostedCashDocumentLineCZP."Cash Desk No." := Rec."Cash Desk No.";
             PostedCashDocumentLineCZP."Cash Document No." := Rec."Cash Document No.";
             PostedCashDocumentLineCZP."Line No." := Rec."Line No.";
-            PostedCashDocumentLineCZP.Insert(false);
+            PostedCashDocumentLineCZP.SystemId := Rec.SystemId;
+            PostedCashDocumentLineCZP.Insert(false, true);
         end;
         PostedCashDocumentLineCZP."Gen. Document Type" := Rec."Document Type";
         PostedCashDocumentLineCZP."Account Type" := Rec."Account Type";
@@ -171,7 +172,8 @@ codeunit 31134 "Sync.Dep.Fld-PostCashDocLn CZP"
             PostedCashDocumentLine."Cash Desk No." := Rec."Cash Desk No.";
             PostedCashDocumentLine."Cash Document No." := Rec."Cash Document No.";
             PostedCashDocumentLine."Line No." := Rec."Line No.";
-            PostedCashDocumentLine.Insert(false);
+            PostedCashDocumentLine.SystemId := Rec.SystemId;
+            PostedCashDocumentLine.Insert(false, true);
         end;
         PostedCashDocumentLine."Document Type" := Rec."Gen. Document Type".AsInteger();
         PostedCashDocumentLine."Account Type" := Rec."Account Type".AsInteger();

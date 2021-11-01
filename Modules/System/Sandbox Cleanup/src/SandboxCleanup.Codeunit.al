@@ -10,6 +10,7 @@ codeunit 1884 "Sandbox Cleanup"
 {
     Access = Public;
 
+#if not CLEAN17
     /// <summary>
     /// Subscribe to this event to clean up data when copying a company to a sandbox environment.
     /// </summary>
@@ -19,6 +20,7 @@ codeunit 1884 "Sandbox Cleanup"
     internal procedure OnClearConfiguration(CompanyName: Text)
     begin
     end;
+#endif
 
     /// <summary>
     /// Subscribe to this event to clean up company-specific data when copying to a sandbox environment.

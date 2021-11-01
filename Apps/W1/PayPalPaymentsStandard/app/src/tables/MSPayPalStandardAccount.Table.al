@@ -24,8 +24,14 @@ table 1070 "MS - PayPal Standard Account"
         {
 
             trigger OnValidate();
+            var
+                CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
             begin
-                VerifyAccountID();
+                if not xRec."Enabled" and Rec."Enabled" then
+                    Rec."Enabled" := CustomerConsentMgt.ConfirmUserConsent();
+
+                if Rec.Enabled then
+                    VerifyAccountID();
             end;
         }
         field(5; "Always Include on Documents"; Boolean)

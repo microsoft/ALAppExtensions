@@ -114,10 +114,8 @@ codeunit 3712 "Translation Implementation"
         FromRecordRef: RecordRef;
     begin
         GetRecordRefFromVariant(FromRecVariant, FromRecordRef);
-
         Translation.SetRange("System Id", GetSystemIdFromRecordRef(FromRecordRef));
         Translation.SetRange("Field ID", FromFieldId);
-
         if Translation.FindSet() then
             repeat
                 Set(ToRecVariant, ToFieldId, Translation."Language ID", Translation.Value);

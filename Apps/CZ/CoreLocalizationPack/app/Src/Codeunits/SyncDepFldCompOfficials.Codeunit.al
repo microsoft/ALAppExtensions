@@ -55,7 +55,8 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
         if not CompanyOfficialCZL.Get(Rec."No.") then begin
             CompanyOfficialCZL.Init();
             CompanyOfficialCZL."No." := Rec."No.";
-            CompanyOfficialCZL.Insert(false);
+            CompanyOfficialCZL.SystemId := Rec.SystemId;
+            CompanyOfficialCZL.Insert(false, true);
         end;
         CompanyOfficialCZL."First Name" := Rec."First Name";
         CompanyOfficialCZL."Middle Name" := Rec."Middle Name";
@@ -146,7 +147,8 @@ codeunit 31154 "Sync.Dep.Fld-CompOfficials CZL"
         if not CompanyOfficials.Get(Rec."No.") then begin
             CompanyOfficials.Init();
             CompanyOfficials."No." := Rec."No.";
-            CompanyOfficials.Insert(false);
+            CompanyOfficials.SystemId := Rec.SystemId;
+            CompanyOfficials.Insert(false, true);
         end;
         CompanyOfficials."First Name" := Rec."First Name";
         CompanyOfficials."Middle Name" := Rec."Middle Name";

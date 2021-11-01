@@ -30,4 +30,16 @@ page 1995 "Checklist Item Users"
             }
         }
     }
+
+    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
+    var
+        ChecklistItemUser: Record "Checklist Item User";
+    begin
+        if ChecklistItemUser.Get(Code, "User ID") then begin
+            ChecklistItemUser."Assigned to User" := true;
+            ChecklistItemUser.Modify();
+            exit(false);
+        end else
+            ChecklistItemUser."Assigned to User" := true;
+    end;
 }

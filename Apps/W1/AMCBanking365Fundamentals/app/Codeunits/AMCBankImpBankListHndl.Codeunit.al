@@ -17,14 +17,6 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
         BankListWebCallTxt: Label 'bankList', locked = true;
 
     [Scope('OnPrem')]
-    [Obsolete('This method is obsolete. A new GetBankListFromWebService overload is available', '16.2')]
-    procedure GetBankListFromWebService(ShowErrors: Boolean; CountryFilter: Text; Timeout: Integer)
-    var
-    begin
-        GetBankListFromWebService(ShowErrors, CountryFilter, Timeout, AMCBankServMgt.GetAppCaller());
-    end;
-
-    [Scope('OnPrem')]
     procedure GetBankListFromWebService(ShowErrors: Boolean; CountryFilter: Text; Timeout: Integer; Appcaller: Text[30])
     var
         TempBlobRequestBody: Codeunit "Temp Blob";
@@ -65,6 +57,7 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
 
     end;
 
+    [NonDebuggable]
     local procedure PrepareSOAPRequestBody(var BankListExchRequestMessage: HttpRequestMessage; CountryFilter: Text)
     var
         AMCBankingSetup: Record "AMC Banking Setup";

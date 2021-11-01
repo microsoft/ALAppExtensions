@@ -71,6 +71,7 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
             ReadContentFromResponse(TempBlobStatement);
     end;
 
+    [NonDebuggable]
     local procedure PrepareSOAPRequestBody(var ReportExportRequestMessage: HttpRequestMessage; var TempBlob: Codeunit "Temp Blob")
     var
         AMCBankingSetup: Record "AMC Banking Setup";

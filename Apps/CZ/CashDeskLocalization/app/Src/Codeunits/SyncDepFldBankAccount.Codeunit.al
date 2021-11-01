@@ -82,7 +82,8 @@ codeunit 31123 "Sync.Dep.Fld-BankAccount CZP"
         if not BankAccount.Get(Rec."No.") then begin
             BankAccount.Init();
             BankAccount."No." := Rec."No.";
-            BankAccount.Insert(false);
+            BankAccount.SystemId := Rec.SystemId;
+            BankAccount.Insert(false, true);
         end;
         BankAccount."Account Type CZP" := BankAccount."Account Type CZP"::"Cash Desk";
         BankAccount.Name := Rec.Name;

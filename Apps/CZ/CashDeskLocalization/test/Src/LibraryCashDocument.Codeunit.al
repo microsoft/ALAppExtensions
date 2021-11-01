@@ -143,7 +143,7 @@ codeunit 148002 "Library - Cash Document CZP"
 
     procedure CreateCashDocumentHeaderCZP(var CashDocumentHeaderCZP: Record "Cash Document Header CZP"; CashDocType: Enum "Cash Document Type CZP"; CashDeskNo: Code[20])
     begin
-        CashDocumentHeaderCZP.Init();
+        Clear(CashDocumentHeaderCZP);
         CashDocumentHeaderCZP.Validate("Cash Desk No.", CashDeskNo);
         CashDocumentHeaderCZP.Validate("Document Type", CashDocType);
         CashDocumentHeaderCZP.Insert(true);
@@ -186,7 +186,7 @@ codeunit 148002 "Library - Cash Document CZP"
     var
         RecordRef: RecordRef;
     begin
-        CashDocumentLineCZP.Init();
+        Clear(CashDocumentLineCZP);
         CashDocumentLineCZP.Validate("Cash Desk No.", CashDocumentHeaderCZP."Cash Desk No.");
         CashDocumentLineCZP.Validate("Cash Document No.", CashDocumentHeaderCZP."No.");
         RecordRef.GetTable(CashDocumentLineCZP);

@@ -37,15 +37,4 @@ dotnet
         type("System.Security.Cryptography.X509Certificates.CertificateRequest"; CertificateRequest) { }
         type("System.Security.Cryptography.AesCryptoServiceProvider"; "Cryptography.AesCryptoServiceProvider") { }
     }
-
-    assembly("System.Security")
-    {
-        type("System.Security.Cryptography.Xml.EncryptedXml"; "EncryptedXml") { }
-        type("System.Security.Cryptography.Xml.EncryptedData"; "EncryptedData") { }
-        type("System.Security.Cryptography.Xml.EncryptionMethod"; "EncryptionMethod") { }
-        type("System.Security.Cryptography.Xml.EncryptedKey"; "EncryptedKey") { }
-        type("System.Security.Cryptography.Xml.CipherData"; "CipherData") { }
-        type("System.Security.Cryptography.Xml.KeyInfoX509Data"; "KeyInfoX509Data") { }
-        type("System.Security.Cryptography.Xml.KeyInfoEncryptedKey"; "KeyInfoEncryptedKey") { }
-    }
 }

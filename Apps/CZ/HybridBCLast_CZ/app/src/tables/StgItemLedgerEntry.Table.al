@@ -93,7 +93,7 @@ table 11715 "Stg Item Ledger Entry"
         }
         field(47; "Drop Shipment"; Boolean)
         {
-            AccessByPermission = TableData "Drop Shpt. Post. Buffer" = R;
+            AccessByPermission = tabledata "Drop Shpt. Post. Buffer" = R;
             Caption = 'Drop Shipment';
         }
         field(50; "Transaction Type"; Code[10])
@@ -141,7 +141,7 @@ table 11715 "Stg Item Ledger Entry"
         }
         field(70; "Reserved Quantity"; Decimal)
         {
-            AccessByPermission = TableData "Purch. Rcpt. Header" = R;
+            AccessByPermission = tabledata "Purch. Rcpt. Header" = R;
             CalcFormula = Sum("Reservation Entry"."Quantity (Base)" WHERE("Source ID" = CONST(''),
                                                                            "Source Ref. No." = FIELD("Entry No."),
                                                                            "Source Type" = CONST(32),
@@ -239,7 +239,7 @@ table 11715 "Stg Item Ledger Entry"
         }
         field(904; "Assemble to Order"; Boolean)
         {
-            AccessByPermission = TableData "BOM Component" = R;
+            AccessByPermission = tabledata "BOM Component" = R;
             Caption = 'Assemble to Order';
         }
         field(1000; "Job No."; Code[20])
@@ -281,13 +281,13 @@ table 11715 "Stg Item Ledger Entry"
         }
         field(5701; "Originally Ordered No."; Code[20])
         {
-            AccessByPermission = TableData "Item Substitution" = R;
+            AccessByPermission = tabledata "Item Substitution" = R;
             Caption = 'Originally Ordered No.';
             TableRelation = Item;
         }
         field(5702; "Originally Ordered Var. Code"; Code[10])
         {
-            AccessByPermission = TableData "Item Substitution" = R;
+            AccessByPermission = tabledata "Item Substitution" = R;
             Caption = 'Originally Ordered Var. Code';
             TableRelation = "Item Variant".Code WHERE("Item No." = FIELD("Originally Ordered No."));
         }
@@ -415,13 +415,13 @@ table 11715 "Stg Item Ledger Entry"
         }
         field(5818; "Shipped Qty. Not Returned"; Decimal)
         {
-            AccessByPermission = TableData "Sales Header" = R;
+            AccessByPermission = tabledata "Sales Header" = R;
             Caption = 'Shipped Qty. Not Returned';
             DecimalPlaces = 0 : 5;
         }
         field(5833; "Prod. Order Comp. Line No."; Integer)
         {
-            AccessByPermission = TableData "Production Order" = R;
+            AccessByPermission = tabledata "Production Order" = R;
             Caption = 'Prod. Order Comp. Line No.';
         }
         field(6500; "Serial No."; Code[50])

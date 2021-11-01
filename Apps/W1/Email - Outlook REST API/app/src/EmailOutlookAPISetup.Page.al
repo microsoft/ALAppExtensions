@@ -250,14 +250,16 @@ page 4509 "Email - Outlook API Setup"
         AccessToken: Text;
     begin
         if not EmailOAuthClient.TryGetAccessToken(AccessToken) then
-            Message(UnsuccessfulTestMsg)
+            Message(UnsuccessfulTestMsg, EmailOAuthClient.GetLastAuthorizationErrorMessage())
         else
             Message(SuccessfulTestMsg);
     end;
 
     var
         MediaResources: Record "Media Resources";
+        [NonDebuggable]
         ClientIdText: Text;
+        [NonDebuggable]
         ClientSecretText: Text;
         DocumentationAzureUlrTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2134620', Locked = true;
         DocumentationBCUlrTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2134520', Locked = true;
@@ -265,7 +267,7 @@ page 4509 "Email - Outlook API Setup"
         AppPermissionsLbl: Label 'Learn more about the permissions';
         ThisWillClearTheFieldsTxt: Label 'If you clear the app registration on this page, users will not be able to send email messages from their Exchange accounts. Do you want to continue?';
         UriIsNotValidErr: Label '%1 is not a valid URI.', Comment = '%1 = a string';
-        UnsuccessfulTestMsg: Label 'We could not get access token with the current setup.\\Please verify the values on the page and try again.';
+        UnsuccessfulTestMsg: Label 'We could not get access token with the current setup. Error: "%1".\\Please verify the values on the page as well as settings of your app registration and try again.', Comment = '%1 = error message';
         SuccessfulTestMsg: Label 'Success! Your authentication was verified.';
         HiddenValueTxt: Label '******', Locked = true;
         TopBannerVisible: Boolean;

@@ -139,6 +139,31 @@ codeunit 9999 "Upgrade Tag"
     end;
 
     /// <summary>
+    /// This function is used for cloud migration to backup upgrade tags before cloud migration is triggered.
+    /// Using the function if cloud migration is not enabled will throw an error.
+    /// </summary>
+    /// <returns>ID of the backup, used in <see cref="RestoreUpgradeTagsFromBackup"/> method.</returns>
+    procedure BackupUpgradeTags(): Integer
+    var
+        UpgradeTagImpl: Codeunit "Upgrade Tag Impl.";
+    begin
+        exit(UpgradeTagImpl.BackupUpgradeTags());
+    end;
+
+    /// <summary>
+    /// This function is used to restore Upgrade tags after cloud migration.
+    /// Using the function if cloud migration is not enabled will throw an error.
+    /// </summary>
+    /// <param name="BackupId">ID of the backup, created by <see cref="BackupUpgradeTags"/> method.</param>
+    /// <param name="RestoreMissingTagsOnly">This parameter indicates if the function should restore the entire table or only insert back the missing upgrade tags.</param>
+    procedure RestoreUpgradeTagsFromBackup(BackupId: Integer; RestoreMissingTagsOnly: Boolean)
+    var
+        UpgradeTagImpl: Codeunit "Upgrade Tag Impl.";
+    begin
+        UpgradeTagImpl.RestoreUpgradeTagsFromBackup(BackupId, RestoreMissingTagsOnly);
+    end;
+
+    /// <summary>
     /// Use this event if you want to add upgrade tag for PerCompany upgrade method for a new company.
     /// </summary>
     /// <param name="PerCompanyUpgradeTags">
@@ -157,6 +182,16 @@ codeunit 9999 "Upgrade Tag"
     /// </param>
     [IntegrationEvent(false, false)]
     internal procedure OnGetPerDatabaseUpgradeTags(var PerDatabaseUpgradeTags: List of [Code[250]])
+    begin
+    end;
+
+    /// <summary>
+    /// Use this event if you want to skip or run logic when we register all tags for a company.
+    /// </summary>
+    /// <param name="NewCompanyName">Name of the company to set the upgrade tags.</param>
+    /// <param name="SkipSetAllUpgradeTags">Specifies if the setting of the tags for the company should be skipped.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnSetAllUpgradeTags(NewCompanyName: Text; var SkipSetAllUpgradeTags: Boolean)
     begin
     end;
 }

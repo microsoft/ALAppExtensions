@@ -36,10 +36,27 @@ table 20247 "Tax Component Formula"
         }
     }
 
+    trigger OnInsert()
+    var
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+    end;
+
+    trigger OnModify()
+    var
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+    end;
+
     trigger OnDelete();
     var
         TaxComponentFormulaToken: Record "Tax Component Formula Token";
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
     begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+
         TaxComponentFormulaToken.Reset();
         TaxComponentFormulaToken.SetRange("Tax Type", "Tax Type");
         TaxComponentFormulaToken.SetRange("Formula Expr. ID", ID);

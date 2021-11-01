@@ -518,7 +518,6 @@ page 1152 "COHUB Company Summary"
     var
         COHUBEnviroment1: Record "COHUB Enviroment";
         COHUBCore1: Codeunit "COHUB Core";
-        NoEnviromentsEnteredNotification: Notification;
     begin
         if COHUBCore.ShowNotSupportedOnPremNotification() then
             exit;
@@ -526,12 +525,9 @@ page 1152 "COHUB Company Summary"
         // Give users access to records with their security id or the sample data
         Rec.SetFilter("Assigned To", '%1|%2', UserSecurityId(), '00000000-0000-0000-0000-000000000000');
 
-        if COHUBEnviroment1.IsEmpty() then begin
-            NoEnviromentsEnteredNotification.Message(NoEnviromentsMsg);
-            NoEnviromentsEnteredNotification.SCOPE := NotificationScope::LocalScope;
-            NoEnviromentsEnteredNotification.ADDACTION(EnterEnviromentsTxt, Codeunit::"COHUB Core", 'OpenEnviroment');
-            NoEnviromentsEnteredNotification.Send();
-        end else
+        if COHUBEnviroment1.IsEmpty() then
+            COHUBCore1.ShowSetupCompanyHubNotification()
+        else
             COHUBCore1.UpdateAllCompanies(true);
 
         Codeunit.Run(Codeunit::"COHUB Group Summary Sync");
@@ -583,8 +579,6 @@ page 1152 "COHUB Company Summary"
         MyOverdueTasks: Text[5];
         MyUserTaskStyle: Text;
         CompanyDisplayNameTxt: Text;
-        NoEnviromentsMsg: Label 'No environments have been added yet. Go ahead and add the first environment.';
-        EnterEnviromentsTxt: Label 'Add Enviroments';
         GroupDrillDownMsg: Label 'You have chosen the name of a group, and there is nothing to look up.';
         DisplayNameStyle: Text;
         IsGroup: Boolean;

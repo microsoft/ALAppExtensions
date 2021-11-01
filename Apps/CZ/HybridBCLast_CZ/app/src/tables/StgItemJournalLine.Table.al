@@ -170,7 +170,7 @@ table 11714 "Stg Item Journal Line"
         }
         field(46; "Drop Shipment"; Boolean)
         {
-            AccessByPermission = TableData "Drop Shpt. Post. Buffer" = R;
+            AccessByPermission = tabledata "Drop Shpt. Post. Buffer" = R;
             Caption = 'Drop Shipment';
             Editable = false;
         }
@@ -268,7 +268,7 @@ table 11714 "Stg Item Journal Line"
         }
         field(68; "Reserved Quantity"; Decimal)
         {
-            AccessByPermission = TableData "Purch. Rcpt. Header" = R;
+            AccessByPermission = tabledata "Purch. Rcpt. Header" = R;
             CalcFormula = Sum("Reservation Entry".Quantity WHERE("Source ID" = FIELD("Journal Template Name"),
                                                                   "Source Ref. No." = FIELD("Line No."),
                                                                   "Source Type" = CONST(83),
@@ -289,7 +289,7 @@ table 11714 "Stg Item Journal Line"
         }
         field(73; "Source Currency Code"; Code[10])
         {
-            AccessByPermission = TableData "Drop Shpt. Post. Buffer" = R;
+            AccessByPermission = tabledata "Drop Shpt. Post. Buffer" = R;
             Caption = 'Source Currency Code';
             Editable = false;
             TableRelation = Currency;
@@ -417,7 +417,7 @@ table 11714 "Stg Item Journal Line"
         }
         field(5468; "Reserved Qty. (Base)"; Decimal)
         {
-            AccessByPermission = TableData "Purch. Rcpt. Header" = R;
+            AccessByPermission = tabledata "Purch. Rcpt. Header" = R;
             CalcFormula = Sum("Reservation Entry"."Quantity (Base)" WHERE("Source ID" = FIELD("Journal Template Name"),
                                                                            "Source Ref. No." = FIELD("Line No."),
                                                                            "Source Type" = CONST(83),
@@ -451,13 +451,13 @@ table 11714 "Stg Item Journal Line"
         }
         field(5701; "Originally Ordered No."; Code[20])
         {
-            AccessByPermission = TableData "Item Substitution" = R;
+            AccessByPermission = tabledata "Item Substitution" = R;
             Caption = 'Originally Ordered No.';
             TableRelation = Item;
         }
         field(5702; "Originally Ordered Var. Code"; Code[10])
         {
-            AccessByPermission = TableData "Item Substitution" = R;
+            AccessByPermission = tabledata "Item Substitution" = R;
             Caption = 'Originally Ordered Var. Code';
             TableRelation = "Item Variant".Code WHERE("Item No." = FIELD("Originally Ordered No."));
         }
@@ -476,7 +476,7 @@ table 11714 "Stg Item Journal Line"
         }
         field(5706; "Purchasing Code"; Code[10])
         {
-            AccessByPermission = TableData "Drop Shpt. Post. Buffer" = R;
+            AccessByPermission = tabledata "Drop Shpt. Post. Buffer" = R;
             Caption = 'Purchasing Code';
             TableRelation = Purchasing;
         }
@@ -590,7 +590,7 @@ table 11714 "Stg Item Journal Line"
         }
         field(5830; Type; Enum "Capacity Type Journal")
         {
-            AccessByPermission = TableData "Machine Center" = R;
+            AccessByPermission = tabledata "Machine Center" = R;
             Caption = 'Type';
         }
         field(5831; "No."; Code[20])
@@ -618,37 +618,37 @@ table 11714 "Stg Item Journal Line"
         }
         field(5841; "Setup Time"; Decimal)
         {
-            AccessByPermission = TableData "Machine Center" = R;
+            AccessByPermission = tabledata "Machine Center" = R;
             Caption = 'Setup Time';
             DecimalPlaces = 0 : 5;
         }
         field(5842; "Run Time"; Decimal)
         {
-            AccessByPermission = TableData "Machine Center" = R;
+            AccessByPermission = tabledata "Machine Center" = R;
             Caption = 'Run Time';
             DecimalPlaces = 0 : 5;
         }
         field(5843; "Stop Time"; Decimal)
         {
-            AccessByPermission = TableData "Machine Center" = R;
+            AccessByPermission = tabledata "Machine Center" = R;
             Caption = 'Stop Time';
             DecimalPlaces = 0 : 5;
         }
         field(5846; "Output Quantity"; Decimal)
         {
-            AccessByPermission = TableData "Machine Center" = R;
+            AccessByPermission = tabledata "Machine Center" = R;
             Caption = 'Output Quantity';
             DecimalPlaces = 0 : 5;
         }
         field(5847; "Scrap Quantity"; Decimal)
         {
-            AccessByPermission = TableData "Machine Center" = R;
+            AccessByPermission = tabledata "Machine Center" = R;
             Caption = 'Scrap Quantity';
             DecimalPlaces = 0 : 5;
         }
         field(5849; "Concurrent Capacity"; Decimal)
         {
-            AccessByPermission = TableData "Machine Center" = R;
+            AccessByPermission = tabledata "Machine Center" = R;
             Caption = 'Concurrent Capacity';
             DecimalPlaces = 0 : 5;
         }
@@ -691,12 +691,12 @@ table 11714 "Stg Item Journal Line"
         }
         field(5873; "Starting Time"; Time)
         {
-            AccessByPermission = TableData "Machine Center" = R;
+            AccessByPermission = tabledata "Machine Center" = R;
             Caption = 'Starting Time';
         }
         field(5874; "Ending Time"; Time)
         {
-            AccessByPermission = TableData "Machine Center" = R;
+            AccessByPermission = tabledata "Machine Center" = R;
             Caption = 'Ending Time';
         }
         field(5882; "Routing No."; Code[20])
@@ -718,7 +718,7 @@ table 11714 "Stg Item Journal Line"
         }
         field(5885; Finished; Boolean)
         {
-            AccessByPermission = TableData "Machine Center" = R;
+            AccessByPermission = tabledata "Machine Center" = R;
             Caption = 'Finished';
         }
         field(5887; "Unit Cost Calculation"; Option)

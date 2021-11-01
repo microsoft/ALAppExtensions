@@ -93,4 +93,14 @@ table 8889 "Sent Email"
         {
         }
     }
+
+    /// <summary>
+    /// Get the message id of the sent email.
+    /// </summary>
+    /// <returns>Message id.</returns>
+    procedure GetMessageId(): Guid
+    begin
+        exit(Rec."Message Id");
+    end;
+
 }

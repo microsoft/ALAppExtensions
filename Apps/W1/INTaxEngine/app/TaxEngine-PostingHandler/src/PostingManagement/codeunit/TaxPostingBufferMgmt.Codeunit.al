@@ -1,6 +1,15 @@
 codeunit 20343 "Tax Posting Buffer Mgmt."
 {
     SingleInstance = true;
+    procedure SetSalesPurchLcy(GenJnlLineSalesPurchLcyAmount: Decimal)
+    begin
+        SalesPurchLcyAmount := GenJnlLineSalesPurchLcyAmount
+    end;
+
+    procedure GetSalesPurchLcy(): Decimal
+    begin
+        exit(SalesPurchLcyAmount);
+    end;
 
     procedure SetDocument(Record: Variant)
     begin
@@ -430,4 +439,5 @@ codeunit 20343 "Tax Posting Buffer Mgmt."
         TransactionTaxID: Guid;
         PostingDocument: Variant;
         TotalTaxAmount: Decimal;
+        SalesPurchLcyAmount: Decimal;
 }

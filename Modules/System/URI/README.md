@@ -53,6 +53,81 @@ procedure GetScheme(): Text
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
 A text that contains the scheme for this URI, converted to lowercase.
+### GetHost (Method) <a name="GetHost"></a> 
+
+ Gets the host name of the URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.host for more information.
+
+#### Syntax
+```
+procedure GetHost(): Text
+```
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+A text that contains the host name for this URI.
+### GetPort (Method) <a name="GetPort"></a> 
+
+ Gets the port number of the URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.port for more information.
+
+#### Syntax
+```
+procedure GetPort(): Integer
+```
+#### Return Value
+*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+
+An integer that contains the port number for this URI.
+### GetAbsolutePath (Method) <a name="GetAbsolutePath"></a> 
+
+ Gets the absolute path of the URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.absolutepath for more information.
+
+#### Syntax
+```
+procedure GetAbsolutePath(): Text
+```
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+A text that contains the absolute path for this URI.
+### GetQuery (Method) <a name="GetQuery"></a> 
+
+ Gets any query information included in the specified URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.query for more information.
+
+#### Syntax
+```
+procedure GetQuery(): Text
+```
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+A text that contains the query information for this URI.
+### GetFragment (Method) <a name="GetFragment"></a> 
+
+ Gets the escaped URI fragment.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uri.fragment for more information.
+
+#### Syntax
+```
+procedure GetFragment(): Text
+```
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+A text that contains the fragment portion for this URI.
 ### GetSegments (Method) <a name="GetSegments"></a> 
 
  Gets a list containing the path segments that make up the specified URI.
@@ -178,6 +253,130 @@ procedure Init(Uri: Text)
 
 A URI string.
 
+### SetScheme (Method) <a name="SetScheme"></a> 
+
+ Sets the scheme name of the URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.scheme for more information.
+
+#### Syntax
+```
+procedure SetScheme(Scheme: Text)
+```
+#### Parameters
+*Scheme ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+A string that represents the scheme name to set.
+
+### GetScheme (Method) <a name="GetScheme"></a> 
+
+ Gets the scheme name of the URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.scheme for more information.
+
+#### Syntax
+```
+procedure GetScheme(): Text
+```
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The scheme name of the URI.
+### SetHost (Method) <a name="SetHost"></a> 
+
+ Sets the host name of the URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.host for more information.
+
+#### Syntax
+```
+procedure SetHost(Host: Text)
+```
+#### Parameters
+*Host ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+A string that represents the host name to set.
+
+### GetHost (Method) <a name="GetHost"></a> 
+
+ Gets the host name of the URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.host for more information.
+
+#### Syntax
+```
+procedure GetHost(): Text
+```
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The host name of the URI.
+### SetPort (Method) <a name="SetPort"></a> 
+
+ Sets the port number of the URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.port for more information.
+
+#### Syntax
+```
+procedure SetPort(Port: Integer)
+```
+#### Parameters
+*Port ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+An integer that represents the port number to set.
+
+### GetPort (Method) <a name="GetPort"></a> 
+
+ Gets the port number of the URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.port for more information.
+
+#### Syntax
+```
+procedure GetPort(): Integer
+```
+#### Return Value
+*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+
+The port number of the URI.
+### SetPath (Method) <a name="SetPath"></a> 
+
+ Sets the path to the resource referenced by the URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.path for more information.
+
+#### Syntax
+```
+procedure SetPath(Path: Text)
+```
+#### Parameters
+*Path ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+A string that represents the path to set.
+
+### GetPath (Method) <a name="GetPath"></a> 
+
+ Gets the path to the resource referenced by the URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.path for more information.
+
+#### Syntax
+```
+procedure GetPath(): Text
+```
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The path to the resource referenced by the URI.
 ### SetQuery (Method) <a name="SetQuery"></a> 
 
  Sets any query information included in the URI.
@@ -209,6 +408,37 @@ procedure GetQuery(): Text
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
 The query information included in the URI.
+### SetFragment (Method) <a name="SetFragment"></a> 
+
+ Sets the fragment portion of the URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.fragment for more information.
+
+#### Syntax
+```
+procedure SetFragment(Fragment: Text)
+```
+#### Parameters
+*Fragment ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+A string that represents the fragment portion to set.
+
+### GetFragment (Method) <a name="GetFragment"></a> 
+
+ Gets the fragment portion of the URI.
+ 
+
+Visit https://docs.microsoft.com/en-us/dotnet/api/system.uribuilder.fragment for more information.
+
+#### Syntax
+```
+procedure GetFragment(): Text
+```
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The fragment portion of the URI.
 ### GetUri (Method) <a name="GetUri"></a> 
 
  Gets the Uri instance constructed by the specified "Uri Builder" instance.

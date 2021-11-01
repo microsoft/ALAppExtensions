@@ -11,7 +11,7 @@ pageextension 13667 "OIOUBL-Sales Order Subform" extends "Sales Order Subform"
         {
             field("OIOUBL-Amount Including VAT"; "Amount Including VAT")
             {
-                Tooltip = 'Specifies the amount including VAT for the whole document. The field may be filled automatically.';
+                Tooltip = 'Specifies the amount including VAT for the whole document. The field may be filled automatically. This is used in the exported electronic document.';
                 Visible = false;
                 ApplicationArea = Basic, Suite;
             }
@@ -21,7 +21,7 @@ pageextension 13667 "OIOUBL-Sales Order Subform" extends "Sales Order Subform"
         {
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
-                Tooltip = 'Specifies the account code of the customer.';
+                Tooltip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
                 Visible = false;
                 ApplicationArea = Basic, Suite;
             }

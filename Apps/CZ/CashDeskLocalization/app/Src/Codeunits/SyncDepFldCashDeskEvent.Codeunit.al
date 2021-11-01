@@ -55,7 +55,8 @@ codeunit 31131 "Sync.Dep.Fld-CashDeskEvent CZP"
         if not CashDeskEventCZP.Get(Rec.Code) then begin
             CashDeskEventCZP.Init();
             CashDeskEventCZP.Code := Rec.Code;
-            CashDeskEventCZP.Insert(false);
+            CashDeskEventCZP.SystemId := Rec.SystemId;
+            CashDeskEventCZP.Insert(false, true);
         end;
         CashDeskEventCZP."Cash Desk No." := Rec."Cash Desk No.";
         CashDeskEventCZP."Document Type" := Rec."Cash Document Type";
@@ -139,7 +140,8 @@ codeunit 31131 "Sync.Dep.Fld-CashDeskEvent CZP"
         if not CashDeskEvent.Get(Rec.Code) then begin
             CashDeskEvent.Init();
             CashDeskEvent.Code := Rec.Code;
-            CashDeskEvent.Insert(false);
+            CashDeskEvent.SystemId := Rec.SystemId;
+            CashDeskEvent.Insert(false, true);
         end;
         CashDeskEvent."Cash Desk No." := Rec."Cash Desk No.";
         CashDeskEvent."Cash Document Type" := Rec."Document Type".AsInteger();

@@ -13,7 +13,7 @@ table 2401 "Sync Change"
         }
         field(2; "Internal ID"; RecordID)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
         }
         field(3; "External ID"; Guid)
         {

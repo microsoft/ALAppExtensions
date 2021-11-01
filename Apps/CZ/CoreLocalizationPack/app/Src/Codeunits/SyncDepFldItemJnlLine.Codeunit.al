@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31168 "Sync.Dep.Fld-ItemJnlLine CZL"
 {
@@ -47,10 +48,13 @@ codeunit 31168 "Sync.Dep.Fld-ItemJnlLine CZL"
         Rec."Statistic Indication" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Statistic Indication"));
         Rec."Statistic Indication CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Statistic Indication CZL"));
         SyncDepFldUtilities.SyncFields(Rec."Intrastat Transaction", Rec."Intrastat Transaction CZL", PreviousRecord."Intrastat Transaction", PreviousRecord."Intrastat Transaction CZL");
+#if not CLEAN17
         DepFieldTxt := Rec."Whse. Net Change Template";
         NewFieldTxt := Rec."Invt. Movement Template CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Whse. Net Change Template", PreviousRecord."Invt. Movement Template CZL");
         Rec."Whse. Net Change Template" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Whse. Net Change Template"));
         Rec."Invt. Movement Template CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Invt. Movement Template CZL"));
+#endif
     end;
 }
+#endif

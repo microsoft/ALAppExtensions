@@ -11,73 +11,6 @@
       <rd:DataSourceID>17383e06-d414-4751-9131-3344315ed551</rd:DataSourceID>
     </DataSource>
   </DataSources>
-  <DataSets>
-    <DataSet Name="DataSet_Result">
-      <Query>
-        <DataSourceName>DataSource</DataSourceName>
-        <CommandText />
-      </Query>
-      <Fields>
-        <Field Name="COMPANYNAME">
-          <DataField>COMPANYNAME</DataField>
-        </Field>
-        <Field Name="GLAccFilter">
-          <DataField>GLAccFilter</DataField>
-        </Field>
-        <Field Name="GLAccount__No__">
-          <DataField>GLAccount__No__</DataField>
-        </Field>
-        <Field Name="GLAccount_Name">
-          <DataField>GLAccount_Name</DataField>
-        </Field>
-        <Field Name="GLEntry__VAT_Amount_">
-          <DataField>GLEntry__VAT_Amount_</DataField>
-        </Field>
-        <Field Name="GLEntry__VAT_Amount_Format">
-          <DataField>GLEntry__VAT_Amount_Format</DataField>
-        </Field>
-        <Field Name="GLEntry_Posting_Date_">
-          <DataField>GLEntry_Posting_Date_</DataField>
-        </Field>
-        <Field Name="GLEntry_VAT_Date_">
-          <DataField>GLEntry_VAT_Date_</DataField>
-        </Field>
-        <Field Name="GLEntry_Document_Type_">
-          <DataField>GLEntry_Document_Type_</DataField>
-        </Field>
-        <Field Name="GLEntry_Document_No__">
-          <DataField>GLEntry_Document_No__</DataField>
-        </Field>
-        <Field Name="GLEntry_Description">
-          <DataField>GLEntry_Description</DataField>
-        </Field>
-        <Field Name="GLEntry_Gen__Posting_Type_">
-          <DataField>GLEntry_Gen__Posting_Type_</DataField>
-        </Field>
-        <Field Name="GLEntry_Gen__Bus__Posting_Group_">
-          <DataField>GLEntry_Gen__Bus__Posting_Group_</DataField>
-        </Field>
-        <Field Name="GLEntry_Gen__Prod__Posting_Group_">
-          <DataField>GLEntry_Gen__Prod__Posting_Group_</DataField>
-        </Field>
-        <Field Name="GLEntry_Amount">
-          <DataField>GLEntry_Amount</DataField>
-        </Field>
-        <Field Name="GLEntry_AmountFormat">
-          <DataField>GLEntry_AmountFormat</DataField>
-        </Field>
-        <Field Name="GLEntry_VAT_Amount">
-          <DataField>GLEntry_VAT_Amount</DataField>
-        </Field>
-        <Field Name="GLEntry_VAT_AmountFormat">
-          <DataField>GLEntry_VAT_AmountFormat</DataField>
-        </Field>
-        <Field Name="GLEntry_Entry_No">
-          <DataField>GLEntry_Entry_No</DataField>
-        </Field>
-      </Fields>
-    </DataSet>
-  </DataSets>
   <ReportSections>
     <ReportSection>
       <Body>
@@ -1879,4 +1812,71 @@ End Function
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Cm</rd:ReportUnitType>
   <rd:ReportID>560eb773-8b53-42b8-b6c0-615347213896</rd:ReportID>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="GLAccFilter">
+          <DataField>GLAccFilter</DataField>
+        </Field>
+        <Field Name="GLAccount__No__">
+          <DataField>GLAccount__No__</DataField>
+        </Field>
+        <Field Name="GLAccount_Name">
+          <DataField>GLAccount_Name</DataField>
+        </Field>
+        <Field Name="GLEntry__VAT_Amount_">
+          <DataField>GLEntry__VAT_Amount_</DataField>
+        </Field>
+        <Field Name="GLEntry__VAT_Amount_Format">
+          <DataField>GLEntry__VAT_Amount_Format</DataField>
+        </Field>
+        <Field Name="GLEntry_Posting_Date_">
+          <DataField>GLEntry_Posting_Date_</DataField>
+        </Field>
+        <Field Name="GLEntry_VAT_Date_">
+          <DataField>GLEntry_VAT_Date_</DataField>
+        </Field>
+        <Field Name="GLEntry_Document_Type_">
+          <DataField>GLEntry_Document_Type_</DataField>
+        </Field>
+        <Field Name="GLEntry_Document_No__">
+          <DataField>GLEntry_Document_No__</DataField>
+        </Field>
+        <Field Name="GLEntry_Description">
+          <DataField>GLEntry_Description</DataField>
+        </Field>
+        <Field Name="GLEntry_Gen__Posting_Type_">
+          <DataField>GLEntry_Gen__Posting_Type_</DataField>
+        </Field>
+        <Field Name="GLEntry_Gen__Bus__Posting_Group_">
+          <DataField>GLEntry_Gen__Bus__Posting_Group_</DataField>
+        </Field>
+        <Field Name="GLEntry_Gen__Prod__Posting_Group_">
+          <DataField>GLEntry_Gen__Prod__Posting_Group_</DataField>
+        </Field>
+        <Field Name="GLEntry_Amount">
+          <DataField>GLEntry_Amount</DataField>
+        </Field>
+        <Field Name="GLEntry_AmountFormat">
+          <DataField>GLEntry_AmountFormat</DataField>
+        </Field>
+        <Field Name="GLEntry_VAT_Amount">
+          <DataField>GLEntry_VAT_Amount</DataField>
+        </Field>
+        <Field Name="GLEntry_VAT_AmountFormat">
+          <DataField>GLEntry_VAT_AmountFormat</DataField>
+        </Field>
+        <Field Name="GLEntry_Entry_No">
+          <DataField>GLEntry_Entry_No</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
 </Report>

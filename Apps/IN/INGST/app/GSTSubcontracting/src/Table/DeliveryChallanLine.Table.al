@@ -343,11 +343,19 @@ table 18469 "Delivery Challan Line"
         {
             Caption = 'GST Group Code';
             DataClassification = CustomerContent;
+            Editable = false;
+            TableRelation = "GST Group";
+            trigger OnValidate()
+            begin
+                Rec."HSN/SAC Code" := '';
+            end;
         }
         field(103; "HSN/SAC Code"; Code[10])
         {
             Caption = 'HSN/SAC Code';
             DataClassification = CustomerContent;
+            Editable = false;
+            TableRelation = "HSN/SAC".Code where("GST Group Code" = field("GST Group Code"));
         }
         field(104; "GST Base Amount"; Decimal)
         {

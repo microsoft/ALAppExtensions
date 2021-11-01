@@ -1062,7 +1062,7 @@ codeunit 18435 "Reference Invoice No. Mgt."
         ReferenceInvoiceNo.Reset();
         ReferenceInvoiceNo.SetRange("Document No.", PurchaseHeader."No.");
         ReferenceInvoiceNo.SetRange("Document Type", GSTDocumentType);
-        ReferenceInvoiceNo.SetRange("Source No.", PurchaseHeader."Buy-from Vendor No.");
+        ReferenceInvoiceNo.SetRange("Source No.", PurchaseHeader."Pay-to Vendor No.");
         UpdateReferenceInvoiceNo.SetSourceType(ReferenceInvoiceNo."Source Type"::Vendor);
         UpdateReferenceInvoiceNo.SetTableView(ReferenceInvoiceNo);
         UpdateReferenceInvoiceNo.Run();

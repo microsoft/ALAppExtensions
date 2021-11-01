@@ -25,7 +25,6 @@ codeunit 148082 "MTDTestPaymentsWebService"
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATPaymentsAndShowResult_Negative_DisabledOutput()
     var
         DummyMTDPayment: Record "MTD Payment";
@@ -43,7 +42,6 @@ codeunit 148082 "MTDTestPaymentsWebService"
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATPaymentsAndShowResult_Negative_Reason()
     var
         DummyMTDPayment: Record "MTD Payment";
@@ -60,13 +58,11 @@ codeunit 148082 "MTDTestPaymentsWebService"
         Assert.ExpectedError(
             StrSubstNo('%1\%2%3', RetrievePaymentsErr, LibraryMakingTaxDigital.GetResonLbl(), HttpError));
         VerifyLatestHttpLogFailure('HTTP error 400 (Bad Request). The provided VRN is invalid.');
-        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATPaymentsAndShowResult_Negative_BlankedJsonResponse()
     var
         DummyMTDPayment: Record "MTD Payment";
@@ -82,7 +78,6 @@ codeunit 148082 "MTDTestPaymentsWebService"
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATPaymentsAndShowResult_Negative_WrongJsonResponse()
     var
         DummyMTDPayment: Record "MTD Payment";
@@ -98,7 +93,6 @@ codeunit 148082 "MTDTestPaymentsWebService"
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATPaymentsAndShowResult_OneNew_DisabledOutput()
     var
         DummyMTDPayment: Record "MTD Payment";
@@ -116,7 +110,6 @@ codeunit 148082 "MTDTestPaymentsWebService"
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('ConfirmHandler')]
     procedure GetVATPaymentsAndShowResult_OneNew_ExpiredToken()
     var
         DummyMTDPayment: Record "MTD Payment";
@@ -137,7 +130,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('GetMTDRecords_RPH,MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('GetMTDRecords_RPH,MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneNewPmtWithDate_UI()
     var
@@ -153,13 +146,12 @@ codeunit 148082 "MTDTestPaymentsWebService"
         VerifyOnePayment(DummyMTDPayment);
         VerifyLatestHttpLogSucess(LibraryMakingTaxDigital.GetRetrievePaymentsMsg(1, 0));
         Assert.ExpectedMessage(GetPaymentsLbl, LibraryVariableStorage.DequeueText());
-        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         Assert.ExpectedMessage(LibraryMakingTaxDigital.GetRetrievePaymentsMsg(1, 0), LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneNewPmtWithoutDate()
     var
@@ -175,7 +167,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneUpToDatePmtWithDate()
     var
@@ -192,7 +184,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneUpToDatePmtWithoutDate()
     var
@@ -209,7 +201,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneModifiedPmtWithDate()
     var
@@ -226,7 +218,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneModifiedPmtWithoutDate()
     var
@@ -243,7 +235,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoNewPmtWithDates()
     var
@@ -259,7 +251,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoNewPmtWithoutDates()
     var
@@ -275,7 +267,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoNewPmtWithOnlyFirstDate()
     var
@@ -291,7 +283,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoNewPmtWithOnlySecondDate()
     var
@@ -307,7 +299,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoUpToDatePmt()
     var
@@ -325,7 +317,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoModifiedPmt()
     var
@@ -343,7 +335,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoPmtInclOneNew()
     var
@@ -360,7 +352,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoPmtInclOneModified()
     var
@@ -378,7 +370,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler')]
+    [HandlerFunctions('MessageHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoPmtInclOneNewAndOneModified()
     var
@@ -405,6 +397,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
 
         LibraryMakingTaxDigital.SetOAuthSetupSandbox(true);
         LibraryMakingTaxDigital.SetupDefaultFPHeaders();
+        LibraryMakingTaxDigital.EnableFeatureConsent(true);
     end;
 
     local procedure ClearRecords()
@@ -479,7 +472,6 @@ codeunit 148082 "MTDTestPaymentsWebService"
         NewCount: Integer;
         ModifiedCount: Integer;
     begin
-        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         Assert.AreEqual(
             ExpectedResult,
             MTDMgt.RetrievePayments(DummyMTDPayment."Start Date", DummyMTDPayment."End Date", TotalCount, NewCount, ModifiedCount, ShowResult),
@@ -487,7 +479,6 @@ codeunit 148082 "MTDTestPaymentsWebService"
         Assert.AreEqual(ExpectedTotalCount, TotalCount, 'MTDMgt.RetrievePayments - TotalCount');
         Assert.AreEqual(ExpectedNewCount, NewCount, 'MTDMgt.RetrievePayments - NewCount');
         Assert.AreEqual(ExpectedModifiedCount, ModifiedCount, 'MTDMgt.RetrievePayments - ModifiedCount');
-        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
     end;
 
     local procedure GetVATPaymentsAndShowResultViaPage(DummyMTDPayment: Record "MTD Payment")
@@ -497,7 +488,6 @@ codeunit 148082 "MTDTestPaymentsWebService"
         Commit();
         LibraryVariableStorage.Enqueue(DummyMTDPayment."Start Date");
         LibraryVariableStorage.Enqueue(DummyMTDPayment."End Date");
-        LibraryVariableStorage.Enqueue(true); // confirm fraud prevention headers
         MTDPayments.OpenEdit();
         MTDPayments."Get VAT Payments".Invoke();
         MTDPayments.Close();
@@ -530,7 +520,6 @@ codeunit 148082 "MTDTestPaymentsWebService"
         Assert.ExpectedErrorCode('Dialog');
         Assert.ExpectedError(ExpectedMessage);
         VerifyLatestHttpLogFailure(ExpectedMessage);
-        LibraryMakingTaxDigital.VerifyFraudPreventionConfirmMsg(LibraryVariableStorage);
         LibraryVariableStorage.AssertEmpty();
     end;
 
@@ -615,12 +604,5 @@ codeunit 148082 "MTDTestPaymentsWebService"
     procedure MessageHandler(Message: Text[1024])
     begin
         LibraryVariableStorage.Enqueue(Message);
-    end;
-
-    [ConfirmHandler]
-    procedure ConfirmHandler(Question: Text; var Reply: Boolean)
-    begin
-        LibraryVariableStorage.Enqueue(Question);
-        Reply := LibraryVariableStorage.DequeueBoolean();
     end;
 }

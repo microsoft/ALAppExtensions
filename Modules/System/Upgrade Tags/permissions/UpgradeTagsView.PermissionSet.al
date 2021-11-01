@@ -10,5 +10,6 @@ PermissionSet 9993 "Upgrade Tags - View"
 
     IncludedPermissionSets = "Upgrade Tags - Read";
 
-    Permissions = tabledata "Upgrade Tags" = imd;
+    Permissions = tabledata "Upgrade Tags" = imd,
+                  tabledata "Upgrade Tag Backup" = imd;
 }

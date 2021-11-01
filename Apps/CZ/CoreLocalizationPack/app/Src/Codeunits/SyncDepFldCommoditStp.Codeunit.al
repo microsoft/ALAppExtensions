@@ -56,7 +56,8 @@ codeunit 31195 "Sync.Dep.Fld-CommoditStp CZL"
             CommoditySetupCZL.Init();
             CommoditySetupCZL."Commodity Code" := Rec."Commodity Code";
             CommoditySetupCZL."Valid From" := Rec."Valid From";
-            CommoditySetupCZL.Insert(false);
+            CommoditySetupCZL.SystemId := Rec.SystemId;
+            CommoditySetupCZL.Insert(false, true);
         end;
         CommoditySetupCZL."Commodity Limit Amount LCY" := Rec."Commodity Limit Amount LCY";
         CommoditySetupCZL."Valid To" := Rec."Valid To";
@@ -131,7 +132,8 @@ codeunit 31195 "Sync.Dep.Fld-CommoditStp CZL"
             CommoditySetup.Init();
             CommoditySetup."Commodity Code" := Rec."Commodity Code";
             CommoditySetup."Valid From" := Rec."Valid From";
-            CommoditySetup.Insert(false);
+            CommoditySetup.SystemId := Rec.SystemId;
+            CommoditySetup.Insert(false, true);
         end;
         CommoditySetup."Commodity Limit Amount LCY" := Rec."Commodity Limit Amount LCY";
         CommoditySetup."Valid To" := Rec."Valid To";

@@ -98,7 +98,7 @@ Output parameter. Contains the combined text, ready to be assigned to
  11:00-13:59     Hi, John Doe!
  14:00-18:59     Good afternoon, John Doe!
  19:00-23:59     Good evening, John Doe!
- if the user name is blank for the current user, simplified version 
+ if the user name is blank for the current user, simplified version
  is used (for example, "Good afternoon!").
  
 

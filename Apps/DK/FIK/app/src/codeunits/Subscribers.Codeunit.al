@@ -25,7 +25,7 @@ codeunit 13657 FIKSubscribers
         PurchasesPayablesSetup.Get();
 
         if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor) and Vendor.Get(GenJournalLine."Account No.") and not PurchasesPayablesSetup."Copy Inv. No. To Pmt. Ref." then
-                FIKMgt.EvaluateFIK(GenJournalLine."Payment Reference", GenJournalLine."Payment Method Code");
+            FIKMgt.EvaluateFIK(GenJournalLine."Payment Reference", GenJournalLine."Payment Method Code");
     end;
 
     //cod 113
@@ -250,8 +250,7 @@ codeunit 13657 FIKSubscribers
             MatchFIKBankRecLines.GetBankStatementMatchingBuffer(TempBankStmtMatchingBuffer, BankAccReconLine."Statement Line No.");
     end;
 
-    //report 206
-    [EventSubscriber(ObjectType::Report, Report::"Sales - Invoice", 'OnGetDocumentReferenceText', '', false, false)]
+    //report 206 - Obsolete
     procedure SetReferenceTextOnGetReferenceText(SalesInvoiceHeader: Record "Sales Invoice Header"; VAR DocumentReference: Text; VAR DocumentReferenceText: Text; VAR Handled: Boolean);
     VAR
         FIKMgt: Codeunit FIKManagement;
@@ -288,11 +287,19 @@ codeunit 13657 FIKSubscribers
     end;
 
     //tab38
+#if not CLEAN19
     [EventSubscriber(ObjectType::Table, DATABASE::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNo', '', false, false)]
     procedure OnValidatePurchaseHeaderPayToVendorNo(VAR Sender: Record "Purchase Header"; Vendor: Record Vendor);
     begin
         Sender.VALIDATE(GiroAccNo, Vendor.GiroAccNo);
     end;
+#else
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType', '', false, false)]
+    local procedure OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType(Vendor: Record Vendor; var PurchaseHeader: Record "Purchase Header"; var xPurchaseHeader: Record "Purchase Header");
+    begin
+        PurchaseHeader.Validate(GiroAccNo, Vendor.GiroAccNo)
+    end;
+#endif
 
     //table81
     [EventSubscriber(ObjectType::Table, DATABASE::"Gen. Journal Line", 'OnGenJnlLineGetVendorAccount', '', false, false)]

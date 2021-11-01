@@ -274,6 +274,14 @@ codeunit 8900 "Email Impl"
             Error(SourceRecordErr);
     end;
 
+    procedure HasSourceRecord(EmailMessageId: Guid): Boolean;
+    var
+        EmailRelatedRecord: Record "Email Related Record";
+    begin
+        EmailRelatedRecord.SetRange("Email Message Id", EmailMessageId);
+        exit(not EmailRelatedRecord.IsEmpty());
+    end;
+
     procedure FilterRemovedSourceRecords(var EmailRelatedRecord: Record "Email Related Record")
     var
         AllObj: Record AllObj;
@@ -290,9 +298,14 @@ codeunit 8900 "Email Impl"
         EmailRelatedRecord.MarkedOnly(true);
     end;
 
-    procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid) ResultSentEmails: Record "Sent Email" temporary;
+    procedure GetSentEmailsForRecord(RecordVariant: Variant; var ResultSentEmails: Record "Sent Email" temporary)
+    var
+        RecRef: RecordRef;
+        FieldRef: FieldRef;
     begin
-        GetSentEmailsForRecord(TableId, SystemId, ResultSentEmails);
+        RecRef.GetTable(RecordVariant);
+        FieldRef := RecRef.field(RecRef.SystemIdNo);
+        GetSentEmailsForRecord(RecRef.Number, FieldRef.Value, ResultSentEmails);
     end;
 
     procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid; var ResultSentEmails: Record "Sent Email" temporary)
@@ -318,6 +331,49 @@ codeunit 8900 "Email Impl"
                 ResultSentEmails.Insert();
             end;
         until EmailRelatedRecord.Next() = 0;
+    end;
+
+    procedure GetEmailOutboxForRecord(RecordVariant: Variant; var ResultEmailOutbox: Record "Email Outbox" temporary)
+    var
+        RecRef: RecordRef;
+        FieldRef: FieldRef;
+    begin
+        RecRef.GetTable(RecordVariant);
+        FieldRef := RecRef.field(RecRef.SystemIdNo);
+        GetEmailOutboxForRecord(RecRef.Number, FieldRef.Value, ResultEmailOutbox);
+    end;
+
+    procedure GetEmailOutboxForRecord(TableId: Integer; SystemId: Guid; var ResultEmailOutbox: Record "Email Outbox" temporary)
+    var
+        EmailOutbox: Record "Email Outbox";
+        EmailRelatedRecord: Record "Email Related Record";
+    begin
+        EmailRelatedRecord.SetRange("Table Id", TableId);
+        EmailRelatedRecord.SetRange("System Id", SystemId);
+
+        if not EmailRelatedRecord.FindSet() then
+            exit;
+
+        repeat
+            EmailOutbox.SetRange("Message Id", EmailRelatedRecord."Email Message Id");
+            if EmailOutbox.FindFirst() then begin
+                ResultEmailOutbox := EmailOutbox;
+                ResultEmailOutbox.Insert();
+            end;
+        until EmailRelatedRecord.Next() = 0;
+    end;
+
+    procedure GetOutboxEmailRecordStatus(MessageId: Guid) ResultStatus: Enum "Email Status"
+    var
+        EmailOutbox: Record "Email Outbox";
+        EmailAccountImpl: Codeunit "Email Account Impl.";
+    begin
+        if not EmailAccountImpl.IsUserEmailAdmin() then
+            EmailOutbox.SetRange("User Security Id", UserSecurityId());
+
+        EmailOutbox.SetRange("Message Id", MessageId);
+        EmailOutbox.FindFirst();
+        exit(EmailOutbox.Status);
     end;
 
     internal procedure CountEmailsInOutbox(EmailStatus: Enum "Email Status"; IsAdmin: Boolean): Integer

@@ -18,7 +18,7 @@ interface "Barcode Font Encoder"
 
     /// <summary> 
     /// Validates whether a text can be encoded.
-    /// The validation is based at a regular expression accoring to
+    /// The validation is based on a regular expression according to
     /// https://www.neodynamic.com/Products/Help/BarcodeWinControl2.5/working_barcode_symbologies.htm
     /// </summary>
     /// <param name="InputText">The text to validate.</param>

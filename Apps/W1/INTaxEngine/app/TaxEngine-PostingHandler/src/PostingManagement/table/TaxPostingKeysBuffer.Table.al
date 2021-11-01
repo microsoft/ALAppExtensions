@@ -14,7 +14,7 @@ table 20337 "Tax Posting Keys Buffer"
         }
         field(2; "Record ID"; RecordId)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Record ID';
         }
     }

@@ -57,7 +57,8 @@ codeunit 31186 "Sync.Dep.Fld-VatStmtCommLn CZL"
             VATStatementCommentLineCZL."VAT Statement Template Name" := Rec."VAT Statement Template Name";
             VATStatementCommentLineCZL."VAT Statement Name" := Rec."VAT Statement Name";
             VATStatementCommentLineCZL."Line No." := Rec."Line No.";
-            VATStatementCommentLineCZL.Insert(false);
+            VATStatementCommentLineCZL.SystemId := Rec.SystemId;
+            VATStatementCommentLineCZL.Insert(false, true);
         end;
         VATStatementCommentLineCZL.Date := Rec.Date;
         VATStatementCommentLineCZL.Comment := Rec.Comment;
@@ -133,7 +134,8 @@ codeunit 31186 "Sync.Dep.Fld-VatStmtCommLn CZL"
             VATStatementCommentLine."VAT Statement Template Name" := Rec."VAT Statement Template Name";
             VATStatementCommentLine."VAT Statement Name" := Rec."VAT Statement Name";
             VATStatementCommentLine."Line No." := Rec."Line No.";
-            VATStatementCommentLine.Insert(false);
+            VATStatementCommentLine.SystemId := Rec.SystemId;
+            VATStatementCommentLine.Insert(false, true);
         end;
         VATStatementCommentLine.Date := Rec.Date;
         VATStatementCommentLine.Comment := Rec.Comment;

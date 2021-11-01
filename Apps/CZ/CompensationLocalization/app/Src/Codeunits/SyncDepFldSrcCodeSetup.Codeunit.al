@@ -1,4 +1,5 @@
-#pragma warning disable AL0432,AA0072
+#if not CLEAN18
+#pragma warning disable AL0432, AA0072
 codeunit 31290 "Sync.Dep.Fld-SrcCodeSetup CZC"
 {
     Access = Internal;
@@ -32,3 +33,4 @@ codeunit 31290 "Sync.Dep.Fld-SrcCodeSetup CZC"
         Rec."Compensation CZC" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Compensation CZC"));
     end;
 }
+#endif

@@ -15,6 +15,83 @@ Use this module to do the following:
 This temporary table is used to mirror the "NAV App Tenant Operation" system table and present details about the extension deployment status.///
 
 
+## Data Out Of Geo. App (Codeunit 2506)
+
+ Provides functions for adding, removing or checking if an App ID is within the list of apps that send data out of the Geolocation.
+ 
+
+### Add (Method) <a name="Add"></a> 
+
+ Adds an App ID to the list of apps that have data out of the geolocation.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure Add(AppID: Guid): Boolean
+```
+#### Parameters
+*AppID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The App ID of the extension.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+The result of adding to the list. True if the data was added; false otherwise.
+### Remove (Method) <a name="Remove"></a> 
+
+ Removes an App ID from the list of apps that have data out of the geolocation.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure Remove(AppID: Guid): Boolean
+```
+#### Parameters
+*AppID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The App ID of the extension.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+The result of removing from the list. True if the data was removed; false otherwise.
+### Contains (Method) <a name="Contains"></a> 
+
+ Checks if an App ID is in the list of apps that have data out of the geolocation.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure Contains(AppID: Guid): Boolean
+```
+#### Parameters
+*AppID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The App ID of the extension.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+The result of checking whether an AppID is the list. True if the AppID was found; false otherwise.
+### AlreadyInstalled (Method) <a name="AlreadyInstalled"></a> 
+
+ Checks if any of the already installed extensions are in the list of apps that have data out of the geolocation.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+procedure AlreadyInstalled(): Boolean
+```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+The result of checking whether an already installed extension is in the list apps that have data out of the geolocation. True if at least one installed extension was found in the list; false otherwise.
+
 ## Extension Management (Codeunit 2504)
 
  Provides features for installing and uninstalling, downloading and uploading, configuring and publishing extensions and their dependencies.
@@ -54,6 +131,28 @@ True if the extention is installed successfully; false otherwise.
 #### Syntax
 ```
 procedure UninstallExtension(PackageId: Guid; IsUIEnabled: Boolean): Boolean
+```
+#### Parameters
+*PackageId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The ID of the extension package.
+
+*IsUIEnabled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Indicates if the uninstall operation is invoked through the UI.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the extention is uninstalled successfully; false otherwise.
+### UninstallExtensionAndDeleteExtensionData (Method) <a name="UninstallExtensionAndDeleteExtensionData"></a> 
+
+ Uninstalls an extension, based on its PackageId and permanently deletes the tables that contain data for the extension.
+ 
+
+#### Syntax
+```
+procedure UninstallExtensionAndDeleteExtensionData(PackageId: Guid; IsUIEnabled: Boolean): Boolean
 ```
 #### Parameters
 *PackageId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
@@ -112,7 +211,7 @@ Indicates whether the install operation is invoked through the UI.
 
 ### UnpublishExtension (Method) <a name="UnpublishExtension"></a> 
 
- Unpublishes an extension, based on its PackageId. 
+ Unpublishes an extension, based on its PackageId.
  An extension can only be unpublished, if it is a per-tenant one and it has been uninstalled first.
  
 
@@ -142,6 +241,28 @@ procedure DownloadExtensionSource(PackageId: Guid): Boolean
 *PackageId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
 
 The PackageId of the extension.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the operation was successful; false otherwise.
+### GetExtensionSource (Method) <a name="GetExtensionSource"></a> 
+
+ Retrives the source of an extension, based on its PackageId.
+ 
+
+#### Syntax
+```
+procedure GetExtensionSource(PackageId: Guid; var ExtensionSourceTempBlob: Codeunit "Temp Blob"): Boolean
+```
+#### Parameters
+*PackageId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The PackageId of the extension.
+
+*ExtensionSourceTempBlob ([Codeunit "Temp Blob"]())* 
+
+TempBlob where the zip is stored.
 
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
@@ -544,6 +665,10 @@ Appsource market application ID
 
 
 ## Extension Marketplace (Page 2502)
+
+ Shows the Extension Marketplace.
+ 
+
 ### PerformAction (Method) <a name="PerformAction"></a> 
 #### Syntax
 ```

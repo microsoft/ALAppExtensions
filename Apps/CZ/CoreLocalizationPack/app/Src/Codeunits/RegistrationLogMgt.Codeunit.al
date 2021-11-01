@@ -1,29 +1,29 @@
 codeunit 11755 "Registration Log Mgt. CZL"
 {
     var
-        RegistrationLogCZL: Record "Registration Log CZL";
         ServiceConditionsURLTok: Label 'http://wwwinfo.mfcr.cz/ares/ares_podminky.html.cz', Locked = true;
-        ValidRegNoQst: Label 'The  registration number is valid. Do you want to update information on the card?';
+        ValidRegNoMsg: Label 'The registration number is valid.';
         InvalidRegNoMsg: Label 'We didn''t find a match for this number. Verify that you entered the correct number.';
         NotVerifiedRegNoMsg: Label 'We couldn''t verify the registration number. Try again later.';
+        DetailNotVerifiedMsg: Label 'Registration number is valid.\No details information was provided by ARES service.';
         DescriptionLbl: Label 'Registration No. Validation Service Setup';
 
     procedure LogCustomer(Customer: Record Customer)
     begin
-        InsertLogRegistration(Customer."Registration No. CZL", RegistrationLogCZL."Account Type"::Customer, Customer."No.");
+        InsertLogRegistration(Customer."Registration No. CZL", Enum::"Reg. Log Account Type CZL"::Customer, Customer."No.");
     end;
 
     procedure LogVendor(Vendor: Record Vendor)
     begin
-        InsertLogRegistration(Vendor."Registration No. CZL", RegistrationLogCZL."Account Type"::Vendor, Vendor."No.");
+        InsertLogRegistration(Vendor."Registration No. CZL", Enum::"Reg. Log Account Type CZL"::Vendor, Vendor."No.");
     end;
 
     procedure LogContact(Contact: Record Contact)
     begin
-        InsertLogRegistration(Contact."Registration No. CZL", RegistrationLogCZL."Account Type"::Contact, Contact."No.");
+        InsertLogRegistration(Contact."Registration No. CZL", Enum::"Reg. Log Account Type CZL"::Contact, Contact."No.");
     end;
 
-    local procedure InsertLogRegistration(RegNo: Text[20]; AccType: Option; AccNo: Code[20])
+    local procedure InsertLogRegistration(RegNo: Text[20]; AccType: Enum "Reg. Log Account Type CZL"; AccNo: Code[20])
     var
         NewRegistrationLogCZL: Record "Registration Log CZL";
     begin
@@ -76,6 +76,9 @@ codeunit 11755 "Registration Log Mgt. CZL"
             if NewRegistrationLogCZL."Verified Address" = '' then
                 NewRegistrationLogCZL."Verified Address" := CopyStr(AddressText, 1, MaxStrLen(NewRegistrationLogCZL."Verified Address"));
             NewRegistrationLogCZL.Insert(true);
+
+            if NewRegistrationLogCZL.LogDetails() then
+                NewRegistrationLogCZL.Modify();
         end else begin
             if ExtractValue('//D:E', XmlDoc, Namespace) <> '' then
                 Error := ExtractValue('//D:ET', XmlDoc, Namespace);
@@ -96,6 +99,7 @@ codeunit 11755 "Registration Log Mgt. CZL"
 
     local procedure FormatAddress(Address: array[10] of Text): Text
     var
+        DummyRegistrationLog: Record "Registration Log CZL";
         FormatedAddress: Text;
         TwoPlaceholdersTok: Label '%1 %2', Locked = true;
         ThreePlaceholdersTok: Label '%1 %2/%3', Locked = true;
@@ -104,16 +108,24 @@ codeunit 11755 "Registration Log Mgt. CZL"
         if FormatedAddress = '' then
             FormatedAddress := Address[2];
         if (Address[3] <> '') and (Address[4] <> '') then
-            FormatedAddress := CopyStr(StrSubstNo(ThreePlaceholdersTok, FormatedAddress, Address[3], Address[4]), 1, MaxStrLen(RegistrationLogCZL."Verified Address"));
+            FormatedAddress := CopyStr(StrSubstNo(ThreePlaceholdersTok, FormatedAddress, Address[3], Address[4]), 1, MaxStrLen(DummyRegistrationLog."Verified Address"));
         if (Address[3] <> '') xor (Address[4] <> '') then begin
             if Address[3] = '' then
                 Address[3] := Address[4];
-            FormatedAddress := CopyStr(StrSubstNo(TwoPlaceholdersTok, FormatedAddress, Address[3]), 1, MaxStrLen(RegistrationLogCZL."Verified Address"));
+            FormatedAddress := CopyStr(StrSubstNo(TwoPlaceholdersTok, FormatedAddress, Address[3]), 1, MaxStrLen(DummyRegistrationLog."Verified Address"));
         end;
         exit(DelChr(FormatedAddress, '<>', ' '));
     end;
 
-    local procedure LogUnloggedRegistrationNumbers(AccountType: Option; AccountNo: Code[20])
+    local procedure CheckAndLogUnloggedRegistrationNumbers(var RegistrationLogCZL: Record "Registration Log CZL"; AccountType: Enum "Reg. Log Account Type CZL"; AccountNo: Code[20])
+    begin
+        RegistrationLogCZL.SetRange("Account Type", AccountType);
+        RegistrationLogCZL.SetRange("Account No.", AccountNo);
+        if RegistrationLogCZL.IsEmpty() then
+            LogUnloggedRegistrationNumbers(AccountType, AccountNo);
+    end;
+
+    local procedure LogUnloggedRegistrationNumbers(AccountType: Enum "Reg. Log Account Type CZL"; AccountNo: Code[20])
     var
         NewRegistrationLogCZL: Record "Registration Log CZL";
         Customer: Record Customer;
@@ -121,19 +133,19 @@ codeunit 11755 "Registration Log Mgt. CZL"
         Contact: Record Contact;
     begin
         case AccountType of
-            NewRegistrationLogCZL."Account Type"::Customer:
+            AccountType::Customer:
                 if Customer.Get(AccountNo) then begin
                     NewRegistrationLogCZL.SetRange("Registration No.", Customer."Registration No. CZL");
                     if NewRegistrationLogCZL.IsEmpty() then
                         LogCustomer(Customer);
                 end;
-            NewRegistrationLogCZL."Account Type"::Vendor:
+            AccountType::Vendor:
                 if Vendor.Get(AccountNo) then begin
                     NewRegistrationLogCZL.SetRange("Registration No.", Vendor."Registration No. CZL");
                     if NewRegistrationLogCZL.IsEmpty() then
                         LogVendor(Vendor);
                 end;
-            NewRegistrationLogCZL."Account Type"::Contact:
+            AccountType::Contact:
                 if Contact.Get(AccountNo) then begin
                     NewRegistrationLogCZL.SetRange("Registration No.", Contact."Registration No. CZL");
                     if NewRegistrationLogCZL.IsEmpty() then
@@ -144,20 +156,20 @@ codeunit 11755 "Registration Log Mgt. CZL"
 
     procedure DeleteCustomerLog(Customer: Record Customer)
     begin
-        DeleteLogRegistration(RegistrationLogCZL."Account Type"::Customer, Customer."No.");
+        DeleteLogRegistration(Enum::"Reg. Log Account Type CZL"::Customer, Customer."No.");
     end;
 
     procedure DeleteVendorLog(Vendor: Record Vendor)
     begin
-        DeleteLogRegistration(RegistrationLogCZL."Account Type"::Vendor, Vendor."No.");
+        DeleteLogRegistration(Enum::"Reg. Log Account Type CZL"::Vendor, Vendor."No.");
     end;
 
     procedure DeleteContactLog(Contact: Record Contact)
     begin
-        DeleteLogRegistration(RegistrationLogCZL."Account Type"::Contact, Contact."No.");
+        DeleteLogRegistration(Enum::"Reg. Log Account Type CZL"::Contact, Contact."No.");
     end;
 
-    local procedure DeleteLogRegistration(AccountType: Option; AccountNo: Code[20])
+    local procedure DeleteLogRegistration(AccountType: Enum "Reg. Log Account Type CZL"; AccountNo: Code[20])
     var
         DeletedRegistrationLogCZL: Record "Registration Log CZL";
     begin
@@ -168,27 +180,25 @@ codeunit 11755 "Registration Log Mgt. CZL"
 
     procedure AssistEditCustomerRegNo(Customer: Record Customer)
     begin
-        AssistEditRegNo(RegistrationLogCZL."Account Type"::Customer, Customer."No.");
+        AssistEditRegNo(Enum::"Reg. Log Account Type CZL"::Customer, Customer."No.");
     end;
 
     procedure AssistEditVendorRegNo(Vendor: Record Vendor)
     begin
-        AssistEditRegNo(RegistrationLogCZL."Account Type"::Vendor, Vendor."No.");
+        AssistEditRegNo(Enum::"Reg. Log Account Type CZL"::Vendor, Vendor."No.");
     end;
 
     procedure AssistEditContactRegNo(Contact: Record Contact)
     begin
-        AssistEditRegNo(RegistrationLogCZL."Account Type"::Contact, Contact."No.");
+        AssistEditRegNo(Enum::"Reg. Log Account Type CZL"::Contact, Contact."No.");
     end;
 
-    local procedure AssistEditRegNo(AccountType: Option; AccountNo: Code[20])
+    local procedure AssistEditRegNo(AccountType: Enum "Reg. Log Account Type CZL"; AccountNo: Code[20])
     var
         AssistedRegistrationLogCZL: Record "Registration Log CZL";
     begin
-        LogUnloggedRegistrationNumbers(AccountType, AccountNo);
+        CheckAndLogUnloggedRegistrationNumbers(AssistedRegistrationLogCZL, AccountType, AccountNo);
         Commit();
-        AssistedRegistrationLogCZL.SetRange(AssistedRegistrationLogCZL."Account Type", AccountType);
-        AssistedRegistrationLogCZL.SetRange(AssistedRegistrationLogCZL."Account No.", AccountNo);
         Page.RunModal(Page::"Registration Log CZL", AssistedRegistrationLogCZL);
     end;
 
@@ -225,7 +235,7 @@ codeunit 11755 "Registration Log Mgt. CZL"
             exit(FoundXMLNode.AsXmlElement().InnerXml());
     end;
 
-    procedure CheckARESForRegNo(var RecordRef: RecordRef; var RegistrationLogCZL: Record "Registration Log CZL"; RecordVariant: Variant; EntryNo: Code[20]; AccountType: Option)
+    procedure CheckARESForRegNo(var RecordRef: RecordRef; var RegistrationLogCZL: Record "Registration Log CZL"; RecordVariant: Variant; EntryNo: Code[20]; AccountType: Enum "Reg. Log Account Type CZL")
     var
         Contact: Record Contact;
         RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
@@ -246,13 +256,24 @@ codeunit 11755 "Registration Log Mgt. CZL"
     procedure UpdateRecordFromRegLog(var RecordRef: RecordRef; RecordVariant: Variant; RegistrationLogCZL: Record "Registration Log CZL")
     var
         DataTypeManagement: Codeunit "Data Type Management";
-        ConfirmManagement: Codeunit "Confirm Management";
     begin
-        DataTypeManagement.GetRecordRef(RecordVariant, RecordRef);
+        if not GuiAllowed() then
+            exit;
+
         case RegistrationLogCZL.Status of
             RegistrationLogCZL.Status::Valid:
-                if ConfirmManagement.GetResponse(ValidRegNoQst, false) then
-                    RunARESUpdate(RecordRef, RecordVariant, RegistrationLogCZL);
+                case RegistrationLogCZL."Detail Status" of
+                    RegistrationLogCZL."Detail Status"::"Not Verified":
+                        Message(DetailNotVerifiedMsg);
+                    RegistrationLogCZL."Detail Status"::Valid:
+                        Message(ValidRegNoMsg);
+                    RegistrationLogCZL."Detail Status"::"Partially Valid",
+                    RegistrationLogCZL."Detail Status"::"Not Valid":
+                        begin
+                            DataTypeManagement.GetRecordRef(RecordVariant, RecordRef);
+                            RegistrationLogCZL.OpenDetailForRecRef(RecordRef);
+                        end;
+                end;
             RegistrationLogCZL.Status::Invalid:
                 Message(InvalidRegNoMsg);
             else
@@ -260,17 +281,21 @@ codeunit 11755 "Registration Log Mgt. CZL"
         end;
     end;
 
+#if not CLEAN19
+    [Obsolete('The ARES Update report is discontinued, use the Registration Log Details page instead.', '19.0')]
     procedure RunARESUpdate(var RecordRef: RecordRef; RecordVariant: Variant; RegistrationLogCZL: Record "Registration Log CZL")
     var
+#pragma warning disable AL0432
         AresUpdateCZL: Report "Ares Update CZL";
+#pragma warning restore AL0432
     begin
         AresUpdateCZL.InitializeReport(RecordVariant, RegistrationLogCZL);
         AresUpdateCZL.UseRequestPage(true);
         AresUpdateCZL.RunModal();
         AresUpdateCZL.GetRecord(RecordRef);
     end;
-
-    procedure ValidateRegNoWithARES(var RecordRef: RecordRef; RecordVariant: Variant; EntryNo: Code[20]; AccountType: Option)
+#endif
+    procedure ValidateRegNoWithARES(var RecordRef: RecordRef; RecordVariant: Variant; EntryNo: Code[20]; AccountType: Enum "Reg. Log Account Type CZL")
     var
         UpdatedRegistrationLogCZL: Record "Registration Log CZL";
     begin
@@ -282,6 +307,16 @@ codeunit 11755 "Registration Log Mgt. CZL"
     procedure GetServiceConditionsURL(): Text
     begin
         exit(ServiceConditionsURLTok);
+    end;
+
+    procedure RunRegistrationNoCheck(RecordVariant: Variant) ResultRecord: RecordRef
+    var
+        RegistrationNoCheck: Page "Registration No. Check CZL";
+    begin
+        RegistrationNoCheck.SetRecordRef(RecordVariant);
+        Commit();
+        RegistrationNoCheck.RunModal();
+        RegistrationNoCheck.GetRecordRef(ResultRecord);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]

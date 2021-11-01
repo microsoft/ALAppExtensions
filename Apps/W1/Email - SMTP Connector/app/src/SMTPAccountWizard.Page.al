@@ -208,6 +208,7 @@ page 4511 "SMTP Account Wizard"
         UserIDEditable: Boolean;
         [InDataSet]
         PasswordEditable: Boolean;
+        [NonDebuggable]
         [InDataSet]
         Password: Text;
         ConfirmApplyO365Qst: Label 'Do you want to override the current data?';

@@ -71,13 +71,27 @@ page 30071 "APIV2 - Contacts"
                         RegisterFieldSet(FieldNo("Company Name"));
                     end;
                 }
+#if not CLEAN19
                 field(businessRelation; "Business Relation")
+                {
+                    Caption = 'Business Relation';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by the Contact Business Relation field.';
+                    ObsoleteTag = '19.0';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(FieldNo("Business Relation"));
+                    end;
+                }
+#endif
+                field(contactBusinessRelation; "Contact Business Relation")
                 {
                     Caption = 'Business Relation';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("Business Relation"));
+                        RegisterFieldSet(FieldNo("Contact Business Relation"));
                     end;
                 }
                 field(addressLine1; Address)

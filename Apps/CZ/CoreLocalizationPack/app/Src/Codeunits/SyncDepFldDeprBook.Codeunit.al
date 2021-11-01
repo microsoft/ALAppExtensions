@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31206 "Sync.Dep.Fld-DeprBook CZL"
 {
@@ -29,3 +30,4 @@ codeunit 31206 "Sync.Dep.Fld-DeprBook CZL"
         SyncDepFldUtilities.SyncFields(Rec."Mark Reclass. as Corrections", Rec."Mark Reclass. as Correct. CZL", PreviousRecord."Mark Reclass. as Corrections", PreviousRecord."Mark Reclass. as Correct. CZL");
     end;
 }
+#endif

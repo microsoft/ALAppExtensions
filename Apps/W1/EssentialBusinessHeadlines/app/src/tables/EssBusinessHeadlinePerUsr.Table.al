@@ -41,7 +41,7 @@ table 1436 "Ess. Business Headline Per Usr"
         }
         field(20; "VAT Return Period Record Id"; RecordId)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
         }
     }
 

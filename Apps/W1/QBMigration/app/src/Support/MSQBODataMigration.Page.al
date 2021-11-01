@@ -346,6 +346,7 @@ page 1830 "MS - QBO Data Migration"
         ConsumerKey: Text;
         ConsumerSecret: Text;
         AuthRequestUrl: Text;
+        [NonDebuggable]
         AccessTokenKey: Text;
         ExpectedState: Text;
 
@@ -493,6 +494,7 @@ page 1830 "MS - QBO Data Migration"
         StatusTxt := AuthInProgressTxt;
     end;
 
+    [NonDebuggable]
     local procedure CompleteAuthorizationProcess(AuthorizationCode: Text)
     var
         MigrationQBConfig: Record "MigrationQB Config";

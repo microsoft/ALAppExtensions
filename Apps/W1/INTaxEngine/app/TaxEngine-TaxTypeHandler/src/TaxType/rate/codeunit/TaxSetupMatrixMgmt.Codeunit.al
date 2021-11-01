@@ -100,6 +100,7 @@ codeunit 20233 "Tax Setup Matrix Mgmt."
         DataType: Enum "Symbol Data Type";
         XmlValue: Text;
     begin
+        TaxRateSetup.SetRange("Tax Type", TaxType);
         TaxRateSetup.SetRange("Column ID", AttributeID[Index]);
         if not TaxRateSetup.FindFirst() then
             Error(RateSetupDoesNotExistErr, AttributeID[Index], TaxType);

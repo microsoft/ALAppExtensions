@@ -13,7 +13,7 @@ Use this module to do the following:
 ### TryShowSurvey (Method) <a name="TryShowSurvey"></a> 
 
  Tries to show the satisfaction survey dialog to the current user.
- The survey is only shown if the user is chosen for the survey. 
+ The survey is only shown if the user is chosen for the survey.
  The method sends the request to the server and checks the response to check if the user is chosen for the survey.
  
 

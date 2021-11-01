@@ -79,10 +79,10 @@ page 18687 "Allowed Sections"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     SectionCodeLbl: Label 'Code eq %1', Comment = '%1 = TDS Section Code';
                 begin
-                    ODataUtility.EditWorksheetInExcel('Allowed Sections', CurrPage.ObjectId(false), StrSubstNo(SectionCodeLbl, Rec."TDS Section"));
+                    EditinExcel.EditPageInExcel('Allowed Sections', CurrPage.ObjectId(false), StrSubstNo(SectionCodeLbl, Rec."TDS Section"));
                 end;
             }
         }

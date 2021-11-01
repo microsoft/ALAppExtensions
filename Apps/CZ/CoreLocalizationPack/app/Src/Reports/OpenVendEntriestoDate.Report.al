@@ -273,12 +273,7 @@ report 11716 "Open Vend. Entries to Date CZL"
                             end;
 
                         // buffer for total sumary by G/L account;
-                        VendorPostingGroup.Get("Vendor Posting Group");
-
-                        if Prepayment then
-                            UpdateBuffer(TempGLAccountNetChange, VendorPostingGroup."Advance Account", "Remaining Amt. (LCY)", 0)
-                        else
-                            UpdateBuffer(TempGLAccountNetChange, VendorPostingGroup."Payables Account", "Remaining Amt. (LCY)", 0);
+                        UpdateBuffer(TempGLAccountNetChange, GenJournalLineHandlerCZL.GetPayablesAccNo("Vendor Ledger Entry"), "Remaining Amt. (LCY)", 0);
                         UpdateBuffer(TempTotalCurrencyGLAccountNetChange, '', "Original Amt. (LCY)", "Remaining Amt. (LCY)");
 
                         if PrintCurrency then begin
@@ -663,8 +658,8 @@ report 11716 "Open Vend. Entries to Date CZL"
         TempCurrencyGLAccountNetChange: Record "G/L Account Net Change" temporary;
         TempTotalCurrencyGLAccountNetChange: Record "G/L Account Net Change" temporary;
 #pragma warning restore AL0432
-        VendorPostingGroup: Record "Vendor Posting Group";
         GLAccount: Record "G/L Account";
+        GenJournalLineHandlerCZL: Codeunit "Gen. Journal Line Handler CZL";
         LimitDate: array[5] of DateFormula;
         CurrencyCode: Code[10];
         WindowDialog: Dialog;

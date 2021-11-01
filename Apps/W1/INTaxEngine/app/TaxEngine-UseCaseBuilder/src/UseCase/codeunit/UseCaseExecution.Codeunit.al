@@ -54,7 +54,10 @@ codeunit 20293 "Use Case Execution"
         UseCase: Record "Tax Use Case";
         UseCaseExecution: Codeunit "Use Case Execution";
     begin
-        UseCase.Get(UseCaseID);
+        if not UseCase.Get(UseCaseID) then begin
+            OnImportUseCaseOnDemand('', UseCaseID);
+            UseCase.Get(UseCaseID);
+        end;
 
         if IsChildUseCase(UseCase) then
             ExecuteUseCaseTree(UseCase."Parent Use Case ID", CurrentRecord, Symbols, PostingSetupRecID, CurrencyCode, CurrencyFactor);
@@ -165,9 +168,13 @@ codeunit 20293 "Use Case Execution"
     var
         UseCase: Record "Tax Use Case";
     begin
-        if UseCase.Get(CaseID) then
-            if (not TaxTypeAlreadyExecuted(UseCase."Tax Type")) and (UseCase.Enable) then
-                ExecuteUseCase(RecRef, UseCase, CurrencyCode, CurrencyFactor, Handled);
+        if not UseCase.Get(CaseID) then begin
+            OnImportUseCaseOnDemand('', CaseID);
+            UseCase.Get(CaseID)
+        end;
+
+        if (not TaxTypeAlreadyExecuted(UseCase."Tax Type")) and (UseCase.Enable) then
+            ExecuteUseCase(RecRef, UseCase, CurrencyCode, CurrencyFactor, Handled);
     end;
 
     local procedure IsValidTreeNodeToExecute(var UseCaseTreeNode: Record "Use Case Tree Node"; RecRef: RecordRef): Boolean
@@ -281,6 +288,11 @@ codeunit 20293 "Use Case Execution"
             exit;
 
         Enabled := UseCase.Enable;
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnImportUseCaseOnDemand(TaxType: Code[20]; CaseID: Guid)
+    begin
     end;
 
     var

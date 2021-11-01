@@ -220,11 +220,19 @@ XmlPort 31106 "Import Tariff Numbers CZL"
     begin
         TariffNumber.Description := TempTariffNumber.Description;
         TariffNumber."Description EN CZL" := TempTariffNumber."Description EN CZL";
+#if CLEAN18
+        if (TempTariffNumber."Suppl. Unit of Meas. Code CZL" <> '') and (TempTariffNumber."Suppl. Unit of Meas. Code CZL" <> DummyUoMTok) then
+            if UoMMappingDictionary.Get(TempTariffNumber."Suppl. Unit of Meas. Code CZL", UnitofMeasureCode) then begin
+                TariffNumber."Suppl. Unit of Meas. Code CZL" := UnitofMeasureCode;
+                TariffNumber."Supplementary Units" := true;
+            end;
+#else
         if (TempTariffNumber."Suppl. Unit of Meas. Code CZL" <> '') and (TempTariffNumber."Suppl. Unit of Meas. Code CZL" <> DummyUoMTok) then begin
             TariffNumber."Supplementary Units" := true;
             if UoMMappingDictionary.Get(TempTariffNumber."Suppl. Unit of Meas. Code CZL", UnitofMeasureCode) then
                 TariffNumber."Suppl. Unit of Meas. Code CZL" := UnitofMeasureCode;
         end;
+#endif
     end;
 
     local procedure AddResultCount(var ImportResultMsg: Text; RecCount: Integer; ChangeTypeText: Text)

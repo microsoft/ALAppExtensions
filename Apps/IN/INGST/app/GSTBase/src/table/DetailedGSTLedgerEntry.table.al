@@ -503,6 +503,12 @@ table 18001 "Detailed GST Ledger Entry"
             DataClassification = CustomerContent;
             Editable = False;
         }
+        field(94; "Post GST to Customer"; Boolean)
+        {
+            Caption = 'Post GST to Customer';
+            DataClassification = CustomerContent;
+            Editable = False;
+        }
     }
 
     keys

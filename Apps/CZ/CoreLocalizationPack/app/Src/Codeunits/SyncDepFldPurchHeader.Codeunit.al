@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31159 "Sync.Dep.Fld-PurchHeader CZL"
 {
@@ -77,6 +78,7 @@ codeunit 31159 "Sync.Dep.Fld-PurchHeader CZL"
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."SWIFT Code", PreviousRecord."SWIFT Code CZL");
         Rec."SWIFT Code" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."SWIFT Code"));
         Rec."SWIFT Code CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."SWIFT Code CZL"));
+#if not CLEAN17
         SyncDepFldUtilities.SyncFields(Rec."VAT Date", Rec."VAT Date CZL", PreviousRecord."VAT Date", PreviousRecord."VAT Date CZL");
         DepFieldTxt := Rec."Registration No.";
         NewFieldTxt := Rec."Registration No. CZL";
@@ -88,12 +90,15 @@ codeunit 31159 "Sync.Dep.Fld-PurchHeader CZL"
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Tax Registration No.", PreviousRecord."Tax Registration No. CZL");
         Rec."Tax Registration No." := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Tax Registration No."));
         Rec."Tax Registration No. CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Tax Registration No. CZL"));
+#endif
         SyncDepFldUtilities.SyncFields(Rec."Physical Transfer", Rec."Physical Transfer CZL", PreviousRecord."Physical Transfer", PreviousRecord."Physical Transfer CZL");
         SyncDepFldUtilities.SyncFields(Rec."Intrastat Exclude", Rec."Intrastat Exclude CZL", PreviousRecord."Intrastat Exclude", PreviousRecord."Intrastat Exclude CZL");
+#if not CLEAN17
         SyncDepFldUtilities.SyncFields(Rec."EU 3-Party Intermediate Role", Rec."EU 3-Party Intermed. Role CZL", PreviousRecord."EU 3-Party Intermediate Role", PreviousRecord."EU 3-Party Intermed. Role CZL");
         SyncDepFldUtilities.SyncFields(Rec."EU 3-Party Trade", Rec."EU 3-Party Trade CZL", PreviousRecord."EU 3-Party Trade", PreviousRecord."EU 3-Party Trade CZL");
         SyncDepFldUtilities.SyncFields(Rec."Original Document VAT Date", Rec."Original Doc. VAT Date CZL", PreviousRecord."Original Document VAT Date", PreviousRecord."Original Doc. VAT Date CZL");
         SyncDepFldUtilities.SyncFields(Rec."VAT Currency Factor", Rec."VAT Currency Factor CZL", PreviousRecord."VAT Currency Factor", PreviousRecord."VAT Currency Factor CZL");
+#endif
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'Bank Account Code', false, false)]
@@ -122,3 +127,4 @@ codeunit 31159 "Sync.Dep.Fld-PurchHeader CZL"
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Purchase Header", Rec.FieldNo("Bank Account Code"));
     end;
 }
+#endif

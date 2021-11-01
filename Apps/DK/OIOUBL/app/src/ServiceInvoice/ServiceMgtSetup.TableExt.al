@@ -26,11 +26,15 @@ tableextension 13654 "OIOUBL-Service Mgt. Setup" extends "Service Mgt. Setup"
 
 
     local procedure IsOIOUBLPathSetupAvailable("Document Type": Option Quote,Order,Invoice,"Credit Memo"): Boolean;
+#if not CLEAN17
     var
         FileMgt: Codeunit "File Management";
+#endif
     begin
+#if not CLEAN17
         if not FileMgt.IsLocalFileSystemAccessible() then
             exit(TRUE);
+#endif
         case "Document Type" of
             "Document Type"::Order, "Document Type"::Invoice:
                 exit("OIOUBL-Service Invoice Path" <> '');

@@ -57,7 +57,8 @@ codeunit 31307 "Sync.Dep.Fld-FAExtPostGr CZF"
             FAExtendedPostingGroupCZF."FA Posting Type" := Rec."FA Posting Type";
 #pragma warning restore AL0603
             FAExtendedPostingGroupCZF.Code := Rec.Code;
-            FAExtendedPostingGroupCZF.Insert(false);
+            FAExtendedPostingGroupCZF.SystemId := Rec.SystemId;
+            FAExtendedPostingGroupCZF.Insert(false, true);
         end;
         FAExtendedPostingGroupCZF."Book Val. Acc. on Disp. (Gain)" := Rec."Book Val. Acc. on Disp. (Gain)";
         FAExtendedPostingGroupCZF."Book Val. Acc. on Disp. (Loss)" := Rec."Book Val. Acc. on Disp. (Loss)";
@@ -140,7 +141,8 @@ codeunit 31307 "Sync.Dep.Fld-FAExtPostGr CZF"
             FAExtendedPostingGroup."FA Posting Group Code" := Rec."FA Posting Group Code";
             FAExtendedPostingGroup."FA Posting Type" := Rec."FA Posting Type".AsInteger();
             FAExtendedPostingGroup.Code := Rec.Code;
-            FAExtendedPostingGroup.Insert(false);
+            FAExtendedPostingGroup.SystemId := Rec.SystemId;
+            FAExtendedPostingGroup.Insert(false, true);
         end;
         FAExtendedPostingGroup."Book Val. Acc. on Disp. (Gain)" := Rec."Book Val. Acc. on Disp. (Gain)";
         FAExtendedPostingGroup."Book Val. Acc. on Disp. (Loss)" := Rec."Book Val. Acc. on Disp. (Loss)";

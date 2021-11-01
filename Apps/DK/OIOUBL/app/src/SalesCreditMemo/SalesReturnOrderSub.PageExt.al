@@ -11,7 +11,7 @@ pageextension 13685 "OIOUBL-Sales Return Order Sub" extends "Sales Return Order 
         {
             field("OIOUBL-Account Code"; "OIOUBL-Account Code")
             {
-                Tooltip = 'Specifies the account code of the customer.';
+                Tooltip = 'Specifies the account code of the customer. This is used in the exported electronic document.';
                 ApplicationArea = SalesReturnOrder;
                 Visible = false;
             }

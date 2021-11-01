@@ -84,7 +84,7 @@ codeunit 31326 "Acc. Sched. Extension Mgt. CZL"
             Result := -1 * Result;
     end;
 
-    local procedure CalcDateFormula(DateFormula: Text[250]): Date
+    procedure CalcDateFormula(DateFormula: Text[250]): Date
     begin
         if DateFormula = '' then
             exit(0D);

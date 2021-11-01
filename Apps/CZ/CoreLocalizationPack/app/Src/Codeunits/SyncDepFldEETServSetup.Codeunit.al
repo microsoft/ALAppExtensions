@@ -1,3 +1,4 @@
+#if not CLEAN18
 #pragma warning disable AL0432
 codeunit 31135 "Sync.Dep.Fld-EETServSetup CZL"
 {
@@ -34,7 +35,8 @@ codeunit 31135 "Sync.Dep.Fld-EETServSetup CZL"
         EETServiceSetupCZL.ChangeCompany(EETServiceSetup.CurrentCompany);
         if not EETServiceSetupCZL.Get() then begin
             EETServiceSetupCZL.Init();
-            EETServiceSetupCZL.Insert();
+            EETServiceSetupCZL.SystemId := EETServiceSetup.SystemId;
+            EETServiceSetupCZL.Insert(false, true);
         end;
         EETServiceSetupCZL."Service URL" := EETServiceSetup."Service URL";
         EETServiceSetupCZL."Sales Regime" := "EET Sales Regime CZL".FromInteger(EETServiceSetup."Sales Regime");
@@ -91,7 +93,8 @@ codeunit 31135 "Sync.Dep.Fld-EETServSetup CZL"
         EETServiceSetup.ChangeCompany(EETServiceSetupCZL.CurrentCompany);
         if not EETServiceSetup.Get() then begin
             EETServiceSetup.Init();
-            EETServiceSetup.Insert();
+            EETServiceSetup.SystemId := EETServiceSetupCZL.SystemId;
+            EETServiceSetup.Insert(false, true);
         end;
         EETServiceSetup."Service URL" := EETServiceSetupCZL."Service URL";
         EETServiceSetup."Sales Regime" := EETServiceSetupCZL."Sales Regime".AsInteger();
@@ -128,3 +131,4 @@ codeunit 31135 "Sync.Dep.Fld-EETServSetup CZL"
         exit(SyncDepFldUtilities.IsFieldSynchronizationDisabled());
     end;
 }
+#endif

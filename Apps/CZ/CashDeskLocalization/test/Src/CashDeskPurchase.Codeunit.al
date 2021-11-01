@@ -1,7 +1,13 @@
 codeunit 148072 "Cash Desk Purchase CZP"
 {
     Subtype = Test;
-    TestPermissions = NonRestrictive;
+    TestPermissions = Disabled;
+
+    trigger OnRun()
+    begin
+        // [FEATURE] [Cash Desk] [Purchase]
+        isInitialized := false;
+    end;
 
     var
         CashDeskCZP: Record "Cash Desk CZP";
@@ -15,10 +21,14 @@ codeunit 148072 "Cash Desk Purchase CZP"
         isInitialized: Boolean;
 
     local procedure Initialize()
+    var
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Cash Desk Purchase CZP");
         LibraryRandom.Init();
         if isInitialized then
             exit;
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Cash Desk Purchase CZP");
 
         LibraryCashDeskCZP.CreateCashDeskCZP(CashDeskCZP);
         LibraryCashDeskCZP.SetupCashDeskCZP(CashDeskCZP, false);
@@ -26,26 +36,27 @@ codeunit 148072 "Cash Desk Purchase CZP"
 
         isInitialized := true;
         Commit();
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Cash Desk Purchase CZP");
     end;
 
     [Test]
     procedure CreatingWithdrawalCashDocumentFromPurchaseInvoice()
     begin
-        // [SCENARIO] Create Cash Documents in Purchase Invoice
+        // [SCENARIO] Create Cash Document in Purchase Invoice
         WithdrawalCashDocumentFromPurchaseInvoice(CashDocumentActionCZP::Create);
     end;
 
     [Test]
     procedure ReleasingWithdrawalCashDocumentFromPurchaseInvoice()
     begin
-        // [SCENARIO] Release Documents in Purchase Invoice
+        // [SCENARIO] Release Cash Document in Purchase Invoice
         WithdrawalCashDocumentFromPurchaseInvoice(CashDocumentActionCZP::Release);
     end;
 
     [Test]
     procedure PostingWithdrawalCashDocumentFromPurchaseInvoice()
     begin
-        // [SCENARIO] Post Cash Documents in Purchase Invoice
+        // [SCENARIO] Post Cash Document in Purchase Invoice
         WithdrawalCashDocumentFromPurchaseInvoice(CashDocumentActionCZP::Post);
     end;
 
@@ -60,7 +71,6 @@ codeunit 148072 "Cash Desk Purchase CZP"
         PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
         PostDocNo: Code[20];
     begin
-        // [FEATURE] Cash Desk
         Initialize();
 
         // [GIVEN] New Payment method is created and used in Purchase Invoice
@@ -148,7 +158,6 @@ codeunit 148072 "Cash Desk Purchase CZP"
         PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
         PostDocNo: Code[20];
     begin
-        // [FEATURE] Cash Desk
         Initialize();
 
         // [GIVEN] New Payment method is created and used in Purchase Credit Memo

@@ -51,6 +51,27 @@ table 20257 "Tax Entity"
         }
     }
 
+    trigger OnInsert()
+    var
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+    end;
+
+    trigger OnModify()
+    var
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+    end;
+
+    trigger OnDelete()
+    var
+        TaxTypeObjectHelper: Codeunit "Tax Type Object Helper";
+    begin
+        TaxTypeObjectHelper.OnBeforeValidateIfUpdateIsAllowed(Rec."Tax Type");
+    end;
+
     var
         AppObjectHelper: Codeunit "App Object Helper";
 }

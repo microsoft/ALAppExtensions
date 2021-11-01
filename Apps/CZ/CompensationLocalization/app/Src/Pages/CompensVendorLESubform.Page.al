@@ -126,12 +126,6 @@ page 31281 "Compens. Vendor LE Subform CZC"
                     ToolTip = 'Specifies the amount that remains to be applied to before the entry is totally applied to. The amount is shown in LCY.';
                     Visible = false;
                 }
-                field("Amount on Payment Order (LCY)"; Rec."Amount on Payment Order (LCY)")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the amount on payment order.';
-                    Visible = false;
-                }
                 field("Bal. Account Type"; Rec."Bal. Account Type")
                 {
                     ApplicationArea = Basic, Suite;

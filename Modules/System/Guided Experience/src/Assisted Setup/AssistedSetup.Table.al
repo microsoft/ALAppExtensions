@@ -29,32 +29,32 @@ table 1803 "Assisted Setup"
         field(3; "Order"; Integer)
         {
             Caption = 'Order';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Order cannot be determined at compile time because the extensions that add to the table are unknown and can insert records in any order.';
-            ObsoleteTag = '16.0';
+            ObsoleteTag = '19.0';
         }
         field(4; Status; Option)
         {
             Caption = 'Status';
             OptionCaption = 'Not Completed,Completed,Not Started,Seen,Watched,Read, ';
             OptionMembers = "Not Completed",Completed,"Not Started",Seen,Watched,Read," ";
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Only option used is Complete- new boolean field with that name created.';
-            ObsoleteTag = '16.0';
+            ObsoleteTag = '19.0';
         }
         field(5; Visible; Boolean)
         {
             Caption = 'Visible';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Only those setup records that are visible should be added.';
-            ObsoleteTag = '16.0';
+            ObsoleteTag = '19.0';
         }
         field(6; Parent; Integer)
         {
             Caption = 'Parent';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Hierarchy is removed. Instead the Group Name is populated for each record.';
-            ObsoleteTag = '16.0';
+            ObsoleteTag = '19.0';
         }
         field(7; "Video Url"; Text[250])
         {
@@ -70,16 +70,16 @@ table 1803 "Assisted Setup"
             InitValue = "Setup and Help";
             OptionCaption = ' ,Group,Setup and Help';
             OptionMembers = " ",Group,"Setup and Help";
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'No group type items anymore. Use the Group Name field instead.';
-            ObsoleteTag = '16.0';
+            ObsoleteTag = '19.0';
         }
         field(10; Featured; Boolean)
         {
             Caption = 'Featured';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Not used in any UI component.';
-            ObsoleteTag = '16.0';
+            ObsoleteTag = '19.0';
         }
         field(11; "Help Url"; Text[250])
         {
@@ -88,37 +88,37 @@ table 1803 "Assisted Setup"
         field(12; "Assisted Setup Page ID"; Integer)
         {
             Caption = 'Assisted Setup Page ID';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Redundant field- duplication of Page ID field.';
-            ObsoleteTag = '16.0';
+            ObsoleteTag = '19.0';
         }
         field(13; "Tour Id"; Integer)
         {
             Caption = 'Tour Id';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Not used in any UI component.';
-            ObsoleteTag = '16.0';
+            ObsoleteTag = '19.0';
         }
         field(14; "Video Status"; Boolean)
         {
             Caption = 'Video Status';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Not needed to track if user has seen video.';
-            ObsoleteTag = '16.0';
+            ObsoleteTag = '19.0';
         }
         field(15; "Help Status"; Boolean)
         {
             Caption = 'Help Status';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Not needed to track if user has seen help.';
-            ObsoleteTag = '16.0';
+            ObsoleteTag = '19.0';
         }
         field(16; "Tour Status"; Boolean)
         {
             Caption = 'Tour Status';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Not used in any UI component.';
-            ObsoleteTag = '16.0';
+            ObsoleteTag = '19.0';
         }
         field(19; "App ID"; Guid)
         {
@@ -159,9 +159,6 @@ table 1803 "Assisted Setup"
         key(Key1; "Page ID")
         {
             Clustered = true;
-        }
-        key(Key2; Order, Visible)
-        {
         }
     }
 

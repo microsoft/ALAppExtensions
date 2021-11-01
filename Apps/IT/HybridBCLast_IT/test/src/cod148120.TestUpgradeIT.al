@@ -7,6 +7,13 @@ codeunit 148120 "Test Upgrade IT"
         Assert: Codeunit Assert;
         CountryCodeTxt: Label 'IT', Locked = true;
 
+    local procedure Initialize()
+    var
+        UpgradeTagLibrary: Codeunit "Upgrade Tag Library";
+    begin
+        UpgradeTagLibrary.DeleteAllUpgradeTags();
+    end;
+
     [Test]
     procedure UpgradeSetsVendorLedgEntries()
     var
@@ -18,6 +25,7 @@ codeunit 148120 "Test Upgrade IT"
     begin
         // [SCENARIO] Data migration for IT runs the correct upgrade code for the vendor ledger entries.
         // [GIVEN] Both vendor ledger entry and detailed vendor ledger entries exist.
+        Initialize();
         VendorLedgerEntry.Init();
         VendorLedgerEntry."Entry No." := LibraryRandom.RandIntInRange(99000, 100000);
         VendorLedgerEntry."Document No." := '13';
@@ -58,6 +66,7 @@ codeunit 148120 "Test Upgrade IT"
     begin
         // [SCENARIO] Data migration for IT runs the correct upgrade code for the customer ledger entries.
         // [GIVEN] Both customer ledger entry and detailed customer ledger entries exist.
+        Initialize();
         CustLedgerEntry.Init();
         CustLedgerEntry."Entry No." := LibraryRandom.RandIntInRange(99000, 100000);
         CustLedgerEntry."Document No." := '13';

@@ -144,10 +144,9 @@ page 8883 "Sent Emails"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
+                Enabled = HasSourceRecord;
 
                 trigger OnAction()
-                var
-                    EmailImpl: Codeunit "Email Impl";
                 begin
                     EmailImpl.ShowSourceRecord(Rec."Message Id");
                 end;
@@ -163,12 +162,19 @@ page 8883 "Sent Emails"
         Rec.Ascending(false);
     end;
 
+    trigger OnAfterGetCurrRecord()
+    begin
+        HasSourceRecord := EmailImpl.HasSourceRecord(Rec."Message Id");
+    end;
+
     trigger OnDeleteRecord(): Boolean
     var
         SentEmail: Record "Sent Email";
     begin
         if SentEmail.Get(Rec.Id) then
             SentEmail.Delete(true);
+
+        HasSourceRecord := false;
     end;
 
     local procedure ShowAccountInformation()
@@ -201,9 +207,12 @@ page 8883 "Sent Emails"
 
     var
         EmailViewer: Codeunit "Email Viewer";
+        EmailImpl: Codeunit "Email Impl";
         NewerThanDate: DateTime;
         EmailAccountId, SourceSystemID : Guid;
         SourceTableID: Integer;
+        [InDataSet]
+        HasSourceRecord: Boolean;
         NoSentEmails: Boolean;
         EmailConnectorHasBeenUninstalledMsg: Label 'The email extension that was used to send this email has been uninstalled. To view information about the email account, you must reinstall the extension.';
 }

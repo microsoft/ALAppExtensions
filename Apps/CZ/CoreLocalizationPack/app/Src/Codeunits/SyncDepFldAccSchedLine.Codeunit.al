@@ -24,7 +24,9 @@ codeunit 31189 "Sync.Dep.Fld-AccSchedLine CZL"
         SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
         PreviousRecordRef: RecordRef;
         DepFieldInt, NewFieldInt : Integer;
+#if not CLEAN17
         DepFieldTxt, NewFieldTxt : Text;
+#endif
     begin
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);

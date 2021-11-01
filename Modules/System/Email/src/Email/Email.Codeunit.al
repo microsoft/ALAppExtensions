@@ -228,15 +228,49 @@ codeunit 8901 "Email"
 
     #endregion
 
+#if not CLEAN19
     ///<summary>
     /// Gets the sent emails related to a record.
     ///</summary>
     ///<param name="TableId">The table ID of the record.</param>
     ///<param name="SystemId">The system ID of the record.</param>
     ///<returns>The sent email related to a record.</returns>
+    [Obsolete('Use GetSentEmailsForRecord(TableId: Integer; SystemId: Guid; var ResultEmailOutbox: Record "Email Outbox" temporary) instead.','19.0')]
     procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid) ResultSentEmails: Record "Sent Email" temporary;
     begin
-        exit(EmailImpl.GetSentEmailsForRecord(TableId, SystemId));
+        EmailImpl.GetSentEmailsForRecord(TableId, SystemId, ResultSentEmails);
+    end;
+#endif
+
+    ///<summary>
+    /// Gets the sent emails related to a record.
+    ///</summary>
+    ///<param name="TableId">The table ID of the record.</param>
+    ///<param name="SystemId">The system ID of the record.</param>
+    ///<returns>The sent email related to a record.</returns>
+    procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid; var ResultSentEmails: Record "Sent Email" temporary)
+    begin
+        EmailImpl.GetSentEmailsForRecord(TableId, SystemId, ResultSentEmails);
+    end;
+
+    ///<summary>
+    /// Gets the sent emails related to a record.
+    ///</summary>
+    ///<param name="RecordVariant">Source Record.</param>
+    ///<param name="ResultSentEmails">The sent email related to a record.</param>
+    procedure GetSentEmailsForRecord(RecordVariant: Variant; var ResultSentEmails: Record "Sent Email" temporary);
+    begin
+        EmailImpl.GetSentEmailsForRecord(RecordVariant, ResultSentEmails);
+    end;
+
+    ///<summary>
+    /// Gets the outbox emails related to a record.
+    ///</summary>
+    ///<param name="RecordVariant">Source Record.</param>
+    ///<param name="ResultEmailOutbox">The outbox emails related to a record.</param>
+    procedure GetEmailOutboxForRecord(RecordVariant: Variant; var ResultEmailOutbox: Record "Email Outbox" temporary);
+    begin
+        EmailImpl.GetEmailOutboxForRecord(RecordVariant, ResultEmailOutbox);
     end;
 
     ///<summary>
@@ -247,6 +281,16 @@ codeunit 8901 "Email"
     procedure OpenSentEmails(TableId: Integer; SystemId: Guid)
     begin
         EmailImpl.OpenSentEmails(TableId, SystemId);
+    end;
+
+    ///<summary>
+    /// Gets the outbox email status.
+    ///</summary>
+    ///<param name="MessageId">The MessageId of the record.</param>
+    ///<returns>Email Status of the record.</returns>
+    procedure GetOutboxEmailRecordStatus(MessageId: Guid) ResultStatus: Enum "Email Status";
+    begin
+        exit(EmailImpl.GetOutboxEmailRecordStatus(MessageId));
     end;
 
     ///<summary>

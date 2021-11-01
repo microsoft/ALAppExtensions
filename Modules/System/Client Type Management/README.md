@@ -14,7 +14,7 @@ To see how to mock the client type in tests, see `SetClientType` in [codeunit "T
  
 
 ### GetCurrentClientType (Method) <a name="GetCurrentClientType"></a> 
-Example 
+Example
  `
  IF ClientTypeManagement.GetCurrentClientType IN [CLIENTTYPE::xxx, CLIENTTYPE::yyy] THEN
  `

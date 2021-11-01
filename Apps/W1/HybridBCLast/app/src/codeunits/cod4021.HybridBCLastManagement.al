@@ -71,7 +71,15 @@ codeunit 4021 "Hybrid BC Last Management"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnReplicationRunCompleted', '', false, false)]
-    local procedure UpdateStatusOnHybridReplicationCompleted(RunId: Text[50]; SubscriptionId: Text; NotificationText: Text)
+    local procedure ReplicationRunCompleted(RunId: Text[50]; SubscriptionId: Text; NotificationText: Text)
+    var
+        W1Management: Codeunit "W1 Management";
+    begin
+        UpdateStatusOnHybridReplicationCompleted(RunId, SubscriptionId);
+        W1Management.SetUpgradePendingOnReplicationRunCompleted(RunId, SubscriptionId, NotificationText);
+    end;
+
+    local procedure UpdateStatusOnHybridReplicationCompleted(RunId: Text[50]; SubscriptionId: Text)
     var
         HybridReplicationDetail: Record "Hybrid Replication Detail";
         HybridReplicationSummary: Record "Hybrid Replication Summary";
@@ -137,48 +145,72 @@ codeunit 4021 "Hybrid BC Last Management"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Management", 'OnAfterCompanyUpgradeFailed', '', true, false)]
-    local procedure UpdateStatusOnCompanyMigrationFailed(HybridReplicationSummary: Record "Hybrid Replication Summary"; ErrorMessage: Text)
-    var
-        HybridReplicationDetail: Record "Hybrid Replication Detail";
-        SourceTableMapping: Record "Source Table Mapping";
-        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+    local procedure UpdateStatusOnCompanyUpgradeFailed(var HybridReplicationSummary: Record "Hybrid Replication Summary"; ErrorMessage: Text)
     begin
         Session.LogMessage('0000EV2', CompanyUpgradeFailedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
-
-        // Need to reset synced version for failed tables and record the error
-        if SourceTableMapping.FindSet() then
-            repeat
-                if IntelligentCloudStatus.Get(SourceTableMapping.SqlTableName(true), CompanyName()) then begin
-                    IntelligentCloudStatus."Synced Version" := 0;
-                    IntelligentCloudStatus.Blocked := true;
-                    IntelligentCloudStatus.Modify();
-
-                    HybridReplicationDetail.SetFailureStatus(HybridReplicationSummary."Run ID",
-                        SourceTableMapping."Source Table Name", IntelligentCloudStatus."Company Name", ErrorMessage);
-                end;
-            until SourceTableMapping.Next() = 0;
+        MarkCompanyUpgradeAsFailed(CopyStr(CompanyName(), 1, 50), ErrorMessage, HybridReplicationSummary)
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Management", 'OnAfterNonCompanyUpgradeFailed', '', true, false)]
-    local procedure UpdateStatusOnNonCompanyMigrationFailed(HybridReplicationSummary: Record "Hybrid Replication Summary"; ErrorMessage: Text)
-    var
-        HybridReplicationDetail: Record "Hybrid Replication Detail";
-        SourceTableMapping: Record "Source Table Mapping";
-        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+    local procedure UpdateStatusOnNonCompanyMigrationFailed(var HybridReplicationSummary: Record "Hybrid Replication Summary"; ErrorMessage: Text)
     begin
         Session.LogMessage('0000EV3', PerDatabaseUpgradeFailedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+        MarkCompanyUpgradeAsFailed('', ErrorMessage, HybridReplicationSummary)
+    end;
 
-        // Need to reset synced version for failed tables and record the error
-        if SourceTableMapping.FindSet() then
-            repeat
-                if IntelligentCloudStatus.Get(SourceTableMapping.SqlTableName(false)) then begin
-                    IntelligentCloudStatus."Synced Version" := 0;
-                    IntelligentCloudStatus.Blocked := true;
-                    IntelligentCloudStatus.Modify();
+    local procedure MarkCompanyUpgradeAsFailed(CompanyName: Text[50]; ErrorMessage: Text; var HybridReplicationSummary: Record "Hybrid Replication Summary")
+    var
+        HybridCompanyStatus: Record "Hybrid Company Status";
+        FailureMessageOutStream: OutStream;
+    begin
+        HybridCompanyStatus.Get(CompanyName);
+        HybridCompanyStatus."Upgrade Status" := HybridCompanyStatus."Upgrade Status"::Failed;
+        HybridCompanyStatus."Upgrade Failure Message".CreateOutStream(FailureMessageOutStream);
+        FailureMessageOutStream.Write(ErrorMessage);
+        HybridCompanyStatus.Modify();
 
-                    HybridReplicationDetail.SetFailureStatus(HybridReplicationSummary."Run ID",
-                        SourceTableMapping."Source Table Name", IntelligentCloudStatus."Company Name", ErrorMessage);
-                end;
-            until SourceTableMapping.Next() = 0;
+        HybridReplicationSummary.Status := HybridReplicationSummary.Status::UpgradeFailed;
+        HybridReplicationSummary.Modify();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnBackupUpgradeTags', '', false, false)]
+    local procedure BackupUpgradeTags(ProductID: Text[250]; var Handled: Boolean; var BackupUpgradeTags: Boolean)
+    begin
+        if Handled then
+            exit;
+
+        if not GetBCLastProductEnabled() then
+            exit;
+
+        // Don't set handled to allow the others to override
+        BackupUpgradeTags := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnSetAllUpgradeTags', '', false, false)]
+    local procedure HandleSetAllUpgradeTags(NewCompanyName: Text; var SkipSetAllUpgradeTags: Boolean)
+    var
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        if SkipSetAllUpgradeTags then
+            exit;
+
+        if not GetBCLastProductEnabled() then
+            exit;
+
+        SkipSetAllUpgradeTags := HybridCloudManagement.IsCompanyUnderUpgrade(NewCompanyName);
+    end;
+
+    procedure GetBCLastProductEnabled(): Boolean
+    var
+        InteligentCloudSetup: Record "Intelligent Cloud Setup";
+        HybridBCLastWizard: Codeunit "Hybrid BC Last Wizard";
+    begin
+        if not InteligentCloudSetup.Get() then
+            exit(false);
+
+        if not (InteligentCloudSetup."Product ID" = HybridBCLastWizard.ProductId()) then
+            exit(false);
+
+        exit(true);
     end;
 }

@@ -2,6 +2,9 @@ codeunit 11757 "Unreliable Payer WS CZL"
 {
     var
         NamespaceTok: Label 'http://adis.mfcr.cz/rozhraniCRPDPH/', Locked = true;
+        GetStatusSoapActionTok: Label 'http://adis.mfcr.cz/rozhraniCRPDPH/getStatusNespolehlivyPlatce', Locked = true;
+        GetStatusExtendedSoapActionTok: Label 'http://adis.mfcr.cz/rozhraniCRPDPH/getStatusNespolehlivyPlatceRozsireny', Locked = true;
+        GetListSoapActionTok: Label 'http://adis.mfcr.cz/rozhraniCRPDPH/getSeznamNespolehlivyPlatce', Locked = true;
 
     [TryFunction]
     procedure GetStatus(var VATRegNoList: List of [Code[20]]; var ResponseTempBlob: Codeunit "Temp Blob")
@@ -19,7 +22,7 @@ codeunit 11757 "Unreliable Payer WS CZL"
             ChildXmlNode := XmlElement.Create('dic', NamespaceTok, FormatVATRegNo(VATRegNo));
             RootXmlNode.Add(ChildXmlNode);
         end;
-        SendHttpRequest(RequestXmlDocument, ResponseTempBlob);
+        SendHttpRequest(RequestXmlDocument, GetStatusSoapActionTok, ResponseTempBlob);
     end;
 
     [TryFunction]
@@ -38,7 +41,7 @@ codeunit 11757 "Unreliable Payer WS CZL"
             ChildXmlNode := XmlElement.Create('dic', NamespaceTok, FormatVATRegNo(VATRegNo));
             RootXmlNode.Add(ChildXmlNode);
         end;
-        SendHttpRequest(RequestXmlDocument, ResponseTempBlob);
+        SendHttpRequest(RequestXmlDocument, GetStatusExtendedSoapActionTok, ResponseTempBlob);
     end;
 
     [TryFunction]
@@ -50,7 +53,7 @@ codeunit 11757 "Unreliable Payer WS CZL"
         RequestXmlDocument := XmlDocument.Create();
         RootXmlNode := XmlElement.Create('SeznamNespolehlivyPlatceRequest', NamespaceTok);
         RequestXmlDocument.Add(RootXmlNode);
-        SendHttpRequest(RequestXmlDocument, ResponseTempBlob);
+        SendHttpRequest(RequestXmlDocument, GetListSoapActionTok, ResponseTempBlob);
     end;
 
     procedure GetInputRecordLimit(): Integer
@@ -79,13 +82,14 @@ codeunit 11757 "Unreliable Payer WS CZL"
                 Message(VATRegNoLimitExceededMsg, InputRecordLimit, VatRegNoCount);
     end;
 
-    local procedure SendHttpRequest(RequestXmlDocument: XmlDocument; var ResponseTempBlob: Codeunit "Temp Blob")
+    local procedure SendHttpRequest(RequestXmlDocument: XmlDocument; SoapAction: Text; var ResponseTempBlob: Codeunit "Temp Blob")
     var
         SOAPWSRequestManagementCZL: Codeunit "SOAP WS Request Management CZL";
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
     begin
         SOAPWSRequestManagementCZL.SetStreamEncoding(TextEncoding::Windows);
         SOAPWSRequestManagementCZL.SetTimeout(10000);
+        SOAPWSRequestManagementCZL.SetAction(SoapAction);
         SOAPWSRequestManagementCZL.DisableHttpsCheck();
         if SOAPWSRequestManagementCZL.SendRequestToWebService(UnreliablePayerMgtCZL.GetUnreliablePayerServiceURL(), RequestXmlDocument) then
             SOAPWSRequestManagementCZL.GetResponseContent(ResponseTempBlob)

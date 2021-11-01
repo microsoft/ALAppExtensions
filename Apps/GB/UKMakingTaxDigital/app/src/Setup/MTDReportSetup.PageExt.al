@@ -7,6 +7,19 @@ pageextension 10539 "MTD Report Setup" extends "VAT Report Setup"
 {
     layout
     {
+        modify("Return Period")
+        {
+            Caption = 'Making Tax Digital';
+        }
+        addfirst("Return Period")
+        {
+            field(Enabled; Rec."MTD Enabled")
+            {
+                Caption = 'Enabled';
+                ToolTip = 'Specifies if the Making Tax Digital feature is enabled.';
+                ApplicationArea = Basic, Suite;
+            }
+        }
         addlast("Return Period")
         {
 #if not CLEAN19

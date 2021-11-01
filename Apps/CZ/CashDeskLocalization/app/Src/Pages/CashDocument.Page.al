@@ -271,6 +271,12 @@ page 31160 "Cash Document CZP"
                 ApplicationArea = Notes;
                 Visible = true;
             }
+            part(PendingApprovalFactBox; "Pending Approval FactBox")
+            {
+                ApplicationArea = All;
+                SubPageLink = "Table ID" = const(11732), "Document No." = field("No.");
+                Visible = OpenApprovalEntriesExistForCurrUser;
+            }
             part(WorkflowStatusFactBox; "Workflow Status FactBox")
             {
                 ApplicationArea = All;
@@ -450,7 +456,7 @@ page 31160 "Cash Document CZP"
                         Rec.VATRounding();
                     end;
                 }
-#if not CLEAN18
+#if not CLEAN19
                 action("Link Advance Letters")
                 {
                     ApplicationArea = Basic, Suite;
@@ -626,6 +632,7 @@ page 31160 "Cash Document CZP"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Preview Posting';
                     Image = ViewPostedOrder;
+                    ShortCutKey = 'Ctrl+Alt+F9';
                     ToolTip = 'Review the result of the posting lines before the actual posting.';
 
                     trigger OnAction()
@@ -722,11 +729,13 @@ page 31160 "Cash Document CZP"
     trigger OnAfterGetRecord()
     begin
         UpdateEditable();
+#if not CLEAN19
         UpdateEnabled();
+#endif
         SetControlVisibility();
-#if not CLEAN18
+#if not CLEAN19
         LinkAdvLettersEnabled := not Rec.IsEETCashRegister();
-#endif        
+#endif
     end;
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
@@ -775,7 +784,7 @@ page 31160 "Cash Document CZP"
         OpenPostedCashDocQst: Label 'The cash document has been posted and moved to the Posted Cash Documents window.\\Do you want to open the posted cash document?';
         DocumentIsPosted: Boolean;
         DocumentIsReleased: Boolean;
-#if not CLEAN18
+#if not CLEAN19
         [InDataSet]
         LinkAdvLettersEnabled: Boolean;
 #endif
@@ -838,11 +847,13 @@ page 31160 "Cash Document CZP"
         WithdrawalEditable := Rec."Document Type" = Rec."Document Type"::Withdrawal;
     end;
 
+#if not CLEAN19
     local procedure UpdateEnabled()
     begin
         LinkAdvLettersEnabled := not Rec.IsEETCashRegister();
     end;
 
+#endif
     local procedure SetShowMandatoryConditions()
     var
         CashDeskCZP: Record "Cash Desk CZP";

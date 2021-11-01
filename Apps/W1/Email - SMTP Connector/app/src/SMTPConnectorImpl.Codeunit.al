@@ -260,6 +260,7 @@ codeunit 4513 "SMTP Connector Impl."
         exit(true);
     end;
 
+    [NonDebuggable]
     internal procedure CreateAccount(var SMTPAccount: Record "SMTP Account"; Password: Text; var EmailAccount: Record "Email Account")
     var
         NewSMTPAccount: Record "SMTP Account";

@@ -1,7 +1,37 @@
 #pragma warning disable AL0432,AL0603
 codeunit 31054 "Install Application CZP"
 {
-    Subtype = Install;
+    Subtype = install;
+    Permissions = tabledata "Cash Desk CZP" = im,
+                  tabledata "Comment Line" = i,
+                  tabledata "Default Dimension" = i,
+                  tabledata "Cash Desk User CZP" = im,
+                  tabledata "Cash Desk Event CZP" = im,
+                  tabledata "Cash Document Header CZP" = im,
+                  tabledata "Cash Document Line CZP" = im,
+                  tabledata "Posted Cash Document Hdr. CZP" = im,
+                  tabledata "Posted Cash Document Line CZP" = im,
+                  tabledata "Currency Nominal Value CZP" = i,
+                  tabledata "Source Code" = i,
+                  tabledata "Cash Desk Rep. Selections CZP" = i,
+                  tabledata "Bank Account" = m,
+                  tabledata "Payment Method" = m,
+                  tabledata "Sales Header" = m,
+                  tabledata "Sales Invoice Header" = m,
+                  tabledata "Sales Cr.Memo Header" = m,
+                  tabledata "Purchase Header" = m,
+                  tabledata "Purch. Inv. Header" = m,
+                  tabledata "Purch. Cr. Memo Hdr." = m,
+                  tabledata "Service Header" = m,
+                  tabledata "Service Invoice Header" = m,
+                  tabledata "Service Cr.Memo Header" = m,
+                  tabledata "Source Code Setup" = m,
+                  tabledata "User Setup" = m,
+                  tabledata "General Ledger Setup" = m;
+
+    var
+        InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
+        AppInfo: ModuleInfo;
 
     trigger OnInstallAppPerDatabase()
     begin
@@ -10,18 +40,48 @@ codeunit 31054 "Install Application CZP"
 
     trigger OnInstallAppPerCompany()
     begin
-        if not InitializeDone() then
+        if not InitializeDone() then begin
+            BindSubscription(InstallApplicationsMgtCZL);
+            CopyUsage();
             CopyData();
-
+            UnbindSubscription(InstallApplicationsMgtCZL);
+        end;
         CompanyInitialize();
     end;
 
     local procedure InitializeDone(): boolean
-    var
-        AppInfo: ModuleInfo;
     begin
         NavApp.GetCurrentModuleInfo(AppInfo);
         exit(AppInfo.DataVersion() <> Version.Create('0.0.0.0'));
+    end;
+
+    local procedure CopyPermission();
+    begin
+        NavApp.GetCurrentModuleInfo(AppInfo);
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Cash Document Header", Database::"Cash Document Header CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Cash Document Line", Database::"Cash Document Line CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Posted Cash Document Header", Database::"Posted Cash Document Hdr. CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Posted Cash Document Line", Database::"Posted Cash Document Line CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Currency Nominal Value", Database::"Currency Nominal Value CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Bank Account", Database::"Cash Desk CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Cash Desk User", Database::"Cash Desk User CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Cash Desk Event", Database::"Cash Desk Event CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Cash Desk Cue", Database::"Cash Desk Cue CZP");
+        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Cash Desk Report Selections", Database::"Cash Desk Rep. Selections CZP");
+    end;
+
+    local procedure CopyUsage();
+    begin
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Cash Document Header", Database::"Cash Document Header CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Cash Document Line", Database::"Cash Document Line CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Posted Cash Document Header", Database::"Posted Cash Document Hdr. CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Posted Cash Document Line", Database::"Posted Cash Document Line CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Currency Nominal Value", Database::"Currency Nominal Value CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Bank Account", Database::"Cash Desk CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Cash Desk User", Database::"Cash Desk User CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Cash Desk Event", Database::"Cash Desk Event CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Cash Desk Cue", Database::"Cash Desk Cue CZP");
+        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Cash Desk Report Selections", Database::"Cash Desk Rep. Selections CZP");
     end;
 
     local procedure CopyData()
@@ -34,8 +94,8 @@ codeunit 31054 "Install Application CZP"
         CopyPostedCashDocumentHeader();
         CopyPostedCashDocumentLine();
         CopyPaymentMethod();
-        CopyPurchaseHeader();
-        CopyPurchaseInvoiceHeader();
+        CopySalesHeader();
+        CopySalesInvoiceHeader();
         CopySalesCrMemoHeader();
         CopyPurchaseHeader();
         CopyPurchaseInvoiceHeader();
@@ -47,39 +107,6 @@ codeunit 31054 "Install Application CZP"
         CopyUserSetup();
         CopyGeneralLedgerSetup();
         CopyCurrencyNominalValue();
-    end;
-
-    local procedure CopyPermission();
-    begin
-        InsertTableDataPermissions(Database::"Cash Document Header", Database::"Cash Document Header CZP");
-        InsertTableDataPermissions(Database::"Cash Document Line", Database::"Cash Document Line CZP");
-        InsertTableDataPermissions(Database::"Posted Cash Document Header", Database::"Posted Cash Document Hdr. CZP");
-        InsertTableDataPermissions(Database::"Posted Cash Document Line", Database::"Posted Cash Document Line CZP");
-        InsertTableDataPermissions(Database::"Currency Nominal Value", Database::"Currency Nominal Value CZP");
-        InsertTableDataPermissions(Database::"Bank Account", Database::"Cash Desk CZP");
-        InsertTableDataPermissions(Database::"Cash Desk User", Database::"Cash Desk User CZP");
-        InsertTableDataPermissions(Database::"Cash Desk Event", Database::"Cash Desk Event CZP");
-        InsertTableDataPermissions(Database::"Cash Desk Cue", Database::"Cash Desk Cue CZP");
-        InsertTableDataPermissions(Database::"Cash Desk Report Selections", Database::"Cash Desk Rep. Selections CZP");
-    end;
-
-    local procedure InsertTableDataPermissions(OldTableID: Integer; NewTableID: Integer)
-    var
-        Permission: Record Permission;
-        NewPermission: Record Permission;
-    begin
-        Permission.SetRange("Object Type", Permission."Object Type"::"Table Data");
-        Permission.SetRange("Object ID", OldTableID);
-        if not Permission.FindSet() then
-            exit;
-        repeat
-            if not NewPermission.Get(Permission."Role ID", Permission."Object Type", Permission."Object ID") then begin
-                NewPermission.Init();
-                NewPermission := Permission;
-                NewPermission."Object ID" := NewTableID;
-                NewPermission.Insert();
-            end;
-        until Permission.Next() = 0;
     end;
 
     local procedure CopyCashDesk();
@@ -97,7 +124,8 @@ codeunit 31054 "Install Application CZP"
                 if not CashDeskCZP.Get(BankAccount."No.") then begin
                     CashDeskCZP.Init();
                     CashDeskCZP."No." := BankAccount."No.";
-                    CashDeskCZP.Insert();
+                    CashDeskCZP.SystemId := BankAccount.SystemId;
+                    CashDeskCZP.Insert(false, true);
                 end;
                 CashDeskCZP.Name := BankAccount.Name;
                 CashDeskCZP."Search Name" := BankAccount."Search Name";
@@ -151,7 +179,8 @@ codeunit 31054 "Install Application CZP"
                     repeat
                         CashDeskCommentLine := BankAccountCommentLine;
                         CashDeskCommentLine."Table Name" := BankAccountCommentLine."Table Name"::"Cash Desk CZP";
-                        CashDeskCommentLine.Insert(false);
+                        CashDeskCommentLine.SystemId := BankAccountCommentLine.SystemId;
+                        CashDeskCommentLine.Insert(false, true);
                     until BankAccountCommentLine.Next() = 0;
 
                 BankAccountDefaultDimension.SetRange("Table ID", Database::"Bank Account");
@@ -160,7 +189,8 @@ codeunit 31054 "Install Application CZP"
                     repeat
                         CashDeskDefaultDimension := BankAccountDefaultDimension;
                         CashDeskDefaultDimension."Table ID" := Database::"Cash Desk CZP";
-                        CashDeskDefaultDimension.Insert(false);
+                        CashDeskDefaultDimension.SystemId := BankAccountDefaultDimension.SystemId;
+                        CashDeskDefaultDimension.Insert(false, true);
                     until BankAccountDefaultDimension.Next() = 0;
             until BankAccount.Next() = 0;
     end;
@@ -176,7 +206,8 @@ codeunit 31054 "Install Application CZP"
                     CashDeskUserCZP.Init();
                     CashDeskUserCZP."Cash Desk No." := CashDeskUser."Cash Desk No.";
                     CashDeskUserCZP."User ID" := CashDeskUser."User ID";
-                    CashDeskUserCZP.Insert();
+                    CashDeskUserCZP.SystemId := CashDeskUser.SystemId;
+                    CashDeskUserCZP.Insert(false, true);
                 end;
                 CashDeskUserCZP.Create := CashDeskUser.Create;
                 CashDeskUserCZP.Issue := CashDeskUser.Issue;
@@ -197,7 +228,8 @@ codeunit 31054 "Install Application CZP"
                 if not CashDeskEventCZP.Get(CashDeskEvent.Code) then begin
                     CashDeskEventCZP.Init();
                     CashDeskEventCZP.Code := CashDeskEvent.Code;
-                    CashDeskEventCZP.Insert();
+                    CashDeskEventCZP.SystemId := CashDeskEvent.SystemId;
+                    CashDeskEventCZP.Insert(false, true);
                 end;
                 CashDeskEventCZP."Cash Desk No." := CashDeskEvent."Cash Desk No.";
                 CashDeskEventCZP."Document Type" := CashDeskEvent."Cash Document Type";
@@ -226,7 +258,8 @@ codeunit 31054 "Install Application CZP"
                     CashDocumentHeaderCZP.Init();
                     CashDocumentHeaderCZP."Cash Desk No." := CashDocumentHeader."Cash Desk No.";
                     CashDocumentHeaderCZP."No." := CashDocumentHeader."No.";
-                    CashDocumentHeaderCZP.Insert();
+                    CashDocumentHeaderCZP.SystemId := CashDocumentHeader.SystemId;
+                    CashDocumentHeaderCZP.Insert(false, true);
                 end;
                 CashDocumentHeaderCZP."Pay-to/Receive-from Name" := CashDocumentHeader."Pay-to/Receive-from Name";
                 CashDocumentHeaderCZP."Pay-to/Receive-from Name 2" := CashDocumentHeader."Pay-to/Receive-from Name 2";
@@ -281,7 +314,8 @@ codeunit 31054 "Install Application CZP"
                     CashDocumentLineCZP."Cash Desk No." := CashDocumentLine."Cash Desk No.";
                     CashDocumentLineCZP."Cash Document No." := CashDocumentLine."Cash Document No.";
                     CashDocumentLineCZP."Line No." := CashDocumentLine."Line No.";
-                    CashDocumentLineCZP.Insert();
+                    CashDocumentLineCZP.SystemId := CashDocumentLine.SystemId;
+                    CashDocumentLineCZP.Insert(false, true);
                 end;
                 CashDocumentLineCZP."Gen. Document Type" := CashDocumentLine."Document Type";
                 CashDocumentLineCZP."Account Type" := CashDocumentLine."Account Type";
@@ -346,7 +380,8 @@ codeunit 31054 "Install Application CZP"
                     PostedCashDocumentHdrCZP.Init();
                     PostedCashDocumentHdrCZP."Cash Desk No." := PostedCashDocumentHeader."Cash Desk No.";
                     PostedCashDocumentHdrCZP."No." := PostedCashDocumentHeader."No.";
-                    PostedCashDocumentHdrCZP.Insert();
+                    PostedCashDocumentHdrCZP.SystemId := PostedCashDocumentHeader.SystemId;
+                    PostedCashDocumentHdrCZP.Insert(false, true);
                 end;
                 PostedCashDocumentHdrCZP."Pay-to/Receive-from Name" := PostedCashDocumentHeader."Pay-to/Receive-from Name";
                 PostedCashDocumentHdrCZP."Pay-to/Receive-from Name 2" := PostedCashDocumentHeader."Pay-to/Receive-from Name 2";
@@ -398,7 +433,8 @@ codeunit 31054 "Install Application CZP"
                     PostedCashDocumentLineCZP."Cash Desk No." := PostedCashDocumentLine."Cash Desk No.";
                     PostedCashDocumentLineCZP."Cash Document No." := PostedCashDocumentLine."Cash Document No.";
                     PostedCashDocumentLineCZP."Line No." := PostedCashDocumentLine."Line No.";
-                    PostedCashDocumentLineCZP.Insert();
+                    PostedCashDocumentLineCZP.SystemId := PostedCashDocumentLine.SystemId;
+                    PostedCashDocumentLineCZP.Insert(false, true);
                 end;
                 PostedCashDocumentLineCZP."Gen. Document Type" := PostedCashDocumentLine."Document Type";
                 PostedCashDocumentLineCZP."Account Type" := PostedCashDocumentLine."Account Type";
@@ -611,7 +647,8 @@ codeunit 31054 "Install Application CZP"
                     CurrencyNominalValueCZP.Init();
                     CurrencyNominalValueCZP."Currency Code" := CurrencyNominalValue."Currency Code";
                     CurrencyNominalValueCZP."Nominal Value" := CurrencyNominalValue.Value;
-                    CurrencyNominalValueCZP.Insert();
+                    CurrencyNominalValueCZP.SystemId := CurrencyNominalValue.SystemId;
+                    CurrencyNominalValueCZP.Insert(false, true);
                 end;
             until CurrencyNominalValue.Next() = 0;
     end;

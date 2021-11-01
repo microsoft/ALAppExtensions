@@ -8,12 +8,20 @@ codeunit 148105 "Test Upgrade CH"
         LibraryHybridBCLast: Codeunit "Library - Hybrid BC Last";
         CountryCodeTxt: Label 'CH', Locked = true;
 
+    local procedure Initialize()
+    var
+        UpgradeTagLibrary: Codeunit "Upgrade Tag Library";
+    begin
+        UpgradeTagLibrary.DeleteAllUpgradeTags();
+    end;
+
     [Test]
     procedure VerifyMappedTablesStaged()
     var
         SourceTableMapping: Record "Source Table Mapping";
     begin
         // [SCENARIO 287703] Swiss extension maps tables that need to be staged
+        Initialize();
         LibraryHybridBCLast.InitializeMapping(14.5);
 
         // [WHEN] The extension is installed
@@ -29,6 +37,7 @@ codeunit 148105 "Test Upgrade CH"
         SourceTableMapping: Record "Source Table Mapping";
     begin
         // [SCENARIO 287703] Swiss extension maps tables that have moved to W1
+        Initialize();
         LibraryHybridBCLast.InitializeMapping(14.5);
 
         // [WHEN] The extension is installed
@@ -46,6 +55,7 @@ codeunit 148105 "Test Upgrade CH"
         W1CompanyHandler: Codeunit "W1 Company Handler";
     begin
         // [SCENARIO 287703] Source Code Setup table is correctly upgraded
+        Initialize();
         LibraryHybridBCLast.InitializeMapping(14.5);
         HybridReplicationSummary.Init();
 
@@ -74,6 +84,7 @@ codeunit 148105 "Test Upgrade CH"
         W1CompanyHandler: Codeunit "W1 Company Handler";
     begin
         // [SCENARIO xxxxxx] Inventory Setup table is correctly upgraded
+        Initialize();
         LibraryHybridBCLast.InitializeMapping(14.5);
 
         // [GIVEN] An Inventory Setup record has been created
@@ -105,6 +116,7 @@ codeunit 148105 "Test Upgrade CH"
         W1CompanyHandler: Codeunit "W1 Company Handler";
     begin
         // [SCENARIO] When migration upgrade logic is run, the ISO Currency Code field is moved to the new W1 field.
+        Initialize();
         LibraryHybridBCLast.InitializeMapping(14.5);
 
         // [GIVEN] A currency record exists with the old field populated.
@@ -129,6 +141,7 @@ codeunit 148105 "Test Upgrade CH"
         W1CompanyHandler: Codeunit "W1 Company Handler";
     begin
         // [SCENARIO] When migration upgrade logic is run, the old blocked fields are moved to the W1 fields.
+        Initialize();
         LibraryHybridBCLast.InitializeMapping(14.5);
 
         // [GIVEN] An item record exists with the old blocked fields populated.

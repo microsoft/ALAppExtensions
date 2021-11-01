@@ -26,11 +26,20 @@ pageextension 11700 "Company Information CZL" extends "Company Information"
                 ToolTip = 'Specifies if the bank account will be checked.';
             }
         }
-        moveafter("Registration No."; "VAT Registration No.")
-        modify("Registration No.")
+        addafter("System Indicator")
         {
-            Importance = Promoted;
+            group("Registration CZL")
+            {
+                Caption = 'Registration';
+                field("Registration No. CZL"; Rec."Registration No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the registration number received from goverment.';
+                    Importance = Promoted;
+                }
+            }
         }
+        moveafter("Registration No. CZL"; "VAT Registration No.")
         addafter("VAT Registration No.")
         {
             field("Tax Registration No. CZL"; Rec."Tax Registration No. CZL")
@@ -39,6 +48,10 @@ pageextension 11700 "Company Information CZL" extends "Company Information"
                 ToolTip = 'Specifies the secondary VAT registration number for the company.';
                 Importance = Additional;
             }
+        }
+        modify("EORI Number")
+        {
+            Visible = true;
         }
     }
     actions
@@ -50,7 +63,9 @@ pageextension 11700 "Company Information CZL" extends "Company Information"
             {
                 Caption = 'O&ther';
 #else
+#pragma warning disable AL0432
         addfirst("O&ther")
+#pragma warning restore AL0432
         {
 #endif
             action(OfficialsCZL)

@@ -17,7 +17,7 @@ page 8885 "Email Activities"
         {
             cuegroup(OutboxCueContainer)
             {
-                Caption = 'Email Status';
+                Caption = 'Email Activities';
 
                 field("Failed Emails"; FailedOutboxEmails)
                 {

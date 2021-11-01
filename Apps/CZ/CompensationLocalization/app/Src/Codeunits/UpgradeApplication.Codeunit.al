@@ -10,15 +10,23 @@ codeunit 31263 "Upgrade Application CZC"
     trigger OnUpgradePerDatabase()
     begin
         DataUpgradeMgt.SetUpgradeInProgress();
-
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZC.GetDataVersion180PerDatabaseUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZC.GetDataVersion180PerDatabaseUpgradeTag());
+        SetDatabaseUpgradeTags();
     end;
 
     trigger OnUpgradePerCompany()
     begin
         DataUpgradeMgt.SetUpgradeInProgress();
+        SetCompanyUpgradeTags();
+    end;
 
+    local procedure SetDatabaseUpgradeTags();
+    begin
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZC.GetDataVersion180PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZC.GetDataVersion180PerDatabaseUpgradeTag());
+    end;
+
+    local procedure SetCompanyUpgradeTags();
+    begin
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZC.GetDataVersion180PerCompanyUpgradeTag()) then
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZC.GetDataVersion180PerCompanyUpgradeTag());
     end;

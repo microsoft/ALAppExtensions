@@ -3,9 +3,13 @@ codeunit 148080 "Gen. Prod. Post. Group SKU CZA"
     Subtype = Test;
     TestPermissions = Disabled;
 
+    trigger OnRun()
+    begin
+        // [FEATURE] [General Production Posting Group] [SKU]
+        isInitialized := false;
+    end;
+
     var
-        SalesReceivablesSetup: Record "Sales & Receivables Setup";
-        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
         PurchaseHeader: Record "Purchase Header";
@@ -19,15 +23,12 @@ codeunit 148080 "Gen. Prod. Post. Group SKU CZA"
         ServiceHeader: Record "Service Header";
         ServiceLine: Record "Service Line";
         ItemJournalLine: Record "Item Journal Line";
-        ALocation: Record Location;
-        BLocation: Record Location;
+        LocationA: Record Location;
         ItemJournalTemplate: Record "Item Journal Template";
         ItemJournalBatch: Record "Item Journal Batch";
-        AGenProductPostingGroup: Record "Gen. Product Posting Group";
-        BGenProductPostingGroup: Record "Gen. Product Posting Group";
-        CGenProductPostingGroup: Record "Gen. Product Posting Group";
-        AStockkeepingUnit: Record "Stockkeeping Unit";
-        BStockkeepingUnit: Record "Stockkeeping Unit";
+        GenProductPostingGroupA: Record "Gen. Product Posting Group";
+        GenProductPostingGroupZ: Record "Gen. Product Posting Group";
+        StockkeepingUnitA: Record "Stockkeeping Unit";
         InventorySetup: Record "Inventory Setup";
         GeneralPostingSetup: Record "General Posting Setup";
         VATPostingSetup: Record "VAT Posting Setup";
@@ -44,412 +45,404 @@ codeunit 148080 "Gen. Prod. Post. Group SKU CZA"
         PurchaseLineType: Enum "Purchase Line Type";
         ServiceDocumentType: Enum "Service Document Type";
         isInitialized: Boolean;
-        isBasicSetupCreated: Boolean;
 
     local procedure Initialize();
+    var
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Gen. Prod. Post. Group SKU CZA");
         LibraryRandom.Init();
         if isInitialized then
             exit;
-
-        SalesReceivablesSetup.Get();
-        SalesReceivablesSetup."Default VAT Date CZL" := SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date";
-        SalesReceivablesSetup.Modify();
-
-        PurchasesPayablesSetup.Get();
-        PurchasesPayablesSetup."Default VAT Date CZL" := PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date";
-        PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" := PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date";
-        PurchasesPayablesSetup.Modify();
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Gen. Prod. Post. Group SKU CZA");
 
         isInitialized := true;
         Commit();
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Gen. Prod. Post. Group SKU CZA");
     end;
 
     [Test]
     procedure SalesLineChangeGenProdPostingGroupUseGPPGfromSKU()
     begin
-        // [FEATURE] Gen. Prod. Posting Group from SKU
+        // [SCENARIO] When validate location in Sales Line, Gen. Prod. Posting Group must be from SKU  
         Initialize();
 
-        BasicSetupCZA();
+        // [GIVEN] Stockkeping Units with Locations and Gen. Prod. Posting Groups have been created
+        SetupLocationsGenProdPostingGroupsStockkepingUnits(false);
+
+        // [GIVEN] Gen. Prod. Posting Group from SKU has been enabled
         SetUseGPPGfromSKU(true);
 
-        // [GIVEN] New Sales Order created
+        // [GIVEN] New Sales Order has been created
+        Clear(SalesHeader);
         LibrarySales.CreateSalesOrder(SalesHeader);
 
-        // [WHEN] Create Sales Line with Item No. with Gen. Prod. Posting Group A value.
+        // [GIVEN] New Posting Setup has been created
         CreateGeneralPostingSetup(SalesHeader."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group");
+        CreateGeneralPostingSetup(SalesHeader."Gen. Bus. Posting Group", StockkeepingUnitA."Gen. Prod. Posting Group CZL");
+        CreateVATPostingSetup(SalesHeader."VAT Bus. Posting Group", GenProductPostingGroupA."Def. VAT Prod. Posting Group");
+
+        // [WHEN] Create Sales Line with Item No.
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLineType::Item, Item."No.", 1000);
 
-        // [THEN] Sales Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
+        // [THEN] Sales Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
         Assert.AreEqual(SalesLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", SalesLine.FieldCaption(SalesLine."Gen. Prod. Posting Group"));
 
-        // [WHEN] Change Sales Line Location Code with Location Code A value.
-        CreateGeneralPostingSetup(SalesLine."Gen. Bus. Posting Group", AStockkeepingUnit."Gen. Prod. Posting Group CZL");
-        CreateVATPostingSetup(SalesLine."VAT Bus. Posting Group", BGenProductPostingGroup."Def. VAT Prod. Posting Group");
-        SalesLine.Validate("Location Code", ALocation.Code);
+        // [WHEN] Change Sales Line Location Code with Location Code A value
+        SalesLine.Validate("Location Code", LocationA.Code);
         SalesLine.Modify();
 
-        // [THEN] Sales Line Gen. Prod. Posting Group has B Gen. Prod. Posting Group value.
-        Assert.AreEqual(SalesLine."Gen. Prod. Posting Group", AStockkeepingUnit."Gen. Prod. Posting Group CZL", SalesLine.FieldCaption(SalesLine."Gen. Prod. Posting Group"));
-
-        // [WHEN] Change Sales Line Location Code with Location Code B value.
-        CreateGeneralPostingSetup(SalesLine."Gen. Bus. Posting Group", BStockkeepingUnit."Gen. Prod. Posting Group CZL");
-        CreateVATPostingSetup(SalesLine."VAT Bus. Posting Group", CGenProductPostingGroup."Def. VAT Prod. Posting Group");
-        SalesLine.Validate("Location Code", BLocation.Code);
-        SalesLine.Modify();
-
-        // [THEN] Sales Line Gen. Prod. Posting Group has C Gen. Prod. Posting Group value.
-        Assert.AreEqual(SalesLine."Gen. Prod. Posting Group", BStockkeepingUnit."Gen. Prod. Posting Group CZL", SalesLine.FieldCaption(SalesLine."Gen. Prod. Posting Group"));
+        // [THEN] Sales Line Gen. Prod. Posting Group will have A Gen. Prod. Posting Group value
+        Assert.AreEqual(SalesLine."Gen. Prod. Posting Group", StockkeepingUnitA."Gen. Prod. Posting Group CZL", SalesLine.FieldCaption(SalesLine."Gen. Prod. Posting Group"));
     end;
 
     [Test]
     procedure SalesLineChangeGenProdPostingGroupNotUseGPPGfromSKU()
     begin
-        // [FEATURE] Gen. Prod. Posting Group from SKU
+        // [SCENARIO] When validate location in Sales Line, Gen. Prod. Posting Group must not be from SKU
         Initialize();
 
-        BasicSetupCZA();
+        // [GIVEN] Stockkeping Units with Locations and Gen. Prod. Posting Groups have been created
+        SetupLocationsGenProdPostingGroupsStockkepingUnits(false);
+
+        // [GIVEN] Gen. Prod. Posting Group from SKU has been disabled
         SetUseGPPGfromSKU(false);
 
-        // [GIVEN] New Sales Order created
+        // [GIVEN] New Sales Order has been created
+        Clear(SalesHeader);
         LibrarySales.CreateSalesOrder(SalesHeader);
 
-        // [WHEN] Create Sales Line with Item No. with Gen. Prod. Posting Group A value.
+        // [GIVEN] New Posting Setup has been created
         CreateGeneralPostingSetup(SalesHeader."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group");
+
+        // [WHEN] Create Sales Line with Item No.
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLineType::Item, Item."No.", 1000);
 
-        // [THEN] Sales Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
+        // [THEN] Sales Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
         Assert.AreEqual(SalesLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", SalesLine.FieldCaption(SalesLine."Gen. Prod. Posting Group"));
 
-        // [WHEN] Change Sales Line Location Code with Location Code A value.
-        SalesLine.Validate("Location Code", ALocation.Code);
+        // [WHEN] Change Sales Line Location Code with Location Code A value
+        SalesLine.Validate("Location Code", LocationA.Code);
         SalesLine.Modify();
 
-        // [THEN] Sales Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
+        // [THEN] Sales Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
         Assert.AreEqual(SalesLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", SalesLine.FieldCaption(SalesLine."Gen. Prod. Posting Group"));
     end;
 
     [Test]
     procedure PurchaseLineChangeGenProdPostingGroupUseGPPGfromSKU()
     begin
-        // [FEATURE] Gen. Prod. Posting Group from SKU
+        // [SCENARIO] When validate location in Purchase Line, Gen. Prod. Posting Group must be from SKU
         Initialize();
 
-        BasicSetupCZA();
+        // [GIVEN] Stockkeping Units with Locations and Gen. Prod. Posting Groups have been created
+        SetupLocationsGenProdPostingGroupsStockkepingUnits(false);
+
+        // [GIVEN] Gen. Prod. Posting Group from SKU has been enabled
         SetUseGPPGfromSKU(true);
 
-        // [GIVEN] New Purchase Order created
+        // [GIVEN] New Purchase Order has been created
+        Clear(PurchaseHeader);
         LibraryPurchase.CreatePurchaseOrder(PurchaseHeader);
 
-        // [WHEN] Create Purchase Line with Item No. with Gen. Prod. Posting Group A value.
+        // [GIVEN] New Posting Setup has been created
         CreateGeneralPostingSetup(PurchaseHeader."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group");
+        CreateGeneralPostingSetup(PurchaseHeader."Gen. Bus. Posting Group", StockkeepingUnitA."Gen. Prod. Posting Group CZL");
+        CreateVATPostingSetup(PurchaseHeader."VAT Bus. Posting Group", GenProductPostingGroupA."Def. VAT Prod. Posting Group");
+
+        // [WHEN] Create Purchase Line with Item No.
         LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLineType::Item, Item."No.", 1000);
 
-        // [THEN] Purchase Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
+        // [THEN] Purchase Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
         Assert.AreEqual(PurchaseLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", PurchaseLine.FieldCaption(PurchaseLine."Gen. Prod. Posting Group"));
 
-        // [WHEN] Change Purchase Line Location Code with Location Code A value.
-        CreateGeneralPostingSetup(PurchaseLine."Gen. Bus. Posting Group", AStockkeepingUnit."Gen. Prod. Posting Group CZL");
-        CreateVATPostingSetup(PurchaseLine."VAT Bus. Posting Group", BGenProductPostingGroup."Def. VAT Prod. Posting Group");
-        PurchaseLine.Validate("Location Code", ALocation.Code);
+        // [WHEN] Change Purchase Line Location Code with Location Code A value
+        PurchaseLine.Validate("Location Code", LocationA.Code);
         PurchaseLine.Modify();
 
-        // [THEN] Purchase Line Gen. Prod. Posting Group has B Gen. Prod. Posting Group value.
-        Assert.AreEqual(PurchaseLine."Gen. Prod. Posting Group", AStockkeepingUnit."Gen. Prod. Posting Group CZL", PurchaseLine.FieldCaption(PurchaseLine."Gen. Prod. Posting Group"));
-
-        // [WHEN] Change Purchase Line Location Code with Location Code B value.
-        CreateGeneralPostingSetup(PurchaseLine."Gen. Bus. Posting Group", BStockkeepingUnit."Gen. Prod. Posting Group CZL");
-        CreateVATPostingSetup(PurchaseLine."VAT Bus. Posting Group", CGenProductPostingGroup."Def. VAT Prod. Posting Group");
-        PurchaseLine.Validate("Location Code", BLocation.Code);
-        PurchaseLine.Modify();
-
-        // [THEN] Purchase Line Gen. Prod. Posting Group has C Gen. Prod. Posting Group value.
-        Assert.AreEqual(PurchaseLine."Gen. Prod. Posting Group", BStockkeepingUnit."Gen. Prod. Posting Group CZL", PurchaseLine.FieldCaption(PurchaseLine."Gen. Prod. Posting Group"));
+        // [THEN] Purchase Line Gen. Prod. Posting Group will have A Gen. Prod. Posting Group value
+        Assert.AreEqual(PurchaseLine."Gen. Prod. Posting Group", StockkeepingUnitA."Gen. Prod. Posting Group CZL", PurchaseLine.FieldCaption(PurchaseLine."Gen. Prod. Posting Group"));
     end;
 
     [Test]
     procedure PurchaseLineChangeGenProdPostingGroupNotUseGPPGfromSKU()
     begin
-        // [FEATURE] Gen. Prod. Posting Group from SKU
+        // [SCENARIO] When validate location in Purchase Line, Gen. Prod. Posting Group must not be from SKU
         Initialize();
 
-        BasicSetupCZA();
+        // [GIVEN] Stockkeping Units with Locations and Gen. Prod. Posting Groups have been created
+        SetupLocationsGenProdPostingGroupsStockkepingUnits(false);
+
+        // [GIVEN] Gen. Prod. Posting Group from SKU has been disabled
         SetUseGPPGfromSKU(false);
 
-        // [GIVEN] New Purchase Order created
+        // [GIVEN] New Purchase Order has been created
+        Clear(PurchaseHeader);
         LibraryPurchase.CreatePurchaseOrder(PurchaseHeader);
 
-        // [WHEN] Create Purchase Line with Item No. with Gen. Prod. Posting Group A value.
+        // [GIVEN] New Posting Setup has been created
         CreateGeneralPostingSetup(PurchaseHeader."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group");
+
+        // [WHEN] Create Purchase Line with Item No.
         LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLineType::Item, Item."No.", 1000);
 
-        // [THEN] Purchase Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
+        // [THEN] Purchase Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
         Assert.AreEqual(PurchaseLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", PurchaseLine.FieldCaption(PurchaseLine."Gen. Prod. Posting Group"));
 
-        // [WHEN] Change Purchase Line Location Code with Location Code A value.
-        PurchaseLine.Validate("Location Code", ALocation.Code);
+        // [WHEN] Change Purchase Line Location Code with Location Code A value
+        PurchaseLine.Validate("Location Code", LocationA.Code);
         PurchaseLine.Modify();
 
-        // [THEN] Purchase Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
+        // [THEN] Purchase Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
         Assert.AreEqual(PurchaseLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", PurchaseLine.FieldCaption(PurchaseLine."Gen. Prod. Posting Group"));
+    end;
+
+    [Test]
+    procedure ServiceLineChangeGenProdPostingGroupUseGPPGfromSKU()
+    begin
+        // [SCENARIO] When validate location in Service Line, Gen. Prod. Posting Group must be from SKU
+        Initialize();
+
+        // [GIVEN] Stockkeping Units with Locations and Gen. Prod. Posting Groups have been created
+        SetupLocationsGenProdPostingGroupsStockkepingUnits(true);
+
+        // [GIVEN] Gen. Prod. Posting Group from SKU has been enabled
+        SetUseGPPGfromSKU(true);
+
+        // [GIVEN] New Service Order has been created
+        Clear(ServiceHeader);
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceDocumentType::Order, ServiceItem."Customer No.");
+
+        // [GIVEN] New Posting Setup has been created
+        CreateGeneralPostingSetup(ServiceHeader."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group");
+        CreateGeneralPostingSetup(ServiceHeader."Gen. Bus. Posting Group", StockkeepingUnitA."Gen. Prod. Posting Group CZL");
+        CreateVATPostingSetup(ServiceHeader."VAT Bus. Posting Group", GenProductPostingGroupA."Def. VAT Prod. Posting Group");
+
+        // [WHEN] Create Service Line with Item No.
+        LibraryService.CreateServiceLineWithQuantity(
+          ServiceLine, ServiceHeader, ServiceLine.Type::Item, ServiceItem."Item No.", LibraryRandom.RandIntInRange(5, 10));
+        ServiceLine.Validate("Service Item Line No.", ServiceItemLine."Line No.");
+        ServiceLine.Modify(true);
+
+        // [THEN] Service Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
+        Assert.AreEqual(ServiceLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", ServiceLine.FieldCaption(ServiceLine."Gen. Prod. Posting Group"));
+
+        // [WHEN] Change Service Line Location Code with Location Code A value
+        ServiceLine.Validate("Location Code", LocationA.Code);
+        ServiceLine.Modify();
+
+        // [THEN] Service Line Gen. Prod. Posting Group will have A Gen. Prod. Posting Group value
+        Assert.AreEqual(ServiceLine."Gen. Prod. Posting Group", StockkeepingUnitA."Gen. Prod. Posting Group CZL", ServiceLine.FieldCaption(ServiceLine."Gen. Prod. Posting Group"));
+    end;
+
+    [Test]
+    procedure ServiceLineChangeGenProdPostingGroupNotUseGPPGfromSKU()
+    begin
+        // [SCENARIO] When validate location in Service Line, Gen. Prod. Posting Group must not be from SKU
+        Initialize();
+
+        // [GIVEN] Stockkeping Units with Locations and Gen. Prod. Posting Groups have been created
+        SetupLocationsGenProdPostingGroupsStockkepingUnits(true);
+
+        // [GIVEN] Gen. Prod. Posting Group from SKU has been disabled
+        SetUseGPPGfromSKU(false);
+
+        // [GIVEN] New Service Order has been created
+        Clear(ServiceHeader);
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceDocumentType::Order, ServiceItem."Customer No.");
+
+        // [GIVEN] New Posting Setup has been created
+        CreateGeneralPostingSetup(ServiceHeader."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group");
+
+        // [WHEN] Create Service Line with Item No.
+        LibraryService.CreateServiceLineWithQuantity(
+          ServiceLine, ServiceHeader, ServiceLine.Type::Item, ServiceItem."Item No.", LibraryRandom.RandIntInRange(5, 10));
+        ServiceLine.Validate("Service Item Line No.", ServiceItemLine."Line No.");
+        ServiceLine.Modify(true);
+
+        // [THEN] Service Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
+        Assert.AreEqual(ServiceLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", ServiceLine.FieldCaption(ServiceLine."Gen. Prod. Posting Group"));
+
+        // [WHEN] Change Service Line Location Code with Location Code A value
+        ServiceLine.Validate("Location Code", LocationA.Code);
+        ServiceLine.Modify();
+
+        // [THEN] Service Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
+        Assert.AreEqual(ServiceLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", ServiceLine.FieldCaption(ServiceLine."Gen. Prod. Posting Group"));
     end;
 
     [Test]
     procedure ItemJournalLineChangeGenProdPostingGroupUseGPPGfromSKU()
     begin
-        // [FEATURE] Gen. Prod. Posting Group from SKU
+        // [SCENARIO] When validate location in Item Journal Line, Gen. Prod. Posting Group must be from SKU
         Initialize();
 
-        BasicSetupCZA();
+        // [GIVEN] Stockkeping Units with Locations and Gen. Prod. Posting Groups have been created
+        SetupLocationsGenProdPostingGroupsStockkepingUnits(false);
+
+        // [GIVEN] Gen. Prod. Posting Group from SKU has been enabled
         SetUseGPPGfromSKU(true);
 
-        // [GIVEN] New Item Journal Template created
+        // [GIVEN] New Item Journal Line has been created
         LibraryInventory.CreateItemJournalTemplate(ItemJournalTemplate);
-
-        // [GIVEN] New Item Journal Batch created
         LibraryInventory.CreateItemJournalBatch(ItemJournalBatch, ItemJournalTemplate.Name);
+        LibraryInventory.CreateItemJournalLine(ItemJournalLine, ItemJournalTemplate.Name, ItemJournalBatch.Name,
+                            ItemJournalLine."Entry Type"::"Positive Adjmt.", Item."No.", LibraryRandom.RandDec(1000, 2));
 
-        // [WHEN] Create Item Journal Line with Item No. with Gen. Prod. Posting Group A value.
+        // [GIVEN] New Posting Setup has been created
+        CreateGeneralPostingSetup(ItemJournalLine."Gen. Bus. Posting Group", StockkeepingUnitA."Gen. Prod. Posting Group CZL");
+
+        // [WHEN] Create Item Journal Line with Item No.
         LibraryInventory.CreateItemJournalLine(ItemJournalLine, ItemJournalTemplate.Name, ItemJournalBatch.Name,
                             ItemJournalLine."Entry Type"::"Negative Adjmt.", Item."No.", LibraryRandom.RandDec(1000, 2));
 
-        // [THEN] Item Journal Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
+        // [THEN] Item Journal Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
         Assert.AreEqual(ItemJournalLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", ItemJournalLine.FieldCaption(ItemJournalLine."Gen. Prod. Posting Group"));
 
-        // [WHEN] Change Item Journal Line Location Code with Location Code A value.
-        CreateGeneralPostingSetup(ItemJournalLine."Gen. Bus. Posting Group", AStockkeepingUnit."Gen. Prod. Posting Group CZL");
-        ItemJournalLine.Validate("Location Code", ALocation.Code);
+        // [WHEN] Change Item Journal Line Location Code with Location Code A value
+        ItemJournalLine.Validate("Location Code", LocationA.Code);
         ItemJournalLine.Modify();
 
-        // [THEN] Item Journal Line Gen. Prod. Posting Group has B Gen. Prod. Posting Group value.
-        Assert.AreEqual(ItemJournalLine."Gen. Prod. Posting Group", AStockkeepingUnit."Gen. Prod. Posting Group CZL", ItemJournalLine.FieldCaption(ItemJournalLine."Gen. Prod. Posting Group"));
-
-        // [WHEN] Change Item Journal Line Location Code with Location Code B value.
-        CreateGeneralPostingSetup(ItemJournalLine."Gen. Bus. Posting Group", BStockkeepingUnit."Gen. Prod. Posting Group CZL");
-        ItemJournalLine.Validate("Location Code", BLocation.Code);
-        ItemJournalLine.Modify();
-
-        // [THEN] Item Journal Line Gen. Prod. Posting Group has C Gen. Prod. Posting Group value.
-        Assert.AreEqual(ItemJournalLine."Gen. Prod. Posting Group", BStockkeepingUnit."Gen. Prod. Posting Group CZL", ItemJournalLine.FieldCaption(ItemJournalLine."Gen. Prod. Posting Group"));
+        // [THEN] Item Journal Line Gen. Prod. Posting Group will have A Gen. Prod. Posting Group value
+        Assert.AreEqual(ItemJournalLine."Gen. Prod. Posting Group", StockkeepingUnitA."Gen. Prod. Posting Group CZL", ItemJournalLine.FieldCaption(ItemJournalLine."Gen. Prod. Posting Group"));
     end;
 
     [Test]
     procedure ItemJournalineChangeGenProdPostingGroupNotUseGPPGfromSKU()
     begin
-        // [FEATURE] Gen. Prod. Posting Group from SKU
+        // [SCENARIO] When validate location in Item Journal Line, Gen. Prod. Posting Group must not be from SKU
         Initialize();
 
-        BasicSetupCZA();
+        // [GIVEN] Stockkeping Units with Locations and Gen. Prod. Posting Groups have been created
+        SetupLocationsGenProdPostingGroupsStockkepingUnits(false);
+
+        // [GIVEN] Gen. Prod. Posting Group from SKU has been disabled
         SetUseGPPGfromSKU(false);
 
-        // [GIVEN] New Item Journal Template created
+        // [GIVEN] New Item Journal Batch has been created
+        LibraryInventory.CreateItemJournalBatch(ItemJournalBatch, ItemJournalTemplate.Name);
         LibraryInventory.CreateItemJournalTemplate(ItemJournalTemplate);
 
-        // [GIVEN] New Item Journal Batch created
-        LibraryInventory.CreateItemJournalBatch(ItemJournalBatch, ItemJournalTemplate.Name);
-
-        // [WHEN] Create Item Journal Line with Item No. with Gen. Prod. Posting Group A value.
+        // [WHEN] Create Item Journal Line with Item No.
         LibraryInventory.CreateItemJournalLine(ItemJournalLine, ItemJournalTemplate.Name, ItemJournalBatch.Name,
                             ItemJournalLine."Entry Type"::"Negative Adjmt.", Item."No.", LibraryRandom.RandDec(1000, 2));
 
-        // [THEN] Item Journal Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
+        // [THEN] Item Journal Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
         Assert.AreEqual(ItemJournalLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", ItemJournalLine.FieldCaption(ItemJournalLine."Gen. Prod. Posting Group"));
 
-        // [WHEN] Change Item Journal Line Location Code with Location Code A value.
-        ItemJournalLine.Validate("Location Code", ALocation.Code);
+        // [WHEN] Change Item Journal Line Location Code with Location Code A value
+        ItemJournalLine.Validate("Location Code", LocationA.Code);
         ItemJournalLine.Modify();
 
-        // [THEN] Item Journal Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
+        // [THEN] Item Journal Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
         Assert.AreEqual(ItemJournalLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", ItemJournalLine.FieldCaption(ItemJournalLine."Gen. Prod. Posting Group"));
     end;
 
     [Test]
     procedure JobJournalLineChangeGenProdPostingGroupUseGPPGfromSKU()
     begin
-        // [FEATURE] Gen. Prod. Posting Group from SKU
+        // [SCENARIO] When validate location in Job Journal Line, Gen. Prod. Posting Group must be from SKU
         Initialize();
 
-        BasicSetupCZA();
+        // [GIVEN] Stockkeping Units with Locations and Gen. Prod. Posting Groups have been created
+        SetupLocationsGenProdPostingGroupsStockkepingUnits(false);
+
+        // [GIVEN] Gen. Prod. Posting Group from SKU has been enabled
         SetUseGPPGfromSKU(true);
 
-        // [GIVEN] New Job created
+        // [GIVEN] New Job Task Line has been created
         LibraryJob.CreateJob(Job);
-
-        // [GIVEN] New Job Task Line created
         LibraryJob.CreateJobTask(Job, JobTask);
 
-        // [WHEN] Create Job Journal Line with Item No. with Gen. Prod. Posting Group A value.
+        // [GIVEN] New Job Journal Line has been created
         LibraryJob.CreateJobJournalLine(JobJournalLine."Line Type"::Billable, JobTask, JobJournalLine);
         JobJournalLine.Validate(Type, JobJournalLine.Type::Item);
         JobJournalLine.Validate("No.", Item."No.");
         JobJournalLine.Modify();
 
-        // [THEN] Job Journal Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
+        // [GIVEN] New Posting Setup has been created
+        CreateGeneralPostingSetup(JobJournalLine."Gen. Bus. Posting Group", StockkeepingUnitA."Gen. Prod. Posting Group CZL");
+
+        // [WHEN] Create Job Journal Line with Item No.
+        LibraryJob.CreateJobJournalLine(JobJournalLine."Line Type"::Billable, JobTask, JobJournalLine);
+        JobJournalLine.Validate(Type, JobJournalLine.Type::Item);
+        JobJournalLine.Validate("No.", Item."No.");
+        JobJournalLine.Modify();
+
+        // [THEN] Job Journal Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
         Assert.AreEqual(JobJournalLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", JobJournalLine.FieldCaption(JobJournalLine."Gen. Prod. Posting Group"));
 
-        // [WHEN] Change Item Journal Line Location Code with Location Code A value.
-        CreateGeneralPostingSetup(JobJournalLine."Gen. Bus. Posting Group", AStockkeepingUnit."Gen. Prod. Posting Group CZL");
-        JobJournalLine.Validate("Location Code", ALocation.Code);
+        // [WHEN] Change Item Journal Line Location Code with Location Code A value
+        CreateGeneralPostingSetup(JobJournalLine."Gen. Bus. Posting Group", StockkeepingUnitA."Gen. Prod. Posting Group CZL");
+        JobJournalLine.Validate("Location Code", LocationA.Code);
         JobJournalLine.Modify();
 
-        // [THEN] Job Journal Line Gen. Prod. Posting Group has B Gen. Prod. Posting Group value.
-        Assert.AreEqual(JobJournalLine."Gen. Prod. Posting Group", AStockkeepingUnit."Gen. Prod. Posting Group CZL", JobJournalLine.FieldCaption(JobJournalLine."Gen. Prod. Posting Group"));
-
-        // [WHEN] Change Job Journal Line Location Code with Location Code B value.
-        CreateGeneralPostingSetup(JobJournalLine."Gen. Bus. Posting Group", BStockkeepingUnit."Gen. Prod. Posting Group CZL");
-        JobJournalLine.Validate("Location Code", BLocation.Code);
-        JobJournalLine.Modify();
-
-        // [THEN] Job Journal Line Gen. Prod. Posting Group has C Gen. Prod. Posting Group value.
-        Assert.AreEqual(JobJournalLine."Gen. Prod. Posting Group", BStockkeepingUnit."Gen. Prod. Posting Group CZL", JobJournalLine.FieldCaption(JobJournalLine."Gen. Prod. Posting Group"));
+        // [THEN] Job Journal Line Gen. Prod. Posting Group will have A Gen. Prod. Posting Group value
+        Assert.AreEqual(JobJournalLine."Gen. Prod. Posting Group", StockkeepingUnitA."Gen. Prod. Posting Group CZL", JobJournalLine.FieldCaption(JobJournalLine."Gen. Prod. Posting Group"));
     end;
 
     [Test]
     procedure JobJournalineChangeGenProdPostingGroupNotUseGPPGfromSKU()
     begin
-        // [FEATURE] Gen. Prod. Posting Group from SKU
+        // [SCENARIO] When validate location in Job Journal Line, Gen. Prod. Posting Group must be from SKU
         Initialize();
 
-        BasicSetupCZA();
+        // [GIVEN] Stockkeping Units with Locations and Gen. Prod. Posting Groups have been created
+        SetupLocationsGenProdPostingGroupsStockkepingUnits(false);
+
+        // [GIVEN] Gen. Prod. Posting Group from SKU has been disabled
         SetUseGPPGfromSKU(false);
 
-        // [GIVEN] New Job created
+        // [GIVEN] New Job Task Line has been created
         LibraryJob.CreateJob(Job);
-
-        // [GIVEN] New Job Task Line created
         LibraryJob.CreateJobTask(Job, JobTask);
 
-        // [WHEN] Create Job Journal Line with Item No. with Gen. Prod. Posting Group A value.
+        // [WHEN] Create Job Journal Line with Item No.
         LibraryJob.CreateJobJournalLine(JobJournalLine."Line Type"::Billable, JobTask, JobJournalLine);
         JobJournalLine.Validate(Type, JobJournalLine.Type::Item);
         JobJournalLine.Validate("No.", Item."No.");
         JobJournalLine.Modify();
 
-        // [THEN] Job Journal Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
+        // [THEN] Job Journal Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group.
         Assert.AreEqual(JobJournalLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", JobJournalLine.FieldCaption(JobJournalLine."Gen. Prod. Posting Group"));
 
-        // [WHEN] Change Job Journal Line Location Code with Location Code A value.
-        JobJournalLine.Validate("Location Code", ALocation.Code);
+        // [WHEN] Change Job Journal Line Location Code with Location Code A value
+        JobJournalLine.Validate("Location Code", LocationA.Code);
         JobJournalLine.Modify();
 
-        // [THEN] Job Journal Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
+        // [THEN] Job Journal Line Gen. Prod. Posting Group will have Z Gen. Prod. Posting Group
         Assert.AreEqual(JobJournalLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", JobJournalLine.FieldCaption(JobJournalLine."Gen. Prod. Posting Group"));
     end;
 
-    [Test]
-    procedure ServiceLineChangeGenProdPostingGroupUseGPPGfromSKU()
+    local procedure SetupLocationsGenProdPostingGroupsStockkepingUnits(NewServiceItem: Boolean)
     begin
-        // [FEATURE] Gen. Prod. Posting Group from SKU
-        Initialize();
-
-        BasicSetupCZA();
-        SetUseGPPGfromSKU(true);
-
-        // [GIVEN] New Service Header created
-        Clear(ServiceHeader);
-        LibraryService.CreateServiceHeader(ServiceHeader, ServiceDocumentType::Order, ServiceItem."Customer No.");
-
-        // [GIVEN] New Service Item Line created
-        LibraryService.CreateServiceItemLine(ServiceItemLine, ServiceHeader, ServiceItem."No.");
-
-        // [WHEN] Create Service Line with Item No. with Gen. Prod. Posting Group A value.
-        CreateGeneralPostingSetup(ServiceHeader."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group");
-        LibraryService.CreateServiceLineWithQuantity(
-          ServiceLine, ServiceHeader, ServiceLine.Type::Item, ServiceItem."Item No.", LibraryRandom.RandIntInRange(5, 10));
-        ServiceLine.Validate("Service Item Line No.", ServiceItemLine."Line No.");
-        ServiceLine.Modify(true);
-
-        // [THEN] Service Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
-        Assert.AreEqual(ServiceLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", ServiceLine.FieldCaption(ServiceLine."Gen. Prod. Posting Group"));
-
-        // [WHEN] Change Service Line Location Code with Location Code A value.
-        CreateGeneralPostingSetup(ServiceLine."Gen. Bus. Posting Group", AStockkeepingUnit."Gen. Prod. Posting Group CZL");
-        CreateVATPostingSetup(ServiceLine."VAT Bus. Posting Group", AGenProductPostingGroup."Def. VAT Prod. Posting Group");
-        ServiceLine.Validate("Location Code", ALocation.Code);
-        ServiceLine.Modify();
-
-        // [THEN] Service Line Gen. Prod. Posting Group has B Gen. Prod. Posting Group value.
-        Assert.AreEqual(ServiceLine."Gen. Prod. Posting Group", AStockkeepingUnit."Gen. Prod. Posting Group CZL", ServiceLine.FieldCaption(ServiceLine."Gen. Prod. Posting Group"));
-
-        // [WHEN] Change Service Line Location Code with Location Code B value.
-        CreateGeneralPostingSetup(ServiceLine."Gen. Bus. Posting Group", BStockkeepingUnit."Gen. Prod. Posting Group CZL");
-        CreateVATPostingSetup(ServiceLine."VAT Bus. Posting Group", BGenProductPostingGroup."Def. VAT Prod. Posting Group");
-        ServiceLine.Validate("Location Code", BLocation.Code);
-        ServiceLine.Modify();
-
-        // [THEN] Service Line Gen. Prod. Posting Group has C Gen. Prod. Posting Group value.
-        Assert.AreEqual(ServiceLine."Gen. Prod. Posting Group", BStockkeepingUnit."Gen. Prod. Posting Group CZL", ServiceLine.FieldCaption(ServiceLine."Gen. Prod. Posting Group"));
-    end;
-
-    [Test]
-    procedure ServiceLineChangeGenProdPostingGroupNotUseGPPGfromSKU()
-    begin
-        // [FEATURE] Gen. Prod. Posting Group from SKU
-        Initialize();
-
-        BasicSetupCZA();
-        SetUseGPPGfromSKU(false);
-
-        // [GIVEN] New Service Header created
-        Clear(ServiceHeader);
-        LibraryService.CreateServiceHeader(ServiceHeader, ServiceDocumentType::Order, ServiceItem."Customer No.");
-
-        // [GIVEN] New Service Item Line created
-        LibraryService.CreateServiceItemLine(ServiceItemLine, ServiceHeader, ServiceItem."No.");
-
-        // [WHEN] Create Service Line with Item No. with Gen. Prod. Posting Group A value.
-        CreateGeneralPostingSetup(ServiceHeader."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group");
-        LibraryService.CreateServiceLineWithQuantity(
-          ServiceLine, ServiceHeader, ServiceLine.Type::Item, ServiceItem."Item No.", LibraryRandom.RandIntInRange(5, 10));
-        ServiceLine.Validate("Service Item Line No.", ServiceItemLine."Line No.");
-        ServiceLine.Modify(true);
-
-        // [THEN] Service Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
-        Assert.AreEqual(ServiceLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", ServiceLine.FieldCaption(ServiceLine."Gen. Prod. Posting Group"));
-
-        // [WHEN] Change Service Line Location Code with Location Code A value.
-        ServiceLine.Validate("Location Code", ALocation.Code);
-        ServiceLine.Modify();
-
-        // [THEN] Service Line Gen. Prod. Posting Group has Item Gen. Prod. Posting Group.
-        Assert.AreEqual(ServiceLine."Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group", ServiceLine.FieldCaption(ServiceLine."Gen. Prod. Posting Group"));
-    end;
-
-    local procedure BasicSetupCZA()
-    begin
-        if isBasicSetupCreated then
-            exit;
-
         // [GIVEN] New Locations created
-        LibraryWarehouse.CreateLocation(ALocation);
-        LibraryWarehouse.CreateLocation(BLocation);
+        LibraryWarehouse.CreateLocation(LocationA);
 
         // [GIVEN] New Gen. Prod. Posting Groups created
-        LibraryERM.CreateGenProdPostingGroup(AGenProductPostingGroup);
-        LibraryERM.CreateGenProdPostingGroup(BGenProductPostingGroup);
-        LibraryERM.CreateGenProdPostingGroup(CGenProductPostingGroup);
+        LibraryERM.CreateGenProdPostingGroup(GenProductPostingGroupZ);
+        LibraryERM.CreateGenProdPostingGroup(GenProductPostingGroupA);
 
         // [GIVEN] New Item created
         LibraryInventory.CreateItem(Item);
-        Item."Gen. Prod. Posting Group" := AGenProductPostingGroup.Code;
+        Item."Gen. Prod. Posting Group" := GenProductPostingGroupZ.Code;
         Item.Modify();
 
         // [GIVEN] New Service Item created
-        LibraryService.CreateServiceItem(ServiceItem, '');
-        ServiceItem.Validate("Item No.", Item."No.");
-        ServiceItem.Modify();
+        if NewServiceItem then begin
+            ServiceItem.DeleteAll();
+            ServiceItemLine.DeleteAll();
+            LibraryService.CreateServiceItem(ServiceItem, '');
+            ServiceItem.Validate("Item No.", Item."No.");
+            ServiceItem.Modify();
+        end;
 
         // [GIVEN] New Stockkeeping Units created
-        LibraryInventory.CreateStockkeepingUnitForLocationAndVariant(AStockkeepingUnit, ALocation.Code, Item."No.", '');
-        AStockkeepingUnit.Validate("Gen. Prod. Posting Group CZL", BGenProductPostingGroup.Code);
-        AStockkeepingUnit.Modify();
-        LibraryInventory.CreateStockkeepingUnitForLocationAndVariant(BStockkeepingUnit, BLocation.Code, Item."No.", '');
-        BStockkeepingUnit.Validate("Gen. Prod. Posting Group CZL", CGenProductPostingGroup.Code);
-        BStockkeepingUnit.Modify();
+        LibraryInventory.CreateStockkeepingUnitForLocationAndVariant(StockkeepingUnitA, LocationA.Code, Item."No.", '');
+        StockkeepingUnitA.Validate("Gen. Prod. Posting Group CZL", GenProductPostingGroupA.Code);
+        StockkeepingUnitA.Modify();
 
         Commit();
-        isBasicSetupCreated := true;
     end;
 
     local procedure SetUseGPPGfromSKU(UseGPPGFromSKU: Boolean)

@@ -9,7 +9,9 @@ codeunit 31044 "Navigate Handler CZL"
     local procedure OnAfterNavigateFindRecords(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; Sender: Page Navigate)
     begin
         FindEETEntries(DocumentEntry, DocNoFilter, Sender);
+#if not CLEAN18
         DeleteObsoleteTables(DocumentEntry);
+#endif
     end;
 
     local procedure FindEETEntries(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; Navigate: Page Navigate)
@@ -23,6 +25,7 @@ codeunit 31044 "Navigate Handler CZL"
         end;
     end;
 
+#if not CLEAN18
     [Obsolete('Moved to Core Localization for Czech.', '18.0')]
     local procedure DeleteObsoleteTables(var DocumentEntry: Record "Document Entry")
     var
@@ -35,6 +38,7 @@ codeunit 31044 "Navigate Handler CZL"
         DocumentEntry.CopyFilters(DummyDocumentEntry);
     end;
 
+#endif
     [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeNavigateShowRecords', '', false, false)]
     local procedure OnBeforeNavigateShowRecords(TableID: Integer; DocNoFilter: Text; PostingDateFilter: Text; var TempDocumentEntry: Record "Document Entry"; var IsHandled: Boolean)
     begin

@@ -160,6 +160,7 @@ page 9989 "Word Templates"
                 var
                     WordTemplateSelectionWizard: Page "Word Template Selection Wizard";
                 begin
+                    WordTemplateSelectionWizard.SetIsUnknownSource();
                     WordTemplateSelectionWizard.SetTemplate(Rec);
                     WordTemplateSelectionWizard.Run();
                 end;

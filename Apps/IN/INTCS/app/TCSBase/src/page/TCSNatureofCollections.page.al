@@ -59,10 +59,10 @@ page 18811 "TCS Nature Of Collections"
 
                 trigger OnAction()
                 var
-                    ODataUtility: Codeunit ODataUtility;
+                    EditinExcel: Codeunit "Edit in Excel";
                     TCSNatureofCollectionLbl: Label 'Code eq %1', Comment = '%1 = TCS Nature of Collection';
                 begin
-                    ODataUtility.EditWorksheetInExcel('TCS Nature of Collection', CurrPage.ObjectId(false), StrSubstNo(TCSNatureofCollectionLbl, Rec.Code));
+                    EditinExcel.EditPageInExcel('TCS Nature of Collection', CurrPage.ObjectId(false), StrSubstNo(TCSNatureofCollectionLbl, Rec.Code));
                 end;
             }
             action(ClearFilter)

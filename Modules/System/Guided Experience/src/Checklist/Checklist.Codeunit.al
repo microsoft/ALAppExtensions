@@ -25,8 +25,10 @@ codeunit 1992 "Checklist"
     procedure Insert(GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer; OrderID: Integer; var TempAllProfile: Record "All Profile" temporary; ShouldEveryoneComplete: Boolean)
     var
         TempUser: Record User temporary;
+        SpotlightTourType: Enum "Spotlight Tour Type";
     begin
-        ChecklistImplementation.Insert(GuidedExperienceType, ObjectTypeToRun, ObjectIDToRun, '', ShouldEveryoneComplete, OrderID, TempAllProfile, TempUser);
+        ChecklistImplementation.Insert(GuidedExperienceType, ObjectTypeToRun, ObjectIDToRun, '', SpotlightTourType::None,
+            ShouldEveryoneComplete, OrderID, TempAllProfile, TempUser);
     end;
 
     /// <summary>
@@ -41,8 +43,10 @@ codeunit 1992 "Checklist"
     var
         TempAllProfile: Record "All Profile" temporary;
         CompletionRequirements: Enum "Checklist Completion Requirements";
+        SpotlightTourType: Enum "Spotlight Tour Type";
     begin
-        ChecklistImplementation.Insert(GuidedExperienceType, ObjectTypeToRun, ObjectIDToRun, '', CompletionRequirements::"Specific users", OrderID, TempAllProfile, TempUser);
+        ChecklistImplementation.Insert(GuidedExperienceType, ObjectTypeToRun, ObjectIDToRun, '', SpotlightTourType::None,
+             CompletionRequirements::"Specific users", OrderID, TempAllProfile, TempUser);
     end;
 
     /// <summary>
@@ -56,8 +60,10 @@ codeunit 1992 "Checklist"
     procedure Insert(GuidedExperienceType: Enum "Guided Experience Type"; Link: Text[250]; OrderID: Integer; var TempAllProfile: Record "All Profile" temporary; ShouldEveryoneComplete: Boolean)
     var
         TempUser: Record User temporary;
+        SpotlightTourType: Enum "Spotlight Tour Type";
     begin
-        ChecklistImplementation.Insert(GuidedExperienceType, ObjectType::MenuSuite, 0, Link, ShouldEveryoneComplete, OrderID, TempAllProfile, TempUser);
+        ChecklistImplementation.Insert(GuidedExperienceType, ObjectType::MenuSuite, 0, Link, SpotlightTourType::None,
+            ShouldEveryoneComplete, OrderID, TempAllProfile, TempUser);
     end;
 
     /// <summary>
@@ -71,8 +77,45 @@ codeunit 1992 "Checklist"
     var
         TempAllProfile: Record "All Profile" temporary;
         CompletionRequirements: Enum "Checklist Completion Requirements";
+        SpotlightTourType: Enum "Spotlight Tour Type";
     begin
-        ChecklistImplementation.Insert(GuidedExperienceType, ObjectType::MenuSuite, 0, Link, CompletionRequirements::"Specific users", OrderID, TempAllProfile, TempUser);
+        ChecklistImplementation.Insert(GuidedExperienceType, ObjectType::MenuSuite, 0, Link, SpotlightTourType::None,
+            CompletionRequirements::"Specific users", OrderID, TempAllProfile, TempUser);
+    end;
+
+    /// <summary>
+    /// Inserts a new checklist item for a spotlight tour.
+    /// </summary>
+    /// <param name="PageID">The ID of the page that the spotlight tour will run on.</param>
+    /// <param name="SpotlightTourType">The type of spotlight tour.</param>
+    /// <param name="OrderID">The index at which this checklist item should appear in the list. Please be aware that if other extensions also insert checklist items, then this ID might not match the index in the list.</param>
+    /// <param name="TempAllProfile">The roles that this checklist item should be displayed for.</param>
+    /// <param name="ShouldEveryoneComplete">Boolean value that controls whether everyone should complete this checklist item. If false, the checklist item will be marked as completed for everyone, even if only one person completes it.</param>
+    procedure Insert(PageID: Integer; SpotlightTourType: Enum "Spotlight Tour Type"; OrderID: Integer; var TempAllProfile: Record "All Profile" temporary; ShouldEveryoneComplete: Boolean)
+    var
+        TempUser: Record User temporary;
+        GuidedExperienceType: Enum "Guided Experience Type";
+    begin
+        ChecklistImplementation.Insert(GuidedExperienceType::"Spotlight Tour", ObjectType::Page, PageID, '', SpotlightTourType,
+            ShouldEveryoneComplete, OrderID, TempAllProfile, TempUser);
+    end;
+
+    /// <summary>
+    /// Inserts a new checklist item for a spotlight tour.
+    /// </summary>
+    /// <param name="PageID">The ID of the page that the spotlight tour will run on.</param>
+    /// <param name="SpotlightTourType">The type of spotlight tour.</param>
+    /// <param name="OrderID">The index at which this checklist item should appear in the list. Please be aware that if other extensions also insert checklist items, then this ID might not match the index in the list.</param>
+    /// <param name="TempAllProfile">The roles that this checklist item should be displayed for.</param>
+    /// <param name="ShouldEveryoneComplete">Boolean value that controls whether everyone should complete this checklist item. If false, the checklist item will be marked as completed for everyone, even if only one person completes it.</param>
+    procedure Insert(PageID: Integer; SpotlightTourType: Enum "Spotlight Tour Type"; OrderID: Integer; var TempUser: Record User temporary)
+    var
+        TempAllProfile: Record "All Profile" temporary;
+        CompletionRequirements: Enum "Checklist Completion Requirements";
+        GuidedExperienceType: Enum "Guided Experience Type";
+    begin
+        ChecklistImplementation.Insert(GuidedExperienceType::"Spotlight Tour", ObjectType::Page, PageID, '', SpotlightTourType,
+            CompletionRequirements::"Specific users", OrderID, TempAllProfile, TempUser);
     end;
 
     /// <summary>
@@ -82,8 +125,10 @@ codeunit 1992 "Checklist"
     /// <param name="ObjectTypeToRun">The object type run by the guided experience item that the checklist item references.</param>
     /// <param name="ObjectIDToRun">The object ID run by the guided experience item that the checklist item references.</param>
     procedure Delete(GuidedExperienceType: Enum "Guided Experience Type"; ObjectTypeToRun: ObjectType; ObjectID: Integer)
+    var
+        SpotlightTourType: Enum "Spotlight Tour Type";
     begin
-        ChecklistImplementation.Delete(GuidedExperienceType, ObjectTypeToRun, ObjectID, '');
+        ChecklistImplementation.Delete(GuidedExperienceType, ObjectTypeToRun, ObjectID, '', SpotlightTourType::None);
     end;
 
     /// <summary>
@@ -92,17 +137,44 @@ codeunit 1992 "Checklist"
     /// <param name="GuidedExperienceType">The type of guided experience item that the checklist item references.</param>
     /// <param name="Link">The URL that is open by the guided experience item that the checklist item references.</param>
     procedure Delete(GuidedExperienceType: Enum "Guided Experience Type"; Link: Text[250])
+    var
+        SpotlightTourType: Enum "Spotlight Tour Type";
     begin
-        ChecklistImplementation.Delete(GuidedExperienceType, ObjectType::MenuSuite, 0, Link);
+        ChecklistImplementation.Delete(GuidedExperienceType, ObjectType::MenuSuite, 0, Link, SpotlightTourType::None);
     end;
 
     /// <summary>
-    /// Checks whether the checklist should be initialized
+    /// Deletes a spotlight tour checklist item.
     /// </summary>
-    /// <returns>True if the checklist should be initialized and false otherwise.</returns>
+    /// <param name="PageID">The ID of the page that the spotlight tour runs on.</param>
+    /// <param name="SpotlightTourType">The type of spotlight tour.</param>
+    procedure Delete(PageID: Integer; SpotlightTourType: Enum "Spotlight Tour Type")
+    var
+        GuidedExperienceType: Enum "Guided Experience Type";
+    begin
+        ChecklistImplementation.Delete(GuidedExperienceType::"Spotlight Tour", ObjectType::Page, PageID, '', SpotlightTourType);
+    end;
+
+#if not CLEAN19
+    /// <summary>
+    /// Checks whether the checklist should be initialized.
+    /// </summary>
+    /// <returns>True if the checklist should be initialized and false otherwise.</returns>    
+    [Obsolete('Replaced by ShouldInitializeChecklist(ShouldSkipForEvaluationCompany).', '19.0')]
     procedure ShouldInitializeChecklist(): Boolean
     begin
-        exit(ChecklistImplementation.ShouldInitializeChecklist());
+        exit(ChecklistImplementation.ShouldInitializeChecklist(true));
+    end;
+#endif
+
+    /// <summary>
+    /// Checks whether the checklist should be initialized for the current company.
+    /// </summary>
+    /// <param name="ShouldSkipForEvaluationCompany">If true, then the function will always return false for evaluation companies.</param>
+    /// <returns>True if the checklist should be initialized and false otherwise.</returns>
+    procedure ShouldInitializeChecklist(ShouldSkipForEvaluationCompany: Boolean): Boolean
+    begin
+        exit(ChecklistImplementation.ShouldInitializeChecklist(ShouldSkipForEvaluationCompany));
     end;
 
     /// <summary>

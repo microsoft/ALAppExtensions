@@ -86,6 +86,7 @@ codeunit 18466 "Subcontracting Post"
         Item: Record Item;
         PurchaseLine: Record "Purchase Line";
         ItemTrackingCode: Record "Item Tracking Code";
+        ItemTrackingSetup: Record "Item Tracking Setup";
         ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
         ItemTrackingManagement: Codeunit "Item Tracking Management";
         Inbound: Boolean;
@@ -146,14 +147,16 @@ codeunit 18466 "Subcontracting Post"
         if Item."Item Tracking Code" <> '' then begin
             Inbound := false;
             ItemTrackingCode.Code := Item."Item Tracking Code";
-            ItemTrackingManagement.GetItemTrackingSettings(
+            ItemTrackingManagement.GetItemTrackingSetup(
                 ItemTrackingCode,
-                ItemJournalLineEntryTypeEnum2EntryTypeOption(ItemJnlLine."Entry Type"),
+                ItemJnlLine."Entry Type",
                 Inbound,
-                SNRequired,
-                LotRequired,
-                SNInfoRequired,
-                LotInfoRequired);
+                ItemTrackingSetup);
+            SNRequired := ItemTrackingSetup."Serial No. Required";
+            LotRequired := ItemTrackingSetup."Lot No. Required";
+            SNInfoRequired := ItemTrackingSetup."Serial No. Info Required";
+            LotInfoRequired := ItemTrackingSetup."Lot No. Info Required";
+
             CheckTrackingLine := (SNRequired = false) and (LotRequired = false);
             QuantitySent := 0;
             if CheckTrackingLine then
@@ -531,6 +534,7 @@ codeunit 18466 "Subcontracting Post"
         OldReservEntry: Record "Reservation Entry";
         ItemTrackingCode: Record "Item Tracking Code";
         Item: Record Item;
+        ItemTrackingSetup: Record "Item Tracking Setup";
         ItemTrackingManagement: Codeunit "Item Tracking Management";
         ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
         Inbound: Boolean;
@@ -648,14 +652,15 @@ codeunit 18466 "Subcontracting Post"
                                 if Item."Item Tracking Code" <> '' then begin
                                     Inbound := true;
                                     ItemTrackingCode.Code := Item."Item Tracking Code";
-                                    ItemTrackingManagement.GetItemTrackingSettings(
+                                    ItemTrackingManagement.GetItemTrackingSetup(
                                         ItemTrackingCode,
-                                        ItemJournalLineEntryTypeEnum2EntryTypeOption(ItemJnlLine."Entry Type"),
-                                        Inbound,
-                                        SNRequired,
-                                        LotRequired,
-                                        SNInfoRequired,
-                                        LotInfoRequired);
+                                        ItemJnlLine."Entry Type",
+                Inbound,
+                                        ItemTrackingSetup);
+                                    SNRequired := ItemTrackingSetup."Serial No. Required";
+                                    LotRequired := ItemTrackingSetup."Lot No. Required";
+                                    SNInfoRequired := ItemTrackingSetup."Serial No. Info Required";
+                                    LotInfoRequired := ItemTrackingSetup."Lot No. Info Required";
 
                                     CheckTrackingLine := (SNRequired = false) and (LotRequired = false);
                                     QuantitySent := 0;
@@ -817,6 +822,7 @@ codeunit 18466 "Subcontracting Post"
         Item: Record Item;
         ItemTrackingCode: Record "Item Tracking Code";
         OldReservEntry: Record "Reservation Entry";
+        ItemTrackingSetup: Record "Item Tracking Setup";
         ItemTrackingManagement: Codeunit "Item Tracking Management";
         ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
         RemQtytoPost: Decimal;
@@ -919,14 +925,15 @@ codeunit 18466 "Subcontracting Post"
                                     if Item."Item Tracking Code" <> '' then begin
                                         Inbound := true;
                                         ItemTrackingCode.Code := Item."Item Tracking Code";
-                                        ItemTrackingManagement.GetItemTrackingSettings(
+                                        ItemTrackingManagement.GetItemTrackingSetup(
                                             ItemTrackingCode,
-                                            ItemJournalLineEntryTypeEnum2EntryTypeOption(ItemJnlLine."Entry Type"),
-                                            Inbound,
-                                            SNRequired,
-                                            LotRequired,
-                                            SNInfoRequired,
-                                            LotInfoRequired);
+                                            ItemJnlLine."Entry Type",
+                                        Inbound,
+                                        ItemTrackingSetup);
+                                    SNRequired := ItemTrackingSetup."Serial No. Required";
+                                    LotRequired := ItemTrackingSetup."Lot No. Required";
+                                    SNInfoRequired := ItemTrackingSetup."Serial No. Info Required";
+                                    LotInfoRequired := ItemTrackingSetup."Lot No. Info Required";
 
                                         CheckTrackingLine := (SNRequired = false) and (LotRequired = false);
                                         QuantitySent := 0;
@@ -1080,6 +1087,7 @@ codeunit 18466 "Subcontracting Post"
         AppliedDeliveryChallan: Record "Applied Delivery Challan";
         ItemTrackingCode: Record "Item Tracking Code";
         OldReservEntry: Record "Reservation Entry";
+        ItemTrackingSetup: Record "Item Tracking Setup";
         ItemTrackingManagement: Codeunit "Item Tracking Management";
         ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
         RemQtytoPost: Decimal;
@@ -1206,14 +1214,15 @@ codeunit 18466 "Subcontracting Post"
                                     if Item."Item Tracking Code" <> '' then begin
                                         Inbound := true;
                                         ItemTrackingCode.Code := Item."Item Tracking Code";
-                                        ItemTrackingManagement.GetItemTrackingSettings(
+                                        ItemTrackingManagement.GetItemTrackingSetup(
                                             ItemTrackingCode,
-                                            ItemJournalLineEntryTypeEnum2EntryTypeOption(ItemJnlLine."Entry Type"),
+                                            ItemJnlLine."Entry Type",
                                             Inbound,
-                                            SNRequired,
-                                            LotRequired,
-                                            SNInfoRequired,
-                                            LotInfoRequired);
+                                            ItemTrackingSetup);
+                                        SNRequired := ItemTrackingSetup."Serial No. Required";
+                                        LotRequired := ItemTrackingSetup."Lot No. Required";
+                                        SNInfoRequired := ItemTrackingSetup."Serial No. Info Required";
+                                        LotInfoRequired := ItemTrackingSetup."Lot No. Info Required";
 
                                         CheckTrackingLine := (SNRequired = false) and (LotRequired = false);
                                         QuantitySent := 0;
@@ -1276,6 +1285,7 @@ codeunit 18466 "Subcontracting Post"
         Item: Record Item;
         ItemTrackingCode: Record "Item Tracking Code";
         OldReservEntry: Record "Reservation Entry";
+        ItemTrackingSetup: Record "Item Tracking Setup";
         ItemTrackingManagement: Codeunit "Item Tracking Management";
         ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
         RemQtytoPost: Decimal;
@@ -1377,14 +1387,15 @@ codeunit 18466 "Subcontracting Post"
                                 if Item."Item Tracking Code" <> '' then begin
                                     Inbound := true;
                                     ItemTrackingCode.Code := Item."Item Tracking Code";
-                                    ItemTrackingManagement.GetItemTrackingSettings(
+                                    ItemTrackingManagement.GetItemTrackingSetup(
                                         ItemTrackingCode,
-                                        ItemJournalLineEntryTypeEnum2EntryTypeOption(ItemJnlLine."Entry Type"),
+                                        ItemJnlLine."Entry Type",
                                         Inbound,
-                                        SNRequired,
-                                        LotRequired,
-                                        SNInfoRequired,
-                                        LotInfoRequired);
+                                        ItemTrackingSetup);
+                                    SNRequired := ItemTrackingSetup."Serial No. Required";
+                                    LotRequired := ItemTrackingSetup."Lot No. Required";
+                                    SNInfoRequired := ItemTrackingSetup."Serial No. Info Required";
+                                    LotInfoRequired := ItemTrackingSetup."Lot No. Info Required";
 
                                     CheckTrackingLine := (SNRequired = false) and (LotRequired = false);
                                     QuantitySent := 0;
@@ -2085,6 +2096,7 @@ codeunit 18466 "Subcontracting Post"
         ItemTrackingCode: Record "Item Tracking Code";
         ReservEntry: Record "Reservation Entry";
         DeliveryChallanLine: Record "Delivery Challan Line";
+        ItemTrackingSetup: Record "Item Tracking Setup";
         ItemTrackingManagement: Codeunit "Item Tracking Management";
 
         Inbound: Boolean;
@@ -2102,14 +2114,15 @@ codeunit 18466 "Subcontracting Post"
         QuantityTracked := 0;
         Inbound := true;
         ItemTrackingCode.Code := Item."Item Tracking Code";
-        ItemTrackingManagement.GetItemTrackingSettings(
+        ItemTrackingManagement.GetItemTrackingSetup(
             ItemTrackingCode,
-            ItemJournalLineEntryTypeEnum2EntryTypeOption(ItemJnlLine."Entry Type"),
-            Inbound,
-            SNRequired,
-            LotRequired,
-            SNInfoRequired,
-            LotInfoRequired);
+            ItemJnlLine."Entry Type",
+                Inbound,
+                ItemTrackingSetup);
+            SNRequired := ItemTrackingSetup."Serial No. Required";
+            LotRequired := ItemTrackingSetup."Lot No. Required";
+            SNInfoRequired := ItemTrackingSetup."Serial No. Info Required";
+            LotInfoRequired := ItemTrackingSetup."Lot No. Info Required";
 
         ReservEntry.Reset();
         ReservEntry.SetCurrentKey(

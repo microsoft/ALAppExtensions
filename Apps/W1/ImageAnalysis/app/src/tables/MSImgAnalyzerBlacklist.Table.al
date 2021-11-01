@@ -6,6 +6,7 @@
 table 2029 "MS - Img. Analyzer Blacklist"
 {
     ReplicateData = false;
+    Caption = 'Image Analyzer Blocked Attributes';
 
     fields
     {

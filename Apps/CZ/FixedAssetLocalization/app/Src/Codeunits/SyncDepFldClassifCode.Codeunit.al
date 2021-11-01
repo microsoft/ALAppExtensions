@@ -53,7 +53,8 @@ codeunit 31301 "Sync.Dep.Fld-Classif. Code CZF"
         if not ClassificationCodeCZF.Get(Rec.Code) then begin
             ClassificationCodeCZF.Init();
             ClassificationCodeCZF.Code := Rec.Code;
-            ClassificationCodeCZF.Insert(false);
+            ClassificationCodeCZF.SystemId := Rec.SystemId;
+            ClassificationCodeCZF.Insert(false, true);
         end;
         ClassificationCodeCZF.Description := Rec.Description;
 #pragma warning disable AL0603
@@ -132,7 +133,8 @@ codeunit 31301 "Sync.Dep.Fld-Classif. Code CZF"
         if not ClassificationCode.Get(Rec.Code) then begin
             ClassificationCode.Init();
             ClassificationCode.Code := Rec.Code;
-            ClassificationCode.Insert(false);
+            ClassificationCode.SystemId := Rec.SystemId;
+            ClassificationCode.Insert(false, true);
         end;
         ClassificationCode.Description := Rec.Description;
         ClassificationCode."Classification Type" := Rec."Classification Type".AsInteger();

@@ -20,21 +20,15 @@ codeunit 31037 "Bank Operations Functions CZL"
     begin
         if Input = '' then
             exit('');
-        exit(CopyStr(DelChrLeft(NumbersOnly(Input), '0'), 1, 10));
+        exit(CopyStr(TrimLeft(NumbersOnly(Input), '0'), 1, 10));
     end;
 
     local procedure NumbersOnly(Input: Text): Text
-    var
-        i: Integer;
-        Output: Text;
     begin
-        for i := 1 to StrLen(Input) do
-            if Input[i] in ['0' .. '9'] then
-                Output += Format(Input[i]);
-        exit(Output);
+        exit(DelChr(Input, '=', DelChr(Input, '=', '0123456789')));
     end;
 
-    local procedure DelChrLeft(Input: Text; DeletedChar: Text[1]): Text
+    local procedure TrimLeft(Input: Text; DeletedChar: Text[1]): Text
     begin
         exit(DelChr(Input, '<', DeletedChar));
     end;
@@ -74,7 +68,7 @@ codeunit 31037 "Bank Operations Functions CZL"
         CompanyInformation.Modify(true);
     end;
 
-    local procedure CheckBankAccountNo(BankAccountNo: Text[30]; ShowErrorMessages: Boolean): Boolean
+    procedure CheckBankAccountNo(BankAccountNo: Text[30]; ShowErrorMessages: Boolean): Boolean
     var
         HasErrors: Boolean;
     begin
@@ -110,12 +104,12 @@ codeunit 31037 "Bank Operations Functions CZL"
         TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, NewDescription);
     end;
 
-    local procedure HasBankAccountNoValidCharacters(BankAccountNo: Text[30]): Boolean
+    procedure HasBankAccountNoValidCharacters(BankAccountNo: Text[30]): Boolean
     begin
         exit(GetInvalidCharactersFromBankAccountNo(BankAccountNo) = '');
     end;
 
-    local procedure GetInvalidCharactersFromBankAccountNo(BankAccountNo: Text[30]): Text
+    procedure GetInvalidCharactersFromBankAccountNo(BankAccountNo: Text[30]): Text
     begin
         exit(DelChr(BankAccountNo, '=', GetValidCharactersForBankAccountNo()));
     end;
@@ -220,4 +214,15 @@ codeunit 31037 "Bank Operations Functions CZL"
 
         exit(OutputSum mod 11);
     end;
+#if not CLEAN19
+#if CLEAN18
+#pragma warning disable AL0432
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Bank Operations Functions", 'OnBeforeCheckBankAccountNo', '', false, false)]
+    local procedure CheckErrorsOnBeforeCheckBankAccountNo(BankAccountNo: Text[30]; ShowErrorMessages: Boolean; var HasErrors: Boolean)
+    begin
+        HasErrors := CheckBankAccountNo(BankAccountNo, ShowErrorMessages);
+    end;
+#pragma warning restore AL0432
+#endif
+#endif
 }

@@ -130,13 +130,19 @@ report 11756 "VAT Documents List CZL"
                     TempDocVATAmountLine."VAT Calculation Type" := "VAT Calculation Type";
                     TempDocVATAmountLine."Tax Group Code" := "Tax Group Code";
                     TempDocVATAmountLine."VAT %" := VATPostingSetup."VAT %";
+#if not CLEAN19
+#pragma warning disable AL0432
                     if "VAT Entry"."Advance Base" <> 0 then begin
                         TempDocVATAmountLine."VAT Base" := "Advance Base";
                         TempDocVATAmountLine."Amount Including VAT" := Amount + "Advance Base";
                     end else begin
+#pragma warning restore AL0432
+#endif
                         TempDocVATAmountLine."VAT Base" := Base;
                         TempDocVATAmountLine."Amount Including VAT" := Amount + Base;
+#if not CLEAN19
                     end;
+#endif
                     TempDocVATAmountLine.InsertLine();
 
                     TempTotVATAmountLine.Init();
@@ -144,18 +150,28 @@ report 11756 "VAT Documents List CZL"
                     TempTotVATAmountLine."VAT Calculation Type" := "VAT Calculation Type";
                     TempTotVATAmountLine."Tax Group Code" := "Tax Group Code";
                     TempTotVATAmountLine."VAT %" := VATPostingSetup."VAT %";
+#if not CLEAN19
+#pragma warning disable AL0432
                     if "VAT Entry"."Advance Base" <> 0 then begin
                         TempTotVATAmountLine."VAT Base" := "Advance Base";
                         TempTotVATAmountLine."Amount Including VAT" := Amount + "Advance Base";
                     end else begin
+#pragma warning restore AL0432
+#endif
                         TempTotVATAmountLine."VAT Base" := Base;
                         TempTotVATAmountLine."Amount Including VAT" := Amount + Base;
+#if not CLEAN19
                     end;
+#endif
                     TempTotVATAmountLine.InsertLine();
 
-                    Advance := "Advance Letter No." <> '';
+                    Advance := IsAdvanceEntryCZL();
+#if not CLEAN19
+#pragma warning disable AL0432
                     if "Advance Base" <> 0 then
                         Base := "Advance Base";
+#pragma warning restore AL0432
+#endif                    
                     AmountWithReverseChargeVAT := Amount;
                     if "VAT Calculation Type" = "VAT Calculation Type"::"Reverse Charge VAT" then
                         AmountWithReverseChargeVAT := 0;
@@ -413,12 +429,8 @@ report 11756 "VAT Documents List CZL"
         TempTotVATAmountLine: Record "VAT Amount Line" temporary;
         VATPostingSetup: Record "VAT Posting Setup";
         EntryTypeFilter: Option Purchase,Sale,All;
-        PrintDetail: Boolean;
-        PrintSummary: Boolean;
-        PrintTotal: Boolean;
+        PrintDetail, PrintSummary, PrintTotal, Advance, HiddenTotalForReverseChargeVAT : Boolean;
         VATEntryFilters: Text;
-        Advance: Boolean;
         TaxRateTxt: Label 'Tax Rate %1', Comment = '%1 = VAT Identifier';
         AmountWithReverseChargeVAT: Decimal;
-        HiddenTotalForReverseChargeVAT: Boolean;
 }

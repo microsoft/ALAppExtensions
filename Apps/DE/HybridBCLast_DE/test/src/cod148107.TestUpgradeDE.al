@@ -8,12 +8,20 @@ codeunit 148107 "Test Upgrade DE"
         LibraryHybridBCLast: Codeunit "Library - Hybrid BC Last";
         CountryCodeTxt: Label 'DE', Locked = true;
 
+    local procedure Initialize()
+    var
+        UpgradeTagLibrary: Codeunit "Upgrade Tag Library";
+    begin
+        UpgradeTagLibrary.DeleteAllUpgradeTags();
+    end;
+
     [Test]
     procedure VerifyMappedTablesStaged()
     var
         SourceTableMapping: Record "Source Table Mapping";
     begin
         // [SCENARIO 287703] German extension maps tables that need to be staged
+        Initialize();
         LibraryHybridBCLast.InitializeMapping(14.5);
 
         // [WHEN] The extension is installed
@@ -29,6 +37,7 @@ codeunit 148107 "Test Upgrade DE"
         SourceTableMapping: Record "Source Table Mapping";
     begin
         // [SCENARIO 287703] German extension maps tables that have moved to W1
+        Initialize();
         LibraryHybridBCLast.InitializeMapping(14.5);
 
         // [WHEN] The extension is installed
@@ -46,6 +55,7 @@ codeunit 148107 "Test Upgrade DE"
         W1CompanyHandler: Codeunit "W1 Company Handler";
     begin
         // [SCENARIO 287703] Source Code Setup table is correctly upgraded
+        Initialize();
         LibraryHybridBCLast.InitializeMapping(14.5);
         HybridReplicationSummary.Init();
 
@@ -74,6 +84,7 @@ codeunit 148107 "Test Upgrade DE"
         W1CompanyHandler: Codeunit "W1 Company Handler";
     begin
         // [SCENARIO xxxxxx] Inventory Setup table is correctly upgraded
+        Initialize();
         LibraryHybridBCLast.InitializeMapping(14.5);
 
         // [GIVEN] An Inventory Setup record has been created

@@ -507,100 +507,6 @@ codeunit 139505 "MS - WorldPay Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('SalesInvoiceReportRequestPageHandler,MessageHandler')]
-    procedure TestSalesInvoiceReportSingleInvoice()
-    var
-        TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
-        MSWorldPayStandardAccount: Record "MS - WorldPay Standard Account";
-        DummyPaymentMethod: Record "Payment Method";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
-    begin
-        Initialize();
-
-        // Setup
-        CreateDefaultWorldPayStandardAccount(MSWorldPayStandardAccount);
-        CreatePaymentMethod(DummyPaymentMethod, FALSE);
-        CreateAndPostSalesInvoice(SalesInvoiceHeader, DummyPaymentMethod);
-        TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument, SalesInvoiceHeader);
-
-        // Exercise
-        SalesInvoiceHeader.SETRECFILTER();
-        COMMIT();
-        REPORT.RUN(REPORT::"Sales - Invoice", TRUE, FALSE, SalesInvoiceHeader);
-
-        // Verify
-        VerifyPaymentServiceIsInReportDataset(TempPaymentReportingArgument);
-        VerifyWorldPayURL(TempPaymentReportingArgument, MSWorldPayStandardAccount, SalesInvoiceHeader);
-    end;
-
-    [Test]
-    [HandlerFunctions('SalesInvoiceReportRequestPageHandler,MessageHandler')]
-    procedure TestSalesInvoiceReportMultipleInvoices()
-    var
-        TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
-        MSWorldPayStandardAccount: Record "MS - WorldPay Standard Account";
-        DummyPaymentMethod: Record "Payment Method";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        SalesInvoiceHeader2: Record "Sales Invoice Header";
-        TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
-        TempPaymentReportingArgument2: Record "Payment Reporting Argument" temporary;
-    begin
-        Initialize();
-        SalesInvoiceHeader.DELETEALL();
-
-        // Setup
-        CreateDefaultWorldPayStandardAccount(MSWorldPayStandardAccount);
-        CreatePaymentMethod(DummyPaymentMethod, FALSE);
-        CreateAndPostSalesInvoice(SalesInvoiceHeader, DummyPaymentMethod);
-        CreateAndPostSalesInvoice(SalesInvoiceHeader2, DummyPaymentMethod);
-        TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument, SalesInvoiceHeader);
-        TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument2, SalesInvoiceHeader2);
-
-        // Exercise
-        SalesInvoiceHeader.SETFILTER("No.", '%1..%2', SalesInvoiceHeader."No.", SalesInvoiceHeader2."No.");
-        COMMIT();
-        REPORT.RUN(REPORT::"Sales - Invoice", TRUE, FALSE, SalesInvoiceHeader);
-
-        // Verify
-        VerifyPaymentServiceIsInReportDataset(TempPaymentReportingArgument);
-        VerifyPaymentServiceIsInReportDataset(TempPaymentReportingArgument2);
-
-        VerifyWorldPayURL(TempPaymentReportingArgument, MSWorldPayStandardAccount, SalesInvoiceHeader);
-        VerifyWorldPayURL(TempPaymentReportingArgument2, MSWorldPayStandardAccount, SalesInvoiceHeader2);
-    end;
-
-    [Test]
-    [HandlerFunctions('SalesInvoiceReportRequestPageHandler,MessageHandler')]
-    procedure TestSalesInvoiceReportChangeTargetURL()
-    var
-        TempPaymentServiceSetup: Record "Payment Service Setup" temporary;
-        MSWorldPayStandardAccount: Record "MS - WorldPay Standard Account";
-        DummyPaymentMethod: Record "Payment Method";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
-    begin
-        Initialize();
-
-        // Setup
-        CreateDefaultWorldPayStandardAccount(MSWorldPayStandardAccount);
-        MSWorldPayStandardAccount.SetTargetURL(NewTargetURLTxt);
-        CreatePaymentMethod(DummyPaymentMethod, FALSE);
-        CreateAndPostSalesInvoice(SalesInvoiceHeader, DummyPaymentMethod);
-        TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument, SalesInvoiceHeader);
-
-        // Exercise
-        COMMIT();
-        SalesInvoiceHeader.SETRECFILTER();
-        REPORT.RUN(REPORT::"Sales - Invoice", TRUE, FALSE, SalesInvoiceHeader);
-
-        // Verify
-        VerifyPaymentServiceIsInReportDataset(TempPaymentReportingArgument);
-        TempPaymentReportingArgument.FIND('=');
-        VerifyWorldPayURL(TempPaymentReportingArgument, MSWorldPayStandardAccount, SalesInvoiceHeader);
-    end;
-
-    [Test]
     [HandlerFunctions('EMailDialogHandler,MessageHandler')]
     procedure TestCoverLetterPaymentLinkSMTPSetup(); // To be removed together with deprecated SMTP objects
     var
@@ -899,7 +805,7 @@ codeunit 139505 "MS - WorldPay Standard Tests"
 
         GetCustomBodyLayout(CustomReportLayout);
 
-	ReportSelections.Reset();
+        ReportSelections.Reset();
         ReportSelections.SetRange(Usage, ReportSelections.Usage::"S.Invoice");
         ReportSelections.FINDFIRST();
         ReportSelections.VALIDATE("Use for Email Attachment", TRUE);
@@ -1191,15 +1097,6 @@ codeunit 139505 "MS - WorldPay Standard Tests"
         Assert.IsTrue(RowFound, 'Row was not found on the page');
 
         SelectPaymentService.OK().INVOKE();
-    end;
-
-    [RequestPageHandler]
-    procedure SalesInvoiceReportRequestPageHandler(var SalesInvoice: TestRequestPage "Sales - Invoice")
-    var
-        LibraryReportDataset: Codeunit "Library - Report Dataset";
-    begin
-        DatasetFileName := LibraryReportDataset.GetFileName();
-        SalesInvoice.SAVEASXML(LibraryReportDataset.GetParametersFileName(), DatasetFileName);
     end;
 
     [ConfirmHandler]
