@@ -233,6 +233,7 @@ codeunit 135135 "Image Tests"
         RotateFlipType: Enum "Rotate Flip Type";
         OutStream: OutStream;
         CurrentWidth, CurrentHeight : Integer;
+        Original, Rotated : Text;
     begin
         // [Given] base64 encoded data, create image
         Image.FromBase64(ImageAsBase64Txt);
@@ -241,14 +242,19 @@ codeunit 135135 "Image Tests"
 
         // [When] rotate image 360 degrees
         Image.RotateFlip(RotateFlipType::Rotate90FlipNone);
+        Original := Image.ToBase64();
+
+        Image.RotateFlip(RotateFlipType::Rotate90FlipNone);
         Image.RotateFlip(RotateFlipType::Rotate90FlipNone);
         Image.RotateFlip(RotateFlipType::Rotate90FlipNone);
         Image.RotateFlip(RotateFlipType::Rotate90FlipNone);
 
+        Rotated := Image.ToBase64();
+
         // [Then] verify image
         Assert.AreEqual(CurrentHeight, Image.GetWidth(), 'Incorrect width');
         Assert.AreEqual(CurrentWidth, Image.GetHeight(), 'Incorrect height');
-        Assert.AreEqual(ImageAsBase64Txt, Image.ToBase64(), 'RotateFlip failed');
+        Assert.AreEqual(Original, Rotated, 'RotateFlip failed');
 
         // [Then] save to stream
         TempBlob.CreateOutStream(OutStream);

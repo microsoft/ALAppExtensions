@@ -232,11 +232,15 @@ codeunit 3970 "Image Impl."
     procedure RotateFlip(RotateFlipType: Enum "Rotate Flip Type")
     var
         Image: DotNet Image;
+        BitmapDst: DotNet Bitmap;
         InStream: InStream;
     begin
         TempBlob.CreateInStream(InStream);
         Image := Image.FromStream(InStream);
-        Image.RotateFlip(RotateFlipType.AsInteger());
+
+        BitmapDst := BitmapDst.Bitmap(Image);
+        BitmapDst.RotateFlip(RotateFlipType.AsInteger());
+
         EncodeToImage(Image);
     end;
 
