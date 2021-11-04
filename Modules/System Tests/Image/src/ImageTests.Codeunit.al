@@ -11,6 +11,7 @@ codeunit 135135 "Image Tests"
     var
         Assert: Codeunit "Library Assert";
         Base64Convert: Codeunit "Base64 Convert";
+        ImageNotInitializedErr: Label 'Image is not initialized';
         ImageAsBase64Txt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAYAAAB8ZH1oAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAhSURBVBhXYwCC/0RirILYMIIDAtjYUIzCwYexCqJhhv8AD/M3yc4WsFgAAAAASUVORK5CYII=', Locked = true;
         RotatedImageAsBase64Txt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAKCAYAAAB8OZQwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAdSURBVBhXYwCC/1gwqYIggCGIhvEIUqgdgRn+AwCbbDfJSYc2FAAAAABJRU5ErkJggq5CYII=', Locked = true;
         ImageAsBase64ClearTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAYAAAB8ZH1oAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwgAADsIBFShKgAAAABRJREFUGFdj+M/A8J8YPPgVMvwHAOUMY51Bb2wGAAAAAElFTkSuQmCCCqJhhv8AD/M3yc4WsFgAAAAASUVORK5CYII=', Locked = true;
@@ -317,4 +318,48 @@ codeunit 135135 "Image Tests"
         Assert.ExpectedError('Parameter Width must be greater than 0');
     end;
 
+    [Test]
+    procedure ImageNotInitializedTest()
+    var
+        Image: Codeunit Image;
+        TempBlob: Codeunit "Temp Blob";
+        ImageOutStream: OutStream;
+    begin
+        // [Scenario] Errors occur when working with an image that has not been initialized.
+
+        // [Given] Image is not initialized
+
+        // [Then] An error occurs when getting the image width
+        asserterror Image.GetWidth();
+        Assert.ExpectedError(ImageNotInitializedErr);
+
+        // [Then] An error occurs when getting the image height
+        asserterror Image.GetHeight();
+        Assert.ExpectedError(ImageNotInitializedErr);
+
+        // [Then] An error occurs when getting the image format
+        asserterror Image.GetFormat();
+        Assert.ExpectedError(ImageNotInitializedErr);
+
+        // [Then] An error occurs when getting the image format as text
+        asserterror Image.GetFormatAsText();
+        Assert.ExpectedError(ImageNotInitializedErr);
+
+        // [Then] An error occurs when croping the image
+        asserterror Image.Crop(1, 1, 1, 1);
+        Assert.ExpectedError(ImageNotInitializedErr);
+
+        // [Then] An error occurs when resizing the image
+        asserterror Image.Resize(1, 1);
+        Assert.ExpectedError(ImageNotInitializedErr);
+
+        // [Then] An error occurs when rotating the image
+        asserterror Image.RotateFlip(Enum::"Rotate Flip Type"::Rotate270FlipNone);
+        Assert.ExpectedError(ImageNotInitializedErr);
+
+        // [Then] The stream is empty when the image is saved
+        TempBlob.CreateOutStream(ImageOutStream);
+        Image.Save(ImageOutStream);
+        Assert.IsFalse(TempBlob.HasValue(), 'Image should be empty');
+    end;
 }
