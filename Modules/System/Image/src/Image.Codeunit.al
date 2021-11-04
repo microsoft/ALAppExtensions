@@ -33,7 +33,7 @@ codeunit 3971 Image
     /// <param name="Blue">The blue component. Valid values are 0 through 255.</param>
     procedure Clear(Red: Integer; Green: Integer; Blue: Integer)
     begin
-        Clear(255, Red, Green, Blue);
+        ImageImpl.Clear(255, Red, Green, Blue);
     end;
 
     /// <summary>

@@ -241,7 +241,7 @@ codeunit 3970 "Image Impl."
         BitmapDst := BitmapDst.Bitmap(Image);
         BitmapDst.RotateFlip(RotateFlipType.AsInteger());
 
-        EncodeToImage(Image);
+        EncodeToImage(BitmapDst);
     end;
 
     procedure Save(OutStream: OutStream)
