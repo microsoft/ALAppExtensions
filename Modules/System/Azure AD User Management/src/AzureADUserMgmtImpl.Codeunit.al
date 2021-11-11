@@ -668,6 +668,16 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             UserPersonalization.Delete();
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Telemetry Custom Dimensions", 'OnAddCommonCustomDimensions', '', true, true)]
+    local procedure OnAddCommonCustomDimensions(var Sender: Codeunit "Telemetry Custom Dimensions")
+    var
+        PlanIds: Codeunit "Plan Ids";
+        IsAdmin: Boolean;
+    begin
+        IsAdmin := AzureADGraphUser.IsUserDelegatedAdmin() or AzureADPlan.IsPlanAssigned(PlanIds.GetInternalAdminPlanId());
+        Sender.AddCommonCustomDimension('IsAdmin', Format(IsAdmin));
+    end;
+
     [InternalEvent(false)]
     local procedure OnIsUserTenantAdmin(var IsUserTenantAdmin: Boolean; var Handled: Boolean)
     begin

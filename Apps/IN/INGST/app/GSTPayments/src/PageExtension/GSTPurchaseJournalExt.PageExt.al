@@ -123,6 +123,15 @@ pageextension 18248 "GST Purchase Journal Ext" extends "Purchase Journal"
                     CallTaxEngine();
                 end;
             }
+            field("Order Address Code"; "Order Address Code")
+            {
+                ApplicationArea = Basic, Suite;
+
+                trigger OnValidate()
+                begin
+                    CallTaxEngine();
+                end;
+            }
             field("GST Input Service Distribution"; Rec."GST Input Service Distribution")
             {
                 ApplicationArea = Basic, Suite;

@@ -14,50 +14,50 @@ codeunit 135048 "IDA 1D I2of5 Test"
     [Test]
     procedure TestInterleaved2of5Encoding()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Encoding a text using Interleaved 2 of 5 symbology yields the correct result
 
-        GenericIDAutomation1DTest.EncodeFontSuccessTest(/* input */'123456', Enum::"Barcode Symbology"::Interleaved2of5, /* expected result */'Ë-CYÌ');
+        GenericBarcodeTestHelper.EncodeFontSuccessTest(/* input */'123456', Enum::"Barcode Symbology"::Interleaved2of5, /* expected result */'Ë-CYÌ');
     end;
 
     [Test]
     procedure TestInterleaved2of5ValidationWithEmptyString()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating an empty text using Interleaved 2 of 5  symbology yeilds an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'', Enum::"Barcode Symbology"::Interleaved2of5, /* expected error */StrSubstNo(InvalidInputErr, ''));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'', Enum::"Barcode Symbology"::Interleaved2of5, /* expected error */StrSubstNo(InvalidInputErr, ''));
     end;
 
     [Test]
     procedure TestInterleaved2of5ValidationWithNormalString()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating a correctly formatted text using Interleaved 2 of 5  symbology doesn't yield an error
 
-        GenericIDAutomation1DTest.ValidateFontSuccessTest(/* input */'123456', Enum::"Barcode Symbology"::Interleaved2of5);
+        GenericBarcodeTestHelper.ValidateFontSuccessTest(/* input */'123456', Enum::"Barcode Symbology"::Interleaved2of5);
     end;
 
     [Test]
     procedure TestInterleaved2of5ValidationWithInvalidString()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating an incorrectly formatted text using Interleaved 2 of 5  symbology yields an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'abcd', Enum::"Barcode Symbology"::Interleaved2of5, /* expected error */StrSubstNo(InvalidInputErr, 'abcd'));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'abcd', Enum::"Barcode Symbology"::Interleaved2of5, /* expected error */StrSubstNo(InvalidInputErr, 'abcd'));
     end;
 
     [Test]
     procedure TestInterleaved2of5ValidationWithInvalidStringLength();
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating a text with wrong length using Interleaved 2 of 5 symbology yields an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'12345', Enum::"Barcode Symbology"::Interleaved2of5, /* expected error */StrSubstNo(InvalidInputErr, '12345'));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'12345', Enum::"Barcode Symbology"::Interleaved2of5, /* expected error */StrSubstNo(InvalidInputErr, '12345'));
     end;
 }

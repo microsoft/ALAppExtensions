@@ -90,23 +90,22 @@ table 20101 "AMC Banking Setup"
 
     trigger OnInsert()
     var
-        AMCBankServMgt: Codeunit "AMC Banking Mgt.";
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
     begin
         if "User Name" = '' then begin
             "User Name" := GetUserName(); // Set username to demo user, if new record for user to try the funtionality
             if "User Name" <> '' then
                 SavePassword(GetPassword()); // Set Password to demo password, if new record for user to try the funtionality
             if "User Name" = GetDemoUserName() then
-                Solution := AMCBankServMgt.GetDemoSolutionCode();
+                Solution := AMCBankingMgt.GetDemoSolutionCode();
         end;
-        AMCBankServMgt.InitDefaultURLs(Rec);
+        AMCBankingMgt.InitDefaultURLs(Rec);
     end;
 
     var
         DemoUserNameTxt: Label 'demouser', Locked = true;
-        DemoPasswordTxt: Label 'DemoPassword', Locked = true;
+        DemoPasswordTxt: Label 'Demo Password', Locked = true;
 
-    [NonDebuggable]
     internal procedure SavePassword(PasswordText: Text)
     begin
         if IsNullGuid("Password Key") then
@@ -169,9 +168,9 @@ table 20101 "AMC Banking Setup"
 
     procedure SetURLsToDefault()
     var
-        AMCBankServMgt: Codeunit "AMC Banking Mgt.";
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
     begin
-        AMCBankServMgt.SetURLsToDefault(Rec);
+        AMCBankingMgt.SetURLsToDefault(Rec);
     end;
 
     procedure GetDemoUserName(): Text[50]

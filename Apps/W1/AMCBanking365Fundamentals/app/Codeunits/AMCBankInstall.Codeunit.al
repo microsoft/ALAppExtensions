@@ -9,11 +9,12 @@ codeunit 20116 "AMC Bank Install"
         NavApp.GetCurrentModuleInfo(AppInfo);
         if AppInfo.DataVersion() = Version.Create('0.0.0.0') then begin
             MoveBankAccountTableData();
-            MoveBankDataConvPmtTypesTableData();
+            MoveBankDataConversionPmtTypesTableData();
             MovePaymentMethodTableData();
             DeleteOldDataExchangeDefinitions();
             RemoveDataExchangeDefinitionReferences();
         end;
+        UpdateNamespaceApiVersion();
     end;
 
     local procedure MoveBankAccountTableData()
@@ -38,19 +39,19 @@ codeunit 20116 "AMC Bank Install"
             until PaymentMethod.Next() = 0;
     end;
 
-    local procedure MoveBankDataConvPmtTypesTableData()
+    local procedure MoveBankDataConversionPmtTypesTableData()
     var
-        BankDataConvPmtType: Record "Bank Data Conversion Pmt. Type";
-        AmcBankPmtType: Record "AMC Bank Pmt. Type";
+        BankDataConversionPmtType: Record "Bank Data Conversion Pmt. Type";
+        AMCBankPmtType: Record "AMC Bank Pmt. Type";
     begin
-        if BankDataConvPmtType.FindSet(false, false) then
+        if BankDataConversionPmtType.FindSet(false, false) then
             repeat
-                clear(AmcBankPmtType);
-                AmcBankPmtType.Code := BankDataConvPmtType.Code;
-                AmcBankPmtType.Description := BankDataConvPmtType.Description;
-                AmcBankPmtType.SystemId := BankDataConvPmtType.SystemId;
-                AmcBankPmtType.Insert(true);
-            until BankDataConvPmtType.Next() = 0;
+                clear(AMCBankPmtType);
+                AMCBankPmtType.Code := BankDataConversionPmtType.Code;
+                AMCBankPmtType.Description := BankDataConversionPmtType.Description;
+                AMCBankPmtType.SystemId := BankDataConversionPmtType.SystemId;
+                AMCBankPmtType.Insert(true);
+            until BankDataConversionPmtType.Next() = 0;
     end;
 
     local procedure DeleteOldDataExchangeDefinitions()
@@ -74,6 +75,25 @@ codeunit 20116 "AMC Bank Install"
 
         PaymentMethod.SetFilter("Pmt. Export Line Definition", '%1|%2', 'BANKDATACONVSERVCT', 'BANKDATACONVSERVSTMT');
         PaymentMethod.ModifyAll("Pmt. Export Line Definition", '');
+    end;
+
+    local procedure UpdateNamespaceApiVersion()
+    var
+        AMCBankingSetup: Record "AMC Banking Setup";
+        AMCBankingMgt: codeunit "AMC Banking Mgt.";
+        ApiPos: Integer;
+    begin
+        if (AMCBankingSetup.Get()) then
+            if (AMCBankingSetup."Namespace API Version" <> AMCBankingMgt.GetCurrentApiVersion()) then begin
+                IF (COPYSTR(AMCBankingSetup."Service URL", STRLEN(AMCBankingSetup."Service URL"), 1) = '/') THEN
+                    AMCBankingSetup."Service URL" := CopyStr(LowerCase(AMCBankingSetup."Service URL" + AMCBankingMgt.GetCurrentApiVersion()), 1, 250)
+                ELSE begin
+                    ApiPos := StrPos(AMCBankingSetup."Service URL", AMCBankingSetup."Namespace API Version");
+                    AMCBankingSetup."Service URL" := CopyStr(CopyStr(LowerCase(AMCBankingSetup."Service URL"), 1, ApiPos - 1) + AMCBankingMgt.GetCurrentApiVersion(), 1, 250);
+                end;
+                AMCBankingSetup."Namespace API Version" := AMCBankingMgt.GetCurrentApiVersion();
+                if AMCBankingSetup.Modify() then;
+            end;
     end;
 }
 

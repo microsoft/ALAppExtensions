@@ -119,7 +119,7 @@ codeunit 9051 "ABS Client Impl."
         Filename: Text;
         SourceStream: InStream;
     begin
-        if UploadIntoStream('*.*', SourceStream) then
+        if UploadIntoStream('', '', '', FileName, SourceStream) then
             OperationResponse := PutBlobBlockBlobStream(Filename, SourceStream, OptionalParameters);
 
         exit(OperationResponse);

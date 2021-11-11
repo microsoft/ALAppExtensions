@@ -2,7 +2,7 @@
     "id":  "e1bc644c-1e88-4055-8650-86af327fc8b7",
     "name":  "_Exclude_BurntInExtension",
     "publisher":  "Microsoft",
-    "version":  "19.0.0.0",
+    "version":  "19.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
     "help":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
@@ -14,6 +14,10 @@
                      ],
     "platform":  "19.0.0.0",
     "target":  "OnPrem",
-    "showMyCode":  true,
-    "application":  "19.0.0.0"
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
+    "application":  "19.1.0.0"
 }

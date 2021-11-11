@@ -98,7 +98,19 @@ page 31141 "VIES Declaration Lines CZL"
                 LastLineNo += 10000;
                 SecondVIESDeclarationLineCZL."Line Type" := FirstVIESDeclarationLineCZL."Line Type"::Correction;
                 SecondVIESDeclarationLineCZL."System-Created" := false;
+                OnBeforeVIESDeclarationLineInsert(FirstVIESDeclarationLineCZL, SecondVIESDeclarationLineCZL);
                 SecondVIESDeclarationLineCZL.Insert();
+                OnAfterVIESDeclarationLineInsert(SecondVIESDeclarationLineCZL, LastLineNo);
             until FirstVIESDeclarationLineCZL.Next() = 0;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeVIESDeclarationLineInsert(FirstVIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; var SecondVIESDeclarationLineCZL: Record "VIES Declaration Line CZL")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterVIESDeclarationLineInsert(SecondVIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; var LastLineNo: Integer)
+    begin
     end;
 }

@@ -246,6 +246,28 @@ codeunit 20365 "Use Case Archival Mgmt."
         end;
     end;
 
+    local procedure LogStatusTelemetry(CaseId: Guid; VersionTxt: Text; UseCaseStatus: Enum "Use Case Status")
+    var
+        Dimensions: Dictionary of [Text, Text];
+    begin
+        Dimensions.Add('CaseID', CaseId);
+        Dimensions.Add('Version', VersionTxt);
+        Dimensions.Add('Status', Format(UseCaseStatus));
+
+        Session.LogMessage(
+            'TE-USECASE-STATUS',
+            UseCaseStatusTxt,
+            Verbosity::Normal,
+            DataClassification::SystemMetadata,
+            TelemetryScope::ExtensionPublisher,
+            Dimensions);
+    end;
+
+    local procedure GetVersionText(Major: Integer; Minor: Integer): Text
+    begin
+        exit(StrSubstNo(VersionLbl, Major, Minor));
+    end;
+
     local procedure GetNextVersionID(CurrentVersion: Integer): Integer
     begin
         exit(CurrentVersion + 1);
@@ -267,6 +289,8 @@ codeunit 20365 "Use Case Archival Mgmt."
             ArchiveUseCase(Rec);
             Rec.Validate(Enable, false);
         end;
+
+        LogStatusTelemetry(Rec.ID, GetVersionText(Rec."Major Version", Rec."Minor Version"), Rec.Status);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Tax Types", 'OnAfterExportTaxTypes', '', false, false)]
@@ -321,4 +345,6 @@ codeunit 20365 "Use Case Archival Mgmt."
         ChangedByMicrosoft: Boolean;
         ChangedByPartnerLbl: Label 'Partner';
         ExportUseCaseQst: Label 'Do you want to Export Use Cases as well?';
+        UseCaseStatusTxt: Label 'Use Case Status change.', Locked = true;
+        VersionLbl: Label '%1.%2', Comment = '%1 - Major Version, %2 - Minor Version';
 }

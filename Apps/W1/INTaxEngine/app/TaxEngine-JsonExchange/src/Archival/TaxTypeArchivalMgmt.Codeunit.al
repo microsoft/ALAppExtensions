@@ -27,7 +27,6 @@ codeunit 20368 "Tax Type Archival Mgmt."
 
         if not Confirm(RestoreTaxTypeQst) then
             exit;
-        ClearTaxEngineSetup(TaxTypeArchivalLogEntry."Tax Type");
 
         TaxType.Get(TaxTypeArchivalLogEntry."Tax Type");
         OldVersion := TaxType."Minor Version";
@@ -38,6 +37,7 @@ codeunit 20368 "Tax Type Archival Mgmt."
             TaxType.Modify();
         end;
 
+        ClearTaxEngineSetup(TaxTypeArchivalLogEntry."Tax Type");
         TaxTypeArchivalLogEntry.CalcFields("Configuration Data");
         TaxTypeArchivalLogEntry."Configuration Data".CreateInStream(IStream);
         JsonText := TypeHelper.ReadAsTextWithSeparator(IStream, '');
@@ -153,6 +153,28 @@ codeunit 20368 "Tax Type Archival Mgmt."
         TaxType.Delete(true);
     end;
 
+    local procedure LogStatusTelemetry(TaxType: Code[20]; VersionTxt: Text; TaxTypeStatus: Enum "Tax Type Status")
+    var
+        Dimensions: Dictionary of [Text, Text];
+    begin
+        Dimensions.Add('TaxType', TaxType);
+        Dimensions.Add('Version', VersionTxt);
+        Dimensions.Add('Status', Format(TaxTypeStatus));
+
+        Session.LogMessage(
+            'TE-TAXTYPE-STATUS',
+            UseCaseStatusTxt,
+            Verbosity::Normal,
+            DataClassification::SystemMetadata,
+            TelemetryScope::ExtensionPublisher,
+            Dimensions);
+    end;
+
+    local procedure GetVersionText(Major: Integer; Minor: Integer): Text
+    begin
+        exit(StrSubstNo(VersionLbl, Major, Minor));
+    end;
+
     [EventSubscriber(ObjectType::Page, Page::"Tax Engine Setup Wizard", 'OnAfterActionEvent', 'ExportModified', false, false)]
     local procedure OnAfterExportModified()
     begin
@@ -169,6 +191,8 @@ codeunit 20368 "Tax Type Archival Mgmt."
             ArchiveTaxType(Rec);
             Rec.Validate(Enabled, false);
         end;
+
+        LogStatusTelemetry(Rec.Code, GetVersionText(Rec."Major Version", Rec."Minor Version"), Rec.Status);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Tax Type", 'OnAfterActionEvent', 'ArchivedLogs', false, false)]
@@ -200,4 +224,6 @@ codeunit 20368 "Tax Type Archival Mgmt."
     var
         ChangedByMicrosoft: Boolean;
         ChangedByPartnerLbl: Label 'Partner';
+        UseCaseStatusTxt: Label 'Tax Type Status change.', Locked = true;
+        VersionLbl: Label '%1.%2', Comment = '%1 - Major Version, %2 - Minor Version';
 }

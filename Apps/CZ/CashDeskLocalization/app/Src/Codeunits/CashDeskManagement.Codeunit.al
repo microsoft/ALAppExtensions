@@ -412,8 +412,13 @@ codeunit 11724 "Cash Desk Management CZP"
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDeskCZP: Record "Cash Desk CZP";
         EETManagementCZL: Codeunit "EET Management CZL";
+        IsHandled: boolean;
     begin
-        if (CashDeskNo = '') or (ActionType = ActionType::" ") then
+        OnBeforeCheckUserRights(CashDeskNo, ActionType, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not IsCheckUserRightsEnabled(CashDeskNo, ActionType) then
             exit;
 
         CashDeskCZP.Get(CashDeskNo);
@@ -453,6 +458,12 @@ codeunit 11724 "Cash Desk Management CZP"
                 ActionType::Post, ActionType::"Post and Print":
                     Error(NotPermToPostErr, CashDocumentHeaderCZP.TableCaption);
             end;
+    end;
+
+    local procedure IsCheckUserRightsEnabled(CashDeskNo: Code[20]; ActionType: Enum "Cash Document Action CZP") IsEnabled: Boolean
+    begin
+        IsEnabled := (CashDeskNo <> '') and (ActionType <> ActionType::" ");
+        OnAfterIsCheckUserRightsEnabled(CashDeskNo, ActionType, IsEnabled);
     end;
 
     procedure CheckCashDesk(CashDeskNo: Code[20])
@@ -631,5 +642,15 @@ codeunit 11724 "Cash Desk Management CZP"
                     CustomerVendorNo := CashDocumentLineCZP."Account No.";
                 end;
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckUserRights(CashDeskNo: Code[20]; ActionType: Enum "Cash Document Action CZP"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterIsCheckUserRightsEnabled(CashDeskNo: Code[20]; ActionType: Enum "Cash Document Action CZP"; var IsEnabled: Boolean)
+    begin
     end;
 }

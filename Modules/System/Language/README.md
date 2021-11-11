@@ -6,25 +6,6 @@ Changes the language for Windows and applications, and converts language codes t
  Table that contains the available application languages.
  
 
-### GetLanguageId (Method) <a name="GetLanguageId"></a> 
-
- [OBSOLETE] Gets the language ID based on its code.
- 
-
-#### Syntax
-```
-[Obsolete('Please use function with the same name from this modules facade codeunit 43 - "Language".', '16.0')]
-procedure GetLanguageId(LanguageCode: Code[10]): Integer
-```
-#### Parameters
-*LanguageCode ([Code[10]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
-
-The code of the language
-
-#### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
-
-The ID for the language code that was provided for this function. If no ID is found for the language code, then it returns 0.
 
 ## Language (Codeunit 43)
 

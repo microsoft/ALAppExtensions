@@ -817,11 +817,12 @@ table 11744 "Cash Desk CZP"
             Error(CurrExchRateIsEmptyErr, CurrencyExchangeRate.GetFilters());
     end;
 
-    procedure IsEETCashRegister(): Boolean
+    procedure IsEETCashRegister() EETCashRegister: Boolean
     var
         EETCashRegisterCZL: Record "EET Cash Register CZL";
     begin
-        exit(EETCashRegisterCZL.FindByCashRegisterNo("EET Cash Register Type CZL"::"Cash Desk", "No."));
+        EETCashRegister := EETCashRegisterCZL.FindByCashRegisterNo("EET Cash Register Type CZL"::"Cash Desk", "No.");
+        OnAfterIsEETCashRegister(Rec, EETCashRegister);
     end;
 
     [IntegrationEvent(false, false)]
@@ -831,6 +832,11 @@ table 11744 "Cash Desk CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterValidateShortcutDimCode(var CashDeskCZP: Record "Cash Desk CZP"; var xCashDeskCZP: Record "Cash Desk CZP"; FieldNumber: Integer; var ShortcutDimCode: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterIsEETCashRegister(CashDeskCZP: Record "Cash Desk CZP"; var EETCashRegister: Boolean)
     begin
     end;
 }

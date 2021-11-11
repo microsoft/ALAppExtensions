@@ -71,8 +71,8 @@ codeunit 9057 "Plan Upgrade"
         RenameOrCreatePlan(PlanIds.GetExternalAccountantPlanId(), 'Dynamics 365 Business Central External Accountant');
         RenameOrCreatePlan(PlanIds.GetPremiumISVPlanId(), 'Dynamics 365 Business Central Premium - Embedded');
         RenameOrCreatePlan(PlanIds.GetViralSignupPlanId(), 'Dynamics 365 Business Central for IWs');
-        RenameOrCreatePlan(PlanIds.GetDelegatedAdminPlanId(), 'Delegated Helpdesk agent - Partner');
-        RenameOrCreatePlan(PlanIds.GetHelpDeskPlanId(), 'Delegated Admin agent - Partner');
+        RenameOrCreatePlan(PlanIds.GetDelegatedAdminPlanId(), 'Delegated Admin agent - Partner');
+        RenameOrCreatePlan(PlanIds.GetHelpDeskPlanId(), 'Delegated Helpdesk agent - Partner');
         RenameOrCreatePlan('996DEF3D-B36C-4153-8607-A6FD3C01B89F', 'D365 Business Central Infrastructure');
 
 

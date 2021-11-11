@@ -631,7 +631,7 @@ codeunit 132605 "Checklist Banner Test"
             'Get started:',
             'All set, ready for business!',
             'All set, ready for business!',
-            'Start exploring Business Central now. You can revisit the checklist later and enable additional features as you need them.');
+            '');
 
         VerifyBannerButtonVisibility(ChecklistBannerContainer, false, true, false, not ChecklistVisible);
     end;

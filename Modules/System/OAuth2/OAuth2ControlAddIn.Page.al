@@ -5,8 +5,9 @@
 
 page 502 OAuth2ControlAddIn
 {
+    PageType = NavigatePage;
     Extensible = false;
-    Caption = 'Waiting for a response - do not close this page';
+    Caption = 'Waiting for a response. Do not close this page.';
     DeleteAllowed = false;
     Editable = false;
     InsertAllowed = false;
@@ -18,6 +19,11 @@ page 502 OAuth2ControlAddIn
     {
         area(Content)
         {
+            group(BodyGroup)
+            {
+                InstructionalText = 'A sign in window is open. To continue, pick the account you want to use and accept the conditions. This message will close when you are done.';
+                ShowCaption = false;
+            }
             usercontrol(OAuthIntegration; OAuthControlAddIn)
             {
                 ApplicationArea = All;

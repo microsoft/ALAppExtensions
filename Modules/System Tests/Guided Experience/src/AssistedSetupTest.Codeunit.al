@@ -17,7 +17,7 @@ codeunit 132586 "Assisted Setup Test"
         NonExistingPageID: Integer;
 
     [Test]
-    [HandlerFunctions('VideoLinkPageHandler,MySetupTestPageHandler,OtherSetupTestPageHandler')]
+    [HandlerFunctions('MySetupTestPageHandler,OtherSetupTestPageHandler')]
     procedure TestAssistedSetupsAreAdded()
     var
         AssistedSetup: TestPage "Assisted Setup";
@@ -38,7 +38,6 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup.Name.AssertEquals('WithLinks');
         AssistedSetup.Completed.AssertEquals(false);
         AssistedSetup.Help.AssertEquals('');
-        AssistedSetup.Video.AssertEquals('');
 
         AssistedSetup.Expand(true);
 
@@ -46,13 +45,11 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup.Name.AssertEquals('English translation');
         AssistedSetup.Completed.AssertEquals(false);
         AssistedSetup.Help.AssertEquals('Read');
-        AssistedSetup.Video.AssertEquals('Watch');
 
         AssistedSetup.Next(); // the second group - WithoutLinks
         AssistedSetup.Name.AssertEquals('WithoutLinks');
         AssistedSetup.Completed.AssertEquals(false);
         AssistedSetup.Help.AssertEquals('');
-        AssistedSetup.Video.AssertEquals('');
 
         AssistedSetup.Expand(true);
 
@@ -60,7 +57,6 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup.Name.AssertEquals('Other Assisted Setup Test Page');
         AssistedSetup.Completed.AssertEquals(false);
         AssistedSetup.Help.AssertEquals('');
-        AssistedSetup.Video.AssertEquals('');
 
         // [WHEN] Start is invoked on the first wizard
         AssistedSetup.First();
@@ -73,11 +69,6 @@ codeunit 132586 "Assisted Setup Test"
 
         // [THEN] Second wizard is not completed
         AssistedSetup.Completed.AssertEquals(false);
-
-        // [WHEN] Click Watch on Video field
-        AssistedSetup.Video.Drilldown();
-
-        // [THEN] Video Link opens, and caught by modal page handler
 
         // [WHEN] Translated Name clicked
         Translation.Trap();
@@ -141,7 +132,7 @@ codeunit 132586 "Assisted Setup Test"
     end;
 
     [Test]
-    [HandlerFunctions('AssistedSetupPageHandler_ChecksCompletedHelpAndVideo')]
+    [HandlerFunctions('AssistedSetupPageHandler_ChecksCompletedHelp')]
     procedure TestAssistedSetupsShowUpOnFilteredView()
     var
         GuidedExperience: Codeunit "Guided Experience";
@@ -244,11 +235,6 @@ codeunit 132586 "Assisted Setup Test"
     end;
 
     [ModalPageHandler]
-    procedure VideoLinkPageHandler(var VideoLink: TestPage "Video Link")
-    begin
-    end;
-
-    [ModalPageHandler]
     procedure MySetupTestPageHandler(var MyAssistedSetupTestPage: TestPage "My Assisted Setup Test Page")
     begin
     end;
@@ -262,13 +248,12 @@ codeunit 132586 "Assisted Setup Test"
     end;
 
     [ModalPageHandler]
-    procedure AssistedSetupPageHandler_ChecksCompletedHelpAndVideo(var AssistedSetup: TestPage "Assisted Setup")
+    procedure AssistedSetupPageHandler_ChecksCompletedHelp(var AssistedSetup: TestPage "Assisted Setup")
     begin
         AssistedSetup.First(); // the group - WithoutLinks
         AssistedSetup.Name.AssertEquals('WithoutLinks');
         AssistedSetup.Completed.AssertEquals(false);
         AssistedSetup.Help.AssertEquals('');
-        AssistedSetup.Video.AssertEquals('');
 
         AssistedSetup.Expand(true);
 
@@ -276,7 +261,6 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup.Name.AssertEquals('Other Assisted Setup Test Page');
         AssistedSetup.Completed.AssertEquals(false);
         AssistedSetup.Help.AssertEquals('');
-        AssistedSetup.Video.AssertEquals('');
     end;
 
 

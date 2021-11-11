@@ -3104,10 +3104,4 @@ ObjectIDToRun2, ManualSetupCategory::Uncategorized, '');
         SpotlightDictionary.Add(SpotlightTourText::Step2Title, Step2Title);
         SpotlightDictionary.Add(SpotlightTourText::Step2Text, Step2Text);
     end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Checklist Implementation", 'OnBeforeChecklistProcedure', '', true, true)]
-    local procedure OnBeforeMarkChecklistSetupAsDone(var IsTest: Boolean)
-    begin
-        IsTest := true;
-    end;
 }

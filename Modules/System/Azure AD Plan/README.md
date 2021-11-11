@@ -94,6 +94,17 @@ the user to check.
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True if the given user is entitled from the service plan.
+### AssignDelegatedAdminPlanAndUserGroups (Method) <a name="AssignDelegatedAdminPlanAndUserGroups"></a> 
+
+ Assign the delegated admin plan and default user groups to the current user.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+[NonDebuggable]
+procedure AssignDelegatedAdminPlanAndUserGroups()
+```
 ### UpdateUserPlans (Method) <a name="UpdateUserPlans"></a> 
 OnRemoveUserGroupsForUserAndPlan
 
@@ -643,20 +654,6 @@ procedure GetPremiumPlanId(): Guid
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
 The ID for the Dynamics 365 Business Central Premium plan.
-### GetInvoicingPlanId (Method) <a name="GetInvoicingPlanId"></a> 
-
- Returns the ID for the Microsoft Invoicing plan.
- 
-
-#### Syntax
-```
-[Obsolete('Invoicing product has been retired.', '16.0')]
-procedure GetInvoicingPlanId(): Guid
-```
-#### Return Value
-*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
-
-The ID for the Microsoft Invoicing plan.
 ### GetViralSignupPlanId (Method) <a name="GetViralSignupPlanId"></a> 
 
  Returns the ID for the Dynamics 365 Business Central for IWs plan.
@@ -696,6 +693,19 @@ procedure GetDelegatedAdminPlanId(): Guid
 *[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
 
 The ID for the Delegated Admin agent - Partner plan.
+### GetD365AdminPartnerPlanId (Method) <a name="GetD365AdminPartnerPlanId"></a> 
+
+ Returns the ID for the Dynamics 365 Admin - Partner plan.
+ 
+
+#### Syntax
+```
+procedure GetD365AdminPartnerPlanId(): Guid
+```
+#### Return Value
+*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+
+The ID for the Dynamics 365 Admin - Partner plan.
 ### GetInternalAdminPlanId (Method) <a name="GetInternalAdminPlanId"></a> 
 
  Returns the ID for the Internal Administrator plan.

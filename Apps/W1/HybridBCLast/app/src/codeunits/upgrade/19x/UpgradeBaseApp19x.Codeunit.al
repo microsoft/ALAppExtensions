@@ -28,7 +28,6 @@ codeunit 4058 "Upgrade BaseApp 19x"
         UpgradeCRMIntegrationRecord();
         UpdatePriceSourceGroupInPriceListLines();
         UpdatePriceListLineStatus();
-        UpdateJobPlanningLinePlanningDueDate();
         UpgradeDimensionSetEntry();
         UpgradeAPIs();
     end;
@@ -42,24 +41,6 @@ codeunit 4058 "Upgrade BaseApp 19x"
         UpgradeSalesCrMemoShortcutDimension();
         UpgradePurchaseOrderShortcutDimension();
         UpgradePurchInvoiceShortcutDimension();
-    end;
-
-    local procedure UpdateJobPlanningLinePlanningDueDate()
-    var
-        JobPlanningLine: Record "Job Planning Line";
-        UpgradeTag: Codeunit "Upgrade Tag";
-        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetJobPlanningLinePlanningDueDateUpgradeTag()) then
-            exit;
-
-        if JobPlanningLine.FindSet() then
-            repeat
-                JobPlanningLine.UpdatePlannedDueDate();
-                JobPlanningLine.Modify();
-            until JobPlanningLine.Next() = 0;
-
-        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetJobPlanningLinePlanningDueDateUpgradeTag());
     end;
 
     local procedure UpdatePriceSourceGroupInPriceListLines()

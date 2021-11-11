@@ -35,6 +35,11 @@ codeunit 13625 "OIOUBL-Document Encode"
         exit(FORMAT(VarDecimal, 0, '<Precision,2:3><Sign><Integer><Decimals><Comma,.>'));
     end;
 
+    procedure DecimalToTextFourDecimals(VarDecimal: Decimal): Text[30];
+    begin
+        exit(Format(VarDecimal, 0, '<Precision,2:5><Sign><Integer><Decimals><Comma,.>'));
+    end;
+
     procedure IntegerToText(VarInteger: Integer): Text[250];
     begin
         exit(FORMAT(VarInteger, 0, '<Sign><Integer,2><Filler Character,0>'));
@@ -117,7 +122,7 @@ codeunit 13625 "OIOUBL-Document Encode"
             ERROR(NonDanishCustomerErr);
     end;
 
-    [Obsolete('Kept for testing and potentially dealing with dependency issues','16.0')]
+    [Obsolete('Kept for testing and potentially dealing with dependency issues', '16.0')]
     procedure GetCompanyVATRegNoOld(VATRegNo: Text[20]): Text[20];
     begin
         ReadCompanyInfo();
@@ -126,7 +131,7 @@ codeunit 13625 "OIOUBL-Document Encode"
         exit(VATRegNo);
     end;
 
-    [Obsolete('Kept for testing and potentially dealing with dependency issues','16.0')]
+    [Obsolete('Kept for testing and potentially dealing with dependency issues', '16.0')]
     procedure GetCustomerVATRegNoOld(VATRegNo: Text[20]): Text[20];
     begin
         ReadCompanyInfo();
@@ -143,7 +148,7 @@ codeunit 13625 "OIOUBL-Document Encode"
         exit(VATRegNo);
     end;
 
-    [Obsolete('GetCustomerVATRegNoIncCustomerCountryCode is the new correct version of the function','16.0')]
+    [Obsolete('GetCustomerVATRegNoIncCustomerCountryCode is the new correct version of the function', '16.0')]
     procedure GetCustomerVATRegNo(VATRegNo: Text[20]): Text[30];
     begin
         ReadCompanyInfo();

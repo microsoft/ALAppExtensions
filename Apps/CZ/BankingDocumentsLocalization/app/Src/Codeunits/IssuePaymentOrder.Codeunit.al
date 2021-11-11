@@ -112,6 +112,7 @@ codeunit 31353 "Issue Payment Order CZB"
             end;
         until PaymentOrderLineCZB.Next() = 0;
 
+        OnAfterCheckPaymentOrderLines(PaymentOrderHeaderCZB);
         PaymentOrderManagementCZB.ProcessErrorMessages(true, true);
     end;
 
@@ -258,6 +259,11 @@ codeunit 31353 "Issue Payment Order CZB"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheckPaymentOrderLine(var PaymentOrderLineCZB: Record "Payment Order Line CZB"; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCheckPaymentOrderLines(var PaymentOrderHeaderCZB: Record "Payment Order Header CZB");
     begin
     end;
 }

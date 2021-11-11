@@ -380,7 +380,6 @@ page 4003 "Intelligent Cloud Management"
 
             action(RepairCompanionTableRecordConsistency)
             {
-                Enabled = IsSuper and IsMigratedCompany;
                 Visible = not IsOnPrem;
                 ApplicationArea = Basic, Suite;
                 Caption = 'Repair Companion Table Records';

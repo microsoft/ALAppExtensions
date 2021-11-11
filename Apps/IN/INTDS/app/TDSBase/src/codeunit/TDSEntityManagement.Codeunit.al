@@ -150,6 +150,21 @@ codeunit 18685 "TDS Entity Management"
         ReAssignPresentationOrder(ParentSectionCode, PresentationOrder);
     end;
 
+    [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnAfterPostDataItem', '', false, false)]
+    local procedure OnAfterPostDataItemSuggetVendorPayment()
+    var
+        TDSEntryUpdateMgt: Codeunit "TDS Entry Update Mgt.";
+    begin
+        TDSEntryUpdateMgt.ClearVendorPayment();
+    end;
+
+    [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnAfterIncludeVendor', '', false, false)]
+    local procedure OnAfterIncludeVendorSuggetVendorPayment()
+    var
+        TDSEntryUpdateMgt: Codeunit "TDS Entry Update Mgt.";
+    begin
+        TDSEntryUpdateMgt.SetSuggetVendorPayment();
+    end;
     local procedure ReAssignPresentationOrder(ParentSectionCode: Code[10]; var PresentationOrder: Integer)
     var
         TDSSection: Record "TDS Section";

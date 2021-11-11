@@ -33,11 +33,12 @@ codeunit 1922 "Camera Impl."
         exit(WasPictureTaken);
     end;
 
+#if not CLEAN20
     procedure AddPicture(RecordVariant: Variant; FieldNo: Integer): Boolean
     var
-    #pragma warning disable AA0073
+#pragma warning disable AA0073
         TempMedia: Record "Temp Media" temporary;
-    #pragma warning restore AA0073
+#pragma warning restore AA0073
         RecordWithMediaRef: RecordRef;
         MediaFieldRef: FieldRef;
         PictureInStream: InStream;
@@ -77,6 +78,7 @@ codeunit 1922 "Camera Impl."
 
         exit(true);
     end;
+#endif
 
     procedure IsAvailable(): Boolean
     begin

@@ -38,6 +38,20 @@ procedure ValidateUserName(UserName: Code[50])
 
 The username to validate.
 
+### HideExternalUsers (Method) <a name="HideExternalUsers"></a> 
+
+ Sets Filter on the given User Record to exclude external users.
+ 
+
+#### Syntax
+```
+procedure HideExternalUsers(var User: Record User)
+```
+#### Parameters
+*User ([Record User]())* 
+
+The User Record to return.
+
 
 ## User Lookup (Page 9843)
 

@@ -1573,6 +1573,7 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
         UpdateServiceSetup();
         UpdateOIOUBLCountryRegionCode();
+        ModifyGeneralLedgerSetup();
 
         isInitialized := true;
     end;
@@ -2124,6 +2125,16 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
             Validate("SWIFT Code", DelStr(LibraryUtility.GenerateGUID(), 1, 2));
             Modify(true);
         end;
+    end;
+
+    local procedure ModifyGeneralLedgerSetup();
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        // Make sure that G/L Setup has move then 2 decimal places
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."Unit-Amount Rounding Precision" := 0.01;
+        GeneralLedgerSetup.Modify();
     end;
 
     local procedure VerifyTaxOnElectronicServiceDocument(DocumentNo: Code[20]; AccountCode: Text[30]; TaxAmount: Decimal);

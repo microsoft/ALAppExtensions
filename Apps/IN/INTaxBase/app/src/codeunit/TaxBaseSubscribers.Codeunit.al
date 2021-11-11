@@ -75,6 +75,13 @@ codeunit 18544 "Tax Base Subscribers"
         CallTaxEngineForPurchaseLines(PurchaseHeader);
     end;
 
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'Applies-to ID', false, false)]
+    local procedure OnAfterValidateEventPurchHeaderAppliesToID(var Rec: Record "Purchase Header")
+    begin
+        CallTaxEngineForPurchaseLines(Rec);
+    end;
+
     [EventSubscriber(ObjectType::Table, database::"Sales Header", 'OnAfterValidateEvent', 'Applies-to Doc. No.', false, false)]
     local procedure OnAfterValidateAppliesToDoc(var Rec: Record "Sales Header")
     begin

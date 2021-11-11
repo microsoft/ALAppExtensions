@@ -5,6 +5,7 @@
 
 enumextension 132586 "Assisted Setup Test Group" extends "Assisted Setup Group"
 {
+#pragma warning disable AS0013 - The IDs should have been within the ranges [132585..132588], [132594..132594], [132607..132609], [134934..134934]
     value(100; WithLinks)
     {
         Caption = 'WithLinks';
@@ -19,4 +20,5 @@ enumextension 132586 "Assisted Setup Test Group" extends "Assisted Setup Group"
     {
         Caption = 'Last group alphabetically';
     }
+#pragma warning restore AS0013 - The IDs should have been within the ranges [132585..132588], [132594..132594], [132607..132609], [134934..134934]
 }

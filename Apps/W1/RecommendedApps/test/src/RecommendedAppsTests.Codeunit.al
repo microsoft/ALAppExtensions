@@ -29,9 +29,11 @@ codeunit 139527 "Recommended Apps Tests"
         RecommendedApps: Codeunit "Recommended Apps";
         AppRecommandedBy: Enum "App Recommended By";
         AppId: Guid;
-        ErrMsg: Label 'Cannot add the recommended app with ID %1. The URL https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.thetasystemslimitedWRONG|AID.bc_excel_importer|PAPPID.24466323-aee9-4049-a66d-a1af24466323?tab=Overview cannot be reached, and the HTTP status code is 404. Are you sure that the information about the app is correct?', Locked = true;
+        Err1Msg: Label 'Cannot add the recommended app with ID %1. The URL https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.thetasystemslimitedWRONG|AID.bc_excel_importer|PAPPID.24466323-aee9-4049-a66d-a1af24466323?tab=Overview cannot be reached, and the HTTP status code is 404. Are you sure that the information about the app is correct?';
+        Err2Msg: Label 'Cannot add the recommended app with ID %1. The URL https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/pu.thetasystemslimitedWRONG%7CAID.bc_excel_importer%7CPAPPID.24466323-aee9-4049-a66d-a1af24466323?tab=Overview is not formatted correctly. Are you sure that the information about the app is correct?';
     begin
-        // [SCENARIO] Test the InsertApp method to insert a new recommended app when the app info are wrong so the BC App Source URL returns 404 not found
+        // [SCENARIO] 
+        // Scenario 1 - Test the InsertApp method to insert a new recommended app when the app info are wrong (app not found in the store) so the BC App Source URL returns 404 not found
         // [WHEN] There are no recommended apps
         RecommendedAppsTable.DeleteAll();
 
@@ -50,7 +52,29 @@ codeunit 139527 "Recommended Apps Tests"
         );
 
         // [THEN] an error saying that the app could not be found in the App Source should be thrown
-        Assert.ExpectedError(StrSubstNo(ErrMsg, AppId));
+        Assert.ExpectedError(StrSubstNo(Err1Msg, AppId));
+
+
+        // Scenario 2 - Test the InsertApp method to insert a new recommended app when the app info are wrong (missing app keywords in URL)
+        // [WHEN] There are no recommended apps
+        RecommendedAppsTable.DeleteAll();
+
+        // [WHEN] A new recommended app is inserted with wrong infpo
+        AppId := CreateGuid();
+
+        asserterror RecommendedApps.InsertApp(
+            AppId,
+            1,
+            'Excel Importer',
+            'Theta Systems Limited',
+            'Import journals and documents from Excel worksheets without reformatting the columns',
+            'For many companies, the source for financial transactions are available as a file. These could be payroll extracts, credit card statements, expense reports or billing schedules from vendors for services. Often the cost of integrating these systems does not justify the benefits. So, why not upload the data via an Excel file import?\Under such scenarios, one can often end up working with different file layouts. To improve efficiency and decrease the risk of error, it’s best to import the file without having to convert it to a fixed layout.',
+            AppRecommandedBy::"Your Microsoft Reseller",
+            'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/pu.thetasystemslimitedWRONG%7CAID.bc_excel_importer%7CPAPPID.24466323-aee9-4049-a66d-a1af24466323?tab=Overview' // word WRONG add in URL
+        );
+
+        // [THEN] an error saying that the app could not be found in the App Source should be thrown
+        Assert.ExpectedError(StrSubstNo(Err2Msg, AppId));
     end;
 
     [Test]
@@ -76,7 +100,11 @@ codeunit 139527 "Recommended Apps Tests"
         AppId := InsertSingleApp();
 
         // [THEN] When getting the app the values that are returned are the same that were inserted
-        RecommendedApps.GetApp(AppId, SortingId, Name, Publisher, ShortDescription, LongDescription, RecommendedBy, AppSourceURL);
+        Assert.AreEqual(
+            true,
+            RecommendedApps.GetApp(AppId, SortingId, Name, Publisher, ShortDescription, LongDescription, RecommendedBy, AppSourceURL),
+            'when an app is retrieved the procedure should return true'
+        );
 
         Assert.AreEqual(1, SortingId, 'SortingId should be equal to 1.');
         Assert.AreEqual('Excel Importer', Name, 'Name should be equal to ''Excel Importer''.');
@@ -107,15 +135,19 @@ codeunit 139527 "Recommended Apps Tests"
         // [WHEN] A new recommended app is inserted
         AppId := InsertSingleApp();
         // [WHEN] The new inserted app is updated
-        RecommendedApps.UpdateApp(
-            AppId,
-            2,
-            'Jet Reports',
-            'Jet Global Data Technologies',
-            'Short description test 2',
-            'Long description test',
-            AppRecommandedBy::"Your Microsoft Reseller",
-            'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.jetreports%7CAID.jetreports%7CPAPPID.bec4ca36-c7fb-4110-9db5-29559cc1f84c?tab=Overview'
+        Assert.AreEqual(
+            true,
+            RecommendedApps.UpdateApp(
+                AppId,
+                2,
+                'Jet Reports',
+                'Jet Global Data Technologies',
+                'Short description test 2',
+                'Long description test',
+                AppRecommandedBy::"Your Microsoft Reseller",
+                'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.jetreports%7CAID.jetreports%7CPAPPID.bec4ca36-c7fb-4110-9db5-29559cc1f84c?tab=Overview'
+            ),
+            'when an app is updated the procedure should return true'
         );
 
         // [THEN] The new values are successfully updated
@@ -152,7 +184,11 @@ codeunit 139527 "Recommended Apps Tests"
         FirstImageId := RecommendedAppsTable.Logo.MediaId();
 
         // [WHEN] The app logo is refreshed
-        RecommendedApps.RefreshImage(AppId);
+        Assert.AreEqual(
+            true,
+            RecommendedApps.RefreshImage(AppId),
+            'when an app''s logo is refreshed the procedure should return true'
+        );
 
         // getting the Id of the re-downloaded logo
         RecommendedAppsTable.Get(AppId);
@@ -176,7 +212,12 @@ codeunit 139527 "Recommended Apps Tests"
         AppId := InsertSingleApp();
 
         // [WHEN] Deleting a specific app
-        RecommendedApps.DeleteApp(AppId);
+        Assert.AreEqual(
+            true,
+              RecommendedApps.DeleteApp(AppId),
+            'when an app is deleted the procedure should return true'
+        );
+
 
         // [THEN] The app should be deleted
         Assert.AreEqual(false, RecommendedAppsTable.Get(AppId), 'The record should not be fund.');
@@ -259,7 +300,7 @@ codeunit 139527 "Recommended Apps Tests"
             'Import journals and documents from Excel worksheets without reformatting the columns',
             'For many companies, the source for financial transactions are available as a file. These could be payroll extracts, credit card statements, expense reports or billing schedules from vendors for services. Often the cost of integrating these systems does not justify the benefits. So, why not upload the data via an Excel file import?\Under such scenarios, one can often end up working with different file layouts. To improve efficiency and decrease the risk of error, it’s best to import the file without having to convert it to a fixed layout.',
             AppRecommandedBy::"Your Microsoft Reseller",
-            'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.thetasystemslimited%7CAID.bc_excel_importer%7CPAPPID.24466323-aee9-4049-a66d-a1af24466323?tab=Overview'
+            'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/pUBID.THETAsystemslimited%7cAID.bc_excel_importer%7cpaPPID.24466323-aee9-4049-a66d-a1af24466323?tab=Overview'
         );
 
         RecommendedApps.InsertApp(
@@ -270,7 +311,7 @@ codeunit 139527 "Recommended Apps Tests"
             'Import journals and documents from Excel worksheets without reformatting the columns',
             'For many companies, the source for financial transactions are available as a file. These could be payroll extracts, credit card statements, expense reports or billing schedules from vendors for services. Often the cost of integrating these systems does not justify the benefits. So, why not upload the data via an Excel file import?\Under such scenarios, one can often end up working with different file layouts. To improve efficiency and decrease the risk of error, it’s best to import the file without having to convert it to a fixed layout.',
             AppRecommandedBy::"Your Microsoft Reseller",
-            'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.thetasystemslimited|AID.bc_excel_importer|PAPPID.24466323-aee9-4049-a66d-a1af24466323?tab=Overview'
+            'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.thetasystemslimited|aID.bc_excel_importer|PAPPid.24466323-aee9-4049-a66d-a1af24466323?tab=Overview'
         );
 
         RecommendedApps.InsertApp(
@@ -292,7 +333,7 @@ codeunit 139527 "Recommended Apps Tests"
            'Advanced Operational and Financial Reporting Inside of Excel.',
            'Jet Reports delivers a fast, accurate business reporting solution built for Microsoft Dynamics 365 Business Central that gives you the flexibility to create any report you need directly inside of Excel. Drag and drop data from any table to quickly build everything from simple financials to advanced operational reports that can be refreshed real-time, on-demand, with the click of a button. Access, share, and organize reports on the web to have the accurate answers you need from anywhere.',
            AppRecommandedBy::"Your Microsoft Reseller",
-           'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.jetreports%7CAID.jetreports%7CPAPPID.bec4ca36-c7fb-4110-9db5-29559cc1f84c?tab=Overview'
+           'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/pubid.jetreports%7caid.jetreports%7cpappid.bec4ca36-c7fb-4110-9db5-29559cc1f84c?tab=Overview'
         );
 
         RecommendedApps.InsertApp(
@@ -325,7 +366,7 @@ codeunit 139527 "Recommended Apps Tests"
             'Easily create your own custom fields for customers, vendors, contacts and more',
             'Do you have customer data you can’t register? Are you missing important contact or vendor information which is essential for your company business? And is there any sync between contacts, customers and vendors? Just some important issues Small to Midsize Businesses struggle with nowadays. Already a lot of standard fields for entities like contacts, customers and vendors are provided, but what if you want to register company specific data for your company process in Microsoft Dynamics 365 Business Central? We have the perfect app to help you get more productive. With the Custom Fields extension you can easily create your own specific fields for customers, vendors, contacts and other entities. Each field can be set up with a field type for data entry, you can use customizable lists and can translate each custom field into your own language. The extension Custom Fields also supports synchronization of the custom fields between contacts, customers and vendors. This will enable you to maintain your data in one place and keep it in sync with the related data. A time-saving and error-limiting functionality! Custom Fields are also available for your sales & purchase documents and the app also transfers your field data from entities to documents.',
             AppRecommandedBy::"Your Microsoft Reseller",
-            'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.wsb_solutions%7CAID.custom_fields%7CPAPPID.1ba841c1-087c-4fb7-b0bf-35db594ce248?tab=Overview'
+            'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.wsb_solutions%7CAID.custom_fields%7CPAPPID.1ba841c1-087c-4fb7-b0bf-35db594ce248?tab=overview'
         );
 
         RecommendedApps.InsertApp(
@@ -336,7 +377,7 @@ codeunit 139527 "Recommended Apps Tests"
             'Easily create your own custom fields for customers, vendors, contacts and more',
             'Do you have customer data you can’t register? Are you missing important contact or vendor information which is essential for your company business? And is there any sync between contacts, customers and vendors? Just some important issues Small to Midsize Businesses struggle with nowadays. Already a lot of standard fields for entities like contacts, customers and vendors are provided, but what if you want to register company specific data for your company process in Microsoft Dynamics 365 Business Central? We have the perfect app to help you get more productive. With the Custom Fields extension you can easily create your own specific fields for customers, vendors, contacts and other entities. Each field can be set up with a field type for data entry, you can use customizable lists and can translate each custom field into your own language. The extension Custom Fields also supports synchronization of the custom fields between contacts, customers and vendors. This will enable you to maintain your data in one place and keep it in sync with the related data. A time-saving and error-limiting functionality! Custom Fields are also available for your sales & purchase documents and the app also transfers your field data from entities to documents.',
             AppRecommandedBy::"Your Microsoft Reseller",
-            'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.wsb_solutions|AID.custom_fields|PAPPID.1ba841c1-087c-4fb7-b0bf-35db594ce248?tab=Overview'
+            'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.wsb_solutions|AID.custom_fields|PAPPID.1ba841c1-087c-4fb7-b0bf-35db594ce248?tab=OVERVIEW'
         );
 
         RecommendedApps.InsertApp(
@@ -370,15 +411,19 @@ codeunit 139527 "Recommended Apps Tests"
     begin
         AppId := CreateGuid();
 
-        RecommendedApps.InsertApp(
-            AppId,
-            1,
-            'Excel Importer',
-            'Theta Systems Limited',
-            'Import journals and documents from Excel worksheets without reformatting the columns',
-            'For many companies, the source for financial transactions are available as a file. These could be payroll extracts, credit card statements, expense reports or billing schedules from vendors for services. Often the cost of integrating these systems does not justify the benefits. So, why not upload the data via an Excel file import?\Under such scenarios, one can often end up working with different file layouts. To improve efficiency and decrease the risk of error, it’s best to import the file without having to convert it to a fixed layout.',
-            AppRecommandedBy::"Your Microsoft Reseller",
-            'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.thetasystemslimited%7CAID.bc_excel_importer%7CPAPPID.24466323-aee9-4049-a66d-a1af24466323?tab=Overview'
+        Assert.AreEqual(
+            true,
+            RecommendedApps.InsertApp(
+                AppId,
+                1,
+                'Excel Importer',
+                'Theta Systems Limited',
+                'Import journals and documents from Excel worksheets without reformatting the columns',
+                'For many companies, the source for financial transactions are available as a file. These could be payroll extracts, credit card statements, expense reports or billing schedules from vendors for services. Often the cost of integrating these systems does not justify the benefits. So, why not upload the data via an Excel file import?\Under such scenarios, one can often end up working with different file layouts. To improve efficiency and decrease the risk of error, it’s best to import the file without having to convert it to a fixed layout.',
+                AppRecommandedBy::"Your Microsoft Reseller",
+                'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.thetasystemslimited%7CAID.bc_excel_importer%7CPAPPID.24466323-aee9-4049-a66d-a1af24466323?tab=Overview'
+            ),
+            'When an app is inserted the procedure should return true'
         );
 
         exit(AppId);

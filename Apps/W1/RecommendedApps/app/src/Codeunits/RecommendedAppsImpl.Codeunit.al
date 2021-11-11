@@ -5,6 +5,8 @@ codeunit 4751 "Recommended Apps Impl."
     var
         RecommendedApps: Record "Recommended Apps";
         AppSourceURLLbl: Label 'https://appsource.microsoft.com/%1/product/dynamics-365-business-central/PUBID.%2|AID.%3|PAPPID.%4?tab=Overview', Locked = true;
+        URLNotWellFormattedErrLbl: Label 'Cannot add the recommended app with ID %1. The URL %2 is not formatted correctly. Are you sure that the information about the app is correct?',
+            Comment = '%1 = App Id; %2 = App Source URL created with app info provided by the partner';
         URLNotReachableErrLbl: Label 'Cannot add the recommended app with ID %1. The URL %2 cannot be reached, and the HTTP status code is %3. Are you sure that the information about the app is correct?',
             Comment = '%1 = App Id; %2 = App Source URL created with app info provided by the partner; %3 = Http StatusCode';
         LogoDoesNotExistErrLbl: Label 'Cannot add the recommended app with ID %1. The logo image cannot be downloaded, and the HTTP status code is %2.',
@@ -13,17 +15,17 @@ codeunit 4751 "Recommended Apps Impl."
         AppSourceURLNotFoundErrLbl: Label 'Cannot get the AppSource URL.';
 
     [NonDebuggable]
-    procedure InsertApp(Id: Guid; SortingId: Integer; Name: Text[250]; Publisher: Text[250]; "Short Description": Text[250]; "Long Description": Text[2048];
-    "Recommended By": Enum "App Recommended By"; AppSourceURL: Text): Boolean
+    procedure InsertApp(Id: Guid; SortingId: Integer; Name: Text[250]; Publisher: Text[250]; ShortDescription: Text[250]; LongDescription: Text[2048];
+    RecommendedBy: Enum "App Recommended By"; AppSourceURL: Text): Boolean
     var
         MemoryStream: DotNet MemoryStream;
-        LanguageCode: Text;
-        PubId: Text;
-        AId: Text;
-        PAppId: Text;
+        LanguageCode: Text[5];
+        PubId: Text[100];
+        AId: Text[100];
+        PAppId: Text[100];
     begin
         // read the app information from the URL
-        GetAppURLParametersFromAppSourceURL(AppSourceURL, LanguageCode, PubId, AId, PAppId);
+        GetAppURLParametersFromAppSourceURL(Id, AppSourceURL, LanguageCode, PubId, AId, PAppId);
 
         CheckIfURLExistsAndDownloadLogo(Id, LanguageCode, PubId, AId, PAppId, MemoryStream);
 
@@ -32,47 +34,52 @@ codeunit 4751 "Recommended Apps Impl."
         RecommendedApps.SortingId := SortingId;
         RecommendedApps.Name := Name;
         RecommendedApps.Publisher := Publisher;
-        RecommendedApps."Short Description" := "Short Description";
-        RecommendedApps."Long Description" := "Long Description";
+        RecommendedApps."Short Description" := ShortDescription;
+        RecommendedApps."Long Description" := LongDescription;
         RecommendedApps.Logo.ImportStream(MemoryStream, 'logo', 'image/png');
-        RecommendedApps."Recommended By" := "Recommended By";
+        RecommendedApps."Recommended By" := RecommendedBy;
         RecommendedApps."Language Code" := LanguageCode;
         RecommendedApps.PubId := PubId;
         RecommendedApps.AId := AId;
         RecommendedApps.PAppId := PAppId;
+
         exit(RecommendedApps.Insert());
     end;
 
     [NonDebuggable]
-    procedure GetApp(Id: Guid; var SortingId: Integer; var Name: Text[250]; var Publisher: Text[250]; var "Short Description": Text[250]; var "Long Description": Text[2048];
-        var "Recommended By": Enum "App Recommended By"; var AppSourceURL: Text)
+    procedure GetApp(Id: Guid; var SortingId: Integer; var Name: Text[250]; var Publisher: Text[250]; var ShortDescription: Text[250]; var LongDescription: Text[2048];
+        var RecommendedBy: Enum "App Recommended By"; var AppSourceURL: Text): Boolean
     begin
-        RecommendedApps.Get(Id);
+        if not RecommendedApps.Get(Id) then
+            exit(false);
 
         SortingId := RecommendedApps.SortingId;
         Name := RecommendedApps.Name;
         Publisher := RecommendedApps.Publisher;
-        "Short Description" := RecommendedApps."Short Description";
-        "Long Description" := RecommendedApps."Long Description";
-        "Recommended By" := RecommendedApps."Recommended By";
-        AppSourceURL := StrSubstNo(AppSourceURLLbl, RecommendedApps."Language Code", RecommendedApps.PubId, RecommendedApps.AId, RecommendedApps.PAppId)
+        ShortDescription := RecommendedApps."Short Description";
+        LongDescription := RecommendedApps."Long Description";
+        RecommendedBy := RecommendedApps."Recommended By";
+        AppSourceURL := StrSubstNo(AppSourceURLLbl, RecommendedApps."Language Code", RecommendedApps.PubId, RecommendedApps.AId, RecommendedApps.PAppId);
+
+        exit(true);
     end;
 
     [NonDebuggable]
-    procedure UpdateApp(Id: Guid; SortingId: Integer; Name: Text[250]; Publisher: Text[250]; "Short Description": Text[250]; "Long Description": Text[2048];
-        "Recommended By": Enum "App Recommended By"; AppSourceURL: Text): Boolean
+    procedure UpdateApp(Id: Guid; SortingId: Integer; Name: Text[250]; Publisher: Text[250]; ShortDescription: Text[250]; LongDescription: Text[2048];
+        RecommendedBy: Enum "App Recommended By"; AppSourceURL: Text): Boolean
     var
         MemoryStream: DotNet MemoryStream;
-        LanguageCode: Text;
-        PubId: Text;
-        AId: Text;
-        PAppId: Text;
+        LanguageCode: Text[5];
+        PubId: Text[100];
+        AId: Text[100];
+        PAppId: Text[100];
         IsModified: Boolean;
     begin
-        // read the app information from the URL
-        GetAppURLParametersFromAppSourceURL(AppSourceURL, LanguageCode, PubId, AId, PAppId);
+        if not RecommendedApps.Get(Id) then
+            exit(false);
 
-        RecommendedApps.Get(Id);
+        // read the app information from the URL
+        GetAppURLParametersFromAppSourceURL(Id, AppSourceURL, LanguageCode, PubId, AId, PAppId);
 
         if RecommendedApps.SortingId <> SortingId then begin
             RecommendedApps.SortingId := SortingId;
@@ -81,15 +88,15 @@ codeunit 4751 "Recommended Apps Impl."
 
         if (RecommendedApps.Name <> Name)
             or (RecommendedApps.Publisher <> Publisher)
-            or (RecommendedApps."Short Description" <> "Short Description")
-            or (RecommendedApps."Long Description" <> "Long Description")
-            or (RecommendedApps."Recommended By" <> "Recommended By")
+            or (RecommendedApps."Short Description" <> ShortDescription)
+            or (RecommendedApps."Long Description" <> LongDescription)
+            or (RecommendedApps."Recommended By" <> RecommendedBy)
         then begin
             RecommendedApps.Name := Name;
             RecommendedApps.Publisher := Publisher;
-            RecommendedApps."Short Description" := "Short Description";
-            RecommendedApps."Long Description" := "Long Description";
-            RecommendedApps."Recommended By" := "Recommended By";
+            RecommendedApps."Short Description" := ShortDescription;
+            RecommendedApps."Long Description" := LongDescription;
+            RecommendedApps."Recommended By" := RecommendedBy;
             IsModified := true;
         end;
 
@@ -114,16 +121,21 @@ codeunit 4751 "Recommended Apps Impl."
     var
         MemoryStream: DotNet MemoryStream;
     begin
-        RecommendedApps.Get(Id);
+        if not RecommendedApps.Get(Id) then
+            exit(false);
+
         CheckIfURLExistsAndDownloadLogo(Id, RecommendedApps."Language Code", RecommendedApps.PubId, RecommendedApps.AId, RecommendedApps.PAppId, MemoryStream);
         RecommendedApps.Logo.ImportStream(MemoryStream, 'logo', 'image/png');
+
         exit(RecommendedApps.Modify());
     end;
 
     [NonDebuggable]
     procedure DeleteApp(Id: Guid): Boolean
     begin
-        RecommendedApps.Get(Id);
+        if not RecommendedApps.Get(Id) then
+            exit(false);
+
         exit(RecommendedApps.Delete());
     end;
 
@@ -149,22 +161,28 @@ codeunit 4751 "Recommended Apps Impl."
     end;
 
     [NonDebuggable]
-    local procedure GetAppURLParametersFromAppSourceURL(AppSourceURL: Text; var LanguageCode: Text; var PubId: Text; var AId: Text; var PAppId: Text)
+    local procedure GetAppURLParametersFromAppSourceURL(Id: Guid; AppSourceURL: Text; var LanguageCode: Text[5]; var PubId: Text[100]; var AId: Text[100]; var PAppId: Text[100])
     var
         Matches: Record Matches;
         Regex: Codeunit Regex;
+        ErrMsg: Text;
     begin
-        Regex.Match(AppSourceURL, '(?<=appsource.microsoft.com\/)(.+)(?=\/product)', 1, Matches);
+        Regex.Match(AppSourceURL, '(?i)(?<=appsource.microsoft.com\/)(.+)(?=\/product)', 1, Matches);
         LanguageCode := Matches.ReadValue();
 
-        Regex.Match(AppSourceURL, '(?<=PUBID.)(.+)(?=(%7CAID|\|AID))', 1, Matches);
+        Regex.Match(AppSourceURL, '(?i)(?<=PUBID.)(.+)(?=(%7CAID|\|AID))', 1, Matches);
         PubId := Matches.ReadValue();
 
-        Regex.Match(AppSourceURL, '(?<=AID.)(.+)(?=(%7CPAPPID|\|PAPPID))', 1, Matches);
+        Regex.Match(AppSourceURL, '(?i)(?<=AID.)(.+)(?=(%7CPAPPID|\|PAPPID))', 1, Matches);
         AId := Matches.ReadValue();
 
-        Regex.Match(AppSourceURL, '(?<=PAPPID.)(.+)(?=(\?tab=Overview))|(?<=PAPPID.)(.+)(?=($))', 1, Matches);
+        Regex.Match(AppSourceURL, '(?i)(?<=PAPPID.)(.+)(?=(\?tab=Overview))|(?<=PAPPID.)(.+)(?=($))', 1, Matches);
         PAppId := Matches.ReadValue();
+
+        if (LanguageCode = '') or (PubId = '') or (AId = '') or (PAppId = '') then begin
+            ErrMsg := StrSubstNo(URLNotWellFormattedErrLbl, Id, AppSourceURL);
+            Error(ErrMsg);
+        end
     end;
 
     [NonDebuggable]

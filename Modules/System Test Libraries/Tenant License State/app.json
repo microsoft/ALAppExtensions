@@ -4,29 +4,29 @@
     "publisher":  "Microsoft",
     "brief":  "Test objetcs for the Tenant License State module.",
     "description":  "Test objetcs for the Tenant License State module.",
-    "version":  "19.0.0.0",
+    "version":  "19.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "",
     "dependencies":  [
-                        {
-                            "id":  "21566fb3-3c6b-4cac-a70d-052f5d66ac64",
-                            "name":  "Tenant License State",
-                            "publisher":  "Microsoft",
-                            "version":  "19.0.0.0"
-                        }
+                         {
+                             "id":  "21566fb3-3c6b-4cac-a70d-052f5d66ac64",
+                             "name":  "Tenant License State",
+                             "publisher":  "Microsoft",
+                             "version":  "19.1.0.0"
+                         }
                      ],
     "screenshots":  [
 
                     ],
-    "idRanges": [
-        {
-            "from": 138077,
-            "to": 138077
-        }
-    ],
+    "idRanges":  [
+                     {
+                         "from":  138077,
+                         "to":  138077
+                     }
+                 ],
     "platform":  "19.0.0.0",
     "target":  "OnPrem"
 }

@@ -76,7 +76,7 @@ codeunit 31116 "EET Service Management CZL"
         CertificateCommonName := CertificateManagement.GetCertificateCommonName(IsolatedCertificate);
         if CompanyInformation."VAT Registration No." <> CertificateCommonName then
             LogMessage(TempErrorMessage."Message Type"::Error, '',
-              StrSubstNo(VATRegistrationErrorTxt, CompanyInformation."VAT Registration No.", CertificateCommonName));
+              StrSubstNo(VATRegistrationErrorTxt, CertificateCommonName, CompanyInformation."VAT Registration No."));
         if EETEntryCZL.GetBusinessPremisesId() = '' then
             LogMessage(TempErrorMessage."Message Type"::Error, '', EmptyBusinessPremisesIdTxt);
         if EETEntryCZL."Cash Register Code" = '' then
@@ -238,6 +238,7 @@ codeunit 31116 "EET Service Management CZL"
         SecurityXmlNode: XmlNode;
         BinarySecurityTokenXmlNode: XmlNode;
         SoapBodyXmlNode: XmlNode;
+        SoapXmlWriteOptions: XmlWriteOptions;
         SoapBodyId: Text;
         BinarySecurityTokenId: Text;
         DataInStream: InStream;
@@ -260,7 +261,8 @@ codeunit 31116 "EET Service Management CZL"
         DataTempBlob.CreateInStream(DataInStream);
         SignatureTempBlob.CreateOutStream(SignatureOutStream);
         SignatureTempBlob.CreateInStream(SignatureInStream);
-        InputXmlDocument.WriteTo(DataOutStream);
+        SoapXmlWriteOptions.PreserveWhitespace := false;
+        InputXmlDocument.WriteTo(SoapXmlWriteOptions, DataOutStream);
         CertificateManagement.SignData(DataInStream, SignatureOutStream, IsolatedCertificate, EETXmlSignProviderCZL);
 
         XmlDocument.ReadFrom(SignatureInStream, SignatureXmlDocument);

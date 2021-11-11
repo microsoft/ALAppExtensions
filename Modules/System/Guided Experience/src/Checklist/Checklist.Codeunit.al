@@ -212,4 +212,30 @@ codeunit 1992 "Checklist"
     begin
         ChecklistImplementation.UpdateUserName(RecRef, Company, UserName, TableID);
     end;
+
+    /// <summary>
+    /// Checks whether the checklist is visible for the current user on the profile that the user is currently on.
+    /// </summary>
+    /// <returns>True if the checklist is visible and false otherwise.</returns>
+    procedure IsChecklistVisible(): Boolean
+    begin
+        exit(ChecklistImplementation.IsChecklistVisible());
+    end;
+
+    /// <summary>
+    /// Sets the checklist visibility for the current user and the profile that the user is currently using.
+    /// </summary>
+    /// <param name="Visible">True if the checklist should be visible and false otherwise.</param>
+    procedure SetChecklistVisibility(Visible: Boolean)
+    begin
+        ChecklistImplementation.SetChecklistVisibility(UserId(), Visible);
+    end;
+
+    /// <summary>
+    /// Event that is triggered when the checklist is being loaded.
+    /// </summary>
+    [IntegrationEvent(false, false)]
+    internal procedure OnChecklistLoading()
+    begin
+    end;
 }

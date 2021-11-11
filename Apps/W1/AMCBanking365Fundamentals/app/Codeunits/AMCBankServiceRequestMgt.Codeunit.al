@@ -2,9 +2,10 @@ codeunit 20118 "AMC Bank Service Request Mgt."
 {
     //new procedure for handling http call - as we can't use Codeunit 1290, as functions are missing
     var
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
         GlobalProgressDialogEnabled: Boolean;
         GLBEnableErrorException: Boolean;
-        GLBHeadersClientHttp: HttpHeaders;
+        GLBHeadersClientHttpClient: HttpHeaders;
         GLBHeadersContentHttp: HttpHeaders;
         GLBResponseErrorText: Text;
         GlobalTimeout: Integer;
@@ -13,7 +14,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         TryLoadErrorLbl: Label 'The web service returned an error message:\';
         WebLoadErrorLbl: Label 'Status code: %1', Comment = '%1=Http Statuscode';
         ExpectedResponseNotReceivedErrLbl: Label 'The expected data was not received from the web service.';
-        ProcessingWindowMsg: Label 'Please wait while the server is processing your request.\This may take several minutes.';
+        ProcessWindowDialogMsg: Label 'Please wait while the server is processing your request.\This may take several minutes.';
         ContentTypeTxt: Label 'text/xml; charset=utf-8', Locked = true;
         FinstaPathTxt: Label '//return/finsta/statement/finstatransus', Locked = true;
         SysErrPathTxt: Label '//return/syslog[syslogtype[text()="error"]]', Locked = true;
@@ -66,7 +67,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
 
     local procedure disposeGLBHttpVariable();
     begin
-        GLBHeadersClientHttp.Clear();
+        GLBHeadersClientHttpClient.Clear();
         GLBHeadersContentHttp.Clear();
         CLEAR(GLBResponseErrorText);
         CLEAR(GLBFromId);
@@ -83,40 +84,40 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         GlobalProgressDialogEnabled := false;
     end;
 
-    procedure InitializeHttp(Var InitRequestMessage: HttpRequestMessage; URL: Text; MessageMethod: Text[6]);
+    procedure InitializeHttp(Var InitHttpRequestMessage: HttpRequestMessage; URL: Text; MessageMethod: Text[6]);
     begin
         disposeGLBHttpVariable();
         GlobalProgressDialogEnabled := true;
-        InitRequestMessage.Method(MessageMethod);
-        InitRequestMessage.SetRequestUri(URL);
-        InitRequestMessage.GetHeaders(GLBHeadersClientHttp);
+        InitHttpRequestMessage.Method(MessageMethod);
+        InitHttpRequestMessage.SetRequestUri(URL);
+        InitHttpRequestMessage.GetHeaders(GLBHeadersClientHttpClient);
         SetHttpClientDefaults();
     end;
 
     local procedure SetHttpClientDefaults();
     var
     begin
-        if (GLBHeadersClientHttp.Contains('Accept')) THEN
-            GLBHeadersClientHttp.Remove('Accept');
+        if (GLBHeadersClientHttpClient.Contains('Accept')) THEN
+            GLBHeadersClientHttpClient.Remove('Accept');
 
-        GLBHeadersClientHttp.Add('Accept', ContentTypeTxt);
+        GLBHeadersClientHttpClient.Add('Accept', ContentTypeTxt);
     end;
 
-    procedure SetHttpContentsDefaults(Var HeaderRequestMessage: HttpRequestMessage);
+    procedure SetHttpContentsDefaults(Var HeaderHttpRequestMessage: HttpRequestMessage);
     var
     begin
-        HeaderRequestMessage.Content().GetHeaders(GLBHeadersContentHttp);
+        HeaderHttpRequestMessage.Content().GetHeaders(GLBHeadersContentHttp);
 
         if (GLBHeadersContentHttp.Contains('Content-Type')) THEN
             GLBHeadersContentHttp.Remove('Content-Type');
 
         GLBHeadersContentHttp.Add('Content-Type', ContentTypeTxt);
 
-        AddAMCSpecificHttpHeaders(HeaderRequestMessage, GLBHeadersContentHttp);
+        AddAMCSpecificHttpHeaders(HeaderHttpRequestMessage, GLBHeadersContentHttp);
 
     end;
 
-    local procedure AddAMCSpecificHttpHeaders(RequestMessage: HttpRequestMessage; var RequestHttpHeaders: HttpHeaders)
+    local procedure AddAMCSpecificHttpHeaders(HttpRequestMessage: HttpRequestMessage; var RequestHttpHeaders: HttpHeaders)
     var
         User: Record User;
         TempBlob: Codeunit "Temp Blob";
@@ -141,7 +142,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
                 AMCEmail := User."Contact Email";
         end;
 
-        RequestMessage.Content().GetHeaders(RequestHttpHeaders);
+        HttpRequestMessage.Content().GetHeaders(RequestHttpHeaders);
 
         if (RequestHttpHeaders.Contains('Amcname')) THEN
             RequestHttpHeaders.Remove('Amcname');
@@ -172,12 +173,12 @@ codeunit 20118 "AMC Bank Service Request Mgt."
 
     end;
 
-    procedure ExecuteWebServiceRequest(Var Handled: Boolean; Var WebRequestMessage: HttpRequestMessage; Var ResponseMessage: HttpResponseMessage; webCall: Text; AppCaller: text[30]; CheckHttpStatus: Boolean): Boolean;
+    procedure ExecuteWebServiceRequest(Handled: Boolean; Var WebHttpRequestMessage: HttpRequestMessage; Var HttpResponseMessage: HttpResponseMessage; webCall: Text; AppCaller: text[30]; CheckHttpStatus: Boolean): Boolean;
     var
         AMCBankingSetup: Record "AMC Banking Setup";
-        ClientHttp: HttpClient;
+        ClientHttpClient: HttpClient;
         RequestHttpContent: HttpContent;
-        ProcessingWindow: Dialog;
+        ProcessWindowDialog: Dialog;
     begin
         if (Handled) then //Only used for mockup for testautomation
             exit(true);
@@ -187,56 +188,55 @@ codeunit 20118 "AMC Bank Service Request Mgt."
             Error(FeatureConsentErr);
 
         if GlobalProgressDialogEnabled then
-            ProcessingWindow.Open(ProcessingWindowMsg);
+            ProcessWindowDialog.Open(ProcessWindowDialogMsg);
 
-        RequestHttpContent := WebRequestMessage.Content();
+        RequestHttpContent := WebHttpRequestMessage.Content();
         LogHttpActivity(webCall, AppCaller, 'Send', '', '', RequestHttpContent, 'ok');
         if GlobalTimeout <= 0 then
             GlobalTimeout := 600000;
-        ClientHttp.Send(WebRequestMessage, ResponseMessage);
+        ClientHttpClient.Send(WebHttpRequestMessage, HttpResponseMessage);
 
         if GlobalProgressDialogEnabled then
-            ProcessingWindow.Close();
+            ProcessWindowDialog.Close();
 
         if (CheckHttpStatus) then
-            exit(CheckHttpCallStatus(webCall, AppCaller, ResponseMessage))
+            exit(CheckHttpCallStatus(webCall, AppCaller, HttpResponseMessage))
         else
             exit(true);
     end;
 
-    procedure CheckHttpCallStatus(webCall: Text; AppCaller: text[30]; Var ResponseMessage: HttpResponseMessage): Boolean;
+    procedure CheckHttpCallStatus(webCall: Text; AppCaller: text[30]; Var HttpResponseMessage: HttpResponseMessage): Boolean;
     var
         Error_Text: Text;
     begin
-        if (NOT ResponseMessage.IsSuccessStatusCode()) then begin
-            Error_Text := TryLoadErrorLbl + StrSubstNo(WebLoadErrorLbl, FORMAT(ResponseMessage.HttpStatusCode()) + ' ' + ResponseMessage.ReasonPhrase());
-            LogHttpActivity(webCall, AppCaller, Error_Text, '', '', ResponseMessage.Content(), 'error');
+        if (NOT HttpResponseMessage.IsSuccessStatusCode()) then begin
+            Error_Text := TryLoadErrorLbl + StrSubstNo(WebLoadErrorLbl, FORMAT(HttpResponseMessage.HttpStatusCode()) + ' ' + HttpResponseMessage.ReasonPhrase());
+            LogHttpActivity(webCall, AppCaller, Error_Text, '', '', HttpResponseMessage.Content(), 'error');
             ERROR(Error_Text);
         end;
         exit(TRUE);
     end;
 
-    procedure GetWebServiceResponse(Var ResponseMessage: HttpResponseMessage; Var ResponseTempBlob: Codeunit "Temp Blob"; responseXPath: Text; useNamespaces: Boolean)
+    procedure GetWebServiceResponse(Var HttpResponseMessage: HttpResponseMessage; Var ResponseTempBlob: Codeunit "Temp Blob"; responseXPath: Text; useNamespaces: Boolean)
     var
-        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
         TempBlob: Codeunit "Temp Blob";
         ResponseXMLDoc: XmlDocument;
         RootXmlElement: XmlElement;
         RootXmlNode: XmlNode;
         ResponseBodyXMLNode: XmlNode;
         NameSpaceMgt: XmlNamespaceManager;
-        ResponseInStr: InStream;
-        ResponseOutStr: OutStream;
-        ResponseContent: HttpContent;
+        ResponseInStream: InStream;
+        ResponseOutStream: OutStream;
+        ResponseHttpContent: HttpContent;
         TempXmlDocText: Text;
         Found: Boolean;
     begin
 
         CLEAR(TempBlob);
-        TempBlob.CREATEINSTREAM(ResponseInStr);
-        ResponseContent := ResponseMessage.Content();
-        ResponseContent.ReadAs(ResponseInStr);
-        XmlDocument.ReadFrom(ResponseInStr, ResponseXMLDoc);
+        TempBlob.CREATEINSTREAM(ResponseInStream);
+        ResponseHttpContent := HttpResponseMessage.Content();
+        ResponseHttpContent.ReadAs(ResponseInStream);
+        XmlDocument.ReadFrom(ResponseInStream, ResponseXMLDoc);
 
         ResponseXMLDoc.WriteTo(TempXmlDocText);
         RemoveUTF16(TempXmlDocText);
@@ -262,9 +262,9 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         end;
 
         CLEAR(ResponseTempBlob);
-        CLEAR(ResponseInStr);
-        ResponseTempBlob.CreateOutStream(ResponseOutStr);
-        ResponseXMLDoc.WriteTo(ResponseOutStr);
+        CLEAR(ResponseInStream);
+        ResponseTempBlob.CreateOutStream(ResponseOutStream);
+        ResponseXMLDoc.WriteTo(ResponseOutStream);
     end;
 
     procedure RemoveUTF16(var XmlDocText: Text)
@@ -294,7 +294,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
             XmlDocText := DelStr(XmlDocText, EncodPos, STRLEN(' standalone="No"'));
     end;
 
-    procedure LogHttpActivity(SoapCall: Text; AppCaller: Text[30]; LogMessage: Text; HintText: Text; SupportUrl: Text; HttpLogContent: HttpContent; ResponseResult: Text) Id: Integer;
+    procedure LogHttpActivity(SoapCall: Text; AppCaller: Text[30]; LogMessage: Text; HintText: Text; SupportUrl: Text; LogHttpContent: HttpContent; ResponseResult: Text) Id: Integer;
     var
         AMCBankingSetup: record "AMC Banking Setup";
         ActivityLog: Record "Activity Log";
@@ -313,7 +313,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         else
             ActivityLog.LogActivity(RecordVariant, ActivityLog.Status::Success, AppCaller, SoapCall, LogMessage);
         TempBlob.CreateInStream(LogInStream);
-        CleanSecureContent(HttpLogContent, LogInStream);
+        CleanSecureContent(LogHttpContent, LogInStream);
         ActivityLog.SetDetailedInfoFromStream(LogInStream);
         ActivityLog."AMC Bank WebLog Status" := SetWeblogStatus(ResponseResult);
         ActivityLog.Modify();
@@ -332,6 +332,129 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         EXIT(ActivityLog.ID);
     end;
 
+    procedure ShowServiceLinkPage(ShowPage: Text; IgnoreError: Boolean): Boolean;
+    var
+        AMCBankingSetup: Record "AMC Banking Setup";
+        TypeHelper: Codeunit "Type Helper";
+        TokenId: Text;
+    begin
+        AMCBankingSetup.GET();
+        TokenId := GetXTLToken(IgnoreError);
+        HyperLink(STRSUBSTNO(GetTokenURLData(AMCBankingSetup."Service URL", ShowPage), TypeHelper.UrlEncode(TokenId)));
+    end;
+
+    local procedure GetXTLToken(IgnoreError: Boolean) TokenId: Text;
+    var
+        AMCBankingSetup: Record "AMC Banking Setup";
+        ResponseTempBlob: Codeunit "Temp Blob";
+        ResponseInStream: InStream;
+        ResponseXMLDoc: XmlDocument;
+        Result: Text;
+        TokenHttpRequestMessage: HttpRequestMessage;
+        TokenHttpResponseMessage: HttpResponseMessage;
+        TokenXMLNodeList: XmlNodeList;
+        TokenXMLNodeCount: Integer;
+        TokenIdXMLNode: XmlNode;
+        Handled: Boolean;
+    begin
+        AMCBankingMgt.CheckCredentials();
+        AMCBankingSetup.Get();
+
+        TokenId := '';
+        InitializeHttp(TokenHttpRequestMessage, AMCBankingSetup."Service URL", 'POST');
+        PrepareSOAPRequestBodyTokenCreate(TokenHttpRequestMessage, GetTokenCreate());
+
+        //Set Content-Type header
+        SetHttpContentsDefaults(TokenHttpRequestMessage);
+
+        OnBeforeExecuteWebServiceRequest(Handled, TokenHttpRequestMessage, TokenHttpResponseMessage, GetTokenCreate(), AMCBankingMgt.GetAppCaller()); //For mockup testing
+        ExecuteWebServiceRequest(Handled, TokenHttpRequestMessage, TokenHttpResponseMessage, GetTokenCreate(), AMCBankingMgt.GetAppCaller(), true);
+        GetWebServiceResponse(TokenHttpResponseMessage, ResponseTempBlob, GetTokenCreate() + GetResponseTag(), true);
+
+        if (not HasResponseErrors(ResponseTempBlob, GetHeaderXPath(), GetTokenCreate() + GetResponseTag(), Result, AMCBankingMgt.GetAppCaller())) then begin
+            ResponseTempBlob.CreateInStream(ResponseInStream);
+            XmlDocument.ReadFrom(ResponseInStream, ResponseXmlDoc);
+
+            ResponseXMLDoc.selectNodes(STRSUBSTNO(GetTokenIdXPath(), GetTokenCreate() + GetResponseTag()), TokenXMLNodeList);
+            FOR TokenXMLNodeCount := 1 TO TokenXMLNodeList.Count() DO BEGIN
+                TokenXMLNodeList.Get(TokenXMLNodeCount, TokenIdXMLNode);
+                TokenId := COPYSTR(getNodeValue(TokenIdXMLNode, GetTokenXPath()), 1, 50);
+            END;
+        end
+        else
+            if (not IgnoreError) then
+                ShowResponseError(Result);
+
+        EXIT(TokenId);
+    end;
+
+    local procedure PrepareSOAPRequestBodyTokenCreate(var BodyHttpRequestMessage: HttpRequestMessage; soapCall: Text);
+    var
+        AMCBankingSetup: Record "AMC Banking Setup";
+        User: Record User;
+        ContentHttpContent: HttpContent;
+        BodyContentXmlDoc: XmlDocument;
+        BodyDeclaration: Xmldeclaration;
+        EnvelopeXMLElement: XmlElement;
+        BodyXMLElement: XMLElement;
+        DataExchXmlElement: XmlElement;
+        ChildXmlElement: XmlElement;
+        TempXmlDocText: Text;
+        AMCGUID: Text;
+        AMCName: Text;
+        AMCEmail: Text;
+    begin
+
+        AMCGUID := DelChr(LowerCase(Format(UserSecurityId())), '=', '{}');
+        User.SetRange("User Security ID", UserSecurityId());
+        if (User.FindFirst()) then begin
+            if (User."Full Name" <> '') then
+                AMCName := User."Full Name"
+            else
+                AMCName := User."User Name";
+
+            if (User."Authentication Email" <> '') then
+                AMCEmail := User."Authentication Email"
+            else
+                AMCEmail := User."Contact Email";
+        end;
+
+        BodyContentXmlDoc := XmlDocument.Create();
+        BodyDeclaration := XmlDeclaration.Create('1.0', 'UTF-8', 'No');
+        BodyContentXmlDoc.SetDeclaration(BodyDeclaration);
+
+        AMCBankingSetup.Get();
+        CreateEnvelope(BodyContentXmlDoc, EnvelopeXmlElement, AMCBankingSetup.GetUserName(), AMCBankingSetup.GetPassword(), '');
+
+        AddElement(EnvelopeXMLElement, EnvelopeXMLElement.NamespaceUri(), 'Body', '', BodyXMLElement, '', '', '');
+        AddElement(BodyXMLElement, AMCBankingMgt.GetNamespace(), soapCall, '', DataExchXmlElement, '', '', '');
+
+        AddElement(DataExchXmlElement, '', 'language', 'US', ChildXmlElement, '', '', '');
+        if (AMCGUID <> '') then
+            AddElement(DataExchXmlElement, '', 'guid', AMCGUID, ChildXmlElement, '', '', '');
+        if (AMCEmail <> '') then
+            AddElement(DataExchXmlElement, '', 'email', AMCEmail, ChildXmlElement, '', '', '');
+
+
+        BodyContentXmlDoc.WriteTo(TempXmlDocText);
+        RemoveUTF16(TempXmlDocText);
+        contentHttpContent.WriteFrom(TempXmlDocText);
+        BodyHttpRequestMessage.Content(contentHttpContent);
+    end;
+
+    local procedure GetTokenURLData(AMCServiceUrl: Text; LoginPage: text): Text;
+    var
+        AMCBankingSetup: Record "AMC Banking Setup";
+    begin
+        AMCBankingSetup.GET();
+        if (StrPos(AMCServiceUrl, AMCBankingSetup."Namespace API Version") <> 0) then begin
+            AMCServiceUrl := COPYSTR(AMCServiceUrl, 1, StrPos(AMCServiceUrl, AMCBankingSetup."Namespace API Version") - 1);
+            EXIT(AMCServiceUrl + 'login?token=%1&loginPage=' + LoginPage);
+        end
+        else
+            EXIT(AMCServiceUrl + '/login?token=%1&loginPage=' + LoginPage);
+    end;
+
     local procedure SetWeblogStatus(reponseResult: Text): ENUM AMCBankWebLogStatus
     begin
         CASE lowerCase(reponseResult) OF
@@ -345,7 +468,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         exit(AMCBankWebLogStatus::Failed);
     end;
 
-    local procedure CleanSecureContent(HttpLogContent: HttpContent; var LogInStream: Instream);
+    local procedure CleanSecureContent(LogHttpContent: HttpContent; var LogInStream: Instream);
     var
         TempBlob: CodeUnit "Temp Blob";
         LogXMLDoc: XmlDocument;
@@ -361,7 +484,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         LogText: Text;
     begin
         TempBlob.CreateInStream(CleanInStream);
-        HttpLogContent.ReadAs(CleanInStream);
+        LogHttpContent.ReadAs(CleanInStream);
         XmlDocument.ReadFrom(CleanInStream, LogXMLDoc);
 
         LogXmlNodeList := LogXMLDoc.GetDescendantNodes();
@@ -432,7 +555,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         ConvertLogXMLNodeList: XmlNodeList;
         ConvertLogXMLNodeCount: Integer;
         ConvertlogXmlNode: XmlNode;
-        HttpContents: HttpContent;
+        HttpContent: HttpContent;
         FoundSyslog: Boolean;
     begin
         //Get result of call
@@ -441,14 +564,14 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         ResponseTempBlob.CreateInStream(ResponseInStream);
         XmlDocument.ReadFrom(ResponseInStream, ResponseXMLDoc);
 
-        ResponseXMLDoc.SelectNodes(STRSUBSTNO(HeadXPath, SoapCallResponse), ResultXMLNodeList);
+        ResponseXMLDoc.SelectNodes(HeadXPath, ResultXMLNodeList);
         FOR ResultXMLNodeCount := 1 TO ResultXMLNodeList.Count() DO BEGIN
             ResultXMLNodeList.Get(ResultXMLNodeCount, ResultXmlNode);
             ResponseResult := COPYSTR(GetNodeValue(ResultXmlNode, GetResultXPath()), 1, 50);
         END;
 
         IF (ResponseResult <> 'ok') THEN BEGIN
-            ResponseXMLDoc.SelectNodes(STRSUBSTNO(GetSyslogXPath(), SoapCallResponse), SysLogXMLNodeList);
+            ResponseXMLDoc.SelectNodes(GetSyslogXPath(), SysLogXMLNodeList);
             FOR SysLogXMLNodeCount := 1 TO SysLogXMLNodeList.Count() DO BEGIN
                 FoundSyslog := true;
                 SysLogXMLNodeList.Get(SysLogXMLNodeCount, SyslogXmlNode);
@@ -456,8 +579,8 @@ codeunit 20118 "AMC Bank Service Request Mgt."
                 GLBResponseErrorText := COPYSTR(GetNodeValue(SyslogXmlNode, GetSyslogTextXPath()), 1, 50);
                 ResponseHintText := COPYSTR(GetNodeValue(SyslogXmlNode, GetSyslogHintTextXPath()), 1, 50);
                 ResponseURL := COPYSTR(GetNodeValue(SyslogXmlNode, GetSyslogUrlXPath()), 1, 50);
-                HttpContents.WriteFrom(ResponseInStream);
-                LogId := LogHttpActivity(SoapCallResponse, AppCaller, GLBResponseErrorText, ResponseHintText, ResponseURL, HttpContents, ResponseResult);
+                HttpContent.WriteFrom(ResponseInStream);
+                LogId := LogHttpActivity(SoapCallResponse, AppCaller, GLBResponseErrorText, ResponseHintText, ResponseURL, HttpContent, ResponseResult);
 
                 IF (GLBFromId = 0) THEN BEGIN
                     GLBFromId := LogId;
@@ -467,15 +590,15 @@ codeunit 20118 "AMC Bank Service Request Mgt."
                     GLBToId := LogId;
             END;
             if (not FoundSyslog) then begin //Look for convertlog if Syslog does not exists
-                ResponseXMLDoc.SelectNodes(STRSUBSTNO(GetConvertlogXPath(), SoapCallResponse), ConvertLogXMLNodeList);
+                ResponseXMLDoc.SelectNodes(GetConvertlogXPath(), ConvertLogXMLNodeList);
                 FOR ConvertLogXMLNodeCount := 1 TO ConvertLogXMLNodeList.Count() DO BEGIN
                     ConvertLogXMLNodeList.Get(ConvertLogXMLNodeCount, ConvertlogXmlNode);
 
                     GLBResponseErrorText := COPYSTR(GetNodeValue(ConvertlogXmlNode, GetSyslogTextXPath()), 1, 50);
                     ResponseHintText := COPYSTR(GetNodeValue(ConvertlogXmlNode, GetSyslogHintTextXPath()), 1, 50);
                     ResponseURL := COPYSTR(GetNodeValue(ConvertlogXmlNode, GetSyslogUrlXPath()), 1, 50);
-                    HttpContents.WriteFrom(ResponseInStream);
-                    LogId := LogHttpActivity(SoapCallResponse, AppCaller, GLBResponseErrorText, ResponseHintText, ResponseURL, HttpContents, ResponseResult);
+                    HttpContent.WriteFrom(ResponseInStream);
+                    LogId := LogHttpActivity(SoapCallResponse, AppCaller, GLBResponseErrorText, ResponseHintText, ResponseURL, HttpContent, ResponseResult);
 
                     IF (GLBFromId = 0) THEN BEGIN
                         GLBFromId := LogId;
@@ -492,8 +615,8 @@ codeunit 20118 "AMC Bank Service Request Mgt."
                 EXIT(FALSE);
         END
         ELSE begin
-            HttpContents.WriteFrom(ResponseInStream);
-            LogHttpActivity(SoapCallResponse, AppCaller, ResponseResult, '', '', HttpContents, ResponseResult);
+            HttpContent.WriteFrom(ResponseInStream);
+            LogHttpActivity(SoapCallResponse, AppCaller, ResponseResult, '', '', HttpContent, ResponseResult);
         end;
 
         EXIT(FALSE);
@@ -504,13 +627,13 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         AMCBankingSetup: Record "AMC Banking Setup";
         ActivityLog: Record "Activity Log";
         DataTypeManagement: Codeunit "Data Type Management";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
         IF (ResponseResult <> 'ok') THEN BEGIN
             IF (GUIALLOWED()) THEN
                 IF ((GLBFromId <> 0) OR (GLBToId <> 0)) THEN
-                    IF DataTypeManagement.GetRecordRef(AMCBankingSetup, RecRef) THEN BEGIN
-                        ActivityLog.SETRANGE(ActivityLog."Record ID", RecRef.RECORDID());
+                    IF DataTypeManagement.GetRecordRef(AMCBankingSetup, RecordRef) THEN BEGIN
+                        ActivityLog.SETRANGE(ActivityLog."Record ID", RecordRef.RECORDID());
                         ActivityLog.SETRANGE(ActivityLog.ID, GLBFromId, GLBToId);
                         PAGE.RUN(PAGE::"AMC Bank Webcall Log", ActivityLog);
                     END;
@@ -550,7 +673,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         XmlDocument.ReadFrom(ResponseInStream, ResponseXmlDoc);
 
 
-        Found := ResponseXmlDoc.SelectSingleNode(STRSUBSTNO(GetJournalNoPath(PaymentExportWebCallTxt + GetResponseTag())), DataXmlNode);
+        Found := ResponseXmlDoc.SelectSingleNode(GetJournalNoPath(), DataXmlNode); //V19.1
         if (Found) then begin
             XTLJournalNo := CopyStr(getNodeValue(DataXmlNode, './journalnumber'), 1, 250);
             CreditTransferRegister.SetRange("Data Exch. Entry No.", DataExchEntryNo);
@@ -572,35 +695,76 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         exit(GLBToId);
     end;
 
+    [IntegrationEvent(true, false)] //Used for mockup testing
+    procedure OnBeforeExecuteWebServiceRequest(Var Handled: Boolean; Var WebHttpRequestMessage: HttpRequestMessage; Var WebHttpResponseMessage: HttpResponseMessage; webCall: Text; AppCaller: Text[30]);
+    begin
+    end;
+
+#if not CLEAN20
+    [Obsolete('This method is obsolete and it will be removed. Use GetFinstaXPath instead', '20.0')]
     procedure GetFinstaXPath(ResponseNode: Text): Text
     begin
         exit(StrSubstNo(FinstaPathTxt, ResponseNode));
     end;
 
+    [Obsolete('This method is obsolete and it will be removed. Use GetSysErrXPath instead', '20.0')]
     procedure GetSysErrXPath(ResponseNode: Text): Text
     begin
         exit(StrSubstNo(SysErrPathTxt, ResponseNode));
     end;
 
+    [Obsolete('This method is obsolete and it will be removed. Use GetConvErrXPath instead', '20.0')]
     procedure GetConvErrXPath(ResponseNode: Text): Text
     begin
         exit(StrSubstNo(ConvErrPathTxt, ResponseNode));
     end;
 
+    [Obsolete('This method is obsolete and it will be removed. Use GetDataXPath instead', '20.0')]
     procedure GetDataXPath(ResponseNode: Text): Text
     begin
         exit(StrSubstNo(DataPathTxt, ResponseNode));
     end;
 
+    [Obsolete('This method is obsolete and it will be removed. Use GetBankXPath instead', '20.0')]
     procedure GetBankXPath(ResponseNode: Text): Text
     begin
         exit(StrSubstNo(BankPathTxt, ResponseNode));
     end;
 
-
+    [Obsolete('This method is obsolete and it will be removed. Use GetJournalNoPath instead', '20.0')]
     procedure GetJournalNoPath(ResponseNode: Text): Text
     begin
         exit(StrSubstNo(PackPathTxt, ResponseNode));
+    end;
+#endif
+    procedure GetFinstaXPath(): Text
+    begin
+        exit(FinstaPathTxt);
+    end;
+
+    procedure GetSysErrXPath(): Text
+    begin
+        exit(SysErrPathTxt);
+    end;
+
+    procedure GetConvErrXPath(): Text
+    begin
+        exit(ConvErrPathTxt);
+    end;
+
+    procedure GetDataXPath(): Text
+    begin
+        exit(DataPathTxt);
+    end;
+
+    procedure GetBankXPath(): Text
+    begin
+        exit(BankPathTxt);
+    end;
+
+    procedure GetJournalNoPath(): Text
+    begin
+        exit(PackPathTxt);
     end;
 
 
@@ -621,6 +785,11 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         EXIT('//syslog');
     end;
 
+    procedure GetReportExportTag(): Text;
+    begin
+        EXIT('reportExport');
+    end;
+
     procedure GetResponseTag(): Text;
     begin
         EXIT('Response');
@@ -631,7 +800,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         EXIT('//pack/convertlog');
     end;
 
-    local procedure GetSyslogReferenceIdXPath(): Text;
+    procedure GetSyslogReferenceIdXPath(): Text;
     begin
         EXIT('./referenceid');
     end;
@@ -674,5 +843,20 @@ codeunit 20118 "AMC Bank Service Request Mgt."
     local procedure GetUsernameTokenFixedValue(): Text;
     begin
         EXIT('UsernameToken-1');
+    end;
+
+    procedure GetTokenCreate(): Text;
+    begin
+        EXIT('tokenCreate');
+    end;
+
+    procedure GetTokenIdXPath(): Text;
+    begin
+        EXIT('//return/token');
+    end;
+
+    procedure GetTokenXPath(): Text;
+    begin
+        EXIT('./token');
     end;
 }

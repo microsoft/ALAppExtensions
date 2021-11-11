@@ -151,22 +151,22 @@ page 20107 "AMC Bank Webcall Log"
         ClearActivityLog: Record "Activity Log";
         ClearSubActivityLog: Record "Activity Log";
         DataTypeManagement: Codeunit "Data Type Management";
-        RecRef: RecordRef;
-        SubRecRef: RecordRef;
+        RecordRef: RecordRef;
+        SubRecordRef: RecordRef;
         DeleteLbl: Label 'Are you sure that you want to delete log activity entries?';
     begin
         IF NOT CONFIRM(DeleteLbl) THEN
             EXIT;
 
         AMCBankingSetup.GET();
-        IF DataTypeManagement.GetRecordRef(AMCBankingSetup, RecRef) THEN BEGIN
+        IF DataTypeManagement.GetRecordRef(AMCBankingSetup, RecordRef) THEN BEGIN
             ClearActivityLog.RESET();
-            ClearActivityLog.SETRANGE(ClearActivityLog."Record ID", RecRef.RECORDID());
+            ClearActivityLog.SETRANGE(ClearActivityLog."Record ID", RecordRef.RECORDID());
             ClearActivityLog.SETFILTER(ClearActivityLog."Activity Date", '<=%1', CREATEDATETIME(TODAY() - DaysOld, TIME()));
             IF (ClearActivityLog.FINDSET()) THEN
                 REPEAT
-                    IF DataTypeManagement.GetRecordRef(ClearActivityLog, SubRecRef) THEN BEGIN
-                        ClearSubActivityLog.SETRANGE(ClearSubActivityLog."Record ID", SubRecRef.RECORDID());
+                    IF DataTypeManagement.GetRecordRef(ClearActivityLog, SubRecordRef) THEN BEGIN
+                        ClearSubActivityLog.SETRANGE(ClearSubActivityLog."Record ID", SubRecordRef.RECORDID());
                         IF (ClearSubActivityLog.FINDSET()) THEN
                             REPEAT
                                 ClearSubActivityLog.DELETE();

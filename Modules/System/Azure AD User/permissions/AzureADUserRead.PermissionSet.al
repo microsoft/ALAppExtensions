@@ -8,7 +8,8 @@ permissionset 9011 "Azure AD User - Read"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Language - Read";
+    IncludedPermissionSets = "Azure AD User - Objects",
+                             "Language - Read";
 
     Permissions = tabledata User = r,
                   tabledata "User Property" = r;

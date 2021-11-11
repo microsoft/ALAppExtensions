@@ -1,4 +1,4 @@
-codeunit 1450 "MS - Yodlee Service Mgt."
+﻿codeunit 1450 "MS - Yodlee Service Mgt."
 {
     var
         ResponseTempBlob: Codeunit "Temp Blob";
@@ -97,8 +97,6 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         ProcessingWindowMsg: Label 'Please wait while the server is processing your request.\This may take several minutes.';
         RemoteServerErr: Label 'The remote server returned an error: (%1) %2.', Locked = true;
         LCYCurrencyCodeMostBeInISOFormatErr: Label 'The Currency code must be in ISO 4217 format eq use USD instead of US';
-        CurrencyMismatchOnOnlineBankAccountErr: Label 'The online bank account %1 has two mismatching currency codes: %2 and %3.', Comment = '%1 - bank account name, %2 - currency code, %3 - currency code';
-        CurrencyMismatchOnOnlineBankAccountTelemetryErr: Label 'The online bank account has two mismatching currency codes: %1 and %2.', Locked = true;
         LinkingToAccountWithEmptyCurrencyQst: Label 'The online bank account %1 has no currency code.\Do you want to link it to your bank account?', Comment = '%1 - bank account name';
         EmptyCurrencyOnOnlineAccountMsg: Label 'The online bank account has no currency code.', Locked = true;
         TransactionsDownloadedTelemetryTxt: Label 'Transactions downloaded for 1 of %1 linked bank account(s).', Locked = true;
@@ -1311,19 +1309,13 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         AvlblBalCurrencyCode := FindNodeText(BankAccountNode, YodleeAPIStrings.GetBankAccountAvailableBalanceXPath());
         RunningBalanceCurrencyCode := FindNodeText(BankAccountNode, YodleeAPIStrings.GetBankAccountRunningBalanceXPath());
 
-        IF (CurrBalCurrencyCode <> '') AND (AvlblBalCurrencyCode <> '') AND (CurrBalCurrencyCode <> AvlblBalCurrencyCode) THEN BEGIN
-            OnOnlineBankAccountCurrencyMismatchSendTelemetry(
-              STRSUBSTNO(CurrencyMismatchOnOnlineBankAccountTelemetryErr, AvlblBalCurrencyCode, CurrBalCurrencyCode));
-            ERROR(CurrencyMismatchOnOnlineBankAccountErr, BankAccountName, AvlblBalCurrencyCode, CurrBalCurrencyCode);
-        END;
-
         IF RunningBalanceCurrencyCode <> '' THEN
             CurrencyCode := RunningBalanceCurrencyCode;
 
-        IF CurrBalCurrencyCode <> '' THEN
+        IF (CurrencyCode = '') AND (CurrBalCurrencyCode <> '') THEN
             CurrencyCode := CurrBalCurrencyCode;
 
-        IF AvlblBalCurrencyCode <> '' THEN
+        IF (CurrencyCode = '') AND (AvlblBalCurrencyCode <> '') THEN
             CurrencyCode := AvlblBalCurrencyCode;
 
         IF CurrencyCode = '' THEN
@@ -2824,12 +2816,6 @@ codeunit 1450 "MS - Yodlee Service Mgt."
     begin
         Session.LogMessage('00001FV', ConsumerUnitializedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
     end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"MS - Yodlee Service Mgt.", 'OnOnlineBankAccountCurrencyMismatchSendTelemetry', '', false, false)]
-    LOCAL PROCEDURE SendTelemetryOnOnlineBankAccountCurrencyMismatch(Message: Text);
-    BEGIN
-        Session.LogMessage('00001QF', Message, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
-    END;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"MS - Yodlee Service Mgt.", 'OnOnlineAccountEmptyCurrencySendTelemetry', '', false, false)]
     LOCAL PROCEDURE SendTelemetryOnOnlineAccountEmptyCurrency(Message: Text);

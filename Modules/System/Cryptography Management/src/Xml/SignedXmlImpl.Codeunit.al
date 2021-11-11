@@ -12,6 +12,7 @@ codeunit 1461 "SignedXml Impl."
         DotNetKeyInfo: DotNet KeyInfo;
         DotNetReference: DotNet Reference;
         DotNetSignedXml: DotNet SignedXml;
+        DotNetDataObject: DotNet DataObject;
 
 
     #region Constructors
@@ -20,7 +21,7 @@ codeunit 1461 "SignedXml Impl."
         XmlDotNetConvert: Codeunit "Xml DotNet Convert";
         DotNetXmlDocument: DotNet XmlDocument;
     begin
-        XmlDotNetConvert.ToDotNet(SigningXmlDocument, DotNetXmlDocument);
+        XmlDotNetConvert.ToDotNet(SigningXmlDocument, DotNetXmlDocument, true);
         DotNetSignedXml := DotNetSignedXml.SignedXml(DotNetXmlDocument);
     end;
 
@@ -29,7 +30,7 @@ codeunit 1461 "SignedXml Impl."
         XmlDotNetConvert: Codeunit "Xml DotNet Convert";
         DotNetXmlElement: DotNet XmlElement;
     begin
-        XmlDotNetConvert.ToDotNet(SigningXmlElement, DotNetXmlElement);
+        XmlDotNetConvert.ToDotNet(SigningXmlElement, DotNetXmlElement, true);
         DotNetSignedXml := DotNetSignedXml.SignedXml(DotNetXmlElement);
     end;
     #endregion
@@ -103,7 +104,7 @@ codeunit 1461 "SignedXml Impl."
         DotNetKeyInfoNode: DotNet KeyInfoNode;
         DotNetXmlElement: DotNet XmlElement;
     begin
-        XmlDotNetConvert.ToDotNet(KeyInfoNodeXmlElement, DotNetXmlElement);
+        XmlDotNetConvert.ToDotNet(KeyInfoNodeXmlElement, DotNetXmlElement, true);
         DotNetKeyInfoNode := DotNetKeyInfoNode.KeyInfoNode(DotNetXmlElement);
         AddClause(DotNetKeyInfoNode);
     end;
@@ -114,10 +115,54 @@ codeunit 1461 "SignedXml Impl."
     end;
     #endregion
 
+    #region DataObject
+    procedure InitializeDataObject()
+    begin
+        DotNetDataObject := DotNetDataObject.DataObject();
+    end;
+
+    procedure AddObject(DataObjectXmlElement: XmlElement)
+    var
+        XmlDotNetConvert: Codeunit "Xml DotNet Convert";
+        DotNetXmlElement: DotNet XmlElement;
+    begin
+        XmlDotNetConvert.ToDotNet(DataObjectXmlElement, DotNetXmlElement, true);
+        DotNetDataObject.LoadXml(DotNetXmlElement);
+        DotNetSignedXml.AddObject(DotNetDataObject);
+    end;
+    #endregion
+
+    procedure LoadXml(SignatureElement: XmlElement)
+    var
+        XmlDotNetConvert: Codeunit "Xml DotNet Convert";
+        DotNetXmlElement: DotNet XmlElement;
+    begin
+        XmlDotNetConvert.ToDotNet(SignatureElement, DotNetXmlElement, true);
+        DotNetSignedXml.LoadXml(DotNetXmlElement);
+    end;
+
+#if not CLEAN19
+    [Obsolete('Replaced by SetSigningKey function with XmlString parameter.', '19.1')]
     procedure SetSigningKey(var SignatureKey: Record "Signature Key")
     begin
         if SignatureKey.TryGetInstance(DotNetAsymmetricAlgorithm) then
             DotNetSignedXml.SigningKey := DotNetAsymmetricAlgorithm;
+    end;
+#endif
+
+    procedure SetSigningKey(XmlString: Text)
+    begin
+        SetSigningKey(XmlString, Enum::SignatureAlgorithm::RSA);
+    end;
+
+    procedure SetSigningKey(XmlString: Text; SignatureAlgorithm: Enum SignatureAlgorithm)
+    var
+        ISignatureAlgorithm: Interface SignatureAlgorithm;
+    begin
+        ISignatureAlgorithm := SignatureAlgorithm;
+        ISignatureAlgorithm.FromXmlString(XmlString);
+        ISignatureAlgorithm.GetInstance(DotNetAsymmetricAlgorithm);
+        DotNetSignedXml.SigningKey := DotNetAsymmetricAlgorithm;
     end;
 
     procedure ComputeSignature()
@@ -134,6 +179,30 @@ codeunit 1461 "SignedXml Impl."
         XmlDotNetConvert: Codeunit "Xml DotNet Convert";
     begin
         XmlDotNetConvert.FromDotNet(DotNetSignedXml.GetXml(), SignedXmlElement);
+    end;
+
+    procedure CheckSignature(): Boolean
+    begin
+        exit(DotNetSignedXml.CheckSignature());
+    end;
+
+    procedure CheckSignature(XmlString: Text): Boolean
+    var
+        ISignatureAlgorithm: Interface SignatureAlgorithm;
+    begin
+        ISignatureAlgorithm := Enum::SignatureAlgorithm::RSA;
+        ISignatureAlgorithm.FromXmlString(XmlString);
+        ISignatureAlgorithm.GetInstance(DotNetAsymmetricAlgorithm);
+        exit(DotNetSignedXml.CheckSignature(DotNetAsymmetricAlgorithm));
+    end;
+
+    procedure CheckSignature(X509CertBase64Value: Text; X509CertPassword: Text; VerifySignatureOnly: Boolean): Boolean
+    var
+        X509Certificate2Impl: Codeunit "X509Certificate2 Impl.";
+        X509Certificate2: DotNet X509Certificate2;
+    begin
+        X509Certificate2Impl.InitializeX509Certificate(X509CertBase64Value, X509CertPassword, X509Certificate2);
+        exit(DotNetSignedXml.CheckSignature(X509Certificate2, VerifySignatureOnly));
     end;
 
     #region Static Fields

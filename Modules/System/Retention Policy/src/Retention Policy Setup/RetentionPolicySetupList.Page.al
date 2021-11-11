@@ -132,4 +132,11 @@ page 3903 "Retention Policy Setup List"
             }
         }
     }
+
+    trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        FeatureTelemetry.LogUptake('0000FW0', 'Retention policies', Enum::"Feature Uptake Status"::Discovered);
+    end;
 }

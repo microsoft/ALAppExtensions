@@ -14,50 +14,50 @@ codeunit 135053 "IDA 1D UPCA Test"
     [Test]
     procedure TestUPCAEncoding();
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Encoding a text using UPC-A symbology yileds the correct result
 
-        GenericIDAutomation1DTest.EncodeFontSuccessTest(/* input */'123456789012', Enum::"Barcode Symbology"::"UPC-A", /* expected result */'V(b23456*RSTKLm(W');
+        GenericBarcodeTestHelper.EncodeFontSuccessTest(/* input */'123456789012', Enum::"Barcode Symbology"::"UPC-A", /* expected result */'V(b23456*RSTKLm(W');
     end;
 
     [Test]
     procedure TestUPCAValidationWithEmptyString();
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating an empty text using UPC-A symbology yeilds an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'', Enum::"Barcode Symbology"::"UPC-A", /* expected error */StrSubstNo(InvalidInputErr, ''));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'', Enum::"Barcode Symbology"::"UPC-A", /* expected error */StrSubstNo(InvalidInputErr, ''));
     end;
 
     [Test]
     procedure TestUPCAValidationWithNormalString();
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating a correctly formatted text using UPC-A symbology doesn't yield an error
 
-        GenericIDAutomation1DTest.ValidateFontSuccessTest(/* input */'123456789012', Enum::"Barcode Symbology"::"UPC-A");
+        GenericBarcodeTestHelper.ValidateFontSuccessTest(/* input */'123456789012', Enum::"Barcode Symbology"::"UPC-A");
     end;
 
     [Test]
     procedure TestUPCAValidationWithInvalidString();
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating an incorrectly formatted text using UPC-A yields an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'abcd', Enum::"Barcode Symbology"::"UPC-A", /* expected error */StrSubstNo(InvalidInputErr, 'abcd'));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'abcd', Enum::"Barcode Symbology"::"UPC-A", /* expected error */StrSubstNo(InvalidInputErr, 'abcd'));
     end;
 
     [Test]
     procedure TestUPCAValidationWithInvalidStringLength();
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating a text with wrong length using UPC-A symbology yields an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'1234567', Enum::"Barcode Symbology"::"UPC-A", /* expected error */StrSubstNo(InvalidInputErr, '1234567'));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'1234567', Enum::"Barcode Symbology"::"UPC-A", /* expected error */StrSubstNo(InvalidInputErr, '1234567'));
     end;
 }

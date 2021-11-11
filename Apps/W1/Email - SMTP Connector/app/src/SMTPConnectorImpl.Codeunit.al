@@ -318,8 +318,8 @@ codeunit 4513 "SMTP Connector Impl."
         ShowNotificationForNewEmailFeature();
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sandbox Cleanup", 'OnClearCompanyConfiguration', '', false, false)]
-    local procedure DisableAccountsForSandbox(CompanyName: Text)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Cleanup", 'OnClearCompanyConfig', '', false, false)]
+    local procedure ClearCompanyConfigGeneral(CompanyName: Text; SourceEnv: Enum "Environment Type"; DestinationEnv: Enum "Environment Type")
     var
         SMTPAccounts: Record "SMTP Account";
     begin

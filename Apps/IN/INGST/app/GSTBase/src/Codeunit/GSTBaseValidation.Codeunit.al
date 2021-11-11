@@ -317,6 +317,9 @@ codeunit 18001 "GST Base Validation"
 
         if GSTPostingManagement.GetBuyerSellerStateCode() <> '' then
             Rec."Buyer/Seller State Code" := GSTPostingManagement.GetBuyerSellerStateCode();
+
+        UpdateECommOperatorGSTRegNo(DetailedGSTLedgerEntry, Rec);
+
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Company Information", 'OnAfterValidateEvent', 'P.A.N. No.', false, false)]
@@ -1205,5 +1208,30 @@ codeunit 18001 "GST Base Validation"
                                     Error(CustGSTARNErr);
                 end;
         end;
+    end;
+
+    local procedure UpdateECommOperatorGSTRegNo(
+        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+        var DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info")
+    var
+        ECommerceMerchant: Record "E-Commerce Merchant";
+        IsHandled: Boolean;
+    begin
+
+        IsHandled := false;
+        OnBeforeGetEcommerceMerchant(DetailedGSTLedgerEntryInfo, IsHandled);
+        if IsHandled then
+            exit;
+
+        if DetailedGSTLedgerEntryInfo."e-Comm. Merchant Id" = '' then
+            exit;
+
+        if ECommerceMerchant.Get(DetailedGSTLedgerEntry."Source No.", DetailedGSTLedgerEntryInfo."e-Comm. Merchant Id") then
+            DetailedGSTLedgerEntryInfo."e-Comm. Operator GST Reg. No." := ECommerceMerchant."Company GST Reg. No.";
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetEcommerceMerchant(DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info"; var IsHandled: Boolean)
+    begin
     end;
 }

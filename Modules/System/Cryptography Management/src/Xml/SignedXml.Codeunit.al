@@ -30,14 +30,35 @@ codeunit 1460 SignedXml
     begin
         SignedXmlImpl.InitializeSignedXml(SigningXmlElement);
     end;
-
+#if not CLEAN19
     /// <summary>
     /// Sets the key used for signing a SignedXml object.
     /// </summary>
     /// <param name="SignatureKey">The key used for signing the SignedXml object.</param>
+    [Obsolete('Replaced by SetSigningKey function with XmlString parameter.', '19.1')]
     procedure SetSigningKey(var SignatureKey: Record "Signature Key")
     begin
         SignedXmlImpl.SetSigningKey(SignatureKey);
+    end;
+#endif
+
+    /// <summary>
+    /// Sets the key used for signing a SignedXml object.
+    /// </summary>
+    /// <param name="XmlString">The XML string containing key information.</param>
+    procedure SetSigningKey(XmlString: Text)
+    begin
+        SignedXmlImpl.SetSigningKey(XmlString);
+    end;
+
+    /// <summary>
+    /// Sets the key used for signing a SignedXml object.
+    /// </summary>
+    /// <param name="XmlString">The XML string containing key information.</param>
+    /// <param name="SignatureAlgorithm">The type of asymmetric algorithms.</param>
+    procedure SetSigningKey(XmlString: Text; SignatureAlgorithm: Enum SignatureAlgorithm)
+    begin
+        SignedXmlImpl.SetSigningKey(XmlString, SignatureAlgorithm);
     end;
 
     /// <summary>
@@ -112,6 +133,32 @@ codeunit 1460 SignedXml
     end;
 
     /// <summary>
+    /// Loads a SignedXml state from an XML element.
+    /// </summary>
+    /// <param name="SignatureElement">The XML element to load the SignedXml state from.</param>
+    procedure LoadXml(SignatureElement: XmlElement)
+    begin
+        SignedXmlImpl.LoadXml(SignatureElement);
+    end;
+
+    /// <summary>
+    /// Initializes a new instance of the DataObject class.
+    /// </summary>
+    procedure InitializeDataObject()
+    begin
+        SignedXmlImpl.InitializeDataObject();
+    end;
+
+    /// <summary>
+    /// Adds a xml element of DataObject object to the list of objects to be signed.
+    /// </summary>
+    /// <param name="DataObjectXmlElement">The xml element of DataObject to add to the list of objects to be signed.</param>
+    procedure AddObject(DataObjectXmlElement: XmlElement)
+    begin
+        SignedXmlImpl.AddObject(DataObjectXmlElement);
+    end;
+
+    /// <summary>
     /// Adds a AddXmlDsigExcC14NTransformToReference object to the list of transforms to be performed on the data before passing it to the digest algorithm.
     /// </summary>
     procedure AddXmlDsigExcC14NTransformToReference()
@@ -132,6 +179,37 @@ codeunit 1460 SignedXml
     procedure ComputeSignature()
     begin
         SignedXmlImpl.ComputeSignature();
+    end;
+
+    /// <summary>
+    /// Determines whether the signature verifies using the public key in the signature.
+    /// </summary>
+    /// <returns>true if the signature verifies; otherwise, false.</returns>
+    procedure CheckSignature(): Boolean
+    begin
+        exit(SignedXmlImpl.CheckSignature());
+    end;
+
+    /// <summary>
+    /// Determines whether the Signature property verifies for the specified key.
+    /// </summary>
+    /// <param name="XmlString">The XML string containing key information.</param>
+    /// <returns>true if the signature verifies; otherwise, false.</returns>
+    procedure CheckSignature(XmlString: Text): Boolean
+    begin
+        exit(SignedXmlImpl.CheckSignature(XmlString));
+    end;
+
+    /// <summary>
+    /// Determines whether the signature verifies for the specified X509Certificate2 and, optionally, whether the certificate is valid.
+    /// </summary>
+    /// <param name="X509CertBase64Value">The X509Certificate2 in Base64 format to use to verify the signature.</param>
+    /// <param name="X509CertPassword">The password to the X509Certificate2.</param>
+    /// <param name="VerifySignatureOnly">true to verify the signature only; false to verify both the signature and certificate.</param>
+    /// <returns>true if the signature verifies; otherwise, false.</returns>
+    procedure CheckSignature(X509CertBase64Value: Text; X509CertPassword: Text; VerifySignatureOnly: Boolean): Boolean
+    begin
+        exit(SignedXmlImpl.CheckSignature(X509CertBase64Value, X509CertPassword, VerifySignatureOnly));
     end;
 
     /// <summary>

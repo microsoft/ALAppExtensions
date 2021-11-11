@@ -130,12 +130,17 @@ codeunit 20297 "Use Case Symbols Handler"
     var
         ScriptSymbolLookup: Record "Script Symbol Lookup";
         UseCaseAttributeMapping: Record "Use Case Attribute Mapping";
+        ArchivalSingleInstance: Codeunit "Archival Single Instance";
     begin
         if Rec.IsTemporary() then
             exit;
 
         if not RunTrigger then
             exit;
+
+        if ArchivalSingleInstance.GetSkipTaxAttribute() then
+            exit;
+
         ScriptSymbolLookup.SetFilter("Source Type", '%1|%2', ScriptSymbolLookup."Source Type"::"Attribute Table", ScriptSymbolLookup."Source Type"::"Tax Attributes");
         ScriptSymbolLookup.SetRange("Source Field ID", Rec.ID);
         if ScriptSymbolLookup.FindFirst() then
@@ -151,12 +156,17 @@ codeunit 20297 "Use Case Symbols Handler"
     var
         UseCaseComponentCalculation: Record "Use Case Component Calculation";
         ScriptSymbolLookup: Record "Script Symbol Lookup";
+        ArchivalSingleInstance: Codeunit "Archival Single Instance";
     begin
         if Rec.IsTemporary() then
             exit;
 
         if not RunTrigger then
             exit;
+
+        if ArchivalSingleInstance.GetSkipTaxComponent() then
+            exit;
+
         ScriptSymbolLookup.SetFilter("Source Type", '%1|%2', ScriptSymbolLookup."Source Type"::Component, ScriptSymbolLookup."Source Type"::"Component Percent");
         ScriptSymbolLookup.SetRange("Source Field ID", Rec.ID);
         if ScriptSymbolLookup.FindFirst() then

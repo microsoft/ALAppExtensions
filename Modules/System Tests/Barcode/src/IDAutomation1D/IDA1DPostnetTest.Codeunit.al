@@ -14,50 +14,50 @@ codeunit 135040 "IDA 1D Postnet Test"
     [Test]
     procedure TestPostnetEncoding()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] ncoding a text using Postnet symbology yields the correct result
 
-        GenericIDAutomation1DTest.EncodeFontSuccessTest(/* input */'123456', Enum::"Barcode Symbology"::Postnet, /* expected result */'(1234569)');
+        GenericBarcodeTestHelper.EncodeFontSuccessTest(/* input */'123456', Enum::"Barcode Symbology"::Postnet, /* expected result */'(1234569)');
     end;
 
     [Test]
     procedure TestPostnetValidationWithEmptyString()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating an empty text using Postnet symbology yeilds an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'', Enum::"Barcode Symbology"::Postnet, /* expected error */StrSubstNo(InvalidInputErr, ''));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'', Enum::"Barcode Symbology"::Postnet, /* expected error */StrSubstNo(InvalidInputErr, ''));
     end;
 
     [Test]
     procedure TestPostnetValidationWithNormalString()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating a correctly formatted text using Postnet symbology doesn't yield an error
 
-        GenericIDAutomation1DTest.ValidateFontSuccessTest(/* input */'123456', Enum::"Barcode Symbology"::Postnet);
+        GenericBarcodeTestHelper.ValidateFontSuccessTest(/* input */'123456', Enum::"Barcode Symbology"::Postnet);
     end;
 
     [Test]
     procedure TestPostnetValidationWithInvalidString()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating an incorrectly formatted text using Postnet symbology yields an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'abcd', Enum::"Barcode Symbology"::Postnet, /* expected error */StrSubstNo(InvalidInputErr, 'abcd'));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'abcd', Enum::"Barcode Symbology"::Postnet, /* expected error */StrSubstNo(InvalidInputErr, 'abcd'));
     end;
 
     [Test]
     procedure TestPostnetValidationWithInvalidStringLength();
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating a text with wrong length using Postnet symbology yields an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'1234567', Enum::"Barcode Symbology"::Postnet, /* expected error */StrSubstNo(InvalidInputErr, '1234567'));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'1234567', Enum::"Barcode Symbology"::Postnet, /* expected error */StrSubstNo(InvalidInputErr, '1234567'));
     end;
 }

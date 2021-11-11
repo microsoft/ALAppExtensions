@@ -6,10 +6,10 @@ codeunit 135082 "Generate Payment Data Sample"
     trigger OnRun()
     var
         TempBlob: Codeunit "Temp Blob";
-        ExpBankConvExtDataHndl: Codeunit "AMC Bank Exp. CT Hndl";
+        AMCBankExpCTHndl: Codeunit "AMC Bank Exp. CT Hndl";
         RecordRef: RecordRef;
     begin
-        ExpBankConvExtDataHndl.ConvertPaymentDataToFormat(TempBlob, Rec);
+        AMCBankExpCTHndl.ConvertPaymentDataToFormat(TempBlob, Rec);
 
         Find();
         RecordRef.GetTable(Rec);

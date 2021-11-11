@@ -40,6 +40,7 @@ The provided variant is not of type record.
 
 #### Syntax
 ```
+[Obsolete('This function does not populate the Media/MediaSet record correctly. Use GetPicture instead.', '20.0')]
 procedure AddPicture(RecordVariant: Variant; FieldNo: Integer): Boolean
 ```
 #### Parameters

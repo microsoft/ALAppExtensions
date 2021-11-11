@@ -6,6 +6,9 @@
 permissionset 9216 "Time Zone Selection - Read"
 {
     Assignable = false;
+
+    IncludedPermissionSets = "Time Zone Selection - Objects";
+
     Permissions = tabledata "Page Data Personalization" = r,
                   tabledata "Time Zone" = r;
 }

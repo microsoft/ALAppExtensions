@@ -439,5 +439,25 @@ tableextension 18004 "GST Gen. Journal Line Ext" extends "Gen. Journal Line"
                     "Merchant Id" = field("e-Commerce Merchant Id"),
                     "Customer No." = field("e-Commerce Customer"));
         }
+        field(18039; "FA Non-Availment"; Boolean)
+        {
+            Caption = 'FA Non-Availment';
+            DataClassification = CustomerContent;
+        }
+        field(18074; "FA Custom Duty Amount"; Decimal)
+        {
+            Caption = 'FA Custom Duty Amount';
+            DataClassification = CustomerContent;
+        }
+        field(18077; "FA Availment"; Boolean)
+        {
+            Caption = 'FA Availment';
+            DataClassification = CustomerContent;
+        }
+        field(18078; "FA Non-Availment Amount"; Decimal)
+        {
+            Caption = 'FA Non-Availment Amount';
+            DataClassification = CustomerContent;
+        }
     }
 }

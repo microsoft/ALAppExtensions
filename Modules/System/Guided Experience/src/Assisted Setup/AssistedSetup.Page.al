@@ -57,7 +57,7 @@ page 1801 "Assisted Setup"
                 field(Help; HelpAvailable)
                 {
                     ApplicationArea = All;
-                    Caption = 'Help';
+                    Caption = 'Learn more';
                     ToolTip = 'Learn more about the process.';
                     Width = 3;
 
@@ -74,6 +74,7 @@ page 1801 "Assisted Setup"
                     Caption = 'Video';
                     ToolTip = 'Play a video that describes the process.';
                     Width = 3;
+                    Visible = false;
 
                     trigger OnDrillDown()
                     var

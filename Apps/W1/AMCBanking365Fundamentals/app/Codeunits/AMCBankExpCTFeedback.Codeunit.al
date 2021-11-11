@@ -6,15 +6,15 @@ codeunit 20111 "AMC Bank Exp. CT Feedback"
     trigger OnRun()
     var
         CreditTransferRegister: Record "Credit Transfer Register";
-        GenJnlLine: Record "Gen. Journal Line";
+        GenJournalLine: Record "Gen. Journal Line";
         PaymentExportData: Record "Payment Export Data";
     begin
-        GenJnlLine.SetRange("Data Exch. Entry No.", "Entry No.");
-        GenJnlLine.FindFirst();
+        GenJournalLine.SetRange("Data Exch. Entry No.", "Entry No.");
+        GenJournalLine.FindFirst();
         CreditTransferRegister.SetRange("Data Exch. Entry No.", "Entry No.");
         CreditTransferRegister.FindLast();
         SetFileOnCreditTransferRegister(Rec, CreditTransferRegister);
-        SetExportFlagOnGenJnlLine(GenJnlLine);
+        SetExportFlagOnGenJnlLine(GenJournalLine);
 
         PaymentExportData.SetRange("Data Exch Entry No.", "Entry No.");
         PaymentExportData.DeleteAll(true);
@@ -26,72 +26,72 @@ codeunit 20111 "AMC Bank Exp. CT Feedback"
         CreditTransferRegister.SetFileContent(DataExch);
     end;
 
-    procedure SetExportFlagOnGenJnlLine(var GenJnlLine: Record "Gen. Journal Line")
+    procedure SetExportFlagOnGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
     var
-        GenJnlLine2: Record "Gen. Journal Line";
+        CopyGenJournalLine: Record "Gen. Journal Line";
     begin
-        GenJnlLine2.CopyFilters(GenJnlLine);
-        if GenJnlLine2.FindSet() then
+        CopyGenJournalLine.CopyFilters(GenJournalLine);
+        if CopyGenJournalLine.FindSet() then
             repeat
-                case GenJnlLine2."Account Type" of
-                    GenJnlLine2."Account Type"::Vendor:
-                        SetExportFlagOnAppliedVendorLedgerEntry(GenJnlLine2);
-                    GenJnlLine2."Account Type"::Customer:
-                        SetExportFlagOnAppliedCustLedgerEntry(GenJnlLine2);
+                case CopyGenJournalLine."Account Type" of
+                    CopyGenJournalLine."Account Type"::Vendor:
+                        SetExportFlagOnAppliedVendorLedgerEntry(CopyGenJournalLine);
+                    CopyGenJournalLine."Account Type"::Customer:
+                        SetExportFlagOnAppliedCustLedgerEntry(CopyGenJournalLine);
                 end;
-                GenJnlLine2.Validate("Check Exported", true);
-                GenJnlLine2.Validate("Exported to Payment File", true);
-                GenJnlLine2.Modify(true);
-            until GenJnlLine2.Next() = 0;
+                CopyGenJournalLine.Validate("Check Exported", true);
+                CopyGenJournalLine.Validate("Exported to Payment File", true);
+                CopyGenJournalLine.Modify(true);
+            until CopyGenJournalLine.Next() = 0;
     end;
 
-    local procedure SetExportFlagOnAppliedVendorLedgerEntry(GenJnlLine: Record "Gen. Journal Line")
+    local procedure SetExportFlagOnAppliedVendorLedgerEntry(GenJournalLine: Record "Gen. Journal Line")
     var
-        VendLedgerEntry: Record "Vendor Ledger Entry";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin
-        if GenJnlLine.IsApplied() then begin
-            VendLedgerEntry.SetRange("Vendor No.", GenJnlLine."Account No.");
+        if GenJournalLine.IsApplied() then begin
+            VendorLedgerEntry.SetRange("Vendor No.", GenJournalLine."Account No.");
 
-            if GenJnlLine."Applies-to Doc. No." <> '' then begin
-                VendLedgerEntry.SetRange("Document Type", GenJnlLine."Applies-to Doc. Type");
-                VendLedgerEntry.SetRange("Document No.", GenJnlLine."Applies-to Doc. No.");
+            if GenJournalLine."Applies-to Doc. No." <> '' then begin
+                VendorLedgerEntry.SetRange("Document Type", GenJournalLine."Applies-to Doc. Type");
+                VendorLedgerEntry.SetRange("Document No.", GenJournalLine."Applies-to Doc. No.");
             end;
 
-            if GenJnlLine."Applies-to ID" <> '' then
-                VendLedgerEntry.SetRange("Applies-to ID", GenJnlLine."Applies-to ID");
+            if GenJournalLine."Applies-to ID" <> '' then
+                VendorLedgerEntry.SetRange("Applies-to ID", GenJournalLine."Applies-to ID");
 
-            if VendLedgerEntry.FindSet() then
+            if VendorLedgerEntry.FindSet() then
                 repeat
-                    VendLedgerEntry.Validate("Exported to Payment File", true);
-                    CODEUNIT.Run(CODEUNIT::"Vend. Entry-Edit", VendLedgerEntry);
-                until VendLedgerEntry.Next() = 0;
+                    VendorLedgerEntry.Validate("Exported to Payment File", true);
+                    CODEUNIT.Run(CODEUNIT::"Vend. Entry-Edit", VendorLedgerEntry);
+                until VendorLedgerEntry.Next() = 0;
         end;
 
-        VendLedgerEntry.Reset();
-        VendLedgerEntry.SetRange("Vendor No.", GenJnlLine."Account No.");
-        VendLedgerEntry.SetRange("Applies-to Doc. Type", GenJnlLine."Document Type");
-        VendLedgerEntry.SetRange("Applies-to Doc. No.", GenJnlLine."Document No.");
-        if VendLedgerEntry.FindSet() then
+        VendorLedgerEntry.Reset();
+        VendorLedgerEntry.SetRange("Vendor No.", GenJournalLine."Account No.");
+        VendorLedgerEntry.SetRange("Applies-to Doc. Type", GenJournalLine."Document Type");
+        VendorLedgerEntry.SetRange("Applies-to Doc. No.", GenJournalLine."Document No.");
+        if VendorLedgerEntry.FindSet() then
             repeat
-                VendLedgerEntry.Validate("Exported to Payment File", true);
-                CODEUNIT.Run(CODEUNIT::"Vend. Entry-Edit", VendLedgerEntry);
-            until VendLedgerEntry.Next() = 0;
+                VendorLedgerEntry.Validate("Exported to Payment File", true);
+                CODEUNIT.Run(CODEUNIT::"Vend. Entry-Edit", VendorLedgerEntry);
+            until VendorLedgerEntry.Next() = 0;
     end;
 
-    local procedure SetExportFlagOnAppliedCustLedgerEntry(GenJnlLine: Record "Gen. Journal Line")
+    local procedure SetExportFlagOnAppliedCustLedgerEntry(GenJournalLine: Record "Gen. Journal Line")
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
     begin
-        if GenJnlLine.IsApplied() then begin
-            CustLedgerEntry.SetRange("Customer No.", GenJnlLine."Account No.");
+        if GenJournalLine.IsApplied() then begin
+            CustLedgerEntry.SetRange("Customer No.", GenJournalLine."Account No.");
 
-            if GenJnlLine."Applies-to Doc. No." <> '' then begin
-                CustLedgerEntry.SetRange("Document Type", GenJnlLine."Applies-to Doc. Type");
-                CustLedgerEntry.SetRange("Document No.", GenJnlLine."Applies-to Doc. No.");
+            if GenJournalLine."Applies-to Doc. No." <> '' then begin
+                CustLedgerEntry.SetRange("Document Type", GenJournalLine."Applies-to Doc. Type");
+                CustLedgerEntry.SetRange("Document No.", GenJournalLine."Applies-to Doc. No.");
             end;
 
-            if GenJnlLine."Applies-to ID" <> '' then
-                CustLedgerEntry.SetRange("Applies-to ID", GenJnlLine."Applies-to ID");
+            if GenJournalLine."Applies-to ID" <> '' then
+                CustLedgerEntry.SetRange("Applies-to ID", GenJournalLine."Applies-to ID");
 
             if CustLedgerEntry.FindSet() then
                 repeat
@@ -101,9 +101,9 @@ codeunit 20111 "AMC Bank Exp. CT Feedback"
         end;
 
         CustLedgerEntry.Reset();
-        CustLedgerEntry.SetRange("Customer No.", GenJnlLine."Account No.");
-        CustLedgerEntry.SetRange("Applies-to Doc. Type", GenJnlLine."Document Type");
-        CustLedgerEntry.SetRange("Applies-to Doc. No.", GenJnlLine."Document No.");
+        CustLedgerEntry.SetRange("Customer No.", GenJournalLine."Account No.");
+        CustLedgerEntry.SetRange("Applies-to Doc. Type", GenJournalLine."Document Type");
+        CustLedgerEntry.SetRange("Applies-to Doc. No.", GenJournalLine."Document No.");
 
         if CustLedgerEntry.FindSet() then
             repeat

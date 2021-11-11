@@ -245,6 +245,7 @@ table 31128 "EET Entry CZL"
         EETCashRegisterCZL: Record "EET Cash Register CZL";
         EETControlCodesMgtCZL: Codeunit "EET Control Codes Mgt. CZL";
         EETManagementCZL: Codeunit "EET Management CZL";
+        SignatureCodeErr: Label 'The signature code of EET Entry is not valid. Some of the following fields have changed.\"%1"\"%2"\"%3"\"%4"\"%5"\"%6"', Comment = '%1 = field caption, %2 = field caption, %3 = field caption, %4 = field caption, %5 = field caption, %6 = field caption';
 
     procedure InitRecord()
     var
@@ -405,6 +406,26 @@ table 31128 "EET Entry CZL"
         exit(EETControlCodesMgtCZL.GenerateSignatureCode(Rec));
     end;
 
+    procedure CheckSignatureCode()
+    var
+        IsHandled: Boolean;
+    begin
+        OnBeforeCheckSignatureCode(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not HasSignatureCode() then
+            exit;
+        if GenerateSignatureCode() <> GetSignatureCode() then
+            Error(SignatureCodeErr,
+                FieldCaption("VAT Registration No."),
+                FieldCaption("Business Premises Code"),
+                FieldCaption("Cash Register Code"),
+                FieldCaption("Receipt Serial No."),
+                FieldCaption("Created At"),
+                FieldCaption("Total Sales Amount"));
+    end;
+
     procedure GenerateSecurityCode(SignatureCode: Text): Text[44]
     begin
         exit(EETControlCodesMgtCZL.GenerateSecurityCode(SignatureCode));
@@ -491,11 +512,6 @@ table 31128 "EET Entry CZL"
 
     procedure CalculateAmounts(VATEntry: Record "VAT Entry")
     var
-        VATPostingSetup: Record "VAT Posting Setup";
-        AmountArt89: Decimal;
-        AmountArt90: Decimal;
-        VATBase: Decimal;
-        VATAmount: Decimal;
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -506,21 +522,40 @@ table 31128 "EET Entry CZL"
         if (VATEntry."Entry No." = 0) or (VATEntry."Unrealized VAT Entry No." <> 0) then
             exit;
 
-        if VATEntry.Amount = 0 then begin
-            "Amount Exempted From VAT" += -VATEntry.Base;
+        CalculateAmounts(VATEntry.Base, VATEntry.Amount, VATEntry."VAT Bus. Posting Group", VATEntry."VAT Prod. Posting Group");
+
+        OnAfterCalculateAmounts(Rec, VATEntry);
+    end;
+
+    procedure CalculateAmounts(Base: Decimal; Amount: Decimal; VATBusPostingGroupCode: Code[20]; VATProdPostingGroupCode: Code[20])
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        AmountArt89: Decimal;
+        AmountArt90: Decimal;
+        VATBase: Decimal;
+        VATAmount: Decimal;
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeBaseCalculateAmounts(Rec, Base, Amount, VATBusPostingGroupCode, VATProdPostingGroupCode, IsHandled);
+        if IsHandled then
+            exit;
+
+        if Amount = 0 then begin
+            "Amount Exempted From VAT" += -Base;
             exit;
         end;
 
-        VATPostingSetup.Get(VATEntry."VAT Bus. Posting Group", VATEntry."VAT Prod. Posting Group");
+        VATPostingSetup.Get(VATBusPostingGroupCode, VATProdPostingGroupCode);
 
         case VATPostingSetup."Supplies Mode Code CZL" of
             VATPostingSetup."Supplies Mode Code CZL"::"par. 89":
-                AmountArt89 := VATEntry.Base + VATEntry.Amount;
+                AmountArt89 := Base + Amount;
             VATPostingSetup."Supplies Mode Code CZL"::"par. 90":
-                AmountArt90 := VATEntry.Base + VATEntry.Amount;
+                AmountArt90 := Base + Amount;
             else begin
-                    VATBase := VATEntry.Base;
-                    VATAmount := VATEntry.Amount;
+                    VATBase := Base;
+                    VATAmount := Amount;
                 end;
         end;
 
@@ -528,7 +563,7 @@ table 31128 "EET Entry CZL"
 
         case VATPostingSetup."VAT Rate CZL" of
             VATPostingSetup."VAT Rate CZL"::" ":
-                "Amount Exempted From VAT" += -(VATEntry.Base + VATEntry.Amount);
+                "Amount Exempted From VAT" += -(Base + Amount);
             VATPostingSetup."VAT Rate CZL"::Base:
                 begin
                     "Amount (Basic) - Art.90" += -AmountArt90;
@@ -548,8 +583,6 @@ table 31128 "EET Entry CZL"
                     "VAT Amount (Reduced 2)" += -VATAmount;
                 end;
         end;
-
-        OnAfterCalculateAmounts(Rec, VATEntry);
     end;
 
     procedure ReverseAmounts()
@@ -731,6 +764,11 @@ table 31128 "EET Entry CZL"
     end;
 
     [IntegrationEvent(false, false)]
+    local procedure OnBeforeBaseCalculateAmounts(var EETEntryCZL: Record "EET Entry CZL"; Base: Decimal; Amount: Decimal; VATBusPostingGroupCode: Code[20]; VATProdPostingGroupCode: Code[20]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeChangeStatus(var EETEntryCZL: Record "EET Entry CZL"; NewStatus: Enum "EET Status CZL"; var NewDescription: Text; var TempErrorMessage: Record "Error Message" temporary; var IsHandled: Boolean)
     begin
     end;
@@ -767,6 +805,11 @@ table 31128 "EET Entry CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterChangeStatus(var EETEntryCZL: Record "EET Entry CZL"; NewStatus: Enum "EET Status CZL"; NewDescription: Text; var TempErrorMessage: Record "Error Message" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckSignatureCode(EETEntryCZL: Record "EET Entry CZL"; var IsHandled: Boolean)
     begin
     end;
 }

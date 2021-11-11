@@ -8,5 +8,7 @@ permissionset 2616 "Printer Management - Read"
     Access = Internal;
     Assignable = false;
 
+    IncludedPermissionSets = "Printer Management - Objects";
+
     Permissions = tabledata Printer = r;
 }

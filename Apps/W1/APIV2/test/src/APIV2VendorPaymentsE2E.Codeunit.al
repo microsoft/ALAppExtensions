@@ -78,6 +78,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
 
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.SetRange("Line No.", LineNo);
+        GenJournalLine.SetRange("Account No.", VendorNo);
         GenJournalLine.FindLast();
         LibraryGraphJournalLines.CheckLineWithGenericLineValues(GenJournalLine, Amount);
         Assert.AreEqual(VendorNo, GenJournalLine."Account No.", 'Journal Line ' + VendorNo + ' should be changed');
@@ -173,6 +174,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
         // to the supplied id and the number should match the id.
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.SetRange("Line No.", LineNo);
+        GenJournalLine.SetRange("Account No.", VendorNo);
         GenJournalLine.FindLast();
 
         Assert.AreEqual(
@@ -247,6 +249,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
         GenJournalLine.Reset();
         GenJournalLine.SetRange("Line No.", LineNo);
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
+        GenJournalLine.SetRange("Account No.", '');
         GenJournalLine.FindLast();
         VendorPaymentGUID := GenJournalLine.SystemId;
         Commit();
@@ -303,6 +306,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
         // [GIVEN] the vendor payment's unique GUID
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.SetFilter("Line No.", Format(LineNo));
+        GenJournalLine.SetRange("Account No.", '');
         GenJournalLine.FindLast();
         VendorPaymentGUID := GenJournalLine.SystemId;
         Assert.AreNotEqual('', VendorPaymentGUID, 'Vendor Payment GUID should not be empty');
@@ -317,6 +321,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
         // [THEN] the JournalLine in the table should have the values that were given
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.SetRange("Line No.", NewLineNo);
+        GenJournalLine.SetRange("Account No.", NewVendorNo);
         GenJournalLine.FindLast();
         LibraryGraphJournalLines.CheckLineWithGenericLineValues(GenJournalLine, NewAmount);
         Assert.AreEqual(NewVendorNo, GenJournalLine."Account No.", 'Journal Line ' + NewVendorNo + ' should be changed');
@@ -361,6 +366,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
 
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.SetRange("Line No.", LineNo);
+        GenJournalLine.SetRange("Account No.", VendorNo);
         GenJournalLine.FindLast();
         VendorPaymentGUID := GenJournalLine.SystemId;
         RandomDocNo := LibraryUtility.GenerateGUID();
@@ -375,6 +381,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
         // [THEN] the response text should contain the random Doc. No. but the Id should be blanked.
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.SetRange("Line No.", LineNo);
+        GenJournalLine.SetRange("Account No.", VendorNo);
         GenJournalLine.FindLast();
 
         Assert.AreEqual(
@@ -411,6 +418,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
         // [GIVEN] the vendor payment's unique GUID
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.SetFilter("Line No.", Format(LineNo));
+        GenJournalLine.SetRange("Account No.", '');
         GenJournalLine.FindLast();
         VendorPaymentGUID := GenJournalLine.SystemId;
         Assert.AreNotEqual('', VendorPaymentGUID, 'VendorPaymentGUID should not be empty');
@@ -470,6 +478,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
 
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.SetRange("Line No.", LineNo);
+        GenJournalLine.SetRange("Account No.", VendorNo);
         GenJournalLine.FindLast();
         Assert.AreEqual(VendorNo, GenJournalLine."Account No.", 'Journal Line ' + VendorNo + ' should be autofilled');
         Assert.AreEqual(AppliesToDocNo, GenJournalLine."Applies-to Doc. No.", 'Journal Line ' + AppliesToDocNo + ' should be changed');
@@ -517,6 +526,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
 
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.SetRange("Line No.", LineNo);
+        GenJournalLine.SetRange("Account No.", VendorNo[2]);
         GenJournalLine.FindLast();
         Assert.AreEqual(VendorNo[2], GenJournalLine."Account No.", 'Journal Line ' + VendorNo[2] + ' should not be autofilled');
         Assert.AreEqual(AppliesToDocNo, GenJournalLine."Applies-to Doc. No.", 'Journal Line ' + AppliesToDocNo + ' should be changed');
@@ -572,6 +582,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
         // [THEN] the response text should contain the vendor payment information and the integration record table should map the JournalLineID with the ID
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.SetRange("Line No.", LineNo[1]);
+        GenJournalLine.SetRange("Account No.", VendorNo);
         GenJournalLine.FindLast();
         Assert.AreEqual(
           VendorNo, GenJournalLine."Account No.", 'Vendor Payment ' + VendorNoNameTxt + ' should have the correct Vendor No');
@@ -581,6 +592,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
         GenJournalLine.Reset();
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.SetRange("Line No.", LineNo[2]);
+        GenJournalLine.SetRange("Account No.", VendorNo);
         GenJournalLine.FindLast();
         Assert.AreEqual(
           VendorNo, GenJournalLine."Account No.", 'Vendor Payment ' + VendorNoNameTxt + ' should have the correct Vendor No');
@@ -590,6 +602,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
         GenJournalLine.Reset();
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.SetRange("Line No.", LineNo[3]);
+        GenJournalLine.SetRange("Account No.", VendorNo);
         GenJournalLine.FindLast();
         Assert.AreEqual(
           VendorNo, GenJournalLine."Account No.", 'Vendor Payment ' + VendorNoNameTxt + ' should have the correct Vendor No');
@@ -693,6 +706,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
         // [THEN] the response text should contain the vendor payment information and the integration record table should map the JournalLineID with the ID
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.SetRange("Line No.", LineNo[1]);
+        GenJournalLine.SetRange("Account No.", VendorNo);
         GenJournalLine.FindLast();
         Assert.AreEqual(
           AppliesToDocNo, GenJournalLine."Applies-to Doc. No.",
@@ -703,6 +717,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
 
         GenJournalLine.Reset();
         GenJournalLine.SetRange("Line No.", LineNo[2]);
+        GenJournalLine.SetRange("Account No.", VendorNo);
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.FindLast();
         Assert.AreEqual(
@@ -714,6 +729,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
 
         GenJournalLine.Reset();
         GenJournalLine.SetRange("Line No.", LineNo[3]);
+        GenJournalLine.SetRange("Account No.", VendorNo);
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         GenJournalLine.FindLast();
         Assert.AreEqual(

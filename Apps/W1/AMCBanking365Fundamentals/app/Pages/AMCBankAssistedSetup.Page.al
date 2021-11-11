@@ -20,7 +20,7 @@ page 20105 "AMC Bank Assisted Setup"
                 Caption = ' ';
                 Editable = false;
                 Visible = TopBannerVisible AND NOT DoneVisible;
-                field(MediaResourcesStandard; MediaResourcesStandardRecord."Media Reference")
+                field(MediaResourcesStandard; StandardRecordMediaResources."Media Reference")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
@@ -33,7 +33,7 @@ page 20105 "AMC Bank Assisted Setup"
                 Caption = ' ';
                 Editable = false;
                 Visible = TopBannerVisible AND DoneVisible;
-                field(MediaResourcesDone; MediaResourcesDoneRecord."Media Reference")
+                field(MediaResourcesDone; DoneRecordMediaResources."Media Reference")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
@@ -635,14 +635,14 @@ page 20105 "AMC Bank Assisted Setup"
     end;
 
     var
-        MediaRepositoryStandard: Record "Media Repository";
-        MediaRepositoryDone: Record "Media Repository";
-        MediaResourcesStandardRecord: Record "Media Resources";
-        MediaResourcesDoneRecord: Record "Media Resources";
+        StandardMediaRepository: Record "Media Repository";
+        DoneMediaRepository: Record "Media Repository";
+        StandardRecordMediaResources: Record "Media Resources";
+        DoneRecordMediaResources: Record "Media Resources";
         TempOnlineBankAccLink: Record "Online Bank Acc. Link" temporary;
         AMCBankAssistedMgt: Codeunit "AMC Bank Assisted Mgt.";
         ClientTypeManagement: Codeunit "Client Type Management";
-        BankDataConvServMgt: Codeunit "AMC Banking Mgt.";
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
         WebRequestHelper: Codeunit "Web Request Helper";
         Step: Option Intro,"Chose updates","Update URLs","Update Banks","Update Data Exch. Def.","Update PayMethods","Update Bank Clear Std","Update Bank Accounts",Done;
         BackEnabled: Boolean;
@@ -665,7 +665,6 @@ page 20105 "AMC Bank Assisted Setup"
         UpdPayMethBoolean: Boolean;
         UpdBankClearStdBoolean: Boolean;
         UpdBankAccountsBoolean: Boolean;
-        Para12Visible: Boolean;
         BankCountryCodeCode: Code[10];
         PaymCountryCodeCode: Code[10];
         BANKDATACONVSERVSTMTBoolean: Boolean;
@@ -689,13 +688,13 @@ page 20105 "AMC Bank Assisted Setup"
 
     local procedure LoadTopBanners();
     begin
-        if MediaRepositoryStandard.GET('AssistedSetup-NoText-400px.png', FORMAT(ClientTypeManagement.GetCurrentClientType())) and
-           MediaRepositoryDone.GET('AssistedSetupDone-NoText-400px.png', FORMAT(ClientTypeManagement.GetCurrentClientType()))
+        if StandardMediaRepository.GET('AssistedSetup-NoText-400px.png', FORMAT(ClientTypeManagement.GetCurrentClientType())) and
+           DoneMediaRepository.GET('AssistedSetupDone-NoText-400px.png', FORMAT(ClientTypeManagement.GetCurrentClientType()))
         then
-            if MediaResourcesStandardRecord.GET(MediaRepositoryStandard."Media Resources Ref") and
-               MediaResourcesDoneRecord.GET(MediaRepositoryDone."Media Resources Ref")
+            if StandardRecordMediaResources.GET(StandardMediaRepository."Media Resources Ref") and
+               DoneRecordMediaResources.GET(DoneMediaRepository."Media Resources Ref")
             then
-                TopBannerVisible := MediaResourcesDoneRecord."Media Reference".HASVALUE();
+                TopBannerVisible := DoneRecordMediaResources."Media Reference".HASVALUE();
     end;
 
     local procedure SetDefaultValues();
@@ -709,11 +708,6 @@ page 20105 "AMC Bank Assisted Setup"
             NextEnabled := true;
 
         StartEnabled := UpdALL;
-
-        if (UpdALL) then
-            Para12Visible := false
-        else
-            Para12Visible := true;
 
         UpdURLBoolean := UpdALL;
         UpdBankBoolean := UpdALL;
@@ -1010,16 +1004,16 @@ page 20105 "AMC Bank Assisted Setup"
 
     local procedure ShowURL();
     var
-        AMCBankServiceSetup: Record "AMC Banking Setup" temporary;
+        TempAMCBankServiceSetup: Record "AMC Banking Setup" temporary;
     begin
         ResetWizardControls();
         Step := Step::"Update URLs";
         URLVisible := true;
         if (URLSChanged = false) then begin
-            BankDataConvServMgt.InitDefaultURLs(AMCBankServiceSetup);
-            SignupURLText := LowerCase(AMCBankServiceSetup."Sign-up URL");
-            ServiceURLText := AMCBankServiceSetup."Service URL";
-            SupportURLText := AMCBankServiceSetup."Support URL";
+            AMCBankingMgt.InitDefaultURLs(TempAMCBankServiceSetup);
+            SignupURLText := LowerCase(TempAMCBankServiceSetup."Sign-up URL");
+            ServiceURLText := TempAMCBankServiceSetup."Service URL";
+            SupportURLText := TempAMCBankServiceSetup."Support URL";
         end;
     end;
 
@@ -1102,12 +1096,6 @@ page 20105 "AMC Bank Assisted Setup"
             until BankAccount.Next() = 0;
     end;
 
-    local procedure CheckPath(Var Path: Text)
-    begin
-        IF (COPYSTR(Path, STRLEN(Path), 1) <> '\') THEN
-            Path := Path + '\';
-    end;
-
     local procedure RunUpdates();
     var
         //UpdOnlineBankAccLink: Record "Online Bank Acc. Link" temporary;
@@ -1121,9 +1109,12 @@ page 20105 "AMC Bank Assisted Setup"
                                                             UpdDataExchDefBoolean, BANKDATACONVSERVCTBoolean, BANKDATACONVSERVPPBoolean, BANKDATACONVSERVSTMTBoolean, BANKDATACONVSERVCREMBoolean, ApplVerText, BuildNoText,
                                                             UpdBankClearStdBoolean, UpdBankAccountsBoolean, TempOnlineBankAccLink, CallLicenseServer);
 
-        AMCBankAssistedMgt.OnAfterRunBasisSetupV16(UpdURLBoolean, URLSChanged, SignupURLText, ServiceURLText, SupportURLText, UpdBankBoolean, UpdPayMethBoolean, BankCountryCodeCode, PaymCountryCodeCode,
+        AMCBankAssistedMgt.OnAfterRunBasisSetupV19(UpdURLBoolean, URLSChanged, SignupURLText, ServiceURLText, SupportURLText, UpdBankBoolean, UpdPayMethBoolean, BankCountryCodeCode, PaymCountryCodeCode,
                                                    UpdDataExchDefBoolean, BANKDATACONVSERVCTBoolean, BANKDATACONVSERVPPBoolean, BANKDATACONVSERVSTMTBoolean, BANKDATACONVSERVCREMBoolean, ApplVerText, BuildNoText,
-                                                   UpdBankClearStdBoolean, UpdBankAccountsBoolean, TempOnlineBankAccLink, CallLicenseServer);
+                                                   UpdBankClearStdBoolean, UpdBankAccountsBoolean, TempOnlineBankAccLink, CallLicenseServer, BasisSetupRanOK);
     end;
+
+
+
 
 }

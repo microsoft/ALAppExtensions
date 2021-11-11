@@ -153,6 +153,21 @@ The user that has provided Authentication object ID.
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True if the user was found, false otherwise.
+### IsUserDelegatedAdmin (Method) <a name="IsUserDelegatedAdmin"></a> 
+
+ Returns whether the current user is Delegated Admin.
+ 
+
+#### Syntax
+```
+[Scope('OnPrem')]
+[NonDebuggable]
+procedure IsUserDelegatedAdmin(): Boolean
+```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the current user is Delegated Admin, false otherwise.
 ### UpdateUserFromAzureGraph (Method) <a name="UpdateUserFromAzureGraph"></a> 
 
  Updates the user record with information from Azure AD.

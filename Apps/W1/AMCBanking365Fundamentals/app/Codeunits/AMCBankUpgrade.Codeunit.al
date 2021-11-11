@@ -24,6 +24,8 @@ codeunit 20119 "AMC Bank Upgrade"
         UpgradeTag.SetUpgradeTag(GetAMCConsentUpgradeTag());
     end;
 
+
+
     internal procedure GetAMCConsentUpgradeTag(): Code[250]
     begin
         exit('MS-407087-AMCConsent-20210812');

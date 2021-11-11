@@ -324,6 +324,7 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
         PurchAdvanceLetterEntry2: Record "Purch. Advance Letter Entry";
         PurchAdvLetterEntryCZZ1: Record "Purch. Adv. Letter Entry CZZ";
         PurchAdvLetterEntryCZZ2: Record "Purch. Adv. Letter Entry CZZ";
+        VATEntry2: Record "VAT Entry";
         PurchAdvLetterManagementCZZ: Codeunit "PurchAdvLetterManagement CZZ";
         CurrFactor: Decimal;
     begin
@@ -364,6 +365,7 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
                 PurchAdvanceLetterEntry1.SetRange("Entry Type", PurchAdvanceLetterEntry1."Entry Type"::VAT);
                 if PurchAdvanceLetterEntry1.FindSet() then
                     repeat
+                        VATEntry2.Get(PurchAdvanceLetterEntry1."VAT Entry No.");
                         PurchAdvLetterManagementCZZ.AdvEntryInit(false);
                         if PurchAdvanceLetterEntry1.Cancelled then
                             PurchAdvLetterManagementCZZ.AdvEntryInitCancel();
@@ -373,7 +375,7 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
                             PurchAdvanceLetterEntry1."VAT Amount", PurchAdvanceLetterEntry1."VAT Amount (LCY)", PurchAdvanceLetterEntry1."VAT Base Amount", PurchAdvanceLetterEntry1."VAT Base Amount (LCY)");
                         PurchAdvLetterManagementCZZ.AdvEntryInsert("Advance Letter Entry Type CZZ"::"VAT Payment", PurchAdvLetterHeaderCZZ."No.", PurchAdvanceLetterEntry1."Posting Date",
                             PurchAdvanceLetterEntry1."VAT Base Amount" + PurchAdvanceLetterEntry1."VAT Amount", PurchAdvanceLetterEntry1."VAT Base Amount (LCY)" + PurchAdvanceLetterEntry1."VAT Amount (LCY)",
-                            PurchAdvLetterEntryCZZ1."Currency Code", PurchAdvLetterEntryCZZ1."Currency Factor", PurchAdvanceLetterEntry1."Document No.", PurchAdvLetterEntryCZZ1."External Document No.",
+                            PurchAdvLetterEntryCZZ1."Currency Code", PurchAdvLetterEntryCZZ1."Currency Factor", PurchAdvanceLetterEntry1."Document No.", VATEntry2."External Document No.",
                             PurchAdvLetterEntryCZZ1."Global Dimension 1 Code", PurchAdvLetterEntryCZZ1."Global Dimension 2 Code", PurchAdvLetterEntryCZZ1."Dimension Set ID", false);
                     until PurchAdvanceLetterEntry1.Next() = 0;
 
@@ -408,6 +410,7 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
                         PurchAdvanceLetterEntry2.SetRange("Vendor Entry No.", PurchAdvanceLetterEntry1."Vendor Entry No.");
                         if PurchAdvanceLetterEntry2.FindSet() then
                             repeat
+                                VATEntry2.Get(PurchAdvanceLetterEntry2."VAT Entry No.");
                                 PurchAdvLetterManagementCZZ.AdvEntryInit(false);
                                 if PurchAdvanceLetterEntry2.Cancelled then
                                     PurchAdvLetterManagementCZZ.AdvEntryInitCancel();
@@ -417,7 +420,7 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
                                     PurchAdvanceLetterEntry2."VAT Amount", PurchAdvanceLetterEntry2."VAT Amount (LCY)", PurchAdvanceLetterEntry2."VAT Base Amount", PurchAdvanceLetterEntry2."VAT Base Amount (LCY)");
                                 PurchAdvLetterManagementCZZ.AdvEntryInsert("Advance Letter Entry Type CZZ"::"VAT Usage", PurchAdvLetterHeaderCZZ."No.", PurchAdvanceLetterEntry2."Posting Date",
                                     PurchAdvanceLetterEntry2."VAT Base Amount" + PurchAdvanceLetterEntry2."VAT Amount", PurchAdvanceLetterEntry2."VAT Base Amount (LCY)" + PurchAdvanceLetterEntry2."VAT Amount (LCY)",
-                                    PurchAdvanceLetterEntry2."Currency Code", VendorLedgerEntry."Original Currency Factor", PurchAdvanceLetterEntry2."Document No.", VendorLedgerEntry."External Document No.",
+                                    PurchAdvanceLetterEntry2."Currency Code", VendorLedgerEntry."Original Currency Factor", PurchAdvanceLetterEntry2."Document No.", VATEntry2."External Document No.",
                                     VendorLedgerEntry."Global Dimension 1 Code", VendorLedgerEntry."Global Dimension 2 Code", VendorLedgerEntry."Dimension Set ID", false);
                             until PurchAdvanceLetterEntry2.Next() = 0;
 

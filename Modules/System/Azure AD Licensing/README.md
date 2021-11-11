@@ -268,7 +268,6 @@ procedure IncludeUnknownPlans(): Boolean
 
 #### Syntax
 ```
-[Scope('OnPrem')]
 [NonDebuggable]
 procedure SetIncludeUnknownPlans(IncludeUnknownPlans: Boolean)
 ```

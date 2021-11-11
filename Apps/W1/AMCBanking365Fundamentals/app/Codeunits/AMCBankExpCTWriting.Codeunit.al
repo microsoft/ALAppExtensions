@@ -1,5 +1,10 @@
+#if not CLEAN20
 codeunit 20110 "AMC Bank Exp. CT Writing"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by the new implementation in V19.1 of credit transfer writing.';
+    ObsoleteTag = '20.0';
+
     Permissions = TableData "Data Exch. Field" = rimd;
     TableNo = "Data Exch.";
 
@@ -20,3 +25,4 @@ codeunit 20110 "AMC Bank Exp. CT Writing"
     end;
 }
 
+#endif

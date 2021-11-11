@@ -2,7 +2,7 @@
     "id":  "1a03de13-ff11-4546-bdce-cde54edc82fe",
     "name":  "GST Service Transfer",
     "publisher":  "Microsoft",
-    "version":  "19.0.0.0",
+    "version":  "19.1.0.0",
     "brief":  "Contains features for transferring services between locations.",
     "description":  "GST Service Transfer allows you to calculate GST when you transfer service from one location to another.",
     "features":  [
@@ -19,25 +19,25 @@
                              "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
                              "publisher":  "Microsoft",
                              "name":  "Tax Engine",
-                             "version":  "19.0.0.0"
+                             "version":  "19.1.0.0"
                          },
                          {
                              "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
                              "publisher":  "Microsoft",
                              "name":  "India Tax Base",
-                             "version":  "19.0.0.0"
+                             "version":  "19.1.0.0"
                          },
                          {
                              "id":  "e3cf5645-b42c-412a-ac9d-bd85793266e5",
                              "publisher":  "Microsoft",
                              "name":  "GST Base",
-                             "version":  "19.0.0.0"
+                             "version":  "19.1.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "application":  "19.0.0.0",
+    "application":  "19.1.0.0",
     "platform":  "19.0.0.0",
     "idRanges":  [
                      {
@@ -46,6 +46,9 @@
                      }
                  ],
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139720",
-    "showMyCode":  true,
-    "runtime":  "6.0"
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    }
 }

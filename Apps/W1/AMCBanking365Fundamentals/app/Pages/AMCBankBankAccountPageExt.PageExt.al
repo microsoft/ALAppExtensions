@@ -1,18 +1,29 @@
-pageextension 20103 "AMC Bank Bank Account Page Ext" extends "Bank Account Card"
+pageextension 20111 "AMC Bank Bank Account Page Ext" extends "Bank Account List"
 {
     ContextSensitiveHelpPage = '304';
 
-    layout
+    actions
     {
-        addAfter("Creditor No.")
+        addAfter("C&ontact")
         {
-            field("Bank Name format"; "AMC Bank Name")
+            action(AMCShowServicePage)
             {
                 ApplicationArea = Basic, Suite;
-                Importance = Additional;
-                ToolTip = 'Specifies your bank''s data format as required by the AMC Banking when you import and export bank files.';
+                Caption = 'AMC Bank Page';
+                Image = SignUp;
+                Promoted = true;
+                ToolTip = 'Calls the AMC Bank Myaccount Page to be able to setup further informations for the bank accounts. External webpage will be opened by this button.';
+                PromotedCategory = Category6;
+                PromotedOnly = true;
+                trigger OnAction();
+                begin
+                    AMCBankServiceRequestMgt.ShowServiceLinkPage('myaccount', true);
+                end;
             }
         }
     }
+
+    var
+        AMCBankServiceRequestMgt: codeunit "AMC Bank Service Request Mgt.";
 
 }

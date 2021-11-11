@@ -118,4 +118,23 @@ tableextension 31028 "Cash Document Line CZZ" extends "Cash Document Line CZP"
             end;
         }
     }
+
+    procedure IsAdvancePaymentCZZ(): Boolean
+    begin
+        exit(
+          ("Document Type" = "Document Type"::Receipt) and
+          ("Account Type" = "Account Type"::Customer) and
+          ("Gen. Document Type" = "Gen. Document Type"::Payment) and
+          ("Advance Letter No. CZZ" <> ''));
+    end;
+
+    procedure IsAdvanceRefundCZZ(): Boolean
+    begin
+        exit(
+          ("Document Type" = "Document Type"::Withdrawal) and
+          ("Account Type" = "Account Type"::Customer) and
+          ("Gen. Document Type" = "Gen. Document Type"::Refund) and
+          ("Applies-To Doc. Type" = "Applies-To Doc. Type"::Payment) and
+          ("Applies-To Doc. No." <> ''));
+    end;
 }

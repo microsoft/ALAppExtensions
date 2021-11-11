@@ -2,6 +2,7 @@ codeunit 18245 "GST Journal Subscribers"
 {
     var
         GSTJournalValidations: Codeunit "GST Journal Validations";
+        GSTJournalLineValidations: Codeunit "GST Journal Line Validations";
 
     //Bank Charge Subscribers
     [EventSubscriber(ObjectType::Table, Database::"Bank Charge", 'OnAfterValidateEvent', 'GST Group Code', False, False)]
@@ -61,5 +62,11 @@ codeunit 18245 "GST Journal Subscribers"
     local procedure ValidateGSTDocumentType(var Rec: Record "Journal Bank Charges")
     begin
         GSTJournalValidations.JnlBankChargeGSTDocumentType(rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterValidateEvent', 'Order Address Code', false, false)]
+    local procedure ValidateOrderAddressCode(var Rec: Record "Gen. Journal Line")
+    begin
+        GSTJournalLineValidations.OrderAddressCode(Rec);
     end;
 }

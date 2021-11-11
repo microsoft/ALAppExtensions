@@ -171,13 +171,7 @@ codeunit 1993 "Checklist Implementation"
         ChecklistSetup: Record "Checklist Setup";
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
         Dimensions: Dictionary of [Text, Text];
-        IsTest: Boolean;
     begin
-        OnBeforeChecklistProcedure(IsTest);
-
-        if not (IsCallerModuleBaseApp(CallerModuleInfo) or IsCallerModuleSystemApp(CallerModuleInfo) or IsTest) then
-            exit;
-
         GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
         Session.LogMessage('0000E9U', ChecklistInitializedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
 
@@ -195,13 +189,7 @@ codeunit 1993 "Checklist Implementation"
     procedure InitializeGuidedExperienceItems(CallerModuleInfo: ModuleInfo)
     var
         GuidedExperience: Codeunit "Guided Experience";
-        IsTest: Boolean;
     begin
-        OnBeforeChecklistProcedure(IsTest);
-
-        if not (IsCallerModuleBaseApp(CallerModuleInfo) or IsCallerModuleSystemApp(CallerModuleInfo) or IsTest) then
-            exit;
-
         GuidedExperience.OnRegisterAssistedSetup();
         GuidedExperience.OnRegisterManualSetup();
         GuidedExperience.OnRegisterGuidedExperienceItem();
@@ -679,10 +667,5 @@ codeunit 1993 "Checklist Implementation"
             exit;
 
         LogMessageOnDatabaseEvent(Rec.Code, '0000EIP', ChecklistItemDeletedLbl);
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeChecklistProcedure(var IsTest: Boolean)
-    begin
     end;
 }

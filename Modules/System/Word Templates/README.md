@@ -58,6 +58,19 @@ procedure GetDocument(var DocumentInStream: InStream)
 
 Out parameter, the InStream to set.
 
+### GetDocumentSize (Method) <a name="GetDocumentSize"></a> 
+
+ Gets size for the resulting document.
+ 
+
+#### Syntax
+```
+procedure GetDocumentSize(): Integer
+```
+#### Return Value
+*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+
+The size for the resulting document in bytes.
 ### Create (Method) <a name="Create"></a> 
 
  Creates a template with the fields of a table. The table is selected by the user via a popup window.
@@ -80,6 +93,28 @@ procedure Create(TableId: Integer)
 *TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
 
 Specifies the ID of the table whose fields will be used to populate the template.
+
+### Create (Method) <a name="Create"></a> 
+
+ Creates a template with the fields from a selected table and a list of related table IDs.
+ 
+
+#### Syntax
+```
+procedure Create(TableId: Integer; RelatedTableIds: List of [Integer]; RelatedTableCodes: List of [Code[5]])
+```
+#### Parameters
+*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+Specifies the ID of the table from which fields will be used to insert data in the template.
+
+*RelatedTableIds ([List of [Integer]]())* 
+
+Specifies the IDs of tables that are related to the selected table. Fields from these tables will also be used to insert data in the template.
+
+*RelatedTableCodes ([List of [Code[5]]]())* 
+
+Specifies the IDs for each related table. The IDs must be the same length as the RelatedTableIds, and be between 1 and 5 characters.
 
 ### Create (Method) <a name="Create"></a> 
 
@@ -260,11 +295,83 @@ procedure GetTableId(): Integer
 *[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
 
 
+### AddRelatedTable (Method) <a name="AddRelatedTable"></a> 
+
+ Add related table.
+ 
+
+The function shows a message if the related code or table ID is already used for the parent table
+
+#### Syntax
+```
+procedure AddRelatedTable(WordTemplateCode: Code[30]; RelatedCode: Code[5]; TableId: Integer; RelatedTableId: Integer; FieldNo: Integer): Boolean
+```
+#### Parameters
+*WordTemplateCode ([Code[30]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+
+The code of an existing parent Word template.
+
+*RelatedCode ([Code[5]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+
+The code of the related table to add.
+
+*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+
+
+*RelatedTableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+
+
+*FieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The field no. of the parent table that references the related table.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the related table was added, false otherwise.
+### RemoveRelatedTable (Method) <a name="RemoveRelatedTable"></a> 
+
+ Remove a related table.
+ 
+
+#### Syntax
+```
+procedure RemoveRelatedTable(WordTemplateCode: Code[30]; RelatedTableId: Integer): Boolean
+```
+#### Parameters
+*WordTemplateCode ([Code[30]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+
+The code of the parent Word template.
+
+*RelatedTableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the related table was removed, false otherwise.
 
 ## Word Template Creation Wizard (Page 9995)
 
  Wizard to create a Word template.
  
+
+### SetMultipleTableNo (Method) <a name="SetMultipleTableNo"></a> 
+#### Syntax
+```
+procedure SetMultipleTableNo(TableIds: List of [Integer]; SelectedTable: Integer)
+```
+#### Parameters
+*TableIds ([List of [Integer]]())* 
+
+
+
+*SelectedTable ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+
 
 ### SetTableNo (Method) <a name="SetTableNo"></a> 
 #### Syntax
@@ -273,6 +380,24 @@ procedure SetTableNo(Value: Integer)
 ```
 #### Parameters
 *Value ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+
+
+### SetRelatedTable (Method) <a name="SetRelatedTable"></a> 
+#### Syntax
+```
+procedure SetRelatedTable(RelatedTableId: Integer; FieldNo: Integer; RelatedCode: Code[5])
+```
+#### Parameters
+*RelatedTableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+
+
+*FieldNo ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+
+
+*RelatedCode ([Code[5]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
 
 
 
@@ -328,6 +453,30 @@ procedure SetData(RecordVariant: Variant)
 The record to set.
 
 
+## Word Templates Related Card (Page 9986)
+
+ A list part factbox to view related entities for Word templates.
+ 
+
+
+## Word Templates Related FactBox (Page 9982)
+
+ A list part factbox to view related entities for Word templates.
+ 
+
+
+## Word Templates Related List (Page 9985)
+
+ A list page to view and edit related entities for Word templates.
+ 
+
+
+## Word Templates Related Part (Page 9987)
+
+ A list part page to view and edit related entities for Word templates.
+ 
+
+
 ## Word Templates Table Lookup (Page 9988)
 
  A look-up page to select a table to be used in a Word template.
@@ -342,6 +491,12 @@ procedure GetRecord(var SelectedRecord: Record "Word Templates Table")
 *SelectedRecord ([Record "Word Templates Table"]())* 
 
 
+
+
+## Word Template To Text Wizard (Page 9999)
+
+ A wizard to select a Word template that can then be output as text
+ 
 
 
 ## Word Templates Save Format (Enum 9987)

@@ -234,6 +234,39 @@ procedure GetPerDatabaseUpgradeTags(var PerDatabaseUpgradeTags: List of [Code[25
 
 
 
+### BackupUpgradeTags (Method) <a name="BackupUpgradeTags"></a> 
+
+ This function is used for cloud migration to backup upgrade tags before cloud migration is triggered.
+ Using the function if cloud migration is not enabled will throw an error.
+ 
+
+#### Syntax
+```
+procedure BackupUpgradeTags(): Integer
+```
+#### Return Value
+*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+
+ID of the backup, used in [RestoreUpgradeTagsFromBackup](#RestoreUpgradeTagsFromBackup) method.
+### RestoreUpgradeTagsFromBackup (Method) <a name="RestoreUpgradeTagsFromBackup"></a> 
+
+ This function is used to restore Upgrade tags after cloud migration.
+ Using the function if cloud migration is not enabled will throw an error.
+ 
+
+#### Syntax
+```
+procedure RestoreUpgradeTagsFromBackup(BackupId: Integer; RestoreMissingTagsOnly: Boolean)
+```
+#### Parameters
+*BackupId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+ID of the backup, created by [BackupUpgradeTags](#BackupUpgradeTags) method.
+
+*RestoreMissingTagsOnly ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+This parameter indicates if the function should restore the entire table or only insert back the missing upgrade tags.
+
 ### OnGetPerCompanyUpgradeTags (Event) <a name="OnGetPerCompanyUpgradeTags"></a> 
 
  Use this event if you want to add upgrade tag for PerCompany upgrade method for a new company.
@@ -267,4 +300,23 @@ internal procedure OnGetPerDatabaseUpgradeTags(var PerDatabaseUpgradeTags: List 
 
  List of upgrade tags that should be inserted if they do not exist.
  
+
+### OnSetAllUpgradeTags (Event) <a name="OnSetAllUpgradeTags"></a> 
+
+ Use this event if you want to skip or run logic when we register all tags for a company.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnSetAllUpgradeTags(NewCompanyName: Text; var SkipSetAllUpgradeTags: Boolean)
+```
+#### Parameters
+*NewCompanyName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Name of the company to set the upgrade tags.
+
+*SkipSetAllUpgradeTags ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Specifies if the setting of the tags for the company should be skipped.
 

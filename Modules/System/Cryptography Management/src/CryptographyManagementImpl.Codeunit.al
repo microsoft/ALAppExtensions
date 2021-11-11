@@ -358,6 +358,21 @@ codeunit 1279 "Cryptography Management Impl."
         exit(ConvertByteHashToString(HashBytes));
     end;
 
+    procedure SignData(InputString: Text; XmlString: Text; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+    var
+        TempBlob: Codeunit "Temp Blob";
+        DataOutStream: OutStream;
+        DataInStream: InStream;
+    begin
+        if InputString = '' then
+            exit;
+        TempBlob.CreateOutStream(DataOutStream, TextEncoding::UTF8);
+        TempBlob.CreateInStream(DataInStream, TextEncoding::UTF8);
+        DataOutStream.WriteText(InputString);
+        SignData(DataInStream, XmlString, HashAlgorithm, SignatureOutStream);
+    end;
+
+#if not CLEAN19
     procedure SignData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
     var
         TempBlob: Codeunit "Temp Blob";
@@ -371,6 +386,7 @@ codeunit 1279 "Cryptography Management Impl."
         DataOutStream.WriteText(InputString);
         SignData(DataInStream, SignatureKey, HashAlgorithm, SignatureOutStream);
     end;
+#endif
 
 #if not CLEAN18
     procedure SignData(InputString: Text; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
@@ -388,6 +404,18 @@ codeunit 1279 "Cryptography Management Impl."
     end;
 #endif
 
+    procedure SignData(DataInStream: InStream; XmlString: Text; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+    var
+        ISignatureAlgorithm: Interface SignatureAlgorithm;
+    begin
+        if DataInStream.EOS() then
+            exit;
+        ISignatureAlgorithm := Enum::SignatureAlgorithm::RSA;
+        ISignatureAlgorithm.FromXmlString(XmlString);
+        ISignatureAlgorithm.SignData(DataInStream, HashAlgorithm, SignatureOutStream);
+    end;
+
+#if not CLEAN19
     procedure SignData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
     var
         ISignatureAlgorithm: Interface SignatureAlgorithm;
@@ -399,6 +427,7 @@ codeunit 1279 "Cryptography Management Impl."
             ISignatureAlgorithm.FromXmlString(SignatureKey.ToXmlString());
         ISignatureAlgorithm.SignData(DataInStream, HashAlgorithm, SignatureOutStream);
     end;
+#endif
 
 #if not CLEAN18
     procedure SignData(DataStream: InStream; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
@@ -414,6 +443,21 @@ codeunit 1279 "Cryptography Management Impl."
     end;
 #endif
 
+    procedure VerifyData(InputString: Text; XmlString: Text; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+    var
+        TempBlob: Codeunit "Temp Blob";
+        DataOutStream: OutStream;
+        DataInStream: InStream;
+    begin
+        if InputString = '' then
+            exit(false);
+        TempBlob.CreateOutStream(DataOutStream, TextEncoding::UTF8);
+        TempBlob.CreateInStream(DataInStream, TextEncoding::UTF8);
+        DataOutStream.WriteText(InputString);
+        exit(VerifyData(DataInStream, XmlString, HashAlgorithm, SignatureInStream));
+    end;
+
+#if not CLEAN19
     procedure VerifyData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
     var
         TempBlob: Codeunit "Temp Blob";
@@ -427,6 +471,7 @@ codeunit 1279 "Cryptography Management Impl."
         DataOutStream.WriteText(InputString);
         exit(VerifyData(DataInStream, SignatureKey, HashAlgorithm, SignatureInStream));
     end;
+#endif
 
 #if not CLEAN18
     procedure VerifyData(InputString: Text; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
@@ -444,6 +489,18 @@ codeunit 1279 "Cryptography Management Impl."
     end;
 #endif
 
+    procedure VerifyData(DataInStream: InStream; XmlString: Text; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+    var
+        ISignatureAlgorithm: Interface SignatureAlgorithm;
+    begin
+        if DataInStream.EOS() then
+            exit(false);
+        ISignatureAlgorithm := Enum::SignatureAlgorithm::RSA;
+        ISignatureAlgorithm.FromXmlString(XmlString);
+        exit(ISignatureAlgorithm.VerifyData(DataInStream, HashAlgorithm, SignatureInStream));
+    end;
+
+#if not CLEAN19
     procedure VerifyData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
     var
         ISignatureAlgorithm: Interface SignatureAlgorithm;
@@ -455,6 +512,7 @@ codeunit 1279 "Cryptography Management Impl."
             ISignatureAlgorithm.FromXmlString(SignatureKey.ToXmlString());
         exit(ISignatureAlgorithm.VerifyData(DataInStream, HashAlgorithm, SignatureInStream));
     end;
+#endif
 
 #if not CLEAN18
     procedure VerifyData(DataStream: InStream; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean

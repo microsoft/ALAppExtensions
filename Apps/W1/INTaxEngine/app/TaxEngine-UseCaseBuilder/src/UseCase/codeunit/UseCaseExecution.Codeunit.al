@@ -24,6 +24,11 @@ codeunit 20293 "Use Case Execution"
                 UseCase.ID,
                 UseCase."Computation Script ID");
             TaxRateComputation.CalculateTaxComponent(SymbolStore, SourceRecordRef, UseCase.ID, CurrencyCode, CurrencyFactor);
+
+            LogExecutionTelemetry(
+                UseCase.ID,
+                GetVersionText(UseCase."Major Version", UseCase."Minor Version"),
+                SourceRecordRef.RecordId);
         end;
 
         SymbolStore.CopySymbols(Symbols);
@@ -290,6 +295,28 @@ codeunit 20293 "Use Case Execution"
         Enabled := UseCase.Enable;
     end;
 
+    local procedure LogExecutionTelemetry(CaseId: Guid; VersionTxt: Text; RecId: RecordId)
+    var
+        Dimensions: Dictionary of [Text, Text];
+    begin
+        Dimensions.Add('CaseID', CaseId);
+        Dimensions.Add('Version', VersionTxt);
+        Dimensions.Add('Record', Format(RecId, 0, 1));
+
+        Session.LogMessage(
+            'TE-USECASE-EXECUTED',
+            UseCaseExcutedTxt,
+            Verbosity::Normal,
+            DataClassification::SystemMetadata,
+            TelemetryScope::ExtensionPublisher,
+            Dimensions);
+    end;
+
+    local procedure GetVersionText(Major: Integer; Minor: Integer): Text
+    begin
+        exit(StrSubstNo(VersionLbl, Major, Minor));
+    end;
+
     [IntegrationEvent(false, false)]
     procedure OnImportUseCaseOnDemand(TaxType: Code[20]; CaseID: Guid)
     begin
@@ -304,4 +331,6 @@ codeunit 20293 "Use Case Execution"
         TransactionValueHelper: Codeunit "Transaction Value Helper";
         RecRefHelper: Codeunit "RecRef Handler";
         EmptyGUID: Guid;
+        UseCaseExcutedTxt: Label 'Use Case executed on record.', Locked = true;
+        VersionLbl: Label '%1.%2', Comment = '%1 - Major Version, %2 - Minor Version';
 }

@@ -8,7 +8,8 @@ PermissionSet 1991 "Guided Experience - Read"
     Access = Public;
     Assignable = false;
 
-    IncludedPermissionSets = "Translation - Read",
+    IncludedPermissionSets = "Guided Experience - Objects",
+                             "Translation - Read",
                              "Extension Management - Read",
                              "Upgrade Tags - Read",
                              "User Login Times - Read";

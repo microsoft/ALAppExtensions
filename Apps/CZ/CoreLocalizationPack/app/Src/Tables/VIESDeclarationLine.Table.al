@@ -263,7 +263,7 @@ table 31076 "VIES Declaration Line CZL"
 
     local procedure TestStatusOpen()
     begin
-        VIESDeclarationHeaderCZL.Get("VIES Declaration No.");
+        GetHeader();
         VIESDeclarationHeaderCZL.TestField(Status, VIESDeclarationHeaderCZL.Status::Open);
     end;
 
@@ -317,10 +317,8 @@ table 31076 "VIES Declaration Line CZL"
     var
         VATEntry: Record "VAT Entry";
         TempVATEntry: Record "VAT Entry" temporary;
-        VATPostingSetup: Record "VAT Posting Setup";
-        AddToDrillDown: Boolean;
     begin
-        VIESDeclarationHeaderCZL.Get("VIES Declaration No.");
+        GetHeader();
 
         VATEntry.SetCurrentKey(Type, "Country/Region Code");
         VATEntry.SetRange(Type, "Trade Type" + 1);
@@ -336,24 +334,39 @@ table 31076 "VIES Declaration Line CZL"
         end;
         VATEntry.SetRange("VAT Date CZL", VIESDeclarationHeaderCZL."Start Date", VIESDeclarationHeaderCZL."End Date");
         VATEntry.SetRange("EU Service", "EU Service");
+        OnDrillDownAmountLCYOnBeforeVATEntryFind(Rec, VIESDeclarationHeaderCZL, VATEntry);
         if VATEntry.FindSet() then
             repeat
-                AddToDrillDown := false;
-                if VATPostingSetup.Get(VATEntry."VAT Bus. Posting Group", VATEntry."VAT Prod. Posting Group") then begin
-                    case "Trade Type" of
-                        "Trade Type"::Sales:
-                            AddToDrillDown := VATPostingSetup."VIES Sales CZL";
-                        "Trade Type"::Purchase:
-                            AddToDrillDown := VATPostingSetup."VIES Purchase CZL";
-                    end;
-                    if AddToDrillDown then begin
-                        TempVATEntry := VATEntry;
-                        TempVATEntry.Insert();
-                    end;
-                end;
+                if IsVATEntryIncludedToDrillDown(VATEntry) then begin
+                    TempVATEntry := VATEntry;
+                    TempVATEntry.Insert();
+                end
             until VATEntry.Next() = 0;
 
         Page.Run(0, TempVATEntry);
+    end;
+
+    local procedure IsVATEntryIncludedToDrillDown(VATEntry: Record "VAT Entry") IsIncluded: Boolean
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        IsHandled: Boolean;
+    begin
+        GetHeader();
+        OnBeforeIsVATEntryIncludedToDrillDown(VATEntry, Rec, VIESDeclarationHeaderCZL, IsIncluded, IsHandled);
+        if IsHandled then
+            exit(IsIncluded);
+
+        if not VATPostingSetup.Get(VATEntry."VAT Bus. Posting Group", VATEntry."VAT Prod. Posting Group") then
+            exit(false);
+
+        case "Trade Type" of
+            "Trade Type"::Sales:
+                exit(VATPostingSetup."VIES Sales CZL");
+            "Trade Type"::Purchase:
+                exit(VATPostingSetup."VIES Purchase CZL");
+        end;
+
+        exit(false);
     end;
 
     procedure CheckLineType()
@@ -366,5 +379,21 @@ table 31076 "VIES Declaration Line CZL"
     begin
         if "Trade Type" = "Trade Type"::" " then
             FieldError("Trade Type");
+    end;
+
+    local procedure GetHeader()
+    begin
+        if "VIES Declaration No." <> VIESDeclarationHeaderCZL."No." then
+            VIESDeclarationHeaderCZL.Get("VIES Declaration No.");
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnDrillDownAmountLCYOnBeforeVATEntryFind(VIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL"; var VATEntry: Record "VAT Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeIsVATEntryIncludedToDrillDown(VATEntry: Record "VAT Entry"; VIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL"; var IsIncluded: Boolean; var IsHandled: Boolean);
+    begin
     end;
 }

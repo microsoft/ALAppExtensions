@@ -518,6 +518,33 @@ The Locale Identifier.
 
 The version that the extension will be deployed to.
 
+### UploadExtensionToVersion (Method) <a name="UploadExtensionToVersion"></a> 
+
+ Uploads an extension to current version, next minor or next major, using a File Stream and based on the Locale Identifier.
+ This method is only applicable in SaaS environment.
+ 
+
+#### Syntax
+```
+procedure UploadExtensionToVersion(FileStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To"; SyncMode: Enum "Extension Sync Mode")
+```
+#### Parameters
+*FileStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The File Stream containing the extension to be uploaded.
+
+*lcid ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The Locale Identifier.
+
+*DeployTo ([Enum "Extension Deploy To"]())* 
+
+The version that the extension will be deployed to.
+
+*SyncMode ([Enum "Extension Sync Mode"]())* 
+
+The desired sync mode.
+
 ### GetMarketplaceEmbeddedUrl (Method) <a name="GetMarketplaceEmbeddedUrl"></a> 
 
  Returns a link to appsource market page
@@ -540,7 +567,7 @@ PROCEDURE GetMarketplaceEmbeddedUrl(): Text
 #### Syntax
 ```
 [Obsolete('Replaced by "Extension Marketplace".GetMessageType procedure.', '17.0')]
-PROCEDURE GetMessageType(JObject: DotNet JObject): Text
+procedure GetMessageType(JObject: DotNet JObject): Text
 ```
 #### Parameters
 *JObject ([DotNet JObject]())* 
@@ -559,7 +586,7 @@ Appsourece response payload as a json object
 #### Syntax
 ```
 [Obsolete('Replaced by "Extension Marketplace".GetApplicationIdFromData procedure.', '17.0')]
-PROCEDURE GetApplicationIdFromData(JObject: DotNet JObject): Text
+procedure GetApplicationIdFromData(JObject: DotNet JObject): Text
 ```
 #### Parameters
 *JObject ([DotNet JObject]())* 
@@ -578,7 +605,7 @@ Application Id in text format
 #### Syntax
 ```
 [Obsolete('Replaced by "Extension Marketplace".MapMarketplaceIdToPackageId procedure.', '17.0')]
-PROCEDURE MapMarketplaceIdToPackageId(ApplicationId: Text): GUID
+procedure MapMarketplaceIdToPackageId(ApplicationId: Text): GUID
 ```
 #### Parameters
 *ApplicationId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
@@ -597,7 +624,7 @@ Package ID as a GUID
 #### Syntax
 ```
 [Obsolete('Replaced by "Extension Marketplace".GetTelementryUrlFromData procedure.', '17.0')]
-PROCEDURE GetTelementryUrlFromData(JObject: DotNet JObject): Text
+procedure GetTelementryUrlFromData(JObject: DotNet JObject): Text
 ```
 #### Parameters
 *JObject ([DotNet JObject]())* 
@@ -610,13 +637,13 @@ Appsourece response payload as a json object
 
 ### MapMarketplaceIdToAppId (Method) <a name="MapMarketplaceIdToAppId"></a> 
 
- Extraxts the app ID from appsource response.
+ Extracts the app ID from appsource response.
  
 
 #### Syntax
 ```
 [Obsolete('Replaced by "Extension Marketplace".MapMarketplaceIdToAppId procedure.', '17.0')]
-PROCEDURE MapMarketplaceIdToAppId(ApplicationId: Text): GUID
+procedure MapMarketplaceIdToAppId(ApplicationId: Text): GUID
 ```
 #### Parameters
 *ApplicationId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
@@ -627,6 +654,24 @@ Appsource market application ID
 *[GUID]()*
 
 
+### GetAppName (Method) <a name="GetAppName"></a> 
+
+ Returns the Name of the app given the App Id.
+ 
+
+#### Syntax
+```
+procedure GetAppName(AppId: Guid): Text
+```
+#### Parameters
+*AppId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The unique identifier of the app.
+
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+The name of the app.
 
 ## Extension Deployment Status (Page 2508)
 
@@ -725,5 +770,32 @@ LOCAL PROCEDURE PerformAction(ActionName: Text)
 
 
  Next major version
+ 
+
+
+## Extension Sync Mode (Enum 2505)
+
+ Specifies how to sync the extension.
+ 
+
+### Add (value: 0)
+
+
+ Modifies the database schema by creating or extending the tables required to
+ satisfy the app's metadata. This mode considers existing versions of the specified
+ app in its calculations.
+ 
+
+### Force Sync (value: 3)
+
+
+ A destructive sync mode which makes the resulting schema match the extension in question
+ regardless of its starting state. This means no change is off limits. This also means
+ that changes which delete things (tables, fields, etc.) also delete the data they contain.
+ 
+
+
+ This mode is intended for use when e.g. renaming tables. It can lead to data loss if used
+ without caution.
  
 

@@ -14,25 +14,39 @@ enum 9701 "Cues And KPIs Style"
     /// <summary>
     /// Specifies that no style will be used when rendering the cue.
     /// </summary>
-    value(0; None) { }
+    value(0; None)
+    {
+        Caption = 'None';
+    }
 
     /// <summary>
     /// Specifies that the Favorable style will be used when rendering the cue.
     /// </summary>
-    value(7; Favorable) { }
+    value(7; Favorable)
+    {
+        Caption = 'Favorable';
+    }
 
     /// <summary>
     /// Specifies that the Unfavorable style will be used when rendering the cue.
     /// </summary>
-    value(8; Unfavorable) { }
+    value(8; Unfavorable)
+    {
+        Caption = 'Unfavorable';
+    }
 
     /// <summary>
     /// Specifies that the Ambiguous style will be used when rendering the cue.
     /// </summary>
-    value(9; Ambiguous) { }
-
+    value(9; Ambiguous)
+    {
+        Caption = 'Ambiguous';
+    }
     /// <summary>
     /// Specifies that the Subordinate style will be used when rendering the cue.
     /// </summary>
-    value(10; Subordinate) { }
+    value(10; Subordinate)
+    {
+        Caption = 'Subordinate';
+    }
 }

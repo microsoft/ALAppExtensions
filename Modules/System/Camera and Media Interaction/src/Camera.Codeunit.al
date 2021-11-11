@@ -24,6 +24,7 @@ codeunit 1907 Camera
         exit(CameraImpl.GetPicture(PictureStream, PictureName));
     end;
 
+#if not CLEAN20
     /// <summary>
     /// Adds a picture from the camera to the field of type 'Media'or 'MediaSet' on the provided record. 
     /// </summary>
@@ -39,10 +40,12 @@ codeunit 1907 Camera
     /// <error>The provided variant is not of type record.</error>
     /// <error>Unsupported field type</error>
     /// <returns>True if the camera is available, the user took a picture and decided to use it, false otherwise.</returns>
+    [Obsolete('This function does not populate the Media/MediaSet record correctly. Use GetPicture instead.', '20.0')]
     procedure AddPicture(RecordVariant: Variant; FieldNo: Integer): Boolean
     begin
         exit(CameraImpl.AddPicture(RecordVariant, FieldNo));
     end;
+#endif
 
     /// <summary>
     /// Checks whether the camera on the client device is available.

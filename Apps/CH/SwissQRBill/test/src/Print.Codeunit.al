@@ -783,6 +783,27 @@ codeunit 148092 "Swiss QR-Bill Test Print"
         VerifyReportDatasetCreditorInfo(SwissQRBillMgt.FormatIBAN(IBAN));
     end;
 
+    [Test]
+    procedure PrintUmlautsUsingWesternEuropeanISO88591Codepage()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        IBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
+        QRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
+        ErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
+        OutStream: OutStream;
+        UmlautChars: Text;
+        i: Integer;
+    begin
+        // [SCENARIO 409387] QR Bills can be printed with umlaut symbols within the QR Code using Western European ISO-8859-1 codepage
+        UmlautChars := PadStr('', 64, ' ');
+        for i := 192 to 255 do
+            UmlautChars[i - 191] := i;
+
+        TempBlob.CreateOutStream(OutStream);
+        IBarcodeProvider := QRCodeProvider.QRCodeProvider();
+        IBarcodeProvider.GetBarcodeStream(UmlautChars, OutStream, ErrorCorrectionLevel::Medium, 5, 0, 28591);
+    end;
+
     local procedure Initialize()
     var
         DummyReportSelections: Record "Report Selections";

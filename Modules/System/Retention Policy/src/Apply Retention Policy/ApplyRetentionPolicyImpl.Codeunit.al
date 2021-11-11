@@ -105,11 +105,13 @@ codeunit 3904 "Apply Retention Policy Impl."
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
         RetenPolicyTelemetryImpl: Codeunit "Reten. Policy Telemetry Impl.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         RecRef: RecordRef;
         Dialog: Dialog;
     begin
         IsUserInvokedRun := UserInvokedRun;
 
+        FeatureTelemetry.LogUptake('0000FVU', 'Retention policies', Enum::"Feature Uptake Status"::"Used");
         if not CanApplyRetentionPolicy(RetentionPolicySetup, Manual) then
             exit;
 
@@ -132,6 +134,8 @@ codeunit 3904 "Apply Retention Policy Impl."
             Dialog.Close();
 
         CheckAndContinueWithRerun(RetentionPolicySetup);
+
+        FeatureTelemetry.LogUsage('0000FVV', 'Retention policies', 'Retention policy applied');
     end;
 
     procedure GetExpiredRecordCount(RetentionPolicySetup: Record "Retention Policy Setup"): Integer;

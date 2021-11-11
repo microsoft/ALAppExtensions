@@ -8,5 +8,7 @@ PermissionSet 776 "Device - Read"
     Access = Internal;
     Assignable = false;
 
+    IncludedPermissionSets = "Device - Objects";
+
     Permissions = tabledata Device = r;
 }

@@ -8,8 +8,10 @@ PermissionSet 8900 "Email - Read"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Retention Policy - View",
-                             "Upgrade Tags - View";
+    IncludedPermissionSets = "Email - Objects",
+                             "Retention Policy - View",
+                             "Upgrade Tags - View",
+                             "Telemetry - Exec";
 
     Permissions = tabledata "Email Connector Logo" = r,
                   tabledata "Email Error" = r,

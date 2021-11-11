@@ -58,6 +58,7 @@ codeunit 135011 "Camera Test"
         Assert.AreEqual(CameraTestLibrary.GetSmallJpeg(), Base64Convert.ToBase64(PictureInStream), 'The mock picture was expected.');
     end;
 
+#if not CLEAN20
     [Test]
     [Scope('OnPrem')]
     procedure AddPictureErrorsTest()
@@ -329,12 +330,6 @@ codeunit 135011 "Camera Test"
         Assert.AreEqual(1, TableWithMedia.Count(), 'Exactly one record was expected to be in the database.');
     end;
 
-    [ModalPageHandler]
-    procedure CameraPageHandler(var CameraPage: TestPage Camera)
-    begin
-        // Do nothing
-    end;
-
     [ConfirmHandler]
     [Scope('OnPrem')]
     procedure ConfirmDialogHandlerYes(Question: Text[1024]; var Reply: Boolean)
@@ -347,6 +342,13 @@ codeunit 135011 "Camera Test"
     procedure ConfirmDialogHandlerNo(Question: Text[1024]; var Reply: Boolean)
     begin
         Reply := false;
+    end;
+#endif
+
+    [ModalPageHandler]
+    procedure CameraPageHandler(var CameraPage: TestPage Camera)
+    begin
+        // Do nothing
     end;
 }
 

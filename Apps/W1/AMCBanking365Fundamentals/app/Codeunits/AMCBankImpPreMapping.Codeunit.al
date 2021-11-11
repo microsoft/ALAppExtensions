@@ -1,5 +1,10 @@
+#if not CLEAN20
 codeunit 20103 "AMC Bank Imp.-Pre-Mapping"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by the new implementation in V19.1 of AMC Bank Imp.-Pre-Process';
+    ObsoleteTag = '20.0';
+
     TableNo = "Bank Acc. Reconciliation Line";
 
     trigger OnRun()
@@ -18,3 +23,4 @@ codeunit 20103 "AMC Bank Imp.-Pre-Mapping"
         StmtNoPathFilterTxt: Label '/reportExportResponse/return/finsta/statement/statementno', Locked = true;
 }
 
+#endif

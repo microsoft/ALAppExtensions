@@ -14,7 +14,7 @@ codeunit 9053 "ABS Blob Client"
     /// Initializes the Azure Blob storage client.
     /// </summary>
     /// <param name="StorageAccount">The name of Storage Account to use.</param>
-    /// <<param name="Container">The name of the container to use.</param>
+    /// <param name="Container">The name of the container to use.</param>
     /// <param name="Authorization">The authorization to use.</param>
     [NonDebuggable]
     procedure Initialize(StorageAccount: Text; Container: Text; Authorization: Interface "Storage Service Authorization")

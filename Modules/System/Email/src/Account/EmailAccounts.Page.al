@@ -303,7 +303,10 @@ page 8887 "Email Accounts"
     }
 
     trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000CTA', 'Emailing', Enum::"Feature Uptake Status"::Discovered);
         CanUserManageEmailSetup := EmailAccountImpl.IsUserEmailAdmin();
         Rec.SetCurrentKey("Account Id", Connector);
         UpdateEmailAccounts();

@@ -14,17 +14,12 @@ codeunit 1468 "TripleDESCryptoSvcProv. Impl." implements SymmetricAlgorithm
     [NonDebuggable]
     procedure GetInstance(var DotNetSymmetricAlgorithm: DotNet "Cryptography.SymmetricAlgorithm")
     begin
-        AesCryptoServiceProvider();
+        DotNetTripleDESCryptoServiceProvider := DotNetTripleDESCryptoServiceProvider.TripleDESCryptoServiceProvider();
         DotNetSymmetricAlgorithm := DotNetTripleDESCryptoServiceProvider;
     end;
 
     procedure XmlEncrypmentMethodUrl(): Text
     begin
         exit(XmlEncrypmentMethodUrlTok);
-    end;
-
-    local procedure AesCryptoServiceProvider()
-    begin
-        DotNetTripleDESCryptoServiceProvider := DotNetTripleDESCryptoServiceProvider.TripleDESCryptoServiceProvider();
     end;
 }

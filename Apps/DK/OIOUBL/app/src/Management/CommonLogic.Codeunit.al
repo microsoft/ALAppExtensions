@@ -527,7 +527,7 @@ codeunit 13648 "OIOUBL-Common Logic"
         PriceElement.Add(
           XmlElement.Create('PriceAmount', DocNameSpaceCBC,
             XmlAttribute.Create('currencyID', CurrencyCode),
-            OIOUBLDocumentEncode.DecimalToText(UnitPrice)));
+            OIOUBLDocumentEncode.DecimalToTextFourDecimals(UnitPrice)));
         PriceElement.Add(
           XmlElement.Create('BaseQuantity', DocNameSpaceCBC,
             XmlAttribute.Create('unitCode', OIOUBLDocumentEncode.GetUoMCode(UnitOfMeasureCode)),

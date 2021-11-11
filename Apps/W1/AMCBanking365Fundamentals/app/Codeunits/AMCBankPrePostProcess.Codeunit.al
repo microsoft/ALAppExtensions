@@ -1,6 +1,9 @@
+#if not CLEAN20
 codeunit 20102 "AMC Bank Pre&Post Process"
 {
-
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by the new implementation in V19.1 of Pre & Post process.';
+    ObsoleteTag = '20.0';
     trigger OnRun()
     begin
     end;
@@ -9,7 +12,7 @@ codeunit 20102 "AMC Bank Pre&Post Process"
         DiffCurrQst: Label 'The bank statement that you are importing contains transactions in %1 %2. This conflicts with the %3 %4.\\Do you want to continue?', Comment = '%1 %2 = Currency Code EUR; %3 %4 = LCY Code DKK.';
         MissingStmtDateInDataMsg: Label 'The statement date was not found in the data to be imported.';
         MissingClosingBalInDataMsg: Label 'The closing balance was not found in the data to be imported.';
-        MissingBankAccNoQst: Label 'Bank account %1 does not have a bank account number.\\Do you want to continue?';
+        MissingBankAccNoQst: Label 'Bank account %1 does not have a bank account number.\\Do you want to continue?', comment = '%1 = Bank Account Code';
         BankAccCurrErr: Label 'The bank statement that you are importing contains transactions in currencies other than the %1 %2 of bank account %3.', Comment = '%1 %2 = Currency Code EUR; %3 = Bank Account No.';
         MultipleStmtErr: Label 'The file that you are trying to import contains more than one bank statement.';
         MissingBankAccNoInDataErr: Label 'The bank account number was not found in the data to be imported.';
@@ -63,11 +66,6 @@ codeunit 20102 "AMC Bank Pre&Post Process"
     procedure PreProcessFile(DataExch: Record "Data Exch."; StatementIdPathFilter: Text)
     begin
         CheckMultipleStatements(DataExch, StatementIdPathFilter);
-    end;
-
-    local procedure GetSubTreeRoot(Node: Text; Distance: Integer): Text
-    begin
-        exit(CopyStr(Node, 1, StrLen(Node) - Distance * 4));
     end;
 
     local procedure CheckBankAccNo(DataExch: Record "Data Exch."; BankAccount: Record "Bank Account"; IBANPathFilter: Text; BankAccIDPathFilter: Text)
@@ -164,3 +162,4 @@ codeunit 20102 "AMC Bank Pre&Post Process"
     end;
 }
 
+#endif

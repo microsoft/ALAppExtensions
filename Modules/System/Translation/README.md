@@ -232,6 +232,76 @@ The record with a field for which the translation will be deleted.
 
 Id of the field for which the translation will be deleted.
 
+### Copy (Method) <a name="Copy"></a> 
+If the RecVariant parameter is of type Record, and it is temporary.
+
+
+ Copies the translation for a field from one record to another record on a persisted (non-temporary) record.
+ 
+
+#### Syntax
+```
+procedure Copy(FromRecVariant: Variant; ToRecVariant: Variant)
+```
+#### Parameters
+*FromRecVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+
+The record from which the translations are copied.
+
+*ToRecVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+
+The record to which the translations are copied.
+
+### Copy (Method) <a name="Copy"></a> 
+If the RecVariant parameter is of type Record, and it is temporary.
+
+
+ Copies the translation for a field from one record to another record on a persisted (non-temporary) record.
+ 
+
+#### Syntax
+```
+procedure Copy(FromRecVariant: Variant; ToRecVariant: Variant; FieldId: Integer)
+```
+#### Parameters
+*FromRecVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+
+The record from which the translations are copied.
+
+*ToRecVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+
+The record to which the translations are copied.
+
+*FieldId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+Id of the field for which the translation will be copied.
+
+### Copy (Method) <a name="Copy"></a> 
+
+ Copies the translation from one record's field to another record's field on a persisted (non-temporary) record.
+ 
+
+#### Syntax
+```
+procedure Copy(FromRecVariant: Variant; FromFieldId: Integer; ToRecVariant: Variant; ToFieldId: Integer)
+```
+#### Parameters
+*FromRecVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+
+The record from which the translations are copied.
+
+*FromFieldId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The id of the field from which the translations are copied.
+
+*ToRecVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+
+The record to which the translations are copied.
+
+*ToFieldId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The id of the field to which the translations are copied.
+
 ### Show (Method) <a name="Show"></a> 
 If the RecVariant parameter is the type Record, and it is temporary.
 

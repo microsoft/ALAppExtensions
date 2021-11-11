@@ -310,6 +310,7 @@ codeunit 58 "Filter Tokens Impl."
 
         if DateToken <> '' then begin
             FilterTokens.OnResolveDateFilterToken(DateFilter, Date1, Date2, Handled);
+            DateToken := UpperCase(DateFilter);
 
             if not Handled then
                 case DateToken of

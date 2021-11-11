@@ -98,4 +98,11 @@ page 3905 "Reten. Policy Setup ListPart"
             }
         }
     }
+
+    trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        FeatureTelemetry.LogUptake('0000FVY', 'Retention policies', Enum::"Feature Uptake Status"::Discovered);
+    end;
 }

@@ -115,33 +115,43 @@ codeunit 1155 "COHUB Comp. Url Task Manager"
         ActivityCuesResponse: Text;
         FinanceCuesResponse: Text;
         UserTasksResponse: Text;
+        RequestFailed: Boolean;
+        COHUBExist: Boolean;
     begin
-        if not COHUBAPIRequest.InvokeActivityCuesAPI(COHUBCompanyEndpoint, ActivityCuesResponse) then
-            exit;
-
-        if not COHUBAPIRequest.InvokeFinanceCuesAPI(COHUBCompanyEndpoint, FinanceCuesResponse) then
-            exit;
-
-        if not COHUBAPIRequest.InvokeUserTasksAPI(COHUBCompanyEndpoint, UserTasksResponse) then
-            exit;
-
+        COHUBExist := COHUBCompanyKPI.Get(COHUBCompanyEndpoint."Enviroment No.", COHUBCompanyEndpoint."Company Name", COHUBCompanyEndpoint."Assigned To");
         COHUBCompanyKPI."Enviroment No." := COHUBCompanyEndpoint."Enviroment No.";
         COHUBCompanyKPI."Company Name" := COHUBCompanyEndpoint."Company Name";
         COHUBCompanyKPI."Company Display Name" := COHUBCompanyEndpoint."Company Display Name";
         COHUBCompanyKPI."Assigned To" := COHUBCompanyEndpoint."Assigned To";
-        ParseFinanceCueFromJSON(FinanceCuesResponse, COHUBCompanyKPI);
-        ParseActivityCueFromJSON(ActivityCuesResponse, COHUBCompanyKPI);
-        ParseUserTasksFromJSON(
-          UserTasksResponse, COHUBCompanyEndpoint."Enviroment No.", COHUBCompanyEndpoint."Company Name",
-          COHUBCompanyEndpoint."Company Display Name");
+
+        if COHUBAPIRequest.InvokeActivityCuesAPI(COHUBCompanyEndpoint, ActivityCuesResponse) then
+            ParseActivityCueFromJSON(ActivityCuesResponse, COHUBCompanyKPI)
+        else
+            RequestFailed := true;
+
+        if COHUBAPIRequest.InvokeFinanceCuesAPI(COHUBCompanyEndpoint, FinanceCuesResponse) then
+            ParseFinanceCueFromJSON(FinanceCuesResponse, COHUBCompanyKPI)
+        else
+            RequestFailed := true;
+
+        if COHUBAPIRequest.InvokeUserTasksAPI(COHUBCompanyEndpoint, UserTasksResponse) then
+            ParseUserTasksFromJSON(
+              UserTasksResponse, COHUBCompanyEndpoint."Enviroment No.", COHUBCompanyEndpoint."Company Name",
+              COHUBCompanyEndpoint."Company Display Name")
+        else
+            RequestFailed := true;
+
         COHUBCompanyKPI."Last Refreshed" := CurrentDateTime();
 
         if COHUBEnviroment.Get(COHUBCompanyEndpoint."Enviroment No.") then
             if (COHUBEnviroment."Contact Name" <> '') and (COHUBCompanyKPI."Contact Name" = '') then
                 COHUBCompanyKPI."Contact Name" := CopyStr(COHUBEnviroment."Contact Name", 1, 50);
 
-        if not COHUBCompanyKPI.Modify(true) then
-            COHUBCompanyKPI.Insert(true);
+        if not COHUBExist then
+            COHUBCompanyKPI.Insert(true)
+        else
+            if not RequestFailed then
+                COHUBCompanyKPI.Modify(true);
     end;
 
     procedure SetTaskComplete(COHUBCompanyEndpoint: Record "COHUB Company Endpoint"; TaskId: Integer)

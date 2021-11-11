@@ -8,7 +8,8 @@ PermissionSet 2610 "Feature Key - Read"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "System Initialization - Exec";
+    IncludedPermissionSets = "Feature Key - Objects",
+                             "System Initialization - Exec";
 
     Permissions = tabledata "Active Session" = r,
                   tabledata Company = r,

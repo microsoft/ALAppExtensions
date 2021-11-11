@@ -25,30 +25,33 @@ table 9092 "Postcode GetAddress.io Config"
     var
         APIPassword: Text;
     begin
-        IF ISNULLGUID(APIKeyGUID) OR NOT IsolatedStorage.Get(APIKeyGUID, Datascope::Company, APIPassword) THEN
-            EXIT('');
+        if IsNullGuid(APIKeyGUID) or not IsolatedStorage.Get(APIKeyGUID, Datascope::Company, APIPassword) then
+            exit('');
 
-        EXIT(APIPassword);
+        exit(APIPassword);
     end;
 
     [NonDebuggable]
     [Scope('OnPrem')]
     procedure SaveAPIKey(var APIKeyGUID: Guid; APIKeyValue: Text[250])
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        IF NOT ISNULLGUID(APIKeyGUID) AND (APIKeyValue = '') THEN BEGIN
+        if not IsNullGuid(APIKeyGUID) AND (APIKeyValue = '') then begin
             If IsolatedStorage.Contains(APIKeyGUID, Datascope::Company) then
                 IsolatedStorage.Delete(APIKeyGUID, Datascope::Company);
-            CLEAR(APIKey);
+            Clear(APIKey);
         end else begin
-            IF ISNULLGUID(APIKey) OR NOT IsolatedStorage.Contains(APIKeyGUID, Datascope::Company) THEN BEGIN
-                APIKeyGuid := FORMAT(CreateGuid());
+            if IsNullGuid(APIKey) or not IsolatedStorage.Contains(APIKeyGUID, Datascope::Company) then begin
+                APIKeyGuid := Format(CreateGuid());
                 APIKey := APIKeyGuid;
             end;
-            IF NOT EncryptionEnabled() THEN
+            if not EncryptionEnabled() then
                 IsolatedStorage.Set(APIKeyGUID, APIKeyValue, Datascope::Company)
             else
                 IsolatedStorage.SetEncrypted(APIKeyGUID, APIKeyValue, Datascope::Company);
+
+            FeatureTelemetry.LogUptake('0000FW7', 'GetAddress.io UK Postcodes', Enum::"Feature Uptake Status"::"Set up");
         end;
         Modify();
     end;

@@ -8,10 +8,12 @@ permissionset 9515 "AAD User Management - Exec"
     Access = Public;
     Assignable = false;
 
-    IncludedPermissionSets = "User Login Times - Read",
+    IncludedPermissionSets = "AAD User Management - Objects",
+                             "User Login Times - Read",
                              "Azure AD User - View",
                              "Azure AD Plan - View",
-                             "Language - View";
+                             "Language - View",
+                             "Telemetry - Exec";
 
     Permissions = tabledata User = rm,
                   tabledata "User Personalization" = r,
