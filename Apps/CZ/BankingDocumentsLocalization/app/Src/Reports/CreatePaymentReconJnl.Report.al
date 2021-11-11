@@ -148,12 +148,12 @@ report 31286 "Create Payment Recon. Jnl. CZB"
             BankAccReconciliationLine."Transaction Text" := IssBankStatementLineCZB."Variable Symbol";
         end;
 
-        OnCreateBankAccReconLineOnBeforeInsertBankAccReconLine(IssBankStatementHeaderCZB, IssBankStatementLineCZB, BankAccReconciliationLine);
+        OnCreateBankAccReconLineOnBeforeInsertBankAccReconLine(IssBankStatementHeaderCZB, IssBankStatementLineCZB, BankAccReconciliationLine, VariableSymbolToDescription);
         BankAccReconciliationLine.Insert(true);
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnCreateBankAccReconLineOnBeforeInsertBankAccReconLine(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; IssBankStatementLineCZB: Record "Iss. Bank Statement Line CZB"; var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line")
+    local procedure OnCreateBankAccReconLineOnBeforeInsertBankAccReconLine(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; IssBankStatementLineCZB: Record "Iss. Bank Statement Line CZB"; var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; VariableSymbolToDescription: Boolean)
     begin
     end;
 }

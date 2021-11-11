@@ -7,5 +7,7 @@ permissionset 447 "Record Link Management - Read"
 {
     Assignable = false;
 
+    IncludedPermissionSets = "Record Link Management - Obj.";
+
     Permissions = tabledata "Record Link" = r;
 }

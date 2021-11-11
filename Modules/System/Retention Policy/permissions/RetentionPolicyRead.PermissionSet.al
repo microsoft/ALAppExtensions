@@ -8,11 +8,13 @@ PermissionSet 3900 "Retention Policy - Read"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Field Selection - Read",
+    IncludedPermissionSets = "Retention Policy - Objects",
+                             "Field Selection - Read",
                              "Guided Experience - Read",
                              "Object Selection - Read",
                              "Upgrade Tags - Read",
-                             "System Initialization - Exec";
+                             "System Initialization - Exec",
+                             "Telemetry - Exec";
 
     Permissions = tabledata AllObj = r,
                   tabledata AllObjWithCaption = r,

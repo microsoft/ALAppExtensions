@@ -31,6 +31,16 @@
                 GSTBaseValidation.CallTaxEngineOnPurchHeader(Rec);
             end;
         }
+        modify("Order Address Code")
+        {
+            trigger OnAfterValidate()
+            var
+                GSTBaseValidation: Codeunit "GST Base Validation";
+            begin
+                CurrPage.SaveRecord();
+                GSTBaseValidation.CallTaxEngineOnPurchHeader(Rec);
+            end;
+        }
         addafter("Foreign Trade")
         {
             group("Tax Information ")

@@ -43,6 +43,8 @@ Codeunit 6091 "FA Card Notifications"
     var
         JobQueueEntry: Record "Job Queue Entry";
     begin
+        if not CanScheduleJob() then
+            exit;
         JobQueueEntry.SETRANGE("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
         JobQueueEntry.SETRANGE("Object ID to Run", CODEUNIT::"FA Ledger Entries Scan");
         JobQueueEntry.SETRANGE(Status, JobQueueEntry.Status::Ready);
@@ -69,4 +71,16 @@ Codeunit 6091 "FA Card Notifications"
     begin
         exit('732367dd-4f13-4cf0-a0d9-8e380a4b920c');
     end;
+
+    internal procedure CanScheduleJob(): Boolean
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+    begin
+        if not (JobQueueEntry.WritePermission() and JobQueueEntry.ReadPermission()) then
+            exit(false);
+        if not TASKSCHEDULER.CanCreateTask() then
+            exit(false);
+        exit(true);
+    end;
+
 }

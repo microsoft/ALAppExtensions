@@ -13,7 +13,7 @@ codeunit 18716 "TDS Subscribers"
             AllowedSections.Reset();
             AllowedSections.SetRange("Vendor No", Rec."Buy-from Vendor No.");
             AllowedSections.SetRange("Default Section", true);
-            if not AllowedSections.IsEmpty then begin
+            if AllowedSections.FindFirst() then begin
                 Rec.Validate("TDS Section Code", AllowedSections."TDS Section");
                 Rec.Validate("Nature of Remittance", AllowedSections."Nature of Remittance");
                 Rec.Validate("Act Applicable", AllowedSections."Act Applicable");

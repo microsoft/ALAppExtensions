@@ -13,7 +13,7 @@ pageextension 4009 "Hybrid O365 Activities" extends "O365 Activities"
                 AutoFormatType = 11;
                 AutoFormatExpression = '<Precision,0:0><Standard Format,9>%';
                 ToolTip = 'Specifies the percentage rate for the number of tables successfully migrated.';
-                Visible = IsIntelligentCloudEnabled;
+                Visible = false;
 
                 trigger OnDrillDown()
                 begin

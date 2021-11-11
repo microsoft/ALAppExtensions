@@ -283,9 +283,12 @@ table 31258 "Iss. Payment Order Header CZB"
         IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
         BankAccount: Record "Bank Account";
         CodeunitID: Integer;
+        IsHandled: Boolean;
         NothingToExportErr: Label 'There is nothing to export.';
     begin
-        OnBeforeExportPmtOrd(Rec);
+        OnBeforeExportPmtOrd(Rec, IsHandled);
+        if IsHandled then
+            exit;
 
         IssPaymentOrderLineCZB.SetRange("Payment Order No.", "No.");
         if IssPaymentOrderLineCZB.IsEmpty() then
@@ -304,6 +307,8 @@ table 31258 "Iss. Payment Order Header CZB"
 
         if Find() then
             IncreaseNoExported();
+
+        OnAfterExportPmtOrd(Rec);
     end;
 
     procedure CreatePaymentJournal(JnlTemplateName: Code[10]; JnlBatchName: Code[10])
@@ -388,7 +393,12 @@ table 31258 "Iss. Payment Order Header CZB"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeExportPmtOrd(var IssPaymentOrderHeaderCZB: Record "Iss. Payment Order Header CZB")
+    local procedure OnBeforeExportPmtOrd(var IssPaymentOrderHeaderCZB: Record "Iss. Payment Order Header CZB"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterExportPmtOrd(var IssPaymentOrderHeaderCZB: Record "Iss. Payment Order Header CZB")
     begin
     end;
 }

@@ -513,13 +513,20 @@ table 31252 "Bank Statement Header CZB"
     procedure ImportBankStatement()
     var
         BankStatementImportCodeunitId: Integer;
+        IsHandled: Boolean;
     begin
+        OnBeforeImportBankStatement(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
         BankAccount.Get("Bank Account No.");
         BankStatementImportCodeunitId := BankAccount.GetBankStatementImportCodeunitIdCZB();
         if BankStatementImportCodeunitId > 0 then
             Codeunit.Run(BankStatementImportCodeunitId, Rec)
         else
             Codeunit.Run(Codeunit::"Imp. Launch Bank Statement CZB", Rec);
+
+        OnAfterImportBankStatement(Rec);
     end;
 
     procedure TestPrintRecords(ShowRequestForm: Boolean)
@@ -572,5 +579,16 @@ table 31252 "Bank Statement Header CZB"
         CalcFields(Amount);
         BankingDocStatisticsCZB.SetValues("Bank Account No.", "Document Date", Amount);
         BankingDocStatisticsCZB.Run();
+    end;
+
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeImportBankStatement(var BankStatementHeaderCZB: Record "Bank Statement Header CZB"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterImportBankStatement(var BankStatementHeaderCZB: Record "Bank Statement Header CZB")
+    begin
     end;
 }

@@ -1,3 +1,4 @@
+#if not CLEAN19
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -10,6 +11,9 @@ table 1461 "Signature Key"
 {
     TableType = Temporary;
     Extensible = false;
+    ObsoleteState = Pending;
+    ObsoleteTag = '19.1';
+    ObsoleteReason = 'The xml representation of key is used instead.';
 
     fields
     {
@@ -131,3 +135,4 @@ table 1461 "Signature Key"
         CopyStream(KeyValueOutStream, KeyValueInStream);
     end;
 }
+#endif

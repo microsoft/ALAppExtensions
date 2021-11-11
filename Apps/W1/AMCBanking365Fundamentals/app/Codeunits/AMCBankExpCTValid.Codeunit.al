@@ -4,7 +4,7 @@ codeunit 20107 "AMC Bank Exp. CT Valid."
 
     trigger OnRun()
     var
-        GenJnlLine: Record "Gen. Journal Line";
+        GenJournalLine: Record "Gen. Journal Line";
         PaymentMethod: record "Payment Method";
         PaymentExportGenJnlCheck: Codeunit "Payment Export Gen. Jnl Check";
         TestedBankAccount: Boolean;
@@ -12,26 +12,26 @@ codeunit 20107 "AMC Bank Exp. CT Valid."
         DeletePaymentFileBatchErrors();
         DeletePaymentFileErrors();
 
-        GenJnlLine.CopyFilters(Rec);
-        if GenJnlLine.FindSet() then
+        GenJournalLine.CopyFilters(Rec);
+        if GenJournalLine.FindSet() then
             repeat
-                CODEUNIT.Run(CODEUNIT::"Payment Export Gen. Jnl Check", GenJnlLine);
+                CODEUNIT.Run(CODEUNIT::"Payment Export Gen. Jnl Check", GenJournalLine);
                 if "Payment Method Code" <> '' then
-                    if (PaymentMethod.Get(GenJnlLine."Payment Method Code")) then
+                    if (PaymentMethod.Get(GenJournalLine."Payment Method Code")) then
                         if (PaymentMethod."AMC Bank Pmt. Type" = '') then
-                            PaymentExportGenJnlCheck.AddFieldEmptyError(GenJnlLine, PaymentMethod.TableCaption, PaymentMethod.FieldCaption("AMC Bank Pmt. Type"), '');
+                            PaymentExportGenJnlCheck.AddFieldEmptyError(GenJournalLine, PaymentMethod.TableCaption, PaymentMethod.FieldCaption("AMC Bank Pmt. Type"), '');
 
-                CheckIsoCodeValues(GenJnlLine, PaymentExportGenJnlCheck, TestedBankAccount);
+                CheckIsoCodeValues(GenJournalLine, PaymentExportGenJnlCheck, TestedBankAccount);
 
-            until GenJnlLine.Next() = 0;
+            until GenJournalLine.Next() = 0;
 
-        if GenJnlLine.HasPaymentFileErrorsInBatch() then begin
+        if GenJournalLine.HasPaymentFileErrorsInBatch() then begin
             Commit();
             Error(HasErrorsErr);
         end;
     end;
 
-    local procedure CheckIsoCodeValues(GenJnlLine: Record "Gen. Journal Line"; PaymentExportGenJnlCheck: Codeunit "Payment Export Gen. Jnl Check"; var TestedBankAccount: Boolean)
+    local procedure CheckIsoCodeValues(GenJournalLine: Record "Gen. Journal Line"; PaymentExportGenJnlCheck: Codeunit "Payment Export Gen. Jnl Check"; var TestedBankAccount: Boolean)
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         CompanyInformation: Record "Company Information";
@@ -48,7 +48,7 @@ codeunit 20107 "AMC Bank Exp. CT Valid."
         GeneralLedgerSetup.Get();
         if (not TestedBankAccount) then begin
             CompanyInformation.Get();
-            if (BankAccount.Get(GenJnlLine."Bal. Account No.")) then begin
+            if (BankAccount.Get(GenJournalLine."Bal. Account No.")) then begin
                 PaymentExportData.SetBankAsSenderBank(BankAccount);
                 PaymentExportData."Sender Bank Country/Region" := CompanyInformation.GetCountryRegionCode(BankAccount."Country/Region Code");
                 PaymentExportData."Sender Bank Account Currency" := GeneralLedgerSetup.GetCurrencyCode(BankAccount."Currency Code");
@@ -56,22 +56,22 @@ codeunit 20107 "AMC Bank Exp. CT Valid."
             TestedBankAccount := true;
         end;
 
-        case GenJnlLine."Account Type" of
-            GenJnlLine."Account Type"::Customer:
+        case GenJournalLine."Account Type" of
+            GenJournalLine."Account Type"::Customer:
                 begin
-                    Customer.Get(GenJnlLine."Account No.");
-                    if CustomerBankAccount.Get(Customer."No.", GenJnlLine."Recipient Bank Account") then
+                    Customer.Get(GenJournalLine."Account No.");
+                    if CustomerBankAccount.Get(Customer."No.", GenJournalLine."Recipient Bank Account") then
                         PaymentExportData.SetCustomerAsRecipient(Customer, CustomerBankAccount);
                 end;
-            GenJnlLine."Account Type"::Vendor:
+            GenJournalLine."Account Type"::Vendor:
                 begin
-                    Vendor.Get(GenJnlLine."Account No.");
-                    if VendorBankAccount.Get(Vendor."No.", GenJnlLine."Recipient Bank Account") then
+                    Vendor.Get(GenJournalLine."Account No.");
+                    if VendorBankAccount.Get(Vendor."No.", GenJournalLine."Recipient Bank Account") then
                         PaymentExportData.SetVendorAsRecipient(Vendor, VendorBankAccount);
                 end;
-            GenJnlLine."Account Type"::Employee:
+            GenJournalLine."Account Type"::Employee:
                 begin
-                    Employee.Get(GenJnlLine."Account No.");
+                    Employee.Get(GenJournalLine."Account No.");
                     PaymentExportData.SetEmployeeAsRecipient(Employee);
                 end;
         end;
@@ -79,33 +79,33 @@ codeunit 20107 "AMC Bank Exp. CT Valid."
         if (PaymentExportData."Sender Bank Country/Region" <> '') then
             if (CountryRegion.Get(PaymentExportData."Sender Bank Country/Region")) then
                 if (CountryRegion."ISO Code" = '') then
-                    PaymentExportGenJnlCheck.AddFieldEmptyError(GenJnlLine, CountryRegion.TableCaption, CountryRegion.FieldCaption("ISO Code"), '');
+                    PaymentExportGenJnlCheck.AddFieldEmptyError(GenJournalLine, CountryRegion.TableCaption, CountryRegion.FieldCaption("ISO Code"), '');
 
         if (PaymentExportData."Recipient Country/Region Code" <> '') then
             if (CountryRegion.Get(PaymentExportData."Recipient Country/Region Code")) then
                 if (CountryRegion."ISO Code" = '') then
-                    PaymentExportGenJnlCheck.AddFieldEmptyError(GenJnlLine, CountryRegion.TableCaption, CountryRegion.FieldCaption("ISO Code"), '');
+                    PaymentExportGenJnlCheck.AddFieldEmptyError(GenJournalLine, CountryRegion.TableCaption, CountryRegion.FieldCaption("ISO Code"), '');
 
         if (PaymentExportData."Recipient Bank Country/Region" <> '') then
             if (CountryRegion.Get(PaymentExportData."Recipient Bank Country/Region")) then
                 if (CountryRegion."ISO Code" = '') then
-                    PaymentExportGenJnlCheck.AddFieldEmptyError(GenJnlLine, CountryRegion.TableCaption, CountryRegion.FieldCaption("ISO Code"), '');
+                    PaymentExportGenJnlCheck.AddFieldEmptyError(GenJournalLine, CountryRegion.TableCaption, CountryRegion.FieldCaption("ISO Code"), '');
 
         if (PaymentExportData."Sender Bank Account Currency" <> '') then
             if (Currency.get(PaymentExportData."Sender Bank Account Currency")) then
                 if (Currency."ISO Code" = '') then
-                    PaymentExportGenJnlCheck.AddFieldEmptyError(GenJnlLine, Currency.TableCaption, Currency.FieldCaption("ISO Code"), '');
+                    PaymentExportGenJnlCheck.AddFieldEmptyError(GenJournalLine, Currency.TableCaption, Currency.FieldCaption("ISO Code"), '');
 
-        if (GenJnlLine."Currency Code" <> '') then // This is to handle BC users that by mistake has set CurrencyCode to the same as GeneralLedgerSetup."LCY Code"
-            PaymentExportData."Currency Code" := GenJnlLine."Currency Code"
+        if (GenJournalLine."Currency Code" <> '') then // This is to handle BC users that by mistake has set CurrencyCode to the same as GeneralLedgerSetup."LCY Code"
+            PaymentExportData."Currency Code" := GenJournalLine."Currency Code"
         else
-            PaymentExportData."Currency Code" := GeneralLedgerSetup.GetCurrencyCode(GenJnlLine."Currency Code");
+            PaymentExportData."Currency Code" := GeneralLedgerSetup.GetCurrencyCode(GenJournalLine."Currency Code");
 
 
         if (PaymentExportData."Currency Code" <> '') then
             if (Currency.get(PaymentExportData."Currency Code")) then
                 if (Currency."ISO Code" = '') then
-                    PaymentExportGenJnlCheck.AddFieldEmptyError(GenJnlLine, Currency.TableCaption, Currency.FieldCaption("ISO Code"), '');
+                    PaymentExportGenJnlCheck.AddFieldEmptyError(GenJournalLine, Currency.TableCaption, Currency.FieldCaption("ISO Code"), '');
 
         Clear(PaymentExportData);
     end;

@@ -8,6 +8,8 @@ permissionset 6710 "Web Service Management - Read"
     Access = Internal;
     Assignable = false;
 
+    IncludedPermissionSets = "Web Service Management - Obj.";
+
     Permissions = tabledata AllObj = r,
                   tabledata AllObjWithCaption = r,
                   tabledata Field = r,

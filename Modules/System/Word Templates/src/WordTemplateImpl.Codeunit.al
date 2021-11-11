@@ -250,11 +250,21 @@ codeunit 9988 "Word Template Impl."
         TempBlob.CreateOutStream(TemplateOutStream, TextEncoding::UTF8);
         WordTemplate.Template.ExportStream(TemplateOutStream);
         TempBlob.CreateInStream(TemplateInStream, TextEncoding::UTF8);
-        Load(TemplateInStream);
+
+        LoadDocument(TemplateInStream);
+        GetMergeFieldsForRecordAndRelated(WordTemplate, MergeFields);
     end;
 
     procedure Load(TemplateInStream: InStream)
+    begin
+        LoadDocument(TemplateInStream);
+        GetMergeFieldsForDocument();
+    end;
+
+    local procedure LoadDocument(TemplateInStream: InStream)
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        CustomDimensions: Dictionary of [Text, Text];
         OutStream: OutStream;
         Success: Boolean;
     begin
@@ -265,11 +275,13 @@ codeunit 9988 "Word Template Impl."
         Template.CreateInStream(TemplateInStream, TextEncoding::UTF8);
 
         Success := TryMailMergeLoadDocument(TemplateInStream);
+        CustomDimensions.Add('TemplateSystemID', WordTemplate.SystemId);
+        CustomDimensions.Add('TemplateTableID', Format(WordTemplate."Table ID"));
 
         if Success then
-            Session.LogMessage('0000ECP', StrSubstNo(LoadedTemplateTxt, WordTemplate.SystemId, WordTemplate."Table ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WordTemplatesCategoryTxt)
+            FeatureTelemetry.LogUptake('0000ECP', 'Word templates', Enum::"Feature Uptake Status"::"Set up", false, CustomDimensions)
         else begin
-            Session.LogMessage('0000ECQ', StrSubstNo(FailedToLoadTemplateTxt, WordTemplate.SystemId, WordTemplate."Table ID", GetLastErrorText(true)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WordTemplatesCategoryTxt);
+            FeatureTelemetry.LogError('0000ECQ', 'Word templates', 'Loading template', GetLastErrorText(true), GetLastErrorCallStack(), CustomDimensions);
             Session.LogMessage('0000ECR', StrSubstNo(FailedToLoadTemplateAllTxt, WordTemplate.SystemId, WordTemplate."Table ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', WordTemplatesCategoryTxt);
             Error(FailedToLoadTemplateErr);
         end;
@@ -277,18 +289,15 @@ codeunit 9988 "Word Template Impl."
 
     [TryFunction]
     local procedure TryMailMergeLoadDocument(var TemplateInstream: InStream)
-    var
-        MailMergeField: Text;
     begin
         MailMerge := MailMerge.MailMerge();
         MailMerge.LoadDocument(TemplateInStream);
-
-        foreach MailMergeField in MailMerge.GetMergeFields() do
-            MergeFields.Add(MailMergeField);
     end;
 
     procedure Merge(Data: Dictionary of [Text, Text]; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format")
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        CustomDimensions: Dictionary of [Text, Text];
         Output: OutStream;
         Success: Boolean;
     begin
@@ -299,10 +308,14 @@ codeunit 9988 "Word Template Impl."
 
         Success := TryMailMergeExecute(Data, SaveFormat, Output);
 
+        CustomDimensions.Add('TemplateSystemID', WordTemplate.SystemId);
+        CustomDimensions.Add('TemplateTableID', Format(WordTemplate."Table ID"));
+        FeatureTelemetry.LogUptake('0000FW3', 'Word templates', Enum::"Feature Uptake Status"::Used, false, CustomDimensions);
+
         if Success then
-            Session.LogMessage('0000ECS', StrSubstNo(AppliedTemplateTxt, WordTemplate.SystemId, WordTemplate."Table ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WordTemplatesCategoryTxt)
+            FeatureTelemetry.LogUsage('0000ECS', 'Word templates', 'Template applied', CustomDimensions)
         else begin
-            Session.LogMessage('0000ECT', StrSubstNo(FailedToApplyTemplateTxt, WordTemplate.SystemId, WordTemplate."Table ID", GetLastErrorText(true)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WordTemplatesCategoryTxt);
+            FeatureTelemetry.LogError('0000ECT', 'Word templates', 'Applying template', GetLastErrorText(true), GetLastErrorCallStack(), CustomDimensions);
             Session.LogMessage('0000ECU', StrSubstNo(FailedToApplyTemplateAllTxt, WordTemplate.SystemId, WordTemplate."Table ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', WordTemplatesCategoryTxt);
             Error(GetLastErrorText());
         end;
@@ -323,6 +336,8 @@ codeunit 9988 "Word Template Impl."
 
     procedure Merge(Data: InStream; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format")
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        CustomDimensions: Dictionary of [Text, Text];
         Output: OutStream;
         Success: Boolean;
     begin
@@ -333,10 +348,14 @@ codeunit 9988 "Word Template Impl."
 
         Success := TryMailMergeExecute(Data, SaveFormat, Output);
 
+        CustomDimensions.Add('TemplateSystemID', WordTemplate.SystemId);
+        CustomDimensions.Add('TemplateTableID', Format(WordTemplate."Table ID"));
+        FeatureTelemetry.LogUptake('0000FW4', 'Word templates', Enum::"Feature Uptake Status"::Used, false, CustomDimensions);
+
         if Success then
-            Session.LogMessage('0000ECV', StrSubstNo(AppliedTemplateTxt, WordTemplate.SystemId, WordTemplate."Table ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WordTemplatesCategoryTxt)
+            FeatureTelemetry.LogUsage('0000ECV', 'Word templates', 'Template applied', CustomDimensions)
         else begin
-            Session.LogMessage('0000ECW', StrSubstNo(FailedToApplyTemplateTxt, WordTemplate.SystemId, WordTemplate."Table ID", GetLastErrorText(true)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WordTemplatesCategoryTxt);
+            FeatureTelemetry.LogError('0000ECW', 'Word templates', 'Applying template', GetLastErrorText(true), GetLastErrorCallStack(), CustomDimensions);
             Session.LogMessage('0000ECX', StrSubstNo(FailedToApplyTemplateAllTxt, WordTemplate.SystemId, WordTemplate."Table ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', WordTemplatesCategoryTxt);
             Error(GetLastErrorText());
         end;
@@ -720,6 +739,27 @@ codeunit 9988 "Word Template Impl."
         WordTemplate.Insert();
     end;
 
+    local procedure GetMergeFieldsForDocument()
+    var
+        MailMergeField: Text;
+    begin
+        foreach MailMergeField in MailMerge.GetMergeFields() do
+            MergeFields.Add(MailMergeField);
+    end;
+
+    local procedure GetMergeFieldsForRecordAndRelated(WordTemplateRec: Record "Word Template"; var MailMergeFields: List of [Text])
+    var
+        WordTemplatesRelatedTable: Record "Word Templates Related Table";
+    begin
+        GetMergeFieldsForRecord(WordTemplateRec."Table ID", MailMergeFields);
+
+        WordTemplatesRelatedTable.SetRange(Code, WordTemplateRec.Code);
+        if WordTemplatesRelatedTable.FindSet() then
+            repeat
+                GetMergeFieldsForRecord(WordTemplatesRelatedTable."Related Table ID", MailMergeFields, StrSubstNo(PrependPatternTxt, WordTemplatesRelatedTable."Related Table Code"));
+            until WordTemplatesRelatedTable.Next() = 0;
+    end;
+
     local procedure GetMergeFieldsForRecord(TableId: Integer; var MailMergeFields: List of [Text])
     begin
         GetMergeFieldsForRecord(TableId, MailMergeFields, '');
@@ -1064,11 +1104,7 @@ codeunit 9988 "Word Template Impl."
         UploadedTemplateTxt: Label 'Template uploaded: %1 (%2).', Comment = '%1 - System ID, %2 - Table ID', Locked = true;
         CreatedTemplateTxt: Label 'Template created: %1 (%2).', Comment = '%1 - System ID, %2 - Table ID', Locked = true;
         DeletedTemplateTxt: Label 'Template deleted: %1 (%2).', Comment = '%1 - System ID, %2 - Table ID', Locked = true;
-        LoadedTemplateTxt: Label 'Template loaded: %1 (%2).', Comment = '%1 - System ID, %2 - Table ID', Locked = true;
-        AppliedTemplateTxt: Label 'Template applied: %1 (%2).', Comment = '%1 - System ID, %2 - Table ID', Locked = true;
         TableNoSetExternallyTxt: Label 'Table no. of Word Template Creation Wizard set externally: %1.', Comment = '%1 - Table ID', Locked = true;
-        FailedToApplyTemplateTxt: Label 'Failed to apply template %1 (%2) with error: %3.', Comment = '%1 - System ID, %2 - Table ID, %3 - Error', Locked = true;
         FailedToApplyTemplateAllTxt: Label 'Failed to apply template: %1 (%2).', Comment = '%1 - System ID, %2 - Table ID, %3 - Error', Locked = true;
-        FailedToLoadTemplateTxt: Label 'Failed to load template: %1 (%2) with error: %3.', Comment = '%1 - System ID, %2 - Table ID, %3 - Error', Locked = true;
         FailedToLoadTemplateAllTxt: Label 'Failed to load template: %1 (%2).', Comment = '%1 - System ID, %2 - Table ID', Locked = true;
 }

@@ -6,12 +6,12 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
     trigger OnRun()
     var
     begin
-        GetBankListFromWebService(true, '', 5000, AMCBankServMgt.GetAppCaller());
+        GetBankListFromWebService(true, '', 5000, AMCBankingMgt.GetAppCaller());
     end;
 
     var
         AMCBankServiceRequestMgt: Codeunit "AMC Bank Service Request Mgt.";
-        AMCBankServMgt: Codeunit "AMC Banking Mgt.";
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
         AMCBankServSysErr: Label 'The AMC Banking has returned the following error message:';
         AddnlInfoTxt: Label 'For more information, go to %1.', comment = '%1=Support URL';
         BankListWebCallTxt: Label 'bankList', locked = true;
@@ -25,23 +25,23 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
         InsertBankData(TempBlobRequestBody, CountryFilter);
     end;
 
-    local procedure SendRequestToWebService(var TempBlobBody: Codeunit "Temp Blob"; EnableUI: Boolean; Timeout: Integer; CountryFilter: Text; Appcaller: Text[30])
+    local procedure SendRequestToWebService(var BodyTempBlob: Codeunit "Temp Blob"; EnableUI: Boolean; Timeout: Integer; CountryFilter: Text; Appcaller: Text[30])
     var
-        AMCBankServiceSetup: Record "AMC Banking Setup";
-        BankListRequestMessage: HttpRequestMessage;
-        BankListResponseMessage: HttpResponseMessage;
+        AMCBankingSetup: Record "AMC Banking Setup";
+        BankListHttpRequestMessage: HttpRequestMessage;
+        BankListHttpResponseMessage: HttpResponseMessage;
         Handled: Boolean;
         Result: Text;
     begin
-        AMCBankServMgt.CheckCredentials();
-        AMCBankServiceSetup.Get();
+        AMCBankingMgt.CheckCredentials();
+        AMCBankingSetup.Get();
 
-        AMCBankServiceRequestMgt.InitializeHttp(BankListRequestMessage, AMCBankServiceSetup."Service URL", 'POST');
+        AMCBankServiceRequestMgt.InitializeHttp(BankListHttpRequestMessage, AMCBankingSetup."Service URL", 'POST');
 
-        PrepareSOAPRequestBody(BankListRequestMessage, CountryFilter);
+        PrepareSOAPRequestBody(BankListHttpRequestMessage, CountryFilter);
 
         //Set Content-Type header
-        AMCBankServiceRequestMgt.SetHttpContentsDefaults(BankListRequestMessage);
+        AMCBankServiceRequestMgt.SetHttpContentsDefaults(BankListHttpRequestMessage);
 
         if not EnableUI then
             AMCBankServiceRequestMgt.DisableProgressDialog();
@@ -49,16 +49,17 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
         //Send Request to webservice
         Handled := false;
         AMCBankServiceRequestMgt.SetTimeout(TimeOut);
-        AMCBankServiceRequestMgt.ExecuteWebServiceRequest(Handled, BankListRequestMessage, BankListResponseMessage, BankListWebCallTxt, AppCaller, true);
-        AMCBankServiceRequestMgt.GetWebServiceResponse(BankListResponseMessage, TempBlobBody, BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), true);
-        if (AMCBankServiceRequestMgt.HasResponseErrors(TempBlobBody, AMCBankServiceRequestMgt.GetHeaderXPath(), BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), Result, AppCaller)) then
+        AMCBankServiceRequestMgt.OnBeforeExecuteWebServiceRequest(Handled, BankListHttpRequestMessage, BankListHttpResponseMessage, BankListWebCallTxt, AppCaller); //For mockup testing
+        AMCBankServiceRequestMgt.ExecuteWebServiceRequest(Handled, BankListHttpRequestMessage, BankListHttpResponseMessage, BankListWebCallTxt, AppCaller, true);
+        AMCBankServiceRequestMgt.GetWebServiceResponse(BankListHttpResponseMessage, BodyTempBlob, BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), true);
+        if (AMCBankServiceRequestMgt.HasResponseErrors(BodyTempBlob, AMCBankServiceRequestMgt.GetHeaderXPath(), BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), Result, AppCaller)) then
             if EnableUI then
-                DisplayErrorFromResponse(TempBlobBody);
+                DisplayErrorFromResponse(BodyTempBlob);
 
     end;
 
     [NonDebuggable]
-    local procedure PrepareSOAPRequestBody(var BankListExchRequestMessage: HttpRequestMessage; CountryFilter: Text)
+    local procedure PrepareSOAPRequestBody(var BankListExchHttpRequestMessage: HttpRequestMessage; CountryFilter: Text)
     var
         AMCBankingSetup: Record "AMC Banking Setup";
         contentHttpContent: HttpContent;
@@ -77,77 +78,105 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
         AMCBankingSetup.Get();
         AMCBankServiceRequestMgt.CreateEnvelope(BodyContentXmlDoc, EnvelopeXmlElement, AMCBankingSetup.GetUserName(), AMCBankingSetup.GetPassword(), '');
         AMCBankServiceRequestMgt.AddElement(EnvelopeXMLElement, EnvelopeXMLElement.NamespaceUri(), 'Body', '', BodyXMLElement, '', '', '');
-        AMCBankServiceRequestMgt.AddElement(BodyXMLElement, AMCBankServMgt.GetNamespace(), BankListWebCallTxt, '', OperationXmlNode, '', '', '');
+        AMCBankServiceRequestMgt.AddElement(BodyXMLElement, AMCBankingMgt.GetNamespace(), BankListWebCallTxt, '', OperationXmlNode, '', '', '');
 
-        AMCBankServiceRequestMgt.AddElement(OperationXmlNode, '', 'compressed', 'true', ChildXmlElement, '', '', '');
+        AMCBankServiceRequestMgt.AddElement(OperationXmlNode, '', 'productdimgroup', 'BANK', ChildXmlElement, '', '', ''); //V17.5
+        AMCBankServiceRequestMgt.AddElement(OperationXmlNode, '', 'banklisttype', 'Compressed', ChildXmlElement, '', '', ''); //V17.5
         AMCBankServiceRequestMgt.AddElement(OperationXmlNode, '', 'filterbycountry', CountryFilter, ChildXmlElement, '', '', '');
 
         BodyContentXmlDoc.WriteTo(TempXmlDocText);
         AMCBankServiceRequestMgt.RemoveUTF16(TempXmlDocText);
         contentHttpContent.WriteFrom(TempXmlDocText);
-        BankListExchRequestMessage.Content(contentHttpContent);
+        BankListExchHttpRequestMessage.Content(contentHttpContent);
     end;
 
     local procedure InsertBankData(TempBlob: Codeunit "Temp Blob"; CountryFilter: Text)
     var
-        AMCBankBank: Record "AMC Bank Banks";
+        AMCBankBanks: Record "AMC Bank Banks";
+        TempAMCBankBanks: Record "AMC Bank Banks" temporary;
         ResponseXMLDoc: XmlDocument;
         BankListXmlNodeList: XmlNodeList;
         ChildNode: XmlNode;
-        InStreamData: InStream;
+        DataInStream: InStream;
         Found: Boolean;
         ChildCounter: Integer;
     begin
-        TempBlob.CreateInStream(InStreamData);
-        XmlDocument.ReadFrom(InStreamData, ResponseXmlDoc);
+        TempBlob.CreateInStream(DataInStream);
+        XmlDocument.ReadFrom(DataInStream, ResponseXmlDoc);
 
-        Found := ResponseXmlDoc.SelectNodes(STRSUBSTNO(AMCBankServiceRequestMgt.GetBankXPath(BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag()),
-                                            BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), AMCBankServMgt.GetNamespace()), BankListXmlNodeList);
+        Found := ResponseXmlDoc.SelectNodes(AMCBankServiceRequestMgt.GetBankXPath(), BankListXmlNodeList); //V17.5
 
-        if BankListXmlNodeList.Count() > 0 then begin
-            if CountryFilter <> '' then
-                AMCBankBank.SetRange("Country/Region Code", CountryFilter);
+        if (Found) then
+            if BankListXmlNodeList.Count() > 0 then begin
+                if CountryFilter <> '' then
+                    AMCBankBanks.SetRange("Country/Region Code", CountryFilter);
 
-            AMCBankBank.DeleteAll();
+                Clear(TempAMCBankBanks);
+                SetTempAMCBankBanks(TempAMCBankBanks, AMCBankBanks);
 
-            for ChildCounter := 1 to BankListXmlNodeList.Count() do begin
-                BankListXmlNodeList.Get(ChildCounter, ChildNode);
-                Clear(AMCBankBank);
+                AMCBankBanks.DeleteAll();
 
-                EVALUATE(AMCBankBank.Bank, COPYSTR(AMCBankServiceRequestMgt.getNodeValue(ChildNode, './bank'), 1, 50));
-                EVALUATE(AMCBankBank."Bank Name", COPYSTR(AMCBankServiceRequestMgt.getNodeValue(ChildNode, './bankname'), 1, 50));
-                EVALUATE(AMCBankBank."Country/Region Code", COPYSTR(AMCBankServiceRequestMgt.getNodeValue(ChildNode, './countryoforigin'), 1, 50));
-                AMCBankBank."Last Update Date" := TODAY();
-                AMCBankBank.Insert(true);
+                for ChildCounter := 1 to BankListXmlNodeList.Count() do begin
+                    BankListXmlNodeList.Get(ChildCounter, ChildNode);
+                    Clear(AMCBankBanks);
+
+                    EVALUATE(AMCBankBanks.Bank, COPYSTR(AMCBankServiceRequestMgt.getNodeValue(ChildNode, './bank'), 1, 50));
+                    EVALUATE(AMCBankBanks."Bank Name", COPYSTR(AMCBankServiceRequestMgt.getNodeValue(ChildNode, './bankname'), 1, 50));
+                    EVALUATE(AMCBankBanks."Country/Region Code", COPYSTR(AMCBankServiceRequestMgt.getNodeValue(ChildNode, './countryoforigin'), 1, 50));
+                    AMCBankBanks."Bank Ownreference" := GetOwnRefOnBankNameList(TempAMCBankBanks, AMCBankBanks);
+                    AMCBankBanks."Last Update Date" := TODAY();
+                    AMCBankBanks.Insert(true);
+                end;
             end;
-        end;
     end;
 
-    local procedure DisplayErrorFromResponse(TempBlobBankList: Codeunit "Temp Blob")
+    local procedure DisplayErrorFromResponse(BankListTempBlob: Codeunit "Temp Blob")
     var
         ResponseXmlDoc: XmlDocument;
-        InStreamData: InStream;
+        DataInStream: InStream;
         SysLogXMLNodeList: XmlNodeList;
         SyslogXmlNode: XmlNode;
         Found: Boolean;
         ErrorText: Text;
         j: Integer;
     begin
-        TempBlobBankList.CreateInStream(InStreamData);
-        XmlDocument.ReadFrom(InStreamData, ResponseXmlDoc);
+        BankListTempBlob.CreateInStream(DataInStream);
+        XmlDocument.ReadFrom(DataInStream, ResponseXmlDoc);
 
-        Found := ResponseXmlDoc.SelectNodes(STRSUBSTNO(AMCBankServiceRequestMgt.GetSysErrXPath(BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag()),
-                                            BankListWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), AMCBankServMgt.GetNamespace()), SysLogXMLNodeList);
+        Found := ResponseXmlDoc.SelectNodes(AMCBankServiceRequestMgt.GetSysErrXPath(), SysLogXMLNodeList);
         if Found then begin
             ErrorText := AMCBankServSysErr;
             for j := 1 to SysLogXMLNodeList.Count() do begin
                 SysLogXMLNodeList.Get(j, SyslogXmlNode);
                 ErrorText += '\\' + CopyStr(AMCBankServiceRequestMgt.getNodeValue(SyslogXmlNode, 'text'), 1, 250) + '\' +
-                  CopyStr(AMCBankServiceRequestMgt.getNodeValue(SyslogXmlNode, 'hinttext'), 1, 250) + '\\' +
-                  StrSubstNo(AddnlInfoTxt, AMCBankServMgt.GetSupportURL(ResponseXmlDoc));
+                                    CopyStr(AMCBankServiceRequestMgt.getNodeValue(SyslogXmlNode, 'hinttext'), 1, 250) + '\\' +
+                                    StrSubstNo(AddnlInfoTxt, AMCBankingMgt.GetSupportURL(ResponseXmlDoc));
             end;
             Error(ErrorText);
         end;
+    end;
+
+    local procedure SetTempAMCBankBanks(var TempAMCBankBanks: record "AMC Bank Banks" temporary; AMCBankBanks: record "AMC Bank Banks")
+    begin
+        if (AMCBankBanks.FindSet()) then
+            repeat
+                if (AMCBankBanks."Bank Ownreference" <> AMCBankBanks."Bank Ownreference"::"Recipient Name") then begin
+                    TempAMCBankBanks := AMCBankBanks;
+                    TempAMCBankBanks.Insert();
+                end;
+            until AMCBankBanks.Next() = 0;
+    end;
+
+    local procedure GetOwnRefOnBankNameList(var TempAMCBankBanks: record "AMC Bank Banks" temporary; AMCBankBanks: record "AMC Bank Banks"): Enum AMCBankOwnreference
+    var
+    begin
+        TempAMCBankBanks.Reset();
+        TempAMCBankBanks.SetFilter(TempAMCBankBanks.Bank, AMCBankBanks.Bank);
+        if (TempAMCBankBanks.FindFirst()) then
+            exit(TempAMCBankBanks."Bank Ownreference");
+
+
+        exit(AMCBankBanks."Bank Ownreference");
     end;
 }
 

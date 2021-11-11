@@ -1,5 +1,5 @@
 # Public Objects
-## Assisted Setup (Codeunit 3725)
+## [Obsolete] Assisted Setup (Codeunit 3725)
 Manage assisted setup guides by allowing the addition of new guides to the list, and updating whether a guide has been completed.
 
 ### Add (Method) <a name="Add"></a> 
@@ -143,31 +143,6 @@ Adds the translation for the name of the setup.
 
 #### Syntax
 ```
-[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
-procedure AddTranslation(ExtensionID: Guid; PageID: Integer; LanguageID: Integer; TranslatedName: Text)
-```
-#### Parameters
-*ExtensionID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
-
-The app ID of the extension to which the setup belongs.
-
-*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
-
-The ID of the page to open when the user clicks the setup.
-
-*LanguageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
-
-The language ID for which the translation is made.
-
-*TranslatedName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
-
-The translated text of the name.
-
-### AddTranslation (Method) <a name="AddTranslation"></a> 
-Adds the translation for the name of the setup.
-
-#### Syntax
-```
 [Obsolete('Replaced by AddTranslation(GuidedExperienceType, ObjectType, ObjectID, LanguageID, TranslatedName) in the Guided Experience codeunit.', '18.0')]
 procedure AddTranslation(PageID: Integer; LanguageID: Integer; TranslatedName: Text)
 ```
@@ -184,27 +159,6 @@ The language ID for which the translation is made.
 
 The translated text of the name.
 
-### IsComplete (Method) <a name="IsComplete"></a> 
-Checks whether a user has already completed the setup.
-
-#### Syntax
-```
-[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
-procedure IsComplete(ExtensionID: Guid; PageID: Integer): Boolean
-```
-#### Parameters
-*ExtensionID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
-
-The app ID of the extension to which the setup belongs.
-
-*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
-
-The ID of the page to open when the user clicks the setup.
-
-#### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
-
-Returns true if the given setup guide has been completed by the user, otherwise false.
 ### IsComplete (Method) <a name="IsComplete"></a> 
 Checks whether a user has already completed the setup.
 
@@ -227,27 +181,6 @@ Checks whether an assisted setup guide exists.
 
 #### Syntax
 ```
-[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
-procedure Exists(ExtensionID: Guid; PageID: Integer): Boolean
-```
-#### Parameters
-*ExtensionID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
-
-The app ID of the extension to which the setup belongs.
-
-*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
-
-The ID of the page to open when the user clicks the setup.
-
-#### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
-
-True if an assisted setup guide for provided extension and page IDs exists; false otherwise.
-### Exists (Method) <a name="Exists"></a> 
-Checks whether an assisted setup guide exists.
-
-#### Syntax
-```
 [Obsolete('Replaced by Exists(GuidedExperienceType, ObjectType, ObjectID) in the Guided Experience codeunit.', '18.0')]
 procedure Exists(PageID: Integer): Boolean
 ```
@@ -260,27 +193,6 @@ The ID of the page to open when the user clicks the setup.
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True if an assisted setup guide for provided extension and page IDs exists; false otherwise.
-### ExistsAndIsNotComplete (Method) <a name="ExistsAndIsNotComplete"></a> 
-Checks whether as assisted setup guide exists but has not been completed.
-
-#### Syntax
-```
-[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
-procedure ExistsAndIsNotComplete(ExtensionID: Guid; PageID: Integer): Boolean
-```
-#### Parameters
-*ExtensionID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
-
-The app ID of the extension to which the setup belongs.
-
-*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
-
-The ID of the page to open when the user clicks the setup.
-
-#### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
-
-True if it exists and is incomplete, false otherwise.
 ### ExistsAndIsNotComplete (Method) <a name="ExistsAndIsNotComplete"></a> 
 Checks whether as assisted setup guide exists but has not been completed.
 
@@ -305,25 +217,6 @@ This is typically called from inside the assisted setup guide when the setup is 
 
 #### Syntax
 ```
-[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
-procedure Complete(ExtensionID: Guid; PageID: Integer)
-```
-#### Parameters
-*ExtensionID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
-
-The app ID of the extension to which the setup belongs.
-
-*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
-
-The ID of the page to open when the user clicks the setup.
-
-### Complete (Method) <a name="Complete"></a> 
-Sets the status of the assisted setup to Complete.
-
-This is typically called from inside the assisted setup guide when the setup is finished.
-
-#### Syntax
-```
 [Obsolete('Replaced by CompleteAssistedSetup(ObjectType, ObjectID) in the Guided Experience codeunit.', '18.0')]
 procedure Complete(PageID: Integer)
 ```
@@ -341,23 +234,6 @@ Resets the status of the assisted setup guide so that it does not appear to have
 procedure Reset(PageID: Integer)
 ```
 #### Parameters
-*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
-
-The ID of the page to open when the user clicks the setup.
-
-### Run (Method) <a name="Run"></a> 
-Issues the call to execute the setup.
-
-#### Syntax
-```
-[Obsolete('ExtensionID is not required. Please use the function with the same name without this parameter.', '16.0')]
-procedure Run(ExtensionID: Guid; PageID: Integer)
-```
-#### Parameters
-*ExtensionID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
-
-The app ID of the extension to which the setup belongs.
-
 *PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
 
 The ID of the page to open when the user clicks the setup.
@@ -606,6 +482,62 @@ The index at which this checklist item should appear in the list. Please be awar
 
 The users that this checklist item should be displayed for.
 
+### Insert (Method) <a name="Insert"></a> 
+
+ Inserts a new checklist item for a spotlight tour.
+ 
+
+#### Syntax
+```
+procedure Insert(PageID: Integer; SpotlightTourType: Enum "Spotlight Tour Type"; OrderID: Integer; var TempAllProfile: Record "All Profile" temporary; ShouldEveryoneComplete: Boolean)
+```
+#### Parameters
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page that the spotlight tour will run on.
+
+*SpotlightTourType ([Enum "Spotlight Tour Type"]())* 
+
+The type of spotlight tour.
+
+*OrderID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The index at which this checklist item should appear in the list. Please be aware that if other extensions also insert checklist items, then this ID might not match the index in the list.
+
+*TempAllProfile ([Record "All Profile" temporary]())* 
+
+The roles that this checklist item should be displayed for.
+
+*ShouldEveryoneComplete ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Boolean value that controls whether everyone should complete this checklist item. If false, the checklist item will be marked as completed for everyone, even if only one person completes it.
+
+### Insert (Method) <a name="Insert"></a> 
+
+ Inserts a new checklist item for a spotlight tour.
+ 
+
+#### Syntax
+```
+procedure Insert(PageID: Integer; SpotlightTourType: Enum "Spotlight Tour Type"; OrderID: Integer; var TempUser: Record User temporary)
+```
+#### Parameters
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page that the spotlight tour will run on.
+
+*SpotlightTourType ([Enum "Spotlight Tour Type"]())* 
+
+The type of spotlight tour.
+
+*OrderID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The index at which this checklist item should appear in the list. Please be aware that if other extensions also insert checklist items, then this ID might not match the index in the list.
+
+*TempUser ([Record User temporary]())* 
+
+
+
 ### Delete (Method) <a name="Delete"></a> 
 
  Deletes a checklist item.
@@ -646,15 +578,52 @@ The type of guided experience item that the checklist item references.
 
 The URL that is open by the guided experience item that the checklist item references.
 
-### ShouldInitializeChecklist (Method) <a name="ShouldInitializeChecklist"></a> 
+### Delete (Method) <a name="Delete"></a> 
 
- Checks whether the checklist should be initialized
+ Deletes a spotlight tour checklist item.
  
 
 #### Syntax
 ```
+procedure Delete(PageID: Integer; SpotlightTourType: Enum "Spotlight Tour Type")
+```
+#### Parameters
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page that the spotlight tour runs on.
+
+*SpotlightTourType ([Enum "Spotlight Tour Type"]())* 
+
+The type of spotlight tour.
+
+### ShouldInitializeChecklist (Method) <a name="ShouldInitializeChecklist"></a> 
+
+ Checks whether the checklist should be initialized.
+ 
+
+#### Syntax
+```
+[Obsolete('Replaced by ShouldInitializeChecklist(ShouldSkipForEvaluationCompany).', '19.0')]
 procedure ShouldInitializeChecklist(): Boolean
 ```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the checklist should be initialized and false otherwise.
+### ShouldInitializeChecklist (Method) <a name="ShouldInitializeChecklist"></a> 
+
+ Checks whether the checklist should be initialized for the current company.
+ 
+
+#### Syntax
+```
+procedure ShouldInitializeChecklist(ShouldSkipForEvaluationCompany: Boolean): Boolean
+```
+#### Parameters
+*ShouldSkipForEvaluationCompany ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+If true, then the function will always return false for evaluation companies.
+
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
@@ -703,6 +672,43 @@ The new user name.
 
 The table for which the user name is to be modified.
 
+### IsChecklistVisible (Method) <a name="IsChecklistVisible"></a> 
+
+ Checks whether the checklist is visible for the current user on the profile that the user is currently on.
+ 
+
+#### Syntax
+```
+procedure IsChecklistVisible(): Boolean
+```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the checklist is visible and false otherwise.
+### SetChecklistVisibility (Method) <a name="SetChecklistVisibility"></a> 
+
+ Sets the checklist visibility for the current user and the profile that the user is currently using.
+ 
+
+#### Syntax
+```
+procedure SetChecklistVisibility(Visible: Boolean)
+```
+#### Parameters
+*Visible ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+True if the checklist should be visible and false otherwise.
+
+### OnChecklistLoading (Event) <a name="OnChecklistLoading"></a> 
+
+ Event that is triggered when the checklist is being loaded.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnChecklistLoading()
+```
 
 ## Guided Experience (Codeunit 1990)
 
@@ -802,6 +808,7 @@ Inserts a learn page.
 
 #### Syntax
 ```
+[Obsolete('Use InsertManualSetup instead.', '19.0')]
 procedure InsertLearnPage(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; PageID: Integer)
 ```
 #### Parameters
@@ -852,6 +859,134 @@ How many minutes the user should expect to spend using the link.
 *Link ([Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
 
 The learn link.
+
+### InsertTour (Method) <a name="InsertTour"></a> 
+Inserts a tour for a page.
+
+#### Syntax
+```
+procedure InsertTour(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; PageID: Integer)
+```
+#### Parameters
+*Title ([Text[2048]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The title of the tour.
+
+*ShortTitle ([Text[50]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+A short title used for the checklist.
+
+*Description ([Text[1024]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The description of the tour.
+
+*ExpectedDuration ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+How many minutes the user should expect to spend taking the tour.
+
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page that the tour is run on.
+
+### InsertSpotlightTour (Method) <a name="InsertSpotlightTour"></a> 
+Inserts a spotlight tour for a page.
+
+#### Syntax
+```
+procedure InsertSpotlightTour(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; PageID: Integer; SpotlighTourType: Enum "Spotlight Tour Type"; SpotlightTourTexts: Dictionary of [Enum "Spotlight Tour Text", Text])
+```
+#### Parameters
+*Title ([Text[2048]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The title of the manual setup.
+
+*ShortTitle ([Text[50]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+A short title used for the checklist.
+
+*Description ([Text[1024]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The description of the manual setup.
+
+*ExpectedDuration ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+How many minutes the tour is expected to take.
+
+*PageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The ID of the page that the spotlight tour will be run on.
+
+*SpotlighTourType ([Enum "Spotlight Tour Type"]())* 
+
+
+
+*SpotlightTourTexts ([Dictionary of [Enum "Spotlight Tour Text", Text]]())* 
+
+The texts that will be displayed during the spotlight tour.
+
+### InsertApplicationFeature (Method) <a name="InsertApplicationFeature"></a> 
+Inserts a guided experience item for an application feature.
+
+#### Syntax
+```
+procedure InsertApplicationFeature(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; ObjectTypeToRun: ObjectType; ObjectIDToRun: Integer)
+```
+#### Parameters
+*Title ([Text[2048]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The title of the application feature.
+
+*ShortTitle ([Text[50]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+A short title used for the checklist.
+
+*Description ([Text[1024]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The description of the application feature.
+
+*ExpectedDuration ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+How many minutes the user should expect to spend .
+
+*ObjectTypeToRun ([ObjectType]())* 
+
+The object type to run for the application feature.
+
+*ObjectIDToRun ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The object ID to run for the application feature.
+
+### InsertVideo (Method) <a name="InsertVideo"></a> 
+Inserts a guided experience item for a video.
+
+#### Syntax
+```
+procedure InsertVideo(Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; ExpectedDuration: Integer; VideoURL: Text[250]; VideoCategory: Enum "Video Category")
+```
+#### Parameters
+*Title ([Text[2048]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The title of the video.
+
+*ShortTitle ([Text[50]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+A short title used for the checklist.
+
+*Description ([Text[1024]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The description of the video.
+
+*ExpectedDuration ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The duration of the video in minutes.
+
+*VideoURL ([Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+
+
+*VideoCategory ([Enum "Video Category"]())* 
+
+The category of the video.
 
 ### OpenManualSetupPage (Method) <a name="OpenManualSetupPage"></a> 
 Opens the Manual Setup page containing the setup guides.
@@ -1119,11 +1254,37 @@ procedure Remove(GuidedExperienceType: Enum "Guided Experience Type"; Link: Text
 #### Parameters
 *GuidedExperienceType ([Enum "Guided Experience Type"]())* 
 
-The type of setup object.
+The type of guided experience item.
 
 *Link ([Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
 
 The link that identifies the guided experience item.
+
+### Remove (Method) <a name="Remove"></a> 
+
+ Removes a guided experience item.
+ 
+
+#### Syntax
+```
+procedure Remove(GuidedExperienceType: Enum "Guided Experience Type"; ObjectType: ObjectType; ObjectID: Integer; SpotlightTourType: Enum "Spotlight Tour Type")
+```
+#### Parameters
+*GuidedExperienceType ([Enum "Guided Experience Type"]())* 
+
+The type of guided experience item.
+
+*ObjectType ([ObjectType]())* 
+
+The object type of the guided experience item.
+
+*ObjectID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The object ID of the guided experience item.
+
+*SpotlightTourType ([Enum "Spotlight Tour Type"]())* 
+
+The type of spotlight tour of the guided experience item.
 
 ### OnRegisterAssistedSetup (Event) <a name="OnRegisterAssistedSetup"></a> 
 Notifies that the list of assisted setups is being gathered, and that new items might be added.
@@ -1206,8 +1367,18 @@ The flag which if set, would stop executing the OpenRoleBasedSetupExperience of 
 [IntegrationEvent(true, false)]
 internal procedure OnRegisterManualSetup()
 ```
+### OnRegisterGuidedExperienceItem (Event) <a name="OnRegisterGuidedExperienceItem"></a> 
 
-## Manual Setup (Codeunit 1875)
+ The event that is raised so that subscribers can add the new guided experience items.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(true, false)]
+internal procedure OnRegisterGuidedExperienceItem()
+```
+
+## [Obsolete] Manual Setup (Codeunit 1875)
 
  The manual setup aggregates all cases where the functionality is setup manually. Typically this is accomplished
  by registering the setup page ID of the extension that contains the functionality.
@@ -1330,6 +1501,8 @@ This page shows all registered assisted setup guides.
  
 
 
+## Checklist Resurfacing (Page 1997)
+
 ## Guided Experience Item List (Page 1996)
 
  Lists guided experience items.
@@ -1357,6 +1530,14 @@ The group to which the setup belongs. Please extend this enum to add your own gr
 
 ### Learn (value: 2)
 
+### Tour (value: 3)
+
+### Spotlight Tour (value: 4)
+
+### Video (value: 5)
+
+### Application Feature (value: 6)
+
 
 ## Manual Setup Category (Enum 1875)
 The category enum is used to navigate the setup page, which can have many records. It is encouraged to extend this enum and use the newly defined options.
@@ -1365,5 +1546,59 @@ The category enum is used to navigate the setup page, which can have many record
 
 
  A default category, specifying that the manual setup is not categorized.
+ 
+
+
+## Spotlight Tour Text (Enum 1997)
+
+ Specifies the exact step of a spotlight tour that a text belongs to.
+ 
+
+### Step1Title (value: 0)
+
+
+ The title for the first step in the spotlight tour.
+ 
+
+### Step1Text (value: 1)
+
+
+ The text for the first step in the spotlight tour.
+ 
+
+### Step2Title (value: 2)
+
+
+ The title for the second step in the spotlight tour.
+ 
+
+### Step2Text (value: 3)
+
+
+ The text for the second step in the spotlight tour.
+ 
+
+
+## Spotlight Tour Type (Enum 1996)
+
+ Specifies the type of a spotlight tour.
+ 
+
+### None (value: 0)
+
+
+ Default value - none.
+ 
+
+### Open in Excel (value: 1)
+
+
+ Specifies that the tour spotlights the Open in Excel functionality on the page.
+ 
+
+### Share to Teams (value: 2)
+
+
+ Specifies that the tour spotlights the Share to Teams functionality on the page.
  
 

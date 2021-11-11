@@ -10,6 +10,51 @@ codeunit 18251 "GST Purchase Non Availment"
         GSTNonAvailmentSessionMgt.SetQtyToBeInvoiced(QtyToBeInvoiced);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferPreparePurchase', '', false, false)]
+    local procedure FillInvoicePostingBufferNonAvailmentFA(var InvoicePostBuffer: Record "Invoice Post. Buffer"; var PurchaseLine: Record "Purchase Line")
+    var
+        QtyFactor: Decimal;
+        CustomDutyLoaded: Decimal;
+    begin
+        if (PurchaseLine.Type = PurchaseLine.Type::"Fixed Asset") and (PurchaseLine."GST Credit" = PurchaseLine."GST Credit"::"Non-Availment") then begin
+            QtyFactor := PurchaseLine."Qty. to Invoice" / PurchaseLine.Quantity;
+            InvoicePostBuffer."FA Non-Availment Amount" := Round(GSTCalculatedAmount(PurchaseLine) * QtyFactor);
+            CustomDutyLoaded := GSTNonAvailmentSessionMgt.GetCustomDutyAmount();
+            InvoicePostBuffer."FA Non-Availment" := true;
+
+            if CustomDutyLoaded <> 0 then
+                InvoicePostBuffer."FA Non-Availment Amount" += Round(CustomDutyLoaded * QtyFactor);
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferModify', '', false, false)]
+    local procedure UpdateInvoicePostingBufferNonAvailmentFA(FromInvoicePostBuffer: Record "Invoice Post. Buffer"; var InvoicePostBuffer: Record "Invoice Post. Buffer")
+    begin
+        InvoicePostBuffer."FA Non-Availment Amount" += FromInvoicePostBuffer."FA Non-Availment Amount";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterCopyToGenJnlLine', '', false, false)]
+    local procedure FillGenJournalLineNonAvailmentFA(InvoicePostBuffer: Record "Invoice Post. Buffer"; var GenJnlLine: Record "Gen. Journal Line")
+    begin
+        GenJnlLine."FA Non-Availment" := InvoicePostBuffer."FA Non-Availment";
+        GenJnlLine."FA Non-Availment Amount" := InvoicePostBuffer."FA Non-Availment Amount";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Jnl.-Post Line", 'OnBeforePostFixedAssetFromGenJnlLine', '', false, false)]
+    local procedure UpdateFANonAvailmentAmount(var FALedgerEntry: Record "FA Ledger Entry"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+        if GenJournalLine."FA Non-Availment" then
+            FALedgerEntry.Amount += GenJournalLine."FA Non-Availment Amount";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostFixedAssetOnBeforeInitGLEntryFromTempFAGLPostBuf', '', false, false)]
+    local procedure UpdateTempFAGLPostBufNonAvailment(var GenJournalLine: Record "Gen. Journal Line"; var TempFAGLPostBuf: Record "FA G/L Posting Buffer")
+    begin
+        if GenJournalLine."FA Non-Availment" then
+            TempFAGLPostBuf.Amount -= GenJournalLine."FA Non-Availment Amount";
+    end;
+
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemJnlLineOnAfterPrepareItemJnlLine', '', false, false)]
     local procedure LoadGSTUnitCost(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line"; var ItemJournalLine: Record "Item Journal Line")
     var
@@ -107,7 +152,7 @@ codeunit 18251 "GST Purchase Non Availment"
             TransactionCessAmount := GetTaxAmount(GSTSetup."Cess Tax Type", PurchaseLine.RecordId);
 
         if (TransactionGSTAmount + TransactionCessAmount) <> 0 then
-            GSTAmountToBeLoaded := GSTBaseValidation.RoundGSTPrecision(TransactionGSTAmount + TransactionCessAmount * (PurchaseLine."Qty. to Invoice" / PurchaseLine.Quantity));
+            GSTAmountToBeLoaded := GSTBaseValidation.RoundGSTPrecision((TransactionGSTAmount + TransactionCessAmount) * (PurchaseLine."Qty. to Invoice" / PurchaseLine.Quantity));
 
         if PurchaseLine."Document Type" in [PurchaseLine."Document Type"::Order,
             PurchaseLine."Document Type"::Invoice,

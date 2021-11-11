@@ -117,19 +117,28 @@ codeunit 18688 "TDS Validations"
         TDSPreviewHandler: Codeunit "TDS Preview Handler";
         InitialInvoiceAmount: Decimal;
         GSTAmount: Decimal;
+        TransNo: Integer;
+        ApplAmt: Decimal;
     begin
         if not TDSEntry.Get(Rec."Entry No.") then
             exit;
 
-        if TDSEntry.Reversed or TDSEntry.Adjusted or (not TDSEntry."Include GST in TDS Base") then
+        if TDSEntry.Reversed or TDSEntry.Adjusted then
             exit;
 
         if not TDSEntryUpdateMgt.IsTDSEntryUpdateStarted(TDSEntry."Entry No.") then
             TDSEntryUpdateMgt.SetTDSEntryForUpdate(TDSEntry);
 
-        TaxBaseSubscribers.GetGSTAmountFromTransNo(Rec."Transaction No.", TDSEntry."Document No.", GSTAmount);
+        if TDSEntry."Include GST in TDS Base" then
+            TaxBaseSubscribers.GetGSTAmountFromTransNo(Rec."Transaction No.", TDSEntry."Document No.", GSTAmount);
         InitialInvoiceAmount := TDSEntryUpdateMgt.GetTDSEntryToUpdateInitialInvoiceAmount(TDSEntry."Entry No.");
-        TDSEntry."Invoice Amount" := InitialInvoiceAmount + Abs(GSTAmount);
+
+        if TDSEntry.Applied then
+            TDSEntryUpdateMgt.GetAppliedAmount(TransNo, ApplAmt);
+        if (TDSEntry."Transaction No." <> TransNo) or (InitialInvoiceAmount = 0) then
+            ApplAmt := 0;
+
+        TDSEntry."Invoice Amount" := InitialInvoiceAmount + Abs(GSTAmount) - Abs(ApplAmt);
         TDSEntry.Modify();
         TDSPreviewHandler.UpdateInvoiceAmountOnTempTDSEntry(TDSEntry);
     end;
@@ -206,5 +215,28 @@ codeunit 18688 "TDS Validations"
         TDSEntry.Reversed := true;
         TDSEntry.Modify();
         NewTDSEntry.Insert();
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Vendor Ledger Entry", 'OnAfterInsertEvent', '', false, false)]
+    local procedure SetVendLedgerEntryNo(var Rec: Record "Vendor Ledger Entry")
+    var
+        TDSEntryUpdateMgt: Codeunit "TDS Entry Update Mgt.";
+    begin
+        TDSEntryUpdateMgt.SetVendLedgerEntryNo(Rec."Entry No.", Rec."Transaction No.");
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Detailed Vendor Ledg. Entry", 'OnAfterInsertEvent', '', false, false)]
+    local procedure SetAppliedAmount(var Rec: Record "Detailed Vendor Ledg. Entry")
+    var
+        TDSEntryUpdateMgt: Codeunit "TDS Entry Update Mgt.";
+        VendLedgerEntryNo: Integer;
+        TransNo: Integer;
+    begin
+        if Rec."Entry Type" <> Rec."Entry Type"::Application then
+            exit;
+
+        TDSEntryUpdateMgt.GetVendLedgerEntryNo(VendLedgerEntryNo, TransNo);
+        if (Rec."Vendor Ledger Entry No." = VendLedgerEntryNo) and (Rec."Transaction No." = TransNo) then
+            TDSEntryUpdateMgt.SetAppliedAmount(Rec);
     end;
 }

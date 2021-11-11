@@ -3,6 +3,7 @@ report 11717 "Quantity Received Check CZL"
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/QuantityReceivedCheck.rdl';
     Caption = 'Quantity Received Check';
+    ApplicationArea = Basic, Suite;
     UsageCategory = ReportsAndAnalysis;
 
     dataset

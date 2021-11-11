@@ -8,7 +8,8 @@ codeunit 18929 "Narration Posting Events"
         AccountNoeErr: Label 'Account No. %1 is not defined as %2 account for the Voucher Sub Type %3 and Document No. %4.', Comment = '%1 = Account No., %2 = Direction, %3 = Voucher Subtype, %4 = Document No.';
         AccountTypeOrBalAccountTypeErr: Label 'Account Type or Bal. Account Type can only be G/L Account or Bank Account for Sub Voucher Type %1 and Document No. %2.', Comment = '%1 = Sub Voucher Type, %2 = Document No.';
         CashAccountErr: Label 'Cash Account No. %1 should not be used for Sub Voucher Type %2 and Document No. %3.', Comment = '%1 = Account No., %2 = Voucher Type, %3 = Document No.';
-        CashAccountNotExistErr: Label 'Account No. %1 is not define as cash account for document No. %2', Comment = '%1 = GenJnlLine.Account No. %2 = GenJnlLine.Document No.';
+        ContraCashAccountErr: Label 'Account No. %1 is not defined as cash account for the Voucher Sub Type %2 and Document No. %3.', Comment = '%1 = Account No., %2 = Voucher Type, %3 = Document No.';
+        ContraBankAccountErr: Label 'Account No. %1 is not defined as bank account for the Voucher Sub Type %2 and Document No. %3.', Comment = '%1 = Account No., %2 = Voucher Type, %3 = Document No.';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeInsertGlobalGLEntry', '', false, false)]
     local procedure InitPostedNarration(
@@ -56,7 +57,6 @@ codeunit 18929 "Narration Posting Events"
         GenJnlTemplate: Record "Gen. Journal Template")
     var
         VoucherSetup: Record "Journal Voucher Posting Setup";
-        GeneralJournalBatch: Record "Gen. Journal Batch";
         GenJnlLine2: Record "Gen. Journal Line";
     begin
         GenJnlLine2.Reset();
@@ -73,20 +73,19 @@ codeunit 18929 "Narration Posting Events"
             GenJnlTemplate.Type::"Contra Voucher",
             GenJnlTemplate.Type::"Journal Voucher"]
         then begin
-            GeneralJournalBatch.Get(GenJnlTemplate.Name, GenJnlLine."Journal Batch Name");
-            VoucherSetup.Get(GeneralJournalBatch."Location Code", GenJnlTemplate.Type);
+            VoucherSetup.Get(GenJnlLine."Location Code", GenJnlTemplate.Type);
             case VoucherSetup."Transaction Direction" of
                 VoucherSetup."Transaction Direction"::Debit:
                     if GenJnlLine2.FindSet() then
                         repeat
-                            CheckAccountNoValidationForVoucherSubType(GenJnlLine2, VoucherSetup, GenJnlTemplate, GeneralJournalBatch);
+                            CheckAccountNoValidationForVoucherSubType(GenJnlLine2, VoucherSetup, GenJnlTemplate);
                         until GenJnlLine2.Next() = 0;
                 VoucherSetup."Transaction Direction"::Credit:
                     if GenJnlLine2.FindSet() then
                         repeat
-                            CheckAccountNoValidationForVoucherSubType(GenJnlLine2, VoucherSetup, GenJnlTemplate, GeneralJournalBatch);
+                            CheckAccountNoValidationForVoucherSubType(GenJnlLine2, VoucherSetup, GenJnlTemplate);
                         until GenJnlLine2.Next() = 0;
-                VoucherSetup."Transaction Direction"::Both:
+                VoucherSetup."Transaction Direction"::Both, VoucherSetup."Transaction Direction"::" ":
                     if GenJnlLine2.FindSet() then
                         repeat
                             ValidateVoucherAccount(GenJnlTemplate.Type, GenJnlLine2);
@@ -180,31 +179,29 @@ codeunit 18929 "Narration Posting Events"
     var
         VoucherSetupCrAccount: Record "Voucher Posting Credit Account";
         VoucherSetupDrAccount: Record "Voucher Posting Debit Account";
-        GenJnlBatch: Record "Gen. Journal Batch";
         GeneralJnlTemplate: Record "Gen. Journal Template";
     begin
-        GenJnlBatch.Get(GenJnlLine."Journal Template Name", GenJnlLine."Journal Batch Name");
         GeneralJnlTemplate.Get(GenJnlLine."Journal Template Name");
         if not IsContraVoucher then begin
             if (GenJnlLine."Bal. Account No." <> '') and
                 (GenJnlLine."Bal. Account Type" = GenJnlLine."Bal. Account Type"::"G/L Account") and
                     (VoucherSetupCrAccount.Get(
-                        GenJnlBatch."Location Code",
+                        GenJnlLine."Location Code",
                         GeneralJnlTemplate.Type::"Cash Receipt Voucher",
                         GenJnlLine."Bal. Account Type"::"G/L Account",
                         GenJnlLine."Bal. Account No.") or
                     VoucherSetupDrAccount.Get(
-                        GenJnlBatch."Location Code",
+                        GenJnlLine."Location Code",
                         GeneralJnlTemplate.Type::"Cash Receipt Voucher",
                         GenJnlLine."Bal. Account Type"::"G/L Account",
                         GenJnlLine."Bal. Account No.") or
                     VoucherSetupCrAccount.Get(
-                        GenJnlBatch."Location Code",
+                        GenJnlLine."Location Code",
                         GeneralJnlTemplate.Type::"Cash Payment Voucher",
                         GenJnlLine."Bal. Account Type"::"G/L Account",
                         GenJnlLine."Bal. Account No.") or
                     VoucherSetupCrAccount.Get(
-                        GenJnlBatch."Location Code",
+                        GenJnlLine."Location Code",
                         GeneralJnlTemplate.Type::"Cash Payment Voucher",
                         GenJnlLine."Bal. Account Type"::"G/L Account",
                         GenJnlLine."Bal. Account No."))
@@ -213,42 +210,166 @@ codeunit 18929 "Narration Posting Events"
 
             if (GenJnlLine."Account No." <> '') and
                 (GenJnlLine."Account Type" = GenJnlLine."Account Type"::"G/L Account") and
-                    (VoucherSetupCrAccount.Get(GenJnlBatch."Location Code",
+                    (VoucherSetupCrAccount.Get(GenJnlLine."Location Code",
                     GeneralJnlTemplate.Type::"Cash Receipt Voucher",
                     GenJnlLine."Account Type"::"G/L Account",
                     GenJnlLine."Account No.")
                     or
-                    VoucherSetupDrAccount.Get(GenJnlBatch."Location Code",
+                    VoucherSetupDrAccount.Get(GenJnlLine."Location Code",
                      GeneralJnlTemplate.Type::"Cash Receipt Voucher",
                      GenJnlLine."Account Type"::"G/L Account",
                       GenJnlLine."Account No.")
                     or
-                    VoucherSetupCrAccount.Get(GenJnlBatch."Location Code",
+                    VoucherSetupCrAccount.Get(GenJnlLine."Location Code",
                     GeneralJnlTemplate.Type::"Cash Payment Voucher",
                     GenJnlLine."Account Type"::"G/L Account",
                     GenJnlLine."Account No.")
                     or
-                    VoucherSetupCrAccount.Get(GenJnlBatch."Location Code",
+                    VoucherSetupDrAccount.Get(GenJnlLine."Location Code",
                     GeneralJnlTemplate.Type::"Cash Payment Voucher",
                     GenJnlLine."Account Type"::"G/L Account",
                         GenJnlLine."Account No."))
             then
                 Error(CashAccountErr, GenJnlLine."Account No.", GeneralJnlTemplate.Type::"Journal Voucher", GenJnlLine."Document No.");
         end;
-        if ((GenJnlLine."Account No." <> '') and (IsContraVoucher) and
-                  (GenJnlLine."Account Type" = GenJnlLine."Account Type"::"G/L Account")) then
-            if (not VoucherSetupDrAccount.Get(GenJnlBatch."Location Code",
-              GeneralJnlTemplate.Type::"Cash Receipt Voucher",
-              GenJnlLine."Account Type"::"G/L Account",
-              GenJnlLine."Account No.")) then
-                Error(CashAccountNotExistErr, GenJnlLine."Account No.", GenJnlLine."Document No.");
+
+        if IsContraVoucher then begin
+            IdentifyContraAccountForGL(GenJnlLine);
+            IdentifyContraAccountForBank(GenJnlLine);
+        end;
     end;
 
+    local procedure IdentifyContraAccountForGL(GenJournalLine: Record "Gen. Journal Line")
+    var
+        VoucherPostingDebitAccount: Record "Voucher Posting Debit Account";
+        VoucherPostingCreditAccount: Record "Voucher Posting Credit Account";
+        GenJournalTemplate: Record "Gen. Journal Template";
+    begin
+        GenJournalTemplate.Get(GenJournalLine."Journal Template Name");
+        if (GenJournalLine."Bal. Account No." <> '') and
+            (GenJournalLine."Bal. Account Type" = GenJournalLine."Bal. Account Type"::"G/L Account")
+            and not
+            (VoucherPostingDebitAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Cash Receipt Voucher",
+            GenJournalLine."Bal. Account Type"::"G/L Account",
+            GenJournalLine."Bal. Account No.")
+            or
+            VoucherPostingCreditAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Cash Receipt Voucher",
+            GenJournalLine."Bal. Account Type"::"G/L Account",
+            GenJournalLine."Bal. Account No.")
+            or
+            VoucherPostingDebitAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Cash Payment Voucher",
+            GenJournalLine."Bal. Account Type"::"G/L Account",
+            GenJournalLine."Bal. Account No.")
+            or
+            VoucherPostingCreditAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Cash Payment Voucher",
+            GenJournalLine."Bal. Account Type"::"G/L Account",
+            GenJournalLine."Bal. Account No."))
+        then
+            Error(ContraCashAccountErr, GenJournalLine."Bal. Account No.", GenJournalTemplate.Type::"Contra Voucher", GenJournalLine."Document No.");
+
+        if (GenJournalLine."Account No." <> '') and
+            (GenJournalLine."Account Type" = GenJournalLine."Account Type"::"G/L Account")
+            and not
+            (VoucherPostingCreditAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Cash Receipt Voucher",
+            GenJournalLine."Account Type"::"G/L Account",
+            GenJournalLine."Account No.")
+            or
+            VoucherPostingDebitAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Cash Receipt Voucher",
+            GenJournalLine."Account Type"::"G/L Account",
+            GenJournalLine."Account No.")
+            or
+            VoucherPostingCreditAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Cash Payment Voucher",
+            GenJournalLine."Account Type"::"G/L Account",
+            GenJournalLine."Account No.")
+            or
+            VoucherPostingDebitAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Cash Payment Voucher",
+            GenJournalLine."Account Type"::"G/L Account",
+            GenJournalLine."Account No."))
+        then
+            Error(ContraCashAccountErr, GenJournalLine."Account No.", GenJournalTemplate.Type::"Contra Voucher", GenJournalLine."Document No.");
+    end;
+
+    local procedure IdentifyContraAccountForBank(GenJournalLine: Record "Gen. Journal Line")
+    var
+        VoucherPostingDebitAccount: Record "Voucher Posting Debit Account";
+        VoucherPostingCreditAccount: Record "Voucher Posting Credit Account";
+        GenJournalTemplate: Record "Gen. Journal Template";
+    begin
+        GenJournalTemplate.Get(GenJournalLine."Journal Template Name");
+        if (GenJournalLine."Bal. Account No." <> '') and
+            (GenJournalLine."Bal. Account Type" = GenJournalLine."Bal. Account Type"::"Bank Account")
+            and not
+            (VoucherPostingDebitAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Bank Payment Voucher",
+            GenJournalLine."Bal. Account Type"::"Bank Account",
+            GenJournalLine."Bal. Account No.")
+            or
+            VoucherPostingCreditAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Bank Receipt Voucher",
+            GenJournalLine."Bal. Account Type"::"Bank Account",
+            GenJournalLine."Bal. Account No.")
+            or
+            VoucherPostingDebitAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Bank Payment Voucher",
+            GenJournalLine."Bal. Account Type"::"Bank Account",
+            GenJournalLine."Bal. Account No.")
+            or
+            VoucherPostingCreditAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Bank Payment Voucher",
+            GenJournalLine."Bal. Account Type"::"Bank Account",
+            GenJournalLine."Bal. Account No."))
+        then
+            Error(ContraBankAccountErr, GenJournalLine."Bal. Account No.", GenJournalTemplate.Type::"Contra Voucher", GenJournalLine."Document No.");
+
+        if (GenJournalLine."Account No." <> '') and
+            (GenJournalLine."Account Type" = GenJournalLine."Account Type"::"Bank Account")
+            and not
+            (VoucherPostingCreditAccount.Get(GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Bank Receipt Voucher",
+            GenJournalLine."Account Type"::"Bank Account",
+            GenJournalLine."Account No.")
+            or
+            VoucherPostingDebitAccount.Get(GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Bank Receipt Voucher",
+            GenJournalLine."Account Type"::"Bank Account",
+            GenJournalLine."Account No.")
+            or
+            VoucherPostingCreditAccount.Get(GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Bank Payment Voucher",
+            GenJournalLine."Account Type"::"Bank Account",
+            GenJournalLine."Account No.")
+            or
+            VoucherPostingDebitAccount.Get(GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Bank Payment Voucher",
+            GenJournalLine."Account Type"::"Bank Account",
+            GenJournalLine."Account No."))
+        then
+            Error(ContraBankAccountErr, GenJournalLine."Account No.", GenJournalTemplate.Type::"Contra Voucher", GenJournalLine."Document No.");
+    end;
     local procedure CheckAccountNoValidationForVoucherSubType(
         GenJournalLine: Record "Gen. Journal Line";
         VoucherSetup: Record "Journal Voucher Posting Setup";
-        GeneralJournalTemplate: Record "Gen. Journal Template";
-        GeneralJournalBatch: Record "Gen. Journal Batch")
+        GeneralJournalTemplate: Record "Gen. Journal Template")
     var
         VoucherPostingDrAccount: Record "Voucher Posting Debit Account";
         VoucherPostingCrAccount: Record "Voucher Posting Credit Account";
@@ -257,11 +378,11 @@ codeunit 18929 "Narration Posting Events"
         if VoucherSetup."Transaction Direction" = VoucherSetup."Transaction Direction"::Debit then
             if GenJournalLine."Bal. Account No." <> '' then begin
                 if GenJournalLine.Amount > 0 then begin
-                    if not VoucherPostingDrAccount.Get(GeneralJournalBatch."Location Code", GeneralJournalTemplate.Type, GenJournalLine."Account Type", GenJournalLine."Account No.") then
+                    if not VoucherPostingDrAccount.Get(GenJournalLine."Location Code", GeneralJournalTemplate.Type, GenJournalLine."Account Type", GenJournalLine."Account No.") then
                         Error(AccountNoeErr, GenJournalLine."Account No.", VoucherSetup."Transaction Direction", GeneralJournalTemplate.Type, GenJournalLine."Document No.");
                     ValidateVoucherAccount(GeneralJournalTemplate.Type, GenJournalLine);
                 end else
-                    if not VoucherPostingDrAccount.Get(GeneralJournalBatch."Location Code", GeneralJournalTemplate.Type, GenJournalLine."Bal. Account Type", GenJournalLine."Bal. Account No.") then
+                    if not VoucherPostingDrAccount.Get(GenJournalLine."Location Code", GeneralJournalTemplate.Type, GenJournalLine."Bal. Account Type", GenJournalLine."Bal. Account No.") then
                         Error(AccountNoeErr, GenJournalLine."Bal. Account No.", VoucherSetup."Transaction Direction", GeneralJournalTemplate.Type, GenJournalLine."Document No.");
                 ValidateVoucherAccount(GeneralJournalTemplate.Type, GenJournalLine);
             end else begin
@@ -272,10 +393,10 @@ codeunit 18929 "Narration Posting Events"
                 GenJnlLine.SetFilter("Line No.", '<>%1', GenJournalLine."Line No.");
                 if GenJnlLine.FindFirst() then
                     if GenJnlLine.Amount < 0 then
-                        if not VoucherPostingDrAccount.Get(GeneralJournalBatch."Location Code", GeneralJournalTemplate.Type, GenJournalLine."Account Type", GenJournalLine."Account No.") then
+                        if not VoucherPostingDrAccount.Get(GenJournalLine."Location Code", GeneralJournalTemplate.Type, GenJournalLine."Account Type", GenJournalLine."Account No.") then
                             Error(AccountNoeErr, GenJournalLine."Bal. Account No.", VoucherSetup."Transaction Direction"::Credit, GeneralJournalTemplate.Type, GenJournalLine."Document No.");
                 if GenJournalLine.Amount > 0 then begin
-                    if not VoucherPostingDrAccount.Get(GeneralJournalBatch."Location Code", GeneralJournalTemplate.Type, GenJournalLine."Account Type", GenJournalLine."Account No.") then
+                    if not VoucherPostingDrAccount.Get(GenJournalLine."Location Code", GeneralJournalTemplate.Type, GenJournalLine."Account Type", GenJournalLine."Account No.") then
                         Error(AccountNoeErr, GenJournalLine."Bal. Account No.", VoucherSetup."Transaction Direction", GeneralJournalTemplate.Type, GenJournalLine."Document No.");
                     ValidateVoucherAccount(GeneralJournalTemplate.Type, GenJournalLine);
                 end;
@@ -283,7 +404,7 @@ codeunit 18929 "Narration Posting Events"
         if VoucherSetup."Transaction Direction" = VoucherSetup."Transaction Direction"::Credit then
             if GenJournalLine."Bal. Account No." <> '' then begin
                 if GenJournalLine.Amount > 0 then begin
-                    if not VoucherPostingCrAccount.Get(GeneralJournalBatch."Location Code",
+                    if not VoucherPostingCrAccount.Get(GenJournalLine."Location Code",
                      GeneralJournalTemplate.Type, GenJournalLine."Bal. Account Type",
                      GenJournalLine."Bal. Account No.") then
                         Error(AccountNoeErr, GenJournalLine."Bal. Account No.",
@@ -291,7 +412,7 @@ codeunit 18929 "Narration Posting Events"
                         GenJournalLine."Document No.");
                     ValidateVoucherAccount(GeneralJournalTemplate.Type, GenJournalLine);
                 end else
-                    if not VoucherPostingCrAccount.Get(GeneralJournalBatch."Location Code", GeneralJournalTemplate.Type, GenJournalLine."Account Type", GenJournalLine."Account No.") then
+                    if not VoucherPostingCrAccount.Get(GenJournalLine."Location Code", GeneralJournalTemplate.Type, GenJournalLine."Account Type", GenJournalLine."Account No.") then
                         Error(AccountNoeErr, GenJournalLine."Account No.", VoucherSetup."Transaction Direction", GeneralJournalTemplate.Type, GenJournalLine."Document No.");
                 ValidateVoucherAccount(GeneralJournalTemplate.Type, GenJournalLine);
             end else begin
@@ -302,10 +423,10 @@ codeunit 18929 "Narration Posting Events"
                 GenJnlLine.SetFilter("Line No.", '<>%1', GenJournalLine."Line No.");
                 if GenJnlLine.FindFirst() then
                     if GenJnlLine.Amount > 0 then
-                        if VoucherPostingCrAccount.Get(GeneralJournalBatch."Location Code", GeneralJournalTemplate.Type, GenJnlLine."Account Type", GenJnlLine."Account No.") then
+                        if VoucherPostingCrAccount.Get(GenJournalLine."Location Code", GeneralJournalTemplate.Type, GenJnlLine."Account Type", GenJnlLine."Account No.") then
                             Error(AccountNoeErr, GenJnlLine."Account No.", VoucherSetup."Transaction Direction"::Debit, GeneralJournalTemplate.Type, GenJnlLine."Document No.");
                 if GenJournalLine.Amount < 0 then begin
-                    if not VoucherPostingCrAccount.Get(GeneralJournalBatch."Location Code", GeneralJournalTemplate.Type, GenJournalLine."Account Type", GenJournalLine."Account No.") then
+                    if not VoucherPostingCrAccount.Get(GenJournalLine."Location Code", GeneralJournalTemplate.Type, GenJournalLine."Account Type", GenJournalLine."Account No.") then
                         Error(AccountNoeErr, GenJournalLine."Account No.", VoucherSetup."Transaction Direction", GeneralJournalTemplate.Type, GenJournalLine."Document No.");
                     ValidateVoucherAccount(GeneralJournalTemplate.Type, GenJournalLine);
                 end;

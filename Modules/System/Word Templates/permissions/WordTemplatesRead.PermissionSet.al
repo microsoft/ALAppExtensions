@@ -8,8 +8,10 @@ permissionset 9986 "Word Templates - Read"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Language - Read",
-                             "Object Selection - Read";
+    IncludedPermissionSets = "Word Templates - Objects",
+                             "Language - Read",
+                             "Object Selection - Read",
+                             "Telemetry - Exec";
 
     Permissions = tabledata "Word Template" = R,
                   tabledata "Word Templates Table" = r,

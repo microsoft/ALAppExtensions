@@ -47,7 +47,6 @@ codeunit 1462 "Xml DotNet Convert"
         OutputXmlElement := OutputXmlDocument.FirstChild();
     end;
 
-
     [TryFunction]
     procedure FromDotNet(InputXmlDocument: DotNet XmlDocument; var OutputXmlDocument: XmlDocument)
     begin

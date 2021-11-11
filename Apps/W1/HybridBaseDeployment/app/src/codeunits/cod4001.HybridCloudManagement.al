@@ -2,6 +2,7 @@ codeunit 4001 "Hybrid Cloud Management"
 {
     Permissions = tabledata "Webhook Subscription" = rimd,
                   tabledata "Intelligent Cloud" = rimd,
+                  tabledata "Intelligent Cloud Status" = rimd,
                   tabledata "Installed Application" = r;
 
     var
@@ -115,6 +116,40 @@ codeunit 4001 "Hybrid Cloud Management"
             exit(false);
 
         exit(IntelligentCloud.Enabled);
+    end;
+
+    [Scope('OnPrem')]
+    internal procedure EnableDataPerDatabaseTables()
+    var
+        PerDatabaseTables: Dictionary of [Integer, Text[250]];
+        TableId: Integer;
+    begin
+        PerDatabaseTables := GetPerDatabaseTablesToCloudMigrate();
+        foreach TableId in PerDatabaseTables.Keys() do
+            InsertIntelligentCloudStatusForPerDatabaseTable(TableId, PerDatabaseTables.Get(TableId))
+    end;
+
+    local procedure InsertIntelligentCloudStatusForPerDatabaseTable(TableId: Integer; TableName: Text[250])
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+    begin
+        if IntelligentCloudStatus.Get(TableName, '') then
+            exit;
+
+        IntelligentCloudStatus."Table Id" := TableId;
+        IntelligentCloudStatus."Table Name" := TableName;
+        IntelligentCloudStatus."Company Name" := '';
+        IntelligentCloudStatus.Insert();
+    end;
+
+    local procedure GetPerDatabaseTablesToCloudMigrate(): Dictionary of [Integer, Text[250]]
+    var
+        PerDatabaseTables: Dictionary of [Integer, Text[250]];
+    begin
+        PerDatabaseTables.Add(9999, 'Upgrade Tags$63ca2fa4-4f03-4f2b-a480-172fef340d3f');
+        PerDatabaseTables.Add(2000000184, 'Tenant Media');
+        PerDatabaseTables.Add(2000000183, 'Tenant Media Set');
+        exit(PerDatabaseTables);
     end;
 
     procedure BackupDataPerDatabase(var IntelligentCloudSetup: Record "Intelligent Cloud Setup")

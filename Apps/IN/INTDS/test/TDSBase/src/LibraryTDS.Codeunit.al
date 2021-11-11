@@ -36,7 +36,7 @@ codeunit 18786 "Library-TDS"
     var
         TDSConcessionalCode: Record "TDS Concessional Code";
     begin
-        Vendor.Validate("P.A.N. No.", LibraryUtility.GenerateRandomCode(Vendor.FieldNo("P.A.N. No."), Database::Vendor));
+        Vendor.Validate("P.A.N. No.", LibraryRandom.RandText(10));
         Vendor.Modify(true);
         UpdateTDSSectionOnVendor(Vendor."No.", ThresholdOverlook, SurchargeOverlook);
 

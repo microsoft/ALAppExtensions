@@ -1,12 +1,12 @@
 Collection of the default subscribers to system events and corresponding overridable integration events for the SmartList Designer.
 # Public Objects
-## Query Navigation Validation (Table 2889)
+## [Obsolete] Query Navigation Validation (Table 2889)
 
  Contains details about the results of validating Query Navigation data.
  
 
 
-## SmartList Designer Handler (Table 2888)
+## [Obsolete] SmartList Designer Handler (Table 2888)
 
  A single-record table that can be used to handle contention between multiple subscribers of the events for the SmartList Designer.
  Consumers of the events should check this record to see if another extension is registered as the handler and then decide if they
@@ -15,7 +15,7 @@ Collection of the default subscribers to system events and corresponding overrid
  
 
 
-## Query Navigation Validation (Codeunit 2890)
+## [Obsolete] Query Navigation Validation (Codeunit 2890)
 
  Contains helper methods for performing SmartList Designer related tasks
  
@@ -77,7 +77,7 @@ A record containing the details about the results of the validation.
 
 True if the data represents a valid record; Otherwise false.
 
-## SmartList Designer Subscribers (Codeunit 2888)
+## [Obsolete] SmartList Designer Subscribers (Codeunit 2888)
 
  Collection of the default subscribers to system events and corresponding overridable integration events for the SmartList Designer.
  

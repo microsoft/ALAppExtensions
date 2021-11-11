@@ -4,29 +4,29 @@
     "publisher":  "Microsoft",
     "brief":  "Test objetcs for the Satisfaction Survey module.",
     "description":  "Test objetcs for the Satisfaction Survey module.",
-    "version":  "19.0.0.0",
+    "version":  "19.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "",
     "dependencies":  [
-                        {
-                            "id":  "5d03ef2d-13f0-4132-b941-48387b581434",
-                            "name":  "Satisfaction Survey",
-                            "publisher":  "Microsoft",
-                            "version":  "19.0.0.0"
-                        }
+                         {
+                             "id":  "5d03ef2d-13f0-4132-b941-48387b581434",
+                             "name":  "Satisfaction Survey",
+                             "publisher":  "Microsoft",
+                             "version":  "19.1.0.0"
+                         }
                      ],
     "screenshots":  [
 
                     ],
-    "idRanges": [
-        {
-            "from": 138074,
-            "to": 138074
-        }
-    ],
+    "idRanges":  [
+                     {
+                         "from":  138074,
+                         "to":  138074
+                     }
+                 ],
     "platform":  "19.0.0.0",
     "target":  "OnPrem"
 }

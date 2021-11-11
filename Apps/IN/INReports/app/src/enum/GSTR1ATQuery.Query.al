@@ -1,0 +1,75 @@
+query 18006 GSTR1ATQuery
+{
+    QueryType = Normal;
+
+    elements
+    {
+        dataitem(Detailed_GST_Ledger_Entry; "Detailed GST Ledger Entry")
+        {
+            DataItemTableFilter = "GST Component Code" = filter(<> 'CESS');
+            filter(Document_Type; "Document Type")
+            {
+                ColumnFilter = Document_Type = const(Payment);
+            }
+            filter(Entry_Type; "Entry Type")
+            {
+                ColumnFilter = Entry_Type = filter(= "Initial Entry");
+            }
+            filter(Location__Reg__No_; "Location  Reg. No.")
+            {
+            }
+            filter(Transaction_Type; "Transaction Type")
+            {
+                ColumnFilter = Transaction_Type = const(Sales);
+            }
+            filter(Posting_Date; "Posting Date")
+            {
+            }
+            filter(GST_on_Advance_Payment; "GST on Advance Payment")
+            {
+            }
+            filter(Reversed; Reversed)
+            {
+            }
+            column(Buyer_Seller_Reg__No_; "Buyer/Seller Reg. No.")
+            {
+
+            }
+            column(Document_No_; "Document No.")
+            {
+            }
+            column(GST__; "GST %")
+            {
+            }
+            column(GST_Jurisdiction_Type; "GST Jurisdiction Type")
+            {
+            }
+            column(GST_Base_Amount; "GST Base Amount")
+            {
+                Method = Sum;
+            }
+            dataitem(Detailed_GST_Ledger_Entry_Info; "Detailed GST Ledger Entry Info")
+            {
+                SqlJoinType = InnerJoin;
+                DataItemLink = "Entry No." = Detailed_GST_Ledger_Entry."Entry No.";
+                column(Buyer_Seller_State_Code; "Buyer/Seller State Code")
+                {
+
+                }
+                dataitem(State; State)
+                {
+                    DataItemLink = Code = Detailed_GST_Ledger_Entry_Info."Buyer/Seller State Code";
+                    SqlJoinType = InnerJoin;
+                    column(State_Code__GST_Reg__No__; "State Code (GST Reg. No.)")
+                    {
+
+                    }
+                    column(Description; Description)
+                    {
+
+                    }
+                }
+            }
+        }
+    }
+}

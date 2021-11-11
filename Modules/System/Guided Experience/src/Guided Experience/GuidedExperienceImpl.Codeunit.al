@@ -693,15 +693,20 @@ codeunit 1991 "Guided Experience Impl."
         InsertTranslations(GuidedExperienceItem, GuidedExperienceItem.Title, GuidedExperienceItem."Short Title",
             GuidedExperienceItem.Description, GuidedExperienceItem.Keywords);
 
-        // if this isn't the first version of the record, copy all the existing translations for the title and the 
-        // description if they haven't changed
+        // if this isn't the first version of the record, copy all the existing translations for the 
+        // record if the fields haven't changed and if the translations don't already exist
         if GuidedExperienceItem.Version > 0 then begin
             if PrevVersionGuidedExperienceItem.Title = GuidedExperienceItem.Title then
-                Translation.Copy(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title));
+                if Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title)) <> '' then
+                    Translation.Copy(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title));
+
             if PrevVersionGuidedExperienceItem."Short Title" = GuidedExperienceItem."Short Title" then
-                Translation.Copy(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title"));
+                if Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title")) <> '' then
+                    Translation.Copy(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title"));
+
             if PrevVersionGuidedExperienceItem.Description = GuidedExperienceItem.Description then
-                Translation.Copy(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description));
+                if Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description)) <> '' then
+                    Translation.Copy(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description));
         end;
     end;
 

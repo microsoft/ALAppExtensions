@@ -61,6 +61,13 @@ table 1950 "LP Machine Learning Setup"
         field(8; "Use My Model Credentials"; Boolean)
         {
             Caption = 'Use My Azure Subscription';
+            trigger OnValidate()
+            var
+                CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+            begin
+                if not xRec."Use My Model Credentials" and Rec."Use My Model Credentials" then
+                    Rec."Use My Model Credentials" := CustomerConsentMgt.ConfirmUserConsentToMicrosoftService();
+            end;
         }
 
         field(9; "Custom API Uri"; Text[250])

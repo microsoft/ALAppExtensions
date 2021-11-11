@@ -53,6 +53,7 @@ codeunit 31118 "EET Management CZL"
         then
             EETEntryCZL.FieldError("Status");
 
+        EETEntryCZL.CheckSignatureCode();
         PrepareEntryToSend(EETEntryCZL);
         EETEntryCZL.ChangeStatus(EETEntryCZL."Status"::Sent);
 
@@ -81,6 +82,7 @@ codeunit 31118 "EET Management CZL"
         then
             EETEntryCZL.FieldError("Status");
 
+        EETEntryCZL.CheckSignatureCode();
         PrepareEntryToSend(EETEntryCZL);
         EETEntryCZL.ChangeStatus(EETEntryCZL."Status"::"Sent to Verification");
 

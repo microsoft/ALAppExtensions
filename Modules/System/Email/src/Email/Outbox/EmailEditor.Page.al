@@ -27,6 +27,8 @@ page 13 "Email Editor"
         {
             group("Email Details")
             {
+                Caption = 'Email Details';
+
                 grid("Email Details Grid")
                 {
                     group("Email Inner Details")
@@ -331,8 +333,12 @@ page 13 "Email Editor"
     end;
 
     trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         EmailEditor.CheckPermissions(Rec);
+
+        FeatureTelemetry.LogUptake('0000CTQ', 'Emailing', Enum::"Feature Uptake Status"::Discovered);
 
         Rec.SetRange("User Security Id", UserSecurityId());
         CurrPage.SetTableView(Rec);

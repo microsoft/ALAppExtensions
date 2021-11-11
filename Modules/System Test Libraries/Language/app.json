@@ -4,29 +4,29 @@
     "publisher":  "Microsoft",
     "brief":  "Test objetcs for the Language module.",
     "description":  "Test objetcs for the Language module.",
-    "version":  "19.0.0.0",
+    "version":  "19.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "",
     "dependencies":  [
-                        {
-                            "id":  "5c36f279-480c-451b-b513-c1af8cfb0744",
-                            "name":  "Language",
-                            "publisher":  "Microsoft",
-                            "version":  "19.0.0.0"
-                        }
+                         {
+                             "id":  "5c36f279-480c-451b-b513-c1af8cfb0744",
+                             "name":  "Language",
+                             "publisher":  "Microsoft",
+                             "version":  "19.1.0.0"
+                         }
                      ],
     "screenshots":  [
 
                     ],
-    "idRanges": [
-        {
-            "from": 130043,
-            "to": 130043
-        }
-    ],
+    "idRanges":  [
+                     {
+                         "from":  130043,
+                         "to":  130043
+                     }
+                 ],
     "platform":  "19.0.0.0",
     "target":  "OnPrem"
 }

@@ -35,6 +35,11 @@ table 20100 "AMC Bank Banks"
             Caption = 'Index';
             DataClassification = CustomerContent;
         }
+        field(20105; "Bank Ownreference"; Enum AMCBankOwnreference)
+        {
+            Caption = 'Ownreference';
+            DataClassification = CustomerContent;
+        }
     }
 
     keys

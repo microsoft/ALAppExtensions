@@ -25,6 +25,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         LibraryUtility: Codeunit "Library - Utility";
         OIOUBLNewFileMock: Codeunit "OIOUBL-File Events Mock";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibrarySetupStorage: Codeunit "Library - Setup Storage";
         AmountErr: Label '%1 must be %2 in %3.', Comment = '"%1:FieldCaption';
         GLNNoTxt: Label '3974567891234';
         IDTxt: Label 'cbc:ID';
@@ -1263,6 +1264,33 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         VerifyAmountPriceDiscountOnSalesCrMemo(SalesCrMemoHeader."No.", LineExtensionAmounts, PriceAmounts, TotalAllowanceChargeAmount);
     end;
 
+    [Test]
+    procedure UnitPriceXmlExportPrecision()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        OIOUBLExportSalesInvoice: Codeunit "OIOUBL-Export Sales Invoice";
+    begin
+        // [FEATURE] [Export]
+        // [SCENARIO 412134] Unit Price xml node export value precision is 4 decimals
+        Initialize();
+        ModifyGeneralLedgerSetup(0.0001);
+
+        // [GIVEN] Posted Sales Invoice with Unit Price = 123.4567, Quantity = 100
+        CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice);
+        LibrarySales.CreateSalesLineWithUnitPrice(SalesLine, SalesHeader, LibraryInventory.CreateItemNo(), 123.4567, 100);
+        SalesInvoiceHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, false, true));
+
+        // [WHEN] Create Electronic Document for Posted Sales Invoice.
+        OIOUBLExportSalesInvoice.ExportXML(SalesInvoiceHeader);
+
+        // [THEN] Exported xml node "PriceAmount" = "123.4567", "LineExtensionAmount" = "12345.67"
+        InitializeLibraryXPathXMLReader(OIOUBLNewFileMock.PopFilePath());
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('//cac:InvoiceLine/cac:Price/cbc:PriceAmount', '123.4567');
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('//cac:InvoiceLine/cbc:LineExtensionAmount', '12345.67');
+    end;
+
     local procedure Initialize();
     var
         SalesHeader: Record "Sales Header";
@@ -1270,14 +1298,17 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     begin
         DocumentSendingProfile.DeleteAll();
         OIOUBLNewFileMock.Setup(OIOUBLNewFileMock);
+        LibrarySetupStorage.Restore();
 
         if isInitialized then
             exit;
 
         UpdateSalesReceivablesSetup();
         UpdateOIOUBLCountryRegionCode();
+        ModifyGeneralLedgerSetup(0.01);
 
         LibraryERM.DisableMyNotifications(CopyStr(UserId(), 1, 50), SalesHeader.GetModifyCustomerAddressNotificationId());
+        LibrarySetupStorage.SaveGeneralLedgerSetup();
 
         isInitialized := true;
     end;
@@ -1769,6 +1800,16 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
             Validate("SWIFT Code", DelStr(LibraryUtility.GenerateGUID(), 1, 2));
             Modify(true);
         end;
+    end;
+
+    local procedure ModifyGeneralLedgerSetup(UnitAmountRoundingPrecision: Decimal);
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        // Make sure that G/L Setup has 2 decimal places
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."Unit-Amount Rounding Precision" := UnitAmountRoundingPrecision;
+        GeneralLedgerSetup.Modify();
     end;
 
     local procedure VerifyElectronicSalesDocument(DocumentNo: Code[20]; AccountCode: Text[30]);

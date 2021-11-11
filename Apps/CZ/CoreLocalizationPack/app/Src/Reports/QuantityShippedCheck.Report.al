@@ -3,6 +3,7 @@ report 11718 "Quantity Shipped Check CZL"
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/QuantityShippedCheck.rdl';
     Caption = 'Quantity Shipped Check';
+    ApplicationArea = Basic, Suite;
     UsageCategory = ReportsAndAnalysis;
 
     dataset

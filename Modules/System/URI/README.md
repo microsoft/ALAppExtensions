@@ -455,3 +455,121 @@ procedure GetUri(var Uri: Codeunit Uri)
 
 A Uri that contains the URI constructed by the Uri Builder.
 
+### AddQueryFlag (Method) <a name="AddQueryFlag"></a> 
+If the provided  is empty.
+
+
+ Adds a flag to the query string of this UriBuilder. In case the same query flag exists already, the action in  is taken.
+ 
+
+This function could alter the order of the existing query string parts. For example, if the previous URL was "https://microsoft.com?foo=bar&john=doe" and the new flag is "contoso", the result could be "https://microsoft.com?john=doe&foo=bar&contoso".
+
+#### Syntax
+```
+procedure AddQueryFlag(Flag: Text; DuplicateAction: Enum "Uri Query Duplicate Behaviour")
+```
+#### Parameters
+*Flag ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+A flag to add to the query string of this UriBuilder. This value will be encoded before being added to the URI query string. Cannot be empty.
+
+*DuplicateAction ([Enum "Uri Query Duplicate Behaviour"]())* 
+
+Specifies which action to take if the flag already exist.
+
+### AddQueryFlag (Method) <a name="AddQueryFlag"></a> 
+If the provided  is empty.
+
+
+ Adds a flag to the query string of this UriBuilder. In case the same query flag exists already, only one occurrence is kept.
+ 
+
+This function could alter the order of the existing query string parts. For example, if the previous URL was "https://microsoft.com?foo=bar&john=doe" and the new flag is "contoso", the result could be "https://microsoft.com?john=doe&foo=bar&contoso".
+
+#### Syntax
+```
+procedure AddQueryFlag(Flag: Text)
+```
+#### Parameters
+*Flag ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+A flag to add to the query string of this UriBuilder. This value will be encoded before being added to the URI query string. Cannot be empty.
+
+### AddQueryParameter (Method) <a name="AddQueryParameter"></a> 
+If the provided  is empty.
+
+
+ Adds a parameter key-value pair to the query string of this UriBuilder (in the form `ParameterKey=ParameterValue`). In case the same query key exists already, the action in  is taken.
+ 
+
+This function could alter the order of the existing query string parts. For example, if the previous URL was "https://microsoft.com?foo=bar&john=doe" and the new flag is "contoso=42", the result could be "https://microsoft.com?john=doe&foo=bar&contoso=42".
+
+#### Syntax
+```
+procedure AddQueryParameter(ParameterKey: Text; ParameterValue: Text; DuplicateAction: Enum "Uri Query Duplicate Behaviour")
+```
+#### Parameters
+*ParameterKey ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The key for the new query parameter. This value will be encoded before being added to the URI query string. Cannot be empty.
+
+*ParameterValue ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The value for the new query parameter. This value will be encoded before being added to the URI query string. Can be empty.
+
+*DuplicateAction ([Enum "Uri Query Duplicate Behaviour"]())* 
+
+Specifies which action to take if the ParameterKey specified already exist.
+
+### AddQueryParameter (Method) <a name="AddQueryParameter"></a> 
+If the provided  is empty.
+
+
+ Adds a parameter key-value pair to the query string of this UriBuilder (in the form `ParameterKey=ParameterValue`). In case the same query key exists already, its value is overwritten.
+ 
+
+This function could alter the order of the existing query string parts. For example, if the previous URL was "https://microsoft.com?foo=bar&john=doe" and the new flag is "contoso=42", the result could be "https://microsoft.com?john=doe&foo=bar&contoso=42".
+
+#### Syntax
+```
+procedure AddQueryParameter(ParameterKey: Text; ParameterValue: Text)
+```
+#### Parameters
+*ParameterKey ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The key for the new query parameter. This value will be encoded before being added to the URI query string. Cannot be empty.
+
+*ParameterValue ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The value for the new query parameter. This value will be encoded before being added to the URI query string. Can be empty.
+
+
+## Uri Query Duplicate Behaviour (Enum 3062)
+
+ Specifies the behaviour when adding a new query parameter or flag to a URI.
+ 
+
+### Skip (value: 1)
+
+
+ Skips adding the value if the same flag or parameter already exists.
+ 
+
+### Overwrite All Matching (value: 2)
+
+
+ Keeps the new value (overwrites all existing matching flags or parameters).
+ 
+
+### Keep All (value: 3)
+
+
+ Keeps both the existing values and the new value.
+ 
+
+### Throw Error (value: 4)
+
+
+ Throws an error if the flag or parameter already exists.
+ 
+

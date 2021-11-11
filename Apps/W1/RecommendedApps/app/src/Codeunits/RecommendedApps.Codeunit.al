@@ -20,10 +20,11 @@ codeunit 4750 "Recommended Apps"
     /// <param name="Long Description">The long description of the app that is displayed on the Recommended Apps page.</param>
     /// <param name="Recommended By">The entity that is recommending the app.</param>
     /// <param name="AppSourceURL">The AppSource URL of the app.</param>
-    procedure InsertApp(Id: Guid; SortingId: Integer; Name: Text[250]; Publisher: Text[250]; "Short Description": Text[250]; "Long Description": Text[2048];
-        "Recommended By": Enum "App Recommended By"; AppSourceURL: Text): Boolean
+    /// <returns>True if the app was successfully inserted; otherwise, false.</returns>
+    procedure InsertApp(Id: Guid; SortingId: Integer; Name: Text[250]; Publisher: Text[250]; ShortDescription: Text[250]; LongDescription: Text[2048];
+        RecommendedBy: Enum "App Recommended By"; AppSourceURL: Text): Boolean
     begin
-        exit(RecommendedAppsImpl.InsertApp(Id, SortingId, Name, Publisher, "Short Description", "Long Description", "Recommended By", AppSourceURL));
+        exit(RecommendedAppsImpl.InsertApp(Id, SortingId, Name, Publisher, ShortDescription, LongDescription, RecommendedBy, AppSourceURL));
     end;
 
     /// <summary>
@@ -37,10 +38,11 @@ codeunit 4750 "Recommended Apps"
     /// <param name="Long Description">The long description of the app that is displayed on the Recommended Apps page.</param>
     /// <param name="Recommended By">The entity that is recommending the app.</param>
     /// <param name="AppSourceURL">The AppSource URL of the app.</param>
-    procedure GetApp(Id: Guid; var SortingId: Integer; var Name: Text[250]; var Publisher: Text[250]; var "Short Description": Text[250]; var "Long Description": Text[2048];
-        var "Recommended By": Enum "App Recommended By"; var AppSourceURL: Text)
+    /// <returns>True if the app was successfully retrieved; otherwise, false.</returns>
+    procedure GetApp(Id: Guid; var SortingId: Integer; var Name: Text[250]; var Publisher: Text[250]; var ShortDescription: Text[250]; var LongDescription: Text[2048];
+        var RecommendedBy: Enum "App Recommended By"; var AppSourceURL: Text): Boolean
     begin
-        RecommendedAppsImpl.GetApp(Id, SortingId, Name, Publisher, "Short Description", "Long Description", "Recommended By", AppSourceURL);
+        exit(RecommendedAppsImpl.GetApp(Id, SortingId, Name, Publisher, ShortDescription, LongDescription, RecommendedBy, AppSourceURL));
     end;
 
     /// <summary>
@@ -54,16 +56,18 @@ codeunit 4750 "Recommended Apps"
     /// <param name="Long Description">The long description of the app that is displayed on the Recommended Apps page.</param>
     /// <param name="Recommended By">The entity that is recommending the app.</param>
     /// <param name="AppSourceURL">The AppSource URL of the app.</param>
-    procedure UpdateApp(Id: Guid; SortingId: Integer; Name: Text[250]; Publisher: Text[250]; "Short Description": Text[250]; "Long Description": Text[2048];
-        "Recommended By": Enum "App Recommended By"; AppSourceURL: Text): Boolean
+    /// <returns>True if the app was successfully updated; otherwise, false.</returns>
+    procedure UpdateApp(Id: Guid; SortingId: Integer; Name: Text[250]; Publisher: Text[250]; ShortDescription: Text[250]; LongDescription: Text[2048];
+        RecommendedBy: Enum "App Recommended By"; AppSourceURL: Text): Boolean
     begin
-        exit(RecommendedAppsImpl.UpdateApp(Id, SortingId, Name, Publisher, "Short Description", "Long Description", "Recommended By", AppSourceURL));
+        exit(RecommendedAppsImpl.UpdateApp(Id, SortingId, Name, Publisher, ShortDescription, LongDescription, RecommendedBy, AppSourceURL));
     end;
 
     /// <summary>
     /// Download the app's logo from AppSource. This is useful when the logo is changed.
     /// </summary>
     /// <param name="Id">The identifier for the app.</param>
+    /// <returns>True if the app's logo was successfully updated; otherwise, false.</returns>
     procedure RefreshImage(Id: Guid): Boolean
     begin
         exit(RecommendedAppsImpl.RefreshImage(Id));
@@ -73,6 +77,7 @@ codeunit 4750 "Recommended Apps"
     /// Delete a recommended app
     /// </summary>
     /// <param name="Id">The identifier for the app.</param>
+    /// <returns>True if the app was successfully deleted; otherwise, false.</returns>
     procedure DeleteApp(Id: Guid): Boolean
     begin
         exit(RecommendedAppsImpl.DeleteApp(Id));

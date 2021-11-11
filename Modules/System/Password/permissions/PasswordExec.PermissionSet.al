@@ -8,6 +8,8 @@ permissionset 1282 "Password - Exec"
     Access = Internal;
     Assignable = false;
 
+    IncludedPermissionSets = "Password - Objects";
+
     Permissions = tabledata User = r,
                   system "Tools, Security, Password" = X;
 }

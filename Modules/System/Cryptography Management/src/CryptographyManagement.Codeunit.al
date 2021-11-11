@@ -186,9 +186,35 @@ codeunit 1266 "Cryptography Management"
     /// Computes the hash value of the specified string and signs it.
     /// </summary>
     /// <param name="InputString">Input string for signing.</param>
+    /// <param name="XmlString">The private key to use in the hash algorithm.</param>
+    /// <param name="HashAlgorithm">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
+    /// <param name="SignatureOutStream">The stream to write the signature for the specified string.</param>
+    procedure SignData(InputString: Text; XmlString: Text; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+    begin
+        CryptographyManagementImpl.SignData(InputString, XmlString, HashAlgorithm, SignatureOutStream);
+    end;
+
+    /// <summary>
+    /// Computes the hash value of the specified data and signs it.
+    /// </summary>
+    /// <param name="DataInStream">The stream of input data.</param>
+    /// <param name="XmlString">The private key to use in the hash algorithm.</param>
+    /// <param name="HashAlgorithm">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
+    /// <param name="SignatureOutStream">The stream to write the signature for the specified input data.</param>
+    procedure SignData(DataInStream: InStream; XmlString: Text; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+    begin
+        CryptographyManagementImpl.SignData(DataInStream, XmlString, HashAlgorithm, SignatureOutStream);
+    end;
+
+#if not CLEAN19
+    /// <summary>
+    /// Computes the hash value of the specified string and signs it.
+    /// </summary>
+    /// <param name="InputString">Input string for signing.</param>
     /// <param name="SignatureKey">The private key to use in the hash algorithm.</param>
     /// <param name="HashAlgorithm">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
     /// <param name="SignatureOutStream">The stream to write the signature for the specified string.</param>
+    [Obsolete('Replaced by SignData function with XmlString parameter.', '19.1')]
     procedure SignData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
     begin
         CryptographyManagementImpl.SignData(InputString, SignatureKey, HashAlgorithm, SignatureOutStream);
@@ -201,10 +227,12 @@ codeunit 1266 "Cryptography Management"
     /// <param name="SignatureKey">The private key to use in the hash algorithm.</param>
     /// <param name="HashAlgorithm">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
     /// <param name="SignatureOutStream">The stream to write the signature for the specified input data.</param>
+    [Obsolete('Replaced by SignData function with XmlString parameter.', '19.1')]
     procedure SignData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
     begin
         CryptographyManagementImpl.SignData(DataInStream, SignatureKey, HashAlgorithm, SignatureOutStream);
     end;
+#endif
 
 #if not CLEAN18
     /// <summary>
@@ -240,10 +268,38 @@ codeunit 1266 "Cryptography Management"
     /// Verifies that a digital signature is valid.
     /// </summary>
     /// <param name="InputString">Input string.</param>
+    /// <param name="XmlString">The public key to use in the hash algorithm.</param>
+    /// <param name="HashAlgorithm">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
+    /// <param name="SignatureInStream">The stream of signature.</param>
+    /// <returns>True if the signature is valid; otherwise, false.</returns>
+    procedure VerifyData(InputString: Text; XmlString: Text; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+    begin
+        exit(CryptographyManagementImpl.VerifyData(InputString, XmlString, HashAlgorithm, SignatureInStream));
+    end;
+
+    /// <summary>
+    /// Verifies that a digital signature is valid.
+    /// </summary>
+    /// <param name="DataInStream">The stream of input data.</param>
+    /// <param name="XmlString">The public key to use in the hash algorithm.</param>
+    /// <param name="HashAlgorithm">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
+    /// <param name="SignatureInStream">The stream of signature.</param>
+    /// <returns>True if the signature is valid; otherwise, false.</returns>
+    procedure VerifyData(DataInStream: InStream; XmlString: Text; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+    begin
+        exit(CryptographyManagementImpl.VerifyData(DataInStream, XmlString, HashAlgorithm, SignatureInStream));
+    end;
+
+#if not CLEAN19
+    /// <summary>
+    /// Verifies that a digital signature is valid.
+    /// </summary>
+    /// <param name="InputString">Input string.</param>
     /// <param name="SignatureKey">The public key to use in the hash algorithm.</param>
     /// <param name="HashAlgorithm">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
     /// <param name="SignatureInStream">The stream of signature.</param>
     /// <returns>True if the signature is valid; otherwise, false.</returns>
+    [Obsolete('Replaced by VerifyData function with XmlString parameter.', '19.1')]
     procedure VerifyData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
     begin
         exit(CryptographyManagementImpl.VerifyData(InputString, SignatureKey, HashAlgorithm, SignatureInStream));
@@ -257,10 +313,12 @@ codeunit 1266 "Cryptography Management"
     /// <param name="HashAlgorithm">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
     /// <param name="SignatureInStream">The stream of signature.</param>
     /// <returns>True if the signature is valid; otherwise, false.</returns>
+    [Obsolete('Replaced by VerifyData function with XmlString parameter.', '19.1')]
     procedure VerifyData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
     begin
         exit(CryptographyManagementImpl.VerifyData(DataInStream, SignatureKey, HashAlgorithm, SignatureInStream));
     end;
+#endif
 
 #if not CLEAN18
     /// <summary>

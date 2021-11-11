@@ -8,6 +8,8 @@ permissionset 2715 "Page Summary Provider - Read"
     Access = Internal;
     Assignable = false;
 
+    IncludedPermissionSets = "Page Summary Provider - Obj.";
+
     Permissions = tabledata "Page Metadata" = r,
                   tabledata "Tenant Media Thumbnails" = r,
                   tabledata "Page Data Personalization" = R, // DotNet NavPageSummaryALFunctions requires this

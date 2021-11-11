@@ -1,5 +1,10 @@
+#if not CLEAN20
 codeunit 20101 "AMC Bank Bank Acc. Rec Lin"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Codeunit 1248 is used.';
+    ObsoleteTag = '20.0';
+
     Permissions = TableData "Data Exch." = rimd;
     TableNo = "Bank Acc. Reconciliation Line";
 
@@ -7,90 +12,91 @@ codeunit 20101 "AMC Bank Bank Acc. Rec Lin"
     var
         DataExch: Record "Data Exch.";
         ProcessDataExch: Codeunit "Process Data Exch.";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
         DataExch.Get("Data Exch. Entry No.");
-        RecRef.GetTable(Rec);
-        ProcessDataExch.ProcessAllLinesColumnMapping(DataExch, RecRef);
+        RecordRef.GetTable(Rec);
+        ProcessDataExch.ProcessAllLinesColumnMapping(DataExch, RecordRef);
     end;
 
     var
         ProgressWindowMsg: Label 'Please wait while the operation is being completed.';
 
-    procedure ImportBankStatement(BankAccRecon: Record "Bank Acc. Reconciliation"; DataExch: Record "Data Exch."): Boolean
+    procedure ImportBankStatement(BankAccReconciliation: Record "Bank Acc. Reconciliation"; DataExch: Record "Data Exch."): Boolean
     var
-        BankAcc: Record "Bank Account";
+        BankAccount: Record "Bank Account";
         DataExchDef: Record "Data Exch. Def";
         DataExchMapping: Record "Data Exch. Mapping";
         DataExchLineDef: Record "Data Exch. Line Def";
-        TempBankAccReconLine: Record "Bank Acc. Reconciliation Line" temporary;
-        ProgressWindow: Dialog;
+        TempBankAccReconciliationLine: Record "Bank Acc. Reconciliation Line" temporary;
+        ProgressWindowDialog: Dialog;
     begin
-        BankAcc.Get(BankAccRecon."Bank Account No.");
-        BankAcc.GetDataExchDef(DataExchDef);
+        BankAccount.Get(BankAccReconciliation."Bank Account No.");
+        BankAccount.GetDataExchDef(DataExchDef);
 
-        DataExch."Related Record" := BankAcc.RecordId();
+        DataExch."Related Record" := BankAccount.RecordId();
         DataExch."Data Exch. Def Code" := DataExchDef.Code;
 
         if not DataExch.ImportToDataExch(DataExchDef) then
             exit(false);
 
-        ProgressWindow.Open(ProgressWindowMsg);
+        ProgressWindowDialog.Open(ProgressWindowMsg);
 
-        CreateBankAccRecLineTemplate(TempBankAccReconLine, BankAccRecon, DataExch);
+        CreateBankAccRecLineTemplate(TempBankAccReconciliationLine, BankAccReconciliation, DataExch);
         DataExchLineDef.SetRange("Data Exch. Def Code", DataExchDef.Code);
         DataExchLineDef.FindFirst();
 
         DataExchMapping.Get(DataExchDef.Code, DataExchLineDef.Code, DATABASE::"Bank Acc. Reconciliation Line");
 
         if DataExchMapping."Pre-Mapping Codeunit" <> 0 then
-            CODEUNIT.Run(DataExchMapping."Pre-Mapping Codeunit", TempBankAccReconLine);
+            CODEUNIT.Run(DataExchMapping."Pre-Mapping Codeunit", TempBankAccReconciliationLine);
 
         DataExchMapping.TestField("Mapping Codeunit");
-        CODEUNIT.Run(DataExchMapping."Mapping Codeunit", TempBankAccReconLine);
+        CODEUNIT.Run(DataExchMapping."Mapping Codeunit", TempBankAccReconciliationLine);
 
         if DataExchMapping."Post-Mapping Codeunit" <> 0 then
-            CODEUNIT.Run(DataExchMapping."Post-Mapping Codeunit", TempBankAccReconLine);
+            CODEUNIT.Run(DataExchMapping."Post-Mapping Codeunit", TempBankAccReconciliationLine);
 
-        InsertNonReconciledNonImportedLines(TempBankAccReconLine, GetStatementLineNoOffset(BankAccRecon));
+        InsertNonReconciledNonImportedLines(TempBankAccReconciliationLine, GetStatementLineNoOffset(BankAccReconciliation));
 
-        ProgressWindow.Close();
+        ProgressWindowDialog.Close();
         exit(true);
     end;
 
-    procedure CreateBankAccRecLineTemplate(var BankAccReconLine: Record "Bank Acc. Reconciliation Line"; BankAccRecon: Record "Bank Acc. Reconciliation"; DataExch: Record "Data Exch.")
+    procedure CreateBankAccRecLineTemplate(var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; BankAccReconciliation: Record "Bank Acc. Reconciliation"; DataExch: Record "Data Exch.")
     begin
-        BankAccReconLine.Init();
-        BankAccReconLine."Statement Type" := BankAccRecon."Statement Type";
-        BankAccReconLine."Statement No." := BankAccRecon."Statement No.";
-        BankAccReconLine."Bank Account No." := BankAccRecon."Bank Account No.";
-        BankAccReconLine."Data Exch. Entry No." := DataExch."Entry No.";
+        BankAccReconciliationLine.Init();
+        BankAccReconciliationLine."Statement Type" := BankAccReconciliation."Statement Type";
+        BankAccReconciliationLine."Statement No." := BankAccReconciliation."Statement No.";
+        BankAccReconciliationLine."Bank Account No." := BankAccReconciliation."Bank Account No.";
+        BankAccReconciliationLine."Data Exch. Entry No." := DataExch."Entry No.";
     end;
 
-    local procedure InsertNonReconciledNonImportedLines(var TempBankAccReconLine: Record "Bank Acc. Reconciliation Line" temporary; StatementLineNoOffset: Integer)
+    local procedure InsertNonReconciledNonImportedLines(var TempBankAccReconciliationLine: Record "Bank Acc. Reconciliation Line" temporary; StatementLineNoOffset: Integer)
     var
         BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
     begin
-        if TempBankAccReconLine.FindSet() then
+        if TempBankAccReconciliationLine.FindSet() then
             repeat
-                if TempBankAccReconLine.CanImport() then begin
-                    BankAccReconciliationLine := TempBankAccReconLine;
+                if TempBankAccReconciliationLine.CanImport() then begin
+                    BankAccReconciliationLine := TempBankAccReconciliationLine;
                     BankAccReconciliationLine."Statement Line No." += StatementLineNoOffset;
                     BankAccReconciliationLine.Insert();
                 end;
-            until TempBankAccReconLine.Next() = 0;
+            until TempBankAccReconciliationLine.Next() = 0;
     end;
 
-    local procedure GetStatementLineNoOffset(BankAccRecon: Record "Bank Acc. Reconciliation"): Integer
+    local procedure GetStatementLineNoOffset(BankAccReconciliation: Record "Bank Acc. Reconciliation"): Integer
     var
-        BankAccReconLine: Record "Bank Acc. Reconciliation Line";
+        BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
     begin
-        BankAccReconLine.SetRange("Statement Type", BankAccRecon."Statement Type");
-        BankAccReconLine.SetRange("Statement No.", BankAccRecon."Statement No.");
-        BankAccReconLine.SetRange("Bank Account No.", BankAccRecon."Bank Account No.");
-        if BankAccReconLine.FindLast() then
-            exit(BankAccReconLine."Statement Line No.");
+        BankAccReconciliationLine.SetRange("Statement Type", BankAccReconciliation."Statement Type");
+        BankAccReconciliationLine.SetRange("Statement No.", BankAccReconciliation."Statement No.");
+        BankAccReconciliationLine.SetRange("Bank Account No.", BankAccReconciliation."Bank Account No.");
+        if BankAccReconciliationLine.FindLast() then
+            exit(BankAccReconciliationLine."Statement Line No.");
         exit(0)
     end;
 }
 
+#endif

@@ -10,10 +10,10 @@ PermissionSet 2889 "SL Designer Subscribers - Edit"
     Assignable = false;
     ObsoleteState = Pending;
     ObsoleteReason = 'The SmartList Designer is not supported in Business Central.';
+    ObsoleteTag = '19.0';
 
     IncludedPermissionSets = "SL Designer Subscribers - Read";
 
     Permissions = tabledata "SmartList Designer Handler" = IMD;
-    ObsoleteTag = '19.0';
 }
 #endif

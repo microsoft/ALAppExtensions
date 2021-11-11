@@ -246,74 +246,98 @@ codeunit 11518 "Swiss QR-Bill Mgt."
     local procedure EncodeUmlautChars(InString: Text) OutString: Text
     var
         SwissQRBillSetup: Record "Swiss QR-Bill Setup";
-        GermanChars: Text;
-        GermanPrintable: Text;
-        FrenchItalianChars: Text;
-        FrenchItalianPrintable: Text;
+        UmlautChars: Text;
+        PrintableChars: Text;
+        DoubleUmlautChars: Text;
+        DoublePrintableChars: List of [Text];
+        Latin1ExclusionUmlautChars: Text;
+        Latin1ExclusionPrintableChars: List of [Text];
         i: Integer;
     begin
-        GermanChars := 'ÄäÖöÜüẞß';
-        GermanPrintable := 'AaOoUuSs';
-        FrenchItalianChars := 'ÆÂÀæàâÉÈÊËéèêëÇçÙÛùûŸÿÏÎÌïîìŒÔÒÓœôòó';
-        FrenchItalianPrintable := 'AAAaaaEEEEeeeeCcUUuuYyIIIiiiOOOOoooo';
+        GetUmlautAndPrintableChars(
+            UmlautChars, PrintableChars,
+            DoubleUmlautChars, DoublePrintableChars,
+            Latin1ExclusionUmlautChars, Latin1ExclusionPrintableChars);
 
         SwissQRBillSetup.Get();
         case SwissQRBillSetup."Umlaut Chars Encode Mode" of
             SwissQRBillSetup."Umlaut Chars Encode Mode"::Remove:
-                begin
-                    OutString := DelChr(InString, '=', GermanChars);
-                    OutString := DelChr(OutString, '=', FrenchItalianChars);
-                end;
+                OutString := DelChr(InString, '=', UmlautChars);
             SwissQRBillSetup."Umlaut Chars Encode Mode"::Single:
-                begin
-                    OutString := ConvertStr(InString, GermanChars, GermanPrintable);
-                    OutString := ConvertStr(OutString, FrenchItalianChars, FrenchItalianPrintable);
-                end;
+                OutString := ConvertStr(InString, UmlautChars, PrintableChars);
             SwissQRBillSetup."Umlaut Chars Encode Mode"::Double:
                 begin
                     for i := 1 to StrLen(InString) do
-                        OutString += ConvertUmlautCharsToDoubleChars(InString[i]);
-                    OutString := ConvertStr(OutString, FrenchItalianChars, FrenchItalianPrintable);
+                        OutString += ConvertUmlautCharsToDoubleChars(InString[i], DoubleUmlautChars, DoublePrintableChars);
+                    OutString := ConvertStr(OutString, UmlautChars, PrintableChars);
                 end;
+            SwissQRBillSetup."Umlaut Chars Encode Mode"::"Western European ISO-8859-1":
+                for i := 1 to StrLen(InString) do
+                    OutString += ConvertUmlautCharsToDoubleChars(InString[i], Latin1ExclusionUmlautChars, Latin1ExclusionPrintableChars);
         end;
 
-        // special char convert
-        OutString := ConvertStr(OutString, '–—‘’“”«»„', '--''''"""""');
-
-        // remove remaining non-printable chars
-        exit(RemoveNonPrintableChars(OutString));
+        OutString := ConvertSpecialChars(OutString);
+        OutString := RemoveNonPrintableChars(OutString);
     end;
 
-    local procedure ConvertUmlautCharsToDoubleChars(InChar: Char) ConvertedChar: Text
+    local procedure GetUmlautAndPrintableChars(var UmlautChars: Text; var PrintableChars: Text; var DoubleUmlautChars: Text; var DoublePrintableChars: List of [Text]; var Latin1ExclusionUmlautChars: Text; var Latin1ExclusionPrintableChars: List of [Text])
+    var
+        i: Integer;
     begin
-        case InChar of
-            'Ä':
-                ConvertedChar := 'Ae';
-            'ä':
-                ConvertedChar := 'ae';
-            'Ö':
-                ConvertedChar := 'Oe';
-            'ö':
-                ConvertedChar := 'oe';
-            'Ü':
-                ConvertedChar := 'Ue';
-            'ü':
-                ConvertedChar := 'ue';
-            'ẞ':
-                ConvertedChar := 'Ss';
-            'ß':
-                ConvertedChar := 'ss';
-            'Æ':
-                ConvertedChar := 'AE';
-            'æ':
-                ConvertedChar := 'ae';
-            'Œ':
-                ConvertedChar := 'OE';
-            'œ':
-                ConvertedChar := 'oe';
-            else
-                ConvertedChar := InChar;
-        end;
+        UmlautChars := PadStr('', 65, ' ');
+        for i := 192 to 255 do
+            UmlautChars[i - 191] := i;
+        UmlautChars[65] := 7838; // ẞ
+        PrintableChars := 'AAAAAAACEEEEIIII NOOOOO OUUUUY saaaaaaaceeeeiiii nooooo ouuuuy yS';
+
+        DoubleUmlautChars := PadStr('', 12, ' ');
+        DoubleUmlautChars[1] := 196; // Ä
+        DoubleUmlautChars[2] := 228; // ä
+        DoubleUmlautChars[3] := 214; // Ö
+        DoubleUmlautChars[4] := 246; // ö
+        DoubleUmlautChars[5] := 220; // Ü
+        DoubleUmlautChars[6] := 252; // ü
+        DoubleUmlautChars[7] := 7838; // ẞ
+        DoubleUmlautChars[8] := 223; // ß
+        DoubleUmlautChars[9] := 198; // Æ
+        DoubleUmlautChars[10] := 230; // æ
+        DoubleUmlautChars[11] := 338; // Œ
+        DoubleUmlautChars[12] := 339; // œ
+        DoublePrintableChars.AddRange('Ae', 'ae', 'Oe', 'oe', 'Ue', 'ue', 'Ss', 'ss', 'AE', 'ae', 'OE', 'oe');
+
+        Latin1ExclusionUmlautChars := PadStr('', 4, ' ');
+        Latin1ExclusionUmlautChars[1] := 7838; // ẞ
+        Latin1ExclusionUmlautChars[2] := 376; // Ÿ
+        Latin1ExclusionUmlautChars[3] := 338; // Œ
+        Latin1ExclusionUmlautChars[4] := 339; // œ
+        Latin1ExclusionPrintableChars.AddRange('SS', 'Y', 'OE', 'oe');
+    end;
+
+    local procedure ConvertUmlautCharsToDoubleChars(InChar: Char; DoubleUmlautChars: Text; DoublePrintableChars: List of [Text]): Text
+    var
+        i: Integer;
+    begin
+        for i := 1 to StrLen(DoubleUmlautChars) do
+            if InChar = DoubleUmlautChars[i] then
+                exit(DoublePrintableChars.Get(i));
+        exit(Format(InChar));
+    end;
+
+    local procedure ConvertSpecialChars(InText: Text) OutText: Text
+    var
+        i: Integer;
+    begin
+        for i := 1 to StrLen(InText) do
+            case InText[i] of
+                8211, 8212:
+                    OutText += '-';
+                8216, 8217:
+                    OutText += '''';
+                8220, 8221, 8222, 171, 187:
+                    OutText += '"';
+                else
+                    OutText += Format(InText[i]);
+            end;
     end;
 
     local procedure RemoveNonPrintableChars(InText: Text) OutText: Text
@@ -321,7 +345,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         i: Integer;
     begin
         for i := 1 to StrLen(InText) do
-            if InText[i] <= 126 then
+            if InText[i] <= 255 then
                 OutText += InText[i];
     end;
 

@@ -8,7 +8,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
     var
         BankAccount: Record "Bank Account";
         TempBlob: Codeunit "Temp Blob";
-        FileMgt: Codeunit "File Management";
+        FileManagement: Codeunit "File Management";
         RecordRef: RecordRef;
         BankFileName: Text;
     begin
@@ -16,11 +16,11 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         ConvertPaymentDataToFormat(TempBlob, Rec);
 
         if (BankAccount.Get(PayBankAcountNo)) then
-            BankFileName := BankAccount."AMC Bank Name" + FileExtTxt
+            BankFileName := AMCBankingMgt.GetBankFileName(BankAccount)
         else
             BankFileName := "Data Exch. Def Code" + GetFileExtension();
 
-        if FileMgt.BLOBExport(TempBlob, BankFileName, true) = '' then
+        if FileManagement.BLOBExport(TempBlob, BankFileName, true) = '' then
             LogInternalError(DownloadFromStreamErr, DataClassification::SystemMetadata, Verbosity::Error);
 
         Get("Entry No.");
@@ -32,7 +32,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
 
     var
         AMCBankServiceRequestMgt: Codeunit "AMC Bank Service Request Mgt.";
-        AMCBankServMgt: Codeunit "AMC Banking Mgt.";
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
         DownloadFromStreamErr: Label 'The file has not been saved.';
         NoRequestBodyErr: Label 'The request body is not set.';
         NothingToExportErr: Label 'There is nothing to export.';
@@ -43,58 +43,58 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         AddnlInfoTxt: Label 'For more information, go to %1.', Comment = '%1=Support URL';
         PaymentExportWebCallTxt: Label 'paymentExportBank', locked = true;
         PayBankAcountNo: Code[20];
-        FileExtTxt: Label '.txt';
 
     [Scope('OnPrem')]
-    procedure ConvertPaymentDataToFormat(var TempBlobPaymentFile: Codeunit "Temp Blob"; DataExch: Record "Data Exch.")
+    procedure ConvertPaymentDataToFormat(var PaymentFileTempBlob: Codeunit "Temp Blob"; DataExch: Record "Data Exch.")
     var
-        TempBlobRequestBody: Codeunit "Temp Blob";
+        RequestBodyTempBlob: Codeunit "Temp Blob";
     begin
         if not DataExch."File Content".HasValue() then
             LogInternalError(NoRequestBodyErr, DataClassification::SystemMetadata, Verbosity::Error);
 
-        TempBlobRequestBody.FromRecord(DataExch, DataExch.FieldNo("File Content"));
+        RequestBodyTempBlob.FromRecord(DataExch, DataExch.FieldNo("File Content"));
 
-        SendPaymentRequestToWebService(TempBlobPaymentFile, TempBlobRequestBody, DataExch."Entry No.", AMCBankServMgt.GetAppCaller());
+        SendPaymentRequestToWebService(PaymentFileTempBlob, RequestBodyTempBlob, DataExch."Entry No.", AMCBankingMgt.GetAppCaller());
 
-        if not TempBlobPaymentFile.HasValue() then
+        if not PaymentFileTempBlob.HasValue() then
             LogInternalError(NothingToExportErr, DataClassification::SystemMetadata, Verbosity::Error);
     end;
 
-    local procedure SendPaymentRequestToWebService(var TempBlobPaymentFile: Codeunit "Temp Blob"; var TempBlobBody: Codeunit "Temp Blob"; DataExchEntryNo: Integer; AppCaller: Text[30])
+    local procedure SendPaymentRequestToWebService(var PaymentFileTempBlob: Codeunit "Temp Blob"; var BodyTempBlob: Codeunit "Temp Blob"; DataExchEntryNo: Integer; AppCaller: Text[30])
     var
-        AMCBankServiceSetup: Record "AMC Banking Setup";
-        PaymentRequestMessage: HttpRequestMessage;
-        PaymentResponseMessage: HttpResponseMessage;
+        AMCBankingSetup: Record "AMC Banking Setup";
+        PaymentHttpRequestMessage: HttpRequestMessage;
+        PaymentHttpResponseMessage: HttpResponseMessage;
         Handled: Boolean;
         Result: Text;
     begin
-        AMCBankServMgt.CheckCredentials();
-        AMCBankServiceSetup.Get();
+        AMCBankingMgt.CheckCredentials();
+        AMCBankingSetup.Get();
 
-        AMCBankServiceRequestMgt.InitializeHttp(PaymentRequestMessage, AMCBankServiceSetup."Service URL", 'POST');
+        AMCBankServiceRequestMgt.InitializeHttp(PaymentHttpRequestMessage, AMCBankingSetup."Service URL", 'POST');
 
-        PrepareSOAPRequestBody(PaymentRequestMessage, TempBlobBody);
+        PrepareSOAPRequestBody(PaymentHttpRequestMessage, BodyTempBlob);
 
         //Set Content-Type header
-        AMCBankServiceRequestMgt.SetHttpContentsDefaults(PaymentRequestMessage);
+        AMCBankServiceRequestMgt.SetHttpContentsDefaults(PaymentHttpRequestMessage);
 
         //Send Request to webservice
         Handled := false;
-        AMCBankServiceRequestMgt.ExecuteWebServiceRequest(Handled, PaymentRequestMessage, PaymentResponseMessage, PaymentExportWebCallTxt, AppCaller, true);
-        AMCBankServiceRequestMgt.GetWebServiceResponse(PaymentResponseMessage, TempBlobPaymentFile, PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), true);
-        AMCBankServiceRequestMgt.SetUsedXTLJournal(TempBlobPaymentFile, DataExchEntryNo, PaymentExportWebCallTxt);
-        if (AMCBankServiceRequestMgt.HasResponseErrors(TempBlobPaymentFile, AMCBankServiceRequestMgt.GetHeaderXPath(), PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), Result, AppCaller)) then
-            DisplayErrorFromResponse(TempBlobPaymentFile, DataExchEntryNo)
+        AMCBankServiceRequestMgt.OnBeforeExecuteWebServiceRequest(Handled, PaymentHttpRequestMessage, PaymentHttpResponseMessage, PaymentExportWebCallTxt, AppCaller); //For mockup testing
+        AMCBankServiceRequestMgt.ExecuteWebServiceRequest(Handled, PaymentHttpRequestMessage, PaymentHttpResponseMessage, PaymentExportWebCallTxt, AppCaller, true);
+        AMCBankServiceRequestMgt.GetWebServiceResponse(PaymentHttpResponseMessage, PaymentFileTempBlob, PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), true);
+        AMCBankServiceRequestMgt.SetUsedXTLJournal(PaymentFileTempBlob, DataExchEntryNo, PaymentExportWebCallTxt);
+        if (AMCBankServiceRequestMgt.HasResponseErrors(PaymentFileTempBlob, AMCBankServiceRequestMgt.GetHeaderXPath(), PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), Result, AppCaller)) then
+            DisplayErrorFromResponse(PaymentFileTempBlob, DataExchEntryNo)
         else
-            ReadContentFromResponse(TempBlobPaymentFile);
+            ReadContentFromResponse(PaymentFileTempBlob);
     end;
 
     [NonDebuggable]
-    local procedure PrepareSOAPRequestBody(var PaymentRequestMessage: HttpRequestMessage; var TempBlob: Codeunit "Temp Blob")
+    local procedure PrepareSOAPRequestBody(var PaymentHttpRequestMessage: HttpRequestMessage; var TempBlob: Codeunit "Temp Blob")
     var
         AMCBankingSetup: Record "AMC Banking Setup";
-        BodyContentInputStream: InStream;
+        BodyContentInStream: InStream;
         EnvelopeXmlDoc: XmlDocument;
         BodyContentXmlDoc: XmlDocument;
         PaymentExportXmlElement: XmlElement;
@@ -106,8 +106,8 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
     begin
         AMCBankingSetup.Get();
 
-        TempBlob.CREATEINSTREAM(BodyContentInputStream);
-        XmlDocument.ReadFrom(BodyContentInputStream, BodyContentXmlDoc);
+        TempBlob.CREATEINSTREAM(BodyContentInStream);
+        XmlDocument.ReadFrom(BodyContentInStream, BodyContentXmlDoc);
 
         Found := BodyContentXmlDoc.GetRoot(PaymentExportXmlElement);
         if (Found) then begin
@@ -119,47 +119,45 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         EnvelopeXmlDoc.WriteTo(TempXmlDocText);
         AMCBankServiceRequestMgt.RemoveUTF16(TempXmlDocText);
         contentHttpContent.WriteFrom(TempXmlDocText);
-        PaymentRequestMessage.Content(contentHttpContent);
+        PaymentHttpRequestMessage.Content(contentHttpContent);
     end;
 
-    local procedure DisplayErrorFromResponse(TempBlobPaymentFile: Codeunit "Temp Blob"; DataExchEntryNo: Integer)
+    local procedure DisplayErrorFromResponse(PaymentFileTempBlob: Codeunit "Temp Blob"; DataExchEntryNo: Integer)
     var
-        GenJnlLine: Record "Gen. Journal Line";
+        GenJournalLine: Record "Gen. Journal Line";
         ResponseXmlDoc: XmlDocument;
-        InStreamData: InStream;
+        DataInStream: InStream;
         SysLogXMLNodeList: XmlNodeList;
         SyslogXmlNode: XmlNode;
         Found: Boolean;
         ErrorText: Text;
         i, j : Integer;
     begin
-        TempBlobPaymentFile.CreateInStream(InStreamData);
-        XmlDocument.ReadFrom(InStreamData, ResponseXmlDoc);
+        PaymentFileTempBlob.CreateInStream(DataInStream);
+        XmlDocument.ReadFrom(DataInStream, ResponseXmlDoc);
 
-        Found := ResponseXmlDoc.SelectNodes(STRSUBSTNO(AMCBankServiceRequestMgt.GetConvErrXPath(PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag()),
-                                            PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), AMCBankServMgt.GetNamespace()), SysLogXMLNodeList);
+        Found := ResponseXmlDoc.SelectNodes(AMCBankServiceRequestMgt.GetConvErrXPath(), SysLogXMLNodeList); //V17.5
         if Found then begin
             for i := 1 to SysLogXMLNodeList.Count() do begin
                 SysLogXMLNodeList.Get(i, SyslogXmlNode);
                 InsertPaymentFileError(SyslogXmlNode, DataExchEntryNo);
             end;
-            GenJnlLine.SetRange("Data Exch. Entry No.", DataExchEntryNo);
-            GenJnlLine.FindFirst();
-            if GenJnlLine.HasPaymentFileErrorsInBatch() then begin
+            GenJournalLine.SetRange("Data Exch. Entry No.", DataExchEntryNo);
+            GenJournalLine.FindFirst();
+            if GenJournalLine.HasPaymentFileErrorsInBatch() then begin
                 Commit();
                 Error(HasErrorsErr);
             end;
         end;
 
-        Found := ResponseXmlDoc.SelectNodes(STRSUBSTNO(AMCBankServiceRequestMgt.GetSysErrXPath(PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag()),
-                                            PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag(), AMCBankServMgt.GetNamespace()), SysLogXMLNodeList);
+        Found := ResponseXmlDoc.SelectNodes(AMCBankServiceRequestMgt.GetSysErrXPath(), SysLogXMLNodeList); //V17.5
         if Found then begin
             ErrorText := BankDataConvServSysErr;
             for j := 1 to SysLogXMLNodeList.Count() do begin
                 SysLogXMLNodeList.Get(j, SyslogXmlNode);
-                ErrorText += '\\' + CopyStr(AMCBankServiceRequestMgt.getNodeValue(SyslogXmlNode, 'text'), 1, 250) + '\' +
-                  CopyStr(AMCBankServiceRequestMgt.getNodeValue(SyslogXmlNode, 'hinttext'), 1, 250) + '\\' +
-                  StrSubstNo(AddnlInfoTxt, AMCBankServMgt.GetSupportURL(ResponseXmlDoc));
+                ErrorText += '\\' + CopyStr(AMCBankServiceRequestMgt.getNodeValue(SyslogXmlNode, AMCBankServiceRequestMgt.GetSyslogHintTextXPath()), 1, 250) + '\' +
+                  CopyStr(AMCBankServiceRequestMgt.getNodeValue(SyslogXmlNode, AMCBankServiceRequestMgt.GetSyslogHintTextXPath()), 1, 250) + '\\' +
+                  StrSubstNo(AddnlInfoTxt, AMCBankingMgt.GetSupportURL(ResponseXmlDoc));
             end;
             Error(ErrorText);
         end;
@@ -168,7 +166,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
     local procedure InsertPaymentFileError(ErrorXmlNode: XmlNode; DataExchEntryNo: Integer)
     var
         PaymentExportData: Record "Payment Export Data";
-        GenJnlLine: Record "Gen. Journal Line";
+        GenJournalLine: Record "Gen. Journal Line";
         XmlDoc: XmlDocument;
         PaymentLineId: Text;
         ErrorText: Text;
@@ -176,10 +174,10 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         SupportURL: Text;
     begin
         ErrorXmlNode.GetDocument(XmlDoc);
-        PaymentLineId := CopyStr(AMCBankServiceRequestMgt.getNodeValue(ErrorXmlNode, 'referenceid'), 1, 50);
-        ErrorText := CopyStr(AMCBankServiceRequestMgt.getNodeValue(ErrorXmlNode, 'text'), 1, 250);
-        HintText := CopyStr(AMCBankServiceRequestMgt.getNodeValue(ErrorXmlNode, 'hinttext'), 1, 250);
-        SupportURL := AMCBankServMgt.GetSupportURL(XmlDoc);
+        PaymentLineId := CopyStr(AMCBankServiceRequestMgt.getNodeValue(ErrorXmlNode, AMCBankServiceRequestMgt.GetSyslogReferenceIdXPath()), 1, 50);
+        ErrorText := CopyStr(AMCBankServiceRequestMgt.getNodeValue(ErrorXmlNode, AMCBankServiceRequestMgt.GetSyslogTextXPath()), 1, 250);
+        HintText := CopyStr(AMCBankServiceRequestMgt.getNodeValue(ErrorXmlNode, AMCBankServiceRequestMgt.GetSyslogHintTextXPath()), 1, 250);
+        SupportURL := AMCBankingMgt.GetSupportURL(XmlDoc);
 
         if (ErrorText = '') or (PaymentLineId = '') then
             Error(IncorrectElementErr, PaymentLineId, ErrorText);
@@ -188,15 +186,15 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
             SetRange("Data Exch Entry No.", DataExchEntryNo);
             SetRange("End-to-End ID", PaymentLineId);
             if FindFirst() then begin
-                GenJnlLine.Get("General Journal Template", "General Journal Batch Name", "General Journal Line No.");
-                GenJnlLine.InsertPaymentFileErrorWithDetails(ErrorText, HintText, SupportURL);
+                GenJournalLine.Get("General Journal Template", "General Journal Batch Name", "General Journal Line No.");
+                GenJournalLine.InsertPaymentFileErrorWithDetails(ErrorText, HintText, SupportURL);
             end else begin
                 SetRange("End-to-End ID");
                 SetRange("Payment Information ID", PaymentLineId);
                 if not FindFirst() then
                     Error(IncorrectElementErr, PaymentLineId, ErrorText);
-                GenJnlLine.Get("General Journal Template", "General Journal Batch Name", "General Journal Line No.");
-                GenJnlLine.InsertPaymentFileErrorWithDetails(ErrorText, HintText, SupportURL);
+                GenJournalLine.Get("General Journal Template", "General Journal Batch Name", "General Journal Line No.");
+                GenJournalLine.InsertPaymentFileErrorWithDetails(ErrorText, HintText, SupportURL);
             end;
         end;
     end;
@@ -211,24 +209,24 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         TempBlob.CreateInStream(ResponseInStream);
         XmlDocument.ReadFrom(ResponseInStream, ResponseXmlDoc);
 
-        Found := ResponseXmlDoc.SelectSingleNode(STRSUBSTNO(AMCBankServiceRequestMgt.GetDataXPath(PaymentExportWebCallTxt + AMCBankServiceRequestMgt.GetResponseTag())), DataXmlNode);
+        Found := ResponseXmlDoc.SelectSingleNode(AMCBankServiceRequestMgt.GetDataXPath(), DataXmlNode); //V17.5
         if not Found then
-            Error(PaymentDataNotCollectedErr, AMCBankServMgt.GetSupportURL(ResponseXmlDoc));
+            Error(PaymentDataNotCollectedErr, AMCBankingMgt.GetSupportURL(ResponseXmlDoc));
 
         DecodePaymentData(TempBlob, DataXmlNode.AsXmlElement().InnerText);
     end;
 
     local procedure DecodePaymentData(var TempBlob: Codeunit "Temp Blob"; Base64String: Text)
     var
-        FileMgt: Codeunit "File Management";
+        FileManagement: Codeunit "File Management";
         Convert: DotNet Convert;
         File: DotNet File;
         FileName: Text;
     begin
-        FileName := FileMgt.ServerTempFileName('txt');
-        FileMgt.IsAllowedPath(FileName, false);
+        FileName := FileManagement.ServerTempFileName('txt');
+        FileManagement.IsAllowedPath(FileName, false);
         File.WriteAllBytes(FileName, Convert.FromBase64String(Base64String));
-        FileMgt.BLOBImportFromServerFile(TempBlob, FileName);
+        FileManagement.BLOBImportFromServerFile(TempBlob, FileName);
     end;
 
     local procedure GetBankAccountNo(DataExchEntryNo: Integer): Code[20];
@@ -241,4 +239,6 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
 
         exit('');
     end;
+
+
 }

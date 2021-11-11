@@ -22,15 +22,15 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         IBANTxt: Text[50];
         CurrTxt: Text[10];
         IsInitialized: Boolean;
-        AssertMsg: Label '%1 Field:"%2" different from expected.';
+        AssertMsg: Label '%1 Field:"%2" different from expected.', Comment = '%1=Field, %2=Fieldname';
         MultiStatementErr: Label 'The file that you are trying to import contains more than one bank statement.';
         MissingStatementDateInDataMsg: Label 'The statement date was not found in the data to be imported.';
         NamespaceTxt: Label 'urn:iso:std:iso:20022:tech:xsd:camt.053.001.02';
-        BankAccMismatchQst: Label 'Bank account %1 does not have the bank account number';
+        BankAccMismatchQst: Label 'Bank account %1 does not have the bank account number', Comment = '%1=Bank Account';
         MissingBankAccNoInDataErr: Label 'The bank account number was not found in the data to be imported.';
-        MissingBankAccNoQst: Label 'Bank account %1 does not have a bank account number. Do you want to continue?';
+        MissingBankAccNoQst: Label 'Bank account %1 does not have a bank account number. Do you want to continue?', Comment = '%1=Bank Account';
         BankAccCurrErr: Label 'The bank statement that you are importing contains transactions in currencies other than the Currency Code ';
-        CurrCodeErr: Label '%1 of bank account %2.';
+        CurrCodeErr: Label '%1 of bank account %2.', Comment = '%1=Currency, %2=Bank Account';
         MissingBalTypeInDataMsg: Label 'The balance type was not found in the data to be imported.';
         MissingClosingBalanceInDataMsg: Label 'The closing balance was not found in the data to be imported.';
 
@@ -343,9 +343,9 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         LineNo := BankAccReconciliationLineTemplate."Statement Line No.";
 
         CreateLine(TempExpdBankAccReconciliationLine, BankAccReconciliationLineTemplate, EntryNo, 1, LineNo * 1,
-          DMY2Date(1, 1, Date2DMY(WorkDate(), 3)), DMY2Date(3, 3, Date2DMY(WorkDate(), 3)), '', 'Cronus Ltd.', '', 105678.5, '');
+          DMY2Date(1, 1, Date2DMY(WorkDate(), 3)), DMY2Date(3, 3, Date2DMY(WorkDate(), 3)), '', 'Cronus Ltd.', '', '', 105678.5, '', '');
         CreateLine(TempExpdBankAccReconciliationLine, BankAccReconciliationLineTemplate, EntryNo, 2, LineNo * 2,
-          DMY2Date(3, 3, Date2DMY(WorkDate(), 3)), DMY2Date(5, 5, Date2DMY(WorkDate(), 3)), '', 'Payer 1234', '', 105.42, '');
+          DMY2Date(3, 3, Date2DMY(WorkDate(), 3)), DMY2Date(5, 5, Date2DMY(WorkDate(), 3)), '', 'Payer 1234', '', '', 105.42, '', '');
 
         AssertDataInTable(TempExpdBankAccReconciliationLine, BankAccReconciliationLineTemplate, '');
 
@@ -381,7 +381,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         CreateBankAccReconTemplateWithFilter(BankAccReconciliationLineTemplate, BankAccReconciliation);
 
         TempBlobUTF8.CreateOutStream(OutStream, TEXTENCODING::UTF8);
-        WriteAMCBankingResponse(OutStream, 'UstrdText', 'Address', 'GB', 'Name',
+        WriteAMCBankingResponse(OutStream, 'UstrdText', '12345678', 'Address', 'GB', 'Name',
           Format(150.75, 0, 9), Format(DMY2Date(1, 1, 2016), 0, 9), CurrTxt, IBANTxt, Format(DMY2Date(2, 2, 2016), 0, 9),
           Format(150.75, 0, 9), 1);
         SetupSourceMock(AMCBankingMgt.GetDataExchDef_STMT(), TempBlobUTF8, '');
@@ -390,15 +390,22 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         LibraryLowerPermissions.SetBanking();
         BankAccReconciliation.ImportBankStatement();
 
+        BankAccReconciliation.SetRange("Statement Type", BankAccReconciliation."Statement Type");
+        BankAccReconciliation.SetRange("Bank Account No.", BankAccReconciliation."Bank Account No.");
+        BankAccReconciliation.SetRange("Statement No.", BankAccReconciliation."Statement No.");
+        BankAccReconciliation.Find('=');
+
         // Verify Bank Acc. Rec. Lines
         DataExch.SetRange("Data Exch. Def Code", AMCBankingMgt.GetDataExchDef_STMT());
         DataExch.FindLast();
         EntryNo := DataExch."Entry No.";
         LineNo := BankAccReconciliationLineTemplate."Statement Line No.";
+        BankAccReconciliationLineTemplate.FindLast();
 
-        CreateLine(TempExpdBankAccReconciliationLine, BankAccReconciliationLineTemplate, EntryNo, 1, LineNo,
-          DMY2Date(1, 1, 2016), 0D, 'UstrdText', 'Name', 'UstrdText', 150.75, 'Address GB');
+        CreateLine(TempExpdBankAccReconciliationLine, BankAccReconciliationLineTemplate, EntryNo, LineNo, LineNo,
+          DMY2Date(1, 1, 2016), 0D, '', 'Name', 'UstrdText', '12345678', 150.75, 'Address', 'GB');
         AssertDataInTable(TempExpdBankAccReconciliationLine, BankAccReconciliationLineTemplate, '');
+
         VerifyBankAccRec(BankAccReconciliation, DMY2Date(2, 2, 2016), 150.75);
 
         // Cleanup Data Exchange Def
@@ -414,7 +421,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         BankAccount: Record "Bank Account";
         TempBlobUTF8: Codeunit "Temp Blob";
         AMCBankingMgt: Codeunit "AMC Banking Mgt.";
-        BankAccReconciliation: TestPage "Bank Acc. Reconciliation";
+        BankAccReconciliationTestPage: TestPage "Bank Acc. Reconciliation";
         OutStream: OutStream;
     begin
         // [FEATURE] [UI]
@@ -427,26 +434,25 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         BankAccount.Modify();
 
         TempBlobUTF8.CreateOutStream(OutStream, TEXTENCODING::UTF8);
-        WriteAMCBankingResponse(OutStream, 'UstrdText', 'Address', 'GB', 'Name',
+        WriteAMCBankingResponse(OutStream, 'UstrdText', '12345678', 'Address', 'GB', 'Name',
           Format(150.75, 0, 9), Format(DMY2Date(1, 1, 2016), 0, 9), CurrTxt, IBANTxt, Format(DMY2Date(2, 2, 2016), 0, 9),
           Format(150.75, 0, 9), 1);
         SetupSourceMock(AMCBankingMgt.GetDataExchDef_STMT(), TempBlobUTF8, '');
 
         // Exercise
         LibraryLowerPermissions.SetBanking();
-        BankAccReconciliation.OpenNew();
-        BankAccReconciliation.BankAccountNo.SetValue(BankAccount."No.");
-        BankAccReconciliation.StatementDate.SetValue(DMY2Date(2, 2, 2016));
-        BankAccReconciliation.ImportBankStatement.Invoke();
+        BankAccReconciliationTestPage.OpenNew();
+        BankAccReconciliationTestPage.BankAccountNo.SetValue(BankAccount."No.");
+        BankAccReconciliationTestPage.ImportBankStatement.Invoke();
 
         // Verify.
-        BankAccReconciliation.StatementNo.AssertEquals('1');
-        Assert.IsTrue(BankAccReconciliation.StmtLine.First(), 'Record was not imported.');
-        BankAccReconciliation.StatementEndingBalance.AssertEquals(Format(150.75));
+        BankAccReconciliationTestPage.StatementNo.AssertEquals('1');
+        Assert.IsTrue(BankAccReconciliationTestPage.StmtLine.First(), 'Record was not imported.');
+        BankAccReconciliationTestPage.StatementEndingBalance.AssertEquals(Format(150.75));
 
         // Cleanup Data Exchange Def
         LibraryLowerPermissions.SetO365Full();
-        LibraryAmcWebService.CleanupAMCBankingDataExch(AMCBankingMgt.GetDataExchDef_STMT())
+        LibraryAmcWebService.CleanupAMCBankingDataExch(AMCBankingMgt.GetDataExchDef_STMT());
     end;
 
     [Test]
@@ -479,7 +485,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         CreateBankAccReconTemplateWithFilter(BankAccReconciliationLineTemplate, BankAccReconciliation);
 
         TempBlobUTF8.CreateOutStream(OutStream, TEXTENCODING::UTF8);
-        WriteAMCBankingResponse(OutStream, 'UstrdText', 'Address', 'GB', 'Name',
+        WriteAMCBankingResponse(OutStream, 'UstrdText', '12345678', 'Address', 'GB', 'Name',
           Format(150.75, 0, 9), Format(DMY2Date(1, 1, 2016), 0, 9), CurrTxt, IBANTxt, Format(DMY2Date(1, 1, 2016), 0, 9),
           Format(150.75, 0, 9), 1);
         SetupSourceMock(AMCBankingMgt.GetDataExchDef_STMT(), TempBlobUTF8, '');
@@ -527,7 +533,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         CreateBankAccReconTemplateWithFilter(BankAccReconciliationLineTemplate, BankAccReconciliation);
 
         TempBlobUTF8.CreateOutStream(OutStream, TEXTENCODING::UTF8);
-        WriteAMCBankingResponse(OutStream, 'UstrdText', 'Address', 'GB', 'Name',
+        WriteAMCBankingResponse(OutStream, 'UstrdText', '12345678', 'Address', 'GB', 'Name',
           Format(150.75, 0, 9), Format(DMY2Date(1, 1, 2016), 0, 9), CurrTxt, ' ' + BankAccNo + ' ', Format(DMY2Date(1, 1, 2016), 0, 9),
           Format(150.75, 0, 9), 1);
         SetupSourceMock(AMCBankingMgt.GetDataExchDef_STMT(), TempBlobUTF8, '');
@@ -575,7 +581,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         CreateBankAccReconTemplateWithFilter(BankAccReconciliationLineTemplate, BankAccReconciliation);
 
         TempBlobUTF8.CreateOutStream(OutStream, TEXTENCODING::UTF8);
-        WriteAMCBankingResponse(OutStream, 'UstrdText', 'Address', 'GB', 'Name',
+        WriteAMCBankingResponse(OutStream, 'UstrdText', '12345678', 'Address', 'GB', 'Name',
           Format(150.75, 0, 9), Format(DMY2Date(1, 1, 2016), 0, 9), CurrTxt, IBANTxt, Format(DMY2Date(1, 1, 2016), 0, 9),
           Format(150.75, 0, 9), 1);
         SetupSourceMock(AMCBankingMgt.GetDataExchDef_STMT(), TempBlobUTF8, '');
@@ -623,7 +629,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         LibraryLowerPermissions.SetOutsideO365Scope();
 
         TempBlobUTF8.CreateOutStream(OutStream, TEXTENCODING::UTF8);
-        WriteAMCBankingResponse(OutStream, 'UstrdText', 'Address', 'GB', 'Name',
+        WriteAMCBankingResponse(OutStream, 'UstrdText', '12345678', 'Address', 'GB', 'Name',
           Format(150.75, 0, 9), Format(DMY2Date(1, 1, 2016), 0, 9), CurrTxt, '', Format(DMY2Date(1, 1, 2016), 0, 9),
           Format(150.75, 0, 9), 1);
         SetupSourceMock(AMCBankingMgt.GetDataExchDef_STMT(), TempBlobUTF8, '');
@@ -668,7 +674,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         CreateBankAccReconTemplateWithFilter(BankAccReconciliationLineTemplate, BankAccReconciliation);
 
         TempBlobUTF8.CreateOutStream(OutStream, TEXTENCODING::UTF8);
-        WriteAMCBankingResponse(OutStream, 'UstrdText', 'Address', 'GB', 'Name',
+        WriteAMCBankingResponse(OutStream, 'UstrdText', 'Address', '12345678', 'GB', 'Name',
           Format(150.75, 0, 9), Format(DMY2Date(1, 1, 2016), 0, 9), CurrTxt, '', Format(DMY2Date(1, 1, 2016), 0, 9),
           Format(150.75, 0, 9), 1);
         SetupSourceMock(AMCBankingMgt.GetDataExchDef_STMT(), TempBlobUTF8, '');
@@ -706,7 +712,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         BankAccount.Modify();
 
         TempBlobUTF8.CreateOutStream(OutStream, TEXTENCODING::UTF8);
-        WriteAMCBankingResponse(OutStream, 'UstrdText', 'Address', 'GB', 'Name',
+        WriteAMCBankingResponse(OutStream, 'UstrdText', '12345678', 'Address', 'GB', 'Name',
           Format(150.75, 0, 9), Format(DMY2Date(1, 1, 2016), 0, 9), FileCurrencyCode, IBANTxt, Format(DMY2Date(1, 1, 2016), 0, 9),
           Format(150.75, 0, 9), 1);
         SetupSourceMock(AMCBankingMgt.GetDataExchDef_STMT(), TempBlobUTF8, '');
@@ -771,14 +777,17 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
     [Scope('OnPrem')]
     procedure VerifyBankAccCurrencyDiffFromBlankFileCurrency()
     begin
+        /*AMC-JN : This is wrong - a finsta can't have blank currency in the return answer) */
+
         // [SCENARIO 8] Import a bank statement file, where the currency of the transactions should be checked against the currency of my bank account.
         // [GIVEN] A bank account set up to import with the AMC format, with a given bank account no. and currency code.
         // [GIVEN] A bank statement file for a bank account containing transactions with a blank currency code.
         // [WHEN] Invoking the Import bank statement from the Bank Acc. Reconciliation page.
-        // [THEN] Import is allowed.
+        // [THEN] Import is allowed. 
         LibraryLowerPermissions.SetBanking();
         LibraryLowerPermissions.AddO365Setup();
         ImportFileForAMCBankingWithCurrency('', LibraryERM.CreateCurrencyWithExchangeRate(DMY2Date(1, 1, 2000), 1, 1));
+
     end;
 
     [Test]
@@ -825,7 +834,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         BankAccount.Modify();
 
         TempBlobUTF8.CreateOutStream(OutStream, TEXTENCODING::UTF8);
-        WriteAMCBankingResponse(OutStream, 'UstrdText', 'Address', 'GB', 'Name',
+        WriteAMCBankingResponse(OutStream, 'UstrdText', '12345678', 'Address', 'GB', 'Name',
           Format(150.75, 0, 9), Format(DMY2Date(1, 1, 2016), 0, 9), '', IBANTxt, Format(DMY2Date(1, 1, 2016), 0, 9),
           Format(150.75, 0, 9), 2);
         SetupSourceMock(AMCBankingMgt.GetDataExchDef_STMT(), TempBlobUTF8, '');
@@ -870,7 +879,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         CreateBankAccReconTemplateWithFilter(BankAccReconciliationLineTemplate, BankAccReconciliation);
 
         TempBlobUTF8.CreateOutStream(OutStream, TEXTENCODING::UTF8);
-        WriteAMCBankingResponse(OutStream, 'UstrdText', 'Address', 'GB', 'Name',
+        WriteAMCBankingResponse(OutStream, 'UstrdText', '12345678', 'Address', 'GB', 'Name',
           Format(150.75, 0, 9), Format(DMY2Date(1, 1, 2016), 0, 9), CurrTxt, BankAccount."Bank Account No.", '', Format(150.75, 0, 9), 1);
         SetupSourceMock(AMCBankingMgt.GetDataExchDef_STMT(), TempBlobUTF8, '');
 
@@ -1134,7 +1143,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         WriteLine(OutStream, '</Document>');
     end;
 
-    local procedure WriteAMCBankingResponse(OutStream: OutStream; UstrdTxt: Text; Address: Text; CountryIso: Text; Name: Text; Amount: Text; Date: Text; CurrencyCode: Text; BankAccNo: Text; StmtDate: Text; StmtAmount: Text; StatementCount: Integer)
+    local procedure WriteAMCBankingResponse(OutStream: OutStream; UstrdTxt: Text; Reference: Text; Address: Text; CountryIso: Text; Name: Text; Amount: Text; Date: Text; CurrencyCode: Text; BankAccNo: Text; StmtDate: Text; StmtAmount: Text; StatementCount: Integer)
     var
         AmcBankingMgt: Codeunit "AMC Banking Mgt.";
         "count": Integer;
@@ -1143,23 +1152,23 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         WriteLine(OutStream, '      <return>');
 
         for count := 1 to StatementCount do
-            WriteAMCBankingStmtElement(OutStream, UstrdTxt, Address, CountryIso, Name, Amount, Date, CurrencyCode, BankAccNo, StmtDate,
+            WriteAMCBankingStmtElement(OutStream, UstrdTxt, Reference, Address, CountryIso, Name, Amount, Date, CurrencyCode, BankAccNo, StmtDate,
               StmtAmount);
 
         WriteLine(OutStream, '      </return>');
         WriteLine(OutStream, '      </ns2:reportExportResponse>');
     end;
 
-    local procedure WriteAMCBankingStmtElement(OutStream: OutStream; UstrdTxt: Text; Address: Text; CountryIso: Text; Name: Text; Amount: Text; Date: Text; CurrencyCode: Text; BankAccNo: Text; StmtDate: Text; StmtAmount: Text)
+    local procedure WriteAMCBankingStmtElement(OutStream: OutStream; UstrdTxt: Text; Reference: Text; Address: Text; CountryIso: Text; Name: Text; Amount: Text; Date: Text; CurrencyCode: Text; BankAccNo: Text; StmtDate: Text; StmtAmount: Text)
     begin
         WriteLine(OutStream, '		<finsta>');
+        WriteLine(OutStream, '     	    <journalnumber>' + Format(SessionId()) + '</journalnumber>');
         WriteLine(OutStream, '        	<statement>');
-        WriteLine(OutStream, '          	<fromdate>' + Date + '</fromdate>');
-        WriteLine(OutStream, '            	<statementno>1234</statementno>');
         WriteLine(OutStream, '            	<balanceend>' + StmtAmount + '</balanceend>');
         WriteLine(OutStream, '            	<balanceenddate>' + StmtDate + '</balanceenddate>');
         WriteLine(OutStream, '            	<balancestart>0</balancestart>');
-        WriteLine(OutStream, '            	<balancestartdate>' + Date + '</balancestartdate>');
+        WriteLine(OutStream, '            	<balancestartdate>' + StmtDate + '</balancestartdate>');
+        WriteLine(OutStream, '            	<statementno>1234</statementno>');
         WriteLine(OutStream, '            	<finstatransus>');
         WriteLine(OutStream, '					<amountposting>');
         WriteLine(OutStream, '						<amount>' + Amount + '</amount>');
@@ -1167,7 +1176,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         WriteLine(OutStream, '						<text>' + UstrdTxt + '</text>');
         WriteLine(OutStream, '					</amountposting>');
         WriteLine(OutStream, '					<references>');
-        WriteLine(OutStream, '						<reference>' + UstrdTxt + '</reference>');
+        WriteLine(OutStream, '						<reference>' + Reference + '</reference>');
         WriteLine(OutStream, '						<type>DOC</type>');
         WriteLine(OutStream, '					</references>');
         WriteLine(OutStream, '					<addressstruct>');
@@ -1344,7 +1353,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         BankAccReconciliationLineTemplate.SetRange("Statement No.", BankAccReconciliation."Statement No.");
     end;
 
-    local procedure CreateLineExt(var TempBankAccReconciliationLine: Record "Bank Acc. Reconciliation Line" temporary; BankAccReconciliationLineTemplate: Record "Bank Acc. Reconciliation Line"; DataExchEntryNo: Integer; DataExchLineNo: Integer; LineNo: Integer; TransactionDate: Date; ValueDate: Date; Description: Text[50]; PayerInfo: Text[50]; TransactionInfo: Text[50]; Amount: Decimal; Address: Text[100])
+    local procedure CreateLineExt(var TempBankAccReconciliationLine: Record "Bank Acc. Reconciliation Line" temporary; BankAccReconciliationLineTemplate: Record "Bank Acc. Reconciliation Line"; DataExchEntryNo: Integer; DataExchLineNo: Integer; LineNo: Integer; TransactionDate: Date; ValueDate: Date; Description: Text[50]; PayerInfo: Text[50]; TransactionInfo: Text[50]; AdditionalTransactionInfo: Text[50]; Amount: Decimal; Address: Text[100]; CountryIso: Text[100])
     begin
         TempBankAccReconciliationLine.Copy(BankAccReconciliationLineTemplate);
         TempBankAccReconciliationLine.Validate("Data Exch. Entry No.", DataExchEntryNo);
@@ -1354,18 +1363,19 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         TempBankAccReconciliationLine.Validate("Transaction Date", TransactionDate);
         TempBankAccReconciliationLine.Validate(Description, Description);
         TempBankAccReconciliationLine.Validate("Related-Party Name", PayerInfo);
-        TempBankAccReconciliationLine.Validate("Additional Transaction Info", TransactionInfo);
+        TempBankAccReconciliationLine.Validate("Additional Transaction Info", AdditionalTransactionInfo);
         TempBankAccReconciliationLine.Validate("Transaction Text", TransactionInfo);
         TempBankAccReconciliationLine.Validate("Statement Amount", Amount);
         TempBankAccReconciliationLine.Validate("Value Date", ValueDate);
         TempBankAccReconciliationLine.Validate("Related-Party Address", Address);
+        TempBankAccReconciliationLine.Validate("Related-Party City", CountryIso);
         TempBankAccReconciliationLine.Insert();
     end;
 
-    local procedure CreateLine(var TempBankAccReconciliationLine: Record "Bank Acc. Reconciliation Line" temporary; BankAccReconciliationLineTemplate: Record "Bank Acc. Reconciliation Line"; DataExchEntryNo: Integer; DataExchLineNo: Integer; LineNo: Integer; TransactionDate: Date; ValueDate: Date; Description: Text[50]; PayerInfo: Text[50]; TransactionInfo: Text[50]; Amount: Decimal; Address: Text[100])
+    local procedure CreateLine(var TempBankAccReconciliationLine: Record "Bank Acc. Reconciliation Line" temporary; BankAccReconciliationLineTemplate: Record "Bank Acc. Reconciliation Line"; DataExchEntryNo: Integer; DataExchLineNo: Integer; LineNo: Integer; TransactionDate: Date; ValueDate: Date; Description: Text[50]; PayerInfo: Text[50]; TransactionInfo: Text[50]; AdditionalTransactionInfo: Text[50]; Amount: Decimal; Address: Text[100]; CountryIso: Text[100])
     begin
         CreateLineExt(TempBankAccReconciliationLine, BankAccReconciliationLineTemplate, DataExchEntryNo, DataExchLineNo, LineNo,
-          TransactionDate, ValueDate, Description, PayerInfo, TransactionInfo, Amount, Address);
+          TransactionDate, ValueDate, Description, PayerInfo, TransactionInfo, AdditionalTransactionInfo, Amount, Address, CountryIso);
     end;
 
     local procedure CreateBankAccWithBankStatementSetup(var BankAccount: Record "Bank Account"; DataExchDefCode: Code[20])
@@ -1553,5 +1563,12 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
     procedure ConfirmHandlerYes(Question: Text[1024]; var Reply: Boolean)
     begin
         Reply := true;
+    end;
+
+    [ConfirmHandler]
+    [Scope('OnPrem')]
+    procedure ConfirmHandlerNo(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := false;
     end;
 }

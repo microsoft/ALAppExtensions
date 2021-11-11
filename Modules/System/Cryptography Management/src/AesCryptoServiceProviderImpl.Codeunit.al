@@ -14,17 +14,12 @@ codeunit 1467 "AesCryptoServiceProvider Impl." implements SymmetricAlgorithm
     [NonDebuggable]
     procedure GetInstance(var DotNetSymmetricAlgorithm: DotNet "Cryptography.SymmetricAlgorithm")
     begin
-        AesCryptoServiceProvider();
+        DotNetAesCryptoServiceProvider := DotNetAesCryptoServiceProvider.AesCryptoServiceProvider();
         DotNetSymmetricAlgorithm := DotNetAesCryptoServiceProvider;
     end;
 
     procedure XmlEncrypmentMethodUrl(): Text
     begin
         exit(XmlEncrypmentMethodUrlTok);
-    end;
-
-    local procedure AesCryptoServiceProvider()
-    begin
-        DotNetAesCryptoServiceProvider := DotNetAesCryptoServiceProvider.AesCryptoServiceProvider();
     end;
 }

@@ -9,6 +9,12 @@ tableextension 20103 "AMC Bank Bank Account ext." extends "Bank Account"
             ValidateTableRelation = false;
             DataClassification = CustomerContent;
         }
+
+        field(20101; "AMC Bank File Name"; Text[250])
+        {
+            Caption = 'Bank file Name';
+            DataClassification = CustomerContent;
+        }
     }
 
 }

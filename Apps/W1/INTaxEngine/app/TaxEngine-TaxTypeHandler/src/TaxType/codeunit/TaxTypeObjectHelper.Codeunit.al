@@ -140,7 +140,7 @@ codeunit 20232 "Tax Type Object Helper"
     begin
         if TaxType.FindSet() then
             repeat
-                TaxType.Status := TaxType.Status::Draft;
+                TaxType.Validate(Status, TaxType.Status::Draft);
                 TaxType.Validate(Enabled, false);
                 TaxType.Modify(true);
             until TaxType.Next() = 0;

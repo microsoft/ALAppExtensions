@@ -171,6 +171,13 @@ page 3901 "Retention Policy Setup Card"
         ExpiredRecordCountStyleTxt: Text;
         ReadPermissionNotificationId: Guid;
 
+    trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        FeatureTelemetry.LogUptake('0000FVZ', 'Retention policies', Enum::"Feature Uptake Status"::Discovered);
+    end;
+
     trigger OnAfterGetCurrRecord()
     var
         RetentionPolicySetup: Record "Retention Policy Setup";

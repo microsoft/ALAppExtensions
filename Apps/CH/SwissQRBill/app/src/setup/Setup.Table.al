@@ -5,7 +5,16 @@ table 11512 "Swiss QR-Bill Setup"
     fields
     {
         field(1; "Primary key"; Code[10]) { }
-        field(2; "Swiss-Cross Image"; Media) { }
+        field(2; "Swiss-Cross Image"; Media)
+        {
+#if CLEAN20
+            ObsoleteState = Removed;
+#else
+            ObsoleteState = Pending;
+#endif
+            ObsoleteTag = '20.0';
+            ObsoleteReason = 'Use W1 codeunit 4113 "Swiss QR Code Helper"';
+        }
         field(3; "Address Type"; enum "Swiss QR-Bill Address Type")
         {
             Caption = 'Address Type';
@@ -42,28 +51,28 @@ table 11512 "Swiss QR-Bill Setup"
         }
         field(12; "SEPA CT Setup"; Boolean)
         {
-            CalcFormula = exist ("Bank Export/Import Setup" where(Direction = const(Export), "Processing Codeunit ID" = const(11520), "Processing XMLport ID" = const(1000), "Check Export Codeunit" = const(1223)));
+            CalcFormula = exist("Bank Export/Import Setup" where(Direction = const(Export), "Processing Codeunit ID" = const(11520), "Processing XMLport ID" = const(1000), "Check Export Codeunit" = const(1223)));
             Caption = 'SEPA Credit Transfer';
             Editable = false;
             FieldClass = FlowField;
         }
         field(13; "SEPA DD Setup"; Boolean)
         {
-            CalcFormula = exist ("Bank Export/Import Setup" where(Direction = const(Export), "Processing Codeunit ID" = const(11530), "Processing XMLport ID" = const(11501), "Check Export Codeunit" = const(1233)));
+            CalcFormula = exist("Bank Export/Import Setup" where(Direction = const(Export), "Processing Codeunit ID" = const(11530), "Processing XMLport ID" = const(11501), "Check Export Codeunit" = const(1233)));
             Caption = 'SEPA Direct Debit';
             Editable = false;
             FieldClass = FlowField;
         }
         field(14; "SEPA CAMT 054 Setup"; Boolean)
         {
-            CalcFormula = exist ("Bank Export/Import Setup" where(Direction = const(Import), "Processing Codeunit ID" = const(1270), "Processing XMLport ID" = const(0), "Check Export Codeunit" = const(0), "Data Exch. Def. Code" = field("SEPA CAMT 054 DataExchDef Code")));
+            CalcFormula = exist("Bank Export/Import Setup" where(Direction = const(Import), "Processing Codeunit ID" = const(1270), "Processing XMLport ID" = const(0), "Check Export Codeunit" = const(0), "Data Exch. Def. Code" = field("SEPA CAMT 054 DataExchDef Code")));
             Caption = 'SEPA CAMT 054';
             Editable = false;
             FieldClass = FlowField;
         }
         field(15; "SEPA CAMT 054 DataExchDef Code"; Code[20])
         {
-            CalcFormula = lookup ("Data Exch. Mapping"."Data Exch. Def Code" where("Table ID" = const(274), "Mapping Codeunit" = const(11522)));
+            CalcFormula = lookup("Data Exch. Mapping"."Data Exch. Def Code" where("Table ID" = const(274), "Mapping Codeunit" = const(11522)));
             Caption = 'SEPA CAMT 054 Data Exch. Def. Code';
             Editable = false;
             FieldClass = FlowField;
@@ -76,34 +85,6 @@ table 11512 "Swiss QR-Bill Setup"
             Clustered = true;
         }
     }
-
-    local procedure InitSwissCrossImage()
-    var
-        SwissQRBillImageMgt: Codeunit "Swiss QR-Bill Image Mgt.";
-        TempBlob: Codeunit "Temp Blob";
-        InStream: InStream;
-    begin
-        Clear("Swiss-Cross Image");
-        SwissQRBillImageMgt.LoadSwissCrossImage(TempBlob);
-        TempBlob.CreateInStream(InStream);
-        "Swiss-Cross Image".ImportStream(InStream, 'QR-Bill Swiss Cross Image');
-    end;
-
-    internal procedure LoadSwissCrossImage(TempBlob: Codeunit "Temp Blob"): Boolean
-    var
-        OutStream: OutStream;
-    begin
-        Get();
-
-        if not "Swiss-Cross Image".HasValue() then begin
-            InitSwissCrossImage();
-            Modify();
-        end;
-
-        TempBlob.CreateOutStream(OutStream);
-        "Swiss-Cross Image".ExportStream(OutStream);
-        exit(true);
-    end;
 
     internal procedure InitDefaultJournalSetup()
     var

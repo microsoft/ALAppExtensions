@@ -168,3 +168,15 @@ Exit parameter containing the requested OAuth specific authorization header.
  Specifies that the Http request type is DELETE.
  
 
+### HEAD (value: 5)
+
+
+ Specifies that the Http request type is HEAD.
+ 
+
+### OPTIONS (value: 6)
+
+
+ Specifies that the Http request type is OPTIONS.
+ 
+

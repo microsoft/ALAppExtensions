@@ -35,7 +35,7 @@ For on-premises versions, you can also use this module to do the following:
 
 
 # Public Objects
-## Signature Key (Table 1461)
+## [Obsolete] Signature Key (Table 1461)
 
  Represents the key of asymmetric algorithm.
  
@@ -67,6 +67,29 @@ procedure ToXmlString(): Text
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
 An XML string containing the key of the saved key value.
+### FromBase64String (Method) <a name="FromBase64String"></a> 
+
+ Saves an key value from an certificate in Base64 format
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure FromBase64String(CertBase64Value: Text; Password: Text; IncludePrivateParameters: Boolean)
+```
+#### Parameters
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Represents the certificate value encoded using the Base64 algorithm
+
+*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+
+
+*IncludePrivateParameters ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+true to include private parameters; otherwise, false.
+
 
 ## SignatureAlgorithm (Interface)
 ### FromXmlString (Method) <a name="FromXmlString"></a> 
@@ -132,6 +155,185 @@ procedure VerifyData(DataInStream: InStream; HashAlgorithm: Enum "Hash Algorithm
 #### Return Value
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
+
+
+## CertificateRequest (Codeunit 1463)
+
+ Provides helper functionality for creating Certificate Signing Requests (CSR:s) and Self Signed Certificates.
+ 
+
+### InitializeRSA (Method) <a name="InitializeRSA"></a> 
+
+ Initializes a new instance of RSACryptoServiceProvider with the specified key size and returns the key as an XML string.
+ 
+
+#### Syntax
+```
+procedure InitializeRSA(KeySize: Integer; IncludePrivateParameters: Boolean; var KeyAsXmlString: Text)
+```
+#### Parameters
+*KeySize ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The size of the key in bits.
+
+*IncludePrivateParameters ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+True to include a public and private RSA key in KeyAsXmlString. False to include only the public key.
+
+*KeyAsXmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Returns an XML string that contains the key of the RSA object that was created.
+
+### InitializeCertificateRequestUsingRSA (Method) <a name="InitializeCertificateRequestUsingRSA"></a> 
+
+ Initializes a new instance of the CertificateRequest with the specified parameters and the initialized RSA key.
+ 
+
+#### Syntax
+```
+procedure InitializeCertificateRequestUsingRSA(SubjectName: Text; HashAlgorithm: Enum "Hash Algorithm"; RSASignaturePaddingMode: Enum "RSA Signature Padding")
+```
+#### Parameters
+*SubjectName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The string representation of the subject name for the certificate or certificate request.
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+The hash algorithm to use when signing the certificate or certificate request.
+
+*RSASignaturePaddingMode ([Enum "RSA Signature Padding"]())* 
+
+The RSA signature padding to apply if self-signing or being signed with an X509Certificate2.
+
+### AddX509BasicConstraintToCertificateRequest (Method) <a name="AddX509BasicConstraintToCertificateRequest"></a> 
+
+ Adds a X509BasicConstraint to the Certificate Request. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509basicconstraintsextension
+ 
+
+#### Syntax
+```
+procedure AddX509BasicConstraintToCertificateRequest(CertificateAuthority: Boolean; HasPathLengthConstraint: Boolean; PathLengthConstraint: Integer; Critical: Boolean)
+```
+#### Parameters
+*CertificateAuthority ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+True if the certificate is from a certificate authority (CA). Otherwise, false.
+
+*HasPathLengthConstraint ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+True if the certificate has a restriction on the number of path levels it allows; otherwise, false.
+
+*PathLengthConstraint ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The number of levels allowed in a certificate's path.
+
+*Critical ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+True if the extension is critical. Otherwise, false.
+
+### AddX509EnhancedKeyUsageToCertificateRequest (Method) <a name="AddX509EnhancedKeyUsageToCertificateRequest"></a> 
+
+ Adds a X509EnhancedKeyUsage to the Certificate Request. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509enhancedkeyusageextension
+ 
+
+#### Syntax
+```
+procedure AddX509EnhancedKeyUsageToCertificateRequest(OidValues: List of [Text]; Critical: Boolean)
+```
+#### Parameters
+*OidValues ([List of [Text]]())* 
+
+List of Oid values (for example '1.3.6.1.5.5.7.3.2') to add.
+
+*Critical ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+True if the extension is critical; otherwise, false.
+
+### AddX509KeyUsageToCertificateRequest (Method) <a name="AddX509KeyUsageToCertificateRequest"></a> 
+
+ Adds a X509KeyUsage to the certificate request. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509keyusageextension
+ 
+
+#### Syntax
+```
+procedure AddX509KeyUsageToCertificateRequest(X509KeyUsageFlags: Integer; Critical: Boolean)
+```
+#### Parameters
+*X509KeyUsageFlags ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The sum of all flag values that are to be added. See https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.x509keyusageflags
+
+*Critical ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+True if the extension is critical; otherwise, false.
+
+### CreateSigningRequest (Method) <a name="CreateSigningRequest"></a> 
+
+ Creates an ASN.1 DER-encoded PKCS#10 CertificationRequest and returns a Base 64 encoded string.
+ 
+
+#### Syntax
+```
+procedure CreateSigningRequest(var SigningRequestPemString: Text)
+```
+#### Parameters
+*SigningRequestPemString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Returns the SigningRequest in Base 64 string format.
+
+### GetX509CertificateRequestExtensionCount (Method) <a name="GetX509CertificateRequestExtensionCount"></a> 
+
+ Gets how many X509Extensions have been added to the X509CertificateRequest.
+ 
+
+#### Syntax
+```
+procedure GetX509CertificateRequestExtensionCount(): Integer
+```
+#### Return Value
+*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+
+The number of added extensions.
+### CreateSigningRequest (Method) <a name="CreateSigningRequest"></a> 
+
+ Creates an ASN.1 DER-encoded PKCS#10 CertificationRequest and returns it in an OutStream.
+ 
+
+#### Syntax
+```
+procedure CreateSigningRequest(SigningRequestOutStream: OutStream)
+```
+#### Parameters
+*SigningRequestOutStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+OutStream.
+
+### CreateSelfSigned (Method) <a name="CreateSelfSigned"></a> 
+
+ Creates a self-signed certificate using the established subject, key, and optional extensions.
+ 
+
+#### Syntax
+```
+procedure CreateSelfSigned(NotBefore: DateTime; NotAfter: DateTime; X509ContentType: Enum "X509 Content Type"; var CertBase64Value: Text)
+```
+#### Parameters
+*NotBefore ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+
+The oldest date and time when this certificate is considered valid.
+
+*NotAfter ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+
+The date and time when this certificate is no longer considered valid.
+
+*X509ContentType ([Enum "X509 Content Type"]())* 
+
+Specifies the format of an X.509 certificate.
+
+*CertBase64Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Returns the certificate value encoded using the Base64 algorithm.
 
 
 ## Cryptography Management (Codeunit 1266)
@@ -412,6 +614,32 @@ The available hash algorithms include HMACMD5, HMACSHA1, HMACSHA256, HMACSHA384,
 *[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
 
 Base64 hashed value.
+### GenerateBase64KeyedHash (Method) <a name="GenerateBase64KeyedHash"></a> 
+
+ Generates keyed base64 encoded hash from provided string based on provided hash algorithm and base64 key.
+ 
+
+#### Syntax
+```
+procedure GenerateBase64KeyedHash(InputString: Text; "Key": Text; HashAlgorithmType: Option HMACMD5,HMACSHA1,HMACSHA256,HMACSHA384,HMACSHA512): Text
+```
+#### Parameters
+*InputString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Input string.
+
+*Key ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Key to use in the hash algorithm.
+
+*HashAlgorithmType ([Option HMACMD5,HMACSHA1,HMACSHA256,HMACSHA384,HMACSHA512]())* 
+
+The available hash algorithms include HMACMD5, HMACSHA1, HMACSHA256, HMACSHA384, and HMACSHA512.
+
+#### Return Value
+*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+
+Hashed value.
 ### SignData (Method) <a name="SignData"></a> 
 
  Computes the hash value of the specified string and signs it.
@@ -419,6 +647,59 @@ Base64 hashed value.
 
 #### Syntax
 ```
+procedure SignData(InputString: Text; XmlString: Text; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+```
+#### Parameters
+*InputString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Input string for signing.
+
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The private key to use in the hash algorithm.
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureOutStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The stream to write the signature for the specified string.
+
+### SignData (Method) <a name="SignData"></a> 
+
+ Computes the hash value of the specified data and signs it.
+ 
+
+#### Syntax
+```
+procedure SignData(DataInStream: InStream; XmlString: Text; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+```
+#### Parameters
+*DataInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of input data.
+
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The private key to use in the hash algorithm.
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureOutStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The stream to write the signature for the specified input data.
+
+### SignData (Method) <a name="SignData"></a> 
+
+ Computes the hash value of the specified string and signs it.
+ 
+
+#### Syntax
+```
+[Obsolete('Replaced by SignData function with XmlString parameter.', '19.1')]
 procedure SignData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
 ```
 #### Parameters
@@ -445,6 +726,7 @@ The stream to write the signature for the specified string.
 
 #### Syntax
 ```
+[Obsolete('Replaced by SignData function with XmlString parameter.', '19.1')]
 procedure SignData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
 ```
 #### Parameters
@@ -525,6 +807,67 @@ The stream to write the output to.
 
 #### Syntax
 ```
+procedure VerifyData(InputString: Text; XmlString: Text; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+```
+#### Parameters
+*InputString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+Input string.
+
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The public key to use in the hash algorithm.
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of signature.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the signature is valid; otherwise, false.
+### VerifyData (Method) <a name="VerifyData"></a> 
+
+ Verifies that a digital signature is valid.
+ 
+
+#### Syntax
+```
+procedure VerifyData(DataInStream: InStream; XmlString: Text; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
+```
+#### Parameters
+*DataInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of input data.
+
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The public key to use in the hash algorithm.
+
+*HashAlgorithm ([Enum "Hash Algorithm"]())* 
+
+The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.
+
+*SignatureInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The stream of signature.
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the signature is valid; otherwise, false.
+### VerifyData (Method) <a name="VerifyData"></a> 
+
+ Verifies that a digital signature is valid.
+ 
+
+#### Syntax
+```
+[Obsolete('Replaced by VerifyData function with XmlString parameter.', '19.1')]
 procedure VerifyData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
 ```
 #### Parameters
@@ -555,6 +898,7 @@ True if the signature is valid; otherwise, false.
 
 #### Syntax
 ```
+[Obsolete('Replaced by VerifyData function with XmlString parameter.', '19.1')]
 procedure VerifyData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
 ```
 #### Parameters
@@ -1204,6 +1548,7 @@ Plain text.
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure ToXmlString(IncludePrivateParameters: Boolean): Text
 ```
 #### Parameters
@@ -1222,6 +1567,7 @@ An XML string containing the key of the current RSA object.
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure SignData(XmlString: Text; DataInStream: InStream; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
 ```
 #### Parameters
@@ -1248,6 +1594,7 @@ The RSA signature stream for the specified data.
 
 #### Syntax
 ```
+[NonDebuggable]
 procedure VerifyData(XmlString: Text; DataInStream: InStream; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
 ```
 #### Parameters
@@ -1271,6 +1618,60 @@ The stream of signature data to be verified.
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True if the signature is valid; otherwise, false.
+### Encrypt (Method) <a name="Encrypt"></a> 
+
+ Encrypts the specified text with the RSA algorithm.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure Encrypt(XmlString: Text; PlainTextInStream: InStream; OaepPadding: Boolean; EncryptedTextOutStream: OutStream)
+```
+#### Parameters
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The XML string containing RSA key information.
+
+*PlainTextInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The input stream to encrypt.
+
+*OaepPadding ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+True to perform RSA encryption using OAEP padding; otherwise, false to use PKCS#1 padding.
+
+*EncryptedTextOutStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The RSA encryption stream for the specified text.
+
+### Decrypt (Method) <a name="Decrypt"></a> 
+
+ Decrypts the specified text that was previously encrypted with the RSA algorithm.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure Decrypt(XmlString: Text; EncryptedTextInStream: InStream; OaepPadding: Boolean; DecryptedTextOutStream: OutStream)
+```
+#### Parameters
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The XML string containing RSA key information.
+
+*EncryptedTextInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+
+The input stream to decrypt.
+
+*OaepPadding ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+true to perform RSA encryption using OAEP padding; otherwise, false to use PKCS#1 padding.
+
+*DecryptedTextOutStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+
+The RSA decryption stream for the specified text.
+
 
 ## X509Certificate2 (Codeunit 1286)
 
@@ -1531,12 +1932,45 @@ The XmlElement object to use to initialize the new instance of SignedXml.
 
 #### Syntax
 ```
+[Obsolete('Replaced by SetSigningKey function with XmlString parameter.', '19.1')]
 procedure SetSigningKey(var SignatureKey: Record "Signature Key")
 ```
 #### Parameters
 *SignatureKey ([Record "Signature Key"]())* 
 
 The key used for signing the SignedXml object.
+
+### SetSigningKey (Method) <a name="SetSigningKey"></a> 
+
+ Sets the key used for signing a SignedXml object.
+ 
+
+#### Syntax
+```
+procedure SetSigningKey(XmlString: Text)
+```
+#### Parameters
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The XML string containing key information.
+
+### SetSigningKey (Method) <a name="SetSigningKey"></a> 
+
+ Sets the key used for signing a SignedXml object.
+ 
+
+#### Syntax
+```
+procedure SetSigningKey(XmlString: Text; SignatureAlgorithm: Enum SignatureAlgorithm)
+```
+#### Parameters
+*XmlString ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The XML string containing key information.
+
+*SignatureAlgorithm ([Enum SignatureAlgorithm]())* 
+
+The type of asymmetric algorithms.
 
 ### InitializeReference (Method) <a name="InitializeReference"></a> 
 
@@ -1645,6 +2079,47 @@ procedure AddClause(KeyInfoNodeXmlElement: XmlElement)
 
 The xml element of KeyInfoNode to add to the collection of KeyInfoClause.
 
+### InitializeDataObject (Method) <a name="InitializeDataObject"></a> 
+
+ Initializes a new instance of the DataObject class.
+ 
+
+#### Syntax
+```
+procedure InitializeDataObject()
+```
+### AddObject (Method) <a name="AddObject"></a> 
+
+ Adds a xml element of DataObject object to the list of objects to be signed.
+ 
+
+#### Syntax
+```
+procedure AddObject(DataObjectXmlElement: XmlElement)
+```
+#### Parameters
+*DataObjectXmlElement ([XmlElement]())* 
+
+The xml element of DataObject to add to the list of objects to be signed.
+
+### AddXmlDsigExcC14NTransformToReference (Method) <a name="AddXmlDsigExcC14NTransformToReference"></a> 
+
+ Adds a AddXmlDsigExcC14NTransformToReference object to the list of transforms to be performed on the data before passing it to the digest algorithm.
+ 
+
+#### Syntax
+```
+procedure AddXmlDsigExcC14NTransformToReference()
+```
+### AddXmlDsigEnvelopedSignatureTransform (Method) <a name="AddXmlDsigEnvelopedSignatureTransform"></a> 
+
+ Adds a AddXmlDsigEnvelopedSignatureTransform object to the list of transforms to be performed on the data before passing it to the digest algorithm.
+ 
+
+#### Syntax
+```
+procedure AddXmlDsigEnvelopedSignatureTransform()
+```
 ### ComputeSignature (Method) <a name="ComputeSignature"></a> 
 
  Computes an Xml digital signature from Xml document.
@@ -1850,6 +2325,24 @@ The value http://www.w3.org/2001/04/xmlenc#sha512.
 
 
  Specifies the SHA512 hash algorithm
+ 
+
+
+## RSA Signature Padding (Enum 1285)
+
+ Enum that specifies all of the available padding modes. For more details check .NET RSASignaturePadding Class
+ 
+
+### Pkcs1 (value: 0)
+
+
+ Specifies PKCS #1 v1.5 padding mode.
+ 
+
+### Pss (value: 1)
+
+
+ Specifies PSS padding mode.
  
 
 

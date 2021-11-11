@@ -8,6 +8,8 @@ PermissionSet 54 "Language - Read"
     Access = Public;
     Assignable = false;
 
+    IncludedPermissionSets = "Language - Objects";
+
     Permissions = tabledata Language = R,
                   tabledata "Page Data Personalization" = R, // Page.Run requires this
                   tabledata "User Personalization" = r,

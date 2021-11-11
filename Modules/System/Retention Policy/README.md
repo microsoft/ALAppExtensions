@@ -1108,6 +1108,12 @@ True if a retention policy is enabled for the table ID. False if no retention po
  
 
 
+## Reten. Policy Setup ListPart (Page 3905)
+
+ This page lists all of the retention policies that have been defined.
+ 
+
+
 ## Retention Policy Setup Card (Page 3901)
 
  This page shows the retention policy setup.

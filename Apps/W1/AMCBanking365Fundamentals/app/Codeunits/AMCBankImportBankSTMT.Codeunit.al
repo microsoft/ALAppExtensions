@@ -1,5 +1,10 @@
+#if not CLEAN20
 codeunit 20100 "AMC Bank Import Bank STMT"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by the new implementation in V19.1 of "AMC Bank Process Statement"';
+    ObsoleteTag = '20.0';
+
     Permissions = TableData "Data Exch. Field" = rimd;
     TableNo = "Data Exch.";
 
@@ -11,7 +16,7 @@ codeunit 20100 "AMC Bank Import Bank STMT"
         XMLStream: InStream;
         LineNo: Integer;
     begin
-        "File Content".CreateInStream(XMLStream);
+        Rec."File Content".CreateInStream(XMLStream);
         XMLDOMManagement.LoadXMLNodeFromInStream(XMLStream, XmlNode);
 
         DataExchLineDef.Get("Data Exch. Def Code", "Data Exch. Line Def Code");
@@ -22,7 +27,7 @@ codeunit 20100 "AMC Bank Import Bank STMT"
     end;
 
     var
-        ProgressMsg: Label 'Preparing line number #1#######';
+        ProgressMsg: Label 'Preparing line number #1#######', Comment = '#1 = Linenumber';
         ProgressWindow: Dialog;
 
     local procedure Parse(DataExchLineDef: Record "Data Exch. Line Def"; EntryNo: Integer; XMLNode: DotNet XmlNode; ParentPath: Text; NodeId: Text[250]; var LastGivenLineNo: Integer; CurrentLineNo: Integer)
@@ -85,3 +90,4 @@ codeunit 20100 "AMC Bank Import Bank STMT"
     end;
 }
 
+#endif

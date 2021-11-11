@@ -218,19 +218,7 @@ page 31263 "Payment Order Subform CZB"
 
                     trigger OnDrillDown()
                     begin
-                        if Rec."Applies-to C/V/E Entry No." <> 0 then begin
-                            Clear(IssPaymentOrderLineCZB);
-                            IssPaymentOrderLineCZB.SetCurrentKey(Type, "Applies-to C/V/E Entry No.", Status);
-                            if Rec.Type = Rec.Type::Customer then
-                                IssPaymentOrderLineCZB.SetRange(Type, Rec.Type::Customer);
-                            if Rec.Type = Rec.Type::Vendor then
-                                IssPaymentOrderLineCZB.SetRange(Type, Rec.Type::Vendor);
-                            IssPaymentOrderLineCZB.SetRange("Applies-to C/V/E Entry No.", Rec."Applies-to C/V/E Entry No.");
-                            IssPaymentOrderLineCZB.SetRange(Status, IssPaymentOrderLineCZB.Status::" ");
-                            Page.RunModal(0, IssPaymentOrderLineCZB);
-                            CurrPage.Update(false);
-                        end else
-                            Rec.FieldError("Applies-to C/V/E Entry No.");
+                        DrillDownAmountOnIssPaymentOrder(false);
                     end;
                 }
                 field("Amt. on Iss. Pay. Orders (LCY)"; IssPaymentOrderLineCZB."Amount (LCY)")
@@ -244,19 +232,7 @@ page 31263 "Payment Order Subform CZB"
 
                     trigger OnDrillDown()
                     begin
-                        if Rec."Applies-to C/V/E Entry No." <> 0 then begin
-                            Clear(IssPaymentOrderLineCZB);
-                            IssPaymentOrderLineCZB.SetCurrentKey(Type, "Applies-to C/V/E Entry No.", Status);
-                            if Rec.Type = Rec.Type::Customer then
-                                IssPaymentOrderLineCZB.SetRange(Type, Rec.Type::Customer);
-                            if Rec.Type = Rec.Type::Vendor then
-                                IssPaymentOrderLineCZB.SetRange(Type, Rec.Type::Vendor);
-                            IssPaymentOrderLineCZB.SetRange("Applies-to C/V/E Entry No.", Rec."Applies-to C/V/E Entry No.");
-                            IssPaymentOrderLineCZB.SetRange(Status, IssPaymentOrderLineCZB.Status::" ");
-                            Page.RunModal(0, IssPaymentOrderLineCZB);
-                            CurrPage.Update(false);
-                        end else
-                            Rec.FieldError("Applies-to C/V/E Entry No.");
+                        DrillDownAmountOnIssPaymentOrder(true);
                     end;
                 }
                 field("Amount Must Be Checked"; Rec."Amount Must Be Checked")
@@ -348,17 +324,7 @@ page 31263 "Payment Order Subform CZB"
 
     trigger OnAfterGetRecord()
     begin
-        Clear(IssPaymentOrderLineCZB);
-        if Rec."Applies-to C/V/E Entry No." <> 0 then begin
-            IssPaymentOrderLineCZB.SetCurrentKey(Type, "Applies-to C/V/E Entry No.", Status);
-            if Rec.Type = Rec.Type::Customer then
-                IssPaymentOrderLineCZB.SetRange(Type, Rec.Type::Customer);
-            if Rec.Type = Rec.Type::Vendor then
-                IssPaymentOrderLineCZB.SetRange(Type, Rec.Type::Vendor);
-            IssPaymentOrderLineCZB.SetRange("Applies-to C/V/E Entry No.", Rec."Applies-to C/V/E Entry No.");
-            IssPaymentOrderLineCZB.SetRange(Status, IssPaymentOrderLineCZB.Status::" ");
-            IssPaymentOrderLineCZB.CalcSums(Amount, "Amount (LCY)");
-        end
+        CalcAmountsOnIssPaymentOrder();
     end;
 
     trigger OnDeleteRecord(): Boolean
@@ -421,5 +387,50 @@ page 31263 "Payment Order Subform CZB"
     begin
         IBANMissing := Rec.IBAN = '';
         AccountNoMissing := Rec."Account No." = '';
+    end;
+
+    local procedure CalcAmountsOnIssPaymentOrder()
+    begin
+        Clear(IssPaymentOrderLineCZB);
+        if Rec."Applies-to C/V/E Entry No." = 0 then
+            exit;
+
+        SetFilterToIssPaymentOrderLine(IssPaymentOrderLineCZB);
+        IssPaymentOrderLineCZB.CalcSums(Amount, "Amount (LCY)");
+    end;
+
+    local procedure DrillDownAmountOnIssPaymentOrder(IsLCY: Boolean)
+    var
+        IssPaymentOrderLineCZB2: Record "Iss. Payment Order Line CZB";
+        IsHandled: Boolean;
+    begin
+        OnBeforeDrillDownAmountOnIssPaymentOrder(Rec, IsLCY, IsHandled);
+        if IsHandled then
+            exit;
+
+        if Rec."Applies-to C/V/E Entry No." = 0 then
+            Rec.FieldError("Applies-to C/V/E Entry No.");
+
+        SetFilterToIssPaymentOrderLine(IssPaymentOrderLineCZB2);
+        Page.RunModal(0, IssPaymentOrderLineCZB2);
+    end;
+
+    local procedure SetFilterToIssPaymentOrderLine(var IssPaymentOrderLineCZB2: Record "Iss. Payment Order Line CZB")
+    begin
+        IssPaymentOrderLineCZB2.SetCurrentKey(Type, "Applies-to C/V/E Entry No.", Status);
+        IssPaymentOrderLineCZB2.SetRange(Type, Rec.Type);
+        IssPaymentOrderLineCZB2.SetRange("Applies-to C/V/E Entry No.", Rec."Applies-to C/V/E Entry No.");
+        IssPaymentOrderLineCZB2.SetRange(Status, IssPaymentOrderLineCZB2.Status::" ");
+        OnAfterSetFilterToIssPaymentOrderLine(Rec, IssPaymentOrderLineCZB2);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeDrillDownAmountOnIssPaymentOrder(PaymentOrderLineCZB: Record "Payment Order Line CZB"; IsLCY: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterSetFilterToIssPaymentOrderLine(PaymentOrderLineCZB: Record "Payment Order Line CZB"; var IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB")
+    begin
     end;
 }

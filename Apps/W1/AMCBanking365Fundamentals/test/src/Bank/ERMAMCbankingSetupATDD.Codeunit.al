@@ -539,7 +539,9 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
     [Scope('OnPrem')]
     procedure PageInEditAllFieldsEditable()
     var
-        AMCBankingSetup: TestPage "AMC Banking Setup";
+        AMCBankingSetup: Record "AMC Banking Setup";
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
+        AMCBankingSetupTestPage: TestPage "AMC Banking Setup";
     begin
         // [FEATURE] [UI]
         // [SCENARIO 16] As an admin, when open AMC Banking Setup in edit all fields should be editable.
@@ -547,12 +549,16 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
 
         // [GIVEN] There is a default conversion setup record.
         // [WHEN] The user opens the conversion setup page in edit mode.
-        AMCBankingSetup.OpenEdit();
+        AMCBankingSetupTestPage.OpenEdit();
 
         // [THEN] All fields editable.
-        Assert.IsTrue(AMCBankingSetup."User Name".Editable(), 'User Name field should be editable');
-        Assert.IsTrue(AMCBankingSetup.Password.Editable(), 'Password field should be editable');
-        Assert.IsTrue(AMCBankingSetup."Service URL".Editable(), 'Service URL field should be editable');
+        Assert.IsTrue(AMCBankingSetupTestPage."User Name".Editable(), 'User Name field should be editable');
+        Assert.IsTrue(AMCBankingSetupTestPage.Password.Editable(), 'Password field should be editable');
+        if (AMCBankingSetup.get()) then
+            if (AMCBankingMgt.IsSolutionSandbox(AMCBankingSetup)) then
+                Assert.IsFalse(AMCBankingSetupTestPage."Service URL".Editable(), 'Service URL field should not be editable')
+            else
+                Assert.IsTrue(AMCBankingSetupTestPage."Service URL".Editable(), 'Service URL field should be editable');
     end;
 
     [Test]
@@ -614,12 +620,12 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
     var
         AMCBankingMgt: Codeunit "AMC Banking Mgt.";
     begin
-        Assert.AreEqual('https://license.amcbanking.com/register', AMCBankingSetup."Sign-up URL", 'Sign-up invalid');
+        Assert.AreEqual(AMCBankingMgt.GetLicenseServerName() + AMCBankingMgt.GetLicenseRegisterTag(), AMCBankingSetup."Sign-up URL", 'Sign-up invalid');
         if ((AMCBankingSetup.Solution = AMCBankingMgt.GetDemoSolutionCode()) or
            (AMCBankingSetup.Solution = '')) then
-            Assert.AreEqual('https://demoxtl.amcbanking.com/nav03', AMCBankingSetup."Service URL", 'Service URL invalid')
+            Assert.AreEqual('https://demoxtl.amcbanking.com/api04', AMCBankingSetup."Service URL", 'Service URL invalid') //V17.5
         else
-            Assert.AreEqual('https://nav.amcbanking.com/nav03', AMCBankingSetup."Service URL", 'Service URL invalid');
+            Assert.AreEqual('https://nav.amcbanking.com/api04', AMCBankingSetup."Service URL", 'Service URL invalid'); //V17.5
         Assert.AreEqual('https://amcbanking.com/landing365bc/help/', AMCBankingSetup."Support URL", 'Service URL invalid');
     end;
 

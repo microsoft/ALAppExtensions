@@ -56,7 +56,7 @@ table 9043 "ABS Container Content"
             DataClassification = SystemMetadata;
             Caption = 'Content Length';
         }
-        field(14; "Content Type"; Text[50])
+        field(14; "Content Type"; Text[2048])
         {
             DataClassification = SystemMetadata;
             Caption = 'Content Type';

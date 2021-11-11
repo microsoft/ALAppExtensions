@@ -903,10 +903,8 @@ table 11732 "Cash Document Header CZP"
 
     procedure VATRounding()
     var
-        RoundingMethod: Record "Rounding Method";
         CashDocumentLineCZP: Record "Cash Document Line CZP";
-        Direction: Text[1];
-        RoundedAmount: Decimal;
+        RoundingAmount: Decimal;
         LineNo: Integer;
     begin
         if not CashDocLinesExist() then
@@ -918,29 +916,12 @@ table 11732 "Cash Document Header CZP"
         CashDeskCZP.TestField("Credit Rounding Account");
 
         CalcFields("Amount Including VAT");
-        CashDocumentLineCZP.SetRange("Cash Desk No.", "Cash Desk No.");
-        CashDocumentLineCZP.SetRange("Cash Document No.", "No.");
-        CashDocumentLineCZP.SetRange("Account Type", CashDocumentLineCZP."Account Type"::"G/L Account");
-        CashDocumentLineCZP.SetFilter("Account No.", '%1|%2', CashDeskCZP."Debit Rounding Account", CashDeskCZP."Credit Rounding Account");
-        CashDocumentLineCZP.SetRange("System-Created Entry", true);
-        if CashDocumentLineCZP.FindFirst() then
+        if FindRoundingLine(CashDocumentLineCZP) then
             "Amount Including VAT" -= CashDocumentLineCZP."Amount Including VAT";
 
-        RoundingMethod.SetRange(Code, CashDeskCZP."Rounding Method Code");
-        RoundingMethod.SetFilter("Minimum Amount", '..%1', Abs("Amount Including VAT"));
-        RoundingMethod.FindLast();
-        RoundingMethod.TestField(Precision);
-        case RoundingMethod.Type of
-            RoundingMethod.Type::Nearest:
-                Direction := '=';
-            RoundingMethod.Type::Up:
-                Direction := '>';
-            RoundingMethod.Type::Down:
-                Direction := '<';
-        end;
-        RoundedAmount := Round("Amount Including VAT", RoundingMethod.Precision, Direction) - "Amount Including VAT";
+        RoundingAmount := CalculateRoundingAmount();
 
-        if (RoundedAmount <> 0) and (CashDocumentLineCZP."Amount Including VAT" <> RoundedAmount) then begin
+        if (RoundingAmount <> 0) and (CashDocumentLineCZP."Amount Including VAT" <> RoundingAmount) then begin
             CashDocumentLineCZP.DeleteAll(true);
 
             CashDocumentLineCZP.Reset();
@@ -957,21 +938,21 @@ table 11732 "Cash Document Header CZP"
             CashDocumentLineCZP.Validate("Account Type", CashDocumentLineCZP."Account Type"::"G/L Account");
             case "Document Type" of
                 "Document Type"::Receipt:
-                    if RoundedAmount < 0 then
+                    if RoundingAmount < 0 then
                         CashDocumentLineCZP.Validate("Account No.", CashDeskCZP."Debit Rounding Account")
                     else
                         CashDocumentLineCZP.Validate("Account No.", CashDeskCZP."Credit Rounding Account");
                 "Document Type"::Withdrawal:
-                    if RoundedAmount > 0 then
+                    if RoundingAmount > 0 then
                         CashDocumentLineCZP.Validate("Account No.", CashDeskCZP."Debit Rounding Account")
                     else
                         CashDocumentLineCZP.Validate("Account No.", CashDeskCZP."Credit Rounding Account");
             end;
             CashDocumentLineCZP.Validate("Currency Code", "Currency Code");
             if "Amounts Including VAT" then
-                CashDocumentLineCZP.Validate(Amount, RoundedAmount)
+                CashDocumentLineCZP.Validate(Amount, RoundingAmount)
             else begin
-                CashDocumentLineCZP.Validate("Amount Including VAT", RoundedAmount);
+                CashDocumentLineCZP.Validate("Amount Including VAT", RoundingAmount);
                 CashDocumentLineCZP.Amount := CashDocumentLineCZP."VAT Base Amount";
                 CashDocumentLineCZP."Amount (LCY)" := Round(CashDocumentLineCZP.Amount);
                 if "Currency Code" <> '' then
@@ -981,6 +962,40 @@ table 11732 "Cash Document Header CZP"
             CashDocumentLineCZP."System-Created Entry" := true;
             CashDocumentLineCZP.Insert(true);
         end;
+    end;
+
+    procedure FindRoundingLine(var CashDocumentLineCZP: Record "Cash Document Line CZP"): Boolean
+    begin
+        GetCashDeskCZP("Cash Desk No.");
+        CashDocumentLineCZP.SetRange("Cash Desk No.", "Cash Desk No.");
+        CashDocumentLineCZP.SetRange("Cash Document No.", "No.");
+        CashDocumentLineCZP.SetRange("Account Type", CashDocumentLineCZP."Account Type"::"G/L Account");
+        CashDocumentLineCZP.SetFilter("Account No.", '%1|%2', CashDeskCZP."Debit Rounding Account", CashDeskCZP."Credit Rounding Account");
+        CashDocumentLineCZP.SetRange("System-Created Entry", true);
+        OnBeforeFindRoundingLine(Rec, CashDocumentLineCZP);
+        exit(CashDocumentLineCZP.FindFirst());
+    end;
+
+    local procedure CalculateRoundingAmount() RoundingAmount: Decimal
+    var
+        RoundingMethod: Record "Rounding Method";
+        Direction: Text[1];
+    begin
+        GetCashDeskCZP("Cash Desk No.");
+        RoundingMethod.SetRange(Code, CashDeskCZP."Rounding Method Code");
+        RoundingMethod.SetFilter("Minimum Amount", '..%1', Abs("Amount Including VAT"));
+        RoundingMethod.FindLast();
+        RoundingMethod.TestField(Precision);
+        case RoundingMethod.Type of
+            RoundingMethod.Type::Nearest:
+                Direction := '=';
+            RoundingMethod.Type::Up:
+                Direction := '>';
+            RoundingMethod.Type::Down:
+                Direction := '<';
+        end;
+        RoundingAmount := Round("Amount Including VAT", RoundingMethod.Precision, Direction) - "Amount Including VAT";
+        OnAfterCalculateRoundingAmount(Rec, RoundingMethod, RoundingAmount);
     end;
 
     procedure GetPartnerTableNo(): Integer
@@ -1338,6 +1353,16 @@ table 11732 "Cash Document Header CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyCashDocumentHeaderFromServiceCrMemoHeader(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFindRoundingLine(CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var CashDocumentLineCZP: Record "Cash Document Line CZP");
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCalculateRoundingAmount(CashDocumentHeaderCZP: Record "Cash Document Header CZP"; RoundingMethod: Record "Rounding Method"; var RoundingAmount: Decimal);
     begin
     end;
 }

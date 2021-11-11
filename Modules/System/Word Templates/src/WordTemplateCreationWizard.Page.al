@@ -472,7 +472,11 @@ page 9995 "Word Template Creation Wizard"
     }
 
     trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000FW1', 'Word templates', Enum::"Feature Uptake Status"::Discovered);
+
         if WordTemplate."Table ID" <> 0 then begin
             Rec.SetFilter("Table ID", TableFilterExpression);
             Rec.Get(WordTemplate."Table ID");

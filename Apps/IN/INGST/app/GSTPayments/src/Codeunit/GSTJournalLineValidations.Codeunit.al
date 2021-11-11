@@ -27,6 +27,8 @@ codeunit 18244 "GST Journal Line Validations"
         GSTPlaceOfSuppErr: Label 'You can not select POS Out Of India field on header if GST Place of Supply is Location Address.';
         POSLineErr: Label 'Please select POS Out Of India field only on header line.';
         POSasVendErr: Label 'POS as Vendor State is only applicable for Registered Vendor.';
+        VendGSTARNErr: Label 'Either Vendor GST Registration No. or ARN No. in Vendor should have a value.';
+        OrderAddGSTARNErr: Label 'Either GST Registration No. or ARN No. should have a value in Order Address.';
 
     procedure OnValidateGSTTDSTCS(var GenJournalLine: Record "Gen. Journal Line")
     var
@@ -136,6 +138,45 @@ codeunit 18244 "GST Journal Line Validations"
         end;
         UpdateGSTJurisdictionType(GenJournalLine3);
         CheckReferenceInvoiceNo(GenJournalLine3);
+    end;
+
+    procedure OrderAddressCode(var GenJournalLine: Record "Gen. Journal Line")
+    var
+        OrderAddress: Record "Order Address";
+        Vendor: Record Vendor;
+    begin
+        if GenJournalLine."Order Address Code" <> '' then begin
+            OrderAddress.Get(GenJournalLine."Account No.", GenJournalLine."Order Address Code");
+            if GenJournalLine."Document Type" in [GenJournalLine."Document Type"::Payment, GenJournalLine."Document Type"::Invoice, GenJournalLine."Document Type"::"Credit Memo"] then begin
+                UpdateOrderAddressFields(GenJournalLine, OrderAddress);
+
+                if GenJournalLine."GST Vendor Type" in ["GST Vendor Type"::Registered, "GST Vendor Type"::Composite,
+                                                       "GST Vendor Type"::SEZ, "GST Vendor Type"::Exempted] then
+                    if OrderAddress.Get(GenJournalLine."Account No.", GenJournalLine."Order Address Code") then
+                        if (OrderAddress."GST Registration No." = '') and (OrderAddress."ARN No." = '') then
+                            Error(OrderAddGSTARNErr);
+
+                if GenJournalLine."GST Vendor Type" in ["GST Vendor Type"::Registered, "GST Vendor Type"::Composite, "GST Vendor Type"::SEZ, "GST Vendor Type"::Exempted] then
+                    if GenJournalLine."Vendor GST Reg. No." = '' then
+                        if Vendor.Get(GenJournalLine."Account No.") and (Vendor."ARN No." = '') then
+                            Error(VendGSTARNErr);
+            end;
+        end else begin
+            GenJournalLine."Order Address State Code" := '';
+            GenJournalLine."Order Address GST Reg. No." := '';
+            GenJournalLine.Modify();
+        end;
+    end;
+
+    local procedure UpdateOrderAddressFields(var GenJournalLine: Record "Gen. Journal Line"; OrderAddress: Record "Order Address")
+    begin
+        if ((GenJournalLine."Account Type" = GenJournalLine."Account Type"::Customer) or (GenJournalLine."Bal. Account Type" = GenJournalLine."Bal. Account Type"::Customer)) then
+            exit;
+
+        GenJournalLine."Order Address State Code" := OrderAddress.State;
+        GenJournalLine."Order Address GST Reg. No." := OrderAddress."GST Registration No.";
+        UpdateGSTJurisdictionType(GenJournalLine);
+        GenJournalLine.Modify();
     end;
 
     procedure POSasVendorState(var GenJournalLine: Record "Gen. Journal Line")
@@ -1052,10 +1093,10 @@ codeunit 18244 "GST Journal Line Validations"
 
     local procedure VerifyPOSOutOfIndia(
         ConfigType: Enum "Party Type";
-        LocationStateCode: Code[10];
-        VendCustStateCode: Code[10];
-        GSTVendorType: Enum "GST Vendor Type";
-        GSTCustomerType: Enum "GST Customer Type")
+                        LocationStateCode: Code[10];
+                        VendCustStateCode: Code[10];
+                        GSTVendorType: Enum "GST Vendor Type";
+                        GSTCustomerType: Enum "GST Customer Type")
     begin
         if LocationStateCode <> VendCustStateCode then
             Error(POSLOCDiffErr);
@@ -1068,8 +1109,8 @@ codeunit 18244 "GST Journal Line Validations"
             then
                 Error(CustGSTTypeErr);
         end else
-        if not (GSTVendorType in [GSTVendorType::Registered, GSTVendorType::" "]) then
-            Error(VendGSTTypeErr);
+            if not (GSTVendorType in [GSTVendorType::Registered, GSTVendorType::" "]) then
+                Error(VendGSTTypeErr);
     end;
 
     local procedure GetPlaceOfSupply(GenJournalLine: Record "Gen. Journal Line"): Code[10]

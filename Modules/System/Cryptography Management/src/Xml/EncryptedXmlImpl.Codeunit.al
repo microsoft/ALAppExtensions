@@ -43,7 +43,7 @@ codeunit 1466 "EncryptedXml Impl."
         DotNetEncryptedData := DotNetEncryptedXml.Encrypt(DotNetXmlElementToEncrypt, DotNetX509Certificate2);
         DotNetEncryptedXml.ReplaceElement(DotNetXmlElementToEncrypt, DotNetEncryptedData, false);
 
-        //Convert the encrypted DotNet XmlDocument to a XmlDocument.
+        //Convert the encrypted DotNet XmlDocument to an XmlDocument.
         XmlDotNetConvert.FromDotNet(DotNetXmlDocument, XmlDocument);
     end;
 
@@ -83,7 +83,7 @@ codeunit 1466 "EncryptedXml Impl."
         SymmetricAlgorithmInterface := SymmetricAlgorithm;
         SymmetricAlgorithmInterface.GetInstance(DotNetSymmetricAlgorithm);
 
-        //Encrypt the data using the asymetric algorithm
+        //Encrypt the data using the symmetric algorithm
         DotNetEncryptedDataBytes :=
             DotNetEncryptedXml.EncryptData(DotNetXmlElementToEncrypt, DotNetSymmetricAlgorithm, false);
 
@@ -120,7 +120,7 @@ codeunit 1466 "EncryptedXml Impl."
     end;
 
     [NonDebuggable]
-    procedure DecryptDocument(var EncryptedDocument: XmlDocument; EncryptionKey: Record "Signature Key"): Boolean
+    procedure DecryptDocument(var EncryptedDocument: XmlDocument; EncryptionKey: Text; SignatureAlgorithm: Enum SignatureAlgorithm): Boolean
     var
         XmlDotNetConvert: Codeunit "Xml DotNet Convert";
         DotNetXmlNamespaceManager: DotNet XmlNamespaceManager;
@@ -128,13 +128,15 @@ codeunit 1466 "EncryptedXml Impl."
         DotNetEncryptedNodes: DotNet XmlNodeList;
         DotNetEncryptedNode: DotNet XmlNode;
         DotNetAsymmetricAlgorithm: DotNet AsymmetricAlgorithm;
+        SignatureAlgorithmInterface: Interface SignatureAlgorithm;
     begin
         //Convert the XmlDocument to a DotNet XmlDocument
         XmlDotNetConvert.ToDotNet(EncryptedDocument, DotNetXmlDocument, true);
 
-        //Get the assymtric algorithm instance to be used for decrypting the symmetric session key
-        if not EncryptionKey.TryGetInstance(DotNetAsymmetricAlgorithm) then
-            exit(false);
+        //Get the asymmetric algorithm instance to be used for decrypting the symmetric session key
+        SignatureAlgorithmInterface := SignatureAlgorithm;
+        SignatureAlgorithmInterface.FromXmlString(EncryptionKey);
+        SignatureAlgorithmInterface.GetInstance(DotNetAsymmetricAlgorithm);
 
         //Find all encrypted data elements and decrypt them
         DotNetXmlNamespaceManager := DotNetXmlNamespaceManager.XmlNamespaceManager(DotNetXmlDocument.NameTable);
@@ -149,6 +151,7 @@ codeunit 1466 "EncryptedXml Impl."
         exit(true);
     end;
 
+    [NonDebuggable]
     local procedure DecryptDataElement(DotNetXmlElement: DotNet XmlElement; DotNetAsymmetricAlgorithm: DotNet AsymmetricAlgorithm): Boolean
     var
         SymmetricAlgorithmInterface: Interface SymmetricAlgorithm;
@@ -201,7 +204,7 @@ codeunit 1466 "EncryptedXml Impl."
     end;
 
     [NonDebuggable]
-    procedure DecryptKey(EncryptedKey: XmlElement; EncryptionKey: Record "Signature Key"; UseOAEP: Boolean; var KeyBase64Value: Text): Boolean
+    procedure DecryptKey(EncryptedKey: XmlElement; EncryptionKey: Text; UseOAEP: Boolean; var KeyBase64Value: Text; SignatureAlgorithm: ENum SignatureAlgorithm): Boolean
     var
         XmlDocument: XmlDocument;
         XmlNamespaceManager: XmlNamespaceManager;
@@ -210,10 +213,12 @@ codeunit 1466 "EncryptedXml Impl."
         DotNetCipherBytes, DotNetKeyBytes : DotNet Array;
         DotNetConvert: Dotnet Convert;
         DotNetAsymmetricAlgorithm: DotNet AsymmetricAlgorithm;
+        SignatureAlgorithmInterface: Interface SignatureAlgorithm;
     begin
-        //Get the asymtric algorithm instance to be used for decrypting the key
-        if not EncryptionKey.TryGetInstance(DotNetAsymmetricAlgorithm) then
-            exit(false);
+        //Get the asymmetric algorithm instance to be used for decrypting the key
+        SignatureAlgorithmInterface := SignatureAlgorithm;
+        SignatureAlgorithmInterface.FromXmlString(EncryptionKey);
+        SignatureAlgorithmInterface.GetInstance(DotNetAsymmetricAlgorithm);
 
         //Get the XML document of the XML element
         if not EncryptedKey.GetDocument(XmlDocument) then

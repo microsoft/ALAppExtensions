@@ -8,7 +8,8 @@ PermissionSet 1432 "Satisfaction Survey - Read"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Upgrade Tags - Read";
+    IncludedPermissionSets = "Satisfaction Survey - Objects",
+                             "Upgrade Tags - Read";
 
     Permissions = tabledata "Add-in" = r,
                   tabledata "Net Promoter Score" = r,

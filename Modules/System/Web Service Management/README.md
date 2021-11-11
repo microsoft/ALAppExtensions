@@ -44,7 +44,7 @@ Use this module to do the following:
 
 #### Syntax
 ```
-[Obsolete('Method scope will be moved down to On-Prem. This function does not work in SaaS.', '16.0')]
+[Scope('OnPrem')]
 procedure CreateWebService(ObjectType: Option; ObjectId: Integer; ObjectName: Text; Published: Boolean)
 ```
 #### Parameters

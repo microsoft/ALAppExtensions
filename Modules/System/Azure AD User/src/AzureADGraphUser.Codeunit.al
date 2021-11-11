@@ -110,6 +110,17 @@ codeunit 9024 "Azure AD Graph User"
     end;
 
     /// <summary>    
+    /// Returns whether the current user is Delegated Helpdesk.
+    /// </summary>
+    /// <returns>True if the current user is Delegated Helpdesk, false otherwise.</returns>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure IsUserDelegatedHelpdesk(): Boolean
+    begin
+        exit(AzureADGraphUserImpl.IsUserDelegatedHelpdesk());
+    end;
+
+    /// <summary>    
     /// Updates the user record with information from Azure AD.
     /// </summary>
     /// <param name="User">The user record to update.</param>

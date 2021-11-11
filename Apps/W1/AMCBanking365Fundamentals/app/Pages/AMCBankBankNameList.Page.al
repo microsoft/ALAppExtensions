@@ -1,7 +1,9 @@
 page 20100 "AMC Bank Bank Name List"
 {
     Caption = 'AMC Banking Bank Name List';
-    Editable = false;
+    Editable = true;
+    InsertAllowed = false;
+    DeleteAllowed = false;
     PageType = List;
     PromotedActionCategories = 'New,Process,Page,Setup';
     SourceTable = "AMC Bank Banks";
@@ -14,24 +16,28 @@ page 20100 "AMC Bank Bank Name List"
         {
             repeater(Group)
             {
-                field(Bank; Bank)
+                field(Bank; Rec.Bank)
                 {
                     ApplicationArea = Basic, Suite;
+                    Editable = false;
                     ToolTip = 'Specifies the name of the bank, and potentially its country/region code, that supports your setup for import/export of bank data using the AMC Banking feature.';
                 }
-                field("Bank Name"; "Bank Name")
+                field("Bank Name"; Rec."Bank Name")
                 {
                     ApplicationArea = Basic, Suite;
+                    Editable = false;
                     ToolTip = 'Specifies the name of the bank that supports your setup for import/export of bank data using the AMC Banking feature.';
                 }
-                field("Country/Region Code"; "Country/Region Code")
+                field("Country/Region Code"; Rec."Country/Region Code")
                 {
                     ApplicationArea = Basic, Suite;
+                    Editable = false;
                     ToolTip = 'Specifies the country/region of the address.';
                 }
-                field("Last Update Date"; "Last Update Date")
+                field("Last Update Date"; Rec."Last Update Date")
                 {
                     ApplicationArea = Basic, Suite;
+                    Editable = false;
                     ToolTip = 'Specifies the last time the list of supported banks was updated.';
                 }
             }
@@ -48,6 +54,7 @@ page 20100 "AMC Bank Bank Name List"
                 Caption = 'Update Bank Name List';
                 Image = Restore;
                 Promoted = true;
+                PromotedOnly = true;
                 PromotedCategory = Category4;
                 ToolTip = 'Update the bank list with any new banks in your country/region.';
 
@@ -58,13 +65,13 @@ page 20100 "AMC Bank Bank Name List"
                     ShowErrors: Boolean;
                 begin
                     ShowErrors := true;
-                    AMCBankImpBankListHndl.GetBankListFromWebService(ShowErrors, FilterNotUsed, LongTimeout, AMCBankServMgt.GetAppCaller());
+                    AMCBankImpBankListHndl.GetBankListFromWebService(ShowErrors, FilterNotUsed, LongTimeout, AMCBankingMgt.GetAppCaller());
                 end;
             }
         }
     }
     var
-        AMCBankServMgt: Codeunit "AMC Banking Mgt.";
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
 
     trigger OnInit()
     begin
@@ -80,8 +87,8 @@ page 20100 "AMC Bank Bank Name List"
     begin
         CountryRegionCode := IdentifyCountryRegionCode(Rec, GetFilter("Country/Region Code"));
 
-        if IsEmpty() then begin
-            AMCBankImpBankListHndl.GetBankListFromWebService(HideErrors, CountryRegionCode, ShortTimeout, AMCBankServMgt.GetAppCaller());
+        if Rec.IsEmpty() then begin
+            AMCBankImpBankListHndl.GetBankListFromWebService(HideErrors, CountryRegionCode, ShortTimeout, AMCBankingMgt.GetAppCaller());
             exit;
         end;
 
@@ -117,7 +124,7 @@ page 20100 "AMC Bank Bank Name List"
             AMCBankBanks.SetFilter("Country/Region Code", CountryRegionCode);
         AMCBankBanks.SetFilter("Last Update Date", '<%1', Today());
         if not AMCBankBanks.IsEmpty() then
-            AMCBankImpBankListHndl.GetBankListFromWebService(ShowErrors, CountryRegionCode, Timeout, AMCBankServMgt.GetAppCaller());
+            AMCBankImpBankListHndl.GetBankListFromWebService(ShowErrors, CountryRegionCode, Timeout, AMCBankingMgt.GetAppCaller());
     end;
 }
 

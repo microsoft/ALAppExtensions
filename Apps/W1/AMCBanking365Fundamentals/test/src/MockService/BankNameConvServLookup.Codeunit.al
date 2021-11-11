@@ -46,7 +46,7 @@ codeunit 135085 "Bank Name Conv Serv Lookup"
         AMCBankBanks.DeleteAll();
 
         // Exercise
-        AMCBankBankNameList.OpenNew();
+        AMCBankBankNameList.OpenEdit();
 
         // Verify
         Assert.IsTrue(AMCBankBankNameList.First(), MissingElementMsg);
@@ -71,7 +71,7 @@ codeunit 135085 "Bank Name Conv Serv Lookup"
 
         // Setup
         AMCBankBanks.DeleteAll();
-        AMCBankBankNameList.OpenNew();
+        AMCBankBankNameList.OpenEdit();
 
         // Pre-Verify
         Assert.IsTrue(AMCBankBankNameList.First(), MissingElementMsg);
@@ -102,7 +102,7 @@ codeunit 135085 "Bank Name Conv Serv Lookup"
 
         // Setup
         AMCBankBanks.DeleteAll();
-        AMCBankBankNameList.OpenNew();
+        AMCBankBankNameList.OpenEdit();
 
         // Pre-Verify
         Assert.IsTrue(AMCBankBankNameList.First(), MissingElementMsg);
@@ -247,7 +247,7 @@ codeunit 135085 "Bank Name Conv Serv Lookup"
         InsertAMCBankBanks(Today());
 
         // Exercise
-        AMCBankBankNameList.OpenNew();
+        AMCBankBankNameList.OpenEdit();
 
         // Verify
         AMCBankBanks.FindFirst();
@@ -276,7 +276,7 @@ codeunit 135085 "Bank Name Conv Serv Lookup"
         InsertAMCBankBanks(Today() - 1);
 
         // Exercise
-        AMCBankBankNameList.OpenNew();
+        AMCBankBankNameList.OpenEdit();
 
         // Verify
         AMCBankBanks.FindFirst();

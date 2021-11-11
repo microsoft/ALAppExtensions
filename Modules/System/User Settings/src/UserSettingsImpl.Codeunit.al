@@ -412,38 +412,37 @@ codeunit 9175 "User Settings Impl."
 
         UserPersonalization.FilterGroup(2);
         UserPersonalization.CalcFields("License Type");
-        UserPersonalization.SetFilter("License Type", '<>%1', UserPersonalization."License Type"::"External User");
+        UserPersonalization.SetFilter("License Type", '<>%1&<>%2', UserPersonalization."License Type"::"External User", UserPersonalization."License Type"::Application);
         UserPersonalization.FilterGroup(0);
     end;
 
     procedure CheckPermissions(var UserSettings: Record "User Settings")
-    var
-        AzureADUserManagement: Codeunit "Azure AD User Management";
-        AzureADGraphUser: Codeunit "Azure AD Graph User";
-        EnvironmentInformation: Codeunit "Environment Information";
-        UserPermissions: Codeunit "User Permissions";
     begin
-        if (UserSettings.Count() > 1) or (UserSettings."User Security ID" <> UserSecurityId()) then begin
-            if EnvironmentInformation.IsSaaSInfrastructure() and (not AzureADUserManagement.IsUserTenantAdmin()) and (not AzureADGraphUser.IsUserDelegatedAdmin()) then
-                Error(NotEnoughPermissionsErr);
-            if EnvironmentInformation.IsOnPrem() and not UserPermissions.IsSuper(UserSecurityId()) then
-                Error(NotEnoughPermissionsErr);
-        end;
+        if (UserSettings.Count() > 1) or (UserSettings."User Security ID" <> UserSecurityId()) then
+            CheckPermissionsInternal();
     end;
 
     procedure CheckPermissions(var UserPersonalization: Record "User Personalization")
+    begin
+        if (UserPersonalization.Count() > 1) or (UserPersonalization."User SID" <> UserSecurityId()) then
+            CheckPermissionsInternal();
+    end;
+
+    local procedure CheckPermissionsInternal()
     var
+        EnvironmentInformation: Codeunit "Environment Information";
         AzureADUserManagement: Codeunit "Azure AD User Management";
         AzureADGraphUser: Codeunit "Azure AD Graph User";
-        EnvironmentInformation: Codeunit "Environment Information";
         UserPermissions: Codeunit "User Permissions";
     begin
-        if (UserPersonalization.Count() > 1) or (UserPersonalization."User SID" <> UserSecurityId()) then begin
-            if EnvironmentInformation.IsSaaSInfrastructure() and (not AzureADUserManagement.IsUserTenantAdmin()) and (not AzureADGraphUser.IsUserDelegatedAdmin()) then
-                Error(NotEnoughPermissionsErr);
-            if EnvironmentInformation.IsOnPrem() and not UserPermissions.IsSuper(UserSecurityId()) then
-                Error(NotEnoughPermissionsErr);
-        end;
+        if EnvironmentInformation.IsSaaSInfrastructure() and 
+            (not AzureADUserManagement.IsUserTenantAdmin()) and
+            (not AzureADGraphUser.IsUserDelegatedAdmin()) and
+            (not AzureADGraphUser.IsUserDelegatedHelpdesk())
+        then
+            Error(NotEnoughPermissionsErr);
+        if EnvironmentInformation.IsOnPrem() and not UserPermissions.IsSuper(UserSecurityId()) then
+            Error(NotEnoughPermissionsErr);
     end;
 
     procedure EditUserID(var UserPersonalization: Record "User Personalization"): Boolean

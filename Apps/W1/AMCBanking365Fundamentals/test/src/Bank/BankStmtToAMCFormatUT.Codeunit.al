@@ -21,7 +21,7 @@ codeunit 132562 "Bank Stmt. to AMC Format UT"
     var
         DataExch: Record "Data Exch.";
         BankStmtTempBlob: Codeunit "Temp Blob";
-        ImpBankConvExtDataHndl: Codeunit "AMC Bank Imp.STMT. Hndl";
+        AMCBankImpSTMTHndl: Codeunit "AMC Bank Imp.STMT. Hndl";
     begin
         // [SCENARIO 1] Send an empty file to AMC web service
         // [GIVEN] Empty file on disk.
@@ -32,7 +32,7 @@ codeunit 132562 "Bank Stmt. to AMC Format UT"
         LibraryLowerPermissions.SetOutsideO365Scope();
 
         // Exercise
-        asserterror ImpBankConvExtDataHndl.ConvertBankStatementToFormat(BankStmtTempBlob, DataExch);
+        asserterror AMCBankImpSTMTHndl.ConvertBankStatementToFormat(BankStmtTempBlob, DataExch);
 
         // Verify
         Assert.ExpectedError(NoRequestBodyErr);
@@ -44,9 +44,9 @@ codeunit 132562 "Bank Stmt. to AMC Format UT"
     var
         InputTempBlob: Codeunit "Temp Blob";
         OutputTempBlob: Codeunit "Temp Blob";
-        FileMgt: Codeunit "File Management";
-        InputStream: InStream;
-        OutputStream: OutStream;
+        FileManagement: Codeunit "File Management";
+        InStream: InStream;
+        OutStream: OutStream;
         ContentProperEncoding: Text;
         ContentWrongEncoding: Text;
         FileName: Text;
@@ -62,21 +62,21 @@ codeunit 132562 "Bank Stmt. to AMC Format UT"
         String := LibraryUtility.GenerateRandomText(1024);
 
         // Setup
-        OutputTempBlob.CreateOutStream(OutputStream, TEXTENCODING::MSDos);
-        OutputStream.Write(String);
+        OutputTempBlob.CreateOutStream(OutStream, TEXTENCODING::MSDos);
+        OutStream.Write(String);
 
         // Exercise
         LibraryLowerPermissions.SetBanking();
-        FileName := FileMgt.ServerTempFileName('MSDos.txt');
-        FileMgt.BLOBExportToServerFile(OutputTempBlob, FileName);
-        FileMgt.BLOBImportFromServerFile(InputTempBlob, FileName);
+        FileName := FileManagement.ServerTempFileName('MSDos.txt');
+        FileManagement.BLOBExportToServerFile(OutputTempBlob, FileName);
+        FileManagement.BLOBImportFromServerFile(InputTempBlob, FileName);
 
         // Pre-Verify
-        InputTempBlob.CreateInStream(InputStream, TEXTENCODING::UTF16);
-        InputStream.Read(ContentWrongEncoding);
+        InputTempBlob.CreateInStream(InStream, TEXTENCODING::UTF16);
+        InStream.Read(ContentWrongEncoding);
 
-        InputTempBlob.CreateInStream(InputStream, TEXTENCODING::MSDos);
-        InputStream.Read(ContentProperEncoding);
+        InputTempBlob.CreateInStream(InStream, TEXTENCODING::MSDos);
+        InStream.Read(ContentProperEncoding);
 
         // Verify
         Assert.AreNotEqual(String, ContentWrongEncoding, '');
@@ -89,9 +89,9 @@ codeunit 132562 "Bank Stmt. to AMC Format UT"
     var
         InputTempBlob: Codeunit "Temp Blob";
         OutputTempBlob: Codeunit "Temp Blob";
-        FileMgt: Codeunit "File Management";
-        InputStream: InStream;
-        OutputStream: OutStream;
+        FileManagement: Codeunit "File Management";
+        InStream: InStream;
+        OutStream: OutStream;
         ContentProperEncoding: Text;
         ContentWrongEncoding: Text;
         FileName: Text;
@@ -107,21 +107,21 @@ codeunit 132562 "Bank Stmt. to AMC Format UT"
         String := LibraryUtility.GenerateRandomText(1024);
 
         // Setup
-        OutputTempBlob.CreateOutStream(OutputStream, TEXTENCODING::Windows);
-        OutputStream.Write(String);
+        OutputTempBlob.CreateOutStream(OutStream, TEXTENCODING::Windows);
+        OutStream.Write(String);
 
         // Exercise
         LibraryLowerPermissions.SetBanking();
-        FileName := FileMgt.ServerTempFileName('Windows.txt');
-        FileMgt.BLOBExportToServerFile(OutputTempBlob, FileName);
-        FileMgt.BLOBImportFromServerFile(InputTempBlob, FileName);
+        FileName := FileManagement.ServerTempFileName('Windows.txt');
+        FileManagement.BLOBExportToServerFile(OutputTempBlob, FileName);
+        FileManagement.BLOBImportFromServerFile(InputTempBlob, FileName);
 
         // Pre-Verify
-        InputTempBlob.CreateInStream(InputStream, TEXTENCODING::UTF16);
-        InputStream.Read(ContentWrongEncoding);
+        InputTempBlob.CreateInStream(InStream, TEXTENCODING::UTF16);
+        InStream.Read(ContentWrongEncoding);
 
-        InputTempBlob.CreateInStream(InputStream, TEXTENCODING::Windows);
-        InputStream.Read(ContentProperEncoding);
+        InputTempBlob.CreateInStream(InStream, TEXTENCODING::Windows);
+        InStream.Read(ContentProperEncoding);
 
         // Verify
         Assert.AreNotEqual(String, ContentWrongEncoding, '');
@@ -134,9 +134,9 @@ codeunit 132562 "Bank Stmt. to AMC Format UT"
     var
         InputTempBlob: Codeunit "Temp Blob";
         OutputTempBlob: Codeunit "Temp Blob";
-        FileMgt: Codeunit "File Management";
-        InputStream: InStream;
-        OutputStream: OutStream;
+        FileManagement: Codeunit "File Management";
+        InStream: InStream;
+        OutStream: OutStream;
         ContentProperEncoding: Text;
         ContentWrongEncoding: Text;
         FileName: Text;
@@ -152,22 +152,22 @@ codeunit 132562 "Bank Stmt. to AMC Format UT"
         String := LibraryUtility.GenerateRandomText(1024);
 
         // Setup
-        OutputTempBlob.CreateOutStream(OutputStream, TEXTENCODING::UTF8);
-        OutputStream.Write(String);
+        OutputTempBlob.CreateOutStream(OutStream, TEXTENCODING::UTF8);
+        OutStream.Write(String);
 
         // Exercise
         LibraryLowerPermissions.SetBanking();
-        FileName := FileMgt.ServerTempFileName('UTF8.txt');
-        FileMgt.BLOBExportToServerFile(OutputTempBlob, FileName);
-        FileMgt.BLOBImportFromServerFile(InputTempBlob, FileName);
+        FileName := FileManagement.ServerTempFileName('UTF8.txt');
+        FileManagement.BLOBExportToServerFile(OutputTempBlob, FileName);
+        FileManagement.BLOBImportFromServerFile(InputTempBlob, FileName);
 
         // Pre-Verify
-        InputTempBlob.CreateInStream(InputStream, TEXTENCODING::UTF16);
-        InputStream.Read(ContentWrongEncoding);
+        InputTempBlob.CreateInStream(InStream, TEXTENCODING::UTF16);
+        InStream.Read(ContentWrongEncoding);
 
         // TEXTENCODING::UTF8 did not work!
-        InputTempBlob.CreateInStream(InputStream, TEXTENCODING::Windows);
-        InputStream.Read(ContentProperEncoding);
+        InputTempBlob.CreateInStream(InStream, TEXTENCODING::Windows);
+        InStream.Read(ContentProperEncoding);
 
         // Verify
         Assert.AreNotEqual(String, ContentWrongEncoding, '');
@@ -180,9 +180,9 @@ codeunit 132562 "Bank Stmt. to AMC Format UT"
     var
         InputTempBlob: Codeunit "Temp Blob";
         OutputTempBlob: Codeunit "Temp Blob";
-        FileMgt: Codeunit "File Management";
-        InputStream: InStream;
-        OutputStream: OutStream;
+        FileManagement: Codeunit "File Management";
+        InStream: InStream;
+        OutStream: OutStream;
         ContentProperEncoding: Text;
         ContentWrongEncoding: Text;
         FileName: Text;
@@ -198,21 +198,21 @@ codeunit 132562 "Bank Stmt. to AMC Format UT"
         String := LibraryUtility.GenerateRandomText(1024);
 
         // Setup
-        OutputTempBlob.CreateOutStream(OutputStream, TEXTENCODING::UTF16);
-        OutputStream.Write(String);
+        OutputTempBlob.CreateOutStream(OutStream, TEXTENCODING::UTF16);
+        OutStream.Write(String);
 
         // Exercise
         LibraryLowerPermissions.SetBanking();
-        FileName := FileMgt.ServerTempFileName('UTF16.txt');
-        FileMgt.BLOBExportToServerFile(OutputTempBlob, FileName);
-        FileMgt.BLOBImportFromServerFile(InputTempBlob, FileName);
+        FileName := FileManagement.ServerTempFileName('UTF16.txt');
+        FileManagement.BLOBExportToServerFile(OutputTempBlob, FileName);
+        FileManagement.BLOBImportFromServerFile(InputTempBlob, FileName);
 
         // Pre-Verify
-        InputTempBlob.CreateInStream(InputStream, TEXTENCODING::MSDos);
-        InputStream.Read(ContentWrongEncoding);
+        InputTempBlob.CreateInStream(InStream, TEXTENCODING::MSDos);
+        InStream.Read(ContentWrongEncoding);
 
-        InputTempBlob.CreateInStream(InputStream, TEXTENCODING::UTF16);
-        InputStream.Read(ContentProperEncoding);
+        InputTempBlob.CreateInStream(InStream, TEXTENCODING::UTF16);
+        InStream.Read(ContentProperEncoding);
 
         // Verify
         Assert.AreNotEqual(String, ContentWrongEncoding, '');

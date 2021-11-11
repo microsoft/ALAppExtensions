@@ -93,9 +93,19 @@ tableextension 18766 "GenJournalLineExt" extends "Gen. Journal Line"
             var
                 GenJnlLine: Record "Gen. Journal Line";
                 CalculateTax: Codeunit "Calculate Tax";
+                TDSEntryUpdateMgt: Codeunit "TDS Entry Update Mgt.";
+                VendorPayment: Boolean;
             begin
+                TDSEntryUpdateMgt.GetSuggetVendorPayment(VendorPayment);
+
+                if VendorPayment then
+                    exit;
+
                 if ("TDS Section Code" <> '') and ("System-Created Entry" = false) then begin
-                    Modify();//To Calculate TDS for every line concidering all General journal lines
+                    if GenJnlLine.Get("Journal Template Name", "Journal Batch Name", "Line No.") then
+                        Modify();//To Calculate TDS for every line concidering all General journal lines
+
+                    GenJnlLine.Reset();
                     GenJnlLine.SetRange("Journal Template Name", "Journal Template Name");
                     GenJnlLine.SetRange("Journal Batch Name", "Journal Batch Name");
                     GenJnlLine.SetRange("TDS Section Code", "TDS Section Code");

@@ -160,5 +160,55 @@ tableextension 18445 "GST Service Invoice Header" extends "Service Invoice Heade
             TableRelation = State;
             DataClassification = CustomerContent;
         }
+        field(18469; "Acknowledgement No."; Text[30])
+        {
+            Caption = 'Acknowledgement No.';
+            DataClassification = CustomerContent;
+        }
+        field(18470; "IRN Hash"; Text[80])
+        {
+            Caption = 'IRN Hash';
+            DataClassification = CustomerContent;
+        }
+        field(18471; "QR Code"; blob)
+        {
+            Subtype = Bitmap;
+            Caption = 'QR Code';
+            DataClassification = CustomerContent;
+        }
+        field(18172; "Acknowledgement Date"; DateTime)
+        {
+            Caption = 'Acknowledgement Date';
+            DataClassification = CustomerContent;
+        }
+        field(18173; "Ship-to Customer"; Code[20])
+        {
+            Editable = false;
+            TableRelation = if ("GST Customer Type" = const(Export)) Customer."No." where("GST Customer Type" = const(Registered));
+            Caption = 'Ship-to Customer';
+            DataClassification = CustomerContent;
+        }
+        field(18174; "Ship-to GST Customer Type"; Enum "GST Customer Type")
+        {
+            Editable = false;
+            Caption = 'Ship-to GST Customer Type';
+            DataClassification = CustomerContent;
+        }
+        field(18175; "IsJSONImported"; Boolean)
+        {
+            Caption = 'IsJSONImported';
+            DataClassification = EndUserPseudonymousIdentifiers;
+        }
+        field(18176; "E-Inv. Cancelled Date"; DateTime)
+        {
+            Caption = 'E-Inv. Cancelled Date';
+            DataClassification = CustomerContent;
+        }
+        field(18177; "Cancel Reason"; Enum "e-Invoice Cancel Reason")
+        {
+            Caption = 'Cancel Reason';
+            DataClassification = CustomerContent;
+        }
+
     }
 }

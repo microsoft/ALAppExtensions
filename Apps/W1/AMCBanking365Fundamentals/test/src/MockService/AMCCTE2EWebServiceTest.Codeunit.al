@@ -126,7 +126,7 @@ codeunit 135087 "AMC CT E2E Web Service Test"
         asserterror GenJournalLine.ExportPaymentFile();
 
         // Verify.
-        Assert.ExpectedError('You have tried to use a not existing bank:');
+        Assert.ExpectedError('Please verify the spelling of this bank. You can see all supported banks at http://amcbanking.com/support/');
         Assert.ExpectedError('Please verify the spelling of this bank.');
     end;
 
@@ -218,7 +218,6 @@ codeunit 135087 "AMC CT E2E Web Service Test"
 
         // create CrTransf with file in blob
         CreateDummyCreditTransferRegister(CreditTransferRegister, true);
-        //TODO ?? CreditTransferRegister.EnableExportToServerFile();
 
         // re-export
         CreditTransferRegister.Reexport();
@@ -240,7 +239,6 @@ codeunit 135087 "AMC CT E2E Web Service Test"
 
         // create CrTransf with file in blob
         CreateDummyCreditTransferRegister(CreditTransferRegister, true);
-        //TODO ?? CreditTransferRegister.EnableExportToServerFile();
 
         // re-export
         CreditTransferRegister.Reexport();
@@ -431,7 +429,7 @@ codeunit 135087 "AMC CT E2E Web Service Test"
         RecordRef: RecordRef;
     begin
         LibraryAMCWebService.PrepareAMCBodyForConversion(BodyTempBlob, UniqueText);
-        DataExchMapping.SetRange("Pre-Mapping Codeunit", CODEUNIT::"AMC Bank Exp. CT Pre-Map");
+        DataExchMapping.SetRange("Mapping Codeunit", CODEUNIT::"AMC Bank Exp. CT Pre-Map");
         DataExchMapping.FindFirst();
 
         TempDataExch.Init();
@@ -454,7 +452,7 @@ codeunit 135087 "AMC CT E2E Web Service Test"
         repeat
             DataExchMapping.SetRange("Data Exch. Def Code", DataExchDef.Code);
             DataExchMapping.SetRange("Table ID", DATABASE::"Payment Export Data");
-            DataExchMapping.SetRange("Pre-Mapping Codeunit", CODEUNIT::"AMC Bank Exp. CT Pre-Map");
+            DataExchMapping.SetRange("Mapping Codeunit", CODEUNIT::"AMC Bank Exp. CT Pre-Map");
             if not DataExchMapping.IsEmpty() then begin
                 BankExportImportSetup.SetRange("Data Exch. Def. Code", DataExchDef.Code);
                 if BankExportImportSetup.FindFirst() then begin

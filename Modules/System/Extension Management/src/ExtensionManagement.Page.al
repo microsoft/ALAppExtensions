@@ -42,18 +42,23 @@ page 2500 "Extension Management"
                     Caption = 'Logo';
                     ToolTip = 'Specifies the logo of the extension, such as the logo of the service provider.';
                 }
-                field(AdditionalInfo; InfoText)
+                field("Is Installed"; IsInstalled)
                 {
                     ApplicationArea = All;
-                    Caption = 'Publisher';
+                    Caption = 'Is Installed';
                     Style = Favorable;
                     StyleExpr = InfoStyle;
-                    ToolTip = 'Specifies, in case of on-premises, either the person or company who provided the extension and, in case of SaaS, whether the extension is installed or not.';
+                    ToolTip = 'Specifies whether the extension is installed.';
                 }
                 field(Name; Name)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the extension.';
+                }
+                field(Publisher; Publisher)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the publisher of the extension.';
                 }
                 field(Version; VersionDisplay)
                 {
@@ -201,7 +206,7 @@ page 2500 "Extension Management"
                 {
                     ApplicationArea = All;
                     Caption = 'Refresh';
-                    Image = RefreshLines;
+                    Image = Refresh;
                     Promoted = true;
                     PromotedCategory = Category5;
                     ToolTip = 'Refresh the list of extensions.';
@@ -283,7 +288,7 @@ page 2500 "Extension Management"
         DetermineExtensionConfigurations();
 
         VersionDisplay := GetVersionDisplayText();
-        SetAdditionalInfoProperties();
+        SetInfoStyleForIsInstalled();
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -308,7 +313,6 @@ page 2500 "Extension Management"
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
         VersionDisplay: Text;
-        InstalledStatus: Text;
         ActionsEnabled: Boolean;
         IsSaaS: Boolean;
         VersionFormatTxt: Label 'v. %1', Comment = 'v=version abbr, %1=Version string';
@@ -317,10 +321,8 @@ page 2500 "Extension Management"
         CannotUnpublishIfInstalledMsg: Label 'The extension %1 cannot be unpublished because it is installed.', Comment = '%1 = name of extension';
         IsMarketplaceEnabled: Boolean;
         IsOnPremDisplay: Boolean;
-        VersionPerTenantTxt: Label 'v. %1 - %2', Comment = '%1=formatted version string, %2=not installed constant', Locked = true;
         IsInstalled: Boolean;
         IsInstallAllowed: Boolean;
-        InfoText: Text;
         InfoStyle: Boolean;
         [InDataSet]
         HelpActionVisible: Boolean;
@@ -355,30 +357,17 @@ page 2500 "Extension Management"
     begin
         // Determining Record and Styling Configurations
         IsInstalled := ExtensionInstallationImpl.IsInstalledByPackageId("Package ID");
-        InstalledStatus := ExtensionInstallationImpl.GetExtensionInstalledDisplayString(IsInstalled);
         IsTenantExtension := "Published As" <> "Published As"::Global;
     end;
 
     local procedure GetVersionDisplayText(): Text
     begin
-        // Getting the version display text and adding a '- NotInstalled' if in SaaS for PerTenant extensions
-        if IsInstalled or not IsSaaS or not IsTenantExtension then
-            exit(StrSubstNo(VersionFormatTxt, ExtensionInstallationImpl.GetVersionDisplayString(Rec)));
-
-        exit(StrSubstNo(VersionPerTenantTxt,
-            ExtensionInstallationImpl.GetVersionDisplayString(Rec), InstalledStatus));
+        exit(StrSubstNo(VersionFormatTxt, ExtensionInstallationImpl.GetVersionDisplayString(Rec)));
     end;
 
-    local procedure SetAdditionalInfoProperties()
+    local procedure SetInfoStyleForIsInstalled()
     begin
-        // Set Name styling if on prem display (shows green)
-        if IsInstallAllowed then begin
-            InfoText := InstalledStatus;
-            InfoStyle := IsInstalled
-        end else begin
-            InfoStyle := false;
-            InfoText := Publisher;
-        end;
+        InfoStyle := IsInstalled and IsInstallAllowed;
     end;
 }
 

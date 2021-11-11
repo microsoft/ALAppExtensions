@@ -240,11 +240,7 @@ codeunit 1996 "Checklist Banner"
         end else
             if IsSetupStarted then begin
                 GetHeaderLabelsBasedOnProgressToCompletion(HeaderTxt, HeaderCollapsedTxt, CalculateProgressToCompletion(ChecklistItemBuffer));
-
-                if AreAllItemsSkippedOrCompleted then
-                    DescriptionTxt := BannerDescriptionCompletedLbl
-                else
-                    DescriptionTxt := '';
+                DescriptionTxt := '';
             end
             else begin
                 HeaderTxt := BannerHeaderCompletedLbl;
@@ -680,10 +676,11 @@ codeunit 1996 "Checklist Banner"
             exit(GuidedExperienceImpl.IsAssistedSetupComplete(GuidedExperienceItem."Object Type to Run", GuidedExperienceItem."Object ID to Run"));
     end;
 
-    local procedure ShouldShowChecklistForUser(UserName: Code[50]): Boolean
+    local procedure ShouldShowChecklist(): Boolean
     var
         UserPersonalization: Record "User Personalization";
         UserChecklistStatus: Record "User Checklist Status";
+        Checklist: Codeunit Checklist;
         ChecklistImplementation: Codeunit "Checklist Implementation";
     begin
         if not UserPersonalization.Get(UserSecurityId()) then
@@ -691,11 +688,12 @@ codeunit 1996 "Checklist Banner"
 
         ChecklistImplementation.SwitchRole(CopyStr(UserId(), 1, 50), UserPersonalization."Profile ID");
 
+        Checklist.OnChecklistLoading();
+
         if ChecklistImplementation.GetUserChecklistStatusForCurrentRole(UserChecklistStatus) then
             exit(UserChecklistStatus."Is Visible");
 
-        if ChecklistImplementation.IsUsersFirstLogin() then
-            exit(ChecklistImplementation.DoesUserHaveChecklistItemsAssigned(UserName));
+        exit(false);
     end;
 
     local procedure GetChecklistForUser(var ChecklistItemBuffer: Record "Checklist Item Buffer"; UserName: Text; RoleID: Code[30])
@@ -814,7 +812,7 @@ codeunit 1996 "Checklist Banner"
     local procedure OnGetRoleCenterBannerPartID(var PartID: Integer)
     begin
         if Session.CurrentClientType() in [ClientType::Web, ClientType::Windows, ClientType::Desktop] then
-            if ShouldShowChecklistForUser(CopyStr(UserId(), 1, 50)) then
+            if ShouldShowChecklist() then
                 PartID := Page::"Checklist Banner";
     end;
 }

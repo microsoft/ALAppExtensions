@@ -14,4 +14,8 @@ enum 11513 "Swiss QR-Bill Umlaut Encoding"
     {
         Caption = 'Remove';
     }
+    value(3; "Western European ISO-8859-1")
+    {
+        Caption = 'Western European ISO-8859-1';
+    }
 }

@@ -8,7 +8,8 @@ PermissionSet 21 "System Application - Read"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "Azure AD Licensing - Exec",
+    IncludedPermissionSets = "System Application - Objects",
+                             "Azure AD Licensing - Exec",
                              "Azure AD Plan - Read",
                              "Azure AD User - Read",
                              "AAD User Management - Exec",
@@ -30,13 +31,17 @@ PermissionSet 21 "System Application - Read"
                              "Record Link Management - Read",
                              "Recurrence Schedule - Read",
                              "Retention Policy - Read",
+#if not CLEAN20
                              "Sandbox Cleanup - Read",
+#endif
+                             "Environment Cleanup - Read",
                              "Satisfaction Survey - Read",
 #if not CLEAN19
                              "SL Designer Subscribers - Read",
 #endif
                              "System Initialization - Exec",
                              "Table Information - Read",
+                             "Telemetry - Exec",
                              "Tenant License State - Read",
                              "Time Zone Selection - Read",
                              "Translation - Read",

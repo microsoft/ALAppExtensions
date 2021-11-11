@@ -1497,28 +1497,36 @@ table 11733 "Cash Document Line CZP"
             CashDeskEventCZP.Get("Cash Desk Event");
     end;
 
-    local procedure IsEETTransaction(): Boolean
+    local procedure IsEETTransaction() EETTransaction: Boolean
     var
-        EETCashRegisterCZL: Record "EET Cash Register CZL";
-        EETTransaction: Boolean;
         IsHandled: Boolean;
     begin
         OnBeforeIsEETTransaction(Rec, EETTransaction, IsHandled);
         if IsHandled then
-            exit(EETTransaction);
+            exit;
 
-        if not EETCashRegisterCZL.FindByCashRegisterNo("EET Cash Register Type CZL"::"Cash Desk", "Cash Desk No.") then
+        if not IsEETCashRegister() then
             exit(false);
 
-        if "Cash Desk Event" = '' then
+        if "Cash Desk Event" <> '' then begin
+            GetCashDeskEventCZP();
+            EETTransaction := CashDeskEventCZP."EET Transaction";
+        end else
 #if not CLEAN18
-            exit(IsInvoicePayment() or IsCreditMemoRefund() or IsAdvancePayment() or IsAdvanceRefund());
+            EETTransaction := IsInvoicePayment() or IsCreditMemoRefund() or IsAdvancePayment() or IsAdvanceRefund();
 #else
-            exit(IsInvoicePayment() or IsCreditMemoRefund());
+            EETTransaction := IsInvoicePayment() or IsCreditMemoRefund();
 #endif
 
-        GetCashDeskEventCZP();
-        exit(CashDeskEventCZP."EET Transaction");
+        OnAfterIsEETTransaction(Rec, EETTransaction);
+    end;
+
+    local procedure IsEETCashRegister() EETCashRegister: Boolean
+    var
+        EETCashRegisterCZL: Record "EET Cash Register CZL";
+    begin
+        EETCashRegister := EETCashRegisterCZL.FindByCashRegisterNo("EET Cash Register Type CZL"::"Cash Desk", "Cash Desk No.");
+        OnAfterIsEETCashRegister(Rec, EETCashRegister);
     end;
 
     procedure UpdateEETTransaction()
@@ -1530,6 +1538,7 @@ table 11733 "Cash Document Line CZP"
     procedure IsInvoicePayment(): Boolean
     begin
         exit(
+            ("Document Type" = "Document Type"::Receipt) and
             ("Account Type" = "Account Type"::Customer) and
             ("Gen. Document Type" = "Gen. Document Type"::Payment) and
             ("Applies-To Doc. Type" = "Applies-To Doc. Type"::Invoice) and
@@ -1539,6 +1548,7 @@ table 11733 "Cash Document Line CZP"
     procedure IsCreditMemoRefund(): Boolean
     begin
         exit(
+            ("Document Type" = "Document Type"::Withdrawal) and
             ("Account Type" = "Account Type"::Customer) and
             ("Gen. Document Type" = "Gen. Document Type"::Refund) and
             ("Applies-To Doc. Type" = "Applies-To Doc. Type"::"Credit Memo") and
@@ -1685,6 +1695,16 @@ table 11733 "Cash Document Line CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeIsEETTransaction(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETTransaction: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterIsEETTransaction(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETTransaction: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterIsEETCashRegister(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETCashRegister: Boolean)
     begin
     end;
 }

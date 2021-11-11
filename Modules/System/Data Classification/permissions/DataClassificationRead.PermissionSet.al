@@ -8,6 +8,8 @@ PermissionSet 1750 "Data Classification - Read"
     Access = Internal;
     Assignable = false;
 
+    IncludedPermissionSets = "Data Classification - Objects";
+
     Permissions = tabledata Company = r,
                   tabledata "Data Privacy Entities" = R,
                   tabledata "Fields Sync Status" = r,

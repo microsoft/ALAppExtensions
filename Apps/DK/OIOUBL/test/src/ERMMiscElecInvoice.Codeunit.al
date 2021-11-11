@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-
 codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
 {
     Subtype = Test;
@@ -563,6 +562,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
     procedure ElectronicInvoiceWithUnitPriceMoreThanTwoDecimal();
     var
         SalesHeader: Record "Sales Header";
+        SalesInvLine: Record "Sales Invoice Line";
         DocumentNo: Code[20];
     begin
         // Verify XML data after Create Electronic Invoices for Item with more than two decimal digits in Unit Price.
@@ -572,12 +572,16 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         DocumentNo :=
           CreateAndPostSalesDocument(SalesHeader, CreateCustomer(''), SalesHeader."Document Type"::Invoice,
             CreateItemWithUnitPrice(), LibraryRandom.RandDec(10, 2), false);  // Using Random value for VAT%.
+        SalesInvLine.SetRange("Document No.", DocumentNo);
+        SalesInvLine.FindFirst();
 
         // Exercise.
         CreateElectronicInvoiceDocument(DocumentNo);
 
         // Verify: Verify ID and Issue Date for Create Electronic Invoice Report.
         VerifyElectronicDocumentData(DocumentNo, SalesHeader."Document Date");
+        // Verify: Verify Unit Price on document matches Unit Price on Electronic Document
+        VerifyNodeDecimalValue('cbc:PriceAmount', SalesInvLine."Unit Price");
     end;
 
     [Test]
@@ -585,6 +589,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
     procedure ElectronicCrMemoWithUnitPriceMoreThanTwoDecimal();
     var
         SalesHeader: Record "Sales Header";
+        SalesCrMemoLine: Record "Sales Cr.Memo Line";
         DocumentNo: Code[20];
     begin
         // Verify XML data after Create Electronic Credit Memos for Item with more than two decimal digits in Unit Price.
@@ -594,12 +599,16 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         DocumentNo :=
           CreateAndPostSalesDocument(SalesHeader, CreateCustomer(''), SalesHeader."Document Type"::"Credit Memo",
             CreateItemWithUnitPrice(), LibraryRandom.RandDec(10, 2), false);  // Using Random value for VAT%.
+        SalesCrMemoLine.SetRange("Document No.", DocumentNo);
+        SalesCrMemoLine.FindFirst();
 
         // Exercise: Run Create Electronic Credit Memo Report.
         CreateElectronicCreditMemoDocument(DocumentNo);
 
         // Verify: Verify ID and Issue Date for Create Electronic Credit Memos Report.
         VerifyElectronicDocumentData(DocumentNo, SalesHeader."Document Date");
+        // Verify: Verify Unit Price on document matches Unit Price on Electronic Document
+        VerifyNodeDecimalValue('cbc:PriceAmount', SalesCrMemoLine."Unit Price");
     end;
 
     [Test]
@@ -1785,4 +1794,3 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
     begin
     end;
 }
-

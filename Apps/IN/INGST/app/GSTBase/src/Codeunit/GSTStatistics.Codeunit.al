@@ -126,7 +126,7 @@ codeunit 18006 "GST Statistics"
         PurchaseLine.SetRange("Document no.", PurchaseHeader."No.");
         if PurchaseLine.FindSet() then
             repeat
-                if (PurchaseLine.Type <> PurchaseLine.Type::"Charge (Item)") and (not PurchaseLine."GST Reverse Charge") then
+                if (not PurchaseLine."GST Reverse Charge") then
                     GSTAmount += GetGSTAmount(PurchaseLine.RecordId());
             until PurchaseLine.Next() = 0;
     end;
@@ -142,7 +142,7 @@ codeunit 18006 "GST Statistics"
         PurchInvLine.SetRange("Document No.", PurchInvHeader."No.");
         if PurchInvLine.FindSet() then
             repeat
-                if (PurchInvLine.Type <> PurchInvLine.Type::"Charge (Item)") and (not PurchInvLine."GST Reverse Charge") then
+                if (not PurchInvLine."GST Reverse Charge") then
                     GSTAmount += GetGSTAmount(PurchInvLine.RecordId);
             until PurchInvLine.Next() = 0;
     end;
@@ -158,7 +158,7 @@ codeunit 18006 "GST Statistics"
         PurchCrMemoLine.SetRange("Document No.", PurchCrMemoHeader."No.");
         if PurchCrMemoLine.FindSet() then
             repeat
-                if (PurchCrMemoLine.Type <> PurchCrMemoLine.Type::"Charge (Item)") and (not PurchCrMemoLine."GST Reverse Charge") then
+                if (not PurchCrMemoLine."GST Reverse Charge") then
                     GSTAmount += GetGSTAmount(PurchCrMemoLine.RecordId());
             until PurchCrMemoLine.Next() = 0;
     end;

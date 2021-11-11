@@ -32,6 +32,25 @@ Holds information about draft emails and email that are about to be sent.
 ## Sent Email (Table 8889)
 Holds information about the sent emails.
 
+### GetMessageId (Method) <a name="GetMessageId"></a> 
+
+ Get the message id of the sent email.
+ 
+
+#### Syntax
+```
+procedure GetMessageId(): Guid
+```
+#### Return Value
+*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+
+Message id.
+
+## Email Related Attachment (Table 8910)
+
+ Temporary table that holds information about attachments related to an email.
+ 
+
 
 ## Email Connector (Interface)
 
@@ -681,6 +700,7 @@ The action that the user performed with the email message.
 
 #### Syntax
 ```
+[Obsolete('Use GetSentEmailsForRecord(TableId: Integer; SystemId: Guid; var ResultEmailOutbox: Record "Email Outbox" temporary) instead.','19.0')]
 procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid)ResultSentEmails: Record "Sent Email" temporary
 ```
 #### Parameters
@@ -696,6 +716,100 @@ The system ID of the record.
 *[Record "Sent Email" temporary]()*
 
 The sent email related to a record.
+### GetSentEmailsForRecord (Method) <a name="GetSentEmailsForRecord"></a> 
+
+ Gets the sent emails related to a record.
+
+
+#### Syntax
+```
+procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid; var ResultSentEmails: Record "Sent Email" temporary)
+```
+#### Parameters
+*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The table ID of the record.
+
+*SystemId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The system ID of the record.
+
+*ResultSentEmails ([Record "Sent Email" temporary]())* 
+
+
+
+### GetSentEmailsForRecord (Method) <a name="GetSentEmailsForRecord"></a> 
+
+ Gets the sent emails related to a record.
+
+
+#### Syntax
+```
+procedure GetSentEmailsForRecord(RecordVariant: Variant; var ResultSentEmails: Record "Sent Email" temporary)
+```
+#### Parameters
+*RecordVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+
+Source Record.
+
+*ResultSentEmails ([Record "Sent Email" temporary]())* 
+
+The sent email related to a record.
+
+### GetEmailOutboxForRecord (Method) <a name="GetEmailOutboxForRecord"></a> 
+
+ Gets the outbox emails related to a record.
+
+
+#### Syntax
+```
+procedure GetEmailOutboxForRecord(RecordVariant: Variant; var ResultEmailOutbox: Record "Email Outbox" temporary)
+```
+#### Parameters
+*RecordVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+
+Source Record.
+
+*ResultEmailOutbox ([Record "Email Outbox" temporary]())* 
+
+The outbox emails related to a record.
+
+### OpenSentEmails (Method) <a name="OpenSentEmails"></a> 
+
+ Open the sent emails page for a source record given by its table ID and system ID.
+
+
+#### Syntax
+```
+procedure OpenSentEmails(TableId: Integer; SystemId: Guid)
+```
+#### Parameters
+*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The table ID of the record.
+
+*SystemId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The system ID of the record.
+
+### GetOutboxEmailRecordStatus (Method) <a name="GetOutboxEmailRecordStatus"></a> 
+
+ Gets the outbox email status.
+
+
+#### Syntax
+```
+procedure GetOutboxEmailRecordStatus(MessageId: Guid)ResultStatus: Enum "Email Status"
+```
+#### Parameters
+*MessageId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The MessageId of the record.
+
+#### Return Value
+*[Enum "Email Status"]()*
+
+Email Status of the record.
 ### AddRelation (Method) <a name="AddRelation"></a> 
 
  Adds a relation between an email message and a record.
@@ -806,6 +920,67 @@ The ID of the email in the queue.
 *Status ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
 True if the message was successfully sent.
+
+### OnFindRelatedAttachments (Event) <a name="OnFindRelatedAttachments"></a> 
+
+ Integration event to get the names and IDs of attachments related to a source record.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnFindRelatedAttachments(SourceTableId: Integer; SourceSystemID: Guid; var EmailRelatedAttachments: Record "Email Related Attachment")
+```
+#### Parameters
+*SourceTableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The table number of the source record.
+
+*SourceSystemID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The system ID of the source record.
+
+*EmailRelatedAttachments ([Record "Email Related Attachment"]())* 
+
+Out parameter to return attachments related to the source record.
+
+### OnGetAttachment (Event) <a name="OnGetAttachment"></a> 
+
+ Integration event that requests an attachment to be added to an email.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnGetAttachment(AttachmentTableID: Integer; AttachmentSystemID: Guid; MessageID: Guid)
+```
+#### Parameters
+*AttachmentTableID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+
+The table number of the attachment.
+
+*AttachmentSystemID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The system ID of the attachment.
+
+*MessageID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The ID of the email to add an attachment to.
+
+### OnEnqueuedInOutbox (Event) <a name="OnEnqueuedInOutbox"></a> 
+
+ Integration event to implement additional validation after the email message has been enqueued in the email outbox.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnEnqueuedInOutbox(MessageId: Guid)
+```
+#### Parameters
+*MessageId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+The ID of the email that has been queued
 
 
 ## Email Message (Codeunit 8904)
@@ -1003,7 +1178,7 @@ procedure GetRecipients(RecipientType: Enum "Email Recipient Type"; var Recipien
 #### Parameters
 *RecipientType ([Enum "Email Recipient Type"]())* 
 
-Sepcifies the type of the recipients.
+Specifies the type of the recipients.
 
 *Recipients ([list of [Text]]())* 
 
@@ -1053,6 +1228,19 @@ The Content Type of the file attachment.
 
 The instream of the attachment.
 
+### Attachments_DeleteContent (Method) <a name="Attachments_DeleteContent"></a> 
+
+ Deletes the contents of the currently selected attachment.
+ 
+
+#### Syntax
+```
+procedure Attachments_DeleteContent(): Boolean
+```
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+Returns true if contents was successfully deleted, otherwise false.
 ### Attachments_First (Method) <a name="Attachments_First"></a> 
 
  Finds the first attachment of the email message.
@@ -1173,6 +1361,30 @@ procedure Attachments_IsInline(): Boolean
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True if the attachment is inline the message body; otherwise - false.
+### OnGetAttachmentContent (Event) <a name="OnGetAttachmentContent"></a> 
+
+ Integration event to provide the stream of data for a given MediaID. If attachment content has been deleted, this event makes it possible to provide
+ the data from elsewhere.
+ 
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnGetAttachmentContent(MediaID: Guid; var InStream: Instream; var Handled: Boolean)
+```
+#### Parameters
+*MediaID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+Id of the underlying media field that contains the attachment data.
+
+*InStream ([Instream]())* 
+
+Stream to that should pointed to the attachment data.
+
+*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+
+Was the attachment content added to the stream.
+
 
 ## Email Scenario (Codeunit 8893)
 
@@ -1355,6 +1567,12 @@ procedure EnableLookupMode()
 
 
 ## Email Attachments (Page 8889)
+
+## Email Related Attachments (Page 8890)
+
+ Displays a list of related attachments to an email.
+ 
+
 
 ## Email Scenario Setup (Page 8893)
 

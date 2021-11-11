@@ -137,7 +137,10 @@ page 8893 "Email Scenario Setup"
     }
 
     trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000CTN', 'Emailing', Enum::"Feature Uptake Status"::Discovered);
         CanUserManageEmailSetup := EmailAccountImpl.IsUserEmailAdmin();
         EmailScenarioImpl.GetScenariosByEmailAccount(Rec);
 

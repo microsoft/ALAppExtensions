@@ -905,6 +905,51 @@ page 18554 "Cash Payment Voucher"
                     ToolTip = 'View the history of transactions that have been posted for the selected record.';
                 }
             }
+            group("&Payments")
+            {
+                Caption = '&Payments';
+                Image = Payment;
+                action(SuggestVendorPayments)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Suggest Vendor Payments';
+                    Ellipsis = true;
+                    Image = SuggestVendorPayments;
+                    Promoted = true;
+                    PromotedCategory = Category5;
+                    PromotedIsBig = true;
+                    ToolTip = 'Create payment suggestions as lines in the payment Voucher.';
+
+                    trigger OnAction()
+                    var
+                        SuggestVendorPayments: Report "Suggest Vendor Payments";
+                    begin
+                        Clear(SuggestVendorPayments);
+                        SuggestVendorPayments.SetGenJnlLine(Rec);
+                        SuggestVendorPayments.RunModal();
+                    end;
+                }
+                action(SuggestEmployeePayments)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Suggest Employee Payments';
+                    Ellipsis = true;
+                    Image = SuggestVendorPayments;
+                    Promoted = true;
+                    PromotedCategory = Category5;
+                    PromotedIsBig = true;
+                    ToolTip = 'Create payment suggestions as lines in the payment Voucher.';
+
+                    trigger OnAction()
+                    var
+                        SuggestEmployeePayments: Report "Suggest Employee Payments";
+                    begin
+                        Clear(SuggestEmployeePayments);
+                        SuggestEmployeePayments.SetGenJnlLine(Rec);
+                        SuggestEmployeePayments.RunModal();
+                    end;
+                }
+            }
             action(Approvals)
             {
                 PromotedOnly = true;

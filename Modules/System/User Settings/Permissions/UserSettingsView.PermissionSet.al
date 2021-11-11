@@ -7,7 +7,8 @@ permissionset 9176 "User Settings - View"
 {
     Assignable = false;
 
-    IncludedPermissionSets = "Language - View",
+    IncludedPermissionSets = "User Settings - Objects",
+                             "Language - View",
                              "Tenant License State - Read",
                              "Time Zone Selection - Read",
                              "User Selection - Read",

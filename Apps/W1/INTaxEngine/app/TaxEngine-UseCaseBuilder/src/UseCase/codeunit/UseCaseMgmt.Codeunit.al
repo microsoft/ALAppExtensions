@@ -70,7 +70,7 @@ codeunit 20294 "Use Case Mgmt."
     begin
         if TaxUseCase.FindSet() then
             repeat
-                TaxUseCase.Status := TaxUseCase.Status::Draft;
+                TaxUseCase.Validate(Status, TaxUseCase.Status::Draft);
                 TaxUseCase.Validate(Enable, false);
                 TaxUseCase.Modify(true);
             until TaxUseCase.Next() = 0;

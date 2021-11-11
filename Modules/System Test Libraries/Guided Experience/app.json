@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Test library for the Guided Experience module",
-    "version":  "19.0.0.0",
+    "version":  "19.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,19 +15,19 @@
                              "id":  "c64d75f0-e9f1-4d0f-9949-cd453b9b1466",
                              "name":  "Guided Experience",
                              "publisher":  "Microsoft",
-                             "version":  "19.0.0.0"
+                             "version":  "19.1.0.0"
                          },
                          {
                              "id":  "84e448ad-faa5-44c8-835a-ec4b408e8cec",
                              "name":  "Video",
                              "publisher":  "Microsoft",
-                             "version":  "19.0.0.0"
+                             "version":  "19.1.0.0"
                          },
                          {
                              "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
                              "name":  "Any",
                              "publisher":  "Microsoft",
-                             "version":  "19.0.0.0"
+                             "version":  "19.1.0.0"
                          }
                      ],
     "screenshots":  [
@@ -40,16 +40,16 @@
                          "to":  132588
                      },
                      {
-                         "from": 132594,
-                         "to": 132594
+                         "from":  132594,
+                         "to":  132594
                      },
                      {
-                         "from": 134934,
-                         "to": 134934
+                         "from":  134934,
+                         "to":  134934
                      },
                      {
-                         "from": 132607,
-                         "to": 132609
+                         "from":  132607,
+                         "to":  132609
                      }
                  ],
     "target":  "OnPrem"

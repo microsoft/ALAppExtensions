@@ -175,8 +175,10 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
 
     local procedure SendTelemetryOnFirstRetentionPolicyEnabled(TableNo: Integer; TableName: Text)
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
+        FeatureTelemetry.LogUptake('0000FVW', 'Retention policies', Enum::"Feature Uptake Status"::"Set up");
         TelemetryDimensions.Add('CompanyName', CompanyName());
         TelemetryDimensions.Add('TableNo', Format(TableNo, 0, 9));
         TelemetryDimensions.Add('TableName', TableName);
@@ -185,8 +187,10 @@ codeunit 3912 "Reten. Policy Telemetry Impl."
 
     local procedure SendTelemetryOnLastRetentionPolicyDisabled(TableNo: Integer; TableName: Text)
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
+        FeatureTelemetry.LogUptake('0000FVX', 'Retention policies', Enum::"Feature Uptake Status"::Undiscovered);
         TelemetryDimensions.Add('CompanyName', CompanyName());
         TelemetryDimensions.Add('TableNo', Format(TableNo, 0, 9));
         TelemetryDimensions.Add('TableName', TableName);

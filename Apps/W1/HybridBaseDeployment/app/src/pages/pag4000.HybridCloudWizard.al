@@ -577,6 +577,8 @@ page 4000 "Hybrid Cloud Setup Wizard"
                     HybridCloudManagement.RestoreDefaultMigrationTableMappings(false);
                     CurrPage.Close();
 
+                    IncludeDataPerDatabaseOnFirstRun();
+
                     HybridCloudManagement.CreateCompanies();
                 end;
             }
@@ -858,5 +860,14 @@ page 4000 "Hybrid Cloud Setup Wizard"
             Step -= 1
         else
             Step += 1;
+    end;
+
+    local procedure IncludeDataPerDatabaseOnFirstRun()
+    var
+        HybridReplicationDetail: Record "Hybrid Replication Detail";
+    begin
+        HybridReplicationDetail.SetRange(Status::Successful);
+        if not HybridReplicationDetail.FindFirst() then
+            HybridCloudManagement.EnableDataPerDatabaseTables()
     end;
 }

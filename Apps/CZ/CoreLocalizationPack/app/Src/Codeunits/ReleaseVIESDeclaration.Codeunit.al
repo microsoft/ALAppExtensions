@@ -26,10 +26,7 @@ codeunit 31059 "Release VIES Declaration CZL"
         PageNo := 1;
         LineNo := 0;
         repeat
-            VIESDeclarationLineCZL.TestField("Country/Region Code");
-            VIESDeclarationLineCZL.TestField("VAT Registration No.");
-            if Rec."Declaration Type" <> Rec."Declaration Type"::Normal then
-                VIESDeclarationLineCZL.TestField("Amount (LCY)");
+            CheckLine(Rec, VIESDeclarationLineCZL);
             LineNo += 1;
             if LineNo = StatutoryReportingSetupCZL."VIES Number of Lines" + 1 then begin
                 LineNo := 1;
@@ -57,5 +54,35 @@ codeunit 31059 "Release VIES Declaration CZL"
 
         VIESDeclarationHeaderCZL.Status := VIESDeclarationHeaderCZL.Status::Open;
         VIESDeclarationHeaderCZL.Modify(true);
+    end;
+
+    local procedure CheckLine(VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL"; VIESDeclarationLineCZL: Record "VIES Declaration Line CZL")
+    var
+        IsHandled: Boolean;
+    begin
+        OnBeforeCheckLine(VIESDeclarationHeaderCZL, VIESDeclarationLineCZL, IsHandled);
+        if IsHandled then
+            exit;
+
+        VIESDeclarationLineCZL.TestField("Country/Region Code");
+        VIESDeclarationLineCZL.TestField("VAT Registration No.");
+        if IsLineAmountCheckingEnabled(VIESDeclarationHeaderCZL, VIESDeclarationLineCZL) then
+            VIESDeclarationLineCZL.TestField("Amount (LCY)");
+    end;
+
+    local procedure IsLineAmountCheckingEnabled(VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL"; VIESDeclarationLineCZL: Record "VIES Declaration Line CZL") IsEnabled: Boolean
+    begin
+        IsEnabled := VIESDeclarationHeaderCZL."Declaration Type" <> VIESDeclarationHeaderCZL."Declaration Type"::Normal;
+        OnAfterIsLineAmountCheckingEnabled(VIESDeclarationHeaderCZL, VIESDeclarationLineCZL, IsEnabled);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckLine(VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL"; VIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterIsLineAmountCheckingEnabled(VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL"; VIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; var IsEnabled: Boolean)
+    begin
     end;
 }

@@ -20,11 +20,11 @@ page 9142 "GetAddress.io Config"
                 begin
                     ValidateApiKey();
 
-                    SaveAPIKey(APIKey, APIKeyText);
+                    Rec.SaveAPIKey(Rec.APIKey, APIKeyText);
                     UpdateAPIField();
                 end;
             }
-            field("Endpoint URL"; EndpointURL)
+            field("Endpoint URL"; Rec.EndpointURL)
             {
                 ApplicationArea = Basic, Suite;
             }
@@ -36,8 +36,8 @@ page 9142 "GetAddress.io Config"
 
                 trigger OnDrillDown()
                 begin
-                    HYPERLINK(TermsAndCondsUrlTok);
-                    TermsAndCondsRead := TRUE;
+                    HyperLink(TermsAndCondsUrlTok);
+                    TermsAndCondsRead := true;
                 end;
             }
             field(GetAPIKey; GetAPIKeyLbl)
@@ -48,7 +48,7 @@ page 9142 "GetAddress.io Config"
 
                 trigger OnDrillDown()
                 begin
-                    HYPERLINK(APIKeyUrlTok);
+                    HyperLink(APIKeyUrlTok);
                 end;
             }
         }
@@ -60,23 +60,24 @@ page 9142 "GetAddress.io Config"
     end;
 
     trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        TermsAndCondsRead := FALSE;
+        TermsAndCondsRead := false;
+        FeatureTelemetry.LogUptake('0000FW8', 'GetAddress.io UK Postcodes', Enum::"Feature Uptake Status"::Discovered);
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     begin
-        IF CloseAction = ACTION::Cancel THEN
-            EXIT(TRUE);
+        if CloseAction = ACTION::Cancel then
+            exit(true);
 
         ValidateApiKey();
-        IF APIKeyText = '' THEN
-            ERROR(EmptyAPIKeyErr);
 
-        IF NOT TermsAndCondsRead THEN
-            MESSAGE(ThirdPartyNoticeMsg);
+        if not TermsAndCondsRead then
+            Message(ThirdPartyNoticeMsg);
 
-        EXIT(NOT ISNULLGUID(APIKey));
+        exit(not IsNullGuid(Rec.APIKey));
     end;
 
     var
@@ -92,16 +93,16 @@ page 9142 "GetAddress.io Config"
 
     local procedure UpdateAPIField()
     begin
-        IF ISNULLGUID(APIKey) THEN
+        if IsNullGuid(Rec.APIKey) then
             APIKeyText := ''
-        ELSE
+        else
             APIKeyText := '****************';
     end;
 
     local procedure ValidateApiKey()
     begin
-        IF APIKeyText = '' THEN
-            ERROR(EmptyAPIKeyErr);
+        if APIKeyText = '' then
+            Error(EmptyAPIKeyErr);
     end;
 }
 

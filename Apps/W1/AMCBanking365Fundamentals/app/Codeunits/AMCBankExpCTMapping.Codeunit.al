@@ -1,5 +1,9 @@
+#if not CLEAN20
 codeunit 20108 "AMC Bank Exp. CT Mapping"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by the new implementation in V19.1 of credit transfer mapping.';
+    ObsoleteTag = '20.0';
     Permissions = TableData "Data Exch." = rimd;
     TableNo = "Data Exch.";
 
@@ -8,32 +12,35 @@ codeunit 20108 "AMC Bank Exp. CT Mapping"
         PaymentExportData: Record "Payment Export Data";
         DataExch: Record "Data Exch.";
         PaymentExportMgt: Codeunit "Payment Export Mgt";
-        PaymentExportDataRecRef: RecordRef;
-        Window: Dialog;
+        PaymentExportDataRecordRef: RecordRef;
+        WindowDialog: Dialog;
         LineNo: Integer;
     begin
+
         PaymentExportData.SetRange("Data Exch Entry No.", "Entry No.");
         PaymentExportData.FindSet();
 
-        Window.Open(ProgressMsg);
+        WindowDialog.Open(ProgressMsg);
 
         repeat
             LineNo += 1;
-            Window.Update(1, LineNo);
+            WindowDialog.Update(1, LineNo);
 
             DataExch.Get(PaymentExportData."Data Exch Entry No.");
             DataExch.Validate("Data Exch. Line Def Code", PaymentExportData."Data Exch. Line Def Code");
             DataExch.Modify(true);
 
-            PaymentExportDataRecRef.GetTable(PaymentExportData);
-            PaymentExportMgt.ProcessColumnMapping(DataExch, PaymentExportDataRecRef,
-              PaymentExportData."Line No.", PaymentExportData."Data Exch. Line Def Code", PaymentExportDataRecRef.Number());
+            PaymentExportDataRecordRef.GetTable(PaymentExportData);
+            PaymentExportMgt.ProcessColumnMapping(DataExch, PaymentExportDataRecordRef,
+              PaymentExportData."Line No.", PaymentExportData."Data Exch. Line Def Code", PaymentExportDataRecordRef.Number());
         until PaymentExportData.Next() = 0;
 
-        Window.Close();
+        WindowDialog.Close();
     end;
 
     var
-        ProgressMsg: Label 'Processing line no. #1######.';
+        ProgressMsg: Label 'Processing line no. #1######.', Comment = '#1=Line number';
+
 }
 
+#endif

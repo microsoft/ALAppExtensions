@@ -14,50 +14,50 @@ codeunit 135047 "IDA 1D EAN8 Test"
     [Test]
     procedure TestEAN8Encoding()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Encoding a text using EAN-8 symbology yields the correct result
 
-        GenericIDAutomation1DTest.EncodeFontSuccessTest(/* input */'1234567', Enum::"Barcode Symbology"::"EAN-8", /* expected result */'(1234*PQRK(');
+        GenericBarcodeTestHelper.EncodeFontSuccessTest(/* input */'1234567', Enum::"Barcode Symbology"::"EAN-8", /* expected result */'(1234*PQRK(');
     end;
 
     [Test]
     procedure TestEAN8ValidationWithEmptyString()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating an empty text using EAN-8 symbology yeilds an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'', Enum::"Barcode Symbology"::"EAN-8", /* expected error */StrSubstNo(InvalidInputErr, ''));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'', Enum::"Barcode Symbology"::"EAN-8", /* expected error */StrSubstNo(InvalidInputErr, ''));
     end;
 
     [Test]
     procedure TestEAN8ValidationWithNormalString()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating a correctly formatted text using EAN-8 doesn't yield an error
 
-        GenericIDAutomation1DTest.ValidateFontSuccessTest(/* input */'2345678', Enum::"Barcode Symbology"::"EAN-8");
+        GenericBarcodeTestHelper.ValidateFontSuccessTest(/* input */'2345678', Enum::"Barcode Symbology"::"EAN-8");
     end;
 
     [Test]
     procedure TestEAN8ValidationWithInvalidString()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating an incorrectly formatted text using EAN-8 yields an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'&&&&&&&', Enum::"Barcode Symbology"::"EAN-8", /* expected error */StrSubstNo(InvalidInputErr, '&&&&&&&'));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'&&&&&&&', Enum::"Barcode Symbology"::"EAN-8", /* expected error */StrSubstNo(InvalidInputErr, '&&&&&&&'));
     end;
 
     [Test]
     procedure TestEAN8ValidationWithInvalidStringLength();
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating a text with wrong length using EAN-8 symbology yields an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'12345678901', Enum::"Barcode Symbology"::"EAN-8", /* expected error */StrSubstNo(InvalidInputErr, '12345678901'));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'12345678901', Enum::"Barcode Symbology"::"EAN-8", /* expected error */StrSubstNo(InvalidInputErr, '12345678901'));
     end;
 }

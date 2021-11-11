@@ -14,50 +14,50 @@ codeunit 135046 "IDA 1D EAN13 Test"
     [Test]
     procedure TestEAN13Encoding();
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Encoding a text using EAN-13 symbology yields the correct result
 
-        GenericIDAutomation1DTest.EncodeFontSuccessTest(/* input */'1234567891012', Enum::"Barcode Symbology"::"EAN-13", /* expected result */'V(23E5GH*STLKLT(');
+        GenericBarcodeTestHelper.EncodeFontSuccessTest(/* input */'1234567891012', Enum::"Barcode Symbology"::"EAN-13", /* expected result */'V(23E5GH*STLKLT(');
     end;
 
     [Test]
     procedure TestEAN13ValidationWithEmptyString();
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating an empty text using EAN-13 symbology yeilds an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'', Enum::"Barcode Symbology"::"EAN-13", /* expected error */StrSubstNo(InvalidInputErr, ''));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'', Enum::"Barcode Symbology"::"EAN-13", /* expected error */StrSubstNo(InvalidInputErr, ''));
     end;
 
     [Test]
     procedure TestEAN13ValidationWithNormalString();
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating a correctly formatted text using EAN-13 symbology doesn't yield an error
 
-        GenericIDAutomation1DTest.ValidateFontSuccessTest(/* input */'1234567891012', Enum::"Barcode Symbology"::"EAN-13");
+        GenericBarcodeTestHelper.ValidateFontSuccessTest(/* input */'1234567891012', Enum::"Barcode Symbology"::"EAN-13");
     end;
 
     [Test]
     procedure TestEAN13ValidationWithInvalidString();
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating an incorrectly formatted text using EAN-13 symbology yields an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'&&&&&&&', Enum::"Barcode Symbology"::"EAN-13", /* expected error */StrSubstNo(InvalidInputErr, '&&&&&&&'));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'&&&&&&&', Enum::"Barcode Symbology"::"EAN-13", /* expected error */StrSubstNo(InvalidInputErr, '&&&&&&&'));
     end;
 
     [Test]
     procedure TestEAN13ValidationWithInvalidStringLength();
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating a text with wrong length using EAN-13 symbology yields an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'12345678901234', Enum::"Barcode Symbology"::"EAN-13", /* expected error */StrSubstNo(InvalidInputErr, '12345678901234'));
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'12345678901234', Enum::"Barcode Symbology"::"EAN-13", /* expected error */StrSubstNo(InvalidInputErr, '12345678901234'));
     end;
 }

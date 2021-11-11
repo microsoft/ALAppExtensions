@@ -119,6 +119,7 @@ page 9204 "User Settings"
                         Caption = 'LastLoginInfo';
                         ShowCaption = false;
                         Visible = LastLoginInfoVisible;
+                        Editable = false;
                     }
                 }
             }

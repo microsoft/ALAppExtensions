@@ -42,6 +42,7 @@ codeunit 4514 "SMTP Message"
         EmailAccount: Codeunit "Email Account";
         InternetAddress: DotNet InternetAddress;
     begin
+        OnBeforeAddFrom(FromName, FromAddress);
         if EmailAccount.ValidateEmailAddress(FromAddress, false) and InternetAddress.TryParse(FromAddress, InternetAddress) then begin
             InternetAddress.Name(FromName);
             Email.From().Add(InternetAddress);
@@ -245,5 +246,10 @@ codeunit 4514 "SMTP Message"
                 Address := SMTPConnectorImpl.ObsfuscateEmailAddress(Address);
             String += StrSubstNo(ConcateLbl, Address);
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAddFrom(var FromName: Text; var FromAddress: Text)
+    begin
     end;
 }

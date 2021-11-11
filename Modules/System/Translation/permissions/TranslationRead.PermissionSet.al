@@ -8,7 +8,8 @@ PermissionSet 3711 "Translation - Read"
     Access = Public;
     Assignable = false;
 
-    IncludedPermissionSets = "Language - Read";
+    IncludedPermissionSets = "Translation - Objects",
+                             "Language - Read";
 
     Permissions = tabledata Translation = r;
 }

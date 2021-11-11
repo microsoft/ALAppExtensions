@@ -8,6 +8,7 @@ PermissionSet 9008 "User Login Times - Read"
     Access = Public;
     Assignable = false;
 
+    IncludedPermissionSets = "User Login Times - Objects";
 
     Permissions = tabledata "User Login" = r;
 }

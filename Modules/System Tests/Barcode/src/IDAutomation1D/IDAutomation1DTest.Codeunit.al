@@ -14,24 +14,24 @@ codeunit 135056 "IDAutomation 1D Test"
     [Test]
     procedure TestEncodingWithUnsupportedSymbology()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Encoding with unsupported barcode symbology yields an error
 
-        GenericIDAutomation1DTest.EncodeFontFailureTest(/* input */'A1234B', Enum::"Barcode Symbology"::"Unsupported Barcode Symbology", /* expected error */CannotFindBarcodeEncoderErr);
-        GenericIDAutomation1DTest.EncodeFontFailureTest(/* input */'&&&&&&', Enum::"Barcode Symbology"::"Unsupported Barcode Symbology", /* expected error */CannotFindBarcodeEncoderErr);
-        GenericIDAutomation1DTest.EncodeFontFailureTest(/* input */'(A&&&&&&A)', Enum::"Barcode Symbology"::"Unsupported Barcode Symbology", /* expected error */CannotFindBarcodeEncoderErr);
+        GenericBarcodeTestHelper.EncodeFontFailureTest(/* input */'A1234B', Enum::"Barcode Symbology"::"Unsupported Barcode Symbology", /* expected error */CannotFindBarcodeEncoderErr);
+        GenericBarcodeTestHelper.EncodeFontFailureTest(/* input */'&&&&&&', Enum::"Barcode Symbology"::"Unsupported Barcode Symbology", /* expected error */CannotFindBarcodeEncoderErr);
+        GenericBarcodeTestHelper.EncodeFontFailureTest(/* input */'(A&&&&&&A)', Enum::"Barcode Symbology"::"Unsupported Barcode Symbology", /* expected error */CannotFindBarcodeEncoderErr);
     end;
 
     [Test]
     procedure TestValidationWithUnsupportedSymbology()
     var
-        GenericIDAutomation1DTest: Codeunit "Generic IDAutomation 1D Test";
+        GenericBarcodeTestHelper: Codeunit "Generic Barcode Test Helper";
     begin
         // [Scenario] Validating with unsupported barcode symbology yields an error
 
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'A1234B', Enum::"Barcode Symbology"::"Unsupported Barcode Symbology", /* expected error */CannotFindBarcodeEncoderErr);
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'&&&&&&', Enum::"Barcode Symbology"::"Unsupported Barcode Symbology", /* expected error */CannotFindBarcodeEncoderErr);
-        GenericIDAutomation1DTest.ValidateFontFailureTest(/* input */'(A&&&&&&A)', Enum::"Barcode Symbology"::"Unsupported Barcode Symbology", /* expected error */CannotFindBarcodeEncoderErr);
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'A1234B', Enum::"Barcode Symbology"::"Unsupported Barcode Symbology", /* expected error */CannotFindBarcodeEncoderErr);
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'&&&&&&', Enum::"Barcode Symbology"::"Unsupported Barcode Symbology", /* expected error */CannotFindBarcodeEncoderErr);
+        GenericBarcodeTestHelper.ValidateFontFailureTest(/* input */'(A&&&&&&A)', Enum::"Barcode Symbology"::"Unsupported Barcode Symbology", /* expected error */CannotFindBarcodeEncoderErr);
     end;
 }

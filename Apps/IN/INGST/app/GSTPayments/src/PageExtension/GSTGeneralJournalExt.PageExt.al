@@ -193,6 +193,15 @@
                     CallTaxEngine();
                 end;
             }
+            field("Order Address Code"; "Order Address Code")
+            {
+                ApplicationArea = Basic, Suite;
+
+                trigger OnValidate()
+                begin
+                    CallTaxEngine();
+                end;
+            }
         }
         modify(Amount)
         {

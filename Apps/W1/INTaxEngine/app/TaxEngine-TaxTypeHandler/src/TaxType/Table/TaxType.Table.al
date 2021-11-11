@@ -83,6 +83,7 @@ table 20258 "Tax Type"
         TaxAttribute: Record "Tax Attribute";
         TaxComponent: Record "Tax Component";
         TaxRateColumnSetup: Record "Tax Rate Column Setup";
+        ArchivalSingleInstance: Codeunit "Archival Single Instance";
     begin
         if not SkipUseCaseDeletion then begin
             if not HideDialog then
@@ -96,10 +97,12 @@ table 20258 "Tax Type"
         if not TaxEntity.IsEmpty() then
             TaxEntity.DeleteAll(true);
 
+        ArchivalSingleInstance.SetSkipTaxAttributeDeletion(SkipUseCaseDeletion);
         TaxAttribute.SetRange("Tax Type", Code);
         if not TaxAttribute.IsEmpty() then
             TaxAttribute.DeleteAll(true);
 
+        ArchivalSingleInstance.SetSkipTaxComponentDeletion(SkipUseCaseDeletion);
         TaxComponent.SetRange("Tax Type", Code);
         if not TaxComponent.IsEmpty() then
             TaxComponent.DeleteAll(true);

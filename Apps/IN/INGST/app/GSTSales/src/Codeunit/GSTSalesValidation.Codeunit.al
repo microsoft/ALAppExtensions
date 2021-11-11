@@ -1646,6 +1646,13 @@ codeunit 18143 "GST Sales Validation"
             Error(NonExemptedLinesErr);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Sales Validation", 'OnBeforeSalesLineHSNSACEditable', '', false, false)]
+    local procedure SetGstHsnEditableforAllType(var IsEditable: Boolean; var IsHandled: Boolean)
+    begin
+        IsEditable := true;
+        IsHandled := true;
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeSalesLineHSNSACEditable(SalesLine: Record "Sales Line"; var IsEditable: Boolean; var IsHandled: Boolean)
     begin

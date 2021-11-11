@@ -39,22 +39,6 @@ procedure CreateNewUserFromGraphUser(GraphUser: DotNet UserInfo)
 
 The Azure AD user.
 
-### UpdateUserFromGraph (Method) <a name="UpdateUserFromGraph"></a> 
-
- Updates details about the user with information from Office 365.
- 
-
-#### Syntax
-```
-[Scope('OnPrem')]
-[NonDebuggable]
-procedure UpdateUserFromGraph(var User: Record User)
-```
-#### Parameters
-*User ([Record User]())* 
-
-The user whose information will be updated.
-
 ### SynchronizeLicensedUserFromDirectory (Method) <a name="SynchronizeLicensedUserFromDirectory"></a> 
 
  Synchronizes a user with the Azure AD user corresponding to the authentication
@@ -100,6 +84,25 @@ procedure IsUserTenantAdmin(): Boolean
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True if the user is a tenant admin; otherwise false.
+### IsUserDelegated (Method) <a name="IsUserDelegated"></a> 
+
+ Checks if the user is a delegated user.
+ 
+
+#### Syntax
+```
+[NonDebuggable]
+procedure IsUserDelegated(UserSecID: Guid): Boolean
+```
+#### Parameters
+*UserSecID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+
+
+
+#### Return Value
+*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+
+True if the user is a delegated user; otherwise false.
 ### SetTestInProgress (Method) <a name="SetTestInProgress"></a> 
 
  Sets a flag that is used to determine whether a test is in progress.
