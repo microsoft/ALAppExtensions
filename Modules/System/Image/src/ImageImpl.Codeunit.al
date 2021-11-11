@@ -10,20 +10,51 @@ codeunit 3970 "Image Impl."
     var
         TempBlob: Codeunit "Temp Blob";
         ImageCodec: DotNet ImageCodecInfo;
+        ImageNotInitializedErr: Label 'Image is not initialized';
         WidthErr: Label 'Parameter Width must be greater than 0';
         HeightErr: Label 'Parameter Height must be greater than 0';
-        XErr: Label 'Parameter X must be between 0 and image width';
-        YErr: Label 'Parameter Y must be between 0 and image height';
+        XErr: Label 'Parameter X must be between 0 and image width (%1)', Comment = '%1 = image width (number)';
+        YErr: Label 'Parameter Y must be between 0 and image height (%1)', Comment = '%1 = image width (number)';
+        AlphaErr: Label 'Parameter Alpha must be between 0 and 255';
+        RedErr: Label 'Parameter Red must be between 0 and 255';
+        GreenErr: Label 'Parameter Green must be between 0 and 255';
+        BlueErr: Label 'Parameter Blue must be between 0 and 255';
         FormatErr: Label 'Image is not in valid format';
-        ImageToLargeErr: Label 'Input image to large. Max allowed size is 5 MB';
+        ImageTooLargeErr: Label 'Input image too large. Max allowed size is 5 MB';
         UnsupportedFormatErr: Label 'Format is currently not supported';
         QualityEncodeGuidTxt: Label '1d5be4b5-fa4a-452d-9cdd-5db35105e7eb', Locked = true;
         ImageCroppedTxt: Label 'Image cropped to x: %1, y: %2, width: %3, height: %4, format: %5', Locked = true;
         ImageResizeTxt: Label 'Image with width: %1, height: %2, format: %3 was resized', Locked = true;
         ImageCreatedTxt: Label 'Image created with size: %1, width: %2, height: %3, format: %4', Locked = true;
-        ImageToLargeTxt: Label 'Image uploaded with size: %1', Locked = true;
+        ImageTooLargeTxt: Label 'Image uploaded with size: %1', Locked = true;
         FormatTxt: Label 'Image input data is in wrong format';
         ImageCatTxt: Label 'Image Module', Locked = true;
+
+    procedure Clear(Alpha: Integer; Red: Integer; Green: Integer; Blue: Integer)
+    var
+        Image: DotNet Image;
+        Graphics: DotNet Graphics;
+        Color: DotNet Color;
+    begin
+        if (Alpha < 0) or (Alpha > 255) then
+            Error(AlphaErr);
+        if (Red < 0) or (Red > 255) then
+            Error(RedErr);
+        if (Green < 0) or (Green > 255) then
+            Error(GreenErr);
+        if (Blue < 0) or (Blue > 255) then
+            Error(BlueErr);
+
+        LoadImage(Image);
+
+        Graphics := Graphics.FromImage(Image);
+
+        Color := Color.FromArgb(Alpha, Red, Green, Blue);
+        Graphics.Clear(Color);
+        Graphics.Dispose();
+
+        EncodeToImage(Image);
+    end;
 
     procedure Crop(X: Integer; Y: Integer; Width: Integer; Height: Integer)
     var
@@ -33,25 +64,23 @@ codeunit 3970 "Image Impl."
         GraphicsUnit: DotNet GraphicsUnit;
         BitmapDst: DotNet Bitmap;
         Image: DotNet Image;
-        InStream: InStream;
         CurrentWidth, CurrentHeight : Integer;
     begin
-        CurrentWidth := GetWidth();
-        CurrentHeight := GetHeight();
-        Session.LogMessage('0000FLN', StrSubstNo(ImageCroppedTxt, X, Y, CurrentWidth, CurrentHeight, GetFormatAsString()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageCatTxt);
-
         if Width < 1 then
             Error(WidthErr);
         if Height < 1 then
             Error(HeightErr);
 
-        if (X < 0) or (X > CurrentWidth) then
-            Error(XErr);
-        if (Y < 0) or (Y > CurrentHeight) then
-            Error(YErr);
+        LoadImage(Image);
+        CurrentWidth := Image.Width();
+        CurrentHeight := Image.Height();
 
-        TempBlob.CreateInStream(InStream);
-        Image := Image.FromStream(InStream);
+        if (X < 0) or (X > CurrentWidth) then
+            Error(XErr, CurrentWidth);
+        if (Y < 0) or (Y > CurrentHeight) then
+            Error(YErr, CurrentHeight);
+
+        Session.LogMessage('0000FLN', StrSubstNo(ImageCroppedTxt, X, Y, CurrentWidth, CurrentHeight, GetFormatAsString()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageCatTxt);
 
         SrcRectangle := SrcRectangle.Rectangle(X, Y, Width, Height);
         DstRectangle := DstRectangle.Rectangle(0, 0, Width, Height);
@@ -75,7 +104,6 @@ codeunit 3970 "Image Impl."
         Graphics: DotNet Graphics;
         Rectangle: DotNet Rectangle;
         Image: DotNet Image;
-        InStream: InStream;
     begin
         Session.LogMessage('0000FLO', StrSubstNo(ImageResizeTxt, GetWidth(), GetHeight(), GetFormatAsString()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageCatTxt);
 
@@ -84,8 +112,7 @@ codeunit 3970 "Image Impl."
         if Height < 1 then
             Error(HeightErr);
 
-        TempBlob.CreateInStream(InStream);
-        Image := Image.FromStream(InStream);
+        LoadImage(Image);
 
         Rectangle := Rectangle.Rectangle(0, 0, Width, Height);
         BitmapDst := BitmapDst.Bitmap(Width, Height);
@@ -107,7 +134,8 @@ codeunit 3970 "Image Impl."
         Base64Converter: Codeunit "Base64 Convert";
         InStream: InStream;
     begin
-        TempBlob.CreateInStream(InStream);
+        TempBlob.CreateInStream(InStream, TextEncoding::UTF8);
+
         exit(Base64Converter.ToBase64(InStream));
     end;
 
@@ -115,12 +143,11 @@ codeunit 3970 "Image Impl."
     var
         Base64Converter: Codeunit "Base64 Convert";
         Outstream: OutStream;
-        InStream: InStream;
     begin
         TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         Base64Converter.FromBase64(Base64Text, OutStream);
-        TempBlob.CreateInStream(InStream, TextEncoding::UTF8);
-        CreateAndVerifyImage(InStream);
+
+        CreateAndVerifyImage();
     end;
 
     procedure FromStream(InStream: InStream)
@@ -129,18 +156,16 @@ codeunit 3970 "Image Impl."
     begin
         TempBlob.CreateOutStream(OutStream);
         CopyStream(OutStream, InStream);
-        CreateAndVerifyImage(InStream);
+        CreateAndVerifyImage();
     end;
 
     procedure GetFormat(): Enum "Image Format"
     var
-        Format: DotnEt ImageFormat;
+        Format: DotNet ImageFormat;
         Image: DotNet Image;
         EnumFormat: Enum "Image Format";
-        InStream: InStream;
     begin
-        TempBlob.CreateInStream(InStream);
-        Image := Image.FromStream(InStream);
+        LoadImage(Image);
 
         Format := Image.RawFormat();
         if Format.Equals(Image.RawFormat.Bmp()) then
@@ -169,10 +194,9 @@ codeunit 3970 "Image Impl."
     var
         FormatConverter: DotNet ImageFormatConverter;
         Image: DotNet Image;
-        InStream: InStream;
     begin
-        TempBlob.CreateInStream(InStream);
-        Image := Image.FromStream(InStream);
+        LoadImage(Image);
+
         FormatConverter := FormatConverter.ImageFormatConverter();
         exit(FormatConverter.ConvertToString(Image.RawFormat()));
     end;
@@ -180,45 +204,56 @@ codeunit 3970 "Image Impl."
     procedure GetWidth(): Integer
     var
         Image: DotNet Image;
-        InStream: InStream;
     begin
-        TempBlob.CreateInStream(InStream);
-        Image := Image.FromStream(InStream);
+        LoadImage(Image);
+
         exit(Image.Width());
     end;
 
     procedure GetHeight(): Integer
     var
         Image: DotNet Image;
-        InStream: InStream;
     begin
-        TempBlob.CreateInStream(InStream);
-        Image := Image.FromStream(InStream);
+        LoadImage(Image);
+
         exit(Image.Height());
+    end;
+
+    procedure RotateFlip(RotateFlipType: Enum "Rotate Flip Type")
+    var
+        Image: DotNet Image;
+        BitmapDst: DotNet Bitmap;
+    begin
+        LoadImage(Image);
+
+        BitmapDst := BitmapDst.Bitmap(Image);
+        BitmapDst.RotateFlip(RotateFlipType.AsInteger());
+
+        EncodeToImage(BitmapDst);
     end;
 
     procedure Save(OutStream: OutStream)
     var
         InStream: InStream;
     begin
-        TempBlob.CreateInStream(InStream);
+        TempBlob.CreateInStream(InStream, TextEncoding::UTF8);
         CopyStream(OutStream, InStream);
     end;
 
-    local procedure CreateAndVerifyImage(InStream: InStream)
+    local procedure CreateAndVerifyImage()
     var
         Image: DotNet Image;
         Size, Width, Height : Integer;
     begin
         if TempBlob.Length() > 5000000 then begin
-            Session.LogMessage('0000FMA', StrSubstNo(ImageToLargeTxt, TempBlob.Length()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageCatTxt);
-            Clear(TempBlob);
-            Error(ImageToLargeErr);
+            Session.LogMessage('0000FMA', StrSubstNo(ImageTooLargeTxt, TempBlob.Length()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageCatTxt);
+            System.Clear(TempBlob);
+            Error(ImageTooLargeErr);
         end;
 
-        if not CreateImage(Image, InStream) then begin
+        if not LoadImage(Image) then begin
             Session.LogMessage('0000FMB', FormatTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageCatTxt);
-            Clear(TempBlob);
+            System.Clear(TempBlob);
             Error(FormatErr);
         end;
 
@@ -228,13 +263,18 @@ codeunit 3970 "Image Impl."
         Width := GetWidth();
         Height := GetHeight();
         Session.LogMessage('0000FLP', StrSubstNo(ImageCreatedTxt, Size, Width, Height, GetFormatAsString()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageCatTxt);
-
     end;
 
     [TryFunction]
-    local procedure CreateImage(var Image: DotNet Image; InStream: InStream)
+    local procedure LoadImage(var Image: DotNet Image)
+    var
+        ImageInStream: InStream;
     begin
-        Image := Image.FromStream(InStream);
+        if not TempBlob.HasValue() then
+            Error(ImageNotInitializedErr);
+
+        TempBlob.CreateInStream(ImageInStream, TextEncoding::UTF8);
+        Image := Image.FromStream(ImageInStream);
     end;
 
     local procedure SetCodec(Image: DotNet Image; var LocalImageCodec: DotNet ImageCodecInfo)
@@ -250,7 +290,7 @@ codeunit 3970 "Image Impl."
 
     local procedure EncodeToImage(Bitmap: DotNet Bitmap)
     var
-        EncoderParameters: Dotnet EncoderParameters;
+        EncoderParameters: DotNet EncoderParameters;
         EncoderParameterArray: DotNet Array;
         EncoderParameter: DotNet EncoderParameter;
         Encoder: DotNet Encoder;
@@ -268,5 +308,4 @@ codeunit 3970 "Image Impl."
         TempBlob.CreateOutStream(OutStream);
         Bitmap.Save(OutStream, ImageCodec, EncoderParameters);
     end;
-
 }

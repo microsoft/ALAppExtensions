@@ -14,6 +14,29 @@ codeunit 3971 Image
         ImageImpl: Codeunit "Image Impl.";
 
     /// <summary>
+    /// Clears the entire drawing surface and fills it with the specified background color.
+    /// </summary>
+    /// <param name="Alpha">The alpha component. Valid values are 0 through 255.</param>
+    /// <param name="Red">The red component. Valid values are 0 through 255.</param>
+    /// <param name="Green">The green component. Valid values are 0 through 255.</param>
+    /// <param name="Blue">The blue component. Valid values are 0 through 255.</param>
+    procedure Clear(Alpha: Integer; Red: Integer; Green: Integer; Blue: Integer)
+    begin
+        ImageImpl.Clear(Alpha, Red, Green, Blue);
+    end;
+
+    /// <summary>
+    /// Clears the entire drawing surface and fills it with the specified background color.
+    /// </summary>
+    /// <param name="Red">The red component. Valid values are 0 through 255.</param>
+    /// <param name="Green">The green component. Valid values are 0 through 255.</param>
+    /// <param name="Blue">The blue component. Valid values are 0 through 255.</param>
+    procedure Clear(Red: Integer; Green: Integer; Blue: Integer)
+    begin
+        ImageImpl.Clear(255, Red, Green, Blue);
+    end;
+
+    /// <summary>
     /// Crops the image based on a rectangle specified by the user. 
     /// The resulting crop will be a hole-cut in the image made by the rectangle.
     /// </summary>
@@ -95,6 +118,15 @@ codeunit 3971 Image
     procedure Resize(Width: Integer; Height: Integer)
     begin
         ImageImpl.Resize(Width, Height);
+    end;
+
+    /// <summary>
+    /// Rotates, flips, or rotates and flips the Image.
+    /// </summary>
+    /// <param name="RotateFlipType">The type of rotation and flip.</param>
+    procedure RotateFlip(RotateFlipType: Enum "Rotate Flip Type")
+    begin
+        ImageImpl.RotateFlip(RotateFlipType);
     end;
 
     /// <summary>
