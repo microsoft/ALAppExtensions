@@ -1,9 +1,0 @@
-# ALTB
-.alpackages/
-.alcache/
-.snapshots/
-.vscode/
-launch.json
-!app.json
-rad.json
-*.app
