@@ -12,21 +12,12 @@
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2101583",
     "logo":  "./AppResources/amctestlogo.png",
     "dependencies":  [
-<<<<<<< HEAD
                          {
                              "id":  "16319982-4995-4fb1-8fb2-2b1e13773e3b",
                              "name":  "AMC Banking 365 Fundamentals",
                              "publisher":  "Microsoft",
                              "version":  "20.3.0.0"
                          },
-=======
-                            {
-                                "id":  "16319982-4995-4fb1-8fb2-2b1e13773e3b",
-                                "name":  "AMC Banking 365 Fundamentals",
-                                "publisher":  "Microsoft",
-                                "version":  "19.0.0.0"
-                            },
->>>>>>> bc89b8e0... AMC Banking 365 Fundamentals V19.1
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",

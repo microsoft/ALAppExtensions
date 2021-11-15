@@ -3,11 +3,7 @@ codeunit 20102 "AMC Bank Pre&Post Process"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'Replaced by the new implementation in V19.1 of Pre & Post process.';
-<<<<<<< HEAD
     ObsoleteTag = '20.0';
-=======
-    ObsoleteTag = '19.1';
->>>>>>> bc89b8e0... AMC Banking 365 Fundamentals V19.1
     trigger OnRun()
     begin
     end;
@@ -126,15 +122,20 @@ codeunit 20102 "AMC Bank Pre&Post Process"
             Error(MultipleStmtErr);
     end;
 
-    procedure HasDataExchFieldValue(var DataExchFieldDetails: Query "Data Exch. Field Details"; DataExchEntryNo: Integer; PathFilter: Text): Boolean
+    procedure HasDataExchFieldValue(var DataExchFieldDetails: Query "Data Exch. Field Details"; DataExchEntryNo: Integer;
+                                                                  PathFilter: Text): Boolean
     begin
         DataExchFieldDetails.SetRange(Data_Exch_No, DataExchEntryNo);
         DataExchFieldDetails.SetFilter(Path, PathFilter);
         DataExchFieldDetails.Open();
-        exit(DataExchFieldDetails.Read());
+        exit(DataExchFieldDetails.Read())                                                                  ;
     end;
 
-    local procedure SetValueFromDataExchField(var DataExchFieldDetails: Query "Data Exch. Field Details"; DataExch: Record "Data Exch."; PathFilter: Text; NotFoundMessage: Text; RecRef: RecordRef; FieldNo: Integer): Boolean
+    local procedure SetValueFromDataExchField(var DataExchFieldDetails: Query "Data Exch. Field Details"; DataExch: Record "Data Exch.";
+                                                                            PathFilter: Text;
+                                                                            NotFoundMessage: Text;
+                                                                            RecRef: RecordRef;
+                                                                            FieldNo: Integer): Boolean
     var
         DataExchField: Record "Data Exch. Field";
         TempFieldIdsToNegate: Record "Integer" temporary;
