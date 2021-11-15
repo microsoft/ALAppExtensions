@@ -263,11 +263,7 @@ page 20109 "AMC Bank Signup to Service"
 
 
 
-<<<<<<< HEAD
     local procedure GetVatIdwithCountryId(CountryRegion: Record "Country/Region"): Text[30]
-=======
-    local procedure GetVatIdwithCountryId(CountryRegion: Record "Country/Region"; CompanyInfomation: Record "Company Information"): Text[20]
->>>>>>> bc89b8e0... AMC Banking 365 Fundamentals V19.1
     var
         CompanyInfomation_RecordRef: RecordRef;
         TaxField_fieldRef: FieldRef;

@@ -3,11 +3,7 @@ codeunit 20104 "AMC Bank Imp.-Post-Mapping"
 {
     ObsoleteState = Pending;
     ObsoleteReason = 'Replaced by the new implementation in V19.1 of AMC Bank Imp.-Post-Process';
-<<<<<<< HEAD
     ObsoleteTag = '20.0';
-=======
-    ObsoleteTag = '19.1';
->>>>>>> bc89b8e0... AMC Banking 365 Fundamentals V19.1
 
     TableNo = "Bank Acc. Reconciliation Line";
 
