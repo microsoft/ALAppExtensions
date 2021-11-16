@@ -284,6 +284,7 @@ codeunit 135087 "AMC CT E2E Web Service Test"
         if IsInitialized then
             exit;
 
+        LibraryAMCWebService.SetHttpClientRequestallowed();
         LibraryAMCWebService.SetupDefaultService();
         LibraryAMCWebService.SetServiceUrlToTest();
         LibraryAMCWebService.SetServiceCredentialsToTest();

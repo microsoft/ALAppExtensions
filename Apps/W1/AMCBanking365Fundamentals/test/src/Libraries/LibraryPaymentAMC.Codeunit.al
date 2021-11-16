@@ -6,8 +6,8 @@ codeunit 130102 "Library - Payment AMC"
     end;
 
     var
-        LocalhostURLTxt: Label 'https://localhost:8080/', Locked = true;
-    //LocalhostURLTxt: Label 'https://host.docker.internal:8088/', Locked = true; //TODO - Put back to above when finished testing
+        //    LocalhostURLTxt: Label 'https://localhost:8080/', Locked = true;
+        LocalhostURLTxt: Label 'https://host.docker.internal:8088/', Locked = true; //TODO - Put back to above when finished testing
 
     [Scope('OnPrem')]
     procedure EnableTestServiceSetup(var TempAMCBankingSetup: Record "AMC Banking Setup" temporary) OldPassword: Text

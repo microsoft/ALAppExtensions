@@ -44,9 +44,10 @@ codeunit 132558 "AMC Banking Credential UT"
         if (not AMCBankingSetup.Get()) then begin
             AMCBankingSetup.Init();
             AMCBankingSetup.Insert(true);
-            AMCBankingSetup."AMC Enabled" := true;
-            AMCBankingSetup.Modify();
         end;
+        AMCBankingSetup."AMC Enabled" := true;
+        AMCBankingSetup.Modify();
+
 
         // Exercise test
         BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetupV162(true, true, '', LocalhostURLTxt, '', true, false, '', '',
@@ -84,9 +85,10 @@ codeunit 132558 "AMC Banking Credential UT"
             AMCBankingSetup.Init();
             AMCBankingSetup.Insert(true);
             AMCBankingSetup."User Name" := AMCBankingMgt.GetLicenseNumber();
-            AMCBankingSetup."AMC Enabled" := true;
-            AMCBankingSetup.Modify();
         end;
+        AMCBankingSetup."AMC Enabled" := true;
+        AMCBankingSetup.Modify();
+
 
         // Exercise test
         BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetupV162(true, true, '', LocalhostURLTxt, '', true, false, '', '',
@@ -124,9 +126,9 @@ codeunit 132558 "AMC Banking Credential UT"
             AMCBankingSetup.Insert(true);
             AMCBankingSetup."User Name" := AMCBankingMgt.GetLicenseNumber();
             AMCBankingSetup.Solution := 'Standard';
-            AMCBankingSetup."AMC Enabled" := true;
-            AMCBankingSetup.Modify();
         end;
+        AMCBankingSetup."AMC Enabled" := true;
+        AMCBankingSetup.Modify();
 
         // Exercise test
         BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetupV162(true, true, '', LocalhostURLTxt, '', true, false, '', '',
@@ -478,6 +480,8 @@ codeunit 132558 "AMC Banking Credential UT"
     var
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
+        LibraryAmcWebService.SetHttpClientRequestallowed();
+
         AMCBankingSetup.DeleteAll();
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
     end;
@@ -492,9 +496,10 @@ codeunit 132558 "AMC Banking Credential UT"
             WasNotPresent := true;
             AMCBankingSetup.Init();
             AMCBankingSetup.Insert(true);
-            AMCBankingSetup."AMC Enabled" := true;
-            AMCBankingSetup.Modify();
         end;
+        AMCBankingSetup."AMC Enabled" := true;
+        AMCBankingSetup.Modify();
+
         LibraryAmcWebService.SetupAMCBankingDataExch(DataExchDef);
 
         if (WasNotPresent) then
@@ -609,4 +614,5 @@ codeunit 132558 "AMC Banking Credential UT"
         AMCBankingSetupPage."Service URL".SetValue(LocalhostURLTxt);
         AMCBankingSetupPage.OK().Invoke();
     end;
+
 }
