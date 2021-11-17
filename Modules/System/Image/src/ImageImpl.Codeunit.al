@@ -190,6 +190,45 @@ codeunit 3970 "Image Impl."
         Error(UnsupportedFormatErr);
     end;
 
+    procedure SetFormat(Format: Enum "Image Format")
+    var
+        DstTempBlob: Codeunit "Temp Blob";
+        Image: DotNet Image;
+        ImageFormat: DotNet ImageFormat;
+        OutStream: OutStream;
+    begin
+        case Format of 
+            Enum::"Image Format"::Bmp:
+                ImageFormat := ImageFormat.Bmp();
+            Enum::"Image Format"::Emf:
+                ImageFormat := ImageFormat.Emf();
+            Enum::"Image Format"::Exif:
+                ImageFormat := ImageFormat.Exif();
+            Enum::"Image Format"::Gif:
+                ImageFormat := ImageFormat.Gif();
+            Enum::"Image Format"::Icon:
+                ImageFormat := ImageFormat.Icon();
+            Enum::"Image Format"::Jpeg:
+                ImageFormat := ImageFormat.Jpeg();
+            Enum::"Image Format"::Png:
+                ImageFormat := ImageFormat.Png();
+            Enum::"Image Format"::Tiff:
+                ImageFormat := ImageFormat.Tiff();
+            Enum::"Image Format"::Wmf:
+                ImageFormat := ImageFormat.Wmf();
+        end;
+
+        LoadImage(Image);
+
+        DstTempBlob.CreateOutStream(OutStream);
+        Image.Save(OutStream, ImageFormat);
+        Image.Dispose();
+
+        TempBlob := DstTempBlob;
+        
+        CreateAndVerifyImage();
+    end;
+
     procedure GetFormatAsString(): Text
     var
         FormatConverter: DotNet ImageFormatConverter;
@@ -257,7 +296,7 @@ codeunit 3970 "Image Impl."
             Error(FormatErr);
         end;
 
-        SetCodec(Image, ImageCodec);
+        SetCodec(Image.RawFormat, ImageCodec);
 
         Size := TempBlob.Length();
         Width := GetWidth();
@@ -277,14 +316,14 @@ codeunit 3970 "Image Impl."
         Image := Image.FromStream(ImageInStream);
     end;
 
-    local procedure SetCodec(Image: DotNet Image; var LocalImageCodec: DotNet ImageCodecInfo)
+    local procedure SetCodec(ImageFormat: DotNet ImageFormat; var LocalImageCodec: DotNet ImageCodecInfo)
     var
         Codecs: DotNet ArrayList;
         Codec: DotNet ImageCodecInfo;
     begin
         Codecs := Codec.GetImageEncoders();
         foreach Codec in Codecs do
-            if Image.RawFormat.Guid() = Codec.FormatID then
+            if ImageFormat.Guid() = Codec.FormatID then
                 LocalImageCodec := Codec;
     end;
 
