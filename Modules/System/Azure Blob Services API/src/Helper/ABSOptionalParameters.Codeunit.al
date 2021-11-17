@@ -226,6 +226,66 @@ codeunit 9047 "ABS Optional Parameters"
         SetRequestHeader('x-ms-requires-sync', ValueText);
     end;
 
+    /// <summary>
+    /// Sets the value for 'x-ms-lease-action' HttpHeader for a request.
+    /// </summary>
+    /// <param name="Value">Enum "ABS Lease Action" value specifying the HttpHeader value</param>
+    procedure LeaseAction("Value": Enum "ABS Lease Action")
+    begin
+        SetRequestHeader('x-ms-lease-action', Format("Value"));
+    end;
+
+    /// <summary>
+    /// Sets the value for 'x-ms-lease-break-period' HttpHeader for a request.
+    /// </summary>
+    /// <param name="Value">Integer value specifying the HttpHeader value.</param>
+    procedure LeaseBreakPeriod("Value": Integer)
+    var
+        LeaseAction: Enum "ABS Lease Action";
+    begin
+        LeaseAction := GetLeaseActionFromRequestHeader();
+        if not (LeaseAction in [LeaseAction::break]) then
+            Error(HeaderCanOnlyBeSetOnConditionErr, 'x-ms-lease-break-period', 'x-ms-lease-action', 'break');
+        SetRequestHeader('x-ms-lease-break-period', Format("Value"));
+    end;
+
+    /// <summary>
+    /// Sets the value for 'x-ms-lease-duration' HttpHeader for a request.
+    /// </summary>
+    /// <param name="Value">Integer value specifying the HttpHeader value.</param>
+    procedure LeaseDuration("Value": Integer)
+    var
+        LeaseAction: Enum "ABS Lease Action";
+    begin
+        LeaseAction := GetLeaseActionFromRequestHeader();
+        if not (LeaseAction in [LeaseAction::acquire]) then
+            Error(HeaderCanOnlyBeSetOnConditionErr, 'x-ms-lease-duration', 'x-ms-lease-action', 'acquire');
+        SetRequestHeader('x-ms-lease-duration', Format("Value"));
+    end;
+
+    /// <summary>
+    /// Sets the value for 'x-ms-proposed-lease-id' HttpHeader for a request.
+    /// </summary>
+    /// <param name="Value">Guid value specifying the HttpHeader value.</param>
+    procedure ProposedLeaseId("Value": Guid)
+    var
+        LeaseAction: Enum "ABS Lease Action";
+    begin
+        LeaseAction := GetLeaseActionFromRequestHeader();
+        if not (LeaseAction in [LeaseAction::acquire, LeaseAction::change]) then
+            Error(HeaderCanOnlyBeSetOnTwoConditionsErr, 'x-ms-proposed-lease-id', 'x-ms-lease-action', 'acquire', 'change');
+        SetRequestHeader('x-ms-proposed-lease-id', "Value");
+    end;
+
+    internal procedure GetLeaseActionFromRequestHeader(): Enum "ABS Lease Action"
+    var
+        LeaseActionAsText: Text;
+    begin
+        if not RequestHeaders.Get('x-ms-lease-action', LeaseActionAsText) then
+            Error(NeedToSpecifyHeaderErr, 'x-ms-lease-action');
+        exit(Enum::"ABS Lease Action".FromInteger(Enum::"ABS Lease Action".Ordinals.Get(Enum::"ABS Lease Action".Names.IndexOf(LeaseActionAsText))));
+    end;
+
     local procedure SetRequestHeader(Header: Text; HeaderValue: Text)
     begin
         RequestHeaders.Remove(Header);
@@ -331,4 +391,7 @@ codeunit 9047 "ABS Optional Parameters"
         ABSFormatHelper: Codeunit "ABS Format Helper";
         RequestHeaders: Dictionary of [Text, Text];
         Parameters: Dictionary of [Text, Text];
+        NeedToSpecifyHeaderErr: Label 'You need to specify the "%1"-header to set this header.', Comment = '%1 = HttpHeader identifier';
+        HeaderCanOnlyBeSetOnConditionErr: Label '"%1" can only be set if "%2" is "%3"', Comment = '%1 = HttpHeader identifier (set), %2 = HttpHeader identifier (get), %3 = Enum value';
+        HeaderCanOnlyBeSetOnTwoConditionsErr: Label '"%1" can only be set if "%2" is "%3" or "%4"', Comment = '%1 = HttpHeader identifier (set), %2 = HttpHeader identifier (get), %3 = Enum value 1, %4 = Enum value 2';
 }

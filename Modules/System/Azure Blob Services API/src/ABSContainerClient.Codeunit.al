@@ -120,6 +120,201 @@ codeunit 9052 "ABS Container Client"
         exit(BlobServicesApiImpl.DeleteContainer(ContainerName, OptionalParameters));
     end;
 
+    /// <summary>
+    /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseAcquire(ContainerName: Text): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ProposedLeaseId: Guid;
+    begin
+        exit(LeaseAcquire(ContainerName, -1, ProposedLeaseId, OptionalParameters)); // Infinite duration, null Guid
+    end;
+
+    /// <summary>
+    /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseAcquire(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    var
+        ProposedLeaseId: Guid;
+    begin
+        exit(LeaseAcquire(ContainerName, -1, ProposedLeaseId, OptionalParameters)); // Infinite duration, null Guid
+    end;
+
+    /// <summary>
+    /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>    
+    /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseAcquire(ContainerName: Text; DurationSeconds: Integer): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ProposedLeaseId: Guid;
+    begin
+        exit(LeaseAcquire(ContainerName, DurationSeconds, ProposedLeaseId, OptionalParameters)); // Custom duration, null Guid
+    end;
+
+    /// <summary>
+    /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>    
+    /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseAcquire(ContainerName: Text; DurationSeconds: Integer; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    var
+        ProposedLeaseId: Guid;
+    begin
+        exit(LeaseAcquire(ContainerName, DurationSeconds, ProposedLeaseId, OptionalParameters)); // Custom duration, null Guid
+    end;
+
+    /// <summary>
+    /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>
+    /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseAcquire(ContainerName: Text; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(LeaseAcquire(ContainerName, -1, ProposedLeaseId, OptionalParameters)); // Infinite duration, custom Guid
+    end;
+
+    /// <summary>
+    /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>
+    /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseAcquire(ContainerName: Text; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(LeaseAcquire(ContainerName, -1, ProposedLeaseId, OptionalParameters)); // Infinite duration, custom Guid
+    end;
+
+    /// <summary>
+    /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>    
+    /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
+    /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseAcquire(ContainerName: Text; DurationSeconds: Integer; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, DurationSeconds, ProposedLeaseId));
+    end;
+
+    /// <summary>
+    /// Releases a lease on a container if it is no longer needed so that another client may immediately acquire a lease against the blob
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>
+    /// <param name="LeaseId">The Guid for the lease that should be released</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseRelease(ContainerName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(LeaseRelease(ContainerName, LeaseId, OptionalParameters));
+    end;
+
+    /// <summary>
+    /// Releases a lease on a container if it is no longer needed so that another client may immediately acquire a lease against the blob
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>
+    /// <param name="LeaseId">The Guid for the lease that should be released</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseRelease(ContainerName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(BlobServicesApiImpl.ContainerLeaseRelease(ContainerName, OptionalParameters, LeaseId));
+    end;
+
+    /// <summary>
+    /// Renews a lease on a container to keep it locked again for the same amount of time as before
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>
+    /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseRenew(ContainerName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(LeaseRenew(ContainerName, LeaseId, OptionalParameters));
+    end;
+
+    /// <summary>
+    /// Renews a lease on a container to keep it locked again for the same amount of time as before
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>
+    /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseRenew(ContainerName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(BlobServicesApiImpl.ContainerLeaseRenew(ContainerName, OptionalParameters, LeaseId));
+    end;
+
+
+    /// <summary>
+    /// Breaks a lease on a container but ensures that another client cannot acquire a new lease until the current lease period has expired
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>
+    /// <param name="LeaseId">The Guid for the lease that should be broken</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseBreak(ContainerName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(LeaseBreak(ContainerName, LeaseId, OptionalParameters));
+    end;
+
+    /// <summary>
+    /// Breaks a lease on a container but ensures that another client cannot acquire a new lease until the current lease period has expired
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>
+    /// <param name="LeaseId">The Guid for the lease that should be broken</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseBreak(ContainerName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(BlobServicesApiImpl.ContainerLeaseBreak(ContainerName, OptionalParameters, LeaseId));
+    end;
+
+    /// <summary>
+    /// Changes the lease ID of an active lease
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>
+    /// <param name="LeaseId">The Guid for the lease that should be changed</param>
+    /// <param name="ProposedLeaseId">The Guid that should be used in future</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseChange(ContainerName: Text; LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(LeaseChange(ContainerName, LeaseId, ProposedLeaseId, OptionalParameters));
+    end;
+
+    /// <summary>
+    /// Changes the lease ID of an active lease
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// </summary>
+    /// <param name="LeaseId">The Guid for the lease that should be changed</param>
+    /// <param name="ProposedLeaseId">The Guid that should be used in future</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure LeaseChange(ContainerName: Text; LeaseId: Guid; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(BlobServicesApiImpl.ContainerLeaseChange(ContainerName, OptionalParameters, LeaseId, ProposedLeaseId));
+    end;
+
     var
         BlobServicesApiImpl: Codeunit "ABS Client Impl.";
 }
