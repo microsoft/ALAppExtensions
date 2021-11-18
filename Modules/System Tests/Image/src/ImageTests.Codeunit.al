@@ -119,6 +119,7 @@ codeunit 135135 "Image Tests"
         // [Given] base64 encoded data, create image
         Image.FromBase64(ImageAsBase64Txt);
 
+        // [When] change the format to Jpeg without any errors
         Image.SetFormat(Format::Jpeg);
 
         // [Then] verify format
