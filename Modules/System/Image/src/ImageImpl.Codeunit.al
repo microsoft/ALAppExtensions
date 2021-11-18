@@ -296,7 +296,7 @@ codeunit 3970 "Image Impl."
             Error(FormatErr);
         end;
 
-        SetCodec(Image.RawFormat, ImageCodec);
+        SetCodec(Image, ImageCodec);
 
         Size := TempBlob.Length();
         Width := GetWidth();
@@ -316,14 +316,14 @@ codeunit 3970 "Image Impl."
         Image := Image.FromStream(ImageInStream);
     end;
 
-    local procedure SetCodec(ImageFormat: DotNet ImageFormat; var LocalImageCodec: DotNet ImageCodecInfo)
+    local procedure SetCodec(Image: DotNet Image; var LocalImageCodec: DotNet ImageCodecInfo)
     var
         Codecs: DotNet ArrayList;
         Codec: DotNet ImageCodecInfo;
     begin
         Codecs := Codec.GetImageEncoders();
         foreach Codec in Codecs do
-            if ImageFormat.Guid() = Codec.FormatID then
+            if Image.RawFormat.Guid() = Codec.FormatID then
                 LocalImageCodec := Codec;
     end;
 
