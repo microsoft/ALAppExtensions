@@ -61,7 +61,7 @@ end;
 ```
 procedure Example()
 var
-    TempBlob:Codeunit "Temp Blob";
+    TempBlob: Codeunit "Temp Blob";
     Image: Codeunit Image;
     InStream: InStream;
     OutStream: OutStream;
