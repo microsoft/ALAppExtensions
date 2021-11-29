@@ -5,7 +5,6 @@
 
 codeunit 9060 "Auth. Format Helper"
 {
-    Access = Internal;
 
     procedure NewLine(): Text
     var
@@ -42,4 +41,5 @@ codeunit 9060 "Auth. Format Helper"
     begin
         exit(CryptographyManagement.GenerateBase64KeyedHashAsBase64String(StringToSign, AccessKey, HashAlgorithmType::HMACSHA256));
     end;
+
 }
