@@ -276,7 +276,7 @@ codeunit 8901 "Email"
     /// <summary>
     /// Open the sent emails page for a source record.
     /// </summary>
-    /// <param name="RecordVariant">Source Record.</param>
+    /// <param name="RecordVariant">Source Record / Source RecordRef / Source RecordId</param>
     procedure OpenSentEmails(RecordVariant: Variant)
     begin
         EmailImpl.OpenSentEmails(RecordVariant);
