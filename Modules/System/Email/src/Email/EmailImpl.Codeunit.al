@@ -425,7 +425,7 @@ codeunit 8900 "Email Impl"
         if not GetRecordRefFromVariant(RecordVariant, RecRef) then
             exit;
 
-        FieldRef := RecRef.field(RecRef.SystemIdNo);
+        FieldRef := RecRef.Field(RecRef.SystemIdNo);
         OpenSentEmails(RecRef.Number, FieldRef.Value);
     end;
 
