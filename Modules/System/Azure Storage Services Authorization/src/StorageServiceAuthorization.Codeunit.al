@@ -100,7 +100,7 @@ codeunit 9062 "Storage Service Authorization"
     var
         AuthHelper: Codeunit "Auth. Format Helper";
     begin
-        AuthHelper.GetRfc1123DateTime(dt);
+        exit(AuthHelper.GetRfc1123DateTime(dt));
     end;
 
     /// <summary>
@@ -112,7 +112,7 @@ codeunit 9062 "Storage Service Authorization"
     var
         AuthHelper: Codeunit "Auth. Format Helper";
     begin
-        AuthHelper.GetIso8601DateTime(dt);
+        exit(AuthHelper.GetIso8601DateTime(dt));
     end;
 
 }
