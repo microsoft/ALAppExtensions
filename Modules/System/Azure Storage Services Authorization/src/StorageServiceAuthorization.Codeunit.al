@@ -90,4 +90,29 @@ codeunit 9062 "Storage Service Authorization"
     begin
         exit(StorServAuthImpl.GetDefaultAPIVersion());
     end;
+
+    /// <summary>
+    /// Formats the given datetime in RFC 1123.
+    /// </summary>
+    /// <param name="dt">The datetime to be formatted.</param>
+    /// <returns>The datetime formatted in RFC 1123.</returns>
+    procedure FormatRfc1123DateTime(dt: DateTime): Text;
+    var
+        AuthHelper: Codeunit "Auth. Format Helper";
+    begin
+        AuthHelper.GetRfc1123DateTime(dt);
+    end;
+
+    /// <summary>
+    /// Formats the given datetime in ISO 8601.
+    /// </summary>
+    /// <param name="dt">The datetime to be formatted.</param>
+    /// <returns>The datetime formatted in ISO 8601.</returns>
+    procedure FormatIso8601DateTime(dt: DateTime): Text
+    var
+        AuthHelper: Codeunit "Auth. Format Helper";
+    begin
+        AuthHelper.GetIso8601DateTime(dt);
+    end;
+
 }
