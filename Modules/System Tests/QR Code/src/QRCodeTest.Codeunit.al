@@ -12,6 +12,8 @@ codeunit 139915 "QR Code Test"
         Assert: Codeunit "Library Assert";
         QRCode: Codeunit "QR Code";
         SampleTxt: Label 'Hello, World!', Locked = true;
+        MaxCapacityLengthTxt: Label 'AaBbCcDdEe', Locked = true;
+        MaxCapacityLengthExceededTxt: Label 'AaBbCcDdEeFf', Locked = true;
         ConvertionToQrCodeErr: Label 'An error occured during the conversion.';
 
     [Test]
@@ -27,5 +29,35 @@ codeunit 139915 "QR Code Test"
 
         // [THEN] The result is correct
         Assert.AreEqual(ConvertionResult, true, ConvertionToQrCodeErr);
+    end;
+
+    [Test]
+    procedure MaxCapacityStringToQRCodeTest()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        ConvertionResult: Boolean;
+    begin
+        // [SCENARIO] A 10 character string is converted to an Version 1 QR code with High Error Correction Level (Max Capacity 10 Alphanumeric characters)
+
+        // [WHEN] The string is converted
+        ConvertionResult := QRCode.GenerateQRCodeImage(MaxCapacityLengthTxt, TempBlob, Enum::"QR Code Error Correction Level"::High, 1);
+
+        // [THEN] The result is correct
+        Assert.AreEqual(ConvertionResult, true, ConvertionToQrCodeErr);
+    end;
+
+    [Test]
+    procedure MaxCapacityExceededStringToQRCodeTest()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        ConvertionResult: Boolean;
+    begin
+        // [SCENARIO] A 12 character string is converted to an Version 1 QR code with High Error Correction Level (Max Capacity 10 Alphanumeric characters)
+
+        // [WHEN] The string is converted
+        QRCode.GenerateQRCodeImage(MaxCapacityLengthExceededTxt, TempBlob, Enum::"QR Code Error Correction Level"::High, 1);
+
+        // [THEN] The qr code is not generated
+        Assert.AreEqual(ConvertionResult, false, ConvertionToQrCodeErr);
     end;
 }
