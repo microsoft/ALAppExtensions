@@ -750,7 +750,7 @@ codeunit 9051 "ABS Client Impl."
         // Duration can be:
         //   between 15 and 60 seconds
         //   -1 (= infinite)
-        if ((DurationSeconds > 0) and ((DurationSeconds < 15) or (DurationSeconds > 60))) xor (not (DurationSeconds <> -1)) then
+        if ((((DurationSeconds < 15) or (DurationSeconds > 60))) and (DurationSeconds <> -1)) then
             Error(ParameterDurationErr, DurationSeconds);
 
         OptionalParameters.LeaseAction(LeaseAction::acquire);
