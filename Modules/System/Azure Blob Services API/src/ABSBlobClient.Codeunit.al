@@ -610,7 +610,7 @@ codeunit 9053 "ABS Blob Client"
         OptionalParameters: Codeunit "ABS Optional Parameters";
         ProposedLeaseId: Guid;
     begin
-        exit(LeaseAcquire(BlobName, -1, ProposedLeaseId, OptionalParameters)); // Infinite duration, null Guid
+        exit(BlobServicesApiImpl.BlobLeaseAcquire(BlobName, OptionalParameters, -1, ProposedLeaseId)); // Infinite duration, null Guid
     end;
 
     /// <summary>
@@ -623,7 +623,7 @@ codeunit 9053 "ABS Blob Client"
     var
         ProposedLeaseId: Guid;
     begin
-        exit(LeaseAcquire(BlobName, -1, ProposedLeaseId, OptionalParameters)); // Infinite duration, null Guid
+        exit(BlobServicesApiImpl.BlobLeaseAcquire(BlobName, OptionalParameters, -1, ProposedLeaseId)); // Infinite duration, null Guid
     end;
 
     /// <summary>
@@ -637,7 +637,7 @@ codeunit 9053 "ABS Blob Client"
         OptionalParameters: Codeunit "ABS Optional Parameters";
         ProposedLeaseId: Guid;
     begin
-        exit(LeaseAcquire(BlobName, DurationSeconds, ProposedLeaseId, OptionalParameters)); // Custom duration, null Guid
+        exit(BlobServicesApiImpl.BlobLeaseAcquire(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId)); // Custom duration, null Guid
     end;
 
     /// <summary>
@@ -651,7 +651,7 @@ codeunit 9053 "ABS Blob Client"
     var
         ProposedLeaseId: Guid;
     begin
-        exit(LeaseAcquire(BlobName, DurationSeconds, ProposedLeaseId, OptionalParameters)); // Custom duration, null Guid
+        exit(BlobServicesApiImpl.BlobLeaseAcquire(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId)); // Custom duration, null Guid
     end;
 
     /// <summary>
@@ -664,7 +664,7 @@ codeunit 9053 "ABS Blob Client"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(LeaseAcquire(BlobName, -1, ProposedLeaseId, OptionalParameters)); // Infinite duration, custom Guid
+        exit(BlobServicesApiImpl.BlobLeaseAcquire(BlobName, OptionalParameters, -1, ProposedLeaseId)); // Infinite duration, custom Guid
     end;
 
     /// <summary>
@@ -676,7 +676,7 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure LeaseAcquire(BlobName: Text; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(LeaseAcquire(BlobName, -1, ProposedLeaseId, OptionalParameters)); // Infinite duration, custom Guid
+        exit(BlobServicesApiImpl.BlobLeaseAcquire(BlobName, OptionalParameters, -1, ProposedLeaseId)); // Infinite duration, custom Guid
     end;
 
     /// <summary>
@@ -702,7 +702,7 @@ codeunit 9053 "ABS Blob Client"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(LeaseRelease(BlobName, LeaseId, OptionalParameters));
+        exit(BlobServicesApiImpl.BlobLeaseRelease(BlobName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -727,7 +727,7 @@ codeunit 9053 "ABS Blob Client"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(LeaseRenew(BlobName, LeaseId, OptionalParameters));
+        exit(BlobServicesApiImpl.BlobLeaseRenew(BlobName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -753,7 +753,7 @@ codeunit 9053 "ABS Blob Client"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(LeaseBreak(BlobName, LeaseId, OptionalParameters));
+        exit(BlobServicesApiImpl.BlobLeaseBreak(BlobName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -779,7 +779,7 @@ codeunit 9053 "ABS Blob Client"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(LeaseChange(BlobName, LeaseId, ProposedLeaseId, OptionalParameters));
+        exit(BlobServicesApiImpl.BlobLeaseChange(BlobName, OptionalParameters, LeaseId, ProposedLeaseId));
     end;
 
     /// <summary>

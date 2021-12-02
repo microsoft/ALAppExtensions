@@ -130,7 +130,7 @@ codeunit 9052 "ABS Container Client"
         OptionalParameters: Codeunit "ABS Optional Parameters";
         ProposedLeaseId: Guid;
     begin
-        exit(LeaseAcquire(ContainerName, -1, ProposedLeaseId, OptionalParameters)); // Infinite duration, null Guid
+        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, -1, ProposedLeaseId)); // Infinite duration, null Guid
     end;
 
     /// <summary>
@@ -143,7 +143,7 @@ codeunit 9052 "ABS Container Client"
     var
         ProposedLeaseId: Guid;
     begin
-        exit(LeaseAcquire(ContainerName, -1, ProposedLeaseId, OptionalParameters)); // Infinite duration, null Guid
+        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, -1, ProposedLeaseId)); // Infinite duration, null Guid
     end;
 
     /// <summary>
@@ -157,7 +157,7 @@ codeunit 9052 "ABS Container Client"
         OptionalParameters: Codeunit "ABS Optional Parameters";
         ProposedLeaseId: Guid;
     begin
-        exit(LeaseAcquire(ContainerName, DurationSeconds, ProposedLeaseId, OptionalParameters)); // Custom duration, null Guid
+        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, DurationSeconds, ProposedLeaseId)); // Custom duration, null Guid
     end;
 
     /// <summary>
@@ -171,7 +171,7 @@ codeunit 9052 "ABS Container Client"
     var
         ProposedLeaseId: Guid;
     begin
-        exit(LeaseAcquire(ContainerName, DurationSeconds, ProposedLeaseId, OptionalParameters)); // Custom duration, null Guid
+        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, DurationSeconds, ProposedLeaseId)); // Custom duration, null Guid
     end;
 
     /// <summary>
@@ -184,7 +184,7 @@ codeunit 9052 "ABS Container Client"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(LeaseAcquire(ContainerName, -1, ProposedLeaseId, OptionalParameters)); // Infinite duration, custom Guid
+        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, -1, ProposedLeaseId)); // Infinite duration, custom Guid
     end;
 
     /// <summary>
@@ -196,7 +196,7 @@ codeunit 9052 "ABS Container Client"
     /// <returns>An operation reponse object</returns>
     procedure LeaseAcquire(ContainerName: Text; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(LeaseAcquire(ContainerName, -1, ProposedLeaseId, OptionalParameters)); // Infinite duration, custom Guid
+        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, -1, ProposedLeaseId)); // Infinite duration, custom Guid
     end;
 
     /// <summary>
@@ -222,7 +222,7 @@ codeunit 9052 "ABS Container Client"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(LeaseRelease(ContainerName, LeaseId, OptionalParameters));
+        exit(BlobServicesApiImpl.ContainerLeaseRelease(ContainerName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -247,7 +247,7 @@ codeunit 9052 "ABS Container Client"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(LeaseRenew(ContainerName, LeaseId, OptionalParameters));
+        exit(BlobServicesApiImpl.ContainerLeaseRenew(ContainerName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -273,7 +273,7 @@ codeunit 9052 "ABS Container Client"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(LeaseBreak(ContainerName, LeaseId, OptionalParameters));
+        exit(BlobServicesApiImpl.ContainerLeaseBreak(ContainerName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -299,7 +299,7 @@ codeunit 9052 "ABS Container Client"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(LeaseChange(ContainerName, LeaseId, ProposedLeaseId, OptionalParameters));
+        exit(BlobServicesApiImpl.ContainerLeaseChange(ContainerName, OptionalParameters, LeaseId, ProposedLeaseId));
     end;
 
     /// <summary>
