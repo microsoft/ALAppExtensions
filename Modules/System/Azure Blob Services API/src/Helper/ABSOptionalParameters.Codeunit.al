@@ -227,15 +227,6 @@ codeunit 9047 "ABS Optional Parameters"
     end;
 
     /// <summary>
-    /// Sets the value for 'x-ms-lease-action' HttpHeader for a request.
-    /// </summary>
-    /// <param name="Value">Enum "ABS Lease Action" value specifying the HttpHeader value</param>
-    procedure LeaseAction("Value": Enum "ABS Lease Action")
-    begin
-        SetRequestHeader('x-ms-lease-action', Format("Value"));
-    end;
-
-    /// <summary>
     /// Sets the value for 'x-ms-lease-break-period' HttpHeader for a request.
     /// </summary>
     /// <param name="Value">Integer value specifying the HttpHeader value.</param>
