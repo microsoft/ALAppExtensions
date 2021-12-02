@@ -11,10 +11,23 @@ codeunit 2616 "Printer Setup"
     Access = Public;
 
     /// <summary>
-    /// Integration event that is called to view and edit the settings of a printer. 
+    /// Gets the type of a printer.
+    /// </summary>
+    /// <param name="Printer">The printer.</param>
+    /// <returns>The printer type.</returns>
+    [Scope('OnPrem')]
+    procedure GetPrinterType(Printer: Record Printer): Enum "Printer Type"
+    var
+        PrinterSetupImpl: Codeunit "Printer Setup Impl.";
+    begin
+        exit(PrinterSetupImpl.GetPrinterType(Printer));
+    end;
+
+    /// <summary>
+    /// Integration event that is called to view and edit the settings of a printer.
     /// Subscribe to this event if you want to introduce user configurable settings for a printer.
     /// </summary>
-    /// <param name="PrinterID">A value that determines the printer being drilled down.</param>    
+    /// <param name="PrinterID">A value that determines the printer being drilled down.</param>
     /// <param name="IsHandled">Stores whether the operation was successful.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnOpenPrinterSettings(PrinterID: Text; var IsHandled: Boolean)
@@ -22,11 +35,11 @@ codeunit 2616 "Printer Setup"
     end;
 
     /// <summary>
-    /// Integration event that is called to set the default printer for all reports. 
+    /// Integration event that is called to set the default printer for all reports.
     ///  Subscribe to this event to specify a value in the Printer Name field and leave the User ID and Report ID fields blank in Printers Selection.
     /// </summary>
     /// <param name="PrinterID">A value that determines the printer being set as default.</param>
-    /// <param name="UserID">A value that determines the user for whom the printer is being set as default. Empty value implies all users.</param>  
+    /// <param name="UserID">A value that determines the user for whom the printer is being set as default. Empty value implies all users.</param>
     /// <param name="IsHandled">Stores whether the operation was successful.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnSetAsDefaultPrinter(PrinterID: Text; UserID: Text; var IsHandled: Boolean)
