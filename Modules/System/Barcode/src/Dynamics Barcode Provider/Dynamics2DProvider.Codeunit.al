@@ -24,12 +24,20 @@ codeunit 9222 "Dynamics 2D Provider" implements "Barcode Image Provider 2D"
 
     procedure EncodeImage(InputText: Text; BarcodeSymbology2D: Enum "Barcode Symbology 2D"): Codeunit "Temp Blob"
     var
+        BarcodeEncodeSettings2D: Record "Barcode Encode Settings 2D";
+    begin
+        BarcodeEncodeSettings2D.Init();
+        exit(EncodeImage(InputText, BarcodeSymbology2D, BarcodeEncodeSettings2D));
+    end;
+
+    procedure EncodeImage(InputText: Text; BarcodeSymbology2D: Enum "Barcode Symbology 2D"; BarcodeEncodeSettings2D: Record "Barcode Encode Settings 2D"): Codeunit "Temp Blob";
+    var
         BarcodeImageEncoder2D: Interface "Barcode Image Encoder 2D";
     begin
         if not GetBarcodeImageEncoder2D(BarcodeSymbology2D, BarcodeImageEncoder2D) then
             Error(CannotFindBarcodeEncoderErr, Enum::"Barcode Image Provider 2D"::Dynamics2D, BarcodeSymbology2D);
 
-        exit(BarcodeImageEncoder2D.EncodeImage(InputText));
+        exit(BarcodeImageEncoder2D.EncodeImage(InputText, BarcodeEncodeSettings2D));
     end;
 
     local procedure GetBarcodeImageEncoder2D(BarcodeSymbology2D: Enum "Barcode Symbology 2D"; var BarcodeImageEncoder2D: Interface "Barcode Image Encoder 2D"): Boolean
