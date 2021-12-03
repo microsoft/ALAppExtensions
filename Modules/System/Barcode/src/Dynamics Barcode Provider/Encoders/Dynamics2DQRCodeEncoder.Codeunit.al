@@ -13,12 +13,15 @@ codeunit 9203 "Dynamics 2D QR-Code Encoder" implements "Barcode Image Encoder 2D
         QRCodeProvider: DotNet "QRCodeProvider";
         QRCodeErrorCorrectionLevel: DotNet "QRCodeErrorCorrectionLevel";
         QRCodeOutStream: OutStream;
+        CannotCreateQrCodeErr: Label 'QR Code could not be created.';
     begin
         QRCodeImageTempBlob.CreateOutStream(QRCodeOutStream);
         IBarcodeProvider := QRCodeProvider.QRCodeProvider();
         GetErrorCorrectionLevelFromEnum(QRCodeErrorCorrectionLevel, BarcodeEncodeSettings2D);
-        IBarcodeProvider.GetBarcodeStream(InputText, QRCodeOutStream, QRCodeErrorCorrectionLevel,
-            BarcodeEncodeSettings2D."Module Size", BarcodeEncodeSettings2D."Quite Zone Width", BarcodeEncodeSettings2D."Code Page");
+        if not IBarcodeProvider.GetBarcodeStream(InputText, QRCodeOutStream, QRCodeErrorCorrectionLevel,
+            BarcodeEncodeSettings2D."Module Size", BarcodeEncodeSettings2D."Quite Zone Width", BarcodeEncodeSettings2D."Code Page")
+        then
+            Error(CannotCreateQrCodeErr);
     end;
 
     local procedure GetErrorCorrectionLevelFromEnum(var QRCodeErrorCorrectionLevel: DotNet "QRCodeErrorCorrectionLevel"; BarcodeEncodeSettings2D: Record "Barcode Encode Settings 2D")

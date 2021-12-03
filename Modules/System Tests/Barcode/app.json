@@ -10,8 +10,7 @@
     "help": "",
     "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo": "",
-    "dependencies": [
-        {
+    "dependencies": [{
             "id": "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
             "name": "DotNet Aliases",
             "publisher": "Microsoft",
@@ -28,12 +27,17 @@
             "name": "Barcode",
             "publisher": "Microsoft",
             "version": "19.1.0.0"
+        },
+        {
+            "id": "e31ad830-3d46-472e-afeb-1d3d35247943",
+            "name": "BLOB Storage",
+            "publisher": "Microsoft",
+            "version": "19.1.0.0"
         }
     ],
     "screenshots": [],
     "platform": "19.0.0.0",
-    "idRanges": [
-        {
+    "idRanges": [{
             "from": 135040,
             "to": 135040
         },
@@ -47,7 +51,7 @@
         },
         {
             "from": 135059,
-            "to": 135059
+            "to": 135060
         }
     ],
     "target": "OnPrem"
