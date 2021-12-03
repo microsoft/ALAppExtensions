@@ -158,7 +158,7 @@ codeunit 9051 "ABS Client Impl."
         exit(LeaseBreak(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, ContainerLbl, OperationPayload.GetContainerName())));
     end;
 
-    procedure ContainerLeaseChange(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ContainerLeaseChange(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
@@ -731,7 +731,7 @@ codeunit 9051 "ABS Client Impl."
         exit(LeaseBreak(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, BlobLbl, OperationPayload.GetBlobName())));
     end;
 
-    procedure BlobLeaseChange(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure BlobLeaseChange(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
@@ -745,6 +745,7 @@ codeunit 9051 "ABS Client Impl."
     local procedure LeaseAcquire(OptionalParameters: Codeunit "ABS Optional Parameters"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
         OperationResponse: Codeunit "ABS Operation Response";
+        FormatHelper: Codeunit "ABS Format Helper";
         LeaseAction: Enum "ABS Lease Action";
     begin
         // Duration can be:
@@ -761,7 +762,7 @@ codeunit 9051 "ABS Client Impl."
         OperationPayload.SetOptionalParameters(OptionalParameters);
 
         OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, OperationNotSuccessfulErr);
-        LeaseId := OperationResponse.GetHeaderValueFromResponseHeaders('x-ms-lease-id');
+        LeaseId := FormatHelper.RemoveCurlyBracketsFromString(OperationResponse.GetHeaderValueFromResponseHeaders('x-ms-lease-id'));
         exit(OperationResponse);
     end;
 
@@ -816,9 +817,10 @@ codeunit 9051 "ABS Client Impl."
         exit(OperationResponse);
     end;
 
-    local procedure LeaseChange(OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; ProposedLeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure LeaseChange(OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
         OperationResponse: Codeunit "ABS Operation Response";
+        FormatHelper: Codeunit "ABS Format Helper";
         LeaseAction: Enum "ABS Lease Action";
     begin
         OptionalParameters.LeaseAction(LeaseAction::change);
@@ -832,6 +834,7 @@ codeunit 9051 "ABS Client Impl."
         OperationPayload.SetOptionalParameters(OptionalParameters);
 
         OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, OperationNotSuccessfulErr);
+        LeaseId := FormatHelper.RemoveCurlyBracketsFromString(OperationResponse.GetHeaderValueFromResponseHeaders('x-ms-lease-id'));
         exit(OperationResponse);
     end;
 

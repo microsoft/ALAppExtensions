@@ -786,10 +786,10 @@ codeunit 9053 "ABS Blob Client"
     /// Changes the lease ID of an active lease
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
     /// </summary>
-    /// <param name="LeaseId">The Guid for the lease that should be changed</param>
+    /// <param name="LeaseId">The Guid for the lease that should be changed. Will contain the updated Guid after successful operation.</param>
     /// <param name="ProposedLeaseId">The Guid that should be used in future</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseChange(BlobName: Text; LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure LeaseChange(BlobName: Text; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
