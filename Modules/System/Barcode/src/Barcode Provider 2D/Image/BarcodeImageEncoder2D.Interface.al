@@ -12,6 +12,7 @@ interface "Barcode Image Encoder 2D"
     /// Encodes a input text to a barcode image.
     /// </summary>
     /// <param name="InputText">The text to encode.</param>
+    /// <param name="BarcodeEncodeSettings2D">The settings to use when encoding the text.</param>
     /// <returns>The encoded barcode.</returns>
     procedure EncodeImage(InputText: Text; BarcodeEncodeSettings2D: Record "Barcode Encode Settings 2D"): Codeunit "Temp Blob";
 }
