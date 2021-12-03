@@ -110,9 +110,8 @@ codeunit 132919 "ABS Container Client Test"
         Assert.IsTrue(Response.IsSuccessful(), 'Operation CreateContainer failed');
 
         // [1st] Acquire Lease on Container
-        Response := ABSContainerClient.LeaseAcquire(ContainerName, 60);
+        Response := ABSContainerClient.LeaseAcquire(ContainerName, 60, LeaseId);
         Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseAcquire failed');
-        LeaseId := Response.GetLeaseId();
         Assert.IsFalse(IsNullGuid(LeaseId), 'Operation LeaseAcquire failed (no LeaseId returned)');
 
         // [2nd] Renew Lease on Container

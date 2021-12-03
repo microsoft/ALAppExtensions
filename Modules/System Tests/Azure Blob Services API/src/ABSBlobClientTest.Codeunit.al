@@ -71,9 +71,8 @@ codeunit 132920 "ABS Blob Client Test"
         Assert.IsTrue(Response.IsSuccessful(), 'Operation PutBlobBlockBlob failed');
 
         // [1st] Acquire Lease on Blob
-        Response := ABSBlobClient.LeaseAcquire(BlobName, 60);
+        Response := ABSBlobClient.LeaseAcquire(BlobName, 60, LeaseId);
         Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseAcquire failed');
-        LeaseId := Response.GetLeaseId();
         Assert.IsFalse(IsNullGuid(LeaseId), 'Operation LeaseAcquire failed (no LeaseId returned)');
 
         // [2nd] Renew Lease on Blob

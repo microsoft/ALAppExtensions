@@ -61,16 +61,6 @@ codeunit 9050 "ABS Operation Response"
         Response := NewResponse;
     end;
 
-    procedure GetLeaseId(): Guid
-    var
-        LeaseId: Guid;
-        LeaseIdAsText: Text;
-    begin
-        LeaseIdAsText := GetHeaderValueFromResponseHeaders('x-ms-lease-id');
-        LeaseId := LeaseIdAsText;
-        exit(LeaseId);
-    end;
-
     [NonDebuggable]
     internal procedure GetHeaderValueFromResponseHeaders(HeaderName: Text): Text
     var
