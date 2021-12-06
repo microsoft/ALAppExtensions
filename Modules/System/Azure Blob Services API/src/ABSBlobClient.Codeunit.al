@@ -710,6 +710,7 @@ codeunit 9053 "ABS Blob Client"
     /// Releases a lease on a Blob if it is no longer needed so that another client may immediately acquire a lease against the blob
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
     /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be released</param>
     /// <returns>An operation reponse object</returns>
     procedure LeaseRelease(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
@@ -723,6 +724,7 @@ codeunit 9053 "ABS Blob Client"
     /// Releases a lease on a Blob if it is no longer needed so that another client may immediately acquire a lease against the blob
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
     /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be released</param>
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
@@ -735,6 +737,7 @@ codeunit 9053 "ABS Blob Client"
     /// Renews a lease on a Blob to keep it locked again for the same amount of time as before
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
     /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
     /// <returns>An operation reponse object</returns>
     procedure LeaseRenew(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
@@ -748,6 +751,7 @@ codeunit 9053 "ABS Blob Client"
     /// Renews a lease on a Blob to keep it locked again for the same amount of time as before
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
     /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
@@ -761,6 +765,7 @@ codeunit 9053 "ABS Blob Client"
     /// Breaks a lease on a blob but ensures that another client cannot acquire a new lease until the current lease period has expired
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
     /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
     /// <returns>An operation reponse object</returns>
     procedure LeaseBreak(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
@@ -774,6 +779,7 @@ codeunit 9053 "ABS Blob Client"
     /// Breaks a lease on a blob but ensures that another client cannot acquire a new lease until the current lease period has expired
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
     /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
@@ -786,6 +792,7 @@ codeunit 9053 "ABS Blob Client"
     /// Changes the lease ID of an active lease
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
     /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be changed. Will contain the updated Guid after successful operation.</param>
     /// <param name="ProposedLeaseId">The Guid that should be used in future</param>
     /// <returns>An operation reponse object</returns>
@@ -800,6 +807,7 @@ codeunit 9053 "ABS Blob Client"
     /// Changes the lease ID of an active lease
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
     /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be changed</param>
     /// <param name="ProposedLeaseId">The Guid that should be used in future</param>
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
