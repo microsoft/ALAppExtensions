@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// Common setting used when encoding @D barcodes.
+/// Common setting used when encoding 2D barcodes.
 /// </summary>
 table 9204 "Barcode Encode Settings 2D"
 {
