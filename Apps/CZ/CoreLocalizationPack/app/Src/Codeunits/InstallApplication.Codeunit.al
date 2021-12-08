@@ -3429,7 +3429,8 @@ codeunit 11748 "Install Application CZL"
         CloseBalanceSheetSourceCodeTxt: Label 'CLBALANCE', MaxLength = 10;
         CloseBalanceSheetSourceCodeDescriptionTxt: Label 'Close Balance Sheet', MaxLength = 100;
     begin
-        SourceCodeSetup.Get();
+        if not SourceCodeSetup.Get() then
+            SourceCodeSetup.Init();
         PrevSourceCodeSetup := SourceCodeSetup;
         InsertSourceCode(SourceCodeSetup."Purchase VAT Delay CZL", PurchaseVATDelaySourceCodeTxt, PurchaseVATDelaySourceCodeDescriptionTxt);
         InsertSourceCode(SourceCodeSetup."Sales VAT Delay CZL", SalesVATDelaySourceCodeTxt, SalesVATDelaySourceCodeDescriptionTxt);

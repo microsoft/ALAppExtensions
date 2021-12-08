@@ -289,6 +289,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
           XmlAttribute.Create('listID', 'urn:oioubl:codelist:invoicetypecode-1.1'),
           XmlAttribute.Create('listAgencyID', '320'),
           '380'));
+        OnCreateXMLOnAfterInsertInvoiceTypeCode(XMLCurrNode, SalesInvoiceHeader);
 
         XMLCurrNode.Add(XmlElement.Create('DocumentCurrencyCode', DocNameSpace, CurrencyCode));
         XMLCurrNode.Add(XmlElement.Create('AccountingCostCode', DocNameSpace, SalesInvoiceHeader."OIOUBL-Account Code"));
@@ -462,6 +463,11 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateXMLOnBeforeInsertAccountingSupplierParty(var XMLCurrNode: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnAfterInsertInvoiceTypeCode(var XMLCurrNode: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header")
     begin
     end;
 }

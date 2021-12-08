@@ -4,10 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 
 /// <summary>
-/// This enum contains the Rotate flip types.
+/// Specifies how much an image is rotated and the axis used to flip the image.
 /// </summary>
 enum 3972 "Rotate Flip Type"
 {
+    Access = Public;
     Extensible = false;
 
     /// <summary>

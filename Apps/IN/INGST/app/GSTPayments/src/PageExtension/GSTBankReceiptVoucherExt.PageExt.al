@@ -114,6 +114,11 @@ pageextension 18244 "GST Bank Receipt Voucher Ext" extends "Bank Receipt Voucher
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies whether the entry is related to bank charges or not.';
             }
+            field("Ship-to Code"; Rec."Ship-to Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies this Ship-to-Code for the customer related transactions';
+            }
         }
         modify(Amount)
         {

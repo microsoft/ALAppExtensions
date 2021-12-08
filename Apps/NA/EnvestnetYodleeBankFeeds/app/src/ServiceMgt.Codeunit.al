@@ -2,8 +2,6 @@
 {
     var
         ResponseTempBlob: Codeunit "Temp Blob";
-        TempTraceTempBlob: Codeunit "Temp Blob";
-        Trace: Codeunit "Trace";
         YodleeAPIStrings: Codeunit "Yodlee API Strings";
         SetupSuccessMsg: Label 'The setup test was successful. The settings are valid.';
         NotEnabledErr: Label 'The bank feed service is not enabled.\\In the Envestnet Yodlee Bank Feeds Service Setup window, select the Enabled check box.';
@@ -24,6 +22,7 @@
         BankRefreshTxt: Label 'Get Latest Bank Feed.';
         AuthenticationTokenTxt: Label 'Get the authentication tokens.';
         LoggingConstTxt: Label 'Bank Feed Service';
+        YodleeResponseTxt: Label 'Yodlee Response';
         GLBTraceLogEnabled: Boolean;
         InvalidResponseErr: Label 'The response was not valid.';
         UnknownErr: Label 'An unknown error has occurred.';
@@ -285,9 +284,6 @@
     begin
         ExecuteWebServiceRequest(YodleeAPIStrings.GetCobrandTokenURL(), 'POST', YodleeAPIStrings.GetCobrandTokenBody(Username, Password), '', ErrorText);
 
-        IF GLBTraceLogEnabled THEN
-            Trace.LogStreamToTempFile(GLBResponseInStream, 'getcobrandtoken', TempTraceTempBlob);
-
         IF ErrorText <> '' THEN
             EXIT(FALSE);
 
@@ -300,9 +296,6 @@
     begin
         AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, '');
         ExecuteWebServiceRequest(YodleeAPIStrings.GetConsumerTokenURL(), 'POST', YodleeAPIStrings.GetConsumerTokenBody(Username, Password, CobrandToken), AuthorizationHeaderValue, ErrorText);
-
-        IF GLBTraceLogEnabled THEN
-            Trace.LogStreamToTempFile(GLBResponseInStream, 'getconsumertoken', TempTraceTempBlob);
 
         IF ErrorText <> '' THEN
             EXIT(FALSE);
@@ -317,9 +310,6 @@
         AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
         ExecuteWebServiceRequest(YodleeAPIStrings.GetFastLinkTokenURL(), YodleeAPIStrings.GetFastLinkTokenRequestMethod(),
           YodleeAPIStrings.GetFastLinkTokenBody(CobrandToken, ConsumerToken), AuthorizationHeaderValue, ErrorText);
-
-        IF GLBTraceLogEnabled THEN
-            Trace.LogStreamToTempFile(GLBResponseInStream, 'getfastlinktoken', TempTraceTempBlob);
 
         IF ErrorText <> '' THEN
             EXIT(FALSE);
@@ -466,9 +456,6 @@
         ExecuteWebServiceRequest(YodleeAPIStrings.GetUnlinkBankAccountURL(AccountID), YodleeAPIStrings.GetUnlinkBankAccountRequestMethod(),
           YodleeAPIStrings.GetUnlinkBankAccountBody(CobrandToken, ConsumerToken, AccountID), AuthorizationHeaderValue, ErrorText);
 
-        IF GLBTraceLogEnabled THEN
-            Trace.LogStreamToTempFile(GLBResponseInStream, 'unlinkbankaccount', TempTraceTempBlob);
-
         if not GLBResponseInStream.EOS() then
             if not GetResponseValue('/', Response, ErrorText) then begin
                 ErrorText := GetAdjustedErrorText(ErrorText, STRSUBSTNO(FailedAccountUnlinkTxt, MSYodleeBankAccLink."No."));
@@ -508,9 +495,6 @@
         AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
         ExecuteWebServiceRequest(YodleeAPIStrings.GetRemoveConsumerURL(), YodleeAPIStrings.GetRemoveConsumerRequestMethod(),
           YodleeAPIStrings.GetRemoveConsumerRequestBody(CobrandToken, ConsumerToken), AuthorizationHeaderValue, ErrorText);
-
-        IF GLBTraceLogEnabled THEN
-            Trace.LogStreamToTempFile(GLBResponseInStream, 'removeconsumeraccount', TempTraceTempBlob);
 
         IF NOT GetResponseValue('/', Response, ErrorText) THEN BEGIN
             LogActivityFailed(RemoveConsumerTxt, ErrorText, FailureAction::IgnoreError, '', StrSubstNo(TelemetryActivityFailureTxt, RemoveConsumerTxt, ErrorText), Verbosity::Error);
@@ -568,9 +552,6 @@
             YodleeAPIStrings.GetRegisterConsumerBody(CobrandToken, UserName, Password, Email, LcyCode), AuthorizationHeaderValue,
             ErrorText);
 
-        IF GLBTraceLogEnabled THEN
-            Trace.LogStreamToTempFile(GLBResponseInStream, 'registerconsumeraccount', TempTraceTempBlob);
-
         IF NOT GetResponseValue('/', Response, ErrorText) THEN BEGIN
             ErrorText := GetAdjustedErrorText(ErrorText, FailedRegisterConsumerTxt);
             IF IsStaleCredentialsErr(ErrorText) THEN BEGIN
@@ -604,9 +585,6 @@
         AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
         ExecuteWebServiceRequest(YodleeAPIStrings.GetLinkedSiteListURL(), YodleeAPIStrings.GetLinkedSiteListRequestMethod(),
           YodleeAPIStrings.GetLinkedSiteListBody(CobrandToken, ConsumerToken), AuthorizationHeaderValue, ErrorText);
-
-        IF GLBTraceLogEnabled THEN
-            Trace.LogStreamToTempFile(GLBResponseInStream, 'getsitelist', TempTraceTempBlob);
 
         EXIT(GetResponseValue(YodleeAPIStrings.GetRootXPath(), SiteListXML, ErrorText));
     end;
@@ -659,9 +637,6 @@
         ExecuteWebServiceRequest(YodleeAPIStrings.GetLinkedBankAccountsURL(ProviderAccountId), YodleeAPIStrings.GetLinkedBankAccountsRequestMethod(),
           YodleeAPIStrings.GetLinkedBankAccountsBody(CobrandToken, ConsumerToken, ProviderAccountId), AuthorizationHeaderValue, ErrorText);
 
-        IF GLBTraceLogEnabled THEN
-            Trace.LogStreamToTempFile(GLBResponseInStream, 'getbankaccounts', TempTraceTempBlob);
-
         IF ErrorText <> '' THEN BEGIN
             LogActivityFailed(
               GetBankAccListTxt, ErrorText, FailureAction::RethrowError, '', StrSubstNo(TelemetryActivityFailureTxt, GetBankAccListTxt, ErrorText), Verbosity::Error);
@@ -693,9 +668,6 @@
         AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
         ExecuteWebServiceRequest(YodleeAPIStrings.GetLinkedBankAccountURL(AccountId), 'GET',
           '', AuthorizationHeaderValue, ErrorText);
-
-        IF GLBTraceLogEnabled THEN
-            Trace.LogStreamToTempFile(GLBResponseInStream, 'getbankaccount', TempTraceTempBlob);
 
         IF ErrorText <> '' THEN BEGIN
             LogActivityFailed(
@@ -999,9 +971,6 @@
             YodleeAPIStrings.GetTransactionSearchBody(CobrandToken, ConsumerToken, OnlineBankAccountId, FromDate, ToDate),
             AuthorizationHeaderValue,
             ErrorText);
-
-        IF GLBTraceLogEnabled THEN
-            Trace.LogStreamToTempFile(GLBResponseInStream, 'transactionsearch', TempTraceTempBlob);
 
         Session.LogMessage('00001SX', STRSUBSTNO(TransactionsDownloadedTelemetryTxt, NumberOfLinkedBankAccounts()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
     end;
@@ -1433,12 +1402,30 @@
         EXIT(TRUE);
     end;
 
-    local procedure RemoveInvalidXMLCharacters(var InputText: Text)
+    [TryFunction]
+    local procedure TryVerifyXMLChars(InputText: Text)
+    var
+        XmlConvert: DotNet XmlConvert;
     begin
+        XmlConvert.VerifyXmlChars(InputText);
+    end;
+
+    local procedure RemoveInvalidXMLCharacters(var InputText: Text)
+    var
+        XmlConvert: DotNet XmlConvert;
+        InputTextStr: DotNet String;
+        Character: Char;
+    begin
+        if not TryVerifyXMLChars(InputText) then begin
+            InputTextStr := InputText;
+            InputText := '';
+            foreach Character in InputTextStr do
+                if XmlConvert.IsXmlChar(Character) then
+                    InputText += Character;
+        end;
         // so far, in icms we have only seen Char x014 coming from Yodlee
         // therefore remove this one first and continue only if there are more
         InputText := InputText.Replace('&#x14', '');
-        InputText := InputText.Replace('ËÇ£“ËÇÖ“í', '');
         if StrPos(InputText, '&#x') = 0 then
             exit;
 
@@ -1515,6 +1502,7 @@
     local procedure ExecuteWebServiceRequest(URL: Text; Method: Text[6]; BodyText: Text; AuthorizationHeaderValue: Text; var ErrorText: Text) PaginationLink: Text
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
+        ActivityLog: Record "Activity Log";
         DotNetExceptionHandler: Codeunit "DotNet Exception Handler";
         IsSuccessful: Boolean;
         Client: HttpClient;
@@ -1525,8 +1513,7 @@
         RequestHeaders: HttpHeaders;
         ContentHeaders: HttpHeaders;
         BankFeedText: Text;
-        LinkedBankAccountsText: Text;
-        LinkedBankAccountText: Text;
+        ResponseTxt: Text;
         ApiVersion: Text;
         CobrandEnvironmentName: Text;
         UnsuccessfulRequestTelemetryTxt: Text;
@@ -1605,22 +1592,36 @@
             // after GetTransactions request, we processes them from BankFeedTextList, because it can come in multiple responses
             BankFeedTextList.Add(BankFeedText);
             Session.LogMessage('000083Y', BankFeedText, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            if GLBTraceLogEnabled then
+                ActivityLog.LogActivity(MSYodleeBankServiceSetup.RecordId(), ActivityLog.Status::Success, YodleeResponseTxt, 'gettransactions', BankFeedText);
         END;
 
+        ResponseMessage.Content().ReadAs(ResponseTxt);
         IF URL.ToLower().Contains('accounts?status=active') THEN BEGIN
-            ResponseMessage.Content().ReadAs(LinkedBankAccountsText);
-            Session.LogMessage('0000BI7', LinkedBankAccountsText, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            Session.LogMessage('0000BI7', ResponseTxt, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            if GLBTraceLogEnabled then
+                ActivityLog.LogActivity(MSYodleeBankServiceSetup.RecordId(), ActivityLog.Status::Success, YodleeResponseTxt, 'getlinkedbankaccounts', ResponseTxt);
         END;
 
         IF URL.ToLower().Contains('accounts?accountid') THEN BEGIN
-            ResponseMessage.Content().ReadAs(LinkedBankAccountText);
-            Session.LogMessage('0000BLP', LinkedBankAccountText, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            Session.LogMessage('0000BLP', ResponseTxt, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            if GLBTraceLogEnabled then
+                ActivityLog.LogActivity(MSYodleeBankServiceSetup.RecordId(), ActivityLog.Status::Success, YodleeResponseTxt, 'getlinkedbankaccount', ResponseTxt);
         END;
 
-        IF URL.ToLower().Contains('user/register') THEN BEGIN
-            ResponseMessage.Content().ReadAs(LinkedBankAccountText);
-            Session.LogMessage('0000DLA', LinkedBankAccountText, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+        IF URL.ToLower().Contains(YodleeAPIStrings.GetRegisterConsumerURL()) THEN BEGIN
+            Session.LogMessage('0000DLA', ResponseTxt, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            if GLBTraceLogEnabled then
+                ActivityLog.LogActivity(MSYodleeBankServiceSetup.RecordId(), ActivityLog.Status::Success, YodleeResponseTxt, YodleeAPIStrings.GetRegisterConsumerURL(), ResponseTxt);
         END;
+
+        IF URL.ToLower().Contains(YodleeAPIStrings.GetLinkedSiteListURL()) THEN BEGIN
+            Session.LogMessage('0000G9J', ResponseTxt, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+            if GLBTraceLogEnabled then
+                ActivityLog.LogActivity(MSYodleeBankServiceSetup.RecordId(), ActivityLog.Status::Success, YodleeResponseTxt, YodleeAPIStrings.GetLinkedSiteListURL(), ResponseTxt);
+        END;
+
+        Commit();
     end;
 
     procedure CheckServiceEnabled();

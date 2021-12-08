@@ -18,6 +18,8 @@ codeunit 502 OAuth2Impl
         MissingClientIdRedirectUrlErr: Label 'The authorization request URL for the OAuth2 Grant flow cannot be constructed because of missing ClientId or RedirectUrl', Locked = true;
         AuthorizationCodeErr: Label 'The OAuth2 authentication code retrieved is empty.', Locked = true;
         EmptyAccessTokenClientCredsErr: Label 'The access token failed to be retrieved by the client credentials grant flow.', Locked = true;
+        PopupBlockedCodeErrLbl: Label 'Popup blocked', Locked = true;
+        PopupBlockedErr: Label 'Your browser may be blocking pop-ups needed by %1.\\Change your browser settings to allow pop-ups or allow pop-ups from the %1 site, then try again.', Comment = '%1 = Short product name (e.g. Business Central)';
 
     [NonDebuggable]
     procedure GetAuthRequestUrl(ClientId: Text; Url: Text; RedirectUrl: Text; var State: Text; ResourceUrl: Text; PromptConsent: Enum "Prompt Interaction"): Text
@@ -174,6 +176,9 @@ codeunit 502 OAuth2Impl
 
         SetPropertiesBasedOnAuthRequestUrlAndRunOAuth2ControlAddIn(AuthRequestUrl, State, AuthCode, AuthCodeErr);
 
+        if StrPos(AuthCodeErr, PopupBlockedCodeErrLbl) > 0 then
+            Error(PopupBlockedErr, ProductName.Short());
+
         if AuthCode = '' then
             exit;
 
@@ -213,6 +218,9 @@ codeunit 502 OAuth2Impl
         AuthRequestUrl := GetAuthRequestUrl(ClientId, ClientSecret, OAuthAuthorityUrl, RedirectURL, State, Scopes, PromptInteraction);
 
         SetPropertiesBasedOnAuthRequestUrlAndRunOAuth2ControlAddIn(AuthRequestUrl, State, AuthCode, AuthCodeErr);
+
+        if StrPos(AuthCodeErr, PopupBlockedCodeErrLbl) > 0 then
+            Error(PopupBlockedErr, ProductName.Short());
 
         if AuthCode = '' then
             exit;

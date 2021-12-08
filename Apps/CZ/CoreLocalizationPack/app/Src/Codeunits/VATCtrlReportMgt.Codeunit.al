@@ -33,8 +33,6 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         Temp1VATCtrlReportEntLinkCZL: Record "VAT Ctrl. Report Ent. Link CZL" temporary;
         Temp2VATCtrlReportEntLinkCZL: Record "VAT Ctrl. Report Ent. Link CZL" temporary;
         TempVATEntry: Record "VAT Entry" temporary;
-        TempActualVATEntry: Record "VAT Entry" temporary;
-        TempDropShptPostBuffer: Record "Drop Shpt. Post. Buffer" temporary;
         VATPostingSetup: Record "VAT Posting Setup";
         VATStatementLine: Record "VAT Statement Line";
         DocumentAmount: Decimal;
@@ -100,51 +98,8 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                             then
                                 VATCtrlReportSectionCZL.Get(VATCtrlReportSectionCZL."Simplified Tax Doc. Sect. Code");
 
-                            case VATCtrlReportSectionCZL.Code of
-                                'A1', 'B1':
-                                    begin
-                                        MergeVATEntry(TempVATEntry, Temp2VATCtrlReportEntLinkCZL);
-                                        GetBufferFromDocument(TempVATEntry, TempDropShptPostBuffer, VATCtrlReportSectionCZL.Code);
-                                        TempDropShptPostBuffer.Reset();
-                                        TempActualVATEntry := TempVATEntry;
-                                        if TempDropShptPostBuffer.FindSet() then
-                                            repeat
-                                                // VAT Entry Amount Set
-                                                if TempDropShptPostBuffer.Count() > 1 then
-                                                    if (TempActualVATEntry.Base + TempActualVATEntry.Amount) < 0 then begin
-                                                        TempVATEntry.Base := -Abs(TempDropShptPostBuffer.Quantity);
-                                                        TempVATEntry.Amount := -Abs(TempDropShptPostBuffer."Quantity (Base)");
-                                                    end else begin
-                                                        TempVATEntry.Base := Abs(TempDropShptPostBuffer.Quantity);
-                                                        TempVATEntry.Amount := Abs(TempDropShptPostBuffer."Quantity (Base)");
-                                                    end;
-
-                                                case VATCtrlReportSectionCZL."Group By" of
-                                                    VATCtrlReportSectionCZL."Group By"::"Document No.":
-                                                        InsertVATCtrlReportBufferDocNo(TempVATCtrlReportBufferCZL, Temp1VATCtrlReportEntLinkCZL, TempVATEntry,
-                                                          VATPostingSetup, VATCtrlReportSectionCZL.Code, TempDropShptPostBuffer."Order No.");
-                                                    VATCtrlReportSectionCZL."Group By"::"External Document No.":
-                                                        InsertVATCtrlReportBufferExtDocNo(TempVATCtrlReportBufferCZL, Temp1VATCtrlReportEntLinkCZL, TempVATEntry,
-                                                          VATPostingSetup, VATCtrlReportSectionCZL.Code, TempDropShptPostBuffer."Order No.");
-                                                    VATCtrlReportSectionCZL."Group By"::"Section Code":
-                                                        InsertVATCtrlReportBufferDocNo(TempVATCtrlReportBufferCZL, Temp1VATCtrlReportEntLinkCZL, TempVATEntry,
-                                                          VATPostingSetup, VATCtrlReportSectionCZL.Code, TempDropShptPostBuffer."Order No.");
-                                                end;
-                                            until TempDropShptPostBuffer.Next() = 0;
-                                    end;
-                                else
-                                    case VATCtrlReportSectionCZL."Group By" of
-                                        VATCtrlReportSectionCZL."Group By"::"Document No.":
-                                            InsertVATCtrlReportBufferDocNo(
-                                              TempVATCtrlReportBufferCZL, Temp1VATCtrlReportEntLinkCZL, TempVATEntry, VATPostingSetup, VATCtrlReportSectionCZL.Code, '');
-                                        VATCtrlReportSectionCZL."Group By"::"External Document No.":
-                                            InsertVATCtrlReportBufferExtDocNo(
-                                              TempVATCtrlReportBufferCZL, Temp1VATCtrlReportEntLinkCZL, TempVATEntry, VATPostingSetup, VATCtrlReportSectionCZL.Code, '');
-                                        VATCtrlReportSectionCZL."Group By"::"Section Code":
-                                            InsertVATCtrlReportBufferDocNo(
-                                              TempVATCtrlReportBufferCZL, Temp1VATCtrlReportEntLinkCZL, TempVATEntry, VATPostingSetup, VATCtrlReportSectionCZL.Code, '');
-                                    end;
-                            end;
+                            OnGetVATCtrlReportLinesOnBeforeAddVATEntryToBuffer(VATStatementLine, VATPostingSetup, VATCtrlReportSectionCZL, TempVATEntry);
+                            AddVATEntryToBuffer(TempVATEntry, VATPostingSetup, VATCtrlReportSectionCZL, Temp1VATCtrlReportEntLinkCZL, Temp2VATCtrlReportEntLinkCZL, TempVATCtrlReportBufferCZL);
                         end;
                     until TempVATEntry.Next() = 0;
             until VATStatementLine.Next() = 0;
@@ -200,6 +155,44 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         end;
     end;
 
+    local procedure AddVATEntryToBuffer(
+        TempVATEntry: Record "VAT Entry" temporary;
+        VATPostingSetup: Record "VAT Posting Setup";
+        VATCtrlReportSectionCZL: Record "VAT Ctrl. Report Section CZL";
+        var Temp1VATCtrlReportEntLinkCZL: Record "VAT Ctrl. Report Ent. Link CZL" temporary;
+        var Temp2VATCtrlReportEntLinkCZL: Record "VAT Ctrl. Report Ent. Link CZL" temporary;
+        var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
+    var
+        TempDropShptPostBuffer: Record "Drop Shpt. Post. Buffer" temporary;
+        TempActualVATEntry: Record "VAT Entry" temporary;
+    begin
+        case VATCtrlReportSectionCZL.Code of
+            'A1', 'B1':
+                begin
+                    MergeVATEntry(TempVATEntry, Temp2VATCtrlReportEntLinkCZL);
+                    GetBufferFromDocument(TempVATEntry, TempDropShptPostBuffer, VATCtrlReportSectionCZL.Code);
+                    TempDropShptPostBuffer.Reset();
+                    TempActualVATEntry := TempVATEntry;
+                    if TempDropShptPostBuffer.FindSet() then
+                        repeat
+                            // VAT Entry Amount Set
+                            if TempDropShptPostBuffer.Count() > 1 then
+                                if (TempActualVATEntry.Base + TempActualVATEntry.Amount) < 0 then begin
+                                    TempVATEntry.Base := -Abs(TempDropShptPostBuffer.Quantity);
+                                    TempVATEntry.Amount := -Abs(TempDropShptPostBuffer."Quantity (Base)");
+                                end else begin
+                                    TempVATEntry.Base := Abs(TempDropShptPostBuffer.Quantity);
+                                    TempVATEntry.Amount := Abs(TempDropShptPostBuffer."Quantity (Base)");
+                                end;
+
+                            InsertVATCtrlReportBuffer(TempVATEntry, VATCtrlReportSectionCZL, VATPostingSetup, TempDropShptPostBuffer."Order No.", Temp1VATCtrlReportEntLinkCZL, TempVATCtrlReportBufferCZL);
+                        until TempDropShptPostBuffer.Next() = 0;
+                end;
+            else
+                InsertVATCtrlReportBuffer(TempVATEntry, VATCtrlReportSectionCZL, VATPostingSetup, '', Temp1VATCtrlReportEntLinkCZL, TempVATCtrlReportBufferCZL);
+        end;
+    end;
+
     local procedure MergeVATEntry(var TempVATEntry: Record "VAT Entry" temporary; var TempVATCtrlReportEntLinkCZL: Record "VAT Ctrl. Report Ent. Link CZL" temporary)
     begin
         TempVATEntryBudgetBuffer.Reset();
@@ -213,6 +206,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         if StrLen(TempVATEntry."External Document No.") > MaxStrLen(TempVATEntryBudgetBuffer."Dimension Value Code 6") then
             TempVATEntryBudgetBuffer.SetRange(TempVATEntryBudgetBuffer."Dimension Value Code 7", CopyStr(TempVATEntry."External Document No.", MaxStrLen(TempVATEntryBudgetBuffer."Dimension Value Code 6") + 1));
         TempVATEntryBudgetBuffer.SetRange(TempVATEntryBudgetBuffer.Date, TempVATEntry."Posting Date");
+        OnMergeVATEntryOnBeforeTempVATEntryBudgetBufferFindFirst(TempVATEntry, TempVATEntryBudgetBuffer);
         if not TempVATEntryBudgetBuffer.FindFirst() then begin
             TempGlobalVATEntry.Reset();
             TempGlobalVATEntry.SetCurrentKey("Document No.");
@@ -223,6 +217,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             TempGlobalVATEntry.SetRange("VAT Registration No.", TempVATEntry."VAT Registration No.");
             TempGlobalVATEntry.SetRange("External Document No.", TempVATEntry."External Document No.");
             TempGlobalVATEntry.SetRange("Posting Date", TempVATEntry."Posting Date");
+            OnMergeVATEntryOnBeforeTempGlobalVATEntryFindSet(TempVATEntry, TempGlobalVATEntry);
             if TempGlobalVATEntry.FindSet() then begin
                 TempVATEntryBudgetBuffer.Init();
                 TempVATEntryBudgetBuffer."G/L Account No." := TempVATEntry."Document No.";
@@ -259,6 +254,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                         TempVATCtrlReportEntLinkCZL.Insert();
                     end;
                 until TempGlobalVATEntry.Next() = 0;
+                OnMergeVATEntryOnBeforeInsertTempVATEntryBudgetBuffer(TempVATEntry, TempVATEntryBudgetBuffer);
                 TempVATEntryBudgetBuffer.Insert();
             end;
         end;
@@ -278,6 +274,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         TempDocumentBudgetBuffer.SetRange(TempDocumentBudgetBuffer."Dimension Value Code 2", Format(TempVATEntry.Type, 0, '<Number>'));
         TempDocumentBudgetBuffer.SetRange(TempDocumentBudgetBuffer."Dimension Value Code 3", TempVATEntry."Bill-to/Pay-to No.");
         TempDocumentBudgetBuffer.SetRange(TempDocumentBudgetBuffer.Date, TempVATEntry."Posting Date");
+        OnGetDocumentAmountOnBeforeTempDocumentBudgetBufferFindFirst(TempVATEntry, TempDocumentBudgetBuffer);
         if not TempDocumentBudgetBuffer.FindFirst() then begin
             TempGlobalVATEntry.Reset();
             if not ExternalDocument or (TempVATEntry."External Document No." = '') then
@@ -287,6 +284,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             TempGlobalVATEntry.SetRange("Bill-to/Pay-to No.", TempVATEntry."Bill-to/Pay-to No.");
             TempGlobalVATEntry.SetRange("Posting Date", TempVATEntry."Posting Date");
             TempGlobalVATEntry.SetRange(Type, TempVATEntry.Type);
+            OnGetDocumentAmountOnBeforeTempGlobalVATEntryFindSet(TempVATEntry, TempGlobalVATEntry);
             if TempGlobalVATEntry.FindSet() then begin
                 TempDocumentBudgetBuffer.Init();
                 if not ExternalDocument or (TempVATEntry."External Document No." = '') then
@@ -315,6 +313,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
 #endif
                             TempDocumentBudgetBuffer.Amount += (TempGlobalVATEntry.Base + TempGlobalVATEntry.Amount);
                 until TempGlobalVATEntry.Next() = 0;
+                OnGetDocumentAmountOnBeforeInsertTempDocumentBudgetBuffer(TempVATEntry, TempDocumentBudgetBuffer);
                 TempDocumentBudgetBuffer.Insert();
             end;
         end;
@@ -350,6 +349,33 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             VATCtrlReportLineCZL.DeleteAll(true);
     end;
 
+    local procedure InsertVATCtrlReportBuffer(
+        TempVATEntry: Record "VAT Entry" temporary;
+        VATCtrlReportSectionCZL: Record "VAT Ctrl. Report Section CZL";
+        VATPostingSetup: Record "VAT Posting Setup";
+        CommodityCode: Code[20];
+        var TempVATCtrlReportEntLinkCZL: Record "VAT Ctrl. Report Ent. Link CZL" temporary;
+        var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
+    var
+        IsHandled: Boolean;
+    begin
+        OnBeforeInsertVATCtrlReportBuffer(TempVATEntry, VATCtrlReportSectionCZL, VATPostingSetup, CommodityCode, TempVATCtrlReportEntLinkCZL, TempVATCtrlReportBufferCZL, IsHandled);
+        if IsHandled then
+            exit;
+
+        case VATCtrlReportSectionCZL."Group By" of
+            VATCtrlReportSectionCZL."Group By"::"Document No.":
+                InsertVATCtrlReportBufferDocNo(
+                    TempVATCtrlReportBufferCZL, TempVATCtrlReportEntLinkCZL, TempVATEntry, VATPostingSetup, VATCtrlReportSectionCZL.Code, CommodityCode);
+            VATCtrlReportSectionCZL."Group By"::"External Document No.":
+                InsertVATCtrlReportBufferExtDocNo(
+                    TempVATCtrlReportBufferCZL, TempVATCtrlReportEntLinkCZL, TempVATEntry, VATPostingSetup, VATCtrlReportSectionCZL.Code, CommodityCode);
+            VATCtrlReportSectionCZL."Group By"::"Section Code":
+                InsertVATCtrlReportBufferDocNo(
+                    TempVATCtrlReportBufferCZL, TempVATCtrlReportEntLinkCZL, TempVATEntry, VATPostingSetup, VATCtrlReportSectionCZL.Code, CommodityCode);
+        end;
+    end;
+
     local procedure InsertVATCtrlReportBufferDocNo(var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary; var TempVATCtrlReportEntLinkCZL: Record "VAT Ctrl. Report Ent. Link CZL" temporary; VATEntry: Record "VAT Entry"; VATPostingSetup: Record "VAT Posting Setup"; SectionCode: Code[20]; CommodityCode: Code[20])
     begin
         TempVATCtrlReportBufferCZL.Reset();
@@ -382,6 +408,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         TempVATCtrlReportBufferCZL.SetRange(TempVATCtrlReportBufferCZL."Supplies Mode Code", VATPostingSetup."Supplies Mode Code CZL");
         TempVATCtrlReportBufferCZL.SetRange(TempVATCtrlReportBufferCZL."Corrections for Bad Receivable", VATPostingSetup."Corrections Bad Receivable CZL");
         TempVATCtrlReportBufferCZL.SetRange(TempVATCtrlReportBufferCZL."Ratio Use", VATPostingSetup."Ratio Coefficient CZL");
+        OnInsertVATCtrlReportBufferGroupOnBeforeTempVATCtrlReportBufferCZLFindFirst(VATEntry, VATPostingSetup, TempVATCtrlReportBufferCZL);
         if not TempVATCtrlReportBufferCZL.FindFirst() then
             InsertVATCtrlReportBuffer(TempVATCtrlReportBufferCZL, VATEntry, VATPostingSetup, SectionCode, CommodityCode)
         else begin
@@ -443,6 +470,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
 #endif
         TempVATCtrlReportBufferCZL."Total Base" := VATEntry.Base;
         TempVATCtrlReportBufferCZL."Total Amount" := VATEntry.Amount;
+        OnInsertVATCtrlReportBufferOnBeforeInsert(VATEntry, VATPostingSetup, TempVATCtrlReportBufferCZL);
         TempVATCtrlReportBufferCZL.Insert();
     end;
 
@@ -464,8 +492,14 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         exit(IsVATEntryCorrected(VATEntry));
     end;
 
-    local procedure IsVATEntryCorrected(VATEntry: Record "VAT Entry"): Boolean
+    local procedure IsVATEntryCorrected(VATEntry: Record "VAT Entry") IsCorrected: Boolean
+    var
+        IsHandled: Boolean;
     begin
+        OnBeforeIsVATEntryCorrected(VATEntry, TempGlobalVATEntry, IsCorrected, IsHandled);
+        if IsHandled then
+            exit;
+
         TempGlobalVATEntry.Reset();
         TempGlobalVATEntry.SetCurrentKey("Document No.");
         TempGlobalVATEntry.SetRange("Document No.", VATEntry."Document No.");
@@ -473,11 +507,17 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         TempGlobalVATEntry.SetRange(Type, VATEntry.Type);
         TempGlobalVATEntry.SetRange(Base, VATEntry."Unrealized Base");
         TempGlobalVATEntry.SetRange(Amount, VATEntry."Unrealized Amount");
-        exit(not TempGlobalVATEntry.IsEmpty());
+        IsCorrected := not TempGlobalVATEntry.IsEmpty();
     end;
 
     local procedure GetBufferFromDocument(VATEntry: Record "VAT Entry"; var TempDropShptPostBuffer: Record "Drop Shpt. Post. Buffer" temporary; SectionCode: Code[20])
+    var
+        IsHandled: Boolean;
     begin
+        OnBeforeGetBufferFromDocument(VATEntry, SectionCode, TempDropShptPostBuffer, IsHandled);
+        if IsHandled then
+            exit;
+
         TempDropShptPostBuffer.Reset();
         TempDropShptPostBuffer.DeleteAll();
 
@@ -536,6 +576,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesInvoiceLine: Record "Sales Invoice Line";
+        IsHandled: Boolean;
     begin
         SalesInvoiceLine.SetRange(SalesInvoiceLine."Document No.", VATEntry."Document No.");
         SalesInvoiceLine.SetRange(SalesInvoiceLine."VAT Bus. Posting Group", VATEntry."VAT Bus. Posting Group");
@@ -547,10 +588,13 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             if SalesInvoiceHeader."No." <> SalesInvoiceLine."Document No." then
                 SalesInvoiceHeader.Get(SalesInvoiceLine."Document No.");
             repeat
-                UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, SalesInvoiceLine."Tariff No. CZL",
-                  SalesInvoiceLine."VAT Bus. Posting Group", SalesInvoiceLine."VAT Prod. Posting Group", SalesInvoiceLine."VAT Base Amount",
-                  SalesInvoiceHeader."Currency Code", SalesInvoiceHeader."VAT Currency Factor CZL", SalesInvoiceHeader."VAT Date CZL",
-                  false, SalesInvoiceLine.Amount);
+                IsHandled := false;
+                OnSplitFromSalesInvLineOnBeforeUpdateTempDropShptPostBuffer(SalesInvoiceHeader, SalesInvoiceLine, TempDropShptPostBuffer, IsHandled);
+                if not IsHandled then
+                    UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, SalesInvoiceLine."Tariff No. CZL",
+                        SalesInvoiceLine."VAT Bus. Posting Group", SalesInvoiceLine."VAT Prod. Posting Group", SalesInvoiceLine."VAT Base Amount",
+                        SalesInvoiceHeader."Currency Code", SalesInvoiceHeader."VAT Currency Factor CZL", SalesInvoiceHeader."VAT Date CZL",
+                        false, SalesInvoiceLine.Amount);
             until SalesInvoiceLine.Next() = 0;
         end;
     end;
@@ -559,6 +603,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
     var
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
+        IsHandled: Boolean;
     begin
         SalesCrMemoLine.SetRange(SalesCrMemoLine."Document No.", VATEntry."Document No.");
         SalesCrMemoLine.SetRange(SalesCrMemoLine."VAT Bus. Posting Group", VATEntry."VAT Bus. Posting Group");
@@ -569,10 +614,13 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             if SalesCrMemoHeader."No." <> SalesCrMemoLine."Document No." then
                 SalesCrMemoHeader.Get(SalesCrMemoLine."Document No.");
             repeat
-                UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, SalesCrMemoLine."Tariff No. CZL",
-                  SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group", SalesCrMemoLine."VAT Base Amount",
-                  SalesCrMemoHeader."Currency Code", SalesCrMemoHeader."VAT Currency Factor CZL", SalesCrMemoHeader."VAT Date CZL",
-                  false, SalesCrMemoLine.Amount);
+                IsHandled := false;
+                OnSplitFromSalesCrMemoLineOnBeforeUpdateTempDropShptPostBuffer(SalesCrMemoHeader, SalesCrMemoLine, TempDropShptPostBuffer, IsHandled);
+                if not IsHandled then
+                    UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, SalesCrMemoLine."Tariff No. CZL",
+                        SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group", SalesCrMemoLine."VAT Base Amount",
+                        SalesCrMemoHeader."Currency Code", SalesCrMemoHeader."VAT Currency Factor CZL", SalesCrMemoHeader."VAT Date CZL",
+                        false, SalesCrMemoLine.Amount);
             until SalesCrMemoLine.Next() = 0;
         end;
     end;
@@ -581,6 +629,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
     var
         PurchInvHeader: Record "Purch. Inv. Header";
         PurchInvLine: Record "Purch. Inv. Line";
+        IsHandled: Boolean;
     begin
         PurchInvLine.SetRange(PurchInvLine."Document No.", VATEntry."Document No.");
         PurchInvLine.SetRange(PurchInvLine."VAT Bus. Posting Group", VATEntry."VAT Bus. Posting Group");
@@ -592,10 +641,13 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             if PurchInvHeader."No." <> PurchInvLine."Document No." then
                 PurchInvHeader.Get(PurchInvLine."Document No.");
             repeat
-                UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, PurchInvLine."Tariff No. CZL",
-                  PurchInvLine."VAT Bus. Posting Group", PurchInvLine."VAT Prod. Posting Group", PurchInvLine."VAT Base Amount",
-                  PurchInvHeader."Currency Code", PurchInvHeader."VAT Currency Factor CZL", PurchInvHeader."VAT Date CZL",
-                  true, PurchInvLine.Amount);
+                IsHandled := false;
+                OnSplitFromPurchInvLineOnBeforeUpdateTempDropShptPostBuffer(PurchInvHeader, PurchInvLine, TempDropShptPostBuffer, IsHandled);
+                if not IsHandled then
+                    UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, PurchInvLine."Tariff No. CZL",
+                        PurchInvLine."VAT Bus. Posting Group", PurchInvLine."VAT Prod. Posting Group", PurchInvLine."VAT Base Amount",
+                        PurchInvHeader."Currency Code", PurchInvHeader."VAT Currency Factor CZL", PurchInvHeader."VAT Date CZL",
+                        true, PurchInvLine.Amount);
             until PurchInvLine.Next() = 0;
         end;
     end;
@@ -604,6 +656,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
     var
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
         PurchCrMemoLine: Record "Purch. Cr. Memo Line";
+        IsHandled: Boolean;
     begin
         PurchCrMemoLine.SetRange(PurchCrMemoLine."Document No.", VATEntry."Document No.");
         PurchCrMemoLine.SetRange(PurchCrMemoLine."VAT Bus. Posting Group", VATEntry."VAT Bus. Posting Group");
@@ -614,10 +667,13 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             if PurchCrMemoHdr."No." <> PurchCrMemoLine."Document No." then
                 PurchCrMemoHdr.Get(PurchCrMemoLine."Document No.");
             repeat
-                UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, PurchCrMemoLine."Tariff No. CZL",
-                  PurchCrMemoLine."VAT Bus. Posting Group", PurchCrMemoLine."VAT Prod. Posting Group", PurchCrMemoLine."VAT Base Amount",
-                  PurchCrMemoHdr."Currency Code", PurchCrMemoHdr."VAT Currency Factor CZL", PurchCrMemoHdr."VAT Date CZL",
-                  true, PurchCrMemoLine.Amount);
+                IsHandled := false;
+                OnSplitFromPurchCrMemoLineOnBeforeUpdateTempDropShptPostBuffer(PurchCrMemoHdr, PurchCrMemoLine, TempDropShptPostBuffer, IsHandled);
+                if not IsHandled then
+                    UpdateTempDropShptPostBuffer(TempDropShptPostBuffer, PurchCrMemoLine."Tariff No. CZL",
+                        PurchCrMemoLine."VAT Bus. Posting Group", PurchCrMemoLine."VAT Prod. Posting Group", PurchCrMemoLine."VAT Base Amount",
+                        PurchCrMemoHdr."Currency Code", PurchCrMemoHdr."VAT Currency Factor CZL", PurchCrMemoHdr."VAT Date CZL",
+                        true, PurchCrMemoLine.Amount);
             until PurchCrMemoLine.Next() = 0;
         end;
     end;
@@ -808,6 +864,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                             TempVATCtrlReportBufferCZL.SetRange("Posting Date", VATCtrlReportLineCZL."Posting Date");
                 end;
 
+                OnCreateBufferForExportOnBeforeTempVATCtrlReportBufferCZLFindFirst(VATCtrlReportLineCZL, VATCtrlReportSectionCZL, TempVATCtrlReportBufferCZL);
                 if not TempVATCtrlReportBufferCZL.FindFirst() then begin
                     CopyLineToBuffer(VATCtrlReportLineCZL, TempVATCtrlReportBufferCZL);
                     LineNo += 1;
@@ -994,6 +1051,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                 Temp1VATCtrlReportBufferCZL.SetRange("VAT Rate", VATCtrlReportLineCZL."VAT Rate");
                 Temp1VATCtrlReportBufferCZL.SetRange("Commodity Code", VATCtrlReportLineCZL."Commodity Code");
                 Temp1VATCtrlReportBufferCZL.SetRange("Supplies Mode Code", VATCtrlReportLineCZL."Supplies Mode Code");
+                OnExportInternalDocCheckToExcelOnBeforeTempVATCtrlReportBufferCZLFindFirst(VATCtrlReportLineCZL, Temp1VATCtrlReportBufferCZL);
                 if not Temp1VATCtrlReportBufferCZL.FindFirst() then begin
                     Temp1VATCtrlReportBufferCZL.Init();
                     Temp1VATCtrlReportBufferCZL."VAT Ctrl. Report Section Code" := VATCtrlReportLineCZL."VAT Ctrl. Report Section Code";
@@ -1008,6 +1066,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                     Temp1VATCtrlReportBufferCZL."VAT Rate" := VATCtrlReportLineCZL."VAT Rate";
                     Temp1VATCtrlReportBufferCZL."Commodity Code" := VATCtrlReportLineCZL."Commodity Code";
                     Temp1VATCtrlReportBufferCZL."Supplies Mode Code" := VATCtrlReportLineCZL."Supplies Mode Code";
+                    OnExportInternalDocCheckToExcelOnBeforeInsertTempVATCtrlReportBufferCZL(VATCtrlReportLineCZL, Temp1VATCtrlReportBufferCZL);
                     Temp1VATCtrlReportBufferCZL.Insert();
                 end;
                 Temp1VATCtrlReportBufferCZL."Total Amount" += VATCtrlReportLineCZL.Base + VATCtrlReportLineCZL.Amount;
@@ -1285,6 +1344,101 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertTempVATEntryForStatementLine(var TempVATEntry: Record "VAT Entry" temporary; VATStatementLine: Record "VAT Statement Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertVATCtrlReportBuffer(VATEntry: Record "VAT Entry"; VATCtrlReportSectionCZL: Record "VAT Ctrl. Report Section CZL"; VATPostingSetup: Record "VAT Posting Setup"; CommodityCode: Code[20]; var TempVATCtrlReportEntLinkCZL: Record "VAT Ctrl. Report Ent. Link CZL" temporary; var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetVATCtrlReportLinesOnBeforeAddVATEntryToBuffer(VATStatementLine: Record "VAT Statement Line"; VATPostingSetup: Record "VAT Posting Setup"; var VATCtrlReportSectionCZL: Record "VAT Ctrl. Report Section CZL"; var TempVATEntry: Record "VAT Entry" temporary);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnMergeVATEntryOnBeforeTempVATEntryBudgetBufferFindFirst(VATEntry: Record "VAT Entry"; var TempDocumentBudgetBuffer: Record "Budget Buffer" temporary);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnMergeVATEntryOnBeforeTempGlobalVATEntryFindSet(VATEntry: Record "VAT Entry"; var TempGlobalVATEntry: Record "VAT Entry" temporary);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnMergeVATEntryOnBeforeInsertTempVATEntryBudgetBuffer(VATEntry: Record "VAT Entry"; var TempDocumentBudgetBuffer: Record "Budget Buffer" temporary);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetDocumentAmountOnBeforeTempDocumentBudgetBufferFindFirst(VATEntry: Record "VAT Entry"; var TempDocumentBudgetBuffer: Record "Budget Buffer" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetDocumentAmountOnBeforeTempGlobalVATEntryFindSet(VATEntry: Record "VAT Entry"; var TempGlobalVATEntry: Record "VAT Entry" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetDocumentAmountOnBeforeInsertTempDocumentBudgetBuffer(VATEntry: Record "VAT Entry"; var TempDocumentBudgetBuffer: Record "Budget Buffer" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnInsertVATCtrlReportBufferGroupOnBeforeTempVATCtrlReportBufferCZLFindFirst(VATEntry: Record "VAT Entry"; VATPostingSetup: Record "VAT Posting Setup"; var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnInsertVATCtrlReportBufferOnBeforeInsert(VATEntry: Record "VAT Entry"; VATPostingSetup: Record "VAT Posting Setup"; var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeIsVATEntryCorrected(VATEntry: Record "VAT Entry"; var TempGlobalVATEntry: Record "VAT Entry" temporary; var IsCorrected: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetBufferFromDocument(VATEntry: Record "VAT Entry"; SectionCode: Code[20]; var TempDropShptPostBuffer: Record "Drop Shpt. Post. Buffer" temporary; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSplitFromSalesInvLineOnBeforeUpdateTempDropShptPostBuffer(SalesInvoiceHeader: Record "Sales Invoice Header"; SalesInvoiceLine: Record "Sales Invoice Line"; var TempDropShptPostBuffer: Record "Drop Shpt. Post. Buffer" temporary; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSplitFromSalesCrMemoLineOnBeforeUpdateTempDropShptPostBuffer(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; SalesCrMemoLine: Record "Sales Cr.Memo Line"; var TempDropShptPostBuffer: Record "Drop Shpt. Post. Buffer" temporary; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSplitFromPurchInvLineOnBeforeUpdateTempDropShptPostBuffer(PurchInvHeader: Record "Purch. Inv. Header"; PurchInvLine: Record "Purch. Inv. Line"; var TempDropShptPostBuffer: Record "Drop Shpt. Post. Buffer" temporary; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSplitFromPurchCrMemoLineOnBeforeUpdateTempDropShptPostBuffer(PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; PurchCrMemoLine: Record "Purch. Cr. Memo Line"; var TempDropShptPostBuffer: Record "Drop Shpt. Post. Buffer" temporary; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateBufferForExportOnBeforeTempVATCtrlReportBufferCZLFindFirst(VATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL"; VATCtrlReportSectionCZL: Record "VAT Ctrl. Report Section CZL"; var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnExportInternalDocCheckToExcelOnBeforeTempVATCtrlReportBufferCZLFindFirst(VATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL"; var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnExportInternalDocCheckToExcelOnBeforeInsertTempVATCtrlReportBufferCZL(VATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL"; var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
     begin
     end;
 }

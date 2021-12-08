@@ -19,7 +19,7 @@ codeunit 9175 "User Settings Impl."
         TrialStartMsg: Label 'We''re glad you''ve chosen to explore %1!\\Your session will restart to activate the new settings.', Comment = '%1 - our product name';
         UserCreatedAppNameTxt: Label '(User-created)';
         DescriptionFilterTxt: Label 'Navigation menu only.';
-        NotEnoughPermissionsErr: Label 'You cannot access settings for other users.';
+        NotEnoughPermissionsErr: Label 'You cannot open this page. Only administrators can access settings for other users.';
 
     procedure GetPageId(): Integer
     var
@@ -435,7 +435,7 @@ codeunit 9175 "User Settings Impl."
         AzureADGraphUser: Codeunit "Azure AD Graph User";
         UserPermissions: Codeunit "User Permissions";
     begin
-        if EnvironmentInformation.IsSaaSInfrastructure() and 
+        if EnvironmentInformation.IsSaaSInfrastructure() and
             (not AzureADUserManagement.IsUserTenantAdmin()) and
             (not AzureADGraphUser.IsUserDelegatedAdmin()) and
             (not AzureADGraphUser.IsUserDelegatedHelpdesk())

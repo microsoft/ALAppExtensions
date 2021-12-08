@@ -41,6 +41,19 @@ pageextension 18144 "GST Posted Sales Invoice Ext" extends "Posted Sales Invoice
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 ToolTip = 'Specifies the merchant ID provided to customers by their payment processor.';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'New field introduced as E-Comm. Merchant Id';
+                ObsoleteTag = '23.0';
+                trigger OnValidate()
+                begin
+                    error(UnusedFieldLbl);
+                end;
+            }
+            field("E-Comm. Merchant Id"; Rec."E-Comm. Merchant Id")
+            {
+                ApplicationArea = Basic, Suite;
+                Editable = false;
+                ToolTip = 'Specifies the merchant ID provided to customers by their payment processor.';
             }
             field("Reference Invoice No."; Rec."Reference Invoice No.")
             {
@@ -321,4 +334,5 @@ pageextension 18144 "GST Posted Sales Invoice Ext" extends "Posted Sales Invoice
         MakeFieldUneditable: Boolean;
         eInvoiceNonGSTTransactionErr: Label 'E-Invoicing is not applicable for Non-GST Transactions.';
         eInvoiceNotApplicableCustomerErr: Label 'E-Invoicing is not applicable for Unregistered, Export and Deemed Export Customers.';
+        UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use ‘E-Comm. Merchant Id’';
 }

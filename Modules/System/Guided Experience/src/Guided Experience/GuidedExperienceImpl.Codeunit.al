@@ -626,7 +626,7 @@ codeunit 1991 "Guided Experience Impl."
             SpotlightTourText."Spotlight Tour Step" := SpotlightTourKey;
             SpotlightTourText."Spotlight Tour Text" := CopyStr(SpotlightTourTextsDictionary.Get(SpotlightTourKey),
                 1, MaxStrLen(SpotlightTourText."Spotlight Tour Text"));
-            SpotlightTourText.Insert();
+            if SpotlightTourText.Insert() then;
         end;
     end;
 
@@ -673,7 +673,8 @@ codeunit 1991 "Guided Experience Impl."
             exit;
 
         if SpotlightTourText."Spotlight Tour Text" = PrevSpotlightTourText."Spotlight Tour Text" then
-            Translation.Copy(PrevSpotlightTourText, SpotlightTourText, SpotlightTourText.FieldNo("Spotlight Tour Text"));
+            if Translation.Get(SpotlightTourText, SpotlightTourText.FieldNo("Spotlight Tour Text")) = '' then
+                Translation.Copy(PrevSpotlightTourText, SpotlightTourText, SpotlightTourText.FieldNo("Spotlight Tour Text"));
     end;
 
     procedure InsertTranslations(GuidedExperienceItem: Record "Guided Experience Item"; Title: Text[2048]; ShortTitle: Text[50]; Description: Text[1024]; Keywords: Text[250])
@@ -697,15 +698,15 @@ codeunit 1991 "Guided Experience Impl."
         // record if the fields haven't changed and if the translations don't already exist
         if GuidedExperienceItem.Version > 0 then begin
             if PrevVersionGuidedExperienceItem.Title = GuidedExperienceItem.Title then
-                if Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title)) <> '' then
+                if Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title)) = '' then
                     Translation.Copy(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title));
 
             if PrevVersionGuidedExperienceItem."Short Title" = GuidedExperienceItem."Short Title" then
-                if Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title")) <> '' then
+                if Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title")) = '' then
                     Translation.Copy(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo("Short Title"));
 
             if PrevVersionGuidedExperienceItem.Description = GuidedExperienceItem.Description then
-                if Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description)) <> '' then
+                if Translation.Get(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description)) = '' then
                     Translation.Copy(PrevVersionGuidedExperienceItem, GuidedExperienceItem, GuidedExperienceItem.FieldNo(Description));
         end;
     end;

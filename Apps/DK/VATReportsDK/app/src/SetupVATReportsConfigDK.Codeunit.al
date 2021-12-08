@@ -7,6 +7,8 @@ codeunit 13691 "Setup VAT Reports Config DK"
 {
     var
         MSECSLDKTok: Label 'ECSL-DK', Locked = true;
+        NewFileExport2022ReportMsg: Label 'The Intrastat report for the calendar year 2022 is now available. To use it, open the VAT Reports Configuration page. In the line where the VAT Report Type field is set to Intrastat Report, set the Content Codeunit ID field to 0.';
+        OpenVATReportConfigMsg: Label 'Open the VAT Reports Configuration page.';
 
     [EventSubscriber(ObjectType::Page, Page::"ECSL Report", 'OnOpenPageEvent', '', false, false)]
     local procedure ConfigureECSL();
@@ -33,9 +35,26 @@ codeunit 13691 "Setup VAT Reports Config DK"
     local procedure ConfigureIntrastat();
     var
         VATReportsConfiguration: Record "VAT Reports Configuration";
+        Notification: Notification;
     begin
         IF NOT VATReportsConfiguration.Get(VATReportsConfiguration."VAT Report Type"::"Intrastat Report", 'CURRENT') then
             AddIntrastatConfiguration();
+
+        VATReportsConfiguration.SetRange("VAT Report Type", VATReportsConfiguration."VAT Report Type"::"Intrastat Report");
+        VATReportsConfiguration.SetFilter("Validate Codeunit ID", '<>%1', 0);
+        VATReportsConfiguration.SetFilter("Content Codeunit ID", '<>%1', 0);
+        if VATReportsConfiguration.IsEmpty() then
+            exit;
+
+        Notification.Message := NewFileExport2022ReportMsg;
+        Notification.Scope := NotificationScope::LocalScope;
+        Notification.AddAction(OpenVATReportConfigMsg, Codeunit::"Setup VAT Reports Config DK", 'OpenVATReportConfig');
+        Notification.Send();
+    end;
+
+    procedure OpenVATReportConfig(Notification: Notification)
+    begin
+        Page.RunModal(Page::"VAT Reports Configuration");
     end;
 
     local procedure AddECSLConfiguration();

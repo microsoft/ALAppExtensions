@@ -9,6 +9,7 @@ permissionsetextension 18355 "D365 READ - India GST" extends "D365 READ"
                   tabledata "Detailed GST Ledger Entry Info" = R,
                   tabledata "Dist. Component Amount" = R,
                   tabledata "E-Commerce Merchant" = R,
+                  tabledata "E-Comm. Merchant" = R,
                   tabledata "GST Application Buffer" = R,
                   tabledata "GST Claim Setoff" = R,
                   tabledata "GST Component Distribution" = R,
@@ -49,5 +50,5 @@ permissionsetextension 18355 "D365 READ - India GST" extends "D365 READ"
                   tabledata "Service Transfer Rcpt. Line" = R,
                   tabledata "Service Transfer Shpt. Header" = R,
                   tabledata "Service Transfer Shpt. Line" = R,
-                  tabledata "Transfer Buffer" = R;                  
+                  tabledata "Transfer Buffer" = R;
 }

@@ -19,6 +19,7 @@ codeunit 148052 "Unreliable Payer CZL"
         Assert: Codeunit Assert;
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
         ReleasePurchaseDocument: Codeunit "Release Purchase Document";
+        EntryNo: Integer;
         isInitialized: Boolean;
         VendorBankAccountCode: Code[20];
         VendorBankAccountName: Text[100];
@@ -119,14 +120,7 @@ codeunit 148052 "Unreliable Payer CZL"
         PurchaseLine.Modify(true);
 
         // [GIVEN] Unreliable Payer Entry has been created, Vendor is reliable
-        UnreliablePayerEntryCZL.Init();
-        UnreliablePayerEntryCZL."Entry No." := LibraryRandom.RandInt(1000);
-        UnreliablePayerEntryCZL."Vendor No." := Vendor."No.";
-        UnreliablePayerEntryCZL."Check Date" := WorkDate();
-        UnreliablePayerEntryCZL."Unreliable Payer" := UnreliablePayerEntryCZL."Unreliable Payer"::NO;
-        UnreliablePayerEntryCZL."Entry Type" := UnreliablePayerEntryCZL."Entry Type"::Payer;
-        UnreliablePayerEntryCZL."VAT Registration No." := Vendor."VAT Registration No.";
-        UnreliablePayerEntryCZL.Insert();
+        CreateUnreliablePayerEntry(Vendor, UnreliablePayerEntryCZL."Unreliable Payer"::NO, UnreliablePayerEntryCZL."Entry Type"::Payer);
         Commit();
 
         // [WHEN] Release Purchase Invoice
@@ -161,14 +155,7 @@ codeunit 148052 "Unreliable Payer CZL"
         PurchaseLine.Modify(true);
 
         // [GIVEN] Unreliable Payer Entry has been created, Vendor is unreliable
-        UnreliablePayerEntryCZL.Init();
-        UnreliablePayerEntryCZL."Entry No." := LibraryRandom.RandInt(1000);
-        UnreliablePayerEntryCZL."Vendor No." := Vendor."No.";
-        UnreliablePayerEntryCZL."Check Date" := WorkDate();
-        UnreliablePayerEntryCZL."Unreliable Payer" := UnreliablePayerEntryCZL."Unreliable Payer"::YES;
-        UnreliablePayerEntryCZL."Entry Type" := UnreliablePayerEntryCZL."Entry Type"::Payer;
-        UnreliablePayerEntryCZL."VAT Registration No." := Vendor."VAT Registration No.";
-        UnreliablePayerEntryCZL.Insert();
+        CreateUnreliablePayerEntry(Vendor, UnreliablePayerEntryCZL."Unreliable Payer"::YES, UnreliablePayerEntryCZL."Entry Type"::Payer);
         Commit();
 
         // [WHEN] Release Purchase Invoice
@@ -204,14 +191,7 @@ codeunit 148052 "Unreliable Payer CZL"
         PurchaseLine.Modify(true);
 
         // [GIVEN] Unreliable Payer Entry has been created, Vendor is unreliable
-        UnreliablePayerEntryCZL.Init();
-        UnreliablePayerEntryCZL."Entry No." := LibraryRandom.RandInt(1000);
-        UnreliablePayerEntryCZL."Vendor No." := Vendor."No.";
-        UnreliablePayerEntryCZL."Check Date" := WorkDate();
-        UnreliablePayerEntryCZL."Unreliable Payer" := UnreliablePayerEntryCZL."Unreliable Payer"::YES;
-        UnreliablePayerEntryCZL."Entry Type" := UnreliablePayerEntryCZL."Entry Type"::Payer;
-        UnreliablePayerEntryCZL."VAT Registration No." := Vendor."VAT Registration No.";
-        UnreliablePayerEntryCZL.Insert();
+        CreateUnreliablePayerEntry(Vendor, UnreliablePayerEntryCZL."Unreliable Payer"::YES, UnreliablePayerEntryCZL."Entry Type"::Payer);
         Commit();
 
         // [WHEN] Release Purchase Invoice
@@ -251,14 +231,7 @@ codeunit 148052 "Unreliable Payer CZL"
         PurchaseLine.Modify(true);
 
         // [GIVEN] Unreliable Payer Entry has been created, Vendor is unreliable
-        UnreliablePayerEntryCZL.Init();
-        UnreliablePayerEntryCZL."Entry No." := LibraryRandom.RandInt(1000);
-        UnreliablePayerEntryCZL."Vendor No." := Vendor."No.";
-        UnreliablePayerEntryCZL."Check Date" := WorkDate();
-        UnreliablePayerEntryCZL."Unreliable Payer" := UnreliablePayerEntryCZL."Unreliable Payer"::YES;
-        UnreliablePayerEntryCZL."Entry Type" := UnreliablePayerEntryCZL."Entry Type"::Payer;
-        UnreliablePayerEntryCZL."VAT Registration No." := Vendor."VAT Registration No.";
-        UnreliablePayerEntryCZL.Insert();
+        CreateUnreliablePayerEntry(Vendor, UnreliablePayerEntryCZL."Unreliable Payer"::YES, UnreliablePayerEntryCZL."Entry Type"::Payer);
         Commit();
 
         // [WHEN] Release Purchase Invoice
@@ -285,19 +258,12 @@ codeunit 148052 "Unreliable Payer CZL"
         Vendor.Modify(false);
 
         // [GIVEN] Unreliable Payer Entry has been created for Payer
-        UnreliablePayerEntryCZL.Init();
-        UnreliablePayerEntryCZL."Entry No." := LibraryRandom.RandInt(1000);
-        UnreliablePayerEntryCZL."Vendor No." := Vendor."No.";
-        UnreliablePayerEntryCZL."Check Date" := WorkDate();
-        UnreliablePayerEntryCZL."Unreliable Payer" := UnreliablePayerEntryCZL."Unreliable Payer"::NO;
-        UnreliablePayerEntryCZL."Entry Type" := UnreliablePayerEntryCZL."Entry Type"::Payer;
-        UnreliablePayerEntryCZL."VAT Registration No." := Vendor."VAT Registration No.";
-        UnreliablePayerEntryCZL.Insert();
+        CreateUnreliablePayerEntry(Vendor, UnreliablePayerEntryCZL."Unreliable Payer"::NO, UnreliablePayerEntryCZL."Entry Type"::Payer);
         Commit();
 
         // [GIVEN] Unreliable Payer Entry has been created for Bank Acount
         UnreliablePayerEntryCZL.Init();
-        UnreliablePayerEntryCZL."Entry No." := LibraryRandom.RandInt(1000);
+        UnreliablePayerEntryCZL."Entry No." := GetNextEntryNo();
         UnreliablePayerEntryCZL."Vendor No." := Vendor."No.";
         UnreliablePayerEntryCZL."Check Date" := WorkDate();
         UnreliablePayerEntryCZL."Entry Type" := UnreliablePayerEntryCZL."Entry Type"::"Bank Account";
@@ -337,19 +303,12 @@ codeunit 148052 "Unreliable Payer CZL"
         Vendor.Modify(false);
 
         // [GIVEN] Unreliable Payer Entry has been created, Vendor is reliable
-        UnreliablePayerEntryCZL.Init();
-        UnreliablePayerEntryCZL."Entry No." := LibraryRandom.RandInt(1000);
-        UnreliablePayerEntryCZL."Vendor No." := Vendor."No.";
-        UnreliablePayerEntryCZL."Check Date" := WorkDate();
-        UnreliablePayerEntryCZL."Unreliable Payer" := UnreliablePayerEntryCZL."Unreliable Payer"::NO;
-        UnreliablePayerEntryCZL."Entry Type" := UnreliablePayerEntryCZL."Entry Type"::Payer;
-        UnreliablePayerEntryCZL."VAT Registration No." := Vendor."VAT Registration No.";
-        UnreliablePayerEntryCZL.Insert();
+        CreateUnreliablePayerEntry(Vendor, UnreliablePayerEntryCZL."Unreliable Payer"::NO, UnreliablePayerEntryCZL."Entry Type"::Payer);
         Commit();
 
         // [GIVEN] Unreliable Payer Entry has been created for Bank Acount
         UnreliablePayerEntryCZL.Init();
-        UnreliablePayerEntryCZL."Entry No." := LibraryRandom.RandInt(1000);
+        UnreliablePayerEntryCZL."Entry No." := GetNextEntryNo();
         UnreliablePayerEntryCZL."Vendor No." := Vendor."No.";
         UnreliablePayerEntryCZL."Check Date" := WorkDate();
         UnreliablePayerEntryCZL."Entry Type" := UnreliablePayerEntryCZL."Entry Type"::"Bank Account";
@@ -370,6 +329,24 @@ codeunit 148052 "Unreliable Payer CZL"
 
         // [THEN] Vendor Bank Account will be public
         Assert.AreEqual(true, VendorBankAccount.IsPublicBankAccountCZL(), 'Vendor Bank Account is not Public');
+    end;
+
+    local procedure CreateUnreliablePayerEntry(Vendor: Record Vendor; UnreliablePayer: Option; EntryType: Option)
+    begin
+        UnreliablePayerEntryCZL.Init();
+        UnreliablePayerEntryCZL."Entry No." := GetNextEntryNo();
+        UnreliablePayerEntryCZL."Vendor No." := Vendor."No.";
+        UnreliablePayerEntryCZL."Check Date" := WorkDate();
+        UnreliablePayerEntryCZL."Unreliable Payer" := UnreliablePayer;
+        UnreliablePayerEntryCZL."Entry Type" := EntryType;
+        UnreliablePayerEntryCZL."VAT Registration No." := Vendor."VAT Registration No.";
+        UnreliablePayerEntryCZL.Insert();
+    end;
+
+    local procedure GetNextEntryNo(): Integer
+    begin
+        EntryNo += 1;
+        exit(EntryNo);
     end;
 
     [ConfirmHandler]
