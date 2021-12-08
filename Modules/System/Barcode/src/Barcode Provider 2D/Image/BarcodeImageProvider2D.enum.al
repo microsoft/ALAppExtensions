@@ -12,7 +12,7 @@ enum 9207 "Barcode Image Provider 2D" implements "Barcode Image Provider 2D"
     Extensible = true;
 
     /// <summary>
-    /// Dynamics QR Code Provide.
+    /// Dynamics QR Code Provider.
     /// </summary>
     value(0; Dynamics2D)
     {
