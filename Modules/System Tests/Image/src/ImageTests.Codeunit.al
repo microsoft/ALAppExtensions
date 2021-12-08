@@ -11,7 +11,7 @@ codeunit 135135 "Image Tests"
     var
         Assert: Codeunit "Library Assert";
         Base64Convert: Codeunit "Base64 Convert";
-        ImageNotInitializedErr: Label 'Image is not initialized';
+        ImageNotInitializedErr: Label 'The image could not be loaded';
         ImageAsBase64Txt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAYAAAB8ZH1oAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAhSURBVBhXYwCC/0RirILYMIIDAtjYUIzCwYexCqJhhv8AD/M3yc4WsFgAAAAASUVORK5CYII=', Locked = true;
         RotatedImageAsBase64Txt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAKCAYAAAB8OZQwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAdSURBVBhXYwCC/1gwqYIggCGIhvEIUqgdgRn+AwCbbDfJSYc2FAAAAABJRU5ErkJggq5CYII=', Locked = true;
         ImageAsBase64ClearTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAYAAAB8ZH1oAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwgAADsIBFShKgAAAABRJREFUGFdj+M/A8J8YPPgVMvwHAOUMY51Bb2wGAAAAAElFTkSuQmCCCqJhhv8AD/M3yc4WsFgAAAAASUVORK5CYII=', Locked = true;
@@ -174,7 +174,7 @@ codeunit 135135 "Image Tests"
 
         // [Then] Fail to do invalid resizing 
         asserterror Image.Clear(-1, 0, 0);
-        Assert.ExpectedError('Parameter Red must be between 0 and 255');
+        Assert.ExpectedError('The Red parameter must be between 0 and 255');
     end;
 
     [Test]

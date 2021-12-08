@@ -387,6 +387,132 @@ codeunit 139521 "VAT Group Representative Logic"
         Assert.ExpectedMessage(VATGroupSettlementQst, LibraryVariableStorage.DequeueText());
         Assert.ExpectedMessage(VATGroupSettlementMsg, LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
+        ClearGlEntries(DocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('VATGroupSetupYesConfirmHandler,SuccessMessageHandler,HandleVATSettlementReport')]
+    procedure TestVATGroupSettlementPostingFromDedicatedActionWithZeroAmount()
+    var
+        VATReportHeader: Record "VAT Report Header";
+        VATReport: TestPage "VAT Report";
+        GenJournalTemplateName: Code[10];
+        DocumentNo: Code[20];
+        MemberId: array[2] of Guid;
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 374187] VAT Group Settlement Posting From Dedicated Action
+        Initialize();
+
+        // [GIVEN] Current Role is Group Representative and all setup for VAT Group settlement is done
+        ClearValidationCUIds();
+        CreateGenJournalTemplateWithNoSeries(GenJournalTemplateName, DocumentNo, false);
+        LibraryVATGroup.UpdateSettlementSetup(
+            '001', CreateGLAccountNo(GLAccountCategory::Liabilities),
+            CreateGLAccountNo(GLAccountCategory::Assets), GenJournalTemplateName);
+
+        // [GIVEN] We have at least 1 approved member
+        MemberId[1] := LibraryVATGroup.MockVATGroupApprovedMemberWithName('Member 1');
+        MemberId[2] := LibraryVATGroup.MockVATGroupApprovedMemberWithName('Member 2');
+
+        // [GIVEN] We have at least one VAT Return
+        // [GIVEN] There are VAT submissions for said period
+        CreateVATReturnWith3Lines(VATReportHeader);
+        CreateVATSubmissionWith3Lines(MemberId[1], 0, 200, 300);
+        CreateVATSubmissionWith3Lines(MemberId[2], 200, 200, 300);
+
+        // [GIVEN] We have Included the VAT Group amounts
+        LibraryVATGroup.IncludeVATGroup(VATReportHeader);
+
+        // [GIVEN] The VAT Return is released and accepted
+        // [GIVEN] The VAT Group Settlement Posted flag is not checked
+        ReleaseAcceptVATReturn(VATReportHeader, false);
+
+        // [GIVEN] The user can post the VAT Group Settlement
+        LibraryVATGroup.OpenVATReturnCard(VATReport, VATReportHeader);
+        Assert.IsTrue(VATReport."Post VAT Group Settlement".Visible(), ControlShouldBeVisibleTxt);
+
+        // [WHEN] the user Posts the VAT Group Settlement
+        Commit();
+        VATReport."Post VAT Group Settlement".Invoke();
+
+        // [THEN] It will be successful
+        VATReport."VAT Group Settlement Posted".AssertEquals(true);
+
+        // [THEN] The posted GL Entries are correct
+        AssertPostedGLEntriesOneWithZero(DocumentNo);
+
+        // [THEN] The button would become invisible
+        Assert.IsFalse(VATReport."Post VAT Group Settlement".Visible(), ControlShouldNotBeVisibleTxt);
+
+        // [THEN] The user won't be prompted to post VAT Group Settlement again after they use Calc. and Post VAT Settlement
+        CalcAndPostVATSettlement(VATReportHeader);
+
+        Assert.ExpectedMessage(VATGroupSettlementQst, LibraryVariableStorage.DequeueText());
+        Assert.ExpectedMessage(VATGroupSettlementMsg, LibraryVariableStorage.DequeueText());
+        LibraryVariableStorage.AssertEmpty();
+        ClearGlEntries(DocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('VATGroupSetupYesConfirmHandler,SuccessMessageHandler,HandleVATSettlementReport')]
+    procedure TestVATGroupSettlementPostingFromCalcPostVATReportWithZeroAmount()
+    var
+        VATReportHeader: Record "VAT Report Header";
+        VATReport: TestPage "VAT Report";
+        GenJournalTemplateName: Code[10];
+        DocumentNo: Code[20];
+        MemberId: array[2] of Guid;
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 374187] VAT Group Settlement Posting From Calc Post VAT Report
+        Initialize();
+
+        // [GIVEN] Current Role is Group Representative and all setup for VAT Group settlement is done
+        ClearValidationCUIds();
+        CreateGenJournalTemplateWithNoSeries(GenJournalTemplateName, DocumentNo, true);
+        LibraryVATGroup.UpdateSettlementSetup(
+            '001', CreateGLAccountNo(GLAccountCategory::Liabilities),
+            CreateGLAccountNo(GLAccountCategory::Assets), GenJournalTemplateName);
+
+        // [GIVEN] We have at least 1 approved member
+        MemberId[1] := LibraryVATGroup.MockVATGroupApprovedMemberWithName('Member 1');
+        MemberId[2] := LibraryVATGroup.MockVATGroupApprovedMemberWithName('Member 2');
+
+        // [GIVEN] We have at least one VAT Return
+        // [GIVEN] There are VAT submissions for said period
+        CreateVATReturnWith3Lines(VATReportHeader);
+        CreateVATSubmissionWith3Lines(MemberId[1], 0, 200, 300);
+        CreateVATSubmissionWith3Lines(MemberId[2], 200, 200, 300);
+
+        // [GIVEN] We have Included the VAT Group amounts
+        LibraryVATGroup.IncludeVATGroup(VATReportHeader);
+
+        // [GIVEN] The VAT Return is released and accepted
+        // [GIVEN] The VAT Group Settlement Posted flag is not checked
+        ReleaseAcceptVATReturn(VATReportHeader, false);
+
+        // [GIVEN] The user can post the VAT Group Settlement
+        LibraryVATGroup.OpenVATReturnCard(VATReport, VATReportHeader);
+        Assert.IsTrue(VATReport."Post VAT Group Settlement".Visible(), ControlShouldBeVisibleTxt);
+
+        // [WHEN] The user posts the VAT Group settlement triggered automatically after posting the normal Calc. Post VAT Settlement
+        CalcAndPostVATSettlement(VATReportHeader);
+        VATReport."VAT Group Settlement Posted".AssertEquals(true);
+
+        // [THEN] The posted GL Entries are correct
+        AssertPostedGLEntriesOneWithZero(DocumentNo);
+
+        // [THEN] The button would become invisible
+        Assert.IsFalse(VATReport."Post VAT Group Settlement".Visible(), ControlShouldNotBeVisibleTxt);
+
+        // [THEN] The user won't be prompted to post VAT Group Settlement again after they use Calc. and Post VAT Settlement
+        CalcAndPostVATSettlement(VATReportHeader);
+
+        Assert.ExpectedMessage(VATGroupSettlementQst, LibraryVariableStorage.DequeueText());
+        Assert.ExpectedMessage(VATGroupSettlementMsg, LibraryVariableStorage.DequeueText());
+        LibraryVariableStorage.AssertEmpty();
+        ClearGlEntries(DocumentNo);
     end;
 
     [Test]
@@ -447,6 +573,7 @@ codeunit 139521 "VAT Group Representative Logic"
         Assert.ExpectedMessage(VATGroupSettlementQst, LibraryVariableStorage.DequeueText());
         Assert.ExpectedMessage(VATGroupSettlementMsg, LibraryVariableStorage.DequeueText());
         LibraryVariableStorage.AssertEmpty();
+        ClearGlEntries(DocumentNo);
     end;
 
     local procedure Initialize()
@@ -461,6 +588,14 @@ codeunit 139521 "VAT Group Representative Logic"
         IsInitialized := true;
 
         Commit();
+    end;
+
+    local procedure ClearGlEntries(DocumentNo: Code[20])
+    var
+        GLEntry: Record "G/L Entry";
+    begin
+        GLEntry.SetRange("Document No.", DocumentNo);
+        GLEntry.DeleteAll();
     end;
 
     local procedure CreateGenJournalTemplateWithNoSeries(var TemplateName: Code[10]; var NextDocumentNo: Code[20]; SkipNextNoSeriesDocNo: Boolean)
@@ -561,19 +696,49 @@ codeunit 139521 "VAT Group Representative Logic"
         DateTo := DMY2Date(31, 1, 2020);
         AssertPostedGLEntry(
             DocumentNo, VATReportSetup."VAT Settlement Account", 100,
-            StrSubstNo(VATSettlementForTxt, 'Member 1', DateFrom, DateTo));
+            StrSubstNo(VATSettlementForTxt, 'Member 1', DateFrom, DateTo), false);
         AssertPostedGLEntry(
             DocumentNo, VATReportSetup."Group Settlement Account", -100,
-            StrSubstNo(VATDueFromTxt, 'Member 1', DateFrom, DateTo));
+            StrSubstNo(VATDueFromTxt, 'Member 1', DateFrom, DateTo), false);
         AssertPostedGLEntry(
             DocumentNo, VATReportSetup."VAT Settlement Account", 200,
-            StrSubstNo(VATSettlementForTxt, 'Member 2', DateFrom, DateTo));
+            StrSubstNo(VATSettlementForTxt, 'Member 2', DateFrom, DateTo), false);
         AssertPostedGLEntry(
             DocumentNo, VATReportSetup."Group Settlement Account", -200,
-            StrSubstNo(VATDueFromTxt, 'Member 2', DateFrom, DateTo));
+            StrSubstNo(VATDueFromTxt, 'Member 2', DateFrom, DateTo), false);
     end;
 
-    local procedure AssertPostedGLEntry(DocumentNo: Code[20]; GLAccountNo: Code[20]; Amount: Decimal; Description: Text)
+    local procedure AssertPostedGLEntriesOneWithZero(DocumentNo: Code[20])
+    var
+        GLEntry: Record "G/L Entry";
+        VATReportSetup: Record "VAT Report Setup";
+        DateFrom: Date;
+        DateTo: Date;
+    begin
+        GLEntry.SetRange("Document No.", DocumentNo);
+        Assert.RecordCount(GLEntry, 2);
+
+        GLEntry.CalcSums(Amount);
+        Assert.AreEqual(0, GLEntry.Amount, 'The net sum should be 0');
+
+        VATReportSetup.Get();
+        DateFrom := DMY2Date(1, 1, 2020);
+        DateTo := DMY2Date(31, 1, 2020);
+        AssertPostedGLEntry(
+            DocumentNo, VATReportSetup."VAT Settlement Account", 100,
+            StrSubstNo(VATSettlementForTxt, 'Member 1', DateFrom, DateTo), true);
+        AssertPostedGLEntry(
+            DocumentNo, VATReportSetup."Group Settlement Account", -100,
+            StrSubstNo(VATDueFromTxt, 'Member 1', DateFrom, DateTo), true);
+        AssertPostedGLEntry(
+            DocumentNo, VATReportSetup."VAT Settlement Account", 200,
+            StrSubstNo(VATSettlementForTxt, 'Member 2', DateFrom, DateTo), false);
+        AssertPostedGLEntry(
+            DocumentNo, VATReportSetup."Group Settlement Account", -200,
+            StrSubstNo(VATDueFromTxt, 'Member 2', DateFrom, DateTo), false);
+    end;
+
+    local procedure AssertPostedGLEntry(DocumentNo: Code[20]; GLAccountNo: Code[20]; Amount: Decimal; Description: Text; Empty: Boolean)
     var
         GLEntry: Record "G/L Entry";
     begin
@@ -581,7 +746,10 @@ codeunit 139521 "VAT Group Representative Logic"
         GLEntry.SetRange(Amount, Amount);
         GLEntry.SetRange(Description, Description);
         GLEntry.SetRange("G/L Account No.", GLAccountNo);
-        Assert.RecordIsNotEmpty(GLEntry);
+        if not Empty then
+            Assert.RecordIsNotEmpty(GLEntry)
+        else
+            Assert.RecordIsEmpty(GLEntry)
     end;
 
     [RequestPageHandler]

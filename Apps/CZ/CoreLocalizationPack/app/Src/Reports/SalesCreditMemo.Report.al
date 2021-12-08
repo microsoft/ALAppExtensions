@@ -366,7 +366,9 @@ report 31190 "Sales Credit Memo CZL"
 
                     trigger OnAfterGetRecord()
                     begin
-                        UnitPriceExclVAT := 100 * "Sales Cr.Memo Line"."Unit Price" / (100 + "Sales Cr.Memo Line"."VAT %");
+                        UnitPriceExclVAT := "Unit Price";
+                        if "Sales Cr.Memo Header"."Prices Including VAT" then
+                            UnitPriceExclVAT := Round("Unit Price" / (1 + "VAT %" / 100), Currency."Amount Rounding Precision");
                     end;
                 }
                 dataitem(VATCounter; "Integer")
@@ -496,6 +498,12 @@ report 31190 "Sales Credit Memo CZL"
                         end;
                 end;
 
+                if "Currency Code" = '' then
+                    Currency.InitRoundingPrecision()
+                else
+                    if not Currency.Get("Currency Code") then
+                        Currency.InitRoundingPrecision();
+
                 SalesCrMemoLine.CalcVATAmountLines("Sales Cr.Memo Header", TempVATAmountLine);
                 TempVATAmountLine.UpdateVATEntryLCYAmountsCZL("Sales Cr.Memo Header");
                 if ("Currency Factor" <> 0) and ("Currency Factor" <> 1) then begin
@@ -572,6 +580,7 @@ report 31190 "Sales Credit Memo CZL"
         PaymentMethod: Record "Payment Method";
         ShipmentMethod: Record "Shipment Method";
         ReasonCode: Record "Reason Code";
+        Currency: Record Currency;
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         VATClause: Record "VAT Clause";
         Language: Codeunit Language;

@@ -1032,7 +1032,7 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
                         trigger OnBeforePassVariable()
                         begin
                             GetAmtAndSkipIfEmpty(dano, 'dano');
-                            if (dano <> '') and (DeclarationType <> DeclarationType::Supplementary) then
+                            if (dano <> '') and not DeclarationIsSupplementary() then
                                 dano := '';
                         end;
                     }
@@ -1385,7 +1385,7 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
     local procedure SetVATLiability()
     begin
         dano_no := '';
-        if DeclarationType <> DeclarationType::Supplementary then begin
+        if not DeclarationIsSupplementary() then begin
             dano_da := GetAmount('dano_da');
             dano_da := DelChr(dano_da, '=', '-');
         end;
@@ -1394,7 +1394,7 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
     local procedure SetExcessVATDeduction()
     begin
         dano_da := '';
-        if DeclarationType <> DeclarationType::Supplementary then begin
+        if not DeclarationIsSupplementary() then begin
             dano_no := GetAmount('dano_no');
             dano_no := DelChr(dano_no, '=', '-');
         end;

@@ -278,11 +278,8 @@ report 31014 "Sales - Advance Letter CZZ"
 
                 trigger OnPostDataItem()
                 begin
-                    if not CurrReport.Preview() then begin
-                        "Sales Advance Letter Header"."No. Printed" := "Sales Advance Letter Header"."No. Printed" + 1;
-                        "Sales Advance Letter Header".Modify();
-                        Commit();
-                    end;
+                    if not IsReportInPreviewMode() then
+                        Codeunit.Run(Codeunit::"Sales Adv. Letter-Printed CZZ", "Sales Advance Letter Header");
                 end;
             }
 
@@ -360,5 +357,12 @@ report 31014 "Sales - Advance Letter CZZ"
           SalesAdvLetterHeaderCZZ."Constant Symbol", SalesAdvLetterHeaderCZZ.FieldCaption("Constant Symbol"),
           SalesAdvLetterHeaderCZZ."Specific Symbol", SalesAdvLetterHeaderCZZ.FieldCaption("Specific Symbol"));
         DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText(SalesAdvLetterHeaderCZZ."Language Code");
+    end;
+
+    local procedure IsReportInPreviewMode(): Boolean
+    var
+        MailManagement: Codeunit "Mail Management";
+    begin
+        exit(CurrReport.Preview or MailManagement.IsHandlingGetEmailBody());
     end;
 }

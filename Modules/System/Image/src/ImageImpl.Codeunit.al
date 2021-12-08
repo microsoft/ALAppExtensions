@@ -10,17 +10,17 @@ codeunit 3970 "Image Impl."
     var
         TempBlob: Codeunit "Temp Blob";
         ImageCodec: DotNet ImageCodecInfo;
-        ImageNotInitializedErr: Label 'Image is not initialized';
+        ImageNotInitializedErr: Label 'The image could not be loaded.';
         WidthErr: Label 'Parameter Width must be greater than 0';
         HeightErr: Label 'Parameter Height must be greater than 0';
-        XErr: Label 'Parameter X must be between 0 and image width (%1)', Comment = '%1 = image width (number)';
-        YErr: Label 'Parameter Y must be between 0 and image height (%1)', Comment = '%1 = image width (number)';
-        AlphaErr: Label 'Parameter Alpha must be between 0 and 255';
-        RedErr: Label 'Parameter Red must be between 0 and 255';
-        GreenErr: Label 'Parameter Green must be between 0 and 255';
-        BlueErr: Label 'Parameter Blue must be between 0 and 255';
+        XErr: Label 'The X parameter must be between 0 and the image width, which is %1.', Comment = '%1 = image width (number)';
+        YErr: Label 'The Y parameter must be between 0 and the image height, which is %1.', Comment = '%1 = image width (number)';
+        AlphaErr: Label 'The Alpha parameter must be between 0 and 255.';
+        RedErr: Label 'The Red parameter must be between 0 and 255.';
+        GreenErr: Label 'The Green parameter must be between 0 and 255.';
+        BlueErr: Label 'The Blue parameter must be between 0 and 255.';
         FormatErr: Label 'Image is not in valid format';
-        ImageTooLargeErr: Label 'Input image too large. Max allowed size is 5 MB';
+        ImageTooLargeErr: Label 'The image is too large. Images can be up to 5 MB.';
         UnsupportedFormatErr: Label 'Format is currently not supported';
         QualityEncodeGuidTxt: Label '1d5be4b5-fa4a-452d-9cdd-5db35105e7eb', Locked = true;
         ImageCroppedTxt: Label 'Image cropped to x: %1, y: %2, width: %3, height: %4, format: %5', Locked = true;

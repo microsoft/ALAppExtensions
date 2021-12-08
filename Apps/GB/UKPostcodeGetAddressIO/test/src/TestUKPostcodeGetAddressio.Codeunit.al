@@ -84,11 +84,44 @@ codeunit 148018 "Test UK Postcode GetAddress.io"
         LibraryVariableStorage.Enqueue(1);
 
         // [WHEN]
-        SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress);
+        // - "line 1" is empty
+        SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress, 1);
 
         // [THEN]
-        Assert.AreEqual('Microsoft Ltd', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
-        Assert.AreEqual('Microsoft Campus', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Microsoft Area', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
+
+        // [WHEN]
+        // - "line 2" is empty
+        SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress, 2);
+
+        // [THEN]
+        Assert.AreEqual('Microsoft Street, Microsoft Area', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
+
+        // [WHEN]
+        // - "line 3" is empty
+        SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress, 3);
+
+        // [THEN]
+        Assert.AreEqual('Microsoft Street, Microsoft Area', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Microsoft Ltd', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
+
+        // [WHEN]
+        // - "line 4" is empty
+        SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress, 4);
+
+        // [THEN]
+        Assert.AreEqual('Microsoft Street, Microsoft Area', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Microsoft Campus, Microsoft Ltd', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
+
+        // [WHEN]
+        // - "Locality" is empty
+        SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress, 5);
+
+        // [THEN]
+        Assert.AreEqual('Microsoft Street', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Microsoft Campus, Microsoft Ltd, Floor 3', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
     end;
 
     [Test]
@@ -250,13 +283,26 @@ codeunit 148018 "Test UK Postcode GetAddress.io"
         Assert.RecordCount(TempAddressListNameValueBuffer, ExpectedResultCount);
     end;
 
-    local procedure SimulateGetAddresIOSpecificAddressSelection(var TempAutocompleteAddress: Record 9090 temporary)
+    local procedure SimulateGetAddresIOSpecificAddressSelection(var TempAutocompleteAddress: Record 9090 temporary; EmptyPosition: Integer)
     var
         TempAddressNameValueBuffer: Record 823 temporary;
         TempEnteredAutocompleteAddress: Record 9090 temporary;
     begin
         TempAddressNameValueBuffer.ID := 1;
-        TempAddressNameValueBuffer.Value := 'Microsoft Ltd, Microsoft Campus, , , , Reading, Berkshire';
+
+        case EmptyPosition of
+            1:
+                TempAddressNameValueBuffer.Value := ', , , , Microsoft Area, Reading, Berkshire';
+            2:
+                TempAddressNameValueBuffer.Value := 'Microsoft Street, , , , Microsoft Area, Reading, Berkshire';
+            3:
+                TempAddressNameValueBuffer.Value := 'Microsoft Ltd, Microsoft Street, , , Microsoft Area, Reading, Berkshire';
+            4:
+                TempAddressNameValueBuffer.Value := 'Microsoft Ltd, Microsoft Campus, Microsoft Street, , Microsoft Area, Reading, Berkshire';
+            5:
+                TempAddressNameValueBuffer.Value := 'Floor 3, Microsoft Ltd, Microsoft Campus, Microsoft Street, , Reading, Berkshire';
+        end;
+
         TempAddressNameValueBuffer.Name := TempAddressNameValueBuffer.Value;
         TempEnteredAutocompleteAddress.Postcode := 'RG61WG';
 

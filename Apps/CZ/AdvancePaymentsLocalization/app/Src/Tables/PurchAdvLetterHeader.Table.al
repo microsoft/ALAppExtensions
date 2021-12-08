@@ -949,7 +949,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
           DimensionManagement.GetRecDefaultDimID(
             Rec, CurrFieldNo, TableID, No, SourceCodeSetup.Purchases, "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
 
-        if OldDimSetID <> "Dimension Set ID" then
+        if (OldDimSetID <> "Dimension Set ID") and LinesExist() then
             Modify();
     end;
 

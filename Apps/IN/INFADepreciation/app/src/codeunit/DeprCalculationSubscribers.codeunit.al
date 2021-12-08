@@ -304,28 +304,11 @@ codeunit 18632 "Depr Calculation Subscribers"
         DaysInFiscalYear := CheckDaysInFiscalYear(DeprBook.Code, FADepBook, UntilDate);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Disposal", 'OnAfterSetEntryAmountsOnBeforeGainLoss', '', false, false)]
-    local procedure OnAfterSetEntryAmountsOnBeforeGainLoss(
-        FANo: Code[20];
-        FADeprBook: Record "FA Depreciation Book";
-        DeprBookCode: Code[10];
-        var EntryAmounts: array[14] of Decimal;
-        var GainLoss: Decimal;
-        var IsHandled: Boolean)
-    begin
-        if FADeprBook."FA Book Type" = FADeprBook."FA Book Type"::"Income Tax" then begin
-            FADeprBook.CalcFields("Book Value", "Proceeds on Disposal", "Acquisition Cost", "Salvage Value", Depreciation);
-            FADeprBook."Proceeds on Disposal" := (-1 * FADeprBook."Proceeds on Disposal");
-            GainLoss := FADeprBook."Book Value" + FADeprBook."Proceeds on Disposal";
-            IsHandled := true;
-        end;
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnAfterCalculateFinalAmount', '', false, false)]
     local procedure OnAfterCalculateFinalAmount(
-        DepreBook: Record "Depreciation Book";
-        var Amount: Decimal;
-        var IsHandled: Boolean)
+    DepreBook: Record "Depreciation Book";
+    var Amount: Decimal;
+    var IsHandled: Boolean)
     begin
         if (DepreBook."FA Book Type" = DepreBook."FA Book Type"::"Income Tax") then
             IsHandled := true;

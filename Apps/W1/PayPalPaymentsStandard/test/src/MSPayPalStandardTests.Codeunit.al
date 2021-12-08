@@ -20,7 +20,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         DatasetFileName: Text;
         Initialized: Boolean;
         UpdateOpenInvoicesManuallyTxt: Label 'A link for the PayPal payment service will be included for new sales documents. To add it to existing sales documents, you must manually select it in the Payment Service field on the sales document.';
-        ExchangeWithExternalServicesMsg: Label 'This extension uses the Paypal service, a third-party provider.';
+        ExchangeWithExternalServicesMsg: Label 'This extension uses a third-party payment service from PayPal.';
         ServiceNotSetupErr: Label 'You must specify an account ID for this payment service.';
         PayPalStandardNameTxt: Label 'PayPal Payments Standard';
         PayPalStandardDescriptionTxt: Label 'PayPal Payments Standard - Fee % of Amount';

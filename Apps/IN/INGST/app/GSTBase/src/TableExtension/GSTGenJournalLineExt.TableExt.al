@@ -438,6 +438,17 @@ tableextension 18004 "GST Gen. Journal Line Ext" extends "Gen. Journal Line"
                 where(
                     "Merchant Id" = field("e-Commerce Merchant Id"),
                     "Customer No." = field("e-Commerce Customer"));
+            ObsoleteState = Pending;
+            ObsoleteReason = 'New field introduced as E-Comm. Merchant Id';
+            ObsoleteTag = '23.0';
+        }
+        field(18052; "E-Comm. Merchant Id"; Code[30])
+        {
+            Caption = 'e-Commerce Merchant Id';
+            DataClassification = CustomerContent;
+            TableRelation = "E-Comm. Merchant"."Merchant Id" where(
+                    "Merchant Id" = field("E-Comm. Merchant Id"),
+                    "Customer No." = field("e-Commerce Customer"));
         }
         field(18039; "FA Non-Availment"; Boolean)
         {

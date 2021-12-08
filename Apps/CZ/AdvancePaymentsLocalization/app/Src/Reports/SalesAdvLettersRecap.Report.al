@@ -65,6 +65,9 @@ report 31026 "Sales Adv. Letters Recap. CZZ"
 
                 trigger OnAfterGetRecord()
                 begin
+                    if OnlyOpen and (Status in [Status::New, Status::Closed]) then
+                        CurrReport.Skip();
+
                     SalesAdvLetterEntryCZZ.Reset();
                     SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", "Sales Adv. Letter Header CZZ"."No.");
                     SalesAdvLetterEntryCZZ.SetRange(Cancelled, false);
@@ -93,7 +96,7 @@ report 31026 "Sales Adv. Letters Recap. CZZ"
                         AdvUsedVATLCY := SalesAdvLetterEntryCZZ."Amount (LCY)";
                     end;
 
-                    if OnlyOpen and (AdvPayedLCY - AdvPayedVATLCY = 0) and (AdvUsedLCY - AdvUsedVATLCY = 0) then
+                    if OnlyDifferences and (AdvPayedLCY - AdvPayedVATLCY = 0) and (AdvUsedLCY - AdvUsedVATLCY = 0) then
                         CurrReport.Skip();
                 end;
             }
@@ -116,6 +119,12 @@ report 31026 "Sales Adv. Letters Recap. CZZ"
                     {
                         Caption = 'Only Open';
                         ToolTip = 'Print only open advance letter.';
+                        ApplicationArea = Basic, Suite;
+                    }
+                    field(OnlyDifferencesField; OnlyDifferences)
+                    {
+                        Caption = 'Only Differences';
+                        ToolTip = 'Print only advance letter with differences.';
                         ApplicationArea = Basic, Suite;
                     }
                     field(ToDateField; ToDate)
@@ -169,6 +178,7 @@ report 31026 "Sales Adv. Letters Recap. CZZ"
         AdvPayedLCY, AdvPayedVATLCY, AdvUsedLCY, AdvUsedVATLCY : Decimal;
         ToDate: Date;
         OnlyOpen: Boolean;
+        OnlyDifferences: Boolean;
         FiltersTxt: Label 'Filters: %1: %2', Comment = '%1 = Table Caption, %2 = Table Filter';
         AmountsInLCYTxt: Label 'All Amounts are in %1.', Comment = '%1 = Currency Code';
 }

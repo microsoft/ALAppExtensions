@@ -319,26 +319,15 @@ page 30008 "APIV2 - Items"
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     begin
-        if TempFieldSet.Get(Database::Item, FieldNo(Inventory)) then
-            Error(InventoryCannotBeChangedInAPostRequestErr);
-
-        if not BaseUnitOfMeasureCodeValidated then
-            if BaseUnitOfMeasureIdValidated then begin
-                Rec.Validate("Base Unit of Measure", Rec."Base Unit of Measure");
-                GraphCollectionMgtItem.ModifyItem(Rec, TempFieldSet);
-            end else
-                GraphCollectionMgtItem.InsertItem(Rec, TempFieldSet)
-        else
-            GraphCollectionMgtItem.ModifyItem(Rec, TempFieldSet);
-
-        SetCalculatedFields();
-        exit(false);
+        exit(InsertItem());
     end;
 
     trigger OnModifyRecord(): Boolean
     var
         Item: Record Item;
     begin
+        if IsInsert then
+            exit(InsertItem());
 
         if TempFieldSet.Get(Database::Item, FieldNo(Inventory)) then
             UpdateInventory();
@@ -365,6 +354,7 @@ page 30008 "APIV2 - Items"
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
+        IsInsert := true;
         ClearCalculatedFields();
     end;
 
@@ -378,6 +368,7 @@ page 30008 "APIV2 - Items"
         BlankGUID: Guid;
         BaseUnitOfMeasureIdValidated: Boolean;
         BaseUnitOfMeasureCodeValidated: Boolean;
+        IsInsert: Boolean;
         TaxGroupValuesDontMatchErr: Label 'The tax group values do not match to a specific Tax Group.';
         TaxGroupIdDoesNotMatchATaxGroupErr: Label 'The "taxGroupId" does not match to a Tax Group.', Comment = 'taxGroupId is a field name and should not be translated.';
         TaxGroupCodeDoesNotMatchATaxGroupErr: Label 'The "taxGroupCode" does not match to a Tax Group.', Comment = 'taxGroupCode is a field name and should not be translated.';
@@ -387,6 +378,25 @@ page 30008 "APIV2 - Items"
         InventoryCannotBeChangedInAPostRequestErr: Label 'Inventory cannot be changed during on insert.';
         UnitOfMeasureIdDoesNotMatchAUnitOfMeasureErr: Label 'The "baseUnitOfMeasureId" does not match to a Unit of Measure.', Comment = 'baseUnitOfMeasureId is a field name and should not be translated.';
         UnitOfMeasureValuesDontMatchErr: Label 'The unit of measure values do not match to a specific Unit of Measure.';
+
+    local procedure InsertItem(): Boolean
+    begin
+        if TempFieldSet.Get(Database::Item, FieldNo(Inventory)) then
+            Error(InventoryCannotBeChangedInAPostRequestErr);
+
+        if not BaseUnitOfMeasureCodeValidated then
+            if BaseUnitOfMeasureIdValidated then begin
+                Rec.Validate("Base Unit of Measure", Rec."Base Unit of Measure");
+                GraphCollectionMgtItem.ModifyItem(Rec, TempFieldSet);
+            end else
+                GraphCollectionMgtItem.InsertItem(Rec, TempFieldSet)
+        else
+            GraphCollectionMgtItem.ModifyItem(Rec, TempFieldSet);
+
+        SetCalculatedFields();
+        Clear(IsInsert);
+        exit(false);
+    end;
 
     local procedure SetCalculatedFields()
     begin

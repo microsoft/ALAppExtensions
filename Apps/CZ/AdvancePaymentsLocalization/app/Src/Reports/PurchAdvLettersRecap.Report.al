@@ -65,6 +65,9 @@ report 31027 "Purch. Adv. Letters Recap. CZZ"
 
                 trigger OnAfterGetRecord()
                 begin
+                    if OnlyOpen and (Status in [Status::New, Status::Closed]) then
+                        CurrReport.Skip();
+
                     PurchAdvLetterEntryCZZ.Reset();
                     PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", "Purch. Adv. Letter Header CZZ"."No.");
                     PurchAdvLetterEntryCZZ.SetRange(Cancelled, false);
@@ -118,6 +121,12 @@ report 31027 "Purch. Adv. Letters Recap. CZZ"
                         ToolTip = 'Print only open advance letter.';
                         ApplicationArea = Basic, Suite;
                     }
+                    field(OnlyDifferencesField; OnlyDifferences)
+                    {
+                        Caption = 'Only Differences';
+                        ToolTip = 'Print only advance letter with differences.';
+                        ApplicationArea = Basic, Suite;
+                    }
                     field(ToDateField; ToDate)
                     {
                         Caption = 'To Date';
@@ -169,6 +178,7 @@ report 31027 "Purch. Adv. Letters Recap. CZZ"
         AdvPayedLCY, AdvPayedVATLCY, AdvUsedLCY, AdvUsedVATLCY : Decimal;
         ToDate: Date;
         OnlyOpen: Boolean;
+        OnlyDifferences: Boolean;
         FiltersTxt: Label 'Filters: %1: %2', Comment = '%1 = Table Caption, %2 = Table Filter';
         AmountsInLCYTxt: Label 'All Amounts are in %1.', Comment = '%1 = Currency Code';
 }
