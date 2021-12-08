@@ -18,12 +18,12 @@ codeunit 2617 "Printer Setup Impl."
         SetMyDefaultPrinterSucessMsg: Label 'Printer %1 is set as default printer for all reports. You can open Printer Selections page to see the created entry.', Comment = '%1 = Printer ID';
         SetDefaultPrinterForAllUsersSucessMsg: Label 'Printer %1 is set as default printer for all reports of all users. You can open Printer Selections page to see the created entry.', Comment = '%1 = Printer ID';
 
-    procedure GetPrinterType(Printer: Record Printer): Enum "Printer Type"
+    procedure GetPrinterCategory(var PrinterType: Enum "Printer Type"; Device: Text[50])
     begin
-        if Printer.Device = NetworkPrinterTxt then
-            exit(Enum::"Printer Type"::"Network Printer")
+        if Device = NetworkPrinterTxt then
+            PrinterType := PrinterType::"Network Printer"
         else
-            exit(Enum::"Printer Type"::"Local Printer");
+            PrinterType := PrinterType::"Local Printer";
     end;
 
     procedure OpenPrinterSettings(PrinterID: Text)

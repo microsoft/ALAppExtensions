@@ -72,6 +72,19 @@ pageextension 18145 "GST Posted Sales Shipment Ext" extends "Posted Sales Shipme
                     ApplicationArea = Basic, Suite;
                     Editable = false;
                     ToolTip = 'Specifies the merchant ID provided to customers by their payment processor.';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'New field introduced as E-Comm. Merchant Id';
+                    ObsoleteTag = '23.0';
+                    trigger OnValidate()
+                    begin
+                        error(UnusedFieldLbl);
+                    end;
+                }
+                field("E-Comm. Merchant Id"; Rec."E-Comm. Merchant Id")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the merchant ID provided to customers by their payment processor.';
                 }
                 field("POS Out Of India"; Rec."POS Out Of India")
                 {
@@ -98,4 +111,6 @@ pageextension 18145 "GST Posted Sales Shipment Ext" extends "Posted Sales Shipme
             }
         }
     }
+    var
+    UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use ‘E-Comm. Merchant Id’';
 }

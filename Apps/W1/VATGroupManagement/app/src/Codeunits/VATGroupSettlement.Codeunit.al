@@ -34,15 +34,15 @@ codeunit 4708 "VAT Group Settlement"
             DocNo := NoSeriesManagement.GetNextNo(GenJournalTemplate."No. Series", 0D, true);
             repeat
                 VATAmount := FindVATAmount(VATGroupSubmissionHeader);
-                if VATAmount = 0 then
-                    exit;
 
-                PrepareVATSettlementGenJnlLine(GenJournalLine, VATGroupSubmissionHeader, DocNo, GenJournalTemplate.Name, VATReportSetup."VAT Settlement Account", VATSettlementTxt, VATAmount);
-                PostGenJnlLine(GenJournalLine);
-                PrepareVATSettlementGenJnlLine(GenJournalLine, VATGroupSubmissionHeader, DocNo, GenJournalTemplate.Name, VATReportSetup."Group Settlement Account", VATGroupSettlementTxt, VATAmount * -1);
-                PostGenJnlLine(GenJournalLine);
+                if VATAmount <> 0 then begin
+                    PrepareVATSettlementGenJnlLine(GenJournalLine, VATGroupSubmissionHeader, DocNo, GenJournalTemplate.Name, VATReportSetup."VAT Settlement Account", VATSettlementTxt, VATAmount);
+                    PostGenJnlLine(GenJournalLine);
+                    PrepareVATSettlementGenJnlLine(GenJournalLine, VATGroupSubmissionHeader, DocNo, GenJournalTemplate.Name, VATReportSetup."Group Settlement Account", VATGroupSettlementTxt, VATAmount * -1);
+                    PostGenJnlLine(GenJournalLine);
+                end
             until VATGroupSubmissionHeader.Next() = 0;
-        end;
+        end
     end;
 
     local procedure PrepareVATSettlementGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; VATGroupSubmissionHeader: Record "VAT Group Submission Header"; DocNo: Code[20]; JournalTemplateName: Code[10]; AccountNo: Code[20]; Description: Text[100]; VATAmount: Decimal)

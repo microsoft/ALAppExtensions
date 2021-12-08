@@ -3,6 +3,8 @@
 codeunit 31376 "Sync.Dep.Fld-DetGLEntry CZA"
 {
     Access = Internal;
+    Permissions = tabledata "Detailed G/L Entry CZA" = rmid,
+                  tabledata "Detailed G/L Entry" = rmid;
 
     [EventSubscriber(ObjectType::Table, Database::"Detailed G/L Entry", 'OnBeforeRenameEvent', '', false, false)]
     local procedure SyncOnBeforeRenameDetailedGLEntry(var Rec: Record "Detailed G/L Entry"; var xRec: Record "Detailed G/L Entry")

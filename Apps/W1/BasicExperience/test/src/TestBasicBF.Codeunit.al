@@ -187,14 +187,19 @@ codeunit 139502 "Test Basic BF"
                     ApplicationAreaSetup.FieldName(Comments),
                     ApplicationAreaSetup.FieldName("Record Links"),
                     ApplicationAreaSetup.FieldName(Notes),
-                    ApplicationAreaSetup.FieldName(VAT),
-                    ApplicationAreaSetup.FieldName("Basic EU"):
+                    ApplicationAreaSetup.FieldName(VAT):
                         ApplicationAreaSetupFieldRef.TestField(true);
 
                     // Only one Microsoft Basic Country Application Area must be true the others must be false         
-                    ApplicationAreaSetup.FieldName("Basic DK"):
+                    ApplicationAreaSetup.FieldName("Basic AU"):
                         if ApplicationAreaSetupFieldRef.Value then
                             IsBasicCountryTested := true;
+                    ApplicationAreaSetup.FieldName("Basic DK"):
+                        if IsBasicCountryTested then
+                            ApplicationAreaSetupFieldRef.TestField(false)
+                        else
+                            if ApplicationAreaSetupFieldRef.Value then
+                                IsBasicCountryTested := true;
                     ApplicationAreaSetup.FieldName("Basic IS"):
                         if IsBasicCountryTested then
                             ApplicationAreaSetupFieldRef.TestField(false)
@@ -202,7 +207,8 @@ codeunit 139502 "Test Basic BF"
                             ApplicationAreaSetupFieldRef.TestField(true);
                             IsBasicCountryTested := true;
                         end;
-
+                    ApplicationAreaSetup.FieldName("Basic EU"):
+                        ;
                     // Remaining Application Area must be false, even when new ones are added                
                     else
                         ApplicationAreaSetupFieldRef.TestField(false);

@@ -38,7 +38,7 @@ codeunit 9058 "Plan Upgrade Tag"
     /// <returns>The rename plans upgrade tag.</returns>
     internal procedure GetRenamePlansUpgradeTag(): Code[250]
     begin
-        exit('MS-329421-RenamePlans-20191009');
+        exit('MS-329421-RenamePlans-20211028'); // Renamed tag - MS-329421-RenamePlans-20191009 to run upgrade again.
     end;
 
     /// <summary>

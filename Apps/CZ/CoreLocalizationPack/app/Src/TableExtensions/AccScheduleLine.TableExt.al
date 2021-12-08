@@ -23,4 +23,13 @@ tableextension 11751 "Acc. Schedule Line CZL" extends "Acc. Schedule Line"
             DataClassification = CustomerContent;
         }
     }
+
+    trigger OnDelete()
+    var
+        AccScheduleFileMappingCZL: Record "Acc. Schedule File Mapping CZL";
+    begin
+        AccScheduleFileMappingCZL.SetRange("Schedule Name", "Schedule Name");
+        AccScheduleFileMappingCZL.SetRange("Schedule Line No.", "Line No.");
+        AccScheduleFileMappingCZL.DeleteAll();
+    end;
 }

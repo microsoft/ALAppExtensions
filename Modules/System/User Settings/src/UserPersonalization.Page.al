@@ -113,7 +113,6 @@ page 9214 "User Personalization"
 
     trigger OnOpenPage()
     begin
-        UserSettingsImpl.CheckPermissions(Rec);
         UserSettingsImpl.HideExternalUsers(Rec);
         CurrPage.Caption := UserSettingsTok;
     end;

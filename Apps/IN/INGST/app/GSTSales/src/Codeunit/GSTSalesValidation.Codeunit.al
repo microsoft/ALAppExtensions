@@ -26,6 +26,7 @@ codeunit 18143 "GST Sales Validation"
         PostGSTtoCustErr: Label 'Only allow for GST Customer type SEZ Development & SEZ Unit.';
         ExemptedLinesErr: Label 'All lines in the document are GST Exempted, the preferred Invoice type should be Bill of Supply.';
         NonExemptedLinesErr: Label 'All lines in the document are not GST Exempted, the preferred Invoice type should be according to GST Customer Type.';
+        GSTDependencyTypeErr: Label 'GST dependency type must be Bill to Address or Ship to Address';
 
     procedure GetPostInvoiceNoSeries(var SalesHeader: Record "Sales Header")
     var
@@ -498,6 +499,14 @@ codeunit 18143 "GST Sales Validation"
         CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
     end;
 
+    //Sales & Receivables Setup
+    [EventSubscriber(ObjectType::Table, Database::"Sales & Receivables Setup", 'OnBeforeValidateEvent', 'GST Dependency Type', false, false)]
+    local procedure OnBeforeValidateEvenetGSTDependencyType(var Rec: Record "Sales & Receivables Setup")
+    begin
+        if Rec."GST Dependency Type" = Rec."GST Dependency Type"::"Location Address" then
+            Error(GSTDependencyTypeErr);
+    end;
+
     local procedure CalcTotalUPITAmount(var Rec: Record "Sales Line")
     begin
         if not Rec."Price Inclusive of Tax" then
@@ -693,12 +702,12 @@ codeunit 18143 "GST Sales Validation"
 
     local procedure EcommerceMerchantId(var SalesHeader: Record "Sales Header")
     var
-        eCommerceMerchant: Record "E-Commerce Merchant";
+        EcommMerchantRec: Record "E-Comm. Merchant";
     begin
-        eCommerceMerchant.SetRange("Customer No.", SalesHeader."Sell-to Customer No.");
-        eCommerceMerchant.SetRange("Company GST Reg. No.", SalesHeader."Location GST Reg. No.");
-        if eCommerceMerchant.FindFirst() then
-            SalesHeader.TestField("e-Commerce Merchant Id", eCommerceMerchant."Merchant Id");
+        EcommMerchantRec.SetRange("Customer No.", SalesHeader."Sell-to Customer No.");
+        EcommMerchantRec.SetRange("Company GST Reg. No.", SalesHeader."Location GST Reg. No.");
+        if EcommMerchantRec.FindFirst() then
+            SalesHeader.TestField("E-Comm. Merchant Id", EcommMerchantRec."Merchant Id");
     end;
 
     local procedure LocationGSTRegNo(var SalesHeader: Record "Sales Header")

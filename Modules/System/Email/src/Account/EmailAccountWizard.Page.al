@@ -139,7 +139,7 @@ page 8886 "Email Account Wizard"
                     {
                         ApplicationArea = All;
                         Caption = 'Account Type';
-                        ToolTip = 'Spectifies the type of the account you want to create.';
+                        ToolTip = 'Specifies the type of the account you want to create.';
                         Editable = false;
                     }
 

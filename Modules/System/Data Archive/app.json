@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Enables users to archive data from Business Central.",
     "description":  "Enables users to archive data from Business Central.",
-    "version":  "19.1.0.0",
+    "version":  "19.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -12,14 +12,14 @@
     "logo":  "",
     "platform":  "19.0.0.0",
     "idRanges":  [
-        {
-            "from":  600,
-            "to":  600
-        },
-        {
-            "from":  610,
-            "to":  610
-        }
+                     {
+                         "from":  600,
+                         "to":  600
+                     },
+                     {
+                         "from":  610,
+                         "to":  610
+                     }
                  ],
     "target":  "OnPrem",
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2173136"

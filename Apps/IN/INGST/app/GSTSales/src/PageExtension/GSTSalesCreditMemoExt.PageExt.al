@@ -120,6 +120,18 @@ pageextension 18146 "GST Sales Credit Memo Ext" extends "Sales Credit Memo"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the merchant ID provided to customers by their payment processor.';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'New field introduced as E-Comm. Merchant Id';
+                ObsoleteTag = '23.0';
+                trigger OnValidate()
+                begin
+                    Error(UnusedFieldLbl);
+                end;
+            }
+            field("E-Comm. Merchant Id"; Rec."E-Comm. Merchant Id")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the merchant ID provided to customers by their payment processor.';
             }
             field("Distance (Km)"; Rec."Distance (Km)")
             {
@@ -184,4 +196,6 @@ pageextension 18146 "GST Sales Credit Memo Ext" extends "Sales Credit Memo"
             }
         }
     }
+    var
+        UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use ‘E-Comm. Merchant Id’';
 }

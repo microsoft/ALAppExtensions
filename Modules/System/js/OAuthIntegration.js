@@ -71,6 +71,14 @@ function OauthLandingHelper(url, key, callback) {
     var w = top.window;
     var aadWindow = w.open(url, '_blank', 'width=972,height=904,location=no');
 
+    if (aadWindow == null || aadWindow.closed || typeof aadWindow.closed === "undefined") {
+        callback({
+            error: "Popup blocked",
+            desc: "There was a problem opening the authentication prompt. Check if it was blocked by a popup blocker."
+        });
+        return;
+    }
+
     function storageEvent(e) {
         if (e.key === key && e.newValue) {
             w.removeEventListener('storage', storageEvent, false);

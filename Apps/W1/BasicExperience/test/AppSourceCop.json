@@ -1,4 +1,4 @@
 {
     "mandatoryAffixes": ["BF"],
-    "supportedCountries": ["DK", "IS"]
+    "supportedCountries": ["DK", "IS","AU"]
 } 

@@ -131,7 +131,6 @@ page 9204 "User Settings"
         if not Rec.Initialized then
             UserSettingsImpl.GetUserSettings(UserSecurityID(), Rec);
 
-        UserSettingsImpl.CheckPermissions(Rec);
         OldUserSettings := Rec;
 
         LastLoginInfoVisible := Rec."User Security ID" = UserSecurityId();
