@@ -23,6 +23,12 @@
             "version": "19.1.0.0"
         },
         {
+            "id": "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+            "name": "Any",
+            "publisher": "Microsoft",
+            "version": "19.1.0.0"
+        },
+        {
             "id": "b70cdbee-da69-4029-bafe-be2a1977301c",
             "name": "Barcode",
             "publisher": "Microsoft",
