@@ -46,18 +46,22 @@ tableextension 18146 "GST Sales Header Archive Ext" extends "Sales Header Archiv
         }
         field(18148; "E-Commerce Customer"; Code[20])
         {
-            caption = 'E-Commerce Customer';
+            Caption = 'E-Commerce Customer';
             TableRelation = Customer where("e-Commerce Operator" = const(true));
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(18149; "E-Commerce Merchant Id"; code[30])
         {
-            caption = 'E-Commerce Merchant Id';
-            TableRelation = "e-Commerce Merchant"."Merchant Id" where("Merchant Id" = field("e-Commerce Merchant Id"),
-                                    "Customer No." = field("e-Commerce Customer"));
+            Caption = 'E-Commerce Merchant Id';
+            TableRelation = "e-Commerce Merchant"."Merchant Id" where(
+                "Merchant Id" = field("e-Commerce Merchant Id"),
+                "Customer No." = field("e-Commerce Customer"));
             DataClassification = CustomerContent;
             Editable = false;
+            ObsoleteState = Pending;
+            ObsoleteReason = 'New field introduced as E-Comm. Merchant Id';
+            ObsoleteTag = '23.0';
         }
         field(18150; "GST Bill-to State Code"; Code[10])
         {
@@ -171,6 +175,14 @@ tableextension 18146 "GST Sales Header Archive Ext" extends "Sales Header Archiv
             Caption = 'Vehicle No.';
             DataClassification = CustomerContent;
             Editable = false;
+        }
+        field(18181; "E-Comm. Merchant Id"; code[30])
+        {
+            Caption = 'E-Comm. Merchant Id';
+            TableRelation = "e-Comm. Merchant"."Merchant Id" where(
+                    "Merchant Id" = field("e-Comm. Merchant Id"),
+                    "Customer No." = field("e-Commerce Customer"));
+            DataClassification = CustomerContent;
         }
     }
 }

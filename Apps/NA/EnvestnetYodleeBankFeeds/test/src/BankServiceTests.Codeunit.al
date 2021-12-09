@@ -36,7 +36,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         DetailsOKTxt: Label '/detailsOK';
         DetailsDuplicateAccountIdTxt: Label '/detailsDuplicateAccountId';
         DetailsMFATxt: Label '/detailsMFA';
-        TestGetTransactionsTxt: Label '/TestGetTransactions';
+        TestGetTransactionsTxt: Label '/TestGetTrans';
         LinkingRemovedMsg: Label '1 bank accounts have been unlinked.';
         LinkingInsertedMsg: Label 'has been linked.';
         CurrencyErr: Label 'The bank feed that you are importing contains transactions in currencies other than';
@@ -68,6 +68,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         ForceStatus500Txt: Label '/status500';
         ForceStatus404Txt: Label '/status404', Locked = true;
         ForceStatus403Txt: Label '/status403', Locked = true;
+        TransactionNotLoggedTxt: Label 'Expected transaction not logged. Detailed Info: %1 Activity Message: %2', Locked = true;
 
     local procedure Initialize();
     var
@@ -1125,6 +1126,39 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         PmtReconJnl.ImportBankTransactions.INVOKE();
 
         VerifyPmtReconJnlWithOnlineTransactions(PmtReconJnl);
+        BankAccRecon.Delete(true);
+    end;
+
+    [Test]
+    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,ConsentConfirmYes')]
+    procedure TestGetTransactionsWithActivityLogging();
+    var
+        BankAccount: Record "Bank Account";
+        MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
+        BankAccReconciliation: Record "Bank Acc. Reconciliation";
+        ActivityLog: Record "Activity Log";
+        PaymentReconciliationJournal: TestPage "Payment Reconciliation Journal";
+    begin
+        // Setup
+        Initialize();
+        ActivityLog.DeleteAll();
+        SetupForOnlineImportingOfTransactions(MSYodleeBankServiceSetup, BankAccount);
+
+        // turn logging on
+        MSYodleeBankServiceSetup.Get();
+        MSYodleeBankServiceSetup."Log Web Requests" := true;
+        MSYodleeBankServiceSetup.Modify();
+
+        // Import bank transactions
+        LibraryERM.CreateBankAccReconciliation(BankAccReconciliation, BankAccount."No.", BankAccReconciliation."Statement Type"::"Payment Application");
+        OpenPmtReconJnl(BankAccReconciliation, PaymentReconciliationJournal);
+        PaymentReconciliationJournal.ImportBankTransactions.Invoke();
+
+        // turn logging off
+        MSYodleeBankServiceSetup."Log Web Requests" := false;
+        MSYodleeBankServiceSetup.Modify();
+
+        VerifyActivityLogWithOnlineTransactions(ActivityLog);
     end;
 
     [Test]
@@ -1998,6 +2032,36 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
 
         // verify feed ending balance from the mock file was imported
         Assert.AreEqual(9044.78, PmtReconJnl.StatementEndingBalance.ASDECIMAL(), '');
+    end;
+
+    local procedure VerifyActivityLogWithOnlineTransactions(var ActivityLog: Record "Activity Log");
+    var
+        BankFeedInstream: InStream;
+        BankFeedDetailedInfo: Text;
+        BankFeedTxt: Text;
+        BankFeedLine: Text;
+    begin
+        ActivityLog.SetRange(Description, 'gettransactions');
+        ActivityLog.FindFirst();
+
+        ActivityLog.CalcFields("Detailed Info");
+        ActivityLog."Detailed Info".CreateInStream(BankFeedInstream);
+        BankFeedInstream.ReadText(BankFeedDetailedInfo);
+        while not BankFeedInStream.EOS() do begin
+            Clear(BankFeedLine);
+            BankFeedInstream.ReadText(BankFeedLine);
+            BankFeedDetailedInfo += BankFeedLine;
+        end;
+        BankFeedTxt := ActivityLog."Activity Message";
+        ActivityLog.DeleteAll();
+
+        // verify that the transaction lines from the mock file are logged      
+        Assert.IsTrue((StrPos(BankFeedDetailedInfo, '3465') > 0) or (StrPos(BankFeedTxt, '3465') > 0), StrSubstNo(TransactionNotLoggedTxt, BankFeedDetailedInfo, BankFeedTxt));
+        Assert.IsTrue((StrPos(BankFeedDetailedInfo, 'DESC1') > 0) or (StrPos(BankFeedTxt, 'DESC1') > 0), StrSubstNo(TransactionNotLoggedTxt, BankFeedDetailedInfo, BankFeedTxt));
+        Assert.IsTrue((StrPos(BankFeedDetailedInfo, '3103') > 0) or (StrPos(BankFeedTxt, '3103') > 0), StrSubstNo(TransactionNotLoggedTxt, BankFeedDetailedInfo, BankFeedTxt));
+        Assert.IsTrue((StrPos(BankFeedDetailedInfo, 'DESC2') > 0) or (StrPos(BankFeedTxt, 'DESC2') > 0), StrSubstNo(TransactionNotLoggedTxt, BankFeedDetailedInfo, BankFeedTxt));
+        Assert.IsTrue((StrPos(BankFeedDetailedInfo, '5646') > 0) or (StrPos(BankFeedTxt, '5646') > 0), StrSubstNo(TransactionNotLoggedTxt, BankFeedDetailedInfo, BankFeedTxt));
+        Assert.IsTrue((StrPos(BankFeedDetailedInfo, 'DESC3') > 0) or (StrPos(BankFeedTxt, 'DESC3') > 0), StrSubstNo(TransactionNotLoggedTxt, BankFeedDetailedInfo, BankFeedTxt));
     end;
 
     local procedure CreateLinkedBankAccount(var BankAccount: Record "Bank Account");

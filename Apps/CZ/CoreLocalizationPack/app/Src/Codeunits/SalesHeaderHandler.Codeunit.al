@@ -76,6 +76,12 @@ codeunit 11743 "Sales Header Handler CZL"
             SalesHeader.Validate("Shipment Method Code", SellToCustomer."Shipment Method Code");
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterCopyShipToCustomerAddressFieldsFromCustomer', '', false, false)]
+    local procedure UpdateOnAfterCopyShipToCustomerAddressFieldsFromCustomer(var SalesHeader: Record "Sales Header"; SellToCustomer: Record Customer)
+    begin
+        SalesHeader."VAT Country/Region Code" := SellToCustomer."Country/Region Code";
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterSetFieldsBilltoCustomer', '', false, false)]
     local procedure UpdateRegNoOnAfterSetFieldsBilltoCustomer(var SalesHeader: Record "Sales Header"; Customer: Record Customer)
     begin

@@ -121,7 +121,7 @@ codeunit 3971 Image
     end;
 
     /// <summary>
-    /// Rotates, flips, or rotates and flips the Image.
+    /// Rotates, flips, or rotates and flips the image.
     /// </summary>
     /// <param name="RotateFlipType">The type of rotation and flip.</param>
     procedure RotateFlip(RotateFlipType: Enum "Rotate Flip Type")

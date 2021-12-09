@@ -482,12 +482,13 @@ report 11971 "Calc. and Post VAT Settl. CZL"
 
                             // Close current VAT entries
                             if PostSettlement then begin
-                                VATEntry.ModifyAll("Closed by Entry No.", NextVATEntryNo);
                                 VATEntry.ModifyAll("VAT Settlement No. CZL", DocNo);
                                 VATEntry.ModifyAll(Closed, true);
-                                VATEntry2.Get(NextVATEntryNo);
-                                VATEntry2."VAT Settlement No. CZL" := DocNo;
-                                VATEntry2.Modify();
+                                if VATEntry2.Get(NextVATEntryNo) then begin
+                                    VATEntry.ModifyAll("Closed by Entry No.", NextVATEntryNo);
+                                    VATEntry2."VAT Settlement No. CZL" := DocNo;
+                                    VATEntry2.Modify();
+                                end;
                             end;
                         end;
                     }

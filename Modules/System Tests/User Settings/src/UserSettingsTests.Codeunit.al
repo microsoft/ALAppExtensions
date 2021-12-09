@@ -11,7 +11,6 @@ codeunit 132905 "User Settings Tests"
         PermissionsMock: Codeunit "Permissions Mock";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         CompanyDisplayNameTxt: Label 'Company display name';
-        NotEnoughPermissionsErr: Label 'You cannot access settings for other users.';
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -271,131 +270,6 @@ codeunit 132905 "User Settings Tests"
 
         UserSettingsTests.AssertEmptyStorage();
         UnBindSubscription(UserSettingsTests);
-    end;
-
-    [Test]
-    procedure TestAccessSettingsOtherUser()
-    var
-        AnotherUserSettings: Record "User Personalization";
-        LibraryUserSettings: Codeunit "Library - User Settings";
-        AzureADUserMgtTestLibrary: Codeunit "Azure AD User Mgt Test Library";
-        AzureADUserTestLibrary: Codeunit "Azure AD User Test Library";
-        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
-        UserSettings: TestPage "User Settings List";
-        AnotherUserSID: Guid;
-    begin
-        // [SCENARIO] A user who is not global/internal or delegated admin is not able to access other users settings
-
-        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
-        BindSubscription(EnvironmentInfoTestLibrary);
-
-        // Current user is not delegated admin
-        AzureADUserTestLibrary.SetIsUserDelegatedtAdmin(false);
-        BindSubscription(AzureADUserTestLibrary);
-
-        // Current user is not global/internal admin
-        AzureADUserMgtTestLibrary.SetIsUserTenantAdmin(false);
-        BindSubscription(AzureADUserMgtTestLibrary);
-
-        LibraryUserSettings.ClearAllSettings();
-        AnotherUserSID := CreateGuid();
-        LibraryUserSettings.CreateUserSettings(AnotherUserSID, AnotherUserSettings);
-
-        asserterror UserSettings.OpenView();
-
-        Assert.ExpectedError(NotEnoughPermissionsErr);
-
-        UnbindSubscription(EnvironmentInfoTestLibrary);
-        UnbindSubscription(AzureADUserMgtTestLibrary);
-        UnbindSubscription(AzureADUserTestLibrary);
-    end;
-
-    [Test]
-    procedure TestGlobalAdminAccessSettingsOtherUser()
-    var
-        AnotherUserSettings: Record "User Personalization";
-        LibraryUserSettings: Codeunit "Library - User Settings";
-        AzureADUserMgtTestLibrary: Codeunit "Azure AD User Mgt Test Library";
-        AzureADUserTestLibrary: Codeunit "Azure AD User Test Library";
-        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
-        UserSettings: TestPage "User Settings List";
-        AnotherUserSID: Guid;
-    begin
-        // [SCENARIO] A user who is global admin is able to access other users settings
-
-        // SaaS
-        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
-        if BindSubscription(EnvironmentInfoTestLibrary) then;
-
-        // Current user is global admin
-        AzureADUserMgtTestLibrary.SetIsUserTenantAdmin(true);
-        BindSubscription(AzureADUserMgtTestLibrary);
-
-        // Current user is not delegated admin
-        AzureADUserTestLibrary.SetIsUserDelegatedtAdmin(false);
-        BindSubscription(AzureADUserTestLibrary);
-
-        LibraryUserSettings.ClearAllSettings();
-        AnotherUserSID := CreateGuid();
-        LibraryUserSettings.CreateUserSettings(AnotherUserSID, AnotherUserSettings);
-        ClearLastError();
-
-        UserSettings.OpenView();
-
-        AnotherUserSettings.CalcFields("Language Name");
-        Assert.AreEqual(AnotherUserSettings."Language Name", UserSettings.Language.Value(), 'Language does not match');
-
-        UserSettings.Close();
-
-        Assert.AreEqual('', GetLastErrorText(), 'No error should have appeared');
-
-        UnbindSubscription(EnvironmentInfoTestLibrary);
-        UnbindSubscription(AzureADUserMgtTestLibrary);
-        UnbindSubscription(AzureADUserTestLibrary);
-    end;
-
-    [Test]
-    procedure TestDelegatedAdminAccessSettingsOtherUser()
-    var
-        AnotherUserSettings: Record "User Personalization";
-        LibraryUserSettings: Codeunit "Library - User Settings";
-        AzureADUserMgtTestLibrary: Codeunit "Azure AD User Mgt Test Library";
-        AzureADUserTestLibrary: Codeunit "Azure AD User Test Library";
-        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
-        UserSettings: TestPage "User Settings List";
-        AnotherUserSID: Guid;
-    begin
-        // [SCENARIO] A user who is delegated admin is able to access other users settings
-
-        // SaaS
-        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
-        if BindSubscription(EnvironmentInfoTestLibrary) then;
-
-        // Current user is delegated admin
-        AzureADUserTestLibrary.SetIsUserDelegatedtAdmin(true);
-        BindSubscription(AzureADUserTestLibrary);
-
-        // Current user is not global/internal admin
-        AzureADUserMgtTestLibrary.SetIsUserTenantAdmin(false);
-        BindSubscription(AzureADUserMgtTestLibrary);
-
-        LibraryUserSettings.ClearAllSettings();
-        AnotherUserSID := CreateGuid();
-        LibraryUserSettings.CreateUserSettings(AnotherUserSID, AnotherUserSettings);
-        ClearLastError();
-
-        UserSettings.OpenView();
-
-        AnotherUserSettings.CalcFields("Language Name");
-        Assert.AreEqual(AnotherUserSettings."Language Name", UserSettings.Language.Value(), 'Language does not match');
-
-        UserSettings.Close();
-
-        Assert.AreEqual('', GetLastErrorText(), 'No error should have appeared');
-
-        UnbindSubscription(EnvironmentInfoTestLibrary);
-        UnbindSubscription(AzureADUserTestLibrary);
-        UnbindSubscription(AzureADUserMgtTestLibrary);
     end;
 
     procedure AssertEmptyStorage()

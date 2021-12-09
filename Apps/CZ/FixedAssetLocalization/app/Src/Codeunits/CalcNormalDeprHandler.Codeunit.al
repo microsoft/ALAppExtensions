@@ -146,7 +146,7 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
         end;
         case TaxDepreciationGroupCZF."Depreciation Type" of
             TaxDepreciationGroupCZF."Depreciation Type"::"Straight-line":
-                if not IsNonZeroDeprecation(FADepreciationBook."FA No.", FADepreciationBook."Depreciation Book Code") then
+                if not IsNonZeroDeprecation(FADepreciationBook."FA No.", FADepreciationBook."Depreciation Book Code", TempFromDate, DateFromProjection, FADepreciationBook."Prorated CZF") then
                     TaxDeprAmount := TaxDeprAmount + TempDepBasis * TaxDepreciationGroupCZF."Straight First Year" / 100
                 else
                     if CalcEndOfFiscalYear(DateLastAppr) = CalcEndOfFiscalYear(AcquisitionDate) then
@@ -156,7 +156,7 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
             TaxDepreciationGroupCZF."Depreciation Type"::"Declining-Balance":
                 begin
                     CounterDepr := CalcDepr(CalcEndOfFiscalYear(DateLastAppr), CalcEndOfFiscalYear(UntilDate), FALedgerEntry);
-                    if not IsNonZeroDeprecation(FADepreciationBook."FA No.", FADepreciationBook."Depreciation Book Code") then begin
+                    if not IsNonZeroDeprecation(FADepreciationBook."FA No.", FADepreciationBook."Depreciation Book Code", TempFromDate, DateFromProjection, FADepreciationBook."Prorated CZF") then begin
                         TaxDeprAmount := TaxDeprAmount + TempDepBasis / TaxDepreciationGroupCZF."Declining First Year";
                         if TaxDepreciationGroupCZF."Declining Depr. Increase %" <> 0 then
                             TaxDeprAmount := TaxDeprAmount + (TempDepBasis * TaxDepreciationGroupCZF."Declining Depr. Increase %" / 100);
@@ -195,9 +195,11 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
 
         if TaxDepreciationGroupCZF."Depreciation Type" <> TaxDepreciationGroupCZF."Depreciation Type"::"Straight-line Intangible" then
             if FADepreciationBook."Prorated CZF" then
-                TaxDeprAmount := TaxDeprAmount *
-                  DepreciationCalculation.DeprDays(CalcStartOfFiscalYear(UntilDate), UntilDate, Year365Days) / 360 -
-                  CalcDepreciatedAmount(FADepreciationBook."FA No.", FADepreciationBook."Depreciation Book Code", 0D, UntilDate)
+                if DateFromProjection = 0D then
+                    TaxDeprAmount := TaxDeprAmount * DepreciationCalculation.DeprDays(CalcStartOfFiscalYear(UntilDate), UntilDate, Year365Days) / 360 -
+                        CalcDepreciatedAmount(FADepreciationBook."FA No.", FADepreciationBook."Depreciation Book Code", 0D, UntilDate)
+                else
+                    TaxDeprAmount := TaxDeprAmount * DepreciationCalculation.DeprDays(DateFromProjection, UntilDate, Year365Days) / 360
             else
                 if TempFaktor < 1 then
                     TaxDeprAmount := TaxDeprAmount * TempFaktor;
@@ -284,10 +286,13 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
         exit(DeprBreakDays);
     end;
 
-    local procedure IsNonZeroDeprecation(FANo: Code[20]; DeprBookCode: Code[10]): Boolean
+    local procedure IsNonZeroDeprecation(FANo: Code[20]; DeprBookCode: Code[10]; FromDate: Date; DateFromProjection: Date; Prorated: Boolean): Boolean
     var
         CalculatedFALedgerEntry: Record "FA Ledger Entry";
     begin
+        if (DateFromProjection <> 0D) or Prorated then
+            exit(FromDate >= CalcEndOfFiscalYear(AcquisitionDate));
+
         DepreciationCalculation.SetFAFilter(CalculatedFALedgerEntry, FANo, DeprBookCode, true);
         CalculatedFALedgerEntry.SetRange("FA Posting Type", CalculatedFALedgerEntry."FA Posting Type"::Depreciation);
         CalculatedFALedgerEntry.SetFilter(Amount, '<>%1', 0);

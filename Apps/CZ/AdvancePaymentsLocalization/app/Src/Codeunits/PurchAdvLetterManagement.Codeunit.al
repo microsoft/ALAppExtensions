@@ -1500,9 +1500,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         GenJournalLine: Record "Gen. Journal Line";
         VendorLedgerEntry1: Record "Vendor Ledger Entry";
         VendorLedgerEntry2: Record "Vendor Ledger Entry";
-#pragma warning disable AL0432
-        TempInvoicePostBuffer: Record "Invoice Post. Buffer" temporary;
-#pragma warning restore AL0432
         AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
@@ -1549,16 +1546,12 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                     RemAmount := GetRemAmtPurchAdvPayment(PurchAdvLetterEntryCZZ, 0D);
                     RemAmountLCY := GetRemAmtLCYPurchAdvPayment(PurchAdvLetterEntryCZZ, 0D);
 
-                    BufferAdvanceVATLines(PurchAdvLetterEntryCZZ, TempInvoicePostBuffer, 0D, true);
-                    TempInvoicePostBuffer.SetFilter("VAT Amount", '<>0');
-
-                    if (RemAmount <> 0) or (not TempInvoicePostBuffer.IsEmpty()) then begin
-                        if VATDocumentNo = '' then
-                            if not TempInvoicePostBuffer.IsEmpty() then begin
-                                AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
-                                AdvanceLetterTemplateCZZ.TestField("Advance Letter Cr. Memo Nos.");
-                                VATDocumentNo := NoSeriesManagement.GetNextNo(AdvanceLetterTemplateCZZ."Advance Letter Cr. Memo Nos.", PostingDate, true);
-                            end;
+                    if RemAmount <> 0 then begin
+                        if VATDocumentNo = '' then begin
+                            AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
+                            AdvanceLetterTemplateCZZ.TestField("Advance Letter Cr. Memo Nos.");
+                            VATDocumentNo := NoSeriesManagement.GetNextNo(AdvanceLetterTemplateCZZ."Advance Letter Cr. Memo Nos.", PostingDate, true);
+                        end;
 
                         PurchAdvLetterHeaderCZZ.Get(PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.");
                         VendorLedgerEntry1.Get(PurchAdvLetterEntryCZZ."Vendor Ledger Entry No.");

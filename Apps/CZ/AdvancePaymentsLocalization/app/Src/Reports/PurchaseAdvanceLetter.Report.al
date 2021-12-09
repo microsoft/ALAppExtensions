@@ -260,11 +260,8 @@ report 31016 "Purchase - Advance Letter CZZ"
 
                 trigger OnPostDataItem()
                 begin
-                    if not CurrReport.Preview() then begin
-                        "Purch. Advance Letter Header"."No. Printed" := "Purch. Advance Letter Header"."No. Printed" + 1;
-                        "Purch. Advance Letter Header".Modify();
-                        Commit();
-                    end;
+                    if not IsReportInPreviewMode() then
+                        Codeunit.Run(Codeunit::"Purch. Adv. Letter-Printed CZZ", "Purch. Advance Letter Header");
                 end;
             }
 
@@ -347,5 +344,12 @@ report 31016 "Purchase - Advance Letter CZZ"
         FormatDocument.SetPaymentMethod(PaymentMethod, PurchAdvLetterHeaderCZZ."Payment Method Code", PurchAdvLetterHeaderCZZ."Language Code");
 
         DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText(PurchAdvLetterHeaderCZZ."Language Code");
+    end;
+
+    local procedure IsReportInPreviewMode(): Boolean
+    var
+        MailManagement: Codeunit "Mail Management";
+    begin
+        exit(CurrReport.Preview or MailManagement.IsHandlingGetEmailBody());
     end;
 }

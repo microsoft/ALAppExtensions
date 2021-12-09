@@ -319,7 +319,6 @@ codeunit 18001 "GST Base Validation"
             Rec."Buyer/Seller State Code" := GSTPostingManagement.GetBuyerSellerStateCode();
 
         UpdateECommOperatorGSTRegNo(DetailedGSTLedgerEntry, Rec);
-
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Company Information", 'OnAfterValidateEvent', 'P.A.N. No.', false, false)]
@@ -1210,24 +1209,24 @@ codeunit 18001 "GST Base Validation"
         end;
     end;
 
+
     local procedure UpdateECommOperatorGSTRegNo(
-        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
-        var DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info")
+            DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+            var DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info")
     var
-        ECommerceMerchant: Record "E-Commerce Merchant";
+        ECommMerchant: Record "E-Comm. Merchant";
         IsHandled: Boolean;
     begin
-
         IsHandled := false;
         OnBeforeGetEcommerceMerchant(DetailedGSTLedgerEntryInfo, IsHandled);
         if IsHandled then
             exit;
 
-        if DetailedGSTLedgerEntryInfo."e-Comm. Merchant Id" = '' then
+        if DetailedGSTLedgerEntryInfo."E-Comm. Merchant Id" = '' then
             exit;
 
-        if ECommerceMerchant.Get(DetailedGSTLedgerEntry."Source No.", DetailedGSTLedgerEntryInfo."e-Comm. Merchant Id") then
-            DetailedGSTLedgerEntryInfo."e-Comm. Operator GST Reg. No." := ECommerceMerchant."Company GST Reg. No.";
+        if ECommMerchant.Get(DetailedGSTLedgerEntry."Source No.", DetailedGSTLedgerEntryInfo."E-Comm. Merchant Id") then
+            DetailedGSTLedgerEntryInfo."E-Comm. Operator GST Reg. No." := ECommMerchant."Company GST Reg. No.";
     end;
 
     [IntegrationEvent(false, false)]

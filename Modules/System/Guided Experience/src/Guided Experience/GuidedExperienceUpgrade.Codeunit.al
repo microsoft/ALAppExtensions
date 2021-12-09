@@ -114,7 +114,7 @@ codeunit 1999 "Guided Experience Upgrade"
 
         RecRef2.Copy(RecRef);
         RecRef2.Field(FieldNo).Value(Code);
-        RecRef2.Insert();
+        if RecRef2.Insert() then;
     end;
 
     local procedure GetCodeThatAccountsForSpotlightTourType(Code: Code[300]): Code[300]

@@ -9,6 +9,7 @@ permissionsetextension 18357 "INTELLIGENT CLOUD - India GST" extends "INTELLIGEN
                   tabledata "Detailed GST Ledger Entry Info" = RIMD,
                   tabledata "Dist. Component Amount" = RIMD,
                   tabledata "E-Commerce Merchant" = RIMD,
+                  tabledata "E-Comm. Merchant" = RIMD,
                   tabledata "GST Application Buffer" = RIMD,
                   tabledata "GST Claim Setoff" = RIMD,
                   tabledata "GST Component Distribution" = RIMD,

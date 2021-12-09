@@ -10,6 +10,7 @@ codeunit 31093 "Data Class. Eval. Handler CZZ"
     var
         Company: Record Company;
         CashDocumentLineCZP: Record "Cash Document Line CZP";
+        CashFlowSetup: Record "Cash Flow Setup";
         CustLedgerEntry: Record "Cust. Ledger Entry";
         CVLedgerEntryBuffer: Record "CV Ledger Entry Buffer";
         GeneralLedgerSetup: Record "General Ledger Setup";
@@ -45,6 +46,8 @@ codeunit 31093 "Data Class. Eval. Handler CZZ"
         DataClassificationMgt.SetFieldToPersonal(Database::"Sales Adv. Letter Entry CZZ", SalesAdvLetterEntryCZZ.FieldNo("User ID"));
 
         DataClassificationMgt.SetFieldToNormal(Database::"Cash Document Line CZP", CashDocumentLineCZP.FieldNo("Advance Letter No. CZZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Cash Flow Setup", CashFlowSetup.FieldNo("S. Adv. Letter CF Acc. No. CZZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Cash Flow Setup", CashFlowSetup.FieldNo("P. Adv. Letter CF Acc. No. CZZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Cust. Ledger Entry", CustLedgerEntry.FieldNo("Advance Letter No. CZZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Cust. Ledger Entry", CustLedgerEntry.FieldNo("Adv. Letter Template Code CZZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"CV Ledger Entry Buffer", CVLedgerEntryBuffer.FieldNo("Advance Letter No. CZZ"));

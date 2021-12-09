@@ -2,7 +2,9 @@ table 18015 "E-Commerce Merchant"
 {
     Caption = 'E-Commerce Merchant';
     DataCaptionFields = "Customer No.", "Merchant Id";
-
+    ObsoleteState = Pending;
+    ObsoleteReason = 'New table 18017 introduced as "E-Comm. Merchant" with customer No. field length as 20';
+    ObsoleteTag = '23.0';
     fields
     {
         field(1; "Customer No."; code[10])

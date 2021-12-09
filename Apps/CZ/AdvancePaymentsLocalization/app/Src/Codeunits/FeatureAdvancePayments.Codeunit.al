@@ -24,7 +24,8 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
                   tabledata "Cash Document Line CZP" = m,
                   tabledata "Payment Order Line CZB" = m,
                   tabledata "Iss. Payment Order Line CZB" = m,
-                  tabledata "Report Selections" = m;
+                  tabledata "Report Selections" = m,
+                  tabledata "Cash Flow Setup" = m;
 
     var
         PurchaseAdvPaymentTemplate: Record "Purchase Adv. Payment Template";
@@ -99,6 +100,7 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
         UpdatePaymentOrderLinesCZB(FeatureDataUpdateStatus);
         UpdateIssPaymentOrderLinesCZB(FeatureDataUpdateStatus);
         UpdateReportSelections(FeatureDataUpdateStatus);
+        UpdateCashFlowSetup(FeatureDataUpdateStatus);
         UnbindSubscription(InstallApplicationsMgtCZL);
 #endif
     end;
@@ -1019,6 +1021,19 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
         ReportSelections.SetRange("Report ID", Report::"Sales Invoice CZL");
         ReportSelections.ModifyAll("Report ID", Report::"Sales - Invoice with Adv. CZZ");
         FeatureDataUpdateMgt.LogTask(FeatureDataUpdateStatus, ReportSelections.TableCaption(), StartDateTime);
+    end;
+
+    local procedure UpdateCashFlowSetup(FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    var
+        CashFlowSetup: Record "Cash Flow Setup";
+        StartDateTime: DateTime;
+    begin
+        StartDateTime := CurrentDateTime();
+        CashFlowSetup.Get();
+        CashFlowSetup."S. Adv. Letter CF Acc. No. CZZ" := CashFlowSetup."S. Adv. Letter CF Account No.";
+        CashFlowSetup."P. Adv. Letter CF Acc. No. CZZ" := CashFlowSetup."P. Adv. Letter CF Account No.";
+        CashFlowSetup.Modify(false);
+        FeatureDataUpdateMgt.LogTask(FeatureDataUpdateStatus, CashFlowSetup.TableCaption(), StartDateTime);
     end;
 
     [IntegrationEvent(false, false)]
