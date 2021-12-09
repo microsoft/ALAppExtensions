@@ -56,6 +56,31 @@ begin
 
 end;
 ```
+
+##### Save an image in a new format
+```
+procedure Example()
+var
+    TempBlob: Codeunit "Temp Blob";
+    Image: Codeunit Image;
+    InStream: InStream;
+    OutStream: OutStream;
+    FileName: Text;
+begin
+    UploadIntoStream('', '', '', FileName, InStream);
+
+    Image.FromStream(InStream);
+    Image.SetFormat(Enum::"Image Format"::Png);
+
+    TempBlob.CreateOutStream(OutStream);
+    Image.Save(OutStream);	
+
+    TempBlob.CreateInStream(InStream);
+    FileName := FileName + '.png';
+    DownloadFromStream(InStream, '', '', '', FileName);
+end;
+```
+
 # Public Objects
 ## Image (Codeunit 3971)
 
@@ -121,6 +146,15 @@ procedure GetFormat(): Enum "Image Format"
 *[Enum "Image Format"]()*
 
 The enum value.
+### SetFormat (Method) <a name="SetFormat"></a> 
+
+ Sets the image format from an Enum "Image Format".
+ 
+
+#### Syntax
+```
+procedure SetFormat(ImageFormat: Enum "Image Format")
+```
 ### FromBase64 (Method) <a name="FromBase64"></a> 
 
  Creates an Image from base64 encoding.

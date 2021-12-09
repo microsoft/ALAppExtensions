@@ -111,6 +111,22 @@ codeunit 135135 "Image Tests"
     end;
 
     [Test]
+    procedure SetFormatTest()
+    var
+        Image: Codeunit Image;
+        Format: Enum "Image Format";
+    begin
+        // [Given] base64 encoded data, create image
+        Image.FromBase64(ImageAsBase64Txt);
+
+        // [When] change the format to Jpeg without any errors
+        Image.SetFormat(Format::Jpeg);
+
+        // [Then] verify format
+        Assert.AreEqual(Format::Jpeg, Image.GetFormat(), 'Changing format failed');
+    end;
+
+    [Test]
     procedure GetFormatAsTextTest()
     var
         Image: Codeunit Image;

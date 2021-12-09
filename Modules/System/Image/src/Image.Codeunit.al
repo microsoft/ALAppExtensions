@@ -73,6 +73,15 @@ codeunit 3971 Image
     end;
 
     /// <summary>
+    /// Sets the image format from an Enum "Image Format".
+    /// </summary>
+    /// <remarks>Depending on the format selected, calling this method may result in loss of image quality.</remarks>
+    procedure SetFormat(ImageFormat: Enum "Image Format")
+    begin
+        ImageImpl.SetFormat(ImageFormat);
+    end;
+
+    /// <summary>
     /// Creates an Image from base64 encoding.
     /// </summary>
     /// <param name="Base64Text">A base64 encoded string the contains the image.</param>
