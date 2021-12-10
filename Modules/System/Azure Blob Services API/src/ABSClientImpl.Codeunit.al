@@ -122,49 +122,49 @@ codeunit 9051 "ABS Client Impl."
         exit(OperationResponse);
     end;
 
-    procedure ContainerLeaseAcquire(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ContainerAcquireLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
         OperationPayload.SetOperation(Operation::LeaseContainer);
         OperationPayload.SetContainerName(ContainerName);
-        exit(LeaseAcquire(OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseAcquireLbl, ContainerLbl, OperationPayload.GetContainerName())));
+        exit(AcquireLease(OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseAcquireLbl, ContainerLbl, OperationPayload.GetContainerName())));
     end;
 
-    procedure ContainerLeaseRelease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ContainerReleaseLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
         OperationPayload.SetOperation(Operation::LeaseContainer);
         OperationPayload.SetContainerName(ContainerName);
-        exit(LeaseRelease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseReleaseLbl, ContainerLbl, OperationPayload.GetContainerName())));
+        exit(ReleaseLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseReleaseLbl, ContainerLbl, OperationPayload.GetContainerName())));
     end;
 
-    procedure ContainerLeaseRenew(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ContainerRenewLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
         OperationPayload.SetOperation(Operation::LeaseContainer);
         OperationPayload.SetContainerName(ContainerName);
-        exit(LeaseRenew(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseRenewLbl, ContainerLbl, OperationPayload.GetContainerName())));
+        exit(RenewLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseRenewLbl, ContainerLbl, OperationPayload.GetContainerName())));
     end;
 
-    procedure ContainerLeaseBreak(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ContainerBreakLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
         OperationPayload.SetOperation(Operation::LeaseContainer);
         OperationPayload.SetContainerName(ContainerName);
-        exit(LeaseBreak(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, ContainerLbl, OperationPayload.GetContainerName())));
+        exit(BreakLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, ContainerLbl, OperationPayload.GetContainerName())));
     end;
 
-    procedure ContainerLeaseChange(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ContainerChangeLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
         OperationPayload.SetOperation(Operation::LeaseContainer);
         OperationPayload.SetContainerName(ContainerName);
-        exit(LeaseChange(OptionalParameters, LeaseId, ProposedLeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseChangeLbl, ContainerLbl, OperationPayload.GetContainerName())));
+        exit(ChangeLease(OptionalParameters, LeaseId, ProposedLeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseChangeLbl, ContainerLbl, OperationPayload.GetContainerName())));
     end;
     #endregion
 
@@ -695,54 +695,54 @@ codeunit 9051 "ABS Client Impl."
         exit(OperationResponse);
     end;
 
-    procedure BlobLeaseAcquire(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure BlobAcquireLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
         OperationPayload.SetOperation(Operation::LeaseBlob);
         OperationPayload.SetBlobName(BlobName);
-        exit(LeaseAcquire(OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseAcquireLbl, BlobLbl, OperationPayload.GetBlobName())));
+        exit(AcquireLease(OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseAcquireLbl, BlobLbl, OperationPayload.GetBlobName())));
     end;
 
-    procedure BlobLeaseRelease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure BlobReleaseLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
         OperationPayload.SetOperation(Operation::LeaseBlob);
         OperationPayload.SetBlobName(BlobName);
-        exit(LeaseRelease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseReleaseLbl, BlobLbl, OperationPayload.GetBlobName())));
+        exit(ReleaseLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseReleaseLbl, BlobLbl, OperationPayload.GetBlobName())));
     end;
 
-    procedure BlobLeaseRenew(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure BlobRenewLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
         OperationPayload.SetOperation(Operation::LeaseBlob);
         OperationPayload.SetBlobName(BlobName);
-        exit(LeaseRenew(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseRenewLbl, BlobLbl, OperationPayload.GetBlobName())));
+        exit(RenewLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseRenewLbl, BlobLbl, OperationPayload.GetBlobName())));
     end;
 
-    procedure BlobLeaseBreak(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure BlobBreakLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
         OperationPayload.SetOperation(Operation::LeaseBlob);
         OperationPayload.SetBlobName(BlobName);
-        exit(LeaseBreak(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, BlobLbl, OperationPayload.GetBlobName())));
+        exit(BreakLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, BlobLbl, OperationPayload.GetBlobName())));
     end;
 
-    procedure BlobLeaseChange(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure BlobChangeLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
         OperationPayload.SetOperation(Operation::LeaseBlob);
         OperationPayload.SetBlobName(BlobName);
-        exit(LeaseChange(OptionalParameters, LeaseId, ProposedLeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseChangeLbl, BlobLbl, OperationPayload.GetBlobName())));
+        exit(ChangeLease(OptionalParameters, LeaseId, ProposedLeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseChangeLbl, BlobLbl, OperationPayload.GetBlobName())));
     end;
     #endregion
 
     #region Private Lease-functions
-    local procedure LeaseAcquire(OptionalParameters: Codeunit "ABS Optional Parameters"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure AcquireLease(OptionalParameters: Codeunit "ABS Optional Parameters"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
         OperationResponse: Codeunit "ABS Operation Response";
         FormatHelper: Codeunit "ABS Format Helper";
@@ -766,7 +766,7 @@ codeunit 9051 "ABS Client Impl."
         exit(OperationResponse);
     end;
 
-    local procedure LeaseRelease(OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure ReleaseLease(OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
         OperationResponse: Codeunit "ABS Operation Response";
         LeaseAction: Enum "ABS Lease Action";
@@ -783,7 +783,7 @@ codeunit 9051 "ABS Client Impl."
         exit(OperationResponse);
     end;
 
-    local procedure LeaseRenew(OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure RenewLease(OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
         OperationResponse: Codeunit "ABS Operation Response";
         LeaseAction: Enum "ABS Lease Action";
@@ -800,7 +800,7 @@ codeunit 9051 "ABS Client Impl."
         exit(OperationResponse);
     end;
 
-    local procedure LeaseBreak(OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure BreakLease(OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
         OperationResponse: Codeunit "ABS Operation Response";
         LeaseAction: Enum "ABS Lease Action";
@@ -817,7 +817,7 @@ codeunit 9051 "ABS Client Impl."
         exit(OperationResponse);
     end;
 
-    local procedure LeaseChange(OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure ChangeLease(OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
         OperationResponse: Codeunit "ABS Operation Response";
         FormatHelper: Codeunit "ABS Format Helper";

@@ -71,29 +71,29 @@ codeunit 132920 "ABS Blob Client Test"
         Assert.IsTrue(Response.IsSuccessful(), 'Operation PutBlobBlockBlob failed');
 
         // [1st] Acquire Lease on Blob
-        Response := ABSBlobClient.LeaseAcquire(BlobName, 60, LeaseId);
+        Response := ABSBlobClient.AcquireLease(BlobName, 60, LeaseId);
         Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseAcquire failed');
         Assert.IsFalse(IsNullGuid(LeaseId), 'Operation LeaseAcquire failed (no LeaseId returned)');
 
         // [2nd] Renew Lease on Blob
-        Response := ABSBlobClient.LeaseRenew(BlobName, LeaseId);
+        Response := ABSBlobClient.RenewLease(BlobName, LeaseId);
         Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseRenew failed');
 
         // This part works when testing against a "real" Azure Storage and not Azurite
         if (AzuriteTestLibrary.GetStorageAccountName() <> 'devstoreaccount1') then begin // "devstoreaccount1" is the hardcoded name for Azurite test-account
             // [3rd] Change Lease on Blob
             ProposedLeaseId := CreateGuid();
-            Response := ABSBlobClient.LeaseChange(BlobName, LeaseId, ProposedLeaseId);
+            Response := ABSBlobClient.ChangeLease(BlobName, LeaseId, ProposedLeaseId);
             Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseChange failed');
             Assert.IsFalse(IsNullGuid(LeaseId), 'Operation LeaseChange failed (no LeaseId returned)');
         end;
 
         // [4th] Break Lease on Blob
-        Response := ABSBlobClient.LeaseBreak(BlobName, LeaseId);
+        Response := ABSBlobClient.BreakLease(BlobName, LeaseId);
         Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseBreak failed');
 
         // [5th] Release Lease on Blob
-        Response := ABSBlobClient.LeaseRelease(BlobName, LeaseId);
+        Response := ABSBlobClient.ReleaseLease(BlobName, LeaseId);
         Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseRelease failed');
 
         // Clean-up

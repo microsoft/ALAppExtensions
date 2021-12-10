@@ -110,29 +110,29 @@ codeunit 132919 "ABS Container Client Test"
         Assert.IsTrue(Response.IsSuccessful(), 'Operation CreateContainer failed');
 
         // [1st] Acquire Lease on Container
-        Response := ABSContainerClient.LeaseAcquire(ContainerName, 60, LeaseId);
+        Response := ABSContainerClient.AcquireLease(ContainerName, 60, LeaseId);
         Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseAcquire failed');
         Assert.IsFalse(IsNullGuid(LeaseId), 'Operation LeaseAcquire failed (no LeaseId returned)');
 
         // [2nd] Renew Lease on Container
-        Response := ABSContainerClient.LeaseRenew(ContainerName, LeaseId);
+        Response := ABSContainerClient.RenewLease(ContainerName, LeaseId);
         Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseRenew failed');
 
         // This part works when testing against a "real" Azure Storage and not Azurite
         if (AzuriteTestLibrary.GetStorageAccountName() <> 'devstoreaccount1') then begin // "devstoreaccount1" is the hardcoded name for Azurite test-account
             // [3rd] Change Lease on Container
             ProposedLeaseId := CreateGuid();
-            Response := ABSContainerClient.LeaseChange(ContainerName, LeaseId, ProposedLeaseId);
+            Response := ABSContainerClient.ChangeLease(ContainerName, LeaseId, ProposedLeaseId);
             Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseChange failed');
             Assert.IsFalse(IsNullGuid(LeaseId), 'Operation LeaseChange failed (no LeaseId returned)');
         end;
 
         // [4th] Break Lease on Container
-        Response := ABSContainerClient.LeaseBreak(ContainerName, LeaseId);
+        Response := ABSContainerClient.BreakLease(ContainerName, LeaseId);
         Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseBreak failed');
 
         // [5th] Release Lease on Container
-        Response := ABSContainerClient.LeaseRelease(ContainerName, LeaseId);
+        Response := ABSContainerClient.ReleaseLease(ContainerName, LeaseId);
         Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseRelease failed');
 
         // Clean-up

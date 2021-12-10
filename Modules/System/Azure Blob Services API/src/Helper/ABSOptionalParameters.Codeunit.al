@@ -283,7 +283,7 @@ codeunit 9047 "ABS Optional Parameters"
     begin
         if not RequestHeaders.Get('x-ms-lease-action', LeaseActionAsText) then
             Error(NeedToSpecifyHeaderErr, 'x-ms-lease-action');
-        exit(Enum::"ABS Lease Action".FromInteger(Enum::"ABS Lease Action".Ordinals.Get(Enum::"ABS Lease Action".Names.IndexOf(LeaseActionAsText))));
+        exit(Enum::"ABS Lease Action".FromInteger(Enum::"ABS Lease Action".Ordinals.Get(Enum::"ABS Lease Action".Names.IndexOf(UpperCase(LeaseActionAsText[1]) + CopyStr(LeaseActionAsText, 2))))); // Make first Char Uppercase
     end;
 
     local procedure SetRequestHeader(Header: Text; HeaderValue: Text)
