@@ -15,7 +15,7 @@ enum 9049 "ABS Lease Action"
     /// <summary>
     /// Requests a new lease.
     /// </summary>
-    value(0; acquire)
+    value(0; Acquire)
     {
         Caption = 'acquire', Locked = true;
     }
@@ -23,7 +23,7 @@ enum 9049 "ABS Lease Action"
     /// <summary>
     /// Renews the lease.
     /// </summary>
-    value(1; renew)
+    value(1; Renew)
     {
         Caption = 'renew', Locked = true;
     }
@@ -31,7 +31,7 @@ enum 9049 "ABS Lease Action"
     /// <summary>
     /// Changes the lease ID of an active lease.
     /// </summary>
-    value(2; change)
+    value(2; Change)
     {
         Caption = 'change', Locked = true;
     }
@@ -39,7 +39,7 @@ enum 9049 "ABS Lease Action"
     /// <summary>
     /// Releases the lease
     /// </summary>
-    value(3; release)
+    value(3; Release)
     {
         Caption = 'release', Locked = true;
     }
@@ -47,7 +47,7 @@ enum 9049 "ABS Lease Action"
     /// <summary>
     /// Breaks the lease, if the blob has an active lease
     /// </summary>
-    value(4; break)
+    value(4; Break)
     {
         Caption = 'break', Locked = true;
     }

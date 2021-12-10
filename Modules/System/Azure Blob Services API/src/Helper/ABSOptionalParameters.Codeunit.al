@@ -244,7 +244,7 @@ codeunit 9047 "ABS Optional Parameters"
         LeaseAction: Enum "ABS Lease Action";
     begin
         LeaseAction := GetLeaseActionFromRequestHeader();
-        if not (LeaseAction in [LeaseAction::break]) then
+        if not (LeaseAction in [LeaseAction::Break]) then
             Error(HeaderCanOnlyBeSetOnConditionErr, 'x-ms-lease-break-period', 'x-ms-lease-action', 'break');
         SetRequestHeader('x-ms-lease-break-period', Format("Value"));
     end;
@@ -258,7 +258,7 @@ codeunit 9047 "ABS Optional Parameters"
         LeaseAction: Enum "ABS Lease Action";
     begin
         LeaseAction := GetLeaseActionFromRequestHeader();
-        if not (LeaseAction in [LeaseAction::acquire]) then
+        if not (LeaseAction in [LeaseAction::Acquire]) then
             Error(HeaderCanOnlyBeSetOnConditionErr, 'x-ms-lease-duration', 'x-ms-lease-action', 'acquire');
         SetRequestHeader('x-ms-lease-duration', Format("Value"));
     end;
@@ -272,7 +272,7 @@ codeunit 9047 "ABS Optional Parameters"
         LeaseAction: Enum "ABS Lease Action";
     begin
         LeaseAction := GetLeaseActionFromRequestHeader();
-        if not (LeaseAction in [LeaseAction::acquire, LeaseAction::change]) then
+        if not (LeaseAction in [LeaseAction::Acquire, LeaseAction::Change]) then
             Error(HeaderCanOnlyBeSetOnTwoConditionsErr, 'x-ms-proposed-lease-id', 'x-ms-lease-action', 'acquire', 'change');
         SetRequestHeader('x-ms-proposed-lease-id', "Value");
     end;

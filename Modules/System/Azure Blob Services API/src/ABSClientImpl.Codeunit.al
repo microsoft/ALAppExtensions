@@ -754,7 +754,7 @@ codeunit 9051 "ABS Client Impl."
         if ((((DurationSeconds < 15) or (DurationSeconds > 60))) and (DurationSeconds <> -1)) then
             Error(ParameterDurationErr, DurationSeconds);
 
-        OptionalParameters.LeaseAction(LeaseAction::acquire);
+        OptionalParameters.LeaseAction(LeaseAction::Acquire);
         OptionalParameters.LeaseDuration(DurationSeconds);
         if not IsNullGuid(ProposedLeaseId) then
             OptionalParameters.ProposedLeaseId(ProposedLeaseId);
@@ -771,7 +771,7 @@ codeunit 9051 "ABS Client Impl."
         OperationResponse: Codeunit "ABS Operation Response";
         LeaseAction: Enum "ABS Lease Action";
     begin
-        OptionalParameters.LeaseAction(LeaseAction::release);
+        OptionalParameters.LeaseAction(LeaseAction::Release);
 
         TestParameterSpecified(LeaseId, 'LeaseId', 'x-ms-lease-id');
 
@@ -788,7 +788,7 @@ codeunit 9051 "ABS Client Impl."
         OperationResponse: Codeunit "ABS Operation Response";
         LeaseAction: Enum "ABS Lease Action";
     begin
-        OptionalParameters.LeaseAction(LeaseAction::renew);
+        OptionalParameters.LeaseAction(LeaseAction::Renew);
 
         TestParameterSpecified(LeaseId, 'LeaseId', 'x-ms-lease-id');
 
@@ -805,7 +805,7 @@ codeunit 9051 "ABS Client Impl."
         OperationResponse: Codeunit "ABS Operation Response";
         LeaseAction: Enum "ABS Lease Action";
     begin
-        OptionalParameters.LeaseAction(LeaseAction::break);
+        OptionalParameters.LeaseAction(LeaseAction::Break);
 
         TestParameterSpecified(LeaseId, 'LeaseId', 'x-ms-lease-id');
 
@@ -823,7 +823,7 @@ codeunit 9051 "ABS Client Impl."
         FormatHelper: Codeunit "ABS Format Helper";
         LeaseAction: Enum "ABS Lease Action";
     begin
-        OptionalParameters.LeaseAction(LeaseAction::change);
+        OptionalParameters.LeaseAction(LeaseAction::Change);
 
         TestParameterSpecified(LeaseId, 'LeaseId', 'x-ms-lease-id');
         TestParameterSpecified(ProposedLeaseId, 'ProposedLeaseId', 'x-ms-proposed-lease-id');
