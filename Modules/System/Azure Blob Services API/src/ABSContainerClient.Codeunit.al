@@ -127,12 +127,12 @@ codeunit 9052 "ABS Container Client"
     /// <param name="ContainerName">The name of the container to delete.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(ContainerName: Text; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(ContainerName: Text; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
         ProposedLeaseId: Guid;
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
+        exit(BlobServicesApiImpl.ContainerAcquireLease(ContainerName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
     end;
 
     /// <summary>
@@ -143,11 +143,11 @@ codeunit 9052 "ABS Container Client"
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         ProposedLeaseId: Guid;
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
+        exit(BlobServicesApiImpl.ContainerAcquireLease(ContainerName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
     end;
 
     /// <summary>
@@ -158,12 +158,12 @@ codeunit 9052 "ABS Container Client"
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(ContainerName: Text; DurationSeconds: Integer; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(ContainerName: Text; DurationSeconds: Integer; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
         ProposedLeaseId: Guid;
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
+        exit(BlobServicesApiImpl.ContainerAcquireLease(ContainerName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
     end;
 
     /// <summary>
@@ -175,11 +175,11 @@ codeunit 9052 "ABS Container Client"
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(ContainerName: Text; DurationSeconds: Integer; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(ContainerName: Text; DurationSeconds: Integer; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         ProposedLeaseId: Guid;
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
+        exit(BlobServicesApiImpl.ContainerAcquireLease(ContainerName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
     end;
 
     /// <summary>
@@ -190,11 +190,11 @@ codeunit 9052 "ABS Container Client"
     /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(ContainerName: Text; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(ContainerName: Text; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
+        exit(BlobServicesApiImpl.ContainerAcquireLease(ContainerName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
     end;
 
     /// <summary>
@@ -206,9 +206,9 @@ codeunit 9052 "ABS Container Client"
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(ContainerName: Text; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(ContainerName: Text; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
+        exit(BlobServicesApiImpl.ContainerAcquireLease(ContainerName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
     end;
 
     /// <summary>
@@ -221,9 +221,9 @@ codeunit 9052 "ABS Container Client"
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(ContainerName: Text; DurationSeconds: Integer; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(ContainerName: Text; DurationSeconds: Integer; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseAcquire(ContainerName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId));
+        exit(BlobServicesApiImpl.ContainerAcquireLease(ContainerName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId));
     end;
 
     /// <summary>
@@ -232,11 +232,11 @@ codeunit 9052 "ABS Container Client"
     /// </summary>
     /// <param name="LeaseId">The Guid for the lease that should be released</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseRelease(ContainerName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ReleaseLease(ContainerName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseRelease(ContainerName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.ContainerReleaseLease(ContainerName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -246,9 +246,9 @@ codeunit 9052 "ABS Container Client"
     /// <param name="LeaseId">The Guid for the lease that should be released</param>
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseRelease(ContainerName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure ReleaseLease(ContainerName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseRelease(ContainerName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.ContainerReleaseLease(ContainerName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -257,11 +257,11 @@ codeunit 9052 "ABS Container Client"
     /// </summary>
     /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseRenew(ContainerName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure RenewLease(ContainerName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseRenew(ContainerName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.ContainerRenewLease(ContainerName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -271,9 +271,9 @@ codeunit 9052 "ABS Container Client"
     /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseRenew(ContainerName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure RenewLease(ContainerName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseRenew(ContainerName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.ContainerRenewLease(ContainerName, OptionalParameters, LeaseId));
     end;
 
 
@@ -283,11 +283,11 @@ codeunit 9052 "ABS Container Client"
     /// </summary>
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseBreak(ContainerName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure BreakLease(ContainerName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseBreak(ContainerName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.ContainerBreakLease(ContainerName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -297,9 +297,9 @@ codeunit 9052 "ABS Container Client"
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseBreak(ContainerName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure BreakLease(ContainerName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseBreak(ContainerName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.ContainerBreakLease(ContainerName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -309,11 +309,11 @@ codeunit 9052 "ABS Container Client"
     /// <param name="LeaseId">The Guid for the lease that should be changed. Will contain the updated Guid after successful operation.</param>
     /// <param name="ProposedLeaseId">The Guid that should be used in future</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseChange(ContainerName: Text; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ChangeLease(ContainerName: Text; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseChange(ContainerName, OptionalParameters, LeaseId, ProposedLeaseId));
+        exit(BlobServicesApiImpl.ContainerChangeLease(ContainerName, OptionalParameters, LeaseId, ProposedLeaseId));
     end;
 
     /// <summary>
@@ -324,9 +324,9 @@ codeunit 9052 "ABS Container Client"
     /// <param name="ProposedLeaseId">The Guid that should be used in future</param>
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseChange(ContainerName: Text; LeaseId: Guid; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure ChangeLease(ContainerName: Text; LeaseId: Guid; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.ContainerLeaseChange(ContainerName, OptionalParameters, LeaseId, ProposedLeaseId));
+        exit(BlobServicesApiImpl.ContainerChangeLease(ContainerName, OptionalParameters, LeaseId, ProposedLeaseId));
     end;
 
     var

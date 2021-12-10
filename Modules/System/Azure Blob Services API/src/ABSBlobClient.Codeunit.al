@@ -607,12 +607,12 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(BlobName: Text; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(BlobName: Text; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
         ProposedLeaseId: Guid;
     begin
-        exit(BlobServicesApiImpl.BlobLeaseAcquire(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
     end;
 
     /// <summary>
@@ -623,11 +623,11 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         ProposedLeaseId: Guid;
     begin
-        exit(BlobServicesApiImpl.BlobLeaseAcquire(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
     end;
 
     /// <summary>
@@ -638,12 +638,12 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(BlobName: Text; DurationSeconds: Integer; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(BlobName: Text; DurationSeconds: Integer; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
         ProposedLeaseId: Guid;
     begin
-        exit(BlobServicesApiImpl.BlobLeaseAcquire(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
     end;
 
     /// <summary>
@@ -655,11 +655,11 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(BlobName: Text; DurationSeconds: Integer; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(BlobName: Text; DurationSeconds: Integer; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         ProposedLeaseId: Guid;
     begin
-        exit(BlobServicesApiImpl.BlobLeaseAcquire(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
     end;
 
     /// <summary>
@@ -670,11 +670,11 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(BlobName: Text; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(BlobName: Text; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.BlobLeaseAcquire(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
     end;
 
     /// <summary>
@@ -686,9 +686,9 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(BlobName: Text; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(BlobName: Text; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobLeaseAcquire(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
     end;
 
     /// <summary>
@@ -701,9 +701,9 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseAcquire(BlobName: Text; DurationSeconds: Integer; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(BlobName: Text; DurationSeconds: Integer; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobLeaseAcquire(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId));
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId));
     end;
 
     /// <summary>
@@ -713,11 +713,11 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be released</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseRelease(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ReleaseLease(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.BlobLeaseRelease(BlobName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.BlobReleaseLease(BlobName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -728,9 +728,9 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="LeaseId">The Guid for the lease that should be released</param>
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseRelease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure ReleaseLease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobLeaseRelease(BlobName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.BlobReleaseLease(BlobName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -740,11 +740,11 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseRenew(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure RenewLease(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.BlobLeaseRenew(BlobName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.BlobRenewLease(BlobName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -755,9 +755,9 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseRenew(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure RenewLease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobLeaseRenew(BlobName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.BlobRenewLease(BlobName, OptionalParameters, LeaseId));
     end;
 
 
@@ -768,11 +768,11 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseBreak(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure BreakLease(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.BlobLeaseBreak(BlobName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -783,9 +783,9 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseBreak(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure BreakLease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobLeaseBreak(BlobName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -796,11 +796,11 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="LeaseId">The Guid for the lease that should be changed. Will contain the updated Guid after successful operation.</param>
     /// <param name="ProposedLeaseId">The Guid that should be used in future</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseChange(BlobName: Text; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ChangeLease(BlobName: Text; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.BlobLeaseChange(BlobName, OptionalParameters, LeaseId, ProposedLeaseId));
+        exit(BlobServicesApiImpl.BlobChangeLease(BlobName, OptionalParameters, LeaseId, ProposedLeaseId));
     end;
 
     /// <summary>
@@ -812,9 +812,9 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="ProposedLeaseId">The Guid that should be used in future</param>
     /// <param name="OptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure LeaseChange(BlobName: Text; LeaseId: Guid; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure ChangeLease(BlobName: Text; LeaseId: Guid; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobLeaseChange(BlobName, OptionalParameters, LeaseId, ProposedLeaseId));
+        exit(BlobServicesApiImpl.BlobChangeLease(BlobName, OptionalParameters, LeaseId, ProposedLeaseId));
     end;
 
     var
