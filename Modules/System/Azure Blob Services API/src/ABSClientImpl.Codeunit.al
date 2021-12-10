@@ -840,11 +840,9 @@ codeunit 9051 "ABS Client Impl."
 
     local procedure TestParameterSpecified("Value": Variant; ParameterName: Text; HeaderIdentifer: Text)
     begin
-        case true of
-            "Value".IsGuid():
-                if IsNullGuid("Value") then
-                    Error(ParameterMissingErr, ParameterName, HeaderIdentifer);
-        end
+        if "Value".IsGuid() then
+            if IsNullGuid("Value") then
+                Error(ParameterMissingErr, ParameterName, HeaderIdentifer);
     end;
     #endregion
 }
