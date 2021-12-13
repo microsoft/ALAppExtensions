@@ -28,5 +28,7 @@ permissionset 9203 "Barcode - Objects"
                   Codeunit "IDA 2D Maxi Code Encoder" = X,
                   Codeunit "IDA 2D PDF417 Encoder" = X,
                   Codeunit "IDA 2D QR-Code Encoder" = X,
-                  Table "Barcode Encode Settings" = X;
+                  Codeunit "Dynamics 2D Provider" = X,
+                  Table "Barcode Encode Settings" = X,
+                  Table "Barcode Encode Settings 2D" = X;
 }

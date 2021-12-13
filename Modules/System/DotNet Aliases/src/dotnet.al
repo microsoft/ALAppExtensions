@@ -2388,4 +2388,17 @@ dotnet
         {
         }
     }
+
+    assembly(Microsoft.Dynamics.Nav.MX)
+    {
+        type(Microsoft.Dynamics.QRCode.ErrorCorrectionLevel; "QRCodeErrorCorrectionLevel")
+        {
+        }
+        type(Microsoft.Dynamics.Nav.MX.BarcodeProviders.IBarcodeProvider; "IBarcodeProvider")
+        {
+        }
+        type(Microsoft.Dynamics.Nav.MX.BarcodeProviders.QRCodeProvider; "QRCodeProvider")
+        {
+        }
+    }
 }
