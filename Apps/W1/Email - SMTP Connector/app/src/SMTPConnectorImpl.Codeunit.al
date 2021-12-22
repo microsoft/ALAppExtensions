@@ -241,8 +241,8 @@ codeunit 4513 "SMTP Connector Impl."
         if SMTPAccount.Name = '' then
             exit(false);
 
-        // Email Address is a mandatory field
-        if SMTPAccount."Email Address" = '' then
+        // Email Address is a mandatory field if a specific account is used
+        if (SMTPAccount."Sender Type" = SMTPAccount."Sender Type"::Specific) and (SMTPAccount."Email Address" = '') then
             exit(false);
 
         // Server is a mandatory field

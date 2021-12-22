@@ -51,6 +51,30 @@ codeunit 4514 "SMTP Message"
     end;
 
     /// <summary>
+    /// Adds the mailbox that this email is being sent from.
+    /// </summary>
+    /// <param name="SMTPAccount">The SMTPAccount record where the sender is definied.</param>
+    [TryFunction]
+    local procedure AddFrom(SMTPAccount: Record "SMTP Account")
+    begin
+        if SMTPAccount."Sender Type" = SMTPAccount."Sender Type"::Specific then
+            AddFrom(SMTPAccount."Sender Name", SMTPAccount."Email Address")
+        else
+            AddFromUser();
+    end;
+
+    /// <summary>
+    /// Adds the mailbox that this email is being sent from based on the current user.
+    /// </summary>
+    local procedure AddFromUser()
+    var
+        User: Record User;
+    begin
+        User.Get(UserSecurityId());
+        AddFrom(User."Full Name", User."Contact Email");
+    end;
+
+    /// <summary>
     /// Adds the recipients that this email is being sent to.
     /// </summary>
     /// <param name="Recipients">The recipient(s)</param>
@@ -95,7 +119,7 @@ codeunit 4514 "SMTP Message"
         Recipients: List of [Text];
     begin
         // Add From
-        AddFrom(SMTPAccount."Sender Name", SMTPAccount."Email Address");
+        AddFrom(SMTPAccount);
 
         // Add "To" recipients
 #pragma warning disable AA0205

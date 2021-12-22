@@ -49,9 +49,23 @@ page 4511 "SMTP Account Wizard"
                 end;
             }
 
+            field(SenderTypeField; Rec."Sender Type")
+            {
+                ApplicationArea = All;
+                Caption = 'Sender Type';
+                ToolTip = 'Specifies if a specific sender or the current user is used as sender. If the current user is used, it must be ensured that the account is allowed to send on behalf of the user.';
+
+                trigger OnValidate()
+                begin
+                    SetProperties();
+                    IsNextEnabled := SMTPConnectorImpl.IsAccountValid(Rec);
+                end;
+            }
+
             field(SenderNameField; Rec."Sender Name")
             {
                 ApplicationArea = All;
+                Enabled = SenderFieldsEnabled;
                 Caption = 'Sender Name';
                 ToolTip = 'Specifies a name to add in front of the sender email address. For example, if you enter Stan in this field, and the email address is stan@cronus.com, the recipient will see the sender as Stan stan@cronus.com.';
             }
@@ -61,6 +75,7 @@ page 4511 "SMTP Account Wizard"
                 ApplicationArea = All;
                 Caption = 'Email Address';
                 ToolTip = 'Specifies the Email Address specified as the from email address.';
+                Enabled = SenderFieldsEnabled;
                 ShowMandatory = true;
                 NotBlank = true;
 
@@ -213,6 +228,7 @@ page 4511 "SMTP Account Wizard"
         Password: Text;
         ConfirmApplyO365Qst: Label 'Do you want to override the current data?';
         IsNextEnabled: Boolean;
+        SenderFieldsEnabled: Boolean;
         TopBannerVisible: Boolean;
         ShowMessageAboutSigningIn: Boolean;
         EveryUserShouldPressAuthenticateMsg: Label 'Before people can send email they must authenticate their email account. They can do that by choosing the Authenticate action on the SMTP Account page.';
@@ -233,6 +249,7 @@ page 4511 "SMTP Account Wizard"
     begin
         UserIDEditable := (Rec.Authentication = Rec.Authentication::Basic) or (Rec.Authentication = Rec.Authentication::"OAuth 2.0") or (Rec.Authentication = Rec.Authentication::NTLM);
         PasswordEditable := (Rec.Authentication = Rec.Authentication::Basic) or (Rec.Authentication = Rec.Authentication::NTLM);
+        SenderFieldsEnabled := Rec."Sender Type" = Rec."Sender Type"::Specific;
         ShowMessageAboutSigningIn := (not EnvironmentInformation.IsSaaSInfrastructure()) and (Rec.Authentication = Rec.Authentication::"OAuth 2.0") and (Rec.Server = SMTPConnectorImpl.GetO365SmtpServer());
     end;
 
