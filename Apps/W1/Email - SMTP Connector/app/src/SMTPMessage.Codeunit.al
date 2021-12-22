@@ -71,6 +71,7 @@ codeunit 4514 "SMTP Message"
         User: Record User;
     begin
         User.Get(UserSecurityId());
+        User.TestField("Contact Email");
         AddFrom(User."Full Name", User."Contact Email");
     end;
 

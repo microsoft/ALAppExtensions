@@ -49,7 +49,7 @@ codeunit 4513 "SMTP Connector Impl."
         if Account.FindSet() then
             repeat
                 Accounts."Account Id" := Account.Id;
-                Accounts."Email Address" := Account."Email Address";
+                Accounts."Email Address" := GetEmailAddress(Account);
                 Accounts.Name := Account.Name;
                 Accounts.Connector := Enum::"Email Connector"::SMTP;
 
@@ -446,6 +446,17 @@ codeunit 4513 "SMTP Connector Impl."
     local procedure GetSmtpNotificationId(): Guid
     begin
         exit('51522fbd-1664-4839-b236-baa60c72d8b5');
+    end;
+
+    local procedure GetEmailAddress(Account: Record "SMTP Account"): Text[250]
+    var
+        User: Record User;
+    begin
+        if Account."Sender Type" = Account."Sender Type"::Specific then
+            exit(Account."Email Address");
+
+        if User.Get(UserSecurityId()) then
+            exit(User."Contact Email");
     end;
 
     internal procedure OpenLearnMore(Notification: Notification)

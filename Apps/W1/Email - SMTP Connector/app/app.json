@@ -3,7 +3,7 @@
     "name":  "Email - SMTP Connector",
     "publisher":  "Microsoft",
     "brief":  "Enable all users to use a single email account through the SMTP protocol to send email in Business Central.",
-    "description":  "This app enables all users to send email from the same email account in Business Central.",
+    "description":  "This app enables all users to send email from an SMTP enabled email account in Business Central.",
     "version":  "19.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
