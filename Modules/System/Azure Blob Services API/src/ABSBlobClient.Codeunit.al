@@ -772,7 +772,22 @@ codeunit 9053 "ABS Blob Client"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId, 0));
+    end;
+
+    /// <summary>
+    /// Breaks a lease on a blob but ensures that another client cannot acquire a new lease until the current lease period has expired
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
+    /// <param name="LeaseId">The Guid for the lease that should be broken</param>
+    /// <param name="LeaseBreakPeriod">The proposed duration the lease should continue before it is broken, in seconds, between 0 and 60.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure BreakLease(BlobName: Text; LeaseId: Guid; LeaseBreakPeriod: Integer): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId, LeaseBreakPeriod));
     end;
 
     /// <summary>
@@ -785,7 +800,21 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure BreakLease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId));
+        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId, 0));
+    end;
+
+    /// <summary>
+    /// Breaks a lease on a blob but ensures that another client cannot acquire a new lease until the current lease period has expired
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
+    /// <param name="LeaseId">The Guid for the lease that should be broken</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="LeaseBreakPeriod">The proposed duration the lease should continue before it is broken, in seconds, between 0 and 60.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure BreakLease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseBreakPeriod: Integer): Codeunit "ABS Operation Response"
+    begin
+        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId, LeaseBreakPeriod));
     end;
 
     /// <summary>

@@ -239,13 +239,10 @@ codeunit 9047 "ABS Optional Parameters"
     /// Sets the value for 'x-ms-lease-break-period' HttpHeader for a request.
     /// </summary>
     /// <param name="Value">Integer value specifying the HttpHeader value.</param>
-    procedure LeaseBreakPeriod("Value": Integer)
+    internal procedure LeaseBreakPeriod("Value": Integer)
     var
         LeaseAction: Enum "ABS Lease Action";
     begin
-        LeaseAction := GetLeaseActionFromRequestHeader();
-        if not (LeaseAction in [LeaseAction::Break]) then
-            Error(HeaderCanOnlyBeSetOnConditionErr, 'x-ms-lease-break-period', 'x-ms-lease-action', 'break');
         SetRequestHeader('x-ms-lease-break-period', Format("Value"));
     end;
 

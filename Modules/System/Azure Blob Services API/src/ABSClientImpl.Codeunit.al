@@ -32,6 +32,7 @@ codeunit 9051 "ABS Client Impl."
         ExpiryOperationNotSuccessfulErr: Label 'Could not set expiration on %1.', Comment = '%1 = Blob';
         LeaseOperationNotSuccessfulErr: Label 'Could not %1 lease for %2 %3.', Comment = '%1 = Lease Action, %2 = Type (Container or Blob), %3 = Name';
         ParameterDurationErr: Label 'Duration can be -1 (for infinite) or between 15 and 60 seconds. Parameter Value: %1', Comment = '%1 = Current Value';
+        ParameterLeaseBreakDurationErr: Label 'Duration can be  between 0 and 60 seconds. Parameter Value: %1', Comment = '%1 = Current Value';
         ParameterMissingErr: Label 'You need to specify %1 (%2)', Comment = '%1 = Parameter Name, %2 = Header Identifer';
         LeaseAcquireLbl: Label 'acquire';
         LeaseBreakLbl: Label 'break';
@@ -149,13 +150,13 @@ codeunit 9051 "ABS Client Impl."
         exit(RenewLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseRenewLbl, ContainerLbl, OperationPayload.GetContainerName())));
     end;
 
-    procedure ContainerBreakLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ContainerBreakLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; LeaseBreakPeriod: Integer): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
         OperationPayload.SetOperation(Operation::LeaseContainer);
         OperationPayload.SetContainerName(ContainerName);
-        exit(BreakLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, ContainerLbl, OperationPayload.GetContainerName())));
+        exit(BreakLease(OptionalParameters, LeaseId, LeaseBreakPeriod, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, ContainerLbl, OperationPayload.GetContainerName())));
     end;
 
     procedure ContainerChangeLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
@@ -722,13 +723,13 @@ codeunit 9051 "ABS Client Impl."
         exit(RenewLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseRenewLbl, BlobLbl, OperationPayload.GetBlobName())));
     end;
 
-    procedure BlobBreakLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure BlobBreakLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; LeaseBreakPeriod: Integer): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
         OperationPayload.SetOperation(Operation::LeaseBlob);
         OperationPayload.SetBlobName(BlobName);
-        exit(BreakLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, BlobLbl, OperationPayload.GetBlobName())));
+        exit(BreakLease(OptionalParameters, LeaseId, LeaseBreakPeriod, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, BlobLbl, OperationPayload.GetBlobName())));
     end;
 
     procedure BlobChangeLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
@@ -800,12 +801,16 @@ codeunit 9051 "ABS Client Impl."
         exit(OperationResponse);
     end;
 
-    local procedure BreakLease(OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure BreakLease(OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; LeaseBreakPeriod: Integer; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
         OperationResponse: Codeunit "ABS Operation Response";
         LeaseAction: Enum "ABS Lease Action";
     begin
+        if (LeaseBreakPeriod < 0) or (LeaseBreakPeriod > 60) then
+            Error(ParameterLeaseBreakDurationErr, LeaseBreakPeriod);
+
         OptionalParameters.LeaseAction(LeaseAction::Break);
+        OptionalParameters.LeaseBreakPeriod(LeaseBreakPeriod);
 
         TestParameterSpecified(LeaseId, 'LeaseId', 'x-ms-lease-id');
 
