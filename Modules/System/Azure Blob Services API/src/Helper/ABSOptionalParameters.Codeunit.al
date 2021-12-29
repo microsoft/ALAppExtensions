@@ -240,8 +240,6 @@ codeunit 9047 "ABS Optional Parameters"
     /// </summary>
     /// <param name="Value">Integer value specifying the HttpHeader value.</param>
     internal procedure LeaseBreakPeriod("Value": Integer)
-    var
-        LeaseAction: Enum "ABS Lease Action";
     begin
         SetRequestHeader('x-ms-lease-break-period', Format("Value"));
     end;
@@ -251,8 +249,6 @@ codeunit 9047 "ABS Optional Parameters"
     /// </summary>
     /// <param name="Value">Integer value specifying the HttpHeader value.</param>
     internal procedure LeaseDuration("Value": Integer)
-    var
-        LeaseAction: Enum "ABS Lease Action";
     begin
         SetRequestHeader('x-ms-lease-duration', Format("Value"));
     end;
@@ -261,13 +257,8 @@ codeunit 9047 "ABS Optional Parameters"
     /// Sets the value for 'x-ms-proposed-lease-id' HttpHeader for a request.
     /// </summary>
     /// <param name="Value">Guid value specifying the HttpHeader value.</param>
-    procedure ProposedLeaseId("Value": Guid)
-    var
-        LeaseAction: Enum "ABS Lease Action";
+    internal procedure ProposedLeaseId("Value": Guid)
     begin
-        LeaseAction := GetLeaseActionFromRequestHeader();
-        if not (LeaseAction in [LeaseAction::Acquire, LeaseAction::Change]) then
-            Error(HeaderCanOnlyBeSetOnTwoConditionsErr, 'x-ms-proposed-lease-id', 'x-ms-lease-action', 'acquire', 'change');
         SetRequestHeader('x-ms-proposed-lease-id', "Value");
     end;
 
