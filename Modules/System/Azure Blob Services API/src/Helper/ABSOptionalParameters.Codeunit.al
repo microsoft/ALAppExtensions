@@ -250,13 +250,10 @@ codeunit 9047 "ABS Optional Parameters"
     /// Sets the value for 'x-ms-lease-duration' HttpHeader for a request.
     /// </summary>
     /// <param name="Value">Integer value specifying the HttpHeader value.</param>
-    procedure LeaseDuration("Value": Integer)
+    internal procedure LeaseDuration("Value": Integer)
     var
         LeaseAction: Enum "ABS Lease Action";
     begin
-        LeaseAction := GetLeaseActionFromRequestHeader();
-        if not (LeaseAction in [LeaseAction::Acquire]) then
-            Error(HeaderCanOnlyBeSetOnConditionErr, 'x-ms-lease-duration', 'x-ms-lease-action', 'acquire');
         SetRequestHeader('x-ms-lease-duration', Format("Value"));
     end;
 
