@@ -16,6 +16,28 @@ report 31107 "Intrastat Declaration Exp. CZL"
         }
     }
 
+    requestpage
+    {
+        SaveValues = true;
+
+        layout
+        {
+            area(Content)
+            {
+                group(Options)
+                {
+                    Caption = 'Options';
+                    field(ExportFormatField; ExportFormat)
+                    {
+                        Caption = 'Export Format';
+                        ToolTip = 'Specifies the year for which to report Intrastat. This ensures that the report has the correct format for that year.';
+                        ApplicationArea = BasicEU;
+                    }
+                }
+            }
+        }
+    }
+
     trigger OnPreReport()
     begin
         GetOneIntrastatJnlBatch();
@@ -35,6 +57,7 @@ report 31107 "Intrastat Declaration Exp. CZL"
         DataTypeManagement: Codeunit "Data Type Management";
         FileManagement: Codeunit "File Management";
         TempBlob: Codeunit "Temp Blob";
+        ExportFormat: Enum "Intrastat Export Format";
         OutStream: OutStream;
         Direction: Text[1];
         Month: Text[2];
@@ -79,7 +102,7 @@ report 31107 "Intrastat Declaration Exp. CZL"
 
     local procedure MainLoop()
     var
-        FieldValue: array[20] of Text;
+        FieldValue: array[21] of Text;
         IsHandled: Boolean;
     begin
         IntrastatJnlLine.Reset();
@@ -95,7 +118,7 @@ report 31107 "Intrastat Declaration Exp. CZL"
             if not IsHandled then
                 FormatIntrastatJnlLineValues(FieldValue);
             OnAfterFormatIntrastatJnlLineValues(IntrastatJnlLine, FieldValue);
-            OutStream.WriteText(BuildCSVRow(FieldValue, 20));
+            OutStream.WriteText(BuildCSVRow(FieldValue, 21));
             OutStream.WriteText();
         until IntrastatJnlLine.Next() = 0;
     end;
@@ -118,31 +141,55 @@ report 31107 "Intrastat Declaration Exp. CZL"
         Commit();
     end;
 
-    local procedure FormatIntrastatJnlLineValues(var FieldValue: array[20] of Text)
+    local procedure FormatIntrastatJnlLineValues(var FieldValue: array[21] of Text)
     begin
-        FieldValue[1] := Month; //Month of declaration
-        FieldValue[2] := Year; //Year of declaration
-        FieldValue[3] := VATRegNo; //VAT registration number (DIC) without prefix CZ
-        FieldValue[4] := Format(IntrastatJnlLine.Type + 1); //Arrival / Dispatch
-        FieldValue[5] := CopyStr(IntrastatJnlLine."Country/Region Code", 1, 2); //Country of dispatch / arrival
-        FieldValue[6] := GetIntrastatJnlLineShipmentArea(); //Region of dispatch / arrival
-        FieldValue[7] := GetIntrastatJnlLineShipmentCountryRegionofOrigin(); //Country of origin
-        FieldValue[8] := CopyStr(IntrastatJnlLine."Transaction Type", 1, 2); //Nature of transaction
-        FieldValue[9] := CopyStr(IntrastatJnlLine."Transport Method", 1, 1); //Nature of transport
-        FieldValue[10] := CopyStr(GetDeliveryGroupCode(), 1, 1); //Delivery terms
-        FieldValue[11] := GetDeclarationTypeCode(); //Code of movement (special)
-        FieldValue[12] := CopyStr(DelChr(IntrastatJnlLine."Tariff No.", '=', ' '), 1, 8); //Combined nomenclature CN8
-        FieldValue[13] := CopyStr(IntrastatJnlLine."Statistic Indication CZL", 1, 2); //Statistical sign (additional code)
-        FieldValue[14] := CopyStr(IntrastatJnlLine."Item Description", 1, 80); //Description of goods
-        FieldValue[15] := FormatWeight(); //Net mass
-        FieldValue[16] := FormatQuantity(); //Quantity in supplementary units
-        FieldValue[17] := FormatAmount(); //Invoiced value
-        FieldValue[18] := ''; //Statistical value. It is not filled out.
-        FieldValue[19] := ''; //Internal note 1. Maximal length 40.
-        FieldValue[20] := ''; //Internal note 2. Maximal length 40.
+        if ExportFormat = ExportFormat::"2022" then begin
+            FieldValue[1] := Month; //Month of declaration
+            FieldValue[2] := Year; //Year of declaration
+            FieldValue[3] := VATRegNo; //VAT registration number (DIC) without prefix CZ
+            FieldValue[4] := Format(IntrastatJnlLine.Type + 1); //Arrival / Dispatch
+            FieldValue[5] := GetIntrastatJnlLinePartnerVATID(); // VAT ID of partner
+            FieldValue[6] := CopyStr(IntrastatJnlLine."Country/Region Code", 1, 2); //Country of dispatch / arrival
+            FieldValue[7] := GetIntrastatJnlLineShipmentArea(); //Region of dispatch / arrival
+            FieldValue[8] := CopyStr(IntrastatJnlLine."Country/Region of Origin Code", 1, 2); //Country of origin
+            FieldValue[9] := CopyStr(IntrastatJnlLine."Transaction Type", 1, 2); //Nature of transaction
+            FieldValue[10] := CopyStr(IntrastatJnlLine."Transport Method", 1, 1); //Nature of transport
+            FieldValue[11] := CopyStr(GetDeliveryGroupCode(), 1, 1); //Delivery terms
+            FieldValue[12] := GetDeclarationTypeCode(); //Code of movement (special)
+            FieldValue[13] := CopyStr(DelChr(IntrastatJnlLine."Tariff No.", '=', ' '), 1, 8); //Combined nomenclature CN8
+            FieldValue[14] := CopyStr(IntrastatJnlLine."Statistic Indication CZL", 1, 2); //Statistical sign (additional code)
+            FieldValue[15] := CopyStr(IntrastatJnlLine."Item Description", 1, 80); //Description of goods
+            FieldValue[16] := FormatWeight(); //Net mass
+            FieldValue[17] := FormatQuantity(); //Quantity in supplementary units
+            FieldValue[18] := FormatAmount(); //Invoiced value
+            FieldValue[19] := ''; //Statistical value. It is not filled out.
+            FieldValue[20] := ''; //Internal note 1. Maximal length 40.
+            FieldValue[21] := ''; //Internal note 2. Maximal length 40.
+        end else begin
+            FieldValue[1] := Month; //Month of declaration
+            FieldValue[2] := Year; //Year of declaration
+            FieldValue[3] := VATRegNo; //VAT registration number (DIC) without prefix CZ
+            FieldValue[4] := Format(IntrastatJnlLine.Type + 1); //Arrival / Dispatch
+            FieldValue[5] := CopyStr(IntrastatJnlLine."Country/Region Code", 1, 2); //Country of dispatch / arrival
+            FieldValue[6] := GetIntrastatJnlLineShipmentArea(); //Region of dispatch / arrival
+            FieldValue[7] := GetIntrastatJnlLineShipmentCountryRegionofOrigin(); //Country of origin
+            FieldValue[8] := CopyStr(IntrastatJnlLine."Transaction Type", 1, 2); //Nature of transaction
+            FieldValue[9] := CopyStr(IntrastatJnlLine."Transport Method", 1, 1); //Nature of transport
+            FieldValue[10] := CopyStr(GetDeliveryGroupCode(), 1, 1); //Delivery terms
+            FieldValue[11] := GetDeclarationTypeCode(); //Code of movement (special)
+            FieldValue[12] := CopyStr(DelChr(IntrastatJnlLine."Tariff No.", '=', ' '), 1, 8); //Combined nomenclature CN8
+            FieldValue[13] := CopyStr(IntrastatJnlLine."Statistic Indication CZL", 1, 2); //Statistical sign (additional code)
+            FieldValue[14] := CopyStr(IntrastatJnlLine."Item Description", 1, 80); //Description of goods
+            FieldValue[15] := FormatWeight(); //Net mass
+            FieldValue[16] := FormatQuantity2021(); //Quantity in supplementary units
+            FieldValue[17] := FormatAmount(); //Invoiced value
+            FieldValue[18] := ''; //Statistical value. It is not filled out.
+            FieldValue[19] := ''; //Internal note 1. Maximal length 40.
+            FieldValue[20] := ''; //Internal note 2. Maximal length 40.
+        end;
     end;
 
-    local procedure BuildCSVRow(FieldValue: array[20] of Text; NoOfFields: Integer) Result: Text
+    local procedure BuildCSVRow(FieldValue: array[21] of Text; NoOfFields: Integer) Result: Text
     var
         i: Integer;
         DelimeterTok: Label '"', Locked = true;
@@ -161,8 +208,15 @@ report 31107 "Intrastat Declaration Exp. CZL"
 
     local procedure GetIntrastatJnlLineShipmentCountryRegionofOrigin(): Text[2]
     begin
-        if (IntrastatJnlLine.Type <> IntrastatJnlLine.Type::Shipment) then
+        if IntrastatJnlLine.Type <> IntrastatJnlLine.Type::Shipment then
             exit(CopyStr(IntrastatJnlLine."Country/Region of Origin Code", 1, 2));
+    end;
+
+    local procedure GetIntrastatJnlLinePartnerVATID(): Text[25]
+    begin
+        if IntrastatJnlLine.Type <> IntrastatJnlLine.Type::Shipment then
+            exit('');
+        exit(CopyStr(IntrastatJnlLine."Partner VAT ID", 1, 25));
     end;
 
     local procedure GetRoundingDirection()
@@ -206,7 +260,7 @@ report 31107 "Intrastat Declaration Exp. CZL"
         TestMaxLength(IntrastatJnlLine, IntrastatJnlLine.FieldNo("Total Weight"), FormattedValue, 14);
     end;
 
-    local procedure FormatQuantity() FormattedValue: Text
+    local procedure FormatQuantity2021() FormattedValue: Text
     var
         TariffNumber: Record "Tariff Number";
     begin
@@ -217,6 +271,25 @@ report 31107 "Intrastat Declaration Exp. CZL"
         if not TariffNumber."Supplementary Units" then
             exit(Format(0.0, 0, PrecisionFormat()));
         FormattedValue := Format(IntrastatJnlLine."Supplem. UoM Quantity CZL", 0, PrecisionFormat());
+        TestMaxLength(IntrastatJnlLine, IntrastatJnlLine.FieldNo("Supplem. UoM Quantity CZL"), FormattedValue, 14);
+    end;
+
+    local procedure FormatQuantity() FormattedValue: Text
+    var
+        TariffNumber: Record "Tariff Number";
+        Quantity: Decimal;
+    begin
+        TariffNumber.Get(IntrastatJnlLine."Tariff No.");
+#if not CLEAN18
+        TariffNumber.CalcFields("Supplementary Units");
+#endif
+        if not TariffNumber."Supplementary Units" then
+            exit(Format(0.0, 0, PrecisionFormat()));
+
+        Quantity := IntrastatJnlLine."Supplem. UoM Quantity CZL";
+        if Quantity > 1 then
+            Quantity := Round(Quantity, 1, Direction);
+        FormattedValue := Format(Quantity, 0, PrecisionFormat());
         TestMaxLength(IntrastatJnlLine, IntrastatJnlLine.FieldNo("Supplem. UoM Quantity CZL"), FormattedValue, 14);
     end;
 
@@ -244,12 +317,12 @@ report 31107 "Intrastat Declaration Exp. CZL"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeFormatIntrastatJnlLineValues(var IntrastatJnlLine: Record "Intrastat Jnl. Line"; var FieldValue: array[20] of Text; var IsHandled: Boolean)
+    local procedure OnBeforeFormatIntrastatJnlLineValues(var IntrastatJnlLine: Record "Intrastat Jnl. Line"; var FieldValue: array[21] of Text; var IsHandled: Boolean)
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterFormatIntrastatJnlLineValues(var IntrastatJnlLine: Record "Intrastat Jnl. Line"; var FieldValue: array[20] of Text)
+    local procedure OnAfterFormatIntrastatJnlLineValues(var IntrastatJnlLine: Record "Intrastat Jnl. Line"; var FieldValue: array[21] of Text)
     begin
     end;
 

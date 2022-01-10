@@ -37,7 +37,7 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
     var
         StringToSign: Text;
         Signature: Text;
-        SignaturePlaceHolderLbl: Label 'SharedKey %1:%2', Comment = '%1 = Account Name; %2 = Calculated Signature';
+        SignaturePlaceHolderLbl: Label 'SharedKey %1:%2', Comment = '%1 = Account Name; %2 = Calculated Signature', Locked=true;
         SecretCanNotBeEmptyErr: Label 'Secret (Access Key) must be provided';
     begin
         if Secret = '' then

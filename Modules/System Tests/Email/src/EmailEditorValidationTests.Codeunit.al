@@ -8,6 +8,7 @@ codeunit 134696 "Email Editor Validation Tests"
     SubType = Test;
     Permissions = tabledata "Email Outbox" = rd,
                   tabledata "Sent Email" = rd;
+    EventSubscriberInstance = Manual;
 
     var
         Assert: Codeunit "Library Assert";
@@ -261,6 +262,46 @@ codeunit 134696 "Email Editor Validation Tests"
     end;
 
     [Test]
+    procedure SendNewMessageThroughEditorTest()
+    var
+        TempAccount: Record "Email Account" temporary;
+        SentEmail: Record "Sent Email";
+        Email: Codeunit Email;
+        ConnectorMock: Codeunit "Connector Mock";
+        EmailMessage: Codeunit "Email Message";
+        Editor: TestPage "Email Editor";
+    begin
+        // [SCENARIO] A new email message can be create in the email editor page from the Accouns page
+
+        // [GIVEN] A connector is installed and an account is added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
+
+        // [GIVEN] The Email Editor pages opens up and details are filled
+        Editor.Trap();
+        EmailMessage.Create('', '', '', false);
+        Email.OpenInEditor(EmailMessage, TempAccount);
+
+        Editor.ToField.SetValue('recipient@test.com');
+        Editor.SubjectField.SetValue('Test Subject');
+        Editor.BodyField.SetValue('Test body');
+
+        // [WHEN] The send action is invoked
+        Editor.Send.Invoke();
+
+        // [THEN] The mail is sent and the info is correct
+        EmailMessage.Get(ConnectorMock.GetEmailMessageID());
+        SentEmail.SetRange("Message Id", EmailMessage.GetId());
+        Assert.IsTrue(SentEmail.FindFirst(), 'A Sent Email record should have been inserted.');
+        Assert.AreEqual('Test Subject', SentEmail.Description, 'A different description was expected');
+        Assert.AreEqual(TempAccount."Account Id", SentEmail."Account Id", 'A different account was expected');
+        Assert.AreEqual(TempAccount."Email Address", SentEmail."Sent From", 'A different sent from was expected');
+        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", SentEmail.Connector, 'A different connector was expected');
+    end;
+
+    [Test]
     [HandlerFunctions('WordTemplateToBodyModalHandler')]
     procedure EmailEditorApplyWordTemplate()
     var
@@ -350,13 +391,11 @@ codeunit 134696 "Email Editor Validation Tests"
         WordTemplate.Finish.Invoke();
     end;
 
-
     [ModalPageHandler]
     [Scope('OnPrem')]
     procedure EmailAccountLookUpHandler(var EmailAccounts: TestPage "Email Accounts")
     begin
         EmailAccounts.First();
-
         EmailAccounts.OK().Invoke();
     end;
 

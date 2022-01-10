@@ -235,7 +235,7 @@ codeunit 8901 "Email"
     ///<param name="TableId">The table ID of the record.</param>
     ///<param name="SystemId">The system ID of the record.</param>
     ///<returns>The sent email related to a record.</returns>
-    [Obsolete('Use GetSentEmailsForRecord(TableId: Integer; SystemId: Guid; var ResultEmailOutbox: Record "Email Outbox" temporary) instead.','19.0')]
+    [Obsolete('Use GetSentEmailsForRecord(TableId: Integer; SystemId: Guid; var ResultEmailOutbox: Record "Email Outbox" temporary) instead.', '19.0')]
     procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid) ResultSentEmails: Record "Sent Email" temporary;
     begin
         EmailImpl.GetSentEmailsForRecord(TableId, SystemId, ResultSentEmails);
@@ -293,6 +293,7 @@ codeunit 8901 "Email"
         exit(EmailImpl.GetOutboxEmailRecordStatus(MessageId));
     end;
 
+#if not CLEAN20
     ///<summary>
     /// Adds a relation between an email message and a record.
     ///</summary>
@@ -300,9 +301,45 @@ codeunit 8901 "Email"
     ///<param name="TableId">The table ID of the record.</param>
     ///<param name="SystemId">The system ID of the record.</param>
     ///<param name="RelationType">The relation type to set.</param>
+    [Obsolete('Use "AddRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type")" with origin', '20.0')]
     procedure AddRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type")
     begin
-        EmailImpl.AddRelation(EmailMessage, TableId, SystemId, RelationType);
+        EmailImpl.AddRelation(EmailMessage, TableId, SystemId, RelationType, Enum::"Email Relation Origin"::"Compose Context");
+    end;
+#endif
+
+    ///<summary>
+    /// Adds a relation between an email message and a record.
+    ///</summary>
+    ///<param name="EmailMessage">The email message for which to create the relation.</param>
+    ///<param name="TableId">The table ID of the record.</param>
+    ///<param name="SystemId">The system ID of the record.</param>
+    ///<param name="RelationType">The relation type to set.</param>
+    ///<param name="Origin">The origin of when the relation is added to the email.</param>
+    procedure AddRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type"; Origin: Enum "Email Relation Origin")
+    begin
+        EmailImpl.AddRelation(EmailMessage, TableId, SystemId, RelationType, Origin);
+    end;
+
+    ///<summary>
+    /// Removes a related record from an email message.
+    ///</summary>
+    ///<param name="EmailMessage">The email message for which to remove the relation.</param>
+    ///<param name="TableId">The table ID of the record.</param>
+    ///<param name="SystemId">The system ID of the record.</param>
+    procedure RemoveRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid): Boolean
+    begin
+        exit(EmailImpl.RemoveRelation(EmailMessage, TableId, SystemId));
+    end;
+
+    /// <summary>
+    /// Check if email has any related records linked.
+    /// </summary>
+    /// <param name="EmailMessage">The email message for which to check.</param>
+    /// <returns>True if it has a related records, otherwise false.</returns>
+    procedure HasRelations(EmailMessage: Codeunit "Email Message"): Boolean
+    begin
+        exit(EmailImpl.HasSourceRecord(EmailMessage.GetId()));
     end;
 
     #region Events
@@ -328,6 +365,30 @@ codeunit 8901 "Email"
     /// <param name="IsHandled">Out parameter to set if the event was handled.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnShowSource(SourceTableId: Integer; SourceSystemId: Guid; var IsHandled: Boolean)
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event to add additional relations based on added relation to emails.
+    /// </summary>
+    /// <param name="EmailMessageId">The ID of the email.</param>
+    /// <param name="TableId">Record table id.</param>
+    /// <param name="SystemId">Record system id.</param>
+    /// <param name="RelatedSystemIds">Dictionary that contains a list of system ids for each table id, allowing to add related records to the email.</param>
+    /// <remarks>A related record consists of a table id and a system id.</remarks>
+    [IntegrationEvent(false, false)]
+    internal procedure OnAfterAddRelation(EmailMessageId: Guid; TableId: Integer; SystemId: Guid; var RelatedSystemIds: Dictionary of [Integer, List of [Guid]])
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event to execute code when relation is removed from email.
+    /// </summary>
+    /// <param name="EmailMessageId">The ID of the email.</param>
+    /// <param name="TableId">Record table id.</param>
+    /// <param name="SystemId">Record system id.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnAfterRemoveRelation(EmailMessageId: Guid; TableId: Integer; SystemId: Guid)
     begin
     end;
 

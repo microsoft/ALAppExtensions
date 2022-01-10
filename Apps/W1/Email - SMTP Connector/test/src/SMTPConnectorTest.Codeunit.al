@@ -15,7 +15,7 @@ codeunit 139760 "SMTP Connector Test"
     procedure TestMultipleAccountsCanBeRegistered()
     var
         EmailAccount: Record "Email Account";
-        SMTPConnector: Codeunit "SMTP Connector";
+        SMTPConnector: Codeunit "SMTP Connector Impl.";
         EmailAccounts: TestPage "Email Accounts";
         AccountIds: array[3] of Guid;
         AccountName: array[3] of Text[250];
@@ -55,7 +55,7 @@ codeunit 139760 "SMTP Connector Test"
     procedure TestShowAccountInformation()
     var
         EmailAccount: Record "Email Account";
-        SMTPConnector: Codeunit "SMTP Connector";
+        SMTPConnector: Codeunit "SMTP Connector Impl.";
     begin
         // [Scenario] Account Information is displayed in the "SMTP Account" page.
 

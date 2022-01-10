@@ -49,7 +49,13 @@ codeunit 31090 "EET Management Handler CZZ"
     local procedure SetAdvanceDocumentTypeOnGetAppliedDocumentType(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETAppliedDocumentTypeCZL: Enum "EET Applied Document Type CZL")
     begin
         if CashDocumentLineCZP.IsAdvancePaymentCZZ() then
+#if not CLEAN20
+#pragma warning disable AL0432
             EETAppliedDocumentTypeCZL := EETAppliedDocumentTypeCZL::Advance;
+#pragma warning restore AL0432
+#else
+            EETAppliedDocumentTypeCZL := EETAppliedDocumentTypeCZL::"Advance CZZ";
+#endif
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"EET Management CZP", 'OnGetAppliedDocumentNo', '', false, false)]

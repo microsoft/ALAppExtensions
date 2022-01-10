@@ -6,11 +6,12 @@ codeunit 10681 "Electronic VAT Installation"
         AssistedSetupTxt: Label 'Set up an electronic VAT submission';
         AssistedSetupDescriptionTxt: Label 'Connect to the ID-porten integration point and submit your VAT return to Skatteetaten.';
         AssistedSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2181211', Locked = true;
+        AuthenticationURLTxt: Label 'https://oidc.difi.no/idporten-oidc-provider', Locked = true;
 
-        ValidateVATReturnUrlLbl: Label 'https://mp-test.sits.no/api/mva/grensesnittstoette/mva-melding/valider', Locked = true;
-        ExchangeIDPortenToAltinnUrlLbl: Label 'https://platform.tt02.altinn.no/authentication/api/v1/exchange/id-porten', Locked = true;
-        SubmissionEnvironmentUrlLbl: Label 'https://skd.apps.tt02.altinn.no/', Locked = true;
-        SubmissionAppUrlLbl: Label 'skd/mva-melding-innsending-etm2', Locked = true;
+        ValidateVATReturnUrlLbl: Label 'https://idporten.api.skatteetaten.no/api/mva/grensesnittstoette/mva-melding/valider', Locked = true;
+        ExchangeIDPortenToAltinnUrlLbl: Label 'https://platform.altinn.no/authentication/api/v1/exchange/id-porten', Locked = true;
+        SubmissionEnvironmentUrlLbl: Label 'https://skd.apps.altinn.no/', Locked = true;
+        SubmissionAppUrlLbl: Label 'skd/mva-melding-innsending-v1/', Locked = true;
         ElectronicVATLbl: Label 'ELEC VAT', Locked = true;
 
     trigger OnInstallAppPerCompany()
@@ -33,7 +34,7 @@ codeunit 10681 "Electronic VAT Installation"
         UpgradeTag.SetAllUpgradeTags();
     end;
 
-    local procedure RunExtensionSetup()
+    procedure RunExtensionSetup()
     begin
         InsertElectronicVATSetup();
         UpdateVATReportSetup();
@@ -47,11 +48,13 @@ codeunit 10681 "Electronic VAT Installation"
         OAuth20: Codeunit OAuth2;
         RedirectUrl: Text;
     begin
-        if not ElecVATSetup.Get() then begin
-            ElecVATSetup.Init();
-            ElecVATSetup.Insert(true);
-        end;
+        if ElecVATSetup.Get() then
+            exit;
+
+        ElecVATSetup.Init();
+        ElecVATSetup.Insert(true);
         ElecVATSetup.Validate("OAuth Feature GUID", CreateGuid());
+        ElecVATSetup.Validate("Authentication URL", AuthenticationURLTxt);
         OAuth20.GetDefaultRedirectURL(RedirectUrl);
         ElecVATSetup.Validate("Redirect URL", CopyStr(RedirectUrl, 1, MaxStrLen(ElecVATSetup."Redirect URL")));
         ElecVATSetup.Validate("Validate VAT Return Url", ValidateVATReturnUrlLbl);

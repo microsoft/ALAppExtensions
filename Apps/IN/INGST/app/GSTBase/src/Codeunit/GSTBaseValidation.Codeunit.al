@@ -216,12 +216,18 @@ codeunit 18001 "GST Base Validation"
         if Rec."Document Type" = Rec."Document Type"::"Credit Memo" then
             Rec.Quantity := Abs(Rec.Quantity)
         else
-            Rec.Quantity := Abs(Rec.Quantity) * SignFactor;
+            if ((Rec."Transaction Type" = Rec."Transaction Type"::Sales) and (Rec."Document Type" = Rec."Document Type"::Refund)) then
+                Rec.Quantity := Abs(Rec.Quantity) * (-1)
+            else
+                Rec.Quantity := Abs(Rec.Quantity) * SignFactor;
 
         Rec."Remaining Base Amount" := Rec."GST Base Amount";
         Rec."Remaining GST Amount" := Rec."GST Amount";
         OriginalDocTypeEnum := DetailedGSTLedgerDocument2OriginalDocumentTypeEnum(Rec."Document Type");
-        Rec."Remaining Quantity" := Rec.Quantity;
+        if Rec."Document Type" = Rec."Document Type"::Refund then
+            Rec."Remaining Quantity" := 0
+        else
+            Rec."Remaining Quantity" := Rec.Quantity;
         Rec."Amount Loaded on Item" := Abs(Rec."Amount Loaded on Item");
         if (Rec."Amount Loaded on Item" <> Rec."GST Amount") and (Rec."Amount Loaded on Item" <> 0) and (Rec."GST Credit" = Rec."GST Credit"::"Non-Availment") then
             Rec."Amount Loaded on Item" := Rec."GST Amount";

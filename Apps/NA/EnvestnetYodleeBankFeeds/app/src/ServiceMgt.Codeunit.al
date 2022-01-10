@@ -1881,8 +1881,8 @@
         OnAfterSuccessfulActivitySendTelemetry(TelemetryMsg);
 
         MSYodleeBankServiceSetup.Get();
-        ActivityLog.LogActivity(
-          MSYodleeBankServiceSetup.RECORDID(), ActivityLog.Status::Success, LoggingConstTxt, ActivityDescription, ActivityMessage);
+        if GLBTraceLogEnabled then
+            ActivityLog.LogActivity(MSYodleeBankServiceSetup.RecordId(), ActivityLog.Status::Success, LoggingConstTxt, ActivityDescription, ActivityMessage);
     end;
 
     local procedure LogActivityFailed(ActivityDescription: Text; ActivityMessage: Text; "Action": Option IgnoreError,RethrowError,RethrowErrorWithConfirm; ConfirmMessage: Text; TelemetryMsg: Text; VerbosityLevel: Verbosity);
@@ -1907,10 +1907,10 @@
         SendTelemetryAfterFailedActivity(VerbosityLevel, TelemetryMsg);
 
         MSYodleeBankServiceSetup.Get();
-        ActivityLog.LogActivity(
-          MSYodleeBankServiceSetup.RECORDID(), ActivityLog.Status::Failed, LoggingConstTxt, ActivityDescription, ActivityMessage);
+        if GLBTraceLogEnabled then
+            ActivityLog.LogActivity(MSYodleeBankServiceSetup.RecordId(), ActivityLog.Status::Failed, LoggingConstTxt, ActivityDescription, ActivityMessage);
 
-        IF IsEmptyMessage THEN
+        IF IsEmptyMessage and GLBTraceLogEnabled THEN
             ActivityLog.SetDetailedInfoFromStream(GLBResponseInStream);
 
         IF GLBDisableRethrowException THEN
@@ -2110,7 +2110,7 @@
         PostedTransactionsTxt += ('</root>' + Format(cr));
         PostedTransactionsTxt += ('</root>' + Format(cr));
 
-        TempBlobResponse.CreateOutStream(OutStreamWithPostedTransactions);
+        TempBlobResponse.CreateOutStream(OutStreamWithPostedTransactions, TextEncoding::UTF8);
         OutStreamWithPostedTransactions.WriteText(PostedTransactionsTxt);
         BankFeedTextList.RemoveRange(1, BankFeedTextList.Count());
     end;

@@ -25,6 +25,8 @@ codeunit 20234 "Tax Attribute Management"
             Value := AttributeValue.Value;
     end;
 
+#if not CLEAN20
+    [Obsolete('Replaced by GetTaxRateAttributeLookupValue function with TaxTypeCode parameter.', '20.0')]
     procedure GetTaxRateAttributeLookupValue(AttributeName: Text; var Value: Text): Boolean
     var
         TaxRateSetup: Record "Tax Rate Column Setup";
@@ -32,6 +34,32 @@ codeunit 20234 "Tax Attribute Management"
         AttributeID: Integer;
     begin
         OldValue := Value;
+        TaxRateSetup.SetRange("Column Name", AttributeName);
+        TaxRateSetup.FindFirst();
+
+        ValidateTaxRateSetup(TaxRateSetup);
+
+        if TaxRateSetup."Linked Attribute ID" <> 0 then
+            AttributeID := TaxRateSetup."Linked Attribute ID";
+
+        if TaxRateSetup."Attribute ID" <> 0 then
+            AttributeID := TaxRateSetup."Attribute ID";
+
+        if AttributeID <> 0 then
+            ManageAttributeLookup(AttributeID, Value);
+
+        exit(OldValue <> Value);
+    end;
+#endif
+    procedure GetTaxRateAttributeLookupValue(TaxTypeCode: Code[20]; AttributeName: Text; var Value: Text): Boolean
+    var
+        TaxRateSetup: Record "Tax Rate Column Setup";
+        OldValue: Text;
+        AttributeID: Integer;
+    begin
+        OldValue := Value;
+
+        TaxRateSetup.SetRange("Tax Type", TaxTypeCode);
         TaxRateSetup.SetRange("Column Name", AttributeName);
         TaxRateSetup.FindFirst();
 

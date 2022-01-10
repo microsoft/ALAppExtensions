@@ -1,6 +1,7 @@
 codeunit 31404 "Cash Flow Handler CZZ"
 {
     var
+        MatrixManagementCZZ: Codeunit "Matrix Management";
         SourceDataDoesNotExistErr: Label 'Source data does not exist for %1: %2.', Comment = '%1 = caption of table, %2 = code of record, example: Source data doesn''t exist for G/L Account: 8210.';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cash Flow Management", 'OnShowSourceLocalSourceTypeCase', '', false, false)]
@@ -42,5 +43,17 @@ codeunit 31404 "Cash Flow Handler CZZ"
             Error(SourceDataDoesNotExistErr, PurchAdvanceLetterCZZ.Caption, SourceNo);
         PurchAdvanceLetterCZZ.SetTableView(PurchAdvLetterHeaderCZZ);
         PurchAdvanceLetterCZZ.Run();
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Cash Flow Availability Lines", 'OnAfterCalcLine', '', false, false)]
+    local procedure CalcAdvancePaymentAmountOnAfterCalcLine(var CashFlowForecast: Record "Cash Flow Forecast"; var CashFlowAvailabilityBuffer: Record "Cash Flow Availability Buffer"; RoundingFactor: Option "None","1","1000","1000000")
+    begin
+        CashFlowAvailabilityBuffer."Sales Advances CZZ" := GetAmount(Enum::"Cash Flow Source Type"::"Sales Advance Letters CZZ", CashFlowForecast, RoundingFactor);
+        CashFlowAvailabilityBuffer."Purchase Advances CZZ" := GetAmount(Enum::"Cash Flow Source Type"::"Purchase Advance Letters CZZ", CashFlowForecast, RoundingFactor);
+    end;
+
+    local procedure GetAmount(SourceType: Enum "Cash Flow Source Type"; var CashFlowForecast: Record "Cash Flow Forecast"; RoundingFactor: Option "None","1","1000","1000000"): Decimal
+    begin
+        exit(MatrixManagementCZZ.RoundAmount(CashFlowForecast.CalcSourceTypeAmount(SourceType), Enum::"Analysis Rounding Factor".FromInteger(RoundingFactor)));
     end;
 }

@@ -4440,6 +4440,12 @@ codeunit 18435 "Reference Invoice No. Mgt."
         UpdateReferenceInvoiceNoGenJournal(Rec);
     end;
 
+    [EventSubscriber(ObjectType::Page, Page::"Journal Voucher", 'OnAfterActionEvent', 'Update Reference Invoice No.', false, false)]
+    local procedure JnlVoucherOnAfterUpdateRefInvNo(var Rec: Record "Gen. Journal Line")
+    begin
+        UpdateReferenceInvoiceNoGenJournal(Rec);
+    end;
+
     [EventSubscriber(ObjectType::Page, Page::"Purchase Journal", 'OnAfterActionEvent', 'Update Reference Invoice No.', false, false)]
     local procedure PurchJnlOnAfterUpdateRefInvNo(var Rec: Record "Gen. Journal Line")
     begin

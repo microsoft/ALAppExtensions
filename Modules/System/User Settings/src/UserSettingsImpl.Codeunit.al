@@ -120,7 +120,10 @@ codeunit 9175 "User Settings Impl."
         UserSettingsRec."Locale ID" := UserPersonalization."Locale ID";
         UserSettingsRec."Time Zone" := UserPersonalization."Time Zone";
 
-        UserSettingsRec.Company := UserPersonalization.Company;
+        if CompanyName() <> '' then
+            UserSettingsRec.Company := CopyStr(CompanyName(), 1, 30)
+        else
+            UserSettingsRec.Company := UserPersonalization.Company;
 
         UserSettingsRec."Last Login" := UserLoginTimeTracker.GetPenultimateLoginDateTime();
         UserSettingsRec."Work Date" := WorkDate();

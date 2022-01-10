@@ -150,11 +150,16 @@ codeunit 31038 "Sales Posting Handler CZL"
         LineAmount: Decimal;
         QtyToInvoice: Decimal;
         ItemNoText: Text;
+        IsHandled: Boolean;
         ItemUnitOfMeasureForVATNotExistErr: Label 'Unit of Measure %1 not exist for Item No. %2.', Comment = '%1 = Unit of Measure Code, %2 = Item No.';
         CommoditySetupForVATNotExistErr: Label 'Commodity Setup %1 for date %2 not exist.', Comment = '%1 = Commodity Code, %2 = Date';
         VATPostingSetupPostMismashErr: Label 'For commodity %1 and limit %2 not allowed VAT type %3 posting.\\Item List:\%4.', Comment = '%1 = Commodity Code, %2 = Commodity Limit Amount LCY, %3 = VAT Calculation Type, %4 = Item No.';
         VATPostingSetupPostMismashQst: Label 'The amount of the invoice is below the limit for Reverse VAT (%5).\\Item List:\%4\\Really post VAT type %3 for Deliverable Code %1 and limit %2?', Comment = '%1 = Commodity Code, %2 = Commodity Limit Amount LCY, %3 = VAT Calculation Type, %4 = List of Item No., %5 = AmountToCheckLimit';
     begin
+        OnBeforeCheckTariffNo(SalesHeader, IsHandled);
+        if IsHandled then
+            exit;
+
         CommoditySetupCZL.SetFilter("Valid From", '..%1', SalesHeader."VAT Date CZL");
         CommoditySetupCZL.SetFilter("Valid To", '%1|%2..', 0D, SalesHeader."VAT Date CZL");
 
@@ -398,5 +403,10 @@ codeunit 31038 "Sales Posting Handler CZL"
                 SalesHeader.Validate("VAT Date CZL", PostingDate);
                 SalesHeader.Modify();
             end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckTariffNo(SalesHeader: Record "Sales Header"; var IsHandled: Boolean);
+    begin
     end;
 }

@@ -142,7 +142,7 @@ page 2616 "Printer Management"
     }
     trigger OnAfterGetRecord()
     begin
-        PrinterSetupImpl.GetPrinterCategory(PrinterType, Device);
+        PrinterType := PrinterSetupImpl.GetPrinterType(Rec);
     end;
 
     trigger OnOpenPage()

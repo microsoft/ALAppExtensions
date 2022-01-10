@@ -17,6 +17,8 @@ codeunit 1999 "Guided Experience Upgrade"
     trigger OnUpgradePerCompany()
     begin
         InsertSpotlightTour();
+
+        UpdateTranslations();
     end;
 
     local procedure InsertSpotlightTour()
@@ -122,5 +124,29 @@ codeunit 1999 "Guided Experience Upgrade"
         SpotlightTourType: Enum "Spotlight Tour Type";
     begin
         exit(StrSubstNo(CodeFormatLbl, Code, SpotlightTourType::None.AsInteger()));
+    end;
+
+    local procedure UpdateTranslations()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        GuidedExperienceUpgradeTag: Codeunit "Guided Experience Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(GuidedExperienceUpgradeTag.GetGuidedExperienceTranslationUpdateTag(), '') then
+            exit;
+
+        if UpgradeTag.HasUpgradeTag(GuidedExperienceUpgradeTag.GetGuidedExperienceTranslationUpdateTag()) then
+            exit;
+
+        DeleteTranslationsForGuidedExperienceItemsAndSpotlightTours();
+
+        UpgradeTag.SetUpgradeTag(GuidedExperienceUpgradeTag.GetGuidedExperienceTranslationUpdateTag());
+    end;
+
+    local procedure DeleteTranslationsForGuidedExperienceItemsAndSpotlightTours()
+    var
+        Translation: Codeunit Translation;
+    begin
+        Translation.Delete(Database::"Guided Experience Item");
+        Translation.Delete(Database::"Spotlight Tour Text");
     end;
 }

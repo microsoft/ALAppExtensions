@@ -19,7 +19,7 @@ codeunit 8900 "Email Impl"
         EmailMessageQueuedErr: Label 'The email has already been queued.';
         EmailMessageSentErr: Label 'The email has already been sent.';
         InvalidEmailAccountErr: Label 'The provided email account does not exist.';
-        InsufficientPermisionsErr: Label 'You do not have the permissions required to send emails. Ask your administrator to grant you the Read, Insert, Modify and Delete permissions for the Sent Email and Email Outbox tables.';
+        InsufficientPermissionsErr: Label 'You do not have the permissions required to send emails. Ask your administrator to grant you the Read, Insert, Modify and Delete permissions for the Sent Email and Email Outbox tables.';
         SourceRecordErr: Label 'Could not find the source for this email.';
 
     #region API
@@ -147,6 +147,7 @@ codeunit 8900 "Email Impl"
     local procedure Send(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; EmailConnector: Enum "Email Connector"; InBackground: Boolean; var EmailOutbox: Record "Email Outbox"): Boolean
     var
         Accounts: Record "Email Account";
+        CurrentUser: Record User;
         Email: codeunit "Email";
         EmailAccount: Codeunit "Email Account";
         EmailMessageImpl: Codeunit "Email Message Impl.";
@@ -169,6 +170,10 @@ codeunit 8900 "Email Impl"
         EmailAccount.GetAllAccounts(false, Accounts);
         if not Accounts.Get(EmailAccountId, EmailConnector) then
             Error(InvalidEmailAccountErr);
+
+        // Add user as an related entity on email
+        if CurrentUser.Get(UserSecurityId()) then
+            Email.AddRelation(EmailMessage, Database::User, CurrentUser.SystemId, Enum::"Email Relation Type"::"Related Entity", Enum::"Email Relation Origin"::"Compose Context");
 
         CreateOrUpdateEmailOutbox(EmailMessageImpl, EmailAccountId, EmailConnector, Enum::"Email Status"::Queued, Accounts."Email Address", EmailOutbox);
 
@@ -398,23 +403,53 @@ codeunit 8900 "Email Impl"
         exit(SentEmails.Count());
     end;
 
-    procedure AddRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type")
+    procedure AddRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type"; Origin: Enum "Email Relation Origin")
+    var
+        Email: Codeunit Email;
+        RelatedRecord: Dictionary of [Integer, List of [Guid]];
+        RelatedRecordTableIds: List of [Integer];
+        RelatedRecordSystemIds: List of [Guid];
+        RelatedRecordTableId: Integer;
+        TableIdCount, SystemIdCount : Integer;
     begin
-        AddRelation(EmailMessage.GetId(), TableId, SystemId, RelationType);
+        AddRelation(EmailMessage.GetId(), TableId, SystemId, RelationType, Origin);
+        Email.OnAfterAddRelation(EmailMessage.GetId(), TableId, SystemId, RelatedRecord);
+
+        RelatedRecordTableIds := RelatedRecord.Keys();
+        for TableIdCount := 1 to RelatedRecordTableIds.Count() do begin
+            RelatedRecordTableId := RelatedRecordTableIds.Get(TableIdCount);
+            RelatedRecordSystemIds := RelatedRecord.Get(RelatedRecordTableId);
+            for SystemIdCount := 1 to RelatedRecordSystemIds.Count() do
+                AddRelation(EmailMessage.GetId(), RelatedRecordTableId, RelatedRecordSystemIds.Get(SystemIdCount), Enum::"Email Relation Type"::"Related Entity", Origin);
+        end;
     end;
 
-    procedure AddRelation(EmailMessageId: Guid; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type")
+    procedure AddRelation(EmailMessageId: Guid; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type"; Origin: Enum "Email Relation Origin")
     var
-        EmailRelation: Record "Email Related Record";
+        EmailRelatedRecord: Record "Email Related Record";
     begin
-        if EmailRelation.Get(TableId, SystemId, EmailMessageId) then
+        if EmailRelatedRecord.Get(TableId, SystemId, EmailMessageId) then
             exit;
 
-        EmailRelation."Email Message Id" := EmailMessageId;
-        EmailRelation."Table Id" := TableId;
-        EmailRelation."System Id" := SystemId;
-        EmailRelation."Relation Type" := RelationType;
-        EmailRelation.Insert();
+        EmailRelatedRecord."Email Message Id" := EmailMessageId;
+        EmailRelatedRecord."Table Id" := TableId;
+        EmailRelatedRecord."System Id" := SystemId;
+        EmailRelatedRecord."Relation Type" := RelationType;
+        EmailRelatedRecord."Relation Origin" := Origin;
+        EmailRelatedRecord.Insert();
+    end;
+
+    procedure RemoveRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid): Boolean
+    var
+        EmailRelation: Record "Email Related Record";
+        Email: Codeunit Email;
+    begin
+        if EmailRelation.Get(EmailMessage.GetId(), TableId, SystemId) then
+            if EmailRelation.Delete() then begin
+                Email.OnAfterRemoveRelation(EmailMessage.GetId(), TableId, SystemId);
+                exit(true);
+            end;
+        exit(false);
     end;
 
     procedure OpenSentEmails(TableId: Integer; SystemId: Guid)
@@ -434,7 +469,7 @@ codeunit 8900 "Email Impl"
                 not SentEmail.WritePermission() or
                 not EmailOutBox.ReadPermission() or
                 not EmailOutBox.WritePermission() then
-            Error(InsufficientPermisionsErr);
+            Error(InsufficientPermissionsErr);
     end;
 
 }

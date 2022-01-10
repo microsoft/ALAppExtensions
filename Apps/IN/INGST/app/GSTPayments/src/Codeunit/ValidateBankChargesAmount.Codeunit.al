@@ -324,6 +324,7 @@ codeunit 18247 "Validate Bank Charges Amount"
         AmountLCY: Decimal;
         SignOfBankAccLedgAmount: Integer)
     var
+        JnlBankChargesSessionMgt: Codeunit "GST Bank Charge Session Mgt.";
         DocType: Enum "BankCharges DocumentType";
     begin
         DocType := GetBankChargeDocType(GenJournalLine);
@@ -341,12 +342,24 @@ codeunit 18247 "Validate Bank Charges Amount"
             end else
                 SignOfBankAccLedgAmount := Abs(BankAccountLedgerEntry.Amount) / BankAccountLedgerEntry.Amount;
 
+        JnlBankChargesSessionMgt.SetBankChargeSign(SignOfBankAccLedgAmount);
         BankAccountLedgerEntry.Amount += (SignOfBankAccLedgAmount * BankChargeAmount);
         BankAccountLedgerEntry."Amount (LCY)" += (SignOfBankAccLedgAmount * BankChargeAmount);
         BankAccountLedgerEntry."Remaining Amount" := BankAccountLedgerEntry.Amount;
         BankAccountLedgerEntry.UpdateDebitCredit(GenJournalLine.Correction);
         BankChargeAmount := (SignOfBankAccLedgAmount * BankChargeAmount);
         GenJournalLine."Amount (LCY)" += BankChargeAmount;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterPostBankAcc', '', false, false)]
+    local procedure ReverseGenJnlLineAmount(var GenJnlLine: Record "Gen. Journal Line")
+    var
+        JnlBankChargesSessionMgt: Codeunit "GST Bank Charge Session Mgt.";
+        BankChargeSign: Integer;
+    begin
+        BankChargeAmount := JnlBankChargesSessionMgt.GetBankChargeAmount();
+        BankChargeSign := JnlBankChargesSessionMgt.GetBankChargeSign() * -1;
+        GenJnlLine."Amount (LCY)" += (BankChargeAmount * BankChargeSign);
     end;
 
     local procedure GetBankChargeDocType(GenJournalLine: Record "Gen. Journal Line"): Enum "BankCharges DocumentType"

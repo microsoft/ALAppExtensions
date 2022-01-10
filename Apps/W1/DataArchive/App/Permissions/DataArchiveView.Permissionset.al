@@ -7,9 +7,11 @@ permissionset 632 "Data Archive - View"
 {
     Access = Public;
     Assignable = true;
-    Caption = 'Data Archive Read - View';
+    Caption = 'Data Archive - View';
 
-    Permissions = tabledata "Data Archive" = R,
-                  tabledata "Data Archive Table" = R,
-                  tabledata "Data Archive Media Field" = R;
+    IncludedPermissionSets = "Data Archive - Read";
+
+    Permissions = tabledata "Data Archive" = imd,
+                  tabledata "Data Archive Table" = imd,
+                  tabledata "Data Archive Media Field" = imd;
 }

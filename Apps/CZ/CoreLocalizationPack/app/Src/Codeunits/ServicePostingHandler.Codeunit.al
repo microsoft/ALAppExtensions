@@ -132,7 +132,12 @@ codeunit 31040 "Service Posting Handler CZL"
     var
         ServiceLine: Record "Service Line";
         TariffNumber: Record "Tariff Number";
+        IsHandled: Boolean;
     begin
+        OnBeforeCheckTariffNo(ServiceHeader, IsHandled);
+        if IsHandled then
+            exit;
+
         ServiceLine.SetRange("Document Type", ServiceHeader."Document Type");
         ServiceLine.SetRange("Document No.", ServiceHeader."No.");
         if ServiceLine.FindSet(false, false) then
@@ -175,5 +180,10 @@ codeunit 31040 "Service Posting Handler CZL"
     begin
         if ServiceCrMemoHeader."Variable Symbol CZL" = '' then
             ServiceCrMemoHeader."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(ServiceCrMemoHeader."No.");
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckTariffNo(ServiceHeader: Record "Service Header"; var IsHandled: Boolean);
+    begin
     end;
 }

@@ -110,7 +110,11 @@ codeunit 18143 "GST Sales Validation"
         SalesLine."Total UPIT Amount" := SalesLine."Unit Price Incl. of Tax" * SalesLine.Quantity - SalesLine."Line Discount Amount";
     end;
 
+#if not CLEAN19
     //AssignPrice Inclusice of Tax
+#pragma warning disable AS0072
+    [Obsolete('Replaced by the new implementation (V16) of price calculation.', '19.0')]
+#pragma warning restore AS0072
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Price Calc. Mgt.", 'OnAfterFindSalesLineItemPrice', '', false, false)]
     local procedure AssignPriceInclusiveTax(var SalesLine: Record "Sales Line"; var TempSalesPrice: Record "Sales Price")
     begin
@@ -125,6 +129,7 @@ codeunit 18143 "GST Sales Validation"
             SalesLine."Total UPIT Amount" := SalesLine."Unit Price Incl. of Tax" * SalesLine.Quantity - SalesLine."Line Discount Amount";
         end;
     end;
+#endif
 
     //Check Accounting Period
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post (Yes/No)", 'OnAfterConfirmPost', '', false, false)]

@@ -3,7 +3,7 @@ codeunit 10690 "Elec. VAT Get Response"
     TableNo = "VAT Report Header";
 
     var
-        NoFeedbackProvidedMsg: Label 'The feedback for your submission is not ready yet.';
+        NoFeedbackProvidedMsg: Label 'The response for your submission is not ready yet.';
         ReportAcceptedMsg: Label 'The report has been successfully accepted.';
         ReportRejectedMsg: Label 'The report was rejected. To find out why, download the response message and check the attached documents.';
 

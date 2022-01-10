@@ -36,7 +36,7 @@ codeunit 8905 "Email Message Impl."
         EmailRelatedRecord.SetRange("Email Message Id", EmailMessage.GetId());
         if EmailRelatedRecord.FindSet() then
             repeat
-                EmailImpl.AddRelation(GetId(), EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", EmailRelatedRecord."Relation Type");
+                EmailImpl.AddRelation(GetId(), EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", EmailRelatedRecord."Relation Type", EmailRelatedRecord."Relation Origin");
             until EmailRelatedRecord.Next() = 0;
     end;
 

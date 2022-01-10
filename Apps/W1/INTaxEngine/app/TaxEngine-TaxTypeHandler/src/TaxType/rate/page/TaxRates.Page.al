@@ -385,6 +385,36 @@ page 20252 "Tax Rates"
                     TaxRatesImportMgmt.ReadAndImportTaxRates(GlobalTaxType);
                 end;
             }
+            action(FilterRates)
+            {
+                Caption = 'Filter By Attributes';
+                Image = FilterLines;
+                ApplicationArea = Basic, Suite;
+                PromotedCategory = Process;
+                Promoted = true;
+                PromotedOnly = true;
+                ToolTip = 'Filter Tax Rates by attributes.';
+
+                trigger OnAction()
+                begin
+                    TaxRatesfilterMgmt.OpenTaxRateFilter(Rec);
+                end;
+            }
+            action(ClearFilter)
+            {
+                Caption = 'Clear Filter';
+                Image = ClearFilter;
+                ApplicationArea = Basic, Suite;
+                PromotedCategory = Process;
+                Promoted = true;
+                PromotedOnly = true;
+                ToolTip = 'Clears Filter on Tax Rates.';
+
+                trigger OnAction()
+                begin
+                    TaxRatesfilterMgmt.ClearTaxRateFilter(Rec);
+                end;
+            }
         }
     }
 
@@ -450,7 +480,7 @@ page 20252 "Tax Rates"
         UpdateRecord := true;
 
         if IsLookup then
-            UpdateRecord := AttributeManagement.GetTaxRateAttributeLookupValue(AttributeCaption[ColumnIndex], AttributeValue[ColumnIndex]);
+            UpdateRecord := AttributeManagement.GetTaxRateAttributeLookupValue(GlobalTaxType, AttributeCaption[ColumnIndex], AttributeValue[ColumnIndex]);
 
         if UpdateRecord then
             TaxSetupMatrixMgmt.UpdateTaxConfigurationValue(ID, GlobalTaxType, AttributeID, ColumnIndex, AttributeValue, RangeAttribute);
@@ -460,6 +490,7 @@ page 20252 "Tax Rates"
     end;
 
     var
+        TaxRatesfilterMgmt: Codeunit "Tax Rate Filter Mgmt.";
         TaxSetupMatrixMgmt: Codeunit "Tax Setup Matrix Mgmt.";
         AttributeManagement: Codeunit "Tax Attribute Management";
         RangeAttribute: array[1000] of Boolean;

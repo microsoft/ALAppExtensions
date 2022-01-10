@@ -254,6 +254,7 @@ codeunit 18440 "GST Service Validations"
     var
         Location: Record Location;
         CompanyInformation: Record "Company Information";
+        GSTServicePostingNoSeries: Codeunit "GST Service Posting No. Series";
     begin
         Rec."Location State Code" := '';
         Rec."Location GST Reg. No." := '';
@@ -263,6 +264,7 @@ codeunit 18440 "GST Service Validations"
             Rec.Trading := Location."Trading Location";
             Rec."Location State Code" := Location."State Code";
             Rec."Location GST Reg. No." := Location."GST Registration No.";
+            GSTServicePostingNoSeries.GetPostingNoSeriesforservice(Rec);
         end else begin
             CompanyInformation.Get();
             Rec.Trading := CompanyInformation."Trading Co.";

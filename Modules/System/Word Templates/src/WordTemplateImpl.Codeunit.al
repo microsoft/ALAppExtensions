@@ -897,6 +897,7 @@ codeunit 9988 "Word Template Impl."
                 RecordRefRelated.Open(RelatedTable."Related Table ID");
                 if GetRelatedRecord(RecordRefRelated, RecordRef.Field(RelatedTable."Field No.").Value()) then
                     WriteDataDict(RecordRefRelated, Data, StrSubstNo(PrependPatternTxt, RelatedTable."Related Table Code"));
+                RecordRefRelated.Close();
             until RelatedTable.Next() = 0;
     end;
 

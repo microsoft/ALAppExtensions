@@ -57,7 +57,7 @@ codeunit 1446 "RSACryptoServiceProvider Impl." implements SignatureAlgorithm
     procedure VerifyData(XmlString: Text; DataInStream: InStream; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
     begin
         FromXmlString(XmlString);
-        VerifyData(DataInStream, HashAlgorithm, SignatureInStream);
+        exit(VerifyData(DataInStream, HashAlgorithm, SignatureInStream));
     end;
 
     [NonDebuggable]

@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 4513 "SMTP Connector Impl."
+codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
 {
     Access = Internal;
     Permissions = tabledata "SMTP Account" = rimd;
@@ -42,6 +42,10 @@ codeunit 4513 "SMTP Connector Impl."
         SmtpNotificationDescTxt: Label 'The first time that the Email Accounts page is opened, show a notification saying that legacy SMTP settings has been copied to the new email setup.';
         ObfuscateLbl: Label '%1*%2@%3', Comment = '%1 = First character of username , %2 = Last character of username, %3 = Host', Locked = true;
 
+    /// <summary>
+    /// Gets the registered accounts for the SMTP connector.
+    /// </summary>
+    /// <param name="Accounts">Out parameter holding all the registered accounts for the SMTP connector.</param>
     procedure GetAccounts(var Accounts: Record "Email Account")
     var
         Account: Record "SMTP Account";
@@ -57,6 +61,10 @@ codeunit 4513 "SMTP Connector Impl."
             until Account.Next() = 0;
     end;
 
+    /// <summary>
+    /// Shows accounts information.
+    /// </summary>
+    /// <param name="AccountId">The ID of the account to show.</param>
     procedure ShowAccountInformation(AccountId: Guid)
     var
         SMTPAccount: Record "SMTP Account";
@@ -67,6 +75,11 @@ codeunit 4513 "SMTP Connector Impl."
         Page.Run(Page::"SMTP Account", SMTPAccount);
     end;
 
+    /// <summary>
+    /// Register an e-mail account for the SMTP connector.
+    /// </summary>
+    /// <param name="Account">Out parameter holding details of the registered account.</param>
+    /// <returns>True if the registration was successful; false - otherwise.</returns>
     procedure RegisterAccount(var Account: Record "Email Account"): Boolean
     var
         SMTPAccountWizard: Page "SMTP Account Wizard";
@@ -76,6 +89,11 @@ codeunit 4513 "SMTP Connector Impl."
         exit(SMTPAccountWizard.GetAccount(Account));
     end;
 
+    /// <summary>
+    /// Deletes an e-mail account for the SMTP connector.
+    /// </summary>
+    /// <param name="AccountId">The ID of the e-mail account</param>
+    /// <returns>True if an account was deleted.</returns>
     procedure DeleteAccount(AccountId: Guid): Boolean
     var
         SMTPAccount: Record "SMTP Account";
@@ -92,6 +110,14 @@ codeunit 4513 "SMTP Connector Impl."
         SMTPClientInitialized := true;
     end;
 
+    /// <summary>
+    /// Sends an e-mail via the SMTP connector.
+    /// </summary>
+    /// <param name="Message">The e-mail message to send.</param>
+    /// <param name="AccountId">The ID of the account to be used for sending.</param>
+    /// <error>SMTP connector failed to connect to server.</error>
+    /// <error>SMTP connector failed to authenticate against server.</error>
+    /// <error>SMTP connector failed to send the email.</error>
     procedure Send(Message: Codeunit "Email Message"; AccountId: Guid)
     var
         Account: Record "SMTP Account";
@@ -165,11 +191,19 @@ codeunit 4513 "SMTP Connector Impl."
         Session.LogMessage('00009UX', SmtpSendTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
     end;
 
+    /// <summary>
+    /// Gets a description of the SMTP connector.
+    /// </summary>
+    /// <returns>A short description of the SMTP connector.</returns>
     procedure GetDescription(): Text[250]
     begin
         exit(ConnectorDescriptionTxt);
     end;
 
+    /// <summary>
+    /// Gets the SMTP connector logo.
+    /// </summary>
+    /// <returns>A base64-formatted image to be used as logo.</returns>
     procedure GetLogoAsBase64(): Text
     begin
         exit(SMTPConnectorBase64LogoTxt);

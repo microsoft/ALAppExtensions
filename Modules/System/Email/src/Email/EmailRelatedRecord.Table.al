@@ -29,6 +29,13 @@ table 8909 "Email Related Record"
         {
             DataClassification = SystemMetadata;
         }
+        /// <summary>
+        /// The origin of this relation. When or how it was added to the email.
+        /// </summary>
+        field(5; "Relation Origin"; Enum "Email Relation Origin")
+        {
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

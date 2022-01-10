@@ -13,14 +13,14 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         ElecVATSetup: Record "Elec. VAT Setup";
         OAuth20Mgt: Codeunit "OAuth 2.0 Mgt.";
         ElecVATCodeLbl: Label 'ELECVAT-1';
-        ServiceURLTxt: Label 'https://oidc-ver2.difi.no/idporten-oidc-provider', Locked = true;
+        ServiceConnectionSetupLbl: Label 'Elec. VAT Return Submission Setup';
         OAuthSetupDescriptionLbl: Label 'Electronic VAT Submission', Locked = true;
         ScopeTxt: Label 'openid skatteetaten:mvameldingvalidering skatteetaten:mvameldinginnsending', Locked = true;
         AuthorizationURLPathTxt: Label '/authorize', Locked = true;
         AccessTokenURLPathTxt: Label '/token', Locked = true;
         RefreshTokenURLPathTxt: Label '/token', Locked = true;
         AuthorizationResponseTypeTxt: Label 'code', Locked = true;
-        UrlWithStateTxt: Label '%1&state=%2', Comment = '%1 = base url, %2 = guid';
+        CurrUrlWithStateTxt: Label '%1&state=%2', Comment = '%1 = base url, %2 = guid', Locked = true;
         OAuthNotConfiguredErr: Label 'OAuth setup is not enabled for Electronic VAT submissiob feature.';
         OpenSetupMsg: Label 'Open service connections to setup.';
         OpenSetupQst: Label 'Do you want to open the setup?';
@@ -34,7 +34,7 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         CannotParseResponseErr: Label 'Cannot parse the http error response', Locked = true;
         HttpErrorTextWithDetailsTxt: Label 'HTTP error %1 (%2). %3', Comment = '%1 = StatusCode, %2 = StatusReason, %3 = HttpError';
         NOVATReturnSubmissionTok: Label 'NOVATReturnSubmissionTelemetryCategoryTok', Locked = true;
-        CheckCompanyVATNoAfterSuccessAuthorizationQst: Label 'Authorization successful.\Do you want to open the Company Information setup to verify the VAT registration number?';
+        CheckCompanyVATNoAfterSuccessAuthorizationQst: Label 'Authorization successful.\Do you want to open the Company Information page to verify the VAT registration number?';
 
     procedure OpenOAuthSetupPage()
     var
@@ -64,7 +64,7 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
                 while not Insert() do
                     Code := IncStr(Code);
             end;
-            "Service URL" := CopyStr(ServiceURLTxt, 1, MaxStrLen("Service URL"));
+            "Service URL" := ElecVATSetup."Authentication URL";
             Description := CopyStr(OAuthSetupDescriptionLbl, 1, MaxStrLen(Description));
             "Redirect URL" := ElecVATSetup."Redirect URL";
             "Client ID" := ElecVATSetup."Client ID";
@@ -126,6 +126,21 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         repeat
             OAuth20Setup."Client ID" := ClientID;
             OAuth20Setup."Client Secret" := ClientSecret;
+            OAuth20Setup.Modify();
+        until OAuth20Setup.Next() = 0;
+    end;
+
+    procedure UpdateElecVATOAuthSetupRecordsWithAuthenticationURL(AuthenticationURL: Text[250])
+    var
+        OAuth20Setup: Record "OAuth 2.0 Setup";
+    begin
+        ElecVATSetup.GetRecordOnce();
+        if IsNullGuid(ElecVATSetup."OAuth Feature GUID") then
+            exit;
+        if not OAuth20Setup.FindSetOAuth20SetupByFeature(ElecVATSetup."OAuth Feature GUID") then
+            exit;
+        repeat
+            OAuth20Setup."Service URL" := AuthenticationURL;
             OAuth20Setup.Modify();
         until OAuth20Setup.Next() = 0;
     end;
@@ -403,7 +418,7 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         CheckOAuthConsistencySetup(OAuth20Setup);
         state := Format(CreateGuid(), 0, 4);
         url :=
-            StrSubstNo(UrlWithStateTxt, OAuth20Mgt.GetAuthorizationURL(OAuth20Setup, GetToken(OAuth20Setup."Client ID", DataScope::Company)), state);
+            StrSubstNo(CurrUrlWithStateTxt, OAuth20Mgt.GetAuthorizationURL(OAuth20Setup, GetToken(OAuth20Setup."Client ID", DataScope::Company)), state);
         OAuth2ControlAddIn.SetOAuth2Properties(url, state);
         OAuth2ControlAddIn.RunModal();
         auth_error := OAuth2ControlAddIn.GetAuthError();
@@ -464,7 +479,8 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
         RefreshToken := GetToken(OAuth20Setup."Refresh Token", TokenDataScope);
         OldServiceUrl := OAuth20Setup."Service URL";
-        OAuth20Setup."Service URL" := ServiceURLTxt;
+        ElecVATSetup.GetRecordOnce();
+        OAuth20Setup."Service URL" := ElecVATSetup."Authentication URL";
         Result :=
             OAuth20Mgt.RefreshAccessTokenWithContentType(
                 OAuth20Setup, RequestJSON, MessageText,
@@ -534,5 +550,16 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
     local procedure OnBeforeCheckEncryption(var IsHandled: Boolean)
     begin
         IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', true, true)]
+    local procedure OnRegisterServiceConnection(var ServiceConnection: Record "Service Connection")
+    var
+        OAuth20Setup: Record "OAuth 2.0 Setup";
+    begin
+        GetOAuthSetup(OAuth20Setup);
+        ServiceConnection.Status := OAuth20Setup.Status;
+        ServiceConnection.InsertServiceConnection(
+          ServiceConnection, OAuth20Setup.RecordId(), ServiceConnectionSetupLbl, '', PAGE::"OAuth 2.0 Setup");
     end;
 }

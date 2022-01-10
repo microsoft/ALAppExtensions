@@ -37,4 +37,26 @@ tableextension 11799 "Item Ledger Entry CZL" extends "Item Ledger Entry"
             DataClassification = CustomerContent;
         }
     }
+
+    procedure SetFilterFromInvtReceiptHeaderCZL(InvtReceiptHeader: Record "Invt. Receipt Header")
+    begin
+        SetCurrentKey("Document No.");
+        SetRange("Document No.", InvtReceiptHeader."No.");
+        SetRange("Posting Date", InvtReceiptHeader."Posting Date");
+    end;
+
+    procedure SetFilterFromInvtShipmentHeaderCZL(InvtShipmentHeader: Record "Invt. Shipment Header")
+    begin
+        SetCurrentKey("Document No.");
+        SetRange("Document No.", InvtShipmentHeader."No.");
+        SetRange("Posting Date", InvtShipmentHeader."Posting Date");
+    end;
+
+    procedure GetRegisterUserIDCZL(): Code[50]
+    var
+        ItemRegister: Record "Item Register";
+    begin
+        if ItemRegister.FindByEntryNo("Entry No.") then
+            exit(ItemRegister."User ID");
+    end;
 }

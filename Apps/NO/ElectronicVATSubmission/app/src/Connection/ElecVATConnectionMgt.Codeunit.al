@@ -7,6 +7,7 @@ codeunit 10687 "Elec. VAT Connection Mgt."
 
     var
         ElecVATSetup: Record "Elec. VAT Setup";
+
         ElecVATLoggingMgt: Codeunit "Elec. VAT Logging Mgt.";
         ValidatingLinesProgressTxt: Label 'Validating lines\@1@@@@@@@';
         FeatureConsentErr: Label 'The electronic VAT submission feature is not enabled. To enable it, on the Electronic VAT Setup page, turn on the Enabled toggle.';
@@ -18,7 +19,7 @@ codeunit 10687 "Elec. VAT Connection Mgt."
         UploadingVATReturnTxt: Label 'Uploading VAT return...';
         CompletingDataFillingTxt: Label 'Completing data filling...';
         CompletingSubmissionTxt: Label 'Completing submission...';
-        CreateInstanceTxt: Label 'Create instance.';
+        CreateInstanceTxt: Label 'Create instance';
         ExchangeTokenTxt: Label 'Exchange ID-Porten token';
         UploadVATReturnSubmissionTxt: Label 'Upload VAT return submission';
         UploadVATReturnTxt: Label 'Upload VAT return';
@@ -40,8 +41,8 @@ codeunit 10687 "Elec. VAT Connection Mgt."
         GetFeedbackErr: Label 'Cannot get feedback.';
         GetFeedbackDataErr: Label 'Cannot get feedback data';
         ReasonTxt: Label 'Reason from the Skatteetaten server: ';
-        CannotHandleResponseFromServerErr: Label 'Validation fails on the server side for the box %1: %2', Comment = '%1 = number, %2 = raw response text';
-        CannotHandleResponseWithReasonFromServerErr: Label 'Validation fails on the server side for the box %1. Reason: %2. Use the Download Response Message action from the VAT report to get more details.', Comment = '%1 = number, %2 = reason text';
+        CannotHandleResponseFromServerErr: Label 'Validation failed for the row %1: %2', Comment = '%1 = number, %2 = raw response text';
+        CannotHandleResponseWithReasonFromServerErr: Label 'Validation failed for the row %1. Reason: %2. Use the Download Response Message action for more details', Comment = '%1 = number, %2 = reason text';
         PositiveValidationResultTxt: Label 'ingen avvik', Locked = true;
         EnvironmentBlocksErr: Label 'Environment blocks an outgoing HTTP request to ''%1''.', Comment = '%1 - url, e.g. https://microsoft.com';
         ConnectionErr: Label 'Could not connect to the remote service %1.', Comment = '%1 - url, e.g. https://microsoft.com';
@@ -50,6 +51,7 @@ codeunit 10687 "Elec. VAT Connection Mgt."
 
     procedure SubmitVATReturn(var VATReportHeader: Record "VAT Report Header")
     var
+        User: Record User;
         WebRequestHelper: Codeunit "Web Request Helper";
         ProcessDialog: Dialog;
         BaseUrl: Text;
@@ -60,6 +62,7 @@ codeunit 10687 "Elec. VAT Connection Mgt."
         ElecVATSetup.GetRecordOnce();
         ElecVATSetup.TestField("Submission Environment URL");
         ElecVATSetup.TestField("Submission App URL");
+        ElecVATLoggingMgt.RemoveResponseDocAttachments(VATReportHeader);
         BaseUrl := ElecVATSetup."Submission Environment URL" + ElecVATSetup."Submission App URL";
         WebRequestHelper.IsValidUri(BaseUrl);
         If GuiAllowed() then begin
@@ -72,7 +75,7 @@ codeunit 10687 "Elec. VAT Connection Mgt."
         UpdateAltinnToken();
         if GuiAllowed() then
             ProcessDialog.Update(1, CreatingInstanceTxt);
-        GetInstanceInfo(InstanceUrl, DataID, BaseUrl);
+        GetInstanceInfo(InstanceUrl, DataID, BaseUrl, VATReportHeader);
         VATReportHeader.Validate("Message Id", InstanceUrl);
         VATReportHeader.modify(true);
         Commit();
@@ -89,7 +92,9 @@ codeunit 10687 "Elec. VAT Connection Mgt."
             ProcessDialog.Update(1, CompletingSubmissionTxt);
         CompleteDataFilling(InstanceUrl);
         VATReportHeader.Validate(Status, VATReportHeader.Status::Submitted);
-        VATReportHeader.Validate("Submitted By", UserSecurityId());
+        User.SetRange("User Security ID", UserSecurityId());
+        if not User.IsEmpty() then
+            VATReportHeader.Validate("Submitted By", UserSecurityId());
         VATReportHeader.Validate("Submitted Date", Today());
         VATReportHeader.Modify(true);
         If GuiAllowed() then
@@ -131,13 +136,11 @@ codeunit 10687 "Elec. VAT Connection Mgt."
         DataJToken: JsonToken;
         DataUrl: Text;
         DataType: Text;
-        MimeType: Text;
-        FileType: Enum "Document Attachment File Type";
-        FileExtension: Text;
         ContentOutStream: OutStream;
     begin
         CheckConnection();
         VATReportHeader.TestField("Message Id");
+        ElecVATLoggingMgt.RemoveResponseDocAttachments(VATReportHeader);
         FeedbackUrl := VATReportHeader."Message Id";
         AddSlashToUrl(FeedbackUrl);
         FeedbackUrl += 'feedback';
@@ -162,16 +165,11 @@ codeunit 10687 "Elec. VAT Connection Mgt."
                     error(ParseFeedbackInstanceErr, Response);
                 DataUrl := JToken.AsValue().AsText();
                 if DataType = 'kvittering' then begin
-                    FileType := FileType::PDF;
-                    FileExtension := 'pdf';
-                    MimeType := 'application/pdf';
                     InvokeGetRequestBinaryFile(TempBlob, Response, DataUrl, GetFeedbackDataTxt, GetFeedbackDataErr);
                     if not JObject.ReadFrom(Response) then
                         error(ParseFeedbackInstanceErr, Response);
+                    ElecVATLoggingMgt.AttachPDFResponseToVATRepHeader(TempBlob, VATReportHeader, DataType);
                 end else begin
-                    FileType := FileType::XML;
-                    FileExtension := 'xml';
-                    MimeType := '';
                     InvokeGetRequestWithAccessTokenCheck(Response, DataUrl, GetTextXmlContentType(), '', GetFeedbackDataTxt, GetFeedbackDataErr);
                     if not JObject.ReadFrom(Response) then
                         error(ParseFeedbackInstanceErr, Response);
@@ -179,13 +177,13 @@ codeunit 10687 "Elec. VAT Connection Mgt."
                         error(ParseFeedbackInstanceErr, Response);
                     TempBlob.CreateOutStream(ContentOutStream, TextEncoding::UTF8);
                     ContentOutStream.WriteText(ContentJToken.AsValue().AsText());
+                    ElecVATLoggingMgt.AttachXmlResponseToVATRepHeader(TempBlob, VATReportHeader, DataType);
                 end;
-                AttachAttachmentToVATRepHeader(TempBlob, VATReportHeader, DataType, FileExtension, FileType, MimeType);
                 if not JObject.SelectToken('Status.reason', JToken) then
                     error(ParseFeedbackInstanceErr, Response);
                 Accepted := Accepted and (JToken.AsValue().AsText() = 'OK');
                 if Accepted and (DataType = 'valideringsresultat') then
-                    Accepted := ParseValidationResponse(Response, '');
+                    Accepted := ParseValidationResponse(Response, '', VATReportHeader, false);
             end;
         end;
         exit(Accepted);
@@ -201,35 +199,6 @@ codeunit 10687 "Elec. VAT Connection Mgt."
         ResposeOutStream.WriteText(Response);
         VATReportArchive.ArchiveResponseMessage(VATReportHeader."VAT Report Config. Code", VATReportHeader."No.", TempBlob);
     end;
-
-    local procedure AttachAttachmentToVATRepHeader(var TempBlob: Codeunit "Temp Blob"; VATReportHeader: Record "VAT Report Header"; FileName: Text; FileExtension: Text; FileType: Enum "Document Attachment File Type"; MimeType: Text)
-    var
-        DocumentAttachment: Record "Document Attachment";
-        LineNo: Integer;
-        FileInStream: InStream;
-    begin
-        DocumentAttachment.SetRange("Table ID", Database::"VAT Report Header");
-        DocumentAttachment.SetRange("VAT Report Config. Code", VATReportHeader."VAT Report Config. Code");
-        DocumentAttachment.SetRange("No.", VATReportHeader."No.");
-        DocumentAttachment.SetRange("File Name", FileName);
-        if DocumentAttachment.FindFirst() then
-            DocumentAttachment.Delete(true);
-        DocumentAttachment.SetRange("File Name");
-        if DocumentAttachment.FindLast() then
-            LineNo := DocumentAttachment."Line No.";
-        LineNo += 10000;
-        DocumentAttachment.Validate("Table ID", Database::"VAT Report Header");
-        DocumentAttachment.Validate("VAT Report Config. Code", VATReportHeader."VAT Report Config. Code");
-        DocumentAttachment.Validate("No.", VATReportHeader."No.");
-        DocumentAttachment.Validate("Line No.", LineNo);
-        DocumentAttachment.Validate("File Name", CopyStr(FileName, 1, MaxStrLen(DocumentAttachment."File Name")));
-        DocumentAttachment.Validate("File Extension", FileExtension);
-        DocumentAttachment.Validate("File Type", FileType);
-        TempBlob.CreateInStream(FileInStream);
-        DocumentAttachment."Document Reference ID".ImportStream(FileInStream, '', MimeType);
-        DocumentAttachment.Insert(true);
-    end;
-
 
     procedure GetUploadVATReturnRequestPart(): Text
     begin
@@ -256,13 +225,13 @@ codeunit 10687 "Elec. VAT Connection Mgt."
                 LinesHandled += 1;
                 StatusDialog.Update(1, Round(LinesHandled / TotalLines * 10000, 1));
             end;
-            ValidateVATReportLine(VATStatementReportLine);
+            ValidateVATReportLine(VATReportHeader, VATStatementReportLine);
         until VATStatementReportLine.Next() = 0;
         If GuiAllowed() then
             StatusDialog.Close();
     end;
 
-    local procedure ValidateVATReportLine(VATStatementReportLine: Record "VAT Statement Report Line")
+    local procedure ValidateVATReportLine(VATReportHeader: Record "VAT Report Header"; VATStatementReportLine: Record "VAT Statement Report Line")
     var
         TempVATStatementReportLine: Record "VAT Statement Report Line" temporary;
         ElecVATCreateContent: Codeunit "Elec. VAT Create Content";
@@ -270,37 +239,39 @@ codeunit 10687 "Elec. VAT Connection Mgt."
         Response: Text;
     begin
         CheckConnection();
+        ElecVATSetup.TestField("Validate VAT Return Url");
         ElecVATLoggingMgt.LogValidationRun();
         TempVATStatementReportLine := VATStatementReportLine;
         TempVATStatementReportLine.Insert();
         Request := ElecVATCreateContent.CreateVATReportLinesContent(TempVATStatementReportLine);
-        ElecVATSetup.TestField("Validate VAT Return Url");
+        ElecVATLoggingMgt.AttachXmlSubmissionTextToVATRepHeader(Request, VATReportHeader, 'mvakode-' + VATStatementReportLine."Box No.");
+        Commit();
         InvokePostRequestWithAccessTokenCheck(Response, ElecVATSetup."Validate VAT Return Url", GetXmlContentType(), Request, ValidateVATReturnTxt, ValidateReturnErr);
-        ParseValidationResponse(Response, VATStatementReportLine."Box No.");
+        ParseValidationResponse(Response, VATStatementReportLine."Box No.", VATReportHeader, true);
     end;
 
-    local procedure GetInstanceInfo(var InstanceUrl: Text[250]; var DataID: Text; BaseUrl: Text)
+    local procedure GetInstanceInfo(var InstanceUrl: Text[250]; var DataID: Text; BaseUrl: Text; VATReportHeader: Record "VAT Report Header")
     var
-        CompanyInformation: Record "Company Information";
+        ElecVATDataMgt: Codeunit "Elec. VAT Data Mgt.";
         InstanceOwnerJObject: JsonObject;
         OrganizationNumberJObject: JsonObject;
         RequestJson: Text;
         ApplicationUrl: Text;
         Response: Text;
     begin
-        CompanyInformation.Get();
-        CompanyInformation.TestField("VAT Registration No.");
-        OrganizationNumberJObject.Add('organisationNumber', CompanyInformation."VAT Registration No.");
+        OrganizationNumberJObject.Add('organisationNumber', ElecVATDataMgt.GetDigitVATRegNo());
         InstanceOwnerJObject.Add('instanceOwner', OrganizationNumberJObject.AsToken());
         InstanceOwnerJObject.WriteTo(RequestJson);
         ApplicationUrl := BaseUrl;
         AddSlashToUrl(ApplicationUrl);
         ApplicationUrl += 'instances/';
+        ElecVATLoggingMgt.AttachXmlSubmissionTextToVATRepHeader(RequestJson, VATReportHeader, CreateInstanceTxt);
+        Commit();
         InvokeJsonPostRequestWithAccessTokenCheck(Response, ApplicationUrl, RequestJson, CreateInstanceTxt, CreateIntanceErr);
         GetInstanceInfoFromResponse(InstanceUrl, DataID, ApplicationUrl, Response);
     end;
 
-    local procedure ParseValidationResponse(ResponseJson: Text; BoxNo: Text): Boolean
+    local procedure ParseValidationResponse(ResponseJson: Text; BoxNo: Text; VATReportHeader: Record "VAT Report Header"; AddToAttachment: Boolean): Boolean
     var
         ElecVATXMLHelper: Codeunit "Elec. VAT XML Helper";
         JToken: JsonToken;
@@ -326,7 +297,11 @@ codeunit 10687 "Elec. VAT Connection Mgt."
         end;
         if BoxNo = '' then
             exit(false);
-        Error(CannotHandleResponseWithReasonFromServerErr, BoxNo, FailureReason);
+        if AddToAttachment then begin
+            ElecVATLoggingMgt.AttachXmlResponseTextToVATRepHeader(ResponseJson, VATReportHeader, 'valideringsresultat');
+            Commit();
+        end;
+        Error(CannotHandleResponseWithReasonFromServerErr, BoxNo, ValidateReturnErr);
     end;
 
     local procedure GetInstanceInfoFromResponse(var InstanceUrl: Text[250]; var DataID: Text; ApplicationUrl: Text; ResponseJson: Text)
@@ -367,6 +342,8 @@ codeunit 10687 "Elec. VAT Connection Mgt."
         AddSlashToUrl(VATReturnSubmissionUrl);
         VATReturnSubmissionUrl += 'data/' + DataID;
         Request := ElecVATCreateContent.CreateVATReturnSubmissionContent(VATReportHeader);
+        ElecVATLoggingMgt.AttachXmlSubmissionTextToVATRepHeader(Request, VATReportHeader, 'konvolutt');
+        Commit();
         InvokePutRequestWithAccessTokenCheck(
             Response, VATReturnSubmissionUrl, GetXmlContentType(), Request, UploadVATReturnSubmissionTxt, UploadVATReturnSubmissionErr);
     end;
@@ -575,7 +552,7 @@ codeunit 10687 "Elec. VAT Connection Mgt."
 
     local procedure AddSlashToUrl(var UrlToUpdate: Text)
     begin
-        If CopyStr(UrlToUpdate, StrLen(UrlToUpdate) - 1, 1) <> '/' then
+        If CopyStr(UrlToUpdate, StrLen(UrlToUpdate), 1) <> '/' then
             UrlToUpdate += '/';
     end;
 

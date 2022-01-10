@@ -9,6 +9,8 @@ permissionset 11780 "CZ Cash Desk - Read CZP"
     Assignable = false;
     Caption = 'CZ Cash Desk - Read';
 
+    IncludedPermissionSets = "CZ Cash Desk - Objects CZP";
+
     Permissions = tabledata "Cash Desk Cue CZP" = R,
                   tabledata "Cash Desk CZP" = R,
                   tabledata "Cash Desk Event CZP" = R,

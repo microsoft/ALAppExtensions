@@ -170,7 +170,7 @@ codeunit 132905 "User Settings Tests"
         Assert.AreEqual(UserSecurityId(), UserSettingsRec."User Security ID", 'The current user''s id was expected.');
         Assert.IsTrue(UserSettingsRec.Initialized, 'The settings should have been initialized.');
         Assert.AreEqual(0, UserSettingsRec."Language ID", 'No language was expected.');
-        Assert.AreEqual('', UserSettingsRec.Company, 'No Company was expected.');
+        Assert.AreEqual(CompanyName(), UserSettingsRec.Company, 'Company should match CompanyName (<Blank Company>).');
         Assert.AreEqual(0, UserSettingsRec."Locale ID", 'No region was expected.');
         Assert.AreEqual('', UserSettingsRec."Time Zone", 'A different time zone was expected.');
         Assert.AreEqual(WorkDate(), UserSettingsRec."Work Date", 'A different work date was expected.');

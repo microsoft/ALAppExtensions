@@ -114,9 +114,9 @@ page 30049 "APIV2 - JournalLines"
                         GeneralLedgerSetup: Record "General Ledger Setup";
                     begin
                         if GeneralLedgerSetup.UseVat() then
-                            Validate("VAT Prod. Posting Group", TaxCode)
+                            Rec."VAT Prod. Posting Group" := TaxCode
                         else
-                            Validate("Tax Group Code", TaxCode);
+                            Rec."Tax Group Code" := TaxCode;
                     end;
                 }
 

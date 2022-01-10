@@ -59,8 +59,7 @@ page 8889 "Email Attachments"
                     EmailEditor: Codeunit "Email Editor";
                 begin
                     EmailEditor.UploadAttachment(EmailMessage);
-                    UpdateDeleteEnablement();
-                    CurrPage.Update();
+                    UpdateDeleteActionEnablement();
                 end;
             }
 
@@ -81,6 +80,7 @@ page 8889 "Email Attachments"
                     EmailEditor: Codeunit "Email Editor";
                 begin
                     EmailEditor.AttachFromRelatedRecords(EmailMessageId);
+                    UpdateDeleteActionEnablement();
                 end;
             }
 
@@ -101,8 +101,7 @@ page 8889 "Email Attachments"
                     EmailEditor: Codeunit "Email Editor";
                 begin
                     EmailEditor.AttachFromWordTemplate(EmailMessage, EmailMessageId);
-                    UpdateDeleteEnablement();
-                    CurrPage.Update();
+                    UpdateDeleteActionEnablement();
                 end;
             }
 
@@ -126,29 +125,41 @@ page 8889 "Email Attachments"
                     if Confirm(DeleteQst) then begin
                         CurrPage.SetSelectionFilter(EmailMessageAttachment);
                         EmailMessageAttachment.DeleteAll();
-                        UpdateDeleteEnablement();
-                        CurrPage.Update();
+                        UpdateDeleteActionEnablement();
                     end;
                 end;
             }
         }
     }
 
-    internal procedure UpdateValues(MessageId: Guid)
+    protected procedure GetEmailMessage() EmailMessage: Codeunit "Email Message"
     begin
-        EmailMessageId := MessageId;
-
         EmailMessage.Get(EmailMessageId);
-        UpdateDeleteEnablement();
-        IsMessageRead := EmailMessage.IsRead();
     end;
 
-    internal procedure UpdateDeleteEnablement()
+    protected procedure UpdateDeleteActionEnablement()
     var
         EmailMessageAttachment: Record "Email Message Attachment";
     begin
         EmailMessageAttachment.SetFilter("Email Message Id", EmailMessageId);
         DeleteActionEnabled := not EmailMessageAttachment.IsEmpty();
+        CurrPage.Update();
+    end;
+
+#if not CLEAN20
+    internal procedure UpdateDeleteEnablement()
+    begin
+        UpdateDeleteActionEnablement();
+    end;
+#endif
+
+    internal procedure UpdateValues(MessageId: Guid)
+    begin
+        EmailMessageId := MessageId;
+
+        EmailMessage.Get(EmailMessageId);
+        UpdateDeleteActionEnablement();
+        IsMessageRead := EmailMessage.IsRead();
     end;
 
     var

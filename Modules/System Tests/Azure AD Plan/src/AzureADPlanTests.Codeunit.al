@@ -18,12 +18,12 @@ codeunit 132912 "Azure AD Plan Tests"
     var
         AzureADPlan: Codeunit "Azure AD Plan";
     begin
-        // [SCENARIO] There should be 15 Plans
+        // [SCENARIO] There should be 17 Plans
 
         // Verify the module highest permission level is sufficient ignore non Tables
         PermissionsMock.Set('AAD Plan View');
 
-        LibraryAssert.AreEqual(16, AzureADPlan.GetAvailablePlansCount(),
+        LibraryAssert.AreEqual(17, AzureADPlan.GetAvailablePlansCount(),
             'The number of available plans has changed. Make sure that you have added or removed tests on these changes in Plan-Based tests and then update the number of plans in this test.');
     end;
 

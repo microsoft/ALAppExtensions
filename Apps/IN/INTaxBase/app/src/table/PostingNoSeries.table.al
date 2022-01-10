@@ -32,6 +32,11 @@ table 18552 "Posting No. Series"
                     "Document Type"::"Transfer Shipment Header",
                     "Document Type"::"Transfer Receipt Header":
                         "Table Id" := Database::"Transfer Header";
+                    "Document Type"::Service,
+                    "Document Type"::"Service Shipment Header",
+                    "Document Type"::"Service Invoice Header",
+                    "Document Type"::"Service Cr.Memo Header":
+                        "Table Id" := Database::"Service Header";
                     "Document Type"::"Gen. Journals":
                         "Table Id" := Database::"Gen. Journal Line"
                     else begin
@@ -84,6 +89,8 @@ table 18552 "Posting No. Series"
                 GetPurchasePostingNoSeries(Record);
             Database::"Transfer Header":
                 ;
+            Database::"Service Header":
+                GetServicePostingNoSeries(Record);
             Database::"Gen. Journal Line":
                 GetGenJournalpostingSeries(Record);
             else begin
@@ -201,6 +208,44 @@ table 18552 "Posting No. Series"
                     else
                         if PurchSetup."Return Shipment on Credit Memo" then
                             NoSeriesMgt.SetDefaultSeries(PurchaseHeader."Return Shipment No. Series", PurchSetup."Posted Return Shpt. Nos.");
+                end;
+        end;
+    end;
+
+    local procedure GetServicePostingNoSeries(var ServiceHeader: Record "Service Header")
+    var
+        PostingNoSeries: Record "Posting No. Series";
+        ServiceSetup: Record "Service Mgt. Setup";
+        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeriesCode: Code[20];
+        TableID: Integer;
+    begin
+        ServiceSetup.Get();
+        TableID := Database::"Service Header";
+        case ServiceHeader."Document Type" of
+            ServiceHeader."Document Type"::Invoice,
+            ServiceHeader."Document Type"::Order,
+            ServiceHeader."Document Type"::Quote:
+                begin
+                    NoSeriesCode := LoopPostingNoSeries(TableID, PostingNoSeries, ServiceHeader, PostingNoSeries."Document Type"::"Service Shipment Header");
+                    if NoSeriesCode <> '' then
+                        ServiceHeader."Shipping No. Series" := NoSeriesCode
+                    else
+                        NoSeriesMgt.SetDefaultSeries(ServiceHeader."Shipping No. Series", ServiceSetup."Posted Service Shipment Nos.");
+
+                    NoSeriesCode := LoopPostingNoSeries(TableID, PostingNoSeries, ServiceHeader, PostingNoSeries."Document Type"::"Service Invoice Header");
+                    if NoSeriesCode <> '' then
+                        ServiceHeader."Posting No. Series" := NoSeriesCode
+                    else
+                        NoSeriesMgt.SetDefaultSeries(ServiceHeader."Posting No. Series", ServiceSetup."Posted Service Invoice Nos.");
+                end;
+            ServiceHeader."Document Type"::"Credit Memo":
+                begin
+                    NoSeriesCode := LoopPostingNoSeries(TableID, PostingNoSeries, ServiceHeader, PostingNoSeries."Document Type"::"Service Cr.Memo Header");
+                    if NoSeriesCode <> '' then
+                        ServiceHeader."Posting No. Series" := NoSeriesCode
+                    else
+                        NoSeriesMgt.SetDefaultSeries(ServiceHeader."Posting No. Series", ServiceSetup."Posted Serv. Credit Memo Nos.");
                 end;
         end;
     end;

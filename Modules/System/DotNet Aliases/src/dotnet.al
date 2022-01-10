@@ -2233,7 +2233,7 @@ dotnet
 
     assembly("MailKit")
     {
-        Version = '2.2.0.0';
+        Version = '2.15.0.0';
         Culture = 'neutral';
         PublicKeyToken = '4e064fe7c44a8f1b';
 
@@ -2268,7 +2268,7 @@ dotnet
 
     assembly("MimeKit")
     {
-        Version = '2.2.0.0';
+        Version = '2.15.0.0';
         Culture = 'neutral';
         PublicKeyToken = 'bede1c8a46c66814';
 

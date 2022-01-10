@@ -24,4 +24,14 @@ pageextension 11786 "Purch. Invoice Subform CZL" extends "Purch. Invoice Subform
             }
         }
     }
+
+    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
+    begin
+        ForceTotalsCalculation();
+    end;
+
+    trigger OnModifyRecord(): Boolean
+    begin
+        ForceTotalsCalculation();
+    end;
 }

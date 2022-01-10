@@ -25,7 +25,10 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
                   tabledata "Payment Order Line CZB" = m,
                   tabledata "Iss. Payment Order Line CZB" = m,
                   tabledata "Report Selections" = m,
-                  tabledata "Cash Flow Setup" = m;
+                  tabledata "Cash Flow Account" = m,
+                  tabledata "Cash Flow Forecast Entry" = m,
+                  tabledata "Cash Flow Setup" = m,
+                  tabledata "Cash Flow Worksheet Line" = m;
 
     var
         PurchaseAdvPaymentTemplate: Record "Purchase Adv. Payment Template";
@@ -43,6 +46,10 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
         IssuedPaymentOrderLine: Record "Issued Payment Order Line";
         ReportSelections: Record "Report Selections";
         TempDocumentEntry: Record "Document Entry" temporary;
+        CashFlowAccount: Record "Cash Flow Account";
+        CashFlowForecastEntry: Record "Cash Flow Forecast Entry";
+        CashFlowSetup: Record "Cash Flow Setup";
+        CashFlowWorksheetLine: Record "Cash Flow Worksheet Line";
         FeatureDataUpdateMgt: Codeunit "Feature Data Update Mgt.";
         InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
         PrepaymentLinksManagement: Codeunit "Prepayment Links Management";
@@ -100,7 +107,10 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
         UpdatePaymentOrderLinesCZB(FeatureDataUpdateStatus);
         UpdateIssPaymentOrderLinesCZB(FeatureDataUpdateStatus);
         UpdateReportSelections(FeatureDataUpdateStatus);
+        UpdateCashFlowAccounts(FeatureDataUpdateStatus);
+        UpdateCashFlowForecastEntry(FeatureDataUpdateStatus);
         UpdateCashFlowSetup(FeatureDataUpdateStatus);
+        UpdateCashFlowWorksheetLine(FeatureDataUpdateStatus);
         UnbindSubscription(InstallApplicationsMgtCZL);
 #endif
     end;
@@ -142,7 +152,19 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
         InsertDocumentEntry(Database::"Issued Payment Order Line", IssuedPaymentOrderLine.TableCaption(), IssuedPaymentOrderLine.CountApprox());
         ReportSelections.SetFilter("Report ID", '%1|%2', Report::"Purchase - Invoice", Report::"Sales Invoice CZL");
         InsertDocumentEntry(Database::"Report Selections", ReportSelections.TableCaption(), ReportSelections.CountApprox());
-
+        InsertDocumentEntry(Database::"Cash Flow Setup", CashFlowSetup.TableCaption(), CashFlowSetup.CountApprox());
+        CashFlowAccount.SetRange("Source Type",
+            CashFlowAccount."Source Type"::"Sales Advance Letters",
+            CashFlowAccount."Source Type"::"Purchase Advance Letters");
+        InsertDocumentEntry(Database::"Cash Flow Account", CashFlowAccount.TableCaption(), CashFlowAccount.CountApprox());
+        CashFlowForecastEntry.SetRange("Source Type",
+            CashFlowForecastEntry."Source Type"::"Sales Advance Letters",
+            CashFlowForecastEntry."Source Type"::"Purchase Advance Letters");
+        InsertDocumentEntry(Database::"Cash Flow Forecast Entry", CashFlowForecastEntry.TableCaption(), CashFlowForecastEntry.CountApprox());
+        CashFlowWorksheetLine.SetRange("Source Type",
+            CashFlowWorksheetLine."Source Type"::"Sales Advance Letters",
+            CashFlowWorksheetLine."Source Type"::"Purchase Advance Letters");
+        InsertDocumentEntry(Database::"Cash Flow Worksheet Line", CashFlowWorksheetLine.TableCaption(), CashFlowWorksheetLine.CountApprox());
         OnAfterCountRecords(TempDocumentEntry);
     end;
 
@@ -1025,7 +1047,6 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
 
     local procedure UpdateCashFlowSetup(FeatureDataUpdateStatus: Record "Feature Data Update Status")
     var
-        CashFlowSetup: Record "Cash Flow Setup";
         StartDateTime: DateTime;
     begin
         StartDateTime := CurrentDateTime();
@@ -1034,6 +1055,66 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
         CashFlowSetup."P. Adv. Letter CF Acc. No. CZZ" := CashFlowSetup."P. Adv. Letter CF Account No.";
         CashFlowSetup.Modify(false);
         FeatureDataUpdateMgt.LogTask(FeatureDataUpdateStatus, CashFlowSetup.TableCaption(), StartDateTime);
+    end;
+
+    local procedure UpdateCashFlowAccounts(FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    var
+        StartDateTime: DateTime;
+    begin
+        StartDateTime := CurrentDateTime();
+        CashFlowAccount.Reset();
+        CashFlowAccount.SetRange("Source Type",
+            CashFlowAccount."Source Type"::"Sales Advance Letters",
+            CashFlowAccount."Source Type"::"Purchase Advance Letters");
+        if CashFlowAccount.FindSet() then
+            repeat
+                if CashFlowAccount."Source Type" = CashFlowAccount."Source Type"::"Sales Advance Letters" then
+                    CashFlowAccount."Source Type" := CashFlowAccount."Source Type"::"Sales Advance Letters CZZ";
+                if CashFlowAccount."Source Type" = CashFlowAccount."Source Type"::"Purchase Advance Letters" then
+                    CashFlowAccount."Source Type" := CashFlowAccount."Source Type"::"Purchase Advance Letters CZZ";
+                CashFlowAccount.Modify(false);
+            until CashFlowAccount.Next() = 0;
+        FeatureDataUpdateMgt.LogTask(FeatureDataUpdateStatus, CashFlowAccount.TableCaption(), StartDateTime);
+    end;
+
+    local procedure UpdateCashFlowForecastEntry(FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    var
+        StartDateTime: DateTime;
+    begin
+        StartDateTime := CurrentDateTime();
+        CashFlowForecastEntry.Reset();
+        CashFlowForecastEntry.SetRange("Source Type",
+            CashFlowForecastEntry."Source Type"::"Sales Advance Letters",
+            CashFlowForecastEntry."Source Type"::"Purchase Advance Letters");
+        if CashFlowForecastEntry.FindSet() then
+            repeat
+                if CashFlowForecastEntry."Source Type" = CashFlowForecastEntry."Source Type"::"Sales Advance Letters" then
+                    CashFlowForecastEntry."Source Type" := CashFlowForecastEntry."Source Type"::"Sales Advance Letters CZZ";
+                if CashFlowForecastEntry."Source Type" = CashFlowForecastEntry."Source Type"::"Purchase Advance Letters" then
+                    CashFlowForecastEntry."Source Type" := CashFlowForecastEntry."Source Type"::"Purchase Advance Letters CZZ";
+                CashFlowForecastEntry.Modify(false);
+            until CashFlowForecastEntry.Next() = 0;
+        FeatureDataUpdateMgt.LogTask(FeatureDataUpdateStatus, CashFlowForecastEntry.TableCaption(), StartDateTime);
+    end;
+
+    local procedure UpdateCashFlowWorksheetLine(FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    var
+        StartDateTime: DateTime;
+    begin
+        StartDateTime := CurrentDateTime();
+        CashFlowWorksheetLine.Reset();
+        CashFlowWorksheetLine.SetRange("Source Type",
+            CashFlowWorksheetLine."Source Type"::"Sales Advance Letters",
+            CashFlowWorksheetLine."Source Type"::"Purchase Advance Letters");
+        if CashFlowWorksheetLine.FindSet() then
+            repeat
+                if CashFlowWorksheetLine."Source Type" = CashFlowWorksheetLine."Source Type"::"Sales Advance Letters" then
+                    CashFlowWorksheetLine."Source Type" := CashFlowWorksheetLine."Source Type"::"Sales Advance Letters CZZ";
+                if CashFlowWorksheetLine."Source Type" = CashFlowWorksheetLine."Source Type"::"Purchase Advance Letters" then
+                    CashFlowWorksheetLine."Source Type" := CashFlowWorksheetLine."Source Type"::"Purchase Advance Letters CZZ";
+                CashFlowWorksheetLine.Modify(false);
+            until CashFlowWorksheetLine.Next() = 0;
+        FeatureDataUpdateMgt.LogTask(FeatureDataUpdateStatus, CashFlowWorksheetLine.TableCaption(), StartDateTime);
     end;
 
     [IntegrationEvent(false, false)]

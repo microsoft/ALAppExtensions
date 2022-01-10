@@ -105,7 +105,8 @@ codeunit 18930 "Validation Events"
                                           GeneralJournalTemplate.Type::"Journal Voucher"] then begin
             GeneralJournalBatch.Get(GeneralJournalTemplate.Name, GenJournalLine."Journal Batch Name");
             VoucherSetup.Get(GeneralJournalBatch."Location Code", GeneralJournalTemplate.Type);
-            VoucherSetup.TestField("Transaction Direction");
+            if ((VoucherSetup.Type <> VoucherSetup.Type::"Journal Voucher") or (VoucherSetup.Type <> VoucherSetup.Type::"Journal Voucher")) then
+                VoucherSetup.TestField("Transaction Direction");
 
             case VoucherSetup."Transaction Direction" of
                 VoucherSetup."Transaction Direction"::Debit:

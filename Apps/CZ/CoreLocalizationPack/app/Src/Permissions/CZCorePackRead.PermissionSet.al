@@ -9,6 +9,8 @@ permissionset 11730 "CZ Core Pack - Read CZL"
     Assignable = false;
     Caption = 'CZ Core Pack - Read';
 
+    IncludedPermissionSets = "CZ Core Pack - Objects CZL";
+
     Permissions = tabledata "Acc. Sched. Expr. Buffer CZL" = R,
                   tabledata "Acc. Schedule Extension CZL" = R,
                   tabledata "Acc. Schedule File Mapping CZL" = R,

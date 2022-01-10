@@ -62,6 +62,25 @@ codeunit 148130 "Library - Elec. VAT Submission"
         VATStatementReportLine.Insert();
     end;
 
+    procedure CreateSimpleVATCode(): Code[10]
+    var
+        VATCode: Record "VAT Code";
+    begin
+        VATCode.Code := LibraryUtility.GenerateRandomCode(VATCode.FieldNo(Code), Database::"VAT Code");
+        VATCode.Insert(true);
+        exit(VATCode.Code)
+    end;
+
+    procedure SetVATSpecificationAndNoteToVATCode(VATCodeValue: Code[10])
+    var
+        VATCode: Record "VAT Code";
+    begin
+        VATCode.Get(VATCodeValue);
+        VATCode.Validate("VAT Specification Code", CreateVATSpecification());
+        VATCode.Validate("VAT Note Code", CreateVATNote());
+        VATCode.Modify(true);
+    end;
+
     procedure SetVATCodeReportVATRate(VATCodeValue: Code[10]; VATRate: Decimal)
     var
         VATCode: Record "VAT Code";
@@ -132,5 +151,25 @@ codeunit 148130 "Library - Elec. VAT Submission"
             SetToken("Access Token", 'Dummy Test Access Token');
             SetToken("Refresh Token", 'Dummy Test Refresh Token');
         end;
+    end;
+
+    local procedure CreateVATSpecification(): Code[50]
+    var
+        VATSpecification: Record "VAT Specification";
+    begin
+        VATSpecification.Validate(Code, LibraryUtility.GenerateGUID());
+        VATSpecification.Validate("VAT Report Value", VATSpecification.Code);
+        VATSpecification.Insert();
+        exit(VATSpecification.Code);
+    end;
+
+    local procedure CreateVATNote(): Code[50]
+    var
+        VATNote: Record "VAT Note";
+    begin
+        VATNote.Validate(Code, LibraryUtility.GenerateGUID());
+        VATNote.Validate("VAT Report Value", VATNote.Code);
+        VATNote.Insert();
+        exit(VATNote.Code);
     end;
 }
