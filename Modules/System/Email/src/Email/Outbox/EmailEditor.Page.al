@@ -66,6 +66,17 @@ page 13 "Email Editor"
                             begin
                                 EmailMessage.SetRecipients(Enum::"Email Recipient Type"::"To", ToRecipient);
                             end;
+
+                            trigger OnLookup(var Text: Text): Boolean
+                            var
+                                EmailAddressRecord: Record "Email Address";
+                                Addressbook: Codeunit Addressbook;
+                            begin
+                                Addressbook.SelectRecipient(Rec."Message Id", EmailAddressRecord);
+                                if EmailAddressRecord.FindSet() then
+                                    Text += Addressbook.GetEmailsFrom(EmailAddressRecord);
+                                exit(true)
+                            end;
                         }
 
                         field(CcField; CcRecipient)
@@ -80,6 +91,17 @@ page 13 "Email Editor"
                             begin
                                 EmailMessage.SetRecipients(Enum::"Email Recipient Type"::Cc, CcRecipient);
                             end;
+
+                            trigger OnLookup(var Text: Text): Boolean
+                            var
+                                EmailAddressRecord: Record "Email Address";
+                                Addressbook: Codeunit Addressbook;
+                            begin
+                                Addressbook.SelectRecipient(Rec."Message Id", EmailAddressRecord);
+                                if EmailAddressRecord.FindSet() then
+                                    Text += Addressbook.GetEmailsFrom(EmailAddressRecord);
+                                exit(true)
+                            end;
                         }
 
                         field(BccField; BccRecipient)
@@ -93,6 +115,17 @@ page 13 "Email Editor"
                             trigger OnValidate()
                             begin
                                 EmailMessage.SetRecipients(Enum::"Email Recipient Type"::Bcc, BccRecipient);
+                            end;
+
+                            trigger OnLookup(var Text: Text): Boolean
+                            var
+                                EmailAddressRecord: Record "Email Address";
+                                Addressbook: Codeunit Addressbook;
+                            begin
+                                Addressbook.SelectRecipient(Rec."Message Id", EmailAddressRecord);
+                                if EmailAddressRecord.FindSet() then
+                                    Text += Addressbook.GetEmailsFrom(EmailAddressRecord);
+                                exit(true)
                             end;
                         }
 
