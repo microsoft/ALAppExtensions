@@ -8,6 +8,7 @@ codeunit 18248 "GST Bank Charge Session Mgt."
         NextEntryNo: Integer;
         BankChargeAmount: Decimal;
         GSTBankChargesPostingStarted: Boolean;
+        BankChargeSign: Integer;
 
     procedure SetTransactionNo(TransNo: Integer)
     begin
@@ -37,6 +38,16 @@ codeunit 18248 "GST Bank Charge Session Mgt."
     procedure GetBankChargeAmount(): Decimal
     begin
         exit(BankChargeAmount);
+    end;
+
+    Procedure SetBankChargeSign(ChargeSign: Integer)
+    begin
+        BankChargeSign := ChargeSign;
+    end;
+
+    Procedure GetBankChargeSign(): Integer
+    begin
+        exit(BankChargeSign);
     end;
 
     procedure CreateGSTBankChargesGenJournallLine(var GenJournalLine: Record "Gen. Journal Line"; GLAccountNo: Code[20]; Amount: Decimal; AmountLCY: Decimal)

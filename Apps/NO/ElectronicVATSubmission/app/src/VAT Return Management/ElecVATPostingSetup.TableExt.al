@@ -25,13 +25,14 @@ tableextension 10689 "Elec. VAT Posting Setup" extends "VAT Posting Setup"
     begin
         if VATCodeValue = '' then
             exit;
+        if not VATCode.Get(VATCodeValue) then
+            exit;
         if not VATCode."Report VAT Rate" then
             exit;
-        VATCode.Get(VATCodeValue);
         if VATCode."VAT Rate For Reporting" <> "VAT %" then
             Message(VATRateDoesNotMatchMsg, VATCode."VAT Rate For Reporting", "VAT %");
     end;
 
     var
-        VATRateDoesNotMatchMsg: Label 'The VAT code you have selected has a VAT rate for reporting (%1 %) that is different than the rate in the VAT posting setup (%2)', Comment = '%1,%2 = VAT rates/numbers';
+        VATRateDoesNotMatchMsg: Label 'The VAT code you have selected has a VAT rate for reporting (%1 %) that is different than a VAT rate in the VAT posting setup (%2)', Comment = '%1,%2 = VAT rates/numbers';
 }

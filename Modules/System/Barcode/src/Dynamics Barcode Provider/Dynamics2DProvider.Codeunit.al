@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9222 "Dynamics 2D Provider" implements "Barcode Image Provider 2D"
+codeunit 9223 "Dynamics 2D Provider" implements "Barcode Image Provider 2D"
 {
     Access = Internal;
 

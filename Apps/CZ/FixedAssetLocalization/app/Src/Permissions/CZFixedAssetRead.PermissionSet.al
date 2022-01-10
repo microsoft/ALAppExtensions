@@ -9,6 +9,8 @@ permissionset 11760 "CZ Fixed Asset - Read CZF"
     Assignable = false;
     Caption = 'CZ Fixed Asset - Read';
 
+    IncludedPermissionSets = "CZ Fixed Asset - Objects CZF";
+
     Permissions = tabledata "Classification Code CZF" = R,
                   tabledata "FA Extended Posting Group CZF" = R,
                   tabledata "FA History Entry CZF" = R,

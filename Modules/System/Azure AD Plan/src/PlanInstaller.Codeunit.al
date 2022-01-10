@@ -33,6 +33,7 @@ codeunit 9056 "Plan Installer"
         CreatePlan(PlanIds.GetPremiumISVPlanId(), 'Dynamics 365 Business Central Premium - Embedded', 9022, '4284DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetDeviceISVPlanId(), 'Dynamics 365 Business Central Device - Embedded', 9022, 'B684DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetViralSignupPlanId(), 'Dynamics 365 Business Central for IWs', 9022, '0184DDCA-27B8-E911-BB26-000D3A2B005C');
+        CreatePlan(PlanIds.GetPremiumPartnerSandboxPlanId(), 'Dynamics 365 BC Premium Partner Sandbox', 9022, '37B1C04B-A429-4139-A15E-067784A80A55');
 
         if not UpgradeTag.HasUpgradeTag(PlanUpgradeTag.GetAddDeviceISVEmbUpgradeTag()) then
             UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetAddDeviceISVEmbUpgradeTag());

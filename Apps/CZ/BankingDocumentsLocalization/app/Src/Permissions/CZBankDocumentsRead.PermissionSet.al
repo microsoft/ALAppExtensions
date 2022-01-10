@@ -9,6 +9,8 @@ permissionset 11790 "CZ Bank Documents - Read CZB"
     Assignable = false;
     Caption = 'CZ Bank Documents - Read';
 
+    IncludedPermissionSets = "CZ Bank Documents - Obj. CZB";
+
     Permissions = tabledata "Bank Statement Header CZB" = R,
                   tabledata "Bank Statement Line CZB" = R,
                   tabledata "Iss. Bank Statement Header CZB" = R,

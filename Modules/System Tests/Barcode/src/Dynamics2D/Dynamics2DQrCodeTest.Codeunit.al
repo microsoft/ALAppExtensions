@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 135060 "Dynamics QR Code Test"
+codeunit 135061 "Dynamics 2D QR Code Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
@@ -33,10 +33,10 @@ codeunit 135060 "Dynamics QR Code Test"
     [Test]
     procedure MaxCapacityStringToQRCodeTest()
     var
-        TempBlob: Codeunit "Temp Blob";
         BarcodeEncodeSettings2D: Record "Barcode Encode Settings 2D";
-        BarcodeImageProvider2D: Enum "Barcode Image Provider 2D";
+        TempBlob: Codeunit "Temp Blob";
         IBarcodeImageProvider2D: Interface "Barcode Image Provider 2D";
+        BarcodeImageProvider2D: Enum "Barcode Image Provider 2D";
     begin
         // [SCENARIO] A 1273 byte string is converted to an Version 40 QR code with High Error Correction Level (Max Capacity 1273 bytes)
         IBarcodeImageProvider2D := BarcodeImageProvider2D::Dynamics2D;
@@ -55,8 +55,8 @@ codeunit 135060 "Dynamics QR Code Test"
     procedure MaxCapacityExceededStringToQRCodeTest()
     var
         BarcodeEncodeSettings2D: Record "Barcode Encode Settings 2D";
-        BarcodeImageProvider2D: Enum "Barcode Image Provider 2D";
         IBarcodeImageProvider2D: Interface "Barcode Image Provider 2D";
+        BarcodeImageProvider2D: Enum "Barcode Image Provider 2D";
     begin
         // [SCENARIO] A 1274 byte string is converted to an Version 40 QR code with High Error Correction Level (Max Capacity 1273 bytes)
         ClearLastError();
@@ -73,7 +73,7 @@ codeunit 135060 "Dynamics QR Code Test"
         Assert.ExpectedError('Cannot accommodate input length.');
     end;
 
-    local procedure GetMaxAlphaNumericString(PlusOne: Boolean) Result: Text
+    local procedure GetMaxAlphaNumericString(PlusOne: Boolean): Text
     begin
         if PlusOne then
             exit(Any.AlphanumericText(1274));

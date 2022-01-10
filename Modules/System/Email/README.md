@@ -3,6 +3,9 @@ Provides an API that lets you connect email accounts to Business Central so that
 ### Email Account
 An email account holds the information needed to send emails from Business Central.
 
+### Email Address Lookup
+Email address lookup suggests email addresses to the user for the To, Cc and Bcc fields, and the suggestions are based on the related records of the email.
+
 ### Email Connector
 An email connector is an interface for creating and managing email accounts, and sending emails. Every email account belongs to an email connector.
 

@@ -29,6 +29,7 @@ codeunit 9027 "Plan Ids"
         BasicPlanGUIDTxt: Label '{2ec8b6ca-ab13-4753-a479-8c2ffe4c323b}', Locked = true;
         AccountantHubPlanGuidTxt: Label '{5d60ea51-0053-458f-80a8-b6f426a1a0c1}', Locked = true;
         InfrastructurePlanGuidTxt: Label '{996DEF3D-B36C-4153-8607-A6FD3C01B89F}', Locked = true;
+        PremiumPartnerSandboxPlanGuidTxt: Label '{37b1c04b-a429-4139-a15e-067784a80a55}', Locked = true;
 #pragma warning disable AA0240
         DelegatedAdminGUIDTxt: Label '{00000000-0000-0000-0000-000000000007}', Locked = true;
         InternalAdminGUIDTxt: Label '{62e90394-69f5-4237-9190-012177145e10}', Locked = true;
@@ -196,5 +197,14 @@ codeunit 9027 "Plan Ids"
     procedure GetInfrastructurePlanId(): Guid
     begin
         exit(InfrastructurePlanGuidTxt);
+    end;
+
+    /// <summary>
+    /// Returns the ID for the D365 Business Central Premium Partner Sandbox plan.
+    /// </summary>
+    /// <returns>The ID for the D365 Business Central Premium Partner Sandbox plan.</returns>
+    procedure GetPremiumPartnerSandboxPlanId(): Guid
+    begin
+        exit(PremiumPartnerSandboxPlanGuidTxt);
     end;
 }

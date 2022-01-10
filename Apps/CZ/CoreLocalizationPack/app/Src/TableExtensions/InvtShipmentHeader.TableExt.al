@@ -10,4 +10,13 @@ tableextension 31036 "Invt. Shipment Header CZL" extends "Invt. Shipment Header"
             DataClassification = CustomerContent;
         }
     }
+
+    procedure GetRegisterUserIDCZL(): Code[50]
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+    begin
+        ItemLedgerEntry.SetFilterFromInvtShipmentHeaderCZL(Rec);
+        if ItemLedgerEntry.FindFirst() then
+            exit(ItemLedgerEntry.GetRegisterUserIDCZL());
+    end;
 }

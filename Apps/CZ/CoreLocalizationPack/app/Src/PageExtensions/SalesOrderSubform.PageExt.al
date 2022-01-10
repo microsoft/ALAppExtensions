@@ -27,4 +27,14 @@ pageextension 11790 "Sales Order Subform CZL" extends "Sales Order Subform"
             }
         }
     }
+
+    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
+    begin
+        ForceTotalsCalculation();
+    end;
+
+    trigger OnModifyRecord(): Boolean
+    begin
+        ForceTotalsCalculation();
+    end;
 }

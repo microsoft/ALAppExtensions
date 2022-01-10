@@ -841,8 +841,10 @@ page 18493 "Subcontracting Order Subform"
     end;
 
     var
+#if not CLEAN19
         PurchHeader: Record "Purchase Header";
         PurchPriceCalcMgt: Codeunit "Purch. Price Calc. Mgt.";
+#endif
         TransferExtendedText: Codeunit "Transfer Extended Text";
         ShortcutDimCode: array[8] of Code[20];
         UpdateAllowedVar: Boolean;
@@ -952,6 +954,10 @@ page 18493 "Subcontracting Order Subform"
         exit(true);
     end;
 
+#if not CLEAN19
+#pragma warning disable AS0072
+    [Obsolete('Replaced by the new implementation (V16) of price calculation.', '19.0')]
+#pragma warning restore AS0072
     procedure ShowPrices()
     begin
         PurchHeader.Get(Rec."Document Type", Rec."Document No.");
@@ -959,12 +965,16 @@ page 18493 "Subcontracting Order Subform"
         PurchPriceCalcMgt.GetPurchLinePrice(PurchHeader, Rec);
     end;
 
+#pragma warning disable AS0072
+    [Obsolete('Replaced by the new implementation (V16) of price calculation.', '19.0')]
+#pragma warning restore AS0072
     procedure ShowLineDisc()
     begin
         PurchHeader.Get(Rec."Document Type", Rec."Document No.");
         Clear(PurchPriceCalcMgt);
         PurchPriceCalcMgt.GetPurchLineLineDisc(PurchHeader, Rec);
     end;
+#endif
 
     procedure ShowLineComment()
     begin

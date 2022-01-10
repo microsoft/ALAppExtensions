@@ -3,7 +3,7 @@ codeunit 10686 "Elec. VAT Validate Return"
     TableNo = "VAT Report Header";
 
     var
-        IncorrectSignErr: Label 'The amount in the box %1 has an incorrect sign. It must be %2.', Comment = '%1 = number, %2 = either positive or negative';
+        IncorrectSignErr: Label 'The amount on the row %1 has an incorrect sign. It must be %2.', Comment = '%1 = number, %2 = either positive or negative';
         PositiveLbl: Label 'positive';
         NegativeLbl: Label 'negative';
         VATAmountCalcErr: Label 'The VAT amount in the box %1 is not equal to the base VAT * VAT Rate.', Comment = '%1 - number';
@@ -16,6 +16,7 @@ codeunit 10686 "Elec. VAT Validate Return"
 
     local procedure ValidateVATReport(VATReportHeader: Record "VAT Report Header")
     var
+        ElecVATSetup: Record "Elec. VAT Setup";
         VATStatementReportLine: Record "VAT Statement Report Line";
         ErrorMessage: Record "Error Message";
         CompanyInformation: Record "Company Information";
@@ -23,6 +24,9 @@ codeunit 10686 "Elec. VAT Validate Return"
         VATCodeValue: Code[10];
         ExpectedVATAmount: Decimal;
     begin
+        ElecVATSetup.Get();
+        if ElecVATSetup."Disable Checks On Release" then
+            exit;
         ErrorMessage.SetContext(VATReportHeader);
         CompanyInformation.Get();
         ErrorMessage.ClearLogRec(CompanyInformation);
@@ -34,10 +38,10 @@ codeunit 10686 "Elec. VAT Validate Return"
         repeat
             If VATStatementReportLine."Box No." in ['1', '11', '12', '13', '14', '15'] then begin
                 if VATStatementReportLine.Amount > 0 then
-                    Error(IncorrectSignErr, VATStatementReportLine."Box No.", NegativeLbl);
+                    Error(IncorrectSignErr, VATStatementReportLine."Row No.", NegativeLbl);
             end else
                 if VATStatementReportLine.Amount < 0 then
-                    Error(IncorrectSignErr, VATStatementReportLine."Box No.", PositiveLbl);
+                    Error(IncorrectSignErr, VATStatementReportLine."Row No.", PositiveLbl);
             VATCodeValue := CopyStr(VATStatementReportLine."Box No.", 1, MaxStrLen(VATCodeValue));
             VATCode.Get(VATCodeValue);
             if VATCode."Report VAT Rate" and (VATStatementReportLine.Base <> 0) then begin

@@ -633,7 +633,7 @@ page 18550 "Bank Payment Voucher"
                     trigger OnValidate()
                     begin
                         //Modified
-                        VoucherFunctions.SplitNarration(NarrationText, false, Rec);
+                        Error('Voucher Narration should be entered from Process - >Voucher Narration tab.');
                     end;
                 }
             }
@@ -865,10 +865,11 @@ page 18550 "Bank Payment Voucher"
                         VoucherNarration.SetTableView(GenNarration);
                         VoucherNarration.RunModal();
 
-                        //ShowOldNarration();
+                        // ShowOldNarration();
                         VoucherFunctions.ShowOldNarration(Rec);
                         CurrPage.Update(true);
                     end;
+
                 }
             }
             group("A&ccount")
@@ -1742,6 +1743,7 @@ page 18550 "Bank Payment Voucher"
         if not PostedFromSimplePage then
             CurrPage.IncomingDocAttachFactBox.Page.LoadDataFromRecord(Rec);
         SetJobQueueVisibility();
+        NarrationText := VoucherFunctions.ShowOldNarration(Rec);
     end;
 
     trigger OnAfterGetRecord()
@@ -1751,8 +1753,8 @@ page 18550 "Bank Payment Voucher"
         HasIncomingDocument := "Incoming Document Entry No." <> 0;
         CurrPage.IncomingDocAttachFactBox.Page.SetCurrentRecordID(RecordId());
         SetUserInteractions();
-        VoucherFunctions.ShowOldNarration(Rec);
         //  ShowOldNarration();
+        NarrationText := VoucherFunctions.ShowOldNarration(Rec);
     end;
 
     trigger OnInit()

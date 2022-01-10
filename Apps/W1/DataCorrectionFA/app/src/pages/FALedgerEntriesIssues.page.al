@@ -6,7 +6,8 @@ page 6090 "FA Ledger Entries Issues"
     PageType = List;
     SourceTable = "FA Ledg. Entry w. Issue";
     SourceTableView = where(Corrected = FILTER(false));
-    Permissions = TableData "FA Ledg. Entry w. Issue" = rimd;
+    Permissions = tabledata "FA Ledg. Entry w. Issue" = rimd,
+                  tabledata "FA Ledger Entry" = rimd;
 
     layout
     {

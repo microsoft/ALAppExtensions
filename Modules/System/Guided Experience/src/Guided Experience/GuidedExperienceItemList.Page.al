@@ -11,6 +11,7 @@ page 1996 "Guided Experience Item List"
     Caption = 'Guided Experience Item List';
     PageType = List;
     SourceTable = "Guided Experience Item";
+    SourceTableTemporary = true;
     Editable = false;
     DeleteAllowed = false;
     InsertAllowed = false;
@@ -49,11 +50,14 @@ page 1996 "Guided Experience Item List"
     }
 
     trigger OnOpenPage()
+    begin
+        if Rec.FindFirst() then; // Set selected record to first record
+    end;
+
+    internal procedure SetGuidedExperienceType(GuidedExperienceType: Enum "Guided Experience Type")
     var
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
     begin
-        GuidedExperienceImpl.GetContentForSetupPage(Rec, Rec."Guided Experience Type"::Learn);
-
-        if Rec.FindFirst() then; // Set selected record to first record
+        GuidedExperienceImpl.GetContentForSetupPage(Rec, GuidedExperienceType);
     end;
 }

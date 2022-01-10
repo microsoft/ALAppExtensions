@@ -1,5 +1,6 @@
 entitlement "SMTP Connector"
 {
     Type = Implicit;
-    ObjectEntitlements = "SMTP Connector";
+
+    ObjectEntitlements = "Email SMTP - Edit";
 }

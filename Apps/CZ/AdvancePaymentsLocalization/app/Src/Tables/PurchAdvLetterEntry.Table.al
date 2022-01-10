@@ -85,6 +85,11 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
             Caption = 'VAT Date';
             DataClassification = CustomerContent;
         }
+        field(34; "Original Document VAT Date"; Date)
+        {
+            Caption = 'Original Document VAT Date';
+            DataClassification = CustomerContent;
+        }
         field(35; "VAT Entry No."; Integer)
         {
             Caption = 'VAT Entry No.';

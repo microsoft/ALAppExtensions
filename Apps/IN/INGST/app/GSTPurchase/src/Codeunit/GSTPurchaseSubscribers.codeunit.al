@@ -400,6 +400,14 @@ codeunit 18080 "GST Purchase Subscribers"
         GSTBaseValidation.CallTaxEngineOnPurchHeader(Rec);
     end;
 
+    //Blanket Order to Purchase Order
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Blanket Purch. Order to Order", 'OnBeforePurchOrderHeaderModify', '', false, false)]
+    local procedure OnBeforePurchOrderHeaderModify(var PurchOrderHeader: Record "Purchase Header"; BlanketOrderPurchHeader: Record "Purchase Header")
+    begin
+        PurchOrderHeader."Location GST Reg. No." := BlanketOrderPurchHeader."Location GST Reg. No.";
+        ValidateLocationGSTRegNo(PurchOrderHeader);
+    end;
+
     //Order Address Validation - Definition
     local procedure OrderaddressState(var OrderAddress: Record "Order Address")
     var

@@ -1495,6 +1495,7 @@ codeunit 148027 "TestPmtExport Validation DK UT"
         Vendor: Record Vendor;
         VendorBankAcc: Record "Vendor Bank Account";
     begin
+        // [SCENARIO 416562] Stan can specify / validate "Creditor No." and "Recipient Bank Account" on the same Vendor Ledger Entry
         Initialize();
 
         // Pre-Setup
@@ -1516,11 +1517,11 @@ codeunit 148027 "TestPmtExport Validation DK UT"
 
         // Exercise
         CreateVendorBankAccount(VendorBankAcc, Vendor."No.");
-        ASSERTERROR VendLedgEntry.VALIDATE("Recipient Bank Account", VendorBankAcc.Code);
+        VendLedgEntry.VALIDATE("Recipient Bank Account", VendorBankAcc.Code);
 
         // Verify
-        Assert.ExpectedError(
-          STRSUBSTNO(FieldIsNotEmptyErr, VendLedgEntry.FIELDCAPTION("Recipient Bank Account"), VendLedgEntry.FIELDCAPTION("Creditor No.")));
+        VendLedgEntry.TestField("Recipient Bank Account");
+        VendLedgEntry.TestField("Creditor No.");
     end;
 
     [Test]

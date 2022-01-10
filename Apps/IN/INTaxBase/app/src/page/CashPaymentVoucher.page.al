@@ -639,7 +639,7 @@ page 18554 "Cash Payment Voucher"
 
                     trigger OnValidate()
                     begin
-                        VoucherFunctions.SplitNarration(NarrationText, false, Rec);
+                        Error('Voucher Narration should be entered from Process - >Voucher Narration tab.');
                     end;
                 }
             }
@@ -1762,7 +1762,7 @@ page 18554 "Cash Payment Voucher"
         HasIncomingDocument := "Incoming Document Entry No." <> 0;
         CurrPage.IncomingDocAttachFactBox.Page.SetCurrentRecordID(RecordId());
         SetUserInteractions();
-        VoucherFunctions.ShowOldNarration(Rec);
+        NarrationText := VoucherFunctions.ShowOldNarration(Rec);
         //ShowOldNarration();
     end;
 

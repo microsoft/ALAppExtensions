@@ -15,6 +15,7 @@ codeunit 4514 "SMTP Message"
         EmailParseFailureErr: Label 'The address %1 could not be parsed correctly.', Comment = '%1=The email address';
         SmtpCategoryLbl: Label 'Email SMTP', Locked = true;
         ConcateLbl: Label '; %1', Locked = true;
+        FromNameOrEmailHasChangedTxt: Label 'The name or address has changed.', Locked = true;
 
     procedure Initialize()
     var
@@ -39,10 +40,18 @@ codeunit 4514 "SMTP Message"
     [TryFunction]
     procedure AddFrom(FromName: Text; FromAddress: Text)
     var
+        SMTPConnector: Codeunit "SMTP Connector";
         EmailAccount: Codeunit "Email Account";
         InternetAddress: DotNet InternetAddress;
+        OldName, OldAddress : Text;
     begin
-        OnBeforeAddFrom(FromName, FromAddress);
+        OldName := FromName;
+        OldAddress := FromAddress;
+        SMTPConnector.OnBeforeAddFrom(FromName, FromAddress);
+
+        if (OldName <> FromName) or (OldAddress <> FromAddress) then
+            Session.LogMessage('0000GC6', FromNameOrEmailHasChangedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', SmtpCategoryLbl);
+
         if EmailAccount.ValidateEmailAddress(FromAddress, false) and InternetAddress.TryParse(FromAddress, InternetAddress) then begin
             InternetAddress.Name(FromName);
             Email.From().Add(InternetAddress);
@@ -246,10 +255,5 @@ codeunit 4514 "SMTP Message"
                 Address := SMTPConnectorImpl.ObsfuscateEmailAddress(Address);
             String += StrSubstNo(ConcateLbl, Address);
         end;
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeAddFrom(var FromName: Text; var FromAddress: Text)
-    begin
     end;
 }

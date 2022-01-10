@@ -600,8 +600,11 @@ page 4000 "Hybrid Cloud Setup Wizard"
     end;
 
     trigger OnOpenPage()
+    var
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
     begin
         IsSaas := EnvironmentInfo.IsSaaS();
+
         if GetFilter("Product ID") = 'TM' then begin
             IsIntelligentCloud := true;
             Reset();
@@ -613,6 +616,10 @@ page 4000 "Hybrid Cloud Setup Wizard"
             ShowProductTypeStep(false);
         end else
             ShowIntroStep();
+
+        if not HybridReplicationSummary.IsEmpty() then
+            if not Confirm(ConfirmCloudMigrationExistingSystemQst) then
+                Error('');
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -692,6 +699,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
         SelectedProductDescriptionVisible: Boolean;
         IntelligentCloudTok: Label 'IntelligentCloud', Locked = true;
         CompletedCloudMigrationSetupMsg: Label 'Completed Cloud Migration Setup.';
+        ConfirmCloudMigrationExistingSystemQst: Label 'Do not set up cloud migration if the target environment is used for business.\\If the target environment includes even one company that is in production use, you risk that the cloud migration process overwrites any data in the database that is shared between the currently active company and any other companies in the same environment.\\Do you want to continue?';
 
     local procedure NextStep(Backwards: Boolean)
     var

@@ -41,6 +41,7 @@ codeunit 8712 "Telemetry Impl."
     local procedure AddCommonCustomDimensions(CustomDimensions: Dictionary of [Text, Text]; CallerModuleInfo: ModuleInfo)
     var
         Company: Record Company;
+        UserPersonalization: Record "User Personalization";
         Language: Codeunit Language;
         CurrentLanguage: Integer;
     begin
@@ -54,6 +55,8 @@ codeunit 8712 "Telemetry Impl."
         CustomDimensions.Add('Company', CompanyName());
         if Company.Get(CompanyName()) then
             CustomDimensions.Add('IsEvaluationCompany', Format(Company."Evaluation Company"));
+        if UserPersonalization.Get(UserSecurityId()) then
+            CustomDimensions.Add('UserRole', UserPersonalization."Profile ID");
 
         GlobalLanguage(CurrentLanguage);
     end;

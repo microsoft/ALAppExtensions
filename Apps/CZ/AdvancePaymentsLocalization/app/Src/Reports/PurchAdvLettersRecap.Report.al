@@ -96,7 +96,7 @@ report 31027 "Purch. Adv. Letters Recap. CZZ"
                         AdvUsedVATLCY := -PurchAdvLetterEntryCZZ."Amount (LCY)";
                     end;
 
-                    if OnlyOpen and (AdvPayedLCY - AdvPayedVATLCY = 0) and (AdvUsedLCY - AdvUsedVATLCY = 0) then
+                    if OnlyDifferences and (AdvPayedLCY - AdvPayedVATLCY = 0) and (AdvUsedLCY - AdvUsedVATLCY = 0) then
                         CurrReport.Skip();
                 end;
             }

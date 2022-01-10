@@ -8,7 +8,7 @@ codeunit 8906 "Email Editor"
     Access = Internal;
     Permissions = tabledata "Email Outbox" = rimd,
                   tabledata "Tenant Media" = r,
-                  tabledata "Email Related Record" = r;
+                  tabledata "Email Related Record" = rd;
 
     procedure Open(EmailOutbox: Record "Email Outbox"; IsModal: Boolean): Enum "Email Action"
     var
@@ -144,6 +144,9 @@ codeunit 8906 "Email Editor"
 
         // Validate recipients
         EmailMessage.ValidateRecipients();
+
+        // Verify related records against current recipients
+        VerifyRelatedRecords(EmailMessage.GetId());
 
         if EmailMessage.GetSubject() = '' then
             exit(Dialog.Confirm(NoSubjectlineQst, false));
@@ -329,7 +332,136 @@ codeunit 8906 "Email Editor"
             Message(NoRelatedAttachmentsErr);
     end;
 
+    procedure LookupRecipients(MessageID: Guid; var Text: Text): Boolean
     var
+        SuggestedRecords: Record "Email Address Lookup";
+        EmailRelatedRecord: Record "Email Related Record";
+        EmailAddressLookup: Codeunit "Email Address Lookup";
+        EmailAddressLookupPage: Page "Email Address Lookup";
+        EntityType: Enum "Email Address Entity";
+    begin
+
+        // Get Suggested Email Addresses
+        EmailRelatedRecord.SetRange("Email Message Id", MessageID);
+        if EmailRelatedRecord.FindSet() then
+            repeat
+                EmailAddressLookup.OnGetSuggestedAddresses(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", SuggestedRecords);
+            until EmailRelatedRecord.Next() = 0;
+
+        if SuggestedRecords.FindFirst() then
+            EntityType := SuggestedRecords."Entity type";
+        EmailAddressLookupPage.AddSuggestions(SuggestedRecords);
+        SuggestedRecords.DeleteAll();
+
+        EmailAddressLookupPage.LookupMode(true);
+        EmailAddressLookupPage.SetEntityType(EntityType);
+        if (EmailAddressLookupPage.RunModal() = Action::LookupOK) or (EmailAddressLookupPage.WasFullAddressLookup()) then begin
+            EmailAddressLookupPage.GetSelectedSuggestions(SuggestedRecords);
+
+            if SuggestedRecords.FindSet() then begin
+                if (Text <> '') and (not Text.EndsWith(';')) then
+                    Text += ';';
+                Text += EmailAddressLookup.GetSelectedSuggestionsAsText(SuggestedRecords);
+
+                // Added recipients is added as related entities on the email
+                AddRelatedRecordsFromEmailAddress(MessageID, SuggestedRecords);
+                exit(true);
+            end;
+        end;
+        exit(false);
+    end;
+
+    procedure VerifyRelatedRecords(MessageID: Guid)
+    var
+        EmailRelatedRecord: Record "Email Related Record";
+        EmailMessage: Codeunit "Email Message";
+        TempCache: Dictionary of [Text, Guid];
+        TempGuid: Guid;
+        Count: Integer;
+    begin
+        // Copy values to temporary cache
+        for Count := 1 to RelatedRecordsCache.Keys().Count() do begin
+            RelatedRecordsCache.Get(RelatedRecordsCache.Keys.Get(Count), TempGuid);
+            TempCache.Add(RelatedRecordsCache.Keys.Get(Count), TempGuid);
+        end;
+
+        // Remove related records that is To, Cc, Bcc 
+        EmailMessage.Get(MessageID);
+        RemoveFromCacheIfExists(TempCache, EmailMessage, Enum::"Email Recipient Type"::"To");
+        RemoveFromCacheIfExists(TempCache, EmailMessage, Enum::"Email Recipient Type"::Cc);
+        RemoveFromCacheIfExists(TempCache, EmailMessage, Enum::"Email Recipient Type"::Bcc);
+
+        // Those left in cache was not found in To, Cc or Bcc, and needs to be removed as related records
+        for Count := 1 to TempCache.Values.Count() do
+            if EmailRelatedRecord.GetBySystemId(TempCache.Values.Get(Count)) then
+                if EmailRelatedRecord."Relation Origin" = Enum::"Email Relation Origin"::"Email Address Lookup" then
+                    EmailRelatedRecord.Delete();
+
+        // Update global cache
+        for Count := 1 to TempCache.Keys.Count() do
+            RelatedRecordsCache.Remove(TempCache.Keys.Get(Count));
+
+    end;
+
+    internal procedure RemoveFromCacheIfExists(var TempCache: Dictionary of [Text, Guid]; var EmailMessage: Codeunit "Email Message"; RecipientType: Enum "Email Recipient Type")
+    var
+        Recipients: List of [Text];
+        Count: Integer;
+    begin
+        EmailMessage.GetRecipients(RecipientType, Recipients);
+        for Count := 1 to Recipients.Count() do
+            if TempCache.ContainsKey(Recipients.Get(Count)) then
+                TempCache.Remove(Recipients.Get(Count));
+    end;
+
+    internal procedure PopulateRelatedRecordCache(MessageID: Guid)
+    var
+        EmailRelatedRecord: Record "Email Related Record";
+        EmailAddressLookupRecord: Record "Email Address Lookup";
+        EmailAddressLookup: Codeunit "Email Address Lookup";
+    begin
+        EmailRelatedRecord.SetFilter("Email Message Id", MessageID);
+        if not EmailRelatedRecord.FindSet() then
+            exit;
+
+        repeat
+            if EmailRelatedRecord."Relation Origin" = Enum::"Email Relation Origin"::"Email Address Lookup" then begin
+                EmailAddressLookup.OnGetSuggestedAddresses(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id", EmailAddressLookupRecord);
+                if RelatedRecordsCache.Add(EmailAddressLookupRecord."E-Mail Address", EmailRelatedRecord.SystemId) then;
+            end;
+        until EmailRelatedRecord.Next() = 0;
+    end;
+
+    internal procedure AddRelatedRecordsFromEmailAddress(MessageID: Guid; var Suggestion: Record "Email Address Lookup")
+    var
+        EmailRelatedRecord: Record "Email Related Record";
+        EmailMessage: Codeunit "Email Message";
+        Email: Codeunit Email;
+        EmailRelationType: Enum "Email Relation Type";
+        HasRelations: Boolean;
+    begin
+        EmailMessage.Get(MessageID);
+        HasRelations := Email.HasRelations(EmailMessage);
+
+        if Suggestion.FindSet() then
+            repeat
+                if not HasRelations then begin
+                    EmailRelationType := Enum::"Email Relation Type"::"Primary Source";
+                    HasRelations := true;
+                end else
+                    EmailRelationType := Enum::"Email Relation Type"::"Related Entity";
+
+                Email.AddRelation(EmailMessage, Suggestion."Source Table Number", Suggestion."Source System Id", EmailRelationType, Enum::"Email Relation Origin"::"Email Address Lookup");
+
+                // Add related record to cache
+                if EmailRelatedRecord.Get(Suggestion."Source Table Number", Suggestion."Source System Id", EmailMessage.GetId()) then
+                    if RelatedRecordsCache.Add(Suggestion."E-Mail Address", EmailRelatedRecord.SystemId) then;
+
+            until Suggestion.Next() = 0;
+    end;
+
+    var
+        RelatedRecordsCache: Dictionary of [Text, Guid];
         IsNewOutbox: Boolean;
         ConfirmDiscardEmailQst: Label 'Go ahead and discard?';
         EmailMessageOpenPermissionErr: Label 'You can only open your own email messages.';

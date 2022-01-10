@@ -21,14 +21,48 @@ codeunit 10683 "Elec. VAT Data Mgt."
         NewVATStatementNameDescriptionLbl: Label 'VAT statement for electronic VAT submission';
         VATRatesForReportingHaveBeenSetMsg: Label 'The actual VAT rates for reporting have been assigned to VAT codes.';
 
+    procedure InsertMissingVATSpecificationsAndNotes()
+    var
+        VATSpecification: Record "VAT Specification";
+        TempVATSpecification: Record "VAT Specification" temporary;
+        VATNote: Record "VAT Note";
+        TempVATNote: Record "VAT Note" temporary;
+        NorwegianVATTools: Codeunit "Norwegian VAT Tools";
+    begin
+        NorwegianVATTools.GetVATSpecifications2022(TempVATSpecification);
+        TempVATSpecification.FindSet();
+        repeat
+            VATSpecification := TempVATSpecification;
+            if VATSpecification.Insert() then;
+        until TempVATSpecification.Next() = 0;
+        NorwegianVATTools.GetVATNotes2022(TempVATNote);
+        TempVATNote.FindSet();
+        repeat
+            VATNote := TempVATNote;
+            if VATNote.Insert() then;
+        until TempVATNote.Next() = 0;
+    end;
+
     procedure GetMissingVATCodes(var TempMissingVATCode: Record "VAT Code" temporary) MissedCodesExist: Boolean
     var
         TempRequiredVATCode: Record "VAT Code" temporary;
+        TempNewVATCode: Record "VAT Code" temporary;
         VATCode: Record "VAT Code";
+        NorwegianVATTools: Codeunit "Norwegian VAT Tools";
     begin
         TempMissingVATCode.Reset();
         TempMissingVATCode.DeleteAll();
         GetRequiredVATCodes(TempRequiredVATCode);
+        NorwegianVATTools.GetVATCodes2022(TempNewVATCode);
+        if TempNewVATCode.FindSet() then
+            repeat
+                if TempRequiredVATCode.Get(TempNewVATCode."SAF-T VAT Code") then begin
+                    TempNewVATCode."Report VAT Rate" := TempRequiredVATCode."Report VAT Rate";
+                    TempNewVATCode."VAT Rate For Reporting" := TempRequiredVATCode."VAT Rate For Reporting";
+                    TempRequiredVATCode := TempNewVATCode;
+                    If TempRequiredVATCode.Insert() then;
+                end;
+            until TempNewVATCode.Next() = 0;
         TempRequiredVATCode.FindSet();
         repeat
             if not VATCode.Get(TempRequiredVATCode.Code) then begin
@@ -93,6 +127,15 @@ codeunit 10683 "Elec. VAT Data Mgt."
         exit(VATCode in ['81', '83', '86', '88', '91'])
     end;
 
+    procedure GetDigitVATRegNo(): Text[20]
+    var
+        CompanyInformation: Record "Company Information";
+    begin
+        CompanyInformation.Get();
+        CompanyInformation.TestField("VAT Registration No.");
+        exit(DelChr(CompanyInformation."VAT Registration No.", '=', DelChr(CompanyInformation."VAT Registration No.", '=', '1234567890')));
+    end;
+
     local procedure CreateVATStatementLines(VATStatementName: Record "VAT Statement Name")
     var
         TempRequiredVATCode: Record "VAT Code" temporary;
@@ -136,7 +179,7 @@ codeunit 10683 "Elec. VAT Data Mgt."
                         LineNo += 10000;
                         AmountRowNo += 1;
                         if BoxNo = '' then
-                            RowNo += '-' + FOrmat(AmountRowNo);
+                            RowNo += '-' + Format(AmountRowNo);
                         CreateVATEntryTotalingLine(
                             VATStatementLine, VATStatementName, RowNo, BoxNo, TempRequiredVATCode.Description, TempVATPostingSetup,
                             VATStatementLine."Gen. Posting Type"::Sale, LineNo, CalculateWith);
@@ -157,8 +200,46 @@ codeunit 10683 "Elec. VAT Data Mgt."
                     LineNo += 10000;
                     CreateRowTotalingLine(VATStatementName, TempRequiredVATCode.Code, TempRequiredVATCode.Description, LineNo, RowTotalingFilter);
                 end;
+                CreateVATEntryTotalingLinesForRelatedVATCodes(LineNo, VATStatementName, TempRequiredVATCode.Code);
             end;
         until TempRequiredVATCode.Next() = 0;
+    end;
+
+    local procedure CreateVATEntryTotalingLinesForRelatedVATCodes(var LineNo: Integer; VATStatementName: Record "VAT Statement Name"; VATCode: Code[10])
+    var
+        TempRelatedVATCode: Record "VAT Code" temporary;
+        VATStatementLine: Record "VAT Statement Line";
+        CalculateWith: Option;
+    begin
+        GetRelatedVATCodes(TempRelatedVATCode, VATCode);
+        if not TempRelatedVATCode.FindSet() then
+            exit;
+        repeat
+            LineNo += 10000;
+            if IsReverseChargeVATCode(TempRelatedVATCode."SAF-T VAT Code") then
+                CalculateWith := VATStatementLine."Calculate with"::Sign
+            else
+                CalculateWith := VATStatementLine."Calculate with"::"Opposite Sign";
+            CreateVATEntryTotalingLineForVATCode(VATStatementName, TempRelatedVATCode.Code, TempRelatedVATCode.Description, LineNo, CalculateWith);
+        until TempRelatedVATCode.Next() = 0;
+    end;
+
+    local procedure CreateVATEntryTotalingLineForVATCode(VATStatementName: Record "VAT Statement Name"; VATCode: Code[10]; Description: Text[100]; LineNo: Integer; CalculateWith: Option)
+    var
+        VATStatementLine: Record "VAT Statement Line";
+    begin
+        VATStatementLine.Init();
+        VATStatementLine.Validate("Statement Template Name", VATStatementName."Statement Template Name");
+        VATStatementLine.Validate("Statement Name", VATStatementName.Name);
+        VATStatementLine.Validate("Line No.", LineNo);
+        VATStatementLine.Validate(Type, VATStatementLine.Type::"VAT Entry Totaling");
+        VATStatementLine.Validate("Row No.", VATCode);
+        VATStatementLine.Validate("Box No.", VATCode);
+        VATStatementLine.Validate("VAT Code", VATCode);
+        VATStatementLine.Validate(Description, Description);
+        VATStatementLine.Validate("Amount Type", VATStatementLine."Amount Type"::Amount);
+        VATStatementLine.Validate("Calculate with", CalculateWith);
+        VATStatementLine.Insert(true);
     end;
 
     local procedure AddToFilter(var Filter: Text[50]; Value: Text)
@@ -248,5 +329,22 @@ codeunit 10683 "Elec. VAT Data Mgt."
         TempVATCode."VAT Rate For Reporting" := VATRateForReporting;
         TempVATCode."Report VAT Rate" := ReportVATRate;
         TempVATCode.Insert();
+    end;
+
+    local procedure GetRelatedVATCodes(var TempRelatedVATCode: Record "VAT Code" temporary; VATCodeValue: Code[10]): Boolean
+    var
+        VATCode: Record "VAT Code";
+    begin
+        TempRelatedVATCode.Reset();
+        TempRelatedVATCode.DeleteAll();
+        VATCode.SetRange("SAF-T VAT Code", VATCodeValue);
+        if not VATCode.FindSet() then
+            exit(false);
+
+        repeat
+            TempRelatedVATCode := VATCode;
+            TempRelatedVATCode.Insert();
+        until VATCode.Next() = 0;
+        exit(true);
     end;
 }

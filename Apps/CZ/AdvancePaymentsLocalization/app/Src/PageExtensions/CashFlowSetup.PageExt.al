@@ -20,11 +20,17 @@ pageextension 31195 "Cash Flow Setup CZZ" extends "Cash Flow Setup"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the number of the cash flow account for sales advance letters';
+#if not CLEAN19
+                Visible = AdvancePaymentsEnabledCZZ;
+#endif
             }
             field("P. Adv. Letter CF Account No. CZZ"; Rec."P. Adv. Letter CF Acc. No. CZZ")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the number of the cash flow account for purchase advance letters ';
+#if not CLEAN19
+                Visible = AdvancePaymentsEnabledCZZ;
+#endif
             }
         }
     }

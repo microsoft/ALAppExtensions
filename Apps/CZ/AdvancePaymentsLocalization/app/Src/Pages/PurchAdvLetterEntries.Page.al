@@ -81,6 +81,12 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies VAT date.';
                 }
+                field("Original Document VAT Date"; Rec."Original Document VAT Date")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies original document VAT date.';
+                    Visible = false;
+                }
                 field("VAT Bus. Posting Group"; Rec."VAT Bus. Posting Group")
                 {
                     ApplicationArea = Basic, Suite;

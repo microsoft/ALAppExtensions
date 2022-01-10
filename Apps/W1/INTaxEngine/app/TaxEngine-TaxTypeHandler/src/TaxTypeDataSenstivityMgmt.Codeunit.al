@@ -13,6 +13,7 @@ codeunit 20239 "Tax Type Data Senstivity Mgmt."
         SetTableFieldsToNormal(Database::"Tax Attribute Value");
         SetTableFieldsToNormal(Database::"Tax Component");
         SetTableFieldsToNormal(Database::"Tax Rate Column Setup");
+        SetTableFieldsToNormal(Database::"Tax Rate Filter");
         SetTableFieldsToNormal(Database::"Tax Acc. Period Setup");
         SetTableFieldsToNormal(Database::"Tax Entity");
         SetTableFieldsToNormal(Database::"Tax Type");

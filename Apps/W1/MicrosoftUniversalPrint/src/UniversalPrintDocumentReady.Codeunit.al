@@ -118,9 +118,7 @@ codeunit 2751 "Universal Print Document Ready"
             exit(false);
         end;
 
-        if GuiAllowed() then
-            Message(JobSentTxt, JobID);
-
+        Session.LogMessage('0000FSY', JobSentTelemtryTxt, Verbosity::Verbose, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
         exit(true);
     end;
 
@@ -136,7 +134,7 @@ codeunit 2751 "Universal Print Document Ready"
         UnableToCreateJobErr: Label 'The print job couldn''t be created.\\%1', Comment = '%1 = a more detailed error message';
         UnableToUploadDocErr: Label 'Could not upload the document to print job %1.\\%2', Comment = '%1 = a print job ID, %2 = a more detailed error message';
         UnableToStartJobErr: Label 'The print job %1 couldn''t be started.\\%2', Comment = '%1 = a print job ID, %2 = a more detailed error message';
-        JobSentTxt: Label 'The print job %1 has been sent for processing in Universal Print.', Comment = '%1 = a print job ID.';
+        JobSentTelemtryTxt: Label 'The print job has been sent for processing in Universal Print.', Locked = true;
         PrintShareNotFoundTelemetryTxt: Label 'Universal Print share is not found.', Locked = true;
         PrintJobNotCreatedTelemetryTxt: Label 'Creating Universal Print job failed.', Locked = true;
         PrintJobNotUploadedTelemetryTxt: Label 'Uploading Universal Print job of size %1 failed.', Locked = true, Comment = '%1 = Size of print job';

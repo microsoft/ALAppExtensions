@@ -630,10 +630,9 @@ page 18555 "Cash Receipt Voucher"
                     Editable = true;
                     MultiLine = true;
                     ToolTip = 'Specifies the Voucher Narration for the current document';
-
                     trigger OnValidate()
                     begin
-                        VoucherFunctions.SplitNarration(NarrationText, false, Rec);
+                        Error('Voucher Narration should be entered from Process - >Voucher Narration tab.');
                     end;
                 }
             }
@@ -865,7 +864,7 @@ page 18555 "Cash Receipt Voucher"
                         VoucherNarration.SetTableView(GenNarration);
                         VoucherNarration.RunModal();
 
-                        //  ShowOldNarration();
+                        // ShowOldNarration();
                         VoucherFunctions.ShowOldNarration(Rec);
                         CurrPage.Update(true);
                     end;
@@ -1712,7 +1711,7 @@ page 18555 "Cash Receipt Voucher"
         HasIncomingDocument := "Incoming Document Entry No." <> 0;
         CurrPage.IncomingDocAttachFactBox.Page.SetCurrentRecordID(RecordId());
         SetUserInteractions();
-        VoucherFunctions.ShowOldNarration(Rec);
+        NarrationText := VoucherFunctions.ShowOldNarration(Rec);
         //  ShowOldNarration();
     end;
 

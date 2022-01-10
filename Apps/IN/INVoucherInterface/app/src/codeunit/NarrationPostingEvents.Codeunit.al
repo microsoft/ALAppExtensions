@@ -152,22 +152,13 @@ codeunit 18929 "Narration Posting Events"
                 begin
                     case GenJournalLine."Account Type" of
                         GenJournalLine."Account Type"::"G/L Account":
-                            if GenJournalLine."Bal. Account No." = '' then begin
-                                if (GenJournalLine."Account Type" <> GenJournalLine."Account Type"::"G/L Account")
-                                                                then
+                            if GenJournalLine."Bal. Account No." = '' then
+                                if (GenJournalLine."Account Type" <> GenJournalLine."Account Type"::"G/L Account") then
                                     Error(AccountTypeOrBalAccountTypeErr, VoucherType, GenJournalLine."Document No.");
-                            end else
-                                if ((GenJournalLine."Account Type" <> GenJournalLine."Account Type"::"G/L Account") or (GenJournalLine."Bal. Account Type" <> GenJournalLine."Bal. Account Type"::"Bank Account"))
-                                                               then
-                                    Error(AccountTypeOrBalAccountTypeErr, VoucherType, GenJournalLine."Document No.");
+
                         GenJournalLine."Account Type"::"Bank Account":
-                            if GenJournalLine."Bal. Account No." = '' then begin
-                                if (GenJournalLine."Account Type" <> GenJournalLine."Account Type"::"Bank Account")
-                                                                then
-                                    Error(AccountTypeOrBalAccountTypeErr, VoucherType, GenJournalLine."Document No.");
-                            end else
-                                if ((GenJournalLine."Account Type" <> GenJournalLine."Account Type"::"Bank Account") or (GenJournalLine."Bal. Account Type" <> GenJournalLine."Bal. Account Type"::"G/L Account"))
-                                                                then
+                            if GenJournalLine."Bal. Account No." = '' then
+                                if (GenJournalLine."Account Type" <> GenJournalLine."Account Type"::"Bank Account") then
                                     Error(AccountTypeOrBalAccountTypeErr, VoucherType, GenJournalLine."Document No.");
                     end;
                     IdentifyJournalVoucherAccounts(GenJournalLine, true);
@@ -366,6 +357,7 @@ codeunit 18929 "Narration Posting Events"
         then
             Error(ContraBankAccountErr, GenJournalLine."Account No.", GenJournalTemplate.Type::"Contra Voucher", GenJournalLine."Document No.");
     end;
+
     local procedure CheckAccountNoValidationForVoucherSubType(
         GenJournalLine: Record "Gen. Journal Line";
         VoucherSetup: Record "Journal Voucher Posting Setup";
