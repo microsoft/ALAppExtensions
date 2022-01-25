@@ -61,6 +61,19 @@ codeunit 9050 "ABS Operation Response"
         Response := NewResponse;
     end;
 
+    [NonDebuggable]
+    internal procedure GetHeaderValueFromResponseHeaders(HeaderName: Text): Text
+    var
+        Headers: HttpHeaders;
+        Values: array[100] of Text;
+        HeaderKeys: List of [Text];
+    begin
+        Headers := Response.Headers;
+        if not Headers.GetValues(HeaderName, Values) then
+            exit('');
+        exit(Values[1]);
+    end;
+
     var
         [NonDebuggable]
         Response: HttpResponseMessage;

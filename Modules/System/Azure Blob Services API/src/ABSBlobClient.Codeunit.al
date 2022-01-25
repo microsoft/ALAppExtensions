@@ -600,6 +600,252 @@ codeunit 9053 "ABS Blob Client"
         exit(BlobServicesApiImpl.PutBlockFromURL(BlobName, SourceUri, BlockId, OptionalParameters));
     end;
 
+    /// <summary>
+    /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>
+    /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
+    /// <returns>An operation reponse object</returns>
+    procedure AcquireLease(BlobName: Text; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ProposedLeaseId: Guid;
+    begin
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
+    end;
+
+    /// <summary>
+    /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
+    /// <returns>An operation reponse object</returns>
+    procedure AcquireLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        ProposedLeaseId: Guid;
+    begin
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
+    end;
+
+    /// <summary>
+    /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>    
+    /// <param name="BlobName">The name of the blob.</param>
+    /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
+    /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
+    /// <returns>An operation reponse object</returns>
+    procedure AcquireLease(BlobName: Text; DurationSeconds: Integer; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ProposedLeaseId: Guid;
+    begin
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
+    end;
+
+    /// <summary>
+    /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>    
+    /// <param name="BlobName">The name of the blob.</param>
+    /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
+    /// <returns>An operation reponse object</returns>
+    procedure AcquireLease(BlobName: Text; DurationSeconds: Integer; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        ProposedLeaseId: Guid;
+    begin
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
+    end;
+
+    /// <summary>
+    /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>
+    /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
+    /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
+    /// <returns>An operation reponse object</returns>
+    procedure AcquireLease(BlobName: Text; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
+    end;
+
+    /// <summary>
+    /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>
+    /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
+    /// <returns>An operation reponse object</returns>
+    procedure AcquireLease(BlobName: Text; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    begin
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
+    end;
+
+    /// <summary>
+    /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>  
+    /// <param name="BlobName">The name of the blob.</param>  
+    /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
+    /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
+    /// <returns>An operation reponse object</returns>
+    procedure AcquireLease(BlobName: Text; DurationSeconds: Integer; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    begin
+        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId));
+    end;
+
+    /// <summary>
+    /// Releases a lease on a Blob if it is no longer needed so that another client may immediately acquire a lease against the blob
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
+    /// <param name="LeaseId">The Guid for the lease that should be released</param>
+    /// <returns>An operation reponse object</returns>
+    procedure ReleaseLease(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(BlobServicesApiImpl.BlobReleaseLease(BlobName, OptionalParameters, LeaseId));
+    end;
+
+    /// <summary>
+    /// Releases a lease on a Blob if it is no longer needed so that another client may immediately acquire a lease against the blob
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
+    /// <param name="LeaseId">The Guid for the lease that should be released</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure ReleaseLease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(BlobServicesApiImpl.BlobReleaseLease(BlobName, OptionalParameters, LeaseId));
+    end;
+
+    /// <summary>
+    /// Renews a lease on a Blob to keep it locked again for the same amount of time as before
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
+    /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
+    /// <returns>An operation reponse object</returns>
+    procedure RenewLease(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(BlobServicesApiImpl.BlobRenewLease(BlobName, OptionalParameters, LeaseId));
+    end;
+
+    /// <summary>
+    /// Renews a lease on a Blob to keep it locked again for the same amount of time as before
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
+    /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure RenewLease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(BlobServicesApiImpl.BlobRenewLease(BlobName, OptionalParameters, LeaseId));
+    end;
+
+
+    /// <summary>
+    /// Breaks a lease on a blob but ensures that another client cannot acquire a new lease until the current lease period has expired
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
+    /// <param name="LeaseId">The Guid for the lease that should be broken</param>
+    /// <returns>An operation reponse object</returns>
+    procedure BreakLease(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId, 0));
+    end;
+
+    /// <summary>
+    /// Breaks a lease on a blob but ensures that another client cannot acquire a new lease until the current lease period has expired
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
+    /// <param name="LeaseId">The Guid for the lease that should be broken</param>
+    /// <param name="LeaseBreakPeriod">The proposed duration the lease should continue before it is broken, in seconds, between 0 and 60.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure BreakLease(BlobName: Text; LeaseId: Guid; LeaseBreakPeriod: Integer): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId, LeaseBreakPeriod));
+    end;
+
+    /// <summary>
+    /// Breaks a lease on a blob but ensures that another client cannot acquire a new lease until the current lease period has expired
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
+    /// <param name="LeaseId">The Guid for the lease that should be broken</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure BreakLease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId, 0));
+    end;
+
+    /// <summary>
+    /// Breaks a lease on a blob but ensures that another client cannot acquire a new lease until the current lease period has expired
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
+    /// <param name="LeaseId">The Guid for the lease that should be broken</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="LeaseBreakPeriod">The proposed duration the lease should continue before it is broken, in seconds, between 0 and 60.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure BreakLease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseBreakPeriod: Integer): Codeunit "ABS Operation Response"
+    begin
+        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId, LeaseBreakPeriod));
+    end;
+
+    /// <summary>
+    /// Changes the lease ID of an active lease
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
+    /// <param name="LeaseId">The Guid for the lease that should be changed. Will contain the updated Guid after successful operation.</param>
+    /// <param name="ProposedLeaseId">The Guid that should be used in future</param>
+    /// <returns>An operation reponse object</returns>
+    procedure ChangeLease(BlobName: Text; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(BlobServicesApiImpl.BlobChangeLease(BlobName, OptionalParameters, LeaseId, ProposedLeaseId));
+    end;
+
+    /// <summary>
+    /// Changes the lease ID of an active lease
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>  
+    /// <param name="LeaseId">The Guid for the lease that should be changed</param>
+    /// <param name="ProposedLeaseId">The Guid that should be used in future</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <returns>An operation reponse object</returns>
+    procedure ChangeLease(BlobName: Text; LeaseId: Guid; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(BlobServicesApiImpl.BlobChangeLease(BlobName, OptionalParameters, LeaseId, ProposedLeaseId));
+    end;
+
     var
         BlobServicesApiImpl: Codeunit "ABS Client Impl.";
 }
