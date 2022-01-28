@@ -16,6 +16,15 @@ codeunit 4100 "Temp Blob"
     /// <summary>
     /// Creates an InStream object with default encoding for the TempBlob. This enables you to read data from the TempBlob.
     /// </summary>
+    /// <returns>The InStream variable with the BLOB content attached.</returns>
+    procedure CreateInStream() InStream: InStream
+    begin
+        TempBlobImpl.CreateInStream(InStream);
+    end;
+
+    /// <summary>
+    /// Creates an InStream object with default encoding for the TempBlob. This enables you to read data from the TempBlob.
+    /// </summary>
     /// <param name="InStream">The InStream variable passed as a VAR to which the BLOB content will be attached.</param>
     procedure CreateInStream(var InStream: InStream)
     begin
@@ -30,6 +39,15 @@ codeunit 4100 "Temp Blob"
     procedure CreateInStream(var InStream: InStream; Encoding: TextEncoding)
     begin
         TempBlobImpl.CreateInStream(InStream, Encoding);
+    end;
+
+    /// <summary>
+    /// Creates an OutStream object with default encoding for the TempBlob. This enables you to write data to the TempBlob.
+    /// </summary>
+    /// <returns>The OutStream variable passed which the BLOB content will be attached.</returns>
+    procedure CreateOutStream() OutStream: OutStream
+    begin
+        TempBlobImpl.CreateOutStream(OutStream);
     end;
 
     /// <summary>

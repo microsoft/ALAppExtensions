@@ -12,6 +12,11 @@ codeunit 4107 "Temp Blob Impl."
         TempBlob: Record "Temp Blob" temporary;
     #pragma warning restore AA0073
 
+    procedure CreateInStream() InStream: InStream
+    begin
+        TempBlob.Blob.CreateInStream(InStream);
+    end;
+
     procedure CreateInStream(var InStream: InStream)
     begin
         TempBlob.Blob.CreateInStream(InStream);
@@ -20,6 +25,11 @@ codeunit 4107 "Temp Blob Impl."
     procedure CreateInStream(var InStream: InStream; Encoding: TextEncoding)
     begin
         TempBlob.Blob.CreateInStream(InStream, Encoding);
+    end;
+
+    procedure CreateOutStream() OutStream: OutStream
+    begin
+        TempBlob.Blob.CreateOutStream(OutStream);
     end;
 
     procedure CreateOutStream(var OutStream: OutStream)
