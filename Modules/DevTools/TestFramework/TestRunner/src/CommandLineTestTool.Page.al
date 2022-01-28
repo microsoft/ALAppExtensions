@@ -355,24 +355,25 @@ page 130455 "Command Line Test Tool"
 
         CodeunitTestMethodLine.SetRange("Test Suite", GlobalALTestSuite.Name);
         CodeunitTestMethodLine.SetRange("Line Type", CodeunitTestMethodLine."Line Type"::Codeunit);
-        CodeunitTestMethodLine.SetRange(Name, CodeunitName);
-        if not CodeunitTestMethodLine.FindFirst() then
+        CodeunitTestMethodLine.SetFilter(Name, CodeunitName);
+        if not CodeunitTestMethodLine.FindSet() then
             exit;
+        repeat
+            TestMethodLine.SetRange("Test Suite", GlobalALTestSuite.Name);
+            TestMethodLine.SetRange("Line Type", "Line Type"::"Function");
+            TestMethodLine.SetRange("Test Codeunit", CodeunitTestMethodLine."Test Codeunit");
+            TestMethodLine.SetFilter(Name, TestMethodName);
+            TestMethodLine.ModifyAll(Run, false);
 
-        TestMethodLine.SetRange("Test Suite", GlobalALTestSuite.Name);
-        TestMethodLine.SetRange("Line Type", "Line Type"::"Function");
-        TestMethodLine.SetRange("Test Codeunit", CodeunitTestMethodLine."Test Codeunit");
-        TestMethodLine.SetFilter(Name, TestMethodName);
-        TestMethodLine.ModifyAll(Run, false);
 
-
-        TestMethodLine.SETRANGE(Name);
-        TestMethodLine.SETRANGE(Run, TRUE);
-        if TestMethodLine.IsEmpty() then begin
-            CodeunitTestMethodLine.VALIDATE(Run, FALSE);
-            CodeunitTestMethodLine.Modify(TRUE);
-        end;
-
+            TestMethodLine.SETRANGE(Name);
+            TestMethodLine.SETRANGE(Run, TRUE);
+            if TestMethodLine.IsEmpty() then begin
+                CodeunitTestMethodLine.VALIDATE(Run, FALSE);
+                CodeunitTestMethodLine.Modify(TRUE);
+            end;
+        until CodeunitTestMethodLine.Next = 0;
+        
         CurrPage.Update();
     end;
 }
