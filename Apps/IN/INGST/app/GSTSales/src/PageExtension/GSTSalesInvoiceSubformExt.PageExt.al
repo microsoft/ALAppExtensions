@@ -154,6 +154,7 @@ pageextension 18149 "GST Sales Invoice Subform Ext" extends "Sales Invoice Subfo
                     CalculateTax: Codeunit "Calculate Tax";
                 begin
                     CurrPage.SaveRecord();
+                    Rec.Validate("GST Place Of Supply");
                     CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
                 end;
             }

@@ -22,6 +22,7 @@ codeunit 10686 "Elec. VAT Validate Return"
         CompanyInformation: Record "Company Information";
         VATCode: Record "VAT Code";
         VATCodeValue: Code[10];
+        VATCodeToCheck: Code[10];
         ExpectedVATAmount: Decimal;
     begin
         ElecVATSetup.Get();
@@ -36,14 +37,18 @@ codeunit 10686 "Elec. VAT Validate Return"
         VATStatementReportLine.SetRange("VAT Report No.", VATReportHeader."No.");
         VATStatementReportLine.FindSet();
         repeat
-            If VATStatementReportLine."Box No." in ['1', '11', '12', '13', '14', '15'] then begin
+            VATCodeValue := CopyStr(VATStatementReportLine."Box No.", 1, MaxStrLen(VATCodeValue));
+            VATCode.Get(VATCodeValue);
+            if VATCode."SAF-T VAT Code" = '' then
+                VATCodeToCheck := VATCode.Code
+            else
+                VATCodeToCheck := VATCode."SAF-T VAT Code";
+            If VATCodeToCheck in ['1', '11', '12', '13', '14', '15'] then begin
                 if VATStatementReportLine.Amount > 0 then
                     Error(IncorrectSignErr, VATStatementReportLine."Row No.", NegativeLbl);
             end else
                 if VATStatementReportLine.Amount < 0 then
                     Error(IncorrectSignErr, VATStatementReportLine."Row No.", PositiveLbl);
-            VATCodeValue := CopyStr(VATStatementReportLine."Box No.", 1, MaxStrLen(VATCodeValue));
-            VATCode.Get(VATCodeValue);
             if VATCode."Report VAT Rate" and (VATStatementReportLine.Base <> 0) then begin
                 ExpectedVATAmount := Round(VATStatementReportLine.Base * VATCode."VAT Rate For Reporting" / 100);
                 if abs(ExpectedVATAmount - VATStatementReportLine.Amount) > 1 then

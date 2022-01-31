@@ -33,4 +33,18 @@ codeunit 148132 "Elec. VAT Submission Demodata"
         VATReportSetup.Get();
         VATReportSetup.TestField("Report VAT Base");
     end;
+
+    [Test]
+    procedure InstallExtensionWithNoVATReportSetup()
+    var
+        VATReportSetup: Record "VAT Report Setup";
+        ElecVATSetup: Record "Elec. VAT Setup";
+        ElectronicVATInstallation: Codeunit "Electronic VAT Installation";
+    begin
+        // [SCENARIO 422655] Stan can install extension when no "VAT Report Setup" record exists
+        VATReportSetup.DeleteAll();
+        ElecVATSetup.DeleteAll();
+        ElectronicVATInstallation.RunExtensionSetup();
+        ElecVATSetup.Get();
+    end;
 }

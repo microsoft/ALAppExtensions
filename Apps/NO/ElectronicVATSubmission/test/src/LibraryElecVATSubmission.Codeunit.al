@@ -143,6 +143,13 @@ codeunit 148130 "Library - Elec. VAT Submission"
             StrSubstNo(UnexpectedElementNameErr, ElementName, TempXMLBuffer.GetElementName()));
     end;
 
+    procedure GetOAuthSetup(var OAuth20Setup: Record "OAuth 2.0 Setup")
+    var
+        ElecVATOAuthMgt: Codeunit "Elec. VAT OAuth Mgt.";
+    begin
+        ElecVATOAuthMgt.GetOAuthSetup(OAuth20Setup);
+    end;
+
     local procedure SetOAuthSetupTestTokens(var OAuth20Setup: Record "OAuth 2.0 Setup")
     begin
         with OAuth20Setup do begin

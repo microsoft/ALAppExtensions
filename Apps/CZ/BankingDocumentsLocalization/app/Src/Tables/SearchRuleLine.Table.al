@@ -1,6 +1,7 @@
 table 31251 "Search Rule Line CZB"
 {
     Caption = 'Search Rule Line';
+    LookupPageId = "Search Rule Line Lookup CZB";
 
     fields
     {
@@ -104,6 +105,16 @@ table 31251 "Search Rule Line CZB"
                     CheckSearchRule();
             end;
         }
+        field(36; "Match Related Party Only"; Boolean)
+        {
+            Caption = 'Match Related Party Only';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                TestField("Search Scope");
+            end;
+        }
         field(40; "Description Filter"; Text[100])
         {
             Caption = 'Description Filter';
@@ -185,6 +196,12 @@ table 31251 "Search Rule Line CZB"
         key(Key1; "Search Rule Code", "Line No.")
         {
             Clustered = true;
+        }
+    }
+    fieldgroups
+    {
+        fieldgroup(Brick; "Search Rule Code", "Line No.", Description, "Match Related Party Only")
+        {
         }
     }
 

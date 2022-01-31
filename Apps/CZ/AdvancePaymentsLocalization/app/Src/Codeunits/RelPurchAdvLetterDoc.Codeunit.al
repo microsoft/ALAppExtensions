@@ -21,7 +21,7 @@ codeunit 31018 "Rel. Purch.Adv.Letter Doc. CZZ"
         VariableSymbol: Code[10];
         IsHandled: Boolean;
     begin
-        if PurchAdvLetterHeaderCZZ.Status.AsInteger() >= PurchAdvLetterHeaderCZZ.Status::"To Pay".AsInteger() then
+        if not (PurchAdvLetterHeaderCZZ.Status in [PurchAdvLetterHeaderCZZ.Status::New, PurchAdvLetterHeaderCZZ.Status::"Pending Approval"]) then
             exit;
 
         IsHandled := false;

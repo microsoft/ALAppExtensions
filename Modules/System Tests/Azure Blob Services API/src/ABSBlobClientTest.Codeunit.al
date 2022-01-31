@@ -45,7 +45,7 @@ codeunit 132920 "ABS Blob Client Test"
     procedure LeaseBlobTest()
     var
         Response: Codeunit "ABS Operation Response";
-        ContainerName, BlobName, BlobContent, NewBlobContent : Text;
+        ContainerName, BlobName, BlobContent : Text;
         LeaseId: Guid;
         ProposedLeaseId: Guid;
     begin

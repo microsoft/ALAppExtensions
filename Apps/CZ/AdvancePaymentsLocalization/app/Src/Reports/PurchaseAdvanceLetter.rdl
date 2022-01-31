@@ -2047,6 +2047,9 @@ Cstr(Fields!PageLbl.Value)</Value>
                                                 <Style />
                                               </Paragraph>
                                             </Paragraphs>
+                                            <Visibility>
+                                              <Hidden>=Fields!VAT_PurchAdvanceLetterLine.Value = 0</Hidden>
+                                            </Visibility>
                                             <Style>
                                               <Border>
                                                 <Color>LightGrey</Color>
@@ -2081,6 +2084,9 @@ Cstr(Fields!PageLbl.Value)</Value>
                                                 </Style>
                                               </Paragraph>
                                             </Paragraphs>
+                                            <Visibility>
+                                              <Hidden>=Fields!AmountIncludingVAT_PurchAdvanceLetterLine.Value = 0</Hidden>
+                                            </Visibility>
                                             <Style>
                                               <Border>
                                                 <Color>LightGrey</Color>
@@ -2129,7 +2135,6 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <PaddingBottom>2pt</PaddingBottom>
                                             </Style>
                                           </Textbox>
-                                          <rd:Selected>true</rd:Selected>
                                         </CellContents>
                                       </TablixCell>
                                       <TablixCell>

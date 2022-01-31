@@ -9,7 +9,7 @@ pageextension 31022 "General Ledger Setup CZZ" extends "General Ledger Setup"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies advance deduction exchange rate.';
                 Importance = Additional;
-                Visible = AdvancePaymentsEnabledCZZ;
+                Visible = false;
             }
         }
 #if not CLEAN19

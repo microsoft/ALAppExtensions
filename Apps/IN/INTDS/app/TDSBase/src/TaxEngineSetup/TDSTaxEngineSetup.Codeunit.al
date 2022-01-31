@@ -1,10 +1,5 @@
 codeunit 18690 "TDS Tax Engine Setup"
 {
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Engine Assisted Setup", 'OnSetupTaxPeriod', '', false, false)]
-    local procedure OnSetupTaxPeriod()
-    begin
-
-    end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Engine Assisted Setup", 'OnSetupTaxTypes', '', false, false)]
     local procedure OnSetupTaxTypes()
@@ -57,6 +52,27 @@ codeunit 18690 "TDS Tax Engine Setup"
             ConfigText := TDSTaxTypes.GetText();
             IsHandled := true;
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TDS Upgrade Subscribers", 'OnGetUpgradedTaxTypeConfig', '', false, false)]
+    local procedure OnGetUpgradedTaxTypeConfig(TaxType: Code[20]; var ConfigText: Text; var IsHandled: Boolean)
+    var
+        TDSTaxTypeData: Codeunit "TDS Tax Types";
+        TDSTaxTypeLbl: Label 'TDS';
+    begin
+        if IsHandled then
+            exit;
+
+        if TaxType = TDSTaxTypeLbl then begin
+            ConfigText := TDSTaxTypeData.GetText();
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TDS Upgrade Subscribers", 'OnGetUpgradedUseCaseConfig', '', false, false)]
+    local procedure OnGetTDSConfig(CaseID: Guid; var IsHandled: Boolean; var Configtext: Text)
+    begin
+        Configtext := GetConfig(CaseID, IsHandled);
     end;
 
     procedure GetText(CaseId: Guid): Text

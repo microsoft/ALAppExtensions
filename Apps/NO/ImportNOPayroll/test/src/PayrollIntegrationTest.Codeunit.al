@@ -136,9 +136,9 @@ codeunit 148000 "Payroll Integration Test"
         // [THEN] 3 journal lines are created
         LineNo := GenJnlLineTemplate."Line No.";
         DocNo := GenJnlLineTemplate."Document No.";
-        CreateTempGenJnlLine(TempExpdGenJnlLine, GenJnlLineTemplate, LineNo * 1, DocNo, GLAccount[1]."No.", PostingDate, GLAccount[1].Name, 0, -585.70, '', DimValue[2].Code);
-        CreateTempGenJnlLine(TempExpdGenJnlLine, GenJnlLineTemplate, LineNo * 2, DocNo, GLAccount[2]."No.", PostingDate, GLAccount[2].Name, 660, 311829.00, DimValue[1].Code, DimValue[2].Code);
-        CreateTempGenJnlLine(TempExpdGenJnlLine, GenJnlLineTemplate, LineNo * 3, DocNo, GLAccount[3]."No.", PostingDate, GLAccount[3].Name, 1040.5, 59025.02, DimValue[1].Code, '');
+        CreateTempGenJnlLine(TempExpdGenJnlLine, GenJnlLineTemplate, LineNo * 1, DocNo, GLAccount[1]."No.", PostingDate, GLAccount[1].Name, 0, -585.70, '', DimValue[2].Code, 1);
+        CreateTempGenJnlLine(TempExpdGenJnlLine, GenJnlLineTemplate, LineNo * 2, DocNo, GLAccount[2]."No.", PostingDate, GLAccount[2].Name, 660, 311829.00, DimValue[1].Code, DimValue[2].Code, 2);
+        CreateTempGenJnlLine(TempExpdGenJnlLine, GenJnlLineTemplate, LineNo * 3, DocNo, GLAccount[3]."No.", PostingDate, GLAccount[3].Name, 1040.5, 59025.02, DimValue[1].Code, '', 3);
 
         AssertDataInTable(TempExpdGenJnlLine, GenJnlLineTemplate, '');
     end;
@@ -184,7 +184,7 @@ codeunit 148000 "Payroll Integration Test"
         // [THEN] 3 journal lines are created
         LineNo := GenJnlLineTemplate."Line No.";
         DocNo := GenJnlLineTemplate."Document No.";
-        CreateTempGenJnlLine(TempExpdGenJnlLine, GenJnlLineTemplate, LineNo * 1, DocNo, GLAccount."No.", PostingDate, GLAccount.Name, 0, 0.01, '', '');
+        CreateTempGenJnlLine(TempExpdGenJnlLine, GenJnlLineTemplate, LineNo * 1, DocNo, GLAccount."No.", PostingDate, GLAccount.Name, 0, 0.01, '', '', 1);
         AssertDataInTable(TempExpdGenJnlLine, GenJnlLineTemplate, '');
     end;
 
@@ -319,7 +319,7 @@ codeunit 148000 "Payroll Integration Test"
         // [THEN] 3 journal lines are created
         LineNo := GenJnlLineTemplate."Line No.";
         DocNo := GenJnlLineTemplate."Document No.";
-        CreateTempGenJnlLine(TempExpdGenJnlLine, GenJnlLineTemplate, LineNo * 1, DocNo, GLAccount."No.", PostingDate, GLAccount.Name, 0, -Amount, '', '');
+        CreateTempGenJnlLine(TempExpdGenJnlLine, GenJnlLineTemplate, LineNo * 1, DocNo, GLAccount."No.", PostingDate, GLAccount.Name, 0, -Amount, '', '', 1);
 
         AssertDataInTable(TempExpdGenJnlLine, GenJnlLineTemplate, '');
     end;
@@ -413,7 +413,7 @@ codeunit 148000 "Payroll Integration Test"
         GenJnlLineTemplate.SETRANGE("Journal Batch Name", GenJnlBatch.Name);
     end;
 
-    local procedure CreateTempGenJnlLine(var TempGenJnlLine: Record "Gen. Journal Line" temporary; GenJnlLineTemplate: Record "Gen. Journal Line"; LineNo: Integer; DocumentNo: Code[20]; AccountNo: Code[20]; PostingDate: Date; Description: Text[100]; Quantity: Decimal; Amount: Decimal; DimCode1: code[20]; DimCode2: code[20]);
+    local procedure CreateTempGenJnlLine(var TempGenJnlLine: Record "Gen. Journal Line" temporary; GenJnlLineTemplate: Record "Gen. Journal Line"; LineNo: Integer; DocumentNo: Code[20]; AccountNo: Code[20]; PostingDate: Date; Description: Text[100]; Quantity: Decimal; Amount: Decimal; DimCode1: code[20]; DimCode2: code[20]; DataExchLineNo: Integer);
     BEGIN
         TempGenJnlLine.COPY(GenJnlLineTemplate);
         TempGenJnlLine.VALIDATE("Line No.", LineNo);
@@ -425,6 +425,7 @@ codeunit 148000 "Payroll Integration Test"
         TempGenJnlLine.VALIDATE(Amount, Amount);
         TempGenJnlLine.VALIDATE("Shortcut Dimension 1 Code", DimCode1);
         TempGenJnlLine.VALIDATE("Shortcut Dimension 2 Code", DimCode2);
+        TempGenJnlLine.Validate("Data Exch. Line No.", DataExchLineNo);
         TempGenJnlLine.INSERT();
     END;
 

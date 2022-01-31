@@ -1377,6 +1377,7 @@ codeunit 18080 "GST Purchase Subscribers"
             until PurchseLine.Next() = 0;
     end;
 
+    
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Purchase Subscribers", 'OnBeforePurchaseLineHSNSACEditable', '', false, false)]
     local procedure SetGstHsnEditableforAllType(var IsEditable: Boolean; var IsHandled: Boolean)
     begin
