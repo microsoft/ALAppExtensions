@@ -80,6 +80,7 @@ pageextension 18161 "GST Sales Return Subform" extends "Sales Return Order Subfo
                     CalculateTax: Codeunit "Calculate Tax";
                 begin
                     CurrPage.SaveRecord();
+                    Rec.Validate("GST Place Of Supply");
                     CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
                 end;
             }

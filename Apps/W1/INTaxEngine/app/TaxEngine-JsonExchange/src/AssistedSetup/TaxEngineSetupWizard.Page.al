@@ -4,7 +4,8 @@ page 20364 "Tax Engine Setup Wizard"
     PageType = NavigatePage;
     Permissions = TableData "Tax Type" = rimd,
                   TableData "Tax Attribute" = rimd,
-                  TableData "Tax Component" = rimd;
+                  TableData "Tax Component" = rimd,
+                  Tabledata "Tax Engine Notification" = rd;
 
     layout
     {
@@ -221,14 +222,15 @@ page 20364 "Tax Engine Setup Wizard"
 
     local procedure FinishAction()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
         TaxEngineAssistedSetup: Codeunit "Tax Engine Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
         if AppendOrReplace = AppendOrReplace::Replace then
             ClearTaxEngineSetup();
 
         TaxEngineAssistedSetup.SetupTaxEngineWithUseCases();
-        AssistedSetup.Complete(Page::"Tax Engine Setup Wizard");
+        GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"Tax Engine Setup Wizard");
+        OnAfterFinishTaxEngineAssistedSetup();
         CurrPage.Close();
     end;
 
@@ -342,5 +344,10 @@ page 20364 "Tax Engine Setup Wizard"
     begin
         WizardNotification.Message := '';
         WizardNotification.Recall();
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterFinishTaxEngineAssistedSetup()
+    begin
     end;
 }

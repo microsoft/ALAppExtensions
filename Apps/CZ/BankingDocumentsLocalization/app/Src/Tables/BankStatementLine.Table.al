@@ -55,6 +55,7 @@ table 31253 "Bank Statement Line CZB"
             var
                 BankAcc: Record "Bank Account";
                 Cust: Record Customer;
+                Employee: Record Employee;
                 Vend: Record Vendor;
             begin
                 if "No." <> xRec."No." then
@@ -72,12 +73,23 @@ table 31253 "Bank Statement Line CZB"
                             if not Cust.Get("No.") then
                                 Cust.Init();
                             Name := Cust.Name;
+                            Validate("Cust./Vendor Bank Account Code", Cust."Preferred Bank Account Code");
                         end;
                     Type::Vendor:
                         begin
                             if not Vend.Get("No.") then
                                 Vend.Init();
                             Name := Vend.Name;
+                            Validate("Cust./Vendor Bank Account Code", Vend."Preferred Bank Account Code");
+                        end;
+                    Type::Employee:
+                        begin
+                            if not Employee.Get("No.") then
+                                Employee.Init();
+                            "Account No." := Employee."Bank Account No.";
+                            IBAN := Employee.IBAN;
+                            "SWIFT Code" := Employee."SWIFT Code";
+                            Name := Employee.FullName();
                         end;
                 end;
             end;
@@ -101,12 +113,18 @@ table 31253 "Bank Statement Line CZB"
                                 if not VendBankAcc.Get("No.", "Cust./Vendor Bank Account Code") then
                                     VendBankAcc.Init();
                                 "Account No." := VendBankAcc."Bank Account No.";
+                                "Transit No." := VendBankAcc."Transit No.";
+                                IBAN := VendBankAcc.IBAN;
+                                "SWIFT Code" := VendBankAcc."SWIFT Code";
                             end;
                         Type::Customer:
                             begin
                                 if not CustBankAcc.Get("No.", "Cust./Vendor Bank Account Code") then
                                     CustBankAcc.Init();
                                 "Account No." := CustBankAcc."Bank Account No.";
+                                "Transit No." := CustBankAcc."Transit No.";
+                                IBAN := CustBankAcc.IBAN;
+                                "SWIFT Code" := CustBankAcc."SWIFT Code";
                             end
                         else
                             if "Cust./Vendor Bank Account Code" <> '' then

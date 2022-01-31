@@ -44,6 +44,16 @@ page 10678 "SAF-T VAT Posting Setup"
                     ToolTip = 'Specifies a description of the VAT posting setup';
                     Editable = false;
                 }
+                field("Sales VAT Reporting Code"; "Sales VAT Reporting Code")
+                {
+                    ApplicationArea = VAT;
+                    ToolTip = 'Specifies the VAT code to be used with this VAT posting setup for sales reporting.';
+                }
+                field("Purchase VAT Reporting Code"; "Purchase VAT Reporting Code")
+                {
+                    ApplicationArea = VAT;
+                    ToolTip = 'Specifies the VAT code to be used with this VAT posting setup for purchase reporting.';
+                }
                 field("Sales SAF-T Tax Code"; "Sales SAF-T Tax Code")
                 {
                     ApplicationArea = Basic, Suite;
@@ -68,6 +78,31 @@ page 10678 "SAF-T VAT Posting Setup"
                     ToolTip = 'Specifies the code of the VAT posting setup that will be used for the StandardTaxCode XML node in the SAF-T file for the purchase VAT entries.';
                     ShowMandatory = PurchStandardTaxCodeMandatory;
                 }
+            }
+        }
+    }
+
+    actions
+    {
+        area(Processing)
+        {
+            action(CopyReportingCodes)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Copy Reporting Codes to SAF-T';
+                ToolTip = 'Copy sales and purchase reporting codes to sales/purchase SAF-T standard tax codes.';
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                Image = Copy;
+
+                trigger OnAction()
+                var
+                    SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
+                begin
+                    SAFTMappingHelper.CopyReportingCodesToSAFTCodes();
+                end;
             }
         }
     }

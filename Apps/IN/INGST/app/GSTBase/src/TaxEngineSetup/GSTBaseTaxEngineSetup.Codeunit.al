@@ -64,6 +64,27 @@ codeunit 18004 "GST Base Tax Engine Setup"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Upgrade Subscribers", 'OnGetUpgradedTaxTypeConfig', '', false, false)]
+    local procedure OnGetUpgradedTaxTypeConfig(TaxType: Code[20]; var ConfigText: Text; var IsHandled: Boolean)
+    var
+        GSTTaxTypeData: Codeunit "GST Tax Type Data";
+        GSTTaxTypeLbl: Label 'GST';
+    begin
+        if IsHandled then
+            exit;
+
+        if TaxType = GSTTaxTypeLbl then begin
+            ConfigText := GSTTaxTypeData.GetText();
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Upgrade Subscribers", 'OnGetUpgradedUseCaseConfig', '', false, false)]
+    local procedure OnGetGSTConfig(CaseID: Guid; var IsHandled: Boolean; var Configtext: Text)
+    begin
+        Configtext := GetConfig(CaseID, IsHandled);
+    end;
+
     local procedure GetText(CaseId: Guid): Text
     var
         IsHandled: Boolean;

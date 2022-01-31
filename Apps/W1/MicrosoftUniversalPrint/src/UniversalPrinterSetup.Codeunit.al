@@ -322,6 +322,8 @@ codeunit 2750 "Universal Printer Setup"
     end;
 
     internal procedure OnQueryClosePrinterSettingsPage(UniversalPrinterSettings: Record "Universal Printer Settings"): Boolean
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         if UniversalPrinterSettings.IsEmpty then
             exit(true);
@@ -340,6 +342,7 @@ codeunit 2750 "Universal Printer Setup"
             ValidatePaperWidth(UniversalPrinterSettings."Paper Width");
         end;
 
+        FeatureTelemetry.LogUptake('0000GG0', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up");
         exit(true);
     end;
 

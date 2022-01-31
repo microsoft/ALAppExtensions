@@ -110,10 +110,10 @@ table 31257 "Payment Order Line CZB"
                                 if not Employee.Get("No.") then
                                     Employee.Init();
                                 Employee.Testfield("Privacy Blocked", false);
-                                "Account No." := Employee."No.";
+                                "Account No." := Employee."Bank Account No.";
                                 IBAN := Employee.IBAN;
                                 "SWIFT Code" := Employee."SWIFT Code";
-                                Name := CopyStr(Employee.FullName(), 1, MaxStrLen(Name));
+                                Name := Employee.FullName();
                             end;
                     end;
                 end;

@@ -226,10 +226,6 @@ codeunit 2752 "Universal Print Graph Helper"
 
         Session.LogMessage('0000EG1', StrSubstNo(InvokeWebRequestFailedTelemetryTxt, StatusCode, ResponseErrorMessage),
         Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintTelemetryCategoryTxt);
-
-        Session.LogMessage('0000EFF', strSubstNo(InvokeWebRequestFailedDetailedTelemetryTxt, StatusCode, ResponseErrorMessage, ResponseErrorDetails),
-        VERBOSITY::Error, DATACLASSIFICATION::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintTelemetryCategoryTxt);
-
         Clear(ErrorMessage);
 
         if not IsNull(StatusCode) then
@@ -286,6 +282,11 @@ codeunit 2752 "Universal Print Graph Helper"
     procedure GetUniversalPrintTelemetryCategory(): Text
     begin
         exit(UniversalPrintTelemetryCategoryTxt);
+    end;
+
+    procedure GetUniversalPrintFeatureTelemetryName(): Text
+    begin
+        exit(UniversalPrintFeatureTelemetryNameTxt);
     end;
 
     procedure GetUniversalPrintPortalUrl(): Text
@@ -357,9 +358,9 @@ codeunit 2752 "Universal Print Graph Helper"
         UserNotAuthenticatedTxt: Label 'User cannot be authenticated with Azure AD.';
         NoAccessTxt: Label 'You don''t have access to the data. Make sure your account has been assigned a Universal Print license and you have the required permissions.';
         UniversalPrintTelemetryCategoryTxt: Label 'Universal Print AL', Locked = true;
+        UniversalPrintFeatureTelemetryNameTxt: Label 'Universal Print', Locked = true;
         NoTokenTelemetryTxt: Label 'Access token could not be retrieved.', Locked = true;
         InvokeWebRequestFailedTelemetryTxt: Label 'Invoking web request has failed. Status %1, Message %2', Locked = true;
-        InvokeWebRequestFailedDetailedTelemetryTxt: Label 'Invoking web request has failed. Status %1, Message %2, Response Details %3', Locked = true;
         UniversalPrintPortalUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2153618', Locked = true;
 }
 

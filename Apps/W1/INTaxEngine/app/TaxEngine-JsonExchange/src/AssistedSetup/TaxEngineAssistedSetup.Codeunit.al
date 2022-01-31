@@ -1,17 +1,24 @@
 codeunit 20366 "Tax Engine Assisted Setup"
 {
+    Permissions = tabledata "Tax Engine Notification" = rmi;
+
     var
         Info: ModuleInfo;
         SetupWizardTxt: Label 'Set up Tax Engine';
         TaxEngineNotificationMsg: Label 'You don''t have Tax Configurations due to which transactions will not calculate tax. but you can import it manually or from Assisted Setup.';
+        TaxConfigUpgradeMsg: Label 'We have upgraded tax confgiurations, this includes bug fix''s or regulatory changes. we reconmmend you to upgrade it now or else it will be imported when you create documents.';
         UpgradeUseCasesNotificationMsg: Label 'We have upgraded some use cases which were modified by you. you can export these use cases and apply your changes manually.';
         UpgradeTaxTypesNotificationMsg: Label 'We have upgraded some Tax Types which were modified by you. you can export these Tax Types and apply your changes manually.';
-        ImportFromWizardLbl: Label 'Import From Wizard';
+        ImportItNowLbl: Label 'Import it now.';
         ShowUseCasesLbl: Label 'Show Modified Use Cases';
         ShowTaxTypesLbl: Label 'Show Modified Tax Types';
         DontAskAgainLbl: Label 'Don''t ask again';
         UseCaseConfigNotFoundErr: Label 'Use Case configuration does not exist for Tax Type: %1, and Case ID : %2', Comment = '%1 - Tax Type,%2 - Case ID';
         TaxTypeConfigNotFoundErr: Label 'Tax Type configuration does not exist for Tax Type: %1', Comment = '%1 - Tax Type';
+        TaxConfigUpgradeNotificationLbl: Label '53d46ef5-5057-40ac-848c-6fdcb07188c4', Locked = true;
+        TaxEngineNotificationLbl: Label '67173147-288c-4e51-87ba-cbd5f1a1261c', Locked = true;
+        UpgradeTaxTypesNotificationLbl: Label 'a7957d72-b5c4-4c36-88dd-b23ce9184221', Locked = true;
+        UpgradeUseCaseNotificationLbl: Label 'a81af8c6-f3a6-4b70-8721-4d3badd1f8b9', Locked = true;
 
     procedure SetupTaxEngine()
     begin
@@ -33,6 +40,24 @@ codeunit 20366 "Tax Engine Assisted Setup"
         OnSetupUseCaseTree();
     end;
 
+    [EventSubscriber(ObjectType::Page, Page::"Tax Engine Setup Wizard", 'OnAfterFinishTaxEngineAssistedSetup', '', false, false)]
+    local procedure OnAfterFinishTaxEngineAssistedSetup()
+    var
+        TaxEngineNotification: Record "Tax Engine Notification";
+        Notification: Notification;
+    begin
+        TaxEngineNotification.SetRange(Hide, false);
+        if TaxEngineNotification.FindSet() then
+            repeat
+                Notification.Id := TaxEngineNotification.Id;
+
+                case TaxEngineNotification.Id of
+                    TaxConfigUpgradeNotificationLbl, TaxEngineNotificationLbl:
+                        RecallNotification(Notification);
+                end;
+            until TaxEngineNotification.Next() = 0;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Use Case Execution", 'OnImportUseCaseOnDemand', '', false, false)]
     local procedure OnImportUseCaseOnDemand(TaxType: Code[20]; CaseID: Guid)
     var
@@ -46,10 +71,42 @@ codeunit 20366 "Tax Engine Assisted Setup"
 
         TaxJsonDeserialization.HideDialog(true);
         TaxJsonDeserialization.SkipUseCaseIndentation(true);
+        TaxJsonDeserialization.SkipVersionCheck(true);
         TaxJsonDeserialization.ImportUseCases(JsonText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnRegister', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Use Case Execution", 'OnUpdateUseCaseRecord', '', false, false)]
+    local procedure OnUpdateUseCaseRecord(TaxType: Code[20]; CaseID: Guid; MajorVersion: Integer; var UseCaseUpdated: Boolean)
+    var
+        TaxJsonDeserialization: Codeunit "Tax Json Deserialization";
+        JsonText: Text;
+    begin
+        OnGetUpdatedUseCaseConfig(TaxType, CaseID, MajorVersion, JsonText, UseCaseUpdated);
+        if not UseCaseUpdated then
+            exit;
+
+        TaxJsonDeserialization.HideDialog(true);
+        TaxJsonDeserialization.SkipUseCaseIndentation(true);
+        TaxJsonDeserialization.SkipVersionCheck(true);
+        TaxJsonDeserialization.ImportUseCases(JsonText);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Use Case Execution", 'OnUpdateTaxTypeRecord', '', false, false)]
+    local procedure OnUpdateTaxTypeRecord(TaxType: Code[20]; MajorVersion: Integer; var TaxTypeUpdated: Boolean)
+    var
+        TaxJsonDeserialization: Codeunit "Tax Json Deserialization";
+        JsonText: Text;
+    begin
+        OnGetUpdatedTaxTypeConfig(TaxType, MajorVersion, JsonText, TaxTypeUpdated);
+        if not TaxTypeUpdated then
+            exit;
+
+        TaxJsonDeserialization.HideDialog(true);
+        TaxJsonDeserialization.SkipVersionCheck(true);
+        TaxJsonDeserialization.ImportTaxTypes(JsonText);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', false, false)]
     local procedure Initialize()
     var
         AssistedSetup: Codeunit "Assisted Setup";
@@ -87,9 +144,7 @@ codeunit 20366 "Tax Engine Assisted Setup"
         if not GuiAllowed then
             exit;
 
-        SendNotificationForEmptyTaxConfig();
-        SendNotificationForUpgradeTaxTypes();
-        SendNotificationForUpgradeUseCases();
+        ShowNotifications();
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Tax Types", 'OnOpenPageEvent', '', false, false)]
@@ -98,33 +153,100 @@ codeunit 20366 "Tax Engine Assisted Setup"
         SendNotificationForEmptyTaxConfig();
     end;
 
+    procedure SendNotificationForconfigUpgrade()
+    begin
+        InsertNotification(TaxConfigUpgradeNotificationLbl, TaxConfigUpgradeMsg);
+    end;
+
+    procedure PushTaxEngineNotifications()
+    begin
+        ResetTaxEngineAssistedSetup();
+        SendNotificationForEmptyTaxConfig();
+        SendNotificationForUpgradeTaxTypes();
+        SendNotificationForUpgradeUseCases();
+    end;
+
+    local procedure ResetTaxEngineAssistedSetup()
+    var
+        GuidedExpericence: Codeunit "Guided Experience";
+    begin
+        if GuidedExpericence.IsAssistedSetupComplete(ObjectType::Page, Page::"Tax Engine Setup Wizard") then
+            GuidedExpericence.ResetAssistedSetup(ObjectType::Page, Page::"Tax Engine Setup Wizard");
+    end;
+
+    local procedure InsertNotification(Id: Guid; MessageTxt: Text[250])
+    var
+        TaxEngineNotification: Record "Tax Engine Notification";
+    begin
+        if TaxEngineNotification.Get(Id) then begin
+            TaxEngineNotification.Hide := false;
+            TaxEngineNotification.Modify();
+        end else begin
+            TaxEngineNotification.Id := Id;
+            TaxEngineNotification.Message := MessageTxt;
+            TaxEngineNotification.Insert();
+        end;
+    end;
+
+    local procedure ShowNotifications()
+    var
+        TaxEngineNotification: Record "Tax Engine Notification";
+        Notification: Notification;
+    begin
+        TaxEngineNotification.SetRange(Hide, false);
+        if TaxEngineNotification.FindSet() then
+            repeat
+                Notification.Id := TaxEngineNotification.Id;
+                Notification.Scope := Notification.Scope::LocalScope;
+                Notification.Message(TaxEngineNotification.Message);
+
+                case TaxEngineNotification.Id of
+                    TaxConfigUpgradeNotificationLbl, TaxEngineNotificationLbl:
+                        begin
+                            Notification.AddAction(ImportItNowLbl, Codeunit::"Tax Engine Assisted Setup", 'RunTaxEngineAssitedSetup');
+                            Notification.AddAction(DontAskAgainLbl, Codeunit::"Tax Engine Assisted Setup", 'DoNotShowNotification');
+                        end;
+                    UpgradeTaxTypesNotificationLbl:
+                        begin
+                            Notification.AddAction(ShowTaxTypesLbl, Codeunit::"Tax Engine Assisted Setup", 'ShowModifiedTaxTypes');
+                            Notification.AddAction(DontAskAgainLbl, Codeunit::"Tax Engine Assisted Setup", 'CompleteTaxTypeConfigUpgrade');
+                        end;
+                    UpgradeUseCaseNotificationLbl:
+                        begin
+                            Notification.AddAction(ShowUseCasesLbl, Codeunit::"Tax Engine Assisted Setup", 'ShowModifiedUseCases');
+                            Notification.AddAction(DontAskAgainLbl, Codeunit::"Tax Engine Assisted Setup", 'CompleteTaxConfigUpgrade');
+                        end;
+                end;
+
+                Notification.Send();
+            until TaxEngineNotification.Next() = 0;
+    end;
+
     procedure SendNotificationForEmptyTaxConfig()
     var
         TaxType: Record "Tax Type";
-        AssistedSetup: Codeunit "Assisted Setup";
-        TaxConfigNotification: Notification;
-        TaxEngineNotificationLbl: Label '67173147-288c-4e51-87ba-cbd5f1a1261c';
+        GuidedExperience: Codeunit "Guided Experience";
+        ShowUpgradeNotification: Boolean;
     begin
-        if AssistedSetup.IsComplete(page::"Tax Engine Setup Wizard") then
+        if GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, Page::"Tax Engine Setup Wizard") then
             exit;
 
-        if not TaxType.IsEmpty() then
-            exit;
+        if not TaxType.IsEmpty() then begin
+            OnBeforeShowTaxConfigUpgradedNotification(ShowUpgradeNotification);
 
-        TaxConfigNotification.Id := TaxEngineNotificationLbl;
-        TaxConfigNotification.Scope := NotificationScope::LocalScope;
-        TaxConfigNotification.Message(TaxEngineNotificationMsg);
-        TaxConfigNotification.AddAction(ImportFromWizardLbl, Codeunit::"Tax Engine Assisted Setup", 'RunTaxEngineAssitedSetup');
-        TaxConfigNotification.AddAction(DontAskAgainLbl, Codeunit::"Tax Engine Assisted Setup", 'CompleteTaxEngineAssitedSetup');
-        TaxConfigNotification.Send();
+            if ShowUpgradeNotification then
+                SendNotificationForconfigUpgrade();
+
+            exit;
+        end;
+
+        InsertNotification(TaxEngineNotificationLbl, TaxEngineNotificationMsg);
     end;
 
     procedure SendNotificationForUpgradeUseCases()
     var
         TaxType: Record "Tax Type";
         UpgradedUseCases: Record "Upgraded Use Cases";
-        UpgradeTaxConfigNotification: Notification;
-        UpgradeUseCaseNotificationLbl: Label 'a81af8c6-f3a6-4b70-8721-4d3badd1f8b9';
     begin
         if TaxType.IsEmpty() then
             exit;
@@ -132,20 +254,13 @@ codeunit 20366 "Tax Engine Assisted Setup"
         if UpgradedUseCases.IsEmpty() then
             exit;
 
-        UpgradeTaxConfigNotification.Id := UpgradeUseCaseNotificationLbl;
-        UpgradeTaxConfigNotification.Scope := NotificationScope::LocalScope;
-        UpgradeTaxConfigNotification.Message(UpgradeUseCasesNotificationMsg);
-        UpgradeTaxConfigNotification.AddAction(ShowUseCasesLbl, Codeunit::"Tax Engine Assisted Setup", 'ShowModifiedUseCases');
-        UpgradeTaxConfigNotification.AddAction(DontAskAgainLbl, Codeunit::"Tax Engine Assisted Setup", 'CompleteTaxConfigUpgrade');
-        UpgradeTaxConfigNotification.Send();
+        InsertNotification(UpgradeUseCaseNotificationLbl, UpgradeUseCasesNotificationMsg);
     end;
 
     procedure SendNotificationForUpgradeTaxTypes()
     var
         TaxType: Record "Tax Type";
         UpgradedTaxTypes: Record "Upgraded Tax Types";
-        UpgradeTaxConfigNotification: Notification;
-        UpgradeTaxTypesNotificationLbl: Label 'a7957d72-b5c4-4c36-88dd-b23ce9184221';
     begin
         if TaxType.IsEmpty() then
             exit;
@@ -153,12 +268,7 @@ codeunit 20366 "Tax Engine Assisted Setup"
         if UpgradedTaxTypes.IsEmpty() then
             exit;
 
-        UpgradeTaxConfigNotification.Id := UpgradeTaxTypesNotificationLbl;
-        UpgradeTaxConfigNotification.Scope := NotificationScope::LocalScope;
-        UpgradeTaxConfigNotification.Message(UpgradeTaxTypesNotificationMsg);
-        UpgradeTaxConfigNotification.AddAction(ShowTaxTypesLbl, Codeunit::"Tax Engine Assisted Setup", 'ShowModifiedTaxTypes');
-        UpgradeTaxConfigNotification.AddAction(DontAskAgainLbl, Codeunit::"Tax Engine Assisted Setup", 'CompleteTaxTypeConfigUpgrade');
-        UpgradeTaxConfigNotification.Send();
+        InsertNotification(UpgradeTaxTypesNotificationLbl, UpgradeTaxTypesNotificationMsg);
     end;
 
     procedure RunTaxEngineAssitedSetup(TaxConfigNotification: Notification)
@@ -168,11 +278,9 @@ codeunit 20366 "Tax Engine Assisted Setup"
         TaxEngineSetupWizard.Run();
     end;
 
-    procedure CompleteTaxEngineAssitedSetup(TaxConfigNotification: Notification)
-    var
-        AssistedSetup: Codeunit "Assisted Setup";
+    procedure DoNotShowNotification(TaxConfigNotification: Notification)
     begin
-        AssistedSetup.Complete(page::"Tax Engine Setup Wizard");
+        RecallNotification(TaxConfigNotification);
     end;
 
     procedure ShowModifiedUseCases(TaxConfigNotification: Notification)
@@ -197,6 +305,8 @@ codeunit 20366 "Tax Engine Assisted Setup"
     begin
         if not UpgradedUseCases.IsEmpty() then
             UpgradedUseCases.DeleteAll();
+
+        RecallNotification(TaxConfigNotification);
     end;
 
     procedure CompleteTaxTypeConfigUpgrade(TaxConfigNotification: Notification)
@@ -205,7 +315,20 @@ codeunit 20366 "Tax Engine Assisted Setup"
     begin
         if not UpgradedTaxTypes.IsEmpty() then
             UpgradedTaxTypes.DeleteAll();
+
+        RecallNotification(TaxConfigNotification);
     end;
+
+    local procedure RecallNotification(TaxConfigNotification: Notification)
+    var
+        TaxEngineNotification: Record "Tax Engine Notification";
+    begin
+        TaxEngineNotification.Get(TaxConfigNotification.Id);
+        TaxEngineNotification.Hide := true;
+        TaxEngineNotification.Modify();
+        TaxConfigNotification.Recall();
+    end;
+
 
     local procedure GetAppId(): Guid
     var
@@ -263,6 +386,21 @@ codeunit 20366 "Tax Engine Assisted Setup"
 
     [IntegrationEvent(false, false)]
     procedure OnImportTaxTypeFromLibrary(TaxType: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetUpdatedUseCaseConfig(TaxType: Code[20]; CaseID: Guid; MajorVersion: Integer; var ConfigText: Text; var UseCaseUpdated: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetUpdatedTaxTypeConfig(TaxType: Code[20]; MajorVersion: Integer; var ConfigText: Text; var TaxTypeUpdated: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeShowTaxConfigUpgradedNotification(var ShowUpgradeNotification: Boolean)
     begin
     end;
 }

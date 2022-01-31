@@ -1,5 +1,6 @@
 codeunit 31409 "Posted Invt. Rcpt.-Printed CZL"
 {
+    Permissions = TableData "Invt. Receipt Header" = rimd;
     TableNo = "Invt. Receipt Header";
 
     trigger OnRun()

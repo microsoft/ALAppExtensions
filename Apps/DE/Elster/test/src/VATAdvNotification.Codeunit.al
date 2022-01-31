@@ -38,7 +38,6 @@ codeunit 148169 "Elster VAT Adv. Notification"
 
         // Verify: Verify that New record will take values from previous record.
         SalesVATAdvanceNotif2.TestField(Period, SalesVATAdvanceNotif.Period);
-        SalesVATAdvanceNotif2.TestField("XSL-Filename", SalesVATAdvanceNotif."XSL-Filename");
         SalesVATAdvanceNotif2.TestField("Contact for Tax Office", SalesVATAdvanceNotif."Contact for Tax Office");
 
         // Tear-Down

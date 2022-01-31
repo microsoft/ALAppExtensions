@@ -79,6 +79,7 @@ pageextension 18147 "GST Sales. Cr. Memo Subfrm Ext" extends "Sales Cr. Memo Sub
                     CalculateTax: Codeunit "Calculate Tax";
                 begin
                     CurrPage.SaveRecord();
+                    Rec.Validate("GST Place Of Supply");
                     CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
                 end;
             }

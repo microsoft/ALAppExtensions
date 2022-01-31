@@ -1,5 +1,7 @@
 report 11750 "Posted Inventory Shipment CZL"
 {
+    Permissions = TableData "Invt. Shipment Header" = r,
+                  TableData "Invt. Shipment Line" = r;
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/PostedInventoryShipment.rdl';
     ApplicationArea = Basic, Suite;
@@ -32,9 +34,11 @@ report 11750 "Posted Inventory Shipment CZL"
             }
             column(RegistrationNo_CompanyInformation; "Registration No.")
             {
+                IncludeCaption = true;
             }
             column(VATRegistrationNo_CompanyInformation; "VAT Registration No.")
             {
+                IncludeCaption = true;
             }
 
             trigger OnAfterGetRecord()

@@ -21,7 +21,7 @@ codeunit 31001 "Rel. Sales Adv.Letter Doc. CZZ"
         VariableSymbol: Code[10];
         IsHandled: Boolean;
     begin
-        if SalesAdvLetterHeaderCZZ.Status.AsInteger() >= SalesAdvLetterHeaderCZZ.Status::"To Pay".AsInteger() then
+        if not (SalesAdvLetterHeaderCZZ.Status in [SalesAdvLetterHeaderCZZ.Status::New, SalesAdvLetterHeaderCZZ.Status::"Pending Approval"]) then
             exit;
 
         IsHandled := false;

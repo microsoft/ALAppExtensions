@@ -69,11 +69,30 @@ table 11021 "Sales VAT Advance Notif."
         field(9; "XSL-Filename"; Text[250])
         {
             DataClassification = CustomerContent;
+#if not CLEAN20
+            ObsoleteTag = '20.0';
+            ObsoleteState = Pending;
+            ObsoleteReason = 'This functionality is not in use and not supported';
+#else
+            ObsoleteTag = '20.0';
+            ObsoleteState = Removed;
+            ObsoleteReason = 'This functionality is not in use and not supported';
+#endif     
         }
         field(10; "XSD-Filename"; Text[250])
         {
             DataClassification = CustomerContent;
+#if not CLEAN20
+            ObsoleteTag = '20.0';
+            ObsoleteState = Pending;
+            ObsoleteReason = 'This functionality is not in use and not supported';
+#else
+            ObsoleteTag = '20.0';
+            ObsoleteState = Removed;
+            ObsoleteReason = 'This functionality is not in use and not supported';
+#endif
         }
+
         field(11; "Statement Template Name"; Code[10])
         {
             DataClassification = CustomerContent;
@@ -234,8 +253,6 @@ table 11021 "Sales VAT Advance Notif."
     begin
         if xRec.FindLast() then;
         Period := xRec.Period;
-        "XSL-Filename" := xRec."XSL-Filename";
-        "XSD-Filename" := xRec."XSD-Filename";
         "Contact for Tax Office" := xRec."Contact for Tax Office";
 
         if "No." = '' then begin
@@ -263,7 +280,6 @@ table 11021 "Sales VAT Advance Notif."
         StartingDateErr: Label 'The starting date is not the first date of a quarter.';
         DeleteXMLFileQst: Label 'Do you want to delete the XML-File for the %1?';
 #if not CLEAN17
-        FilePathNotExistErr: Label 'The file or path %1 does not exist.';
         FileExistsMsg: Label 'File already exists. Overwrite?';
 #endif
         CreateXMLBeforeShowErr: Label 'You must create the XML-File before it can be shown.';
@@ -315,7 +331,6 @@ table 11021 "Sales VAT Advance Notif."
     var
         SalesVATAdvNotif2: Record "Sales VAT Advance Notif.";
         FileManagement: Codeunit "File Management";
-        XmlProcessInst: XmlProcessingInstruction;
         XmlElem: XmlElement;
         XmlOutStream: OutStream;
         XmlInStream: InStream;
@@ -327,20 +342,6 @@ table 11021 "Sales VAT Advance Notif."
         FileName := FileManagement.ServerTempFileName('xml');
 
         XmlDoc.GetRoot(XmlElem);
-        if "XSL-Filename" <> '' then begin
-#if not CLEAN17
-            if FileManagement.IsLocalFileSystemAccessible() then
-                if not FileManagement.ClientFileExists("XSL-Filename") then
-                    Error(FilePathNotExistErr, "XSL-Filename");
-#endif
-            XmlProcessInst := XmlProcessingInstruction.Create(
-                'xml-stylesheet', 'type="text/xsl" href="' + "XSL-Filename" + '"');
-            XmlElem.AddBeforeSelf(XmlProcessInst);
-        end;
-
-        if EXISTS("XSD-Filename") then
-            XmlElem.SetAttribute('schemaLocation', "XSD-Filename");
-
         SalesVATAdvNotif2."XML Submission Document".CreateOutStream(XmlOutStream);
         XmlDoc.WriteTo(XmlOutStream);
         SalesVATAdvNotif2."XML Submission Document".CreateInStream(XmlInStream);

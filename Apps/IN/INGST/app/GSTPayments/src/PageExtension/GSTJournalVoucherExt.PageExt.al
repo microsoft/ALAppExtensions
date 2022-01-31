@@ -1,5 +1,26 @@
 pageextension 18259 "Journal Voucher" extends "Journal Voucher"
 {
+    layout
+    {
+        addafter("Gen. Prod. Posting Group")
+        {
+            field("GST Group Code"; Rec."GST Group Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the GST Group Code as selected from the given options';
+            }
+            field("HSN/SAC Code"; Rec."HSN/SAC Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the HSN/SAC Code as selected from the given options';
+            }
+            field("GST Credit"; Rec."GST Credit")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the GST Credit as selected from the given options';
+            }
+        }
+    }
     actions
     {
         addafter(Reconcile)

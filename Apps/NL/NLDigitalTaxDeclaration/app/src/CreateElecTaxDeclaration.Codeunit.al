@@ -5,7 +5,7 @@ codeunit 11421 "Create Elec. Tax Declaration"
     var
         TempUriNameValueBuffer: Record "Name/Value Buffer" temporary;
         XMLDoc: XmlDocument;
-        BdINameSpaceTxt: Label 'http://www.nltaxonomie.nl/nt15/bd/20201209/dictionary/bd-data', Locked = true;
+        BdINameSpaceTxt: Label 'http://www.nltaxonomie.nl/nt16/bd/20211208/dictionary/bd-data', Locked = true;
 
     trigger OnRun()
     var
@@ -35,7 +35,7 @@ codeunit 11421 "Create Elec. Tax Declaration"
         RootElement.Add(XmlAttribute.CreateNamespaceDeclaration('xlink', 'http://www.w3.org/1999/xlink').AsXmlNode());
         SchemaRef := XmlElement.Create('schemaRef', 'http://www.xbrl.org/2003/linkbase');
         SchemaRef.Add(XmlAttribute.Create('type', 'http://www.w3.org/1999/xlink', 'simple').AsXmlNode());
-        SchemaRef.Add(XmlAttribute.Create('href', 'http://www.w3.org/1999/xlink', 'http://www.nltaxonomie.nl/nt15/bd/20201209/entrypoints/bd-rpt-ob-aangifte-2021.xsd').AsXmlNode());
+        SchemaRef.Add(XmlAttribute.Create('href', 'http://www.w3.org/1999/xlink', 'http://www.nltaxonomie.nl/nt16/bd/20211208/entrypoints/bd-rpt-ob-aangifte-2022.xsd').AsXmlNode());
         RootElement.Add(SchemaRef);
 
         ContextElement := XmlElement.Create('context', 'http://www.xbrl.org/2003/instance');

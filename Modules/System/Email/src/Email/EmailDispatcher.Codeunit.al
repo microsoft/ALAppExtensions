@@ -33,12 +33,12 @@ codeunit 8888 "Email Dispatcher"
         FeatureTelemetry: Codeunit "Feature Telemetry";
         Dimensions: Dictionary of [Text, Text];
     begin
-        Session.LogMessage('0000CTM', Format(Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl, 'EmailMessageID', Rec."Message Id");
-
         Dimensions.Add('Connector', Format(Rec.Connector));
         Dimensions.Add('EmailMessageID', Format(Rec."Message Id", 0, 4));
         Dimensions.Add('EmailAccountID', Format(Rec."Account Id", 0, 4));
-        FeatureTelemetry.LogUptake('0000D0X', EmailFeatureNameLbl, Enum::"Feature Uptake Status"::Used, false, Dimensions);
+        Dimensions.Add('Category', EmailCategoryLbl);
+
+        Session.LogMessage('0000CTM', Format(Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, Dimensions);
 
         // -----------
         // NB: Avoid adding events here as any error would cause a roll-back and possibly an inconsistent state of the Email Outbox.
@@ -49,17 +49,16 @@ codeunit 8888 "Email Dispatcher"
         if EmailMessageImpl.Get(Rec."Message Id") then begin
             LogAttachments();
 
+            SendEmail.SetTelemetryDimensions(Dimensions);
             SendEmail.SetConnector(Rec.Connector);
             SendEmail.SetAccount(Rec."Account Id");
 
             EmailMessageImpl.GetEmailMessage(EmailMessage);
             Success := SendEmail.Run(EmailMessage);
 
-            Dimensions.Add('Category', EmailCategoryLbl);
-
             if Success then begin
                 Session.LogMessage('0000CTV', SuccessfullySentEmailMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
-                Session.LogMessage('0000CTO', StrSubstNo(SuccessfullySentEmailDetailedMsg, Rec."Message Id", Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+                Session.LogMessage('0000CTO', StrSubstNo(SuccessfullySentEmailDetailedMsg, Rec."Message Id", Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, Dimensions);
                 FeatureTelemetry.LogUsage('0000CTQ', EmailFeatureNameLbl, 'Email sent');
 
                 InsertToSentEmail(Rec);
@@ -79,7 +78,7 @@ codeunit 8888 "Email Dispatcher"
             end;
         end
         else begin
-            Session.LogMessage('0000CTR', StrSubstNo(FailedToFindEmailMessageMsg, Rec."Message Id"), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+            Session.LogMessage('0000CTR', StrSubstNo(FailedToFindEmailMessageMsg, Rec."Message Id"), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, Dimensions);
             UpdateOutboxError(FailedToFindEmailMessageErrorMsg, Rec);
             UpdateOutboxStatus(Rec, Rec.Status::Failed);
         end;
