@@ -238,4 +238,13 @@ codeunit 9750 "Web Service Management"
     begin
         exit(WebServiceManagementImpl.IsServiceNameValid(Value));
     end;
+
+    /// <summary> 
+    /// Deletes a webservice.
+    /// </summary>
+    /// <param name="WebServiceAggregate">The record to be deleted.</param>
+    procedure DeleteWebService(var Rec: Record "Web Service Aggregate")
+    begin
+        WebServiceManagementImpl.DeleteWebService(Rec);
+    end;
 }
