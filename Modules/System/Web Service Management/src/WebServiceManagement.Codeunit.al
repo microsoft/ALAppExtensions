@@ -243,8 +243,8 @@ codeunit 9750 "Web Service Management"
     /// Deletes a webservice.
     /// </summary>
     /// <param name="WebServiceAggregate">The record to be deleted.</param>
-    procedure DeleteWebService(var Rec: Record "Web Service Aggregate")
+    procedure DeleteWebService(var WebServiceAggregate: Record "Web Service Aggregate")
     begin
-        WebServiceManagementImpl.DeleteWebService(Rec);
+        WebServiceManagementImpl.DeleteWebService(WebServiceAggregate);
     end;
 }
