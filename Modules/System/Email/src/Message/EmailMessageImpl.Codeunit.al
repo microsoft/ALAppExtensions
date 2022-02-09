@@ -73,9 +73,9 @@ codeunit 8905 "Email Message Impl."
 
     procedure UpdateMessage(ToRecipients: List of [Text]; Subject: Text; Body: Text; HtmlFormatted: Boolean; CCRecipients: List of [Text]; BCCRecipients: List of [Text])
     begin
-        SetBody(Body);
-        SetSubject(Subject);
-        SetBodyHTMLFormatted(HtmlFormatted);
+        SetBodyValue(Body);
+        SetSubjectValue(Subject);
+        SetBodyHTMLFormattedValue(HtmlFormatted);
         Modify();
 
         SetRecipients(Enum::"Email Recipient Type"::"To", ToRecipients);
@@ -97,7 +97,7 @@ codeunit 8905 "Email Message Impl."
         BodyInStream.Read(BodyText);
     end;
 
-    procedure SetBody(BodyText: Text)
+    procedure SetBodyValue(BodyText: Text)
     var
         BodyOutStream: OutStream;
     begin
@@ -111,14 +111,39 @@ codeunit 8905 "Email Message Impl."
         BodyOutStream.Write(BodyText);
     end;
 
+    procedure SetBody(BodyText: Text)
+    begin
+        SetBodyValue(BodyText);
+        Modify();
+    end;
+
+    procedure AppendToBody(BodyText: Text)
+    var
+        BodyOutStream: OutStream;
+    begin
+        if BodyText = '' then
+            exit;
+
+        ReplaceRgbaColorsWithRgb(BodyText);
+        Message.Body.CreateOutStream(BodyOutStream, TextEncoding::UTF8);
+        BodyOutStream.Write(BodyText);
+        Modify();
+    end;
+
     procedure GetSubject(): Text[2048]
     begin
         exit(Message.Subject);
     end;
 
-    procedure SetSubject(Subject: Text)
+    procedure SetSubjectValue(Subject: Text)
     begin
         Message.Subject := CopyStr(Subject, 1, MaxStrLen(Message.Subject));
+    end;
+
+    procedure SetSubject(Subject: Text)
+    begin
+        SetSubjectValue(Subject);
+        Modify();
     end;
 
     procedure IsBodyHTMLFormatted(): Boolean
@@ -126,9 +151,15 @@ codeunit 8905 "Email Message Impl."
         exit(Message."HTML Formatted Body");
     end;
 
-    procedure SetBodyHTMLFormatted(Value: Boolean)
+    procedure SetBodyHTMLFormattedValue(Value: Boolean)
     begin
         Message."HTML Formatted Body" := Value;
+    end;
+
+    procedure SetBodyHTMLFormatted(Value: Boolean)
+    begin
+        SetBodyHTMLFormattedValue(Value);
+        Modify();
     end;
 
     procedure IsRead(): Boolean
