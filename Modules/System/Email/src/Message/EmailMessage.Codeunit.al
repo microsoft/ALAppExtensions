@@ -107,7 +107,7 @@ codeunit 8904 "Email Message"
 
     /// <summary>
     /// Sets the subject of the email message.
-    /// /// <param name="Subbject">The subject to set to the email message.</param>
+    /// /// <param name="Subject">The subject to set to the email message.</param>
     /// </summary>
     procedure SetSubject(Subject: Text)
     begin
@@ -165,7 +165,7 @@ codeunit 8904 "Email Message"
     /// Sets the recipents of a certain type of the email message.
     /// </summary>
     /// <param name="RecipientType">Specifies the type of the recipients.</param>
-    /// <param name="Recipients">Specifies the list of the recipients' email addresses as a list.</param>
+    /// <param name="Recipients">Specifies the list of the recipients' email addresses.</param>
     procedure SetRecipients(RecipientType: Enum "Email Recipient Type"; var Recipients: list of [Text])
     begin
         EmailMessageImpl.SetRecipients(RecipientType, Recipients);
