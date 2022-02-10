@@ -80,7 +80,7 @@ codeunit 8904 "Email Message"
 
     /// <summary>
     /// Sets the body of the email message.
-    /// /// <param name="Body">The body to set to the email message.</param>
+    /// <param name="Body">The body to set to the email message.</param>
     /// </summary>
     procedure SetBody(Body: Text)
     begin
@@ -156,7 +156,7 @@ codeunit 8904 "Email Message"
     /// </summary>
     /// <param name="RecipientType">Specifies the type of the recipients.</param>
     /// <param name="Recipients">Specifies the list of the recipients' email addresses as a semicolon (;) separated list.</param>
-    procedure SetRecipients(RecipientType: Enum "Email Recipient Type"; var Recipients: Text)
+    procedure SetRecipients(RecipientType: Enum "Email Recipient Type"; Recipients: Text)
     begin
         EmailMessageImpl.SetRecipients(RecipientType, Recipients);
     end;
@@ -166,7 +166,7 @@ codeunit 8904 "Email Message"
     /// </summary>
     /// <param name="RecipientType">Specifies the type of the recipients.</param>
     /// <param name="Recipients">Specifies the list of the recipients' email addresses.</param>
-    procedure SetRecipients(RecipientType: Enum "Email Recipient Type"; var Recipients: list of [Text])
+    procedure SetRecipients(RecipientType: Enum "Email Recipient Type"; Recipients: list of [Text])
     begin
         EmailMessageImpl.SetRecipients(RecipientType, Recipients);
     end;
