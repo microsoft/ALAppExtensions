@@ -125,7 +125,7 @@ codeunit 8904 "Email Message"
 
     /// <summary>
     /// Sets whether the email body is formatted in HTML.
-    /// /// <param name="Value">True if the email body is formatted in HTML; otherwise - false.</param>
+    /// <param name="Value">True if the email body is formatted in HTML; otherwise - false.</param>
     /// </summary>
     procedure SetBodyHTMLFormatted(Value: Boolean)
     begin
