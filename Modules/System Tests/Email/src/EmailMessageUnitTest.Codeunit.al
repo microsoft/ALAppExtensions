@@ -522,6 +522,157 @@ codeunit 134689 "Email Message Unit Test"
         Assert.ExpectedError(EmailMessageSentCannotDeleteRecipientErr);
     end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure SetBodyTest()
+    var
+        Message: Codeunit "Email Message";
+        Recipients: List of [Text];
+        Result: List of [Text];
+        Index: Integer;
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        // Exercise
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Message.SetBody('Changed test body');
+        // Verify
+        Assert.AreEqual('Changed test body', Message.GetBody(), 'A different body was expected');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure AppendToBodyTest()
+    var
+        Message: Codeunit "Email Message";
+        Recipients: List of [Text];
+        Result: List of [Text];
+        Index: Integer;
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        // Exercise
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Message.AppendToBody(' extended');
+        // Verify
+        Assert.AreEqual('Test body extended', Message.GetBody(), 'A different body was expected');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure SetSubjectTest()
+    var
+        Message: Codeunit "Email Message";
+        Recipients: List of [Text];
+        Result: List of [Text];
+        Index: Integer;
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        // Exercise
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Message.SetSubject('Changed test subject');
+        // Verify
+        Assert.AreEqual('Changed test subject', Message.GetSubject(), 'A different subject was expected');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure SetBodyHTMLFormattedTest()
+    var
+        Message: Codeunit "Email Message";
+        Recipients: List of [Text];
+        Result: List of [Text];
+        Index: Integer;
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        // Exercise
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Message.SetBodyHTMLFormatted(false);
+        // Verify
+        Assert.IsFalse(Message.IsBodyHTMLFormatted(), 'Body was expected not to be HTML formatted');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure SetRecipientsToTest()
+    var
+        Message: Codeunit "Email Message";
+        Recipients: List of [Text];
+        Result: List of [Text];
+        Index: Integer;
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        // Exercise
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Recipients.Add('recipient1@test.com');
+        Recipients.Add('recipient2@test.com');
+        Recipients.Add('recipient3@test.com');
+        Message.SetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+        Message.GetRecipients(Enum::"Email Recipient Type"::"To", Result);
+
+        // Verify
+        for Index := 1 to Result.Count() do
+            Assert.AreEqual(StrSubstNo(RecipientLbl, Index), Result.Get(Index), 'A different recipient was expected');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure SetRecipientsCCTest()
+    var
+        Message: Codeunit "Email Message";
+        Recipients: List of [Text];
+        Result: List of [Text];
+        Index: Integer;
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        // Exercise
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Recipients.Add('recipient1@test.com');
+        Recipients.Add('recipient2@test.com');
+        Recipients.Add('recipient3@test.com');
+        Message.SetRecipients(Enum::"Email Recipient Type"::"Cc", Recipients);
+        Message.GetRecipients(Enum::"Email Recipient Type"::"Cc", Result);
+
+        // Verify
+        for Index := 1 to Result.Count() do
+            Assert.AreEqual(StrSubstNo(RecipientLbl, Index), Result.Get(Index), 'A different recipient was expected');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure SetRecipientsBCCTest()
+    var
+        Message: Codeunit "Email Message";
+        Recipients: List of [Text];
+        Result: List of [Text];
+        Index: Integer;
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        // Exercise
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Recipients.Add('recipient1@test.com');
+        Recipients.Add('recipient2@test.com');
+        Recipients.Add('recipient3@test.com');
+        Message.SetRecipients(Enum::"Email Recipient Type"::"BCc", Recipients);
+        Message.GetRecipients(Enum::"Email Recipient Type"::"BCc", Result);
+
+        // Verify
+        for Index := 1 to Result.Count() do
+            Assert.AreEqual(StrSubstNo(RecipientLbl, Index), Result.Get(Index), 'A different recipient was expected');
+    end;
+
     [StrMenuHandler]
     [Scope('OnPrem')]
     procedure CloseEmailEditorHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
