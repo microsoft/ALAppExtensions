@@ -80,7 +80,7 @@ codeunit 8904 "Email Message"
 
     /// <summary>
     /// Sets the body of the email message.
-    /// /// <param name="Body">The body to set to the email message.</param>
+    /// <param name="Body">The body to set to the email message.</param>
     /// </summary>
     procedure SetBody(Body: Text)
     begin
