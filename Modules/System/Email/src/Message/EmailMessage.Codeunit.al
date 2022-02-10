@@ -89,7 +89,7 @@ codeunit 8904 "Email Message"
 
     /// <summary>
     /// Appends to the body of the email message.
-    /// /// <param name="Value">The value to append to the body of the email message.</param>
+    /// <param name="Value">The value to append to the body of the email message.</param>
     /// </summary>
     procedure AppendToBody(Value: Text)
     begin
@@ -107,7 +107,7 @@ codeunit 8904 "Email Message"
 
     /// <summary>
     /// Sets the subject of the email message.
-    /// /// <param name="Subject">The subject to set to the email message.</param>
+    /// <param name="Subject">The subject to set to the email message.</param>
     /// </summary>
     procedure SetSubject(Subject: Text)
     begin
@@ -125,7 +125,7 @@ codeunit 8904 "Email Message"
 
     /// <summary>
     /// Sets whether the email body is formatted in HTML.
-    /// /// <param name="Value">True if the email body is formatted in HTML; otherwise - false.</param>
+    /// <param name="Value">True if the email body is formatted in HTML; otherwise - false.</param>
     /// </summary>
     procedure SetBodyHTMLFormatted(Value: Boolean)
     begin
