@@ -89,7 +89,7 @@ codeunit 8904 "Email Message"
 
     /// <summary>
     /// Appends to the body of the email message.
-    /// /// <param name="Value">The value to append to the body of the email message.</param>
+    /// <param name="Value">The value to append to the body of the email message.</param>
     /// </summary>
     procedure AppendToBody(Value: Text)
     begin
