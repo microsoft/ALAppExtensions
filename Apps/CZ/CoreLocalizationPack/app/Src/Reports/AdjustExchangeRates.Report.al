@@ -327,6 +327,8 @@ report 31004 "Adjust Exchange Rates CZL"
                 }
 
                 trigger OnAfterGetRecord()
+                var
+                    SkipCustLedgerEntry: Boolean;
                 begin
                     TempSumsDetailedCustLedgEntry.DeleteAll();
 
@@ -337,6 +339,15 @@ report 31004 "Adjust Exchange Rates CZL"
                         if TempCustLedgerEntry.Next() = 0 then
                             CurrReport.Break();
                     CustLedgerEntry.Get(TempCustLedgerEntry."Entry No.");
+
+                    SkipCustLedgerEntry := false;
+                    OnSkipCustLedgerEntry(CustLedgerEntry, SkipAdvancePayments, SkipCustLedgerEntry);
+                    if SkipCustLedgerEntry then
+                        CurrReport.Skip();
+#if not CLEAN19
+                    if SkipAdvancePayments and CustLedgerEntry.Prepayment then
+                        CurrReport.Skip();
+#endif
                     AdjustCustomerLedgerEntry(CustLedgerEntry, PostingDate);
 
                     Clear(AdjDebit);
@@ -511,6 +522,8 @@ report 31004 "Adjust Exchange Rates CZL"
                 }
 
                 trigger OnAfterGetRecord()
+                var
+                    SkipVendorLedgerEntry: Boolean;
                 begin
                     TempSumsDetailedVendorLedgEntry.DeleteAll();
 
@@ -521,6 +534,15 @@ report 31004 "Adjust Exchange Rates CZL"
                         if TempVendorLedgerEntry.Next() = 0 then
                             CurrReport.Break();
                     VendorLedgerEntry.Get(TempVendorLedgerEntry."Entry No.");
+
+                    SkipVendorLedgerEntry := false;
+                    OnSkipVendorLedgerEntry(VendorLedgerEntry, SkipAdvancePayments, SkipVendorLedgerEntry);
+                    if SkipVendorLedgerEntry then
+                        CurrReport.Skip();
+#if not CLEAN19
+                    if SkipAdvancePayments and VendorLedgerEntry.Prepayment then
+                        CurrReport.Skip();
+#endif
                     AdjustVendorLedgerEntry(VendorLedgerEntry, PostingDate);
 
                     Clear(AdjDebit);
@@ -922,6 +944,12 @@ report 31004 "Adjust Exchange Rates CZL"
                         MultiLine = true;
                         ToolTip = 'Specifies if you want to post in an additional reporting currency and adjust general ledger accounts for currency fluctuations between LCY and the additional reporting currency.';
                     }
+                    field(SkipAdvancePaymentsField; SkipAdvancePayments)
+                    {
+                        ApplicationArea = Suite;
+                        Caption = 'Skip Advance Payments';
+                        ToolTip = 'Specifies if you want to skip Advance Payments';
+                    }
                     field(PostField; Post)
                     {
                         ApplicationArea = Basic, Suite;
@@ -1185,6 +1213,7 @@ report 31004 "Adjust Exchange Rates CZL"
         VATEntryNo: Decimal;
         NewEntryNo: Integer;
         FirstEntry: Boolean;
+        SkipAdvancePayments: Boolean;
         MaxAdjExchRateBufIndex: Integer;
         RatesAdjustedMsg: Label 'One or more currency exchange rates have been adjusted.';
         NothingToAdjustMsg: Label 'There is nothing to adjust.';
@@ -2633,6 +2662,16 @@ report 31004 "Adjust Exchange Rates CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnCloseRequestPage()
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSkipCustLedgerEntry(CustLedgerEntry: Record "Cust. Ledger Entry"; SkipAdvancePayments: Boolean; var SkipCustLedgerEntry: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSkipVendorLedgerEntry(VendorLedgerEntry: Record "Vendor Ledger Entry"; SkipAdvancePayments: Boolean; var SkipVendorLedgerEntry: Boolean)
     begin
     end;
 }

@@ -32,9 +32,11 @@ report 11752 "Inventory Document CZL"
             }
             column(RegistrationNo_CompanyInformation; "Registration No.")
             {
+                IncludeCaption = true;
             }
             column(VATRegistrationNo_CompanyInformation; "VAT Registration No.")
             {
+                IncludeCaption = true;
             }
 
             trigger OnAfterGetRecord()

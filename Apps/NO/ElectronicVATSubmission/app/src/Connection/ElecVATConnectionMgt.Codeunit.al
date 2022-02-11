@@ -301,7 +301,7 @@ codeunit 10687 "Elec. VAT Connection Mgt."
             ElecVATLoggingMgt.AttachXmlResponseTextToVATRepHeader(ResponseJson, VATReportHeader, 'valideringsresultat');
             Commit();
         end;
-        Error(CannotHandleResponseWithReasonFromServerErr, BoxNo, ValidateReturnErr);
+        Error(CannotHandleResponseWithReasonFromServerErr, BoxNo, FailureReason);
     end;
 
     local procedure GetInstanceInfoFromResponse(var InstanceUrl: Text[250]; var DataID: Text; ApplicationUrl: Text; ResponseJson: Text)

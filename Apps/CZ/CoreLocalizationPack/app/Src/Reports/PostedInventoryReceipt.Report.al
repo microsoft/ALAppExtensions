@@ -1,5 +1,7 @@
 report 11751 "Posted Inventory Receipt CZL"
 {
+    Permissions = TableData "Invt. Receipt Header" = r,
+                  TableData "Invt. Receipt Line" = r;
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/PostedInventoryReceipt.rdl';
     ApplicationArea = Basic, Suite;
@@ -32,9 +34,11 @@ report 11751 "Posted Inventory Receipt CZL"
             }
             column(RegistrationNo_CompanyInformation; "Registration No.")
             {
+                IncludeCaption = true;
             }
             column(VATRegistrationNo_CompanyInformation; "VAT Registration No.")
             {
+                IncludeCaption = true;
             }
 
             trigger OnAfterGetRecord()

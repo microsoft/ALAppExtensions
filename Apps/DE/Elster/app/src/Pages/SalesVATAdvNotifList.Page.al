@@ -40,17 +40,25 @@ page 11017 "Sales VAT Adv. Notif. List"
                     ToolTip = 'Specifies the length of the period for created and transmitted sales VAT advance notifications.';
                     Visible = false;
                 }
+#if not CLEAN20
                 field("XSL-Filename"; "XSL-Filename")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the path and the file name of the style sheet for the VAT advance notification that you submit to and receive from the tax authorities.';
                     Visible = false;
+                    ObsoleteTag = '20.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This functionality is not in use and not supported';
                 }
                 field("XML-File Creation Date"; "XML-File Creation Date")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the creation date of the XML document to be submitted to the tax authorities.';
+                    ObsoleteTag = '20.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This functionality is not in use and not supported';
                 }
+# endif
             }
         }
     }
@@ -98,12 +106,26 @@ page 11017 "Sales VAT Adv. Notif. List"
                 action("P&review")
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'P&review';
+                    Caption = 'P&review statement';
                     Image = "Report";
                     RunObject = Page "VAT Statement Preview";
-                    RunPageLink = "Statement Template Name" = field ("Statement Template Name"),
-                                  Name = field ("Statement Name");
-                    ToolTip = 'Preview the sales VAT advance notification that you will send to the tax authorities.';
+                    RunPageLink = "Statement Template Name" = field("Statement Template Name"),
+                                  Name = field("Statement Name");
+                    ToolTip = 'View a VAT statement as a preview of the sales VAT advance notification that you will send to the tax authorities.';
+                }
+                action(PreviewAmounts)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Show amounts from XML file';
+                    Image = PreviewChecks;
+                    ToolTip = 'Show the amounts from the XML file that you will send to the tax authorities.';
+
+                    trigger OnAction()
+                    var
+                        ElsterManagement: Codeunit "Elster Management";
+                    begin
+                        ElsterManagement.ShowElecVATDeclOverview(Rec);
+                    end;
                 }
                 separator("2")
                 {

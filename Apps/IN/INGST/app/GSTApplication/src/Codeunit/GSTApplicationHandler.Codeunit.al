@@ -1387,6 +1387,8 @@ codeunit 18430 "GST Application Handler"
 
             GSTApplSessionMgt.GetOnlineCustLedgerEntry(OnlineCustLedgerEntry);
 
+            GetCustomerLedgerEntry(OnlineCustLedgerEntry, ApplyingCustLedgEntry);
+
             if ApplyingCustLedgEntry."GST on Advance Payment" then begin
                 GSTApplicationLibrary.ApplyCurrencyFactorInvoice(true);
                 TotalTCSInclSHECess := GSTApplSessionMgt.GetTotalTCSInclSHECessAmount();
@@ -1431,6 +1433,14 @@ codeunit 18430 "GST Application Handler"
                     ApplyingCustLedgEntry."Entry No.",
                     ApplyingCustLedgEntry."GST Group Code");
             end;
+        end;
+    end;
+
+    local procedure GetCustomerLedgerEntry(var OnlineCustLedgerEntry: Record "Cust. Ledger Entry"; var ApplyingCustLedgEntry: Record "Cust. Ledger Entry")
+    begin
+        if (OnlineCustLedgerEntry."Seller GST Reg. No." = '') and (OnlineCustLedgerEntry."Seller State Code" = '') then begin
+            OnlineCustLedgerEntry."Seller GST Reg. No." := ApplyingCustLedgEntry."Seller GST Reg. No.";
+            OnlineCustLedgerEntry."Seller State Code" := ApplyingCustLedgEntry."Seller State Code";
         end;
     end;
 

@@ -1,13 +1,5 @@
 codeunit 18551 "Tax Base Tax Engine Setup"
 {
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Engine Assisted Setup", 'OnSetupUseCaseTree', '', false, false)]
-    local procedure OnSetupUseCaseTree()
-    var
-        UseCaseTreeIndent: Codeunit "Use Case Tree-Indent";
-    begin
-        UseCaseTreeIndent.ReadUseCaseTree(GetTreeText());
-    end;
-
     procedure UpgradeUseCaseTree()
     var
         UseCaseTreeIndent: Codeunit "Use Case Tree-Indent";
@@ -18,6 +10,14 @@ codeunit 18551 "Tax Base Tax Engine Setup"
     local procedure GetTreeText(): Text
     begin
         exit(UseCaseTreeLbl);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Engine Assisted Setup", 'OnSetupUseCaseTree', '', false, false)]
+    local procedure OnSetupUseCaseTree()
+    var
+        UseCaseTreeIndent: Codeunit "Use Case Tree-Indent";
+    begin
+        UseCaseTreeIndent.ReadUseCaseTree(GetTreeText());
     end;
 
     var

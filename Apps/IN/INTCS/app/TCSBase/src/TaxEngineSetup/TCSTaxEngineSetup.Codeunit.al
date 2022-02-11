@@ -53,6 +53,28 @@ codeunit 18810 "TCS Tax Engine Setup"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TCS Upgrade Subscribers", 'OnGetUpgradedTaxTypeConfig', '', false, false)]
+    local procedure OnGetUpgradedTaxTypeConfig(TaxType: Code[20]; var ConfigText: Text; var IsHandled: Boolean)
+    var
+        TCSTaxTypeData: Codeunit "TCS Tax Type";
+        TCSTaxTypeLbl: Label 'TCS';
+    begin
+        if IsHandled then
+            exit;
+
+        if TaxType = TCSTaxTypeLbl then begin
+            ConfigText := TCSTaxTypeData.GetText();
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TCS Upgrade Subscribers", 'OnGetUpgradedUseCaseConfig', '', false, false)]
+    local procedure OnGetTCSConfig(CaseID: Guid; var IsHandled: Boolean; var Configtext: Text)
+    begin
+        Configtext := GetConfig(CaseID, IsHandled);
+    end;
+
+
     procedure GetText(CaseId: Guid): Text
     var
         IsHandled: Boolean;

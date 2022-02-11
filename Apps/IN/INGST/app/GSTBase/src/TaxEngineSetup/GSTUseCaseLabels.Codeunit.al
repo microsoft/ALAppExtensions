@@ -38,6 +38,12 @@ codeunit 18019 "GST Use Case Labels"
             IsHandled := true;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Upgrade Subscribers", 'OnGetUpgradedUseCaseConfig', '', false, false)]
+    local procedure OnGetGSTConfig(CaseID: Guid; var IsHandled: Boolean; var Configtext: Text)
+    begin
+        Configtext := GetConfig(CaseID, IsHandled);
+    end;
+
     local procedure GetText(CaseId: Guid): Text
     var
         IsHandled: Boolean;

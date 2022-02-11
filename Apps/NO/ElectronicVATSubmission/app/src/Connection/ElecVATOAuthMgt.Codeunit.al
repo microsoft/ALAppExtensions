@@ -107,12 +107,14 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         Error('');
     end;
 
-    procedure GetOAuthSetup(var OAuth20Setup: Record "OAuth 2.0 Setup")
+    procedure GetOAuthSetup(var OAuth20Setup: Record "OAuth 2.0 Setup"): Boolean
     begin
-        ElecVATSetup.GetRecordOnce();
+        if not ElecVATSetup.GetRecordOnce() then
+            exit(false);
         ElecVATSetup.TestField("OAuth Feature GUID");
         if not OAuth20Setup.FindFirstOAuth20SetupByFeatureAndCurrUser(ElecVATSetup."OAuth Feature GUID") then
             InitOAuthSetup(OAuth20Setup);
+        exit(true);
     end;
 
     procedure UpdateElecVATOAuthSetupRecordsWithClientIDAndSecret(ClientID: Guid; ClientSecret: Guid)
@@ -170,7 +172,8 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
 
     procedure IsElectronicVATOAuthSetup(OAuth20Setup: Record "OAuth 2.0 Setup"): Boolean
     begin
-        ElecVATSetup.GetRecordOnce();
+        if not ElecVATSetup.GetRecordOnce() then
+            exit;
         exit(OAuth20Setup."Feature GUID" = ElecVATSetup."OAuth Feature GUID");
     end;
 
@@ -354,10 +357,7 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         if NewToken then
             TokenKey := CreateGuid();
 
-        if EncryptionEnabled() then
-            IsolatedStorage.SetEncrypted(TokenKey, TokenValue, TokenDataScope)
-        else
-            IsolatedStorage.Set(TokenKey, TokenValue, TokenDataScope);
+        IsolatedStorage.Set(TokenKey, TokenValue, TokenDataScope);
     end;
 
     [NonDebuggable]
@@ -557,7 +557,8 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
     begin
-        GetOAuthSetup(OAuth20Setup);
+        if not GetOAuthSetup(OAuth20Setup) then
+            exit;
         ServiceConnection.Status := OAuth20Setup.Status;
         ServiceConnection.InsertServiceConnection(
           ServiceConnection, OAuth20Setup.RecordId(), ServiceConnectionSetupLbl, '', PAGE::"OAuth 2.0 Setup");

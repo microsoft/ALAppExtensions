@@ -1,11 +1,6 @@
 codeunit 20293 "Use Case Execution"
 {
-    procedure ExecuteUseCase(
-        var UseCase: Record "Tax Use Case";
-        var SourceRecordRef: RecordRef;
-        var Symbols: Record "Script Symbol Value" Temporary;
-        CurrencyCode: Code[20];
-        CurrencyFactor: Decimal)
+    procedure ExecuteUseCase(var UseCase: Record "Tax Use Case"; var SourceRecordRef: RecordRef; var Symbols: Record "Script Symbol Value" Temporary; CurrencyCode: Code[20]; CurrencyFactor: Decimal)
     begin
         if not IsEnabled(UseCase) then
             exit;
@@ -34,13 +29,7 @@ codeunit 20293 "Use Case Execution"
         SymbolStore.CopySymbols(Symbols);
     end;
 
-    procedure ExecuteUseCaseWithRecord(
-        var UseCase: Record "Tax Use Case";
-        var SourceRecord: Variant;
-        var Symbols: Record "Script Symbol Value" Temporary;
-        var PostingSetupRecID: RecordId;
-        CurrencyCode: Code[20];
-        CurrencyFactor: Decimal);
+    procedure ExecuteUseCaseWithRecord(var UseCase: Record "Tax Use Case"; var SourceRecord: Variant; var Symbols: Record "Script Symbol Value" Temporary; var PostingSetupRecID: RecordId; CurrencyCode: Code[20]; CurrencyFactor: Decimal);
     var
         SourceRecordRef: RecordRef;
     begin
@@ -48,13 +37,7 @@ codeunit 20293 "Use Case Execution"
         ExecuteUseCase(UseCase, SourceRecordRef, Symbols, CurrencyCode, CurrencyFactor);
     end;
 
-    procedure ExecuteUseCaseTree(
-        UseCaseID: Guid;
-        var CurrentRecord: Variant;
-        var Symbols: Record "Script Symbol Value" temporary;
-        var PostingSetupRecID: RecordId;
-        CurrencyCode: Code[20];
-        CurrencyFactor: Decimal)
+    procedure ExecuteUseCaseTree(UseCaseID: Guid; var CurrentRecord: Variant; var Symbols: Record "Script Symbol Value" temporary; var PostingSetupRecID: RecordId; CurrencyCode: Code[20]; CurrencyFactor: Decimal)
     var
         UseCase: Record "Tax Use Case";
         UseCaseExecution: Codeunit "Use Case Execution";
@@ -62,7 +45,8 @@ codeunit 20293 "Use Case Execution"
         if not UseCase.Get(UseCaseID) then begin
             OnImportUseCaseOnDemand('', UseCaseID);
             UseCase.Get(UseCaseID);
-        end;
+        end else
+            UpdateUseCaseRecord(UseCase);
 
         if IsChildUseCase(UseCase) then
             ExecuteUseCaseTree(UseCase."Parent Use Case ID", CurrentRecord, Symbols, PostingSetupRecID, CurrencyCode, CurrencyFactor);
@@ -109,6 +93,8 @@ codeunit 20293 "Use Case Execution"
             repeat
                 UseCaseTreeNode.TestField("Tax Type");
                 TaxType.Get(UseCaseTreeNode."Tax Type");
+                UpdateTaxTypeRecord(TaxType);
+
                 ClearTransactionValues(TaxType.Code, RecRef);
                 if TaxType.Enabled then
                     InternalExecuteUseCaseTree(UseCaseTreeNode, RecRef, CurrencyCode, CurrencyFactor);
@@ -176,10 +162,31 @@ codeunit 20293 "Use Case Execution"
         if not UseCase.Get(CaseID) then begin
             OnImportUseCaseOnDemand('', CaseID);
             UseCase.Get(CaseID)
-        end;
+        end else
+            UpdateUseCaseRecord(UseCase);
 
         if (not TaxTypeAlreadyExecuted(UseCase."Tax Type")) and (UseCase.Enable) then
             ExecuteUseCase(RecRef, UseCase, CurrencyCode, CurrencyFactor, Handled);
+    end;
+
+    local procedure UpdateUseCaseRecord(var UseCase: Record "Tax Use Case")
+    var
+        UseCaseUpdated: Boolean;
+    begin
+        OnUpdateUseCaseRecord(UseCase."Tax Type", UseCase.ID, UseCase."Major Version", UseCaseUpdated);
+
+        if UseCaseUpdated then
+            UseCase.Get(UseCase.ID);
+    end;
+
+    local procedure UpdateTaxTypeRecord(var TaxType: Record "Tax Type")
+    var
+        TaxTypeUpdated: Boolean;
+    begin
+        OnUpdateTaxTypeRecord(TaxType.Code, TaxType."Major Version", TaxTypeUpdated);
+
+        if TaxTypeUpdated then
+            TaxType.Get(TaxType.Code);
     end;
 
     local procedure IsValidTreeNodeToExecute(var UseCaseTreeNode: Record "Use Case Tree Node"; RecRef: RecordRef): Boolean
@@ -236,12 +243,7 @@ codeunit 20293 "Use Case Execution"
             RecRef := Record;
     end;
 
-    local procedure ExecuteUseCase(
-        Var CaseRecRef: RecordRef;
-        var UseCase: Record "Tax Use Case";
-        CurrencyCode: Code[20];
-        CurrencyFactor: Decimal;
-        var Handled: Boolean)
+    local procedure ExecuteUseCase(Var CaseRecRef: RecordRef; var UseCase: Record "Tax Use Case"; CurrencyCode: Code[20]; CurrencyFactor: Decimal; var Handled: Boolean)
     var
         TempSymbols: Record "Script Symbol Value" Temporary;
         UseCaseExecution: Codeunit "Use Case Execution";
@@ -319,6 +321,16 @@ codeunit 20293 "Use Case Execution"
 
     [IntegrationEvent(false, false)]
     procedure OnImportUseCaseOnDemand(TaxType: Code[20]; CaseID: Guid)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdateUseCaseRecord(TaxType: Code[20]; CaseID: Guid; MajorVersion: Integer; var UseCaseUpdated: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdateTaxTypeRecord(TaxType: Code[20]; MajorVersion: Integer; var TaxTypeUpdated: Boolean)
     begin
     end;
 

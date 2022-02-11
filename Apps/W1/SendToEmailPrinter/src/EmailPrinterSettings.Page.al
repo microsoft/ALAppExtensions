@@ -214,6 +214,13 @@ page 2650 "Email Printer Settings"
         }
     }
 
+    trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        FeatureTelemetry.LogUptake('0000GG3', EmailPrinterFeatureTelemetryNameTxt, Enum::"Feature Uptake Status"::Discovered);
+    end;
+
     local procedure CreateAndSendPrivacyNotification()
     var
         NotificationLifecycleMgt: Codeunit "Notification Lifecycle Mgt.";
@@ -245,6 +252,7 @@ page 2650 "Email Printer Settings"
         LearnMoreActionLbl: Label 'Learn more';
         PrintPrivacyNotificationMsg: Label 'Print jobs will be sent to the specified email address. Please take privacy precautions.';
         PrintPrivacyNotificationGuidTok: Label 'f0178e0e-e19a-4a7c-bdbb-843c37d9125a', Locked = true;
+        EmailPrinterFeatureTelemetryNameTxt: Label 'Send to Email Print', Locked = true;
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin

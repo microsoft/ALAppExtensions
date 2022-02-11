@@ -66,7 +66,6 @@ codeunit 9050 "ABS Operation Response"
     var
         Headers: HttpHeaders;
         Values: array[100] of Text;
-        HeaderKeys: List of [Text];
     begin
         Headers := Response.Headers;
         if not Headers.GetValues(HeaderName, Values) then

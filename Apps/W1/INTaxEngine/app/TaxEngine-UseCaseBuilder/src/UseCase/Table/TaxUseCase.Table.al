@@ -148,6 +148,11 @@ table 20306 "Tax Use Case"
         DeleteUseCaseSymbolLookup(ID, "Computation Script ID");
     end;
 
+    procedure SkipTreeOnDelete(Skip: Boolean)
+    begin
+        SkipTreeDeletion := true;
+    end;
+
     local procedure DeleteAttributeMapping()
     var
         UseCaseAttributeMapping: Record "Use Case Attribute Mapping";
@@ -229,6 +234,11 @@ table 20306 "Tax Use Case"
     var
         UseCaseTreeNode: Record "Use Case Tree Node";
     begin
+        //This will be true only if the delete of use case is called from Desrialization which should not clear caseId
+        //Use cases deleted from desrialization are only for upgrading use cases
+        if SkipTreeDeletion then
+            exit;
+
         if CaseID = EmptyGuid then
             exit;
 
@@ -239,5 +249,6 @@ table 20306 "Tax Use Case"
 
     var
         EmptyGuid: Guid;
+        SkipTreeDeletion: Boolean;
         UseCaseStatusLbl: Label 'You cannot enable a use case with status %1', Comment = '%1 = Status';
 }

@@ -367,7 +367,4 @@ codeunit 9047 "ABS Optional Parameters"
         ABSFormatHelper: Codeunit "ABS Format Helper";
         RequestHeaders: Dictionary of [Text, Text];
         Parameters: Dictionary of [Text, Text];
-        NeedToSpecifyHeaderErr: Label 'You need to specify the "%1"-header to set this header.', Comment = '%1 = HttpHeader identifier';
-        HeaderCanOnlyBeSetOnConditionErr: Label '"%1" can only be set if "%2" is "%3"', Comment = '%1 = HttpHeader identifier (set), %2 = HttpHeader identifier (get), %3 = Enum value';
-        HeaderCanOnlyBeSetOnTwoConditionsErr: Label '"%1" can only be set if "%2" is "%3" or "%4"', Comment = '%1 = HttpHeader identifier (set), %2 = HttpHeader identifier (get), %3 = Enum value 1, %4 = Enum value 2';
 }

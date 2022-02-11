@@ -438,7 +438,7 @@ page 10674 "SAF-T Setup Wizard"
         OpenMappingSetupLbl: Label 'Open the setup page to define G/L account mappings.';
         OpenVATMappingSetupLbl: Label 'Open the setup page to define a VAT Posting Setup mapping.';
         OpenDimensionExportSetupLbl: Label 'Open the setup page to define which dimensions to export to SAF-T.';
-        GLAccountMappingRemainderTxt: Label 'Mapping is not mandatory if no G/L entries are posted in the reported period.';
+        GLAccountMappingRemainderTxt: Label 'You must provide mapping for all G/L accounts in the company.';
         GLAccountMappingRemainder2Txt: Label 'For G/L account with no mapping code, enter NA.';
         VATMappingRemainderTxt: Label 'VAT posting setups without a mapping will be exported with the NA value to the XML file.';
 

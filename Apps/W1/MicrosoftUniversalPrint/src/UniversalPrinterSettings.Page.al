@@ -160,6 +160,13 @@ page 2750 "Universal Printer Settings"
         InsertDefaults(Rec);
     end;
 
+    trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        FeatureTelemetry.LogUptake('0000GFZ', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered, false, true);
+    end;
+
     trigger OnDeleteRecord(): Boolean
     begin
         UniversalPrinterSetup.DeletePrinterSettings(Rec.Name);
@@ -189,6 +196,7 @@ page 2750 "Universal Printer Settings"
 
     var
         UniversalPrinterSetup: Codeunit "Universal Printer Setup";
+        UniversalPrintGraphHelper: Codeunit "Universal Print Graph Helper";
         PrivacyLbl: Label 'Learn more about how the data is handled.';
         PrivacyUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=724009', Locked = true;
         IsSizeCustom: Boolean;

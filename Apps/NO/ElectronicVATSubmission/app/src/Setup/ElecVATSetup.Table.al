@@ -86,12 +86,14 @@ table 10686 "Elec. VAT Setup"
     var
         RecordHasBeenRead: Boolean;
 
-    procedure GetRecordOnce()
+    procedure GetRecordOnce(): Boolean
     begin
         if RecordHasBeenRead then
-            exit;
-        Get();
+            exit(true);
+        if not Get() then
+            exit(false);
         RecordHasBeenRead := true;
+        exit(true);
     end;
 
     [NonDebuggable]
@@ -101,10 +103,7 @@ table 10686 "Elec. VAT Setup"
         if IsNullGuid(TokenKey) then
             TokenKey := CreateGuid();
 
-        if EncryptionEnabled() then
-            IsolatedStorage.SetEncrypted(TokenKey, TokenValue, DataScope::Company)
-        else
-            IsolatedStorage.Set(TokenKey, TokenValue, DataScope::Company);
+        IsolatedStorage.Set(TokenKey, TokenValue, DataScope::Company);
     end;
 
     [NonDebuggable]
