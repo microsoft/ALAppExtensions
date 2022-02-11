@@ -19,6 +19,7 @@ codeunit 10672 "SAF-T Mapping Helper"
         VATPostingSetupWithoutTaxCodeErr: Label 'One or more VAT posting setup do not have a %1. Open the VAT Posting Setup page and specify %1 for each VAT posting setup combination.';
         SourceCodeWithoutSAFTCodeErr: Label 'One or more source codes do not have a SAF-T source code. Open the Source Codes page and specify a SAF-T source code for each source code.';
         ChartOfAccountsAlreadyExistsErr: Label 'A chart of accounts must be empty to be created based on SAF-T standard accounts.';
+        CopyReportingCodesToSAFTCodesQst: Label 'Do you want to copy sales and purchase reporting codes to sales/purchase SAF-T standard tax codes?';
         AssortedJournalsSourceCodeDescriptionLbl: Label 'Assorted Journals';
         GeneralLedgerJournalsSourceCodeDescriptionLbl: Label 'General Ledger Journals';
         AccountReceivablesSourceCodeDescriptionLbl: Label 'Account Receivables';
@@ -192,11 +193,32 @@ codeunit 10672 "SAF-T Mapping Helper"
             until SAFTGLAccountMapping.Next() = 0;
     end;
 
+    procedure CopyReportingCodesToSAFTCodes()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        ConfirmManagement: Codeunit "Confirm Management";
+    begin
+        if not ConfirmManagement.GetResponse(CopyReportingCodesToSAFTCodesQst, false) then
+            exit;
+
+        if not VATPostingSetup.FindSet(true) then
+            exit;
+
+        repeat
+            if VATPostingSetup."Sales VAT Reporting Code" <> '' then
+                VATPostingSetup.Validate("Sales SAF-T Standard Tax Code", VATPostingSetup."Sales VAT Reporting Code");
+            if VATPostingSetup."Purchase VAT Reporting Code" <> '' then
+                VATPostingSetup.Validate("Purch. SAF-T Standard Tax Code", VATPostingSetup."Purchase VAT Reporting Code");
+            VATPostingSetup.Modify(true);
+        until VATPostingSetup.Next() = 0;
+    end;
+
     local procedure GLAccHasEntries(GLAccNo: Code[20]; StartingDate: Date; EndingDate: Date; IncludeIncomingBalance: Boolean): Boolean
     var
         GLAccount: Record "G/L Account";
     begin
-        GLAccount.Get(GLAccNo);
+        if not GLAccount.Get(GLAccNo) then
+            exit(false);
         exit(GLAccNetChangeIsNotZero(GLAccount, StartingDate, EndingDate, IncludeIncomingBalance));
     end;
 

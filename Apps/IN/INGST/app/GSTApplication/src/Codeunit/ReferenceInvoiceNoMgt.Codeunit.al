@@ -1046,7 +1046,12 @@ codeunit 18435 "Reference Invoice No. Mgt."
         UpdateReferenceInvoiceNo: Page "Update Reference Invoice No";
         SalesDocType: Enum "Sales Document Type";
         GSTDocumentType: Enum "Document Type Enum";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeUpdateReferenceInvoiceNoPurchHeader(PurchaseHeader, IsHandled);
+        if IsHandled then
+            exit;
         if not IsGSTApplicable("Transaction Type Enum"::Purchase, PurchaseHeader."Document Type", SalesDocType, PurchaseHeader."No.") then
             Error(ReferenceInvoiceNoErr);
 
@@ -1074,7 +1079,12 @@ codeunit 18435 "Reference Invoice No. Mgt."
         UpdateReferenceInvoiceNo: Page "Update Reference Invoice No";
         PurchDocType: Enum "Purchase Document Type";
         GSTDocumentType: Enum "Document Type Enum";
+        ISHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeUpdateReferenceInvoiceNoSalesHeader(SalesHeader, IsHandled);
+        if IsHandled then
+            exit;
         if not IsGSTApplicable("Transaction Type Enum"::Sales, PurchDocType, SalesHeader."Document Type", SalesHeader."No.") then
             Error(ReferenceInvoiceNoErr);
 
@@ -3235,7 +3245,13 @@ codeunit 18435 "Reference Invoice No. Mgt."
         ReferenceInvoiceNo: Record "Reference Invoice No.";
         SalesDocType: Enum "Sales Document Type";
         GSTDocumentType: Enum "Document Type Enum";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeCheckRefInvNoPurchHeader(PurchaseHeader, IsHandled);
+        if IsHandled then
+            exit;
+
         if not IsGSTApplicable("Transaction Type Enum"::Purchase, PurchaseHeader."Document Type", SalesDocType, PurchaseHeader."No.") then
             exit;
 
@@ -3265,7 +3281,12 @@ codeunit 18435 "Reference Invoice No. Mgt."
         CustLedgerEntry: Record "Cust. Ledger Entry";
         ReferenceInvoiceNo: Record "Reference Invoice No.";
         GSTDocumentType: Enum "Document Type Enum";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeCheckRefInvNoSalesHeader(SalesHeader, IsHandled);
+        if IsHandled then
+            exit;
         if not IsGSTApplicable("Transaction Type Enum"::Sales, SalesHeader."Document Type", SalesHeader."Document Type", SalesHeader."No.") then
             exit;
 
@@ -4668,4 +4689,26 @@ codeunit 18435 "Reference Invoice No. Mgt."
     begin
         CreatePostedReferenceInvoiceNoService(ServiceHeader, ServInvoiceNo, ServCrMemoNo);
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckRefInvNoPurchHeader(var PurchaseHeader: Record "Purchase Header"; IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateReferenceInvoiceNoPurchHeader(var PurchaseHeader: Record "Purchase Header"; IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckRefInvNoSalesHeader(var SalesHeader: Record "Sales Header"; IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateReferenceInvoiceNoSalesHeader(var SalesHeader: Record "Sales Header"; IsHandled: Boolean)
+    begin
+    end;
+
+
 }

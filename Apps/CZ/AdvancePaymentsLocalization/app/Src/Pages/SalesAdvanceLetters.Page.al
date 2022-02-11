@@ -129,6 +129,24 @@ page 31170 "Sales Advance Letters CZZ"
                     ToolTip = 'Specifies whether VAT document will be posted automatically.';
                     Visible = false;
                 }
+                field("Payment Method Code"; Rec."Payment Method Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies how to make payment, such as with bank transfer, cash, or check.';
+                    Visible = false;
+                }
+                field("Shortcut Dimension 1 Code"; Rec."Shortcut Dimension 1 Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the code for Shortcut Dimension 1, which is one of two global dimension codes that you set up in the General Ledger Setup window.';
+                    Visible = false;
+                }
+                field("Shortcut Dimension 2 Code"; Rec."Shortcut Dimension 2 Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the code for Shortcut Dimension 2, which is one of two global dimension codes that you set up in the General Ledger Setup window.';
+                    Visible = false;
+                }
             }
         }
         area(FactBoxes)

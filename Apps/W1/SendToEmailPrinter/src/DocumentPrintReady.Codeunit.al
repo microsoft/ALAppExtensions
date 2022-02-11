@@ -33,6 +33,8 @@ codeunit 2651 "Document Print Ready"
         if not EmailPrinterSettings.Get(PrinterName) then
             exit;
 
+        FeatureTelemetry.LogUptake('0000GG1', EmailPrinterFeatureTelemetryNameTxt, Enum::"Feature Uptake Status"::Used);
+
         // exit if printer email adress is empty
         if EmailPrinterSettings."Email Address" = '' then begin
             if GuiAllowed() then
@@ -48,6 +50,9 @@ codeunit 2651 "Document Print Ready"
 
         // handle success parameter by sending email
         Success := SendEmail(ToList, EmailPrinterSettings."Email Subject", EmailPrinterSettings."Email Body", DocumentStream, AttachmentName, PrinterName);
+
+        if Success then
+            FeatureTelemetry.LogUsage('0000GG2', EmailPrinterFeatureTelemetryNameTxt, 'Send To Email Print Job Sent');
     end;
 
     local procedure GetAttachmentName(ObjectPayload: JsonObject; var AttachmentName: Text[250])
@@ -58,9 +63,9 @@ codeunit 2651 "Document Print Ready"
         ObjectName: JsonToken;
         DocumentType: JsonToken;
     begin
-        If ObjectPayload.Get('objectname', ObjectName) then
+        if ObjectPayload.Get('objectname', ObjectName) then
             FileName := ObjectName.AsValue().AsText();
-        If ObjectPayload.Get('documenttype', DocumentType) then begin
+        if ObjectPayload.Get('documenttype', DocumentType) then begin
             DocumentTypeParts := DocumentType.AsValue().AsText().Split('/');
             FileExtension := DocumentTypeParts.Get(DocumentTypeParts.Count());
         end;
@@ -149,12 +154,14 @@ codeunit 2651 "Document Print Ready"
 
     var
         SetupPrinters: Codeunit "Setup Printers";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         SendErr: Label 'The email couldn''t be sent. %1', Comment = '%1 = a more detailed error message';
         PrinterEmailNotSetupErr: Label 'The email address of %1 printer is not configured. Please add the printer''s email address.', Comment = '%1 = Printer name.';
         FromAddressWasNotFoundErr: Label 'An email from address was not found.';
         NoEmailAccountDefinedErr: Label 'Email is not set up for the action you are trying to take. Ask your administrator to either add the %1 scenario to your email account, or to specify a default account for email scenarios.', Comment = '%1 = Email scenario. E.g. "Email Printer"';
         SetupSMTPErr: Label 'To send print job to the %1 printer, you must set up SMTP.', Comment = '%1 = Printer name.';
         EmailPrinterTelemetryCategoryTok: Label 'AL Email Printer', Locked = true;
+        EmailPrinterFeatureTelemetryNameTxt: Label 'Send to Email Print', Locked = true;
         SMTPNotSetupTelemetryTxt: Label 'SMTP is not set up.', Locked = true;
         NoEmailAccountTxt: Label 'There is no account for the "Email Printer" scenario.', Locked = true;
         PrinterEmailNotSetupTelemetryTxt: Label 'The email address of the printer is missing', Locked = true;

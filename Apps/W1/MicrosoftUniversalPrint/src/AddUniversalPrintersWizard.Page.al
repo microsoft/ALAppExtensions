@@ -310,6 +310,7 @@ page 2752 "Add Universal Printers Wizard"
     var
         UniversalPrinterSettings: Record "Universal Printer Settings";
     begin
+        FeatureTelemetry.LogUptake('0000GFV', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered, false, true);
         if not UniversalPrinterSettings.WritePermission() then
             Error(NoTablePermissionsErr);
 
@@ -395,6 +396,8 @@ page 2752 "Add Universal Printers Wizard"
     local procedure StartAutoAdd()
     begin
         TotalAddedPrinters := UniversalPrinterSetup.AddAllPrintShares();
+        if TotalAddedPrinters > 0 then
+            FeatureTelemetry.LogUptake('0000GFW', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up");
         NumberOfPrintersAddedText := StrSubstNo(NumberOfPrintersAddedTemplateTxt, TotalAddedPrinters);
     end;
 
@@ -430,6 +433,7 @@ page 2752 "Add Universal Printers Wizard"
         ClientTypeManagement: Codeunit "Client Type Management";
         UniversalPrintGraphHelper: Codeunit "Universal Print Graph Helper";
         UniversalPrinterSetup: Codeunit "Universal Printer Setup";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         CurrentStep: Option Intro,OnPremAadSetup,AutoAdd,Done;
         TopBannerVisible: Boolean;
         NextEnabled: Boolean;

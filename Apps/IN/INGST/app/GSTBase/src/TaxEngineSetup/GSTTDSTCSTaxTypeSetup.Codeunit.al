@@ -35,6 +35,27 @@ codeunit 18011 "GST TDS TCS Tax Type Setup"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Upgrade Subscribers", 'OnGetUpgradedTaxTypeConfig', '', false, false)]
+    local procedure OnGetUpgradedTaxTypeConfig(TaxType: Code[20]; var ConfigText: Text; var IsHandled: Boolean)
+    var
+        GSTTDSTCSTaxTypeData: Codeunit "GST TDS TCS Tax Type Data";
+        GSTTDSTCSTaxTypeLbl: Label 'GST TDS TCS';
+    begin
+        if IsHandled then
+            exit;
+
+        if TaxType = GSTTDSTCSTaxTypeLbl then begin
+            ConfigText := GSTTDSTCSTaxTypeData.GetText();
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Upgrade Subscribers", 'OnGetUpgradedUseCaseConfig', '', false, false)]
+    local procedure OnGetGSTConfig(CaseID: Guid; var IsHandled: Boolean; var Configtext: Text)
+    begin
+        Configtext := GetConfig(CaseID, IsHandled);
+    end;
+
     procedure GetConfig(CaseID: Guid; var Handled: Boolean): Text
     var
         "{94D595D0-1FF1-4501-AC76-164AD453F547}Lbl": Label 'GST Use Cases';

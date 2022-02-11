@@ -34,7 +34,10 @@
                               <TablixBody>
                                 <TablixColumns>
                                   <TablixColumn>
-                                    <Width>10cm</Width>
+                                    <Width>3.5cm</Width>
+                                  </TablixColumn>
+                                  <TablixColumn>
+                                    <Width>6.5cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
                                     <Width>4cm</Width>
@@ -76,8 +79,10 @@
                                               <PaddingBottom>2pt</PaddingBottom>
                                             </Style>
                                           </Textbox>
+                                          <ColSpan>2</ColSpan>
                                         </CellContents>
                                       </TablixCell>
+                                      <TablixCell />
                                       <TablixCell>
                                         <CellContents>
                                           <Textbox Name="DocumentType">
@@ -173,8 +178,10 @@
                                               <PaddingBottom>2pt</PaddingBottom>
                                             </Style>
                                           </Textbox>
+                                          <ColSpan>2</ColSpan>
                                         </CellContents>
                                       </TablixCell>
+                                      <TablixCell />
                                       <TablixCell>
                                         <CellContents>
                                           <Textbox Name="DocumentDateCaption">
@@ -271,8 +278,10 @@
                                               <PaddingBottom>2pt</PaddingBottom>
                                             </Style>
                                           </Textbox>
+                                          <ColSpan>2</ColSpan>
                                         </CellContents>
                                       </TablixCell>
+                                      <TablixCell />
                                       <TablixCell>
                                         <CellContents>
                                           <Textbox Name="PostedByCaption">
@@ -366,8 +375,10 @@
                                               <PaddingBottom>2pt</PaddingBottom>
                                             </Style>
                                           </Textbox>
+                                          <ColSpan>2</ColSpan>
                                         </CellContents>
                                       </TablixCell>
+                                      <TablixCell />
                                       <TablixCell>
                                         <CellContents>
                                           <Textbox Name="PostingDateCaption">
@@ -464,8 +475,10 @@
                                               <PaddingBottom>2pt</PaddingBottom>
                                             </Style>
                                           </Textbox>
+                                          <ColSpan>2</ColSpan>
                                         </CellContents>
                                       </TablixCell>
+                                      <TablixCell />
                                       <TablixCell>
                                         <CellContents>
                                           <Textbox Name="Textbox43">
@@ -561,8 +574,10 @@
                                               <PaddingBottom>2pt</PaddingBottom>
                                             </Style>
                                           </Textbox>
+                                          <ColSpan>2</ColSpan>
                                         </CellContents>
                                       </TablixCell>
+                                      <TablixCell />
                                       <TablixCell>
                                         <CellContents>
                                           <Textbox Name="Textbox2">
@@ -630,6 +645,36 @@
                                   <TablixRow>
                                     <Height>0.45cm</Height>
                                     <TablixCells>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="RegistrationNo_CompanyInformationCaption">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Parameters!RegistrationNo_CompanyInformationCaption.Value</Value>
+                                                    <Style>
+                                                      <FontSize>8pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <Style>
+                                              <Border>
+                                                <Style>None</Style>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
                                       <TablixCell>
                                         <CellContents>
                                           <Textbox Name="CompanyRegistrationNo">
@@ -727,6 +772,36 @@
                                   <TablixRow>
                                     <Height>0.45cm</Height>
                                     <TablixCells>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="VATRegistrationNo_CompanyInformationCaption">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Parameters!VATRegistrationNo_CompanyInformationCaption.Value</Value>
+                                                    <Style>
+                                                      <FontSize>8pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <Style>
+                                              <Border>
+                                                <Style>None</Style>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
                                       <TablixCell>
                                         <CellContents>
                                           <Textbox Name="CompanyVATRegistrationNo">
@@ -857,6 +932,37 @@
                                       </TablixCell>
                                       <TablixCell>
                                         <CellContents>
+                                          <Textbox Name="Textbox15">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value />
+                                                    <Style>
+                                                      <FontSize>8pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox15</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Style>None</Style>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
                                           <Textbox Name="Textbox53">
                                             <CanGrow>true</CanGrow>
                                             <KeepTogether>true</KeepTogether>
@@ -923,6 +1029,7 @@
                               </TablixBody>
                               <TablixColumnHierarchy>
                                 <TablixMembers>
+                                  <TablixMember />
                                   <TablixMember />
                                   <TablixMember />
                                   <TablixMember />
@@ -1846,59 +1953,6 @@
                 <VerticalAlign>Middle</VerticalAlign>
               </Style>
             </Textbox>
-            <Textbox Name="ExecutionTimeTextBox">
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=Globals!ExecutionTime</Value>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                        <Format>d</Format>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Right</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <Left>14.74998cm</Left>
-              <Height>0.423cm</Height>
-              <Width>3.25001cm</Width>
-              <ZIndex>1</ZIndex>
-              <Style>
-                <VerticalAlign>Middle</VerticalAlign>
-              </Style>
-            </Textbox>
-            <Textbox Name="UserIdTextBox">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=User!UserID</Value>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Right</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <Top>0.88128cm</Top>
-              <Left>14.74998cm</Left>
-              <Height>0.423cm</Height>
-              <Width>3.25002cm</Width>
-              <ZIndex>2</ZIndex>
-              <Style>
-                <VerticalAlign>Middle</VerticalAlign>
-              </Style>
-            </Textbox>
             <Textbox Name="PageNumberTextBox">
               <KeepTogether>true</KeepTogether>
               <Paragraphs>
@@ -1916,11 +1970,10 @@
                   </Style>
                 </Paragraph>
               </Paragraphs>
-              <Top>0.45828cm</Top>
               <Left>14.74998cm</Left>
               <Height>0.423cm</Height>
               <Width>3.25001cm</Width>
-              <ZIndex>3</ZIndex>
+              <ZIndex>1</ZIndex>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -2005,6 +2058,24 @@
       </DefaultValue>
       <Prompt>TotalLbl</Prompt>
     </ReportParameter>
+    <ReportParameter Name="RegistrationNo_CompanyInformationCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>RegistrationNo_CompanyInformationCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>RegistrationNo_CompanyInformationCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="VATRegistrationNo_CompanyInformationCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>VATRegistrationNo_CompanyInformationCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>VATRegistrationNo_CompanyInformationCaption</Prompt>
+    </ReportParameter>
     <ReportParameter Name="PostingDate_InvtShipmentHeaderCaption">
       <DataType>String</DataType>
       <DefaultValue>
@@ -2072,7 +2143,7 @@
   <ReportParametersLayout>
     <GridLayoutDefinition>
       <NumberOfColumns>1</NumberOfColumns>
-      <NumberOfRows>14</NumberOfRows>
+      <NumberOfRows>16</NumberOfRows>
       <CellDefinitions>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
@@ -2112,36 +2183,46 @@
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>7</RowIndex>
-          <ParameterName>PostingDate_InvtShipmentHeaderCaption</ParameterName>
+          <ParameterName>RegistrationNo_CompanyInformationCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>8</RowIndex>
-          <ParameterName>DocumentDate_InvtShipmentHeaderCaption</ParameterName>
+          <ParameterName>VATRegistrationNo_CompanyInformationCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>9</RowIndex>
-          <ParameterName>ItemNo_InvtShipmentLineCaption</ParameterName>
+          <ParameterName>PostingDate_InvtShipmentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>10</RowIndex>
-          <ParameterName>Description_InvtShipmentLineCaption</ParameterName>
+          <ParameterName>DocumentDate_InvtShipmentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>11</RowIndex>
-          <ParameterName>LocationCode_InvtShipmentLineCaption</ParameterName>
+          <ParameterName>ItemNo_InvtShipmentLineCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>12</RowIndex>
-          <ParameterName>UnitofMeasureCode_InvtShipmentLineCaption</ParameterName>
+          <ParameterName>Description_InvtShipmentLineCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>13</RowIndex>
+          <ParameterName>LocationCode_InvtShipmentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>14</RowIndex>
+          <ParameterName>UnitofMeasureCode_InvtShipmentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>15</RowIndex>
           <ParameterName>Quantity_InvtShipmentLineCaption</ParameterName>
         </CellDefinition>
       </CellDefinitions>

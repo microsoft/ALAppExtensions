@@ -1,6 +1,7 @@
 codeunit 20369 "Archival Single Instance"
 {
     SingleInstance = true;
+
     procedure SetSkipTaxAttributeDeletion(NewSkipTaxAttribute: Boolean)
     begin
         SkipTaxAttribute := NewSkipTaxAttribute;

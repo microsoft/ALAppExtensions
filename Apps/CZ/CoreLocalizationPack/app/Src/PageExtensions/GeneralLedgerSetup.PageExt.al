@@ -61,22 +61,22 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
 #pragma warning restore AL0432
         {
 #endif
-                field("User Checks Allowed CZL"; Rec."User Checks Allowed CZL")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies whether extended user controls will be activated based on User setup.';
-                }
-                field("Closed Per. Entry Pos.Date CZL"; Rec."Closed Per. Entry Pos.Date CZL")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the posting date of closed period entries in inventory adjustement';
-                }
-                field("Rounding Date CZL"; Rec."Rounding Date CZL")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the date for the inventory rounding adjustment by inventory adjustement';
-                }
+            field("User Checks Allowed CZL"; Rec."User Checks Allowed CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies whether extended user controls will be activated based on User setup.';
             }
+            field("Closed Per. Entry Pos.Date CZL"; Rec."Closed Per. Entry Pos.Date CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the posting date of closed period entries in inventory adjustement';
+            }
+            field("Rounding Date CZL"; Rec."Rounding Date CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the date for the inventory rounding adjustment by inventory adjustement';
+            }
+        }
 #if CLEAN19
         }
 #endif
@@ -88,5 +88,11 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
                 ToolTip = 'Specifies to share the account schedule in general ledger setup.';
             }
         }
+#if not CLEAN19
+        modify(Other)
+        {
+            Visible = true;
+        }
+#endif
     }
 }

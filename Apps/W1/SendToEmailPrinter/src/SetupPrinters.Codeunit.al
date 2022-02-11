@@ -94,6 +94,8 @@ codeunit 2650 "Setup Printers"
     end;
 
     internal procedure OnQueryClosePrinterSettingsPage(EmailPrinterSettings: Record "Email Printer Settings"): Boolean
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         if EmailPrinterSettings.IsEmpty then
             exit(true);
@@ -108,6 +110,7 @@ codeunit 2650 "Setup Printers"
             ValidatePaperHeight(EmailPrinterSettings."Paper Height");
             ValidatePaperWidth(EmailPrinterSettings."Paper Width");
         end;
+        FeatureTelemetry.LogUptake('0000GG4', EmailPrinterFeatureTelemetryNameTxt, Enum::"Feature Uptake Status"::"Set up");
         exit(true);
     end;
 
@@ -158,6 +161,7 @@ codeunit 2650 "Setup Printers"
         UsedInPrinterSelectionErr: Label 'You cannot delete printer %1. It is used on the Printer Selections page.', Comment = '%1 = Printer ID';
         ClosePageQst: Label 'The email address is not valid. Do you want to exit?';
         EmailPrinterTelemetryCategoryTok: Label 'AL Email Printer', Locked = true;
+        EmailPrinterFeatureTelemetryNameTxt: Label 'Send to Email Print', Locked = true;
         PrinterIDMissingTelemetryTxt: Label 'Printer ID is missing during printer setup.', Locked = true;
         CustomSizeErrorTelemetryTxt: Label 'Custom paper size configured with incorrect height or width.', Locked = true;
         PrintPrivacyUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2120728', Locked = true;

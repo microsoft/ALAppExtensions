@@ -132,9 +132,6 @@ report 31131 "Inventory Account To Date CZA"
                     trigger OnAfterGetRecord()
                     begin
                         CalcFields("Applied Amount CZA");
-                        if ((Amount - "Applied Amount CZA") = 0) and (not ShowApplyEntries) then
-                            CurrReport.Skip();
-
                         RemAmount := Amount - "Applied Amount CZA";
                         if (RemAmount = 0) and (not ShowZeroRemainAmt) then
                             CurrReport.Skip();
@@ -249,5 +246,11 @@ report 31131 "Inventory Account To Date CZA"
     begin
         PrintOnlyOnePerPage := NewPrintOnlyOnePerPage;
         ShowApplyEntries := NewShowApplyEntries;
+    end;
+
+    procedure InitializeRequest(NewPrintOnlyOnePerPage: Boolean; NewShowApplyEntries: Boolean; NewShowZeroRemainAmt: Boolean)
+    begin
+        InitializeRequest(NewPrintOnlyOnePerPage, NewShowApplyEntries);
+        ShowZeroRemainAmt := NewShowZeroRemainAmt;
     end;
 }
