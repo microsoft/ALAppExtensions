@@ -72,6 +72,16 @@ codeunit 4100 "Temp Blob"
     /// <summary>
     /// Creates an OutStream object with the specified encoding for the TempBlob. This enables you to write data to the TempBlob.
     /// </summary>
+    /// <param name="Encoding">The text encoding to use.</param>
+    /// <returns>The OutStream variable with the BLOB content attached.</returns>
+    procedure CreateOutStream(Encoding: TextEncoding) OutStream: OutStream
+    begin
+        TempBlobImpl.CreateOutStream(OutStream, Encoding);
+    end;
+
+    /// <summary>
+    /// Creates an OutStream object with the specified encoding for the TempBlob. This enables you to write data to the TempBlob.
+    /// </summary>
     /// <param name="OutStream">The OutStream variable passed as a VAR to which the BLOB content will be attached.</param>
     /// <param name="Encoding">The text encoding to use.</param>
     procedure CreateOutStream(var OutStream: OutStream; Encoding: TextEncoding)
