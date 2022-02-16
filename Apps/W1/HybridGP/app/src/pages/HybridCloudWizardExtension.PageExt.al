@@ -30,7 +30,7 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
                     group("GPMigrationSettings.2.2")
                     {
                         ShowCaption = false;
-                        InstructionalText = 'Choose whether to migrate inactive customers and vendors or uncheck the boxes to only migrate those that are active.';
+                        InstructionalText = 'Choose whether to migrate inactive customers, vendors and checkbooks, or uncheck the boxes to only migrate those that are active.';
                     }
                 }
             }
