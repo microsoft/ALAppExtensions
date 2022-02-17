@@ -86,7 +86,7 @@ table 4044 "GP Company Migration Settings"
         }
         field(11; "Migrate Inactive Checkbooks"; Boolean)
         {
-            InitValue = false;
+            InitValue = true;
             DataClassification = SystemMetadata;
         }
     }
