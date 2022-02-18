@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -87,6 +87,17 @@ codeunit 4100 "Temp Blob"
     procedure FromRecordRef(RecordRef: RecordRef; FieldNo: Integer)
     begin
         TempBlobImpl.FromRecordRef(RecordRef, FieldNo);
+    end;
+
+    /// <summary>
+    /// Copies the value of the TempBlob to the specified field on the RecordVariant.
+    /// </summary>
+    /// <param name="RecordVariant">Any Record variable.</param>
+    /// <param name="FieldNo">The field number of the Blob field to be written.</param>
+    /// <returns>The Record that was passed.</returns>
+    procedure ToRecord(RecordVariant: Variant; FieldNo: Integer): Variant
+    begin
+        exit(TempBlobImpl.ToRecord(RecordVariant, FieldNo));
     end;
 
     /// <summary>

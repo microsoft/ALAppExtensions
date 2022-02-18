@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -48,6 +48,16 @@ codeunit 4107 "Temp Blob Impl."
     begin
         RecordRef.GetTable(RecordVariant);
         FromRecordRef(RecordRef, FieldNo);
+    end;
+
+    procedure ToRecord(RecordVariant: Variant; FieldNo: Integer): Variant
+    var
+        RecordRef: RecordRef;
+    begin
+        RecordRef.GetTable(RecordVariant);
+        ToRecordRef(RecordRef, FieldNo);
+        RecordRef.SetTable(RecordVariant);
+        exit(RecordVariant);
     end;
 
     procedure FromRecordRef(RecordRef: RecordRef; FieldNo: Integer)
