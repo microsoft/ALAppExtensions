@@ -559,6 +559,24 @@ codeunit 134689 "Email Message Unit Test"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
+    procedure AppendToBodyTestEmptyString()
+    var
+        Message: Codeunit "Email Message";
+        Recipients: List of [Text];
+        Index: Integer;
+    begin
+        // Initialize
+        PermissionsMock.Set('Email Edit');
+
+        // Exercise
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
+        Message.AppendToBody('');
+        // Verify
+        Assert.AreEqual('Test body', Message.GetBody(), 'A different body was expected');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     procedure SetSubjectTest()
     var
         Message: Codeunit "Email Message";
