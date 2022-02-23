@@ -120,12 +120,15 @@ codeunit 8905 "Email Message Impl."
     procedure AppendToBody(BodyText: Text)
     var
         BodyOutStream: OutStream;
+        Body: Text;
     begin
         if BodyText = '' then
             exit;
 
         ReplaceRgbaColorsWithRgb(BodyText);
+        Body := GetBody();
         Message.Body.CreateOutStream(BodyOutStream, TextEncoding::UTF8);
+        BodyOutStream.Write(Body);
         BodyOutStream.Write(BodyText);
         Modify();
     end;
