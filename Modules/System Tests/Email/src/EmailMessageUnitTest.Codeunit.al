@@ -545,7 +545,6 @@ codeunit 134689 "Email Message Unit Test"
     var
         Message: Codeunit "Email Message";
         Recipients: List of [Text];
-        Result: List of [Text];
         Index: Integer;
     begin
         // Initialize
