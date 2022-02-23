@@ -452,6 +452,18 @@ codeunit 8900 "Email Impl"
         exit(false);
     end;
 
+    procedure OpenSentEmails(RecordVariant: Variant)
+    var
+        RecRef: RecordRef;
+        FieldRef: FieldRef;
+    begin
+        if not GetRecordRefFromVariant(RecordVariant, RecRef) then
+            exit;
+
+        FieldRef := RecRef.Field(RecRef.SystemIdNo);
+        OpenSentEmails(RecRef.Number, FieldRef.Value);
+    end;
+
     procedure OpenSentEmails(TableId: Integer; SystemId: Guid)
     var
         SentEmails: Page "Sent Emails";
@@ -470,6 +482,29 @@ codeunit 8900 "Email Impl"
                 not EmailOutBox.ReadPermission() or
                 not EmailOutBox.WritePermission() then
             Error(InsufficientPermissionsErr);
+    end;
+
+    local procedure GetRecordRefFromVariant(RecRelatedVariant: Variant; var ResultRecordRef: RecordRef): Boolean
+    var
+        RecID: RecordID;
+    begin
+        case true of
+            RecRelatedVariant.IsRecord:
+                ResultRecordRef.GetTable(RecRelatedVariant);
+            RecRelatedVariant.IsRecordRef:
+                ResultRecordRef := RecRelatedVariant;
+            RecRelatedVariant.IsRecordId:
+                begin
+                    RecID := RecRelatedVariant;
+                    if RecID.TableNo = 0 then
+                        exit(false);
+                    if not ResultRecordRef.Get(RecID) then
+                        ResultRecordRef.Open(RecID.TableNo);
+                end;
+            else
+                exit(false);
+        end;
+        exit(true);
     end;
 
 }

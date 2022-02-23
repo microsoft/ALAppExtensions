@@ -273,6 +273,15 @@ codeunit 8901 "Email"
         EmailImpl.GetEmailOutboxForRecord(RecordVariant, ResultEmailOutbox);
     end;
 
+    /// <summary>
+    /// Open the sent emails page for a source record.
+    /// </summary>
+    /// <param name="RecordVariant">Source Record / Source RecordRef / Source RecordId</param>
+    procedure OpenSentEmails(RecordVariant: Variant)
+    begin
+        EmailImpl.OpenSentEmails(RecordVariant);
+    end;
+
     ///<summary>
     /// Open the sent emails page for a source record given by its table ID and system ID.
     ///</summary>
