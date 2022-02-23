@@ -531,9 +531,9 @@ codeunit 134689 "Email Message Unit Test"
     begin
         // Initialize
         PermissionsMock.Set('Email Edit');
+        Message.Create(Recipients, 'Test subject', 'Test body', true);
 
         // Exercise
-        Message.Create(Recipients, 'Test subject', 'Test body', true);
         Message.SetBody('Changed test body');
         // Verify
         Assert.AreEqual('Changed test body', Message.GetBody(), 'A different body was expected');
