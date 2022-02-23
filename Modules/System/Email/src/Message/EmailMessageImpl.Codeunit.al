@@ -355,6 +355,36 @@ codeunit 8905 "Email Message Impl."
         end;
     end;
 
+    procedure AddRecipient(RecipientType: Enum "Email Recipient Type"; Recipient: Text)
+    var
+        EmailRecipientRecord: Record "Email Recipient";
+        UniqueRecipients: Dictionary of [Text, Text];
+        Recipients: List of [Text];
+        tmpRecipient: Text;
+    begin
+        if Recipient <> '' then
+            exit;
+        EmailRecipientRecord.SetRange("Email Message Id", Message.Id);
+        EmailRecipientRecord.SetRange("Email Recipient Type", RecipientType);
+
+        if not EmailRecipientRecord.IsEmpty() then
+            EmailRecipientRecord.DeleteAll();
+
+        Recipient := DelChr(Recipient, '<>'); // trim the whitespaces around
+        Recipients := GetRecipients(RecipientType);
+        foreach tmpRecipient in Recipients do
+            if UniqueRecipients.Add(tmpRecipient.ToLower(), tmpRecipient) then;
+
+        if UniqueRecipients.Add(Recipient.ToLower(), Recipient) then begin // Set the recipient key to lowercase to prevent duplicates
+            EmailRecipientRecord.Init();
+            EmailRecipientRecord."Email Message Id" := Message.Id;
+            EmailRecipientRecord."Email Recipient Type" := RecipientType;
+            EmailRecipientRecord."Email Address" := CopyStr(Recipient, 1, MaxStrLen(EmailRecipientRecord."Email Address"));
+
+            EmailRecipientRecord.Insert();
+        end;
+    end;
+
     procedure Attachments_DeleteContent(): Boolean
     var
         MediaId: Guid;

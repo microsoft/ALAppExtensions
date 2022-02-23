@@ -162,6 +162,16 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
+    /// Adds a recipent of a certain type to the email message.
+    /// </summary>
+    /// <param name="RecipientType">Specifies the type of the recipient.</param>
+    /// <param name="Recipient">Specifies the recipient's email address.</param>
+    procedure AddRecipient(RecipientType: Enum "Email Recipient Type"; Recipient: Text)
+    begin
+        EmailMessageImpl.AddRecipient(RecipientType, Recipient);
+    end;
+
+    /// <summary>
     /// Sets the recipents of a certain type of the email message.
     /// </summary>
     /// <param name="RecipientType">Specifies the type of the recipients.</param>
