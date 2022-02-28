@@ -61,9 +61,6 @@ codeunit 11729 "Cash Document-Post CZP"
         PostedCashDocumentHdrCZP.Insert();
         OnAfterPostedCashDocHeaderInsert(PostedCashDocumentHdrCZP, CashDocumentHeaderCZP);
 
-#if not CLEAN17
-        GenJnlPostLine.SetPostFromCashReq(true);
-#endif
         PostHeader();
         PostLines();
 #if not CLEAN18

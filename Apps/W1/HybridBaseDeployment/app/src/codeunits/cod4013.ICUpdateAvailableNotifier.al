@@ -1,6 +1,7 @@
 codeunit 4013 "Intelligent Cloud Notifier"
 {
-    Permissions = TableData "My Notifications" = rimd;
+    Permissions = tabledata "My Notifications" = rimd,
+                  tabledata "Intelligent Cloud" = r;
     SingleInstance = true;
 
     var
@@ -18,7 +19,14 @@ codeunit 4013 "Intelligent Cloud Notifier"
     procedure ShowICUpdateNotification();
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        IntelligentCloud: Record "Intelligent Cloud";
     begin
+        if not IntelligentCloud.Get() then
+            exit;
+
+        if not IntelligentCloud.Enabled then
+            exit;
+
         if IsICNotificationEnabled() and IntelligentCloudSetup.UpdateAvailable() then
             CreateNotification(GetICNotificationGuid(), ICUpdateAvailableTxt, NotificationScope::LocalScope, OpenWizardTxt, 'OpenICUpdateWizard');
     end;

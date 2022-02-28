@@ -132,11 +132,11 @@ codeunit 8904 "Email Message"
     /// </summary>
     /// <param name="AttachmentName">The name of the file attachment.</param>
     /// <param name="ContentType">The Content Type of the file attachment.</param>
-    /// <param name="AttachmentStream">The instream of the attachment.</param>
+    /// <param name="AttachmentInStream">The instream of the attachment.</param>
     /// <returns>True if the attachment was added; otherwise - false.</returns>
-    procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentStream: InStream)
+    procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentInStream: InStream)
     begin
-        EmailMessageImpl.AddAttachment(AttachmentName, ContentType, AttachmentStream);
+        EmailMessageImpl.AddAttachment(AttachmentName, ContentType, AttachmentInStream);
     end;
 
     /// <summary>
@@ -178,10 +178,10 @@ codeunit 8904 "Email Message"
     /// <summary>
     /// Gets the content of the current attachment.
     /// </summary>
-    /// <param name="AttachmentStream">Out parameter with the content of the current attachment.</param>
-    procedure Attachments_GetContent(var AttachmentStream: InStream)
+    /// <param name="AttachmentInStream">Out parameter with the content of the current attachment.</param>
+    procedure Attachments_GetContent(var AttachmentInStream: InStream)
     begin
-        EmailMessageImpl.Attachments_GetContent(AttachmentStream);
+        EmailMessageImpl.Attachments_GetContent(AttachmentInStream);
     end;
 
     /// <summary>

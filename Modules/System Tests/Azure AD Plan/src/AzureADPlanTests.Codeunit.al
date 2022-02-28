@@ -94,7 +94,7 @@ codeunit 132912 "Azure AD Plan Tests"
     var
         AzureADPlan: Codeunit "Azure AD Plan";
         AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
         UserID: Guid;
         PlanID: Guid;
     begin
@@ -105,20 +105,20 @@ codeunit 132912 "Azure AD Plan Tests"
 
         // [GIVEN] a service plan and a user who is entitled to a plan 
         UserId := CreateGuid();
-        CreateGraphUser(GraphUser, UserId);
+        CreateGraphUser(GraphUserInfo, UserId);
         PlanID := AzureADPlanTestLibraries.CreatePlan('TestPlan');
-        PopulateMockGraph(GraphUser, PlanID, 'TestPlan');
+        PopulateMockGraph(GraphUserInfo, PlanID, 'TestPlan');
 
         // [WHEN] checking if the user is entitled to a service plan
         // [THEN] the result should be true
-        LibraryAssert.AreEqual(true, AzureADPlan.IsGraphUserEntitledFromServicePlan(GraphUser), 'The user should be entitled from the service Plan');
+        LibraryAssert.AreEqual(true, AzureADPlan.IsGraphUserEntitledFromServicePlan(GraphUserInfo), 'The user should be entitled from the service Plan');
 
         // [GIVEN] a user who is NOT entitled to any plan
-        CreateGraphUser(GraphUser, UserSecurityId());
+        CreateGraphUser(GraphUserInfo, UserSecurityId());
 
         // [WHEN] checking if the user is entitled to a plan
         // [THEN] the result should be false
-        LibraryAssert.AreEqual(false, AzureADPlan.IsGraphUserEntitledFromServicePlan(GraphUser), 'The user should not be entitled from the service Plan');
+        LibraryAssert.AreEqual(false, AzureADPlan.IsGraphUserEntitledFromServicePlan(GraphUserInfo), 'The user should not be entitled from the service Plan');
     end;
 
     [Test]
@@ -127,7 +127,7 @@ codeunit 132912 "Azure AD Plan Tests"
     procedure TestUpdateUserPlans()
     var
         AzureADPlan: Codeunit "Azure AD Plan";
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
         UserID: Guid;
         PlanID: Guid;
     begin
@@ -139,15 +139,15 @@ codeunit 132912 "Azure AD Plan Tests"
 
         // [GIVEN] a User and a GraphUser with a Plan which is not in the table Plan and a user
         UserId := CreateGuid();
-        CreateGraphUser(GraphUser, UserId);
+        CreateGraphUser(GraphUserInfo, UserId);
         PlanID := CreateGuid();
-        PopulateMockGraph(GraphUser, PlanID, 'TestPlan');
+        PopulateMockGraph(GraphUserInfo, PlanID, 'TestPlan');
 
         LibraryAssert.AreEqual(false, AzureADPlan.DoesPlanExist(PlanID), 'The new Plan should not exist in the table Plan');
         LibraryAssert.AreEqual(false, AzureADPlan.IsPlanAssignedToUser(PlanID, UserID), 'The new Plan should not be assigned to the user');
 
         // [WHEN] updating the User Plans from the GraphUser
-        AzureADPlan.UpdateUserPlans(UserID, GraphUser);
+        AzureADPlan.UpdateUserPlans(UserID, GraphUserInfo);
 
         // [THEN] the new Plan should exist and the User should have the new Plan assigned to him
         LibraryAssert.AreEqual(true, AzureADPlan.DoesPlanExist(PlanID), 'The new Plan should exist in the table Plan');
@@ -320,22 +320,22 @@ codeunit 132912 "Azure AD Plan Tests"
         LibraryAssert.AreEqual(1, AzureADPlan.GetAvailablePlansCount(), 'The Plan table should have only 1 Plan');
     end;
 
-    local procedure PopulateMockGraph(GraphUser: DotNet UserInfo; PlanId: Guid; PlanName: Text)
+    local procedure PopulateMockGraph(GraphUserInfo: DotNet UserInfo; PlanId: Guid; PlanName: Text)
     var
         MockGraphQuery: DotNet MockGraphQuery;
     begin
         MockGraphQuery := MockGraphQuery.MockGraphQuery();
-        MockGraphQuery.AddUser(GraphUser);
-        AddUserPlan(MockGraphQuery, GraphUser, PlanId, PlanName);
+        MockGraphQuery.AddUser(GraphUserInfo);
+        AddUserPlan(MockGraphQuery, GraphUserInfo, PlanId, PlanName);
     end;
 
-    local procedure CreateGraphUser(var GraphUser: DotNet UserInfo; UserId: Guid)
+    local procedure CreateGraphUser(var GraphUserInfo: DotNet UserInfo; UserId: Guid)
     begin
-        GraphUser := GraphUser.UserInfo();
-        GraphUser.ObjectId := UserId;
+        GraphUserInfo := GraphUserInfo.UserInfo();
+        GraphUserInfo.ObjectId := UserId;
     end;
 
-    local procedure AddUserPlan(var MockGraphQuery: DotNet MockGraphQuery; GraphUser: DotNet UserInfo; PlanId: Guid; PlanName: Text)
+    local procedure AddUserPlan(var MockGraphQuery: DotNet MockGraphQuery; GraphUserInfo: DotNet UserInfo; PlanId: Guid; PlanName: Text)
     var
         AssignedPlan: DotNet ServicePlanInfo;
     begin
@@ -344,7 +344,7 @@ codeunit 132912 "Azure AD Plan Tests"
         AssignedPlan.ServicePlanName := PlanName;
         AssignedPlan.CapabilityStatus := 'Enabled';
 
-        MockGraphQuery.AddAssignedPlanToUser(GraphUser, AssignedPlan);
+        MockGraphQuery.AddAssignedPlanToUser(GraphUserInfo, AssignedPlan);
     end;
 
     local procedure DeleteAllFromTablePlanAndUserPlan()

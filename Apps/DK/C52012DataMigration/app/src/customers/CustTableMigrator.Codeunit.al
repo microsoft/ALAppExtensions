@@ -163,7 +163,7 @@ codeunit 1866 "C5 CustTable Migrator"
         CustomerDataMigrationFacade.SetShipmentMethodCode(CreateShipmentMethodIfNeeded(C5CustTable.Delivery));
         CustomerDataMigrationFacade.SetInvoiceDiscCode(CreateCustomerDiscountGroupIfNeeded(C5CustTable.DiscGroup));
 
-        CustomerDataMigrationFacade.SetBlockedType(ConvertBlocked(C5CustTable));
+        CustomerDataMigrationFacade.SetBlocked(ConvertBlocked(C5CustTable));
 
         // reference to another customer
         // to make sure the bill to customer exists

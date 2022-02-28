@@ -27,12 +27,12 @@ codeunit 139756 "SMTP Account Mock"
         AccServer := Value;
     end;
 
-    procedure Authentication(): Enum "SMTP Authentication"
+    procedure Authentication(): Enum "SMTP Authentication Types"
     begin
         exit(AccAuthentication);
     end;
 
-    procedure Authentication(Value: Enum "SMTP Authentication")
+    procedure Authentication(Value: Enum "SMTP Authentication Types")
     begin
         AccAuthentication := Value;
     end;
@@ -110,7 +110,7 @@ codeunit 139756 "SMTP Account Mock"
     var
         AccName: Text[250];
         AccServer: Text[250];
-        AccAuthentication: Enum "SMTP Authentication";
+        AccAuthentication: Enum "SMTP Authentication Types";
         AccUserID: Text[250];
         AccServerPort: Integer;
         AccSecureConnection: Boolean;

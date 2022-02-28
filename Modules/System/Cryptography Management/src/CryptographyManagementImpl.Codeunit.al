@@ -372,7 +372,13 @@ codeunit 1279 "Cryptography Management Impl."
         SignData(DataInStream, XmlString, HashAlgorithm, SignatureOutStream);
     end;
 
+    procedure SignData(InputString: Text; SignatureKey: Codeunit "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+    begin
+        SignData(InputString, SignatureKey.ToXmlString(), HashAlgorithm, SignatureOutStream);
+    end;
+
 #if not CLEAN19
+#pragma warning disable AL0432
     procedure SignData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
     var
         TempBlob: Codeunit "Temp Blob";
@@ -386,6 +392,7 @@ codeunit 1279 "Cryptography Management Impl."
         DataOutStream.WriteText(InputString);
         SignData(DataInStream, SignatureKey, HashAlgorithm, SignatureOutStream);
     end;
+#pragma warning restore
 #endif
 
 #if not CLEAN18
@@ -415,7 +422,13 @@ codeunit 1279 "Cryptography Management Impl."
         ISignatureAlgorithm.SignData(DataInStream, HashAlgorithm, SignatureOutStream);
     end;
 
+    procedure SignData(DataInStream: InStream; SignatureKey: Codeunit "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+    begin
+        SignData(DataInStream, SignatureKey.ToXmlString(), HashAlgorithm, SignatureOutStream);
+    end;
+
 #if not CLEAN19
+#pragma warning disable AL0432
     procedure SignData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
     var
         ISignatureAlgorithm: Interface SignatureAlgorithm;
@@ -427,9 +440,11 @@ codeunit 1279 "Cryptography Management Impl."
             ISignatureAlgorithm.FromXmlString(SignatureKey.ToXmlString());
         ISignatureAlgorithm.SignData(DataInStream, HashAlgorithm, SignatureOutStream);
     end;
+#pragma warning restore
 #endif
 
 #if not CLEAN18
+#pragma warning disable AL0432
     procedure SignData(DataStream: InStream; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
     var
         SignatureKey: Record "Signature Key";
@@ -441,6 +456,7 @@ codeunit 1279 "Cryptography Management Impl."
         SignatureKey.WriteKeyValue(KeyStream);
         SignData(DataStream, SignatureKey, "Hash Algorithm".FromInteger(HashAlgorithmType), SignatureStream);
     end;
+#pragma warning restore
 #endif
 
     procedure VerifyData(InputString: Text; XmlString: Text; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
@@ -458,6 +474,7 @@ codeunit 1279 "Cryptography Management Impl."
     end;
 
 #if not CLEAN19
+#pragma warning disable AL0432
     procedure VerifyData(InputString: Text; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
     var
         TempBlob: Codeunit "Temp Blob";
@@ -471,6 +488,7 @@ codeunit 1279 "Cryptography Management Impl."
         DataOutStream.WriteText(InputString);
         exit(VerifyData(DataInStream, SignatureKey, HashAlgorithm, SignatureInStream));
     end;
+#pragma warning restore
 #endif
 
 #if not CLEAN18
@@ -501,6 +519,7 @@ codeunit 1279 "Cryptography Management Impl."
     end;
 
 #if not CLEAN19
+#pragma warning disable AL0432
     procedure VerifyData(DataInStream: InStream; var SignatureKey: Record "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
     var
         ISignatureAlgorithm: Interface SignatureAlgorithm;
@@ -512,9 +531,11 @@ codeunit 1279 "Cryptography Management Impl."
             ISignatureAlgorithm.FromXmlString(SignatureKey.ToXmlString());
         exit(ISignatureAlgorithm.VerifyData(DataInStream, HashAlgorithm, SignatureInStream));
     end;
+#pragma warning restore
 #endif
 
 #if not CLEAN18
+#pragma warning disable AL0432
     procedure VerifyData(DataStream: InStream; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
     var
         SignatureKey: Record "Signature Key";
@@ -526,6 +547,7 @@ codeunit 1279 "Cryptography Management Impl."
         SignatureKey.FromXmlString("Key");
         exit(VerifyData(DataStream, SignatureKey, "Hash Algorithm".FromInteger(HashAlgorithmType), SignatureStream));
     end;
+#pragma warning restore
 #endif
 
     procedure InitRijndaelProvider()

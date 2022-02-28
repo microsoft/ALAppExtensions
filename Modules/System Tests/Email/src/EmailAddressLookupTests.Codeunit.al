@@ -45,7 +45,7 @@ codeunit 134699 "Email Address Lookup Tests"
 
         // [GIVEN] An email message with a recipient, subject, body and related record
         Message.Create('test@test.com', 'Subject', 'Body');
-        Email.AddRelation(Message, 0, CreateGuid(), Enum::"Email Relation Type"::"Primary Source");
+        Email.AddRelation(Message, 0, CreateGuid(), Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
 
         // [WHEN] Opening the email message in the email editor and performing a Lookup on ToRecipient field
         EditorPage.Trap();
@@ -132,7 +132,7 @@ codeunit 134699 "Email Address Lookup Tests"
 
         // [GIVEN] An email message with a recipient, subject, body and related record
         Message.Create('test@test.com', 'Subject', 'Body');
-        Email.AddRelation(Message, 0, CreateGuid(), Enum::"Email Relation Type"::"Primary Source");
+        Email.AddRelation(Message, 0, CreateGuid(), Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
 
         // [WHEN] Opening the email message in the email editor and performing a Lookup on ToRecipient field
         EditorPage.Trap();
@@ -177,7 +177,7 @@ codeunit 134699 "Email Address Lookup Tests"
 
         // [GIVEN] An email message with a recipient, subject, body and related record
         Message.Create('test@test.com', 'Subject', 'Body');
-        Email.AddRelation(Message, 0, CreateGuid(), Enum::"Email Relation Type"::"Primary Source");
+        Email.AddRelation(Message, 0, CreateGuid(), Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
 
         // [WHEN] Opening the email message in the email editor and performing a Lookup on ToRecipient field
         EditorPage.Trap();

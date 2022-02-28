@@ -1,3 +1,9 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+#if not CLEAN19
 codeunit 11305 "Upgrade BaseApp 19 BE"
 {
     ObsoleteState = Pending;
@@ -31,4 +37,4 @@ codeunit 11305 "Upgrade BaseApp 19 BE"
         UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetCustomerVATLiableTag());
     end;
 }
-
+#endif

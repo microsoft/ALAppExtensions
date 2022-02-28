@@ -180,14 +180,17 @@ codeunit 11742 "VAT Date Handler CZL"
 
     procedure InitVATDateFromRecordCZL(TableNo: Integer)
     var
+        DummyGLEntry: Record "G/L Entry";
+        DummyVATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL";
         DataTypeManagement: Codeunit "Data Type Management";
         RecordRef: RecordRef;
         PostingDateFieldRef: FieldRef;
         VATDateFieldRef: FieldRef;
     begin
         RecordRef.Open(TableNo);
-        DataTypeManagement.FindFieldByName(RecordRef, VATDateFieldRef, 'VAT Date');
-        DataTypeManagement.FindFieldByName(RecordRef, PostingDateFieldRef, 'Posting Date');
+        if not DataTypeManagement.FindFieldByName(RecordRef, VATDateFieldRef, DummyGLEntry.FieldName("VAT Date CZL")) then
+            DataTypeManagement.FindFieldByName(RecordRef, VATDateFieldRef, DummyVATCtrlReportLineCZL.FieldName("VAT Date"));
+        DataTypeManagement.FindFieldByName(RecordRef, PostingDateFieldRef, DummyGLEntry.FieldName("Posting Date"));
         VATDateFieldRef.SetRange(0D);
         PostingDateFieldRef.SetFilter('<>%1', 0D);
         if RecordRef.FindSet(true) then

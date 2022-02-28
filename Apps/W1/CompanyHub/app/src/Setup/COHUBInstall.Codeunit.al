@@ -13,7 +13,7 @@ codeunit 1160 "COHUB Install"
         InstallPerCompany();
     end;
 
-    var 
+    var
         CompanyHubTok: Label 'D365 COMPANY HUB', Locked = true;
         CompanyHubDescriptionTxt: Label 'Dyn. 365 Company Hub';
 
@@ -61,12 +61,12 @@ codeunit 1160 "COHUB Install"
     end;
 
     local procedure AddPermission(ObjectId: Integer)
-    var 
+    var
         Permission: Record Permission;
         CompanyHubCode: Code[20];
     begin
         CompanyHubCode := CopyStr(CompanyHubTok, 1, MaxStrLen(Permission."Role ID"));
-        
+
         Permission."Role ID" := CompanyHubCode;
         Permission."Object Type" := Permission."Object Type"::"Table Data";
         Permission."Object ID" := ObjectId;
@@ -87,7 +87,9 @@ codeunit 1160 "COHUB Install"
         if UserGroup.Get(CompanyHubCode) then
             exit;
 
+#pragma warning disable AA0210
         AllProfile.SetRange("Role Center ID", Page::"Business Manager Role Center");
+#pragma warning restore AA0210
         AllProfile.SetRange(Scope, AllProfile.Scope::Tenant);
         AllProfile.FindFirst();
 
@@ -154,7 +156,7 @@ codeunit 1160 "COHUB Install"
     var
         Company: Record Company;
         COHUBCompanyKPI: Record "COHUB Company KPI";
-        EnviromentCompanyEndpoint: Record "COHUB Company Endpoint";
+        COHUBCompanyEndpoint: Record "COHUB Company Endpoint";
         COHUBEnviroment: Record "COHUB Enviroment";
         COHUBUserTask: Record "COHUB User Task";
         COHUBGroupCompanySummary: Record "COHUB Group Company Summary";
@@ -169,13 +171,13 @@ codeunit 1160 "COHUB Install"
         DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Company KPI", COHUBCompanyKPI.FieldNo("Company Name"));
         DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Company KPI", COHUBCompanyKPI.FieldNo("Assigned To"));
         DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Company KPI", COHUBCompanyKPI.FieldNo("Contact Name"));
-        DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Company KPI", COHUBCompanyKPI.FieldNo("Name"));
+        DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Company KPI", COHUBCompanyKPI.FieldNo("Environment Name"));
 
         DataClassificationMgt.SetTableFieldsToNormal(Database::"COHUB Company Endpoint");
-        DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Company Endpoint", EnviromentCompanyEndpoint.FieldNo("Company Display Name"));
-        DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Company Endpoint", EnviromentCompanyEndpoint.FieldNo("Company Name"));
-        DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Company Endpoint", EnviromentCompanyEndpoint.FieldNo("Assigned To"));
-        DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Company Endpoint", EnviromentCompanyEndpoint.FieldNo("ODATA Company URL"));
+        DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Company Endpoint", COHUBCompanyEndpoint.FieldNo("Company Display Name"));
+        DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Company Endpoint", COHUBCompanyEndpoint.FieldNo("Company Name"));
+        DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Company Endpoint", COHUBCompanyEndpoint.FieldNo("Assigned To"));
+        DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Company Endpoint", COHUBCompanyEndpoint.FieldNo("ODATA Company URL"));
 
         DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Enviroment", COHUBEnviroment.FieldNo(Link));
 
@@ -189,7 +191,7 @@ codeunit 1160 "COHUB Install"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"COHUB Group");
 
         DataClassificationMgt.SetTableFieldsToNormal(Database::"COHUB Group Company Summary");
-        DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Group Company Summary", COHUBGroupCompanySummary.FieldNo("Enviroment Name"));
+        DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Group Company Summary", COHUBGroupCompanySummary.FieldNo("Environment Name"));
         DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Group Company Summary", COHUBGroupCompanySummary.FieldNo("Company Display Name"));
         DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Group Company Summary", COHUBGroupCompanySummary.FieldNo("Company Name"));
         DataClassificationMgt.SetFieldToPersonal(Database::"COHUB Group Company Summary", COHUBGroupCompanySummary.FieldNo("Assigned To"));

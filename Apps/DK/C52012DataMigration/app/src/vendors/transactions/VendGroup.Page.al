@@ -17,6 +17,7 @@ page 1893 "C5 VendGroup"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(Group;Group) { ApplicationArea=All; }
                 field(GroupName;GroupName) { ApplicationArea=All; }
                 field(InventoryInflowAcc;InventoryInflowAcc) { ApplicationArea=All; }
@@ -27,6 +28,7 @@ page 1893 "C5 VendGroup"
                 field(GroupAccount;GroupAccount) { ApplicationArea=All; }
                 field(CashPayment;CashPayment) { ApplicationArea=All; }
                 field(LineDisc;LineDisc) { ApplicationArea=All; }                
+#pragma warning restore
             }
         }
     }

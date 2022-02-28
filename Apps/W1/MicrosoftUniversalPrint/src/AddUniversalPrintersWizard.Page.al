@@ -64,8 +64,13 @@ page 2752 "Add Universal Printers Wizard"
                             Hyperlink(UniversalPrintUrlTxt);
                         end;
                     }
+#if not CLEAN20
                     field(Privacy; PrivacyLbl)
                     {
+                        ObsoleteReason = 'Field is no longer used due to privacy notice above.';
+                        ObsoleteState = Pending;
+                        ObsoleteTag = '20.0';
+                        Visible = false;
                         ApplicationArea = All;
                         Editable = false;
                         ShowCaption = false;
@@ -78,15 +83,46 @@ page 2752 "Add Universal Printers Wizard"
                     }
                     label(EmptySpace1)
                     {
+                        ObsoleteReason = 'Empty space no longer needed.';
+                        ObsoleteState = Pending;
+                        ObsoleteTag = '20.0';
+                        Visible = false;
                         ApplicationArea = All;
                         ShowCaption = false;
                         Caption = '';
                     }
+#endif
                 }
                 group("Para0.2")
                 {
                     Caption = 'Let''s go!';
                     InstructionalText = 'Choose Next to get started.';
+                }
+            }
+            group(PrivacyNoticeStep)
+            {
+                ShowCaption = false;
+                Visible = CurrentStep = CurrentStep::PrivacyNotice;
+                group(PrivacyNoticeInner)
+                {
+                    Caption = 'Your privacy is important to us';
+                    
+                    label(PrivacyNoticeLabel)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'This feature utilizes Microsoft Universal Print. By continuing you are affirming that you understand that the data handling and compliance standards of Microsoft Universal Print may not be the same as those provided by Microsoft Dynamics 365 Business Central. Please consult the documentation for Universal Print to learn more.';
+                    }
+                    field(PrivacyNoticeStatement; PrivacyStatementTxt)
+                    {
+                        ApplicationArea = All;
+                        Editable = false;
+                        ShowCaption = false;
+
+                        trigger OnDrillDown()
+                        begin
+                            Hyperlink('https://go.microsoft.com/fwlink/?linkid=831305');
+                        end;
+                    }
                 }
             }
             group(OnPremAadSetup)
@@ -299,11 +335,11 @@ page 2752 "Add Universal Printers Wizard"
 
     trigger OnInit()
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
         LoadTopBanners();
 
-        IsOnPrem := EnvironmentInfo.IsOnPrem();
+        IsOnPrem := EnvironmentInformation.IsOnPrem();
     end;
 
     trigger OnOpenPage()
@@ -434,7 +470,7 @@ page 2752 "Add Universal Printers Wizard"
         UniversalPrintGraphHelper: Codeunit "Universal Print Graph Helper";
         UniversalPrinterSetup: Codeunit "Universal Printer Setup";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        CurrentStep: Option Intro,OnPremAadSetup,AutoAdd,Done;
+        CurrentStep: Option Intro,PrivacyNotice,OnPremAadSetup,AutoAdd,Done;
         TopBannerVisible: Boolean;
         NextEnabled: Boolean;
         BackEnabled: Boolean;
@@ -453,8 +489,11 @@ page 2752 "Add Universal Printers Wizard"
         LearnMoreSignupTxt: Label 'Learn more and sign up!';
         LearnMoreAzureAppTxt: Label 'Learn more about registering an Azure AD application';
         AzureAppLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2150045', Locked = true;
+#if not CLEAN20
         PrivacyLbl: Label 'Learn more about how the data is handled.';
         PrivacyUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=724009', Locked = true;
+#endif
         LearnMoreUniversalPrintPortalTxt: Label 'Universal Print portal';
+        PrivacyStatementTxt: Label 'Learn more about our Privacy Statement.';
 }
 

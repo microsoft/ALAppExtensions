@@ -28,26 +28,26 @@ report 11714 "Joining G/L Account Adj. CZL"
                 WindowDialog.Update(1, Round((9999 / i) * j, 1));
 
                 DocumentNo := GetDocumentNoBySortingType(GLEntryFilter);
-                if TempGLAccountAdjustmentBuffer.Get(DocumentNo) then begin
-                    TempGLAccountAdjustmentBuffer.Amount += GLEntryFilter.Amount;
-                    TempGLAccountAdjustmentBuffer."Debit Amount" += GLEntryFilter."Debit Amount";
-                    TempGLAccountAdjustmentBuffer."Credit Amount" += GLEntryFilter."Credit Amount";
-                    if ShowPostingDate and (TempGLAccountAdjustmentBuffer."Posting Date" = 0D) and (GLEntryFilter."Posting Date" <> 0D) then
-                        TempGLAccountAdjustmentBuffer."Posting Date" := GLEntryFilter."Posting Date";
-                    if ShowDescription and (TempGLAccountAdjustmentBuffer.Description = '') and (GLEntryFilter.Description <> '') then
-                        TempGLAccountAdjustmentBuffer.Description := GLEntryFilter.Description;
-                    TempGLAccountAdjustmentBuffer.Modify();
+                if TempGLAccountAdjustBufferCZL.Get(DocumentNo) then begin
+                    TempGLAccountAdjustBufferCZL.Amount += GLEntryFilter.Amount;
+                    TempGLAccountAdjustBufferCZL."Debit Amount" += GLEntryFilter."Debit Amount";
+                    TempGLAccountAdjustBufferCZL."Credit Amount" += GLEntryFilter."Credit Amount";
+                    if ShowPostingDate and (TempGLAccountAdjustBufferCZL."Posting Date" = 0D) and (GLEntryFilter."Posting Date" <> 0D) then
+                        TempGLAccountAdjustBufferCZL."Posting Date" := GLEntryFilter."Posting Date";
+                    if ShowDescription and (TempGLAccountAdjustBufferCZL.Description = '') and (GLEntryFilter.Description <> '') then
+                        TempGLAccountAdjustBufferCZL.Description := GLEntryFilter.Description;
+                    TempGLAccountAdjustBufferCZL.Modify();
                 end else begin
-                    TempGLAccountAdjustmentBuffer.Init();
-                    TempGLAccountAdjustmentBuffer."Document No." := DocumentNo;
-                    TempGLAccountAdjustmentBuffer.Amount := GLEntryFilter.Amount;
-                    TempGLAccountAdjustmentBuffer."Debit Amount" := GLEntryFilter."Debit Amount";
-                    TempGLAccountAdjustmentBuffer."Credit Amount" := GLEntryFilter."Credit Amount";
+                    TempGLAccountAdjustBufferCZL.Init();
+                    TempGLAccountAdjustBufferCZL."Document No." := DocumentNo;
+                    TempGLAccountAdjustBufferCZL.Amount := GLEntryFilter.Amount;
+                    TempGLAccountAdjustBufferCZL."Debit Amount" := GLEntryFilter."Debit Amount";
+                    TempGLAccountAdjustBufferCZL."Credit Amount" := GLEntryFilter."Credit Amount";
                     if ShowPostingDate then
-                        TempGLAccountAdjustmentBuffer."Posting Date" := GLEntryFilter."Posting Date";
+                        TempGLAccountAdjustBufferCZL."Posting Date" := GLEntryFilter."Posting Date";
                     if ShowDescription then
-                        TempGLAccountAdjustmentBuffer.Description := GLEntryFilter.Description;
-                    TempGLAccountAdjustmentBuffer.Insert();
+                        TempGLAccountAdjustBufferCZL.Description := GLEntryFilter.Description;
+                    TempGLAccountAdjustBufferCZL.Insert();
                 end;
             end;
 
@@ -61,22 +61,22 @@ report 11714 "Joining G/L Account Adj. CZL"
         dataitem(EntryBuffer; "Integer")
         {
             DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
-            column(EntryBuffer_DocumentNo; TempGLAccountAdjustmentBuffer."Document No.")
+            column(EntryBuffer_DocumentNo; TempGLAccountAdjustBufferCZL."Document No.")
             {
             }
-            column(EntryBuffer_Amount; TempGLAccountAdjustmentBuffer.Amount)
+            column(EntryBuffer_Amount; TempGLAccountAdjustBufferCZL.Amount)
             {
             }
-            column(EntryBuffer_DebitAmount; TempGLAccountAdjustmentBuffer."Debit Amount")
+            column(EntryBuffer_DebitAmount; TempGLAccountAdjustBufferCZL."Debit Amount")
             {
             }
-            column(EntryBuffer_CreditAmount; TempGLAccountAdjustmentBuffer."Credit Amount")
+            column(EntryBuffer_CreditAmount; TempGLAccountAdjustBufferCZL."Credit Amount")
             {
             }
-            column(EntryBuffer_Description; TempGLAccountAdjustmentBuffer.Description)
+            column(EntryBuffer_Description; TempGLAccountAdjustBufferCZL.Description)
             {
             }
-            column(EntryBuffer_PostingDate; TempGLAccountAdjustmentBuffer."Posting Date")
+            column(EntryBuffer_PostingDate; TempGLAccountAdjustBufferCZL."Posting Date")
             {
             }
             dataitem(GLEntry; "G/L Entry")
@@ -114,24 +114,24 @@ report 11714 "Joining G/L Account Adj. CZL"
                     GLEntry.CopyFilters(GLEntryFilter);
                     if SortingType = 0 then begin
                         GLEntry.SetCurrentKey("Document No.");
-                        GLEntry.SetRange("Document No.", TempGLAccountAdjustmentBuffer."Document No.");
+                        GLEntry.SetRange("Document No.", TempGLAccountAdjustBufferCZL."Document No.");
                     end else
-                        GLEntry.SetRange("External Document No.", TempGLAccountAdjustmentBuffer."Document No.");
+                        GLEntry.SetRange("External Document No.", TempGLAccountAdjustBufferCZL."Document No.");
                 end;
             }
             trigger OnAfterGetRecord()
             begin
                 if EntryBuffer.Number <> 1 then
-                    if TempGLAccountAdjustmentBuffer.Next() = 0 then
+                    if TempGLAccountAdjustBufferCZL.Next() = 0 then
                         CurrReport.Break();
 
-                if TempGLAccountAdjustmentBuffer.Amount = 0 then
+                if TempGLAccountAdjustBufferCZL.Amount = 0 then
                     CurrReport.Skip();
             end;
 
             trigger OnPreDataItem()
             begin
-                if not TempGLAccountAdjustmentBuffer.FindSet() then
+                if not TempGLAccountAdjustBufferCZL.FindSet() then
                     CurrReport.Quit();
             end;
         }
@@ -193,7 +193,7 @@ report 11714 "Joining G/L Account Adj. CZL"
     end;
 
     var
-        TempGLAccountAdjustmentBuffer: Record "G/L Account Adjustment Buffer" temporary;
+        TempGLAccountAdjustBufferCZL: Record "G/L Account Adjust. Buffer CZL" temporary;
         WindowDialog: Dialog;
         GLEntryFilters: Text;
         SortingType: Option DocumentNo,ExternalDocumentNo,Combination;

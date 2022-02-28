@@ -30,9 +30,13 @@ permissionset 1258 "Cryptography Mgt. - Objects"
                   Codeunit "AesCryptoServiceProvider Impl." = X,
                   Codeunit "TripleDESCryptoSvcProv. Impl." = X,
                   Codeunit EncryptedXml = X,
-                  codeunit "EncryptedXml Impl." = X,
-                  Page "Data Encryption Management" = X,
+                  Codeunit "EncryptedXml Impl." = X,
+                  Codeunit "Signature Key" = X,
+                  Codeunit "Signature Key Impl." = X,
 #if not CLEAN19
-                  Table "Signature Key" = X;
-#endif
+#pragma warning disable AL0432
+                  Table "Signature Key" = X,
+#pragma warning restore                  
+#endif           
+                  Page "Data Encryption Management" = X;
 }

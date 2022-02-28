@@ -1,5 +1,10 @@
+#if not CLEAN20
 codeunit 1084 "MS - Wallet Merchant Mgt"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
+
     var
         MSWalletSignUpBaseUrlTxt: Label 'MSWalletSignUpUrl', Locked = true;
         MSWalletMerchantAPITxt: Label 'MSWalletMerchantAPI', Locked = true;
@@ -33,7 +38,7 @@ codeunit 1084 "MS - Wallet Merchant Mgt"
         TermsOfServiceNotAcceptedInvErr: Label 'You must accept the Microsoft Pay Payments terms of service before you can continue.';
         EmptyAccessTokenTxt: Label 'Received empty Access Token for resource: %1.', Locked = true;
 
-    [Scope('Internal')]
+    [Scope('OnPrem')]
     procedure GetMerchantSignupUrl(): Text;
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
@@ -335,4 +340,4 @@ codeunit 1084 "MS - Wallet Merchant Mgt"
         exit(true);
     end;
 }
-
+#endif

@@ -73,7 +73,7 @@ page 31271 "Compens. Report Selections CZC"
     end;
 
     var
-        ReportUsage2: Enum "Compens. Report Sel. Usage CZC";
+        ReportUsage2: Enum "Compens. Report Sel. Usage CZC";
 
     local procedure SetUsageFilter()
     begin

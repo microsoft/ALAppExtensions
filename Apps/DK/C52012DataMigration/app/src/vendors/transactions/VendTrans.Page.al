@@ -17,6 +17,7 @@ page 1894 "C5 VendTrans"
         {
             repeater(General)
             {
+#pragma warning disable AA0218
                 field(BudgetCode;BudgetCode) { ApplicationArea=All; }
                 field(Account;Account) { ApplicationArea=All; }
                 field(Department;Department) { ApplicationArea=All; }
@@ -52,6 +53,7 @@ page 1894 "C5 VendTrans"
                 field(ExchRateTri;ExchRateTri) { ApplicationArea=All; }
                 field(Centre;Centre) { ApplicationArea=All; }
                 field(Purpose;Purpose) { ApplicationArea=All; }
+#pragma warning restore
             }
         }
     }

@@ -125,7 +125,9 @@ codeunit 130500 "Any"
         if MinNumberOfDays >= MaxNumberOfDays then
             exit(StartingDate);
 
+#pragma warning disable AA0217
         exit(CalcDate(StrSubstNo('<+%1D>', IntegerInRange(MinNumberOfDays, MaxNumberOfDays)), StartingDate));
+#pragma warning restore
     end;
 
     /// <summary>

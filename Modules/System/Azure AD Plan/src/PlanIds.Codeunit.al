@@ -16,6 +16,7 @@ codeunit 9027 "Plan Ids"
     end;
 
     var
+        M365CollaborationPlanGUIDTxt: Label '{57ff2da0-773e-42df-b2af-ffb7a2317929}', Locked = true;
         TeamMemberPlanGUIDTxt: Label '{d9a6391b-8970-4976-bd94-5f205007c8d8}', Locked = true;
         EssentialPlanGUIDTxt: Label '{920656a2-7dd8-4c83-97b6-a356414dbd36}', Locked = true;
         PremiumPlanGUIDTxt: Label '{8e9002c0-a1d8-4465-b952-817d2948e6e2}', Locked = true;
@@ -53,6 +54,15 @@ codeunit 9027 "Plan Ids"
     procedure GetTeamMemberPlanId(): Guid
     begin
         exit(TeamMemberPlanGUIDTxt);
+    end;
+
+    /// <summary>
+    /// Returns the ID for the Microsoft 365 Collaboration plan.
+    /// </summary>
+    /// <returns>The ID for the Microsoft 365 Collaboration plan.</returns>
+    procedure GetM365CollaborationPlanId(): Guid
+    begin
+        exit(M365CollaborationPlanGUIDTxt);
     end;
 
     /// <summary>

@@ -1,6 +1,6 @@
 #if not CLEAN19
 #pragma warning disable AL0432,AL0603
-codeunit 31342 "Sync.Dep.Fld-IssPaymOrdLn CZB"
+codeunit 31342 "Sync.Dep.Fld-IssPaymOrdLn CZB"
 {
     Access = Internal;
     Permissions = tabledata "Issued Payment Order Line" = rimd,
@@ -82,9 +82,6 @@ codeunit 31342 "Sync.Dep.Fld-IssPaymOrdLn CZB"
         IssPaymentOrderLineCZB."SWIFT Code" := IssuedPaymentOrderLine."SWIFT Code";
         IssPaymentOrderLineCZB.Status := IssuedPaymentOrderLine.Status;
         IssPaymentOrderLineCZB.Name := IssuedPaymentOrderLine.Name;
-        IssPaymentOrderLineCZB."VAT Unreliable Payer" := IssuedPaymentOrderLine."VAT Uncertainty Payer";
-        IssPaymentOrderLineCZB."Public Bank Account" := IssuedPaymentOrderLine."Public Bank Account";
-        IssPaymentOrderLineCZB."Third Party Bank Account" := IssuedPaymentOrderLine."Third Party Bank Account";
         IssPaymentOrderLineCZB."Payment Method Code" := IssuedPaymentOrderLine."Payment Method Code";
         IssPaymentOrderLineCZB.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Iss. Payment Order Line CZB");
@@ -185,9 +182,6 @@ codeunit 31342 "Sync.Dep.Fld-IssPaymOrdLn CZB"
         IssuedPaymentOrderLine."SWIFT Code" := IssPaymentOrderLineCZB."SWIFT Code";
         IssuedPaymentOrderLine.Status := IssPaymentOrderLineCZB.Status.AsInteger();
         IssuedPaymentOrderLine.Name := IssPaymentOrderLineCZB.Name;
-        IssuedPaymentOrderLine."VAT Uncertainty Payer" := IssPaymentOrderLineCZB."VAT Unreliable Payer";
-        IssuedPaymentOrderLine."Public Bank Account" := IssPaymentOrderLineCZB."Public Bank Account";
-        IssuedPaymentOrderLine."Third Party Bank Account" := IssPaymentOrderLineCZB."Third Party Bank Account";
         IssuedPaymentOrderLine."Payment Method Code" := IssPaymentOrderLineCZB."Payment Method Code";
         IssuedPaymentOrderLine.Modify(false);
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Issued Payment Order Line");

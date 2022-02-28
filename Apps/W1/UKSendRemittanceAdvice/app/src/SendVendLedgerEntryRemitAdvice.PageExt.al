@@ -38,12 +38,16 @@ pageextension 4023 SendVendLedgerEntryRemitAdvice extends "Vendor Ledger Entries
     var
         DocumentSendingProfile: Record "Document Sending Profile";
         DummyReportSelections: Record "Report Selections";
+        ReportSelectionInteger: Integer;
     begin
         IF NOT VendorLedgerEntry.FindSet() THEN
             EXIT;
 
+        DummyReportSelections.Usage := DummyReportSelections.Usage::"P.V.Remit.";
+        ReportSelectionInteger := DummyReportSelections.Usage.AsInteger();
+
         DocumentSendingProfile.SendVendorRecords(
-            DummyReportSelections.Usage::"P.V.Remit.", VendorLedgerEntry, RemittanceAdviceTxt, "Vendor No.", "Document No.",
+            ReportSelectionInteger, VendorLedgerEntry, RemittanceAdviceTxt, "Vendor No.", "Document No.",
             VendorLedgerEntry.FIELDNO("Vendor No."), VendorLedgerEntry.FIELDNO("Document No."));
     end;
 

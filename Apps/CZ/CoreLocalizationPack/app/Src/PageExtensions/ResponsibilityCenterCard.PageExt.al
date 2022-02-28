@@ -6,6 +6,8 @@ pageextension 31101 "Responsibility Center Card CZL" extends "Responsibility Cen
         {
             group(PaymentsCZL)
             {
+                Caption = 'Payments';
+
                 field("Default Bank Account Code CZL"; Rec."Default Bank Account Code CZL")
                 {
                     ApplicationArea = Basic, Suite;

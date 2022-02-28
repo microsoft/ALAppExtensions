@@ -1,3 +1,4 @@
+#if not CLEAN20
 pageextension 1088 "MS - Wallet Payment Services" extends "BC O365 Payment Services"
 {
     layout
@@ -40,7 +41,7 @@ pageextension 1088 "MS - Wallet Payment Services" extends "BC O365 Payment Servi
                 visible = not IsMerchantIdSet and UserHasPermissions;
                 field("SetUpMsPayLinkControl"; MsPaySetupLbl)
                 {
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                     Editable = false;
                     ShowCaption = false;
                     ToolTip = 'Initiates the steps required to set up Microsoft Pay Payments for this company.';
@@ -66,7 +67,7 @@ pageextension 1088 "MS - Wallet Payment Services" extends "BC O365 Payment Servi
                 Visible = IsMerchantIdSet and UserHasPermissions;
                 field("MsPaySettingsLinkControl"; MsPaySettingsLbl)
                 {
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                     Editable = false;
                     ShowCaption = false;
 
@@ -115,9 +116,9 @@ pageextension 1088 "MS - Wallet Payment Services" extends "BC O365 Payment Servi
     var
         DummyMSWalletMerchantAccount: Record "MS - Wallet Merchant Account";
         AzureADUserManagement: Codeunit "Azure AD User Management";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        if not EnvironmentInfo.IsSaaS() then
+        if not EnvironmentInformation.IsSaaS() then
             exit(DummyMSWalletMerchantAccount.WritePermission());
 
         if AzureADUserManagement.IsUserTenantAdmin() then
@@ -138,3 +139,4 @@ pageextension 1088 "MS - Wallet Payment Services" extends "BC O365 Payment Servi
         TelemetryCategoryTok: Label 'AL MSPAY', Locked = true;
         UserWithoutPermissionsMsg: Label 'An Invoicing user without permissions saw the corresponding label in the Microsoft Pay Payments settings page.', Locked = true;
 }
+#endif

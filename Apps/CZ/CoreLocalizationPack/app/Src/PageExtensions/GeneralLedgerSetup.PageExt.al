@@ -89,10 +89,12 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
             }
         }
 #if not CLEAN19
+#pragma warning disable AL0432
         modify(Other)
         {
             Visible = true;
         }
+#pragma warning restore AL0432
 #endif
     }
 }

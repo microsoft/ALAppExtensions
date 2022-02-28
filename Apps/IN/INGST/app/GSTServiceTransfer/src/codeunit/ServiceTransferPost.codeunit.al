@@ -16,14 +16,17 @@ codeunit 18350 "Service Transfer Post"
         TempGSTPostingBufferFinal: Record "GST Posting Buffer" temporary;
         ServiceTransferHeader: Record "Service Transfer Header";
         GenJnlLine: Record "Gen. Journal Line";
+        GLSetup: Record "General Ledger Setup";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
+        GenJnlPostPreview: Codeunit "Gen. Jnl.-Post Preview";
         SourceCode: Code[10];
         PostedServiceTransferShptDocNo: Code[20];
         PostedServiceTransferRcptDocNo: Code[20];
         TransferAmount: Decimal;
         GSTAmount: Decimal;
-        ControlAccount: Boolean;
         InvoiceRoundingAmount: Decimal;
+        ControlAccount: Boolean;
+        PreviewMode: Boolean;
         ShipReceiveQst: Label '&Ship,&Receive';
         SameLocErr: Label 'Service Transfer order %1 canNot be posted because %2 and %3 are the same.', Comment = '%1 = Transfer Order;%2 = From Location;%3 = To Location';
         ServTransDimErr: Label 'The combination of dimensions used in Service Transfer order %1 is blocked. %2.', Comment = '%1 = Order No ;%2 = Error';
@@ -34,6 +37,7 @@ codeunit 18350 "Service Transfer Post"
         ServiceTranTxt: Label 'Service Transfer - %1', Comment = '%1 = Transfer Doc ';
         ServTransDelMsg: Label 'Service Transfer Order %1 has been deleted.', Comment = '%1 = Service Transfer Order No';
         LocationCodeErr: Label 'Please specIfy the Location Code or Location GST Registration No. for the selected Document.';
+        ServiceTransferLineErr: Label 'There is nothing to post. Service Transfer Line not available for the selected Document.';
 
     local procedure InsertDetailedGSTLedgerEnfo(
             DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
@@ -80,29 +84,31 @@ codeunit 18350 "Service Transfer Post"
     local procedure Code()
     var
         ServiceTransferLine: Record "Service Transfer Line";
-        GLSetup: Record "General Ledger Setup";
         DefaultNumber: Integer;
-        Selection: Option " ",Shipment,Receipt;
     begin
         ServiceTransferLine.SetRange("Document No.", ServiceTransferHeader."No.");
         if ServiceTransferLine.FindSet() then
             repeat
-                if not ServiceTransferLine.Shipped and (DefaultNumber = 0)
-                then
+                if not ServiceTransferLine.Shipped and (DefaultNumber = 0) then
                     DefaultNumber := 1;
-                if ServiceTransferLine.Shipped and (DefaultNumber = 0)
-                then
+                if ServiceTransferLine.Shipped and (DefaultNumber = 0) then
                     DefaultNumber := 2;
             until (ServiceTransferLine.Next() = 0) or (DefaultNumber > 0);
 
         if DefaultNumber = 0 then
-            DefaultNumber := 1;
+            Error(ServiceTransferLineErr);
 
+        PostingSelection(DefaultNumber);
+
+        if PreviewMode then
+            GenJnlPostPreview.ThrowError();
+    end;
+
+    local procedure PostingSelection(DefaultNumber: Integer)
+    begin
         GLSetup.Get();
-        Selection := StrMenu(ShipReceiveQst, DefaultNumber);
-        case Selection of
-            0:
-                exit;
+
+        case StrMenu(ShipReceiveQst, DefaultNumber) of
             1:
                 ServiceTransferPostShipment(ServiceTransferHeader);
             2:
@@ -114,7 +120,6 @@ codeunit 18350 "Service Transfer Post"
     var
         ServiceTransferLine: Record "Service Transfer Line";
         SourceCodeSetup: Record "Source Code Setup";
-        GLSetup: Record "General Ledger Setup";
         GSTBaseValidation: Codeunit "GST Base Validation";
         DocTransferType: Enum "Service Doc Transfer Type";
         GSTRoundingAmount: Decimal;
@@ -197,7 +202,6 @@ codeunit 18350 "Service Transfer Post"
     var
         SourceCodeSetup: Record "Source Code Setup";
         ServiceTransferLine: Record "Service Transfer Line";
-        GLSetup: Record "General Ledger Setup";
         GSTBaseValidation: Codeunit "GST Base Validation";
         DocTransferType: Enum "Service Doc Transfer Type";
         GSTRoundingAmount: Decimal;
@@ -266,7 +270,10 @@ codeunit 18350 "Service Transfer Post"
 
         ControlAccount := true;
         PostTransLineToGenJnlLine(ServiceTransferHeader, false);
-        DeleteOneServiceTransferOrder();
+
+        if not PreviewMode then
+            DeleteOneServiceTransferOrder();
+
         Window.Close();
     end;
 
@@ -1186,5 +1193,54 @@ codeunit 18350 "Service Transfer Post"
                     IsHandled := true;
                 end;
         end;
+    end;
+
+    procedure PreviewDocument(var ServiceTransferHeader: Record "Service Transfer Header" temporary)
+    var
+        ServiceTransferPost: Codeunit "Service Transfer Post";
+        GSTPreviewHandler: Codeunit "GST Preview Handler";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforePreviewDocument(ServiceTransferHeader, IsHandled);
+        if IsHandled then
+            exit;
+
+        GSTPreviewHandler.ClearBuffers();
+        GenJnlPostPreview.Preview(ServiceTransferPost, ServiceTransferHeader);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Preview", 'OnRunPreview', '', false, false)]
+    local procedure OnRunPreviewForServiceTransfer(var Result: Boolean; Subscriber: Variant; RecVar: Variant)
+    var
+        RecRef: RecordRef;
+    begin
+        if not RecVar.IsRecord() then
+            exit;
+
+        RecRef.GetTable(RecVar);
+        if RecRef.Number() <> Database::"Service Transfer Header" then
+            exit;
+
+        RunServiceTransferPreview(Result, Subscriber, RecVar);
+    end;
+
+    local procedure RunServiceTransferPreview(var Result: Boolean; Subscriber: Variant; RecVar: Variant)
+    var
+        ServiceTransferPost: Codeunit "Service Transfer Post";
+    begin
+        ServiceTransferPost := Subscriber;
+        ServiceTransferPost.SetPreviewMode(true);
+        Result := ServiceTransferPost.Run(RecVar);
+    end;
+
+    procedure SetPreviewMode(NewPreviewMode: Boolean)
+    begin
+        PreviewMode := NewPreviewMode;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePreviewDocument(var ServiceTransferHeader: Record "Service Transfer Header"; var IsHandled: Boolean)
+    begin
     end;
 }

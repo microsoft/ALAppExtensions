@@ -2,6 +2,7 @@ table 1152 "COHUB Enviroment"
 {
     Access = Internal;
     DataPerCompany = false;
+    ReplicateData = false;
 
     fields
     {

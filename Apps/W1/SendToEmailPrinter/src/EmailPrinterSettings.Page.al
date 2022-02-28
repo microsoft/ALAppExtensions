@@ -110,17 +110,20 @@ page 2650 "Email Printer Settings"
                 Caption = 'Email Body (Optional)';
                 ToolTip = 'Specifies the body of the sent email. Some printers may print the body of the email along with the attachment(s).';
             }
+#if not CLEAN20
             group(SMTPSetup)
             {
                 ShowCaption = false;
-                Visible = (not IsSmtpSetup) and (not IsEmailFeatureEnabled);
+                Visible = false;
                 ObsoleteState = Pending;
                 ObsoleteReason = 'Replaced with the Email Module';
                 ObsoleteTag = '17.0';
-
                 group(SMTPSetupInner)
                 {
                     ShowCaption = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced with the Email Module';
+                    ObsoleteTag = '20.0';
                     field(SMTPSetupRequired; SMTPSetupRequiredLbl)
                     {
                         ApplicationArea = All;
@@ -129,6 +132,9 @@ page 2650 "Email Printer Settings"
                         Style = Attention;
                         Caption = 'This printer requires SMTP mail setup to print the jobs.';
                         ToolTip = 'Specifies the requirement for the printer.';
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Replaced with the Email Module';
+                        ObsoleteTag = '20.0';
                     }
                     field(SetupSMTP; SetupSMTPLbl)
                     {
@@ -137,17 +143,17 @@ page 2650 "Email Printer Settings"
                         ShowCaption = false;
                         Caption = 'Set up SMTP';
                         ToolTip = 'Open SMTP mail setup page.';
-                        trigger OnDrillDown()
-                        begin
-                            Page.Run(Page::"SMTP Mail Setup");
-                        end;
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Replaced with the Email Module';
+                        ObsoleteTag = '20.0';
                     }
                 }
             }
+#endif
             group(EmailSetup)
             {
                 ShowCaption = false;
-                Visible = (not IsEmailAccountDefined) and IsEmailFeatureEnabled and HasEmailAccountPermission;
+                Visible = (not IsEmailAccountDefined) and HasEmailAccountPermission;
                 group(EmailSetupInner)
                 {
                     ShowCaption = false;
@@ -178,7 +184,7 @@ page 2650 "Email Printer Settings"
             group(EmailSetupNoPermisssions)
             {
                 ShowCaption = false;
-                Visible = (not IsEmailAccountDefined) and IsEmailFeatureEnabled and (not HasEmailAccountPermission);
+                Visible = (not IsEmailAccountDefined) and (not HasEmailAccountPermission);
                 group(EmailSetupNoPermissionsInner)
                 {
                     ShowCaption = false;
@@ -236,17 +242,16 @@ page 2650 "Email Printer Settings"
 
     var
         SetupPrinters: Codeunit "Setup Printers";
-        EmailFeature: Codeunit "Email Feature";
         IsSizeCustom: Boolean;
-        IsSmtpSetup: Boolean;
-        IsEmailFeatureEnabled: Boolean;
         IsEmailAccountDefined: Boolean;
         HasEmailAccountPermission: Boolean;
         NewMode: Boolean;
         DeleteMode: Boolean;
-        SetupSMTPLbl: Label 'Set up SMTP';
         SetupEmailAccountLbl: Label 'Set up email account';
+#if not CLEAN20
+        SetupSMTPLbl: Label 'Set up SMTP';
         SMTPSetupRequiredLbl: Label 'This printer requires SMTP mail setup to print the jobs.';
+#endif
         EmailAccountRequiredLbl: Label 'For this printer to work, set up an email account in Business Central to use for sending print jobs to the email printers.';
         EmailAccountPermissionsRequiredLbl: Label 'For this printer to work, a user with respective permissions needs to set up an email account in Business Central.';
         LearnMoreActionLbl: Label 'Learn more';
@@ -281,8 +286,6 @@ page 2650 "Email Printer Settings"
         EmailScenario: Codeunit "Email Scenario";
     begin
         IsSizeCustom := SetupPrinters.IsPaperSizeCustom("Paper Size");
-        IsSmtpSetup := SetupPrinters.IsSMTPSetup();
-        IsEmailFeatureEnabled := EmailFeature.IsEnabled();
         HasEmailAccountPermission := EmailAccount.WritePermission();
         IsEmailAccountDefined := EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Email Printer", EmailAccount);
     end;

@@ -17,6 +17,7 @@ page 1890 "C5 InvenTrans"
         {
             repeater(General)
             {
+#pragma warning disable AA0218
                 field(ItemNumber;ItemNumber) { ApplicationArea=All; }
                 field(BudgetCode;BudgetCode) { ApplicationArea=All; }
                 field(InvenLocation;InvenLocation) { ApplicationArea=All; }
@@ -73,6 +74,7 @@ page 1890 "C5 InvenTrans"
                 field(TmpFunction;TmpFunction) { ApplicationArea=All; }
                 field(CollectNumber;CollectNumber) { ApplicationArea=All; }
                 field(SkipSettle;SkipSettle) { ApplicationArea=All; }
+#pragma warning restore
             }
         }
     }

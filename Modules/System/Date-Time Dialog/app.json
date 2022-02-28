@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Helper page for entering a date-time value",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -16,7 +16,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
+    "platform":  "20.0.0.0",
     "idRange":  {
                     "from":  684,
                     "to":  684

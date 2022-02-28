@@ -144,8 +144,6 @@ codeunit 9999 "Upgrade Tag"
     /// </summary>
     /// <returns>ID of the backup, used in <see cref="RestoreUpgradeTagsFromBackup"/> method.</returns>
     procedure BackupUpgradeTags(): Integer
-    var
-        UpgradeTagImpl: Codeunit "Upgrade Tag Impl.";
     begin
         exit(UpgradeTagImpl.BackupUpgradeTags());
     end;
@@ -157,8 +155,6 @@ codeunit 9999 "Upgrade Tag"
     /// <param name="BackupId">ID of the backup, created by <see cref="BackupUpgradeTags"/> method.</param>
     /// <param name="RestoreMissingTagsOnly">This parameter indicates if the function should restore the entire table or only insert back the missing upgrade tags.</param>
     procedure RestoreUpgradeTagsFromBackup(BackupId: Integer; RestoreMissingTagsOnly: Boolean)
-    var
-        UpgradeTagImpl: Codeunit "Upgrade Tag Impl.";
     begin
         UpgradeTagImpl.RestoreUpgradeTagsFromBackup(BackupId, RestoreMissingTagsOnly);
     end;

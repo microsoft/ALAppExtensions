@@ -137,52 +137,52 @@ codeunit 9024 "Azure AD Graph User"
     /// Gets the authentication email of the provided Graph user.
     /// </summary>
     /// <remarks>Authentication email corresponds to userPrincipalName property on the Graph user.</remarks>
-    /// <param name="GraphUser">The Azure AD user.</param>
+    /// <param name="GraphUserInfo">The Azure AD user.</param>
     /// <returns>The authentication email of the provided Graph user. Can be used to assign to "Authentication Email" field on the User table.</returns>
     [Scope('OnPrem')]
     [NonDebuggable]
-    procedure GetAuthenticationEmail(GraphUser: DotNet UserInfo): Text[250]
+    procedure GetAuthenticationEmail(GraphUserInfo: DotNet UserInfo): Text[250]
     begin
-        exit(AzureADGraphUserImpl.GetAuthenticationEmail(GraphUser));
+        exit(AzureADGraphUserImpl.GetAuthenticationEmail(GraphUserInfo));
     end;
 
     /// <summary>    
     /// Gets the display name of the provided Graph user.
     /// </summary>
     /// <remarks>Display name corresponds to displayName property on the Graph user.</remarks>
-    /// <param name="GraphUser">The Azure AD user.</param>
+    /// <param name="GraphUserInfo">The Azure AD user.</param>
     /// <returns>The display name of the provided Graph user. Can be used to assign to "User Name" field on the User table.</returns>
     [Scope('OnPrem')]
     [NonDebuggable]
-    procedure GetDisplayName(GraphUser: DotNet UserInfo): Text[50]
+    procedure GetDisplayName(GraphUserInfo: DotNet UserInfo): Text[50]
     begin
-        exit(AzureADGraphUserImpl.GetDisplayName(GraphUser));
+        exit(AzureADGraphUserImpl.GetDisplayName(GraphUserInfo));
     end;
 
     /// <summary>    
     /// Gets the contact email of the provided Graph user.
     /// </summary>
     /// <remarks>Contact email corresponds to Mail property on the Graph user.</remarks>
-    /// <param name="GraphUser">The Azure AD user.</param>
+    /// <param name="GraphUserInfo">The Azure AD user.</param>
     /// <returns>The contact email of the provided Graph user. Can be used to assign to "Contact Email" field on the User table.</returns>
     [Scope('OnPrem')]
     [NonDebuggable]
-    procedure GetContactEmail(GraphUser: DotNet UserInfo): Text[250]
+    procedure GetContactEmail(GraphUserInfo: DotNet UserInfo): Text[250]
     begin
-        exit(AzureADGraphUserImpl.GetContactEmail(GraphUser));
+        exit(AzureADGraphUserImpl.GetContactEmail(GraphUserInfo));
     end;
 
     /// <summary>    
     /// Gets the full name of the provided Graph user.
     /// </summary>
     /// <remarks>Full name is composed from the combination of givenName and surname properties on the Graph user.</remarks>
-    /// <param name="GraphUser">The Azure AD user.</param>
+    /// <param name="GraphUserInfo">The Azure AD user.</param>
     /// <returns>The full name of the provided Graph user. Can be used to assign to "Full Name" field on the User table.</returns>
     [Scope('OnPrem')]
     [NonDebuggable]
-    procedure GetFullName(GraphUser: DotNet UserInfo): Text[80]
+    procedure GetFullName(GraphUserInfo: DotNet UserInfo): Text[80]
     begin
-        exit(AzureADGraphUserImpl.GetFullName(GraphUser));
+        exit(AzureADGraphUserImpl.GetFullName(GraphUserInfo));
     end;
 
     /// <summary>    
@@ -192,13 +192,13 @@ codeunit 9024 "Azure AD Graph User"
     /// Preferred language ID is derived from preferredLanguage property on the Graph user. 
     /// If the preferred language is not set or it is set to a language that is not supported in Business Central, the function returns 0.
     /// </remarks>
-    /// <param name="GraphUser">The Azure AD user.</param>
+    /// <param name="GraphUserInfo">The Azure AD user.</param>
     /// <returns>The preferred language ID of the provided Graph user. Can be used to set the preferred language using the Language module.</returns>
     [Scope('OnPrem')]
     [NonDebuggable]
-    procedure GetPreferredLanguageID(GraphUser: DotNet UserInfo): Integer
+    procedure GetPreferredLanguageID(GraphUserInfo: DotNet UserInfo): Integer
     begin
-        exit(AzureADGraphUserImpl.GetPreferredLanguageID(GraphUser));
+        exit(AzureADGraphUserImpl.GetPreferredLanguageID(GraphUserInfo));
     end;
 
     /// <summary>    

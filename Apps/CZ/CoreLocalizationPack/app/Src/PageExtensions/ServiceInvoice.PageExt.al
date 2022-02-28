@@ -2,6 +2,29 @@ pageextension 11749 "Service Invoice CZL" extends "Service Invoice"
 {
     layout
     {
+#if not CLEAN20
+#pragma warning disable AL0432
+        movelast(General; "Posting Description")
+#pragma warning restore AL0432
+#else
+        addlast(General)
+        {
+            field("Posting Description CZL"; Rec."Posting Description")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies a description of the purchase receipt. The posting description also appers on vendor and G/L entries.';
+                Visible = false;
+            }
+        }
+#endif
+        addbefore("Location Code")
+        {
+            field("Reason Code CZL"; Rec."Reason Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the reason code on the entry.';
+            }
+        }
         addafter("Posting Date")
         {
             field("VAT Date CZL"; Rec."VAT Date CZL")
@@ -10,8 +33,13 @@ pageextension 11749 "Service Invoice CZL" extends "Service Invoice"
                 ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
             }
         }
-        addafter("VAT Registration No.")
+        addlast(Invoicing)
         {
+            field("VAT Registration No. CZL"; Rec."VAT Registration No.")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+            }
             field("Registration No. CZL"; Rec."Registration No. CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -24,14 +52,6 @@ pageextension 11749 "Service Invoice CZL" extends "Service Invoice"
                 Importance = Additional;
             }
         }
-        addafter("Prices Including VAT")
-        {
-            field("Customer Posting Group CZL"; Rec."Customer Posting Group")
-            {
-                ApplicationArea = Service;
-                ToolTip = 'Specifies the customer''s market type to link business transakcions to.';
-            }
-        }
         addafter("Currency Code")
         {
             field("VAT Currency Code CZL"; Rec."VAT Currency Code CZL")
@@ -41,8 +61,9 @@ pageextension 11749 "Service Invoice CZL" extends "Service Invoice"
                 ToolTip = 'Specifies the currency of VAT on the service invoice.';
 
                 trigger OnAssistEdit()
+                var
+                    ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
-                    Clear(ChangeExchangeRate);
                     if Rec."VAT Date CZL" <> 0D then
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Date CZL")
                     else
@@ -51,37 +72,42 @@ pageextension 11749 "Service Invoice CZL" extends "Service Invoice"
                         Rec.Validate("VAT Currency Factor CZL", ChangeExchangeRate.GetParameter());
                         CurrPage.Update();
                     end;
-                    Clear(ChangeExchangeRate);
                 end;
 
                 trigger OnValidate()
                 begin
-                    CurrencyCodeOnAfterValidate();
                     CurrPage.SaveRecord();
                 end;
             }
         }
-        addafter("Area")
+        addlast("Foreign Trade")
         {
+            field("Language Code CZL"; Rec."Language Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the language to be used on printouts for this document.';
+            }
+            field("VAT Country/Region Code CZL"; Rec."VAT Country/Region Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT country/region code of customer.';
+            }
             field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies when the service header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
-            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies that entry will be excluded from intrastat.';
-            }
-        }
-        addfirst("Foreign Trade")
-        {
             field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Intrastat Transaction';
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
+            }
+            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies that entry will be excluded from intrastat.';
             }
         }
         addafter("Foreign Trade")
@@ -149,12 +175,4 @@ pageextension 11749 "Service Invoice CZL" extends "Service Invoice"
             }
         }
     }
-
-    var
-        ChangeExchangeRate: Page "Change Exchange Rate";
-
-    local procedure CurrencyCodeOnAfterValidate()
-    begin
-        CurrPage.ServLines.Page.UpdateForm(true);
-    end;
 }

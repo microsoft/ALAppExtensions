@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Library used to store variables in a queue to pass values to handler functions",
     "description":  "In test code, Library - Variable Storage can be used to pass values to handler and other methods",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "privacyStatement":  "",
     "EULA":  "",
     "help":  "",
@@ -15,13 +15,13 @@
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "publisher":  "Microsoft",
                              "name":  "Library Assert",
-                             "version":  "19.4.0.0"
+                             "version":  "20.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
+    "platform":  "20.0.0.0",
     "idRanges":  [
                      {
                          "from":  131004,

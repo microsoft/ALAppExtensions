@@ -499,14 +499,20 @@ codeunit 10672 "SAF-T Mapping Helper"
 
     procedure AddSAFTAssistedSetup()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
-        AssistedSetupGroup: Enum "Assisted Setup Group";
-        Info: ModuleInfo;
+        GuidedExperience: Codeunit "Guided Experience";
     begin
-        NavApp.GetCurrentModuleInfo(Info);
-        AssistedSetup.Add(
-            Info.Id(), PAGE::"SAF-T Setup Wizard", CopyStr(SAFTSetupGuideTxt, 1, 250),
-            AssistedSetupGroup::GettingStarted);
+        GuidedExperience.InsertAssistedSetup(
+            CopyStr(SAFTSetupGuideTxt, 1, 2048),
+            CopyStr(SAFTSetupGuideTxt, 1, 50),
+            '',
+            1,
+            ObjectType::Page,
+            PAGE::"SAF-T Setup Wizard",
+            "Assisted Setup Group"::GettingStarted,
+            '',
+            "Video Category"::Uncategorized,
+            ''
+        );
     end;
 
     procedure InsertDefaultNoSeriesInSAFTSetup()

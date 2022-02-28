@@ -29,18 +29,6 @@ codeunit 31193 "Sync.Dep.Fld-SalesLine CZL"
             PreviousRecordRef.SetTable(PreviousRecord);
 
         SyncDepFldUtilities.SyncFields(Rec."Physical Transfer", Rec."Physical Transfer CZL", PreviousRecord."Physical Transfer", PreviousRecord."Physical Transfer CZL");
-#if not CLEAN17
-        DepFieldTxt := Rec."Tariff No.";
-        NewFieldTxt := Rec."Tariff No. CZL";
-        SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Tariff No.", PreviousRecord."Tariff No. CZL");
-        Rec."Tariff No." := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Tariff No."));
-        Rec."Tariff No. CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Tariff No. CZL"));
-        DepFieldTxt := Rec."Statistic Indication";
-        NewFieldTxt := Rec."Statistic Indication CZL";
-        SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Statistic Indication", PreviousRecord."Statistic Indication CZL");
-        Rec."Statistic Indication" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Statistic Indication"));
-        Rec."Statistic Indication CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Statistic Indication CZL"));
-#endif
         DepFieldTxt := Rec."Country/Region of Origin Code";
         NewFieldTxt := Rec."Country/Reg. of Orig. Code CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Country/Region of Origin Code", PreviousRecord."Country/Reg. of Orig. Code CZL");

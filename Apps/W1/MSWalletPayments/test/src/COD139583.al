@@ -1,5 +1,9 @@
+#if not CLEAN20
 codeunit 139583 "MS - Wallet Mock Events"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     // version Test,ERM,W1,AT,AU,BE,CA,CH,DE,DK,ES,FI,FR,GB,IS,IT,MX,NL,NO,NZ,SE,US
 
     EventSubscriberInstance = Manual;
@@ -44,4 +48,4 @@ codeunit 139583 "MS - Wallet Mock Events"
         LibraryVariableStorage.AssertEmpty();
     end;
 }
-
+#endif

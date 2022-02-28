@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Client Add-In Library",
     "description":  "Client Add-In Library for Microsoft Dynamics 365 Business Central",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
@@ -15,13 +15,13 @@
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
+    "platform":  "20.0.0.0",
+    "resourceExposurePolicy": {
+        "allowDebugging": false,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
     "help":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "application":  "19.4.0.0"
+    "application":  "20.0.0.0"
 }

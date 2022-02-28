@@ -14,18 +14,18 @@ page 31144 "EET Cash Registers CZL"
                 field("Business Premises Code"; Rec."Business Premises Code")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the code of the premises.';
+                    ToolTip = 'Specifies the code of the premises.';
                     Visible = BusinessPremisesCodeVisibility;
                 }
                 field("Code"; Rec.Code)
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the code of the cash register.';
+                    ToolTip = 'Specifies the code of the cash register.';
                 }
                 field("Register Type"; Rec."Cash Register Type")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the type of the cash register.';
+                    ToolTip = 'Specifies the type of the cash register.';
                 }
                 field("Register No."; Rec."Cash Register No.")
                 {
@@ -35,7 +35,7 @@ page 31144 "EET Cash Registers CZL"
                 field("Register Name"; Rec."Cash Register Name")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the name of the cash register.';
+                    ToolTip = 'Specifies the name of the cash register.';
                 }
                 field("Certificate Code"; Rec."Certificate Code")
                 {
@@ -45,7 +45,7 @@ page 31144 "EET Cash Registers CZL"
                 field("Receipt Serial Nos."; Rec."Receipt Serial Nos.")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the number series for the receipt serial numbers.';
+                    ToolTip = 'Specifies the number series for the receipt serial numbers.';
                 }
             }
         }
@@ -72,7 +72,7 @@ page 31144 "EET Cash Registers CZL"
                                   "Cash Register Code" = FIELD(Code);
                     RunPageView = SORTING("Business Premises Code", "Cash Register Code");
                     ShortCutKey = 'Ctrl+F7';
-                    ToolTip = 'Displays a list of EET entries for the selected cash register.';
+                    ToolTip = 'Displays a list of EET entries for the selected cash register.';
                 }
             }
         }

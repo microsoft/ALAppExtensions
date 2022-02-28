@@ -91,10 +91,17 @@ table 31003 "Advance Letter Template CZZ"
         }
         field(15; "Document Report ID"; Integer)
         {
-            Caption = 'Document Report ID';
+            Caption = 'Document Report ID (Obsolete)';
             DataClassification = CustomerContent;
             BlankZero = true;
             TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Report));
+            ObsoleteTag = '20.0';
+            ObsoleteReason = 'Replaced by standard report selection.';
+#if CLEAN20
+            ObsoleteState = Removed;
+#else
+#pragma warning disable AL0432
+            ObsoleteState = Pending;
             trigger OnValidate()
             begin
                 CalcFields("Document Report Caption");
@@ -102,17 +109,29 @@ table 31003 "Advance Letter Template CZZ"
         }
         field(16; "Document Report Caption"; Text[249])
         {
-            Caption = 'Document Report Caption';
+            Caption = 'Document Report Caption (Obsolete)';
             Editable = false;
             FieldClass = FlowField;
             CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Report), "Object ID" = field("Document Report ID")));
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.0';
+            ObsoleteReason = 'Replaced by standard report selection.';
         }
+#pragma warning restore AL0432
+#endif
         field(18; "Invoice/Cr. Memo Report ID"; Integer)
         {
-            Caption = 'Invoice/Cr. Memo Report ID';
+            Caption = 'Invoice/Cr. Memo Report ID (Obsolete)';
             DataClassification = CustomerContent;
             BlankZero = true;
             TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Report));
+            ObsoleteTag = '20.0';
+            ObsoleteReason = 'Replaced by standard report selection.';
+#if CLEAN20
+            ObsoleteState = Removed;
+#else
+#pragma warning disable AL0432
+            ObsoleteState = Pending;
             trigger OnValidate()
             begin
                 CalcFields("Invoice/Cr. Memo Rep. Caption");
@@ -120,11 +139,16 @@ table 31003 "Advance Letter Template CZZ"
         }
         field(19; "Invoice/Cr. Memo Rep. Caption"; Text[249])
         {
-            Caption = 'Invoice/Cr. Memo Report Caption';
+            Caption = 'Invoice/Cr. Memo Report Caption (Obsolete)';
             FieldClass = FlowField;
             Editable = false;
             CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Report), "Object ID" = field("Invoice/Cr. Memo Report ID")));
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.0';
+            ObsoleteReason = 'Replaced by standard report selection.';
         }
+#pragma warning restore AL0432
+#endif
         field(25; "Automatic Post VAT Document"; Boolean)
         {
             Caption = 'Automatic Post VAT Document';

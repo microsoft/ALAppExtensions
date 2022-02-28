@@ -429,11 +429,6 @@ report 11769 "VAT Statement CZL"
                             end;
                         until VATStatementLine.Next() = 0;
                 end;
-#if not CLEAN17
-#pragma warning disable AL0432
-            VATStatementLine.Type::"Formula", // This value is discontinued and should no longer be used.
-#pragma warning restore
-#endif
             VATStatementLine.Type::"Formula CZL":
                 begin
                     Amount := EvaluateExpression(true, VATStatementLine."Row Totaling", VATStatementLine, true);

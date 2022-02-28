@@ -65,13 +65,13 @@ codeunit 11784 "Purchase Line Handler CZL"
     var
         PurchaseLine2: Record "Purchase Line";
     begin
-        // remove vat correction on current line
+        // remove VAT correction on current line
         if (PurchaseLine."VAT Difference" <> 0) and (PurchaseLine.Quantity <> 0) then begin
             PurchaseLine."VAT Difference" := 0;
             PurchaseLine.UpdateAmounts();
         end;
 
-        // remove vat correction on another lines except the current line
+        // remove VAT correction on another lines except the current line
         PurchaseLine2.Reset();
         PurchaseLine2.SetRange("Document Type", PurchaseLine."Document Type");
         PurchaseLine2.SetRange("Document No.", PurchaseLine."Document No.");
@@ -84,4 +84,22 @@ codeunit 11784 "Purchase Line Handler CZL"
                 PurchaseLine2.Modify();
             until PurchaseLine2.Next() = 0;
     end;
+#if CLEAN18
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterValidateEvent', 'Prod. Order No.', false, false)]
+    local procedure ProdOrderNoOnAfterValidate(var Rec: Record "Purchase Line"; var xRec: Record "Purchase Line"; CurrFieldNo: Integer)
+    var
+        AddOnIntegrManagement: Codeunit AddOnIntegrManagement;
+    begin
+        if (CurrFieldNo <> 0) and (Rec."Prod. Order No." <> xRec."Prod. Order No.") then begin
+            Rec."Routing No." := '';
+            Rec."Operation No." := '';
+            Rec."Work Center No." := '';
+            Rec."Prod. Order Line No." := 0;
+            Rec."Routing Reference No." := 0;
+        end;
+
+        AddOnIntegrManagement.ValidateProdOrderOnPurchLine(Rec);
+    end;
+#endif
 }

@@ -93,7 +93,7 @@ page 30023 "APIV2 - Payment Terms"
     var
         PaymentTerms: Record "Payment Terms";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        PaymentTermsRecordRef: RecordRef;
     begin
         PaymentTerms.SetRange(Code, Code);
         if not PaymentTerms.IsEmpty() then
@@ -101,9 +101,9 @@ page 30023 "APIV2 - Payment Terms"
 
         Insert(true);
 
-        RecRef.GetTable(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CurrentDateTime());
-        RecRef.SetTable(Rec);
+        PaymentTermsRecordRef.GetTable(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(PaymentTermsRecordRef, TempFieldSet, CurrentDateTime());
+        PaymentTermsRecordRef.SetTable(Rec);
 
         Modify(true);
         exit(false);

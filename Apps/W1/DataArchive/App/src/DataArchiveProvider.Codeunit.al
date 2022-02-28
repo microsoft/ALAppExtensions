@@ -290,7 +290,6 @@ codeunit 605 "Data Archive Provider" implements "Data Archive Provider"
         Field: Record Field;
     begin
         Field.SetRange(TableNo, TableNo);
-        Field.SetRange("No.", 1, 1999999999);
         Field.SetRange(Class, Field.Class::Normal);
         Field.SetFilter(ObsoleteState, '<>%1', Field.ObsoleteState::Removed);
         Clear(FieldList);

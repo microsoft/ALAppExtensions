@@ -51,7 +51,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         ConnectionMethodBatchClientTxt: Label 'BATCH_PROCESS_DIRECT', Locked = true;
         ProdNameTxt: Label 'Microsoft Dynamics 365 Business Central', Locked = true;
         ProdNameOnPremSuffixTxt: Label ' OnPrem', Locked = true;
-        DefaultProdVersionTxt: Label '19.0.0.0', Locked = true;
+        DefaultProdVersionTxt: Label '20.0.0.0', Locked = true;
         DefaultOSFamilyTxt: Label 'Windows', Locked = true;
         WMI_OSInfo_FieldTxt: Label 'Version,CurrentTimeZone', Locked = true;
         WMI_OSInfo_WhereTxt: Label 'Primary=''true'' and Name like ''%Windows%''', Locked = true;

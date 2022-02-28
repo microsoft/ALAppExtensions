@@ -208,7 +208,7 @@ page 30062 "APIV2 - Sales Shipments"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(14);
+                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Sales Shipment");
                 }
             }
         }

@@ -134,26 +134,6 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
         Rec."Test Report ID" := Report::"General Journal - Test CZL";
     end;
 
-#if not CLEAN17
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Template", 'OnAfterValidateEvent', 'Test Report ID', false, false)]
-    local procedure UpdateTestReportIdOnAfterValidatePostingReportID(var Rec: Record "Gen. Journal Template"; CurrFieldNo: Integer)
-    begin
-        if CurrFieldNo = 0 then
-            if Rec."Test Report ID" = Report::"General Journal - Test" then
-                Rec."Test Report ID" := Report::"General Journal - Test CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Template", 'OnAfterValidateEvent', 'Posting Report ID', false, false)]
-    local procedure UpdatePostingReportIdOnAfterValidatePostingReportID(var Rec: Record "Gen. Journal Template"; CurrFieldNo: Integer)
-    begin
-        if CurrFieldNo = 0 then
-            if Rec."Posting Report ID" = Report::"General Ledger Document" then
-                Rec."Posting Report ID" := Report::"General Ledger Document CZL";
-    end;
-#pragma warning restore AL0432
-
-#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Check Line", 'OnBeforeRunCheck', '', false, false)]
     local procedure CheckVatDateOnBeforeRunCheck(var GenJournalLine: Record "Gen. Journal Line")
     begin
@@ -464,6 +444,7 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
         exit(SourceCodeSetup."VAT LCY Correction CZL" = SrcCode)
     end;
 #if not CLEAN18
+#pragma warning disable AL0432
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCalculatedVATAmountLCY', '', false, false)]
     local procedure OnBeforeCalculatedVATAmountLCY(GenJournalLine: Record "Gen. Journal Line"; var CalculatedVATAmtLCY: Decimal; var IsHandled: Boolean)
@@ -473,6 +454,7 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
         CalculatedVATAmtLCY := GenJournalLine."VAT Amount (LCY)";
         IsHandled := true;
     end;
+#pragma warning restore AL0432
 #endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterInitVAT', '', false, false)]
@@ -490,6 +472,7 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
     end;
 
 #if CLEAN19
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterCopyToGenJnlLine', '', false, false)]
     local procedure CopyFieldsOnAfterCopyToGenJnlLine(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostBuffer: Record "Invoice Post. Buffer");
     begin
@@ -497,6 +480,7 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
         GenJnlLine."VAT Date CZL" := InvoicePostBuffer."VAT Date CZL";
         GenJnlLine."Original Doc. VAT Date CZL" := InvoicePostBuffer."Original Doc. VAT Date CZL";
     end;
+#pragma warning restore AL0432
 #else
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromInvPostBuffer', '', false, false)]

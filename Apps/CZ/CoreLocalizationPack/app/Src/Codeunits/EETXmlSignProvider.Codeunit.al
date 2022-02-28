@@ -1,4 +1,4 @@
-codeunit 31082 "EET Xml Sign. Provider CZL" implements "Electronic Signature Provider"
+codeunit 31082 "EET Xml Sign. Provider CZL"
 {
     Access = Internal;
 
@@ -6,10 +6,18 @@ codeunit 31082 "EET Xml Sign. Provider CZL" implements "Electronic Signature Pro
         SoapBodyId: Text;
         BinarySecurityTokenId: Text;
 
-#if not CLEAN19
-#pragma warning disable AL0432
     [NonDebuggable]
-    procedure GetSignature(DataInStream: InStream; var SignatureKey: Record "Signature Key"; SignatureOutStream: OutStream)
+    procedure SignData(DataInStream: InStream; IsolatedCertificate: Record "Isolated Certificate"; SignatureOutStream: OutStream)
+    var
+        CertificateManagement: Codeunit "Certificate Management";
+        SignatureKey: Codeunit "Signature Key";
+    begin
+        CertificateManagement.GetCertPrivateKey(IsolatedCertificate, SignatureKey);
+        SignData(DataInStream, SignatureKey, SignatureOutStream);
+    end;
+
+    [NonDebuggable]
+    procedure SignData(DataInStream: InStream; SignatureKey: Codeunit "Signature Key"; SignatureOutStream: OutStream)
     var
         SignedXml: Codeunit SignedXml;
         SigningXmlDocument: XmlDocument;
@@ -35,36 +43,6 @@ codeunit 31082 "EET Xml Sign. Provider CZL" implements "Electronic Signature Pro
         SignedXml.ComputeSignature();
         SignedXml.GetXml().WriteTo(SignatureOutStream);
     end;
-#pragma warning restore AL0432
-#else
-    [NonDebuggable]
-    procedure GetSignature(DataInStream: InStream; XmlString: Text; SignatureOutStream: OutStream)
-    var
-        SignedXml: Codeunit SignedXml;
-        SigningXmlDocument: XmlDocument;
-    begin
-        XmlDocument.ReadFrom(DataInStream, SigningXmlDocument);
-
-        SignedXml.InitializeSignedXml(SigningXmlDocument);
-        SignedXml.SetSigningKey(XmlString);
-
-        // Reference
-        SignedXml.InitializeReference(FormatURI(SoapBodyId));
-        SignedXml.SetDigestMethod(SignedXml.GetXmlDsigSHA256Url());
-        SignedXml.AddXmlDsigExcC14NTransformToReference('');
-
-        // SignedInfo
-        SignedXml.SetXmlDsigExcC14NTransformAsCanonicalizationMethod('soap');
-        SignedXml.SetSignatureMethod(SignedXml.GetXmlDsigRSASHA256Url());
-
-        // KeyInfo
-        SignedXml.InitializeKeyInfo();
-        SignedXml.AddClause(GetKeyInfoNodeXmlElement());
-
-        SignedXml.ComputeSignature();
-        SignedXml.GetXml().WriteTo(SignatureOutStream);
-    end;
-#endif
 
     procedure SetSoapBodyId(NewSoapBodyId: Text)
     begin

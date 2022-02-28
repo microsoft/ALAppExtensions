@@ -200,46 +200,8 @@ codeunit 10683 "Elec. VAT Data Mgt."
                     LineNo += 10000;
                     CreateRowTotalingLine(VATStatementName, TempRequiredVATCode.Code, TempRequiredVATCode.Description, LineNo, RowTotalingFilter);
                 end;
-                CreateVATEntryTotalingLinesForRelatedVATCodes(LineNo, VATStatementName, TempRequiredVATCode.Code);
             end;
         until TempRequiredVATCode.Next() = 0;
-    end;
-
-    local procedure CreateVATEntryTotalingLinesForRelatedVATCodes(var LineNo: Integer; VATStatementName: Record "VAT Statement Name"; VATCode: Code[10])
-    var
-        TempRelatedVATCode: Record "VAT Code" temporary;
-        VATStatementLine: Record "VAT Statement Line";
-        CalculateWith: Option;
-    begin
-        GetRelatedVATCodes(TempRelatedVATCode, VATCode);
-        if not TempRelatedVATCode.FindSet() then
-            exit;
-        repeat
-            LineNo += 10000;
-            if IsReverseChargeVATCode(TempRelatedVATCode."SAF-T VAT Code") then
-                CalculateWith := VATStatementLine."Calculate with"::Sign
-            else
-                CalculateWith := VATStatementLine."Calculate with"::"Opposite Sign";
-            CreateVATEntryTotalingLineForVATCode(VATStatementName, TempRelatedVATCode.Code, TempRelatedVATCode.Description, LineNo, CalculateWith);
-        until TempRelatedVATCode.Next() = 0;
-    end;
-
-    local procedure CreateVATEntryTotalingLineForVATCode(VATStatementName: Record "VAT Statement Name"; VATCode: Code[10]; Description: Text[100]; LineNo: Integer; CalculateWith: Option)
-    var
-        VATStatementLine: Record "VAT Statement Line";
-    begin
-        VATStatementLine.Init();
-        VATStatementLine.Validate("Statement Template Name", VATStatementName."Statement Template Name");
-        VATStatementLine.Validate("Statement Name", VATStatementName.Name);
-        VATStatementLine.Validate("Line No.", LineNo);
-        VATStatementLine.Validate(Type, VATStatementLine.Type::"VAT Entry Totaling");
-        VATStatementLine.Validate("Row No.", VATCode);
-        VATStatementLine.Validate("Box No.", VATCode);
-        VATStatementLine.Validate("VAT Code", VATCode);
-        VATStatementLine.Validate(Description, Description);
-        VATStatementLine.Validate("Amount Type", VATStatementLine."Amount Type"::Amount);
-        VATStatementLine.Validate("Calculate with", CalculateWith);
-        VATStatementLine.Insert(true);
     end;
 
     local procedure AddToFilter(var Filter: Text[50]; Value: Text)
@@ -329,14 +291,13 @@ codeunit 10683 "Elec. VAT Data Mgt."
         TempVATCode."VAT Rate For Reporting" := VATRateForReporting;
         TempVATCode."Report VAT Rate" := ReportVATRate;
         TempVATCode.Insert();
+        GetRelatedVATCodes(TempVATCode, TempVATCode.Code);
     end;
 
     local procedure GetRelatedVATCodes(var TempRelatedVATCode: Record "VAT Code" temporary; VATCodeValue: Code[10]): Boolean
     var
         VATCode: Record "VAT Code";
     begin
-        TempRelatedVATCode.Reset();
-        TempRelatedVATCode.DeleteAll();
         VATCode.SetRange("SAF-T VAT Code", VATCodeValue);
         if not VATCode.FindSet() then
             exit(false);

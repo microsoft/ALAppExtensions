@@ -104,6 +104,13 @@ table 8888 "Email Outbox"
             DataClassification = CustomerContent;
             Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
+
+        field(15; "Date Sending"; DateTime)
+        {
+            Access = Internal;
+            DataClassification = SystemMetadata;
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
+        }
     }
 
     keys
@@ -121,8 +128,35 @@ table 8888 "Email Outbox"
         key(Status; Status)
         {
         }
-        key(StatusMessageId;  "Message Id",Status)
+        key(StatusMessageId; "Message Id", Status)
         {
         }
     }
+
+    /// <summary>
+    /// Get the message id of the outbox email.
+    /// </summary>
+    /// <returns>Message id.</returns>
+    procedure GetMessageId(): Guid
+    begin
+        exit(Rec."Message Id");
+    end;
+
+    /// <summary>
+    /// Get the account id of the outbox email.
+    /// </summary>
+    /// <returns>Account id.</returns>
+    procedure GetAccountId(): Guid
+    begin
+        exit(Rec."Account Id");
+    end;
+
+    /// <summary>
+    /// The email connector of the outbox email.
+    /// </summary>
+    /// <returns>Email connector</returns>
+    procedure GetConnector(): Enum "Email Connector"
+    begin
+        exit(Rec.Connector);
+    end;
 }

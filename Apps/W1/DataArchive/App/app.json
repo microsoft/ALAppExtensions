@@ -4,10 +4,10 @@
     "publisher":  "Microsoft",
     "brief":  "Archive important data before you delete it.",
     "description":  "Reduce the amount of data in your production environment by archiving data that's important, but not frequently needed.",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2173136",
     "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
     "logo":  "ExtensionLogo.png",
     "dependencies":  [
@@ -15,19 +15,19 @@
                              "id":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
                              "name":  "System Application",
                              "publisher":  "Microsoft",
-                             "version":  "19.4.0.0"
+                             "version":  "20.0.0.0"
                          },
                          {
                              "id":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
                              "name":  "Base Application",
                              "publisher":  "Microsoft",
-                             "version":  "19.4.0.0"
+                             "version":  "20.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
+    "platform":  "20.0.0.0",
     "idRanges":  [
                      {
                          "from":  600,

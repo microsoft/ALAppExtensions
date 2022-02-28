@@ -496,7 +496,7 @@ page 30028 "APIV2 - Sales Orders"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(2);
+                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const("Sales Order");
                 }
                 part(salesOrderLines; "APIV2 - Sales Order Lines")
                 {
@@ -588,7 +588,7 @@ page 30028 "APIV2 - Sales Orders"
                     Caption = 'Attachments';
                     EntityName = 'attachment';
                     EntitySetName = 'attachments';
-                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const(2);
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Sales Order");
                 }
             }
         }

@@ -107,16 +107,16 @@ codeunit 1999 "Guided Experience Upgrade"
 
     local procedure InsertRecordCopyWithModifiedCode(RecVariant: Variant; FieldNo: Integer; Code: Code[300])
     var
-        RecRef: RecordRef;
-        RecRef2: RecordRef;
+        RecordRef: RecordRef;
+        RecordRef2: RecordRef;
     begin
-        RecRef.GetTable(RecVariant);
+        RecordRef.GetTable(RecVariant);
 
-        RecRef2.Open(RecRef.Number);
+        RecordRef2.Open(RecordRef.Number);
 
-        RecRef2.Copy(RecRef);
-        RecRef2.Field(FieldNo).Value(Code);
-        if RecRef2.Insert() then;
+        RecordRef2.Copy(RecordRef);
+        RecordRef2.Field(FieldNo).Value(Code);
+        if RecordRef2.Insert() then;
     end;
 
     local procedure GetCodeThatAccountsForSpotlightTourType(Code: Code[300]): Code[300]

@@ -16,7 +16,7 @@ codeunit 138704 "Reten. Pol. Test Installer"
         RetentionPolicyTestData4: Record "Retention Policy Test Data 4";
         RetentionPeriod: Record "Retention Period";
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         RetPeriodCalc: DateFormula;
         TableFilters: JsonArray;
     begin
@@ -30,13 +30,13 @@ codeunit 138704 "Reten. Pol. Test Installer"
         RetenPolAllowedTables.AddAllowedTable(3900, 0); // Retention Period -> should fail, don't own table
 
         RetentionPolicyTestData4.SetRange(Description, 'A', 'Z');
-        RecRef.GetTable(RetentionPolicyTestData4);
-        RetenPolAllowedTables.AddTableFilterToJsonArray(TableFilters, RetentionPeriod."Retention Period"::"1 Week", RetentionPolicyTestData4.FieldNo(SystemCreatedAt), false, true, RecRef);
+        RecordRef.GetTable(RetentionPolicyTestData4);
+        RetenPolAllowedTables.AddTableFilterToJsonArray(TableFilters, RetentionPeriod."Retention Period"::"1 Week", RetentionPolicyTestData4.FieldNo(SystemCreatedAt), false, true, RecordRef);
 
         RetentionPolicyTestData4.SetRange(Description, 'E', 'Q');
-        RecRef.GetTable(RetentionPolicyTestData4);
+        RecordRef.GetTable(RetentionPolicyTestData4);
         Evaluate(RetPeriodCalc, '<-14D>');
-        RetenPolAllowedTables.AddTableFilterToJsonArray(TableFilters, RetPeriodCalc, RetentionPolicyTestData4.FieldNo("DateTime Field"), false, false, RecRef);
+        RetenPolAllowedTables.AddTableFilterToJsonArray(TableFilters, RetPeriodCalc, RetentionPolicyTestData4.FieldNo("DateTime Field"), false, false, RecordRef);
         RetenPolAllowedTables.AddAllowedTable(Database::"Retention Policy Test Data 4", TableFilters);
     end;
 }

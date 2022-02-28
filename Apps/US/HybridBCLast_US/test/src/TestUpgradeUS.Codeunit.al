@@ -168,35 +168,36 @@ codeunit 139914 "Test Upgrade US"
     [Test]
     procedure DataExchDefTransformsData()
     var
-        StgDataExchDef: Record "Stg Data Exch Def US";
+        StgDataExchDefUS: Record "Stg Data Exch Def US";
         W1CompanyHandler: Codeunit "W1 Company Handler";
+        DataExchangeDefinitionType: Enum "Data Exchange Definition Type";
     begin
         // [SCENARIO] All Staging Data Exch. Def records where Type = 5 should be set to 10000
         // All Staging Data Exch. Def records where Type = 6 should be set to 5
 
         // [GIVEN] Some Staging records have been created
-        StgDataExchDef.DeleteAll();
-        StgDataExchDef.Init();
-        StgDataExchDef.Type := 5;
-        StgDataExchDef.Code := '1';
-        StgDataExchDef.Insert();
+        StgDataExchDefUS.DeleteAll();
+        StgDataExchDefUS.Init();
+        StgDataExchDefUS.Type := DataExchangeDefinitionType::"Generic Export";
+        StgDataExchDefUS.Code := '1';
+        StgDataExchDefUS.Insert();
 
-        StgDataExchDef.Init();
-        StgDataExchDef.Type := 6;
-        StgDataExchDef.Code := '2';
-        StgDataExchDef.Insert();
+        StgDataExchDefUS.Init();
+        StgDataExchDefUS.Type := DataExchangeDefinitionType::"Generic Import";
+        StgDataExchDefUS.Code := '2';
+        StgDataExchDefUS.Insert();
 
         // [WHEN] The data load is triggered
         W1CompanyHandler.OnTransformPerCompanyTableDataForVersion(CountryCodeTxt, 16.0);
 
         // [THEN] Staging Data Exch. Def records where Type=5 should now be 10000. 
         // Staging Data Exch. Def records where Type=6 should now be 5.
-        StgDataExchDef.SetRange(Type, 10000);
-        Assert.AreEqual(1, StgDataExchDef.Count(), 'Unexpected quantity of Data Exch. Def records, Type=1000');
+        StgDataExchDefUS.SetRange(Type, DataExchangeDefinitionType::"EFT Payment Export");
+        Assert.AreEqual(1, StgDataExchDefUS.Count(), 'Unexpected quantity of Data Exch. Def records, Type=1000');
 
-        StgDataExchDef.Reset();
-        StgDataExchDef.SetRange(Type, 5);
-        Assert.AreEqual(1, StgDataExchDef.Count(), 'Unexpected quantity of Data Exch. Def records, Type=6');
+        StgDataExchDefUS.Reset();
+        StgDataExchDefUS.SetRange(Type, DataExchangeDefinitionType::"Generic Export");
+        Assert.AreEqual(1, StgDataExchDefUS.Count(), 'Unexpected quantity of Data Exch. Def records, Type=6');
     end;
 
     [Test]
@@ -204,34 +205,35 @@ codeunit 139914 "Test Upgrade US"
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         DataExchDef: Record "Data Exch. Def";
-        StgDataExchDef: Record "Stg Data Exch Def US";
+        StgDataExchDefUS: Record "Stg Data Exch Def US";
         W1DataLoad: Codeunit "W1 Data Load";
+        DataExchangeDefinitionType: Enum "Data Exchange Definition Type";
     begin
         // [SCENARIO] All Data Exch. Def records where Type = 5 should be set to 10000
         // All Data Exch. Def records where Type = 6 should be set to 5
         HybridReplicationSummary.Init();
 
         // [GIVEN] Some Staging records have been created and transformed
-        StgDataExchDef.DeleteAll();
-        StgDataExchDef.Init();
-        StgDataExchDef.Type := 10000;
-        StgDataExchDef.Code := '1';
-        StgDataExchDef.Insert();
+        StgDataExchDefUS.DeleteAll();
+        StgDataExchDefUS.Init();
+        StgDataExchDefUS.Type := DataExchangeDefinitionType::"EFT Payment Export";
+        StgDataExchDefUS.Code := '1';
+        StgDataExchDefUS.Insert();
 
-        StgDataExchDef.Init();
-        StgDataExchDef.Type := 5;
-        StgDataExchDef.Code := '2';
-        StgDataExchDef.Insert();
+        StgDataExchDefUS.Init();
+        StgDataExchDefUS.Type := DataExchangeDefinitionType::"Generic Export";
+        StgDataExchDefUS.Code := '2';
+        StgDataExchDefUS.Insert();
 
         // [GIVEN] Primary contents of table have been replicated
         DataExchDef.DeleteAll();
         DataExchDef.Init();
-        DataExchDef.Type := 5;
+        DataExchDef.Type := DataExchangeDefinitionType::"Generic Export";
         DataExchDef.Code := '1';
         DataExchDef.Insert();
 
         DataExchDef.Init();
-        DataExchDef.Type := 6;
+        DataExchDef.Type := DataExchangeDefinitionType::"Generic Import";
         DataExchDef.Code := '2';
         DataExchDef.Insert();
 
@@ -239,13 +241,13 @@ codeunit 139914 "Test Upgrade US"
         W1DataLoad.LoadTableData(HybridReplicationSummary, CountryCodeTxt);
 
         // [THEN] Data Exch. Def records where Type=5 should now be 10000. Data Exch. Def records where Type=6 should now be 5.
-        DataExchDef.SetRange(Type, 10000);
+        DataExchDef.SetRange(Type, DataExchangeDefinitionType::"EFT Payment Export");
         Assert.AreEqual(1, DataExchDef.Count(), 'Unexpected quantity of Data Exch. Def records, Type=1000');
 
         DataExchDef.Reset();
-        DataExchDef.SetRange(Type, 5);
+        DataExchDef.SetRange(Type, DataExchangeDefinitionType::"Generic Import");
         Assert.AreEqual(1, DataExchDef.Count(), 'Unexpected quantity of Data Exch. Def records, Type=6');
 
-        Assert.AreEqual(0, StgDataExchDef.Count(), 'Staging table should be emptied.');
+        Assert.AreEqual(0, StgDataExchDefUS.Count(), 'Staging table should be emptied.');
     end;
 }

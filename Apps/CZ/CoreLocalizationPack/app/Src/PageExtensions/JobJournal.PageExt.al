@@ -28,8 +28,14 @@ pageextension 11714 "Job Journal CZL" extends "Job Journal"
                 Visible = false;
             }
         }
-        addafter("Transaction Specification")
+        addafter("Transport Method")
         {
+            field("Transaction Specification CZL"; Rec."Transaction Specification")
+            {
+                ApplicationArea = Jobs;
+                ToolTip = 'Specifies a code for the transaction specification, for the purpose of reporting to INTRASTAT.';
+                Visible = false;
+            }
             field("Tariff No. CZL"; Rec."Tariff No. CZL")
             {
                 ApplicationArea = Basic, Suite;

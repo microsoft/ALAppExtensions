@@ -15,6 +15,41 @@ pageextension 11759 "VAT Entries Preview CZL" extends "VAT Entries Preview"
                 ToolTip = 'Specifies the VAT entry''s Original Document VAT Date.';
             }
         }
+        addafter("Document No.")
+        {
+            field("External Document No. CZL"; Rec."External Document No.")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the number that the vendor uses on the invoice they sent to you or number of receipt.';
+            }
+        }
+        addbefore("VAT Calculation Type")
+        {
+            field("Unrealized Amount CZL"; Rec."Unrealized Amount")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the unrealized amount of the VAT entry.';
+                Visible = false;
+            }
+            field("Unrealized Base CZL"; Rec."Unrealized Base")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the unrealized base of the VAT entry.';
+                Visible = false;
+            }
+            field("Remaining Unrealized Amount CZL"; Rec."Remaining Unrealized Amount")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the remaining unrealized amount of the VAT entry.';
+                Visible = false;
+            }
+            field("Remaining Unrealized Base CZL"; Rec."Remaining Unrealized Base")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the remaining unrealized base of the VAT entry.';
+                Visible = false;
+            }
+        }
         addafter("EU Service")
         {
             field("VAT Settlement No. CZL"; Rec."VAT Settlement No. CZL")

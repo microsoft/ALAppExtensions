@@ -1,4 +1,4 @@
-enum 11736 "Cash Document FA Post.Type CZP"
+enum 11736 "Cash Document FA Post.Type CZP"
 {
     Extensible = true;
 

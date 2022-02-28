@@ -73,7 +73,7 @@ page 31169 "Report Selection Cash Desk CZP"
     end;
 
     var
-        ReportUsage2: Enum "Cash Desk Rep. Sel. Usage CZP";
+        ReportUsage2: Enum "Cash Desk Rep. Sel. Usage CZP";
 
     local procedure SetUsageFilter()
     begin

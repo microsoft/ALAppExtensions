@@ -17,6 +17,7 @@ page 1874 "C5 Employee"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(Employee; Employee) { ApplicationArea = All; }
                 field(Name; Name) { ApplicationArea = All; }
                 field(Address1; Address1) { ApplicationArea = All; }
@@ -36,7 +37,7 @@ page 1874 "C5 Employee"
                 field(Currency; Currency) { ApplicationArea = All; }
                 field(Language_; Language_) { ApplicationArea = All; }
                 field(CellPhone; CellPhone) { ApplicationArea = All; }
-
+#pragma warning restore
             }
         }
     }

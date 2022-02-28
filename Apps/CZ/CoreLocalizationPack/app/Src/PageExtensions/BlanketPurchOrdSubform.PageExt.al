@@ -23,15 +23,5 @@ pageextension 11779 "Blanket Purch.Ord. Subform CZL" extends "Blanket Purchase O
                 Visible = false;
             }
         }
-#if CLEAN19
-        modify("Tax Area Code")
-        {
-            Visible = false;
-        }
-        modify("Tax Group Code")
-        {
-            Visible = false;
-        }
-#endif
     }
 }

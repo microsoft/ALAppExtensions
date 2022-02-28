@@ -2,12 +2,12 @@
     "id":  "e6328152-bb29-4664-9dae-3bc7eaae1fd8",
     "name":  "Email - Outlook REST API",
     "publisher":  "Microsoft",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "brief":  "Provides a library that enables email connectors to communicate with the Outlook and Graph APIs.",
     "description":  "This extension provides a library that enables email connectors to communicate with the Outlook and Graph APIs to retrieve user information and send email messages.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=865141",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2173079",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "ExtensionLogo.png",
     "internalsVisibleTo":  [
@@ -20,8 +20,8 @@
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
-    "application":  "19.4.0.0",
+    "platform":  "20.0.0.0",
+    "application":  "20.0.0.0",
     "idRanges":  [
                      {
                          "from":  4506,
@@ -29,10 +29,10 @@
                      }
                  ],
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
     "target":  "OnPrem"
 }

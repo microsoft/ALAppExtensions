@@ -1,8 +1,17 @@
 table 1080 "MS - Wallet Merchant Account"
 {
-    Caption = 'Microsoft Pay Payments Account';
+#if not CLEAN20
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     DrillDownPageID = 1080;
     LookupPageID = 1080;
+#else
+    ObsoleteState = Removed;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '23.0';
+#endif
+    Caption = 'Microsoft Pay Payments Account';
     Permissions = TableData "Webhook Subscription" = rimd;
     ReplicateData = false;
 
@@ -33,16 +42,18 @@ table 1080 "MS - Wallet Merchant Account"
 
             trigger OnValidate();
             var
+#if not CLEAN20
                 MSWalletMerchantAccount: Record "MS - Wallet Merchant Account";
+#endif
                 SalesHeader: Record "Sales Header";
             begin
                 IF NOT "Always Include on Documents" THEN
                     EXIT;
-
+#if not CLEAN20
                 MSWalletMerchantAccount.SETRANGE("Always Include on Documents", TRUE);
                 MSWalletMerchantAccount.SETFILTER("Primary Key", '<>%1', "Primary Key");
                 MSWalletMerchantAccount.MODIFYALL("Always Include on Documents", FALSE, TRUE);
-
+#endif
                 IF NOT GUIALLOWED() THEN
                     EXIT;
 
@@ -51,7 +62,7 @@ table 1080 "MS - Wallet Merchant Account"
                     SalesHeader."Document Type"::Order,
                     SalesHeader."Document Type"::Quote));
 
-                IF SalesHeader.FINDFIRST() AND NOT HideDialogs THEN
+                IF not SalesHeader.IsEmpty() AND NOT HideDialogs THEN
                     MESSAGE(UpdateOpenInvoicesManuallyMsg);
             end;
         }
@@ -89,10 +100,6 @@ table 1080 "MS - Wallet Merchant Account"
     {
     }
 
-    trigger OnDelete();
-    begin
-        DeleteWebhookSubscription("Merchant ID");
-    end;
 
     trigger OnInsert();
     var
@@ -104,27 +111,12 @@ table 1080 "MS - Wallet Merchant Account"
         "Test Mode" := CompanyInformationMgt.IsDemoCompany();
     end;
 
-    trigger OnModify();
-    begin
-        UpdateWebhookOnModify();
-    end;
-
     var
         merchantIDCannotBeBlankErr: Label 'You must set up your merchant account before enabling this payment service.';
         UpdateOpenInvoicesManuallyMsg: Label 'A link for the Microsoft Pay Payments payment service will be included on new sales documents. To add it to existing sales documents, you must manually select it in the Payment Service field on the sales document.';
         HideDialogs: Boolean;
         MSWalletSingeltonErr: Label 'You can only have one Microsoft Pay Payments setup. To add more payment accounts to your merchant profile, edit the existing Microsoft Pay Payments setup.';
-        MSWalletTelemetryCategoryTok: Label 'AL MSPAY', Locked = true;
         InvalidPaymentRequestURLErr: Label 'The payment request URL is not valid.';
-        WebhooksNotAllowedForCurrentClientTypeTxt: Label 'Webhooks are not allowed for the current client type.', Locked = true;
-        WebhookSubscriptionAlreadyExistsTxt: Label 'A webhook subscription already exists.', Locked = true;
-        WebhookSubscriptionNotCreatedTxt: Label 'A webhook subscription is not created.', Locked = true;
-        WebhookSubscriptionCreatedTxt: Label 'A webhook subscription is created.', Locked = true;
-        WebhookSubscriptionDeletedTxt: Label 'The webhook subscription is deleted.', Locked = true;
-        WebhookSubscriptionDoesNotExistTxt: Label 'The webhook subscription does not exist.', Locked = true;
-        PaymentRegistrationSetupAlreadyExistsTxt: Label 'The payment registration setup already exists.', Locked = true;
-        PaymentRegistrationSetupCreatedTxt: Label 'A payment registration setup is created.', Locked = true;
-        PaymentRegistrationSetupNotCreatedTxt: Label 'A payment registration setup is not created.', Locked = true;
 
     procedure GetPaymentRequestURL(): Text;
     var
@@ -178,73 +170,6 @@ table 1080 "MS - Wallet Merchant Account"
         HideDialogs := TRUE;
     end;
 
-    local procedure UpdateWebhookOnModify();
-    var
-        PrevMSWalletMerchantAccount: Record "MS - Wallet Merchant Account";
-    begin
-        PrevMSWalletMerchantAccount.GET("Primary Key");
-
-        IF PrevMSWalletMerchantAccount."Merchant ID" <> "Merchant ID" THEN
-            DeleteWebhookSubscription(PrevMSWalletMerchantAccount."Merchant ID");
-
-        IF "Merchant ID" <> '' THEN
-            IF Enabled THEN
-                RegisterWebhookListener("Merchant ID")
-            ELSE
-                DeleteWebhookSubscription("Merchant ID");
-
-        CreatePaymentRegistrationSetupForCurrentUser();
-    end;
-
-    local procedure RegisterWebhookListener(AccountID: Text[250]);
-    var
-        WebhookSubscription: Record "Webhook Subscription";
-        MarketingSetup: Record "Marketing Setup";
-        WebhookManagement: Codeunit "Webhook Management";
-        MSWalletWebhookManagement: Codeunit "MS - Wallet Webhook Management";
-        WebHooksAdapterUri: Text[250];
-        SubscriptionID: Text[150];
-    begin
-        IF NOT WebhookManagement.IsCurrentClientTypeAllowed() THEN BEGIN
-            Session.LogMessage('00008I4', WebhooksNotAllowedForCurrentClientTypeTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
-            EXIT;
-        END;
-
-        SubscriptionID := CopyStr(MSWalletWebhookManagement.GetWebhookSubscriptionID(LOWERCASE(AccountID)), 1, MaxStrLen(SubscriptionID));
-        WebhookSubscription.SETRANGE("Subscription ID", SubscriptionID);
-        WebhookSubscription.SetFilter("Created By", MSWalletWebhookManagement.GetCreatedByFilterForWebhooks());
-        WebHooksAdapterUri := MSWalletWebhookManagement.GetNotificationUrl();
-
-        IF WebhookManagement.FindWebhookSubscriptionMatchingEndPointUri(WebhookSubscription, WebHooksAdapterUri, 0, 0) THEN BEGIN
-            Session.LogMessage('00008I5', WebhookSubscriptionAlreadyExistsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
-            EXIT; // subscription already exists
-        END;
-
-        WebhookSubscription."Subscription ID" := SubscriptionID;
-        WebhookSubscription.Endpoint := WebHooksAdapterUri;
-        WebhookSubscription."Created By" := COPYSTR(GetBaseURL(), 1, MAXSTRLEN(WebhookSubscription."Created By"));
-        WebhookSubscription."Company Name" := CopyStr(COMPANYNAME(), 1, MaxStrLen(WebhookSubscription."Company Name"));
-        WebhookSubscription."Run Notification As" := MarketingSetup.TrySetWebhookSubscriptionUserAsCurrentUser();
-        IF NOT WebhookSubscription.INSERT() THEN
-            Session.LogMessage('00008I6', WebhookSubscriptionNotCreatedTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok)
-        ELSE
-            Session.LogMessage('00008I7', WebhookSubscriptionCreatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
-    end;
-
-    local procedure DeleteWebhookSubscription(AccountID: Text[250]);
-    var
-        WebhookSubscription: Record "Webhook Subscription";
-        MSWalletWebhookManagement: Codeunit "MS - Wallet Webhook Management";
-    begin
-        WebhookSubscription.SETRANGE("Subscription ID", MSWalletWebhookManagement.GetWebhookSubscriptionID(LOWERCASE(AccountID)));
-        WebhookSubscription.SetFilter("Created By", MSWalletWebhookManagement.GetCreatedByFilterForWebhooks());
-        IF NOT WebhookSubscription.IsEmpty() THEN BEGIN
-            WebhookSubscription.DeleteAll(true);
-            Session.LogMessage('00008I8', WebhookSubscriptionDeletedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
-        END;
-
-        Session.LogMessage('00008I9', WebhookSubscriptionDoesNotExistTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
-    end;
 
     procedure GetBaseURL(): Text;
     var
@@ -252,23 +177,4 @@ table 1080 "MS - Wallet Merchant Account"
     begin
         EXIT(TypeHelper.UriGetAuthority(GetPaymentRequestURL()));
     end;
-
-    local procedure CreatePaymentRegistrationSetupForCurrentUser();
-    var
-        PaymentRegistrationSetup: Record "Payment Registration Setup";
-    begin
-        IF PaymentRegistrationSetup.GET(USERID()) THEN BEGIN
-            Session.LogMessage('00008IA', PaymentRegistrationSetupAlreadyExistsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
-            exit;
-        END;
-        IF PaymentRegistrationSetup.GET() THEN BEGIN
-            PaymentRegistrationSetup."User ID" := CopyStr(USERID(), 1, MaxStrLen(PaymentRegistrationSetup."User ID"));
-            IF PaymentRegistrationSetup.INSERT(TRUE) THEN BEGIN
-                Session.LogMessage('00008IB', PaymentRegistrationSetupCreatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
-                exit;
-            END;
-            Session.LogMessage('00008IC', PaymentRegistrationSetupNotCreatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok)
-        END;
-    end;
 }
-

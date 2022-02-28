@@ -118,7 +118,12 @@ page 2750 "Universal Printer Settings"
                 group(ManageSetupInner)
                 {
                     ShowCaption = false;
-                    field(Privacy; PrivacyLbl)
+                    label(PrivacyNoticeLabel)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'This feature utilizes Microsoft Universal Print. By continuing you are affirming that you understand that the data handling and compliance standards of Microsoft Universal Print may not be the same as those provided by Microsoft Dynamics 365 Business Central. Please consult the documentation for Universal Print to learn more.';
+                    }
+                    field(Privacy; PrivacyStatementTxt)
                     {
                         ApplicationArea = All;
                         Editable = false;
@@ -197,9 +202,9 @@ page 2750 "Universal Printer Settings"
     var
         UniversalPrinterSetup: Codeunit "Universal Printer Setup";
         UniversalPrintGraphHelper: Codeunit "Universal Print Graph Helper";
-        PrivacyLbl: Label 'Learn more about how the data is handled.';
         PrivacyUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=724009', Locked = true;
         IsSizeCustom: Boolean;
         NewMode: Boolean;
         DeleteMode: Boolean;
+        PrivacyStatementTxt: Label 'Your privacy is important to us. To learn more read our Privacy Statement.';
 }

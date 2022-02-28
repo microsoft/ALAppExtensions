@@ -29,7 +29,7 @@ codeunit 8888 "Email Dispatcher"
         EmailMessage: Record "Email Message";
         SendEmail: Codeunit "Send Email";
         Email: Codeunit Email;
-        ClientTypeMgt: Codeunit "Client Type Management";
+        ClientTypeManagement: Codeunit "Client Type Management";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         Dimensions: Dictionary of [Text, Text];
     begin
@@ -83,7 +83,7 @@ codeunit 8888 "Email Dispatcher"
             UpdateOutboxStatus(Rec, Rec.Status::Failed);
         end;
 
-        if (ClientTypeMgt.GetCurrentClientType() = ClientType::Background) then
+        if (ClientTypeManagement.GetCurrentClientType() = ClientType::Background) then
             Email.OnAfterSendEmail(Rec."Message Id", Success);
     end;
 

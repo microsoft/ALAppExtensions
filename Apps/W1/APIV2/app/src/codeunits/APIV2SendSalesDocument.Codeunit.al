@@ -60,38 +60,30 @@ codeunit 30038 "APIV2 - Send Sales Document"
     end;
 
     local procedure SendPostedCreditMemo(var SalesCrMemoHeader: Record "Sales Cr.Memo Header")
-    var
-        GraphIntBusinessProfile: Codeunit "Graph Int - Business Profile";
     begin
         O365SetupEmail.CheckMailSetup();
         CheckSendToEmailAddress(SalesCrMemoHeader);
-        GraphIntBusinessProfile.SyncFromGraphSynchronously();
 
         SalesCrMemoHeader.SETRECFILTER();
         SalesCrMemoHeader.EmailRecords(false);
     end;
 
     local procedure SendCancelledCreditMemo(var SalesCrMemoHeader: Record "Sales Cr.Memo Header")
-    var
-        GraphIntBusinessProfile: Codeunit "Graph Int - Business Profile";
     begin
         O365SetupEmail.CheckMailSetup();
         CheckSendToEmailAddress(SalesCrMemoHeader);
-        GraphIntBusinessProfile.SyncFromGraphSynchronously();
         SendCreditMemoCancelationEmail(SalesCrMemoHeader);
     end;
 
     local procedure SendDocument(var SalesHeader: Record "Sales Header")
     var
         LinesInstructionMgt: Codeunit "Lines Instruction Mgt.";
-        GraphIntBusinessProfile: Codeunit "Graph Int - Business Profile";
     begin
         if not SalesHeader.SalesLinesExist() then
             Error(ThereIsNothingToSellErr);
         LinesInstructionMgt.SalesCheckAllLinesHaveQuantityAssigned(SalesHeader);
         O365SetupEmail.CheckMailSetup();
         CheckSendToEmailAddress(SalesHeader);
-        GraphIntBusinessProfile.SyncFromGraphSynchronously();
 
         SalesHeader.SETRECFILTER();
         SalesHeader.EmailRecords(false);
@@ -158,10 +150,12 @@ codeunit 30038 "APIV2 - Send Sales Document"
         TempSalesHeader: Record "Sales Header" temporary;
         ReportSelections: Record "Report Selections";
         DocumentMailing: Codeunit "Document-Mailing";
+        ReportSelectionUsage: Enum "Report Selection Usage";
         RecordVariant: Variant;
         EmailAddress: Text[250];
         ServerEmailBodyFilePath: Text[250];
         EmailBodyTxt: Text;
+        EmptyInStream: InStream;
     begin
         if not IsCreditMemoCancelled(SalesCrMemoHeader) then
             exit;
@@ -170,9 +164,9 @@ codeunit 30038 "APIV2 - Send Sales Document"
         EmailAddress := GetSendToEmailAddress(SalesCrMemoHeader);
         EmailBodyTxt := GetCreditMemoEmailBody(SalesCrMemoHeader);
         ReportSelections.GetEmailBodyTextForCust(
-          ServerEmailBodyFilePath, 2, RecordVariant, SalesCrMemoHeader."Bill-to Customer No.", EmailAddress, EmailBodyTxt);
+          ServerEmailBodyFilePath, ReportSelectionUsage::"S.Invoice", RecordVariant, SalesCrMemoHeader."Bill-to Customer No.", EmailAddress, EmailBodyTxt);
         DocumentMailing.EmailFileWithSubjectAndReportUsage(
-         '', '', ServerEmailBodyFilePath, StrSubstNo(CancelationEmailSubjectTxt, TempSalesHeader."Document Type"::"Credit Memo"),
+         EmptyInStream, '', ServerEmailBodyFilePath, StrSubstNo(CancelationEmailSubjectTxt, TempSalesHeader."Document Type"::"Credit Memo"),
          SalesCrMemoHeader."No.", EmailAddress, Format(TempSalesHeader."Document Type"::"Credit Memo"), true, 2);
     end;
 

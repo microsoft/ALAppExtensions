@@ -16,6 +16,7 @@ page 1868 "C5 InvenPriceGroup"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(Group;Group) { ApplicationArea=All; }
                 field(GroupName;GroupName) { ApplicationArea=All; }
                 field(InclVat;InclVat) { ApplicationArea=All; }
@@ -24,6 +25,7 @@ page 1868 "C5 InvenPriceGroup"
                 field(Roundoff100;Roundoff100) { ApplicationArea=All; }
                 field(Roundoff1000;Roundoff1000) { ApplicationArea=All; }
                 field(Roundoff1000Plus;Roundoff1000Plus) { ApplicationArea=All; }
+#pragma warning restore
             }
         }
     }    

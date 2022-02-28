@@ -1372,64 +1372,55 @@ table 31004 "Sales Adv. Letter Header CZZ"
         VATAmountLCY := SalesAdvLetterEntryCZZ."VAT Amount (LCY)";
     end;
 
-    procedure PrintRecord(ShowDialog: Boolean)
+    procedure PrintRecords(ShowRequestPage: Boolean)
     var
-        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
-        PrintReportID: Integer;
+        DocumentSendingProfile: Record "Document Sending Profile";
+        DummyReportSelections: Record "Report Selections";
+        IsHandled: Boolean;
     begin
-        SalesAdvLetterHeaderCZZ.Copy(Rec);
-        if not SalesAdvLetterHeaderCZZ.FindSet() then
-            exit;
-
-        AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
-        AdvanceLetterTemplateCZZ.TestField("Document Report ID");
-        if SalesAdvLetterHeaderCZZ.Count() > 1 then begin
-            PrintReportID := AdvanceLetterTemplateCZZ."Document Report ID";
-            SalesAdvLetterHeaderCZZ.Next();
-            repeat
-                AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
-                AdvanceLetterTemplateCZZ.TestField("Document Report ID", PrintReportID);
-            until SalesAdvLetterHeaderCZZ.Next() = 0;
-        end;
-        Report.Run(AdvanceLetterTemplateCZZ."Document Report ID", ShowDialog, false, SalesAdvLetterHeaderCZZ);
+        IsHandled := false;
+        OnBeforePrintRecords(DummyReportSelections, Rec, ShowRequestPage, IsHandled);
+        if not IsHandled then
+            DocumentSendingProfile.TrySendToPrinter(
+              DummyReportSelections.Usage::"Sales Advance Letter CZZ".AsInteger(), Rec, FieldNo("Bill-to Customer No."), ShowRequestPage);
     end;
 
     procedure PrintToDocumentAttachment()
     var
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
-        DocumentAttachment: Record "Document Attachment";
-        DocumentAttachmentMgmt: Codeunit "Document Attachment Mgmt";
-        TempBlob: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
-        DummyInStream: InStream;
-        ReportOutStream: OutStream;
-        DocumentInStream: InStream;
-        FileName: Text[250];
-        DocumentAttachmentFileNameTok: Label '%1', Comment = '%1 = Advance Letter No.', Locked = true;
     begin
-        SalesAdvLetterHeaderCZZ := Rec;
+        SalesAdvLetterHeaderCZZ.Copy(Rec);
+        if SalesAdvLetterHeaderCZZ.FindSet() then
+            repeat
+                DoPrintToDocumentAttachment(SalesAdvLetterHeaderCZZ);
+            until SalesAdvLetterHeaderCZZ.Next() = 0;
+    end;
+
+    local procedure DoPrintToDocumentAttachment(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    var
+        ReportSelections: Record "Report Selections";
+    begin
         SalesAdvLetterHeaderCZZ.SetRecFilter();
-        RecordRef.GetTable(SalesAdvLetterHeaderCZZ);
-        if not RecordRef.FindFirst() then
-            exit;
+        ReportSelections.SaveAsDocumentAttachment(
+            ReportSelections.Usage::"Sales Advance Letter CZZ".AsInteger(), SalesAdvLetterHeaderCZZ, SalesAdvLetterHeaderCZZ."No.", SalesAdvLetterHeaderCZZ."Bill-to Customer No.", true);
+    end;
 
-        AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
-        AdvanceLetterTemplateCZZ.TestField("Document Report ID");
-        if not Report.RdlcLayout(AdvanceLetterTemplateCZZ."Document Report ID", DummyInStream) then
-            exit;
+    procedure EmailRecords(ShowDialog: Boolean)
+    var
+        DocumentSendingProfile: Record "Document Sending Profile";
+        DummyReportSelections: Record "Report Selections";
+        ReportDistributionManagement: Codeunit "Report Distribution Management";
+        DocumentTypeTxt: Text[50];
+        IsHandled: Boolean;
+    begin
+        DocumentTypeTxt := ReportDistributionManagement.GetFullDocumentTypeText(Rec);
 
-        Clear(TempBlob);
-        TempBlob.CreateOutStream(ReportOutStream);
-        Report.SaveAs(AdvanceLetterTemplateCZZ."Document Report ID", '',
-                    ReportFormat::Pdf, ReportOutStream, RecordRef);
-
-        Clear(DocumentAttachment);
-        DocumentAttachment.InitFieldsFromRecRef(RecordRef);
-        FileName := DocumentAttachment.FindUniqueFileName(
-                    StrSubstNo(DocumentAttachmentFileNameTok, SalesAdvLetterHeaderCZZ."No."), 'pdf');
-        TempBlob.CreateInStream(DocumentInStream);
-        DocumentAttachment.SaveAttachmentFromStream(DocumentInStream, RecordRef, FileName);
-        DocumentAttachmentMgmt.ShowNotification(RecordRef, 1, true);
+        IsHandled := false;
+        OnBeforeEmailRecords(DummyReportSelections, Rec, DocumentTypeTxt, ShowDialog, IsHandled);
+        if not IsHandled then
+            DocumentSendingProfile.TrySendToEMail(
+              DummyReportSelections.Usage::"Sales Advance Letter CZZ".AsInteger(), Rec, FieldNo("No."), DocumentTypeTxt,
+              FieldNo("Bill-to Customer No."), ShowDialog);
     end;
 
     procedure CheckSalesAdvanceLetterReleaseRestrictions()
@@ -1627,6 +1618,16 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeDeleteRecordInApprovalRequest(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePrintRecords(var ReportSelections: Record "Report Selections"; var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeEmailRecords(var ReportSelections: Record "Report Selections"; var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; DocTxt: Text; ShowDialog: Boolean; var IsHandled: Boolean)
     begin
     end;
 }

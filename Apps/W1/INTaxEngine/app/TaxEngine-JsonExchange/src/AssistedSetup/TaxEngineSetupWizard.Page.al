@@ -182,10 +182,10 @@ page 20364 "Tax Engine Setup Wizard"
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
         if CloseAction = Action::OK then
-            if AssistedSetup.ExistsAndIsNotComplete(Page::"Tax Engine Setup Wizard") then
+            if GuidedExperience.AssistedSetupExistsAndIsNotComplete(ObjectType::Page, Page::"Tax Engine Setup Wizard") then
                 if not Confirm(NAVNotSetUpQst, false) then
                     Error('');
     end;

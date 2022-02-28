@@ -63,7 +63,7 @@ pageextension 18456 "GST Service Quote Lines" extends "Service Quote Lines"
             field("GST Place Of Supply"; Rec."GST Place Of Supply")
             {
                 ApplicationArea = Basic, Suite;
-                Editable = false;
+                Editable = IsHSNSACEditable;
                 ToolTip = 'Specifies on which location state code system should consider for GST calculation in case of sale of product or service.';
             }
             field("GST Group Code"; Rec."GST Group Code")

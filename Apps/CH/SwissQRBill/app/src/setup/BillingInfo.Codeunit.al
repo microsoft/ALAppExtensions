@@ -19,7 +19,7 @@ codeunit 11519 "Swiss QR-Bill Billing Info"
                 repeat
                     TempSwissQRBillBillingDetail.SetRange("Tag Code", "Tag Code");
                     if TempSwissQRBillBillingDetail.FindFirst() then begin
-                        TempSwissQRBillBillingDetail."Tag Value" += StrSubstNo(';%1', "Tag Value");
+                        TempSwissQRBillBillingDetail."Tag Value" += ';' + "Tag Value";
                         TempSwissQRBillBillingDetail.Modify();
                     end else begin
                         TempSwissQRBillBillingDetail.SetRange("Tag Code");
@@ -32,11 +32,11 @@ codeunit 11519 "Swiss QR-Bill Billing Info"
         TempSwissQRBillBillingDetail.Reset();
         with TempSwissQRBillBillingDetail do
             if FindSet() then begin
-                Result := CopyStr(StrSubstNo('//%1', FormatCode), 1, MaxStrLen(Result));
+                Result := CopyStr('//' + FormatCode, 1, MaxStrLen(Result));
                 repeat
-                    AddText := StrSubstNo('/%1/%2', "Tag Code", "Tag Value");
+                    AddText := '/' + "Tag Code" + '/' + "Tag Value";
                     if StrLen(Result + AddText) < 140 then
-                        Result += StrSubstNo('/%1/%2', "Tag Code", "Tag Value");
+                        Result += '/' + "Tag Code" + '/' + "Tag Value";
                 until Next() = 0;
             end;
     end;
@@ -54,10 +54,10 @@ codeunit 11519 "Swiss QR-Bill Billing Info"
                     repeat
                         if Result <> '' then
                             Result += ';';
-                        Result += StrSubstNo('%1:%2', FormatAmount("VAT %"), FormatAmount("VAT Base"));
+                        Result += FormatAmount("VAT %") + ':' + FormatAmount("VAT Base");
                     until Next() = 0
                 else
-                    exit(StrSubstNo('%1', FormatAmount("VAT %")));
+                    exit(FormatAmount("VAT %"));
     end;
 
     local procedure SumUpVATAmountLinesByVATPct(var TargetVATAmountLine: Record "VAT Amount Line"; var SourceVATAmountLine: Record "VAT Amount Line")
@@ -89,7 +89,7 @@ codeunit 11519 "Swiss QR-Bill Billing Info"
             with PaymentTerms do
                 if Get(PmtTermsCode) then
                     if "Discount Date Calculation" <> DummyDateFormula then
-                        exit(StrSubstNo('%1:%2', "Discount %", CalcDate("Discount Date Calculation", WorkDate()) - WorkDate()));
+                        exit(Format("Discount %") + ':' + Format(CalcDate("Discount Date Calculation", WorkDate()) - WorkDate()));
     end;
 
     internal procedure DrillDownBillingInfo(BillingInfoText: Text)

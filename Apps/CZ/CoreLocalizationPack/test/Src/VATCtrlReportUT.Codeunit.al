@@ -327,7 +327,7 @@ codeunit 148068 "VAT Ctrl. Report UT CZL"
         Commit();
 
         // [WHEN] Export recapitulative vat control report
-        VATCtrlReportXmlDocument := ExportVATCtrlReport(VATCtrlReportHeaderCZL, Enum::"VAT Statement Report Selection"::Open, Enum::"VAT Ctrl. Report Decl Type CZL"::Recapitulative);
+        VATCtrlReportXmlDocument := ExportVATCtrlReport(VATCtrlReportHeaderCZL, Enum::"VAT Statement Report Selection"::Open, Enum::"VAT Ctrl. Report Decl Type CZL"::Recapitulative);
 
         // [THEN] The information regarding recapitulative statement will be in the xml
         AssertXmlAttributeValue(VATCtrlReportXmlDocument, '/Pisemnost/DPHKH1/VetaD', 'khdph_forma', 'B');
@@ -365,7 +365,7 @@ codeunit 148068 "VAT Ctrl. Report UT CZL"
         Commit();
 
         // [WHEN] Export vat control report
-        VATCtrlReportXmlDocument := ExportVATCtrlReport(VATCtrlReportHeaderCZL, Enum::"VAT Statement Report Selection"::Open, Enum::"VAT Ctrl. Report Decl Type CZL"::Recapitulative);
+        VATCtrlReportXmlDocument := ExportVATCtrlReport(VATCtrlReportHeaderCZL, Enum::"VAT Statement Report Selection"::Open, Enum::"VAT Ctrl. Report Decl Type CZL"::Recapitulative);
 
         // [THEN] The A4 statement won't be in the xml
         AssertXmlDocNodeNotExist(VATCtrlReportXmlDocument, '/Pisemnost/DPHKH1/VetaA4');
@@ -395,7 +395,7 @@ codeunit 148068 "VAT Ctrl. Report UT CZL"
         Commit();
 
         // [WHEN] Export supplementary vat control report
-        VATCtrlReportXmlDocument := ExportVATCtrlReport(VATCtrlReportHeaderCZL, Enum::"VAT Statement Report Selection"::Open, Enum::"VAT Ctrl. Report Decl Type CZL"::Supplementary);
+        VATCtrlReportXmlDocument := ExportVATCtrlReport(VATCtrlReportHeaderCZL, Enum::"VAT Statement Report Selection"::Open, Enum::"VAT Ctrl. Report Decl Type CZL"::Supplementary);
 
         // [THEN] The information regarding supplementary statement will be in the xml
         AssertXmlAttributeValue(VATCtrlReportXmlDocument, '/Pisemnost/DPHKH1/VetaD', 'khdph_forma', 'N');
@@ -437,7 +437,7 @@ codeunit 148068 "VAT Ctrl. Report UT CZL"
     local procedure CreateVATCtrlReportLine(VATCtrlReportNo: Code[20]; SectionCode: Code[20]) VATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL"
     var
         VATPostingSetup: Record "VAT Posting Setup";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
         if VATCtrlReportNo = '' then
             VATCtrlReportNo := LibraryUtility.GenerateRandomCode(VATCtrlReportLineCZL.FieldNo("VAT Ctrl. Report No."), Database::"VAT Ctrl. Report Line CZL");
@@ -445,8 +445,8 @@ codeunit 148068 "VAT Ctrl. Report UT CZL"
         LibraryERM.FindVATPostingSetup(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT");
         VATCtrlReportLineCZL.Init();
         VATCtrlReportLineCZL."VAT Ctrl. Report No." := VATCtrlReportNo;
-        RecRef.GetTable(VATCtrlReportLineCZL);
-        VATCtrlReportLineCZL."Line No." := LibraryUtility.GetNewLineNo(RecRef, VATCtrlReportLineCZL.FieldNo("Line No."));
+        RecordRef.GetTable(VATCtrlReportLineCZL);
+        VATCtrlReportLineCZL."Line No." := LibraryUtility.GetNewLineNo(RecordRef, VATCtrlReportLineCZL.FieldNo("Line No."));
         VATCtrlReportLineCZL."VAT Ctrl. Report Section Code" := SectionCode;
         VATCtrlReportLineCZL."Posting Date" := LibraryTaxCZL.GetDateFromLastOpenVATPeriod();
         VATCtrlReportLineCZL."VAT Date" := VATCtrlReportLineCZL."Posting Date";
@@ -488,7 +488,7 @@ codeunit 148068 "VAT Ctrl. Report UT CZL"
         UnbindSubscription(VATCtrlReportUTCZL);
     end;
 
-    local procedure ExportVATCtrlReport(VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL"; EntriesSelection: Enum "VAT Statement Report Selection"; DeclarationType: Enum "VAT Ctrl. Report Decl Type CZL") XmlDoc: XmlDocument
+    local procedure ExportVATCtrlReport(VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL"; EntriesSelection: Enum "VAT Statement Report Selection"; DeclarationType: Enum "VAT Ctrl. Report Decl Type CZL") XmlDoc: XmlDocument
     var
         TempBlob: Codeunit "Temp Blob";
         XmlDocumentInStream: InStream;
@@ -562,21 +562,21 @@ codeunit 148068 "VAT Ctrl. Report UT CZL"
     end;
 
     [RequestPageHandler]
-    procedure VATCtrlReportGetEntHandler(var VATCtrlReportGetEnt: TestRequestPage "VAT Ctrl. Report Get Ent. CZL")
+    procedure VATCtrlReportGetEntHandler(var VATCtrlReportGetEntCZL: TestRequestPage "VAT Ctrl. Report Get Ent. CZL")
     var
         VariantValue: Variant;
     begin
         LibraryVariableStorage.Dequeue(VariantValue);
-        VATCtrlReportGetEnt.StartingDate.AssertEquals(VariantValue);
+        VATCtrlReportGetEntCZL.StartingDate.AssertEquals(VariantValue);
         LibraryVariableStorage.Dequeue(VariantValue);
-        VATCtrlReportGetEnt.EndingDate.AssertEquals(VariantValue);
+        VATCtrlReportGetEntCZL.EndingDate.AssertEquals(VariantValue);
         LibraryVariableStorage.Dequeue(VariantValue);
-        VATCtrlReportGetEnt.VATStatementTemplateCZL.AssertEquals(VariantValue);
+        VATCtrlReportGetEntCZL.VATStatementTemplateCZL.AssertEquals(VariantValue);
         LibraryVariableStorage.Dequeue(VariantValue);
-        VATCtrlReportGetEnt.VATStatementNameCZL.AssertEquals(VariantValue);
+        VATCtrlReportGetEntCZL.VATStatementNameCZL.AssertEquals(VariantValue);
         LibraryVariableStorage.Dequeue(VariantValue);
-        VATCtrlReportGetEnt.ProcessEntryTypeCZL.SetValue(VariantValue);
-        VATCtrlReportGetEnt.OK().Invoke();
+        VATCtrlReportGetEntCZL.ProcessEntryTypeCZL.SetValue(VariantValue);
+        VATCtrlReportGetEntCZL.OK().Invoke();
     end;
 
     [RequestPageHandler]

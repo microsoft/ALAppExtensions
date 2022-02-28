@@ -110,6 +110,8 @@ codeunit 31239 "FA Deprec. Book Handler CZF"
         end;
     end;
 
+#if not CLEAN18
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Fixed Asset", 'OnAfterValidateEvent', 'Clasification Code', false, false)]
     local procedure CheckTaxDepreciationCodeOnAfterValidateEvent(var Rec: Record "Fixed Asset")
     var
@@ -137,6 +139,8 @@ codeunit 31239 "FA Deprec. Book Handler CZF"
         end;
     end;
 
+#pragma warning restore AL0432
+#endif
     [EventSubscriber(ObjectType::Page, Page::"Fixed Asset Card", 'OnAfterLoadDepreciationBooks', '', false, false)]
     local procedure ShowDeprBooksOnAfterLoadDepreciationBooks(var Simple: Boolean)
     begin

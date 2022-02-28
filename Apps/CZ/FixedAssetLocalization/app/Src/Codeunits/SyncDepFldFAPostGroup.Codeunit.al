@@ -1,6 +1,6 @@
 #if not CLEAN18
 #pragma warning disable AL0432,AA0072
-codeunit 31226 "Sync.Dep.Fld-FAPostGroup CZF"
+codeunit 31226 "Sync.Dep.Fld-FAPostGroup CZF"
 {
     Access = Internal;
 

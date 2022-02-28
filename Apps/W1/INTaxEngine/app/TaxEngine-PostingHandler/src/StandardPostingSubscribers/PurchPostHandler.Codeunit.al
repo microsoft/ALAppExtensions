@@ -115,6 +115,7 @@ codeunit 20335 "Purch.-Post Handler"
             Currency."Amount Rounding Precision");
     end;
 
+#if not CLEAN20
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostVendorEntry', '', false, false)]
     local procedure OnBeforePostVendorEntry(
         var GenJnlLine: Record "Gen. Journal Line";
@@ -124,4 +125,13 @@ codeunit 20335 "Purch.-Post Handler"
     begin
         GenJnlLine."Tax ID" := TaxPostingBufferMgmt.GetTaxID();
     end;
+#endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
+    local procedure OnPostLedgerEntryOnBeforeGenJnlPostLine(var GenJnlLine: Record "Gen. Journal Line"; var PurchHeader: Record "Purchase Header")
+    var
+        TaxPostingBufferMgmt: Codeunit "Tax Posting Buffer Mgmt.";
+    begin
+        GenJnlLine."Tax ID" := TaxPostingBufferMgmt.GetTaxID();
+    end;   
 }

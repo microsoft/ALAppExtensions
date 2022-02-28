@@ -412,7 +412,11 @@ codeunit 148099 "SAF-T Test Helper"
         CompanyInformation.Modify();
         BankAccount.DeleteAll();
         LibraryERM.CreateBankAccount(BankAccount);
+        BankAccount.IBAN := LibraryUtility.GenerateGUID();
+        BankAccount."Bank Clearing Code" := LibraryUtility.GenerateGUID();
+        BankAccount."SWIFT Code" := LibraryUtility.GenerateGUID();
         BankAccount.Validate("Bank Account No.", LibraryUtility.GenerateGUID());
+        BankAccount."Bank Acc. Posting Group" := '';
         BankAccount.Modify(true);
     end;
 
@@ -486,7 +490,11 @@ codeunit 148099 "SAF-T Test Helper"
             CustomerPostingGroup.Validate("Receivables Account", TempGLAccount."No.");
             CustomerPostingGroup.Modify(true);
             LibrarySales.CreateCustomerBankAccount(CustomerBankAccount, Customer."No.");
+            CustomerBankAccount.Name := LibraryUtility.GenerateGUID();
             CustomerBankAccount."Bank Account No." := LibraryUtility.GenerateGUID();
+            CustomerBankAccount.IBAN := LibraryUtility.GenerateGUID();
+            CustomerBankAccount."Bank Clearing Code" := LibraryUtility.GenerateGUID();
+            CustomerBankAccount."SWIFT Code" := LibraryUtility.GenerateGUID();
             CustomerBankAccount.Modify(true);
             for j := 1 to LibraryRandom.RandInt(3) do
                 CreateDefaultDimensions(Database::Customer, Customer."No.");
@@ -525,7 +533,11 @@ codeunit 148099 "SAF-T Test Helper"
             VendorPostingGroup.Validate("Payables Account", TempGLAccount."No.");
             VendorPostingGroup.Modify(true);
             LibraryPurchase.CreateVendorBankAccount(VendorBankAccount, Vendor."No.");
+            VendorBankAccount.Name := LibraryUtility.GenerateGUID();
             VendorBankAccount."Bank Account No." := LibraryUtility.GenerateGUID();
+            VendorBankAccount.IBAN := LibraryUtility.GenerateGUID();
+            VendorBankAccount."Bank Clearing Code" := LibraryUtility.GenerateGUID();
+            VendorBankAccount."SWIFT Code" := LibraryUtility.GenerateGUID();
             VendorBankAccount.Modify(true);
             for j := 1 to LibraryRandom.RandInt(3) do
                 CreateDefaultDimensions(Database::Vendor, Vendor."No.");
@@ -540,7 +552,7 @@ codeunit 148099 "SAF-T Test Helper"
         DimensionValue.SetFilter(Name, ' ');
         if DimensionValue.FindSet() then
             repeat
-                DimensionValue.Name := LibraryUtility.GenerateGUID();
+                DimensionValue.Name := '<&';
                 DimensionValue.Modify();
             until DimensionValue.Next() = 0;
     end;

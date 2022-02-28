@@ -148,6 +148,7 @@ codeunit 1993 "Checklist Implementation"
     var
         Company: Record Company;
         ChecklistSetup: Record "Checklist Setup";
+        CurrentDateTimeUTC: DateTime;
     begin
         if not (Session.CurrentClientType() in [ClientType::Web, ClientType::Windows, ClientType::Desktop]) then
             exit(false);
@@ -162,8 +163,42 @@ codeunit 1993 "Checklist Implementation"
         if ChecklistSetup.IsEmpty() then
             exit(true);
 
-        if ChecklistSetup.FindFirst() then
-            exit(not ChecklistSetup."Is Setup Done");
+        if ChecklistSetup.FindFirst() then begin
+            if ChecklistSetup."Is Setup Done" then
+                exit(false);
+
+            if ChecklistSetup."Is Setup in Progress" then begin
+                CurrentDateTimeUTC := GetCurrentDateTimeInUTC();
+
+                // if the setup started more than 1 hour ago, but was not finished, we should restart it
+                if CurrentDateTimeUTC - ChecklistSetup."DateTime when Setup Started" > 3600000 then
+                    exit(true)
+                else
+                    exit(false);
+            end;
+
+            exit(true);
+        end;
+    end;
+
+    procedure MarkChecklistSetupInProgress(CallerModuleInfo: ModuleInfo)
+    var
+        ChecklistSetup: Record "Checklist Setup";
+    begin
+        if ChecklistSetup.FindFirst() then begin
+            if ChecklistSetup."Is Setup Done" then
+                exit;
+
+            if ChecklistSetup."Is Setup in Progress" then
+                exit;
+
+            ChecklistSetup.Delete();
+        end;
+
+        ChecklistSetup."Is Setup in Progress" := true;
+        ChecklistSetup."DateTime when Setup Started" := GetCurrentDateTimeInUTC();
+        ChecklistSetup."Is Setup Done" := false;
+        ChecklistSetup.Insert();
     end;
 
     procedure MarkChecklistSetupAsDone(CallerModuleInfo: ModuleInfo)
@@ -268,13 +303,13 @@ codeunit 1993 "Checklist Implementation"
         exit(false);
     end;
 
-    procedure UpdateUserName(var RecRef: RecordRef; Company: Text[30]; UserName: Text[50]; TableID: Integer)
+    procedure UpdateUserName(var RecordRef: RecordRef; Company: Text[30]; UserName: Text[50]; TableID: Integer)
     begin
         case TableID of
             Database::"Checklist Item User":
-                ChangeUserForChecklistItemUser(RecRef, Company, UserName);
+                ChangeUserForChecklistItemUser(RecordRef, Company, UserName);
             Database::"User Checklist Status":
-                ChangeUserForUserChecklistStatus(RecRef, Company, UserName);
+                ChangeUserForUserChecklistStatus(RecordRef, Company, UserName);
         end;
     end;
 
@@ -291,21 +326,21 @@ codeunit 1993 "Checklist Implementation"
             end;
     end;
 
-    local procedure ChangeUserForChecklistItemUser(var RecRef: RecordRef; Company: Text[30]; UserName: Text[50])
+    local procedure ChangeUserForChecklistItemUser(var RecordRef: RecordRef; Company: Text[30]; UserName: Text[50])
     var
         ChecklistItemUser: Record "Checklist Item User";
     begin
         ChecklistItemUser.ChangeCompany(Company);
-        RecRef.SetTable(ChecklistItemUser);
+        RecordRef.SetTable(ChecklistItemUser);
         ChecklistItemUser.Rename(ChecklistItemUser.Code, UserName);
     end;
 
-    local procedure ChangeUserForUserChecklistStatus(var RecRef: RecordRef; Company: Text[30]; UserName: Text[50])
+    local procedure ChangeUserForUserChecklistStatus(var RecordRef: RecordRef; Company: Text[30]; UserName: Text[50])
     var
         UserChecklistStatus: Record "User Checklist Status";
     begin
         UserChecklistStatus.ChangeCompany(Company);
-        RecRef.SetTable(UserChecklistStatus);
+        RecordRef.SetTable(UserChecklistStatus);
         UserChecklistStatus.Rename(UserName, UserChecklistStatus."Role ID");
     end;
 
@@ -621,18 +656,13 @@ codeunit 1993 "Checklist Implementation"
         OldChecklistItemUser.DeleteAll();
     end;
 
-    local procedure IsCallerModuleBaseApp(CallerModuleInfo: ModuleInfo): Boolean
-    begin
-        exit(CallerModuleInfo.Id = '437dbf0e-84ff-417a-965d-ed2bb9650972');
-    end;
-
-    local procedure IsCallerModuleSystemApp(CallerModuleInfo: ModuleInfo): Boolean
+    procedure GetCurrentDateTimeInUTC(): DateTime
     var
-        CurrentModuleInfo: ModuleInfo;
+        CurrentDateTimeUTC: DateTime;
     begin
-        NavApp.GetCurrentModuleInfo(CurrentModuleInfo);
+        Evaluate(CurrentDateTimeUTC, Format(CurrentDateTime(), 0, 9));
 
-        exit(CallerModuleInfo.Id = CurrentModuleInfo.Id);
+        exit(CurrentDateTimeUTC);
     end;
 
     local procedure LogMessageOnDatabaseEvent(Code: Code[300]; Tag: Text; Message: Text)

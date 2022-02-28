@@ -72,14 +72,14 @@ page 30018 "APIV2 - G/L Entries"
                     Caption = 'Attachments';
                     EntityName = 'attachment';
                     EntitySetName = 'attachments';
-                    SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const(1);
+                    SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const(Journal);
                 }
                 part(dimensionSetLines; "APIV2 - Dimension Set Lines")
                 {
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(12);
+                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("General Ledger Entry");
                 }
             }
         }

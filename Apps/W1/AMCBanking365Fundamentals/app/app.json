@@ -1,14 +1,14 @@
 {
     "id":  "16319982-4995-4fb1-8fb2-2b1e13773e3b",
-    "platform":  "19.0.0.0",
-    "application":  "19.4.0.0",
-    "version":  "19.4.0.0",
+    "platform":  "20.0.0.0",
+    "application":  "20.0.0.0",
+    "version":  "20.0.0.0",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2101583",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
+    "resourceExposurePolicy": {
+        "allowDebugging": false,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
     "description":  "AMC Banking Fundamentals enable Microsoft Dynamics 365 Business Central to speak the same language as your banks. Easily export payment files containing all your vendor payments in a file-format your bank will support. Import statements in many formats to utilize the automatic reconciliation functionality. AMC Banking Fundamentals connects Business Central to our third-party server, where you will automatically have access to all developed formats, so you never have to think about bank formats again. Sign up, free of charge for the first bank account on https://license.amcbanking.com/register",
     "internalsVisibleTo":  [
                                {

@@ -62,7 +62,7 @@ codeunit 31116 "EET Service Management CZL"
     var
         CompanyInformation: Record "Company Information";
         CertificateManagement: Codeunit "Certificate Management";
-        CertificateCommonName: Text;
+        CertificateSimpleName: Text;
         VATRegistrationErrorTxt: Label 'The certificate was issued to %1 but your VAT Registration No. is %2.', Comment = '%1=VAT Registration Number of certificate, %2=VAT Registration Number of company';
         VATRegistrationWarningTxt: Label 'VAT Registration No. %1 on EET Entry doesn''t match to VAT Registration No. %2 in Company Information.', Comment = '%1=VAT Registration Number of EET Entry, %2=VAT Registration Number of Company Information';
         EmptyBusinessPremisesIdTxt: Label 'Business Premises Id must not be empty.';
@@ -73,10 +73,10 @@ codeunit 31116 "EET Service Management CZL"
         if CompanyInformation."VAT Registration No." <> EETEntryCZL."VAT Registration No." then
             LogMessage(TempErrorMessage."Message Type"::Warning, '',
               StrSubstNo(VATRegistrationWarningTxt, EETEntryCZL."VAT Registration No.", CompanyInformation."VAT Registration No."));
-        CertificateCommonName := CertificateManagement.GetCertificateCommonName(IsolatedCertificate);
-        if CompanyInformation."VAT Registration No." <> CertificateCommonName then
+        CertificateSimpleName := CertificateManagement.GetCertSimpleName(IsolatedCertificate);
+        if CompanyInformation."VAT Registration No." <> CertificateSimpleName then
             LogMessage(TempErrorMessage."Message Type"::Error, '',
-              StrSubstNo(VATRegistrationErrorTxt, CertificateCommonName, CompanyInformation."VAT Registration No."));
+              StrSubstNo(VATRegistrationErrorTxt, CertificateSimpleName, CompanyInformation."VAT Registration No."));
         if EETEntryCZL.GetBusinessPremisesId() = '' then
             LogMessage(TempErrorMessage."Message Type"::Error, '', EmptyBusinessPremisesIdTxt);
         if EETEntryCZL."Cash Register Code" = '' then
@@ -206,7 +206,7 @@ codeunit 31116 "EET Service Management CZL"
             AddAttributeWithPrefix(SecurityXmlNode, 'mustUnderstand', 'soap', SoapNamespaceTxt, '1');
             XMLDOMManagement.AddNamespaceDeclaration(SecurityXmlNode, 'wsu', SecurityUtilityNamespaceTxt);
             XMLDOMManagement.AddElementWithPrefix(
-                SecurityXmlNode, 'BinarySecurityToken', CertificateManagement.GetCertAsBase64StringWithoutPrivateKey(IsolatedCertificate),
+                SecurityXmlNode, 'BinarySecurityToken', CertificateManagement.GetRawCertDataAsBase64String(IsolatedCertificate),
                 'wsse', SecurityExtensionNamespaceTxt, BinarySecurityTokenXmlNode);
             AddAttributeWithPrefix(BinarySecurityTokenXmlNode, 'Id', 'wsu', SecurityUtilityNamespaceTxt, CreateXmlElementID());
             AddAttribute(BinarySecurityTokenXmlNode, 'EncodingType', SecurityEncodingTypeBase64BinaryTxt);
@@ -230,7 +230,6 @@ codeunit 31116 "EET Service Management CZL"
     var
         DataTempBlob: Codeunit "Temp Blob";
         SignatureTempBlob: Codeunit "Temp Blob";
-        CertificateManagement: Codeunit "Certificate Management";
         EETXmlSignProviderCZL: Codeunit "EET Xml Sign. Provider CZL";
         XMLDOMManagement: Codeunit "XML DOM Management";
         SignatureXmlDocument: XmlDocument;
@@ -263,7 +262,7 @@ codeunit 31116 "EET Service Management CZL"
         SignatureTempBlob.CreateInStream(SignatureInStream);
         SoapXmlWriteOptions.PreserveWhitespace := false;
         InputXmlDocument.WriteTo(SoapXmlWriteOptions, DataOutStream);
-        CertificateManagement.SignData(DataInStream, SignatureOutStream, IsolatedCertificate, EETXmlSignProviderCZL);
+        EETXmlSignProviderCZL.SignData(DataInStream, IsolatedCertificate, SignatureOutStream);
 
         XmlDocument.ReadFrom(SignatureInStream, SignatureXmlDocument);
         SignatureXmlDocument.GetRoot(SignatureXmlElement);
@@ -402,7 +401,7 @@ codeunit 31116 "EET Service Management CZL"
         if CertBase64Value = '' then
             exit;
 
-        if not CertificateManagement.VerifyCertificate(CertBase64Value) then
+        if not CertificateManagement.VerifyCertFromBase64(CertBase64Value) then
             LogMessage(TempErrorMessage."Message Type"::Error, '', EETCertificateNotValidErr);
     end;
 

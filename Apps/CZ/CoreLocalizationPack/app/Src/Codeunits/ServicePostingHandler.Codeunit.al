@@ -8,8 +8,12 @@ codeunit 31040 "Service Posting Handler CZL"
         BankOperationsFunctionsCZL: Codeunit "Bank Operations Functions CZL";
         ReverseChargeCheckCZL: Enum "Reverse Charge Check CZL";
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Serv-Posting Journals Mgt.", 'OnAfterPostInvoicePostBuffer', '', false, false)]
 #pragma warning disable AL0432
+#if not CLEAN20
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Serv-Posting Journals Mgt.", 'OnAfterPostInvoicePostBuffer', '', false, false)]
+#else
+    // TODO: Subscribe the new event from "Service Post Invoice" instead of obsoleted event OnAfterPostInvoicePostBuffer from "Serv-Posting Journals Mgt."
+#endif
     local procedure ServPostingVATCurrencyFactorOnAfterPostInvPostBuffer(var GenJournalLine: Record "Gen. Journal Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer"; ServiceHeader: Record "Service Header"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
 #pragma warning restore AL0432
     var
@@ -152,8 +156,28 @@ codeunit 31040 "Service Posting Handler CZL"
             until ServiceLine.Next() = 0;
     end;
 
+#if not CLEAN20
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Serv-Posting Journals Mgt.", 'OnBeforePostCustomerEntry', '', false, false)]
+#pragma warning restore AL0432
     local procedure UpdateSymbolsAndBankAccountOnBeforePostCustomerEntry(var GenJournalLine: Record "Gen. Journal Line"; ServiceHeader: Record "Service Header")
+    begin
+        GenJournalLine."Specific Symbol CZL" := ServiceHeader."Specific Symbol CZL";
+        if ServiceHeader."Variable Symbol CZL" <> '' then
+            GenJournalLine."Variable Symbol CZL" := ServiceHeader."Variable Symbol CZL"
+        else
+            GenJournalLine."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(GenJournalLine."Document No.");
+        GenJournalLine."Constant Symbol CZL" := ServiceHeader."Constant Symbol CZL";
+        GenJournalLine."Bank Account Code CZL" := ServiceHeader."Bank Account Code CZL";
+        GenJournalLine."Bank Account No. CZL" := ServiceHeader."Bank Account No. CZL";
+        GenJournalLine."IBAN CZL" := ServiceHeader."IBAN CZL";
+        GenJournalLine."SWIFT Code CZL" := ServiceHeader."SWIFT Code CZL";
+        GenJournalLine."Transit No. CZL" := ServiceHeader."Transit No. CZL";
+    end;
+#endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
+    local procedure UpdateSymbolsAndBankAccountOnPostLedgerEntryOnBeforeGenJnlPostLine(var GenJournalLine: Record "Gen. Journal Line"; ServiceHeader: Record "Service Header")
     begin
         GenJournalLine."Specific Symbol CZL" := ServiceHeader."Specific Symbol CZL";
         if ServiceHeader."Variable Symbol CZL" <> '' then

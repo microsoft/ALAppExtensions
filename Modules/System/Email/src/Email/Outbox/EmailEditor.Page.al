@@ -65,7 +65,7 @@ page 13 "Email Editor"
 
                             trigger OnValidate()
                             begin
-                                EmailMessage.SetRecipients(Enum::"Email Recipient Type"::"To", ToRecipient);
+                                EmailMessageImpl.SetRecipients(Enum::"Email Recipient Type"::"To", ToRecipient);
                                 EmailEditor.VerifyRelatedRecords(Rec."Message Id");
                             end;
 
@@ -87,7 +87,7 @@ page 13 "Email Editor"
 
                             trigger OnValidate()
                             begin
-                                EmailMessage.SetRecipients(Enum::"Email Recipient Type"::Cc, CcRecipient);
+                                EmailMessageImpl.SetRecipients(Enum::"Email Recipient Type"::Cc, CcRecipient);
                                 EmailEditor.VerifyRelatedRecords(Rec."Message Id");
                             end;
 
@@ -108,7 +108,7 @@ page 13 "Email Editor"
 
                             trigger OnValidate()
                             begin
-                                EmailMessage.SetRecipients(Enum::"Email Recipient Type"::Bcc, BccRecipient);
+                                EmailMessageImpl.SetRecipients(Enum::"Email Recipient Type"::Bcc, BccRecipient);
                                 EmailEditor.VerifyRelatedRecords(Rec."Message Id");
                             end;
 
@@ -128,8 +128,8 @@ page 13 "Email Editor"
 
                             trigger OnValidate()
                             begin
-                                EmailMessage.SetSubject(EmailSubject);
-                                EmailMessage.Modify();
+                                EmailMessageImpl.SetSubject(EmailSubject);
+                                EmailMessageImpl.Modify();
 
                                 Rec.Description := CopyStr(EmailSubject, 1, MaxStrLen(Rec.Description));
                                 Rec.Modify();
@@ -158,8 +158,8 @@ page 13 "Email Editor"
 
                     trigger OnValidate()
                     begin
-                        EmailMessage.SetBody(EmailBody);
-                        EmailMessage.Modify();
+                        EmailMessageImpl.SetBody(EmailBody);
+                        EmailMessageImpl.Modify();
                     end;
                 }
             }
@@ -180,8 +180,8 @@ page 13 "Email Editor"
 
                     trigger OnValidate()
                     begin
-                        EmailMessage.SetBody(EmailBody);
-                        EmailMessage.Modify();
+                        EmailMessageImpl.SetBody(EmailBody);
+                        EmailMessageImpl.Modify();
                     end;
                 }
             }
@@ -215,7 +215,7 @@ page 13 "Email Editor"
                 var
                     IsEmailDataValid: Boolean;
                 begin
-                    IsEmailDataValid := EmailEditor.ValidateEmailData(TempEmailAccount."Email Address", EmailMessage);
+                    IsEmailDataValid := EmailEditor.ValidateEmailData(TempEmailAccount."Email Address", EmailMessageImpl);
 
                     if IsEmailDataValid then begin
                         IsNewOutbox := false;
@@ -264,7 +264,7 @@ page 13 "Email Editor"
 
                 trigger OnAction()
                 begin
-                    EmailEditor.UploadAttachment(EmailMessage);
+                    EmailEditor.UploadAttachment(EmailMessageImpl);
 
                     CurrPage.Attachments.Page.UpdateDeleteEnablement();
                     CurrPage.Attachments.Page.Update();
@@ -285,7 +285,7 @@ page 13 "Email Editor"
                 trigger OnAction()
                 var
                 begin
-                    EmailEditor.LoadWordTemplate(EmailMessage, Rec."Message Id");
+                    EmailEditor.LoadWordTemplate(EmailMessageImpl, Rec."Message Id");
                 end;
             }
             action(ShowSourceRecord)
@@ -334,14 +334,14 @@ page 13 "Email Editor"
         EmailEditor.CheckPermissions(Rec);
 
         EmailEditor.GetEmailAccount(Rec, TempEmailAccount);
-        EmailEditor.GetEmailMessage(Rec, EmailMessage);
+        EmailEditor.GetEmailMessage(Rec, EmailMessageImpl);
 
         UpdateFromField(TempEmailAccount);
-        ToRecipient := EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::"To");
-        CcRecipient := EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::Cc);
-        BccRecipient := EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::Bcc);
-        EmailBody := EmailMessage.GetBody();
-        EmailSubject := EmailMessage.GetSubject();
+        ToRecipient := EmailMessageImpl.GetRecipientsAsText(Enum::"Email Recipient Type"::"To");
+        CcRecipient := EmailMessageImpl.GetRecipientsAsText(Enum::"Email Recipient Type"::Cc);
+        BccRecipient := EmailMessageImpl.GetRecipientsAsText(Enum::"Email Recipient Type"::Bcc);
+        EmailBody := EmailMessageImpl.GetBody();
+        EmailSubject := EmailMessageImpl.GetSubject();
 
         if EmailSubject <> '' then
             CurrPage.Caption(EmailSubject)
@@ -350,19 +350,19 @@ page 13 "Email Editor"
 
         EmailScheduled := Rec.Status in [Enum::"Email Status"::Queued, Enum::"Email Status"::Processing];
         HasSourceRecord := EmailImpl.HasSourceRecord(Rec."Message Id");
-        IsHTMLFormatted := EmailMessage.IsBodyHTMLFormatted();
-        CurrPage.Attachments.Page.UpdateValues(EmailMessage.GetId());
+        IsHTMLFormatted := EmailMessageImpl.IsBodyHTMLFormatted();
+        CurrPage.Attachments.Page.UpdateValues(EmailMessageImpl.GetId(), not EmailScheduled);
     end;
 
     trigger OnOpenPage()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        EmailEditor.CheckPermissions(Rec);
+        // Do not check permissions on compose
+        if Rec.Id <> 0 then
+            EmailEditor.CheckPermissions(Rec);
 
         FeatureTelemetry.LogUptake('0000CTQ', 'Emailing', Enum::"Feature Uptake Status"::Discovered);
-
-        Rec.SetRange("User Security Id", UserSecurityId());
         CurrPage.SetTableView(Rec);
 
         if not IsNewOutbox then begin // if the outbox is set as new, do not create new outbox
@@ -442,7 +442,7 @@ page 13 "Email Editor"
 
     var
         TempEmailAccount: Record "Email Account" temporary;
-        EmailMessage: Codeunit "Email Message Impl.";
+        EmailMessageImpl: Codeunit "Email Message Impl.";
         EmailEditor: Codeunit "Email Editor";
         EmailImpl: Codeunit "Email Impl";
 

@@ -18,6 +18,7 @@ page 1861 "C5 VendTable"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(Account; Account) { ApplicationArea = All; }
                 field(Name; Name) { ApplicationArea = All; }
                 field(Address1; Address1) { ApplicationArea = All; }
@@ -89,6 +90,7 @@ page 1861 "C5 VendTable"
                 field(CardType; CardType) { ApplicationArea = All; }
                 field(StdAccount; StdAccount) { ApplicationArea = All; }
                 field(VatNumberType; VatNumberType) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

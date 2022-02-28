@@ -79,8 +79,8 @@ codeunit 2750 "Universal Printer Setup"
         PrinterUnit: Enum "Printer Unit";
     begin
         // Converting mm/in to hundredths of a mm/in
-        PaperTray.Add('width', UniversalPrinterSettings."Paper Height" * 100);
-        PaperTray.Add('height', UniversalPrinterSettings."Paper Width" * 100);
+        PaperTray.Add('height', UniversalPrinterSettings."Paper Height" * 100);
+        PaperTray.Add('width', UniversalPrinterSettings."Paper Width" * 100);
         if UniversalPrinterSettings."Paper Unit" = UniversalPrinterSettings."Paper Unit"::Millimeters then
             PaperTray.Add('units', PrinterUnit::HundredthsOfAMillimeter.AsInteger());
         if UniversalPrinterSettings."Paper Unit" = UniversalPrinterSettings."Paper Unit"::Inches then

@@ -4,10 +4,10 @@
     "publisher":  "Microsoft",
     "brief":  "Provides functionality to use the printer's email address to send print jobs to the printer.",
     "description":  "Provides functionality to use the printer's email address to send print jobs to the printer.",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2118801",
     "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
     "logo":  "ExtensionLogo.png",
     "dependencies":  [
@@ -19,7 +19,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
+    "platform":  "20.0.0.0",
     "target":  "OnPrem",
     "idRanges":  [
                      {
@@ -31,11 +31,11 @@
                          "to":  5660
                      }
                  ],
-    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/",
-    "application":  "19.4.0.0",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2118801",
+    "application":  "20.0.0.0",
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    }
 }

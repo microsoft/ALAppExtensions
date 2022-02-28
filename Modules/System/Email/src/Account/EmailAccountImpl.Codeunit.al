@@ -9,14 +9,14 @@ codeunit 8889 "Email Account Impl."
     Permissions = tabledata "Email Connector Logo" = rimd,
                   tabledata "Email Scenario" = imd;
 
-    procedure GetAllAccounts(LoadLogos: Boolean; var Accounts: Record "Email Account" temporary)
+    procedure GetAllAccounts(LoadLogos: Boolean; var TempEmailAccount: Record "Email Account" temporary)
     var
         EmailAccounts: Record "Email Account";
         IEmailConnector: Interface "Email Connector";
         Connector: Enum "Email Connector";
     begin
-        Accounts.Reset();
-        Accounts.DeleteAll();
+        TempEmailAccount.Reset();
+        TempEmailAccount.DeleteAll();
 
         foreach Connector in Connector.Ordinals do begin
             IEmailConnector := Connector;
@@ -26,25 +26,25 @@ codeunit 8889 "Email Account Impl."
 
             if EmailAccounts.FindSet() then
                 repeat
-                    Accounts := EmailAccounts;
-                    Accounts.Connector := Connector;
+                    TempEmailAccount := EmailAccounts;
+                    TempEmailAccount.Connector := Connector;
 
                     if LoadLogos then begin
-                        ImportLogo(Accounts, Connector);
-                        ImportLogoBlob(Accounts, Connector);
+                        ImportLogo(TempEmailAccount, Connector);
+                        ImportLogoBlob(TempEmailAccount, Connector);
                     end;
 
-                    if not Accounts.Insert() then;
+                    if not TempEmailAccount.Insert() then;
                 until EmailAccounts.Next() = 0;
         end;
 
         // Sort by account name
-        Accounts.SetCurrentKey(Name);
+        TempEmailAccount.SetCurrentKey(Name);
     end;
 
     procedure DeleteAccounts(var EmailAccountsToDelete: Record "Email Account")
     var
-        CurrentDefaultAccount: Record "Email Account";
+        CurrentDefaultEmailAccount: Record "Email Account";
         ConfirmManagement: Codeunit "Confirm Management";
         EmailScenario: Codeunit "Email Scenario";
         EmailConnector: Interface "Email Connector";
@@ -58,7 +58,7 @@ codeunit 8889 "Email Account Impl."
             exit;
 
         // Get the current default account to track if it was deleted
-        EmailScenario.GetDefaultEmailAccount(CurrentDefaultAccount);
+        EmailScenario.GetDefaultEmailAccount(CurrentDefaultEmailAccount);
 
         // Delete all selected acounts
         repeat
@@ -70,13 +70,13 @@ codeunit 8889 "Email Account Impl."
             end;
         until EmailAccountsToDelete.Next() = 0;
 
-        HandleDefaultAccountDeletion(CurrentDefaultAccount."Account Id", CurrentDefaultAccount.Connector);
+        HandleDefaultAccountDeletion(CurrentDefaultEmailAccount."Account Id", CurrentDefaultEmailAccount.Connector);
     end;
 
     local procedure HandleDefaultAccountDeletion(CurrentDefaultAccountId: Guid; Connector: Enum "Email Connector")
     var
         AllEmailAccounts: Record "Email Account";
-        NewDefaultAccount: Record "Email Account";
+        NewDefaultEmailAccount: Record "Email Account";
         EmailScenario: Codeunit "Email Scenario";
     begin
         GetAllAccounts(false, AllEmailAccounts);
@@ -94,30 +94,30 @@ codeunit 8889 "Email Account Impl."
         end;
 
         Commit();  // Commit the accounts deletion in order to prompt for new default account
-        if PromptNewDefaultAccountChoice(NewDefaultAccount) then
-            MakeDefault(NewDefaultAccount)
+        if PromptNewDefaultAccountChoice(NewDefaultEmailAccount) then
+            MakeDefault(NewDefaultEmailAccount)
         else
             EmailScenario.UnassignScenario(Enum::"Email Scenario"::Default); // remove the default scenario as it is pointing to a non-existent account
     end;
 
-    local procedure PromptNewDefaultAccountChoice(var NewDefaultAccount: Record "Email Account"): Boolean
+    local procedure PromptNewDefaultAccountChoice(var NewDefaultEmailAccount: Record "Email Account"): Boolean
     var
-        AccountsPage: Page "Email Accounts";
+        EmailAccountsPage: Page "Email Accounts";
     begin
-        AccountsPage.LookupMode(true);
-        AccountsPage.EnableLookupMode();
-        AccountsPage.Caption(ChooseNewDefaultTxt);
-        if AccountsPage.RunModal() = Action::LookupOK then begin
-            AccountsPage.GetAccount(NewDefaultAccount);
+        EmailAccountsPage.LookupMode(true);
+        EmailAccountsPage.EnableLookupMode();
+        EmailAccountsPage.Caption(ChooseNewDefaultTxt);
+        if EmailAccountsPage.RunModal() = Action::LookupOK then begin
+            EmailAccountsPage.GetAccount(NewDefaultEmailAccount);
             exit(true);
         end;
 
         exit(false);
     end;
 
-    local procedure ImportLogo(var Account: Record "Email Account"; Connector: Interface "Email Connector")
+    local procedure ImportLogo(var EmailAccount: Record "Email Account"; Connector: Interface "Email Connector")
     var
-        ConnectorLogo: Record "Email Connector Logo";
+        EmailConnectorLogo: Record "Email Connector Logo";
         TempBlob: Codeunit "Temp Blob";
         Base64Convert: Codeunit "Base64 Convert";
         ConnectorLogoBase64: Text;
@@ -129,24 +129,24 @@ codeunit 8889 "Email Account Impl."
 
         if ConnectorLogoBase64 = '' then
             exit;
-        if not ConnectorLogo.Get(Account.Connector) then begin
+        if not EmailConnectorLogo.Get(EmailAccount.Connector) then begin
             TempBlob.CreateOutStream(OutStream);
             Base64Convert.FromBase64(ConnectorLogoBase64, OutStream);
             TempBlob.CreateInStream(InStream);
-            ConnectorLogo.Connector := Account.Connector;
-            ConnectorLogo.Logo.ImportStream(InStream, StrSubstNo(ConnectorLogoDescriptionTxt, Account.Connector));
-            if ConnectorLogo.Insert() then;
+            EmailConnectorLogo.Connector := EmailAccount.Connector;
+            EmailConnectorLogo.Logo.ImportStream(InStream, StrSubstNo(ConnectorLogoDescriptionTxt, EmailAccount.Connector));
+            if EmailConnectorLogo.Insert() then;
         end;
-        Account.Logo := ConnectorLogo.Logo
+        EmailAccount.Logo := EmailConnectorLogo.Logo
     end;
 
     procedure IsAnyAccountRegistered(): Boolean
     var
-        Accounts: Record "Email Account";
+        EmailAccount: Record "Email Account";
     begin
-        GetAllAccounts(false, Accounts);
+        GetAllAccounts(false, EmailAccount);
 
-        exit(not Accounts.IsEmpty());
+        exit(not EmailAccount.IsEmpty());
     end;
 
     internal procedure IsUserEmailAdmin(): Boolean
@@ -200,7 +200,7 @@ codeunit 8889 "Email Account Impl."
             Error(CannotManageSetupErr);
     end;
 
-    local procedure ImportLogoBlob(var Account: Record "Email Account"; Connector: Interface "Email Connector")
+    local procedure ImportLogoBlob(var EmailAccount: Record "Email Account"; Connector: Interface "Email Connector")
     var
         Base64Convert: Codeunit "Base64 Convert";
         ConnectorLogoBase64: Text;
@@ -209,7 +209,7 @@ codeunit 8889 "Email Account Impl."
         ConnectorLogoBase64 := Connector.GetLogoAsBase64();
 
         if ConnectorLogoBase64 <> '' then begin
-            Account.LogoBlob.CreateOutStream(OutStream);
+            EmailAccount.LogoBlob.CreateOutStream(OutStream);
             Base64Convert.FromBase64(ConnectorLogoBase64, OutStream);
         end;
     end;
@@ -260,7 +260,7 @@ codeunit 8889 "Email Account Impl."
     end;
 
     [InternalEvent(false)]
-    internal procedure OnAfterSetSelectionFilter(var Rec: Record "Email Account")
+    internal procedure OnAfterSetSelectionFilter(var EmailAccount: Record "Email Account")
     begin
     end;
 

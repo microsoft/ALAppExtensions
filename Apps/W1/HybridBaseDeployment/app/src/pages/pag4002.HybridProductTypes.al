@@ -25,8 +25,8 @@ page 4002 "Hybrid Product Types"
 
     trigger OnOpenPage()
     var
-        HybridManagement: Codeunit "Hybrid Cloud Management";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
-        HybridManagement.OnGetHybridProductType(Rec);
+        HybridCloudManagement.OnGetHybridProductType(Rec);
     end;
 }

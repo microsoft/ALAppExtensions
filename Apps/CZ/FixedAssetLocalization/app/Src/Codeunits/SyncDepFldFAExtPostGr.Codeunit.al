@@ -1,6 +1,6 @@
 #if not CLEAN18
 #pragma warning disable AL0432,AA0072
-codeunit 31307 "Sync.Dep.Fld-FAExtPostGr CZF"
+codeunit 31307 "Sync.Dep.Fld-FAExtPostGr CZF"
 {
     Access = Internal;
     Permissions = tabledata "FA Extended Posting Group" = rimd,

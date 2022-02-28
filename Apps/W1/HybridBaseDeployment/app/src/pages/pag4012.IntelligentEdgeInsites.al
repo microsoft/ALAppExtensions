@@ -66,11 +66,11 @@ page 4012 "Intelligent Edge Insights"
 
     trigger OnOpenPage()
     var
-        CalcAmts: Codeunit CalculateAmounts;
+        CalculateAmounts: Codeunit CalculateAmounts;
     begin
-        "Over Due Sales Invoices" := CalcAmts.NumOfOverDueSalesInvoice();
-        "Sales Invoices Due This Week" := CalcAmts.NumOfSalesInvoicesDueThisWeek();
-        "Over Due Purchase Invoices" := CalcAmts.NumOfPurchInvoicesOverDue();
-        "Purchase Invoices Due This Week" := CalcAmts.NumOfPurchInvoicesDueThisWeek();
+        "Over Due Sales Invoices" := CalculateAmounts.NumOfOverDueSalesInvoice();
+        "Sales Invoices Due This Week" := CalculateAmounts.NumOfSalesInvoicesDueThisWeek();
+        "Over Due Purchase Invoices" := CalculateAmounts.NumOfPurchInvoicesOverDue();
+        "Purchase Invoices Due This Week" := CalculateAmounts.NumOfPurchInvoicesDueThisWeek();
     end;
 }

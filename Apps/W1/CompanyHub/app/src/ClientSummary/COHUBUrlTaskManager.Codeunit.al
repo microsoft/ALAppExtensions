@@ -93,14 +93,18 @@ codeunit 1154 "COHUB Url Task Manager"
     var
         COHUBCompanyEndpoint: Record "COHUB Company Endpoint";
         COHUBCompUrlTaskManager: Codeunit "COHUB Comp. Url Task Manager";
+        CompanyEndpointExist: Boolean;
     begin
+        CompanyEndpointExist := COHUBCompanyEndpoint.Get(COHUBEnviroment."No.", CompanyNameValue, UserSecurityId());
         COHUBCompanyEndpoint."Enviroment No." := COHUBEnviroment."No.";
         COHUBCompanyEndpoint."Company Name" := CompanyNameValue;
         COHUBCompanyEndpoint."Assigned To" := UserSecurityId();
         COHUBCompanyEndpoint."Company Display Name" := CompanyDisplayNameValue;
         COHUBCompanyEndpoint."ODATA Company URL" := COPYSTR(CompanyUrl, 1, MaxStrLen(COHUBCompanyEndpoint."ODATA Company URL"));
         COHUBCompanyEndpoint."Evaulation Company" := IsEvaulationCompany;
-        if not COHUBCompanyEndpoint.Modify(true) then
+        if CompanyEndpointExist then
+            COHUBCompanyEndpoint.Modify(true)
+        else
             COHUBCompanyEndpoint.Insert(true);
 
         COHUBCompUrlTaskManager.GatherKPIData(COHUBCompanyEndpoint);

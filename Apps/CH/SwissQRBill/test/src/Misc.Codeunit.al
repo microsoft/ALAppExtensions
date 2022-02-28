@@ -70,17 +70,17 @@ codeunit 148093 "Swiss QR-Bill Test Misc"
     [HandlerFunctions('CompanyInformationMPH')]
     procedure QRBillSetupPage_DrillDown_QRIBAN()
     var
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
         SwissQRBillSetup: TestPage "Swiss QR-Bill Setup";
     begin
         // [FEATURE] [UI]
         // [SCENARIO 259169] Page "Swiss QR-Bill Setup" assert and drill down "QR-IBAN"
         SwissQRBillTestLibrary.UpdateCompanyQRIBAN();
-        CompanyInfo.Get();
+        CompanyInformation.Get();
 
         with SwissQRBillSetup do begin
             OpenEdit();
-            QRIBAN.AssertEquals(CompanyInfo."Swiss QR-Bill IBAN");
+            QRIBAN.AssertEquals(CompanyInformation."Swiss QR-Bill IBAN");
             QRIBAN.Drilldown();
             Close();
         end;
@@ -91,16 +91,16 @@ codeunit 148093 "Swiss QR-Bill Test Misc"
     [HandlerFunctions('CompanyInformationMPH')]
     procedure QRBillSetupPage_DrillDown_IBAN()
     var
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
         SwissQRBillSetup: TestPage "Swiss QR-Bill Setup";
     begin
         // [FEATURE] [UI]
         // [SCENARIO 259169] Page "Swiss QR-Bill Setup" assert and drill down "IBAN"
-        CompanyInfo.Get();
+        CompanyInformation.Get();
 
         with SwissQRBillSetup do begin
             OpenEdit();
-            IBAN.AssertEquals(CompanyInfo.IBAN);
+            IBAN.AssertEquals(CompanyInformation.IBAN);
             IBAN.Drilldown();
             Close();
         end;
@@ -166,15 +166,15 @@ codeunit 148093 "Swiss QR-Bill Test Misc"
     [HandlerFunctions('GLSetupMPH')]
     procedure QRBillSetupPage_DrillDown_GLSetup()
     var
-        GLSetup: Record "General Ledger Setup";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         SwissQRBillSetup: TestPage "Swiss QR-Bill Setup";
     begin
         // [FEATURE] [UI]
         // [SCENARIO 259169] Page "Swiss QR-Bill Setup" assert and drill down SEPA Non-Euro Export
-        GLSetup.Get();
+        GeneralLedgerSetup.Get();
         with SwissQRBillSetup do begin
             OpenEdit();
-            SEPANonEuroExport.AssertEquals(GLSetup."SEPA Non-Euro Export");
+            SEPANonEuroExport.AssertEquals(GeneralLedgerSetup."SEPA Non-Euro Export");
             OpenGLSetup.Drilldown();
             Close();
         end;
@@ -385,12 +385,12 @@ codeunit 148093 "Swiss QR-Bill Test Misc"
     end;
 
     [ModalPageHandler]
-    procedure QRBillLayoutMPH(var QRBillLayoutPage: TestPage "Swiss QR-Bill Layout")
+    procedure QRBillLayoutMPH(var SwissQRBillLayout: TestPage "Swiss QR-Bill Layout")
     begin
     end;
 
     [ModalPageHandler]
-    procedure BillingInfoMPH(var BillingInfoPage: TestPage "Swiss QR-Bill Billing Info")
+    procedure BillingInfoMPH(var SwissQRBillBillingInfo: TestPage "Swiss QR-Bill Billing Info")
     begin
     end;
 
@@ -405,12 +405,12 @@ codeunit 148093 "Swiss QR-Bill Test Misc"
     end;
 
     [ModalPageHandler]
-    procedure ReportsMPH(var ReportsPage: TestPage "Swiss QR-Bill Reports")
+    procedure ReportsMPH(var SwissQRBillReports: TestPage "Swiss QR-Bill Reports")
     begin
     end;
 
     [ModalPageHandler]
-    procedure GLSetupMPH(var GLSetupPage: TestPage "General Ledger Setup")
+    procedure GLSetupMPH(var GeneralLedgerSetup: TestPage "General Ledger Setup")
     begin
     end;
 

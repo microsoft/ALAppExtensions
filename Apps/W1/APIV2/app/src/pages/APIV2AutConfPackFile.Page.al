@@ -12,16 +12,22 @@ page 30057 "APIV2 - Aut. Conf. Pack. File"
         {
             repeater(Group)
             {
-                field(code; Code)
+                field(code; Rec.Code)
                 {
                     ApplicationArea = All;
                     Caption = 'Code';
                     Editable = false;
+                    ToolTip = 'Specifies a code for the configuration package.';
                 }
-                field(content; Content)
+#pragma warning disable AL0273
+#pragma warning disable AW0004
+                field(content; Rec.Content)
+#pragma warning restore AL0273
+#pragma warning restore AW0004
                 {
                     ApplicationArea = All;
                     Caption = 'Content';
+                    ToolTip = 'Specifies a contect package.';
                 }
             }
         }

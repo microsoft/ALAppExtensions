@@ -173,7 +173,7 @@ page 4020 "Post Migration Checklist"
     local procedure PopulateCompany()
     var
         HybridCompany: Record "Hybrid Company";
-        PostMigChecklist: Record "Post Migration Checklist";
+        PostMigrationChecklist: Record "Post Migration Checklist";
         ShowHelp: Boolean;
         Users: Boolean;
         Sales: Boolean;
@@ -181,44 +181,44 @@ page 4020 "Post Migration Checklist"
         DefineUserMappings: Boolean;
 
     begin
-        PostMigChecklist.Reset();
-        PostMigChecklist.SetFilter(Help, '=%1', true);
-        if PostMigChecklist.FindSet() then
+        PostMigrationChecklist.Reset();
+        PostMigrationChecklist.SetFilter(Help, '=%1', true);
+        if PostMigrationChecklist.FindSet() then
             ShowHelp := true;
 
-        PostMigChecklist.Reset();
-        PostMigChecklist.SetFilter("Users Setup", '=%1', true);
-        if PostMigChecklist.FindSet() then
+        PostMigrationChecklist.Reset();
+        PostMigrationChecklist.SetFilter("Users Setup", '=%1', true);
+        if PostMigrationChecklist.FindSet() then
             Users := true;
 
-        PostMigChecklist.Reset();
-        PostMigChecklist.SetFilter("D365 Sales", '=%1', true);
-        if PostMigChecklist.FindSet() then
+        PostMigrationChecklist.Reset();
+        PostMigrationChecklist.SetFilter("D365 Sales", '=%1', true);
+        if PostMigrationChecklist.FindSet() then
             Sales := true;
 
-        PostMigChecklist.Reset();
-        PostMigChecklist.SetFilter("Disable Intelligent Cloud", '=%1', true);
-        if PostMigChecklist.FindSet() then
+        PostMigrationChecklist.Reset();
+        PostMigrationChecklist.SetFilter("Disable Intelligent Cloud", '=%1', true);
+        if PostMigrationChecklist.FindSet() then
             DisableIntelligentCloud := true;
 
-        PostMigChecklist.Reset();
-        PostMigChecklist.SetFilter("Define User Mappings", '=%1', true);
-        if PostMigChecklist.FindSet() then
+        PostMigrationChecklist.Reset();
+        PostMigrationChecklist.SetFilter("Define User Mappings", '=%1', true);
+        if PostMigrationChecklist.FindSet() then
             DefineUserMappings := true;
 
-        PostMigChecklist.Reset();
-        if not PostMigChecklist.IsEmpty() then
+        PostMigrationChecklist.Reset();
+        if not PostMigrationChecklist.IsEmpty() then
             HybridCompany.SetRange(Replicate, true);
         repeat
-            if not PostMigChecklist.Get(HybridCompany.Name) then begin
-                PostMigChecklist.Init();
-                PostMigChecklist."Company Name" := HybridCompany.Name;
-                PostMigChecklist.Help := ShowHelp;
-                PostMigChecklist."Users Setup" := Users;
-                PostMigChecklist."Disable Intelligent Cloud" := DisableIntelligentCloud;
-                PostMigChecklist."D365 Sales" := Sales;
-                PostMigChecklist."Define User Mappings" := DefineUserMappings;
-                PostMigChecklist.Insert();
+            if not PostMigrationChecklist.Get(HybridCompany.Name) then begin
+                PostMigrationChecklist.Init();
+                PostMigrationChecklist."Company Name" := HybridCompany.Name;
+                PostMigrationChecklist.Help := ShowHelp;
+                PostMigrationChecklist."Users Setup" := Users;
+                PostMigrationChecklist."Disable Intelligent Cloud" := DisableIntelligentCloud;
+                PostMigrationChecklist."D365 Sales" := Sales;
+                PostMigrationChecklist."Define User Mappings" := DefineUserMappings;
+                PostMigrationChecklist.Insert();
             end;
         until HybridCompany.Next() = 0;
     end;
@@ -226,62 +226,62 @@ page 4020 "Post Migration Checklist"
     local procedure RemoveCompanies()
     var
         HybridCompany: Record "Hybrid Company";
-        PostMigChecklist: Record "Post Migration Checklist";
-        PostMigChecklistWork: Record "Post Migration Checklist";
+        PostMigrationChecklist: Record "Post Migration Checklist";
+        PostMigrationChecklistWork: Record "Post Migration Checklist";
 
     begin
-        PostMigChecklistWork.Reset();
+        PostMigrationChecklistWork.Reset();
 
-        if PostMigChecklistWork.FindSet() then
+        if PostMigrationChecklistWork.FindSet() then
             repeat
-                if not HybridCompany.Get(PostMigChecklistWork."Company Name") then begin
-                    PostMigChecklist.Get(PostMigChecklistWork."Company Name");
-                    PostMigChecklist.Delete();
+                if not HybridCompany.Get(PostMigrationChecklistWork."Company Name") then begin
+                    PostMigrationChecklist.Get(PostMigrationChecklistWork."Company Name");
+                    PostMigrationChecklist.Delete();
                 end else
                     If HybridCompany.Replicate = false then begin
-                        PostMigChecklist.Get(PostMigChecklistWork."Company Name");
-                        PostMigChecklist.Delete();
+                        PostMigrationChecklist.Get(PostMigrationChecklistWork."Company Name");
+                        PostMigrationChecklist.Delete();
                     end;
-            until PostMigChecklistWork.Next() = 0;
+            until PostMigrationChecklistWork.Next() = 0;
     end;
 
     local procedure MarkAll()
     var
-        PostMigChecklist: Record "Post Migration Checklist";
+        PostMigrationChecklist: Record "Post Migration Checklist";
     begin
-        PostMigChecklist.Reset();
-        PostMigChecklist.SetRange(Help, true);
-        if PostMigChecklist.FindSet() then begin
-            PostMigChecklist.Reset();
-            PostMigChecklist.ModifyAll(Help, true);
+        PostMigrationChecklist.Reset();
+        PostMigrationChecklist.SetRange(Help, true);
+        if PostMigrationChecklist.FindSet() then begin
+            PostMigrationChecklist.Reset();
+            PostMigrationChecklist.ModifyAll(Help, true);
             Commit();
         end;
-        PostMigChecklist.Reset();
-        PostMigChecklist.SetRange("Users Setup", true);
-        if PostMigChecklist.FindSet() then begin
-            PostMigChecklist.Reset();
-            PostMigChecklist.ModifyAll("Users Setup", true);
+        PostMigrationChecklist.Reset();
+        PostMigrationChecklist.SetRange("Users Setup", true);
+        if PostMigrationChecklist.FindSet() then begin
+            PostMigrationChecklist.Reset();
+            PostMigrationChecklist.ModifyAll("Users Setup", true);
             Commit();
         end;
-        PostMigChecklist.Reset();
-        PostMigChecklist.SetRange("D365 Sales", true);
-        if PostMigChecklist.FindSet() then begin
-            PostMigChecklist.Reset();
-            PostMigChecklist.ModifyAll("D365 Sales", true);
+        PostMigrationChecklist.Reset();
+        PostMigrationChecklist.SetRange("D365 Sales", true);
+        if PostMigrationChecklist.FindSet() then begin
+            PostMigrationChecklist.Reset();
+            PostMigrationChecklist.ModifyAll("D365 Sales", true);
             Commit();
         end;
-        PostMigChecklist.Reset();
-        PostMigChecklist.SetRange("Disable Intelligent Cloud", true);
-        if PostMigChecklist.FindSet() then begin
-            PostMigChecklist.Reset();
-            PostMigChecklist.ModifyAll("Disable Intelligent Cloud", true);
+        PostMigrationChecklist.Reset();
+        PostMigrationChecklist.SetRange("Disable Intelligent Cloud", true);
+        if PostMigrationChecklist.FindSet() then begin
+            PostMigrationChecklist.Reset();
+            PostMigrationChecklist.ModifyAll("Disable Intelligent Cloud", true);
             Commit();
         end;
-        PostMigChecklist.Reset();
-        PostMigChecklist.SetRange("Define User Mappings", true);
-        if PostMigChecklist.FindSet() then begin
-            PostMigChecklist.Reset();
-            PostMigChecklist.ModifyAll("Define User Mappings", true);
+        PostMigrationChecklist.Reset();
+        PostMigrationChecklist.SetRange("Define User Mappings", true);
+        if PostMigrationChecklist.FindSet() then begin
+            PostMigrationChecklist.Reset();
+            PostMigrationChecklist.ModifyAll("Define User Mappings", true);
             Commit();
         end;
     end;

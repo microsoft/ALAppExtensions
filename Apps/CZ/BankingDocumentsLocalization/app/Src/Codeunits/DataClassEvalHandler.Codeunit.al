@@ -1,4 +1,4 @@
-codeunit 31331 "Data Class. Eval. Handler CZB"
+codeunit 31331 "Data Class. Eval. Handler CZB"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Class. Eval. Data Country", 'OnAfterClassifyCountrySpecificTables', '', false, false)]
     local procedure ApplyEvaluationClassificationsForPrivacyOnAfterClassifyCountrySpecificTables()

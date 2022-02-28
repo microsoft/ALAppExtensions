@@ -164,12 +164,12 @@ page 31173 "Sales Adv. Letter Entries CZZ"
     }
     actions
     {
-        area(processing)
+        area(Processing)
         {
             group(AdvanceLetterVAT)
             {
-                Caption = 'VAT Document';
-                Image = Document;
+                Caption = 'Posting';
+                Image = PostingEntries;
 
                 action(PostPaymentVAT)
                 {
@@ -184,6 +184,22 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                         SalesAdvLetterManagement: Codeunit "SalesAdvLetterManagement CZZ";
                     begin
                         SalesAdvLetterManagement.PostAdvancePaymentVAT(Rec, 0D);
+                    end;
+                }
+                action(PostAndSendPaymentVAT)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Post Payment VAT and &Send';
+                    Enabled = ("Entry Type" = "Entry Type"::Payment) and (not IsClosed) and (not Cancelled);
+                    Ellipsis = true;
+                    Image = PostSendTo;
+                    ToolTip = 'Finalize and prepare to send the document according to the customer''s sending profile, such as attached to an email. The Send document to window opens first so you can confirm or select a sending profile.';
+
+                    trigger OnAction()
+                    var
+                        SalesAdvLetterManagement: Codeunit "SalesAdvLetterManagement CZZ";
+                    begin
+                        SalesAdvLetterManagement.PostAndSendAdvancePaymentVAT(Rec);
                     end;
                 }
                 action(PostPaymentVATUsage)
@@ -287,7 +303,26 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                     SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
                 begin
                     CurrPage.SetSelectionFilter(SalesAdvLetterEntryCZZ);
-                    SalesAdvLetterEntryCZZ.PrintRecord(true);
+                    SalesAdvLetterEntryCZZ.PrintRecords(true);
+                end;
+            }
+            action(Email)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = '&Send by Email';
+                Enabled = ("Entry Type" = "Entry Type"::"VAT Payment") or ("Entry Type" = "Entry Type"::"VAT Usage") or ("Entry Type" = "Entry Type"::"VAT Close");
+                Image = Email;
+                Promoted = true;
+                PromotedCategory = Report;
+                ToolTip = 'Prepare to email the document. The Send Email window opens prefilled with the customer''s email address so you can add or edit information.';
+
+                trigger OnAction()
+                var
+                    SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
+                begin
+                    SalesAdvLetterEntryCZZ := Rec;
+                    CurrPage.SetSelectionFilter(SalesAdvLetterEntryCZZ);
+                    SalesAdvLetterEntryCZZ.EmailRecords(true);
                 end;
             }
         }

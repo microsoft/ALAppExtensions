@@ -16,8 +16,10 @@ page 1882 "C5 Delivery"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(Delivery; Delivery) { ApplicationArea = All; }
                 field(Name; Name) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

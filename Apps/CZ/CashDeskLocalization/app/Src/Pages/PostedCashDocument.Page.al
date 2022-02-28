@@ -179,7 +179,7 @@ page 31165 "Posted Cash Document CZP"
                 {
                     ApplicationArea = Basic, Suite;
                     Importance = Additional;
-                    ToolTip = 'Specifies the EET entry number.';
+                    ToolTip = 'Specifies the EET entry number.';
                 }
                 field("Created ID"; Rec."Created ID")
                 {

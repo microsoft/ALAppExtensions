@@ -57,7 +57,7 @@ page 149005 "BCPT Lookup Codeunits"
 
     trigger OnOpenPage()
     Begin
-        Dlg.Open(OpenLbl);
+        StatusDialog.Open(OpenLbl);
         DlgOpened := true;
         Rec.SetFilter(ID, '49000..99999|149100..149999');
         Rec.FilterGroup(2);
@@ -69,7 +69,7 @@ page 149005 "BCPT Lookup Codeunits"
     trigger OnFindRecord(Which: Text): Boolean
     begin
         if DlgOpened then
-            Dlg.Close();
+            StatusDialog.Close();
         DlgOpened := false;
         exit(Rec.Find(Which));
     end;
@@ -77,6 +77,6 @@ page 149005 "BCPT Lookup Codeunits"
     var
         ShowAllCodeunits: Boolean;
         DlgOpened: boolean;
-        Dlg: Dialog;
+        StatusDialog: Dialog;
         OpenLbl: Label 'Retrieving test objects. This may take a couple of minutes the first time...';
 }

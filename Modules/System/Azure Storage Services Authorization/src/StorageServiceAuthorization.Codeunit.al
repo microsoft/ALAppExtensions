@@ -44,11 +44,11 @@ codeunit 9062 "Storage Service Authorization"
                                                                     SignedResources: List of [Enum "SAS Resource Type"];
                                                                     SignedPermissions: List of [Enum "SAS Permission"];
                                                                     SignedExpiry: DateTime;
-                                                                    OptionalParams: Record "SAS Parameters"): Interface "Storage Service Authorization"
+                                                                    OptionalSASParameters: Record "SAS Parameters"): Interface "Storage Service Authorization"
     var
         StorServAuthImpl: Codeunit "Stor. Serv. Auth. Impl.";
     begin
-        exit(StorServAuthImpl.CreateSAS(SigningKey, SignedVersion, SignedServices, SignedResources, SignedPermissions, SignedExpiry, OptionalParams));
+        exit(StorServAuthImpl.CreateSAS(SigningKey, SignedVersion, SignedServices, SignedResources, SignedPermissions, SignedExpiry, OptionalSASParameters));
     end;
 
     /// <summary>

@@ -11,6 +11,7 @@ codeunit 18134 "GST Purchase Registered"
         Storage: Dictionary of [Text[20], Text[20]];
         ComponentPerArray: array[10] of Decimal;
         StorageBoolean: Dictionary of [Text[20], Boolean];
+        OrderAddr: Boolean;
         ErrorLbl: Label 'State Code must have a value in Vendor: No.=%1.', Comment = '%1 = Vendor No.';
         OrderAddressLbl: Label 'Order Address are not Equal', Locked = true;
         PANNoErr: Label 'PAN No. must be entered.', Locked = true;
@@ -31,6 +32,35 @@ codeunit 18134 "GST Purchase Registered"
         PostedDocumentNoLbl: Label 'PostedDocumentNo';
         NotEqualLbl: Label 'Not Equal';
         InvoiceTypeLbl: Label 'InvoiceType';
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromGSTPurchOrderRegVendWithITCForItemIntraState()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        DocumentNo: Code[20];
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type enum";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        // [SCENARIO] [397988] [Check if the system is calculating GST in case of Inter-State Purchase of Services from Registered Vendor where Input Tax Credit is available through Purchase Order]
+        // [FEATURE] [Goods, Purchase Order] [ITC, Registered Vendor, Intra-State]
+
+        // [GIVEN] Created GST Setup and tax rates for Registered Vendor and GST Credit adjustment is Non Available with GST group type as Goods
+        OrderAddr := true;
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Goods, false, false);
+        InitializeShareStep(true, false, false);
+        SetStorageLibraryPurchaseText(NoOfLineLbl, Format(1));
+
+        // [WHEN] Create and Post Purchase Order with GST and Line Type as Item for Intrastate Transactions.
+        DocumentNo := CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::Item, DocumentType::Order);
+
+        // [THEN] GST ledger entries are created and Verified
+        LibraryGST.VerifyGLEntries(PurchaseHeader."Document Type"::Invoice, DocumentNo, 3);
+        VerifyGSTEntries(DocumentNo, Database::"Purch. Inv. Header");
+    end;
 
     [Test]
     [HandlerFunctions('TaxRatePageHandler,ReferenceInvoiceNoPageHandler')]
@@ -2847,12 +2877,16 @@ codeunit 18134 "GST Purchase Registered"
             LocationCode: Code[10];
             PurchaseInvoiceType: Enum "GST Invoice Type")
     var
+        OrderAddress: Record "Order Address";
         LibraryUtility: Codeunit "Library - Utility";
         Overseas: Boolean;
     begin
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, DocumentType, VendorNo);
         PurchaseHeader.Validate("Posting Date", WorkDate());
         PurchaseHeader.Validate("Location Code", LocationCode);
+
+        if OrderAddr then
+            PurchaseHeader.Validate("Order Address Code", LibraryGST.CreateOrderAddress(OrderAddress, VendorNo));
 
         if Overseas then
             PurchaseHeader.Validate("POS Out Of India", true);
@@ -2875,10 +2909,10 @@ codeunit 18134 "GST Purchase Registered"
         var PurchaseHeader: Record "Purchase Header";
         var PurchaseLine: Record "Purchase Line";
         LineType: Enum "Purchase Line Type";
-        InputCreditAvailment: Boolean;
-        Exempted: Boolean;
-        LineDiscount: Boolean;
-        NoOfLine: Integer);
+                      InputCreditAvailment: Boolean;
+                      Exempted: Boolean;
+                      LineDiscount: Boolean;
+                      NoOfLine: Integer);
     var
         VATPostingSetup: Record "VAT Posting Setup";
         LineTypeNo: Code[20];

@@ -37,6 +37,26 @@ page 9515 "Azure AD User Update Wizard"
                     Caption = 'Note:';
                     InstructionalText = 'It can take up to 72 hours for a change in Microsoft 365 to become available to Business Central.';
                 }
+
+                group(LinkToLicenseConfigurationGroup)
+                {
+                    Caption = 'Before you get started';
+                    InstructionalText = 'You might want to configure custom permissions for each license type to speed up how you configure users.';
+
+                    field(LinkToLicenseConfiguration; LinkToLicenseConfigurationTxt)
+                    {
+                        ApplicationArea = All;
+                        Editable = false;
+                        ShowCaption = false;
+                        Caption = ' ';
+                        ToolTip = 'Configure permissions per license so you won''t have to manually configure every user.';
+
+                        trigger OnDrillDown()
+                        begin
+                            Page.Run(Page::"Plan Configuration List");
+                        end;
+                    }
+                }
             }
             group("No Updates")
             {
@@ -380,6 +400,7 @@ page 9515 "Azure AD User Update Wizard"
         TotalUpdatesReadyToApplyVisible: Boolean;
         TotalUpdatesReadyToApplyTxt: Label 'Number of updates ready to be applied: %1. These can be name, email address, preferred language, and user access changes. Choose View changes to see the list.', Comment = '%1 = An integer count of total updates ready to apply';
 
+        LinkToLicenseConfigurationTxt: Label 'Configure permissions per license';
         CannotUpdateUsersFromOfficeErr: Label 'Your user account does not give you permission to fetch users from Microsoft 365. Please contact your administrator.';
 
     trigger OnOpenPage()

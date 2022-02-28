@@ -129,6 +129,7 @@ codeunit 2504 "Extension Management"
     end;
 
 #if not CLEAN17
+#pragma warning disable AL0432
     /// <summary>
     /// Retrieves a list of all the Deployment Status Entries
     /// </summary>
@@ -138,6 +139,7 @@ codeunit 2504 "Extension Management"
     begin
         ExtensionOperationImpl.GetAllExtensionDeploymentStatusEntries(NavAppTenantOperation);
     end;
+#pragma warning restore
 #endif
 
     /// <summary>
@@ -223,35 +225,35 @@ codeunit 2504 "Extension Management"
     /// Gets the logo of an extension.
     /// </summary>
     /// <param name="AppId">The App ID of the extension.</param>
-    /// <param name="Logo">Out parameter holding the logo of the extension.</param> 
-    procedure GetExtensionLogo(AppId: Guid; var Logo: Codeunit "Temp Blob")
+    /// <param name="LogoTempBlob">Out parameter holding the logo of the extension.</param> 
+    procedure GetExtensionLogo(AppId: Guid; var LogoTempBlob: Codeunit "Temp Blob")
     begin
-        ExtensionOperationImpl.GetExtensionLogo(AppId, Logo);
+        ExtensionOperationImpl.GetExtensionLogo(AppId, LogoTempBlob);
     end;
 
     /// <summary>
     /// Uploads an extension to current version, next minor or next major, using a File Stream and based on the Locale Identifier.
     /// This method is only applicable in SaaS environment.
     /// </summary>
-    /// <param name="FileStream">The File Stream containing the extension to be uploaded.</param>
+    /// <param name="FileInStream">The File Stream containing the extension to be uploaded.</param>
     /// <param name="lcid">The Locale Identifier.</param>
     /// <param name="DeployTo">The version that the extension will be deployed to.</param>
-    procedure UploadExtensionToVersion(FileStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To")
+    procedure UploadExtensionToVersion(FileInStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To")
     begin
-        UploadExtensionToVersion(FileStream, lcid, DeployTo, "Extension Sync Mode"::Add);
+        UploadExtensionToVersion(FileInStream, lcid, DeployTo, "Extension Sync Mode"::Add);
     end;
 
     /// <summary>
     /// Uploads an extension to current version, next minor or next major, using a File Stream and based on the Locale Identifier.
     /// This method is only applicable in SaaS environment.
     /// </summary>
-    /// <param name="FileStream">The File Stream containing the extension to be uploaded.</param>
+    /// <param name="FileInStream">The File Stream containing the extension to be uploaded.</param>
     /// <param name="lcid">The Locale Identifier.</param>
     /// <param name="DeployTo">The version that the extension will be deployed to.</param>
     /// <param name="SyncMode">The desired sync mode.</param>
-    procedure UploadExtensionToVersion(FileStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To"; SyncMode: Enum "Extension Sync Mode")
+    procedure UploadExtensionToVersion(FileInStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To"; SyncMode: Enum "Extension Sync Mode")
     begin
-        ExtensionOperationImpl.DeployAndUploadExtension(FileStream, lcid, DeployTo, SyncMode);
+        ExtensionOperationImpl.DeployAndUploadExtension(FileInStream, lcid, DeployTo, SyncMode);
     end;
 
 #if not CLEAN17

@@ -58,11 +58,9 @@ codeunit 148054 "VAT Date CZL"
         GeneralLedgerSetup."Use VAT Date CZL" := true;
         GeneralLedgerSetup."Allow VAT Posting From CZL" := 0D;
         GeneralLedgerSetup."Allow VAT Posting To CZL" := 0D;
-#if not CLEAN17
+#if not CLEAN19
 #pragma warning disable AL0432
         GeneralLedgerSetup."Use VAT Date" := true;
-        GeneralLedgerSetup."Allow VAT Posting From" := 0D;
-        GeneralLedgerSetup."Allow VAT Posting To" := 0D;
 #pragma warning restore
 #endif
         GeneralLedgerSetup.Modify();
@@ -70,7 +68,7 @@ codeunit 148054 "VAT Date CZL"
         SalesReceivablesSetup.Get();
         SalesReceivablesSetup."Order Nos." := LibraryERM.CreateNoSeriesCode();
         SalesReceivablesSetup."Default VAT Date CZL" := SalesReceivablesSetup."Default VAT Date CZL"::Blank;
-#if not CLEAN17
+#if not CLEAN19
 #pragma warning disable AL0432
         SalesReceivablesSetup."Default VAT Date" := SalesReceivablesSetup."Default VAT Date"::Blank;
 #pragma warning restore
@@ -80,7 +78,7 @@ codeunit 148054 "VAT Date CZL"
         PurchasesPayablesSetup.Get();
         PurchasesPayablesSetup."Order Nos." := LibraryERM.CreateNoSeriesCode();
         PurchasesPayablesSetup."Default VAT Date CZL" := PurchasesPayablesSetup."Default VAT Date CZL"::Blank;
-#if not CLEAN17
+#if not CLEAN19
 #pragma warning disable AL0432
         PurchasesPayablesSetup."Default VAT Date" := PurchasesPayablesSetup."Default VAT Date"::Blank;
 #pragma warning restore
@@ -90,11 +88,6 @@ codeunit 148054 "VAT Date CZL"
         ServiceMgtSetup.Get();
         ServiceMgtSetup."Service Order Nos." := LibraryERM.CreateNoSeriesCode();
         ServiceMgtSetup."Default VAT Date CZL" := ServiceMgtSetup."Default VAT Date CZL"::Blank;
-#if not CLEAN17
-#pragma warning disable AL0432
-        ServiceMgtSetup."Default VAT Date" := ServiceMgtSetup."Default VAT Date"::Blank;
-#pragma warning restore
-#endif
         ServiceMgtSetup.Modify();
         VATStatementTemplate.FindFirst();
         GLAccountNo := LibraryERM.CreateGLAccountNoWithDirectPosting();
@@ -839,7 +832,7 @@ codeunit 148054 "VAT Date CZL"
         Initialize();
 
         // [GIVEN] The Gen. Journal Line without Original Doc. VAT Date has been created
-        CreateGenJournalLineWithoutOriginalDocVATDate(Enum::"Gen. Journal Document Type"::Invoice, LibraryRandom.RandDec(1000, 2), GenJournalLine);
+        CreateGenJournalLineWithoutOriginalDocVATDate(Enum::"Gen. Journal Document Type"::Invoice, -LibraryRandom.RandDec(1000, 2), GenJournalLine);
 
         // [WHEN] Post created Gen. Journal Line
         asserterror PostGenJournalLine(GenJournalLine);

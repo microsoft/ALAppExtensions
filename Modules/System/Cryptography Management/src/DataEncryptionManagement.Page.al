@@ -145,9 +145,9 @@ page 9905 "Data Encryption Management"
 
     trigger OnInit()
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        IsSaaS := EnvironmentInfo.IsSaaS();
+        IsSaaS := EnvironmentInformation.IsSaaS();
     end;
 
     var

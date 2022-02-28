@@ -100,19 +100,23 @@ codeunit 31362 "Match Bank Payment CZB"
 #endif
                         end;
                     SearchRuleLineCZB."Search Scope"::Customer:
+#if not CLEAN19
                         begin
                             FillMatchBankPaymentBufferCustomer();
-#if not CLEAN19
                             FillMatchBankPaymentBufferSalesAdvance();
-#endif
                         end;
+#else
+                        FillMatchBankPaymentBufferCustomer();
+#endif
                     SearchRuleLineCZB."Search Scope"::Vendor:
+#if not CLEAN19
                         begin
                             FillMatchBankPaymentBufferVendor();
-#if not CLEAN19
                             FillMatchBankPaymentBufferPurchAdvance();
-#endif
                         end;
+#else
+                        FillMatchBankPaymentBufferVendor();
+#endif
                     SearchRuleLineCZB."Search Scope"::Employee:
                         FillMatchBankPaymentBufferEmployee();
                 end;

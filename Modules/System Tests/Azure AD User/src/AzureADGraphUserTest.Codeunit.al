@@ -184,7 +184,7 @@ codeunit 132911 "Azure AD Graph User Test"
     [Scope('OnPrem')]
     procedure TestGetGraphUserForTheCurrentUser()
     var
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
     begin
         Initialize();
 
@@ -192,27 +192,27 @@ codeunit 132911 "Azure AD Graph User Test"
         PermissionsMock.Set('AAD User View');
 
         // [WHEN] Retrieving the graph user for the current user's security id
-        AzureADGraphUser.GetGraphUser(UserSecurityId(), GraphUser);
+        AzureADGraphUser.GetGraphUser(UserSecurityId(), GraphUserInfo);
 
         // [THEN] The graph user should not be null
-        LibraryAssert.IsFalse(IsNull(GraphUser), 'The graph user should not be null');
+        LibraryAssert.IsFalse(IsNull(GraphUserInfo), 'The graph user should not be null');
 
         // [THEN] The graph user's properties are assigned correctly
-        LibraryAssert.AreEqual(CurrentUserObjectIdLbl, GraphUser.ObjectId(),
+        LibraryAssert.AreEqual(CurrentUserObjectIdLbl, GraphUserInfo.ObjectId(),
             'The object id of the graph user is incorect');
-        LibraryAssert.AreEqual(CurrentUserSurnameLbl, GraphUser.Surname(),
+        LibraryAssert.AreEqual(CurrentUserSurnameLbl, GraphUserInfo.Surname(),
             'The surname of the graph user is incorect');
-        LibraryAssert.AreEqual(CurrentUserDisplayNameLbl, GraphUser.DisplayName(),
+        LibraryAssert.AreEqual(CurrentUserDisplayNameLbl, GraphUserInfo.DisplayName(),
             'The display name of the graph user is incorect');
-        LibraryAssert.AreEqual(CurrentUserEmailLbl, GraphUser.Mail(),
+        LibraryAssert.AreEqual(CurrentUserEmailLbl, GraphUserInfo.Mail(),
             'The email of the graph user is incorect');
-        LibraryAssert.AreEqual(CurrentUserPrincipalNameLbl, GraphUser.UserPrincipalName(),
+        LibraryAssert.AreEqual(CurrentUserPrincipalNameLbl, GraphUserInfo.UserPrincipalName(),
             'The user principal name of the graph user is incorect');
-        LibraryAssert.AreEqual(CurrentUserGivenNameLbl, GraphUser.GivenName(),
+        LibraryAssert.AreEqual(CurrentUserGivenNameLbl, GraphUserInfo.GivenName(),
             'The given name of the graph user is incorect');
-        LibraryAssert.AreEqual(CurrentUserPreferredLanguageLbl, GraphUser.PreferredLanguage(),
+        LibraryAssert.AreEqual(CurrentUserPreferredLanguageLbl, GraphUserInfo.PreferredLanguage(),
             'The preferred language of the graph user is incorect');
-        LibraryAssert.AreEqual(false, GraphUser.AccountEnabled(),
+        LibraryAssert.AreEqual(false, GraphUserInfo.AccountEnabled(),
             'The account enabled flag of the graph user is set incorectly');
 
         TearDown();
@@ -223,7 +223,7 @@ codeunit 132911 "Azure AD Graph User Test"
     [Scope('OnPrem')]
     procedure TestGetGraphUserForAnInexistentUser()
     var
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
     begin
         Initialize();
 
@@ -232,7 +232,7 @@ codeunit 132911 "Azure AD Graph User Test"
 
         // [WHEN] Retrieving the graph user for an inexistent user
         // [THEN] An error should occur, as the user does not exist
-        asserterror AzureADGraphUser.GetGraphUser(CreateGuid(), GraphUser);
+        asserterror AzureADGraphUser.GetGraphUser(CreateGuid(), GraphUserInfo);
         LibraryAssert.ExpectedError('The user with the security ID');
 
         TearDown();
@@ -243,35 +243,35 @@ codeunit 132911 "Azure AD Graph User Test"
     [Scope('OnPrem')]
     procedure TestGetGraphUserForANewUserWithValidObjectId()
     var
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
     begin
         Initialize();
-        
+
         // Verify the module highest permission level is sufficient ignore non Tables
         PermissionsMock.Set('AAD User View');
 
         // [WHEN] Retrieving the graph user for a newly inserted Azure AD Graph user with a valid object id
-        AzureADGraphUser.GetGraphUser(NewAADUserIdLbl, GraphUser);
+        AzureADGraphUser.GetGraphUser(NewAADUserIdLbl, GraphUserInfo);
 
         // [THEN] The user should not be null
-        LibraryAssert.IsFalse(IsNull(GraphUser), 'The graph user should not be null');
+        LibraryAssert.IsFalse(IsNull(GraphUserInfo), 'The graph user should not be null');
 
         // [THEN] The graph user's properties are assigned correctly
-        LibraryAssert.AreEqual(NewAADUserObjectIdLbl, GraphUser.ObjectId(),
+        LibraryAssert.AreEqual(NewAADUserObjectIdLbl, GraphUserInfo.ObjectId(),
             'The object id of the graph user is incorect');
-        LibraryAssert.AreEqual(NewAADUserSurnameLbl, GraphUser.Surname(),
+        LibraryAssert.AreEqual(NewAADUserSurnameLbl, GraphUserInfo.Surname(),
             'The surname of the graph user is incorect');
-        LibraryAssert.AreEqual(NewAADUserDisplayNameLbl, GraphUser.DisplayName(),
+        LibraryAssert.AreEqual(NewAADUserDisplayNameLbl, GraphUserInfo.DisplayName(),
             'The display name of the graph user is incorect');
-        LibraryAssert.AreEqual(NewAADUserEmailLbl, GraphUser.Mail(),
+        LibraryAssert.AreEqual(NewAADUserEmailLbl, GraphUserInfo.Mail(),
             'The email of the graph user is incorect');
-        LibraryAssert.AreEqual(NewAADUserPrincipalNameLbl, GraphUser.UserPrincipalName(),
+        LibraryAssert.AreEqual(NewAADUserPrincipalNameLbl, GraphUserInfo.UserPrincipalName(),
             'The user principal name of the graph user is incorect');
-        LibraryAssert.AreEqual(NewAADUserGivenNameLbl, GraphUser.GivenName(),
+        LibraryAssert.AreEqual(NewAADUserGivenNameLbl, GraphUserInfo.GivenName(),
             'The given name of the graph user is incorect');
-        LibraryAssert.AreEqual(NewAADUserPreferredLanguageLbl, GraphUser.PreferredLanguage(),
+        LibraryAssert.AreEqual(NewAADUserPreferredLanguageLbl, GraphUserInfo.PreferredLanguage(),
             'The preferred language of the graph user is incorect');
-        LibraryAssert.AreEqual(true, GraphUser.AccountEnabled(),
+        LibraryAssert.AreEqual(true, GraphUserInfo.AccountEnabled(),
             'The account enabled flag of the graph user is set incorectly');
 
         TearDown();
@@ -282,7 +282,7 @@ codeunit 132911 "Azure AD Graph User Test"
     [Scope('OnPrem')]
     procedure TestGetGraphUserForANewUserWithInvalidObjectId()
     var
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
     begin
         Initialize();
 
@@ -291,7 +291,7 @@ codeunit 132911 "Azure AD Graph User Test"
 
         // [WHEN] Retrieving the graph user for a newly inserted Azure AD Graph user with an invalid object id
         // [THEN] An error should occur
-        asserterror AzureADGraphUser.GetGraphUser(AADUserIdWithEmptyObjectIdLbl, GraphUser);
+        asserterror AzureADGraphUser.GetGraphUser(AADUserIdWithEmptyObjectIdLbl, GraphUserInfo);
         LibraryAssert.ExpectedError('An Azure Active Directory user');
 
         TearDown();
@@ -537,7 +537,7 @@ codeunit 132911 "Azure AD Graph User Test"
     procedure TestUpdateUserFromAzureGraphForAValidUserWithoutUpdates()
     var
         User: Record User;
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
         UserFullName: Text;
         UserName: Text;
         IsUserModified: Boolean;
@@ -545,15 +545,17 @@ codeunit 132911 "Azure AD Graph User Test"
         Initialize();
 
         // [GIVEN] A user's full name, contact email and authentication email
+#pragma warning disable AA0217
         UserFullName := StrSubstNo('%1 %2', NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
+#pragma warning restore
         UserName := 'username';
 
         // [GIVEN] A new user
         InsertUser(User, NewAADUserIdLbl, true, UserFullName, NewAADUserEmailLbl, NewAADUserPrincipalNameLbl, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
-        AzureADGraphUser.GetGraphUser(NewAADUserIdLbl, GraphUser);
-        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
+        AzureADGraphUser.GetGraphUser(NewAADUserIdLbl, GraphUserInfo);
+        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUserInfo);
 
         // [THEN] IsUserModified should be false, as the user does not require updates
         LibraryAssert.IsFalse(IsUserModified, 'The user does not require any updates');
@@ -584,7 +586,7 @@ codeunit 132911 "Azure AD Graph User Test"
     procedure TestUpdateUserFromAzureGraphForAValidUserWithUpdatedState()
     var
         User: Record User;
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
         UserFullName: Text;
         UserName: Text;
         ContactEmail: Text;
@@ -604,8 +606,8 @@ codeunit 132911 "Azure AD Graph User Test"
         InsertUser(User, NewAADUserIdLbl, false, UserFullName, ContactEmail, AuthenticationEmail, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
-        AzureADGraphUser.GetGraphUser(NewAADUserIdLbl, GraphUser);
-        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
+        AzureADGraphUser.GetGraphUser(NewAADUserIdLbl, GraphUserInfo);
+        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUserInfo);
 
         // [THEN] IsUserModified should be true, as the user requires updates
         LibraryAssert.IsTrue(IsUserModified, 'The user requires updates');
@@ -638,7 +640,7 @@ codeunit 132911 "Azure AD Graph User Test"
     procedure TestUpdateUserFromAzureGraphForAValidUserWithUpdatedFullName()
     var
         User: Record User;
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
         UserFullName: Text;
         UserName: Text;
         ContactEmail: Text;
@@ -658,8 +660,8 @@ codeunit 132911 "Azure AD Graph User Test"
         InsertUser(User, UserToUpdate1IdLbl, true, UserFullName, ContactEmail, AuthenticationEmail, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
-        AzureADGraphUser.GetGraphUser(UserToUpdate1IdLbl, GraphUser);
-        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
+        AzureADGraphUser.GetGraphUser(UserToUpdate1IdLbl, GraphUserInfo);
+        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUserInfo);
 
         // [THEN] IsUserModified should be true, as the user requires updates
         LibraryAssert.IsTrue(IsUserModified, 'The user requires updates');
@@ -692,7 +694,7 @@ codeunit 132911 "Azure AD Graph User Test"
     procedure TestUpdateUserFromAzureGraphForAValidUserWithUpdatedContactEmail()
     var
         User: Record User;
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
         UserFullName: Text;
         UserName: Text;
         ContactEmail: Text;
@@ -711,8 +713,8 @@ codeunit 132911 "Azure AD Graph User Test"
         InsertUser(User, UserToUpdate2IdLbl, true, UserFullName, ContactEmail, AuthenticationEmail, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
-        AzureADGraphUser.GetGraphUser(UserToUpdate2IdLbl, GraphUser);
-        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
+        AzureADGraphUser.GetGraphUser(UserToUpdate2IdLbl, GraphUserInfo);
+        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUserInfo);
 
         // [THEN] IsUserModified should be true, as the user requires updates
         LibraryAssert.IsTrue(IsUserModified, 'The user requires updates');
@@ -744,7 +746,7 @@ codeunit 132911 "Azure AD Graph User Test"
     procedure TestUpdateUserFromAzureGraphForAValidUserWithUpdatedAuthenticationEmail()
     var
         User: Record User;
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
         UserFullName: Text;
         UserName: Text;
         AuthenticationEmail: Text;
@@ -761,8 +763,8 @@ codeunit 132911 "Azure AD Graph User Test"
         InsertUser(User, UserToUpdate3IdLbl, true, UserFullName, NewAADUserEmailLbl, AuthenticationEmail, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
-        AzureADGraphUser.GetGraphUser(UserToUpdate3IdLbl, GraphUser);
-        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
+        AzureADGraphUser.GetGraphUser(UserToUpdate3IdLbl, GraphUserInfo);
+        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUserInfo);
 
         // [THEN] IsUserModified should be true, as the user requires updates
         LibraryAssert.IsTrue(IsUserModified, 'The user requires updates');
@@ -794,7 +796,7 @@ codeunit 132911 "Azure AD Graph User Test"
     procedure TestEnsureAuthenticationEmailIsNotInUse()
     var
         User: Record User;
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
     begin
         Initialize();
 
@@ -827,8 +829,8 @@ codeunit 132911 "Azure AD Graph User Test"
 
         // [WHEN] Calling UpdateUserFromAzureGraph on the first user 
         if User.Get(UserToUpdate4IdLbl) then;
-        AzureADGraphUser.GetGraphUser(User."User Security ID", GraphUser);
-        AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
+        AzureADGraphUser.GetGraphUser(User."User Security ID", GraphUserInfo);
+        AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUserInfo);
 
         // [THEN] The email addresses should be updated according to the ones in the graph
         if User.Get(UserToUpdate4IdLbl) then;

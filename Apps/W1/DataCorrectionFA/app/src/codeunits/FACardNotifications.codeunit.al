@@ -1,7 +1,7 @@
 Codeunit 6091 "FA Card Notifications"
 {
     var
-        NotificationForFAEntriesThatCouldByCorrectedMsg: Label 'There are Fixed Asset Entries with potential rounding issues.';
+        NotificationForFAEntriesThatCouldByCorrectedMsg: Label 'There are fixed asset entries with potential rounding issues.';
         SeeMoreMsg: Label 'See more';
 
     [EventSubscriber(ObjectType::Page, Page::"Fixed Asset Card", 'OnAfterGetCurrRecordEvent', '', false, false)]
@@ -9,7 +9,9 @@ Codeunit 6091 "FA Card Notifications"
     var
         FALedgEntrywIssue: Record "FA Ledg. Entry w. Issue";
     begin
-        ScheduleScanJob();
+        ScanEntries();
+        FALedgEntrywIssue.SetRange(Corrected, false);
+        FALedgEntrywIssue.SetRange("FA No.", Rec."No.");
         if not FALedgEntrywIssue.IsEmpty then
             RaiseNotificationForFAEntriesThatCouldByCorrected();
     end;
@@ -33,38 +35,28 @@ Codeunit 6091 "FA Card Notifications"
         if not FALedgEntrywIssue.ReadPermission THEN
             exit;
         if FALedgEntrywIssue.IsEmpty then begin
-            ScheduleScanJob();
+            ScanEntries();
             exit;
         end;
         Page.RunModal(Page::"FA Ledger Entries Issues", FALedgEntrywIssue);
     end;
 
-    local procedure ScheduleScanJob()
+    local procedure ScanEntries()
     var
-        JobQueueEntry: Record "Job Queue Entry";
+        FASetup: Record "FA Setup";
     begin
-        if not CanScheduleJob() then
+        if not TaskScheduler.CanCreateTask() then
             exit;
-        JobQueueEntry.SETRANGE("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
-        JobQueueEntry.SETRANGE("Object ID to Run", CODEUNIT::"FA Ledger Entries Scan");
-        JobQueueEntry.SETRANGE(Status, JobQueueEntry.Status::Ready);
-        IF JobQueueEntry.FINDFIRST() THEN
-            EXIT;
 
-        JobQueueEntry.SETFILTER(Status, '%1|%2', JobQueueEntry.Status::"On Hold", JobQueueEntry.Status::Finished);
-        IF JobQueueEntry.FINDFIRST() THEN BEGIN
-            JobQueueEntry.Restart();
-            EXIT;
-        END;
-        JobQueueEntry.LOCKTABLE();
-        JobQueueEntry.INIT();
-        JobQueueEntry."Run on Sundays" := true;
-        JobQueueEntry."Recurring Job" := true;
-        JobQueueEntry."Object Type to Run" := JobQueueEntry."Object Type to Run"::Codeunit;
-        JobQueueEntry."Object ID to Run" := CODEUNIT::"FA Ledger Entries Scan";
-        JobQueueEntry."Earliest Start Date/Time" := CREATEDATETIME(Today, 220000T);
-        JobQueueEntry."Maximum No. of Attempts to Run" := 3;
-        CODEUNIT.RUN(CODEUNIT::"Job Queue - Enqueue", JobQueueEntry);
+        FASetup.Get();
+        if FASetup."Last time scanned" > (CurrentDateTime + GetCacheRefreshInterval()) then
+            exit;
+
+        FASetup.LockTable();
+        FASetup."Last time scanned" := CurrentDateTime;
+        FASetup.Modify();
+        Commit();  // Clear the lock on FA Setup
+        TaskScheduler.CreateTask(Codeunit::"FA Ledger Entries Scan", 0, true, CompanyName, CurrentDateTime + 1000); // Add 1s
     end;
 
     procedure GetNotificationForFAEntriesThatCouldByCorrected(): Guid
@@ -81,6 +73,11 @@ Codeunit 6091 "FA Card Notifications"
         if not TASKSCHEDULER.CanCreateTask() then
             exit(false);
         exit(true);
+    end;
+
+    local procedure GetCacheRefreshInterval() Interval: Duration
+    begin
+        Interval := 7 * 24 * 60 * 60 * 1000; // 1 week
     end;
 
 }

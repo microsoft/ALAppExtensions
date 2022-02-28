@@ -37,12 +37,16 @@ pageextension 4022 SendPmtJnlRemitAdvice extends "Payment Journal"
     var
         DocumentSendingProfile: Record "Document Sending Profile";
         DummyReportSelections: Record "Report Selections";
+        DummyReportSelectionsInteger: Integer;
     begin
         IF NOT GenJournalLine.FindSet() THEN
             EXIT;
 
+        DummyReportSelections.Usage := DummyReportSelections.Usage::"V.Remittance";
+        DummyReportSelectionsInteger := DummyReportSelections.Usage.AsInteger();
+
         DocumentSendingProfile.SendVendorRecords(
-            DummyReportSelections.Usage::"V.Remittance", GenJournalLine, RemittanceAdviceTxt, "Account No.", "Document No.",
+            DummyReportSelectionsInteger, GenJournalLine, RemittanceAdviceTxt, "Account No.", "Document No.",
             GenJournalLine.FIELDNO("Account No."), GenJournalLine.FIELDNO("Document No."));
     end;
 

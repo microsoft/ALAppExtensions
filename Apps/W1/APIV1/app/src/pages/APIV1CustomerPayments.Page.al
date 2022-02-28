@@ -84,31 +84,6 @@ page 20058 "APIV1 - Customer Payments"
                 {
                     ApplicationArea = All;
                     Caption = 'ContactId', Locked = true;
-
-                    trigger OnValidate()
-                    var
-                        CustomerOfContact: Record Customer;
-                        ContactRecord: Record Contact;
-                        GraphIntContact: Codeunit "Graph Int. - Contact";
-                    begin
-                        if "Contact Graph Id" = '' then begin
-                            if Customer."No." = '' then
-                                Validate("Account No.", '');
-                            exit;
-                        end;
-
-                        if not GraphIntContact.FindOrCreateCustomerFromGraphContactSafe("Contact Graph Id", CustomerOfContact, ContactRecord) then
-                            exit;
-
-                        if Customer."No." <> '' then begin
-                            if CustomerOfContact."No." <> Customer."No." then
-                                Error(CustomerValuesDontMatchErr);
-                            exit;
-                        end;
-
-                        Validate("Customer Id", CustomerOfContact.SystemId);
-                        Validate("Account No.", CustomerOfContact."No.");
-                    end;
                 }
                 field(postingDate; "Posting Date")
                 {

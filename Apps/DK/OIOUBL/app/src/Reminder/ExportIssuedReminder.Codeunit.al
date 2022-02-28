@@ -49,7 +49,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
                 until IssuedReminderLine.NEXT() = 0;
                 OIOUBLCommonLogic.InsertTaxSubtotal(
                   TaxTotalElement,
-                  IssuedReminderLine."VAT Calculation Type",
+                  IssuedReminderLine."VAT Calculation Type".AsInteger(),
                   TaxableAmount,
                   TaxAmount,
                   VATPercentage,
@@ -68,7 +68,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
                 // Invoice->TaxTotal->TaxSubtotal
                 OIOUBLCommonLogic.InsertTaxSubtotal(
                   TaxTotalElement,
-                  IssuedReminderLine."VAT Calculation Type",
+                  IssuedReminderLine."VAT Calculation Type".AsInteger(),
                   TaxableAmount,
                   TaxAmount,
                   VATPercentage,
@@ -88,7 +88,7 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
             until IssuedReminderLine.NEXT() = 0;
             OIOUBLCommonLogic.InsertTaxSubtotal(
               TaxTotalElement,
-              IssuedReminderLine."VAT Calculation Type",
+              IssuedReminderLine."VAT Calculation Type".AsInteger(),
               TaxableAmount,
               TaxAmount,
               VATPercentage,
@@ -103,23 +103,15 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
         IssuedReminderLine2: Record "Issued Reminder Line";
         ContactStandardAddress: Record "Standard Address";
         ContactInfo: Record Contact;
-        RBMgt: Codeunit "File Management";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
-#if not CLEAN17
-        EnvironmentInfo: Codeunit "Environment Information";
-#endif
+        TempBlob: Codeunit "Temp Blob";
         XMLdocOut: XmlDocument;
         XMLCurrNode: XmlElement;
         CurrencyCode: Code[10];
-        FromFile: Text[1024];
         TaxableAmount: Decimal;
         TaxAmount: Decimal;
         TotalTaxAmount: Decimal;
         TotalAmount: Decimal;
-#if not CLEAN17
-        DocumentType: Option "Quote","Order","Invoice","Credit Memo","Blanket Order","Return Order","Finance Charge","Reminder";
-#endif
-        OutputFile: File;
         FileOutstream: Outstream;
     begin
         CODEUNIT.RUN(CODEUNIT::"OIOUBL-Check Issued Reminder", Rec);
@@ -136,8 +128,6 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
         IssuedReminderLine.SETFILTER("No.", '<>%1', ' ');
         if NOT IssuedReminderLine.FINDSET() then
             EXIT;
-
-        FromFile := CopyStr(RBMgt.ServerTempFileName(''), 1, MaxStrLen(FromFile));
 
         // Reminder
         XmlDocument.ReadFrom(OIOUBLCommonLogic.GetReminderHeader(), XMLdocOut);
@@ -254,18 +244,11 @@ codeunit 13639 "OIOUBL-Export Issued Reminder"
 
         SalesSetup.GET();
 
-        OutputFile.create(FromFile);
-        OutputFile.CreateOutStream(FileOutstream);
+        TempBlob.CreateOutStream(FileOutstream);
         OnRunOnBeforeXmlDocumentWriteToFileStream(XMLdocOut, Rec, DocNameSpace, DocNameSpace2);
         XMLdocOut.WriteTo(FileOutstream);
-        OutputFile.Close();
 
-#if not CLEAN17
-        if RBMgt.IsLocalFileSystemAccessible() AND NOT EnvironmentInfo.IsSaaS() then
-            SalesSetup.VerifyAndSetOIOUBLSetupPath(DocumentType::Reminder);
-#endif
-
-        OIOUBLManagement.ExportXMLFile("No.", FromFile, SalesSetup."OIOUBL-Reminder Path");
+        OIOUBLManagement.ExportXMLFile("No.", TempBlob, SalesSetup."OIOUBL-Reminder Path", '');
 
         IssuedReminder.GET("No.");
         IssuedReminder."OIOUBL-Electronic Reminder Created" := TRUE;

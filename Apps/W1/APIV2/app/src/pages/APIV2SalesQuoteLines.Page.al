@@ -282,7 +282,7 @@ page 30045 "APIV2 - Sales Quote Lines"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(5);
+                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Sales Quote Line");
                 }
                 part(location; "APIV2 - Locations")
                 {
@@ -383,17 +383,6 @@ page 30045 "APIV2 - Sales Quote Lines"
         TempFieldBuffer."Table ID" := Database::"Sales Invoice Line Aggregate";
         TempFieldBuffer."Field ID" := FieldNo;
         TempFieldBuffer.Insert();
-    end;
-
-    local procedure RegisterItemFieldSet(FieldNo: Integer)
-    begin
-        if TempItemFieldSet.Get(Database::Item, FieldNo) then
-            exit;
-
-        TempItemFieldSet.Init();
-        TempItemFieldSet.TableNo := Database::Item;
-        TempItemFieldSet.Validate("No.", FieldNo);
-        TempItemFieldSet.Insert(true);
     end;
 
     local procedure ClearCalculatedFields()

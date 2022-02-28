@@ -332,7 +332,7 @@ codeunit 148095 "Swiss QR-Bill Test IncomingDoc"
     procedure ScanFromPageList_FullMatch()
     var
         IncomingDocument: Record "Incoming Document";
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
         Vendor: Record Vendor;
         VendorBankAccountNo: Code[20];
         QRCodeText: Text;
@@ -341,14 +341,14 @@ codeunit 148095 "Swiss QR-Bill Test IncomingDoc"
         // [FEATURE] [UI] [Scan]
         // [SCENARIO 259169] Page "Incoming Documents"."Scan QR-Bill" action in case of full match
         Initialize();
-        CompanyInfo.Get();
+        CompanyInformation.Get();
         IBAN := SwissQRBillTestLibrary.GetFixedIBAN();
         SwissQRBillTestLibrary.CreateVendorWithBankAccount(Vendor."No.", VendorBankAccountNo, IBAN);
         Vendor.Find();
         QRCodeText :=
-            'SPC\0200\1\' + IBAN + '\S\' + Vendor.Name + '\\\\\\\\\\\\\\CHF\S\' + CompanyInfo.Name + '\' +
-            CompanyInfo.Address + '\' + CompanyInfo."Address 2" + '\' + CompanyInfo."Post Code" + '\' +
-            CompanyInfo.City + '\' + CompanyInfo."Country/Region Code" + '\NON\\\EPD';
+            'SPC\0200\1\' + IBAN + '\S\' + Vendor.Name + '\\\\\\\\\\\\\\CHF\S\' + CompanyInformation.Name + '\' +
+            CompanyInformation.Address + '\' + CompanyInformation."Address 2" + '\' + CompanyInformation."Post Code" + '\' +
+            CompanyInformation.City + '\' + CompanyInformation."Country/Region Code" + '\NON\\\EPD';
 
         PerformScanFromPageList(QRCodeText, true);
 
@@ -369,7 +369,7 @@ codeunit 148095 "Swiss QR-Bill Test IncomingDoc"
     [HandlerFunctions('QRBillScanMPH,MessageHandler')]
     procedure ScanFromPageList_IBANMatch_CreateJournal()
     var
-        JournalLine: Record "Gen. Journal Line";
+        GenJournalLine: Record "Gen. Journal Line";
         VendorNo: Code[20];
         VendorBankAccountNo: Code[20];
         QRCodeText: Text;
@@ -390,8 +390,8 @@ codeunit 148095 "Swiss QR-Bill Test IncomingDoc"
 
         PerformScanFromPageListAndCreateJournal(QRCodeText);
 
-        FindLatestPurchaseJournalRecord(JournalLine);
-        with JournalLine do begin
+        FindLatestPurchaseJournalRecord(GenJournalLine);
+        with GenJournalLine do begin
             TestField("Document Type", "Document Type"::Invoice);
             TestField("Account Type", "Account Type"::Vendor);
             TestField("Account No.", VendorNo);

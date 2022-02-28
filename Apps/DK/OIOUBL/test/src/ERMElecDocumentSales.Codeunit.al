@@ -14,7 +14,6 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     end;
 
     var
-        SMTPMailSetup: Record "SMTP Mail Setup";
         Assert: Codeunit Assert;
         LibraryERM: Codeunit "Library - ERM";
         LibraryInventory: Codeunit "Library - Inventory";
@@ -89,7 +88,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         CreateAndPostSalesDocumentWithSingleLine(SalesLine."Document Type"::"Credit Memo", REPORT::"OIOUBL-Create Elec. Cr. Memos");
     end;
 
-    local procedure CreateAndPostSalesDocumentWithSingleLine(DocumentType: Option; ReportID: Integer);
+    local procedure CreateAndPostSalesDocumentWithSingleLine(DocumentType: Enum "Sales Line Type"; ReportID: Integer);
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
@@ -130,7 +129,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         CreateAndPostSalesDocumentWithMultipleGL(SalesHeader."Document Type"::Invoice, REPORT::"OIOUBL-Create Elec. Invoices");
     end;
 
-    local procedure CreateAndPostSalesDocumentWithMultipleGL(DocumentType: Option; ReportID: Integer);
+    local procedure CreateAndPostSalesDocumentWithMultipleGL(DocumentType: Enum "Sales Document Type"; ReportID: Integer);
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
@@ -178,7 +177,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesHeader."Document Type"::Invoice, REPORT::"OIOUBL-Create Elec. Invoices");
     end;
 
-    local procedure CreateAndPostSalesDocumentMultipleItemsChargeItemAndGL(DocumentType: Option; ReportID: Integer);
+    local procedure CreateAndPostSalesDocumentMultipleItemsChargeItemAndGL(DocumentType: Enum "Sales Document Type"; ReportID: Integer);
     var
         ItemChargeAssignmentSales: Record "Item Charge Assignment (Sales)";
         SalesHeader: Record "Sales Header";
@@ -257,7 +256,9 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesHeader."Document Type"::Invoice, REPORT::"OIOUBL-Create Elec. Invoices", '', 'Follow the Items Below');  // Use Blank for Sales Line No.
     end;
 
-    local procedure CreateAndPostSalesDocumentSalesLineTypeBlank(DocumentType: Option; ReportID: Integer; LineNo: Code[20]; Descrption: Text[50]);
+    local procedure CreateAndPostSalesDocumentSalesLineTypeBlank(DocumentType: Enum "Sales Document Type"; ReportID: Integer;
+                                                                                   LineNo: Code[20];
+                                                                                   Descrption: Text[50]);
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
@@ -817,22 +818,9 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     end;
 
     [Test]
-    [HandlerFunctions('PostandSendModalPageHandler,StandardSalesInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
-    procedure PostAndSendSalesInvoiceOIOUBLWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        PostAndSendSalesInvoiceOIOUBLWithPrintAndEmailInternal();
-    end;
-
-    [Test]
     [HandlerFunctions('PostandSendModalPageHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendSalesInvoiceOIOUBLWithPrintAndEmail();
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         PostAndSendSalesInvoiceOIOUBLWithPrintAndEmailInternal();
     end;
 
@@ -878,22 +866,9 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     end;
 
     [Test]
-    [HandlerFunctions('PostandSendModalPageHandler,StandardSalesInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
-    procedure PostAndSendSalesInvoiceOIOUBLAndPDFWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        PostAndSendSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
-    end;
-
-    [Test]
     [HandlerFunctions('PostandSendModalPageHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendSalesInvoiceOIOUBLAndPDFWithPrintAndEmail();
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         PostAndSendSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
     end;
 
@@ -937,22 +912,9 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     end;
 
     [Test]
-    [HandlerFunctions('ProfileSelectionMethodStrMenuHandler,StandardSalesInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
-    procedure SendPostedSalesInvoiceOIOUBLWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        SendPostedSalesInvoiceOIOUBLWithPrintAndEmailInternal();
-    end;
-
-    [Test]
     [HandlerFunctions('ProfileSelectionMethodStrMenuHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler')]
     procedure SendPostedSalesInvoiceOIOUBLWithPrintAndEmail();
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         SendPostedSalesInvoiceOIOUBLWithPrintAndEmailInternal();
     end;
 
@@ -999,24 +961,10 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         end;
         VerifyFileListInZipArchive(FileNameLst);
     end;
-
-    [Test]
-    [HandlerFunctions('ProfileSelectionMethodStrMenuHandler,StandardSalesInvoiceRequestPageHandler,EmailDialogModalPageHandler')]
-    procedure SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
-    end;
-
     [Test]
     [HandlerFunctions('ProfileSelectionMethodAndCloseEmailStrMenuHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler')]
     procedure SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmail();
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
     end;
 
@@ -1060,22 +1008,9 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     end;
 
     [Test]
-    [HandlerFunctions('PostandSendModalPageHandler,StandardSalesCreditMemoRequestPageHandler,EmailDialogModalPageHandler')]
-    procedure PostAndSendSalesCrMemoOIOUBLWithPrintAndEmailSMTPSetup(); // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        PostAndSendSalesCrMemoOIOUBLWithPrintAndEmailInternal();
-    end;
-
-    [Test]
     [HandlerFunctions('PostandSendModalPageHandler,StandardSalesCreditMemoRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendSalesCrMemoOIOUBLWithPrintAndEmail();
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         PostAndSendSalesCrMemoOIOUBLWithPrintAndEmailInternal();
     end;
 
@@ -1313,7 +1248,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         isInitialized := true;
     end;
 
-    local procedure CreateAndPostSalesDocumentSalesLineTypeAndNoBlank(DocumentType: Option; ReportID: Integer);
+    local procedure CreateAndPostSalesDocumentSalesLineTypeAndNoBlank(DocumentType: Enum "Sales Document Type"; ReportID: Integer);
     var
         Item: Record Item;
         SalesHeader: Record "Sales Header";
@@ -1348,7 +1283,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         exit(TaxAmount);
     end;
 
-    local procedure CreateAndPostSalesDocument(var SalesLine: Record "Sales Line"; DocumentType: Option): Code[20];
+    local procedure CreateAndPostSalesDocument(var SalesLine: Record "Sales Line"; DocumentType: Enum "Sales Document Type"): Code[20];
     var
         SalesHeader: Record "Sales Header";
     begin
@@ -1358,17 +1293,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
-    local procedure CreateAndShipSalesDocument(var SalesLine: Record "Sales Line"; DocumentType: Option): Code[20];
-    var
-        SalesHeader: Record "Sales Header";
-    begin
-        CreateSalesDocumentWithItem(SalesLine, DocumentType);
-        SalesHeader.GET(SalesLine."Document Type", SalesLine."Document No.");
-
-        exit(LibrarySales.PostSalesDocument(SalesHeader, true, false));
-    end;
-
-    local procedure CreateMultiplePostedSalesDocuments(var PostedDocNoLst: List of [Code[20]]; var PostedDocNoFilter: Text; DocumentType: Option; NumberOfDocuments: Integer);
+    local procedure CreateMultiplePostedSalesDocuments(var PostedDocNoLst: List of [Code[20]]; var PostedDocNoFilter: Text; DocumentType: Enum "Sales Document Type"; NumberOfDocuments: Integer);
     var
         SalesLine: Record "Sales Line";
         i: Integer;
@@ -1411,7 +1336,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         exit(GLAccount."No.");
     end;
 
-    local procedure CreateSalesDocumentWithItem(var SalesLine: Record "Sales Line"; DocumentType: Option);
+    local procedure CreateSalesDocumentWithItem(var SalesLine: Record "Sales Line"; DocumentType: Enum "Sales Document Type");
     var
         SalesHeader: Record "Sales Header";
     begin
@@ -1419,7 +1344,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, LibraryInventory.CreateItemNo());
     end;
 
-    local procedure CreateSalesHeader(var SalesHeader: Record "Sales Header"; DocumentType: Option);
+    local procedure CreateSalesHeader(var SalesHeader: Record "Sales Header"; DocumentType: Enum "Sales Document Type");
     var
         PostCode: Record "Post Code";
     begin
@@ -1434,7 +1359,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         ClearVATRegistrationForCustomer(SalesHeader."Sell-to Customer No.");
     end;
 
-    local procedure CreateSalesLine(var SalesLine: Record "Sales Line"; SalesHeader: Record "Sales Header"; Type: Option; No: Code[20]);
+    local procedure CreateSalesLine(var SalesLine: Record "Sales Line"; SalesHeader: Record "Sales Header"; Type: Enum "Sales Line Type"; No: Code[20]);
     var
         UnitOfMeasure: Record "Unit of Measure";
     begin
@@ -1446,7 +1371,9 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesLine.MODIFY(true);
     end;
 
-    local procedure CreateSalesLineWithBlankLines(LineNo: Integer; DocumentType: Option; DocumentNo: Code[20]; No: Code[20]; Description: Text[50]);
+    local procedure CreateSalesLineWithBlankLines(LineNo: Integer; DocumentType: Enum "Sales Document Type"; DocumentNo: Code[20];
+                                                                                     No: Code[20];
+                                                                                     Description: Text[50]);
     var
         SalesLine: Record "Sales Line";
     begin
@@ -1475,7 +1402,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesLine.Modify(true);
     end;
 
-    local procedure CreateElectronicDocumentFormat(DocFormatCode: Code[20]; DocFormatUsage: Option; CodeunitID: Integer);
+    local procedure CreateElectronicDocumentFormat(DocFormatCode: Code[20]; DocFormatUsage: Enum "Electronic Document Format Usage"; CodeunitID: Integer);
     var
         ElectronicDocumentFormat: Record "Electronic Document Format";
     begin
@@ -1483,7 +1410,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
             SetFilter(Code, DocFormatCode);
             SetRange(Usage, DocFormatUsage);
             DeleteAll();
-            InsertElectronicFormat(DocFormatCode, '', CodeunitID, 0, DocFormatUsage);
+            InsertElectronicFormat(DocFormatCode, '', CodeunitID, 0, DocFormatUsage.AsInteger());
         end;
     end;
 
@@ -1501,7 +1428,9 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         end;
     end;
 
-    local procedure CreateDocumentSendingProfile(var DocumentSendingProfile: Record "Document Sending Profile"; PrinterType: Option; EmailType: Option; EmailAttachment: Option; EmailFormatCode: Code[20]; DiskType: Option; DiskFormatCode: Code[20])
+    local procedure CreateDocumentSendingProfile(var DocumentSendingProfile: Record "Document Sending Profile"; PrinterType: Option; EmailType: Option; EmailAttachment: Enum "Document Sending Profile Attachment Type"; EmailFormatCode: Code[20];
+                                                                                                                                                                             DiskType: Enum "Doc. Sending Profile Disk";
+                                                                                                                                                                             DiskFormatCode: Code[20])
     begin
         with DocumentSendingProfile do begin
             Init();
@@ -1542,7 +1471,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         exit(VATPostingSetup."VAT Prod. Posting Group");
     end;
 
-    local procedure FindReverseChargeVAT(VATCalculationType: Option): Code[20];
+    local procedure FindReverseChargeVAT(VATCalculationType: Enum "Tax Calculation Type"): Code[20];
     var
         VATPostingSetup: Record "VAT Posting Setup";
     begin
@@ -1709,17 +1638,20 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         CreateElecSalesInvoice.RUN();
     end;
 
-    local procedure SetDefaultDocumentSendingProfile(DiskType: Option; DiskFormatCode: Code[20]);
+    local procedure SetDefaultDocumentSendingProfile(DiskType: Enum "Doc. Sending Profile Disk"; DiskFormatCode: Code[20]);
     var
         DocumentSendingProfile: Record "Document Sending Profile";
     begin
         CreateDocumentSendingProfile(
-            DocumentSendingProfile, DocumentSendingProfile.Printer::No, DocumentSendingProfile."E-Mail"::No, 0, '', DiskType, DiskFormatCode);
+            DocumentSendingProfile, DocumentSendingProfile.Printer::No, DocumentSendingProfile."E-Mail"::No,
+            "Document Sending Profile Attachment Type"::PDF, '', DiskType, DiskFormatCode);
         DocumentSendingProfile.Default := true;
         DocumentSendingProfile.Modify();
     end;
 
-    local procedure SetDefaultDocumentSendingProfile(PrinterType: Option; EmailType: Option; EmailAttachment: Option; EmailFormatCode: Code[20]; DiskType: Option; DiskFormatCode: Code[20])
+    local procedure SetDefaultDocumentSendingProfile(PrinterType: Option; EmailType: Option; EmailAttachment: Enum "Document Sending Profile Attachment Type"; EmailFormatCode: Code[20];
+                                                                                                                  DiskType: Enum "Doc. Sending Profile Disk";
+                                                                                                                  DiskFormatCode: Code[20])
     var
         DocumentSendingProfile: Record "Document Sending Profile";
     begin
@@ -1745,27 +1677,9 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 
     local procedure MailSetupInitialize()
     var
-        EmailFeature: Codeunit "Email Feature";
         LibraryWorkflow: Codeunit "Library - Workflow";
     begin
-        if EmailFeature.IsEnabled() then begin
-            LibraryWorkflow.SetUpEmailAccount();
-            exit;
-        end;
-        SMTPMailSetupClear();
-
-        SMTPMailSetup.Init();
-        SMTPMailSetup."SMTP Server" := 'smtp.office365.com';
-        SMTPMailSetup."User ID" := 'testuser@domain.com';
-        SMTPMailSetup.Authentication := SMTPMailSetup.Authentication::Basic;
-        SMTPMailSetup.SetPassword('TestPasssword');
-        SMTPMailSetup.Insert();
-    end;
-
-    local procedure SMTPMailSetupClear() // To be removed together with deprecated SMTP objects
-    begin
-        SMTPMailSetup.DeleteAll();
-        Commit();
+        LibraryWorkflow.SetUpEmailAccount();
     end;
 
     local procedure UpdateOIOUBLCountryRegionCode();
@@ -1897,7 +1811,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         STRSUBSTNO(AmountErr, GLEntry.FIELDCAPTION(Amount), GLEntry.Amount, GLEntry.TABLECAPTION()));
     end;
 
-    local procedure VerifyInteractionLogEntry(DocumentType: Option; DocumentNo: Code[20])
+    local procedure VerifyInteractionLogEntry(DocumentType: Enum "Interaction Log Entry Document Type"; DocumentNo: Code[20])
     var
         InteractionLogEntry: Record "Interaction Log Entry";
     begin
@@ -2040,12 +1954,6 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     procedure SelectSendingOptionsOKModalPageHandler(var SelectSendingOptions: TestPage "Select Sending Options")
     begin
         SelectSendingOptions.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure EmailDialogModalPageHandler(var EmailDialog: TestPage "Email Dialog")
-    begin
-        EmailDialog.Cancel().Invoke();
     end;
 
     [ModalPageHandler]

@@ -5,26 +5,36 @@ codeunit 19011 "India Migartion Assisted Setup"
         SetupWizardTxt: Label 'Finalize data migration';
 
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnRegister', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', false, false)]
     local procedure Initialize()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        AssistedSetup: Codeunit "Guided Experience";
         Language: Codeunit Language;
         CurrentGlobalLanguage: Integer;
     begin
         CurrentGlobalLanguage := GlobalLanguage;
 
-        AssistedSetup.Add(
-            GetAppId(),
-            Page::"Finalize India Migration",
+        AssistedSetup.InsertAssistedSetup(
             SetupWizardTxt,
+            SetupWizardTxt,
+            SetupWizardTxt,
+            0,
+            ObjectType::Page,
+            Page::"Finalize India Migration",
             "Assisted Setup Group"::GettingStarted,
             '',
             "Video Category"::GettingStarted,
             '');
 
+
         GlobalLanguage(Language.GetDefaultApplicationLanguageId());
-        AssistedSetup.AddTranslation(Page::"Finalize India Migration", Language.GetDefaultApplicationLanguageId(), SetupWizardTxt);
+        AssistedSetup.AddTranslationForSetupObjectDescription(
+            "Guided Experience Type"::"Assisted Setup",
+            ObjectType::Page,
+            Page::"Finalize India Migration",
+            Language.GetDefaultApplicationLanguageId(),
+            SetupWizardTxt);
+
         GlobalLanguage(CurrentGlobalLanguage);
     end;
 

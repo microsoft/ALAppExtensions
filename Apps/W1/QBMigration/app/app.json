@@ -1,10 +1,10 @@
 {
     "id":  "1b80b577-772f-4e0f-bc13-50214fb3da6e",
-    "name":  "QuickBooks Data Migration",
+    "name":  "Migration of QuickBooks Data",
     "publisher":  "Microsoft",
     "brief":  "Enables users to migrate their Customers, Vendors, Items and Accounts and open transactions from QuickBooks to Microsoft Dynamics 365 Business Central.",
     "description":  "This application automates the process of migrating Customers, Vendors, Items and Accounts from QuickBooks to Microsoft Dynamics 365 Business Central. The user will need to either download the exporter tool to export their data out of QuickBooks Desktop or log into the QuickBooks Online System. GL Accounts and a beginning balance transaction will migrate along with Customers and Vendors and their current open transactions. Inventory items and current quantity on hand and service items will migrate from QuickBooks.",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=850307",
@@ -16,18 +16,18 @@
                              "id":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
                              "name":  "System Application",
                              "publisher":  "Microsoft",
-                             "version":  "19.4.0.0"
+                             "version":  "20.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
+    "platform":  "20.0.0.0",
     "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "19.4.0.0"
+    "resourceExposurePolicy": {
+        "allowDebugging": false,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
+    "application":  "20.0.0.0"
 }

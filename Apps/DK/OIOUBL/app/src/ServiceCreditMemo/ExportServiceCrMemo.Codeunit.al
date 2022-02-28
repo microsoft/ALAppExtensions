@@ -24,12 +24,14 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
     var
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
         RecordRef: RecordRef;
+        FileOutStream: OutStream;
     begin
-        RecordRef.Get(RecordID);
+        RecordRef.Get(Rec.RecordID);
         RecordRef.SetTable(ServiceCrMemoHeader);
 
-        ServerFilePath := CreateXML(ServiceCrMemoHeader);
-        Modify();
+        Rec."File Content".CreateOutStream(FileOutStream);
+        CreateXML(ServiceCrMemoHeader, FileOutStream);
+        Rec.Modify();
 
         ServiceCrMemoHeader."OIOUBL-Electronic Credit Memo Created" := true;
         ServiceCrMemoHeader.Modify();
@@ -40,33 +42,22 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
     procedure ExportXML(ServiceCrMemoHeader: Record "Service Cr.Memo Header")
     var
         ServiceCrMemoHeader2: Record "Service Cr.Memo Header";
-        RecordExportBuffer: Record "Record Export Buffer";
         ElectronicDocumentFormat: Record "Electronic Document Format";
-#if not CLEAN17
-        RBMgt: Codeunit "File Management";
-        EnvironmentInfo: Codeunit "Environment Information";
-#endif
         OIOUBLManagement: Codeunit "OIOUBL-Management";
-        FromFile: Text[1024];
-#if not CLEAN17
-        DocumentType: Option "Quote","Order","Invoice","Credit Memo","Blanket Order","Return Order","Finance Charge","Reminder";
-#endif
+        TempBlob: Codeunit "Temp Blob";
+        FileOutStream: OutStream;
+        FileName: Text[250];
     begin
-        FromFile := CreateXML(ServiceCrMemoHeader);
+        TempBlob.CreateOutStream(FileOutStream);
+        CreateXML(ServiceCrMemoHeader, FileOutStream);
 
         ServiceSetup.Get();
 
-#if not CLEAN17
-        if RBMgt.IsLocalFileSystemAccessible() and not EnvironmentInfo.IsSaaS() then
-            ServiceSetup.OIOUBLVerifyAndSetPath(DocumentType::"Credit Memo");
-#endif
+        FileName := ElectronicDocumentFormat.GetAttachmentFileName(ServiceCrMemoHeader."No.", 'Credit Memo', 'xml');
+        OIOUBLManagement.UpdateRecordExportBuffer(ServiceCrMemoHeader.RecordId(), TempBlob, FileName);
 
-        OIOUBLManagement.UpdateRecordExportBuffer(
-            ServiceCrMemoHeader.RecordId(),
-            CopyStr(FromFile, 1, MaxStrLen(RecordExportBuffer.ServerFilePath)),
-            ElectronicDocumentFormat.GetAttachmentFileName(ServiceCrMemoHeader."No.", 'Credit Memo', 'xml'));
-
-        OIOUBLManagement.ExportXMLFile(ServiceCrMemoHeader."No.", FromFile, ServiceSetup."OIOUBL-Service Cr. Memo Path");
+        OIOUBLManagement.ExportXMLFile(
+            ServiceCrMemoHeader."No.", TempBlob, ServiceSetup."OIOUBL-Service Cr. Memo Path", FileName);
 
         ServiceCrMemoHeader2.Get(ServiceCrMemoHeader."No.");
         ServiceCrMemoHeader2."OIOUBL-Electronic Credit Memo Created" := true;
@@ -128,7 +119,8 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
                 repeat
                     UpdateTaxAmtAndTaxableAmt(ServiceCrMemoLine.Amount, ServiceCrMemoLine."Amount Including VAT", TaxableAmount, TaxAmount);
                 until ServiceCrMemoLine.NEXT() = 0;
-                OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, ServiceCrMemoLine."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
+                OIOUBLXMLGenerator.InsertTaxSubtotal(
+                    TaxTotalElement, ServiceCrMemoLine."VAT Calculation Type".AsInteger(), TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
             end;
 
             TaxableAmount := 0;
@@ -140,7 +132,8 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
                     UpdateTaxAmtAndTaxableAmt(ServiceCrMemoLine.Amount, ServiceCrMemoLine."Amount Including VAT", TaxableAmount, TaxAmount);
                 until ServiceCrMemoLine.NEXT() = 0;
                 // CrMemo->TaxTotal->TaxSubtotal
-                OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, ServiceCrMemoLine."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
+                OIOUBLXMLGenerator.InsertTaxSubtotal(
+                    TaxTotalElement, ServiceCrMemoLine."VAT Calculation Type".AsInteger(), TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
             end;
         end;
 
@@ -154,7 +147,8 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
             repeat
                 UpdateTaxAmtAndTaxableAmt(ServiceCrMemoLine.Amount, ServiceCrMemoLine."Amount Including VAT", TaxableAmount, TaxAmount);
             until ServiceCrMemoLine.NEXT() = 0;
-            OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, ServiceCrMemoLine."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
+            OIOUBLXMLGenerator.InsertTaxSubtotal(
+                TaxTotalElement, ServiceCrMemoLine."VAT Calculation Type".AsInteger(), TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
         end;
 
         CrMemoElement.Add(TaxTotalElement);
@@ -179,7 +173,7 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
         OIOUBLXMLGenerator.InsertLineTaxTotal(CrMemoLineElement,
           ServiceCrMemoLine."Amount Including VAT",
           ServiceCrMemoLine.Amount,
-          ServiceCrMemoLine."VAT Calculation Type",
+          ServiceCrMemoLine."VAT Calculation Type".AsInteger(),
           ServiceCrMemoLine."VAT %",
           CurrencyCode);
         OIOUBLXMLGenerator.InsertItem(CrMemoLineElement, ServiceCrMemoLine.Description, ServiceCrMemoLine."No.");
@@ -191,14 +185,13 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
         CrMemoElement.Add(CrMemoLineElement);
     end;
 
-    local procedure CreateXML(ServiceCrMemoHeader: Record "Service Cr.Memo Header") FromFile: Text[250]
+    local procedure CreateXML(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var FileOutstream: Outstream)
     var
         ServiceCrMemoLine: Record "Service Cr.Memo Line";
         ServiceCrMemoLine2: Record "Service Cr.Memo Line";
         OIOUBLProfile: Record "OIOUBL-Profile";
         BillToAddress: Record "Standard Address";
         PartyContact: Record Contact;
-        RBMgt: Codeunit "File Management";
         PEPPOLManagement: Codeunit "PEPPOL Management";
         XMLdocOut: XmlDocument;
         XMLCurrNode: XmlElement;
@@ -209,8 +202,6 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
         TotalAmount: Decimal;
         TotalInvDiscountAmount: Decimal;
         TotalTaxAmount: Decimal;
-        OutputFile: File;
-        FileOutstream: Outstream;
     begin
         CODEUNIT.RUN(CODEUNIT::"OIOUBL-Check Service Cr. Memo", ServiceCrMemoHeader);
         ReadGLSetup();
@@ -234,8 +225,6 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
         ServiceCrMemoLine.SETFILTER("No.", '<>%1', ' ');
         if NOT ServiceCrMemoLine.FINDSET() then
             EXIT;
-
-        FromFile := CopyStr(RBMgt.ServerTempFileName(''), 1, MaxStrLen(FromFile));
 
         // Credit Memo
         XmlDocument.ReadFrom(OIOUBLXMLGenerator.GetCrMemoHeader(), XMLdocOut);
@@ -303,7 +292,7 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
 
             if TotalInvDiscountAmount > 0 then
                 OIOUBLXMLGenerator.InsertAllowanceCharge(XMLCurrNode, 1, 'Rabat',
-                  OIOUBLXMLGenerator.GetTaxCategoryID(ServiceCrMemoLine2."VAT Calculation Type", ServiceCrMemoLine2."VAT %"),
+                  OIOUBLXMLGenerator.GetTaxCategoryID(ServiceCrMemoLine2."VAT Calculation Type".AsInteger(), ServiceCrMemoLine2."VAT %"),
                   TotalInvDiscountAmount, CurrencyCode, ServiceCrMemoLine2."VAT %");
         end;
 
@@ -350,11 +339,8 @@ codeunit 13644 "OIOUBL-Export Service Cr.Memo"
             InsertCrMemoLine(XMLCurrNode, ServiceCrMemoLine, CurrencyCode, UnitOfMeasureCode);
         until ServiceCrMemoLine.NEXT() = 0;
 
-        OutputFile.Create(FromFile);
-        OutputFile.CreateOutStream(FileOutstream);
         OnCreateXMLOnBeforeXmlDocumentWriteToFileStream(XMLdocOut, ServiceCrMemoHeader, DocNameSpace, DocNameSpace2);
         XMLdocOut.WriteTo(FileOutstream);
-        OutputFile.Close();
     end;
 
     procedure ReadCompanyInfo();

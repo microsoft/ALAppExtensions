@@ -2,7 +2,7 @@
     "id":  "75f1590f-55c5-4501-ae63-bada5504e852",
     "name":  "Performance Toolkit Samples",
     "publisher":  "Microsoft",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "brief":  "Performance test framework sample tests",
     "description":  "This extension provides tests that simulate business processes, such as creating sales orders, for the Business Central Performance Toolkit. Developers can use these to test for performance regressions during development.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -12,23 +12,17 @@
     "logo":  "./logo/ExtensionLogo.png",
     "dependencies":  [
                          {
-                             "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
-                             "name":  "Library Variable Storage",
-                             "publisher":  "Microsoft",
-                             "version":  "19.4.0.0"
-                         },
-                         {
                              "id":  "75f1590f-55c5-4501-ae63-bada5534e852",
                              "publisher":  "Microsoft",
                              "name":  "Performance Toolkit",
-                             "version":  "19.4.0.0"
+                             "version":  "20.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
-    "application":  "19.4.0.0",
+    "platform":  "20.0.0.0",
+    "application":  "20.0.0.0",
     "idRanges":  [
                      {
                          "from":  149100,
@@ -36,10 +30,10 @@
                      }
                  ],
     "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
     "target":  "Cloud"
 }

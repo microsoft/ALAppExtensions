@@ -33,7 +33,7 @@ pageextension 2026 "Item Picture Analyzer Ext" extends "Item Card"
                         exit;
                     end;
 
-                    ItemAttrPopulate.OnAfterImportPictureAnalyzePicture(rec);
+                    ItemAttrPopulate.AnalyzePicture(rec);
                 end;
             }
         }

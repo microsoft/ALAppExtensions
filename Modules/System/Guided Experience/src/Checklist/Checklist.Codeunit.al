@@ -178,6 +178,18 @@ codeunit 1992 "Checklist"
     end;
 
     /// <summary>
+    /// Marks the checklist setup in progress.
+    /// </summary>
+    procedure MarkChecklistSetupInProgress()
+    var
+        CallerModuleInfo: ModuleInfo;
+    begin
+        NavApp.GetCallerModuleInfo(CallerModuleInfo);
+
+        ChecklistImplementation.MarkChecklistSetupInProgress(CallerModuleInfo);
+    end;
+
+    /// <summary>
     /// Marks the checklist setup as done.
     /// </summary>
     procedure MarkChecklistSetupAsDone()
@@ -204,13 +216,13 @@ codeunit 1992 "Checklist"
     /// <summary>
     /// Updates the user name for checklist records that have it as a primary key.
     /// </summary>
-    /// <param name="RecRef">The recordref that poins to the record that is to be modified.</param>
+    /// <param name="RecordRef">The recordref that poins to the record that is to be modified.</param>
     /// <param name="Company">The company in which the table is to be modified.</param>
     /// <param name="UserName">The new user name.</param>
     /// <param name="TableID">The table for which the user name is to be modified.</param>
-    procedure UpdateUserName(var RecRef: RecordRef; Company: Text[30]; UserName: Text[50]; TableID: Integer)
+    procedure UpdateUserName(var RecordRef: RecordRef; Company: Text[30]; UserName: Text[50]; TableID: Integer)
     begin
-        ChecklistImplementation.UpdateUserName(RecRef, Company, UserName, TableID);
+        ChecklistImplementation.UpdateUserName(RecordRef, Company, UserName, TableID);
     end;
 
     /// <summary>

@@ -159,6 +159,20 @@ page 31273 "Compensation Subform CZC"
                         CurrPage.Update();
                     end;
                 }
+                field(RelatedAmountToApply; Rec.CalcRelatedAmountToApply())
+                {
+                    Caption = 'Related Amount to Apply (LCY)';
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the total Amount (LCY) related suggestions to apply.';
+                    BlankZero = true;
+                    Visible = false;
+
+                    trigger OnDrillDown()
+                    begin
+                        Rec.DrillDownRelatedAmountToApply();
+                    end;
+                }
                 field("Shortcut Dimension 1 Code"; Rec."Shortcut Dimension 1 Code")
                 {
                     ApplicationArea = Dimensions;

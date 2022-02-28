@@ -3,12 +3,7 @@ codeunit 1665 "MS Ceridian Payroll upgrade"
     Subtype = Upgrade;
 
     trigger OnUpgradePerCompany()
-    var
-        AppInfo: ModuleInfo;
     begin
-        NavApp.GetCurrentModuleInfo(AppInfo);
-        if AppInfo.DataVersion().Major() = 1 then
-            NAVAPP.RESTOREARCHIVEDATA(DATABASE::"MS Ceridian Payroll Setup");
         UpgradeSecretsToIsolatedStorage();
     end;
 

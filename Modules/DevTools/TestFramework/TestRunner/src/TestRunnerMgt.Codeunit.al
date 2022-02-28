@@ -143,6 +143,7 @@ codeunit 130454 "Test Runner - Mgt"
             TestSuiteMgt.SetLastErrorOnLine(CodeunitTestMethodLine);
         end;
 
+        DummyBlankDateTime := 0DT;
         if (TestMethodLine."Start Time" < CodeunitTestMethodLine."Start Time") or
            (CodeunitTestMethodLine."Start Time" = DummyBlankDateTime)
         then

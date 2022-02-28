@@ -19,7 +19,9 @@ codeunit 1885 "Sandbox Cleanup Impl."
         SandboxCleanup: Codeunit "Sandbox Cleanup";
     begin
 #if not CLEAN17
+#pragma warning disable AL0432
         SandboxCleanup.OnClearConfiguration('');
+#pragma warning restore
 #endif
         SandboxCleanup.OnClearDatabaseConfiguration();
     end;
@@ -30,7 +32,9 @@ codeunit 1885 "Sandbox Cleanup Impl."
         SandboxCleanup: Codeunit "Sandbox Cleanup";
     begin
 #if not CLEAN17
+#pragma warning disable AL0432
         SandboxCleanup.OnClearConfiguration(CompanyName());
+#pragma warning restore
 #endif
         SandboxCleanup.OnClearCompanyConfiguration(CompanyName());
     end;

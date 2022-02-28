@@ -10,7 +10,7 @@ permissionset 11762 "CZ Fixed Asset - Objects CZF"
     Caption = 'CZ Fixed Asset - Objects';
 
     Permissions = Codeunit "Calc. Normal Depr. Handler CZF" = X,
-                  Codeunit "Data Class. Eval. Handler CZF" = X,
+                  Codeunit "Data Class. Eval. Handler CZF" = X,
                   Codeunit "FA Acquisition Handler CZF" = X,
                   Codeunit "FA Deprec. Book Handler CZF" = X,
                   Codeunit "FA Disposal Handler CZF" = X,
@@ -21,14 +21,16 @@ permissionset 11762 "CZ Fixed Asset - Objects CZF"
                   Codeunit "Guided Experience Handler CZF" = X,
                   Codeunit "Install Application CZF" = X,
                   Codeunit "Substitute Report Handler CZF" = X,
-                  Codeunit "Sync.Dep.Fld-Classif. Code CZF" = X,
-                  Codeunit "Sync.Dep.Fld-Deprec. Book CZF" = X,
-                  Codeunit "Sync.Dep.Fld-FA Depr.Book CZF" = X,
-                  Codeunit "Sync.Dep.Fld-FAExtPostGr CZF" = X,
-                  Codeunit "Sync.Dep.Fld-FAPostGroup CZF" = X,
+#if not CLEAN18                  
+                  Codeunit "Sync.Dep.Fld-Classif. Code CZF" = X,
+                  Codeunit "Sync.Dep.Fld-Deprec. Book CZF" = X,
+                  Codeunit "Sync.Dep.Fld-FA Depr.Book CZF" = X,
+                  Codeunit "Sync.Dep.Fld-FAExtPostGr CZF" = X,
+                  Codeunit "Sync.Dep.Fld-FAPostGroup CZF" = X,
                   Codeunit "Sync.Dep.Fld-FA Setup CZF" = X,
                   Codeunit "Sync.Dep.Fld-Fixed Asset CZF" = X,
-                  Codeunit "Sync.Dep.Fld-TaxDeprGroup CZF" = X,
+                  Codeunit "Sync.Dep.Fld-TaxDeprGroup CZF" = X,
+#endif
                   Codeunit "Upgrade Application CZF" = X,
                   Codeunit "Upgrade Tag Definitions CZF" = X,
                   Page "Classification Codes CZF" = X,

@@ -38,12 +38,13 @@ page 4017 "Intelligent Cloud Update"
                         Caption = '';
                         InstructionalText = 'This process will update your Cloud Migration environment to the latest version.';
 
+#pragma warning disable AA0218, AA0225
                         field(UpdateICInfo; StrSubstNo(VersionTxt, DeployedVersion, LatestVersion))
                         {
                             ApplicationArea = Basic, Suite;
                             Caption = '';
                         }
-
+#pragma warning restore
                         field(ProcessUpdateTxt; PleaseWaitTxt)
                         {
                             ApplicationArea = Basic, Suite;
@@ -98,11 +99,11 @@ page 4017 "Intelligent Cloud Update"
     var
         PermissionManager: Codeunit "Permission Manager";
         UserPermissions: Codeunit "User Permissions";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
         UpdateVisible := true;
         IsSuperAndSetupComplete := PermissionManager.IsIntelligentCloud() and UserPermissions.IsSuper(UserSecurityId());
-        IsOnPrem := NOT EnvironmentInfo.IsSaaS();
+        IsOnPrem := NOT EnvironmentInformation.IsSaaS();
 
         if not IsSuperAndSetupComplete then
             Error(RunUpdatePermissionErr);

@@ -105,21 +105,21 @@ page 8944 "Email Address Lookup"
         EntityType := EmailAddressEntity;
     end;
 
-    protected procedure LookupFullAddressList(Entity: Enum "Email Address Entity")
+    protected procedure LookupFullAddressList(EmailAddressEntity: Enum "Email Address Entity")
     var
-        Addresses: Record "Email Address Lookup";
-        EmailAddressLookup: Codeunit "Email Address Lookup Impl";
+        EmailAddressLookup: Record "Email Address Lookup";
+        EmailAddressLookupImpl: Codeunit "Email Address Lookup Impl";
     begin
-        if EmailAddressLookup.LookupEmailAddress(Entity, Addresses) then begin
+        if EmailAddressLookupImpl.LookupEmailAddress(EmailAddressEntity, EmailAddressLookup) then begin
             Clear(Rec);
-            Addresses.FindSet();
+            EmailAddressLookup.FindSet();
             repeat
-                if (not Rec.Get(Addresses."E-Mail Address", Addresses.Name, Addresses."Entity type")) then begin
-                    Rec.TransferFields(Addresses);
+                if (not Rec.Get(EmailAddressLookup."E-Mail Address", EmailAddressLookup.Name, EmailAddressLookup."Entity type")) then begin
+                    Rec.TransferFields(EmailAddressLookup);
                     Rec.Insert();
                     Rec.Mark(true);
                 end;
-            until Addresses.Next() = 0;
+            until EmailAddressLookup.Next() = 0;
             FullAddressLookup := true;
             CurrPage.Close();
         end;
@@ -131,7 +131,7 @@ page 8944 "Email Address Lookup"
         CurrPage.Update();
     end;
 
-    procedure GetSelectedSuggestions(var EmailAddress: Record "Email Address Lookup")
+    procedure GetSelectedSuggestions(var EmailAddressLookup: Record "Email Address Lookup")
     begin
         if FullAddressLookup then
             Rec.MarkedOnly(true)
@@ -142,18 +142,18 @@ page 8944 "Email Address Lookup"
             exit;
 
         repeat
-            EmailAddress.TransferFields(Rec);
-            EmailAddress.Insert();
+            EmailAddressLookup.TransferFields(Rec);
+            EmailAddressLookup.Insert();
         until Rec.Next() = 0;
     end;
 
-    procedure AddSuggestions(var EmailAddress: Record "Email Address Lookup")
+    procedure AddSuggestions(var EmailAddressLookup: Record "Email Address Lookup")
     begin
-        if EmailAddress.FindSet() then
+        if EmailAddressLookup.FindSet() then
             repeat
-                Rec.Copy(EmailAddress);
+                Rec.Copy(EmailAddressLookup);
                 Rec.Insert();
-            until EmailAddress.Next() = 0;
+            until EmailAddressLookup.Next() = 0;
 
         // Sort list
         Rec.SetCurrentKey(Company, Name);

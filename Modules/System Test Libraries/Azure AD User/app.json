@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Test objetcs for the Azure AD User module.",
     "description":  "Test objetcs for the Azure AD User module.",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,22 +15,22 @@
                              "id":  "f2cc2ef8-949f-47d1-85b8-10bd6f8bc61c",
                              "name":  "Azure AD User",
                              "publisher":  "Microsoft",
-                             "version":  "19.4.0.0"
+                             "version":  "20.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
     "idRanges":  [
-                     {
-                         "from":  132911,
-                         "to":  132911
+                     { 
+                         "from": 132911, 
+                         "to": 132911
                      },
                      {
                          "from":  132915,
                          "to":  132915
                      }
                  ],
-    "platform":  "19.0.0.0",
+    "platform":  "20.0.0.0",
     "target":  "OnPrem"
 }

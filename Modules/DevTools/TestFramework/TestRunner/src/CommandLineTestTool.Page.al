@@ -45,7 +45,7 @@ page 130455 "Command Line Test Tool"
                 begin
                     TestSuiteMgt.DeleteAllMethods(GlobalALTestSuite);
                     TestSuiteMgt.SelectTestMethodsByRange(GlobalALTestSuite, TestCodeunitRangeFilter);
-                    IF FindFirst() THEN;
+                    IF Rec.FindFirst() THEN;
                 end;
             }
             field(TestRunnerCodeunitId; TestRunnerCodeunitId)
@@ -73,7 +73,7 @@ page 130455 "Command Line Test Tool"
                 begin
                     TestSuiteMgt.DeleteAllMethods(GlobalALTestSuite);
                     TestSuiteMgt.SelectTestMethodsByExtension(GlobalALTestSuite, ExtensionId);
-                    IF FindFirst() THEN;
+                    IF Rec.FindFirst() THEN;
                 end;
             }
             field(DisableTestMethod; RemoveTestMethod)
@@ -107,22 +107,24 @@ page 130455 "Command Line Test Tool"
                     Editable = false;
                     ToolTip = 'Specifies a Non-Translatable value for console test runner.';
                 }
-                field(TestCodeunit; "Test Codeunit")
+                field(TestCodeunit; Rec."Test Codeunit")
                 {
                     ApplicationArea = All;
+                    Tooltip = 'Specifies the ID the test codeunit.';
                     Caption = 'Codeunit ID';
                     Editable = false;
                 }
-                field(Name; Name)
+                field(Name; Rec.Name)
                 {
                     ApplicationArea = All;
                     Caption = 'Name';
                     Editable = false;
                     ToolTip = 'Specifies the name of the test tool.';
                 }
-                field(Run; Run)
+                field(Run; Rec.Run)
                 {
                     ApplicationArea = All;
+                    Tooltip = 'Specifies wether the tests should run.';
                     Caption = 'Run';
 
                     trigger OnValidate()
@@ -151,15 +153,16 @@ page 130455 "Command Line Test Tool"
                     Caption = 'Stack Trace';
                     ToolTip = 'Specifies stack trace';
                 }
-                field(FinishTime; "Finish Time")
+                field(FinishTime; Rec."Finish Time")
                 {
                     ApplicationArea = All;
                     Caption = 'Finish Time';
                     ToolTip = 'Specifies the duration of the test run';
                 }
-                field(StartTime; "Start Time")
+                field(StartTime; Rec."Start Time")
                 {
                     ApplicationArea = All;
+                    Tooltip = 'Specifies the time the test started.';
                     Caption = 'Start Time';
                 }
             }
@@ -173,9 +176,11 @@ page 130455 "Command Line Test Tool"
             action(RunSelectedTests)
             {
                 ApplicationArea = All;
+                Tooltip = 'Runs the selected tests.';
                 Caption = 'Run Se&lected Tests';
                 Image = TestFile;
                 Promoted = true;
+                PromotedOnly = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
 
@@ -187,7 +192,7 @@ page 130455 "Command Line Test Tool"
                     TestMethodLine.Copy(Rec);
                     CurrPage.SetSelectionFilter(TestMethodLine);
                     TestSuiteMgt.RunSelectedTests(TestMethodLine);
-                    Find();
+                    Rec.Find();
                     CurrPage.Update(true);
                 end;
             }
@@ -195,9 +200,11 @@ page 130455 "Command Line Test Tool"
             action(RunNextTest)
             {
                 ApplicationArea = All;
+                Tooltip = 'Runs the next test.';
                 Caption = 'Run N&ext Test';
                 Image = TestReport;
                 Promoted = true;
+                PromotedOnly = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
 
@@ -213,7 +220,7 @@ page 130455 "Command Line Test Tool"
                     else
                         TestResultsJSONText := AllTestsExecutedTxt;
 
-                    if Find() then;
+                    if Rec.Find() then;
                     CurrPage.Update(true);
                 end;
             }
@@ -221,9 +228,11 @@ page 130455 "Command Line Test Tool"
             action(ClearTestResults)
             {
                 ApplicationArea = All;
+                Tooltip = 'Clear the test results.';
                 Caption = 'Clear Test R&esults';
                 Image = ClearLog;
                 Promoted = true;
+                PromotedOnly = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
 
@@ -290,9 +299,9 @@ page 130455 "Command Line Test Tool"
 
         CurrPage.SaveRecord();
 
-        FilterGroup(2);
-        SetRange("Test Suite", CurrentSuiteName);
-        FilterGroup(0);
+        Rec.FilterGroup(2);
+        Rec.SetRange("Test Suite", CurrentSuiteName);
+        Rec.FilterGroup(0);
 
         CurrPage.Update(false);
     end;
@@ -309,11 +318,11 @@ page 130455 "Command Line Test Tool"
                 Commit();
             end;
 
-        FilterGroup(2);
-        SetRange("Test Suite", CurrentSuiteName);
-        FilterGroup(0);
+        Rec.FilterGroup(2);
+        Rec.SetRange("Test Suite", CurrentSuiteName);
+        Rec.FilterGroup(0);
 
-        if Find('-') then;
+        if Rec.Find('-') then;
 
         GlobalALTestSuite.Get(CurrentSuiteName);
         GlobalALTestSuite.CalcFields("Tests to Execute");
@@ -324,10 +333,10 @@ page 130455 "Command Line Test Tool"
         TestSuiteMgt: Codeunit "Test Suite Mgt.";
         ConvertToInteger: Integer;
     begin
-        ConvertToInteger := Result;
+        ConvertToInteger := Rec.Result;
         ResultCode := Format(ConvertToInteger);
 
-        ConvertToInteger := "Line Type";
+        ConvertToInteger := Rec."Line Type";
         LineTypeCode := Format(ConvertToInteger);
 
         StackTrace := TestSuiteMgt.GetErrorCallStack(Rec);
@@ -360,7 +369,7 @@ page 130455 "Command Line Test Tool"
             exit;
 
         TestMethodLine.SetRange("Test Suite", GlobalALTestSuite.Name);
-        TestMethodLine.SetRange("Line Type", "Line Type"::"Function");
+        TestMethodLine.SetRange("Line Type", Rec."Line Type"::"Function");
         TestMethodLine.SetRange("Test Codeunit", CodeunitTestMethodLine."Test Codeunit");
         TestMethodLine.SetFilter(Name, TestMethodName);
         TestMethodLine.ModifyAll(Run, false);

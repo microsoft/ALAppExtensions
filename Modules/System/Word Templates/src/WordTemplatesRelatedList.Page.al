@@ -86,11 +86,11 @@ page 9985 "Word Templates Related List"
         Rec."Table ID" := TableId;
     end;
 
-    internal procedure AddTable(TempWordTemplateRelatedTable: Record "Word Templates Related Table"): Boolean
+    internal procedure AddTable(WordTemplatesRelatedTable: Record "Word Templates Related Table"): Boolean
     var
         WordTemplateImpl: Codeunit "Word Template Impl.";
     begin
-        exit(WordTemplateImpl.AddRelatedTable(Rec, TempWordTemplateRelatedTable));
+        exit(WordTemplateImpl.AddRelatedTable(Rec, WordTemplatesRelatedTable));
     end;
 
     internal procedure SetTableNo(TableNo: Integer)

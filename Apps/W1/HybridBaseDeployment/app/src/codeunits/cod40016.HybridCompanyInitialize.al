@@ -49,8 +49,10 @@ codeunit 40016 "Hybrid Company Initialize"
         HybridCompany: Record "Hybrid Company";
     begin
         Clear(NonInitializedCompanies);
+#pragma warning disable AA0210        
         HybridCompany.SetFilter("Company Initialization Status", '<>%1', HybridCompany."Company Initialization Status"::Initialized);
         HybridCompany.SetRange(Replicate, true);
+#pragma warning restore
         if HybridCompany.IsEmpty() then
             exit;
 

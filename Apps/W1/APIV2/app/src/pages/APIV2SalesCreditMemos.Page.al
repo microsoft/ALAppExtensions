@@ -413,7 +413,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(6);
+                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const("Sales Credit Memo");
                 }
                 part(salesCreditMemoLines; "APIV2 - Sales Credit Mem Lines")
                 {
@@ -428,7 +428,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                     Multiplicity = ZeroOrOne;
                     EntityName = 'pdfDocument';
                     EntitySetName = 'pdfDocument';
-                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const(4);
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Sales Credit Memo");
                 }
                 field(discountAmount; "Invoice Discount Amount")
                 {
@@ -571,7 +571,7 @@ page 30038 "APIV2 - Sales Credit Memos"
                     Caption = 'Attachments';
                     EntityName = 'attachment';
                     EntitySetName = 'attachments';
-                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const(4);
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Sales Credit Memo");
                 }
             }
         }

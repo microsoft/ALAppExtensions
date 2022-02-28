@@ -548,4 +548,44 @@ table 31273 "Compensation Line CZC"
     begin
         DimensionManagement.GetShortcutDimensions("Dimension Set ID", ShortcutDimCode);
     end;
+
+    procedure CalcRelatedAmountToApply(): Decimal
+    var
+        TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
+    begin
+        FindRelatedAmountToApply(TempCrossApplicationBufferCZL);
+        TempCrossApplicationBufferCZL.CalcSums("Amount (LCY)");
+        exit(TempCrossApplicationBufferCZL."Amount (LCY)");
+    end;
+
+    procedure DrillDownRelatedAmountToApply()
+    var
+        TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
+    begin
+        FindRelatedAmountToApply(TempCrossApplicationBufferCZL);
+        Page.Run(Page::"Cross Application CZL", TempCrossApplicationBufferCZL);
+    end;
+
+    local procedure FindRelatedAmountToApply(var TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary)
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        if Rec."Source No." = '' then
+            exit;
+
+        case Rec."Source Type" of
+            Rec."Source Type"::Customer:
+                if Rec."Source Entry No." <> 0 then
+                    if CustLedgerEntry.Get(Rec."Source Entry No.") then
+                        CrossApplicationMgtCZL.OnGetSuggestedAmountForCustLedgerEntry(CustLedgerEntry, TempCrossApplicationBufferCZL,
+                                                                                      Database::"Compensation Line CZC", Rec."Compensation No.", Rec."Line No.");
+            Rec."Source Type"::Vendor:
+                if Rec."Source Entry No." <> 0 then
+                    if VendorLedgerEntry.Get(Rec."Source Entry No.") then
+                        CrossApplicationMgtCZL.OnGetSuggestedAmountForVendLedgerEntry(VendorLedgerEntry, TempCrossApplicationBufferCZL,
+                                                                                      Database::"Compensation Line CZC", Rec."Compensation No.", Rec."Line No.");
+        end;
+    end;
 }

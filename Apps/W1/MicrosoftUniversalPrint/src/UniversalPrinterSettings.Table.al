@@ -95,18 +95,21 @@ table 2751 "Universal Printer Settings"
             Caption = 'Allow all users';
         }
 
-#if not CLEAN18
         /// <summary>
         /// The output bin to use when printing the document.
         /// </summary>
         field(12; outputBin; Text[2048])
         {
             Caption = 'Output Bin';
+#if not CLEAN18
             ObsoleteState = Pending;
-            ObsoleteReason = 'Replaced with Paper Tray';
             ObsoleteTag = '18.0';
-        }
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '21.0';
 #endif
+            ObsoleteReason = 'Replaced with Paper Tray';
+        }
 
         /// <summary>
         /// The output paper tray to use when printing the document.

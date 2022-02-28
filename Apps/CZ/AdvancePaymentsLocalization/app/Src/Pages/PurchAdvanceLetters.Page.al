@@ -141,6 +141,19 @@ page 31180 "Purch. Advance Letters CZZ"
                     ToolTip = 'Specifies amount on issued payment order.';
                     Visible = false;
                 }
+                field(SuggestedAmountToApplyCZL; Rec.CalcSuggestedAmountToApply())
+                {
+                    Caption = 'Suggested Amount to Apply (LCY)';
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the total Amount (LCY) suggested to apply.';
+                    Visible = false;
+
+                    trigger OnDrillDown()
+                    begin
+                        Rec.DrillDownSuggestedAmountToApply();
+                    end;
+                }
                 field("Payment Method Code"; Rec."Payment Method Code")
                 {
                     ApplicationArea = Basic, Suite;
@@ -329,8 +342,9 @@ page 31180 "Purch. Advance Letters CZZ"
                 var
                     PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
                 begin
+                    PurchAdvLetterHeaderCZZ := Rec;
                     CurrPage.SetSelectionFilter(PurchAdvLetterHeaderCZZ);
-                    PurchAdvLetterHeaderCZZ.PrintRecord(true);
+                    PurchAdvLetterHeaderCZZ.PrintRecords(true);
                 end;
             }
             action(PrintToAttachment)

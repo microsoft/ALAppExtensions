@@ -8,7 +8,10 @@ codeunit 9175 "User Settings Impl."
     Access = Internal;
     Permissions = tabledata "All Profile" = r,
                   tabledata Company = r,
+#if not CLEAN20
                   tabledata "Extra Settings" = rim,
+#endif
+                  tabledata "Application User Settings" = rim,
                   tabledata "Tenant Profile" = r,
                   tabledata User = r,
                   tabledata "User Personalization" = rim;
@@ -91,7 +94,7 @@ codeunit 9175 "User Settings Impl."
     procedure GetUserSettings(UserSecurityID: Guid; var UserSettingsRec: Record "User Settings")
     var
         UserPersonalization: Record "User Personalization";
-        ExtraSettings: Record "Extra Settings";
+        ApplicationUserSettings: Record "Application User Settings";
         AllProfile: Record "All Profile";
         UserSettings: Codeunit "User Settings";
         UserLoginTimeTracker: Codeunit "User Login Time Tracker";
@@ -125,13 +128,13 @@ codeunit 9175 "User Settings Impl."
         else
             UserSettingsRec.Company := UserPersonalization.Company;
 
-        UserSettingsRec."Last Login" := UserLoginTimeTracker.GetPenultimateLoginDateTime();
+        UserSettingsRec."Last Login" := UserLoginTimeTracker.GetPenultimateLoginDateTime(UserSecurityID);
         UserSettingsRec."Work Date" := WorkDate();
         UserSettingsRec.Initialized := true;
         UserSettings.OnAfterGetUserSettings(UserSettingsRec);
 
-        GetAppSettings(UserSecurityID, ExtraSettings);
-        UserSettingsRec."Teaching Tips" := ExtraSettings."Teaching Tips";
+        GetAppSettings(UserSecurityID, ApplicationUserSettings);
+        UserSettingsRec."Teaching Tips" := ApplicationUserSettings."Teaching Tips";
 
         if not UserSettingsRec.Insert() then
             UserSettingsRec.Modify();
@@ -142,22 +145,22 @@ codeunit 9175 "User Settings Impl."
         GetUserSettings(UserSettings."User Security ID", UserSettings);
     end;
 
-    procedure UpdateUserSettings(OldSettings: Record "User Settings"; NewSettings: Record "User Settings")
+    procedure UpdateUserSettings(OldUserSettings: Record "User Settings"; NewUserSettings: Record "User Settings")
     var
         UserSettings: Codeunit "User Settings";
     begin
-        UserSettings.OnUpdateUserSettings(OldSettings, NewSettings);
+        UserSettings.OnUpdateUserSettings(OldUserSettings, NewUserSettings);
 
-        if NewSettings."User Security ID" = UserSecurityId() then
-            UpdateCurrentUsersSettings(OldSettings, NewSettings)
+        if NewUserSettings."User Security ID" = UserSecurityId() then
+            UpdateCurrentUsersSettings(OldUserSettings, NewUserSettings)
         else
-            UpdateOtherUsersSettings(NewSettings);
+            UpdateOtherUsersSettings(NewUserSettings);
     end;
 
     local procedure UpdateOtherUsersSettings(NewUserSettings: Record "User Settings")
     var
         UserPersonalization: Record "User Personalization";
-        ExtraSettings: Record "Extra Settings";
+        ApplicationUserSettings: Record "Application User Settings";
     begin
         UserPersonalization.Get(NewUserSettings."User Security ID");
 
@@ -170,17 +173,17 @@ codeunit 9175 "User Settings Impl."
         UserPersonalization."App ID" := NewUserSettings."App ID";
         UserPersonalization.Modify();
 
-        GetAppSettings(NewUserSettings."User Security ID", ExtraSettings);
-        ExtraSettings."Teaching Tips" := NewUserSettings."Teaching Tips";
-        ExtraSettings.Modify();
+        GetAppSettings(NewUserSettings."User Security ID", ApplicationUserSettings);
+        ApplicationUserSettings."Teaching Tips" := NewUserSettings."Teaching Tips";
+        ApplicationUserSettings.Modify();
     end;
 
-    local procedure UpdateCurrentUsersSettings(OldSettings: Record "User Settings"; NewSettings: Record "User Settings")
+    local procedure UpdateCurrentUsersSettings(OldUserSettings: Record "User Settings"; NewUserSettings: Record "User Settings")
     var
 #if not CLEAN19
         AllProfile: Record "All Profile";
 #endif
-        ExtraSettings: Record "Extra Settings";
+        ApplicationUserSettings: Record "Application User Settings";
 #if not CLEAN19
         UserSettings: Codeunit "User Settings";
 #endif
@@ -191,59 +194,59 @@ codeunit 9175 "User Settings Impl."
     begin
         sessionSetting.Init();
 
-        if OldSettings."Language ID" <> NewSettings."Language ID" then begin
+        if OldUserSettings."Language ID" <> NewUserSettings."Language ID" then begin
 #if not CLEAN19
-            UserSettings.OnBeforeLanguageChange(OldSettings."Language ID", NewSettings."Language ID");
+            UserSettings.OnBeforeLanguageChange(OldUserSettings."Language ID", NewUserSettings."Language ID");
 #endif
-            sessionSetting.LanguageId := NewSettings."Language ID";
+            sessionSetting.LanguageId := NewUserSettings."Language ID";
             ShouldRefreshSession := true;
         end;
 
-        if OldSettings."Locale ID" <> NewSettings."Locale ID" then begin
-            sessionSetting.LocaleId := NewSettings."Locale ID";
+        if OldUserSettings."Locale ID" <> NewUserSettings."Locale ID" then begin
+            sessionSetting.LocaleId := NewUserSettings."Locale ID";
             ShouldRefreshSession := true;
         end;
 
-        if OldSettings."Time Zone" <> NewSettings."Time Zone" then begin
+        if OldUserSettings."Time Zone" <> NewUserSettings."Time Zone" then begin
             ShouldRefreshSession := true;
-            sessionSetting.Timezone := NewSettings."Time Zone";
+            sessionSetting.Timezone := NewUserSettings."Time Zone";
         end;
 
-        if OldSettings.Company <> NewSettings.Company then begin
+        if OldUserSettings.Company <> NewUserSettings.Company then begin
             ShouldRefreshSession := true;
             WasEvaluation := TenantLicenseState.IsEvaluationMode();
-            sessionSetting.Company := NewSettings.Company;
+            sessionSetting.Company := NewUserSettings.Company;
             if WasEvaluation and TenantLicenseState.IsTrialMode() then
                 Message(StrSubstNo(TrialStartMsg, ProductName.Marketing()));
         end;
 
-        if (OldSettings."Profile ID" <> NewSettings."Profile ID") or
-            (OldSettings."App ID" <> NewSettings."App ID") or
-            (OldSettings.Scope <> NewSettings.Scope)
+        if (OldUserSettings."Profile ID" <> NewUserSettings."Profile ID") or
+            (OldUserSettings."App ID" <> NewUserSettings."App ID") or
+            (OldUserSettings.Scope <> NewUserSettings.Scope)
         then begin
             ShouldRefreshSession := true;
-            sessionSetting.ProfileId := NewSettings."Profile ID";
-            sessionSetting.ProfileAppId := NewSettings."App ID";
-            sessionSetting.ProfileSystemScope := NewSettings.Scope = NewSettings.Scope::System;
+            sessionSetting.ProfileId := NewUserSettings."Profile ID";
+            sessionSetting.ProfileAppId := NewUserSettings."App ID";
+            sessionSetting.ProfileSystemScope := NewUserSettings.Scope = NewUserSettings.Scope::System;
         end;
 
 #if not CLEAN19
-        if OldSettings."Work Date" <> NewSettings."Work Date" then begin
-            UserSettings.OnBeforeWorkdateChange(WorkDate(), NewSettings."Work Date");
-            WorkDate(NewSettings."Work Date");
+        if OldUserSettings."Work Date" <> NewUserSettings."Work Date" then begin
+            UserSettings.OnBeforeWorkdateChange(WorkDate(), NewUserSettings."Work Date");
+            WorkDate(NewUserSettings."Work Date");
         end;
 
-        if AllProfile.Get(NewSettings.Scope, NewSettings."App ID", NewSettings."Profile ID") then;
-        UserSettings.OnAfterQueryClosePage(NewSettings."Language ID", NewSettings."Locale ID", NewSettings."Time Zone", NewSettings.Company, AllProfile);
+        if AllProfile.Get(NewUserSettings.Scope, NewUserSettings."App ID", NewUserSettings."Profile ID") then;
+        UserSettings.OnAfterQueryClosePage(NewUserSettings."Language ID", NewUserSettings."Locale ID", NewUserSettings."Time Zone", NewUserSettings.Company, AllProfile);
 #else
-        if OldSettings."Work Date" <> NewSettings."Work Date" then
-            WorkDate(NewSettings."Work Date");
+        if OldUserSettings."Work Date" <> NewUserSettings."Work Date" then
+            WorkDate(NewUserSettings."Work Date");
 #endif
 
-        if OldSettings."Teaching Tips" <> NewSettings."Teaching Tips" then begin
-            GetAppSettings(UserSecurityId(), ExtraSettings);
-            ExtraSettings."Teaching Tips" := NewSettings."Teaching Tips";
-            ExtraSettings.Modify();
+        if OldUserSettings."Teaching Tips" <> NewUserSettings."Teaching Tips" then begin
+            GetAppSettings(UserSecurityId(), ApplicationUserSettings);
+            ApplicationUserSettings."Teaching Tips" := NewUserSettings."Teaching Tips";
+            ApplicationUserSettings.Modify();
         end;
 
         if ShouldRefreshSession then
@@ -331,17 +334,36 @@ codeunit 9175 "User Settings Impl."
         UserPersonalization.Insert();
     end;
 
+#if not CLEAN20
+    [Obsolete('Replaced with function that takes Application User Settings record', '20.0')]
     procedure InitializeAppSettings(UserSecurityID: Guid; var ExtraSettings: Record "Extra Settings")
     begin
         ExtraSettings."User Security ID" := UserSecurityID;
         ExtraSettings."Teaching Tips" := true;
         ExtraSettings.Insert();
     end;
+#endif
 
+    procedure InitializeAppSettings(UserSecurityID: Guid; var ApplicationUserSettings: Record "Application User Settings")
+    begin
+        ApplicationUserSettings."User Security ID" := UserSecurityID;
+        ApplicationUserSettings."Teaching Tips" := true;
+        ApplicationUserSettings.Insert();
+    end;
+
+#if not CLEAN20
+    [Obsolete('Replaced with function that takes Application User Settings record', '20.0')]
     procedure GetAppSettings(UserSecurityID: Guid; var ExtraSettings: Record "Extra Settings")
     begin
         if not ExtraSettings.Get(UserSecurityID) then
             InitializeAppSettings(UserSecurityID, ExtraSettings);
+    end;
+#endif
+
+    procedure GetAppSettings(UserSecurityID: Guid; var ApplicationUserSettings: Record "Application User Settings")
+    begin
+        if not ApplicationUserSettings.Get(UserSecurityID) then
+            InitializeAppSettings(UserSecurityID, ApplicationUserSettings);
     end;
 
     procedure GetPlatformSettings(UserSecurityID: Guid; var UserPersonalization: Record "User Personalization")
@@ -360,29 +382,29 @@ codeunit 9175 "User Settings Impl."
 
     procedure DisableTeachingTips(UserSecurityId: Guid)
     var
-        ExtraSettings: Record "Extra Settings";
+        ApplicationUserSettings: Record "Application User Settings";
     begin
-        GetAppSettings(UserSecurityId, ExtraSettings);
-        ExtraSettings."Teaching Tips" := false;
-        ExtraSettings.Modify();
+        GetAppSettings(UserSecurityId, ApplicationUserSettings);
+        ApplicationUserSettings."Teaching Tips" := false;
+        ApplicationUserSettings.Modify();
     end;
 
     procedure EnableTeachingTips(UserSecurityId: Guid)
     var
-        ExtraSettings: Record "Extra Settings";
+        ApplicationUserSettings: Record "Application User Settings";
     begin
-        GetAppSettings(UserSecurityId, ExtraSettings);
-        ExtraSettings."Teaching Tips" := true;
-        ExtraSettings.Modify();
+        GetAppSettings(UserSecurityId, ApplicationUserSettings);
+        ApplicationUserSettings."Teaching Tips" := true;
+        ApplicationUserSettings.Modify();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetAutoStartTours', '', false, false)]
     local procedure CheckIfUserCalloutsAreEnabled(var IsEnabled: Boolean)
     var
-        ExtraSettings: Record "Extra Settings";
+        ApplicationUserSettings: Record "Application User Settings";
     begin
-        GetAppSettings(UserSecurityId(), ExtraSettings);
-        IsEnabled := ExtraSettings."Teaching Tips";
+        GetAppSettings(UserSecurityId(), ApplicationUserSettings);
+        IsEnabled := ApplicationUserSettings."Teaching Tips";
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'OpenSettings', '', false, false)]

@@ -11,5 +11,6 @@ permissionset 89 "Permissions & Licenses - Edit"
 
     Permissions = tabledata "Access Control" = IMD,
                   tabledata "Tenant Permission" = IMD,
-                  tabledata "Tenant Permission Set" = IMD;
+                  tabledata "Tenant Permission Set" = IMD,
+                  tabledata "Tenant Permission Set Rel." = IMD;
 }

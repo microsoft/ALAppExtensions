@@ -52,6 +52,7 @@ page 8888 "Sent Emails List Part"
                 field(Sender; Rec.Sender)
                 {
                     ApplicationArea = All;
+                    Visible = false;
                     ToolTip = 'Specifies the Business Central user who sent this email.';
                 }
 
@@ -74,31 +75,6 @@ page 8888 "Sent Emails List Part"
     {
         area(Processing)
         {
-            action(Resend)
-            {
-                ApplicationArea = All;
-                Caption = 'Resend';
-                ToolTip = 'Resend the email.';
-                Image = Email;
-                Enabled = not NoSentEmails;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
-
-                trigger OnAction()
-                var
-                    SelectedSentEmail: Record "Sent Email";
-                begin
-                    CurrPage.SetSelectionFilter(SelectedSentEmail);
-                    if not SelectedSentEmail.FindSet() then
-                        exit;
-
-                    repeat
-                        EmailViewer.Resend(SelectedSentEmail);
-                    until SelectedSentEmail.Next() = 0;
-                end;
-            }
-
             action(EditAndSend)
             {
                 ApplicationArea = All;
@@ -133,23 +109,6 @@ page 8888 "Sent Emails List Part"
                     NoSentEmails := Rec.IsEmpty();
                 end;
             }
-
-            action(ShowSourceRecord)
-            {
-                ApplicationArea = All;
-                Image = GetSourceDoc;
-                Caption = 'Show Source';
-                ToolTip = 'Open the page from where the email was sent.';
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
-                Enabled = HasSourceRecord;
-
-                trigger OnAction()
-                begin
-                    EmailImpl.ShowSourceRecord(Rec."Message Id");
-                end;
-            }
         }
     }
 
@@ -180,57 +139,48 @@ page 8888 "Sent Emails List Part"
         EmailConnector.ShowAccountInformation(Rec."Account Id");
     end;
 
-    internal procedure SetNewerThan(NewDate: DateTime)
+    /// <summary>
+    /// Loads the relevant sent emails.
+    /// </summary>
+    procedure Load()
+    begin
+        EmailImpl.GetSentEmails(EmailAccountId, NewerThanDate, SourceTableID, SourceSystemID, Rec);
+        Rec.SetCurrentKey("Date Time Sent");
+        NoSentEmails := Rec.IsEmpty();
+        Rec.Ascending(false);
+    end;
+
+    /// <summary>
+    /// Set date filter for sent emails.
+    /// </summary>
+    /// <param name="NewDate">Earliest date to include sent emails from.</param>
+    procedure SetNewerThan(NewDate: DateTime)
     begin
         NewerThanDate := NewDate;
     end;
 
-    internal procedure SetEmailAccountId(AccountId: Guid)
-    begin
-        EmailAccountId := AccountId;
-    end;
-
-    internal procedure SetRelatedRecord(TableID: Integer; SystemID: Guid)
+    /// <summary>
+    /// Set filter for related record on sent emails.
+    /// </summary>
+    /// <param name="TableID">The entity table.</param>
+    /// <param name="SystemID">A record to filter on.</param>
+    procedure SetRelatedRecord(TableID: Integer; SystemID: Guid)
     begin
         SourceTableID := TableID;
         SourceSystemID := SystemID;
     end;
 
-    procedure LoadSentEmails(RecordVariant: Variant)
+    /// <summary>
+    /// Set filter for related record on sent emails.
+    /// </summary>
+    /// <param name="RecordVariant">Source record.</param>
+    procedure SetRelatedRecord(RecordVariant: Variant)
     var
-        RecRef: RecordRef;
-        RecID: RecordID;
-        FieldRef: FieldRef;
+        EmailImpl: Codeunit "Email Impl";
+        RecordRef: RecordRef;
     begin
-        case true of
-            RecordVariant.IsRecord:
-                RecRef.GetTable(RecordVariant);
-            RecordVariant.IsRecordRef:
-                RecRef := RecordVariant;
-            RecordVariant.IsRecordId:
-                begin
-                    RecID := RecordVariant;
-                    if RecID.TableNo = 0 then
-                        exit;
-                    if not RecRef.Get(RecID) then
-                        RecRef.Open(RecID.TableNo);
-                end;
-            else
-                exit;
-        end;
-
-        FieldRef := RecRef.field(RecRef.SystemIdNo);
-        LoadSentEmails(RecRef.Number, FieldRef.Value);
-    end;
-
-    procedure LoadSentEmails(TableID: Integer; SystemID: Guid)
-    begin
-        SetRelatedRecord(TableID, SystemID);
-        EmailViewer.RefreshSentMailForUser(EmailAccountId, NewerThanDate, SourceTableID, SourceSystemID, Rec);
-        Rec.SetCurrentKey("Date Time Sent");
-        NoSentEmails := Rec.IsEmpty();
-        Rec.Ascending(false);
-        CurrPage.Update(false);
+        if EmailImpl.GetRecordRef(RecordVariant, RecordRef) then
+            SetRelatedRecord(RecordRef.Number, RecordRef.Field(RecordRef.SystemIdNo).Value);
     end;
 
     var

@@ -21,7 +21,7 @@ codeunit 9046 "ABS URI Helper"
     [NonDebuggable]
     procedure ConstructUri(StorageBaseUrl: Text; StorageAccountName: Text; ContainerName: Text; BlobName: Text; Operation: Enum "ABS Operation"): Text
     var
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSFormatHelper: Codeunit "ABS Format Helper";
         ConstructedUrl: Text;
     begin
         TestConstructUrlParameter(StorageAccountName, ContainerName, BlobName, Operation);
@@ -42,10 +42,10 @@ codeunit 9046 "ABS URI Helper"
 
         // e.g. https://<StorageAccountName>.blob.core.windows.net/<Container>/<BlobName>?comp=copy&coppyid=<Id>
         if Operation = Operation::AbortCopyBlob then
-            FormatHelper.AppendToUri(ConstructedUrl, 'copyid', RetrieveFromOptionalUriParameters('copyid'));
+            ABSFormatHelper.AppendToUri(ConstructedUrl, 'copyid', RetrieveFromOptionalUriParameters('copyid'));
 
         if Operation in [Operation::Putblock, Operation::PutBlockFromURL] then
-            FormatHelper.AppendToUri(ConstructedUrl, 'blockid', RetrieveFromOptionalUriParameters('blockid'));
+            ABSFormatHelper.AppendToUri(ConstructedUrl, 'blockid', RetrieveFromOptionalUriParameters('blockid'));
 
         AddOptionalUriParameters(ConstructedUrl);
 
@@ -90,7 +90,7 @@ codeunit 9046 "ABS URI Helper"
     [NonDebuggable]
     local procedure AppendRestTypeIfNecessary(var ConstructedUrl: Text; Operation: Enum "ABS Operation")
     var
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSFormatHelper: Codeunit "ABS Format Helper";
         RestType: Text;
         RestTypeLbl: Label 'restype';
         ContainerRestTypeLbl: Label 'container', Locked = true;
@@ -112,13 +112,13 @@ codeunit 9046 "ABS URI Helper"
         end;
         if RestType = '' then
             exit;
-        FormatHelper.AppendToUri(ConstructedUrl, RestTypeLbl, RestType);
+        ABSFormatHelper.AppendToUri(ConstructedUrl, RestTypeLbl, RestType);
     end;
 
     [NonDebuggable]
     local procedure AppendCompValueIfNecessary(var ConstructedUrl: Text; Operation: Enum "ABS Operation")
     var
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSFormatHelper: Codeunit "ABS Format Helper";
         CompValue: Text;
         CompIdentifierLbl: Label 'comp', Locked = true;
         ListExtensionLbl: Label 'list', Locked = true;
@@ -192,7 +192,7 @@ codeunit 9046 "ABS URI Helper"
         end;
         if CompValue = '' then
             exit;
-        FormatHelper.AppendToUri(ConstructedUrl, CompIdentifierLbl, CompValue);
+        ABSFormatHelper.AppendToUri(ConstructedUrl, CompIdentifierLbl, CompValue);
     end;
 
     [NonDebuggable]
@@ -210,7 +210,7 @@ codeunit 9046 "ABS URI Helper"
     [NonDebuggable]
     local procedure AddOptionalUriParameters(var Uri: Text)
     var
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSFormatHelper: Codeunit "ABS Format Helper";
         ParameterIdentifier: Text;
         ParameterValue: Text;
     begin
@@ -220,7 +220,7 @@ codeunit 9046 "ABS URI Helper"
         foreach ParameterIdentifier in OptionalUriParameters.Keys do
             if not (ParameterIdentifier in ['copyid', 'blockid']) then begin
                 OptionalUriParameters.Get(ParameterIdentifier, ParameterValue);
-                FormatHelper.AppendToUri(Uri, ParameterIdentifier, ParameterValue);
+                ABSFormatHelper.AppendToUri(Uri, ParameterIdentifier, ParameterValue);
             end;
     end;
 

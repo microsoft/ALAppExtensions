@@ -1,3 +1,4 @@
+#if not CLEAN19
 codeunit 4056 "Upgrade BaseApp 18x"
 {
     ObsoleteState = Pending;
@@ -41,7 +42,6 @@ codeunit 4056 "Upgrade BaseApp 18x"
         UpgradePostCodeServiceKey();
         UpgradeIntrastatJnlLine(CountryCode);
         UpgradeWordTemplateTables();
-        UpgradeDocumentDefaultLineType();
     end;
 
     local procedure UpgradeAPIs()
@@ -112,13 +112,6 @@ codeunit 4056 "Upgrade BaseApp 18x"
             until SalesShipmentHeader.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetNewSalesShipmentLineUpgradeTag());
-    end;
-
-    local procedure LoadForwardLinks()
-    var
-        NamedForwardLink: Record "Named Forward Link";
-    begin
-        NamedForwardLink.Load();
     end;
 
     local procedure UpgradePowerBIOptin()
@@ -333,28 +326,5 @@ codeunit 4056 "Upgrade BaseApp 18x"
     begin
         exit(300000);
     end;
-
-    local procedure UpgradeDocumentDefaultLineType()
-    var
-        SalesReceivablesSetup: Record "Sales & Receivables Setup";
-        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
-        UpgradeTag: Codeunit "Upgrade Tag";
-        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetDocumentDefaultLineTypeUpgradeTag()) then
-            exit;
-
-        if SalesReceivablesSetup.Get() then begin
-            SalesReceivablesSetup."Document Default Line Type" := SalesReceivablesSetup."Document Default Line Type"::Item;
-            SalesReceivablesSetup.Modify();
-        end;
-
-        if PurchasesPayablesSetup.Get() then begin
-            PurchasesPayablesSetup."Document Default Line Type" := PurchasesPayablesSetup."Document Default Line Type"::Item;
-            PurchasesPayablesSetup.Modify();
-        end;
-
-        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetDocumentDefaultLineTypeUpgradeTag());
-    end;
 }
-
+#endif

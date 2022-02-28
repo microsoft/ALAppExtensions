@@ -18,18 +18,18 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
 
     procedure HasReadPermission(TableId: Integer): Boolean
     var
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
-        RecRef.Open(TableId);
-        exit(RecRef.ReadPermission())
+        RecordRef.Open(TableId);
+        exit(RecordRef.ReadPermission())
     end;
 
-    procedure Count(RecRef: RecordRef): Integer
+    procedure Count(RecordRef: RecordRef): Integer
     begin
-        exit(RecRef.Count())
+        exit(RecordRef.Count())
     end;
 
-    procedure ApplyRetentionPolicyAllRecordFilters(RetentionPolicySetup: Record "Retention Policy Setup"; var RecRef: RecordRef; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary): Boolean
+    procedure ApplyRetentionPolicyAllRecordFilters(RetentionPolicySetup: Record "Retention Policy Setup"; var RecordRef: RecordRef; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary): Boolean
     var
         RetentionPeriod: Record "Retention Period";
         RetentionPolicyLog: Codeunit "Retention Policy Log";
@@ -49,37 +49,37 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
         ValidateExpirationDate(ExpirationDate, RetentionPolicySetup."Table ID", RetentionPolicySetup."Table Caption");
         RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(AllRecordsFilterInfoLbl, RetentionPolicySetup."Table Id", Format(ExpirationDate, 0, 9)));
 
-        RecRef.Open(RetentionPolicySetup."Table ID");
-        if not RecRef.ReadPermission() then begin
-            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(MissingReadPermissionLbl, RecRef.Number, RecRef.Caption));
+        RecordRef.Open(RetentionPolicySetup."Table ID");
+        if not RecordRef.ReadPermission() then begin
+            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(MissingReadPermissionLbl, RecordRef.Number, RecordRef.Caption));
             exit(false);
         end;
-        ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(RetentionPolicySetup."Date Field No.", ExpirationDate, RecRef, 11, RetenPolFilteringParam."Null Date Replacement value");
-        if not RecRef.IsEmpty then
+        ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(RetentionPolicySetup."Date Field No.", ExpirationDate, RecordRef, 11, RetenPolFilteringParam."Null Date Replacement value");
+        if not RecordRef.IsEmpty then
             exit(true);
 
         RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(NoRecordsToDeleteLbl, RetentionPolicySetup."Table Id", RetentionPolicySetup."Table Caption"));
         exit(false);
     end;
 
-    procedure ApplyRetentionPolicySubSetFilters(RetentionPolicySetup: Record "Retention Policy Setup"; var RecRef: RecordRef; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary): Boolean
+    procedure ApplyRetentionPolicySubSetFilters(RetentionPolicySetup: Record "Retention Policy Setup"; var RecordRef: RecordRef; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary): Boolean
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
     begin
-        RecRef.Open(RetentionPolicySetup."Table ID");
-        if not RecRef.ReadPermission() then begin
-            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(MissingReadPermissionLbl, RecRef.Number, RecRef.Caption));
+        RecordRef.Open(RetentionPolicySetup."Table ID");
+        if not RecordRef.ReadPermission() then begin
+            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(MissingReadPermissionLbl, RecordRef.Number, RecordRef.Caption));
             exit(false);
         end;
 
         // Pass 1: Mark Records to delete
-        MarkRecordRefWithRecordsToDelete(RetentionPolicySetup, RecRef, RetenPolFilteringParam);
+        MarkRecordRefWithRecordsToDelete(RetentionPolicySetup, RecordRef, RetenPolFilteringParam);
         // Pass 2: UnMark Records to keep
-        UnMarkRecordRefWithRecordsToKeep(RetentionPolicySetup, RecRef, RetenPolFilteringParam);
+        UnMarkRecordRefWithRecordsToKeep(RetentionPolicySetup, RecordRef, RetenPolFilteringParam);
         // Delete remaining Marked records
-        RecRef.MarkedOnly(true);
+        RecordRef.MarkedOnly(true);
 
-        if not RecRef.IsEmpty then
+        if not RecordRef.IsEmpty then
             exit(true);
 
         RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(NoRecordsToDeleteLbl, RetentionPolicySetup."Table Id", RetentionPolicySetup."Table Caption"));
@@ -107,17 +107,17 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
             RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(MinExpirationDateErr, TableId, TableCaption, RetenPolAllowedTables.GetMandatoryMinimumRetentionDays(TableId)));
     end;
 
-    local procedure MarkRecordRefWithRecordsToDelete(RetentionPolicySetup: Record "Retention Policy Setup"; var RecRef: RecordRef; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary)
+    local procedure MarkRecordRefWithRecordsToDelete(RetentionPolicySetup: Record "Retention Policy Setup"; var RecordRef: RecordRef; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary)
     begin
-        SetMarksOnRecordRef(RetentionPolicySetup, RecRef, true, RetenPolFilteringParam);
+        SetMarksOnRecordRef(RetentionPolicySetup, RecordRef, true, RetenPolFilteringParam);
     end;
 
-    local procedure UnMarkRecordRefWithRecordsToKeep(RetentionPolicySetup: Record "Retention Policy Setup"; RecRef: RecordRef; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary)
+    local procedure UnMarkRecordRefWithRecordsToKeep(RetentionPolicySetup: Record "Retention Policy Setup"; RecordRef: RecordRef; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary)
     begin
-        SetMarksOnRecordRef(RetentionPolicySetup, RecRef, false, RetenPolFilteringParam);
+        SetMarksOnRecordRef(RetentionPolicySetup, RecordRef, false, RetenPolFilteringParam);
     end;
 
-    local procedure SetMarksOnRecordRef(RetentionPolicySetup: Record "Retention Policy Setup"; RecRef: RecordRef; MarkValue: boolean; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary);
+    local procedure SetMarksOnRecordRef(RetentionPolicySetup: Record "Retention Policy Setup"; RecordRef: RecordRef; MarkValue: boolean; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary);
     var
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
         RetentionPeriod: Record "Retention Period";
@@ -135,35 +135,35 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
                         ValidateExpirationDate(ExpirationDate, RetentionPolicySetupLine."Table ID", RetentionPolicySetupLine."Table Caption");
                     end;
                     // set filter for Table Filter in filtergroup 10
-                    SetRetentionPolicyLineTableFilter(RetentionPolicySetupLine, RecRef, 10);
+                    SetRetentionPolicyLineTableFilter(RetentionPolicySetupLine, RecordRef, 10);
                     // set filter for date in filtergroup 11
                     if MarkValue then
-                        ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(RetentionPolicySetupLine."Date Field No.", ExpirationDate, RecRef, 11, RetenPolFilteringParam."Null Date Replacement value")
+                        ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(RetentionPolicySetupLine."Date Field No.", ExpirationDate, RecordRef, 11, RetenPolFilteringParam."Null Date Replacement value")
                     else
                         // if ExpirationDate is >= today - 1, don't set filter and remove all records from temp
                         if ExpirationDate < Yesterday() then
-                            ApplyRetentionPolicy.SetWhereNewerExpirationDateFilter(RetentionPolicySetupLine."Date Field No.", ExpirationDate, RecRef, 11, RetenPolFilteringParam."Null Date Replacement value");
+                            ApplyRetentionPolicy.SetWhereNewerExpirationDateFilter(RetentionPolicySetupLine."Date Field No.", ExpirationDate, RecordRef, 11, RetenPolFilteringParam."Null Date Replacement value");
 
-                    if RecRef.FindSet(false, false) then
+                    if RecordRef.FindSet(false, false) then
                         repeat
-                            RecRef.Mark := MarkValue;
-                        until RecRef.Next() = 0;
+                            RecordRef.Mark := MarkValue;
+                        until RecordRef.Next() = 0;
                 end;
-                ClearFilterGroupOnRecRef(RecRef, 10);
-                ClearFilterGroupOnRecRef(RecRef, 11);
+                ClearFilterGroupOnRecRef(RecordRef, 10);
+                ClearFilterGroupOnRecRef(RecordRef, 11);
             until RetentionPolicySetupLine.Next() = 0;
     end;
 
-    local procedure SetRetentionPolicyLineTableFilter(var RetentionPolicySetupLine: Record "Retention Policy Setup Line"; var RecRef: RecordRef; FilterGroup: Integer);
+    local procedure SetRetentionPolicyLineTableFilter(var RetentionPolicySetupLine: Record "Retention Policy Setup Line"; var RecordRef: RecordRef; FilterGroup: Integer);
     begin
-        RecRef.FilterGroup := FilterGroup;
-        RecRef.SetView(RetentionPolicySetupLine.GetTableFilterView());
+        RecordRef.FilterGroup := FilterGroup;
+        RecordRef.SetView(RetentionPolicySetupLine.GetTableFilterView());
     end;
 
-    local procedure ClearFilterGroupOnRecRef(var RecRef: RecordRef; FilterGroup: Integer)
+    local procedure ClearFilterGroupOnRecRef(var RecordRef: RecordRef; FilterGroup: Integer)
     begin
-        RecRef.FilterGroup := FilterGroup;
-        RecRef.SetView('');
+        RecordRef.FilterGroup := FilterGroup;
+        RecordRef.SetView('');
     end;
 
     local procedure LogCategory(): Enum "Retention Policy Log Category"

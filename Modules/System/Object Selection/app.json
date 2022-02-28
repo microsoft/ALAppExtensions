@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Look up page for all of the application objects, including objects from installed extensions.",
     "description":  "",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -16,15 +16,15 @@
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
+    "platform":  "20.0.0.0",
     "idRanges":  [
                      {
                          "from":  358,
                          "to":  358
                      },
                      {
-                         "from":  217,
-                         "to":  217
+                         "from": 217,
+                         "to": 217
                      }
                  ],
     "target":  "OnPrem",

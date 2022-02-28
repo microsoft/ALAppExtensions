@@ -142,15 +142,12 @@ codeunit 4701 "VAT Group Helper Functions"
             exit(VATGroupSubmissionHeader2."Submitted On" > VATGroupSubmissionHeader."Submitted On");
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnRegister', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', false, false)]
     local procedure AddVATReportSetupWizard()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
-        Info: ModuleInfo;
-        AssistedSetupGroup: Enum "Assisted Setup Group";
-        VideoCategory: Enum "Video Category";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
-        AssistedSetup.Add(Info.Id(), Page::"VAT Group Setup Guide", AssistedSetupTxt, AssistedSetupGroup::GettingStarted, '', VideoCategory::Uncategorized, AssistedSetupHelpLinkTxt, AssistedSetupDescriptionTxt);
+        GuidedExperience.InsertAssistedSetup(AssistedSetupTxt, AssistedSetupTxt, AssistedSetupDescriptionTxt, 0, ObjectType::Page, Page::"VAT Group Setup Guide", "Assisted Setup Group"::GettingStarted, '', "Video Category"::Uncategorized, AssistedSetupHelpLinkTxt);
     end;
 
     internal procedure GetVATGroupDefaultBCVersion(): Enum "VAT Group BC Version"

@@ -86,6 +86,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                                     Hyperlink(PrivacyNoticeUrlTxt);
                                 end;
                             }
+#pragma warning disable AA0218
                             field(AgreePrivacy; InAgreementWithPolicy)
                             {
                                 ApplicationArea = Basic, Suite;
@@ -100,6 +101,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                                         NextEnabled := false;
                                 end;
                             }
+#pragma warning restore
                         }
                     }
                 }
@@ -115,6 +117,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                     group("Para2.1.1")
                     {
                         Caption = '';
+#pragma warning disable AA0218
                         field("Product Name"; TempHybridProductType."Display Name")
                         {
                             Caption = 'Product';
@@ -147,6 +150,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                                 NextEnabled := true;
                             end;
                         }
+#pragma warning restore                        
                     }
 
                     group("Para2.1.2")
@@ -165,6 +169,28 @@ page 4000 "Hybrid Cloud Setup Wizard"
                 }
             }
 
+            group(Step21)
+            {
+                Caption = '';
+                Visible = DelegatedAdminStepVisible;
+                group("Para21.1")
+                {
+                    Caption = 'Delegated Admin Setup';
+                    InstructionalText = 'You are signed in as a delegated administrator. You must get approval from a licensed user with SUPER permissions to run the cloud migration on their behalf. Send the following link to the licensed user so that they can grant or revoke the permission to run the cloud migration. Once your request is accepted, you can start this setup guide again.';
+                    group("Para22.1.1")
+                    {
+                        Caption = 'Link to approval page';
+                        field(ApprovalPageLinkTxt; ApprovalPageLinkTxt)
+                        {
+                            ShowCaption = false;
+                            ApplicationArea = Basic, Suite;
+                            Editable = false;
+                            MultiLine = true;
+                        }
+                    }
+                }
+            }
+
             group(Step3)
             {
                 Caption = '';
@@ -172,6 +198,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                 group("Para3.1")
                 {
                     Caption = 'Define your SQL database connection';
+#pragma warning disable AA0218
                     field("Sql Server Type"; "Sql Server Type")
                     {
                         Caption = 'SQL Configuration';
@@ -183,6 +210,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                             IsChanged := IsChanged or (Rec."Sql Server Type" <> xRec."Sql Server Type");
                         end;
                     }
+#pragma warning restore                    
                 }
                 group("Para3.2")
                 {
@@ -233,6 +261,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                         Caption = '';
                         InstructionalText = 'The data migration requires an integration runtime service. The runtime service provides a connection between your on-premises solution and your Business Central cloud tenant.';
 
+#pragma warning disable AA0218, AA0225
                         field(DownloadShir; DownloadShirLinkTxt)
                         {
                             ApplicationArea = Basic, Suite;
@@ -242,6 +271,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                                 Hyperlink(DownloadShirURLTxt);
                             end;
                         }
+#pragma warning restore
                         field(RuntimeInstructions2; '2. Install the integration runtime on your on-premises database server')
                         {
                             ApplicationArea = Basic, Suite;
@@ -263,12 +293,14 @@ page 4000 "Hybrid Cloud Setup Wizard"
                 group("4.2")
                 {
                     Caption = '';
+#pragma warning disable AA0218
                     field(RuntimeKey; RuntimeKeyTxt)
                     {
                         ApplicationArea = Basic, Suite;
                         Enabled = false;
                         Caption = 'Authentication Key:';
                     }
+#pragma warning restore
                 }
             }
             group(Step5)
@@ -291,6 +323,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                     group("Para5.1.2")
                     {
                         ShowCaption = false;
+#pragma warning disable AA0218
                         field(SelectAll; ChooseAll)
                         {
                             ApplicationArea = Basic, Suite;
@@ -304,7 +337,9 @@ page 4000 "Hybrid Cloud Setup Wizard"
                                 CurrPage.Update();
                             end;
                         }
+#pragma warning restore
                     }
+
                     group("Para5.1.3")
                     {
                         ShowCaption = false;
@@ -312,12 +347,23 @@ page 4000 "Hybrid Cloud Setup Wizard"
                         {
                             ShowCaption = false;
                             InstructionalText = 'If you have selected a company that does not exist in Business Central, it will automatically be created for you. This may take a few minutes.';
+
+                            field(Instruction; SetupAdditionalCompaniesInstructionTxt)
+                            {
+                                ShowCaption = false;
+                                MultiLine = true;
+                                Editable = false;
+                                Enabled = false;
+                                Style = Strong;
+                                ApplicationArea = All;
+                            }
                         }
                     }
                 }
             }
 
 #if not CLEAN19
+#pragma warning disable AA0218, AA0225
             group(Step6)
             {
                 Caption = '';
@@ -467,6 +513,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                     }
                 }
             }
+#pragma warning restore
 #endif
 
             group(StepFinish)
@@ -558,28 +605,9 @@ page 4000 "Hybrid Cloud Setup Wizard"
                 InFooterBar = true;
 
                 trigger OnAction()
-                var
-                    HybridCompany: Record "Hybrid Company";
-                    AssistedSetup: Codeunit "Assisted Setup";
-                    TelemetryDimensions: Dictionary of [Text, Text];
                 begin
-                    HybridCompany.SetRange(Replicate, true);
-
-                    TelemetryDimensions.Add('Category', IntelligentCloudTok);
-                    TelemetryDimensions.Add('NumberOfCompanies', Format(HybridCompany.Count(), 0, 9));
-                    TelemetryDimensions.Add('TotalMigrationSize', Format(HybridCompany.GetTotalMigrationSize(), 0, 9));
-
-                    Session.LogMessage('0000EUR', CompletedCloudMigrationSetupMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
-
-                    AssistedSetup.Complete(Page::"Hybrid Cloud Setup Wizard");
-                    Rec.Validate("Replication User", UserId());
-                    Rec.Modify();
-                    HybridCloudManagement.RestoreDefaultMigrationTableMappings(false);
+                    HybridCloudManagement.FinishCloudMigrationSetup(Rec);
                     CurrPage.Close();
-
-                    IncludeDataPerDatabaseOnFirstRun();
-
-                    HybridCloudManagement.CreateCompanies();
                 end;
             }
         }
@@ -587,9 +615,6 @@ page 4000 "Hybrid Cloud Setup Wizard"
 
     trigger OnInit()
     begin
-        if not HybridCloudManagement.CanSetupIntelligentCloud() then
-            Error(RunWizardPermissionErr);
-
         LoadTopBanners();
 
         if not Get() then begin
@@ -603,7 +628,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
     begin
-        IsSaas := EnvironmentInfo.IsSaaS();
+        IsSaas := EnvironmentInformation.IsSaaS();
 
         if GetFilter("Product ID") = 'TM' then begin
             IsIntelligentCloud := true;
@@ -624,7 +649,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
         if not (CloseAction = Action::OK) then
             exit(true);
@@ -632,10 +657,10 @@ page 4000 "Hybrid Cloud Setup Wizard"
         if not IsSaas then
             exit(true);
 
-        if not AssistedSetup.Exists(PAGE::"Hybrid Cloud Setup Wizard") then
+        if not GuidedExperience.Exists("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Hybrid Cloud Setup Wizard") then
             exit;
 
-        if AssistedSetup.IsComplete(PAGE::"Hybrid Cloud Setup Wizard") then begin
+        if GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, PAGE::"Hybrid Cloud Setup Wizard") then begin
             if Confirm(OpenCloudMigrationPageQst, true) then
                 Page.Run(page::"Intelligent Cloud Management");
             exit(true);
@@ -656,7 +681,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
         MediaResources_Done: Record "Media Resources";
         ClientTypeManagement: Codeunit "Client Type Management";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
         IsChanged: Boolean;
         TopBannerVisible: Boolean;
         IntroVisible: Boolean;
@@ -674,7 +699,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
         ChooseAll: Boolean;
         InAgreementWithPolicy: Boolean;
         IsIntelligentCloud: Boolean;
-        Step: Option Intro,ProductType,SQLServerType,IRInstructions,CompanySelection,ProductSpecificSettings,Schedule,Done;
+        Step: Option Intro,DelegatedAdminStep,ProductType,SQLServerType,IRInstructions,CompanySelection,ProductSpecificSettings,Schedule,Done;
         SqlConnectionStringTxt: Text;
         RuntimeNameTxt: Text;
         RuntimeKeyTxt: Text;
@@ -690,16 +715,17 @@ page 4000 "Hybrid Cloud Setup Wizard"
         NoCompaniesSelectedErr: Label 'You must select at least one company to replicate to continue.';
         DoneWithSignupMsg: Label 'Redirecting to SaaS Business Central solution.';
         NotificationIdTxt: Label 'ce917438-506c-4724-9b01-13c1b860e851', Locked = true;
-        RunWizardPermissionErr: Label 'You do not have permissions to run the cloud migration setup. You must be a licensed user, and your user account must have the SUPER permission set.';
         CannotEnableReplicationForCompanyErr: Label 'You must start the cloud migration from a different company than where you are currently signed in. Change the company to a different one.';
         OpenCloudMigrationPageQst: Label 'The migration has now been set up.\\ Would you like to open the Cloud Migration Management page to manage your data migrations?';
         BlankProductIdErr: Label 'The ID of the specified product is blank. If you see this message again, contact technical support.';
         BlankProductFoundTxt: Label 'Blank product ID found for %1.', Locked = true, Comment = '%1 - Record that was selected';
         SelectedProductDescription: Text;
         SelectedProductDescriptionVisible: Boolean;
-        IntelligentCloudTok: Label 'IntelligentCloud', Locked = true;
-        CompletedCloudMigrationSetupMsg: Label 'Completed Cloud Migration Setup.';
         ConfirmCloudMigrationExistingSystemQst: Label 'Do not set up cloud migration if the target environment is used for business.\\If the target environment includes even one company that is in production use, you risk that the cloud migration process overwrites any data in the database that is shared between the currently active company and any other companies in the same environment.\\Do you want to continue?';
+        DelegatedAdminStepVisible: Boolean;
+        ApprovalPageLinkTxt: Text;
+        SetupAdditionalCompaniesInstructionTxt: Label 'Do not set up cloud migration to migrate additional companies for a production environment that is already in use for business. You risk overwriting or deleting data that is shared across companies.';
+
 
     local procedure NextStep(Backwards: Boolean)
     var
@@ -713,12 +739,23 @@ page 4000 "Hybrid Cloud Setup Wizard"
         case TempStep of
             Step::Intro:
                 ShowIntroStep();
+            Step::DelegatedAdminStep:
+                begin
+                    if not ShowDelegatedAdminStep() then begin
+                        IncrementStep(Backwards, Step);
+                        NextStep(Backwards);
+                        exit;
+                    end;
+
+                    NextEnabled := false;
+                    ApprovalPageLinkTxt := GetUrl(ClientType::Web, CurrentCompany, ObjectType::Page, Page::"Hybrid DA Approval");
+                end;
             Step::ProductType:
                 ShowProductTypeStep(Backwards);
             Step::SQLServerType:
                 ShowSQLServerTypeStep(Backwards);
             Step::IRInstructions:
-                if (("Sql Server Type" = "Sql Server Type"::AzureSQL) or (RuntimeNameTxt <> '')) then begin
+                if (HybridCloudManagement.CanSkipIRSetup("Sql Server Type", RuntimeNameTxt)) then begin
                     IncrementStep(Backwards, Step);
                     NextStep(Backwards);
                     exit;
@@ -750,6 +787,16 @@ page 4000 "Hybrid Cloud Setup Wizard"
         CurrPage.Update(true);
     end;
 
+    local procedure ShowDelegatedAdminStep(): Boolean;
+    var
+        DelegatedAdminStepVisible: Boolean;
+    begin
+        DelegatedAdminStepVisible := HybridCloudManagement.CheckNeedsApprovalToRunCloudMigration();
+
+        ResetWizardControls();
+        exit(DelegatedAdminStepVisible);
+    end;
+
     local procedure LoadTopBanners()
     begin
         if MediaRepositoryStandard.GET('AssistedSetup-NoText-400px.png', FORMAT(ClientTypeManagement.GetCurrentClientType())) and
@@ -774,7 +821,9 @@ page 4000 "Hybrid Cloud Setup Wizard"
         SQLServerTypeVisible := false;
         IRInstructionsVisible := false;
         CompanySelectionVisible := false;
+#pragma warning disable AA0206
         ProductSpecificSettingsVisible := false;
+#pragma warning restore
         ScheduleVisible := false;
         DoneVisible := false;
     end;
@@ -831,7 +880,9 @@ page 4000 "Hybrid Cloud Setup Wizard"
     local procedure ShowProductSpecificSettingsPage()
     begin
         ResetWizardControls();
+#pragma warning disable AA0206
         ProductSpecificSettingsVisible := true;
+#pragma warning restore
         NextEnabled := true;
     end;
 
@@ -868,14 +919,5 @@ page 4000 "Hybrid Cloud Setup Wizard"
             Step -= 1
         else
             Step += 1;
-    end;
-
-    local procedure IncludeDataPerDatabaseOnFirstRun()
-    var
-        HybridReplicationDetail: Record "Hybrid Replication Detail";
-    begin
-        HybridReplicationDetail.SetRange(Status::Successful);
-        if not HybridReplicationDetail.FindFirst() then
-            HybridCloudManagement.EnableDataPerDatabaseTables()
     end;
 }

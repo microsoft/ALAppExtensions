@@ -31,14 +31,23 @@ codeunit 135030 "Temp Blob Test"
     procedure CreateStreamReturnTest()
     var
         TempBlob: Codeunit "Temp Blob";
+        BlobInStream: InStream;
+        OutputText: Text;
     begin
         // [SCENARIO] Streams (InStream and OutStream) can be created and used.
 
         // Verify the module highest permission level is sufficient ignore non Tables
         PermissionsMock.Set('Blob Storage Exec');
 
+        // [GIVEN] A BLOB with sample text
         WriteSampleTextToBlob(TempBlob);
-        Assert.IsTrue(BlobContentIsEqualToSampleTextReturn(TempBlob), 'Same text was expected.');
+
+        // [WHEN] The content of the BLOB is retrieved
+        BlobInStream := TempBlob.CreateInStream();
+        BlobInStream.ReadText(OutputText);
+
+        // [THEN] The content matches the sample text
+        Assert.AreEqual(SampleTxt, OutputText, 'Same text was expected.');
     end;
 
     [Test]
@@ -100,7 +109,6 @@ codeunit 135030 "Temp Blob Test"
         // [THEN] Incorrect result.
         Assert.AreNotEqual(SampleTxt, OutputText, 'Different text was expected.');
     end;
-
 
     [Test]
     procedure ReadFromRecordTest()
@@ -318,15 +326,4 @@ codeunit 135030 "Temp Blob Test"
         BlobInStream.ReadText(OutputText);
         exit(SampleTxt = OutputText);
     end;
-
-    local procedure BlobContentIsEqualToSampleTextReturn(TempBlob: Codeunit "Temp Blob"): Boolean
-    var
-        BlobInStream: InStream;
-        OutputText: Text;
-    begin
-        BlobInStream := TempBlob.CreateInStream();
-        BlobInStream.ReadText(OutputText);
-        exit(SampleTxt = OutputText);
-    end;
 }
-

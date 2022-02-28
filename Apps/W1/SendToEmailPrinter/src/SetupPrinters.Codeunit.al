@@ -131,22 +131,14 @@ codeunit 2650 "Setup Printers"
         PrinterUnit: Enum "Printer Unit";
     begin
         //Converting mm/in to hundredths of  a mm/in
-        PaperTray.Add('width', EmailPrinterSettings."Paper Height" * 100);
-        PaperTray.Add('height', EmailPrinterSettings."Paper Width" * 100);
+        PaperTray.Add('height', EmailPrinterSettings."Paper Height" * 100);
+        PaperTray.Add('width', EmailPrinterSettings."Paper Width" * 100);
         if EmailPrinterSettings."Paper Unit" = EmailPrinterSettings."Paper Unit"::Millimeters then
             PaperTray.Add('units', PrinterUnit::HundredthsOfAMillimeter.AsInteger());
         if EmailPrinterSettings."Paper Unit" = EmailPrinterSettings."Paper Unit"::Inches then
             PaperTray.Add('units', PrinterUnit::Display.AsInteger());
     end;
-
-    [Obsolete('SMTP setup is replaced with the Email Module. Please, use EmailAccount.IsAnyAccountRegistered()', '17.0')]
-    internal procedure IsSMTPSetup(): Boolean
-    var
-        SMTPMailSetup: Record "SMTP Mail Setup";
-    begin
-        exit(SMTPMailSetup.HasSetup() and MailManagement.IsSMTPEnabled())
-    end;
-
+    
     procedure LearnMoreAction(PrivacyNotification: Notification)
     begin
         Hyperlink(PrintPrivacyUrlTxt);

@@ -23,15 +23,5 @@ pageextension 11778 "Blanket Sales Ord. Subform CZL" extends "Blanket Sales Orde
                 Visible = false;
             }
         }
-#if CLEAN19
-        modify("Tax Area Code")
-        {
-            Visible = false;
-        }
-        modify("Tax Group Code")
-        {
-            Visible = false;
-        }
-#endif
     }
 }

@@ -4,6 +4,7 @@ Use this module to:
 - Retrieve settings for a user.
 - Add additional settings for a user.
 - Display user-specific settings.
+
 # Public Objects
 ## User Settings (Table 9172)
 

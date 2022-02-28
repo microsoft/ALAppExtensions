@@ -1,5 +1,9 @@
+#if not CLEAN20
 page 1080 "MS - Wallet Merchant Setup"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     Caption = 'Microsoft Pay Payments Setup';
     DataCaptionExpression = Description;
     InsertAllowed = false;
@@ -201,6 +205,5 @@ page 1080 "MS - Wallet Merchant Setup"
         ExchangeWithExternalServicesMsg: Label 'This extension uses the Microsoft Pay Payments service. By enabling this extension, you will be subject to the applicable terms, conditions, and privacy policies that Microsoft Pay Payments may make available.\\When you establish a connection through the Microsoft Pay Payments extension, customer data from the invoice, such as invoice number, due date, amount, and currency, as well as your Microsoft Pay Payments account ID, will be inserted into the Microsoft Pay Payments payment link on invoices and sent to Microsoft Pay Payments when the customer chooses the link to pay. This data is used to ensure that the link contains enough information for your customers to pay the invoice, as well as for Microsoft Pay Payments to identify you as the recipient of a payment using the link.\\By installing this solution, you agree for this limited set of data to be sent to the Microsoft Pay Payments service. Note that you can disable or uninstall the Microsoft Pay Payments extension at any time to discontinue the functionality.';
         DisableEnableConfirm: Boolean;
         IsInvApp: Boolean;
-
 }
-
+#endif

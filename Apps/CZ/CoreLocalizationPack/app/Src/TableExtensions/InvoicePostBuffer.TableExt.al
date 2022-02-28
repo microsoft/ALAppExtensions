@@ -4,6 +4,18 @@ tableextension 11722 "Invoice Post. Buffer CZL" extends "Invoice Post. Buffer"
 {
     fields
     {
+        field(11773; "Ext. Amount CZL"; Decimal)
+        {
+            AutoFormatType = 1;
+            Caption = 'Ext. Amount';
+            DataClassification = SystemMetadata;
+        }
+        field(11774; "Ext. Amount Incl. VAT CZL"; Decimal)
+        {
+            AutoFormatType = 1;
+            Caption = 'Ext. Amount Including VAT';
+            DataClassification = SystemMetadata;
+        }
         field(11780; "VAT Date CZL"; Date)
         {
             Caption = 'VAT Date';

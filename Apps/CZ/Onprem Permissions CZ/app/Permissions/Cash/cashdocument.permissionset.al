@@ -14,16 +14,6 @@ permissionset 11703 "CASH-DOCUMENT"
     ObsoleteReason = 'Moved to Cash Desk Localization for Czech.';
     ObsoleteTag = '18.0';
 
-#if CLEAN17
     Permissions = tabledata "Company Information" = R;
-#else
-    Permissions = tabledata "Cash Desk Cue" = R,
-                  tabledata "Cash Desk Event" = R,
-                  tabledata "Cash Desk Report Selections" = R,
-                  tabledata "Cash Desk User" = R,
-                  tabledata "Cash Document Header" = RIMD,
-                  tabledata "Cash Document Line" = RIMD,
-                  tabledata "Currency Nominal Value" = R;
-#endif
 }
 #endif

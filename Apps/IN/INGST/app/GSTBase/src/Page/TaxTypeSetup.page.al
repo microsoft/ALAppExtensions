@@ -24,10 +24,10 @@ page 18008 "Tax Type Setup"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the code of the Cess tax type.';
                 }
-                field("Generate E-Inv. on Ser. Post";Rec."Generate E-Inv. on Ser. Post")
+                field("Generate E-Inv. on Ser. Post"; Rec."Generate E-Inv. on Ser. Post")
                 {
-                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the boolean for Generate E-Inv. on Ser. Post';
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the function through which e-invoice will be generated at the time of service post.';
                 }
             }
         }

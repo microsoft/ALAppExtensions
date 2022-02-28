@@ -47,8 +47,9 @@ codeunit 18080 "GST Purchase Subscribers"
             end;
     end;
 
-
+#if not CLEAN20      
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnBeforeUpdateLocationCode', '', false, false)]
+    [Obsolete('Not actual after Non Inventoriable Item refactoring', '20.0')]
     local procedure HandledOnBeforeUpdateLocationCode(var PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean)
     var
         Item: Record Item;
@@ -57,6 +58,7 @@ codeunit 18080 "GST Purchase Subscribers"
             if (Item."HSN/SAC Code" <> '') and (Item."GST Group Code" <> '') then
                 IsHandled := true;
     end;
+#endif
 
     //CopyDocument 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterCopyPostedPurchInvoice', '', false, false)]
@@ -144,11 +146,11 @@ codeunit 18080 "GST Purchase Subscribers"
     end;
 
     //Purchase Quote to Order
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Quote to Order", 'OnBeforeInsertPurchOrderHeader', '', false, false)]
-    local procedure CopyQuoteInfotoOrder(var PurchOrderHeader: Record "Purchase Header"; PurchQuoteHeader: Record "Purchase Header")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Quote to Order", 'OnCreatePurchHeaderOnBeforePurchOrderHeaderModify', '', false, false)]
+    local procedure CopyQuoteInfotoOrder(var PurchOrderHeader: Record "Purchase Header"; PurchHeader: Record "Purchase Header")
     begin
-        PurchOrderHeader."Location GST Reg. No." := PurchQuoteHeader."Location GST Reg. No.";
-        PurchOrderHeader."Location State Code" := PurchQuoteHeader."Location State Code";
+        PurchOrderHeader."Location GST Reg. No." := PurchHeader."Location GST Reg. No.";
+        PurchOrderHeader."Location State Code" := PurchHeader."Location State Code";
     end;
 
     //Purchase Header Validations
@@ -158,7 +160,7 @@ codeunit 18080 "GST Purchase Subscribers"
         VendorInfo(PurchaseHeader, Vendor);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNo', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType', '', false, false)]
     local procedure CopyPayToVendorInfo(var PurchaseHeader: Record "Purchase Header"; Vendor: Record Vendor)
     begin
         PayToVendorInfo(PurchaseHeader, Vendor);

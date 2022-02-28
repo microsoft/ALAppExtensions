@@ -12,64 +12,64 @@ codeunit 3916 "Reten. Pol. Delete. Impl." implements "Reten. Pol. Deleting"
         LimitNumberOfRecordsLbl: Label 'Limited the number of records to delete for table %1, %2 to %3 records. The maximum number of records that can be deleted at the same time is %4, and %5 records were previously deleted in one or more tables.', Comment = '%1 = a id of a table (integer), %2 = the caption of the table, %3, %4, %5 = integer';
         MissingReadPermissionLbl: Label 'Unable to check number of records to delete due to missing read permission for table %1, %2', Comment = '%1 = table number, %2 = table caption';
 
-    procedure DeleteRecords(var RecRef: RecordRef; var RetenPolDeletingParam: Record "Reten. Pol. Deleting Param" temporary);
+    procedure DeleteRecords(var RecordRef: RecordRef; var RetenPolDeletingParam: Record "Reten. Pol. Deleting Param" temporary);
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
     begin
-        if not RecRef.ReadPermission then
-            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(MissingReadPermissionLbl, RecRef.Number, RecRef.Caption))
+        if not RecordRef.ReadPermission then
+            RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(MissingReadPermissionLbl, RecordRef.Number, RecordRef.Caption))
         else
-            if not RecRef.IsEmpty then
-                if (RecRef.Count() > (RetenPolDeletingParam."Max. Number of Rec. To Delete" + NumberOfRecordsToDeleteBuffer())) then begin
+            if not RecordRef.IsEmpty then
+                if (RecordRef.Count() > (RetenPolDeletingParam."Max. Number of Rec. To Delete" + NumberOfRecordsToDeleteBuffer())) then begin
                     RetentionPolicyLog.LogWarning(LogCategory(), StrSubstNo(TooManyRecordsToDeleteLbl, RetenPolDeletingParam."Total Max. Nr. of Rec. to Del."));
-                    LimitRecordsToBeDeleted(RecRef, RetenPolDeletingParam."Skip Event Rec. Limit Exceeded", RetenPolDeletingParam."Max. Number of Rec. To Delete", RetenPolDeletingParam."Total Max. Nr. of Rec. to Del.");
+                    LimitRecordsToBeDeleted(RecordRef, RetenPolDeletingParam."Skip Event Rec. Limit Exceeded", RetenPolDeletingParam."Max. Number of Rec. To Delete", RetenPolDeletingParam."Total Max. Nr. of Rec. to Del.");
                 end;
         // if indirect permissions, raise event
         // if direct permission or no permission, delete
         //  -> if no permission, delete and let error bubble up
         if not RetenPolDeletingParam."Indirect Permission Required" then
-            RecRef.DeleteAll(true);
+            RecordRef.DeleteAll(true);
         RetenPolDeletingParam."Skip Event Indirect Perm. Req." := not RetenPolDeletingParam."Indirect Permission Required";
-        RecRef.Close();
+        RecordRef.Close();
     end;
 
-    local procedure LimitRecordsToBeDeleted(var RecRef: RecordRef; var SkipOnApplyRetentionPolicyRecordLimitExceeded: Boolean; MaxNumberOfRecordsToDelete: Integer; TotalMaxNumberOfRecordsToDelete: Integer)
+    local procedure LimitRecordsToBeDeleted(var RecordRef: RecordRef; var SkipOnApplyRetentionPolicyRecordLimitExceeded: Boolean; MaxNumberOfRecordsToDelete: Integer; TotalMaxNumberOfRecordsToDelete: Integer)
     var
         RetentionPolicyLog: Codeunit "Retention Policy Log";
     begin
-        RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(LimitNumberOfRecordsLbl, RecRef.Number, RecRef.Caption, MaxNumberOfRecordsToDelete, TotalMaxNumberOfRecordsToDelete, TotalMaxNumberOfRecordsToDelete - MaxNumberOfRecordsToDelete));
+        RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(LimitNumberOfRecordsLbl, RecordRef.Number, RecordRef.Caption, MaxNumberOfRecordsToDelete, TotalMaxNumberOfRecordsToDelete, TotalMaxNumberOfRecordsToDelete - MaxNumberOfRecordsToDelete));
 
-        if RecRef.MarkedOnly() then
-            UnmarkRecordsToLimit(RecRef, MaxNumberOfRecordsToDelete)
+        if RecordRef.MarkedOnly() then
+            UnmarkRecordsToLimit(RecordRef, MaxNumberOfRecordsToDelete)
         else
-            MarkRecordsToLimit(RecRef, MaxNumberOfRecordsToDelete);
+            MarkRecordsToLimit(RecordRef, MaxNumberOfRecordsToDelete);
 
         SkipOnApplyRetentionPolicyRecordLimitExceeded := false;
     end;
 
-    local procedure UnmarkRecordsToLimit(var RecRef: RecordRef; StartRecordIndex: Integer)
+    local procedure UnmarkRecordsToLimit(var RecordRef: RecordRef; StartRecordIndex: Integer)
     begin
-        RecRef.FindSet();
-        RecRef.Next(StartRecordIndex);
-        RecRef.MarkedOnly(false);
+        RecordRef.FindSet();
+        RecordRef.Next(StartRecordIndex);
+        RecordRef.MarkedOnly(false);
         repeat
-            RecRef.Mark(false);
-        until RecRef.Next() = 0;
-        RecRef.MarkedOnly(true);
+            RecordRef.Mark(false);
+        until RecordRef.Next() = 0;
+        RecordRef.MarkedOnly(true);
     end;
 
-    local procedure MarkRecordsToLimit(var RecRef: RecordRef; RecordCount: Integer)
+    local procedure MarkRecordsToLimit(var RecordRef: RecordRef; RecordCount: Integer)
     var
         i: integer;
     begin
-        RecRef.FindSet();
+        RecordRef.FindSet();
         repeat
-            RecRef.Mark(true);
+            RecordRef.Mark(true);
             i += 1;
-            if RecRef.Next() = 0 then
+            if RecordRef.Next() = 0 then
                 i := RecordCount;
         until i >= RecordCount;
-        RecRef.MarkedOnly(true);
+        RecordRef.MarkedOnly(true);
     end;
 
     local procedure NumberOfRecordsToDeleteBuffer(): Integer

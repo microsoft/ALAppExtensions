@@ -13,6 +13,7 @@ codeunit 31018 "Rel. Purch.Adv.Letter Doc. CZZ"
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
         ApprovalProcessReleaseErr: Label 'This document can only be released when the approval process is complete.';
         ApprovalProcessReopenErr: Label 'The approval process must be cancelled or completed to reopen this document.';
+        NegativeAmountErr: Label 'must not be negative';
 
     local procedure Code()
     var
@@ -34,6 +35,8 @@ codeunit 31018 "Rel. Purch.Adv.Letter Doc. CZZ"
 
         PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT", "Amount Including VAT (LCY)");
         PurchAdvLetterHeaderCZZ.TestField("Amount Including VAT");
+        if PurchAdvLetterHeaderCZZ."Amount Including VAT" < 0 then
+            PurchAdvLetterHeaderCZZ.FieldError("Amount Including VAT", NegativeAmountErr);
         if PurchAdvLetterHeaderCZZ."Variable Symbol" = '' then begin
             VariableSymbol := BankOperationsFunctionsCZL.CreateVariableSymbol(PurchAdvLetterHeaderCZZ."Vendor Adv. Letter No.");
             OnUpdateVariableSymbol(PurchAdvLetterHeaderCZZ, VariableSymbol);

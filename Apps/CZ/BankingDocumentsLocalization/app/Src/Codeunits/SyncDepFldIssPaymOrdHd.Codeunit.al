@@ -1,6 +1,6 @@
 #if not CLEAN19
 #pragma warning disable AL0432
-codeunit 31341 "Sync.Dep.Fld-IssPaymOrdHd CZB"
+codeunit 31341 "Sync.Dep.Fld-IssPaymOrdHd CZB"
 {
     Access = Internal;
     Permissions = tabledata "Issued Payment Order Header" = rimd,

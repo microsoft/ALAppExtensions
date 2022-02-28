@@ -84,7 +84,7 @@ codeunit 2752 "Universal Print Graph Helper"
     begin
         BodyConfigJsonObject.Add('outputBin', UniversalPrinterSettings."Paper Tray");
         if UniversalPrinterSettings.Landscape then
-            BodyConfigJsonObject.Add('orientation', Format(Enum::"Universal Printer Orientation"::landscape));
+            BodyConfigJsonObject.Add('orientation', GetOrientationName(Enum::"Universal Printer Orientation"::landscape));
 
         BodyJsonObject.Add('configuration', BodyConfigJsonObject);
         if not InvokeRequest(GetGraphPrintShareJobsUrl(UniversalPrinterSettings."Print Share ID"), 'POST', Format(BodyJsonObject), ResponseContent, ErrorMessage) then
@@ -108,6 +108,11 @@ codeunit 2752 "Universal Print Graph Helper"
             exit(false);
 
         exit(true);
+    end;
+
+    local procedure GetOrientationName(Orientation: Enum "Universal Printer Orientation"): Text
+    begin
+        exit(Orientation.Names.Get(Orientation.Ordinals.IndexOf(Orientation.AsInteger())));
     end;
 
     procedure CreateUploadSessionRequest(PrintShareId: Text; FileName: Text; DocumentType: Text; Size: BigInteger; JobId: Text; DocumentId: Text; var UploadUrl: Text; var ErrorMessage: Text): Boolean

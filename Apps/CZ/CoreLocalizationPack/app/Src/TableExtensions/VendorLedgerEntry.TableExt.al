@@ -112,6 +112,20 @@ tableextension 11721 "Vendor Ledger Entry CZL" extends "Vendor Ledger Entry"
         OnAfterUpdateBankInfoCZL(Rec);
     end;
 
+    procedure CalcSuggestedAmountToApplyCZL(): Decimal
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        exit(CrossApplicationMgtCZL.CalcSuggestedAmountToApplyVendorLedgerEntry(Rec));
+    end;
+
+    procedure DrillDownSuggestedAmountToApplyCZL()
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        CrossApplicationMgtCZL.DrillDownSuggestedAmountToApplyVendorLedgerEntry(Rec);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateBankInfoCZL(var VendorLedgerEntry: Record "Vendor Ledger Entry")
     begin

@@ -59,6 +59,8 @@ codeunit 148103 "SAF-T XML Tests"
         // TFS 350284: All xnl nodes predefined with 'n1:'
         // TFS 350284: Both sales and purchase VAT Entry information exports 
         // TFS 372962: Customer and vendor with zero balance should be presented
+        // TFS 425270: Xml nodes values are encoded. The value '<&' must be exported as '&amp;lt;&amp;amp;'
+        // TFS 427679: Export all bank account data
         VerifyMasterDataStructureWithStdAccMapping(TempXMLBuffer, SAFTExportHeader."Mapping Range Code", NumberOfMasterDataRecords);
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -1209,7 +1211,9 @@ codeunit 148103 "SAF-T XML Tests"
                 TempXMLBuffer, Customer.Contact, Customer."Phone No.", Customer."Fax No.", Customer."E-Mail", Customer."Home Page");
             CustomerBankAccount.SetRange("Customer No.", Customer."No.");
             CustomerBankAccount.FindFirst();
-            VerifyCompanyBankAccount(TempXMLBuffer, CustomerBankAccount."Bank Account No.");
+            VerifyCompanyBankAccount(
+                TempXMLBuffer, CustomerBankAccount.IBAN, CustomerBankAccount."Bank Account No.", CustomerBankAccount.Name,
+                CustomerBankAccount."Bank Clearing Code", CustomerBankAccount."SWIFT Code");
             SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:CustomerID', Customer."No.");
             CustomerPostingGroup.Get(Customer."Customer Posting Group");
             SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AccountID', CustomerPostingGroup."Receivables Account");
@@ -1246,7 +1250,9 @@ codeunit 148103 "SAF-T XML Tests"
                 TempXMLBuffer, Vendor.Contact, Vendor."Phone No.", Vendor."Fax No.", Vendor."E-Mail", Vendor."Home Page");
             VendorBankAccount.SetRange("Vendor No.", Vendor."No.");
             VendorBankAccount.FindFirst();
-            VerifyCompanyBankAccount(TempXMLBuffer, VendorBankAccount."Bank Account No.");
+            VerifyCompanyBankAccount(
+                TempXMLBuffer, VendorBankAccount.IBAN, VendorBankAccount."Bank Account No.", VendorBankAccount.Name,
+                VendorBankAccount."Bank Clearing Code", VendorBankAccount."SWIFT Code");
             SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:SupplierID', Vendor."No.");
             VendorPostingGroup.Get(Vendor."Vendor Posting Group");
             SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AccountID', VendorPostingGroup."Payables Account");
@@ -1304,7 +1310,7 @@ codeunit 148103 "SAF-T XML Tests"
             SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AnalysisType', Dimension."SAF-T Analysis Type");
             SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AnalysisTypeDescription', Dimension.Name);
             SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AnalysisID', DimensionValue.Code);
-            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AnalysisIDDescription', DimensionValue.Name);
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AnalysisIDDescription', '&amp;lt;&amp;amp;');
         until DimensionValue.Next() = 0;
     end;
 
@@ -1339,9 +1345,13 @@ codeunit 148103 "SAF-T XML Tests"
             TempXMLBuffer, Employee."First Name", Employee."Last Name", Employee."Phone No.",
              Employee."Fax No.", Employee."E-Mail", Employee."Mobile Phone No.");
         VerifyTaxRegistration(TempXMLBuffer, CompanyInformation);
-        VerifyCompanyBankAccount(TempXMLBuffer, CompanyInformation."Bank Account No.");
+        VerifyCompanyBankAccount(
+            TempXMLBuffer, CompanyInformation.IBAN, CompanyInformation."Bank Account No.", CompanyInformation."Bank Name",
+            CompanyInformation."Bank Branch No.", CompanyInformation."SWIFT Code");
         BankAccount.FindFirst();
-        VerifyCompanyBankAccount(TempXMLBuffer, BankAccount."Bank Account No.");
+        VerifyCompanyBankAccount(
+            TempXMLBuffer, BankAccount.IBAN, BankAccount."Bank Account No.", BankAccount.Name,
+            BankAccount."Bank Clearing Code", BankAccount."SWIFT Code");
     end;
 
     local procedure VerifyAddress(var TempXMLBuffer: Record "XML Buffer" temporary; StreetName: Text; City: Text; PostCode: Code[20]; CountryRegionCode: Code[20])
@@ -1417,12 +1427,16 @@ codeunit 148103 "SAF-T XML Tests"
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:TaxAuthority', 'Skatteetaten');
     end;
 
-    local procedure VerifyCompanyBankAccount(var TempXMLBuffer: Record "XML Buffer" temporary; BankAccountNumber: Text[30])
+    local procedure VerifyCompanyBankAccount(var TempXMLBuffer: Record "XML Buffer" temporary; IBAN: Text; BankAccountNumber: Text[30]; BankAccName: Text; SortCode: Text; SWIFT: Text)
     var
         SAFTExportMgt: Codeunit "SAF-T Export Mgt.";
     begin
         SAFTTestHelper.AssertElementName(TempXMLBuffer, 'n1:BankAccount');
+        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:IBANNumber', IBAN);
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:BankAccountNumber', BankAccountNumber);
+        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:BankAccountName', BankAccName);
+        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:SortCode', SortCode);
+        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:BIC', SWIFT);
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:CurrencyCode', SAFTExportMgt.GetISOCurrencyCode(''));
     end;
 

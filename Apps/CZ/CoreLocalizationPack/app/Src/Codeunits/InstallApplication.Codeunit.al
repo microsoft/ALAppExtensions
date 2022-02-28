@@ -1420,17 +1420,9 @@ codeunit 11748 "Install Application CZL"
             StatutoryReportingSetupCZL."VIES Decl. Auth. Employee No." := StatReportingSetup."VIES Decl. Auth. Employee No.";
             StatutoryReportingSetupCZL."VIES Decl. Filled Employee No." := StatReportingSetup."VIES Decl. Filled by Empl. No.";
             StatutoryReportingSetupCZL."VIES Number of Lines" := StatReportingSetup."VIES Number of Lines";
-#if CLEAN17
             if StatReportingSetup."VIES Declaration Report No." = 31060 then
-#else
-            if StatReportingSetup."VIES Declaration Report No." = Report::"VIES Declaration" then
-#endif            
                 StatutoryReportingSetupCZL."VIES Declaration Report No." := Report::"VIES Declaration CZL";
-#if CLEAN17
             if (StatReportingSetup."VIES Decl. Exp. Obj. Type" = StatReportingSetup."VIES Decl. Exp. Obj. Type"::Report) and (StatReportingSetup."VIES Decl. Exp. Obj. No." = 31066) then
-#else
-            if (StatReportingSetup."VIES Decl. Exp. Obj. Type" = StatReportingSetup."VIES Decl. Exp. Obj. Type"::Report) and (StatReportingSetup."VIES Decl. Exp. Obj. No." = Report::"VIES Declaration Export") then
-#endif
                 StatutoryReportingSetupCZL."VIES Declaration Export No." := Xmlport::"VIES Declaration CZL";
             StatutoryReportingSetupCZL."Transaction Type Mandatory" := StatReportingSetup."Transaction Type Mandatory";
             StatutoryReportingSetupCZL."Transaction Spec. Mandatory" := StatReportingSetup."Transaction Spec. Mandatory";
@@ -1616,11 +1608,7 @@ codeunit 11748 "Install Application CZL"
 
     local procedure ConvertVATStatementLineDeprEnumValues(var VATStatementLine: Record "VAT Statement Line");
     begin
-#if CLEAN17
         if VATStatementLine.Type = 4 then //4 = VATStatementLine.Type::Formula
-#else
-        if VATStatementLine.Type = VATStatementLine.Type::Formula then
-#endif
             VATStatementLine.Type := VATStatementLine.Type::"Formula CZL";
     end;
 
@@ -1945,6 +1933,8 @@ codeunit 11748 "Install Application CZL"
         if PurchaseLine.FindSet() then
             repeat
                 PurchaseLine."Negative CZL" := PurchaseLine.Negative;
+                PurchaseLine."Ext. Amount CZL" := PurchaseLine."Ext. Amount (LCY)";
+                PurchaseLine."Ext. Amount Incl. VAT CZL" := PurchaseLine."Ext.Amount Including VAT (LCY)";
                 PurchaseLine."Physical Transfer CZL" := PurchaseLine."Physical Transfer";
                 PurchaseLine."Tariff No. CZL" := PurchaseLine."Tariff No.";
                 PurchaseLine."Statistic Indication CZL" := PurchaseLine."Statistic Indication";
@@ -2047,7 +2037,7 @@ codeunit 11748 "Install Application CZL"
 
     local procedure CopyTariffNumber();
     var
-#if CLEAN19
+#if CLEAN18
         UnitOfMeasure: Record "Unit of Measure";
 #endif
         TariffNumber: Record "Tariff Number";
@@ -3057,11 +3047,7 @@ codeunit 11748 "Install Application CZL"
             repeat
                 PrevGenJournalTemplate := GenJournalTemplate;
                 GenJournalTemplate."Test Report ID" := Report::"General Journal - Test CZL";
-#if CLEAN17
                 if GenJournalTemplate."Posting Report ID" = 11763 then
-#else
-                if GenJournalTemplate."Posting Report ID" = Report::"General Ledger Document" then
-#endif
                     GenJournalTemplate."Posting Report ID" := Report::"General Ledger Document CZL";
                 if (GenJournalTemplate."Test Report ID" <> PrevGenJournalTemplate."Test Report ID") or (GenJournalTemplate."Posting Report ID" <> PrevGenJournalTemplate."Posting Report ID") then
                     GenJournalTemplate.Modify(false);
@@ -3077,130 +3063,59 @@ codeunit 11748 "Install Application CZL"
             repeat
                 PrevReportSelections := ReportSelections;
                 case ReportSelections."Report ID" of
-#if CLEAN17
                     31094,
-#else
-                    Report::"Sales - Quote CZ",
-#endif
                     Report::"Standard Sales - Quote":
                         ReportSelections."Report ID" := Report::"Sales Quote CZL";
-#if CLEAN17
                     31095,
-#else
-                    Report::"Order Confirmation CZ",
-#endif
                     Report::"Standard Sales - Order Conf.":
                         ReportSelections."Report ID" := Report::"Sales Order Confirmation CZL";
-#if CLEAN17
                     31096,
-#else
-                    Report::"Sales - Invoice CZ",
-#endif
                     Report::"Standard Sales - Invoice":
                         ReportSelections."Report ID" := Report::"Sales Invoice CZL";
-#if CLEAN17
                     31093,
-#else
-                    Report::"Return Order Confirmation CZ",
-#endif
                     Report::"Return Order Confirmation":
                         ReportSelections."Report ID" := Report::"Sales Return Order Confirm CZL";
-#if CLEAN17
                     31097,
-#else
-                    Report::"Sales - Credit Memo CZ",
-#endif
                     Report::"Standard Sales - Credit Memo":
                         ReportSelections."Report ID" := Report::"Sales Credit Memo CZL";
-#if CLEAN17
                     31098,
-#else
-                    Report::"Sales - Shipment CZ",
-#endif
                     Report::"Sales - Shipment":
                         ReportSelections."Report ID" := Report::"Sales Shipment CZL";
-#if CLEAN17 
                     31099,
-#else
-                    Report::"Sales - Return Reciept CZ",
-#endif
                     Report::"Sales - Return Receipt":
                         ReportSelections."Report ID" := Report::"Sales Return Reciept CZL";
-#if CLEAN17
                     31091,
-#else
-                    Report::"Purchase - Quote CZ",
-#endif
                     Report::"Purchase - Quote":
                         ReportSelections."Report ID" := Report::"Purchase Quote CZL";
-#if CLEAN17
                     31092,
-#else
-                    Report::"Order CZ",
-#endif
+                    Report::Order,
                     Report::"Standard Purchase - Order":
                         ReportSelections."Report ID" := Report::"Purchase Order CZL";
-#if CLEAN17
                     31110,
-#else
-                    Report::"Service Quote CZ",
-#endif
                     Report::"Service Quote":
                         ReportSelections."Report ID" := Report::"Service Quote CZL";
-#if CLEAN17
                     31111,
-#else
-                    Report::"Service Order CZ",
-#endif
                     Report::"Service Order":
                         ReportSelections."Report ID" := Report::"Service Order CZL";
-#if CLEAN17
                     31088,
-#else
-                    Report::"Service - Invoice CZ",
-#endif
                     Report::"Service - Invoice":
                         ReportSelections."Report ID" := Report::"Service Invoice CZL";
-#if CLEAN17
                     31089,
-#else
-                    Report::"Service - Credit Memo CZ",
-#endif
                     Report::"Service - Credit Memo":
                         ReportSelections."Report ID" := Report::"Service Credit Memo CZL";
-#if CLEAN17
                     31090,
-#else
-                    Report::"Service - Shipment CZ",
-#endif
                     Report::"Service - Shipment":
                         ReportSelections."Report ID" := Report::"Service Shipment CZL";
-#if CLEAN17
                     31112,
-#else
-                    Report::"Service Contract Quote CZ",
-#endif
                     Report::"Service Contract Quote":
                         ReportSelections."Report ID" := Report::"Service Contract Quote CZL";
-#if CLEAN17
                     31113,
-#else
-                    Report::"Service Contract CZ",
-#endif
                     Report::"Service Contract":
                         ReportSelections."Report ID" := Report::"Service Contract CZL";
-#if CLEAN17
                     31086,
-#else
-                    Report::"Reminder CZ",
-#endif
                     Report::Reminder:
                         ReportSelections."Report ID" := Report::"Reminder CZL";
-#if CLEAN17
                     31087,
-#else
-                    Report::"Finance Charge Memo CZ",
-#endif
                     Report::"Finance Charge Memo":
                         ReportSelections."Report ID" := Report::"Finance Charge Memo CZL";
                 end;
@@ -3227,7 +3142,7 @@ codeunit 11748 "Install Application CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure CompanyInitialize()
     var
-        DataClassEvalHandlerCZL: Codeunit "Data Class. Eval. Handler CZL";
+        DataClassEvalHandlerCZL: Codeunit "Data Class. Eval. Handler CZL";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         InitRegistrationNoServiceConfig();
@@ -3264,7 +3179,7 @@ codeunit 11748 "Install Application CZL"
         end;
 
         PrevUnrelPayerServiceSetupCZL := UnrelPayerServiceSetupCZL;
-        UnrelPayerServiceSetupCZL."Unreliable Payer Web Service" := UnreliablePayerMgtCZL.GetUnreliablePayerServiceURL();
+        UnreliablePayerMgtCZL.SetDefaultUnreliablePayerServiceURL(UnrelPayerServiceSetupCZL);
         UnrelPayerServiceSetupCZL.Enabled := false;
         UnrelPayerServiceSetupCZL."Public Bank Acc.Chck.Star.Date" := 20140101D;
         UnrelPayerServiceSetupCZL."Public Bank Acc.Check Limit" := 700000;
@@ -3468,11 +3383,7 @@ codeunit 11748 "Install Application CZL"
         if ItemJournalTemplate.FindSet(true) then
             repeat
                 PrevItemJournalTemplate := ItemJournalTemplate;
-#if CLEAN17
                 if ItemJournalTemplate."Posting Report ID" = 31078 then
-#else
-                if ItemJournalTemplate."Posting Report ID" = Report::"Posted Inventory Document" then
-#endif
                     ItemJournalTemplate."Posting Report ID" := Report::"Posted Inventory Document CZL";
                 if (ItemJournalTemplate."Posting Report ID" <> PrevItemJournalTemplate."Posting Report ID") then
                     ItemJournalTemplate.Modify();

@@ -188,7 +188,7 @@ codeunit 148079 "Banking Documents CZB"
     var
         PaymentOrderHeaderCZB: Record "Payment Order Header CZB";
         PaymentOrderLineCZB: Record "Payment Order Line CZB";
-        InvalidFormatBankAccountErr: Label '''Account No.'' %1 in ''Payment Order Line CZB: %2,%3 is malformed.', Comment = '%1 = Account No.; %2 = Payment Order No.; %3 = Line No.';
+        InvalidFormatBankAccountErr: Label 'Account No. %1 in Payment Order Line CZB: %2,%3 is malformed.', Comment = '%1 = Account No.; %2 = Payment Order No.; %3 = Line No.';
     begin
         // [SCENARIO] Test that invalid bank account no. will cause error during the issuing
         Initialize();

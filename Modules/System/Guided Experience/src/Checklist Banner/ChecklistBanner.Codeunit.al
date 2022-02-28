@@ -504,7 +504,7 @@ codeunit 1996 "Checklist Banner"
             and (NewStatus <> NewStatus::"Not Started")
             and (
                 (NewStatus = NewStatus::Started)
-                or ((OldStatus in [OldStatus::"Not Started", OldStatus::Started]) and (NewStatus in [NewStatus::Skipped, NewStatus::Completed]))
+                or ((OldStatus in [OldStatus::"Not Started", OldStatus::Started, OldStatus::Skipped]) and (NewStatus in [NewStatus::Skipped, NewStatus::Completed]))
                 )
             );
     end;
@@ -552,7 +552,7 @@ codeunit 1996 "Checklist Banner"
             [GuidedExperienceItem."Guided Experience Type"::"Manual Setup",
             GuidedExperienceItem."Guided Experience Type"::"Application Feature"]
         then begin
-            RunObject(GuidedExperienceItem."Object Type to Run", GuidedExperienceItem."Object ID to Run");
+            RunObject(GuidedExperienceItem);
             UpdateChecklistItemUserStatus(ChecklistItemBuffer, UserId(), ChecklistItemStatus::Started);
         end else
             if GuidedExperienceItem."Guided Experience Type" = GuidedExperienceItem."Guided Experience Type"::"Assisted Setup" then begin
@@ -595,13 +595,20 @@ codeunit 1996 "Checklist Banner"
         Video.Play(VideoUrl);
     end;
 
-    local procedure RunObject(ObjectType: Enum "Guided Experience Object Type"; ObjectID: Integer)
+    local procedure RunObject(GuidedExperienceItem: Record "Guided Experience Item")
+    var
+        ObjectID: Integer;
+        ObjectType: Enum "Guided Experience Object Type";
     begin
         Commit(); //needed before the RunModal
-
+        ObjectType := GuidedExperienceItem."Object Type to Run";
+        ObjectID := GuidedExperienceItem."Object ID to Run";
         case ObjectType of
             ObjectType::Page:
-                Page.RunModal(ObjectID);
+                If GuidedExperienceItem."Guided Experience Type" = GuidedExperienceItem."Guided Experience Type"::"Application Feature" then
+                    Page.Run(ObjectID)
+                else
+                    Page.RunModal(ObjectID);
             ObjectType::Codeunit:
                 Codeunit.Run(ObjectID);
             ObjectType::Report:

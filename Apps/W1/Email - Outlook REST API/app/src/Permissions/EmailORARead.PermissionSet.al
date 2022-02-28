@@ -7,5 +7,5 @@ permissionset 4509 "Email ORA - Read"
     IncludedPermissionSets = "Email ORA - Objects";
 
     Permissions = tabledata "Email - Outlook Account" = r,
-                  tabledata "Email - Outlook API Setup" = R;
+                    tabledata "Email - Outlook API Setup" = R;
 }

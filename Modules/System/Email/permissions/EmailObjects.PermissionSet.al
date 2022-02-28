@@ -31,8 +31,13 @@ permissionset 8906 "Email - Objects"
                   Codeunit "Email Test Mail" = X,
                   Codeunit "Email Upgrade" = X,
                   Codeunit "Email Viewer" = X,
+                  Codeunit "Email View Policy" = X,
                   Codeunit "Email" = X,
                   Codeunit "Send Email" = X,
+                  Codeunit "View All Emails Policy" = X,
+                  Codeunit "View If All Related Records" = X,
+                  Codeunit "View If Any Related Records" = X,
+                  Codeunit "View Only Own Emails Policy" = X,
                   Page "Email Account Wizard" = X,
                   Page "Email Accounts" = X,
                   Page "Email Activities" = X,
@@ -47,7 +52,9 @@ permissionset 8906 "Email - Objects"
                   Page "Email Scenarios for Account" = X,
                   Page "Email User-Specified Address" = X,
                   Page "Email Viewer" = X,
+                  Page "Email View Policy List" = X,
                   Page "Sent Emails" = X,
+                  Page "Sent Emails List Part" = X,
                   Table "Email Account Scenario" = X,
                   Table "Email Account" = X,
                   Table "Email Address Lookup" = X,
@@ -61,5 +68,8 @@ permissionset 8906 "Email - Objects"
                   Table "Email Related Attachment" = X,
                   Table "Email Related Record" = X,
                   Table "Email Scenario" = X,
-                  Table "Sent Email" = X;
+                  Table "Email View Policy" = X,
+                  Table "Sent Email" = X,
+                  Query "Sent Emails" = X,
+                  Query "Outbox Emails" = X;
 }

@@ -10,6 +10,7 @@ table 1471 "Product Video Category"
     ObsoleteState = Removed;
     ObsoleteReason = 'Videos are not categorized any more in this way. The Video module handles the full listing.';
     ObsoleteTag = '19.0';
+    ReplicateData = false;
 
     fields
     {

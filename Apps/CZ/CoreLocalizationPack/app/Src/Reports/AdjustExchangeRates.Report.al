@@ -85,6 +85,7 @@ report 31004 "Adjust Exchange Rates CZL"
                     var
                         BankAccount: Record "Bank Account";
                         GroupTotal: Boolean;
+                        ExchRateAdjmtAccountType: Enum "Exch. Rate Adjmt. Account Type";
                     begin
                         BankAccount.Copy("Bank Account");
                         if BankAccount.Next() = 1 then begin
@@ -99,7 +100,7 @@ report 31004 "Adjust Exchange Rates CZL"
                                   "Bank Account"."Currency Code", "Bank Account"."Bank Acc. Posting Group",
                                   TotalAdjBase, TotalAdjBaseLCY, TotalAdjAmount, 0, 0, 0, PostingDate, '',
                                   false, '');
-                                InsertExchRateAdjmtReg(3, "Bank Account"."Bank Acc. Posting Group", "Bank Account"."Currency Code");
+                                InsertExchRateAdjmtReg(ExchRateAdjmtAccountType::"Bank Account", "Bank Account"."Bank Acc. Posting Group", "Bank Account"."Currency Code");
                                 TotalBankAccountsAdjusted += 1;
                                 TempAdjustExchangeRateBuffer.Reset();
                                 TempAdjustExchangeRateBuffer.DeleteAll();
@@ -1288,7 +1289,7 @@ report 31004 "Adjust Exchange Rates CZL"
         end;
     end;
 
-    local procedure InsertExchRateAdjmtReg(AdjustAccType: Integer; PostingGrCode: Code[20]; CurrencyCode: Code[10])
+    local procedure InsertExchRateAdjmtReg(ExchRateAdjmtAccountType: Enum "Exch. Rate Adjmt. Account Type"; PostingGrCode: Code[20]; CurrencyCode: Code[10])
     begin
         if not Post then
             exit;
@@ -1298,7 +1299,7 @@ report 31004 "Adjust Exchange Rates CZL"
 
         ExchRateAdjmtReg."No." := ExchRateAdjmtReg."No." + 1;
         ExchRateAdjmtReg."Creation Date" := PostingDate;
-        ExchRateAdjmtReg."Account Type" := AdjustAccType;
+        ExchRateAdjmtReg."Account Type" := ExchRateAdjmtAccountType;
         ExchRateAdjmtReg."Posting Group" := PostingGrCode;
         ExchRateAdjmtReg."Currency Code" := TempCurrency.Code;
         ExchRateAdjmtReg."Currency Factor" := TempCurrency."Currency Factor";
@@ -1415,6 +1416,7 @@ report 31004 "Adjust Exchange Rates CZL"
         TempDetailedCVLedgEntryBuffer: Record "Detailed CV Ledg. Entry Buffer" temporary;
         LastEntryNo: Integer;
         LastTransactionNo: Integer;
+        ExchRateAdjmtAccountType: Enum "Exch. Rate Adjmt. Account Type";
     begin
         if TempAdjustExchangeRateBuffer.FindSet() then begin
             // Summarize per currency and dimension combination
@@ -1481,7 +1483,7 @@ report 31004 "Adjust Exchange Rates CZL"
                                             Temp2AdjustExchangeRateBuffer."Posting Date", TempAdjustExchangeRateBuffer."IC Partner Code");
                                         if not TempDetailedCVLedgEntryBuffer.Insert() then
                                             TempDetailedCVLedgEntryBuffer."Transaction No." := 0;
-                                        InsertExchRateAdjmtReg(1, TempAdjustExchangeRateBuffer."Posting Group", TempAdjustExchangeRateBuffer."Currency Code");
+                                        InsertExchRateAdjmtReg(ExchRateAdjmtAccountType::Customer, TempAdjustExchangeRateBuffer."Posting Group", TempAdjustExchangeRateBuffer."Currency Code");
                                         TotalCustomersAdjusted += 1;
                                     end;
                                 2: // Vendor
@@ -1493,7 +1495,7 @@ report 31004 "Adjust Exchange Rates CZL"
                                             Temp2AdjustExchangeRateBuffer."Posting Date", TempAdjustExchangeRateBuffer."IC Partner Code");
                                         if not TempDetailedCVLedgEntryBuffer.Insert() then
                                             TempDetailedCVLedgEntryBuffer."Transaction No." := 0;
-                                        InsertExchRateAdjmtReg(2, TempAdjustExchangeRateBuffer."Posting Group", TempAdjustExchangeRateBuffer."Currency Code");
+                                        InsertExchRateAdjmtReg(ExchRateAdjmtAccountType::Vendor, TempAdjustExchangeRateBuffer."Posting Group", TempAdjustExchangeRateBuffer."Currency Code");
                                         TotalVendorsAdjusted += 1;
                                     end;
                             end;
@@ -1706,10 +1708,10 @@ report 31004 "Adjust Exchange Rates CZL"
         TotalAmount := TotalAmount + AmountToAdd;
     end;
 
-    local procedure PostGLAccAdjmt(GLAccNo: Code[20]; ExchRateAdjmt: Integer; Amount: Decimal; NetChange: Decimal; AddCurrNetChange: Decimal)
+    local procedure PostGLAccAdjmt(GLAccNo: Code[20]; ExchRateAdjustmentType: Enum "Exch. Rate Adjustment Type"; Amount: Decimal; NetChange: Decimal; AddCurrNetChange: Decimal)
     begin
         GenJournalLine.Init();
-        case ExchRateAdjmt of
+        case ExchRateAdjustmentType of
             "G/L Account"."Exchange Rate Adjustment"::"Adjust Amount":
                 begin
                     GenJournalLine."Additional-Currency Posting" := GenJournalLine."Additional-Currency Posting"::"Amount Only";
