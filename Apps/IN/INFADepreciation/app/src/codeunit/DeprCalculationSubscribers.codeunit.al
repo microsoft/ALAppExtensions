@@ -30,7 +30,7 @@ codeunit 18632 "Depr Calculation Subscribers"
         AmountBelowZeroLbl: Label 'AmountBelowZero', Locked = true;
 
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnBeforeCalculateTransferValue', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnCalculateOnBeforeTransferValue', '', false, false)]
     local procedure OnBeforeCalculateTransferValue(
         FANo: Code[20];
         var StorageDecimal: Dictionary of [Text, Decimal];
@@ -39,7 +39,7 @@ codeunit 18632 "Depr Calculation Subscribers"
         var StorageCode: Dictionary of [Text, Code[10]];
         var EntryAmounts2: array[4] of Decimal;
         var EntryAmounts: array[4] of Decimal;
-        var DeprMethod: Option StraightLine,DB1,DB2,DB1SL,DB2SL,"User-Defined",Manual,BelowZero;
+        var DeprMethod: Enum "FA Depr. Method Internal";
         var Year365Days: Boolean;
         var IsHandled: Boolean)
     begin
@@ -209,15 +209,15 @@ codeunit 18632 "Depr Calculation Subscribers"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnAfterTransferValuesCalculation', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnAfterTransferValues2', '', false, false)]
     local procedure OnAfterTransferValuesEvent(
         FADepreciationBook: Record "FA Depreciation Book";
         FixedAsset: Record "Fixed Asset";
-        var Year365Days: Boolean;
+        Year365Days: Boolean;
         var DeprYears: Decimal;
         var DeprBasis: Decimal;
         var BookValue: Decimal;
-        var DeprMethod: Option)
+        var DeprMethod: Enum "FA Depr. Method Internal")
     var
         FABlock: Record "Fixed Asset Block";
         DeprBook: Record "Depreciation Book";

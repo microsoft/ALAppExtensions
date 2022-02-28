@@ -48,14 +48,20 @@ codeunit 27020 "DIOT - Initialize"
 
     local procedure AddDIOTAssistedSetup()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
-        AssistedSetupGroup: Enum "Assisted Setup Group";
-        Info: ModuleInfo;
+        GuidedExperience: Codeunit "Guided Experience";
     begin
-        NavApp.GetCurrentModuleInfo(Info);
-        AssistedSetup.Add(
-            Info.Id(), PAGE::"DIOT Setup Wizard", DIOTDataManagement.GetDIOTSetupGuideTxt(),
-            AssistedSetupGroup::GettingStarted);
+        GuidedExperience.InsertAssistedSetup(
+            CopyStr(DIOTDataManagement.GetDIOTSetupGuideTxt(), 1, 2048),
+            CopyStr(DIOTDataManagement.GetDIOTSetupGuideTxt(), 1, 50),
+            '',
+            1,
+            ObjectType::Page,
+            PAGE::"DIOT Setup Wizard",
+            "Assisted Setup Group"::GettingStarted,
+            '',
+            "Video Category"::Uncategorized,
+            ''
+        );
     end;
 
     local procedure InsertDefaultDIOTCountryData()

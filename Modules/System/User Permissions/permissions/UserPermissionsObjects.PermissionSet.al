@@ -11,5 +11,6 @@ permissionset 166 "User Permissions - Objects"
     IncludedPermissionSets = "Environment Info. - Objects";
 
     Permissions = Codeunit "User Permissions Impl." = X,
-                  Codeunit "User Permissions" = X;
+                  Codeunit "User Permissions" = X,
+                  Page "Lookup Permission Set" = X;
 }

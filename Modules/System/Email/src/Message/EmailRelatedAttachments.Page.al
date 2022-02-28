@@ -50,7 +50,7 @@ page 8890 "Email Related Attachments"
         EmailMessageId := MessageId;
     end;
 
-    internal procedure GetSelectedAttachments(var Result: Record "Email Related Attachment")
+    internal procedure GetSelectedAttachments(var EmailRelatedAttachment: Record "Email Related Attachment")
     begin
         CurrPage.SetSelectionFilter(Rec);
 
@@ -58,8 +58,8 @@ page 8890 "Email Related Attachments"
             exit;
 
         repeat
-            Result.Copy(Rec);
-            Result.Insert();
+            EmailRelatedAttachment.Copy(Rec);
+            EmailRelatedAttachment.Insert();
         until Rec.Next() = 0;
     end;
 

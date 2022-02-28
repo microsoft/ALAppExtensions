@@ -1,7 +1,10 @@
+#if not CLEAN20
 codeunit 139581 "MS - Wallet Inv Mock Events"
 {
     // version Test,ERM,W1,CA,GB,US
-
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     EventSubscriberInstance = Manual;
 
     trigger OnRun();
@@ -139,4 +142,4 @@ codeunit 139581 "MS - Wallet Inv Mock Events"
         end;
     end;
 }
-
+#endif

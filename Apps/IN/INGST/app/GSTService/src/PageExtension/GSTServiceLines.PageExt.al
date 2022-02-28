@@ -59,6 +59,7 @@ pageextension 18441 "GST Service Lines" extends "Service Lines"
                 ToolTip = 'Specifies an identifier for the GST Group  used to calculate and post GST.';
                 trigger OnValidate()
                 begin
+                    Validate("GST Place Of Supply");
                     CalculateTax.CallTaxEngineOnServiceLine(Rec, xRec);
                 end;
             }

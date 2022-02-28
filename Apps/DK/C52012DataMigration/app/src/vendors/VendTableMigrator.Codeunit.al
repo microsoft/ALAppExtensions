@@ -83,7 +83,7 @@ codeunit 1864 "C5 VendTable Migrator"
         VendorDataMigrationFacade.SetShipmentMethodCode(CreateShipmentMethodIfNeeded(C5VendTable.Delivery));
         VendorDataMigrationFacade.SetInvoiceDiscCode(CreateVendorInvoiceDiscountIfNeeded(C5VendTable.DiscGroup));
 
-        VendorDataMigrationFacade.SetBlockedType(ConvertBlocked(C5VendTable));
+        VendorDataMigrationFacade.SetBlocked(ConvertBlocked(C5VendTable));
         VendorDataMigrationFacade.SetFaxNo(C5VendTable.Fax);
         VendorDataMigrationFacade.SetVATRegistrationNo(CopyStr(C5VendTable.VatNumber, 1, 20)); // VAT field length on the vendor table is 20
         VendorDataMigrationFacade.SetHomePage(C5VendTable.URL);

@@ -120,7 +120,7 @@ codeunit 148087 "Fixed Assets CZF"
     end;
 
     [Test]
-    [HandlerFunctions('NoConfirmHandler,MessageHandler')]
+    [HandlerFunctions('NoConfirmHandler')]
     procedure CalculateDepreciationWithInterruption()
     var
         FixedAsset: Record "Fixed Asset";
@@ -155,6 +155,7 @@ codeunit 148087 "Fixed Assets CZF"
         PostFAJournalLine(FAJournalLine);
 
         // [GIVEN] The depreciation interruption has been setup
+        FADepreciationBook.Find();
         FADepreciationBook.Validate("Deprec. Interrupted up to CZF", CalcDate('<-CY+1Y>', WorkDate()));
         FADepreciationBook.Modify(true);
 

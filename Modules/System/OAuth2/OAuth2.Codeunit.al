@@ -313,7 +313,9 @@ codeunit 501 OAuth2
     [TryFunction]
     procedure AcquireAuthorizationCodeTokenFromCache(ClientId: Text; ClientSecret: Text; RedirectURL: Text; ResourceURL: Text; var AccessToken: Text)
     begin
+#pragma warning disable AL0432
         OAuth2Impl.AcquireTokenFromCache(RedirectURL, ClientId, ClientSecret, ResourceURL, AccessToken);
+#pragma warning restore
     end;
 #endif
 

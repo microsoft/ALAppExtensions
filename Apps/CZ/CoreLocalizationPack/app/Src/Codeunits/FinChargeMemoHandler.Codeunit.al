@@ -38,4 +38,12 @@ codeunit 31014 "Fin. Charge Memo Handler CZL"
         GenJnlLine."IBAN CZL" := FinChargeMemoHeader."IBAN CZL";
         GenJnlLine."SWIFT Code CZL" := FinChargeMemoHeader."SWIFT Code CZL";
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Issued Fin. Charge Memo Header", 'OnBeforeDeleteEvent', '', false, false)]
+    local procedure CheckDeletionAllowOnBeforeDeleteEvent(var Rec: Record "Issued Fin. Charge Memo Header")
+    var
+        PostSalesDelete: Codeunit "PostSales-Delete";
+    begin
+        PostSalesDelete.IsDocumentDeletionAllowed(Rec."Posting Date");
+    end;
 }

@@ -254,4 +254,23 @@ codeunit 18003 "GST Preview Handler"
     begin
         PreviewPosting := false;
     end;
+
+    procedure ClearBuffers()
+    begin
+        TempGSTLedgerEntry.Reset();
+        if not TempGSTLedgerEntry.IsEmpty() then
+            TempGSTLedgerEntry.DeleteAll();
+
+        TempDetailedGSTLedgerEntry.Reset();
+        if not TempDetailedGSTLedgerEntry.IsEmpty() then
+            TempDetailedGSTLedgerEntry.DeleteAll();
+
+        TempGSTTDSTCSEntry.Reset();
+        if not TempGSTTDSTCSEntry.IsEmpty() then
+            TempGSTTDSTCSEntry.DeleteAll();
+
+        TempDetailedGSTLedgerEntryInfo.Reset();
+        if not TempDetailedGSTLedgerEntryInfo.IsEmpty() then
+            TempDetailedGSTLedgerEntryInfo.DeleteAll();
+    end;
 }

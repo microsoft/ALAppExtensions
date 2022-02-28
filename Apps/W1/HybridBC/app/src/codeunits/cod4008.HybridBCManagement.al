@@ -8,6 +8,7 @@ codeunit 4008 "Hybrid BC Management"
         FailurePreparingDataErr: Label 'Failed to prepare data for the table.\\\\%1', Comment = '%1 - The inner error message.';
         FailureCopyingTableErr: Label 'Failed to copy the table.\\\\%1', Comment = '%1 - The inner error message.';
         UnsupportedVersionErr: Label 'Business Central on-premises must be on the same major version as the online instance. Check if the version was set correctly on the database. For more information, see the documentation - https://go.microsoft.com/fwlink/?linkid=2148701.';
+        NoUpgradeNeededForBCCloudMigrationErr: Label 'No upgrade is needed when you migrate to Business Central online from the same version of Business Central on-premises.';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Message Management", 'OnResolveMessageCode', '', false, false)]
     local procedure GetBCMessageOnResolveMessageCode(MessageCode: Code[10]; InnerMessage: Text; var Message: Text)
@@ -68,6 +69,18 @@ codeunit 4008 "Hybrid BC Management"
 
         // Don't set handled to allow the others to override
         BackupUpgradeTags := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInvokeDataUpgrade', '', false, false)]
+    local procedure InvokeDataUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary"; var Handled: Boolean)
+    begin
+        if Handled then
+            exit;
+
+        if not GetBCProductEnabled() then
+            exit;
+
+        Error(NoUpgradeNeededForBCCloudMigrationErr);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnReplicationRunCompleted', '', false, false)]

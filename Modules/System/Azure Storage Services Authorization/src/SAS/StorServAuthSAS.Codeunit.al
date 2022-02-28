@@ -8,14 +8,14 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
     Access = Internal;
 
     [NonDebuggable]
-    procedure Authorize(var HttpRequest: HttpRequestMessage; StorageAccount: Text)
+    procedure Authorize(var HttpRequestMessage: HttpRequestMessage; StorageAccount: Text)
     var
         Uri: Codeunit Uri;
         UriBuilder: Codeunit "Uri Builder";
         UriText, QueryText : Text;
     begin
         StorageAccountName := StorageAccount;
-        UriText := HttpRequest.GetRequestUri();
+        UriText := HttpRequestMessage.GetRequestUri();
 
         UriBuilder.Init(UriText);
         QueryText := UriBuilder.GetQuery();
@@ -27,7 +27,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
 
         UriBuilder.GetUri(Uri);
 
-        HttpRequest.SetRequestUri(Uri.GetAbsoluteUri());
+        HttpRequestMessage.SetRequestUri(Uri.GetAbsoluteUri());
     end;
 
     [NonDebuggable]

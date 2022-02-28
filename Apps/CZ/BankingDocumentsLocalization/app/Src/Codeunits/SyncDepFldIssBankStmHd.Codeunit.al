@@ -1,6 +1,6 @@
 #if not CLEAN19
 #pragma warning disable AL0432,AL0603
-codeunit 31343 "Sync.Dep.Fld-IssBankStmHd CZB"
+codeunit 31343 "Sync.Dep.Fld-IssBankStmHd CZB"
 {
     Access = Internal;
     Permissions = tabledata "Issued Bank Statement Header" = rimd,

@@ -83,7 +83,7 @@ report 31008 "Intrastat - Invoice Check CZL"
             column(LineNo_IntrastatJnlLine; "Line No.")
             {
             }
-            dataitem(TempDocBuffer; "G/L Account Adjustment Buffer")
+            dataitem(TempDocBuffer; "G/L Account Adjust. Buffer CZL")
             {
 
                 DataItemTableView = sorting("Document No.");

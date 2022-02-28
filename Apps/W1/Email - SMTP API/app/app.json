@@ -1,0 +1,38 @@
+{
+    "id":  "8fc50dfb-d338-4fd9-9499-5e44cc8cbf50",
+    "name":  "Email - SMTP API",
+    "publisher":  "Microsoft",
+    "brief":  "This app enables sending emails through the SMTP protocol.",
+    "logo": "ExtensionLogo.png",
+    "description":  "This app enables sending emails through the SMTP protocol.",
+    "version":  "20.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2186415",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
+    "dependencies": [
+        {
+            "id":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+            "publisher":  "Microsoft",
+            "name":  "System Application",
+            "version":  "20.0.0.0"
+        }
+    ],
+    "internalsVisibleTo":  [
+                               {
+                                   "id":  "51493bda-1ba4-46dc-a72e-65eadc0e63b1",
+                                   "name":  "Email - SMTP API Test Library",
+                                   "publisher":  "Microsoft"
+                               }
+                           ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "20.0.0.0",
+    "idRanges":  [
+                    {"from": 4611,
+                        "to": 4620}
+                 ],
+    "target":  "OnPrem",
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520"
+}

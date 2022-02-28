@@ -8,7 +8,6 @@ codeunit 139870 "RM Cont/Todo, Edit Tests"
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryMarketing: Codeunit "Library - Marketing";
         LibraryUtility: Codeunit "Library - Utility";
-        LibraryGraphSync: Codeunit "Library - Graph Sync";
         Assert: Codeunit Assert;
 
     [Test]
@@ -250,7 +249,6 @@ codeunit 139870 "RM Cont/Todo, Edit Tests"
     local procedure Initialize()
     begin
         LibraryVariableStorage.Clear();
-        LibraryGraphSync.DisableGraphSync();
     end;
 
     [ModalPageHandler]

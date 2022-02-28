@@ -1,10 +1,10 @@
 {
     "id":  "bc45ae22-3b5b-44b5-beb4-2a42bf79cc34",
-    "name":  "Quickbooks Payroll File Import",
+    "name":  "Import of QuickBooks Payroll Files",
     "publisher":  "Microsoft",
-    "brief":  "The Quickbooks Payroll File Import functionality allows you to import payroll transactions from a Quickbooks IIF file.",
-    "description":  "The Quickbooks Payroll File Import functionality allows you to import payroll transactions from a Quickbooks IIF file.",
-    "version":  "19.4.0.0",
+    "brief":  "The Import of QuickBooks Payroll Files functionality allows you to import payroll transactions from a Quickbooks IIF file.",
+    "description":  "The Import of QuickBooks Payroll Files functionality allows you to import payroll transactions from a Quickbooks IIF file.",
+    "version":  "20.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?LinkId=860351",
@@ -17,12 +17,12 @@
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
+    "platform":  "20.0.0.0",
     "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "19.4.0.0"
+    "resourceExposurePolicy": {
+        "allowDebugging": false,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
+    "application":  "20.0.0.0"
 }

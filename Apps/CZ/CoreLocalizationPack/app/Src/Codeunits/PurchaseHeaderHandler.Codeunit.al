@@ -86,17 +86,12 @@ codeunit 11744 "Purchase Header Handler CZL"
         Rec.Validate("VAT Currency Code CZL", Rec."Currency Code");
     end;
 
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeValidateEvent', 'Currency Factor', false, false)]
-    local procedure UpdateVATCurrencyfactorCZLOnBeforeCurrencyFactorValidate(var Rec: Record "Purchase Header"; var xRec: Record "Purchase Header"; CurrFieldNo: Integer)
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'Currency Factor', false, false)]
+    local procedure UpdateVATCurrencyfactorCZLOnBeforeCurrencyFactorValidate(var Rec: Record "Purchase Header"; var xRec: Record "Purchase Header")
     begin
-        if (Rec."Currency Factor" <> xRec."Currency Factor") and (Rec.IsCurrentFieldNoDiffZero(CurrFieldNo) or (xRec."Currency Factor" = 0)) then begin
-            Rec.UpdatePurchLinesByFieldNo(Rec.FieldNo("Currency Factor"), CurrFieldNo <> 0);
+        if Rec."Currency Factor" <> xRec."Currency Factor" then
             Rec.UpdateVATCurrencyFactorCZL();
-            Rec.CopyRecCurrencyFactortoxRecCurrencyFactor(Rec, xRec); // Elimination of double run function (synchro)
-        end;
     end;
-#pragma warning restore AL0432
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterUpdateCurrencyFactor', '', false, false)]
     local procedure OnAfterUpdateCurrencyFactor(var PurchaseHeader: Record "Purchase Header")
@@ -134,12 +129,10 @@ codeunit 11744 "Purchase Header Handler CZL"
                     PurchLine."Physical Transfer CZL" := PurchHeader."Physical Transfer CZL";
         end;
     end;
-#if CLEAN17
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnGetVATCurrencyFactor', '', false, false)]
     local procedure ReturnVATCurrencyFactorCZLOnGetVATCurrencyFactor(Rec: Record "Purchase Header"; var VATCurrencyFactor: Decimal)
     begin
         VATCurrencyFactor := Rec."VAT Currency Factor CZL";
     end;
-#endif
 }

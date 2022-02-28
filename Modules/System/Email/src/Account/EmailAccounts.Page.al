@@ -370,19 +370,19 @@ page 8887 "Email Accounts"
     /// <summary>
     /// Gets the selected email account.
     /// </summary>
-    /// <param name="Account">The selected email account</param>
-    procedure GetAccount(var Account: Record "Email Account")
+    /// <param name="EmailAccount">The selected email account</param>
+    procedure GetAccount(var EmailAccount: Record "Email Account")
     begin
-        Account := Rec;
+        EmailAccount := Rec;
     end;
 
     /// <summary>
     /// Sets an email account to be selected.
     /// </summary>
-    /// <param name="Account">The email account to be initially selected on the page</param>
-    procedure SetAccount(var Account: Record "Email Account")
+    /// <param name="EmailAccount">The email account to be initially selected on the page</param>
+    procedure SetAccount(var EmailAccount: Record "Email Account")
     begin
-        Rec := Account;
+        Rec := EmailAccount;
     end;
 
     /// <summary>

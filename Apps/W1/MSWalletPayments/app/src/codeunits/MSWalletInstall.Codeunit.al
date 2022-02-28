@@ -1,6 +1,10 @@
+#if not CLEAN20
 codeunit 1086 "MS Wallet Install"
 {
     Subtype = install;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
 
     trigger OnInstallAppPerCompany()
     begin
@@ -36,5 +40,5 @@ codeunit 1086 "MS Wallet Install"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"MS - Wallet Charge");
         DataClassificationMgt.SetFieldToPersonal(Database::"MS - Wallet Charge", MSWalletCharge.FieldNo("Merchant ID"));
     end;
-
 }
+#endif

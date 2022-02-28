@@ -133,7 +133,6 @@ codeunit 13622 "OIOUBL-Subscribers"
         RecordExportBuffer.Reset();
         RecordExportBuffer.SetRange("OIOUBL-User ID", UserId());
         RecordExportBuffer.SetRange("Electronic Document Format", OIOUBLManagement.GetOIOUBLElectronicDocumentFormatCode());
-        RecordExportBuffer.SetFilter(ServerFilePath, '<>%1', '');
         RecordExportBuffer.SetFilter(ClientFileName, '<>%1', '');
         if RecordExportBuffer.IsEmpty() then begin
             OIOUBLManagement.ClearRecordExportBuffer();
@@ -151,6 +150,8 @@ codeunit 13622 "OIOUBL-Subscribers"
         OIOUBLManagement.DownloadZipFile(ServerZipFilePath, ClientZipFilePath, ClientZipFileName);
     end;
 
+#if not CLEAN20
+    [Obsolete('Replaced by CancelDownloadWhenZipOnExportXMLBlobOnBeforeDownload.', '20.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"OIOUBL-Management", 'OnExportXMLFileOnBeforeDownload', '', false, false)]
     procedure CancelDownloadWhenZipOnExportXMLFileOnBeforeDownload(var Sender: Codeunit "OIOUBL-Management"; DocNo: Code[20]; SourceFile: Text; FolderPath: Text; var IsHandled: Boolean)
     var
@@ -164,6 +165,21 @@ codeunit 13622 "OIOUBL-Subscribers"
         if not RecordExportBuffer.IsEmpty() then
             IsHandled := true;
     end;
+#endif
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"OIOUBL-Management", 'OnExportXMLFileOnBeforeBLOBExport', '', false, false)]
+    local procedure CancelDownloadWhenZipOnExportXMLBlobOnBeforeDownload(var Sender: Codeunit "OIOUBL-Management"; DocNo: Code[20]; var TempBlob: Codeunit "Temp Blob"; FileName: Text; var IsHandled: Boolean)
+    var
+        RecordExportBuffer: Record "Record Export Buffer";
+    begin
+        if RecordExportBuffer.IsEmpty() then
+            exit;
+
+        RecordExportBuffer.SetRange("OIOUBL-User ID", UserId());
+        RecordExportBuffer.SetFilter(ClientFileName, FileName);
+        if not RecordExportBuffer.IsEmpty() then
+            IsHandled := true;
+    end;
+
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeRunNonStandardCodeunit(ExportCodeunitID: Integer; RecordVariant: Variant; var IsHandled: Boolean)

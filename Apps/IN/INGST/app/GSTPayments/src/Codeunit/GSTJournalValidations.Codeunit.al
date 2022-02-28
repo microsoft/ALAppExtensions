@@ -67,6 +67,12 @@ codeunit 18246 "GST Journal Validations"
         if GenJnlLine."Bal. Account No." = '' then
             GenJnlLine.TestField("Account Type", GenJnlLine."Account Type"::"Bank Account");
 
+        if GenJnlLine."Currency Code" = '' then begin
+            BankCharge.Get(JnlBankCharges."Bank Charge");
+            if BankCharge."Foreign Exchange" then
+                GenJnlLine.TestField("Currency Code");
+        end;
+
         BankCharge.Get(JnlBankCharges."Bank Charge");
         if BankCharge."Foreign Exchange" then
             GenJnlLine.TestField("Bank Charge", false);

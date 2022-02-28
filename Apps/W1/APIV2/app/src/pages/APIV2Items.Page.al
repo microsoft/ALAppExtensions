@@ -288,14 +288,14 @@ page 30008 "APIV2 - Items"
                     Multiplicity = ZeroOrOne;
                     EntityName = 'picture';
                     EntitySetName = 'pictures';
-                    SubPageLink = Id = Field(SystemId), "Parent Type" = const(2);
+                    SubPageLink = Id = Field(SystemId), "Parent Type" = const(Item);
                 }
                 part(defaultDimensions; "APIV2 - Default Dimensions")
                 {
                     Caption = 'Default Dimensions';
                     EntityName = 'defaultDimension';
                     EntitySetName = 'defaultDimensions';
-                    SubPageLink = ParentId = Field(SystemId), "Parent Type" = const(2);
+                    SubPageLink = ParentId = Field(SystemId), "Parent Type" = const(Item);
                 }
                 part(itemVariants; "APIV2 - Item Variants")
                 {
@@ -415,26 +415,26 @@ page 30008 "APIV2 - Items"
 
     local procedure UpdateInventory()
     var
-        ItemJnlLine: Record "Item Journal Line";
+        ItemJournalLine: Record "Item Journal Line";
         ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
     begin
         calcfields(Inventory);
         if Inventory = InventoryValue then
             exit;
-        ItemJnlLine.Init();
-        ItemJnlLine.Validate("Posting Date", Today());
-        ItemJnlLine."Document No." := "No.";
+        ItemJournalLine.Init();
+        ItemJournalLine.Validate("Posting Date", Today());
+        ItemJournalLine."Document No." := "No.";
 
         if Inventory < InventoryValue then
-            ItemJnlLine.Validate("Entry Type", ItemJnlLine."Entry Type"::"Positive Adjmt.")
+            ItemJournalLine.Validate("Entry Type", ItemJournalLine."Entry Type"::"Positive Adjmt.")
         else
-            ItemJnlLine.Validate("Entry Type", ItemJnlLine."Entry Type"::"Negative Adjmt.");
+            ItemJournalLine.Validate("Entry Type", ItemJournalLine."Entry Type"::"Negative Adjmt.");
 
-        ItemJnlLine.Validate("Item No.", "No.");
-        ItemJnlLine.Validate(Description, Description);
-        ItemJnlLine.Validate(Quantity, Abs(InventoryValue - Inventory));
+        ItemJournalLine.Validate("Item No.", "No.");
+        ItemJournalLine.Validate(Description, Description);
+        ItemJournalLine.Validate(Quantity, Abs(InventoryValue - Inventory));
 
-        ItemJnlPostLine.RunWithCheck(ItemJnlLine);
+        ItemJnlPostLine.RunWithCheck(ItemJournalLine);
         Get("No.");
     end;
 

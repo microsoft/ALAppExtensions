@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-
 codeunit 1438 "Ess. Bus. Headline Subscribers"
 {
 
@@ -15,6 +14,7 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
     end;
 
 #if not CLEAN19
+#pragma warning disable AS0072, AS0022, AS0018
     [Obsolete('My Settings has been obsoleted', '19.0')]
     [EventSubscriber(ObjectType::Page, Page::"My Settings", 'OnBeforeLanguageChange', '', true, true)]
     procedure OnBeforeUpdateLanguage(OldLanguageId: Integer; NewLanguageId: Integer);
@@ -28,6 +28,7 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
     begin
         InvalidateHeadlines();
     end;
+#pragma warning restore
 #else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"User Settings", 'OnUpdateUserSettings', '', true, true)]
     local procedure OnBeforeUpdateUserSettings(NewSettings: Record "User Settings"; OldSettings: Record "User Settings");

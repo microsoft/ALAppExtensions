@@ -77,14 +77,6 @@ codeunit 2611 "Feature Management Facade"
     end;
 
     /// <summary>
-    /// Creates the scheduled task.
-    /// </summary>
-    local procedure ScheduleTask(var FeatureDataUpdateStatus: Record "Feature Data Update Status"): Boolean;
-    begin
-        exit(FeatureManagementImpl.ScheduleTask(FeatureDataUpdateStatus));
-    end;
-
-    /// <summary>
     /// Cancels the scheduled task before it is started.
     /// </summary>
     procedure CancelTask(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; ClearStartDateTime: Boolean)

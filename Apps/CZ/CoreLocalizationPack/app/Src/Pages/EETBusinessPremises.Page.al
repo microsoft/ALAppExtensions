@@ -13,12 +13,12 @@ page 31143 "EET Business Premises CZL"
                 field("Code"; Rec.Code)
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the code of the premises.';
+                    ToolTip = 'Specifies the code of the premises.';
                 }
                 field(Description; Rec.Description)
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the description of the premises.';
+                    ToolTip = 'Specifies the description of the premises.';
                 }
                 field(Identification; Rec.Identification)
                 {
@@ -49,7 +49,7 @@ page 31143 "EET Business Premises CZL"
                 PromotedOnly = true;
                 RunObject = Page "EET Cash Registers CZL";
                 RunPageLink = "Business Premises Code" = FIELD(Code);
-                ToolTip = 'Displays a list of POS devices assigned to the promises.';
+                ToolTip = 'Displays a list of POS devices assigned to the promises.';
             }
         }
     }

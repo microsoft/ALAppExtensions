@@ -18,6 +18,7 @@ page 18247 "Journal Bank Charges"
                 SubPageLink = "Table ID Filter" = const(18247),
                     "Template Name Filter" = field("Journal Template Name"),
                     "Batch Name Filter" = field("Journal Batch Name"),
+                    "Document No. Filter" = field("Bank Charge"),
                     "Line No. Filter" = field("Line No.");
             }
         }

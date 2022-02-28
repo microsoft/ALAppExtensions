@@ -2,7 +2,7 @@
     "id":  "8afe7b40-8c87-4beb-ada0-451d1761bf95",
     "name":  "_Exclude_APIV1_",
     "publisher":  "Microsoft",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "brief":  "APIV1",
     "description":  "APIV1",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -17,12 +17,12 @@
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
+    "platform":  "20.0.0.0",
     "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "19.4.0.0"
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
+    "application":  "20.0.0.0"
 }

@@ -2,7 +2,7 @@
     "id":  "20cc6140-cbda-4a21-b15d-8f6190fb5469",
     "name":  "India Tax Base Tests",
     "publisher":  "Microsoft",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "brief":  "Tests For India Tax Base Test Publishers",
     "description":  "Contains India Tax Base Test Publishers",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -18,20 +18,20 @@
                              "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
                              "publisher":  "Microsoft",
                              "name":  "India Tax Base",
-                             "version":  "19.4.0.0"
+                             "version":  "20.0.0.0"
                          },
                          {
                              "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
                              "publisher":  "Microsoft",
                              "name":  "Tax Engine",
-                             "version":  "19.4.0.0"
+                             "version":  "20.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
-    "application":  "19.4.0.0",
+    "platform":  "20.0.0.0",
+    "application":  "20.0.0.0",
     "idRanges":  [
                      {
                          "from":  18598,
@@ -39,9 +39,9 @@
                      }
                  ],
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139720",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    }
 }

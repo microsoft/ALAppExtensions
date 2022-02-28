@@ -6,7 +6,7 @@ codeunit 139676 "MS - QB Payroll Import Test"
     TestPermissions = Disabled;
 
     var
-        FileMgt: Codeunit "File Management";
+        FileManagement: Codeunit "File Management";
         MSQuickbooksPayrollImport: Codeunit "MS - Quickbooks Payroll Import";
         Assert: Codeunit "Assert";
         InvalidIIFTransFileErr: Label 'This is not a valid IIF transaction file. Required token %1 could not be found in the file.', Comment = '%1 - arbitrary text';
@@ -160,230 +160,230 @@ codeunit 139676 "MS - QB Payroll Import Test"
     local procedure GenerateValidIIFTransactionFile(var ServerFilePath: Text[250]);
     var
         TempBlob: Codeunit "Temp Blob";
-        Stream: OutStream;
+        TempOutStream: OutStream;
         Tab: Char;
         CR: Char;
     begin
         Tab := 9;
         CR := 13;
 
-        TempBlob.CreateOutStream(Stream, TEXTENCODING::UTF8);
-        Stream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('!SPL%1SPLID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('!ENDTRNS');
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Labor%1%1 -349.5%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Materials%1%1 -350.5%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('ENDTRNS');
+        TempBlob.CreateOutStream(TempOutStream, TEXTENCODING::UTF8);
+        TempOutStream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('!SPL%1SPLID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('!ENDTRNS');
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Labor%1%1 -349.5%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Materials%1%1 -350.5%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('ENDTRNS');
 
-        ServerFilePath := CopyStr(FileMgt.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
-        FileMgt.BLOBExportToServerFile(TempBlob, ServerFilePath);
+        ServerFilePath := CopyStr(FileManagement.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
+        FileManagement.BLOBExportToServerFile(TempBlob, ServerFilePath);
     end;
 
     local procedure GenerateValidIIFTransactionFileMixed(var ServerFilePath: Text[250]);
     var
         TempBlob: Codeunit "Temp Blob";
-        Stream: OutStream;
+        TempOutStream: OutStream;
         Tab: Char;
         CR: Char;
     begin
         Tab := 9;
         CR := 13;
 
-        TempBlob.CreateOutStream(Stream, TEXTENCODING::UTF8);
-        Stream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('!SPL%1SPLID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('!ENDTRNS');
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Labor%1%1 -349.5%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Materials%1%1 -250.5%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('SPL%1%1DEPOSIT%1 7/1/16%1Fees%1%1 -100%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('ENDTRNS');
+        TempBlob.CreateOutStream(TempOutStream, TEXTENCODING::UTF8);
+        TempOutStream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('!SPL%1SPLID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('!ENDTRNS');
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Labor%1%1 -349.5%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Materials%1%1 -250.5%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('SPL%1%1DEPOSIT%1 7/1/16%1Fees%1%1 -100%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('ENDTRNS');
 
-        ServerFilePath := CopyStr(FileMgt.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
-        FileMgt.BLOBExportToServerFile(TempBlob, ServerFilePath);
+        ServerFilePath := CopyStr(FileManagement.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
+        FileManagement.BLOBExportToServerFile(TempBlob, ServerFilePath);
     end;
 
     local procedure GenerateValidIIFTransactionFileNoGenJnl(var ServerFilePath: Text[250]);
     var
         TempBlob: Codeunit "Temp Blob";
-        Stream: OutStream;
+        TempOutStream: OutStream;
         Tab: Char;
         CR: Char;
     begin
         Tab := 9;
         CR := 13;
 
-        TempBlob.CreateOutStream(Stream, TEXTENCODING::UTF8);
-        Stream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('!SPL%1SPLID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('!ENDTRNS');
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('TRNS%1%1DEPOSIT%1 7/1/16%1Savings%1%1 650%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('SPL%1%1DEPOSIT%1 7/1/16%1Construction:Labor%1%1 -349.5%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('SPL%1%1DEPOSIT%1 7/1/16%1Construction:Materials%1%1 -250.5%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('SPL%1%1DEPOSIT%1 7/1/16%1Fees%1%1 -100%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('ENDTRNS');
+        TempBlob.CreateOutStream(TempOutStream, TEXTENCODING::UTF8);
+        TempOutStream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('!SPL%1SPLID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('!ENDTRNS');
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('TRNS%1%1DEPOSIT%1 7/1/16%1Savings%1%1 650%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('SPL%1%1DEPOSIT%1 7/1/16%1Construction:Labor%1%1 -349.5%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('SPL%1%1DEPOSIT%1 7/1/16%1Construction:Materials%1%1 -250.5%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('SPL%1%1DEPOSIT%1 7/1/16%1Fees%1%1 -100%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('ENDTRNS');
 
-        ServerFilePath := CopyStr(FileMgt.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
-        FileMgt.BLOBExportToServerFile(TempBlob, ServerFilePath);
+        ServerFilePath := CopyStr(FileManagement.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
+        FileManagement.BLOBExportToServerFile(TempBlob, ServerFilePath);
     end;
 
     local procedure GenerateValidIIFTransactionFileLastCenturyDates(var ServerFilePath: Text[250]);
     var
         TempBlob: Codeunit "Temp Blob";
-        Stream: OutStream;
+        TempOutStream: OutStream;
         Tab: Char;
         CR: Char;
     begin
         Tab := 9;
         CR := 13;
 
-        TempBlob.CreateOutStream(Stream, TEXTENCODING::UTF8);
-        Stream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('!SPL%1SPLID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('!ENDTRNS');
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 10/1/98%1Savings%1%1 650%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/23/98%1Construction:Labor%1%1 -349.5%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 10/11/98%1Construction:Materials%1%1 -350.5%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('ENDTRNS');
+        TempBlob.CreateOutStream(TempOutStream, TEXTENCODING::UTF8);
+        TempOutStream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('!SPL%1SPLID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('!ENDTRNS');
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 10/1/98%1Savings%1%1 650%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/23/98%1Construction:Labor%1%1 -349.5%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 10/11/98%1Construction:Materials%1%1 -350.5%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('ENDTRNS');
 
-        ServerFilePath := CopyStr(FileMgt.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
-        FileMgt.BLOBExportToServerFile(TempBlob, ServerFilePath);
+        ServerFilePath := CopyStr(FileManagement.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
+        FileManagement.BLOBExportToServerFile(TempBlob, ServerFilePath);
     end;
 
     local procedure GenerateIIFTransactionFileNoHeader(var ServerFilePath: Text[250]);
     var
         TempBlob: Codeunit "Temp Blob";
-        Stream: OutStream;
+        TempOutStream: OutStream;
         Tab: Char;
         CR: Char;
     begin
         Tab := 9;
         CR := 13;
 
-        TempBlob.CreateOutStream(Stream, TEXTENCODING::UTF8);
-        Stream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Labor%1%1 -349.5%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Materials%1%1 -350.5%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('ENDTRNS');
+        TempBlob.CreateOutStream(TempOutStream, TEXTENCODING::UTF8);
+        TempOutStream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Labor%1%1 -349.5%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('SPL%1%1GENERAL JOURNAL%1 7/1/16%1Construction:Materials%1%1 -350.5%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('ENDTRNS');
 
-        ServerFilePath := CopyStr(FileMgt.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
-        FileMgt.BLOBExportToServerFile(TempBlob, ServerFilePath);
+        ServerFilePath := CopyStr(FileManagement.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
+        FileManagement.BLOBExportToServerFile(TempBlob, ServerFilePath);
     end;
 
     local procedure GenerateEmptyFile(var ServerFilePath: Text[250]);
     var
         TempBlob: Codeunit "Temp Blob";
-        Stream: OutStream;
+        TempOutStream: OutStream;
     begin
-        TempBlob.CreateOutStream(Stream, TEXTENCODING::UTF8);
+        TempBlob.CreateOutStream(TempOutStream, TEXTENCODING::UTF8);
 
-        ServerFilePath := CopyStr(FileMgt.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
-        FileMgt.BLOBExportToServerFile(TempBlob, ServerFilePath);
+        ServerFilePath := CopyStr(FileManagement.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
+        FileManagement.BLOBExportToServerFile(TempBlob, ServerFilePath);
     end;
 
     local procedure GenerateIIFFileMissingTransactionTypeField(var ServerFilePath: Text[250]);
     var
         TempBlob: Codeunit "Temp Blob";
-        Stream: OutStream;
+        TempOutStream: OutStream;
         Tab: Char;
         CR: Char;
     begin
         Tab := 9;
         CR := 13;
 
-        TempBlob.CreateOutStream(Stream, TEXTENCODING::UTF8);
-        Stream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1ABCD%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('!SPL%1SPLID%1ABCD%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('!ENDTRNS');
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('ENDTRNS');
+        TempBlob.CreateOutStream(TempOutStream, TEXTENCODING::UTF8);
+        TempOutStream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1ABCD%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('!SPL%1SPLID%1ABCD%1DATE%1ACCNT%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('!ENDTRNS');
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('ENDTRNS');
 
-        ServerFilePath := CopyStr(FileMgt.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
-        FileMgt.BLOBExportToServerFile(TempBlob, ServerFilePath);
+        ServerFilePath := CopyStr(FileManagement.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
+        FileManagement.BLOBExportToServerFile(TempBlob, ServerFilePath);
     end;
 
     local procedure GenerateIIFFileMissingAccountField(var ServerFilePath: Text[250]);
     var
         TempBlob: Codeunit "Temp Blob";
-        Stream: OutStream;
+        TempOutStream: OutStream;
         Tab: Char;
         CR: Char;
     begin
         Tab := 9;
         CR := 13;
 
-        TempBlob.CreateOutStream(Stream, TEXTENCODING::UTF8);
-        Stream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ABCD%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('!SPL%1SPLID%1TRNSTYPE%1DATE%1ABCD%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('!ENDTRNS');
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('ENDTRNS');
+        TempBlob.CreateOutStream(TempOutStream, TEXTENCODING::UTF8);
+        TempOutStream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ABCD%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('!SPL%1SPLID%1TRNSTYPE%1DATE%1ABCD%1CLASS%1AMOUNT%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('!ENDTRNS');
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('ENDTRNS');
 
-        ServerFilePath := CopyStr(FileMgt.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
-        FileMgt.BLOBExportToServerFile(TempBlob, ServerFilePath);
+        ServerFilePath := CopyStr(FileManagement.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
+        FileManagement.BLOBExportToServerFile(TempBlob, ServerFilePath);
     end;
 
     local procedure GenerateIIFFileMissingAmountField(var ServerFilePath: Text[250]);
     var
         TempBlob: Codeunit "Temp Blob";
-        Stream: OutStream;
+        TempOutStream: OutStream;
         Tab: Char;
         CR: Char;
     begin
         Tab := 9;
         CR := 13;
 
-        TempBlob.CreateOutStream(Stream, TEXTENCODING::UTF8);
-        Stream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1ABCD%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('!SPL%1SPLID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1ABCD%1DOCNUM%1MEMO', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('!ENDTRNS');
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1', Tab));
-        Stream.WRITE(FORMAT(CR));
-        Stream.WRITE('ENDTRNS');
+        TempBlob.CreateOutStream(TempOutStream, TEXTENCODING::UTF8);
+        TempOutStream.WRITE(STRSUBSTNO('!TRNS%1TRNSID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1ABCD%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('!SPL%1SPLID%1TRNSTYPE%1DATE%1ACCNT%1CLASS%1ABCD%1DOCNUM%1MEMO', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('!ENDTRNS');
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE(STRSUBSTNO('TRNS%1%1GENERAL JOURNAL%1 7/1/16%1Savings%1%1 650%1%1', Tab));
+        TempOutStream.WRITE(FORMAT(CR));
+        TempOutStream.WRITE('ENDTRNS');
 
-        ServerFilePath := CopyStr(FileMgt.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
-        FileMgt.BLOBExportToServerFile(TempBlob, ServerFilePath);
+        ServerFilePath := CopyStr(FileManagement.ServerTempFileName('.iif'), 1, MaxStrLen(ServerFilePath));
+        FileManagement.BLOBExportToServerFile(TempBlob, ServerFilePath);
     end;
 
     [MessageHandler]

@@ -142,12 +142,14 @@ codeunit 1461 "SignedXml Impl."
     end;
 
 #if not CLEAN19
+#pragma warning disable AL0432
     [Obsolete('Replaced by SetSigningKey function with XmlString parameter.', '19.1')]
     procedure SetSigningKey(var SignatureKey: Record "Signature Key")
     begin
         if SignatureKey.TryGetInstance(DotNetAsymmetricAlgorithm) then
             DotNetSignedXml.SigningKey := DotNetAsymmetricAlgorithm;
     end;
+#pragma warning restore
 #endif
 
     procedure SetSigningKey(XmlString: Text)
@@ -163,6 +165,11 @@ codeunit 1461 "SignedXml Impl."
         ISignatureAlgorithm.FromXmlString(XmlString);
         ISignatureAlgorithm.GetInstance(DotNetAsymmetricAlgorithm);
         DotNetSignedXml.SigningKey := DotNetAsymmetricAlgorithm;
+    end;
+
+    procedure SetSigningKey(SignatureKey: Codeunit "Signature Key")
+    begin
+        SetSigningKey(SignatureKey.ToXmlString());
     end;
 
     procedure ComputeSignature()

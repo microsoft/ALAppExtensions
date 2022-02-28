@@ -12,7 +12,7 @@ codeunit 1482 "Edit in Excel Impl."
                   TableData "Tenant Web Service" = r;
 
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
         EditinExcel: Codeunit "Edit in Excel";
         EditInExcelTelemetryCategoryTxt: Label 'Edit in Excel', Locked = true;
         TenantWebserviceDoesNotExistTxt: Label 'Tenant web service does not exist.', Locked = true;
@@ -115,8 +115,8 @@ codeunit 1482 "Edit in Excel Impl."
         DataEntityExportInfoParam.Language := LanguageIDToCultureName(WindowsLanguage); // todo get language
         DataEntityExportInfoParam.EnableDesign := true;
         DataEntityExportInfoParam.RefreshOnOpen := true;
-        if EnvironmentInfo.IsSaaS() then
-            DataEntityExportInfoParam.Headers.Add('BCEnvironment', EnvironmentInfo.GetEnvironmentName());
+        if EnvironmentInformation.IsSaaS() then
+            DataEntityExportInfoParam.Headers.Add('BCEnvironment', EnvironmentInformation.GetEnvironmentName());
         if Company.Get(TenantWebService.CurrentCompany) then
             DataEntityExportInfoParam.Headers.Add('Company', Format(Company.Id, 0, 4))
         else
@@ -321,7 +321,9 @@ codeunit 1482 "Edit in Excel Impl."
         if FilterClause <> '' then begin
             TrimFilterClause(FilterClause);
 
+#pragma warning disable AA0217
             if Regex.IsMatch(FilterClause, StrSubstNo('\b%1 \b', FilterFieldName)) then begin
+#pragma warning restore
                 FilterClause := CopyStr(FilterClause, StrPos(FilterClause, FilterFieldName + ' '));
 
                 while FilterClause <> '' do begin
@@ -398,7 +400,12 @@ codeunit 1482 "Edit in Excel Impl."
         exit(FilterCreated);
     end;
 
-    local procedure ConcatValueStringPortions(var ValueStringParam: DotNet String; var FilterSegmentsParam: DotNet Array; var Index: Integer): Integer
+    local procedure IsFilteringForEmptyString(FilterStringParam: DotNet String): Boolean
+    begin
+        exit(FilterStringParam = '''''');
+    end;
+
+    local procedure ConcatValueStringPortions(var FilterStringParam: DotNet String; var FilterSegmentsParam: DotNet Array; var Index: Integer): Integer
     var
         ValueStringPortion: Text;
         LastPosition: Integer;
@@ -408,35 +415,37 @@ codeunit 1482 "Edit in Excel Impl."
         StrLenBeforeTrim: Integer;
     begin
         SingleTick := 39;
+        if IsFilteringForEmptyString(FilterStringParam) then
+            exit(0); // In this case we did not concatenate or trim anything
 
-        FirstPosition := ValueStringParam.IndexOf(SingleTick);
-        LastPosition := ValueStringParam.LastIndexOf(SingleTick);
+        FirstPosition := FilterStringParam.IndexOf(SingleTick);
+        LastPosition := FilterStringParam.LastIndexOf(SingleTick);
 
         // The valueString might have been spit earlier if it had an embedded ' ', stick it back together
         if (FirstPosition = 0) and (FirstPosition = LastPosition) then
             repeat
                 ValueStringPortion := FilterSegmentsParam.GetValue(Index);
-                ValueStringParam := ValueStringParam.Concat(ValueStringParam, ' ');
-                ValueStringParam := ValueStringParam.Concat(ValueStringParam, ValueStringPortion);
+                FilterStringParam := FilterStringParam.Concat(FilterStringParam, ' ');
+                FilterStringParam := FilterStringParam.Concat(FilterStringParam, ValueStringPortion);
                 ValueStringPortion := FilterSegmentsParam.GetValue(Index);
                 Index += 1;
             until ValueStringPortion.LastIndexOf(SingleTick) > 0;
 
         // Now that the string has been put back together if needed, remove leading and trailing SingleTick
         // as the excel addin will apply them.
-        FirstPosition := ValueStringParam.IndexOf(SingleTick);
+        FirstPosition := FilterStringParam.IndexOf(SingleTick);
 
-        StrLenBeforeTrim := StrLen(ValueStringParam);
+        StrLenBeforeTrim := StrLen(FilterStringParam);
         if FirstPosition = 0 then begin
-            ValueStringParam := DelStr(ValueStringParam, 1, 1);
-            LastPosition := ValueStringParam.LastIndexOf(SingleTick);
+            FilterStringParam := DelStr(FilterStringParam, 1, 1);
+            LastPosition := FilterStringParam.LastIndexOf(SingleTick);
             if LastPosition > 0 then begin
-                ValueStringParam := DelChr(ValueStringParam, '>', ')'); // Remove any trailing ')'
-                ValueStringParam := DelStr(ValueStringParam, ValueStringParam.Length, 1);
+                FilterStringParam := DelChr(FilterStringParam, '>', ')'); // Remove any trailing ')'
+                FilterStringParam := DelStr(FilterStringParam, FilterStringParam.Length, 1);
             end;
         end;
 
-        StrLenAfterTrim := StrLen(ValueStringParam);
+        StrLenAfterTrim := StrLen(FilterStringParam);
         exit(StrLenBeforeTrim - StrLenAfterTrim);
     end;
 
@@ -511,7 +520,7 @@ codeunit 1482 "Edit in Excel Impl."
 
     local procedure EnsureKeysInSelect(SourceTableTextParam: Text; ColumnDictionary: DotNet GenericDictionary2)
     var
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         VarFieldRef: FieldRef;
         VarKeyRef: KeyRef;
         KeysText: DotNet String;
@@ -520,8 +529,8 @@ codeunit 1482 "Edit in Excel Impl."
     begin
         Evaluate(SourceTableId, SourceTableTextParam);
 
-        RecRef.Open(SourceTableId);
-        VarKeyRef := RecRef.KeyIndex(1);
+        RecordRef.Open(SourceTableId);
+        VarKeyRef := RecordRef.KeyIndex(1);
         for i := 1 to VarKeyRef.FieldCount do begin
             VarFieldRef := VarKeyRef.FieldIndex(i);
             KeysText := ExternalizeODataObjectName(VarFieldRef.Name);
@@ -614,7 +623,7 @@ codeunit 1482 "Edit in Excel Impl."
 
     local procedure GetHostName(): Text
     begin
-        if EnvironmentInfo.IsSaaS() then
+        if EnvironmentInformation.IsSaaS() then
             exit(GetExcelAddinProviderServiceUrl());
         exit(GetUrl(ClientType::Web));
     end;
@@ -633,8 +642,9 @@ codeunit 1482 "Edit in Excel Impl."
         Handled: Boolean;
     begin
         if StrPos(ODataFilter, '$filter=') = 0 then
+#pragma warning disable AA0217
             ODataFilter := StrSubstNo('%1%2', '$filter=', ODataFilter);
-
+#pragma warning restore
         EditinExcel.OnEditInExcel(ServiceName, ODataFilter, '', Handled);
         if Handled then begin
             Session.LogMessage('0000F7M', EditInExcelHandledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
@@ -650,8 +660,9 @@ codeunit 1482 "Edit in Excel Impl."
         Handled: Boolean;
     begin
         if StrPos(ODataFilter, '$filter=') = 0 then
+#pragma warning disable AA0217
             ODataFilter := StrSubstNo('%1%2', '$filter=', ODataFilter);
-
+#pragma warning restore
         EditinExcel.OnEditInExcel(ServiceName, ODataFilter, SearchString, Handled);
         if Handled then begin
             Session.LogMessage('0000F7N', EditInExcelHandledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);

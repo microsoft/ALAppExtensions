@@ -33,30 +33,30 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
     end;
 
     [NonDebuggable]
-    local procedure GetSharedKeySignature(HttpRequest: HttpRequestMessage; StorageAccount: Text): Text
+    local procedure GetSharedKeySignature(HttpRequestMessage: HttpRequestMessage; StorageAccount: Text): Text
     var
         StringToSign: Text;
         Signature: Text;
-        SignaturePlaceHolderLbl: Label 'SharedKey %1:%2', Comment = '%1 = Account Name; %2 = Calculated Signature', Locked=true;
+        SignaturePlaceHolderLbl: Label 'SharedKey %1:%2', Comment = '%1 = Account Name; %2 = Calculated Signature', Locked = true;
         SecretCanNotBeEmptyErr: Label 'Secret (Access Key) must be provided';
     begin
         if Secret = '' then
             Error(SecretCanNotBeEmptyErr);
 
-        StringToSign := CreateSharedKeyStringToSign(HttpRequest, StorageAccount);
+        StringToSign := CreateSharedKeyStringToSign(HttpRequestMessage, StorageAccount);
         Signature := AuthFormatHelper.GetAccessKeyHashCode(StringToSign, Secret);
         exit(StrSubstNo(SignaturePlaceHolderLbl, StorageAccount, Signature));
     end;
 
-    local procedure CreateSharedKeyStringToSign(Request: HttpRequestMessage; StorageAccount: Text): Text
+    local procedure CreateSharedKeyStringToSign(HttpRequestMessage: HttpRequestMessage; StorageAccount: Text): Text
     var
         RequestHeaders, ContentHeaders : HttpHeaders;
         StringToSign: Text;
     begin
-        Request.GetHeaders(RequestHeaders);
-        if TryGetContentHeaders(Request, ContentHeaders) then;
+        HttpRequestMessage.GetHeaders(RequestHeaders);
+        if TryGetContentHeaders(HttpRequestMessage, ContentHeaders) then;
 
-        StringToSign += Request.Method() + NewLine();
+        StringToSign += HttpRequestMessage.Method() + NewLine();
         StringToSign += GetHeaderValueOrEmpty(ContentHeaders, 'Content-Encoding') + NewLine();
         StringToSign += GetHeaderValueOrEmpty(ContentHeaders, 'Content-Language') + NewLine();
         StringToSign += GetHeaderValueOrEmpty(ContentHeaders, 'Content-Length') + NewLine();
@@ -69,15 +69,15 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
         StringToSign += GetHeaderValueOrEmpty(RequestHeaders, 'If-Unmodified-Since') + NewLine();
         StringToSign += GetHeaderValueOrEmpty(RequestHeaders, 'Range') + NewLine();
         StringToSign += GetCanonicalizedHeaders(RequestHeaders) + NewLine();
-        StringToSign += GetCanonicalizedResource(StorageAccount, Request.GetRequestUri());
+        StringToSign += GetCanonicalizedResource(StorageAccount, HttpRequestMessage.GetRequestUri());
 
         exit(StringToSign);
     end;
 
     [TryFunction]
-    local procedure TryGetContentHeaders(var Request: HttpRequestMessage; var RequestHeaders: HttpHeaders)
+    local procedure TryGetContentHeaders(var HttpRequestMessage: HttpRequestMessage; var RequestHttpHeaders: HttpHeaders)
     begin
-        Request.Content.GetHeaders(RequestHeaders);
+        HttpRequestMessage.Content.GetHeaders(RequestHttpHeaders);
     end;
 
     local procedure GetHeaderValueOrEmpty(Headers: HttpHeaders; HeaderKey: Text): Text

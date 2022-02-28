@@ -44,6 +44,9 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
         WorldPayNoLinkQst: Label 'An error occured while creating the WorldPay payment link.\\Do you want to continue to create the document without the link?';
         WorldPayTargetURLIsEmptyTxt: Label 'WorldPay target URL is empty.', Locked = true;
         WorldPayTargetURLIsInvalidTxt: Label 'WorldPay target URL is invalid.', Locked = true;
+        WorldPayInvoiceNoTok: Label '%1 (%2 %3)', Locked = true;
+        WorldPayTargetURLTok: Label '%1&%2', Locked = true;
+        WorldPayUrlTok: Label '%1 (%2)', Locked = true;
 
     local procedure GenerateHyperlink(var PaymentReportingArgument: Record 1062): Boolean;
     var
@@ -71,7 +74,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
 
                     InvoiceNo := SalesInvoiceHeader."No.";
                     IF SalesInvoiceHeader."Your Reference" <> '' THEN
-                        InvoiceNo := STRSUBSTNO('%1 (%2 %3)', InvoiceNo, YourReferenceTxt, SalesInvoiceHeader."Your Reference");
+                        InvoiceNo := STRSUBSTNO(WorldPayInvoiceNoTok, InvoiceNo, YourReferenceTxt, SalesInvoiceHeader."Your Reference");
 
                     QueryString := STRSUBSTNO(WorldPayMandatoryParametersTok,
                         UriEscapeDataString(MsWorldPayStandardAccount."Account ID"),
@@ -85,7 +88,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
                         exit(false);
                     end;
 
-                    TargetURL := STRSUBSTNO('%1&%2', BaseURL, QueryString);
+                    TargetURL := STRSUBSTNO(WorldPayTargetURLTok, BaseURL, QueryString);
                     if not PaymentReportingArgument.TrySetTargetURL(TargetURL) then begin
                         Session.LogMessage('0000804', WorldPayTargetURLIsInvalidTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WorldPayTelemetryCategoryTok);
                         exit(false);
@@ -112,7 +115,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
                     exit(true);
                 END;
             ELSE
-                ERROR(STRSUBSTNO(NotSupportedTypeErr, DocumentRecordRef.CAPTION()));
+                ERROR(NotSupportedTypeErr, DocumentRecordRef.CAPTION());
         END;
     end;
 
@@ -134,7 +137,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
 
         PaymentReportingArgument.VALIDATE("URL Caption", WorldPayCaptionURLTxt);
         IF STRPOS(PaymentReportingArgument.GetTargetURL(), GetSandboxURL()) > 0 THEN
-            PaymentReportingArgument.VALIDATE("URL Caption", STRSUBSTNO('%1 (%2)', WorldPayCaptionURLTxt, DemoLinkCaptionTxt));
+            PaymentReportingArgument.VALIDATE("URL Caption", STRSUBSTNO(WorldPayUrlTok, WorldPayCaptionURLTxt, DemoLinkCaptionTxt));
         PaymentReportingArgument.MODIFY(TRUE);
 
         IF GLOBALLANGUAGE() <> CurrentLanguage THEN
@@ -180,7 +183,6 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
         PaymentMethod.Code := WorldPayPaymentMethodCodeTok;
         PaymentMethod.Description := WorldPayPaymentMethodDescTok;
         PaymentMethod."Bal. Account Type" := PaymentMethod."Bal. Account Type"::"G/L Account";
-        PaymentMethod."Use for Invoicing" := TRUE;
         IF PaymentMethod.INSERT() THEN;
     end;
 
@@ -214,6 +216,11 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnRegisterPaymentServiceProviders', '', false, false)]
+    local procedure RegisterWorldPayStandardTemplateSubscriber(var PaymentServiceSetup: Record 1060)
+    begin
+        RegisterWorldPayStandardTemplate(PaymentServiceSetup);
+    end;
+
     procedure RegisterWorldPayStandardTemplate(var PaymentServiceSetup: Record 1060)
     var
         TempMSWorldPayStdTemplate: Record "MS - WorldPay Std. Template" temporary;
@@ -276,7 +283,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Manual Setup", 'OnRegisterManualSetup', '', false, false)]
-    local procedure RegisterBusinessSetup(var Sender: Codeunit 1875)
+    local procedure RegisterBusinessSetup(var Sender: Codeunit "Manual Setup")
     var
         MSWorldPayStandardAccount: Record "MS - WorldPay Standard Account";
         MSWorldPayStdTemplate: Record "MS - WorldPay Std. Template";
@@ -296,9 +303,9 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
     procedure ValidateChangeTargetURL()
     var
         CompanyInformationMgt: Codeunit "Company Information Mgt.";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInfo.IsSaaS() THEN
+        IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInformation.IsSaaS() THEN
             ERROR(TargetURLCannotBeChangedInDemoCompanyErr);
     end;
 

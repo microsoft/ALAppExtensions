@@ -10,7 +10,11 @@ codeunit 31038 "Sales Posting Handler CZL"
         BankOperationsFunctionsCZL: Codeunit "Bank Operations Functions CZL";
         ReverseChargeCheckCZL: Enum "Reverse Charge Check CZL";
 
+#if not CLEAN19
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterPostInvPostBuffer', '', false, false)]
+#else
+    // TODO: Subscribe the new event OnPostLinesOnAfterGenJnlLinePost from "Sales Post Invoice" instead of obsoleted event OnAfterPostInvPostBuffer from "Sales-Post"
+#endif
     local procedure SalesPostVATCurrencyFactorOnAfterPostInvPostBuffer(var GenJnlLine: Record "Gen. Journal Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer"; var SalesHeader: Record "Sales Header"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     var
         VATCurrFactor: Decimal;
@@ -257,9 +261,6 @@ codeunit 31038 "Sales Posting Handler CZL"
 
                 if AmountToCheckLimit < CommoditySetupCZL."Commodity Limit Amount LCY" then begin
                     // Normal
-#if not CLEAN17
-                    if not CheckTariffNoByBaseApp(CommoditySetupCZL) then // check done by Base Application
-#endif
                     if Temp1InventoryBuffer.Get(TempInventoryBuffer."Item No.", Format(SalesLine."VAT Calculation Type"::"Reverse Charge VAT", 0, '<Number>')) then
                         if not ConfirmManagement.GetResponseOrDefault(StrSubStno(VATPostingSetupPostMismashQst,
                             CommoditySetupCZL."Commodity Code", CommoditySetupCZL."Commodity Limit Amount LCY",
@@ -275,19 +276,6 @@ codeunit 31038 "Sales Posting Handler CZL"
             until TempInventoryBuffer.Next() = 0;
     end;
 
-#if not CLEAN17
-    [Obsolete('Will be removed together with Commodity Setup remove from Base App.', '17.5')]
-    local procedure CheckTariffNoByBaseApp(var CommoditySetupCZL: Record "Commodity Setup CZL"): Boolean
-    var
-        CommoditySetup: Record "Commodity Setup";
-    begin
-        CommoditySetupCZL.CopyFilter("Commodity Code", CommoditySetup."Commodity Code");
-        CommoditySetupCZL.CopyFilter("Valid From", CommoditySetup."Valid From");
-        CommoditySetupCZL.CopyFilter("Valid To", CommoditySetup."Valid To");
-        exit(not CommoditySetup.IsEmpty());
-    end;
-
-#endif
     local procedure GetQtyToInvoice(SalesLine: Record "Sales Line"; Ship: Boolean): Decimal
     var
         AllowedQtyToInvoice: Decimal;
@@ -317,8 +305,26 @@ codeunit 31038 "Sales Posting Handler CZL"
         exit(ItemNoText);
     end;
 
+#if not CLEAN20
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostCustomerEntry', '', false, false)]
     local procedure UpdateSymbolsAndBankAccountOnBeforePostCustomerEntry(var GenJnlLine: Record "Gen. Journal Line"; var SalesHeader: Record "Sales Header")
+    begin
+        GenJnlLine."Specific Symbol CZL" := SalesHeader."Specific Symbol CZL";
+        if SalesHeader."Variable Symbol CZL" <> '' then
+            GenJnlLine."Variable Symbol CZL" := SalesHeader."Variable Symbol CZL"
+        else
+            GenJnlLine."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(GenJnlLine."Document No.");
+        GenJnlLine."Constant Symbol CZL" := SalesHeader."Constant Symbol CZL";
+        GenJnlLine."Bank Account Code CZL" := SalesHeader."Bank Account Code CZL";
+        GenJnlLine."Bank Account No. CZL" := SalesHeader."Bank Account No. CZL";
+        GenJnlLine."IBAN CZL" := SalesHeader."IBAN CZL";
+        GenJnlLine."SWIFT Code CZL" := SalesHeader."SWIFT Code CZL";
+        GenJnlLine."Transit No. CZL" := SalesHeader."Transit No. CZL";
+    end;
+
+#endif
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
+    local procedure UpdateSymbolsAndBankAccountOnPostLedgerEntryOnBeforeGenJnlPostLine(var GenJnlLine: Record "Gen. Journal Line"; var SalesHeader: Record "Sales Header")
     begin
         GenJnlLine."Specific Symbol CZL" := SalesHeader."Specific Symbol CZL";
         if SalesHeader."Variable Symbol CZL" <> '' then
@@ -403,6 +409,37 @@ codeunit 31038 "Sales Posting Handler CZL"
                 SalesHeader.Validate("VAT Date CZL", PostingDate);
                 SalesHeader.Modify();
             end;
+    end;
+
+    [EventSubscriber(ObjectType::Report, Report::"Sales Document - Test", 'OnAfterCheckSalesDoc', '', false, false)]
+    local procedure CheckIntrastatMandatoryFieldsOnAfterCheckSalesDoc(SalesHeader: Record "Sales Header"; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])
+    var
+        StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
+        MustBeSpecifiedLbl: Label '%1 must be specified.', Comment = '%1 = FieldCaption';
+    begin
+        if not (SalesHeader.Ship or SalesHeader.Receive) then
+            exit;
+        if SalesHeader.IsIntrastatTransactionCZL() and SalesHeader.ShipOrReceiveInventoriableTypeItemsCZL() then begin
+            StatutoryReportingSetupCZL.Get();
+            if StatutoryReportingSetupCZL."Transaction Type Mandatory" then
+                if SalesHeader."Transaction Type" = '' then
+                    AddError(StrSubstNo(MustBeSpecifiedLbl, SalesHeader.FieldCaption("Transaction Type")), ErrorCounter, ErrorText);
+            if StatutoryReportingSetupCZL."Transaction Spec. Mandatory" then
+                if SalesHeader."Transaction Specification" = '' then
+                    AddError(StrSubstNo(MustBeSpecifiedLbl, SalesHeader.FieldCaption("Transaction Specification")), ErrorCounter, ErrorText);
+            if StatutoryReportingSetupCZL."Transport Method Mandatory" then
+                if SalesHeader."Transport Method" = '' then
+                    AddError(StrSubstNo(MustBeSpecifiedLbl, SalesHeader.FieldCaption("Transport Method")), ErrorCounter, ErrorText);
+            if StatutoryReportingSetupCZL."Shipment Method Mandatory" then
+                if SalesHeader."Shipment Method Code" = '' then
+                    AddError(StrSubstNo(MustBeSpecifiedLbl, SalesHeader.FieldCaption("Shipment Method Code")), ErrorCounter, ErrorText);
+        end;
+    end;
+
+    local procedure AddError(Text: Text[250]; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])
+    begin
+        ErrorCounter += 1;
+        ErrorText[ErrorCounter] := Text;
     end;
 
     [IntegrationEvent(false, false)]

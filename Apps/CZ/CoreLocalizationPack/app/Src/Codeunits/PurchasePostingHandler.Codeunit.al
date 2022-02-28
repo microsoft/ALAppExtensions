@@ -10,13 +10,17 @@ codeunit 31039 "Purchase Posting Handler CZL"
         BankOperationsFunctionsCZL: Codeunit "Bank Operations Functions CZL";
         ReverseChargeCheckCZL: Enum "Reverse Charge Check CZL";
 
+#if not CLEAN19
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostInvPostBuffer', '', false, false)]
-    local procedure PurchasePostVATCurrencyFactorOnAfterPostInvPostBuffer(var GenJnlLine: Record "Gen. Journal Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer"; PurchHeader: Record "Purchase Header"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+#else
+    // TODO: Subscribe the new event OnPostLinesOnAfterGenJnlLinePost from "Purch Post Invoice" instead of obsoleted event OnAfterPostInvPostBuffer from "Purch.-Post"
+#endif
+    local procedure PurchasePostVATCurrencyFactorOnAfterPostInvPostBuffer(var InvoicePostBuffer: Record "Invoice Post. Buffer"; PurchHeader: Record "Purchase Header"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     begin
         if (PurchHeader."Currency Code" <> '') and (PurchHeader."Currency Factor" <> PurchHeader."VAT Currency Factor CZL") and
-                    ((InvoicePostBuffer."VAT Calculation Type" = InvoicePostBuffer."VAT Calculation Type"::"Reverse Charge VAT") or
-                     (InvoicePostBuffer."VAT Calculation Type" = InvoicePostBuffer."VAT Calculation Type"::"Normal VAT"))
-                 then begin
+           ((InvoicePostBuffer."VAT Calculation Type" = InvoicePostBuffer."VAT Calculation Type"::"Reverse Charge VAT") or
+            (InvoicePostBuffer."VAT Calculation Type" = InvoicePostBuffer."VAT Calculation Type"::"Normal VAT"))
+        then begin
             VATPostingSetup.Get(InvoicePostBuffer."VAT Bus. Posting Group", InvoicePostBuffer."VAT Prod. Posting Group");
             VATPostingSetup.TestField("Purch. VAT Curr. Exch. Acc CZL");
             SourceCodeSetup.Get();
@@ -49,31 +53,14 @@ codeunit 31039 "Purchase Posting Handler CZL"
             AmtType::Base:
                 begin
                     AccountNo := VATPostingSetup."Purch. VAT Curr. Exch. Acc CZL";
-                    if PurchaseHeader."Prices Including VAT" then
-                        CalcAmt := InvoicePostBuffer.Amount -
-#if CLEAN18
-                        0
-#else
-                          Round(InvoicePostBuffer."Ext. Amount" - InvoicePostBuffer."Ext. VAT Difference (LCY)",
-                            Currency."Amount Rounding Precision")
-#endif
-                    else
-                        CalcAmt := (InvoicePostBuffer.Amount -
-#if CLEAN18
-                        0);
-#else
-                           (Round(InvoicePostBuffer."Ext. Amount", Currency."Amount Rounding Precision")));
-#endif
+                    CalcAmt := InvoicePostBuffer.Amount -
+                        Round(InvoicePostBuffer."Ext. Amount CZL", Currency."Amount Rounding Precision");
                 end;
             AmtType::VAT:
                 begin
                     CalcAmt := InvoicePostBuffer."VAT Amount" -
-#if CLEAN18
-                        0;
-#else
-                       Round(InvoicePostBuffer."Ext. Amount Including VAT" - InvoicePostBuffer."Ext. Amount" +
-                         InvoicePostBuffer."Ext. VAT Difference (LCY)", Currency."Amount Rounding Precision");
-#endif
+                        Round(InvoicePostBuffer."Ext. Amount Incl. VAT CZL" - InvoicePostBuffer."Ext. Amount CZL",
+                            Currency."Amount Rounding Precision");
                     if CalcAmt < 0 then
                         AccountNo := Currency."Realized Gains Acc."
                     else
@@ -146,43 +133,15 @@ codeunit 31039 "Purchase Posting Handler CZL"
             if InvoicePostBuffer."VAT Calculation Type" = InvoicePostBuffer."VAT Calculation Type"::"Normal VAT" then begin
                 // Normal VAT
                 GenJournalLine.Quantity := InvoicePostBuffer.Quantity;
-                if PurchaseHeader."Prices Including VAT" then begin
-#if not CLEAN18
-                    GenJournalLine.Amount := Round(InvoicePostBuffer."Ext. Amount" - InvoicePostBuffer."Ext. VAT Difference (LCY)",
-                        Currency."Amount Rounding Precision");
-
-                    GenJournalLine."VAT Amount" := Round(InvoicePostBuffer."Ext. Amount Including VAT" - InvoicePostBuffer."Ext. Amount" +
-                        InvoicePostBuffer."Ext. VAT Difference (LCY)", Currency."Amount Rounding Precision");
-#endif
-                    GenJournalLine."VAT Base Amount" := GenJournalLine.Amount;
-                    GenJournalLine."Source Currency Amount" := Round(InvoicePostBuffer."Amount (ACY)", Currency."Amount Rounding Precision");
-                    GenJournalLine."Source Curr. VAT Amount" :=
-                      Round(InvoicePostBuffer."VAT Amount (ACY)", Currency."Amount Rounding Precision");
-                    GenJournalLine."Source Curr. VAT Base Amount" :=
-                      Round(InvoicePostBuffer."VAT Base Amount (ACY)", Currency."Amount Rounding Precision");
-#if not CLEAN18
-                    GenJournalLine."VAT Difference" :=
-                      Round(InvoicePostBuffer."Ext. VAT Difference (LCY)", Currency."Amount Rounding Precision");
-                    GenJournalLine."VAT Difference (LCY)" := GenJournalLine."VAT Difference";
-#endif
-                end else begin
-#if not CLEAN18
-                    GenJournalLine.Amount := Round(InvoicePostBuffer."Ext. Amount", Currency."Amount Rounding Precision");
-                    GenJournalLine."VAT Amount" := Round(InvoicePostBuffer."Ext. Amount Including VAT" - InvoicePostBuffer."Ext. Amount" +
-                        InvoicePostBuffer."Ext. VAT Difference (LCY)", Currency."Amount Rounding Precision");
-#endif
-                    GenJournalLine."VAT Base Amount" := GenJournalLine.Amount;
-                    GenJournalLine."Source Currency Amount" := Round(InvoicePostBuffer."Amount (ACY)", Currency."Amount Rounding Precision");
-                    GenJournalLine."Source Curr. VAT Amount" :=
-                      Round(InvoicePostBuffer."VAT Amount (ACY)", Currency."Amount Rounding Precision");
-                    GenJournalLine."Source Curr. VAT Base Amount" :=
-                      Round(InvoicePostBuffer."VAT Base Amount (ACY)", Currency."Amount Rounding Precision");
-#if not CLEAN18
-                    GenJournalLine."VAT Difference" :=
-                      Round(InvoicePostBuffer."Ext. VAT Difference (LCY)", Currency."Amount Rounding Precision");
-                    GenJournalLine."VAT Difference (LCY)" := GenJournalLine."VAT Difference";
-#endif
-                end;
+                GenJournalLine.Amount := Round(InvoicePostBuffer."Ext. Amount CZL", Currency."Amount Rounding Precision");
+                GenJournalLine."VAT Amount" := Round(InvoicePostBuffer."Ext. Amount Incl. VAT CZL" - InvoicePostBuffer."Ext. Amount CZL",
+                    Currency."Amount Rounding Precision");
+                GenJournalLine."VAT Base Amount" := GenJournalLine.Amount;
+                GenJournalLine."Source Currency Amount" := Round(InvoicePostBuffer."Amount (ACY)", Currency."Amount Rounding Precision");
+                GenJournalLine."Source Curr. VAT Amount" :=
+                    Round(InvoicePostBuffer."VAT Amount (ACY)", Currency."Amount Rounding Precision");
+                GenJournalLine."Source Curr. VAT Base Amount" :=
+                    Round(InvoicePostBuffer."VAT Base Amount (ACY)", Currency."Amount Rounding Precision");
             end else begin
                 // Reverse Charge VAT
                 if PurchaseHeader."VAT Currency Factor CZL" = 0 then
@@ -271,23 +230,6 @@ codeunit 31039 "Purchase Posting Handler CZL"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostInvPostBuffer', '', false, false)]
-    local procedure UpdateVatDateOnBeforePostInvPostBufferPurch(var GenJnlLine: Record "Gen. Journal Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer"; var PurchHeader: Record "Purchase Header")
-    begin
-        EliminateDoublePosting(InvoicePostBuffer, PurchHeader);
-    end;
-
-    [Obsolete('This procedure will be removed after removing feature from Base Application.', '17.0')]
-    local procedure EliminateDoublePosting(var InvoicePostBuffer: Record "Invoice Post. Buffer"; var PurchHeader: Record "Purchase Header")
-    begin
-        // Elimination of double posting
-        if (PurchHeader."Currency Code" <> '') and (PurchHeader."Currency Factor" <> PurchHeader."VAT Currency Factor CZL") and
-           ((InvoicePostBuffer."VAT Calculation Type" = InvoicePostBuffer."VAT Calculation Type"::"Reverse Charge VAT") or
-           (InvoicePostBuffer."VAT Calculation Type" = InvoicePostBuffer."VAT Calculation Type"::"Normal VAT"))
-        then
-            PurchHeader."Your Reference" := 'VAT Currency Diff. Posted';
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterCheckPurchDoc', '', false, false)]
     local procedure CheckIntrastatAndVatDateOnAfterCheckPurchDoc(var PurchHeader: Record "Purchase Header")
     var
@@ -334,8 +276,26 @@ codeunit 31039 "Purchase Posting Handler CZL"
             until PurchaseLine.Next() = 0;
     end;
 
+#if not CLEAN20
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostVendorEntry', '', false, false)]
     local procedure UpdateSymbolsAndBankAccountOnBeforePostVendorEntry(var GenJnlLine: Record "Gen. Journal Line"; var PurchHeader: Record "Purchase Header")
+    begin
+        GenJnlLine."Specific Symbol CZL" := PurchHeader."Specific Symbol CZL";
+        if PurchHeader."Variable Symbol CZL" <> '' then
+            GenJnlLine."Variable Symbol CZL" := PurchHeader."Variable Symbol CZL"
+        else
+            GenJnlLine."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(GenJnlLine."External Document No.");
+        GenJnlLine."Constant Symbol CZL" := PurchHeader."Constant Symbol CZL";
+        GenJnlLine."Bank Account Code CZL" := PurchHeader."Bank Account Code CZL";
+        GenJnlLine."Bank Account No. CZL" := PurchHeader."Bank Account No. CZL";
+        GenJnlLine."IBAN CZL" := PurchHeader."IBAN CZL";
+        GenJnlLine."SWIFT Code CZL" := PurchHeader."SWIFT Code CZL";
+        GenJnlLine."Transit No. CZL" := PurchHeader."Transit No. CZL";
+    end;
+
+#endif
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
+    local procedure UpdateSymbolsAndBankAccountOnPostLedgerEntryOnBeforeGenJnlPostLine(var GenJnlLine: Record "Gen. Journal Line"; var PurchHeader: Record "Purchase Header")
     begin
         GenJnlLine."Specific Symbol CZL" := PurchHeader."Specific Symbol CZL";
         if PurchHeader."Variable Symbol CZL" <> '' then
@@ -419,6 +379,124 @@ codeunit 31039 "Purchase Posting Handler CZL"
                 PurchaseHeader.Validate("VAT Date CZL", PurchaseHeader."Posting Date");
                 PurchaseHeader.Modify();
             end;
+    end;
+
+    [EventSubscriber(ObjectType::Report, Report::"Purchase Document - Test", 'OnAfterCheckPurchaseDoc', '', false, false)]
+    local procedure CheckIntrastatMandatoryFieldsOnAfterCheckPurchaseDoc(PurchaseHeader: Record "Purchase Header"; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])
+    var
+        StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
+        MustBeSpecifiedLbl: Label '%1 must be specified.', Comment = '%1 = FieldCaption';
+    begin
+        if not (PurchaseHeader.Ship or PurchaseHeader.Receive) then
+            exit;
+        if PurchaseHeader.IsIntrastatTransactionCZL() and PurchaseHeader.ShipOrReceiveInventoriableTypeItemsCZL() then begin
+            StatutoryReportingSetupCZL.Get();
+            if StatutoryReportingSetupCZL."Transaction Type Mandatory" then
+                if PurchaseHeader."Transaction Type" = '' then
+                    AddError(StrSubstNo(MustBeSpecifiedLbl, PurchaseHeader.FieldCaption("Transaction Type")), ErrorCounter, ErrorText);
+            if StatutoryReportingSetupCZL."Transaction Spec. Mandatory" then
+                if PurchaseHeader."Transaction Specification" = '' then
+                    AddError(StrSubstNo(MustBeSpecifiedLbl, PurchaseHeader.FieldCaption("Transaction Specification")), ErrorCounter, ErrorText);
+            if StatutoryReportingSetupCZL."Transport Method Mandatory" then
+                if PurchaseHeader."Transport Method" = '' then
+                    AddError(StrSubstNo(MustBeSpecifiedLbl, PurchaseHeader.FieldCaption("Transport Method")), ErrorCounter, ErrorText);
+            if StatutoryReportingSetupCZL."Shipment Method Mandatory" then
+                if PurchaseHeader."Shipment Method Code" = '' then
+                    AddError(StrSubstNo(MustBeSpecifiedLbl, PurchaseHeader.FieldCaption("Shipment Method Code")), ErrorCounter, ErrorText);
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Report, Report::"Purchase Document - Test", 'OnAfterCheckPurchaseDoc', '', false, false)]
+    local procedure CheckExternalDocumentNoOnAfterCheckPurchaseDoc(PurchaseHeader: Record "Purchase Header"; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])
+    var
+        VendLedgEntry: Record "Vendor Ledger Entry";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        VendorMgt: Codeunit "Vendor Mgt.";
+        ExternalDocumentNoAlreadyExistsLbl: Label 'Purchase %1 %2 already exists for this vendor.', Comment = '%1 = Document Type, %2 = Document No.';
+    begin
+        if PurchaseHeader."Vendor Invoice No." <> '' then begin
+            VendLedgEntry.SetCurrentKey("External Document No.");
+            VendorMgt.SetFilterForExternalDocNo(VendLedgEntry, PurchaseHeader."Document Type", PurchaseHeader."Vendor Invoice No.", PurchaseHeader."Pay-to Vendor No.", PurchaseHeader."Document Date");
+            if VendLedgEntry.IsEmpty() then begin
+                PurchInvHeader.SetCurrentKey("Vendor Invoice No.");
+                PurchInvHeader.SetRange("Vendor Invoice No.", PurchaseHeader."Vendor Invoice No.");
+                PurchInvHeader.SetRange("Pay-to Vendor No.", PurchaseHeader."Pay-to Vendor No.");
+                if not PurchInvHeader.IsEmpty() then
+                    AddError(StrSubstNo(ExternalDocumentNoAlreadyExistsLbl, PurchaseHeader."Document Type", PurchaseHeader."Vendor Invoice No."), ErrorCounter, ErrorText);
+            end;
+        end;
+
+        if PurchaseHeader."Vendor Cr. Memo No." <> '' then begin
+            VendLedgEntry.SetCurrentKey("External Document No.");
+            VendorMgt.SetFilterForExternalDocNo(VendLedgEntry, PurchaseHeader."Document Type", PurchaseHeader."Vendor Cr. Memo No.", PurchaseHeader."Pay-to Vendor No.", PurchaseHeader."Document Date");
+            if not VendLedgEntry.IsEmpty() then
+                AddError(StrSubstNo(ExternalDocumentNoAlreadyExistsLbl, PurchaseHeader."Document Type", PurchaseHeader."Vendor Cr. Memo No."), ErrorCounter, ErrorText)
+            else begin
+                PurchCrMemoHdr.SetCurrentKey("Vendor Cr. Memo No.");
+                PurchCrMemoHdr.SetRange("Vendor Cr. Memo No.", PurchaseHeader."Vendor Cr. Memo No.");
+                PurchCrMemoHdr.SetRange("Pay-to Vendor No.", PurchaseHeader."Pay-to Vendor No.");
+                if not PurchCrMemoHdr.IsEmpty() then
+                    AddError(StrSubstNo(ExternalDocumentNoAlreadyExistsLbl, PurchaseHeader."Document Type", PurchaseHeader."Vendor Cr. Memo No."), ErrorCounter, ErrorText);
+
+            end;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterFillInvoicePostBuffer', '', false, false)]
+    local procedure SetExtendedAmountsOnAfterFillInvoicePostBuffer(var InvoicePostBuffer: Record "Invoice Post. Buffer"; PurchLine: Record "Purchase Line")
+    begin
+        InvoicePostBuffer."Ext. Amount CZL" := PurchLine."Ext. Amount CZL";
+        InvoicePostBuffer."Ext. Amount Incl. VAT CZL" := PurchLine."Ext. Amount Incl. VAT CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnRoundAmountOnBeforeIncrAmount', '', false, false)]
+    local procedure RoundExtendedAmountsOnRoundAmountOnBeforeIncrAmount(PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; var TotalPurchLine: Record "Purchase Line"; var TotalPurchLineLCY: Record "Purchase Line"; var CurrExchRate: Record "Currency Exchange Rate"; var NoVAT: Boolean)
+    begin
+        if PurchaseHeader."Currency Code" = '' then
+            exit;
+
+        PurchaseLine."Ext. Amount Incl. VAT CZL" :=
+            Round(
+                CurrExchRate.ExchangeAmtFCYToLCY(
+                    PurchaseHeader.GetUseDate(), PurchaseHeader."Currency Code",
+                    TotalPurchLine."Amount Including VAT", PurchaseHeader."VAT Currency Factor CZL")) -
+            TotalPurchLineLCY."Ext. Amount Incl. VAT CZL";
+
+        if NoVAT then
+            PurchaseLine."Ext. Amount CZL" := PurchaseLine."Ext. Amount Incl. VAT CZL"
+        else
+            PurchaseLine."Ext. Amount CZL" :=
+                Round(
+                    CurrExchRate.ExchangeAmtFCYToLCY(
+                        PurchaseHeader.GetUseDate(), PurchaseHeader."Currency Code",
+                        TotalPurchLine.Amount, PurchaseHeader."VAT Currency Factor CZL")) -
+                TotalPurchLineLCY."Ext. Amount CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterIncrAmount', '', false, false)]
+    local procedure IncrementExtendedAmountsOnAfterIncrAmount(var TotalPurchLine: Record "Purchase Line"; PurchLine: Record "Purchase Line")
+    begin
+        Increment(TotalPurchLine."Ext. Amount Incl. VAT CZL", PurchLine."Ext. Amount Incl. VAT CZL");
+        Increment(TotalPurchLine."Ext. Amount CZL", PurchLine."Ext. Amount CZL");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterReverseAmount', '', false, false)]
+    local procedure ReverseExtendedAmountsOnAfterReverseAmount(var PurchLine: Record "Purchase Line")
+    begin
+        PurchLine."Ext. Amount CZL" := -PurchLine."Ext. Amount CZL";
+        PurchLine."Ext. Amount Incl. VAT CZL" := -PurchLine."Ext. Amount Incl. VAT CZL";
+    end;
+
+    local procedure Increment(var Number: Decimal; Number2: Decimal)
+    begin
+        Number := Number + Number2;
+    end;
+
+    local procedure AddError(Text: Text[250]; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])
+    begin
+        ErrorCounter += 1;
+        ErrorText[ErrorCounter] := Text;
     end;
 
     [IntegrationEvent(false, false)]

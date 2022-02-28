@@ -1,6 +1,6 @@
 #if not CLEAN18
 #pragma warning disable AL0432, AA0072
-codeunit 31296 "Sync.Dep.Fld-FA Depr.Book CZF"
+codeunit 31296 "Sync.Dep.Fld-FA Depr.Book CZF"
 {
     Access = Internal;
 

@@ -26,7 +26,6 @@ page 30049 "APIV2 - JournalLines"
                 field(journalId; "Journal Batch Id")
                 {
                     Caption = 'Journal Id';
-                    Editable = false;
                 }
                 field(journalDisplayName; GlobalJournalDisplayNameTxt)
                 {
@@ -161,14 +160,14 @@ page 30049 "APIV2 - JournalLines"
                     Caption = 'Attachments';
                     EntityName = 'attachment';
                     EntitySetName = 'attachments';
-                    SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const(1);
+                    SubPageLink = "Document Id" = Field(SystemId), "Document Type" = const(Journal);
                 }
                 part(dimensionSetLines; "APIV2 - Dimension Set Lines")
                 {
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(1);
+                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Journal Line");
                 }
             }
         }
@@ -196,11 +195,18 @@ page 30049 "APIV2 - JournalLines"
         GenJournalBatch: Record "Gen. Journal Batch";
         TempGenJournalLine: Record "Gen. Journal Line" temporary;
     begin
+        if IsNullGuid(Rec."Journal Batch Id") then
+            CheckFilters();
+
         TempGenJournalLine.Reset();
         TempGenJournalLine.Copy(Rec);
 
         Clear(Rec);
-        GenJournalBatch.GetBySystemId(TempGenJournalLine.GetFilter("Journal Batch Id"));
+        if IsNullGuid(TempGenJournalLine."Journal Batch Id") then
+            GenJournalBatch.GetBySystemId(TempGenJournalLine.GetFilter("Journal Batch Id"))
+        else
+            GenJournalBatch.GetBySystemId(TempGenJournalLine."Journal Batch Id");
+
         GraphMgtJournalLines.SetJournalLineTemplateAndBatchV2(Rec, GenJournalBatch);
         LibraryAPIGeneralJournal.InitializeLine(
           Rec, TempGenJournalLine."Line No.", TempGenJournalLine."Document No.", TempGenJournalLine."External Document No.");
@@ -215,6 +221,9 @@ page 30049 "APIV2 - JournalLines"
         GenJournalLine: Record "Gen. Journal Line";
     begin
         GenJournalLine.GetBySystemId(SystemId);
+
+        if Rec."Journal Batch Id" <> GenJournalLine."Journal Batch Id" then
+            Error(CannotEditBatchIdErr);
 
         if "Line No." = GenJournalLine."Line No." then
             Modify(true)
@@ -231,8 +240,6 @@ page 30049 "APIV2 - JournalLines"
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
-        CheckFilters();
-
         ClearCalculatedFields();
 
         "Document Type" := "Document Type"::" ";
@@ -252,6 +259,7 @@ page 30049 "APIV2 - JournalLines"
         LibraryAPIGeneralJournal: Codeunit "Library API - General Journal";
         FiltersNotSpecifiedErr: Label 'You must specify a journal batch ID or a journal ID to get a journal line.';
         CannotEditBatchNameErr: Label 'The Journal Batch Display Name isn''t editable.';
+        CannotEditBatchIdErr: Label 'The Journal Batch Id isn''t editable.';
         AccountValuesDontMatchErr: Label 'The account values do not match to a specific Account.';
         AccountIdDoesNotMatchAnAccountErr: Label 'The "accountId" does not match to an Account.', Comment = 'accountId is a field name and should not be translated.';
         BalAccountIdDoesNotMatchAnAccountErr: Label 'The "balancingAccountId" does not match to an Account.', Comment = 'balancingAccountId is a field name and should not be translated.';

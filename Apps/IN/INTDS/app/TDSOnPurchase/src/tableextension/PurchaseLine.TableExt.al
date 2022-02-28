@@ -85,7 +85,7 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
         AllowedSections: Record "Allowed Sections";
     begin
         AllowedSections.Reset();
-        AllowedSections.SetRange("Vendor No", PurchLine."Pay-to Vendor No.");
+        AllowedSections.SetRange("Vendor No", PurchLine."Buy-from Vendor No.");
         AllowedSections.SetRange("TDS Section", TDSSection);
         if AllowedSections.findfirst() then
             if SetTDSSection then
@@ -101,10 +101,10 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
         AllowedSections: Record "Allowed Sections";
         ConfirmManagement: Codeunit "Confirm Management";
     begin
-        if ConfirmManagement.GetResponseOrDefault(strSubstNo(ConfirmMessageMsg, TDSSection, PurchLine."Pay-to Vendor No."), true) then begin
+        if ConfirmManagement.GetResponseOrDefault(strSubstNo(ConfirmMessageMsg, TDSSection, PurchLine."Buy-from Vendor No."), true) then begin
             AllowedSections.init();
             AllowedSections."TDS Section" := TDSSection;
-            AllowedSections."Vendor No" := PurchLine."Pay-to Vendor No.";
+            AllowedSections."Vendor No" := PurchLine."Buy-from Vendor No.";
             AllowedSections.insert();
             if SetTDSSection then
                 PurchLine."TDS Section Code" := TDSSection
@@ -118,11 +118,11 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
         AllowedSections: Record "Allowed Sections";
     begin
         AllowedSections.Reset();
-        AllowedSections.SetRange("Vendor No", "Pay-to Vendor No.");
+        AllowedSections.SetRange("Vendor No", "Buy-from Vendor No.");
         AllowedSections.SetRange("TDS Section", "TDS Section Code");
         AllowedSections.SetRange("Non Resident Payments", true);
         if AllowedSections.IsEmpty then
-            Error(NonResidentPaymentsSelectionErr, Rec."Pay-to Vendor No.");
+            Error(NonResidentPaymentsSelectionErr, Rec."Buy-from Vendor No.");
     end;
 
     local procedure UpdateTaxAmountOnCurrentDocument()

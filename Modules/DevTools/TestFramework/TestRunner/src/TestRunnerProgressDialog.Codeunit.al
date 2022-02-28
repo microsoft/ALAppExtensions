@@ -13,7 +13,7 @@ codeunit 130455 "Test Runner - Progress Dialog"
     end;
 
     var
-        Window: Dialog;
+        Dialog: Dialog;
         ExecutingTestsMsg: Label 'Executing Tests...\', Locked = true;
         TestSuiteMsg: Label 'Test Suite    #1###################\', Locked = true;
         TestCodeunitMsg: Label 'Test Codeunit #2################### @3@@@@@@@@@@@@@\', Locked = true;
@@ -48,8 +48,8 @@ codeunit 130455 "Test Runner - Progress Dialog"
 
         WindowNoOfFunctionTotal := CopyTestMethodLine.Count();
 
-        Window.HideSubsequentDialogs(true);
-        Window.Open(
+        Dialog.HideSubsequentDialogs(true);
+        Dialog.Open(
           ExecutingTestsMsg +
           TestSuiteMsg +
           TestCodeunitMsg +
@@ -66,7 +66,7 @@ codeunit 130455 "Test Runner - Progress Dialog"
         if not GuiAllowed() then
             exit;
 
-        Window.Close();
+        Dialog.Close();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Test Runner - Mgt", 'OnAfterTestMethodRun', '', false, false)]
@@ -93,17 +93,17 @@ codeunit 130455 "Test Runner - Progress Dialog"
         end;
 
         if IsTimeForUpdate() then begin
-            Window.Update(1, CurrentTestMethodLine."Test Suite");
-            Window.Update(2, CurrentTestMethodLine."Test Codeunit");
-            Window.Update(4, FunctionName);
-            Window.Update(6, WindowTestSuccess);
-            Window.Update(7, WindowTestFailure);
-            Window.Update(8, WindowTestSkip);
+            Dialog.Update(1, CurrentTestMethodLine."Test Suite");
+            Dialog.Update(2, CurrentTestMethodLine."Test Codeunit");
+            Dialog.Update(4, FunctionName);
+            Dialog.Update(6, WindowTestSuccess);
+            Dialog.Update(7, WindowTestFailure);
+            Dialog.Update(8, WindowTestSkip);
 
             if WindowNoOfTestCodeunitTotal <> 0 then
-                Window.Update(3, Round(WindowNoOfTestCodeunit / WindowNoOfTestCodeunitTotal * 10000, 1));
+                Dialog.Update(3, Round(WindowNoOfTestCodeunit / WindowNoOfTestCodeunitTotal * 10000, 1));
             if WindowNoOfFunctionTotal <> 0 then
-                Window.Update(5, Round(WindowNoOfFunction / WindowNoOfFunctionTotal * 10000, 1));
+                Dialog.Update(5, Round(WindowNoOfFunction / WindowNoOfFunctionTotal * 10000, 1));
         end;
     end;
 

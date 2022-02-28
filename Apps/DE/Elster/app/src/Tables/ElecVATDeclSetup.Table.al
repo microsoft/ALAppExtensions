@@ -52,19 +52,8 @@ table 11023 "Elec. VAT Decl. Setup"
             Error(MissingSetupElsterErr);
     end;
 
-#if not CLEAN17
-    local procedure IsSalesVATAdvNotifPathAvailable(): Boolean;
-    var
-        FileManagement: Codeunit "File Management";
-    begin
-        if not FileManagement.IsLocalFileSystemAccessible() then
-            exit(true);
-        exit("Sales VAT Adv. Notif. Path" <> '');
-    end;
-#else
     local procedure IsSalesVATAdvNotifPathAvailable(): Boolean;
     begin
         exit(true);
     end;
-#endif
 }

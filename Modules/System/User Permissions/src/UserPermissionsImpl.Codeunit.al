@@ -206,6 +206,19 @@ codeunit 153 "User Permissions Impl."
             exit(true);
     end;
 
+    procedure HasUserPermissionSetAssigned(UserSecurityId: Guid; Company: Text; RoleId: Code[20]; ItemScope: Option; AppId: Guid): Boolean
+    var
+        AccessControl: Record "Access Control";
+    begin
+        AccessControl.SetRange("User Security ID", UserSecurityId);
+        AccessControl.SetRange("Role ID", RoleID);
+        AccessControl.SetFilter("Company Name", '%1|%2', '', Company);
+        AccessControl.SetRange(Scope, ItemScope);
+        AccessControl.SetRange("App ID", AppId);
+
+        exit(not AccessControl.IsEmpty());
+    end;
+
     /// <summary>
     /// An event that indicates that subscribers should set the result that should be returned when the CanManageUsersOnTenant is called.
     /// </summary>

@@ -493,7 +493,7 @@ codeunit 31330 "Install Application CZB"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure CompanyInitialize()
     var
-        DataClassEvalHandlerCZB: Codeunit "Data Class. Eval. Handler CZB";
+        DataClassEvalHandlerCZB: Codeunit "Data Class. Eval. Handler CZB";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         InitExpLauncherSEPA();

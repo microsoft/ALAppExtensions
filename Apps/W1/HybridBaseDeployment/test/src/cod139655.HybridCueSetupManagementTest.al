@@ -56,16 +56,16 @@ codeunit 139655 "Hybrid Cue Setup Mgt Tests"
 
     local procedure EnableReplicationForCompany(CompanyName: Text[50]; Replicate: Boolean)
     var
-        HybridCompanies: Record "Hybrid Company";
+        HybridCompany: Record "Hybrid Company";
     begin
-        if HybridCompanies.Get(CompanyName) then begin
-            HybridCompanies.Replicate := Replicate;
-            HybridCompanies.Modify();
+        if HybridCompany.Get(CompanyName) then begin
+            HybridCompany.Replicate := Replicate;
+            HybridCompany.Modify();
         end else begin
-            HybridCompanies.Init();
-            HybridCompanies.Name := CompanyName;
-            HybridCompanies.Replicate := Replicate;
-            HybridCompanies.Insert();
+            HybridCompany.Init();
+            HybridCompany.Name := CompanyName;
+            HybridCompany.Replicate := Replicate;
+            HybridCompany.Insert();
         end;
     end;
 

@@ -106,18 +106,18 @@ codeunit 2501 "Extension Marketplace"
     var
         TempBlob: Codeunit "Temp Blob";
         HttpWebResponse: DotNet HttpWebResponse;
-        ResponseStr: InStream;
+        ResponseInStream: InStream;
     begin
         InitializeHTTPRequest(ResponseUrl);
         HttpWebRequest.Accept := '*/*';
         HttpWebRequest.ContentType := 'application/json';
         HttpWebRequest.Method := 'POST';
         AddBodyAsText(Format(OperationResult));
-        TempBlob.CreateInStream(ResponseStr);
+        TempBlob.CreateInStream(ResponseInStream);
 
         ClearLastError();
         HttpWebResponse := HttpWebRequest.GetResponse();
-        HttpWebResponse.GetResponseStream().CopyTo(ResponseStr);
+        HttpWebResponse.GetResponseStream().CopyTo(ResponseInStream);
     end;
 
     [TryFunction]

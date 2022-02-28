@@ -20,7 +20,7 @@ codeunit 4031 SetupRemittanceReports
         InsertReportSelections(ReportSelections.Usage::"P.V.Remit.", '1', Report::"Remittance Advice - Entries");
     end;
 
-    local procedure InsertReportSelections(ReportUsage: Option; ReportSequence: Code[10]; ReportId: Integer)
+    local procedure InsertReportSelections(ReportUsage: Enum "Report Selection Usage"; ReportSequence: Code[10]; ReportId: Integer)
     var
         ReportSelections: Record "Report Selections";
     begin

@@ -1,5 +1,9 @@
+#if not CLEAN20
 codeunit 1081 "MS - Wallet Merchant Upgrade"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     Subtype = Upgrade;
 
     trigger OnUpgradePerCompany();
@@ -16,4 +20,4 @@ codeunit 1081 "MS - Wallet Merchant Upgrade"
         end;
     end;
 }
-
+#endif

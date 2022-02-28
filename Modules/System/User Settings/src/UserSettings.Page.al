@@ -113,7 +113,7 @@ page 9204 "User Settings"
                 {
                     Caption = 'Security';
                     Visible = LastLoginInfoVisible;
-                    field("Last Login Info"; UserSettingsImpl.GetLastLoginInfo(Rec."Last Login"))
+                    field("Last Login Info"; LastLoginInfo)
                     {
                         ApplicationArea = All;
                         Caption = 'LastLoginInfo';
@@ -133,7 +133,8 @@ page 9204 "User Settings"
 
         OldUserSettings := Rec;
 
-        LastLoginInfoVisible := Rec."User Security ID" = UserSecurityId();
+        LastLoginInfo := UserSettingsImpl.GetLastLoginInfo(Rec."Last Login");
+        LastLoginInfoVisible := (Rec."User Security ID" = UserSecurityId()) and (LastLoginInfo <> '');
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -147,5 +148,6 @@ page 9204 "User Settings"
         Language: Codeunit Language;
         TimeZoneSelection: Codeunit "Time Zone Selection";
         UserSettingsImpl: Codeunit "User Settings Impl.";
+        LastLoginInfo: Text;
         LastLoginInfoVisible: Boolean;
 }

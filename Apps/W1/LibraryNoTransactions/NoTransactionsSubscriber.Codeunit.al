@@ -18,7 +18,7 @@ codeunit 130630 "No Transactions Subscriber"
         if IsTableExcluded(RecRef) then
             exit;
 
-        Error(StrSubstNo(TransactionDetectedErr, RecRef.RecordId(), 'DELETE'));
+        Error(TransactionDetectedErr, RecRef.RecordId(), 'DELETE');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Global Triggers", 'OnDatabaseInsert', '', false, false)]
@@ -30,7 +30,7 @@ codeunit 130630 "No Transactions Subscriber"
         if IsTableExcluded(RecRef) then
             exit;
 
-        Error(StrSubstNo(TransactionDetectedErr, RecRef.RecordId(), 'INSERT'));
+        Error(TransactionDetectedErr, RecRef.RecordId(), 'INSERT');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Global Triggers", 'OnDatabaseModify', '', false, false)]
@@ -42,7 +42,7 @@ codeunit 130630 "No Transactions Subscriber"
         if IsTableExcluded(RecRef) then
             exit;
 
-        Error(StrSubstNo(TransactionDetectedErr, RecRef.RecordId(), 'MODIFY'));
+        Error(TransactionDetectedErr, RecRef.RecordId(), 'MODIFY');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Global Triggers", 'OnDatabaseRename', '', false, false)]
@@ -54,7 +54,7 @@ codeunit 130630 "No Transactions Subscriber"
         if IsTableExcluded(RecRef) then
             exit;
 
-        Error(StrSubstNo(TransactionDetectedErr, RecRef.RecordId(), 'RENAME'));
+        Error(TransactionDetectedErr, RecRef.RecordId(), 'RENAME');
     end;
 
     local procedure IsTableExcluded(RecRef: RecordRef): Boolean

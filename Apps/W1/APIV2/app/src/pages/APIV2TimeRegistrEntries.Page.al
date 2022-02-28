@@ -155,7 +155,7 @@ page 30041 "APIV2 - Time Registr. Entries"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(13);
+                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const("Time Registration Entry");
                 }
             }
         }

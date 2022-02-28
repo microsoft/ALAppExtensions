@@ -403,7 +403,7 @@ page 30022 "APIV2 - Dimension Set Lines"
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
         SalesInvoiceLine: Record "Sales Invoice Line";
         PurchaseLine: Record "Purchase Line";
-        PurchaseInvLine: Record "Purch. Inv. Line";
+        PurchInvLine: Record "Purch. Inv. Line";
         DimensionManagement: Codeunit "DimensionManagement";
         DimensionSetEntryBufferParentType: Enum "Dimension Set Entry Buffer Parent Type";
         ErrorMsg: Text;
@@ -560,11 +560,11 @@ page 30022 "APIV2 - Dimension Set Lines"
                         PurchaseLine.Modify(true);
                         exit;
                     end;
-                    if PurchaseInvLine.GetBySystemId(ParentIdFilter) then begin
-                        PurchaseInvLine."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
+                    if PurchInvLine.GetBySystemId(ParentIdFilter) then begin
+                        PurchInvLine."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
                         DimensionManagement.UpdateGlobalDimFromDimSetID(
-                            PurchaseInvLine."Dimension Set ID", PurchaseInvLine."Shortcut Dimension 1 Code", PurchaseInvLine."Shortcut Dimension 2 Code");
-                        PurchaseInvLine.Modify(true);
+                            PurchInvLine."Dimension Set ID", PurchInvLine."Shortcut Dimension 1 Code", PurchInvLine."Shortcut Dimension 2 Code");
+                        PurchInvLine.Modify(true);
                         exit;
                     end;
                 end;

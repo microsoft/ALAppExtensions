@@ -135,20 +135,20 @@ page 9986 "Word Templates Related Card"
         TableId := TableNo;
     end;
 
-    internal procedure SetRelatedTable(var TempWordTemplateRelatedTable: Record "Word Templates Related Table" temporary)
+    internal procedure SetRelatedTable(var WordTemplatesRelatedTable: Record "Word Templates Related Table" temporary)
     begin
-        if TempWordTemplateRelatedTable.IsTemporary then
-            Rec.Copy(TempWordTemplateRelatedTable, true)
+        if WordTemplatesRelatedTable.IsTemporary then
+            Rec.Copy(WordTemplatesRelatedTable, true)
         else
-            if TempWordTemplateRelatedTable."Table ID" <> 0 then begin
-                Rec.Copy(TempWordTemplateRelatedTable);
+            if WordTemplatesRelatedTable."Table ID" <> 0 then begin
+                Rec.Copy(WordTemplatesRelatedTable);
                 Rec.Insert();
             end;
     end;
 
-    internal procedure GetRelatedTable(var TempWordTemplateRelatedTable: Record "Word Templates Related Table" temporary)
+    internal procedure GetRelatedTable(var WordTemplatesRelatedTable: Record "Word Templates Related Table" temporary)
     begin
-        TempWordTemplateRelatedTable.TransferFields(Rec);
+        WordTemplatesRelatedTable.TransferFields(Rec);
     end;
 
     local procedure UpdateFieldSelectionVisibility()

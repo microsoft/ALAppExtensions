@@ -51,7 +51,7 @@ codeunit 18001 "GST Base Validation"
                 8 .. 11:
                     CheckIsNumeric(RegistrationNo, Position);
                 13:
-                    CheckIsNumeric(RegistrationNo, Position);
+                    CheckIsAlphaNumeric(RegistrationNo, Position);
                 14:
                     CheckForZValue(RegistrationNo, Position);
                 15:
@@ -61,11 +61,11 @@ codeunit 18001 "GST Base Validation"
 
     //Same Funciton is called in GST Sales
     procedure VerifyPOSOutOfIndia(
-    PartyType: Enum "Party Type";
-    LocationStateCode: Code[10];
-    VendCustStateCode: Code[10];
-    GSTVendorType: Enum "GST Vendor Type";
-    GSTCustomerType: Enum "GST Customer Type")
+        PartyType: Enum "Party Type";
+        LocationStateCode: Code[10];
+        VendCustStateCode: Code[10];
+        GSTVendorType: Enum "GST Vendor Type";
+        GSTCustomerType: Enum "GST Customer Type")
     begin
         if LocationStateCode <> VendCustStateCode then
             Error(POSLOCDiffErr);
@@ -362,7 +362,15 @@ codeunit 18001 "GST Base Validation"
     //GST Registration Nos. - Subscribers
     [EventSubscriber(ObjectType::Table, Database::"GST Registration Nos.", 'OnAfterValidateEvent', 'Code', false, false)]
     local procedure ValidateRegistrationCodeonAfterValidateEvent(var Rec: Record "GST Registration Nos."; var xRec: Record "GST Registration Nos.")
+    var
+        CompanyInformation: Record "Company Information";
     begin
+        CompanyInformation.Get();
+        if CompanyInformation."P.A.N. No." <> '' then
+            CheckGSTRegistrationNo(Rec."State Code", Rec.Code, CompanyInformation."P.A.N. No.")
+        else
+            Error(PANErr);
+
         if xRec.Code <> '' then
             CheckDependentDataInCompanyAndLocationAtEditing(xRec);
     end;
@@ -373,10 +381,7 @@ codeunit 18001 "GST Base Validation"
         CompanyInformation: Record "Company Information";
     begin
         CompanyInformation.Get();
-        if CompanyInformation."P.A.N. No." <> '' then
-            CheckGSTRegistrationNo(Rec."State Code", Rec.Code, CompanyInformation."P.A.N. No.")
-        else
-            Error(PANErr);
+        CheckGSTRegistrationNo(Rec."State Code", Rec.Code, CompanyInformation."P.A.N. No.");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"GST Registration Nos.", 'OnAfterDeleteEvent', '', false, false)]
@@ -1214,7 +1219,6 @@ codeunit 18001 "GST Base Validation"
                 end;
         end;
     end;
-
 
     local procedure UpdateECommOperatorGSTRegNo(
             DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";

@@ -4,6 +4,7 @@ codeunit 40018 "Fix Data OnRun Completed"
 
     trigger OnRun()
     var
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         NotificationTextInStream: InStream;
         NotificationText: Text;
@@ -12,6 +13,13 @@ codeunit 40018 "Fix Data OnRun Completed"
         Commit();
 
         SelectLatestVersion();
+
+        // Mark as completed so we do not break existing flows
+        HybridReplicationSummary.Get(Rec."Run ID");
+        HybridReplicationSummary.Status := HybridReplicationSummary.Status::Completed;
+        HybridReplicationSummary.Modify();
+        Commit();
+
         Rec.SetAutoCalcFields("Notification Text");
         Rec.Get(Rec.RecordId);
 
@@ -22,5 +30,4 @@ codeunit 40018 "Fix Data OnRun Completed"
         Rec.Delete();
         Commit();
     end;
-
 }

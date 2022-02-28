@@ -165,16 +165,17 @@ codeunit 1432 "Satisfaction Survey Impl."
             exit(false);
         end;
 
-        if not NetPromoterScore."Send Request" then begin
-            Session.LogMessage('000098T', ActivatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
-            NetPromoterScore."Last Request Time" := CurrentDateTime();
-            NetPromoterScore."Send Request" := true;
-            if NetPromoterScore.Modify() then
-                exit(true)
-            else begin
+        if not NetPromoterScore."Send Request" then
+            if NetPromoterScore.Find() then begin
+                NetPromoterScore."Last Request Time" := CurrentDateTime();
+                NetPromoterScore."Send Request" := true;
+                if NetPromoterScore.Modify() then begin
+                    Session.LogMessage('000098T', ActivatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
+                    exit(true);
+                end;
+
                 Session.LogMessage('00009N5', CouldNotModifySetupRecordTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
                 exit(false);
-            end;
         end;
 
         Session.LogMessage('00009FW', AlreadyActivatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);

@@ -40,12 +40,14 @@ permissionset 1994 "Guided Experience - Objects"
                   Table "Guided Experience Item" = X,
                   Table "Spotlight Tour Text" = X,
 #if not CLEAN18
+#pragma warning disable AL0432
                   Codeunit "Assisted Setup" = X,
                   Codeunit "Manual Setup" = X,
                   Table "Assisted Setup Log" = X,
                   Table "Assisted Setup" = X,
                   Table "Business Setup Icon" = X,
                   Table "Manual Setup" = X,
+#pragma warning restore
 #endif
                   Table "User Checklist Status" = X;
 }

@@ -93,13 +93,13 @@ codeunit 11518 "Swiss QR-Bill Mgt."
 
     internal procedure PrintFromBuffer(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer")
     var
-        FileMgt: Codeunit "File Management";
+        FileManagement: Codeunit "File Management";
         PDFFileTempBlob: Codeunit "Temp Blob";
         PDFFileInStream: InStream;
     begin
         PDFFileTempBlob.CreateInStream(PDFFileInStream);
         if ReportPrintToStream(SwissQRBillBuffer, PDFFileTempBlob) then
-            FileMgt.DownloadFromStreamHandler(PDFFileInStream, 'Save QR-Bill', '', 'pdf', SwissQRBillBuffer."File Name");
+            FileManagement.DownloadFromStreamHandler(PDFFileInStream, 'Save QR-Bill', '', 'pdf', SwissQRBillBuffer."File Name");
     end;
 
     local procedure ReportPrintToStream(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer"; var PDFFileTempBlob: Codeunit "Temp Blob"): Boolean
@@ -126,10 +126,10 @@ codeunit 11518 "Swiss QR-Bill Mgt."
 
     internal procedure GetCurrency(CurrencyCode: Code[10]): Code[10]
     var
-        GLSetup: Record "General Ledger Setup";
+        GeneralLedgerSetup: Record "General Ledger Setup";
     begin
         if CurrencyCode = '' then
-            with GLSetup do begin
+            with GeneralLedgerSetup do begin
                 Get();
                 exit("LCY Code");
             end;
@@ -151,11 +151,11 @@ codeunit 11518 "Swiss QR-Bill Mgt."
 
     internal procedure GetAllowedCurrencyCodeFilter() Result: Text
     var
-        GLSetup: Record "General Ledger Setup";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         Currency: Record Currency;
     begin
-        GLSetup.Get();
-        if AllowedISOCurrency(GLSetup."LCY Code") then
+        GeneralLedgerSetup.Get();
+        if AllowedISOCurrency(GeneralLedgerSetup."LCY Code") then
             Result += '''''';
 
         with Currency do begin
@@ -233,7 +233,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
     begin
         CustLedgerEntry.SetFilter(
             "Document Type",
-            StrSubstNo('%1|%2|%3', DocumentType::Invoice, DocumentType::Reminder, DocumentType::"Finance Charge Memo"));
+            Format(DocumentType::Invoice) + '|' + Format(DocumentType::Reminder) + '|' + Format(DocumentType::"Finance Charge Memo"));
         CustLedgerEntry.SetFilter("Currency Code", GetAllowedCurrencyCodeFilter());
         CustomerLedgerEntries.LookupMode(true);
         CustomerLedgerEntries.SetTableView(CustLedgerEntry);
@@ -365,12 +365,12 @@ codeunit 11518 "Swiss QR-Bill Mgt."
             ReferenceType::"Creditor Reference (ISO 11649)":
                 begin
                     TempReferenceNo := Format(SwissQRBillSetup."Last Used Reference No.");
-                    exit(CopyStr(StrSubstNo('RF%1%2', CalcCheckDigitForCreditorReference(TempReferenceNo), TempReferenceNo), 1, 25));
+                    exit(CopyStr('RF' + CalcCheckDigitForCreditorReference(TempReferenceNo) + TempReferenceNo, 1, 25));
                 end;
             ReferenceType::"QR Reference":
                 begin
                     TempReferenceNo := Format(SwissQRBillSetup."Last Used Reference No.", 0, '<Integer,26><Filler Character,0>');
-                    exit(CopyStr(StrSubstNo('%1%2', TempReferenceNo, CalcCheckDigitForQRReference(TempReferenceNo)), 1, 27));
+                    exit(CopyStr(TempReferenceNo + CalcCheckDigitForQRReference(TempReferenceNo), 1, 27));
                 end;
         end;
     end;
@@ -435,7 +435,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         if ('RF' <> CopyStr(PaymentReference, 1, 2)) or (StrLen(PaymentReference) < 5) then
             exit(false);
 
-        PaymentReference := CopyStr(StrSubstNo('%1%2', PaymentReference.Remove(1, 4), CopyStr(PaymentReference, 1, 4)), 1, 25);
+        PaymentReference := CopyStr(PaymentReference.Remove(1, 4) + CopyStr(PaymentReference, 1, 4), 1, 25);
         exit(CalcCreditorReferenceModule97(PaymentReference) = 1);
     end;
 
@@ -447,26 +447,24 @@ codeunit 11518 "Swiss QR-Bill Mgt."
                 if (StrLen(PaymentReference) > 4) and (StrLen(PaymentReference) < 26) then begin
                     while StrLen(PaymentReference) >= 4 do begin
                         if Result <> '' then
-                            Result += StrSubstNo(' %1', CopyStr(PaymentReference, 1, 4))
+                            Result += ' ' + CopyStr(PaymentReference, 1, 4)
                         else
                             Result := CopyStr(PaymentReference, 1, 4);
                         PaymentReference := DelStr(PaymentReference, 1, 4);
                     end;
                     if StrLen(PaymentReference) > 0 then
-                        Result += StrSubstNo(' %1', CopyStr(PaymentReference, 1));
+                        Result += ' ' + CopyStr(PaymentReference, 1);
                     exit(Result);
                 end;
             ReferenceType::"QR Reference":
                 if StrLen(PaymentReference) = 27 then
                     exit(
-                        StrSubstNo(
-                            '%1 %2 %3 %4 %5 %6',
-                            CopyStr(PaymentReference, 1, 2),
-                            CopyStr(PaymentReference, 3, 5),
-                            CopyStr(PaymentReference, 8, 5),
-                            CopyStr(PaymentReference, 13, 5),
-                            CopyStr(PaymentReference, 18, 5),
-                            CopyStr(PaymentReference, 23, 5)));
+                        CopyStr(PaymentReference, 1, 2) + ' ' +
+                        CopyStr(PaymentReference, 3, 5) + ' ' +
+                        CopyStr(PaymentReference, 8, 5) + ' ' +
+                        CopyStr(PaymentReference, 13, 5) + ' ' +
+                        CopyStr(PaymentReference, 18, 5) + ' ' +
+                        CopyStr(PaymentReference, 23, 5));
         end;
 
         exit(PaymentReference);
@@ -478,14 +476,12 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         if StrLen(IBAN) = 21 then
             exit(
                 CopyStr(
-                    StrSubstNo(
-                        '%1 %2 %3 %4 %5 %6',
-                        CopyStr(IBAN, 1, 4),
-                        CopyStr(IBAN, 5, 4),
-                        CopyStr(IBAN, 9, 4),
-                        CopyStr(IBAN, 13, 4),
-                        CopyStr(IBAN, 17, 4),
-                        CopyStr(IBAN, 21, 1)),
+                    CopyStr(IBAN, 1, 4) + ' ' +
+                    CopyStr(IBAN, 5, 4) + ' ' +
+                    CopyStr(IBAN, 9, 4) + ' ' +
+                    CopyStr(IBAN, 13, 4) + ' ' +
+                    CopyStr(IBAN, 17, 4) + ' ' +
+                    CopyStr(IBAN, 21, 1),
                     1, 50)
             );
         exit(IBAN);
@@ -558,10 +554,8 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         if TempDirectDebitCollectionEntry."Payment Reference" <> '' then
             PaymentExportData."Message to Recipient 1" :=
                 CopyStr(
-                    StrSubstNo(
-                        '%1; %2',
-                        TempDirectDebitCollectionEntry."Applies-to Entry Description",
-                        TempDirectDebitCollectionEntry."Payment Reference"),
+                    TempDirectDebitCollectionEntry."Applies-to Entry Description" + '; ' +
+                    TempDirectDebitCollectionEntry."Payment Reference",
                     1, MaxStrLen(PaymentExportData."Message to Recipient 1"));
     end;
 }

@@ -30,13 +30,13 @@ codeunit 9701 "Cues And KPIs"
     /// Changes the user of a cue setup entry.
     /// A Recref pointing to the newly modified record is returned by var.
     /// </summary>
-    /// <param name="RecRef">The recordref that poins to the record that will be modified.</param>
+    /// <param name="RecordRef">The recordref that poins to the record that will be modified.</param>
     /// <param name="Company">The company in which the table will be modified.</param>
     /// <param name="UserName">The new UserName to which the setup entry will belong to.</param>
     [Scope('OnPrem')]
-    procedure ChangeUserForSetupEntry(var RecRef: RecordRef; Company: Text[30]; UserName: Text[50])
+    procedure ChangeUserForSetupEntry(var RecordRef: RecordRef; Company: Text[30]; UserName: Text[50])
     begin
-        CuesAndKPIsImpl.ChangeUserForSetupEntry(RecRef, Company, UserName);
+        CuesAndKPIsImpl.ChangeUserForSetupEntry(RecordRef, Company, UserName);
     end;
 
     /// <summary>

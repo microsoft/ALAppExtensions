@@ -1090,6 +1090,7 @@ codeunit 139733 "APIV1 - Attachments E2E"
             IncomingDocument."Document Type" := IncomingDocument."Document Type"::"Sales Invoice";
             IncomingDocument."Document No." := SalesInvoiceHeader."No.";
             IncomingDocument."Posting Date" := SalesInvoiceHeader."Posting Date";
+            IncomingDocument.Posted := true;
             IncomingDocument.INSERT(TRUE);
             IncomingDocument.FIND();
             EXIT(TRUE);

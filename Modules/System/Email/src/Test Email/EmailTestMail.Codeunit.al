@@ -21,7 +21,7 @@ codeunit 8887 "Email Test Mail"
     trigger OnRun()
     var
         Email: Codeunit Email;
-        Message: Codeunit "Email Message";
+        EmailMessage: Codeunit "Email Message";
         EmailUserSpecifiedAddress: Page "Email User-Specified Address";
         EmailRecipient: Text;
         EmailChoices: Text;
@@ -41,17 +41,19 @@ codeunit 8887 "Email Test Mail"
                 EmailRecipient := EmailUserSpecifiedAddress.GetEmailAddress()
             else
                 exit;
-                
+
 #if not CLEAN17
+#pragma warning disable AL0432
         Email.OnGetTestEmailBody(Rec.Connector, EmailBody);
+#pragma warning restore        
 #endif
         Email.OnGetBodyForTestEmail(Rec.Connector, Rec."Account Id", EmailBody);
 
         if EmailBody = '' then
             EmailBody := StrSubstNo(TestEmailBodyTxt, UserId(), Rec.Connector);
 
-        Message.Create(EmailRecipient, TestEmailSubjectTxt, EmailBody, true);
-        if Email.Send(Message, Rec) then
+        EmailMessage.Create(EmailRecipient, TestEmailSubjectTxt, EmailBody, true);
+        if Email.Send(EmailMessage, Rec) then
             Message(StrSubstNo(TestEmailSuccessMsg, EmailRecipient))
         else
             Error(TestEmailFailedMsg);

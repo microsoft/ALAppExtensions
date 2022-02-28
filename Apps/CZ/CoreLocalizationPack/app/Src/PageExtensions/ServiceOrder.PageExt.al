@@ -2,6 +2,21 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
 {
     layout
     {
+#if not CLEAN20
+#pragma warning disable AL0432
+        movelast(General; "Posting Description")
+#pragma warning restore AL0432
+#else
+        addlast(General)
+        {
+            field("Posting Description CZL"; Rec."Posting Description")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies a description of the purchase receipt. The posting description also appers on vendor and G/L entries.';
+                Visible = false;
+            }
+        }
+#endif
         addafter("Posting Date")
         {
             field("VAT Date CZL"; Rec."VAT Date CZL")
@@ -10,8 +25,13 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
                 ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
             }
         }
-        addafter("VAT Registration No.")
+        addlast(Details)
         {
+            field("VAT Registration No. CZL"; Rec."VAT Registration No.")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+            }
             field("Registration No. CZL"; Rec."Registration No. CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -33,8 +53,9 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
                 ToolTip = 'Specifies the currency of VAT on the service order.';
 
                 trigger OnAssistEdit()
+                var
+                    ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
-                    Clear(ChangeExchangeRate);
                     if Rec."VAT Date CZL" <> 0D then
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Date CZL")
                     else
@@ -43,14 +64,30 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
                         Rec.Validate("VAT Currency Factor CZL", ChangeExchangeRate.GetParameter());
                         CurrPage.Update();
                     end;
-                    Clear(ChangeExchangeRate);
                 end;
 
                 trigger OnValidate()
                 begin
-                    CurrencyCodeOnAfterValidate();
                     CurrPage.SaveRecord();
                 end;
+            }
+        }
+        addlast(" Foreign Trade")
+        {
+            field("Language Code CZL"; Rec."Language Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the language to be used on printouts for this document.';
+            }
+            field("VAT Country/Region Code CZL"; Rec."VAT Country/Region Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT country/region code of customer.';
+            }
+            field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies when the service header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
             field(IntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
             {
@@ -58,14 +95,6 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
                 Caption = 'Intrastat Transaction';
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
-            }
-        }
-        addafter("Area")
-        {
-            field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies when the service header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
@@ -138,12 +167,4 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
             }
         }
     }
-
-    var
-        ChangeExchangeRate: Page "Change Exchange Rate";
-
-    local procedure CurrencyCodeOnAfterValidate()
-    begin
-        CurrPage.ServItemLines.Page.Update(true);
-    end;
 }

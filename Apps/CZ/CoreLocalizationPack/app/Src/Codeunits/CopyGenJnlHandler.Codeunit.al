@@ -8,4 +8,19 @@ codeunit 31063 "Copy Gen. Jnl. Handler CZL"
             GenJournalLine.Modify();
         end
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Gen. Journal Mgt.", 'OnAfterInsertGenJournalLine', '', false, false)]
+    local procedure ReverseSignCorrectionOnAfterInsertGenJournalLine(CopyGenJournalParameters: Record "Copy Gen. Journal Parameters"; var GenJournalLine: Record "Gen. Journal Line")
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        if not CopyGenJournalParameters."Reverse Sign" then
+            exit;
+
+        GeneralLedgerSetup.Get();
+        if GeneralLedgerSetup."Mark Cr. Memos as Corrections" then begin
+            GenJournalLine.Validate(Correction, true);
+            GenJournalLine.Modify();
+        end;
+    end;
 }

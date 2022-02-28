@@ -58,6 +58,8 @@ page 31179 "Advance Letter Templates CZZ"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies automatic post VAT document.';
                 }
+#if not CLEAN20
+#pragma warning disable AL0432
                 field("Document Report ID"; Rec."Document Report ID")
                 {
                     ApplicationArea = Basic, Suite;
@@ -88,6 +90,8 @@ page 31179 "Advance Letter Templates CZZ"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies invoice/credit memo report caption.';
                 }
+#pragma warning restore AL0432
+#endif
             }
         }
     }

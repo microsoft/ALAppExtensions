@@ -352,7 +352,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
     begin
         if not (Ship or Receive) then
             exit;
-        if IsIntrastatTransactionCZL() and ShipOrReceiveInventoriableTypeItems() then begin
+        if IsIntrastatTransactionCZL() and ShipOrReceiveInventoriableTypeItemsCZL() then begin
             StatutoryReportingSetupCZL.Get();
             if StatutoryReportingSetupCZL."Transaction Type Mandatory" then
                 TestField("Transaction Type");
@@ -375,6 +375,20 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         exit(GlobalIsIntrastatTransaction);
     end;
 
+    procedure ShipOrReceiveInventoriableTypeItemsCZL(): Boolean
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        PurchaseLine.SetRange("Document Type", "Document Type");
+        PurchaseLine.SetRange("Document No.", "No.");
+        PurchaseLine.SetRange(Type, PurchaseLine.Type::Item);
+        if PurchaseLine.FindSet() then
+            repeat
+                if ((PurchaseLine."Qty. to Receive" <> 0) or (PurchaseLine."Return Qty. to Ship" <> 0)) and PurchaseLine.IsInventoriableItem() then
+                    exit(true);
+            until PurchaseLine.Next() = 0;
+    end;
+
     local procedure UpdateGlobalIsIntrastatTransaction(): Boolean
     var
         CountryRegion: Record "Country/Region";
@@ -390,18 +404,6 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         if CountryRegion.IsLocalCountryCZL("Ship-to Country/Region Code", true) then
             exit(CountryRegion.IsIntrastatCZL("VAT Country/Region Code", true));
         exit(CountryRegion.IsIntrastatCZL("Ship-to Country/Region Code", true));
-    end;
-
-    [Obsolete('This procedure will be removed after removing feature from Base Application.', '17.0')]
-    procedure CopyRecCurrencyFactortoxRecCurrencyFactor(var Rec: Record "Purchase Header"; var xRec: Record "Purchase Header")
-    begin
-        xRec."Currency Factor" := Rec."Currency Factor";
-    end;
-
-    [Obsolete('This procedure will be removed after removing feature from Base Application.', '17.0')]
-    procedure IsCurrentFieldNoDiffZero(CurrFieldNo: Integer): Boolean
-    begin
-        exit(CurrFieldNo <> 0);
     end;
 
     [IntegrationEvent(false, false)]

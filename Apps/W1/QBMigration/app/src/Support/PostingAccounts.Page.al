@@ -13,6 +13,7 @@ page 1918 "MigrationQB Posting Accounts"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(SalesAccount; SalesAccount)
                 {
                     ApplicationArea = All;
@@ -88,6 +89,7 @@ page 1918 "MigrationQB Posting Accounts"
                     ApplicationArea = All;
                     Caption = 'Purch. Service Charge Acc.';
                 }
+#pragma warning restore
             }
         }
     }

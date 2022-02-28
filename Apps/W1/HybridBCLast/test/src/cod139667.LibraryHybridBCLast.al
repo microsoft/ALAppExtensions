@@ -8,6 +8,8 @@ codeunit 139667 "Library - Hybrid BC Last"
         DataLoadFailure: Text;
         UpgradeEvents: Dictionary of [Decimal, Text];
         SubscriptionIdTxt: Label 'DynamicsBCLast_IntelligentCloud';
+        SubscriptionFormatTxt: Label '%1_IntelligentCloud', Comment = '%1 - The source product id', Locked = true;
+        DateTimeStringFormatTok: Label '%1-%2-%3', Locked = true;
 
     procedure InitializeMapping(SourceVersion: Decimal)
     var
@@ -240,5 +242,28 @@ codeunit 139667 "Library - Hybrid BC Last"
             UpgradeEvents.Add(TargetVersion, 'L')
         else
             UpgradeEvents.Set(TargetVersion, EventString + 'L');
+    end;
+
+    procedure InsertWebhookCompletedReplication(RunID: Text; CompanyName: Text)
+    var
+        WebhookNotification: Record "Webhook Notification";
+        HybridBCLastWizard: Codeunit "Hybrid BC Last Wizard";
+        NotificationOutStream: OutStream;
+        TodayDate: Date;
+        DateTimeString: Text;
+    begin
+        WebhookNotification.ID := CreateGuid();
+        WebhookNotification."Sequence Number" := 1;
+        WebhookNotification."Subscription ID" := COPYSTR(STRSUBSTNO(SubscriptionFormatTxt, HybridBCLastWizard.ProductId()), 1, 150);
+        WebhookNotification.Notification.CreateOutStream(NotificationOutStream);
+        TodayDate := DT2Date(CurrentDateTime);
+        DateTimeString := StrSubstNo(DateTimeStringFormatTok, Date2DMY(TodayDate, 3), Date2DMY(TodayDate, 2), Date2DMY(TodayDate, 1));
+        NotificationOutStream.WriteText(GetBCPreviousCloudSuccessfullNotification(RunID, CompanyName, DateTimeString));
+        WebhookNotification.Insert();
+    end;
+
+    local procedure GetBCPreviousCloudSuccessfullNotification(RunId: Text; NameOfCompany: Text; StartDate: Text): Text
+    begin
+        exit('{"@odata.type":"#Microsoft.Dynamics.NAV.Hybrid.Notification","SubscriptionId":"DynamicsBCLast_IntelligentCloud","ChangeType":"Changed","RunId":"' + RunId + '", "StartTime": "' + StartDate + 'T23:59:59.3759312Z","TriggerType":"PipelineActivity","Status":"Completed","ServiceType":"ReplicationCompleted","SyncedVersion":"145","IncrementalTables":[{"TableName":"Bank Account$16319982-4995-4fb1-8fb2-2b1e13773e3b","CompanyName":"' + NameOfCompany + '","ErrorCode":"50004","ErrorMessage":"The table does not exist in the local instance."},{"TableName":"AMC Bank Banks$16319982-4995-4fb1-8fb2-2b1e13773e3b","CompanyName":"' + NameOfCompany + '","ErrorCode":"50004","ErrorMessage":"The table does not exist in the local instance."},{"TableName":"Standard Item Journal$437dbf0e-84ff-417a-965d-ed2bb9650972","CompanyName":"' + NameOfCompany + '","ErrorCode":"","ErrorMessage":""},{"TableName":"Standard Purchase Code$437dbf0e-84ff-417a-965d-ed2bb9650972","CompanyName":"' + NameOfCompany + '","ErrorCode":"","ErrorMessage":""}]}');
     end;
 }

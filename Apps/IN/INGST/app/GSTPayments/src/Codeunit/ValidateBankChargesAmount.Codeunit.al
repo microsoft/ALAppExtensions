@@ -150,7 +150,7 @@ codeunit 18247 "Validate Bank Charges Amount"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Tax Transaction Value", 'OnBeforeTableFilterApplied', '', false, false)]
-    local procedure OnBeforeTableFilterApplied(var TaxRecordID: RecordID; TemplateNameFilter: Text; BatchFilter: Text; LineNoFilter: Integer)
+    local procedure OnBeforeTableFilterApplied(var TaxRecordID: RecordID; TemplateNameFilter: Text; BatchFilter: Text; LineNoFilter: Integer; DocumentNoFilter: Text)
     var
         JnlBankCharges: Record "Journal Bank Charges";
     begin
@@ -158,6 +158,7 @@ codeunit 18247 "Validate Bank Charges Amount"
         JnlBankCharges.SetRange("Journal Template Name", TemplateNameFilter);
         JnlBankCharges.SetRange("Journal Batch Name", BatchFilter);
         JnlBankCharges.SetRange("Line No.", LineNoFilter);
+        JnlBankCharges.SetRange("Bank Charge", DocumentNoFilter);
         if JnlBankCharges.FindFirst() then
             TaxRecordID := JnlBankCharges.RecordId();
     end;
@@ -238,6 +239,7 @@ codeunit 18247 "Validate Bank Charges Amount"
                         DetailedGSTEntryBuffer."Transaction Type" := DetailedGSTEntryBuffer."Transaction Type"::Purchase;
                         DetailedGSTEntryBuffer."Line No." := GenJnlLine."Line No.";
                         DetailedGSTEntryBuffer."Jnl. Bank Charge" := JnlBankCharges."Bank Charge";
+                        DetailedGSTEntryBuffer."External Document No." := JnlBankCharges."External Document No.";
                         DetailedGSTEntryBuffer."Bank Charge Entry" := true;
                         DetailedGSTEntryBuffer."Journal Template Name" := JnlBankCharges."Journal Template Name";
                         DetailedGSTEntryBuffer."Journal Batch Name" := JnlBankCharges."Journal Batch Name";
@@ -575,6 +577,7 @@ codeunit 18247 "Validate Bank Charges Amount"
         else
             GSTLedgerEntry."Document Type" := GSTLedgerEntry."Document Type"::"Credit Memo";
 
+        GSTLedgerEntry."External Document No." := GSTPostingBuffer."External Document No.";
         GSTLedgerEntry."Skip Tax Engine Trigger" := true;
         GSTLedgerEntry.Insert(true);
     end;
@@ -786,6 +789,7 @@ codeunit 18247 "Validate Bank Charges Amount"
 
                 GSTPostingBuffer[1]."GST Base Amount" := DetailedGSTEntryBuffer."GST Base Amount";
                 GSTPostingBuffer[1]."GST Amount" := DetailedGSTEntryBuffer."GST Amount";
+                GSTPostingBuffer[1]."External Document No." := DetailedGSTEntryBuffer."External Document No.";
                 UpdateGSTPostingBufferBankCharge();
             until DetailedGSTEntryBuffer.Next() = 0;
     end;
@@ -846,6 +850,7 @@ codeunit 18247 "Validate Bank Charges Amount"
             PostedJnlBankCharges."GST Inv. Rounding Precision" := JnlBankCharges."GST Inv. Rounding Precision";
             PostedJnlBankCharges."GST Inv. Rounding Type" := JnlBankCharges."GST Inv. Rounding Type";
             PostedJnlBankCharges."Nature of Supply" := PostedJnlBankCharges."Nature of Supply"::B2B;
+            JnlBankCharges.TestField("External Document No.");
             PostedJnlBankCharges."External Document No." := JnlBankCharges."External Document No.";
             PostedJnlBankCharges."Transaction No." := JnlBankChargesSessionMgt.GetTranxactionNo();
             PostedJnlBankCharges.LCY := JnlBankCharges.LCY;
@@ -942,7 +947,7 @@ codeunit 18247 "Validate Bank Charges Amount"
         end;
     end;
 
-    local procedure FillDetailedGSTLedgerEntry(JournalBankCharges: Record "Journal Bank Charges"; EntryNo: Integer; NextTransactionNo: Integer; GenJournalLine: Record "Gen. Journal Line")
+    local procedure FillDetailedGSTLedgerEntry(JournalBankCharges: Record "Journal Bank Charges"; var EntryNo: Integer; NextTransactionNo: Integer; GenJournalLine: Record "Gen. Journal Line")
     var
         DetailedGSTEntryBuffer: Record "Detailed GST Entry Buffer";
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";

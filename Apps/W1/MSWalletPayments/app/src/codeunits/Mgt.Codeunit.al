@@ -1,5 +1,9 @@
+#if not CLEAN20
 codeunit 1080 "MS - Wallet Mgt."
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     TableNo = "Payment Reporting Argument";
 
     trigger OnRun();
@@ -22,7 +26,6 @@ codeunit 1080 "MS - Wallet Mgt."
     var
         NotSupportedTypeErr: Label 'This function is not supported for the %1 table.', Comment = '%1 Caption of the table';
         MSWalletCaptionURLTxt: Label 'Pay this invoice now.';
-        MSWalletCaptionURLInvoicingTxt: Label 'Pay now';
         DemoLinkCaptionTxt: Label 'NOTE: This is a test invoice. Therefore, no actual money transfer will be made.', Comment = 'Will be shown next to Pay with Microsoft Pay Payments link';
         MSWalletNameTxt: Label 'Microsoft Pay Payments';
         MSWalletDescriptionTxt: Label 'Microsoft Pay Payments - Enables credit cards and PayPal payments';
@@ -33,7 +36,6 @@ codeunit 1080 "MS - Wallet Mgt."
         MSWalletBusinessSetupKeywordsTxt: Label 'Finance,Microsoft Pay Payments,MS Pay,Payment';
         MSWalletPaymentMethodCodeTok: Label 'MSPAY', Locked = true;
         MSWalletPaymentMethodDescTok: Label 'Microsoft Pay Payments';
-        UpdateWebhookTok: Label '%1?target=MSWallet&event=update&company=%2', Locked = true;
         CompleteWebhookTok: Label '%1?target=MSWallet&event=complete&company=%2', Locked = true;
         MSWalletRequestErr: Label 'An error occured while creating the Microsoft Pay Payments payment link.';
         MSWalletNoLinkQst: Label 'An error occured while creating the Microsoft Pay Payments payment link.\\Do you want to continue to create the document without the link?';
@@ -127,12 +129,16 @@ codeunit 1080 "MS - Wallet Mgt."
 
     procedure GetDeprecationMessageNotification(): Text
     begin
+#pragma warning disable AA0217
         exit(StrSubstNo('%1\\%2:\%3', MSWalletDeprecationMsgTok, MSWalletDeprecationActionTok, MSWalledDeprecationHelpTopicLinkTok));
+#pragma warning restore
     end;
 
     local procedure GetDeprecationMessageError(): Text
     begin
+#pragma warning disable AA0217        
         exit(StrSubstNo('%1\\%2:\%3', MSWalletDeprecationErr, MSWalletDeprecationActionTok, MSWalledDeprecationHelpTopicLinkTok));
+#pragma warning restore
     end;
 
     procedure SendDeprecationNotification(ParentRecordId: RecordId);
@@ -160,7 +166,6 @@ codeunit 1080 "MS - Wallet Mgt."
     local procedure SetCaptionBasedOnLanguage(var PaymentReportingArgument: Record "Payment Reporting Argument"; TestMode: Boolean);
     var
         Language: Record "Language";
-        EnvInfoProxy: Codeunit "Env. Info Proxy";
         CurrentLanguage: Integer;
         MSWalletBaseCaptionURL: Text;
     begin
@@ -168,15 +173,14 @@ codeunit 1080 "MS - Wallet Mgt."
         IF Language.GET(PaymentReportingArgument."Language Code") THEN
             GLOBALLANGUAGE(Language."Windows Language ID");
 
-        IF EnvInfoProxy.IsInvoicing() THEN
-            MSWalletBaseCaptionURL := MSWalletCaptionURLInvoicingTxt
-        ELSE
-            MSWalletBaseCaptionURL := MSWalletCaptionURLTxt;
+        MSWalletBaseCaptionURL := MSWalletCaptionURLTxt;
 
         PaymentReportingArgument.VALIDATE("URL Caption", MSWalletBaseCaptionURL);
 
         IF TestMode THEN
+#pragma warning disable AA0217        
             PaymentReportingArgument.VALIDATE("URL Caption", STRSUBSTNO('%1 (%2)', MSWalletBaseCaptionURL, DemoLinkCaptionTxt));
+#pragma warning restore
         PaymentReportingArgument.MODIFY(TRUE);
 
         IF GLOBALLANGUAGE() <> CurrentLanguage THEN
@@ -305,7 +309,6 @@ codeunit 1080 "MS - Wallet Mgt."
         UNTIL MSWalletMerchantAccount.NEXT() = 0;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnRegisterPaymentServiceProviders', '', false, false)]
     procedure RegisterMSWalletTemplate(var PaymentServiceSetup: Record 1060);
     var
         TempMSWalletMerchantTemplate: Record "MS - Wallet Merchant Template" temporary;
@@ -327,6 +330,12 @@ codeunit 1080 "MS - Wallet Mgt."
         PaymentServiceSetup."Management Codeunit ID" := CODEUNIT::"MS - Wallet Mgt.";
         PaymentServiceSetup.AssignPrimaryKey(PaymentServiceSetup);
         if PaymentServiceSetup.INSERT(TRUE) then;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Payment Service Setup", 'OnRegisterPaymentServiceProviders', '', false, false)]
+    local procedure RegisterMSWalletTemplateOnRegisterPaymentServiceProviders(var PaymentServiceSetup: Record 1060);
+    begin
+        RegisterMSWalletTemplate(PaymentServiceSetup);
     end;
 
     procedure NewPaymentAccount(var MSWalletMerchantAccount: Record "MS - Wallet Merchant Account"): Boolean;
@@ -391,11 +400,10 @@ codeunit 1080 "MS - Wallet Mgt."
         UNTIL MSWalletMerchantAccount.NEXT() = 0
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Manual Setup", 'OnRegisterManualSetup', '', false, false)]
-    local procedure RegisterBusinessSetup(var Sender: Codeunit "Manual Setup");
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', false, false)]
+    local procedure RegisterBusinessSetup(sender: Codeunit "Guided Experience");
     var
         MSWalletMerchantAccount: Record "MS - Wallet Merchant Account";
-        ManualSetupCategory: Enum "Manual Setup Category";
     begin
         if not MSWalletMerchantAccount.WritePermission() then
             exit;
@@ -404,27 +412,18 @@ codeunit 1080 "MS - Wallet Mgt."
             if not NewPaymentAccount(MSWalletMerchantAccount) then
                 exit;
 
-        Sender.Insert(
-          MSWalletNameTxt, MSWalletBusinessSetupDescriptionTxt, MSWalletBusinessSetupKeywordsTxt,
-          PAGE::"MS - Wallet Merchant Setup", 'ce917438-506c-4724-9b01-13c1b860e851', ManualSetupCategory::Service);
+        Sender.InsertManualSetup(
+          MSWalletNameTxt, MSWalletNameTxt, MSWalletBusinessSetupDescriptionTxt, 0, ObjectType::Page,
+          Page::"MS - Wallet Merchant Setup", "Manual Setup Category"::Service, MSWalletBusinessSetupKeywordsTxt);
     end;
 
     procedure ValidateChangePaymentRequestURL();
     var
         CompanyInformationMgt: Codeunit "Company Information Mgt.";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInfo.IsSaaS() THEN
+        IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInformation.IsSaaS() THEN
             ERROR(TargetURLCannotBeChangedInDemoCompanyErr);
-    end;
-
-    local procedure UpdatePaymentRequestFromAzureKeyVault(var MSWalletMerchantAccount: Record "MS - Wallet Merchant Account");
-    var
-        MSWalletMerchantTemplate: Record "MS - Wallet Merchant Template";
-    begin
-        if not GetTemplateExtended(MSWalletMerchantTemplate, true) then
-            ERROR(PaymentRequestAzureKeyVaultErr);
-        MSWalletMerchantAccount.SetPaymentRequestURL(MSWalletMerchantTemplate.GetPaymentRequestURL());
     end;
 
     local procedure SetTemplatePaymentRequestFromAzureKeyVault(var MSWalletMerchantTemplate: Record "MS - Wallet Merchant Template"): Boolean;
@@ -469,8 +468,9 @@ codeunit 1080 "MS - Wallet Mgt."
             ERROR(PaymentRequestAzureKeyVaultErr);
 
         AcquiredAuthToken := AcquireApplicationToken(AADAppID, AADAppKey, AADIdentityService, PaymentRequesBaseURL);
-
+#pragma warning disable AA0217
         EXIT(STRSUBSTNO('Bearer %1', AcquiredAuthToken));
+#pragma warning restore
     end;
 
     local procedure GetNotifyURL(): Text;
@@ -480,25 +480,9 @@ codeunit 1080 "MS - Wallet Mgt."
         EXIT(WebhookManagement.GetNotificationUrl());
     end;
 
-
-    local procedure GetWebhookUpdateURL(): Text;
-    begin
-        exit(STRSUBSTNO(UpdateWebhookTok, GetNotifyURL(), LOWERCASE(CompanyProperty.UrlName())));
-    end;
-
     procedure GetWebhookCompleteURL(): Text;
     begin
         exit(STRSUBSTNO(CompleteWebhookTok, GetNotifyURL(), LOWERCASE(CompanyProperty.UrlName())));
-    end;
-
-
-    local procedure IsValidPaymentURL(MSWalletMerchantAccount: Record "MS - Wallet Merchant Account"; PaymentURL: Text): Boolean;
-    var
-        BaseURL: Text;
-    begin
-        BaseURL := LOWERCASE(MSWalletMerchantAccount.GetBaseURL());
-        PaymentURL := LOWERCASE(GetBaseURL(PaymentURL));
-        EXIT(RemoveFirstSubdomain(PaymentURL) = RemoveFirstSubdomain(BaseURL));
     end;
 
     procedure IsValidAndSecureURL(URL: Text): Boolean;
@@ -510,14 +494,6 @@ codeunit 1080 "MS - Wallet Mgt."
                 if WebRequestHelper.IsSecureHttpUrl(URL) then
                     exit(true);
         exit(false);
-    end;
-
-    local procedure RemoveFirstSubdomain(URL: Text): Text;
-    var
-        DotIndex: Integer;
-    begin
-        DotIndex := STRPOS(URL, '.');
-        EXIT(COPYSTR(URL, DotIndex + 1));
     end;
 
     procedure GetBaseURL(URL: Text): Text;
@@ -543,19 +519,6 @@ codeunit 1080 "MS - Wallet Mgt."
         PropertyValue := JValue.AsText();
     end;
 
-    local procedure TryParseDateTime(DateTimeText: Text; var ResultDateTime: DateTime): Boolean;
-    var
-        TypeHelper: Codeunit "Type Helper";
-        DateTimeVariant: Variant;
-    begin
-        DateTimeVariant := 0DT;
-        if not TypeHelper.Evaluate(DateTimeVariant, DateTimeText, '', '') then
-            exit(false);
-
-        ResultDateTime := DateTimeVariant;
-        exit(true);
-    end;
-
     local procedure ServiceUrlValidityTime(): Integer;
     begin
         exit(3600000); // 1 hour
@@ -570,3 +533,4 @@ codeunit 1080 "MS - Wallet Mgt."
         AccessToken := AuthFlow.ALAcquireApplicationToken(ClientID, ClientSecret, Authority, ResourceUri);
     end;
 }
+#endif

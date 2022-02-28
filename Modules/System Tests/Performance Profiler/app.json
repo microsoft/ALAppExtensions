@@ -1,0 +1,50 @@
+{
+    "id":  "17310ad8-f1ab-494e-a146-ddc9c5f563d6",
+    "name":  "Performance Profiler Test",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for the Performance Profiler module",
+    "description":  "Tests for the Performance Profiler module",
+    "version":  "20.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "3ed12f72-47eb-4173-87c2-42ea99d60e67",
+                             "name":  "Performance Profiler",
+                             "publisher":  "Microsoft",
+                             "version":  "20.0.0.0"
+                         },
+                         {
+                             "id":  "b5c15eed-62f1-41e8-b053-bd733426766f",
+                             "name":  "Performance Profiler Test Library",
+                             "publisher":  "Microsoft",
+                             "version":  "20.0.0.0"
+                         },
+                         {
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "name":  "Library Assert",
+                             "publisher":  "Microsoft",
+                             "version":  "20.0.0.0"
+                         },
+                         {
+                            "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
+                            "name":  "BLOB Storage",
+                            "publisher":  "Microsoft",
+                            "version":  "20.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "20.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  135013,
+                         "to":  135014
+                     }
+                 ],
+    "target":  "OnPrem"
+}

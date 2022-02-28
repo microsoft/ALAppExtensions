@@ -8,82 +8,82 @@ codeunit 9054 "ABS Container Content Helper"
     Access = Internal;
 
     [NonDebuggable]
-    procedure AddNewEntryFromNode(var ContainerContent: Record "ABS Container Content"; var Node: XmlNode; XPathName: Text)
+    procedure AddNewEntryFromNode(var ABSContainerContent: Record "ABS Container Content"; var Node: XmlNode; XPathName: Text)
     var
-        HelperLibrary: Codeunit "ABS Helper Library";
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
         NameFromXml: Text;
         OuterXml: Text;
         ChildNodes: XmlNodeList;
         PropertiesNode: XmlNode;
     begin
-        NameFromXml := HelperLibrary.GetValueFromNode(Node, XPathName);
+        NameFromXml := ABSHelperLibrary.GetValueFromNode(Node, XPathName);
         Node.WriteTo(OuterXml);
         Node.SelectSingleNode('.//Properties', PropertiesNode);
         ChildNodes := PropertiesNode.AsXmlElement().GetChildNodes();
         if ChildNodes.Count = 0 then
-            AddNewEntry(ContainerContent, NameFromXml, OuterXml)
+            AddNewEntry(ABSContainerContent, NameFromXml, OuterXml)
         else
-            AddNewEntry(ContainerContent, NameFromXml, OuterXml, ChildNodes);
+            AddNewEntry(ABSContainerContent, NameFromXml, OuterXml, ChildNodes);
     end;
 
     [NonDebuggable]
-    procedure AddNewEntry(var ContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text)
+    procedure AddNewEntry(var ABSContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text)
     var
         ChildNodes: XmlNodeList;
     begin
-        AddNewEntry(ContainerContent, NameFromXml, OuterXml, ChildNodes);
+        AddNewEntry(ABSContainerContent, NameFromXml, OuterXml, ChildNodes);
     end;
 
     [NonDebuggable]
-    procedure AddNewEntry(var ContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList)
+    procedure AddNewEntry(var ABSContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList)
     var
         NextEntryNo: Integer;
-        Outstr: OutStream;
+        OutStream: OutStream;
     begin
         if NameFromXml.Contains('/') then
-            AddParentEntry(ContainerContent, NameFromXml);
+            AddParentEntry(ABSContainerContent, NameFromXml);
 
-        NextEntryNo := GetNextEntryNo(ContainerContent);
+        NextEntryNo := GetNextEntryNo(ABSContainerContent);
 
-        ContainerContent.Init();
+        ABSContainerContent.Init();
 
-        ContainerContent."Entry No." := NextEntryNo;
-        ContainerContent."Parent Directory" := GetDirectParentName(NameFromXml);
-        ContainerContent.Level := GetLevel(NameFromXml);
-        ContainerContent."Full Name" := CopyStr(NameFromXml, 1, 250);
-        ContainerContent.Name := GetName(NameFromXml);
-        SetPropertyFields(ContainerContent, ChildNodes);
-        ContainerContent."XML Value".CreateOutStream(Outstr);
-        Outstr.Write(OuterXml);
+        ABSContainerContent."Entry No." := NextEntryNo;
+        ABSContainerContent."Parent Directory" := GetDirectParentName(NameFromXml);
+        ABSContainerContent.Level := GetLevel(NameFromXml);
+        ABSContainerContent."Full Name" := CopyStr(NameFromXml, 1, 250);
+        ABSContainerContent.Name := GetName(NameFromXml);
+        SetPropertyFields(ABSContainerContent, ChildNodes);
+        ABSContainerContent."XML Value".CreateOutStream(OutStream);
+        OutStream.Write(OuterXml);
 
-        ContainerContent.Insert(true);
+        ABSContainerContent.Insert(true);
     end;
 
     [NonDebuggable]
-    local procedure AddParentEntry(var ContainerContent: Record "ABS Container Content"; NameFromXml: Text)
+    local procedure AddParentEntry(var ABSContainerContent: Record "ABS Container Content"; NameFromXml: Text)
     var
         NextEntryNo: Integer;
     begin
-        NextEntryNo := GetNextEntryNo(ContainerContent);
+        NextEntryNo := GetNextEntryNo(ABSContainerContent);
 
-        ContainerContent.Init();
+        ABSContainerContent.Init();
 
-        ContainerContent."Entry No." := NextEntryNo;
-        ContainerContent.Level := GetLevel(NameFromXml) - 1;
-        ContainerContent.Name := GetDirectParentName(NameFromXml);
-        ContainerContent."Parent Directory" := GetDirectParentName(NameFromXml);
-        ContainerContent."Content Type" := 'Directory';
+        ABSContainerContent."Entry No." := NextEntryNo;
+        ABSContainerContent.Level := GetLevel(NameFromXml) - 1;
+        ABSContainerContent.Name := GetDirectParentName(NameFromXml);
+        ABSContainerContent."Parent Directory" := GetDirectParentName(NameFromXml);
+        ABSContainerContent."Content Type" := 'Directory';
 
-        ContainerContent.Insert(true);
+        ABSContainerContent.Insert(true);
     end;
 
     [NonDebuggable]
-    local procedure SetPropertyFields(var ContainerContent: Record "ABS Container Content"; ChildNodes: XmlNodeList)
+    local procedure SetPropertyFields(var ABSContainerContent: Record "ABS Container Content"; ChildNodes: XmlNodeList)
     var
-        FormatHelper: Codeunit "ABS Format Helper";
-        HelperLibrary: Codeunit "ABS Helper Library";
-        RecRef: RecordRef;
-        FldRef: FieldRef;
+        ABSFormatHelper: Codeunit "ABS Format Helper";
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
+        RecordRef: RecordRef;
+        FieldRef: FieldRef;
         ChildNode: XmlNode;
         PropertyName: Text;
         PropertyValue: Text;
@@ -93,28 +93,28 @@ codeunit 9054 "ABS Container Content Helper"
             PropertyName := ChildNode.AsXmlElement().Name;
             PropertyValue := ChildNode.AsXmlElement().InnerText;
             if PropertyValue <> '' then begin
-                RecRef.GetTable(ContainerContent);
-                if HelperLibrary.GetFieldByName(Database::"ABS Container Content", PropertyName, FldNo) then begin
-                    FldRef := RecRef.Field(FldNo);
-                    case FldRef.Type of
-                        FldRef.Type::DateTime:
-                            FldRef.Value := FormatHelper.ConvertToDateTime(PropertyValue);
-                        FldRef.Type::Integer:
-                            FldRef.Value := FormatHelper.ConvertToInteger(PropertyValue);
+                RecordRef.GetTable(ABSContainerContent);
+                if ABSHelperLibrary.GetFieldByName(Database::"ABS Container Content", PropertyName, FldNo) then begin
+                    FieldRef := RecordRef.Field(FldNo);
+                    case FieldRef.Type of
+                        FieldRef.Type::DateTime:
+                            FieldRef.Value := ABSFormatHelper.ConvertToDateTime(PropertyValue);
+                        FieldRef.Type::Integer:
+                            FieldRef.Value := ABSFormatHelper.ConvertToInteger(PropertyValue);
                         else
-                            FldRef.Value := PropertyValue;
+                            FieldRef.Value := PropertyValue;
                     end;
                 end;
             end;
-            RecRef.SetTable(ContainerContent);
+            RecordRef.SetTable(ABSContainerContent);
         end;
     end;
 
     [NonDebuggable]
-    local procedure GetNextEntryNo(var ContainerContent: Record "ABS Container Content"): Integer
+    local procedure GetNextEntryNo(var ABSContainerContent: Record "ABS Container Content"): Integer
     begin
-        if ContainerContent.FindLast() then
-            exit(ContainerContent."Entry No." + 1)
+        if ABSContainerContent.FindLast() then
+            exit(ABSContainerContent."Entry No." + 1)
         else
             exit(1);
     end;
@@ -162,27 +162,27 @@ codeunit 9054 "ABS Container Content Helper"
     /// </summary>
     /// <returns>The Full name of the Blob, recovered from saved XmlNode</returns>
     [NonDebuggable]
-    internal procedure GetFullNameFromXML(var ContainerContent: Record "ABS Container Content"): Text
+    internal procedure GetFullNameFromXML(var ABSContainerContent: Record "ABS Container Content"): Text
     var
-        HelperLibrary: Codeunit "ABS Helper Library";
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
         Node: XmlNode;
         NameFromXml: Text;
     begin
-        GetXmlNodeForEntry(ContainerContent, Node);
-        NameFromXml := HelperLibrary.GetValueFromNode(Node, './/Name');
+        GetXmlNodeForEntry(ABSContainerContent, Node);
+        NameFromXml := ABSHelperLibrary.GetValueFromNode(Node, './/Name');
         exit(NameFromXml);
     end;
 
     [NonDebuggable]
-    local procedure GetXmlNodeForEntry(var ContainerContent: Record "ABS Container Content"; var Node: XmlNode)
+    local procedure GetXmlNodeForEntry(var ABSContainerContent: Record "ABS Container Content"; var Node: XmlNode)
     var
-        InStr: InStream;
+        InStream: InStream;
         XmlAsText: Text;
         Document: XmlDocument;
     begin
-        ContainerContent.CalcFields("XML Value");
-        ContainerContent."XML Value".CreateInStream(InStr);
-        InStr.Read(XmlAsText);
+        ABSContainerContent.CalcFields("XML Value");
+        ABSContainerContent."XML Value".CreateInStream(InStream);
+        InStream.Read(XmlAsText);
         XmlDocument.ReadFrom(XmlAsText, Document);
         Node := Document.AsXmlNode();
     end;

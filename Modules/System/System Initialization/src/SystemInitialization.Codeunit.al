@@ -24,10 +24,24 @@ codeunit 150 "System Initialization"
 
     /// <summary>
     /// Integration event for after the system initialization.
-    /// Subscribe to this event in order to execute additional initialization steps.
+    /// Used only for login.
     /// </summary>
+#if CLEAN20
+    [Scope('OnPrem')]
+#else
+    [Obsolete('Replaced by OnAfterLogin.', '20.0')]
+#endif
     [IntegrationEvent(false, false)]
     internal procedure OnAfterInitialization()
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event for after the login.
+    /// Subscribe to this event in order to execute additional initialization steps.
+    /// </summary>
+    [IntegrationEvent(false, false, true)]
+    internal procedure OnAfterLogin()
     begin
     end;
 }

@@ -13,6 +13,7 @@ page 1916 "MigrationQB ItemTable"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(Name; Name) { ApplicationArea = All; }
                 field(Description; Description) { ApplicationArea = All; }
                 field(Type; Type) { ApplicationArea = All; }
@@ -20,6 +21,7 @@ page 1916 "MigrationQB ItemTable"
                 field(PurchaseCost; PurchaseCost) { ApplicationArea = All; }
                 field(QtyOnHand; QtyOnHand) { ApplicationArea = All; }
                 field(Taxable; Taxable) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

@@ -23,22 +23,9 @@ codeunit 139610 SendRemittanceAdvice
     end;
 
     [Test]
-    [HandlerFunctions('SelectSendingOptionHandler,EmailVerifyModalPageHandler')]
-    procedure SendRemittanceAdviceFromPaymentJournalSMTPSetup() // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        SendRemittanceAdviceFromPaymentJournalInternal();
-    end;
-
-    [Test]
     [HandlerFunctions('SelectSendingOptionHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure SendRemittanceAdviceFromPaymentJournal()
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         SendRemittanceAdviceFromPaymentJournalInternal();
     end;
 
@@ -47,15 +34,11 @@ codeunit 139610 SendRemittanceAdvice
         CustomReportSelection: Record "Custom Report Selection";
         GenJournalLine: Record "Gen. Journal Line";
         Vendor: Record Vendor;
-        EmailFeature: Codeunit "Email Feature";
         LibraryWorkflow: Codeunit "Library - Workflow";
     begin
         // [SCENARIO 339846] Send remittance advice report to vendor by email from Payment Journal using customized Document Sending Profile
         Initialize();
-        if EmailFeature.IsEnabled() then
-            LibraryWorkflow.SetUpEmailAccount()
-        else
-            CreateSMTPMailSetup();
+        LibraryWorkflow.SetUpEmailAccount();
 
         // [GIVEN] Vendor with email
         // [GIVEN] Payment journal line
@@ -69,26 +52,12 @@ codeunit 139610 SendRemittanceAdvice
         LibraryVariableStorage.Enqueue(Vendor."E-Mail");
         SendFromPaymentJournal(GenJournalLine);
         // [THEN] Email Dialog opened and "To:" = "Email"
-        // Verified in EmailVerifyModalPageHandler handler
-    end;
-
-    [Test]
-    [HandlerFunctions('SelectSendingOptionHandler,EmailVerifyModalPageHandler')]
-    procedure SendRemittanceAdviceFromVendorLedgerEntrySMTPSetup() // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        SendRemittanceAdviceFromVendorLedgerEntryInternal();
     end;
 
     [Test]
     [HandlerFunctions('SelectSendingOptionHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure SendRemittanceAdviceFromVendorLedgerEntry()
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         SendRemittanceAdviceFromVendorLedgerEntryInternal();
     end;
 
@@ -96,15 +65,11 @@ codeunit 139610 SendRemittanceAdvice
     var
         CustomReportSelection: Record "Custom Report Selection";
         Vendor: Record Vendor;
-        EmailFeature: Codeunit "Email Feature";
         LibraryWorkflow: Codeunit "Library - Workflow";
     begin
         // [SCENARIO 339846] Send remittance advice report to vendor by email from Payment Journal using customized Document Sending Profile
         Initialize();
-        if EmailFeature.IsEnabled() then
-            LibraryWorkflow.SetUpEmailAccount()
-        else
-            CreateSMTPMailSetup();
+        LibraryWorkflow.SetUpEmailAccount();
 
         // [GIVEN] Vendor with email
         // [GIVEN] Vendor Ledger Entry
@@ -118,7 +83,6 @@ codeunit 139610 SendRemittanceAdvice
         LibraryVariableStorage.Enqueue(Vendor."E-Mail");
         SendFromVendorLedgerEntry(Vendor."No.");
         // [THEN] Email Dialog opened and "To:" = "Email"
-        // Verified in EmailVerifyModalPageHandler handler
     end;
 
     local procedure Initialize()
@@ -232,21 +196,6 @@ codeunit 139610 SendRemittanceAdvice
         VendorLedgerEntries.CLOSE();
     end;
 
-    local procedure CreateSMTPMailSetup()
-    var
-        SMTPMailSetup: Record "SMTP Mail Setup";
-    begin
-        if SMTPMailSetup.get() then
-            SMTPMailSetup.Delete();
-
-        SMTPMailSetup.Init();
-        SMTPMailSetup.Authentication := SMTPMailSetup.Authentication::Basic;
-        SMTPMailSetup."SMTP Server" := LibraryUtility.GenerateGUID();
-        SMTPMailSetup."User ID" := LibraryUtility.GenerateRandomEmail();
-        SMTPMailSetup.SetPassword('password');
-        SMTPMailSetup.Insert();
-    end;
-
     local procedure ResetDefaultDocumentSendingProfile()
     var
         DocumentSendingProfile: Record "Document Sending Profile";
@@ -273,12 +222,6 @@ codeunit 139610 SendRemittanceAdvice
         SelectSendingOptions."E-Mail".SETVALUE(DocumentSendingProfile."E-Mail"::"Yes (Prompt for Settings)");
         SelectSendingOptions.Disk.SETVALUE(DocumentSendingProfile.Disk::PDF);
         SelectSendingOptions.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure EmailVerifyModalPageHandler(var EmailDialog: TestPage "Email Dialog")
-    begin
-        EmailDialog.SendTo.AssertEquals(LibraryVariableStorage.DequeueText());
     end;
 
     [ModalPageHandler]

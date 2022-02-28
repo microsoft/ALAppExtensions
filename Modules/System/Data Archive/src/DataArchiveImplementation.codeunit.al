@@ -64,22 +64,22 @@ codeunit 610 "Data Archive Implementation" implements "Data Archive Provider"
         DataArchiveProvider.DiscardChanges();
     end;
 
-    procedure SaveRecord(var RecRef: RecordRef)
+    procedure SaveRecord(var RecordRef: RecordRef)
     begin
         TestIsCreated();
-        DataArchiveProvider.SaveRecord(RecRef);
+        DataArchiveProvider.SaveRecord(RecordRef);
     end;
 
-    procedure SaveRecord(RecordVar: Variant)
+    procedure SaveRecord(RecordVariant: Variant)
     begin
         TestIsCreated();
-        DataArchiveProvider.SaveRecord(RecordVar);
+        DataArchiveProvider.SaveRecord(RecordVariant);
     end;
 
-    procedure SaveRecords(var RecRef: RecordRef)
+    procedure SaveRecords(var RecordRef: RecordRef)
     begin
         TestIsCreated();
-        DataArchiveProvider.SaveRecords(RecRef);
+        DataArchiveProvider.SaveRecords(RecordRef);
     end;
 
     procedure StartSubscriptionToDelete()

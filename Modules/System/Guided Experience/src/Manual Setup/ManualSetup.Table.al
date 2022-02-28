@@ -19,6 +19,7 @@ table 3700 "Manual Setup"
 #endif
     ObsoleteReason = 'The Manual Setup module and its objects have been consolidated in the Guided Experience module. Use the Guided Experience Item table instead.';
     ObsoleteTag = '18.0';
+    ReplicateData = false;
 
     fields
     {

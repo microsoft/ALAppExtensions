@@ -135,18 +135,18 @@ table 1361 "MS - WorldPay Std. Template"
     var
         TempBlob: Codeunit "Temp Blob";
         LogoHttpClient: HttpClient;
-        ResponseMessage: HttpResponseMessage;
+        ResponseHttpResponseMessage: HttpResponseMessage;
         ResponseInStream: InStream;
         LogoOutStream: OutStream;
     begin
-        if not LogoHttpClient.Get(LogoURL, ResponseMessage) then
+        if not LogoHttpClient.Get(LogoURL, ResponseHttpResponseMessage) then
             exit(FALSE);
-        if not ResponseMessage.IsSuccessStatusCode() then
+        if not ResponseHttpResponseMessage.IsSuccessStatusCode() then
             exit(FALSE);
 
         TempBlob.CreateInStream(ResponseInStream);
 
-        ResponseMessage.Content().ReadAs(ResponseInStream);
+        ResponseHttpResponseMessage.Content().ReadAs(ResponseInStream);
         Logo.CREATEOUTSTREAM(LogoOutStream);
         exit(COPYSTREAM(LogoOutStream, ResponseInStream));
     end;

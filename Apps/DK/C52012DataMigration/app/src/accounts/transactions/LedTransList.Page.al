@@ -18,6 +18,7 @@ page 1902 "C5 LedTrans List"
         {
             repeater(General)
             {
+#pragma warning disable AA0218
                 field("Error Message"; MigrationErrorText)
                 {
                     ApplicationArea = All;
@@ -48,6 +49,7 @@ page 1902 "C5 LedTrans List"
                 field(ReconcileNo;ReconcileNo) { ApplicationArea=All; }
                 field(VatRepCounter;VatRepCounter) { ApplicationArea=All; }
                 field(VatPeriodRecId;VatPeriodRecId) { ApplicationArea=All; }                
+#pragma warning restore
             }
         }
     }

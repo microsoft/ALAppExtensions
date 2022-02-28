@@ -187,14 +187,14 @@ page 30017 "APIV2 - Employees"
                     Multiplicity = ZeroOrOne;
                     EntityName = 'picture';
                     EntitySetName = 'pictures';
-                    SubPageLink = Id = Field(SystemId), "Parent Type" = const(4);
+                    SubPageLink = Id = Field(SystemId), "Parent Type" = const(Employee);
                 }
                 part(defaultDimensions; "APIV2 - Default Dimensions")
                 {
                     Caption = 'Default Dimensions';
                     EntityName = 'defaultDimension';
                     EntitySetName = 'defaultDimensions';
-                    SubPageLink = ParentId = Field(SystemId), "Parent Type" = const(4);
+                    SubPageLink = ParentId = Field(SystemId), "Parent Type" = const(Employee);
                 }
                 part(timeRegistrationEntries; "APIV2 - Time Registr. Entries")
                 {
@@ -219,13 +219,13 @@ page 30017 "APIV2 - Employees"
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        EmployeeRecordRef: RecordRef;
     begin
         Insert(true);
 
-        RecRef.GetTable(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CurrentDateTime());
-        RecRef.SetTable(Rec);
+        EmployeeRecordRef.GetTable(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(EmployeeRecordRef, TempFieldSet, CurrentDateTime());
+        EmployeeRecordRef.SetTable(Rec);
 
         Modify(true);
         SetCalculatedFields();

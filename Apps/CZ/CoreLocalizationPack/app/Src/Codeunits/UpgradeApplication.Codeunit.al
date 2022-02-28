@@ -366,14 +366,22 @@ codeunit 31017 "Upgrade Application CZL"
     var
         PurchaseLine: Record "Purchase Line";
     begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
+           UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion200PerCompanyUpgradeTag())
+        then
             exit;
 
         if PurchaseLine.FindSet(true) then
             repeat
-                PurchaseLine."Negative CZL" := PurchaseLine.Negative;
-                PurchaseLine."Physical Transfer CZL" := PurchaseLine."Physical Transfer";
-                PurchaseLine."Country/Reg. of Orig. Code CZL" := PurchaseLine."Country/Region of Origin Code";
+                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
+                    PurchaseLine."Negative CZL" := PurchaseLine.Negative;
+                    PurchaseLine."Physical Transfer CZL" := PurchaseLine."Physical Transfer";
+                    PurchaseLine."Country/Reg. of Orig. Code CZL" := PurchaseLine."Country/Region of Origin Code";
+                end;
+                if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion200PerCompanyUpgradeTag()) then begin
+                    PurchaseLine."Ext. Amount CZL" := PurchaseLine."Ext. Amount (LCY)";
+                    PurchaseLine."Ext. Amount Incl. VAT CZL" := PurchaseLine."Ext.Amount Including VAT (LCY)";
+                end;
                 PurchaseLine.Modify(false);
             until PurchaseLine.Next() = 0;
     end;
@@ -2216,6 +2224,8 @@ codeunit 31017 "Upgrade Application CZL"
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerDatabaseUpgradeTag());
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerDatabaseUpgradeTag()) then
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerDatabaseUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion200PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion200PerDatabaseUpgradeTag());
     end;
 
     local procedure SetCompanyUpgradeTags();
@@ -2228,5 +2238,7 @@ codeunit 31017 "Upgrade Application CZL"
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag());
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerCompanyUpgradeTag()) then
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerCompanyUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion200PerCompanyUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion200PerCompanyUpgradeTag());
     end;
 }

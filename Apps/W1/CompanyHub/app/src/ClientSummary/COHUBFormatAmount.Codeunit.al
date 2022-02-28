@@ -34,7 +34,7 @@ codeunit 1165 "COHUB Format Amount"
         if Evaluate(DecimalValue, AmountText, 9) then
             exit(true);
 
-        SendTraceTag('0000DIA', COHUBTelemetryCategoryLbl, Verbosity::Error, StrSubstNo(CouldNotParseStringTxt, AmountText), DataClassification::CustomerContent);
+        Session.LogMessage('0000DIA', StrSubstNo(CouldNotParseStringTxt, AmountText), Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', COHUBTelemetryCategoryLbl);
         exit(false);
     end;
 

@@ -18,7 +18,7 @@ codeunit 9988 "Word Template Impl."
         InStream: InStream;
     begin
         if MergeFields.Count() = 0 then begin
-            Template.CreateInStream(InStream, TextEncoding::UTF8);
+            TemplateTempBlob.CreateInStream(InStream, TextEncoding::UTF8);
             Output := GetTemplateName('docx');
             DownloadFromStream(InStream, DownloadDialogTitleLbl, '', '', Output);
             Session.LogMessage('0000ED4', StrSubstNo(DownloadedTemplateTxt, WordTemplate.SystemId, WordTemplate."Table ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WordTemplatesCategoryTxt);
@@ -26,7 +26,7 @@ codeunit 9988 "Word Template Impl."
         end;
 
         PrepareZipFile();
-        ZipFile.CreateInStream(InStream, TextEncoding::UTF8);
+        ZipFileTempBlob.CreateInStream(InStream, TextEncoding::UTF8);
 
         Output := GetTemplateName('zip');
         DownloadFromStream(InStream, DownloadDialogTitleLbl, '', '', Output);
@@ -46,14 +46,14 @@ codeunit 9988 "Word Template Impl."
         OutStream: OutStream;
         InStream: InStream;
     begin
-        Clear(ZipFile);
+        Clear(ZipFileTempBlob);
 
         DataCompression.CreateZipArchive();
-        Template.CreateInStream(InStream, TextEncoding::UTF8);
+        TemplateTempBlob.CreateInStream(InStream, TextEncoding::UTF8);
         DataCompression.AddEntry(InStream, GetTemplateName('docx'));
         GenerateSpreadsheetDataSource(DataCompression); // Add data source spreadsheet to zip
 
-        ZipFile.CreateOutStream(OutStream, TextEncoding::UTF8);
+        ZipFileTempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         DataCompression.SaveZipArchive(OutStream);
     end;
 
@@ -118,7 +118,7 @@ codeunit 9988 "Word Template Impl."
         FileText: Text;
         InStream: InStream;
     begin
-        Result.CreateInStream(InStream, TextEncoding::UTF8);
+        ResultTempBlob.CreateInStream(InStream, TextEncoding::UTF8);
         if MultipleDocuments then
             FileText := 'Output.zip'
         else
@@ -177,17 +177,17 @@ codeunit 9988 "Word Template Impl."
 
     procedure GetTemplate(var TemplateInStream: InStream)
     begin
-        Template.CreateInStream(TemplateInStream, TextEncoding::UTF8);
+        TemplateTempBlob.CreateInStream(TemplateInStream, TextEncoding::UTF8);
     end;
 
     procedure GetDocument(var DocumentInStream: InStream)
     begin
-        Result.CreateInStream(DocumentInStream, TextEncoding::UTF8);
+        ResultTempBlob.CreateInStream(DocumentInStream, TextEncoding::UTF8);
     end;
 
     procedure GetDocumentSize(): Integer
     begin
-        exit(Result.Length());
+        exit(ResultTempBlob.Length());
     end;
 
     procedure Create()
@@ -233,7 +233,7 @@ codeunit 9988 "Word Template Impl."
 
         MergeFields := MailMergeFields;
 
-        Template.CreateOutStream(OutStream, TextEncoding::UTF8);
+        TemplateTempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         MailMerge := MailMerge.MailMerge();
         MailMerge.CreateDocument(DataSourceFileTxt, OutStream);
     end;
@@ -270,9 +270,9 @@ codeunit 9988 "Word Template Impl."
     begin
         Clear(MergeFields);
 
-        Template.CreateOutStream(OutStream, TextEncoding::UTF8);
+        TemplateTempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         CopyStream(OutStream, TemplateInStream);
-        Template.CreateInStream(TemplateInStream, TextEncoding::UTF8);
+        TemplateTempBlob.CreateInStream(TemplateInStream, TextEncoding::UTF8);
 
         Success := TryMailMergeLoadDocument(TemplateInStream);
         CustomDimensions.Add('TemplateSystemID', WordTemplate.SystemId);
@@ -291,7 +291,7 @@ codeunit 9988 "Word Template Impl."
     local procedure TryMailMergeLoadDocument(var TemplateInstream: InStream)
     begin
         MailMerge := MailMerge.MailMerge();
-        MailMerge.LoadDocument(TemplateInStream);
+        MailMerge.LoadDocument(DataSourceFileTxt, TemplateInStream);
     end;
 
     procedure Merge(Data: Dictionary of [Text, Text]; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format")
@@ -301,9 +301,9 @@ codeunit 9988 "Word Template Impl."
         Output: OutStream;
         Success: Boolean;
     begin
-        Clear(Result);
+        Clear(ResultTempBlob);
         MultipleDocuments := SplitDocument;
-        Result.CreateOutStream(Output, TextEncoding::UTF8);
+        ResultTempBlob.CreateOutStream(Output, TextEncoding::UTF8);
         ChosenFormat := SaveFormat;
 
         Success := TryMailMergeExecute(Data, SaveFormat, Output);
@@ -341,9 +341,9 @@ codeunit 9988 "Word Template Impl."
         Output: OutStream;
         Success: Boolean;
     begin
-        Clear(Result);
+        Clear(ResultTempBlob);
         MultipleDocuments := SplitDocument;
-        Result.CreateOutStream(Output, TextEncoding::UTF8);
+        ResultTempBlob.CreateOutStream(Output, TextEncoding::UTF8);
         ChosenFormat := SaveFormat;
 
         Success := TryMailMergeExecute(Data, SaveFormat, Output);
@@ -409,8 +409,8 @@ codeunit 9988 "Word Template Impl."
                 ReloadWordTemplate();
             until RecordRef.Next() = 0;
 
-        Clear(Result);
-        Result.CreateOutStream(OutStream, TextEncoding::UTF8);
+        Clear(ResultTempBlob);
+        ResultTempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         DataCompression.SaveZipArchive(OutStream);
     end;
 
@@ -490,20 +490,20 @@ codeunit 9988 "Word Template Impl."
 
     procedure AddTable(TableId: Integer)
     var
-        AllowedTable: Record "Word Templates Table";
+        AllowedWordTemplatesTable: Record "Word Templates Table";
         TableMetadata: Record "Table Metadata";
     begin
         if not TableMetadata.Get(TableId) then
             exit;
-        AllowedTable."Table ID" := TableId;
-        if AllowedTable.Insert() then;
+        AllowedWordTemplatesTable."Table ID" := TableId;
+        if AllowedWordTemplatesTable.Insert() then;
     end;
 
     procedure AllowedTableExist(TableId: Integer): Boolean
     var
-        AllowedTable: Record "Word Templates Table";
+        AllowedWordTemplatesTable: Record "Word Templates Table";
     begin
-        exit(AllowedTable.Get(TableId));
+        exit(AllowedWordTemplatesTable.Get(TableId));
     end;
 
     internal procedure GetTableId(): Integer
@@ -729,7 +729,7 @@ codeunit 9988 "Word Template Impl."
     var
         Instream: Instream;
     begin
-        Template.CreateInStream(Instream, TextEncoding::UTF8);
+        TemplateTempBlob.CreateInStream(Instream, TextEncoding::UTF8);
         MailMerge := MailMerge.MailMerge();
         MailMerge.LoadDocument(Instream);
     end;
@@ -825,7 +825,7 @@ codeunit 9988 "Word Template Impl."
                     Found := RelatedRecord.Get(Reference);
     end;
 
-    internal procedure GetByPrimaryKey(var RecordRef: RecordRef; Reference: Variant): Boolean
+    internal procedure GetByPrimaryKey(var RecordRef: RecordRef; ReferenceVariant: Variant): Boolean
     var
         FieldRef: FieldRef;
         KeyRef: KeyRef;
@@ -837,22 +837,22 @@ codeunit 9988 "Word Template Impl."
         FieldRef := KeyRef.FieldIndex(1);
         case FieldRef.Type of
             FieldRef.Type::BigInteger:
-                if not Reference.IsBigInteger() then
+                if not ReferenceVariant.IsBigInteger() then
                     exit(false);
             FieldRef.Type::Code:
-                if not Reference.IsCode() then
+                if not ReferenceVariant.IsCode() then
                     exit(false);
             FieldRef.Type::Integer:
-                if not Reference.IsInteger() then
+                if not ReferenceVariant.IsInteger() then
                     exit(false);
             FieldRef.Type::Guid:
-                if not Reference.IsGuid() then
+                if not ReferenceVariant.IsGuid() then
                     exit(false);
             else
                 exit(false);
         end;
 
-        FieldRef.SetRange(Reference);
+        FieldRef.SetRange(ReferenceVariant);
         exit(RecordRef.FindFirst());
     end;
 
@@ -1064,9 +1064,9 @@ codeunit 9988 "Word Template Impl."
 
     var
         WordTemplate: Record "Word Template";
-        Result: Codeunit "Temp Blob";
-        Template: Codeunit "Temp Blob";
-        ZipFile: Codeunit "Temp Blob";
+        ResultTempBlob: Codeunit "Temp Blob";
+        TemplateTempBlob: Codeunit "Temp Blob";
+        ZipFileTempBlob: Codeunit "Temp Blob";
         MailMerge: DotNet MailMerge;
         MergeFields: List of [Text];
         ChosenFormat: Enum "Word Templates Save Format";

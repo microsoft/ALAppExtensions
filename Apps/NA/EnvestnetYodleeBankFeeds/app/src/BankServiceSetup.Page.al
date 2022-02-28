@@ -398,6 +398,7 @@ page 1450 "MS - Yodlee Bank Service Setup"
                     Promoted = true;
                     PromotedCategory = Category6;
                     PromotedIsBig = true;
+                    PromotedOnly = true;
                     RunObject = Page "Bank Account List";
                     RunPageMode = View;
                     ToolTip = 'View the bank accounts.';
@@ -415,7 +416,7 @@ page 1450 "MS - Yodlee Bank Service Setup"
 
     trigger OnOpenPage();
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
         CompanyInformationMgt: Codeunit "Company Information Mgt.";
     begin
         RESET();
@@ -429,7 +430,7 @@ page 1450 "MS - Yodlee Bank Service Setup"
         AdvancedViewOnOpen := NOT HasDefaultCredentials();
         AdvancedView := NOT HasDefaultCredentials();
         ConsumerEditable := AdvancedView AND EditableByNotEnabled;
-        UserProfileEmaiLAddressIsVisible := (NOT EnvironmentInfo.IsSaaS()) OR CompanyInformationMgt.IsDemoCompany();
+        UserProfileEmaiLAddressIsVisible := (NOT EnvironmentInformation.IsSaaS()) OR CompanyInformationMgt.IsDemoCompany();
     end;
 
     var

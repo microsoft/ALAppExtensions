@@ -8,7 +8,7 @@ codeunit 9014 "Azure AD Graph Impl."
     Access = Internal;
 
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
         [NonDebuggable]
         GraphQuery: DotNet GraphQuery;
         IsTestInProgress: Boolean;
@@ -117,7 +117,7 @@ codeunit 9014 "Azure AD Graph Impl."
     var
         AzureADGraph: codeunit "Azure AD Graph";
     begin
-        if not EnvironmentInfo.IsSaaS() then
+        if not EnvironmentInformation.IsSaaS() then
             exit(false);
 
         if IsGraphInitialized then

@@ -1025,7 +1025,7 @@ page 18554 "Cash Payment Voucher"
                             if IsSimplePage then
                                 // If this page is opend in simple mode then use the current doc no. for every G/L lines that are created
                                 // from standard journal.
-                                StdGenJnl.CreateGenJnlFromStdJnlWithDocNo(StdGenJnl, CurrentJnlBatchName, CurrentDocNo)
+                                StdGenJnl.CreateGenJnlFromStdJnlWithDocNo(StdGenJnl, CurrentJnlBatchName, CurrentDocNo, 0D)
                             else
                                 StdGenJnl.CreateGenJnlFromStdJnl(StdGenJnl, CurrentJnlBatchName);
                             Message(CashPaymentInsertedMsg, StdGenJnl.Code);

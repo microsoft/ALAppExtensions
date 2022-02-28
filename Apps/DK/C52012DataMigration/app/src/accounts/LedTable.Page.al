@@ -17,6 +17,7 @@ page 1863 "C5 LedTable"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(Account; Account) { ApplicationArea = All; }
                 field(AccountName; AccountName) { ApplicationArea = All; }
                 field(AccountType; AccountType) { ApplicationArea = All; }
@@ -53,6 +54,7 @@ page 1863 "C5 LedTable"
                 field(MandPurpose; MandPurpose) { ApplicationArea = All; }
                 field(VatBlocked; VatBlocked) { ApplicationArea = All; }
                 field(OpeningAccount; OpeningAccount) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

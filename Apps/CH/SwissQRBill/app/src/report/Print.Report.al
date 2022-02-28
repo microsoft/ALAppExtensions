@@ -245,7 +245,7 @@ report 11510 "Swiss QR-Bill Print"
         BillingInfo := SwissQRBillBuffer."Billing Information";
         Result := SwissQRBillBuffer."Unstructured Message";
         if (Result <> '') and (StrLen(BillingInfo) > 45) then
-            Result += StrSubstNo(' %1', BillingInfo)
+            Result += ' ' + BillingInfo
         else
             SwissQRBillMgt.AddLineIfNotBlanked(Result, BillingInfo);
     end;

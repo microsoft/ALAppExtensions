@@ -9,4 +9,14 @@ codeunit 31382 "Reversal Entry Handler CZA"
         if GLEntry."Applied Amount CZA" <> 0 then
             Error(ReverseErr, GLEntry.TableCaption, GLEntry."Entry No.");
     end;
+#if CLEAN19
+
+    [EventSubscriber(ObjectType::Table, Database::"Reversal Entry", 'OnBeforeCheckFA', '', false, false)]
+    local procedure OnAfterMoveToGenJnlLine()
+    var
+        CheckFaErr: Label 'Function Reverse Register and Reverse Transaction cannot be used! Use function Cancel Entries instead.';
+    begin
+        Error(CheckFaErr)
+    end;
+#endif
 }

@@ -101,14 +101,18 @@ codeunit 1991 "Guided Experience Impl."
         PrevGuidedExperienceItem: Record "Guided Experience Item";
         GuidedExperience: Codeunit "Guided Experience";
 #if not CLEAN18
+#pragma warning disable AL0432
         ManualSetup: Codeunit "Manual Setup";
+#pragma warning restore
 #endif
     begin
         Clear(PageIDs);
 
         GuidedExperience.OnRegisterManualSetup();
 #if not CLEAN18
+#pragma warning disable AL0432
         ManualSetup.OnRegisterManualSetup();
+#pragma warning restore
 #endif
 
         GuidedExperienceItem.SetCurrentKey("Guided Experience Type", "Object Type to Run", "Object ID to Run", Link, Version);
@@ -769,8 +773,10 @@ codeunit 1991 "Guided Experience Impl."
         ConfirmManagement: Codeunit "Confirm Management";
         GuidedExperience: Codeunit "Guided Experience";
 #if not CLEAN18
+#pragma warning disable AL0432
         AssistedSetup: Codeunit "Assisted Setup";
         HandledAssistedSetup: Boolean;
+#pragma warning restore
 #endif
         Handled: Boolean;
         ObjectType: ObjectType;
@@ -785,9 +791,11 @@ codeunit 1991 "Guided Experience Impl."
             if Handled then
                 exit;           
 #else
+#pragma warning disable AL0432
             AssistedSetup.OnReRunOfCompletedSetup(GuidedExperienceItem."Extension ID", GuidedExperienceItem."Object ID to Run", HandledAssistedSetup);
             if Handled or HandledAssistedSetup then
                 exit;
+#pragma warning restore
 #endif
 
             if not ConfirmManagement.GetResponse(StrSubstNo(RunSetupAgainQst, GuidedExperienceItem.Title), false) then
@@ -797,8 +805,10 @@ codeunit 1991 "Guided Experience Impl."
         RunObject(GuidedExperienceItem);
 
 #if not CLEAN18
+#pragma warning disable AL0432
         if GuidedExperienceItem."Guided Experience Type" = GuidedExperienceItem."Guided Experience Type"::"Assisted Setup" then
             AssistedSetup.OnAfterRun(GuidedExperienceItem."Extension ID", GuidedExperienceItem."Object ID to Run");
+#pragma warning restore
 #endif
         if GuidedExperienceItem."Guided Experience Type" = GuidedExperienceItem."Guided Experience Type"::"Assisted Setup" then
             GuidedExperience.OnAfterRunAssistedSetup(GuidedExperienceItem."Extension ID", ObjectType, GuidedExperienceItem."Object ID to Run");
@@ -920,8 +930,10 @@ codeunit 1991 "Guided Experience Impl."
     var
         GuidedExperience: Codeunit "Guided Experience";
 #if not CLEAN18
+#pragma warning disable AL0432
         AssistedSetup: Codeunit "Assisted Setup";
         HandledAssistedSetup: Boolean;
+#pragma warning restore
 #endif
         RoleBasedSetupExperienceID: Integer;
     begin
@@ -929,8 +941,10 @@ codeunit 1991 "Guided Experience Impl."
 
         GuidedExperience.OnBeforeOpenRoleBasedAssistedSetupExperience(RoleBasedSetupExperienceID, Handled);
 #if not CLEAN18
+#pragma warning disable AL0432
         AssistedSetup.OnBeforeOpenRoleBasedSetupExperience(RoleBasedSetupExperienceID, HandledAssistedSetup);
         if not (HandledAssistedSetup or Handled) then
+#pragma warning restore
 #else
         if not Handled then
 #endif

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "_Exclude_SyncBaseApp_",
     "description":  "_Exclude_SyncBaseApp_",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
     "help":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
@@ -17,11 +17,11 @@
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "19.4.0.0"
+    "platform":  "20.0.0.0",
+    "resourceExposurePolicy": {
+        "allowDebugging": false,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
+    "application":  "20.0.0.0"
 }

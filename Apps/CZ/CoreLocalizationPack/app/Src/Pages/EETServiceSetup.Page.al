@@ -22,7 +22,7 @@ page 31142 "EET Service Setup CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = EditableByNotEnabled;
-                    ToolTip = 'Specifies the source address of the service.';
+                    ToolTip = 'Specifies the source address of the service.';
                 }
                 field("Sales Regime"; Rec."Sales Regime")
                 {
@@ -35,20 +35,20 @@ page 31142 "EET Service Setup CZL"
                     ApplicationArea = Basic, Suite;
                     Editable = EditableByNotEnabled;
                     Importance = Additional;
-                    ToolTip = 'Specifies the response time limit, after which goes into offline mode.';
+                    ToolTip = 'Specifies the response time limit, after which goes into offline mode.';
                 }
                 field("Appointing VAT Reg. No."; Rec."Appointing VAT Reg. No.")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = EditableByNotEnabled;
                     Importance = Additional;
-                    ToolTip = 'Specifies the responsible person who collects revenues.';
+                    ToolTip = 'Specifies the responsible person who collects revenues.';
                 }
                 field("Certificate Code"; Rec."Certificate Code")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = EditableByNotEnabled;
-                    ToolTip = 'Specifies the certificate needed to register sales.';
+                    ToolTip = 'Specifies the certificate needed to register sales.';
                 }
             }
             group(Status)
@@ -101,7 +101,7 @@ page 31142 "EET Service Setup CZL"
                 Caption = 'Certificate Codes';
                 Image = Certificate;
                 RunObject = Page "Certificate Code List CZL";
-                ToolTip = 'Displays a list of available certificates.';
+                ToolTip = 'Displays a list of available certificates.';
             }
         }
         area(Processing)

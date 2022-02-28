@@ -1,6 +1,6 @@
 #if not CLEAN18
 #pragma warning disable AL0432, AL0603, AA0072
-codeunit 31299 "Sync.Dep.Fld-TaxDeprGroup CZF"
+codeunit 31299 "Sync.Dep.Fld-TaxDeprGroup CZF"
 {
     Access = Internal;
     Permissions = tabledata "Depreciation Group" = rimd,

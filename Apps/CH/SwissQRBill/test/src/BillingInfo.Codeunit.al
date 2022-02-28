@@ -114,7 +114,7 @@ codeunit 148091 "Swiss QR-Bill Test BillingInfo"
     [Scope('OnPrem')]
     procedure GetBillingInformation_VATNumber()
     var
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
         SwissQRBillBillingInfo: Record "Swiss QR-Bill Billing Info";
         EntryNo: Integer;
     begin
@@ -122,11 +122,11 @@ codeunit 148091 "Swiss QR-Bill Test BillingInfo"
         // [SCENARIO 259169] Record "Swiss QR-Bill Billing Info".GetBillingInformation() in case of only vat number option
         SwissQRBillBillingInfo.Init();
         SwissQRBillBillingInfo."VAT Number" := true;
-        CompanyInfo.Get();
-        CompanyInfo.TestField("VAT Registration No.");
+        CompanyInformation.Get();
+        CompanyInformation.TestField("VAT Registration No.");
         EntryNo := MockCustLedgerEntry('docno123', DMY2Date(30, 12, 2020), DMY2Date(31, 12, 2020), '');
         Assert.AreEqual(
-            StrSubstNo('//S1/30/%1', SwissQRBillBillingInfoMgt.FormatVATRegNo(CompanyInfo."VAT Registration No.")),
+            '//S1/30/' + SwissQRBillBillingInfoMgt.FormatVATRegNo(CompanyInformation."VAT Registration No."),
             SwissQRBillBillingInfo.GetBillingInformation(EntryNo), 'vat number option');
     end;
 
@@ -219,21 +219,20 @@ codeunit 148091 "Swiss QR-Bill Test BillingInfo"
     [Scope('OnPrem')]
     procedure GetBillingInformation_All()
     var
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
         SwissQRBillBillingInfo: Record "Swiss QR-Bill Billing Info";
         SalesInvoiceHeader: Record "Sales Invoice Header";
     begin
         // [SCENARIO 259169] Record "Swiss QR-Bill Billing Info".GetBillingInformation() in case of all enabled option
-        CompanyInfo.Get();
+        CompanyInformation.Get();
         SwissQRBillBillingInfo.InitDefault();
         SwissQRBillTestLibrary.CreatePostSalesInvoice(SalesInvoiceHeader, '', 100, SwissQRBillTestLibrary.CreatePaymentTerms(1, 2), '');
         Assert.AreEqual(
-            StrSubstNo(
-                '//S1/10/%1/11/%2/30/%3/31/%4/32/10/40/1:2',
-                SalesInvoiceHeader."No.", SwissQRBillBillingInfoMgt.FormatDate(SalesInvoiceHeader."Document Date"),
-                SwissQRBillBillingInfoMgt.FormatVATRegNo(CompanyInfo."VAT Registration No."),
-                SwissQRBillBillingInfoMgt.FormatDate(SalesInvoiceHeader."Posting Date")
-            ),
+                '//S1/10/' + SalesInvoiceHeader."No." +
+                '/11/' + SwissQRBillBillingInfoMgt.FormatDate(SalesInvoiceHeader."Document Date") +
+                '/30/' + SwissQRBillBillingInfoMgt.FormatVATRegNo(CompanyInformation."VAT Registration No.") +
+                '/31/' + SwissQRBillBillingInfoMgt.FormatDate(SalesInvoiceHeader."Posting Date") +
+                '/32/10/40/1:2',
             SwissQRBillBillingInfo.GetBillingInformation(SalesInvoiceHeader."Cust. Ledger Entry No."),
             'all neabled option');
     end;
@@ -359,15 +358,15 @@ codeunit 148091 "Swiss QR-Bill Test BillingInfo"
             'S1/10/docno/11/201231/20/CRREF/30/vat_no-1.2.3/31/201230/32/10:100;20:200;15/40/1:2;3:4');
         with LibraryVariableStorage do begin
             Assert.AreEqual('S1-10-docno-Document No.-docno', DequeueText(), '');
-            Assert.AreEqual(StrSubstNo('S1-11-201231-Document Date-%1', Format(20201231D)), DequeueText(), '');
+            Assert.AreEqual('S1-11-201231-Document Date-' + Format(20201231D), DequeueText(), '');
             Assert.AreEqual('S1-20-CRREF-Creditor Reference-CRREF', DequeueText(), '');
             Assert.AreEqual('S1-30-vat_no-1.2.3-VAT Registration No.-123', DequeueText(), '');
-            Assert.AreEqual(StrSubstNo('S1-31-201230-VAT Date-%1', Format(20201230D)), DequeueText(), '');
-            Assert.AreEqual(StrSubstNo('S1-32-10:100-VAT Details-%1', StrSubstNo(VATDetailsTxt, 10, 100)), DequeueText(), '');
-            Assert.AreEqual(StrSubstNo('S1-32-20:200-VAT Details-%1', StrSubstNo(VATDetailsTxt, 20, 200)), DequeueText(), '');
-            Assert.AreEqual(StrSubstNo('S1-32-15-VAT Details-%1', StrSubstNo(VATDetailsTotalTxt, 15)), DequeueText(), '');
-            Assert.AreEqual(StrSubstNo('S1-40-1:2-Payment Terms-%1', StrSubstNo(PaymentTermsTxt, 1, 2)), DequeueText(), '');
-            Assert.AreEqual(StrSubstNo('S1-40-3:4-Payment Terms-%1', StrSubstNo(PaymentTermsTxt, 3, 4)), DequeueText(), '');
+            Assert.AreEqual('S1-31-201230-VAT Date-' + Format(20201230D), DequeueText(), '');
+            Assert.AreEqual('S1-32-10:100-VAT Details-' + StrSubstNo(VATDetailsTxt, 10, 100), DequeueText(), '');
+            Assert.AreEqual('S1-32-20:200-VAT Details-' + StrSubstNo(VATDetailsTxt, 20, 200), DequeueText(), '');
+            Assert.AreEqual('S1-32-15-VAT Details-' + StrSubstNo(VATDetailsTotalTxt, 15), DequeueText(), '');
+            Assert.AreEqual('S1-40-1:2-Payment Terms-' + StrSubstNo(PaymentTermsTxt, 1, 2), DequeueText(), '');
+            Assert.AreEqual('S1-40-3:4-Payment Terms-' + StrSubstNo(PaymentTermsTxt, 3, 4), DequeueText(), '');
             AssertEmpty();
         end;
     end;
@@ -649,10 +648,10 @@ codeunit 148091 "Swiss QR-Bill Test BillingInfo"
         with SwissQRBillBillingDetails do
             repeat
                 RecText := FormatCodeField.Value();
-                RecText += StrSubstNo('-%1', TagField.Value());
-                RecText += StrSubstNo('-%1', ValueField.Value());
-                RecText += StrSubstNo('-%1', TypeField.Value());
-                RecText += StrSubstNo('-%1', DescriptionField.Value());
+                RecText += '-' + TagField.Value();
+                RecText += '-' + ValueField.Value();
+                RecText += '-' + TypeField.Value();
+                RecText += '-' + DescriptionField.Value();
                 LibraryVariableStorage.Enqueue(RecText);
             until not Next();
     end;

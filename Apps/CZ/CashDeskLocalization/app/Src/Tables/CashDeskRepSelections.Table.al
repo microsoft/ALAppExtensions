@@ -5,7 +5,7 @@ table 11748 "Cash Desk Rep. Selections CZP"
 
     fields
     {
-        field(1; Usage; Enum "Cash Desk Rep. Sel. Usage CZP")
+        field(1; Usage; Enum "Cash Desk Rep. Sel. Usage CZP")
         {
             Caption = 'Usage';
             DataClassification = CustomerContent;

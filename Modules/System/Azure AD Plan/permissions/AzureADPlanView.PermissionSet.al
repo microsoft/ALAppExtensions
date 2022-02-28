@@ -9,7 +9,8 @@ PermissionSet 9018 "Azure AD Plan - View"
     Assignable = false;
 
     IncludedPermissionSets = "Azure AD Plan - Read",
-                             "Upgrade Tags - View";
+                             "Upgrade Tags - View",
+                             "Telemetry - Exec";
 
     Permissions = tabledata Plan = imd,
                   tabledata "User Plan" = imd;

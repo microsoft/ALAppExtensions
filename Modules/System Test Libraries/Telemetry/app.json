@@ -4,19 +4,19 @@
     "publisher":  "Microsoft",
     "brief":  "Test objetcs for the Telemetry module.",
     "description":  "Test objetcs for the Telemetry module.",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "",
     "dependencies":  [
-                         {
-                             "id":  "de35f591-7216-4e60-8be1-1911d71a7fc2",
-                             "name":  "Telemetry",
-                             "publisher":  "Microsoft",
-                             "version":  "19.4.0.0"
-                         }
+						{
+							"id": "de35f591-7216-4e60-8be1-1911d71a7fc2",
+							"name": "Telemetry",
+							"publisher": "Microsoft",
+							"version": "20.0.0.0"
+						}
                      ],
     "screenshots":  [
 
@@ -27,6 +27,6 @@
                          "to":  139482
                      }
                  ],
-    "platform":  "19.0.0.0",
+    "platform":  "20.0.0.0",
     "target":  "OnPrem"
 }

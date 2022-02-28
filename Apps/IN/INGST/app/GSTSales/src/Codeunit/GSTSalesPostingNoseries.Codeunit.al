@@ -46,7 +46,7 @@ codeunit 18142 "GST Sales Posting No. Series"
         Rec := Record;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Sell-to Customer Template Code', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Sell-to Customer Templ. Code', false, false)]
     local procedure SelltoCustomerTemplateCode(var Rec: Record "Sales Header")
     var
         Record: Variant;
@@ -66,7 +66,7 @@ codeunit 18142 "GST Sales Posting No. Series"
         Rec := Record;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Bill-to Customer Template Code', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Bill-to Customer Templ. Code', false, false)]
     local procedure BilltoCustomerTemplateCode(var Rec: Record "Sales Header")
     var
         Record: Variant;

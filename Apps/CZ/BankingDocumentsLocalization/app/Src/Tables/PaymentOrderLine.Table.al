@@ -1070,13 +1070,17 @@ table 31257 "Payment Order Line CZB"
         PaymentOrderManagementCZB: Codeunit "Payment Order Management CZB";
         ConfirmManagement: Codeunit "Confirm Management";
         GLSetupRead: Boolean;
+#if not CLEAN19
         AdvancePaymentTxt: Label 'Advance Payment';
         AdvancePaymentLineTxt: Label 'Advance Payment Line';
         AdvanceAlreadyAppliedQst: Label 'Advanced payment %1 is already applied on payment order. Continue?', Comment = '%1 = Letter No.';
+#endif
         ExistEntryErr: Label 'For the field %1 in table %2 exist more than one value %3.', Comment = '%1 = FieldCaption, %2 = TableCaption, %3 = Applies-to Doc. No.';
         NotExistEntryErr: Label 'For the field %1 in table %2 not exist value %3.', Comment = '%1 = FieldCaption, %2 = TableCaption, %3 = Applies-to Doc. No.';
         LedgerAlreadyAppliedQst: Label 'Ledger entry %1 is already applied on payment order. Continue?', Comment = '%1 = Applies-to C/V Entry No.';
+#if not CLEAN19
         LedgerAlreadyAppliedLineQst: Label 'Advanced payment %1 is already applied on payment order. Continue?', Comment = '%1 = Letter No.';
+#endif
         StatusCheckSuspended: Boolean;
 
     procedure GetPaymentOrder()
@@ -1428,6 +1432,60 @@ table 31257 "Payment Order Line CZB"
         exit(UnreliablePayerMgtCZL.IsPublicBankAccount('', Vendor."VAT Registration No.", "Account No.", IBAN));
     end;
 
+    procedure CalcRelatedAmountToApply(): Decimal
+    var
+        TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
+    begin
+        FindRelatedAmountToApply(TempCrossApplicationBufferCZL);
+        TempCrossApplicationBufferCZL.CalcSums("Amount (LCY)");
+        exit(TempCrossApplicationBufferCZL."Amount (LCY)");
+    end;
+
+    procedure DrillDownRelatedAmountToApply()
+    var
+        TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
+    begin
+        FindRelatedAmountToApply(TempCrossApplicationBufferCZL);
+        Page.Run(Page::"Cross Application CZL", TempCrossApplicationBufferCZL);
+    end;
+
+    local procedure FindRelatedAmountToApply(var TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary)
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        EmployeeLedgerEntry: Record "Employee Ledger Entry";
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+        AppliesToAdvanceLetterNo: Code[20];
+    begin
+        if Rec."No." = '' then
+            exit;
+
+        case Rec.Type of
+            Rec.Type::Customer:
+                if Rec."Applies-to C/V/E Entry No." <> 0 then
+                    if CustLedgerEntry.Get(Rec."Applies-to C/V/E Entry No.") then
+                        CrossApplicationMgtCZL.OnGetSuggestedAmountForCustLedgerEntry(CustLedgerEntry, TempCrossApplicationBufferCZL,
+                                                                                      Database::"Iss. Payment Order Line CZB", Rec."Payment Order No.", Rec."Line No.");
+            Rec.Type::Vendor:
+                begin
+                    if Rec."Applies-to C/V/E Entry No." <> 0 then
+                        if VendorLedgerEntry.Get(Rec."Applies-to C/V/E Entry No.") then
+                            CrossApplicationMgtCZL.OnGetSuggestedAmountForVendLedgerEntry(VendorLedgerEntry, TempCrossApplicationBufferCZL,
+                                                                                          Database::"Iss. Payment Order Line CZB", Rec."Payment Order No.", Rec."Line No.");
+
+                    OnBeforeFindRelatedAmoutToApply(Rec, AppliesToAdvanceLetterNo);
+                    if AppliesToAdvanceLetterNo <> '' then
+                        CrossApplicationMgtCZL.OnGetSuggestedAmountForPurchAdvLetterHeader(AppliesToAdvanceLetterNo, TempCrossApplicationBufferCZL,
+                                                                                           Database::"Iss. Payment Order Line CZB", Rec."Payment Order No.", Rec."Line No.");
+                end;
+            Rec.Type::Employee:
+                if Rec."Applies-to C/V/E Entry No." <> 0 then
+                    if EmployeeLedgerEntry.Get(Rec."Applies-to C/V/E Entry No.") then
+                        CrossApplicationMgtCZL.OnGetSuggestedAmountForEmplLedgerEntry(EmployeeLedgerEntry, TempCrossApplicationBufferCZL,
+                                                                                      Database::"Iss. Payment Order Line CZB", Rec."Payment Order No.", Rec."Line No.");
+        end;
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeUpdateAmountsFromVendorLedgerEntry(var PaymentOrderLineCZB: Record "Payment Order Line CZB"; xPaymentOrderLineCZB: Record "Payment Order Line CZB"; VendorLedgerEntry: Record "Vendor Ledger Entry"; var IsHandled: Boolean)
     begin
@@ -1455,6 +1513,11 @@ table 31257 "Payment Order Line CZB"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterAppliesToEmplLedgEntryNo(var PaymentOrderLineCZB: Record "Payment Order Line CZB"; EmployeeLedgerEntry: Record "Employee Ledger Entry");
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFindRelatedAmoutToApply(PaymentOrderLineCZB: Record "Payment Order Line CZB"; var AppliesToAdvanceLetterNo: Code[20]);
     begin
     end;
 }

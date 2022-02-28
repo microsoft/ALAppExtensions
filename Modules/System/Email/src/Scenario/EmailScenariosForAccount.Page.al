@@ -35,10 +35,10 @@ page 8894 "Email Scenarios for Account"
         }
     }
 
-    internal procedure GetSelectedScenarios(var Result: Record "Email Account Scenario")
+    internal procedure GetSelectedScenarios(var ResultEmailAccountScenario: Record "Email Account Scenario")
     begin
-        Result.Reset();
-        Result.DeleteAll();
+        ResultEmailAccountScenario.Reset();
+        ResultEmailAccountScenario.DeleteAll();
 
         CurrPage.SetSelectionFilter(Rec);
 
@@ -46,8 +46,8 @@ page 8894 "Email Scenarios for Account"
             exit;
 
         repeat
-            Result.Copy(Rec);
-            Result.Insert();
+            ResultEmailAccountScenario.Copy(Rec);
+            ResultEmailAccountScenario.Insert();
         until Rec.Next() = 0;
     end;
 

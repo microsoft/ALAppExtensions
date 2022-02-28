@@ -129,11 +129,11 @@ page 1908 Camera
     /// Gets the picture that was taken when the page was opened.
     /// An error is displayed if the function is called without opening the page first.
     /// </summary>
-    /// <param name="Stream">The InStream to read the picture from.</param>
+    /// <param name="InStream">The InStream to read the picture from.</param>
     /// <error>The picture is not available.</error>
-    procedure GetPicture(Stream: Instream)
+    procedure GetPicture(InStream: Instream)
     begin
-        CameraPageImpl.GetPicture(Stream);
+        CameraPageImpl.GetPicture(InStream);
     end;
 
     trigger CameraProvider::PictureAvailable(PictureName: Text; PictureFilePath: Text)

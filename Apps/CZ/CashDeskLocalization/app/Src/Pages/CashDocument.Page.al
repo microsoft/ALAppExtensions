@@ -152,7 +152,7 @@ page 31160 "Cash Document CZP"
                 {
                     ApplicationArea = Basic, Suite;
                     DrillDown = false;
-                    ToolTip = 'Specifies that the cash register works with EET.';
+                    ToolTip = 'Specifies that the cash register works with EET.';
                 }
             }
             part(CashDocLines; "Cash Document Subform CZP")

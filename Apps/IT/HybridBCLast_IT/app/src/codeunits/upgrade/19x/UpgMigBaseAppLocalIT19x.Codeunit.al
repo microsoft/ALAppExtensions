@@ -1,3 +1,9 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+#if not CLEAN19
 codeunit 12107 "Upg Mig BaseApp Local IT 19x"
 {
     trigger OnRun()
@@ -17,18 +23,20 @@ codeunit 12107 "Upg Mig BaseApp Local IT 19x"
     var
         VATReportHeader: Record "VAT Report Header";
         UpgradeTag: Codeunit "Upgrade Tag";
-        UpgradeTags: Codeunit "Upgrade Tag Def - Country";
+        UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTags.GetVATReportTaxAuthDocNoUpgradeTag()) then
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetVATReportTaxAuthDocNoUpgradeTag()) then
             exit;
 
         if VATReportHeader.FindSet() then
             repeat
+#pragma warning disable AL0432
                 VATReportHeader."Tax Auth. Document No." := VATReportHeader."Tax Auth. Doc. No.";
+#pragma warning restore AL0432
                 VATReportHeader.Modify();
             until VATReportHeader.Next() = 0;
 
-        UpgradeTag.SetUpgradeTag(UpgradeTags.GetVATReportTaxAuthDocNoUpgradeTag());
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetVATReportTaxAuthDocNoUpgradeTag());
     end;
 }
-
+#endif

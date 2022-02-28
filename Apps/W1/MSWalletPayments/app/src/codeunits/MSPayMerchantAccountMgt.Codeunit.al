@@ -1,6 +1,9 @@
+#if not CLEAN20
 codeunit 1085 "MS - Pay Merchant Account Mgt."
 {
-
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Paypal Account Proxy", 'SetAlwaysIncludeMsPayOnDocuments', '', true, true)]
     procedure HandleSetAlwaysIncludeMsPayOnDocuments(NewAlwaysIncludeOnDocuments: Boolean; HideDialogs: Boolean);
     begin
@@ -38,6 +41,5 @@ codeunit 1085 "MS - Pay Merchant Account Mgt."
             MSWalletMerchantAccount.Modify(true);
         end;
     end;
-
 }
-
+#endif

@@ -2,7 +2,7 @@
     "id":  "7106d701-c601-4a5f-97c2-b8b323ae2c18",
     "name":  "QR Generator",
     "publisher":  "Microsoft",
-    "version":  "19.4.0.0",
+    "version":  "20.0.0.0",
     "brief":  "Contains feature for QR Code Generation.",
     "description":  "Contains feature for QR Code Generation.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -20,8 +20,8 @@
     "screenshots":  [
 
                     ],
-    "platform":  "19.0.0.0",
-    "application":  "19.4.0.0",
+    "platform":  "20.0.0.0",
+    "application":  "20.0.0.0",
     "idRanges":  [
                      {
                          "from":  18650,
@@ -29,10 +29,10 @@
                      }
                  ],
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139720",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
     "target":  "OnPrem"
 }

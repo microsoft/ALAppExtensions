@@ -90,6 +90,12 @@ page 8882 "Email Outbox"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the date when this email failed to send.';
                 }
+
+                field("Date Sending"; Rec."Date Sending")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the date when this email is scheduled for sending.';
+                }
             }
         }
     }
@@ -173,7 +179,7 @@ page 8882 "Email Outbox"
 
                     repeat
                         EmailMessage.Get(SelectedEmailOutbox."Message Id");
-                        EmailImpl.Enqueue(EmailMessage, SelectedEmailOutbox."Account Id", SelectedEmailOutbox.Connector);
+                        EmailImpl.Enqueue(EmailMessage, SelectedEmailOutbox."Account Id", SelectedEmailOutbox.Connector, CurrentDateTime());
                     until SelectedEmailOutbox.Next() = 0;
 
                     LoadEmailOutboxForUser();
@@ -236,7 +242,7 @@ page 8882 "Email Outbox"
 
     local procedure LoadEmailOutboxForUser()
     begin
-        EmailImpl.RefreshEmailOutboxForUser(EmailAccountId, EmailStatus, Rec);
+        EmailImpl.GetOutboxEmails(EmailAccountId, EmailStatus, Rec);
 
         Rec.SetCurrentKey("Date Queued");
         NoEmailsInOutbox := Rec.IsEmpty();

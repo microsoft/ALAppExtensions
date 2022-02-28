@@ -36,8 +36,8 @@ page 9988 "Word Templates Table Lookup"
         }
     }
 
-    procedure GetRecord(var SelectedRecord: Record "Word Templates Table")
+    procedure GetRecord(var SelectedWordTemplatesTable: Record "Word Templates Table")
     begin
-        SelectedRecord := Rec;
+        SelectedWordTemplatesTable := Rec;
     end;
 }

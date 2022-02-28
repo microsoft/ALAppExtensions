@@ -17,6 +17,7 @@ page 1892 "C5 CustTrans"
         {
             repeater(General)
             {
+#pragma warning disable AA0218
                 field(BudgetCode;BudgetCode) { ApplicationArea=All; }
                 field(Account;Account) { ApplicationArea=All; }
                 field(Department;Department) { ApplicationArea=All; }
@@ -50,6 +51,7 @@ page 1892 "C5 CustTrans"
                 field(Centre;Centre) { ApplicationArea=All; }
                 field(Purpose;Purpose) { ApplicationArea=All; }
                 field(PaymentMode;PaymentMode) { ApplicationArea=All; }
+#pragma warning restore
             }
         }
     }

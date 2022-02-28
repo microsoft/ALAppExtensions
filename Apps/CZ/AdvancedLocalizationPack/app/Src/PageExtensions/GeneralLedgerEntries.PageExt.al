@@ -13,7 +13,6 @@ pageextension 31241 "General Ledger Entries CZA" extends "General Ledger Entries
             field(RemainingAmountCZAField; Rec.RemainingAmountCZA())
             {
                 ApplicationArea = Basic, Suite;
-                BlankZero = true;
                 Caption = 'Remaining Amount';
                 Editable = false;
                 ToolTip = 'Specifies the remaining amount of general ledger entries';

@@ -5,6 +5,7 @@ codeunit 18440 "GST Service Validations"
         RefErr: Label 'Document is attached with Reference Invoice No. Please delete attached Reference Invoice No.';
         GSTGroupReverseChargeErr: Label 'GST Group Code %1 with Reverse Charge cannot be selected for Service transactions.', Comment = 'GST Group Code %1.';
         ConversionErr: Label 'Document Type %1 is not a valid option.', Comment = '%1 = Service Header Document Type';
+        GSTPlaceOfSupplyErr: Label 'You must select Ship-to Code or Ship-to Customer in transaction header.';
 
     procedure ReferenceInvoiceNoValidation(DocumentType: Enum "Service Document Type"; DocNo: Code[20]; CustNum: Code[20])
     var
@@ -100,8 +101,33 @@ codeunit 18440 "GST Service Validations"
             Rec."GST Bill-to State Code" := Customer."State Code";
     end;
 
+#if not CLEAN20
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Serv-Posting Journals Mgt.", 'OnBeforePostCustomerEntry', '', false, false)]
     local procedure FillCustomerEntry(var GenJournalLine: Record "Gen. Journal Line"; ServiceHeader: Record "Service Header")
+    var
+        ServiceLine: Record "Service Line";
+    begin
+        GenJournalLine."GST Customer Type" := ServiceHeader."GST Customer Type";
+        GenJournalLine."Location State Code" := ServiceHeader."Location State Code";
+        GenJournalLine."Location GST Reg. No." := ServiceHeader."Location GST Reg. No.";
+        GenJournalLine."GST Bill-to/BuyFrom State Code" := ServiceHeader."GST Bill-to State Code";
+        GenJournalLine."Customer GST Reg. No." := ServiceHeader."Customer GST Reg. No.";
+        GenJournalLine."GST Place of Supply" := GenJournalLine."GST Place of Supply"::"Bill-to Address";
+        GenJournalLine."Ship-to Code" := ServiceHeader."Ship-to Code";
+        GenJournalLine."GST Ship-to State Code" := ServiceHeader."GST Ship-to State Code";
+        GenJournalLine."Ship-to GST Reg. No." := ServiceHeader."Ship-to GST Reg. No.";
+        GenJournalLine."Location Code" := ServiceHeader."Location Code";
+
+        ServiceLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceLine.SetRange("Document Type", ServiceHeader."Document Type");
+        ServiceLine.SetFilter("Qty. to Invoice", '<>%1', 0);
+        if ServiceLine.FindFirst() then
+            GenJournalLine."GST Jurisdiction Type" := ServiceLine."GST Jurisdiction Type";
+    end;
+#endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
+    local procedure OnPostLedgerEntryOnBeforeGenJnlPostLine(var GenJournalLine: Record "Gen. Journal Line"; ServiceHeader: Record "Service Header")
     var
         ServiceLine: Record "Service Line";
     begin
@@ -237,6 +263,9 @@ codeunit 18440 "GST Service Validations"
     var
         ShiptoAddress: Record "Ship-to Address";
     begin
+        if Rec."Ship-to GST Reg. No." = '' then
+            exit;
+
         if not ShiptoAddress.Get(Rec."Customer No.", Rec."Ship-to Code") then
             exit;
 
@@ -359,6 +388,10 @@ codeunit 18440 "GST Service Validations"
             ServiceLine."GST Group Type" := GSTGroup."GST Group Type";
             if GSTGroup."GST Place Of Supply" <> GSTGroup."GST Place Of Supply"::" " then
                 ServiceLine."GST Place Of Supply" := GSTGroup."GST Place Of Supply";
+
+            if ServiceLine."Document Type" <> ServiceLine."Document Type"::"Credit Memo" then
+                if ServiceLine."GST Place Of Supply" <> ServiceLine."GST Place Of Supply"::" " then
+                    GSTPlaceOfSupply(ServiceLine);
         end;
 
         UpdateGSTJurisdictionType(ServiceLine);
@@ -415,6 +448,103 @@ codeunit 18440 "GST Service Validations"
                 if not TaxTransactionValue.IsEmpty() then
                     ServiceHeader.TestField("Invoice Type");
             until ServiceLine.Next() = 0
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyShipToCustomerAddressFieldsFromShipToAddr', '', false, false)]
+    local procedure UpdateShipToAddrfields(var ServiceHeader: Record "Service Header"; ShipToAddress: Record "Ship-to Address")
+    begin
+        if ShipToAddress.State <> '' then
+            ShipToAddrfields(ServiceHeader, ShipToAddress);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyShipToCustomerAddressFieldsFromCustomer', '', false, false)]
+    local procedure UpdateCustomerFields(var ServiceHeader: Record "Service Header"; SellToCustomer: Record Customer)
+    begin
+        CustomerFields(ServiceHeader);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service line", 'OnAfterValidateEvent', 'GST Place Of Supply', false, false)]
+    local procedure ValidateGSTPlaceOfSupply(var Rec: Record "Service Line")
+    var
+        GSTServiceShiptoAddress: Codeunit "GST Service Ship To Address";
+    begin
+        GSTPlaceOfSupply(Rec);
+        GSTServiceShiptoAddress.ValidateGSTRegistration(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service-Post (Yes/No)", 'OnAfterConfirmPost', '', false, false)]
+    local procedure CheckAccountignPeriod(var ServiceHeader: Record "Service Header")
+    var
+        GSTServiceShiptoAddress: Codeunit "GST Service Ship To Address";
+    begin
+        GSTServiceShiptoAddress.ServicePostGSTPlaceOfSupply(ServiceHeader);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeValidateEvent', 'Ship-to Code', false, false)]
+    local procedure OnBeforeUpdateShipToCode(var Rec: Record "Service Header")
+    var
+        Customer: Record Customer;
+    begin
+        if Customer.Get(Rec."Customer No.") then
+            Rec."GST Customer Type" := Customer."GST Customer Type";
+    end;
+
+    local procedure CustomerFields(var ServiceHeader: Record "Service Header")
+    var
+        ShipToAddr: Record "Ship-to Address";
+    begin
+        if ServiceHeader."Document Type" in ["Document Type Enum"::"Credit Memo", "Document Type Enum"::"Return Order"] then
+            if ShipToAddr.Get(ServiceHeader."Customer No.", ServiceHeader."Ship-to Code") then begin
+                if not (ServiceHeader."GST Customer Type" in [
+                    "GST Customer Type"::Export,
+                    "GST Customer Type"::"Deemed Export",
+                    "GST Customer Type"::"SEZ Development",
+                    "GST Customer Type"::"SEZ Unit"])
+                then begin
+                    ShipToAddr.TestField(State);
+                    ServiceHeader."GST Ship-to State Code" := ShipToAddr.State;
+                end;
+                if not (ServiceHeader."GST Customer Type" in ["GST Customer Type"::Export]) then begin
+                    ShipToAddr.TestField(State);
+                    ServiceHeader."Ship-to GST Reg. No." := ShipToAddr."GST Registration No.";
+                end;
+            end;
+    end;
+
+    local procedure ShipToAddrfields(var ServiceHeader: Record "Service Header"; ShipToAddress: Record "Ship-to Address")
+    begin
+        if ServiceHeader."GST Customer Type" <> "GST Customer Type"::" " then
+            if ServiceHeader."GST Customer Type" in [
+                "GST Customer Type"::Exempted,
+                "GST Customer Type"::"Deemed Export",
+                "GST Customer Type"::"SEZ Development",
+                "GST Customer Type"::"SEZ Unit",
+                "GST Customer Type"::Registered]
+            then begin
+                ShipToAddress.TestField(State);
+                if ShipToAddress."GST Registration No." = '' then
+                    if ShipToAddress."ARN No." = '' then
+                        Error(ShiptoGSTARNErr);
+                ServiceHeader."GST Ship-to State Code" := ShipToAddress.State;
+                ServiceHeader."Ship-to GST Reg. No." := ShipToAddress."GST Registration No.";
+
+                if CheckGSTPlaceOfSupply(ServiceHeader) then
+                    ServiceHeader.State := ShipToAddress.State;
+            end;
+    end;
+
+    local Procedure CheckGSTPlaceOfSupply(ServiceHeader: Record "Service Header"): Boolean
+    var
+        ServiceLine: Record "Service Line";
+    begin
+        ServiceLine.Reset();
+        ServiceLine.SetRange("Document Type", ServiceHeader."Document Type");
+        ServiceLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceLine.SetRange("GST Place of Supply", ServiceLine."GST Place of Supply"::"Ship-to Address");
+        if not ServiceLine.IsEmpty() then
+            exit(true);
+
+        exit(false);
     end;
 
     local procedure UpdateExempetedCustomerLine(var ServiceLine: Record "Service Line")
@@ -547,6 +677,68 @@ codeunit 18440 "GST Service Validations"
         end else
             IsEditable := true;
     end;
+
+    local procedure UpdateStateCode(var ServiceHeader: Record "Service Header"; var ServiceLine: Record "Service Line")
+    var
+        GSTServiceShiptoAddress: Codeunit "GST Service Ship To Address";
+    begin
+        Case ServiceLine."GST Place of Supply" of
+            ServiceLine."GST Place Of Supply"::"Bill-to Address":
+                GSTServiceShiptoAddress.UpdateBillToAddressState(ServiceHeader);
+            ServiceLine."GST Place Of Supply"::"Ship-to Address":
+                GSTServiceShiptoAddress.UpdateShiptoAddressState(ServiceHeader);
+            ServiceLine."GST Place Of Supply"::"Location Address":
+                GSTServiceShiptoAddress.UpdateLocationAddressState(ServiceHeader);
+        end;
+        ServiceHeader.Modify();
+    end;
+
+    local procedure GSTPlaceOfSupply(var ServiceLine: Record "Service Line")
+    var
+        ServiceHeader: Record "Service Header";
+        ShipToAddress: Record "Ship-to Address";
+    begin
+        ServiceLine.TestField("Quantity Shipped", 0);
+        ServiceLine.TestField("Quantity Invoiced", 0);
+        ServiceHeader.Get(ServiceLine."Document Type", ServiceLine."Document No.");
+        ServiceHeader.TestField("POS Out Of India", false);
+        if ServiceLine."GST Place Of Supply" = ServiceLine."GST Place Of Supply"::"Ship-to Address" then begin
+            if (ServiceHeader."Ship-to Code" = '') then
+                error(GSTPlaceOfSupplyErr);
+
+            ServiceHeader.TestField("POS Out Of India", false);
+            if ServiceHeader."Ship-to GST Reg. No." = '' then
+                if ShipToAddress.Get(ServiceLine."Customer No.", ServiceLine."Ship-to Code") then
+                    if not (ServiceHeader."GST Customer Type" in [ServiceHeader."GST Customer Type"::Unregistered, ServiceHeader."GST Customer Type"::Export]) then
+                        if ShipToAddress."ARN No." = '' then
+                            Error(ShipToGSTARNErr);
+        end;
+        if ServiceLine."Document Type" In [ServiceLine."Document Type"::Invoice,
+            ServiceLine."Document Type"::"Credit Memo",
+            ServiceLine."Document Type"::Order] then
+            ReferenceInvoiceNoValidation(ServiceHeader);
+
+        UpdateStateCode(ServiceHeader, ServiceLine);
+        UpdateGSTJurisdictionType(ServiceLine);
+    end;
+
+    local procedure ReferenceInvoiceNoValidation(ServiceHeader: Record "Service Header")
+    var
+        ReferenceInvoiceNo: Record "Reference Invoice No.";
+        DocTye: Text;
+        DocTypeEnum: Enum "Document Type Enum";
+    begin
+        DocTye := Format(ServiceHeader."Document Type");
+        Evaluate(DocTypeEnum, DocTye);
+        ReferenceInvoiceNo.SetRange("Document Type", DocTypeEnum);
+        ReferenceInvoiceNo.SetRange("Document No.", ServiceHeader."No.");
+        ReferenceInvoiceNo.SetRange("Source Type", ReferenceInvoiceNo."Source Type"::Customer);
+        ReferenceInvoiceNo.SetRange("Source No.", ServiceHeader."Customer No.");
+        ReferenceInvoiceNo.SetRange(Verified, true);
+        if not ReferenceInvoiceNo.IsEmpty() then
+            Error(RefErr);
+    end;
+
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeServiceLineHSNSACEditable(ServiceLine: Record "Service Line"; var IsEditable: Boolean; var IsHandled: Boolean)

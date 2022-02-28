@@ -18,6 +18,7 @@ page 1862 "C5 InvenTable"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(ItemNumber; ItemNumber) { ApplicationArea = All; }
                 field(ItemName1; ItemName1) { ApplicationArea = All; }
                 field(ItemName2; ItemName2) { ApplicationArea = All; }
@@ -79,6 +80,7 @@ page 1862 "C5 InvenTable"
                 field(LastMovementDate; LastMovementDate) { ApplicationArea = All; }
                 field(VatGroup; VatGroup) { ApplicationArea = All; }
                 field(StdItemNumber; StdItemNumber) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

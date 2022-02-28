@@ -7,6 +7,20 @@ tableextension 11754 "Purchase Line CZL" extends "Purchase Line"
             Caption = 'Negative';
             DataClassification = CustomerContent;
         }
+        field(11773; "Ext. Amount CZL"; Decimal)
+        {
+            AutoFormatExpression = "Currency Code";
+            AutoFormatType = 1;
+            Caption = 'Ext. Amount';
+            Editable = false;
+        }
+        field(11774; "Ext. Amount Incl. VAT CZL"; Decimal)
+        {
+            AutoFormatExpression = "Currency Code";
+            AutoFormatType = 1;
+            Caption = 'Ext. Amount Including VAT';
+            Editable = false;
+        }
         field(31064; "Physical Transfer CZL"; Boolean)
         {
             Caption = 'Physical Transfer';

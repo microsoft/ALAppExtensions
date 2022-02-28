@@ -11,211 +11,6 @@
       <rd:DataSourceID>c10159d7-2406-45f3-96c3-f67e08bab49f</rd:DataSourceID>
     </DataSource>
   </DataSources>
-  <DataSets>
-    <DataSet Name="DataSet_Result">
-      <Query>
-        <DataSourceName>DataSource</DataSourceName>
-        <CommandText />
-      </Query>
-      <Fields>
-        <Field Name="PeriodVATDateFilter">
-          <DataField>PeriodVATDateFilter</DataField>
-        </Field>
-        <Field Name="CompanyName">
-          <DataField>CompanyName</DataField>
-        </Field>
-        <Field Name="UseAmtsInAddCurr">
-          <DataField>UseAmtsInAddCurr</DataField>
-        </Field>
-        <Field Name="PrintVATEntries">
-          <DataField>PrintVATEntries</DataField>
-        </Field>
-        <Field Name="VATPostingSetupFilter">
-          <DataField>VATPostingSetupFilter</DataField>
-        </Field>
-        <Field Name="HeaderText">
-          <DataField>HeaderText</DataField>
-        </Field>
-        <Field Name="Heading">
-          <DataField>Heading</DataField>
-        </Field>
-        <Field Name="VATBase">
-          <DataField>VATBase</DataField>
-        </Field>
-        <Field Name="VATBaseFormat">
-          <DataField>VATBaseFormat</DataField>
-        </Field>
-        <Field Name="VATAmount">
-          <DataField>VATAmount</DataField>
-        </Field>
-        <Field Name="VATAmountFormat">
-          <DataField>VATAmountFormat</DataField>
-        </Field>
-        <Field Name="VATBaseSale">
-          <DataField>VATBaseSale</DataField>
-        </Field>
-        <Field Name="VATBaseSaleFormat">
-          <DataField>VATBaseSaleFormat</DataField>
-        </Field>
-        <Field Name="VATAmountSale">
-          <DataField>VATAmountSale</DataField>
-        </Field>
-        <Field Name="VATAmountSaleFormat">
-          <DataField>VATAmountSaleFormat</DataField>
-        </Field>
-        <Field Name="VATBasePurch">
-          <DataField>VATBasePurch</DataField>
-        </Field>
-        <Field Name="VATBasePurchFormat">
-          <DataField>VATBasePurchFormat</DataField>
-        </Field>
-        <Field Name="VATAmountPurch">
-          <DataField>VATAmountPurch</DataField>
-        </Field>
-        <Field Name="VATAmountPurchFormat">
-          <DataField>VATAmountPurchFormat</DataField>
-        </Field>
-        <Field Name="VATBaseReverseChargeVAT">
-          <DataField>VATBaseReverseChargeVAT</DataField>
-        </Field>
-        <Field Name="VATBaseReverseChargeVATFormat">
-          <DataField>VATBaseReverseChargeVATFormat</DataField>
-        </Field>
-        <Field Name="VATAmountReverseChargeVAT">
-          <DataField>VATAmountReverseChargeVAT</DataField>
-        </Field>
-        <Field Name="VATAmountReverseChargeVATFormat">
-          <DataField>VATAmountReverseChargeVATFormat</DataField>
-        </Field>
-        <Field Name="Selection">
-          <DataField>Selection</DataField>
-        </Field>
-        <Field Name="VATBusPstGr_VATPostSetup">
-          <DataField>VATBusPstGr_VATPostSetup</DataField>
-        </Field>
-        <Field Name="VATPrdPstGr_VATPostSetup">
-          <DataField>VATPrdPstGr_VATPostSetup</DataField>
-        </Field>
-        <Field Name="VATEntryGetFilterType">
-          <DataField>VATEntryGetFilterType</DataField>
-        </Field>
-        <Field Name="VATDate_VATEntry">
-          <DataField>VATDate_VATEntry</DataField>
-        </Field>
-        <Field Name="DocumentNo_VATEntry">
-          <DataField>DocumentNo_VATEntry</DataField>
-        </Field>
-        <Field Name="DocumentType_VATEntry">
-          <DataField>DocumentType_VATEntry</DataField>
-        </Field>
-        <Field Name="Type_VATEntry">
-          <DataField>Type_VATEntry</DataField>
-        </Field>
-        <Field Name="CalculatedVATBase">
-          <DataField>CalculatedVATBase</DataField>
-        </Field>
-        <Field Name="CalculatedVATBaseFormat">
-          <DataField>CalculatedVATBaseFormat</DataField>
-        </Field>
-        <Field Name="CalculatedVATAmount">
-          <DataField>CalculatedVATAmount</DataField>
-        </Field>
-        <Field Name="CalculatedVATAmountFormat">
-          <DataField>CalculatedVATAmountFormat</DataField>
-        </Field>
-        <Field Name="VATCalcType_VATEntry">
-          <DataField>VATCalcType_VATEntry</DataField>
-        </Field>
-        <Field Name="BilltoPaytoNo_VATEntry">
-          <DataField>BilltoPaytoNo_VATEntry</DataField>
-        </Field>
-        <Field Name="EntryNo_VATEntry">
-          <DataField>EntryNo_VATEntry</DataField>
-        </Field>
-        <Field Name="UserID_VATEntry">
-          <DataField>UserID_VATEntry</DataField>
-        </Field>
-        <Field Name="AddCurrUnrlzdAmt_VATEntry">
-          <DataField>AddCurrUnrlzdAmt_VATEntry</DataField>
-        </Field>
-        <Field Name="AddCurrUnrlzdAmt_VATEntryFormat">
-          <DataField>AddCurrUnrlzdAmt_VATEntryFormat</DataField>
-        </Field>
-        <Field Name="AddCurrUnrlzdBas_VATEntry">
-          <DataField>AddCurrUnrlzdBas_VATEntry</DataField>
-        </Field>
-        <Field Name="AddCurrUnrlzdBas_VATEntryFormat">
-          <DataField>AddCurrUnrlzdBas_VATEntryFormat</DataField>
-        </Field>
-        <Field Name="AdditionlCurrAmt_VATEntry">
-          <DataField>AdditionlCurrAmt_VATEntry</DataField>
-        </Field>
-        <Field Name="AdditionlCurrAmt_VATEntryFormat">
-          <DataField>AdditionlCurrAmt_VATEntryFormat</DataField>
-        </Field>
-        <Field Name="AdditinlCurrBase_VATEntry">
-          <DataField>AdditinlCurrBase_VATEntry</DataField>
-        </Field>
-        <Field Name="AdditinlCurrBase_VATEntryFormat">
-          <DataField>AdditinlCurrBase_VATEntryFormat</DataField>
-        </Field>
-        <Field Name="VATRegistrationNo_VATEntry">
-          <DataField>VATRegistrationNo_VATEntry</DataField>
-        </Field>
-        <Field Name="CountryRegionCode_VATEntry">
-          <DataField>CountryRegionCode_VATEntry</DataField>
-        </Field>
-        <Field Name="CountrySubtotalCaption">
-          <DataField>CountrySubtotalCaption</DataField>
-        </Field>
-        <Field Name="CountrySubBase">
-          <DataField>CountrySubBase</DataField>
-        </Field>
-        <Field Name="CountrySubBaseFormat">
-          <DataField>CountrySubBaseFormat</DataField>
-        </Field>
-        <Field Name="CountrySubAmount">
-          <DataField>CountrySubAmount</DataField>
-        </Field>
-        <Field Name="CountrySubAmountFormat">
-          <DataField>CountrySubAmountFormat</DataField>
-        </Field>
-        <Field Name="CountrySubTotalPrint">
-          <DataField>CountrySubTotalPrint</DataField>
-        </Field>
-        <Field Name="VATEntryTotalCaption">
-          <DataField>VATEntryTotalCaption</DataField>
-        </Field>
-        <Field Name="VATEntryTotalWithRevChrgVATCaption">
-          <DataField>VATEntryTotalWithRevChrgVATCaption</DataField>
-        </Field>
-        <Field Name="VATEntrySumCalculatedBase">
-          <DataField>VATEntrySumCalculatedBase</DataField>
-        </Field>
-        <Field Name="VATEntrySumCalculatedBaseFormat">
-          <DataField>VATEntrySumCalculatedBaseFormat</DataField>
-        </Field>
-        <Field Name="VATEntrySumCalculatedAmount">
-          <DataField>VATEntrySumCalculatedAmount</DataField>
-        </Field>
-        <Field Name="VATEntrySumCalculatedAmountFormat">
-          <DataField>VATEntrySumCalculatedAmountFormat</DataField>
-        </Field>
-        <Field Name="VATEntrySumAddCurrBase">
-          <DataField>VATEntrySumAddCurrBase</DataField>
-        </Field>
-        <Field Name="VATEntrySumAddCurrBaseFormat">
-          <DataField>VATEntrySumAddCurrBaseFormat</DataField>
-        </Field>
-        <Field Name="VATEntrySumAddCurrAmount">
-          <DataField>VATEntrySumAddCurrAmount</DataField>
-        </Field>
-        <Field Name="VATEntrySumAddCurrAmountFormat">
-          <DataField>VATEntrySumAddCurrAmountFormat</DataField>
-        </Field>
-      </Fields>
-    </DataSet>
-  </DataSets>
   <ReportSections>
     <ReportSection>
       <Body>
@@ -3424,4 +3219,209 @@ End Function
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Cm</rd:ReportUnitType>
   <rd:ReportID>3cbcb070-2c8c-4a92-a5f9-e15f302bb684</rd:ReportID>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="PeriodVATDateFilter">
+          <DataField>PeriodVATDateFilter</DataField>
+        </Field>
+        <Field Name="CompanyName">
+          <DataField>CompanyName</DataField>
+        </Field>
+        <Field Name="UseAmtsInAddCurr">
+          <DataField>UseAmtsInAddCurr</DataField>
+        </Field>
+        <Field Name="PrintVATEntries">
+          <DataField>PrintVATEntries</DataField>
+        </Field>
+        <Field Name="VATPostingSetupFilter">
+          <DataField>VATPostingSetupFilter</DataField>
+        </Field>
+        <Field Name="HeaderText">
+          <DataField>HeaderText</DataField>
+        </Field>
+        <Field Name="Heading">
+          <DataField>Heading</DataField>
+        </Field>
+        <Field Name="VATBase">
+          <DataField>VATBase</DataField>
+        </Field>
+        <Field Name="VATBaseFormat">
+          <DataField>VATBaseFormat</DataField>
+        </Field>
+        <Field Name="VATAmount">
+          <DataField>VATAmount</DataField>
+        </Field>
+        <Field Name="VATAmountFormat">
+          <DataField>VATAmountFormat</DataField>
+        </Field>
+        <Field Name="VATBaseSale">
+          <DataField>VATBaseSale</DataField>
+        </Field>
+        <Field Name="VATBaseSaleFormat">
+          <DataField>VATBaseSaleFormat</DataField>
+        </Field>
+        <Field Name="VATAmountSale">
+          <DataField>VATAmountSale</DataField>
+        </Field>
+        <Field Name="VATAmountSaleFormat">
+          <DataField>VATAmountSaleFormat</DataField>
+        </Field>
+        <Field Name="VATBasePurch">
+          <DataField>VATBasePurch</DataField>
+        </Field>
+        <Field Name="VATBasePurchFormat">
+          <DataField>VATBasePurchFormat</DataField>
+        </Field>
+        <Field Name="VATAmountPurch">
+          <DataField>VATAmountPurch</DataField>
+        </Field>
+        <Field Name="VATAmountPurchFormat">
+          <DataField>VATAmountPurchFormat</DataField>
+        </Field>
+        <Field Name="VATBaseReverseChargeVAT">
+          <DataField>VATBaseReverseChargeVAT</DataField>
+        </Field>
+        <Field Name="VATBaseReverseChargeVATFormat">
+          <DataField>VATBaseReverseChargeVATFormat</DataField>
+        </Field>
+        <Field Name="VATAmountReverseChargeVAT">
+          <DataField>VATAmountReverseChargeVAT</DataField>
+        </Field>
+        <Field Name="VATAmountReverseChargeVATFormat">
+          <DataField>VATAmountReverseChargeVATFormat</DataField>
+        </Field>
+        <Field Name="Selection">
+          <DataField>Selection</DataField>
+        </Field>
+        <Field Name="VATBusPstGr_VATPostSetup">
+          <DataField>VATBusPstGr_VATPostSetup</DataField>
+        </Field>
+        <Field Name="VATPrdPstGr_VATPostSetup">
+          <DataField>VATPrdPstGr_VATPostSetup</DataField>
+        </Field>
+        <Field Name="VATEntryGetFilterType">
+          <DataField>VATEntryGetFilterType</DataField>
+        </Field>
+        <Field Name="VATDate_VATEntry">
+          <DataField>VATDate_VATEntry</DataField>
+        </Field>
+        <Field Name="DocumentNo_VATEntry">
+          <DataField>DocumentNo_VATEntry</DataField>
+        </Field>
+        <Field Name="DocumentType_VATEntry">
+          <DataField>DocumentType_VATEntry</DataField>
+        </Field>
+        <Field Name="Type_VATEntry">
+          <DataField>Type_VATEntry</DataField>
+        </Field>
+        <Field Name="CalculatedVATBase">
+          <DataField>CalculatedVATBase</DataField>
+        </Field>
+        <Field Name="CalculatedVATBaseFormat">
+          <DataField>CalculatedVATBaseFormat</DataField>
+        </Field>
+        <Field Name="CalculatedVATAmount">
+          <DataField>CalculatedVATAmount</DataField>
+        </Field>
+        <Field Name="CalculatedVATAmountFormat">
+          <DataField>CalculatedVATAmountFormat</DataField>
+        </Field>
+        <Field Name="VATCalcType_VATEntry">
+          <DataField>VATCalcType_VATEntry</DataField>
+        </Field>
+        <Field Name="BilltoPaytoNo_VATEntry">
+          <DataField>BilltoPaytoNo_VATEntry</DataField>
+        </Field>
+        <Field Name="EntryNo_VATEntry">
+          <DataField>EntryNo_VATEntry</DataField>
+        </Field>
+        <Field Name="UserID_VATEntry">
+          <DataField>UserID_VATEntry</DataField>
+        </Field>
+        <Field Name="AddCurrUnrlzdAmt_VATEntry">
+          <DataField>AddCurrUnrlzdAmt_VATEntry</DataField>
+        </Field>
+        <Field Name="AddCurrUnrlzdAmt_VATEntryFormat">
+          <DataField>AddCurrUnrlzdAmt_VATEntryFormat</DataField>
+        </Field>
+        <Field Name="AddCurrUnrlzdBas_VATEntry">
+          <DataField>AddCurrUnrlzdBas_VATEntry</DataField>
+        </Field>
+        <Field Name="AddCurrUnrlzdBas_VATEntryFormat">
+          <DataField>AddCurrUnrlzdBas_VATEntryFormat</DataField>
+        </Field>
+        <Field Name="AdditionlCurrAmt_VATEntry">
+          <DataField>AdditionlCurrAmt_VATEntry</DataField>
+        </Field>
+        <Field Name="AdditionlCurrAmt_VATEntryFormat">
+          <DataField>AdditionlCurrAmt_VATEntryFormat</DataField>
+        </Field>
+        <Field Name="AdditinlCurrBase_VATEntry">
+          <DataField>AdditinlCurrBase_VATEntry</DataField>
+        </Field>
+        <Field Name="AdditinlCurrBase_VATEntryFormat">
+          <DataField>AdditinlCurrBase_VATEntryFormat</DataField>
+        </Field>
+        <Field Name="VATRegistrationNo_VATEntry">
+          <DataField>VATRegistrationNo_VATEntry</DataField>
+        </Field>
+        <Field Name="CountryRegionCode_VATEntry">
+          <DataField>CountryRegionCode_VATEntry</DataField>
+        </Field>
+        <Field Name="CountrySubtotalCaption">
+          <DataField>CountrySubtotalCaption</DataField>
+        </Field>
+        <Field Name="CountrySubBase">
+          <DataField>CountrySubBase</DataField>
+        </Field>
+        <Field Name="CountrySubBaseFormat">
+          <DataField>CountrySubBaseFormat</DataField>
+        </Field>
+        <Field Name="CountrySubAmount">
+          <DataField>CountrySubAmount</DataField>
+        </Field>
+        <Field Name="CountrySubAmountFormat">
+          <DataField>CountrySubAmountFormat</DataField>
+        </Field>
+        <Field Name="CountrySubTotalPrint">
+          <DataField>CountrySubTotalPrint</DataField>
+        </Field>
+        <Field Name="VATEntryTotalCaption">
+          <DataField>VATEntryTotalCaption</DataField>
+        </Field>
+        <Field Name="VATEntryTotalWithRevChrgVATCaption">
+          <DataField>VATEntryTotalWithRevChrgVATCaption</DataField>
+        </Field>
+        <Field Name="VATEntrySumCalculatedBase">
+          <DataField>VATEntrySumCalculatedBase</DataField>
+        </Field>
+        <Field Name="VATEntrySumCalculatedBaseFormat">
+          <DataField>VATEntrySumCalculatedBaseFormat</DataField>
+        </Field>
+        <Field Name="VATEntrySumCalculatedAmount">
+          <DataField>VATEntrySumCalculatedAmount</DataField>
+        </Field>
+        <Field Name="VATEntrySumCalculatedAmountFormat">
+          <DataField>VATEntrySumCalculatedAmountFormat</DataField>
+        </Field>
+        <Field Name="VATEntrySumAddCurrBase">
+          <DataField>VATEntrySumAddCurrBase</DataField>
+        </Field>
+        <Field Name="VATEntrySumAddCurrBaseFormat">
+          <DataField>VATEntrySumAddCurrBaseFormat</DataField>
+        </Field>
+        <Field Name="VATEntrySumAddCurrAmount">
+          <DataField>VATEntrySumAddCurrAmount</DataField>
+        </Field>
+        <Field Name="VATEntrySumAddCurrAmountFormat">
+          <DataField>VATEntrySumAddCurrAmountFormat</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
 </Report>

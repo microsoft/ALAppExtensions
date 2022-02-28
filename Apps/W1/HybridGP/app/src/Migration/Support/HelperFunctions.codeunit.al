@@ -66,6 +66,7 @@ Codeunit 4037 "Helper Functions"
         GlDocNoTxt: Label 'G00001', Locked = true;
         MigrationTypeTxt: Label 'Great Plains';
         ImportedEntityTxt: Label 'Imported %1 data file.', Locked = true;
+        CloudMigrationTok: Label 'CloudMigration', Locked = true;
 
     procedure GetEntities(EntityName: Text; var JArray: JsonArray): Boolean
     var
@@ -80,7 +81,7 @@ Codeunit 4037 "Helper Functions"
             if not JToken.IsArray() then
                 Error(AnArrayExpectedErr);
             JArray := JToken.AsArray();
-            SendTraceTag('00007GL', GetMigrationTypeTxt(), Verbosity::Normal, StrSubstNo(ImportedEntityTxt, EntityName), DataClassification::SystemMetadata);
+            Session.LogMessage('00007GL', StrSubstNo(ImportedEntityTxt, EntityName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
             exit(true);
         end;
         exit(false);
@@ -95,7 +96,7 @@ Codeunit 4037 "Helper Functions"
         if FileName <> '' then begin
             GetFileContent(FileName, JObject);
             JObject.Get(EntityName, JToken);
-            SendTraceTag('00007GM', GetMigrationTypeTxt(), Verbosity::Normal, StrSubstNo(ImportedEntityTxt, EntityName), DataClassification::SystemMetadata);
+            Session.LogMessage('00007GM', StrSubstNo(ImportedEntityTxt, EntityName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
             exit(true);
         end;
         exit(false);
@@ -912,6 +913,11 @@ Codeunit 4037 "Helper Functions"
         exit(CopyStr(MigrationTypeTxt, 1, 250));
     end;
 
+    procedure GetTelemetryCategory(): Text
+    begin
+        exit(CloudMigrationTok);
+    end;
+
     internal procedure CheckDimensionName(Name: Text[50]): Code[20]
     var
         GLAccount: Record "G/L Account";
@@ -1067,7 +1073,6 @@ Codeunit 4037 "Helper Functions"
         GPBankMaster: Record "GP Bank MSTR";
         GPCheckbookMaster: Record "GP Checkbook MSTR";
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
         GPAccount.DeleteAll();
         GPGLTransactions.DeleteAll();
@@ -1093,7 +1098,7 @@ Codeunit 4037 "Helper Functions"
         GPCheckbookMaster.DeleteAll();
         GPCheckbookTransactions.DeleteAll();
 
-        SendTraceTag('00007GH', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, 'Cleaned up staging tables.', DataClassification::SystemMetadata);
+        Session.LogMessage('00007GH', 'Cleaned up staging tables.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
     end;
 
     procedure CleanupBeforeSynchronization();
@@ -1194,7 +1199,7 @@ Codeunit 4037 "Helper Functions"
         GLAccount.DeleteAll(true);
 
         Commit();
-        SendTraceTag('00007GI', GetMigrationTypeTxt(), Verbosity::Normal, 'Cleaned up before Synchronization.', DataClassification::SystemMetadata);
+        Session.LogMessage('00007GI', 'Cleaned up before Synchronization.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetPreMigrationCleanupCompleted();
     end;
 
@@ -1272,49 +1277,62 @@ Codeunit 4037 "Helper Functions"
     var
         GenJnlLine: Record "Gen. Journal Line";
         GenJnlBatch: Record "Gen. Journal Batch";
-        HelperFunctions: Codeunit "Helper Functions";
         JournalBatchName: Text;
         DurationAsInt: BigInteger;
         StartTime: DateTime;
         FinishedTelemetryTxt: Label 'Posting GL transactions finished; Duration: %1', Comment = '%1 - The time taken', Locked = true;
+        SkipPosting: Boolean;
     begin
         StartTime := CurrentDateTime();
-        SendTraceTag('00007GJ', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, 'Posting GL transactions started.', DataClassification::SystemMetadata);
+        Session.LogMessage('00007GJ', 'Posting GL transactions started.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
 
-        // Post the Account batches
-        GenJnlBatch.Reset();
-        GenJnlBatch.SetRange("Journal Template Name", 'GENERAL');
-        GenJnlBatch.SetFilter(Name, PostingGroupCodeTxt + '*');
-        if GenJnlBatch.FindSet() then
-            repeat
-                JournalBatchName := GenJnlBatch.Name;
-                GenJnlLine.Reset();
-                GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
-                GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-                if not GenJnlLine.IsEmpty() then
-                    PostGLBatch(CopyStr(JournalBatchName, 1, 10));
-            until GenJnlBatch.Next() = 0;
+        OnSkipPostingGLAccounts(SkipPosting);
+        if SkipPosting then
+            exit;
 
-        // Post the Customer Batch, if created...
-        JournalBatchName := CustomerBatchNameTxt;
-        GenJnlLine.Reset();
-        GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
-        GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-        if not GenJnlLine.IsEmpty() then
-            PostGLBatch(CopyStr(JournalBatchName, 1, 10));
+        OnSkipPostingAccountBatches(SkipPosting);
+        if not SkipPosting then begin
+            // Post the Account batches
+            GenJnlBatch.Reset();
+            GenJnlBatch.SetRange("Journal Template Name", 'GENERAL');
+            GenJnlBatch.SetFilter(Name, PostingGroupCodeTxt + '*');
+            if GenJnlBatch.FindSet() then
+                repeat
+                    JournalBatchName := GenJnlBatch.Name;
+                    GenJnlLine.Reset();
+                    GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
+                    GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
+                    if not GenJnlLine.IsEmpty() then
+                        PostGLBatch(CopyStr(JournalBatchName, 1, 10));
+                until GenJnlBatch.Next() = 0;
+        end;
 
-        // Post the Vendor Batch, if created...
-        JournalBatchName := VendorBatchNameTxt;
-        GenJnlLine.Reset();
-        GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
-        GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-        if not GenJnlLine.IsEmpty() then
-            PostGLBatch(CopyStr(JournalBatchName, 1, 10));
+        OnSkipPostingCustomerBatches(SkipPosting);
+        if not SkipPosting then begin
+            // Post the Customer Batch, if created...
+            JournalBatchName := CustomerBatchNameTxt;
+            GenJnlLine.Reset();
+            GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
+            GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
+            if not GenJnlLine.IsEmpty() then
+                PostGLBatch(CopyStr(JournalBatchName, 1, 10));
+        end;
+
+        OnSkipPostingVendorBatches(SkipPosting);
+        if not SkipPosting then begin
+            // Post the Vendor Batch, if created...
+            JournalBatchName := VendorBatchNameTxt;
+            GenJnlLine.Reset();
+            GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
+            GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
+            if not GenJnlLine.IsEmpty() then
+                PostGLBatch(CopyStr(JournalBatchName, 1, 10));
+        end;
 
         // Remove posted batches
         RemoveBatches();
         DurationAsInt := CurrentDateTime() - StartTime;
-        SendTraceTag('00007GK', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, StrSubstNo(FinishedTelemetryTxt, DurationAsInt), DataClassification::SystemMetadata);
+        Session.LogMessage('00007GK', StrSubstNo(FinishedTelemetryTxt, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
     end;
 
     procedure PostGLBatch(JournalBatchName: Code[10])
@@ -1558,7 +1576,7 @@ Codeunit 4037 "Helper Functions"
             CreateDimensionValues();
         end;
 
-        SendTraceTag('0000BBF', GetMigrationTypeTxt(), Verbosity::Normal, 'Created Dimensions', DataClassification::SystemMetadata);
+        Session.LogMessage('0000BBF', 'Created Dimensions', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetDimentionsCreated();
     end;
 
@@ -1613,7 +1631,7 @@ Codeunit 4037 "Helper Functions"
             UpdatePaymentTerms();
         end;
 
-        SendTraceTag('0000BBG', GetMigrationTypeTxt(), Verbosity::Normal, 'Created Payment Terms', DataClassification::SystemMetadata);
+        Session.LogMessage('0000BBG', 'Created Payment Terms', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetPaymentTermsCreated();
     end;
 
@@ -1637,7 +1655,7 @@ Codeunit 4037 "Helper Functions"
                 Location.Insert(true);
             until GPItemLocation.Next() = 0;
 
-        SendTraceTag('0000BK6', GetMigrationTypeTxt(), Verbosity::Normal, 'Created Locations', DataClassification::SystemMetadata);
+        Session.LogMessage('0000BK6', 'Created Locations', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetLocationsCreated();
     end;
 
@@ -1691,7 +1709,7 @@ Codeunit 4037 "Helper Functions"
         CheckBookMaster: Record "GP Checkbook MSTR";
     begin
         CheckBookMaster.MoveStagingData();
-        SendTraceTag('0000CAB', GetMigrationTypeTxt(), Verbosity::Normal, 'Created Checkbooks', DataClassification::SystemMetadata);
+        Session.LogMessage('0000CAB', 'Created Checkbooks', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetCheckBooksCreated();
     end;
 
@@ -1700,7 +1718,7 @@ Codeunit 4037 "Helper Functions"
         GPPOPPOHeader: Record "GP POPPOHeader";
     begin
         GPPOPPOHeader.MoveStagingData();
-        SendTraceTag('0000CQP', GetMigrationTypeTxt(), Verbosity::Normal, 'Created Open Purchase Orders', DataClassification::SystemMetadata);
+        Session.LogMessage('0000CQP', 'Created Open Purchase Orders', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetOpenPurchaseOrdersCreated();
     end;
 
@@ -1856,6 +1874,26 @@ Codeunit 4037 "Helper Functions"
             CreateDataMigrationErrorRecord('Item Tracking Codes not created');
         if not GPConfiguration."Locations Created" then
             CreateDataMigrationErrorRecord('Locations not created.');
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSkipPostingGLAccounts(var SkipPosting: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSkipPostingAccountBatches(var SkipPosting: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSkipPostingCustomerBatches(var SkipPosting: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSkipPostingVendorBatches(var SkipPosting: Boolean)
+    begin
     end;
 
     local procedure CreateDataMigrationErrorRecord(ErrorMessage: Text[250])

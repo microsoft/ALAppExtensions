@@ -16,9 +16,11 @@ page  1864 "C5 CN8Code"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(CN8Code;CN8Code) { ApplicationArea=All; }
                 field(Txt;Txt) { ApplicationArea=All; }
                 field(SupplementaryUnits;SupplementaryUnits) { ApplicationArea=All; }
+#pragma warning restore
             }
         }
     }    

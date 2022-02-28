@@ -201,9 +201,9 @@ codeunit 4691 "Recurrence Schedule Impl."
     begin
         DatesInMonth.SetRange("Period Type", DatesInMonth."Period Type"::Date);
         DatesInMonth.SetRange("Period Start", CalcDate('<-CM>', CurrDate), CalcDate('<+CM>', CurrDate));
-    #pragma warning disable AA0210
+#pragma warning disable AA0210
         DatesInMonth.SetRange("Period No.", StartWeekDay, EndWeekDay);
-    #pragma warning restore AA0210
+#pragma warning restore AA0210
 
         if WhatToFind = RecurrenceOrdinalNo::Last then begin
             DatesInMonth.FindLast();
@@ -375,7 +375,9 @@ codeunit 4691 "Recurrence Schedule Impl."
             if IsNullGuid(RecurrenceID) then
                 RecurrenceSchedule.Insert(true)
             else
+#pragma warning disable AA0214
                 RecurrenceSchedule.Modify(true);
+#pragma warning restore            
             RecurrenceID := RecurrenceSchedule.ID;
             exit;
         end;

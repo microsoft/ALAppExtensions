@@ -56,7 +56,7 @@ tableextension 11799 "Item Ledger Entry CZL" extends "Item Ledger Entry"
     var
         ItemRegister: Record "Item Register";
     begin
-        if ItemRegister.FindByEntryNo("Entry No.") then
+        if ItemRegister.FindByEntryNoCZL("Entry No.") then
             exit(ItemRegister."User ID");
     end;
 }

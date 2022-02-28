@@ -6,18 +6,18 @@
 codeunit 134692 "Email E2E Tests"
 {
     SubType = Test;
-    Permissions = tabledata "Email Message" = rd,
+    Permissions = tabledata "Email Message" = rid,
                   tabledata "Email Message Attachment" = r,
                   tabledata "Email Recipient" = r,
                   tabledata "Email Related Record" = r,
                   tabledata "Email Outbox" = rimd,
+                  tabledata "Email View Policy" = rid,
                   tabledata "Sent Email" = rid;
 
     var
         Assert: Codeunit "Library Assert";
         PermissionsMock: Codeunit "Permissions Mock";
         Email: Codeunit Email;
-        EmailMessageOpenPermissionErr: Label 'You can only open your own email messages.';
         EmailWasQueuedForSendingMsg: Label 'The message was queued for sending.';
         FromDisplayNameLbl: Label '%1 (%2)', Comment = '%1 - Account Name, %2 - Email address', Locked = true;
 
@@ -136,7 +136,8 @@ codeunit 134692 "Email E2E Tests"
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
 
-        PermissionsMock.Set('Email Edit');
+        PermissionsMock.Set('Email Admin');
+        GiveUserViewAllPolicy();
 
         // [GIVEN] There are no Record in Email Outbox 
         Outbox.DeleteAll();
@@ -181,18 +182,21 @@ codeunit 134692 "Email E2E Tests"
     var
         TempAccount: Record "Email Account" temporary;
         Outbox: Record "Email Outbox";
+        SentEmails: Record "Sent Email";
         Message: Record "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
         EmailEditor: Page "Email Editor";
         Editor: TestPage "Email Editor";
     begin
         // [SCENARIO] When the editor page is closed and the user choose to discard the email, there is no outbox entry.
+        SentEmails.DeleteAll();
 
         // [GIVEN] A connector is installed and an account is added
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
 
-        PermissionsMock.Set('Email Edit');
+        PermissionsMock.Set('Email Admin');
+        GiveUserViewAllPolicy();
 
         // [GIVEN] There are no Record in Email Outbox and no messages
         Outbox.DeleteAll();
@@ -466,30 +470,40 @@ codeunit 134692 "Email E2E Tests"
     end;
 
     [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     procedure OpenSentEmailFromAnotherUserTest()
     var
         SentEmail: Record "Sent Email";
+        EmailMessage: Record "Email Message";
         Any: Codeunit Any;
         SentEmails: TestPage "Sent Emails";
+        EmailViewer: TestPage "Email Viewer";
     begin
         // Create a sent email
         PermissionsMock.Set('Email Admin');
+        GiveUserViewAllPolicy();
+
+        EmailMessage.Init();
+        EmailMessage.Subject := 'Test';
+        EmailMessage.Insert();
 
         SentEmail.Init();
         SentEmail.Description := CopyStr(Any.UnicodeText(50), 1, MaxStrLen(SentEmail.Description));
         SentEmail."Date Time Sent" := CurrentDateTime();
         SentEmail."User Security Id" := CreateGuid(); // Created by another user
+        SentEmail."Message Id" := EmailMessage.Id;
         SentEmail.Insert();
 
         // Exercise
         SentEmails.Trap();
+        EmailViewer.Trap();
         Page.Run(Page::"Sent Emails");
 
         Assert.IsTrue(SentEmails.GoToRecord(SentEmail), 'The sent email record should be present on the Sent Emails page');
 
-        // An error appears when a user tries to open an email sent from another user
-        asserterror SentEmails.Desc.Drilldown();
-        Assert.ExpectedError(EmailMessageOpenPermissionErr);
+        // No error should appear when a admin user tries to open an email sent from another user
+        SentEmails.Desc.Drilldown();
+        EmailViewer.OK().Invoke();
     end;
 
     [Test]
@@ -508,6 +522,7 @@ codeunit 134692 "Email E2E Tests"
         SystemId: Guid;
     begin
         // Initialize
+        SentEmail.DeleteAll();
         EmailRelatedRecord.DeleteAll();
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
@@ -521,7 +536,7 @@ codeunit 134692 "Email E2E Tests"
         TableId := Any.IntegerInRange(1, 10000);
         for i := 1 to NumberOfRelations do begin
             SystemId := Any.GuidValue();
-            Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source");
+            Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
         end;
 
         // Send the email
@@ -568,6 +583,7 @@ codeunit 134692 "Email E2E Tests"
         SystemId: Guid;
     begin
         // Initialize
+        SentEmail.DeleteAll();
         EmailRelatedRecord.DeleteAll();
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
@@ -581,7 +597,7 @@ codeunit 134692 "Email E2E Tests"
         TableId := Any.IntegerInRange(1, 10000);
         for i := 1 to NumberOfRelations do begin
             SystemId := Any.GuidValue();
-            Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source");
+            Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
         end;
 
         // Send the email
@@ -612,6 +628,7 @@ codeunit 134692 "Email E2E Tests"
     procedure EmailOutboxEntriesVisibilityTest()
     var
         EmailOutbox: Record "Email Outbox";
+        EmailViewPolicy: Record "Email View Policy";
         EmailOutboxes: TestPage "Email Outbox";
         EmailEditor: TestPage "Email Editor";
         EmailOutboxesIds: List of [BigInteger];
@@ -620,6 +637,11 @@ codeunit 134692 "Email E2E Tests"
     begin
         // [Scenario] Email Outbox entries can only be opened by the user who created them
         PermissionsMock.Set('Email Admin');
+
+        EmailViewPolicy.DeleteAll();
+        EmailViewPolicy."User Security ID" := UserSecurityId();
+        EmailViewPolicy."Email View Policy" := Enum::"Email View Policy"::OwnEmails;
+        EmailViewPolicy.Insert();
 
         // Create four email outbox entries
         EmailOutbox.DeleteAll();
@@ -638,50 +660,26 @@ codeunit 134692 "Email E2E Tests"
         EmailOutboxes.Trap();
         Page.Run(Page::"Email Outbox");
 
-        EmailOutboxes.GoToKey(EmailOutboxesIds.Get(2));
+        EmailOutboxes.GoToKey(EmailOutboxesIds.Get(3));
         Assert.AreEqual(Enum::"Email Status"::Draft.AsInteger(), EmailOutboxes.Status.AsInteger(), 'Wrong status on the email outbox');
-        Assert.AreEqual('Subject 2', EmailOutboxes.Desc.Value(), 'Wrong description on the email outbox');
+        Assert.AreEqual('Subject 3', EmailOutboxes.Desc.Value(), 'Wrong description on the email outbox');
         Assert.AreEqual('', EmailOutboxes.Error.Value(), 'Error message field should be empty');
-        asserterror EmailOutboxes.Desc.Drilldown();
-        Assert.ExpectedError(EmailMessageOpenPermissionErr);
-
-        EmailOutboxes.GoToKey(EmailOutboxesIds.Get(4));
-        Assert.AreEqual(Enum::"Email Status"::Draft.AsInteger(), EmailOutboxes.Status.AsInteger(), 'Wrong status on the email outbox');
-        Assert.AreEqual('Subject 4', EmailOutboxes.Desc.Value(), 'Wrong description on the email outbox');
-        Assert.AreEqual('', EmailOutboxes.Error.Value(), 'Error message field should be empty');
-        asserterror EmailOutboxes.Desc.Drilldown();
-        Assert.ExpectedError(EmailMessageOpenPermissionErr);
+        EmailEditor.Trap();
+        EmailOutboxes.Desc.Drilldown();
 
         EmailOutboxes.GoToKey(EmailOutboxesIds.Get(1));
         Assert.AreEqual(Enum::"Email Status"::Draft.AsInteger(), EmailOutboxes.Status.AsInteger(), 'Wrong status on the email outbox');
         Assert.AreEqual('Subject 1', EmailOutboxes.Desc.Value(), 'Wrong description on the email outbox');
         Assert.AreEqual('', EmailOutboxes.Error.Value(), 'Error message field should be empty');
-
         EmailEditor.Trap();
-        EmailOutboxes.Desc.Drilldown(); // opens the email editor
+        EmailOutboxes.Desc.Drilldown();
 
         Assert.AreEqual('Recipient 1', EmailEditor.ToField.Value(), 'Wrong recipient on the email outbox');
         Assert.AreEqual('Subject 1', EmailEditor.SubjectField.Value(), 'Wrong subject on email outbox in email editor');
         Assert.AreEqual('Body 1', EmailEditor.BodyField.Value(), 'Wrong body on email outbox in email editor');
         Assert.AreEqual('Attachment Name 1', EmailEditor.Attachments.FileName.Value(), 'Wrong attachment name on email outbox');
 
-        Assert.IsTrue(EmailEditor.Next(), 'There should be next record');
-
-        Assert.AreEqual('Recipient 3', EmailEditor.ToField.Value(), 'Wrong recipient on the email outbox');
-        Assert.AreEqual('Subject 3', EmailEditor.SubjectField.Value(), 'Wrong subject on email outbox in email editor');
-        Assert.AreEqual('Body 3', EmailEditor.BodyField.Value(), 'Wrong body on email outbox in email editor');
-        Assert.AreEqual('Attachment Name 3', EmailEditor.Attachments.FileName.Value(), 'Wrong attachment name on email outbox');
-
-        Assert.IsFalse(EmailEditor.Next(), 'There should not be next record');
-
-        Assert.IsTrue(EmailEditor.Previous(), 'There should be previous record');
-
-        Assert.AreEqual('Recipient 1', EmailEditor.ToField.Value(), 'Wrong recipient on the email outbox');
-        Assert.AreEqual('Subject 1', EmailEditor.SubjectField.Value(), 'Wrong subject on email outbox in email editor');
-        Assert.AreEqual('Body 1', EmailEditor.BodyField.Value(), 'Wrong body on email outbox in email editor');
-        Assert.AreEqual('Attachment Name 1', EmailEditor.Attachments.FileName.Value(), 'Wrong attachment name on email outbox');
-
-        Assert.IsFalse(EmailEditor.Previous(), 'There should not be previous record');
+        RemoveViewPolicies();
     end;
 
     [Test]
@@ -713,7 +711,7 @@ codeunit 134692 "Email E2E Tests"
 
         SourceTable := 18;
         SourceSystemID := CreateGuid();
-        Email.AddRelation(EmailMessage, SourceTable, SourceSystemID, Enum::"Email Relation Type"::"Related Entity");
+        Email.AddRelation(EmailMessage, SourceTable, SourceSystemID, Enum::"Email Relation Type"::"Related Entity", Enum::"Email Relation Origin"::"Compose Context");
 
         EmailMessageWithSource := EmailMessage.GetId();
 
@@ -739,6 +737,86 @@ codeunit 134692 "Email E2E Tests"
         SentEmail.SetRange("Message Id", EmailMessageWithoutSource);
         Assert.IsTrue(SentEmail.FindFirst(), 'A sent email record should have been created');
         Assert.IsFalse(SentEmails.GoToRecord(SentEmail), 'The sent email without email relation should not be listed');
+    end;
+
+    [Test]
+    procedure OpenRelatedEmailsForRecordVariant()
+    var
+        TempAccount: Record "Email Account" temporary;
+        SentEmail: Record "Sent Email";
+        Any: Codeunit Any;
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        RecordVariant: Variant;
+        SentEmails: TestPage "Sent Emails";
+        Recipient, Subject, Body : Text;
+        EmailMessageWithSource, EmailMessageWithoutSource : Guid;
+    begin
+        // [Scenario] Show sent emails page for emails related to a record
+        // Initialize
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
+
+        // [Given] An email with a related record
+        Recipient := Any.Email();
+        Subject := Any.UnicodeText(50);
+        Body := Any.UnicodeText(1024);
+
+        EmailMessage.Create(Recipient, Subject, Body, true);
+        EmailMessageWithSource := EmailMessage.GetId();
+
+        SentEmail.Id := 10000;
+        SentEmail."Message Id" := CreateGuid();
+        SentEmail."Account Id" := CreateGuid();
+        SentEmail."Date Time Sent" := CurrentDateTime();
+        SentEmail.Description := 'Test';
+        SentEmail.Insert();
+        RecordVariant := SentEmail;
+
+        Email.AddRelation(EmailMessage, Database::"Sent Email", SentEmail.SystemId, Enum::"Email Relation Type"::"Related Entity", Enum::"Email Relation Origin"::"Compose Context");
+
+        // [When] Sending the email with a related record
+        Email.Send(EmailMessage, TempAccount."Account Id", TempAccount.Connector);
+
+        // [And] Sending an email without a related record
+        EmailMessage.Create(Recipient, Subject, Body, true);
+        EmailMessageWithoutSource := EmailMessage.GetId();
+        Email.Send(EmailMessage, TempAccount."Account Id", TempAccount.Connector);
+
+        // [When] The sent emails page is opened for the source
+        SentEmail.SetRange("Message Id", EmailMessageWithSource);
+        Assert.IsTrue(SentEmail.FindFirst(), 'A sent email record should have been created');
+
+        SentEmails.Trap();
+        Email.OpenSentEmails(RecordVariant);
+
+        // [Then] The email with source should appear on the sent emails page
+        Assert.IsTrue(SentEmails.GoToRecord(SentEmail), 'The sent email record should be present on the Sent Emails page');
+
+        // [And] The email without source should not 
+        SentEmail.SetRange("Message Id", EmailMessageWithoutSource);
+        Assert.IsTrue(SentEmail.FindFirst(), 'A sent email record should have been created');
+        Assert.IsFalse(SentEmails.GoToRecord(SentEmail), 'The sent email without email relation should not be listed');
+
+        SentEmail.DeleteAll();
+    end;
+
+    local procedure GiveUserViewAllPolicy()
+    var
+        EmailViewPolicy: Record "Email View Policy";
+    begin
+        EmailViewPolicy."User Security ID" := UserSecurityId();
+        EmailViewPolicy."Email View Policy" := Enum::"Email View Policy"::AllEmails;
+        EmailViewPolicy.Insert();
+    end;
+
+    local procedure RemoveViewPolicies()
+    var
+        EmailViewPolicy: Record "Email View Policy";
+    begin
+        EmailViewPolicy.DeleteAll();
     end;
 
     local procedure CreateEmailOutbox(Recipient: Text; Subject: Text; Body: Text; AttachmentName: Text[250]; AttachmentContent: Text; var EmailOutbox: Record "Email Outbox")

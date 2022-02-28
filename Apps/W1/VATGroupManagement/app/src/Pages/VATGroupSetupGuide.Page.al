@@ -642,9 +642,9 @@ page 4705 "VAT Group Setup Guide"
 
     local procedure ValidateAndFinishSetup()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
-        AssistedSetup.Complete(Page::"VAT Group Setup Guide");
+        GuidedExperience.CompleteAssistedSetup(ObjectType::page, Page::"VAT Group Setup Guide");
         if IsJobQueueEnabled then
             EnableJobQueueStatusUpdate();
     end;

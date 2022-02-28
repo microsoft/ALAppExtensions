@@ -38,7 +38,9 @@ codeunit 18143 "GST Sales Validation"
         SalesHeader := VariantRec;
     end;
 
+#if not CLEAN20      
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnBeforeUpdateLocationCode', '', false, false)]
+    [Obsolete('Not actual after Non Inventoriable Item refactoring', '20.0')]
     local procedure HandledOnBeforeUpdateLocationCode(var SalesLine: Record "Sales Line"; var IsHandled: Boolean)
     var
         Item: Record Item;
@@ -47,6 +49,7 @@ codeunit 18143 "GST Sales Validation"
             if (Item."HSN/SAC Code" <> '') and (Item."GST Group Code" <> '') then
                 IsHandled := true;
     end;
+#endif
 
     //CopyDocument 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterCopySalesLineFromSalesLineBuffer', '', false, false)]

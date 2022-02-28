@@ -1,3 +1,4 @@
+#if not CLEAN20
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -5,6 +6,10 @@
 
 interface "SMTP Client"
 {
+    ObsoleteReason = 'SMTP Client API moved to "SMTP API" app';
+    ObsoleteState = Pending;
+    ObsoleteTag = '20.0';
+
     /// <summary>
     /// Initialize the SMTP client with the account to use and the email message to send.
     /// </summary>
@@ -35,3 +40,4 @@ interface "SMTP Client"
     /// </summary>
     procedure Disconnect();
 }
+#endif

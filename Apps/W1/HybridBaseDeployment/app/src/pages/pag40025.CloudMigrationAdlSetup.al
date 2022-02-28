@@ -85,6 +85,7 @@ page 40025 "Cloud Migration ADL Setup"
                             end;
                         }
 
+#pragma warning disable AA0218
                         field(AcceptLegal; LegalAccepted)
                         {
                             ApplicationArea = Basic, Suite;
@@ -95,6 +96,7 @@ page 40025 "Cloud Migration ADL Setup"
                                 NextEnabled := LegalAccepted;
                             end;
                         }
+#pragma warning restore                        
                     }
                 }
             }

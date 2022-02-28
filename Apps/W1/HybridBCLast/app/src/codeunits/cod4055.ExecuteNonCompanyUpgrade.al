@@ -19,8 +19,14 @@ codeunit 4055 "Execute Non-Company Upgrade"
         CountryCode: Text;
         TargetVersion: Decimal;
         TargetVersions: List of [Decimal];
+        Handled: Boolean;
     begin
         HybridCompanyStatus.Get('');
+
+        OnBeforeRunPerDatabaseUpgrade(HybridCompanyStatus, Handled);
+        if Handled then
+            exit;
+
         if HybridCompanyStatus."Upgrade Status" <> HybridCompanyStatus."Upgrade Status"::Pending then
             Error(WrongUpgradeStatusForDataPerCompanyErr, HybridCompanyStatus."Upgrade Status");
 
@@ -44,6 +50,11 @@ codeunit 4055 "Execute Non-Company Upgrade"
         HybridCompanyStatus.Get('');
         HybridCompanyStatus."Upgrade Status" := HybridCompanyStatus."Upgrade Status"::Completed;
         HybridCompanyStatus.Modify();
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeRunPerDatabaseUpgrade(var HybridCompanyStatus: Record "Hybrid Company Status"; var Handled: Boolean)
+    begin
     end;
 
     var

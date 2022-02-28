@@ -1,3 +1,9 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+#if not CLEAN19
 codeunit 11507 "Upgrade Mig Local App CH 19x"
 {
     ObsoleteState = Pending;
@@ -17,13 +23,13 @@ codeunit 11507 "Upgrade Mig Local App CH 19x"
         UpgradeCheckPartnerVATID();
     end;
 
-#if not CLEAN19
     procedure UpgradeCheckPartnerVATID()
     var
         CompanyInformation: Record "Company Information";
         UpgradeTag: Codeunit "Upgrade Tag";
         UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
+#pragma warning disable AL0432
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetCheckPartnerVATIDTag()) then
             exit;
 
@@ -34,6 +40,7 @@ codeunit 11507 "Upgrade Mig Local App CH 19x"
         end;
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetCheckPartnerVATIDTag());
+#pragma warning restore AL0432
     end;
-#endif
 }
+#endif

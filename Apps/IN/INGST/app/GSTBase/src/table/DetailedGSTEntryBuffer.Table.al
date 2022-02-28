@@ -462,6 +462,11 @@ table 18000 "Detailed GST Entry Buffer"
             Caption = 'POS Out Of India';
             DataClassification = SystemMetadata;
         }
+        field(94; "External Document No."; Code[40])
+        {
+            Caption = 'External Document No.';
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

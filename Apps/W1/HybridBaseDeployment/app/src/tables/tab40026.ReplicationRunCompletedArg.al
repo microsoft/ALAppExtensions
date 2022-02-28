@@ -1,6 +1,7 @@
 table 40026 "Replication Run Completed Arg"
 {
     DataClassification = SystemMetadata;
+    ReplicateData = false;
 
     fields
     {

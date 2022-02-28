@@ -17,12 +17,12 @@ codeunit 134697 "Email Accounts Selection Mock"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Email Account Impl.", 'OnAfterSetSelectionFilter', '', false, false)]
-    local procedure SelectAccounts(var Rec: Record "Email Account")
+    local procedure SelectAccounts(var EmailAccount: Record "Email Account")
     var
         SelectionFilter: Text;
         AccountId: Guid;
     begin
-        Rec.Reset();
+        EmailAccount.Reset();
 
         foreach AccountId in SelectedAccounts do
             SelectionFilter := StrSubstNo('%1|%2', SelectionFilter, AccountId);
@@ -30,7 +30,7 @@ codeunit 134697 "Email Accounts Selection Mock"
         SelectionFilter := DelChr(SelectionFilter, '<>', '|'); // remove trailing and leading pipes
 
         if SelectionFilter <> '' then
-            Rec.SetFilter("Account Id", SelectionFilter);
+            EmailAccount.SetFilter("Account Id", SelectionFilter);
     end;
 
     var

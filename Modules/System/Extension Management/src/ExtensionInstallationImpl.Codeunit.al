@@ -180,7 +180,7 @@ codeunit 2500 "Extension Installation Impl"
     begin
         CheckPermissions();
         if IsUIEnabled = true then
-            exit(UninstallExtensionWithConfirmDialog(PackageID, false, ClearSchema));
+            exit(UninstallExtensionWithConfirmDialog(PackageID, ClearSchema, ClearSchema));
 
         PublishedApplication.SetRange("Package ID", PackageID);
         PublishedApplication.SetRange("Tenant Visible", true);
@@ -188,7 +188,7 @@ codeunit 2500 "Extension Installation Impl"
         if PublishedApplication.IsEmpty() then
             exit(false);
 
-        exit(UninstallExtensionSilently(PackageID, false, ClearSchema));
+        exit(UninstallExtensionSilently(PackageID, ClearSchema, ClearSchema));
     end;
 
     local procedure UninstallExtensionSilently(PackageID: Guid; ClearData: Boolean; ClearSchema: Boolean): Boolean

@@ -251,7 +251,7 @@ codeunit 31240 "Install Application CZF"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure CompanyInitialize()
     var
-        DataClassEvalHandlerCZF: Codeunit "Data Class. Eval. Handler CZF";
+        DataClassEvalHandlerCZF: Codeunit "Data Class. Eval. Handler CZF";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         DataClassEvalHandlerCZF.ApplyEvaluationClassificationsForPrivacy();

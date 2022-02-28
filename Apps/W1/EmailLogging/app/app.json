@@ -1,0 +1,35 @@
+{
+  "id": "114e4e19-182b-42e2-b5a9-91d8b8ee8ce1",
+  "name":  "_Exclude_Email Logging Using Graph API",
+  "publisher":  "Microsoft",
+  "version":  "20.0.0.0",
+  "brief":  "_Exclude_Email Logging Using Graph API",
+  "description":  "_Exclude_Email Logging Using Graph API",
+  "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+  "help":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+  "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo":  "ExtensionLogo.png",
+  "dependencies":  [
+
+                   ],
+  "internalsVisibleTo":  [
+                             {
+                                 "id":  "bee0d27a-b577-4acc-9eca-6eb63b5f6029",
+                                 "name":  "_Exclude_Email Logging Using Graph API Tests",
+                                 "publisher":  "Microsoft"
+                             }
+                         ],
+  "screenshots":  [
+
+                  ],
+  "platform":  "20.0.0.0",
+  "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520",
+  "resourceExposurePolicy": {
+      "allowDebugging": true,
+      "allowDownloadingSource": true,
+      "includeSourceInSymbolFile": true
+  },
+  "target":  "OnPrem",
+  "application":  "20.0.0.0"
+}

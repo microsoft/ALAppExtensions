@@ -96,22 +96,22 @@ report 31182 "Reminder CZL"
             column(RegistrationNo_IssuedReminderHeader; "Registration No. CZL")
             {
             }
-            column(BankAccountNo_IssuedReminderHeaderCaption; FieldCaption("Bank Account No."))
+            column(BankAccountNo_IssuedReminderHeaderCaption; FieldCaption("Bank Account No. CZL"))
             {
             }
-            column(BankAccountNo_IssuedReminderHeader; "Bank Account No.")
+            column(BankAccountNo_IssuedReminderHeader; "Bank Account No. CZL")
             {
             }
-            column(IBAN_IssuedReminderHeaderCaption; FieldCaption(IBAN))
+            column(IBAN_IssuedReminderHeaderCaption; FieldCaption("IBAN CZL"))
             {
             }
-            column(IBAN_IssuedReminderHeader; IBAN)
+            column(IBAN_IssuedReminderHeader; "IBAN CZL")
             {
             }
-            column(SWIFTCode_IssuedReminderHeaderCaption; FieldCaption("SWIFT Code"))
+            column(SWIFTCode_IssuedReminderHeaderCaption; FieldCaption("SWIFT Code CZL"))
             {
             }
-            column(SWIFTCode_IssuedReminderHeader; "SWIFT Code")
+            column(SWIFTCode_IssuedReminderHeader; "SWIFT Code CZL")
             {
             }
             column(CustomerNo_IssuedReminderHeaderCaption; FieldCaption("Customer No."))
@@ -206,12 +206,6 @@ report 31182 "Reminder CZL"
                     column(RemainingAmount_IssuedReminderLine; "Remaining Amount")
                     {
                     }
-                    column(InterestAmount_IssuedReminderLineCaption; FieldCaption("Interest Amount"))
-                    {
-                    }
-                    column(InterestAmount_IssuedReminderLine; "Interest Amount")
-                    {
-                    }
                     column(Description_IssuedReminderLine; Description)
                     {
                     }
@@ -224,19 +218,15 @@ report 31182 "Reminder CZL"
                     column(LineNo_IssuedReminderLine; "Line No.")
                     {
                     }
-                    column(InterestAmountInclVAT; InterestAmountInclVAT)
+                    column(AmountInclVAT; AmountInclVAT)
                     {
                     }
-                    column(AmountInclVAT; AmountInclVAT)
+                    column(InterestAmountLbl; InterestAmountLbl)
                     {
                     }
                     trigger OnAfterGetRecord()
                     begin
                         AmountInclVAT := 0;
-                        InterestAmountInclVAT := 0;
-
-                        if "Interest Amount" <> 0 then
-                            InterestAmountInclVAT := "Interest Amount" + "VAT Amount";
 
                         if Amount <> 0 then
                             AmountInclVAT := Amount + "VAT Amount"
@@ -245,6 +235,7 @@ report 31182 "Reminder CZL"
                     trigger OnPreDataItem()
                     begin
                         SetFilter("Line Type", '<>%1&<>%2', "Line Type"::"Not Due", "Line Type"::"On Hold");
+                        SetRange("Detailed Interest Rates Entry", false);
                     end;
                 }
                 dataitem(NotDueLine; "Issued Reminder Line")
@@ -410,9 +401,9 @@ report 31182 "Reminder CZL"
         LogInteractionEnable: Boolean;
         TotalLbl: Label 'Total';
         ShowNotDueAmounts: Boolean;
-        InterestAmountInclVAT: Decimal;
         AmountInclVAT: Decimal;
         CreatorLbl: Label 'Created by';
+        InterestAmountLbl: Label 'Interest Amount';
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; LogInteractionFrom: Boolean; ShowNotDueAmountsFrom: Boolean)
     begin

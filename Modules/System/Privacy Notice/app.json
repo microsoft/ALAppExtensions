@@ -1,0 +1,31 @@
+{
+    "id": "daa5d70e-eaf5-4256-bf80-53545ef7629a",
+    "name": "Privacy Notice",
+    "publisher": "Microsoft",
+    "brief": "Functionality for showing privacy notices.",
+    "description": "Functionality to ensure privacy notices have been approved for integrations to other services.",
+    "version": "20.0.0.0",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help": "",
+    "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo": "",
+    "dependencies": [
+        {
+            "id": "93b83ef6-9666-4c1d-b130-c232f4047621",
+            "name": "Upgrade Tags",
+            "publisher": "Microsoft",
+            "version": "20.0.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "20.0.0.0",
+    "target": "OnPrem",
+    "idRanges": [
+        {
+            "from": 1563,
+            "to": 1567
+        }
+    ],
+    "contextSensitiveHelpUrl": "https://docs.microsoft.com/dynamics365/business-central/"
+}

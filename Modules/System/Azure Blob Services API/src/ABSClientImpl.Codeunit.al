@@ -9,10 +9,10 @@ codeunit 9051 "ABS Client Impl."
     Access = Internal;
 
     var
-        OperationPayload: Codeunit "ABS Operation Payload";
-        BlobAPIHttpContentHelper: Codeunit "ABS HttpContent Helper";
-        BlobAPIWebRequestHelper: Codeunit "ABS Web Request Helper";
-        BlobAPIFormatHelper: Codeunit "ABS Format Helper";
+        ABSOperationPayload: Codeunit "ABS Operation Payload";
+        ABSHttpContentHelper: Codeunit "ABS HttpContent Helper";
+        ABSWebRequestHelper: Codeunit "ABS Web Request Helper";
+        ABSFormatHelper: Codeunit "ABS Format Helper";
 
         #region Labels
         ListContainercOperationNotSuccessfulErr: Label 'Could not list container.';
@@ -47,706 +47,698 @@ codeunit 9051 "ABS Client Impl."
     [NonDebuggable]
     procedure Initialize(StorageAccountName: Text; ContainerName: Text; BlobName: Text; Authorization: Interface "Storage Service Authorization"; ApiVersion: Enum "Storage Service API Version")
     begin
-        OperationPayload.Initialize(StorageAccountName, ContainerName, BlobName, Authorization, ApiVersion);
+        ABSOperationPayload.Initialize(StorageAccountName, ContainerName, BlobName, Authorization, ApiVersion);
     end;
 
     procedure SetBaseUrl(BaseUrl: Text)
     begin
-        OperationPayload.SetBaseUrl(BaseUrl);
+        ABSOperationPayload.SetBaseUrl(BaseUrl);
     end;
 
     [NonDebuggable]
-    procedure ListContainers(var Container: Record "ABS Container"; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure ListContainers(var ABSContainer: Record "ABS Container"; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        HelperLibrary: Codeunit "ABS Helper Library";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
         Operation: Enum "ABS Operation";
         ResponseText: Text;
         NodeList: XmlNodeList;
     begin
-        OperationPayload.SetOperation(Operation::ListContainers);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
+        ABSOperationPayload.SetOperation(Operation::ListContainers);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
 
-        OperationResponse := BlobAPIWebRequestHelper.GetOperationAsText(OperationPayload, ResponseText, ListContainercOperationNotSuccessfulErr);
+        ABSOperationResponse := ABSWebRequestHelper.GetOperationAsText(ABSOperationPayload, ResponseText, ListContainercOperationNotSuccessfulErr);
 
-        NodeList := HelperLibrary.CreateContainerNodeListFromResponse(ResponseText);
-        HelperLibrary.ContainerNodeListTotempRecord(NodeList, Container);
+        NodeList := ABSHelperLibrary.CreateContainerNodeListFromResponse(ResponseText);
+        ABSHelperLibrary.ContainerNodeListTotempRecord(NodeList, ABSContainer);
 
-        exit(OperationResponse);
+        exit(ABSOperationResponse);
     end;
 
     #region Container operations
-    procedure CreateContainer(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure CreateContainer(ContainerName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::CreateContainer);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
-        OperationPayload.SetContainerName(ContainerName);
+        ABSOperationPayload.SetOperation(Operation::CreateContainer);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        ABSOperationPayload.SetContainerName(ContainerName);
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, StrSubstNo(CreateContainerOperationNotSuccessfulErr, OperationPayload.GetContainerName()));
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, StrSubstNo(CreateContainerOperationNotSuccessfulErr, ABSOperationPayload.GetContainerName()));
+        exit(ABSOperationResponse);
     end;
 
-    procedure DeleteContainer(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure DeleteContainer(ContainerName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::DeleteContainer);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
-        OperationPayload.SetContainerName(ContainerName);
+        ABSOperationPayload.SetOperation(Operation::DeleteContainer);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        ABSOperationPayload.SetContainerName(ContainerName);
 
-        OperationResponse := BlobAPIWebRequestHelper.DeleteOperation(OperationPayload, StrSubstNo(DeleteContainerOperationNotSuccessfulErr, OperationPayload.GetContainerName()));
+        ABSOperationResponse := ABSWebRequestHelper.DeleteOperation(ABSOperationPayload, StrSubstNo(DeleteContainerOperationNotSuccessfulErr, ABSOperationPayload.GetContainerName()));
 
-        exit(OperationResponse);
+        exit(ABSOperationResponse);
     end;
 
     [NonDebuggable]
-    procedure ListBlobs(var ContainerContent: Record "ABS Container Content"; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure ListBlobs(var ABSContainerContent: Record "ABS Container Content"; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        HelperLibrary: Codeunit "ABS Helper Library";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
         Operation: Enum "ABS Operation";
         ResponseText: Text;
         NodeList: XmlNodeList;
     begin
-        OperationPayload.SetOperation(Operation::ListBlobs);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
+        ABSOperationPayload.SetOperation(Operation::ListBlobs);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
 
-        OperationResponse := BlobAPIWebRequestHelper.GetOperationAsText(OperationPayload, ResponseText, StrSubstNo(ListBlobsContainercOperationNotSuccessfulErr, OperationPayload.GetContainerName()));
+        ABSOperationResponse := ABSWebRequestHelper.GetOperationAsText(ABSOperationPayload, ResponseText, StrSubstNo(ListBlobsContainercOperationNotSuccessfulErr, ABSOperationPayload.GetContainerName()));
 
-        NodeList := HelperLibrary.CreateBlobNodeListFromResponse(ResponseText);
-        HelperLibrary.BlobNodeListToTempRecord(NodeList, ContainerContent);
+        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ResponseText);
+        ABSHelperLibrary.BlobNodeListToTempRecord(NodeList, ABSContainerContent);
 
-        exit(OperationResponse);
+        exit(ABSOperationResponse);
     end;
 
-    procedure ContainerAcquireLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ContainerAcquireLease(ContainerName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::LeaseContainer);
-        OperationPayload.SetContainerName(ContainerName);
-        exit(AcquireLease(OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseAcquireLbl, ContainerLbl, OperationPayload.GetContainerName())));
+        ABSOperationPayload.SetOperation(Operation::LeaseContainer);
+        ABSOperationPayload.SetContainerName(ContainerName);
+        exit(AcquireLease(ABSOptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseAcquireLbl, ContainerLbl, ABSOperationPayload.GetContainerName())));
     end;
 
-    procedure ContainerReleaseLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ContainerReleaseLease(ContainerName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::LeaseContainer);
-        OperationPayload.SetContainerName(ContainerName);
-        exit(ReleaseLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseReleaseLbl, ContainerLbl, OperationPayload.GetContainerName())));
+        ABSOperationPayload.SetOperation(Operation::LeaseContainer);
+        ABSOperationPayload.SetContainerName(ContainerName);
+        exit(ReleaseLease(ABSOptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseReleaseLbl, ContainerLbl, ABSOperationPayload.GetContainerName())));
     end;
 
-    procedure ContainerRenewLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure ContainerRenewLease(ContainerName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        ABSOperation: Enum "ABS Operation";
+    begin
+        ABSOperationPayload.SetOperation(ABSOperation::LeaseContainer);
+        ABSOperationPayload.SetContainerName(ContainerName);
+        exit(RenewLease(ABSOptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseRenewLbl, ContainerLbl, ABSOperationPayload.GetContainerName())));
+    end;
+
+    procedure ContainerBreakLease(ContainerName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; LeaseBreakPeriod: Integer): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::LeaseContainer);
-        OperationPayload.SetContainerName(ContainerName);
-        exit(RenewLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseRenewLbl, ContainerLbl, OperationPayload.GetContainerName())));
+        ABSOperationPayload.SetOperation(Operation::LeaseContainer);
+        ABSOperationPayload.SetContainerName(ContainerName);
+        exit(BreakLease(ABSOptionalParameters, LeaseId, LeaseBreakPeriod, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, ContainerLbl, ABSOperationPayload.GetContainerName())));
     end;
 
-    procedure ContainerBreakLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; LeaseBreakPeriod: Integer): Codeunit "ABS Operation Response"
+    procedure ContainerChangeLease(ContainerName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::LeaseContainer);
-        OperationPayload.SetContainerName(ContainerName);
-        exit(BreakLease(OptionalParameters, LeaseId, LeaseBreakPeriod, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, ContainerLbl, OperationPayload.GetContainerName())));
-    end;
-
-    procedure ContainerChangeLease(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
-    var
-        Operation: Enum "ABS Operation";
-    begin
-        OperationPayload.SetOperation(Operation::LeaseContainer);
-        OperationPayload.SetContainerName(ContainerName);
-        exit(ChangeLease(OptionalParameters, LeaseId, ProposedLeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseChangeLbl, ContainerLbl, OperationPayload.GetContainerName())));
+        ABSOperationPayload.SetOperation(Operation::LeaseContainer);
+        ABSOperationPayload.SetContainerName(ContainerName);
+        exit(ChangeLease(ABSOptionalParameters, LeaseId, ProposedLeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseChangeLbl, ContainerLbl, ABSOperationPayload.GetContainerName())));
     end;
     #endregion
 
     #region Blob operations
-    procedure PutBlobBlockBlobUI(OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobBlockBlobUI(ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Filename: Text;
-        SourceStream: InStream;
+        SourceInStream: InStream;
     begin
-        if UploadIntoStream('', '', '', FileName, SourceStream) then
-            OperationResponse := PutBlobBlockBlobStream(Filename, SourceStream, OptionalParameters);
+        if UploadIntoStream('', '', '', FileName, SourceInStream) then
+            ABSOperationResponse := PutBlobBlockBlobStream(Filename, SourceInStream, ABSOptionalParameters);
 
-        exit(OperationResponse);
+        exit(ABSOperationResponse);
     end;
 
-    procedure PutBlobBlockBlobStream(BlobName: Text; var SourceStream: InStream; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobBlockBlobStream(BlobName: Text; var SourceInStream: InStream; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        SourceContent: Variant;
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        SourceContentVariant: Variant;
     begin
-        SourceContent := SourceStream;
+        SourceContentVariant := SourceInStream;
 
-        OperationPayload.SetBlobName(BlobName);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
+        ABSOperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
 
-        OperationResponse := PutBlobBlockBlob(SourceContent);
-        exit(OperationResponse);
+        ABSOperationResponse := PutBlobBlockBlob(SourceContentVariant);
+        exit(ABSOperationResponse);
     end;
 
-    procedure PutBlobBlockBlobText(BlobName: Text; SourceText: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobBlockBlobText(BlobName: Text; SourceText: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        SourceContent: Variant;
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        SourceContentVariant: Variant;
     begin
-        OperationPayload.SetBlobName(BlobName);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
+        ABSOperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
 
-        SourceContent := SourceText;
-        OperationResponse := PutBlobBlockBlob(SourceContent);
-        exit(OperationResponse);
+        SourceContentVariant := SourceText;
+        ABSOperationResponse := PutBlobBlockBlob(SourceContentVariant);
+        exit(ABSOperationResponse);
     end;
 
-    local procedure PutBlobBlockBlob(var SourceContent: Variant): Codeunit "ABS Operation Response"
+    local procedure PutBlobBlockBlob(var SourceContentVariant: Variant): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
-        Content: HttpContent;
-        SourceStream: InStream;
+        HttpContent: HttpContent;
+        SourceInStream: InStream;
         SourceText: Text;
     begin
-        OperationPayload.SetOperation(Operation::PutBlob);
+        ABSOperationPayload.SetOperation(Operation::PutBlob);
 
         case true of
-            SourceContent.IsInStream():
+            SourceContentVariant.IsInStream():
                 begin
-                    SourceStream := SourceContent;
-                    BlobAPIHttpContentHelper.AddBlobPutBlockBlobContentHeaders(Content, OperationPayload, SourceStream);
+                    SourceInStream := SourceContentVariant;
+                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceInStream);
                 end;
-            SourceContent.IsText():
+            SourceContentVariant.IsText():
                 begin
-                    SourceText := SourceContent;
-                    BlobAPIHttpContentHelper.AddBlobPutBlockBlobContentHeaders(Content, OperationPayload, SourceText);
+                    SourceText := SourceContentVariant;
+                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceText);
                 end;
         end;
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, Content, StrSubstNo(UploadBlobOperationNotSuccessfulErr, OperationPayload.GetBlobName(), OperationPayload.GetContainerName()));
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, HttpContent, StrSubstNo(UploadBlobOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName(), ABSOperationPayload.GetContainerName()));
+        exit(ABSOperationResponse);
     end;
 
-    procedure PutBlobPageBlob(BlobName: Text; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobPageBlob(BlobName: Text; ContentType: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::PutBlob);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
-        OperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.SetOperation(Operation::PutBlob);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        ABSOperationPayload.SetBlobName(BlobName);
 
-        BlobAPIHttpContentHelper.AddBlobPutPageBlobContentHeaders(OperationPayload, 0, ContentType);
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, StrSubstNo(UploadBlobOperationNotSuccessfulErr, OperationPayload.GetBlobName(), OperationPayload.GetContainerName()));
+        ABSHttpContentHelper.AddBlobPutPageBlobContentHeaders(ABSOperationPayload, 0, ContentType);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, StrSubstNo(UploadBlobOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName(), ABSOperationPayload.GetContainerName()));
 
-        exit(OperationResponse);
+        exit(ABSOperationResponse);
     end;
 
-    procedure PutBlobAppendBlob(BlobName: Text; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobAppendBlob(BlobName: Text; ContentType: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::PutBlob);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
-        OperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.SetOperation(Operation::PutBlob);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        ABSOperationPayload.SetBlobName(BlobName);
 
-        BlobAPIHttpContentHelper.AddBlobPutAppendBlobContentHeaders(OperationPayload, ContentType);
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, StrSubstNo(UploadBlobOperationNotSuccessfulErr, OperationPayload.GetBlobName(), OperationPayload.GetContainerName()));
-        exit(OperationResponse);
+        ABSHttpContentHelper.AddBlobPutAppendBlobContentHeaders(ABSOperationPayload, ContentType);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, StrSubstNo(UploadBlobOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName(), ABSOperationPayload.GetContainerName()));
+        exit(ABSOperationResponse);
     end;
 
-    procedure AppendBlockText(BlobName: Text; ContentAsText: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure AppendBlockText(BlobName: Text; ContentAsText: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
     begin
-        OperationResponse := AppendBlockText(BlobName, ContentAsText, 'text/plain; charset=UTF-8', OptionalParameters);
-        exit(OperationResponse);
+        ABSOperationResponse := AppendBlockText(BlobName, ContentAsText, 'text/plain; charset=UTF-8', ABSOptionalParameters);
+        exit(ABSOperationResponse);
     end;
 
-    procedure AppendBlockText(BlobName: Text; ContentAsText: Text; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure AppendBlockText(BlobName: Text; ContentAsText: Text; ContentType: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
     begin
-        OperationResponse := AppendBlock(BlobName, ContentType, ContentAsText, OptionalParameters);
-        exit(OperationResponse);
+        ABSOperationResponse := AppendBlock(BlobName, ContentType, ContentAsText, ABSOptionalParameters);
+        exit(ABSOperationResponse);
     end;
 
-    procedure AppendBlockStream(BlobName: Text; ContentAsStream: InStream; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure AppendBlockStream(BlobName: Text; ContentAsInStream: InStream; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
     begin
-        OperationResponse := AppendBlockStream(BlobName, ContentAsStream, 'application/octet-stream', OptionalParameters);
-        exit(OperationResponse);
+        ABSOperationResponse := AppendBlockStream(BlobName, ContentAsInStream, 'application/octet-stream', ABSOptionalParameters);
+        exit(ABSOperationResponse);
     end;
 
-    procedure AppendBlockStream(BlobName: Text; ContentAsStream: InStream; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure AppendBlockStream(BlobName: Text; ContentAsInStream: InStream; ContentType: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
     begin
-        OperationResponse := AppendBlock(BlobName, ContentType, ContentAsStream, OptionalParameters);
-        exit(OperationResponse);
+        ABSOperationResponse := AppendBlock(BlobName, ContentType, ContentAsInStream, ABSOptionalParameters);
+        exit(ABSOperationResponse);
     end;
 
-    procedure AppendBlock(BlobName: Text; ContentType: Text; SourceContent: Variant; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure AppendBlock(BlobName: Text; ContentType: Text; SourceContentVariant: Variant; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
-        Content: HttpContent;
-        SourceStream: InStream;
+        HttpContent: HttpContent;
+        SourceInStream: InStream;
         SourceText: Text;
     begin
-        OperationPayload.SetOperation(Operation::AppendBlock);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
-        OperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.SetOperation(Operation::AppendBlock);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        ABSOperationPayload.SetBlobName(BlobName);
 
         case true of
-            SourceContent.IsInStream():
+            SourceContentVariant.IsInStream():
                 begin
-                    SourceStream := SourceContent;
-                    BlobAPIHttpContentHelper.AddBlobPutBlockBlobContentHeaders(Content, OperationPayload, SourceStream);
+                    SourceInStream := SourceContentVariant;
+                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceInStream);
                 end;
-            SourceContent.IsText():
+            SourceContentVariant.IsText():
                 begin
-                    SourceText := SourceContent;
-                    BlobAPIHttpContentHelper.AddBlobPutBlockBlobContentHeaders(Content, OperationPayload, SourceText);
+                    SourceText := SourceContentVariant;
+                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceText);
                 end;
         end;
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, Content, StrSubstNo(UploadBlobOperationNotSuccessfulErr, OperationPayload.GetBlobName(), OperationPayload.GetContainerName()));
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, HttpContent, StrSubstNo(UploadBlobOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName(), ABSOperationPayload.GetContainerName()));
+        exit(ABSOperationResponse);
     end;
 
-    procedure AppendBlockFromURL(BlobName: Text; SourceUri: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure AppendBlockFromURL(BlobName: Text; SourceUri: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
-        Content: HttpContent;
+        HttpContent: HttpContent;
     begin
-        OperationPayload.SetOperation(Operation::AppendBlockFromURL);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
-        OperationPayload.SetBlobName(BlobName);
-        OperationPayload.AddContentHeader('Content-Length', '0');
-        OperationPayload.AddRequestHeader('x-ms-copy-source', SourceUri);
+        ABSOperationPayload.SetOperation(Operation::AppendBlockFromURL);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        ABSOperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.AddContentHeader('Content-Length', '0');
+        ABSOperationPayload.AddRequestHeader('x-ms-copy-source', SourceUri);
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, Content, StrSubstNo(AppendBlockFromUrlOperationNotSuccessfulErr, SourceUri, OperationPayload.GetBlobName()));
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, HttpContent, StrSubstNo(AppendBlockFromUrlOperationNotSuccessfulErr, SourceUri, ABSOperationPayload.GetBlobName()));
 
-        exit(OperationResponse);
+        exit(ABSOperationResponse);
     end;
 
-    procedure GetBlobAsFile(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure GetBlobAsFile(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        TargetStream: InStream;
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        TargetInStream: InStream;
     begin
-        OperationResponse := GetBlobAsStream(BlobName, TargetStream, OptionalParameters);
+        ABSOperationResponse := GetBlobAsStream(BlobName, TargetInStream, ABSOptionalParameters);
 
-        BlobName := OperationPayload.GetBlobName();
-        DownloadFromStream(TargetStream, '', '', '', BlobName);
-        exit(OperationResponse);
+        BlobName := ABSOperationPayload.GetBlobName();
+        DownloadFromStream(TargetInStream, '', '', '', BlobName);
+        exit(ABSOperationResponse);
     end;
 
-    procedure GetBlobAsStream(BlobName: Text; var TargetStream: InStream; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure GetBlobAsStream(BlobName: Text; var TargetInStream: InStream; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        Operation: Enum "ABS Operation";
-    begin
-        OperationPayload.SetOperation(Operation::GetBlob);
-        OperationPayload.SetBlobName(BlobName);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
-
-        OperationResponse := BlobAPIWebRequestHelper.GetOperationAsStream(OperationPayload, TargetStream, StrSubstNo(GetBlobOperationNotSuccessfulErr, OperationPayload.GetBlobName()));
-        exit(OperationResponse);
-    end;
-
-    procedure GetBlobAsText(BlobName: Text; var TargetText: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
-    var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::GetBlob);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
-        OperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.SetOperation(Operation::GetBlob);
+        ABSOperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
 
-        OperationResponse := BlobAPIWebRequestHelper.GetOperationAsText(OperationPayload, TargetText, StrSubstNo(GetBlobOperationNotSuccessfulErr, OperationPayload.GetBlobName()));
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.GetOperationAsStream(ABSOperationPayload, TargetInStream, StrSubstNo(GetBlobOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName()));
+        exit(ABSOperationResponse);
+    end;
+
+    procedure GetBlobAsText(BlobName: Text; var TargetText: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    var
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        Operation: Enum "ABS Operation";
+    begin
+        ABSOperationPayload.SetOperation(Operation::GetBlob);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        ABSOperationPayload.SetBlobName(BlobName);
+
+        ABSOperationResponse := ABSWebRequestHelper.GetOperationAsText(ABSOperationPayload, TargetText, StrSubstNo(GetBlobOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName()));
+        exit(ABSOperationResponse);
     end;
 
     procedure SetBlobExpiryRelativeToCreation(BlobName: Text; ExpiryTime: Integer): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         ExpiryOption: Enum "ABS Blob Expiry Option";
     begin
-        OperationResponse := SetBlobExpiry(BlobName, ExpiryOption::RelativeToCreation, ExpiryTime, StrSubstNo(ExpiryOperationNotSuccessfulErr, OperationPayload.GetBlobName()));
-        exit(OperationResponse);
+        ABSOperationResponse := SetBlobExpiry(BlobName, ExpiryOption::RelativeToCreation, ExpiryTime, StrSubstNo(ExpiryOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName()));
+        exit(ABSOperationResponse);
     end;
 
     procedure SetBlobExpiryRelativeToNow(BlobName: Text; ExpiryTime: Integer): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         ExpiryOption: Enum "ABS Blob Expiry Option";
     begin
-        OperationResponse := SetBlobExpiry(BlobName, ExpiryOption::RelativeToNow, ExpiryTime, StrSubstNo(ExpiryOperationNotSuccessfulErr, OperationPayload.GetBlobName()));
-        exit(OperationResponse);
+        ABSOperationResponse := SetBlobExpiry(BlobName, ExpiryOption::RelativeToNow, ExpiryTime, StrSubstNo(ExpiryOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName()));
+        exit(ABSOperationResponse);
     end;
 
     procedure SetBlobExpiryAbsolute(BlobName: Text; ExpiryTime: DateTime): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         ExpiryOption: Enum "ABS Blob Expiry Option";
     begin
-        OperationResponse := SetBlobExpiry(BlobName, ExpiryOption::Absolute, ExpiryTime, StrSubstNo(ExpiryOperationNotSuccessfulErr, OperationPayload.GetBlobName()));
-        exit(OperationResponse);
+        ABSOperationResponse := SetBlobExpiry(BlobName, ExpiryOption::Absolute, ExpiryTime, StrSubstNo(ExpiryOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName()));
+        exit(ABSOperationResponse);
     end;
 
     procedure SetBlobExpiryNever(BlobName: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         ExpiryOption: Enum "ABS Blob Expiry Option";
     begin
-        OperationResponse := SetBlobExpiry(BlobName, ExpiryOption::NeverExpire, '', StrSubstNo(ExpiryOperationNotSuccessfulErr, OperationPayload.GetBlobName()));
-        exit(OperationResponse);
+        ABSOperationResponse := SetBlobExpiry(BlobName, ExpiryOption::NeverExpire, '', StrSubstNo(ExpiryOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName()));
+        exit(ABSOperationResponse);
     end;
 
-    procedure SetBlobExpiry(BlobName: Text; ExpiryOption: Enum "ABS Blob Expiry Option"; ExpiryTime: Variant;
+    procedure SetBlobExpiry(BlobName: Text; ExpiryOption: Enum "ABS Blob Expiry Option"; ExpiryTimeVariant: Variant;
                                                               OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
         DateTimeValue: DateTime;
         IntegerValue: Integer;
         SpecifyMilisecondsErr: Label 'You need to specify an Integer Value (number of miliseconds) for option %1', Comment = '%1 = Expiry Option';
         SpecifyDateTimeErr: Label 'You need to specify an DateTime Value for option %1', Comment = '%1 = Expiry Option';
     begin
-        OperationPayload.SetOperation(Operation::SetBlobExpiry);
-        OperationPayload.SetBlobName(BlobName);
-        OperationPayload.AddRequestHeader('x-ms-expiry-option', Format(ExpiryOption));
+        ABSOperationPayload.SetOperation(Operation::SetBlobExpiry);
+        ABSOperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.AddRequestHeader('x-ms-expiry-option', Format(ExpiryOption));
 
         case ExpiryOption of
             ExpiryOption::RelativeToCreation, ExpiryOption::RelativeToNow:
-                if not ExpiryTime.IsInteger() then
+                if not ExpiryTimeVariant.IsInteger() then
                     Error(SpecifyMilisecondsErr, ExpiryOption);
             ExpiryOption::Absolute:
-                if not ExpiryTime.IsDateTime() then
+                if not ExpiryTimeVariant.IsDateTime() then
                     Error(SpecifyDateTimeErr, ExpiryOption);
         end;
         if not (ExpiryOption in [ExpiryOption::NeverExpire]) then
             case true of
-                ExpiryTime.IsInteger():
+                ExpiryTimeVariant.IsInteger():
                     begin
-                        IntegerValue := ExpiryTime;
-                        OperationPayload.AddRequestHeader('x-ms-expiry-time', Format(IntegerValue));
+                        IntegerValue := ExpiryTimeVariant;
+                        ABSOperationPayload.AddRequestHeader('x-ms-expiry-time', Format(IntegerValue));
                     end;
-                ExpiryTime.IsDateTime():
+                ExpiryTimeVariant.IsDateTime():
                     begin
-                        DateTimeValue := ExpiryTime;
-                        OperationPayload.AddRequestHeader('x-ms-expiry-time', BlobAPIFormatHelper.GetRfc1123DateTime((DateTimeValue)));
+                        DateTimeValue := ExpiryTimeVariant;
+                        ABSOperationPayload.AddRequestHeader('x-ms-expiry-time', ABSFormatHelper.GetRfc1123DateTime((DateTimeValue)));
                     end;
             end;
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, OperationNotSuccessfulErr);
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, OperationNotSuccessfulErr);
+        exit(ABSOperationResponse);
     end;
 
-    procedure GetBlobTags(BlobName: Text; var BlobTags: XmlDocument; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure GetBlobTags(BlobName: Text; var BlobTags: XmlDocument; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
         ResponseText: Text;
     begin
-        OperationPayload.SetOperation(Operation::GetBlobTags);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
-        OperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.SetOperation(Operation::GetBlobTags);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        ABSOperationPayload.SetBlobName(BlobName);
 
-        OperationResponse := BlobAPIWebRequestHelper.GetOperationAsText(OperationPayload, ResponseText, StrSubstNo(TagsOperationNotSuccessfulErr, 'get', BlobLbl));
-        BlobTags := FormatHelper.TextToXmlDocument(ResponseText);
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.GetOperationAsText(ABSOperationPayload, ResponseText, StrSubstNo(TagsOperationNotSuccessfulErr, 'get', BlobLbl));
+        BlobTags := ABSFormatHelper.TextToXmlDocument(ResponseText);
+        exit(ABSOperationResponse);
     end;
 
     procedure SetBlobTags(BlobName: Text; Tags: Dictionary of [Text, Text]): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Document: XmlDocument;
     begin
-        Document := FormatHelper.TagsDictionaryToXmlDocument(Tags);
-        OperationResponse := SetBlobTags(BlobName, Document);
-        exit(OperationResponse);
+        Document := ABSFormatHelper.TagsDictionaryToXmlDocument(Tags);
+        ABSOperationResponse := SetBlobTags(BlobName, Document);
+        exit(ABSOperationResponse);
     end;
 
     procedure SetBlobTags(BlobName: Text; Tags: XmlDocument): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        Content: HttpContent;
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        HTTPContent: HttpContent;
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::SetBlobTags);
-        OperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.SetOperation(Operation::SetBlobTags);
+        ABSOperationPayload.SetBlobName(BlobName);
 
-        BlobAPIHttpContentHelper.AddTagsContent(Content, OperationPayload, Tags);
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, Content, StrSubstNo(TagsOperationNotSuccessfulErr, 'set', BlobLbl));
-        exit(OperationResponse);
+        ABSHttpContentHelper.AddTagsContent(HTTPContent, ABSOperationPayload, Tags);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, HTTPContent, StrSubstNo(TagsOperationNotSuccessfulErr, 'set', BlobLbl));
+        exit(ABSOperationResponse);
     end;
 
     procedure FindBlobsByTags(SearchTags: Dictionary of [Text, Text]; var FoundBlobs: XmlDocument): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
     begin
-        OperationResponse := FindBlobsByTags(FormatHelper.TagsDictionaryToSearchExpression(SearchTags), FoundBlobs);
-        exit(OperationResponse);
+        ABSOperationResponse := FindBlobsByTags(ABSFormatHelper.TagsDictionaryToSearchExpression(SearchTags), FoundBlobs);
+        exit(ABSOperationResponse);
     end;
 
     procedure FindBlobsByTags(SearchExpression: Text; var FoundBlobs: XmlDocument): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
         ResponseText: Text;
     begin
-        OperationPayload.SetOperation(Operation::FindBlobByTags);
-        OperationPayload.AddUriParameter('where', SearchExpression);
+        ABSOperationPayload.SetOperation(Operation::FindBlobByTags);
+        ABSOperationPayload.AddUriParameter('where', SearchExpression);
 
-        OperationResponse := BlobAPIWebRequestHelper.GetOperationAsText(OperationPayload, ResponseText, FindBlobsByTagsOperationNotSuccessfulErr);
+        ABSOperationResponse := ABSWebRequestHelper.GetOperationAsText(ABSOperationPayload, ResponseText, FindBlobsByTagsOperationNotSuccessfulErr);
 
-        FoundBlobs := FormatHelper.TextToXmlDocument(ResponseText);
+        FoundBlobs := ABSFormatHelper.TextToXmlDocument(ResponseText);
 
-        exit(OperationResponse);
+        exit(ABSOperationResponse);
     end;
 
-    procedure DeleteBlob(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure DeleteBlob(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::DeleteBlob);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
-        OperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.SetOperation(Operation::DeleteBlob);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        ABSOperationPayload.SetBlobName(BlobName);
 
-        OperationResponse := BlobAPIWebRequestHelper.DeleteOperation(OperationPayload, StrSubstNo(DeleteBlobOperationNotSuccessfulErr, OperationPayload.GetBlobName(), OperationPayload.GetContainerName(), 'Delete'));
+        ABSOperationResponse := ABSWebRequestHelper.DeleteOperation(ABSOperationPayload, StrSubstNo(DeleteBlobOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName(), ABSOperationPayload.GetContainerName(), 'Delete'));
 
-        exit(OperationResponse);
+        exit(ABSOperationResponse);
     end;
 
-    procedure UndeleteBlob(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure UndeleteBlob(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::UndeleteBlob);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
-        OperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.SetOperation(Operation::UndeleteBlob);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        ABSOperationPayload.SetBlobName(BlobName);
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, StrSubstNo(DeleteBlobOperationNotSuccessfulErr, OperationPayload.GetBlobName(), OperationPayload.GetContainerName(), 'Undelete'));
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, StrSubstNo(DeleteBlobOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName(), ABSOperationPayload.GetContainerName(), 'Undelete'));
 
-        exit(OperationResponse);
+        exit(ABSOperationResponse);
     end;
 
-    procedure CopyBlob(BlobName: Text; SourceName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure CopyBlob(BlobName: Text; SourceName: Text; LeaseId: Guid; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
 
     begin
-        OperationPayload.SetOperation(Operation::CopyBlob);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
-        OperationPayload.SetBlobName(BlobName);
-        OperationPayload.AddRequestHeader('x-ms-copy-source', SourceName);
+        ABSOperationPayload.SetOperation(Operation::CopyBlob);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        ABSOperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.AddRequestHeader('x-ms-copy-source', SourceName);
 
         if not IsNullGuid(LeaseId) then
-            OperationPayload.AddRequestHeader('x-ms-lease-id', BlobAPIFormatHelper.RemoveCurlyBracketsFromString(Format(LeaseId).ToLower()));
+            ABSOperationPayload.AddRequestHeader('x-ms-lease-id', ABSFormatHelper.RemoveCurlyBracketsFromString(Format(LeaseId).ToLower()));
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, StrSubstNo(CopyOperationNotSuccessfulErr, SourceName, OperationPayload.GetBlobName()));
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, StrSubstNo(CopyOperationNotSuccessfulErr, SourceName, ABSOperationPayload.GetBlobName()));
+        exit(ABSOperationResponse);
     end;
 
     procedure CopyBlobFromURL(SourceUri: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::CopyBlobFromUrl);
-        OperationPayload.AddRequestHeader('x-ms-copy-source', SourceUri);
-        OperationPayload.AddRequestHeader('x-ms-requires-sync', 'true');
+        ABSOperationPayload.SetOperation(Operation::CopyBlobFromUrl);
+        ABSOperationPayload.AddRequestHeader('x-ms-copy-source', SourceUri);
+        ABSOperationPayload.AddRequestHeader('x-ms-requires-sync', 'true');
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, CopyOperationNotSuccessfulErr);
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, CopyOperationNotSuccessfulErr);
+        exit(ABSOperationResponse);
     end;
 
-    procedure PutBlock(SourceContent: Variant): Codeunit "ABS Operation Response"
+    procedure PutBlock(SourceContentVariant: Variant): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
     begin
-        OperationResponse := PutBlock(SourceContent, FormatHelper.GetBase64BlockId());
-        exit(OperationResponse);
+        ABSOperationResponse := PutBlock(SourceContentVariant, ABSFormatHelper.GetBase64BlockId());
+        exit(ABSOperationResponse);
     end;
 
-    procedure PutBlock(SourceContent: Variant; BlockId: Text): Codeunit "ABS Operation Response"
+    procedure PutBlock(SourceContentVariant: Variant; BlockId: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
-        Content: HttpContent;
-        SourceStream: InStream;
+        HttpContent: HttpContent;
+        SourceInStream: InStream;
         SourceText: Text;
     begin
-        OperationPayload.SetOperation(Operation::PutBlock);
-        OperationPayload.AddUriParameter('blockid', BlockId);
+        ABSOperationPayload.SetOperation(Operation::PutBlock);
+        ABSOperationPayload.AddUriParameter('blockid', BlockId);
 
         case true of
-            SourceContent.IsInStream():
+            SourceContentVariant.IsInStream():
                 begin
-                    SourceStream := SourceContent;
-                    BlobAPIHttpContentHelper.AddBlobPutBlockBlobContentHeaders(Content, OperationPayload, SourceStream);
+                    SourceInStream := SourceContentVariant;
+                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceInStream);
                 end;
-            SourceContent.IsText():
+            SourceContentVariant.IsText():
                 begin
-                    SourceText := SourceContent;
-                    BlobAPIHttpContentHelper.AddBlobPutBlockBlobContentHeaders(Content, OperationPayload, SourceText);
+                    SourceText := SourceContentVariant;
+                    ABSHttpContentHelper.AddBlobPutBlockBlobContentHeaders(HttpContent, ABSOperationPayload, SourceText);
                 end;
         end;
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, Content, StrSubstNo(PutBlockOperationNotSuccessfulErr, OperationPayload.GetBlobName()));
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, HttpContent, StrSubstNo(PutBlockOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName()));
+        exit(ABSOperationResponse);
     end;
 
     procedure GetBlockList(BlockListType: Enum "ABS Block List Type"; var CommitedBlocks: Dictionary of [Text, Integer]; var UncommitedBlocks: Dictionary of [Text, Integer]): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        HelperLibrary: Codeunit "ABS Helper Library";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
         Document: XmlDocument;
     begin
-        OperationResponse := GetBlockList(BlockListType, Document);
-        HelperLibrary.BlockListResultToDictionary(Document, CommitedBlocks, UncommitedBlocks);
-        exit(OperationResponse);
+        ABSOperationResponse := GetBlockList(BlockListType, Document);
+        ABSHelperLibrary.BlockListResultToDictionary(Document, CommitedBlocks, UncommitedBlocks);
+        exit(ABSOperationResponse);
     end;
 
     procedure GetBlockList(var BlockList: XmlDocument): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         BlockListType: Enum "ABS Block List Type";
     begin
-        OperationResponse := GetBlockList(BlockListType::committed, BlockList); // default API value is "committed"
-        exit(OperationResponse);
+        ABSOperationResponse := GetBlockList(BlockListType::committed, BlockList); // default API value is "committed"
+        exit(ABSOperationResponse);
     end;
 
     procedure GetBlockList(BlockListType: Enum "ABS Block List Type"; var BlockList: XmlDocument): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
         ResponseText: Text;
     begin
-        OperationPayload.SetOperation(Operation::GetBlockList);
-        OperationPayload.AddUriParameter('blocklisttype', Format(BlockListType));
-        OperationResponse := BlobAPIWebRequestHelper.GetOperationAsText(OperationPayload, ResponseText, StrSubstNo(BlockListOperationNotSuccessfulErr, OperationPayload.GetBlobName(), 'get'));
-        BlockList := FormatHelper.TextToXmlDocument(ResponseText);
-        exit(OperationResponse);
+        ABSOperationPayload.SetOperation(Operation::GetBlockList);
+        ABSOperationPayload.AddUriParameter('blocklisttype', Format(BlockListType));
+        ABSOperationResponse := ABSWebRequestHelper.GetOperationAsText(ABSOperationPayload, ResponseText, StrSubstNo(BlockListOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName(), 'get'));
+        BlockList := ABSFormatHelper.TextToXmlDocument(ResponseText);
+        exit(ABSOperationResponse);
     end;
 
     procedure PutBlockList(CommitedBlocks: Dictionary of [Text, Integer]; UncommitedBlocks: Dictionary of [Text, Integer]): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         BlockList: Dictionary of [Text, Text];
         BlockListAsXml: XmlDocument;
     begin
-        FormatHelper.BlockDictionariesToBlockListDictionary(CommitedBlocks, UncommitedBlocks, BlockList, false);
-        BlockListAsXml := FormatHelper.BlockListDictionaryToXmlDocument(BlockList);
-        OperationResponse := PutBlockList(BlockListAsXml);
-        exit(OperationResponse);
+        ABSFormatHelper.BlockDictionariesToBlockListDictionary(CommitedBlocks, UncommitedBlocks, BlockList, false);
+        BlockListAsXml := ABSFormatHelper.BlockListDictionaryToXmlDocument(BlockList);
+        ABSOperationResponse := PutBlockList(BlockListAsXml);
+        exit(ABSOperationResponse);
     end;
 
     procedure PutBlockList(BlockList: XmlDocument): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
-        Content: HttpContent;
+        HttpContent: HttpContent;
     begin
-        OperationPayload.SetOperation(Operation::PutBlockList);
-        BlobAPIHttpContentHelper.AddBlockListContent(Content, OperationPayload, BlockList);
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, Content, StrSubstNo(BlockListOperationNotSuccessfulErr, OperationPayload.GetBlobName(), 'put'));
-        exit(OperationResponse);
+        ABSOperationPayload.SetOperation(Operation::PutBlockList);
+        ABSHttpContentHelper.AddBlockListContent(HttpContent, ABSOperationPayload, BlockList);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, HttpContent, StrSubstNo(BlockListOperationNotSuccessfulErr, ABSOperationPayload.GetBlobName(), 'put'));
+        exit(ABSOperationResponse);
     end;
 
-    procedure PutBlockFromURL(BlobName: Text; SourceUri: Text; BlockId: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlockFromURL(BlobName: Text; SourceUri: Text; BlockId: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         Operation: Enum "ABS Operation";
-        Content: HttpContent;
+        HttpContent: HttpContent;
     begin
-        OperationPayload.SetOperation(Operation::PutBlockFromURL);
-        OperationPayload.SetOptionalParameters(OptionalParameters);
-        OperationPayload.SetBlobName(BlobName);
-        OperationPayload.AddRequestHeader('x-ms-copy-source', SourceUri);
-        OperationPayload.AddUriParameter('blockid', BlockId);
-        OperationPayload.AddContentHeader('Content-Length', '0');
+        ABSOperationPayload.SetOperation(Operation::PutBlockFromURL);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
+        ABSOperationPayload.SetBlobName(BlobName);
+        ABSOperationPayload.AddRequestHeader('x-ms-copy-source', SourceUri);
+        ABSOperationPayload.AddUriParameter('blockid', BlockId);
+        ABSOperationPayload.AddContentHeader('Content-Length', '0');
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, Content, StrSubstNo(PutBlockFromUrlOperationNotSuccessfulErr, SourceUri, OperationPayload.GetBlobName()));
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, HttpContent, StrSubstNo(PutBlockFromUrlOperationNotSuccessfulErr, SourceUri, ABSOperationPayload.GetBlobName()));
 
-        exit(OperationResponse);
+        exit(ABSOperationResponse);
     end;
 
-    procedure BlobAcquireLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
-    var
-        Operation: Enum "ABS Operation";
-    begin
-        OperationPayload.SetOperation(Operation::LeaseBlob);
-        OperationPayload.SetBlobName(BlobName);
-        exit(AcquireLease(OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseAcquireLbl, BlobLbl, OperationPayload.GetBlobName())));
-    end;
-
-    procedure BlobReleaseLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure BlobAcquireLease(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::LeaseBlob);
-        OperationPayload.SetBlobName(BlobName);
-        exit(ReleaseLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseReleaseLbl, BlobLbl, OperationPayload.GetBlobName())));
+        ABSOperationPayload.SetOperation(Operation::LeaseBlob);
+        ABSOperationPayload.SetBlobName(BlobName);
+        exit(AcquireLease(ABSOptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseAcquireLbl, BlobLbl, ABSOperationPayload.GetBlobName())));
     end;
 
-    procedure BlobRenewLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure BlobReleaseLease(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::LeaseBlob);
-        OperationPayload.SetBlobName(BlobName);
-        exit(RenewLease(OptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseRenewLbl, BlobLbl, OperationPayload.GetBlobName())));
+        ABSOperationPayload.SetOperation(Operation::LeaseBlob);
+        ABSOperationPayload.SetBlobName(BlobName);
+        exit(ReleaseLease(ABSOptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseReleaseLbl, BlobLbl, ABSOperationPayload.GetBlobName())));
     end;
 
-    procedure BlobBreakLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; LeaseBreakPeriod: Integer): Codeunit "ABS Operation Response"
+    procedure BlobRenewLease(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::LeaseBlob);
-        OperationPayload.SetBlobName(BlobName);
-        exit(BreakLease(OptionalParameters, LeaseId, LeaseBreakPeriod, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, BlobLbl, OperationPayload.GetBlobName())));
+        ABSOperationPayload.SetOperation(Operation::LeaseBlob);
+        ABSOperationPayload.SetBlobName(BlobName);
+        exit(RenewLease(ABSOptionalParameters, LeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseRenewLbl, BlobLbl, ABSOperationPayload.GetBlobName())));
     end;
 
-    procedure BlobChangeLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure BlobBreakLease(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; LeaseBreakPeriod: Integer): Codeunit "ABS Operation Response"
     var
         Operation: Enum "ABS Operation";
     begin
-        OperationPayload.SetOperation(Operation::LeaseBlob);
-        OperationPayload.SetBlobName(BlobName);
-        exit(ChangeLease(OptionalParameters, LeaseId, ProposedLeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseChangeLbl, BlobLbl, OperationPayload.GetBlobName())));
+        ABSOperationPayload.SetOperation(Operation::LeaseBlob);
+        ABSOperationPayload.SetBlobName(BlobName);
+        exit(BreakLease(ABSOptionalParameters, LeaseId, LeaseBreakPeriod, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseBreakLbl, BlobLbl, ABSOperationPayload.GetBlobName())));
+    end;
+
+    procedure BlobChangeLease(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
+    var
+        Operation: Enum "ABS Operation";
+    begin
+        ABSOperationPayload.SetOperation(Operation::LeaseBlob);
+        ABSOperationPayload.SetBlobName(BlobName);
+        exit(ChangeLease(ABSOptionalParameters, LeaseId, ProposedLeaseId, StrSubstNo(LeaseOperationNotSuccessfulErr, LeaseChangeLbl, BlobLbl, ABSOperationPayload.GetBlobName())));
     end;
     #endregion
 
     #region Private Lease-functions
-    local procedure AcquireLease(OptionalParameters: Codeunit "ABS Optional Parameters"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure AcquireLease(ABSOptionalParameters: Codeunit "ABS Optional Parameters"; DurationSeconds: Integer; ProposedLeaseId: Guid; var LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         LeaseAction: Enum "ABS Lease Action";
     begin
         // Duration can be:
@@ -755,98 +747,97 @@ codeunit 9051 "ABS Client Impl."
         if ((((DurationSeconds < 15) or (DurationSeconds > 60))) and (DurationSeconds <> -1)) then
             Error(ParameterDurationErr, DurationSeconds);
 
-        OptionalParameters.LeaseAction(LeaseAction::Acquire);
-        OptionalParameters.LeaseDuration(DurationSeconds);
+        ABSOptionalParameters.LeaseAction(LeaseAction::Acquire);
+        ABSOptionalParameters.LeaseDuration(DurationSeconds);
         if not IsNullGuid(ProposedLeaseId) then
-            OptionalParameters.ProposedLeaseId(ProposedLeaseId);
+            ABSOptionalParameters.ProposedLeaseId(ProposedLeaseId);
 
-        OperationPayload.SetOptionalParameters(OptionalParameters);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, OperationNotSuccessfulErr);
-        LeaseId := FormatHelper.RemoveCurlyBracketsFromString(OperationResponse.GetHeaderValueFromResponseHeaders('x-ms-lease-id'));
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, OperationNotSuccessfulErr);
+        LeaseId := ABSFormatHelper.RemoveCurlyBracketsFromString(ABSOperationResponse.GetHeaderValueFromResponseHeaders('x-ms-lease-id'));
+        exit(ABSOperationResponse);
     end;
 
-    local procedure ReleaseLease(OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure ReleaseLease(ABSOptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         LeaseAction: Enum "ABS Lease Action";
     begin
-        OptionalParameters.LeaseAction(LeaseAction::Release);
+        ABSOptionalParameters.LeaseAction(LeaseAction::Release);
 
         TestParameterSpecified(LeaseId, 'LeaseId', 'x-ms-lease-id');
 
-        OptionalParameters.LeaseId(LeaseId);
+        ABSOptionalParameters.LeaseId(LeaseId);
 
-        OperationPayload.SetOptionalParameters(OptionalParameters);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, OperationNotSuccessfulErr);
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, OperationNotSuccessfulErr);
+        exit(ABSOperationResponse);
     end;
 
-    local procedure RenewLease(OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure RenewLease(ABSOptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         LeaseAction: Enum "ABS Lease Action";
     begin
-        OptionalParameters.LeaseAction(LeaseAction::Renew);
+        ABSOptionalParameters.LeaseAction(LeaseAction::Renew);
 
         TestParameterSpecified(LeaseId, 'LeaseId', 'x-ms-lease-id');
 
-        OptionalParameters.LeaseId(LeaseId);
+        ABSOptionalParameters.LeaseId(LeaseId);
 
-        OperationPayload.SetOptionalParameters(OptionalParameters);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, OperationNotSuccessfulErr);
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, OperationNotSuccessfulErr);
+        exit(ABSOperationResponse);
     end;
 
-    local procedure BreakLease(OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; LeaseBreakPeriod: Integer; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure BreakLease(ABSOptionalParameters: Codeunit "ABS Optional Parameters"; LeaseId: Guid; LeaseBreakPeriod: Integer; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         LeaseAction: Enum "ABS Lease Action";
     begin
         if (LeaseBreakPeriod < 0) or (LeaseBreakPeriod > 60) then
             Error(ParameterLeaseBreakDurationErr, LeaseBreakPeriod);
 
-        OptionalParameters.LeaseAction(LeaseAction::Break);
-        OptionalParameters.LeaseBreakPeriod(LeaseBreakPeriod);
+        ABSOptionalParameters.LeaseAction(LeaseAction::Break);
+        ABSOptionalParameters.LeaseBreakPeriod(LeaseBreakPeriod);
 
         TestParameterSpecified(LeaseId, 'LeaseId', 'x-ms-lease-id');
 
-        OptionalParameters.LeaseId(LeaseId);
+        ABSOptionalParameters.LeaseId(LeaseId);
 
-        OperationPayload.SetOptionalParameters(OptionalParameters);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, OperationNotSuccessfulErr);
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, OperationNotSuccessfulErr);
+        exit(ABSOperationResponse);
     end;
 
-    local procedure ChangeLease(OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure ChangeLease(ABSOptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid; ProposedLeaseId: Guid; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
         LeaseAction: Enum "ABS Lease Action";
     begin
-        OptionalParameters.LeaseAction(LeaseAction::Change);
+        ABSOptionalParameters.LeaseAction(LeaseAction::Change);
 
         TestParameterSpecified(LeaseId, 'LeaseId', 'x-ms-lease-id');
         TestParameterSpecified(ProposedLeaseId, 'ProposedLeaseId', 'x-ms-proposed-lease-id');
 
-        OptionalParameters.LeaseId(LeaseId);
-        OptionalParameters.ProposedLeaseId(ProposedLeaseId);
+        ABSOptionalParameters.LeaseId(LeaseId);
+        ABSOptionalParameters.ProposedLeaseId(ProposedLeaseId);
 
-        OperationPayload.SetOptionalParameters(OptionalParameters);
+        ABSOperationPayload.SetOptionalParameters(ABSOptionalParameters);
 
-        OperationResponse := BlobAPIWebRequestHelper.PutOperation(OperationPayload, OperationNotSuccessfulErr);
-        LeaseId := FormatHelper.RemoveCurlyBracketsFromString(OperationResponse.GetHeaderValueFromResponseHeaders('x-ms-lease-id'));
-        exit(OperationResponse);
+        ABSOperationResponse := ABSWebRequestHelper.PutOperation(ABSOperationPayload, OperationNotSuccessfulErr);
+        LeaseId := ABSFormatHelper.RemoveCurlyBracketsFromString(ABSOperationResponse.GetHeaderValueFromResponseHeaders('x-ms-lease-id'));
+        exit(ABSOperationResponse);
     end;
 
-    local procedure TestParameterSpecified("Value": Variant; ParameterName: Text; HeaderIdentifer: Text)
+    local procedure TestParameterSpecified(ValueVariant: Variant; ParameterName: Text; HeaderIdentifer: Text)
     begin
-        if "Value".IsGuid() then
-            if IsNullGuid("Value") then
+        if ValueVariant.IsGuid() then
+            if IsNullGuid(ValueVariant) then
                 Error(ParameterMissingErr, ParameterName, HeaderIdentifer);
     end;
     #endregion

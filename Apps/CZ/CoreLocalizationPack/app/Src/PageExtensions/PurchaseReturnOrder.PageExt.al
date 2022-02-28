@@ -2,6 +2,21 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
 {
     layout
     {
+#if not CLEAN20
+#pragma warning disable AL0432
+        movelast(General; "Posting Description")
+#pragma warning restore AL0432
+#else
+        addlast(General)
+        {
+            field("Posting Description CZL"; Rec."Posting Description")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies a description of the purchase receipt. The posting description also appers on vendor and G/L entries.';
+                Visible = false;
+            }
+        }
+#endif
         addafter("Posting Date")
         {
             field("VAT Date CZL"; Rec."VAT Date CZL")
@@ -15,8 +30,21 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
                 ToolTip = 'Specifies the VAT date of the original document.';
             }
         }
-        addafter("VAT Registration No.")
+        addafter("Document Date")
         {
+            field("Correction CZL"; Rec.Correction)
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if you need to post a corrective entry to an account.';
+            }
+        }
+        addlast("Invoice Details")
+        {
+            field("VAT Registration No. CZL"; Rec."VAT Registration No.")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+            }
             field("Registration No. CZL"; Rec."Registration No. CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -36,11 +64,10 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
                 ApplicationArea = Basic, Suite;
                 Caption = 'VAT Currency Code';
                 Editable = false;
-                ToolTip = 'Specifies vat currency code of purchase return order';
+                ToolTip = 'Specifies VAT currency code of purchase return order';
 
                 trigger OnAssistEdit()
                 begin
-                    Clear(ChangeExchangeRate);
                     if Rec."VAT Date CZL" <> 0D then
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Date CZL")
                     else
@@ -50,13 +77,48 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
                         Rec.Validate("VAT Currency Factor CZL", ChangeExchangeRate.GetParameter());
                         CurrPage.Update();
                     end;
-                    Clear(ChangeExchangeRate);
                 end;
 
                 trigger OnValidate()
                 begin
                     CurrencyCodeOnAfterValidate();
                 end;
+            }
+        }
+        addlast("Shipping and Payment")
+        {
+            field("Shipment Method Code CZL"; Rec."Shipment Method Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the code that represents the shipment method for this purchase.';
+            }
+            field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if there is physical transfer of the item.';
+            }
+        }
+        addlast("Foreign Trade")
+        {
+            field("Language Code CZL"; Rec."Language Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the language to be used on printouts for this document.';
+            }
+            field("VAT Country/Region Code CZL"; Rec."VAT Country/Region Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT country/region code of customer.';
+            }
+            field("EU 3-Party Trade CZL"; Rec."EU 3-Party Trade CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies whether the document is part of a three-party trade.';
+            }
+            field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies when the purchase header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
             field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
             {
@@ -65,31 +127,10 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
             }
-            field("EU 3-Party Trade CZL"; Rec."EU 3-Party Trade CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies whether the document is part of a three-party trade.';
-            }
-        }
-        addafter("Area")
-        {
-            field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies when the purchase header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
-            }
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
                 ApplicationArea = BasicEU;
                 ToolTip = 'Specifies that entry will be excluded from intrastat.';
-            }
-        }
-        addafter("VAT Bus. Posting Group")
-        {
-            field("Vendor Posting Group CZL"; Rec."Vendor Posting Group")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the vendor''s market type to link business transactions made for the vendor with the appropriate account in the general ledger.';
             }
         }
         addafter("Foreign Trade")
@@ -154,14 +195,6 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
                     ToolTip = 'Specifies the number of the bank branch.';
                     Importance = Additional;
                 }
-            }
-        }
-        addafter(Control62)
-        {
-            field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies if there is physical transfer of the item.';
             }
         }
     }

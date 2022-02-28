@@ -47,7 +47,9 @@ codeunit 1072 "MS - PayPal Create Demo Data"
 
     var
         DemoAccountPrefixTxt: Label 'Demo Sandbox Account - ';
+#pragma warning disable AA0240
         DemoAccountIDTxt: Label 'donotreply@dynamics.com', Locked = true;
+#pragma warning restore
 
     local procedure InsertSandboxPayPalTemplate();
     var

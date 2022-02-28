@@ -14,25 +14,25 @@ codeunit 130002 "Library Assert"
     end;
 
     var
-        IsTrueFailedErr: Label 'Assert.IsTrue failed. %1';
-        IsFalseFailedErr: Label 'Assert.IsFalse failed. %1';
+        IsTrueFailedErr: Label 'Assert.IsTrue failed. %1', Locked = true;
+        IsFalseFailedErr: Label 'Assert.IsFalse failed. %1', Locked = true;
         AreEqualFailedErr: Label 'Assert.AreEqual failed. Expected:<%1> (%2). Actual:<%3> (%4). %5.', Locked = true;
         AreNotEqualFailedErr: Label 'Assert.AreNotEqual failed. Expected any value except:<%1> (%2). Actual:<%3> (%4). %5.', Locked = true;
-        AreNearlyEqualFailedErr: Label 'Assert.AreNearlyEqual failed. Expected a difference no greater than <%1> between expected value <%2> and actual value <%3>. %4';
-        AreNotNearlyEqualFailedErr: Label 'Assert.AreNotNearlyEqual failed. Expected a difference greater than <%1> between expected value <%2> and actual value <%3>. %4';
-        FailFailedErr: Label 'Assert.Fail failed. %1';
+        AreNearlyEqualFailedErr: Label 'Assert.AreNearlyEqual failed. Expected a difference no greater than <%1> between expected value <%2> and actual value <%3>. %4', Locked = true;
+        AreNotNearlyEqualFailedErr: Label 'Assert.AreNotNearlyEqual failed. Expected a difference greater than <%1> between expected value <%2> and actual value <%3>. %4', Locked = true;
+        FailFailedErr: Label 'Assert.Fail failed. %1', Locked = true;
         TableIsEmptyErr: Label 'Assert.TableIsEmpty failed. Table <%1> with filter <%2> must not contain records.', Locked = true;
         TableIsNotEmptyErr: Label 'Assert.TableIsNotEmpty failed. Table <%1> with filter <%2> must contain records.', Locked = true;
-        KnownFailureErr: Label 'Known failure: see VSTF Bug #%1.';
-        ExpectedErrorFailedErr: Label 'Assert.ExpectedError failed. Expected: %1. Actual: %2.';
-        ExpectedErrorCodeFailedErr: Label 'Assert.ExpectedErrorCode failed. Expected: %1. Actual: %2. Actual error message: %3.';
-        ExpectedMessageFailedErr: Label 'Assert.ExpectedMessage failed. Expected: %1. Actual: %2.';
+        KnownFailureErr: Label 'Known failure: see VSTF Bug #%1.', Locked = true;
+        ExpectedErrorFailedErr: Label 'Assert.ExpectedError failed. Expected: %1. Actual: %2.', Locked = true;
+        ExpectedErrorCodeFailedErr: Label 'Assert.ExpectedErrorCode failed. Expected: %1. Actual: %2. Actual error message: %3.', Locked = true;
+        ExpectedMessageFailedErr: Label 'Assert.ExpectedMessage failed. Expected: %1. Actual: %2.', Locked = true;
         RecordCountErr: Label 'Assert.RecordCount failed. Expected number of %1 entries: %2. Actual: %3.', Locked = true;
-        UnsupportedTypeErr: Label 'Equality assertions only support Boolean, Option, Integer, BigInteger, Decimal, Code, Text, Date, DateFormula, Time, Duration, and DateTime values. Current value:%1.';
+        UnsupportedTypeErr: Label 'Equality assertions only support Boolean, Option, Integer, BigInteger, Decimal, Code, Text, Date, DateFormula, Time, Duration, and DateTime values. Current value:%1.', Locked = true;
         RecordNotFoundTok: Label 'DB:RecordNotFound';
         RecordAlreadyExistsTok: Label 'DB:RecordExists';
         RecordNothingInsideFilterTok: Label 'DB:NothingInsideFilter';
-        AssertErr: Label 'Expected error %1 actual %2';
+        AssertErr: Label 'Expected error %1 actual %2', Locked = true;
         PrimRecordNotFoundTok: Label 'DB:PrimRecordNotFound';
         NoFilterTok: Label 'DB:NoFilter';
         ErrorHasNotBeenThrownErr: Label 'The error has not been thrown.';
@@ -62,13 +62,13 @@ codeunit 130002 "Library Assert"
     /// <summary>
     /// Tests whether the specified values are equal and throws an exception if the two values are not equal.
     /// </summary>
-    /// <param name="Expected">The first value to compare. This is the value the tests expects.</param>
-    /// <param name="Actual">The second value to compare. This is the value produced by the code under test.</param>
+    /// <param name="ExpectedVariant">The first value to compare. This is the value the tests expects.</param>
+    /// <param name="ActualVariant">The second value to compare. This is the value produced by the code under test.</param>
     /// <param name="Msg">The message to include in the exception when actual is not equal to expected. The message is shown in test results.</param>
-    procedure AreEqual(Expected: Variant; Actual: Variant; Msg: Text)
+    procedure AreEqual(ExpectedVariant: Variant; ActualVariant: Variant; Msg: Text)
     begin
-        if not Equal(Expected, Actual) then
-            Error(AreEqualFailedErr, Expected, TypeNameOf(Expected), Actual, TypeNameOf(Actual), Msg)
+        if not Equal(ExpectedVariant, ActualVariant) then
+            Error(AreEqualFailedErr, ExpectedVariant, TypeNameOf(ExpectedVariant), ActualVariant, TypeNameOf(ActualVariant), Msg)
     end;
 
     /// <summary>
@@ -87,13 +87,13 @@ codeunit 130002 "Library Assert"
     /// <summary>
     /// Tests whether the specified values are unequal and throws an exception if they are equal.
     /// </summary>
-    /// <param name="Expected">The first value to compare. This is the value the test expects not to match actual.</param>
-    /// <param name="Actual">The second value to compare. This is the value produced by the code under test.</param>
+    /// <param name="ExpectedVariant">The first value to compare. This is the value the test expects not to match actual.</param>
+    /// <param name="ActualVariant">The second value to compare. This is the value produced by the code under test.</param>
     /// <param name="Msg">The message to include in the exception when actual is not equal to expected. The message is shown in test results.</param>
-    procedure AreNotEqual(Expected: Variant; Actual: Variant; Msg: Text)
+    procedure AreNotEqual(ExpectedVariant: Variant; ActualVariant: Variant; Msg: Text)
     begin
-        if Equal(Expected, Actual) then
-            Error(AreNotEqualFailedErr, Expected, TypeNameOf(Expected), Actual, TypeNameOf(Actual), Msg)
+        if Equal(ExpectedVariant, ActualVariant) then
+            Error(AreNotEqualFailedErr, ExpectedVariant, TypeNameOf(ExpectedVariant), ActualVariant, TypeNameOf(ActualVariant), Msg)
     end;
 
     /// <summary>
@@ -137,10 +137,10 @@ codeunit 130002 "Library Assert"
     /// <param name="RecVariant">The record to be checked</param>
     procedure RecordIsEmpty(RecVariant: Variant)
     var
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
-        RecRef.GetTable(RecVariant);
-        RecRefIsEmpty(RecRef);
+        RecordRef.GetTable(RecVariant);
+        RecRefIsEmpty(RecordRef);
     end;
 
     /// <summary>
@@ -149,10 +149,10 @@ codeunit 130002 "Library Assert"
     /// <param name="RecVariant">The record to be checked</param>
     procedure RecordIsNotEmpty(RecVariant: Variant)
     var
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
-        RecRef.GetTable(RecVariant);
-        RecRefIsNotEmpty(RecRef);
+        RecordRef.GetTable(RecVariant);
+        RecRefIsNotEmpty(RecordRef);
     end;
 
     /// <summary>
@@ -161,11 +161,11 @@ codeunit 130002 "Library Assert"
     /// <param name="TableNo">The id of table the test expects to be empty</param>
     procedure TableIsEmpty(TableNo: Integer)
     var
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
-        RecRef.Open(TableNo);
-        RecRefIsEmpty(RecRef);
-        RecRef.Close();
+        RecordRef.Open(TableNo);
+        RecRefIsEmpty(RecordRef);
+        RecordRef.Close();
     end;
 
     /// <summary>
@@ -174,23 +174,23 @@ codeunit 130002 "Library Assert"
     /// <param name="TableNo">The id of table the test expects not to be empty</param>
     procedure TableIsNotEmpty(TableNo: Integer)
     var
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
-        RecRef.Open(TableNo);
-        RecRefIsNotEmpty(RecRef);
-        RecRef.Close();
+        RecordRef.Open(TableNo);
+        RecRefIsNotEmpty(RecordRef);
+        RecordRef.Close();
     end;
 
-    local procedure RecRefIsEmpty(var RecRef: RecordRef)
+    local procedure RecRefIsEmpty(var RecordRef: RecordRef)
     begin
-        if not RecRef.IsEmpty() then
-            Error(TableIsEmptyErr, RecRef.Caption(), RecRef.GetFilters());
+        if not RecordRef.IsEmpty() then
+            Error(TableIsEmptyErr, RecordRef.Caption(), RecordRef.GetFilters());
     end;
 
-    local procedure RecRefIsNotEmpty(var RecRef: RecordRef)
+    local procedure RecRefIsNotEmpty(var RecordRef: RecordRef)
     begin
-        if RecRef.IsEmpty() then
-            Error(TableIsNotEmptyErr, RecRef.Caption(), RecRef.GetFilters());
+        if RecordRef.IsEmpty() then
+            Error(TableIsNotEmptyErr, RecordRef.Caption(), RecordRef.GetFilters());
     end;
 
     /// <summary>
@@ -200,12 +200,12 @@ codeunit 130002 "Library Assert"
     /// <param name="ExpectedCount">The expected number of records in the table</param>
     procedure RecordCount(RecVariant: Variant; ExpectedCount: Integer)
     var
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
-        RecRef.GetTable(RecVariant);
-        if ExpectedCount <> RecRef.Count() then
-            Error(RecordCountErr, RecRef.Caption(), ExpectedCount, RecRef.Count());
-        RecRef.Close();
+        RecordRef.GetTable(RecVariant);
+        if ExpectedCount <> RecordRef.Count() then
+            Error(RecordCountErr, RecordRef.Caption(), ExpectedCount, RecordRef.Count());
+        RecordRef.Close();
     end;
 
     /// <summary>
@@ -294,76 +294,76 @@ codeunit 130002 "Library Assert"
         VerifyFailure(PrimRecordNotFoundTok, StrSubstNo(AssertErr, PrimRecordNotFoundTok, GetLastErrorCode()));
     end;
 
-    local procedure TypeOf(Value: Variant): Integer
+    local procedure TypeOf(ValueVariant: Variant): Integer
     var
         "Field": Record "Field";
     begin
         case true of
-            Value.IsBoolean():
+            ValueVariant.IsBoolean():
                 exit(Field.Type::Boolean);
-            Value.IsOption() or Value.IsInteger() or Value.IsByte():
+            ValueVariant.IsOption() or ValueVariant.IsInteger() or ValueVariant.IsByte():
                 exit(Field.Type::Integer);
-            Value.IsBigInteger():
+            ValueVariant.IsBigInteger():
                 exit(Field.Type::BigInteger);
-            Value.IsDecimal():
+            ValueVariant.IsDecimal():
                 exit(Field.Type::Decimal);
-            Value.IsText() or Value.IsCode() or Value.IsChar() or Value.IsTextConstant():
+            ValueVariant.IsText() or ValueVariant.IsCode() or ValueVariant.IsChar() or ValueVariant.IsTextConstant():
                 exit(Field.Type::Text);
-            Value.IsDate():
+            ValueVariant.IsDate():
                 exit(Field.Type::Date);
-            Value.IsTime():
+            ValueVariant.IsTime():
                 exit(Field.Type::Time);
-            Value.IsDuration():
+            ValueVariant.IsDuration():
                 exit(Field.Type::Duration);
-            Value.IsDateTime():
+            ValueVariant.IsDateTime():
                 exit(Field.Type::DateTime);
-            Value.IsDateFormula():
+            ValueVariant.IsDateFormula():
                 exit(Field.Type::DateFormula);
-            Value.IsGuid():
+            ValueVariant.IsGuid():
                 exit(Field.Type::GUID);
-            Value.IsRecordId():
+            ValueVariant.IsRecordId():
                 exit(Field.Type::RecordID);
             else
-                Error(UnsupportedTypeErr, UnsupportedTypeName(Value))
+                Error(UnsupportedTypeErr, UnsupportedTypeName(ValueVariant))
         end
     end;
 
-    local procedure TypeNameOf(Value: Variant): Text
+    local procedure TypeNameOf(ValueVariant: Variant): Text
     var
         "Field": Record "Field";
     begin
-        Field.Type := TypeOf(Value);
+        Field.Type := TypeOf(ValueVariant);
         exit(Format(Field.Type));
     end;
 
-    local procedure UnsupportedTypeName(Value: Variant): Text
+    local procedure UnsupportedTypeName(ValueVariant: Variant): Text
     begin
         case true of
-            Value.IsRecord():
+            ValueVariant.IsRecord():
                 exit('Record');
-            Value.IsRecordRef():
+            ValueVariant.IsRecordRef():
                 exit('RecordRef');
-            Value.IsFieldRef():
+            ValueVariant.IsFieldRef():
                 exit('FieldRef');
-            Value.IsCodeunit():
+            ValueVariant.IsCodeunit():
                 exit('Codeunit');
-            Value.IsFile():
+            ValueVariant.IsFile():
                 exit('File');
         end;
         exit('Unsupported Type');
     end;
 
-    local procedure Equal(Left: Variant; Right: Variant): Boolean
+    local procedure Equal(LeftVariant: Variant; RightVariant: Variant): Boolean
     begin
-        if IsNumber(Left) and IsNumber(Right) then
-            exit(EqualNumbers(Left, Right));
+        if IsNumber(LeftVariant) and IsNumber(RightVariant) then
+            exit(EqualNumbers(LeftVariant, RightVariant));
 
-        exit((TypeOf(Left) = TypeOf(Right)) and (Format(Left, 0, 2) = Format(Right, 0, 2)))
+        exit((TypeOf(LeftVariant) = TypeOf(RightVariant)) and (Format(LeftVariant, 0, 2) = Format(RightVariant, 0, 2)))
     end;
 
-    local procedure IsNumber(Value: Variant): Boolean
+    local procedure IsNumber(ValueVariant: Variant): Boolean
     begin
-        exit(Value.IsDecimal() or Value.IsInteger() or Value.IsChar())
+        exit(ValueVariant.IsDecimal() or ValueVariant.IsInteger() or ValueVariant.IsChar())
     end;
 
     local procedure EqualNumbers(Left: Decimal; Right: Decimal): Boolean

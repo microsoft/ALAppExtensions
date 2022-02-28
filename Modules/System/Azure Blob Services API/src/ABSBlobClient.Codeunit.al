@@ -21,7 +21,7 @@ codeunit 9053 "ABS Blob Client"
     var
         StorageServiceAuthorization: Codeunit "Storage Service Authorization";
     begin
-        BlobServicesApiImpl.Initialize(StorageAccount, Container, '', Authorization, StorageServiceAuthorization.GetDefaultAPIVersion());
+        ABSClientImpl.Initialize(StorageAccount, Container, '', Authorization, StorageServiceAuthorization.GetDefaultAPIVersion());
     end;
 
     /// <summary>
@@ -34,7 +34,7 @@ codeunit 9053 "ABS Blob Client"
     [NonDebuggable]
     procedure Initialize(StorageAccount: Text; Container: Text; Authorization: Interface "Storage Service Authorization"; APIVersion: Enum "Storage Service API Version")
     begin
-        BlobServicesApiImpl.Initialize(StorageAccount, Container, '', Authorization, APIVersion);
+        ABSClientImpl.Initialize(StorageAccount, Container, '', Authorization, APIVersion);
     end;
 
     /// <summary>
@@ -45,32 +45,32 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="BaseUrl">A valid URL string</param>
     procedure SetBaseUrl(BaseUrl: Text)
     begin
-        BlobServicesApiImpl.SetBaseUrl(BaseUrl);
+        ABSClientImpl.SetBaseUrl(BaseUrl);
     end;
 
     /// <summary>
     /// Lists the blobs in a specific container.
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs
     /// </summary>    
-    /// <param name="ContainerContent">Collection of the result (temporary record).</param>
+    /// <param name="ABSContainerContent">Collection of the result (temporary record).</param>
     /// <returns>An operation reponse object</returns>
-    procedure ListBlobs(var ContainerContent: Record "ABS Container Content"): Codeunit "ABS Operation Response"
+    procedure ListBlobs(var ABSContainerContent: Record "ABS Container Content"): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.ListBlobs(ContainerContent, OptionalParameters));
+        exit(ABSClientImpl.ListBlobs(ABSContainerContent, ABSOptionalParameters));
     end;
 
     /// <summary>
     /// Lists the blobs in a specific container.
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs
     /// </summary>    
-    /// <param name="ContainerContent">Collection of the result (temporary record).</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSContainerContent">Collection of the result (temporary record).</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure ListBlobs(var ContainerContent: Record "ABS Container Content"; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure ListBlobs(var ABSContainerContent: Record "ABS Container Content"; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.ListBlobs(ContainerContent, OptionalParameters));
+        exit(ABSClientImpl.ListBlobs(ABSContainerContent, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -80,20 +80,20 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure PutBlobBlockBlobUI(): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.PutBlobBlockBlobUI(OptionalParameters));
+        exit(ABSClientImpl.PutBlobBlockBlobUI(ABSOptionalParameters));
     end;
 
     /// <summary>
     /// Uploads a file as a BlockBlob (with File Selection Dialog).
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
     /// </summary>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure PutBlobBlockBlobUI(OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobBlockBlobUI(ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.PutBlobBlockBlobUI(OptionalParameters));
+        exit(ABSClientImpl.PutBlobBlockBlobUI(ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -101,13 +101,13 @@ codeunit 9053 "ABS Blob Client"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
-    /// <param name="SourceStream">The Content of the Blob as InStream.</param>
+    /// <param name="SourceInStream">The Content of the Blob as InStream.</param>
     /// <returns>An operation reponse object</returns>
-    procedure PutBlobBlockBlobStream(BlobName: Text; var SourceStream: InStream): Codeunit "ABS Operation Response"
+    procedure PutBlobBlockBlobStream(BlobName: Text; var SourceInStream: InStream): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.PutBlobBlockBlobStream(BlobName, SourceStream, OptionalParameters));
+        exit(ABSClientImpl.PutBlobBlockBlobStream(BlobName, SourceInStream, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -115,12 +115,12 @@ codeunit 9053 "ABS Blob Client"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
-    /// <param name="SourceStream">The Content of the Blob as InStream.</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="SourceInStream">The Content of the Blob as InStream.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure PutBlobBlockBlobStream(BlobName: Text; var SourceStream: InStream; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobBlockBlobStream(BlobName: Text; var SourceInStream: InStream; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.PutBlobBlockBlobStream(BlobName, SourceStream, OptionalParameters));
+        exit(ABSClientImpl.PutBlobBlockBlobStream(BlobName, SourceInStream, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -132,9 +132,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure PutBlobBlockBlobText(BlobName: Text; SourceText: Text): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.PutBlobBlockBlobText(BlobName, SourceText, OptionalParameters));
+        exit(ABSClientImpl.PutBlobBlockBlobText(BlobName, SourceText, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -143,11 +143,11 @@ codeunit 9053 "ABS Blob Client"
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceText">The Content of the Blob as Text.</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure PutBlobBlockBlobText(BlobName: Text; SourceText: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobBlockBlobText(BlobName: Text; SourceText: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.PutBlobBlockBlobText(BlobName, SourceText, OptionalParameters));
+        exit(ABSClientImpl.PutBlobBlockBlobText(BlobName, SourceText, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -159,9 +159,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure PutBlobPageBlob(BlobName: Text; ContentType: Text): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.PutBlobPageBlob(BlobName, ContentType, OptionalParameters));
+        exit(ABSClientImpl.PutBlobPageBlob(BlobName, ContentType, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -170,11 +170,11 @@ codeunit 9053 "ABS Blob Client"
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure PutBlobPageBlob(BlobName: Text; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobPageBlob(BlobName: Text; ContentType: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.PutBlobPageBlob(BlobName, ContentType, OptionalParameters));
+        exit(ABSClientImpl.PutBlobPageBlob(BlobName, ContentType, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -186,9 +186,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure PutBlobAppendBlobStream(BlobName: Text): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(PutBlobAppendBlob(BlobName, 'application/octet-stream', OptionalParameters));
+        exit(PutBlobAppendBlob(BlobName, 'application/octet-stream', ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -197,11 +197,11 @@ codeunit 9053 "ABS Blob Client"
     /// Uses 'application/octet-stream' as Content-Type
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure PutBlobAppendBlobStream(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobAppendBlobStream(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(PutBlobAppendBlob(BlobName, 'application/octet-stream', OptionalParameters));
+        exit(PutBlobAppendBlob(BlobName, 'application/octet-stream', ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -210,11 +210,11 @@ codeunit 9053 "ABS Blob Client"
     /// Uses 'text/plain; charset=UTF-8' as Content-Type
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure PutBlobAppendBlobText(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobAppendBlobText(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(PutBlobAppendBlob(BlobName, 'text/plain; charset=UTF-8', OptionalParameters));
+        exit(PutBlobAppendBlob(BlobName, 'text/plain; charset=UTF-8', ABSOptionalParameters));
     end;
     /// <summary>
     /// The Put Blob operation creates a new append blob
@@ -222,11 +222,11 @@ codeunit 9053 "ABS Blob Client"
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure PutBlobAppendBlob(BlobName: Text; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlobAppendBlob(BlobName: Text; ContentType: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.PutBlobAppendBlob(BlobName, ContentType, OptionalParameters));
+        exit(ABSClientImpl.PutBlobAppendBlob(BlobName, ContentType, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -252,9 +252,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure AppendBlockText(BlobName: Text; ContentAsText: Text; ContentType: Text): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(AppendBlock(BlobName, ContentType, ContentAsText, OptionalParameters));
+        exit(AppendBlock(BlobName, ContentType, ContentAsText, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -264,11 +264,11 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ContentAsText">Text-variable containing the content that should be added to the Blob</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure AppendBlockText(BlobName: Text; ContentAsText: Text; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure AppendBlockText(BlobName: Text; ContentAsText: Text; ContentType: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(AppendBlock(BlobName, ContentType, ContentAsText, OptionalParameters));
+        exit(AppendBlock(BlobName, ContentType, ContentAsText, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -277,13 +277,13 @@ codeunit 9053 "ABS Blob Client"
     /// Uses 'application/octet-stream' as Content-Type
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
-    /// <param name="ContentAsStream">InStream containing the content that should be added to the Blob</param>
+    /// <param name="ContentAsInStream">InStream containing the content that should be added to the Blob</param>
     /// <returns>An operation reponse object</returns>
-    procedure AppendBlockStream(BlobName: Text; ContentAsStream: InStream): Codeunit "ABS Operation Response"
+    procedure AppendBlockStream(BlobName: Text; ContentAsInStream: InStream): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(AppendBlockStream(BlobName, ContentAsStream, 'application/octet-stream', OptionalParameters));
+        exit(AppendBlockStream(BlobName, ContentAsInStream, 'application/octet-stream', ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -291,12 +291,12 @@ codeunit 9053 "ABS Blob Client"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
-    /// <param name="ContentAsStream">InStream containing the content that should be added to the Blob</param>
+    /// <param name="ContentAsInStream">InStream containing the content that should be added to the Blob</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
     /// <returns>An operation reponse object</returns>
-    procedure AppendBlockStream(BlobName: Text; ContentAsStream: InStream; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure AppendBlockStream(BlobName: Text; ContentAsInStream: InStream; ContentType: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(AppendBlock(BlobName, ContentType, ContentAsStream, OptionalParameters));
+        exit(AppendBlock(BlobName, ContentType, ContentAsInStream, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -305,12 +305,12 @@ codeunit 9053 "ABS Blob Client"
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
-    /// <param name="SourceContent">Variant containing the content that should be added to the Blob</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="SourceContentVariant">Variant containing the content that should be added to the Blob</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure AppendBlock(BlobName: Text; ContentType: Text; SourceContent: Variant; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure AppendBlock(BlobName: Text; ContentType: Text; SourceContentVariant: Variant; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.AppendBlock(BlobName, ContentType, SourceContent, OptionalParameters));
+        exit(ABSClientImpl.AppendBlock(BlobName, ContentType, SourceContentVariant, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -322,9 +322,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure AppendBlockFromURL(BlobName: Text; SourceUri: Text): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.AppendBlockFromURL(BlobName, SourceUri, OptionalParameters));
+        exit(ABSClientImpl.AppendBlockFromURL(BlobName, SourceUri, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -333,11 +333,11 @@ codeunit 9053 "ABS Blob Client"
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceUri">Specifies the name of the source blob.</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure AppendBlockFromURL(BlobName: Text; SourceUri: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure AppendBlockFromURL(BlobName: Text; SourceUri: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.AppendBlockFromURL(BlobName, SourceUri, OptionalParameters));
+        exit(ABSClientImpl.AppendBlockFromURL(BlobName, SourceUri, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -348,9 +348,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure GetBlobAsFile(BlobName: Text): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.GetBlobAsFile(BlobName, OptionalParameters));
+        exit(ABSClientImpl.GetBlobAsFile(BlobName, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -358,11 +358,11 @@ codeunit 9053 "ABS Blob Client"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure GetBlobAsFile(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure GetBlobAsFile(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.GetBlobAsFile(BlobName, OptionalParameters));
+        exit(ABSClientImpl.GetBlobAsFile(BlobName, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -370,13 +370,13 @@ codeunit 9053 "ABS Blob Client"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
-    /// <param name="TargetStream">The result InStream containg the content of the Blob.</param>
+    /// <param name="TargetInStream">The result InStream containg the content of the Blob.</param>
     /// <returns>An operation reponse object</returns>
-    procedure GetBlobAsStream(BlobName: Text; var TargetStream: InStream): Codeunit "ABS Operation Response"
+    procedure GetBlobAsStream(BlobName: Text; var TargetInStream: InStream): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.GetBlobAsStream(BlobName, TargetStream, OptionalParameters));
+        exit(ABSClientImpl.GetBlobAsStream(BlobName, TargetInStream, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -384,12 +384,12 @@ codeunit 9053 "ABS Blob Client"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
-    /// <param name="TargetStream">The result InStream containg the content of the Blob.</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="TargetInStream">The result InStream containg the content of the Blob.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure GetBlobAsStream(BlobName: Text; var TargetStream: InStream; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure GetBlobAsStream(BlobName: Text; var TargetInStream: InStream; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.GetBlobAsStream(BlobName, TargetStream, OptionalParameters));
+        exit(ABSClientImpl.GetBlobAsStream(BlobName, TargetInStream, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -401,9 +401,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure GetBlobAsText(BlobName: Text; var TargetText: Text): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.GetBlobAsText(BlobName, TargetText, OptionalParameters));
+        exit(ABSClientImpl.GetBlobAsText(BlobName, TargetText, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -412,11 +412,11 @@ codeunit 9053 "ABS Blob Client"
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="TargetText">The result Text containg the content of the Blob.</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure GetBlobAsText(BlobName: Text; var TargetText: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure GetBlobAsText(BlobName: Text; var TargetText: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.GetBlobAsText(BlobName, TargetText, OptionalParameters));
+        exit(ABSClientImpl.GetBlobAsText(BlobName, TargetText, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -429,7 +429,7 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure SetBlobExpiryRelativeToCreation(BlobName: Text; ExpiryTime: Integer): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.SetBlobExpiryRelativeToCreation(BlobName, ExpiryTime));
+        exit(ABSClientImpl.SetBlobExpiryRelativeToCreation(BlobName, ExpiryTime));
     end;
 
     /// <summary>
@@ -442,7 +442,7 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure SetBlobExpiryRelativeToNow(BlobName: Text; ExpiryTime: Integer): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.SetBlobExpiryRelativeToNow(BlobName, ExpiryTime));
+        exit(ABSClientImpl.SetBlobExpiryRelativeToNow(BlobName, ExpiryTime));
     end;
 
     /// <summary>
@@ -455,7 +455,7 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure SetBlobExpiryAbsolute(BlobName: Text; ExpiryTime: DateTime): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.SetBlobExpiryAbsolute(BlobName, ExpiryTime));
+        exit(ABSClientImpl.SetBlobExpiryAbsolute(BlobName, ExpiryTime));
     end;
 
     /// <summary>
@@ -465,7 +465,7 @@ codeunit 9053 "ABS Blob Client"
     /// </summary>    
     procedure SetBlobExpiryNever(BlobName: Text): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.SetBlobExpiryNever(BlobName));
+        exit(ABSClientImpl.SetBlobExpiryNever(BlobName));
     end;
 
     /// <summary>
@@ -477,7 +477,7 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure SetBlobTags(BlobName: Text; Tags: Dictionary of [Text, Text]): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.SetBlobTags(BlobName, Tags));
+        exit(ABSClientImpl.SetBlobTags(BlobName, Tags));
     end;
 
     /// <summary>
@@ -488,9 +488,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure DeleteBlob(BlobName: Text): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.DeleteBlob(BlobName, OptionalParameters));
+        exit(ABSClientImpl.DeleteBlob(BlobName, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -498,11 +498,11 @@ codeunit 9053 "ABS Blob Client"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/delete-blob
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure DeleteBlob(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure DeleteBlob(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.DeleteBlob(BlobName, OptionalParameters));
+        exit(ABSClientImpl.DeleteBlob(BlobName, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -513,9 +513,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure UndeleteBlob(BlobName: Text): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.UndeleteBlob(BlobName, OptionalParameters));
+        exit(ABSClientImpl.UndeleteBlob(BlobName, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -523,11 +523,11 @@ codeunit 9053 "ABS Blob Client"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/undelete-blob
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure UndeleteBlob(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure UndeleteBlob(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.UndeleteBlob(BlobName, OptionalParameters));
+        exit(ABSClientImpl.UndeleteBlob(BlobName, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -539,10 +539,10 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure CopyBlob(BlobName: Text; SourceName: Text): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
         LeaseId: Guid;
     begin
-        exit(CopyBlob(BlobName, SourceName, LeaseId, OptionalParameters));
+        exit(CopyBlob(BlobName, SourceName, LeaseId, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -552,11 +552,11 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceName">Specifies the name of the source blob or file.</param>
     /// <param name="LeaseId">Required if the destination blob has an active lease. The lease ID specified must match the lease ID of the destination blob.</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure CopyBlob(BlobName: Text; SourceName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure CopyBlob(BlobName: Text; SourceName: Text; LeaseId: Guid; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.CopyBlob(BlobName, SourceName, LeaseId, OptionalParameters));
+        exit(ABSClientImpl.CopyBlob(BlobName, SourceName, LeaseId, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -568,7 +568,7 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure PutBlockList(CommitedBlocks: Dictionary of [Text, Integer]; UncommitedBlocks: Dictionary of [Text, Integer]): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.PutBlockList(CommitedBlocks, UncommitedBlocks));
+        exit(ABSClientImpl.PutBlockList(CommitedBlocks, UncommitedBlocks));
     end;
 
     /// <summary>
@@ -581,9 +581,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure PutBlockFromURL(BlobName: Text; SourceUri: Text; BlockId: Text): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.PutBlockFromURL(BlobName, SourceUri, BlockId, OptionalParameters));
+        exit(ABSClientImpl.PutBlockFromURL(BlobName, SourceUri, BlockId, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -593,11 +593,11 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceUri">Specifies the name of the source block blob.</param>
     /// <param name="BlockId">Specifies the BlockId that should be put.</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure PutBlockFromURL(BlobName: Text; SourceUri: Text; BlockId: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure PutBlockFromURL(BlobName: Text; SourceUri: Text; BlockId: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.PutBlockFromURL(BlobName, SourceUri, BlockId, OptionalParameters));
+        exit(ABSClientImpl.PutBlockFromURL(BlobName, SourceUri, BlockId, ABSOptionalParameters));
     end;
 
     /// <summary>
@@ -609,10 +609,10 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure AcquireLease(BlobName: Text; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
         ProposedLeaseId: Guid;
     begin
-        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
+        exit(ABSClientImpl.BlobAcquireLease(BlobName, ABSOptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
     end;
 
     /// <summary>
@@ -620,14 +620,14 @@ codeunit 9053 "ABS Blob Client"
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure AcquireLease(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(BlobName: Text; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         ProposedLeaseId: Guid;
     begin
-        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
+        exit(ABSClientImpl.BlobAcquireLease(BlobName, ABSOptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, null Guid
     end;
 
     /// <summary>
@@ -640,10 +640,10 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure AcquireLease(BlobName: Text; DurationSeconds: Integer; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
         ProposedLeaseId: Guid;
     begin
-        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
+        exit(ABSClientImpl.BlobAcquireLease(BlobName, ABSOptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
     end;
 
     /// <summary>
@@ -652,14 +652,14 @@ codeunit 9053 "ABS Blob Client"
     /// </summary>    
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure AcquireLease(BlobName: Text; DurationSeconds: Integer; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(BlobName: Text; DurationSeconds: Integer; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
         ProposedLeaseId: Guid;
     begin
-        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
+        exit(ABSClientImpl.BlobAcquireLease(BlobName, ABSOptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId)); // Custom duration, null Guid
     end;
 
     /// <summary>
@@ -672,9 +672,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure AcquireLease(BlobName: Text; ProposedLeaseId: Guid; var LeaseId: Guid): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
+        exit(ABSClientImpl.BlobAcquireLease(BlobName, ABSOptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
     end;
 
     /// <summary>
@@ -683,12 +683,12 @@ codeunit 9053 "ABS Blob Client"
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure AcquireLease(BlobName: Text; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(BlobName: Text; ProposedLeaseId: Guid; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
+        exit(ABSClientImpl.BlobAcquireLease(BlobName, ABSOptionalParameters, -1, ProposedLeaseId, LeaseId)); // Infinite duration, custom Guid
     end;
 
     /// <summary>
@@ -698,12 +698,12 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
     /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
     /// <returns>An operation reponse object</returns>
-    procedure AcquireLease(BlobName: Text; DurationSeconds: Integer; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
+    procedure AcquireLease(BlobName: Text; DurationSeconds: Integer; ProposedLeaseId: Guid; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; var LeaseId: Guid): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobAcquireLease(BlobName, OptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId));
+        exit(ABSClientImpl.BlobAcquireLease(BlobName, ABSOptionalParameters, DurationSeconds, ProposedLeaseId, LeaseId));
     end;
 
     /// <summary>
@@ -715,9 +715,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure ReleaseLease(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.BlobReleaseLease(BlobName, OptionalParameters, LeaseId));
+        exit(ABSClientImpl.BlobReleaseLease(BlobName, ABSOptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -726,11 +726,11 @@ codeunit 9053 "ABS Blob Client"
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be released</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure ReleaseLease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure ReleaseLease(BlobName: Text; LeaseId: Guid; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobReleaseLease(BlobName, OptionalParameters, LeaseId));
+        exit(ABSClientImpl.BlobReleaseLease(BlobName, ABSOptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -742,9 +742,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure RenewLease(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.BlobRenewLease(BlobName, OptionalParameters, LeaseId));
+        exit(ABSClientImpl.BlobRenewLease(BlobName, ABSOptionalParameters, LeaseId));
     end;
 
     /// <summary>
@@ -753,11 +753,11 @@ codeunit 9053 "ABS Blob Client"
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure RenewLease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure RenewLease(BlobName: Text; LeaseId: Guid; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobRenewLease(BlobName, OptionalParameters, LeaseId));
+        exit(ABSClientImpl.BlobRenewLease(BlobName, ABSOptionalParameters, LeaseId));
     end;
 
 
@@ -770,9 +770,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure BreakLease(BlobName: Text; LeaseId: Guid): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId, 0));
+        exit(ABSClientImpl.BlobBreakLease(BlobName, ABSOptionalParameters, LeaseId, 0));
     end;
 
     /// <summary>
@@ -785,9 +785,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure BreakLease(BlobName: Text; LeaseId: Guid; LeaseBreakPeriod: Integer): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId, LeaseBreakPeriod));
+        exit(ABSClientImpl.BlobBreakLease(BlobName, ABSOptionalParameters, LeaseId, LeaseBreakPeriod));
     end;
 
     /// <summary>
@@ -796,11 +796,11 @@ codeunit 9053 "ABS Blob Client"
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure BreakLease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure BreakLease(BlobName: Text; LeaseId: Guid; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId, 0));
+        exit(ABSClientImpl.BlobBreakLease(BlobName, ABSOptionalParameters, LeaseId, 0));
     end;
 
     /// <summary>
@@ -809,12 +809,12 @@ codeunit 9053 "ABS Blob Client"
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <param name="LeaseBreakPeriod">The proposed duration the lease should continue before it is broken, in seconds, between 0 and 60.</param>
     /// <returns>An operation reponse object</returns>
-    procedure BreakLease(BlobName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"; LeaseBreakPeriod: Integer): Codeunit "ABS Operation Response"
+    procedure BreakLease(BlobName: Text; LeaseId: Guid; ABSOptionalParameters: Codeunit "ABS Optional Parameters"; LeaseBreakPeriod: Integer): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobBreakLease(BlobName, OptionalParameters, LeaseId, LeaseBreakPeriod));
+        exit(ABSClientImpl.BlobBreakLease(BlobName, ABSOptionalParameters, LeaseId, LeaseBreakPeriod));
     end;
 
     /// <summary>
@@ -827,9 +827,9 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure ChangeLease(BlobName: Text; var LeaseId: Guid; ProposedLeaseId: Guid): Codeunit "ABS Operation Response"
     var
-        OptionalParameters: Codeunit "ABS Optional Parameters";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.BlobChangeLease(BlobName, OptionalParameters, LeaseId, ProposedLeaseId));
+        exit(ABSClientImpl.BlobChangeLease(BlobName, ABSOptionalParameters, LeaseId, ProposedLeaseId));
     end;
 
     /// <summary>
@@ -839,13 +839,13 @@ codeunit 9053 "ABS Blob Client"
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be changed</param>
     /// <param name="ProposedLeaseId">The Guid that should be used in future</param>
-    /// <param name="OptionalParameters">Optional parameters to pass.</param>
+    /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
-    procedure ChangeLease(BlobName: Text; LeaseId: Guid; ProposedLeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    procedure ChangeLease(BlobName: Text; LeaseId: Guid; ProposedLeaseId: Guid; ABSOptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.BlobChangeLease(BlobName, OptionalParameters, LeaseId, ProposedLeaseId));
+        exit(ABSClientImpl.BlobChangeLease(BlobName, ABSOptionalParameters, LeaseId, ProposedLeaseId));
     end;
 
     var
-        BlobServicesApiImpl: Codeunit "ABS Client Impl.";
+        ABSClientImpl: Codeunit "ABS Client Impl.";
 }

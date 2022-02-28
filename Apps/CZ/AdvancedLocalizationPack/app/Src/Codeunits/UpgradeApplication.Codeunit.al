@@ -4,7 +4,9 @@ codeunit 31251 "Upgrade Application CZA"
     Permissions = tabledata "Detailed G/L Entry CZA" = im,
                   tabledata "G/L Entry" = m,
                   tabledata "Inventory Setup" = m,
-                  tabledata "Manufacturing Setup" = m;
+                  tabledata "Manufacturing Setup" = m,
+                  tabledata "Transfer Shipment Line" = m,
+                  tabledata "Item Entry Relation" = m;
 
     var
         DataUpgradeMgt: Codeunit "Data Upgrade Mgt.";
@@ -55,6 +57,8 @@ codeunit 31251 "Upgrade Application CZA"
         UpgradeDefaultDimension();
         UpgradeInventorySetup();
         UpgradeManufacturingSetup();
+        UpgradeTransferShipmentLine();
+        UpgradeItemEntryRelation();
     end;
 
     local procedure UpgradeDetailedGLEntry()
@@ -163,6 +167,35 @@ codeunit 31251 "Upgrade Application CZA"
         end;
     end;
 
+    local procedure UpgradeTransferShipmentLine();
+    var
+        TransferShipmentLine: Record "Transfer Shipment Line";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerCompanyUpgradeTag()) then
+            exit;
+
+        if TransferShipmentLine.FindSet(true) then
+            repeat
+                TransferShipmentLine."Correction CZA" := TransferShipmentLine.Correction;
+                TransferShipmentLine."Transfer Order Line No. CZA" := TransferShipmentLine."Transfer Order Line No.";
+                TransferShipmentLine.Modify(false);
+            until TransferShipmentLine.Next() = 0;
+    end;
+
+    local procedure UpgradeItemEntryRelation();
+    var
+        ItemEntryRelation: Record "Item Entry Relation";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerCompanyUpgradeTag()) then
+            exit;
+
+        if ItemEntryRelation.FindSet(true) then
+            repeat
+                ItemEntryRelation."Undo CZA" := ItemEntryRelation.Undo;
+                ItemEntryRelation.Modify(false);
+            until ItemEntryRelation.Next() = 0;
+    end;
+
     local procedure SetDatabaseUpgradeTags();
     begin
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion180PerDatabaseUpgradeTag()) then
@@ -171,6 +204,8 @@ codeunit 31251 "Upgrade Application CZA"
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerDatabaseUpgradeTag());
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerDatabaseUpgradeTag()) then
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerDatabaseUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerDatabaseUpgradeTag());
     end;
 
     local procedure SetCompanyUpgradeTags();
@@ -181,5 +216,7 @@ codeunit 31251 "Upgrade Application CZA"
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerCompanyUpgradeTag());
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerCompanyUpgradeTag()) then
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerCompanyUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerCompanyUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerCompanyUpgradeTag());
     end;
 }

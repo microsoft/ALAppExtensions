@@ -19,8 +19,10 @@ codeunit 31334 "Guided Experience Handler CZB"
         SearchRuleKeywordsTxt: Label 'Search Rules, Bank Statement, Apply, Match';
     begin
 #if not CLEAN20
+#pragma warning disable AL0432
         GuidedExperience.InsertManualSetup(SearchRuleNameTxt, SearchRuleNameTxt, SearchRuleDescriptionTxt,
           10, ObjectType::Page, Page::"Search Rule List CZB", ManualSetupCategory::"Banking Documents CZZ", SearchRuleKeywordsTxt);
+#pragma warning restore AL0432
 #else
         GuidedExperience.InsertManualSetup(SearchRuleNameTxt, SearchRuleNameTxt, SearchRuleDescriptionTxt,
           10, ObjectType::Page, Page::"Search Rule List CZB", ManualSetupCategory::"Banking Documents CZB", SearchRuleKeywordsTxt);

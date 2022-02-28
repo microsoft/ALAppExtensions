@@ -28,18 +28,6 @@ codeunit 31192 "Sync.Dep.Fld-SrcCodeSetup CZL"
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
 
-#if not CLEAN17
-        DepFieldTxt := Rec."Sales VAT Delay";
-        NewFieldTxt := Rec."Sales VAT Delay CZL";
-        SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Sales VAT Delay", PreviousRecord."Sales VAT Delay CZL");
-        Rec."Sales VAT Delay" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Sales VAT Delay"));
-        Rec."Sales VAT Delay CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Sales VAT Delay CZL"));
-        DepFieldTxt := Rec."Purchase VAT Delay";
-        NewFieldTxt := Rec."Purchase VAT Delay CZL";
-        SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Purchase VAT Delay", PreviousRecord."Purchase VAT Delay CZL");
-        Rec."Purchase VAT Delay" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Purchase VAT Delay"));
-        Rec."Purchase VAT Delay CZL" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Purchase VAT Delay CZL"));
-#endif
         DepFieldTxt := Rec."Close Balance Sheet";
         NewFieldTxt := Rec."Close Balance Sheet CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Close Balance Sheet", PreviousRecord."Close Balance Sheet CZL");

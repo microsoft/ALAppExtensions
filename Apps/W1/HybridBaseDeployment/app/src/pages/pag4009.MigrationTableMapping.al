@@ -40,17 +40,9 @@ page 4009 "Migration Table Mapping"
                         exit(true);
                     end;
 
-                    trigger OnValidate()
-                    var
-                        PublishedApplication: Record "Published Application";
-                        ExtensionNameFilterTxt: Label '@%1*', Comment = '%1 - name of extension', Locked = true;
+                    trigger OnValidate()                    
                     begin
-                        if ExtensionName <> '' then begin
-                            PublishedApplication.SetFilter(Name, StrSubstNo(ExtensionNameFilterTxt, ExtensionName));
-                            PublishedApplication.FindFirst();
-                            ExtensionName := PublishedApplication.Name;
-                            Validate("App ID", PublishedApplication.ID);
-                        end;
+                        Rec.UpdateExtensionName(ExtensionName);
                     end;
                 }
                 field("Table Name"; "Table Name")
@@ -118,6 +110,7 @@ page 4009 "Migration Table Mapping"
                     ExtensionTableMapping: Record "Migration Table Mapping";
                     PublishedApplication: Record "Published Application";
                     ApplicationObjectMetadata: Record "Application Object Metadata";
+                    TableMetadata: Record "Table Metadata";
                 begin
                     if not LookupApp(PublishedApplication) then
                         exit;
@@ -126,12 +119,14 @@ page 4009 "Migration Table Mapping"
                     ApplicationObjectMetadata.SetRange("Object Type", ApplicationObjectMetadata."Object Type"::Table);
                     if ApplicationObjectMetadata.FindSet() then
                         repeat
-                            if not ExtensionTableMapping.Get(PublishedApplication.ID, ApplicationObjectMetadata."Object ID") then begin
-                                ExtensionTableMapping.Init();
-                                ExtensionTableMapping.Validate("App ID", PublishedApplication.ID);
-                                ExtensionTableMapping.Validate("Table ID", ApplicationObjectMetadata."Object ID");
-                                ExtensionTableMapping.Insert(true);
-                            end;
+                            if not ExtensionTableMapping.Get(PublishedApplication.ID, ApplicationObjectMetadata."Object ID") then
+                                if TableMetadata.Get(ApplicationObjectMetadata."Object ID") then
+                                    if TableMetadata.ReplicateData then begin
+                                        ExtensionTableMapping.Init();
+                                        ExtensionTableMapping.Validate("App ID", PublishedApplication.ID);
+                                        ExtensionTableMapping.Validate("Table ID", ApplicationObjectMetadata."Object ID");
+                                        ExtensionTableMapping.Insert(true);
+                                    end;
                         until ApplicationObjectMetadata.Next() = 0
                     else
                         Message(NoTablesInExtensionMsg);
@@ -231,5 +226,4 @@ page 4009 "Migration Table Mapping"
         ExtensionName: Text[250];
         NoTablesInExtensionMsg: Label 'No tables exist in the specified extension.';
         ResetToDefaultsQst: Label 'All current table mappings for Cloud Migration will be deleted and replaced with the default values.\\Do you want to continue?';
-
 }

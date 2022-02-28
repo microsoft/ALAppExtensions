@@ -35,7 +35,7 @@ table 11726 "Registration Log Detail CZL"
             Caption = 'Current Value';
             DataClassification = CustomerContent;
         }
-        field(23; Status; Enum "Reg. Log Detail Field Status CZL")
+        field(23; Status; Enum "Reg. Log Detailed Field Status CZL")
         {
             Caption = 'Status';
             DataClassification = CustomerContent;

@@ -177,7 +177,7 @@ page 30055 "APIV2 - Customer Payments"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(1);
+                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Journal Line");
                 }
             }
         }

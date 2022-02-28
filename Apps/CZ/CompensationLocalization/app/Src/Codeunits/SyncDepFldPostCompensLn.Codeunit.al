@@ -1,6 +1,6 @@
 #if not CLEAN18
 #pragma warning disable AL0432, AL0603, AA0072
-codeunit 31293 "Sync.Dep.Fld-PostCompensLn CZC"
+codeunit 31293 "Sync.Dep.Fld-PostCompensLn CZC"
 {
     Access = Internal;
     Permissions = tabledata "Posted Credit Line" = rimd,

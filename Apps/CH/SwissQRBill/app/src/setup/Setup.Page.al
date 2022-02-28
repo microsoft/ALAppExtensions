@@ -47,7 +47,7 @@ page 11514 "Swiss QR-Bill Setup"
                 {
                     ShowCaption = false;
 
-                    field(QRIBAN; CompanyInfo."Swiss QR-Bill IBAN")
+                    field(QRIBAN; CompanyInformation."Swiss QR-Bill IBAN")
                     {
                         ApplicationArea = All;
                         Caption = 'QR-IBAN';
@@ -63,7 +63,7 @@ page 11514 "Swiss QR-Bill Setup"
                             CurrPage.Update(false);
                         end;
                     }
-                    field(IBAN; CompanyInfo.IBAN)
+                    field(IBAN; CompanyInformation.IBAN)
                     {
                         ApplicationArea = All;
                         Caption = 'IBAN';
@@ -145,7 +145,7 @@ page 11514 "Swiss QR-Bill Setup"
                 {
                     ShowCaption = false;
 
-                    field(SEPANonEuroExport; GLSetup."SEPA Non-Euro Export")
+                    field(SEPANonEuroExport; GeneralLedgerSetup."SEPA Non-Euro Export")
                     {
                         ApplicationArea = All;
                         Caption = 'SEPA Non-Euro Export';
@@ -195,8 +195,8 @@ page 11514 "Swiss QR-Bill Setup"
     }
 
     var
-        CompanyInfo: Record "Company Information";
-        GLSetup: Record "General Ledger Setup";
+        CompanyInformation: Record "Company Information";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         SwissQRBillMgt: Codeunit "Swiss QR-Bill Mgt.";
         PaymentMethodsText: Text;
         DocumentTypesText: Text;
@@ -204,8 +204,8 @@ page 11514 "Swiss QR-Bill Setup"
 
     trigger OnInit()
     begin
-        CompanyInfo.Get();
-        GLSetup.Get();
+        CompanyInformation.Get();
+        GeneralLedgerSetup.Get();
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -213,7 +213,7 @@ page 11514 "Swiss QR-Bill Setup"
         CalcFields("SEPA CAMT 054 DataExchDef Code");
         PaymentMethodsText := SwissQRBillMgt.FormatQRPaymentMethodsCount(SwissQRBillMgt.CalcQRPaymentMethodsCount());
         DocumentTypesText := SwissQRBillMgt.FormatEnabledReportsCount(SwissQRBillMgt.CalcEnabledReportsCount());
-        CompanyInfo.Find();
-        GLSetup.Find();
+        CompanyInformation.Find();
+        GeneralLedgerSetup.Find();
     end;
 }

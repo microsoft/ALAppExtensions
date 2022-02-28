@@ -69,10 +69,10 @@ codeunit 1909 "Media Upload Page Impl."
             Error(NoMediaWasSelectedErr);
     end;
 
-    procedure GetMedia(Stream: InStream)
+    procedure GetMedia(InStream: InStream)
     begin
         GetMedia(FileTempBlob);
-        FileTempBlob.CreateInStream(Stream);
+        FileTempBlob.CreateInStream(InStream);
     end;
 
     procedure HasMedia(): Boolean

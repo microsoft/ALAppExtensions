@@ -279,9 +279,6 @@ table 11021 "Sales VAT Advance Notif."
         MustSpecStartingDateErr: Label 'You must specify a beginning of a month as starting date of the statement period.';
         StartingDateErr: Label 'The starting date is not the first date of a quarter.';
         DeleteXMLFileQst: Label 'Do you want to delete the XML-File for the %1?';
-#if not CLEAN17
-        FileExistsMsg: Label 'File already exists. Overwrite?';
-#endif
         CreateXMLBeforeShowErr: Label 'You must create the XML-File before it can be shown.';
         CannotChangeXMLFileErr: Label 'You cannot change the value of this field anymore after the XML-File for the %1 has been created.';
         XmlFilterTxt: Label 'XML File(*.xml)|*.xml', Locked = true;
@@ -356,32 +353,6 @@ table 11021 "Sales VAT Advance Notif."
         ExportXMLFile(FileName);
     end;
 
-#if not CLEAN17
-    local procedure ExportXMLFile(SourceFile: Text)
-    var
-        FileManagement: Codeunit "File Management";
-        EnvironmentInfo: Codeunit "Environment Information";
-        FileName: Text;
-        FilePath: Text;
-        ResultXMLFullName: Text;
-    begin
-        ElecVATDeclSetup.Get();
-        if FileManagement.IsLocalFileSystemAccessible() and not EnvironmentInfo.IsSaaS() then
-            ElecVATDeclSetup.VerifyAndSetSalesVATAdvNotifPath();
-
-        FileName := StrSubstNo('%1_%2.xml', ElecVATDeclSetup."XML File Default Name", Description);
-
-        if FileManagement.IsLocalFileSystemAccessible() then begin
-            FilePath := FileManagement.DownloadTempFile(SourceFile);
-            ResultXMLFullName := StrSubstNo('%1\%2', ElecVATDeclSetup."Sales VAT Adv. Notif. Path", FileName);
-            if FileManagement.ClientFileExists(ResultXMLFullName) then
-                if not Confirm(FileExistsMsg) then
-                    exit;
-            FileManagement.CopyClientFile(FilePath, ResultXMLFullName, true);
-        end else
-            Download(SourceFile, '', ElecVATDeclSetup."Sales VAT Adv. Notif. Path", XmlFilterTxt, FileName);
-    end;
-#else
     local procedure ExportXMLFile(SourceFile: Text)
     var
         FileName: Text;
@@ -392,7 +363,6 @@ table 11021 "Sales VAT Advance Notif."
 
         Download(SourceFile, '', ElecVATDeclSetup."Sales VAT Adv. Notif. Path", XmlFilterTxt, FileName);
     end;
-#endif
 
     procedure CheckDate(StartDate2: Date)
     begin

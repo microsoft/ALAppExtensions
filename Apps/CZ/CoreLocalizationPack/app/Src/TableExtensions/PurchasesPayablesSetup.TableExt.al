@@ -2,7 +2,7 @@ tableextension 11715 "Purchases & Payables Setup CZL" extends "Purchases & Payab
 {
     fields
     {
-        field(11780; "Default VAT Date CZL"; Enum "Default VAT Date CZL")
+        field(11780; "Default VAT Date CZL"; Enum "Default VAT Date CZL")
         {
             Caption = 'Default VAT Date';
             DataClassification = CustomerContent;
@@ -10,7 +10,7 @@ tableextension 11715 "Purchases & Payables Setup CZL" extends "Purchases & Payab
         field(11781; "Allow Alter Posting Groups CZL"; Boolean)
         {
             Caption = 'Allow Alter Posting Groups';
-            DataClassification = CustomerContent;            
+            DataClassification = CustomerContent;
         }
         field(31110; "Def. Orig. Doc. VAT Date CZL"; Option)
         {

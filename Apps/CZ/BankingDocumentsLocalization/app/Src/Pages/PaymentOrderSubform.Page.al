@@ -108,6 +108,20 @@ page 31263 "Payment Order Subform CZB"
                         CurrPage.Update();
                     end;
                 }
+                field(RelatedAmountToApply; Rec.CalcRelatedAmountToApply())
+                {
+                    Caption = 'Related Amount to Apply (LCY)';
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the total Amount (LCY) related suggestions to apply.';
+                    BlankZero = true;
+                    Visible = false;
+
+                    trigger OnDrillDown()
+                    begin
+                        Rec.DrillDownRelatedAmountToApply();
+                    end;
+                }
                 field("Amount (Paym. Order Currency)"; Rec."Amount (Paym. Order Currency)")
                 {
                     ApplicationArea = Basic, Suite;

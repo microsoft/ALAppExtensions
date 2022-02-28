@@ -5,7 +5,7 @@ table 31271 "Compens. Report Selections CZC"
 
     fields
     {
-        field(1; Usage; Enum "Compens. Report Sel. Usage CZC")
+        field(1; Usage; Enum "Compens. Report Sel. Usage CZC")
         {
             Caption = 'Usage';
             DataClassification = CustomerContent;

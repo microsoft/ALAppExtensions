@@ -13,182 +13,182 @@ codeunit 9045 "ABS Web Request Helper"
 
     #region GET Request
     [NonDebuggable]
-    procedure GetOperationAsText(var OperationPayload: Codeunit "ABS Operation Payload"; var ResponseText: Text; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    procedure GetOperationAsText(var ABSOperationPayload: Codeunit "ABS Operation Payload"; var ResponseText: Text; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
     begin
-        OperationResponse := GetOperation(OperationPayload, OperationNotSuccessfulErr);
+        ABSOperationResponse := GetOperation(ABSOperationPayload, OperationNotSuccessfulErr);
 
 
-        if not OperationResponse.GetResultAsText(ResponseText) then
+        if not ABSOperationResponse.GetResultAsText(ResponseText) then
             Error(ReadResponseFailedErr);
 
-        exit(OperationResponse);
+        exit(ABSOperationResponse);
     end;
 
     [NonDebuggable]
-    procedure GetOperationAsStream(var OperationPayload: Codeunit "ABS Operation Payload"; var Stream: InStream; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    procedure GetOperationAsStream(var ABSOperationPayload: Codeunit "ABS Operation Payload"; var InStream: InStream; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
+        ABSOperationResponse: Codeunit "ABS Operation Response";
     begin
-        OperationResponse := GetOperation(OperationPayload, OperationNotSuccessfulErr);
+        ABSOperationResponse := GetOperation(ABSOperationPayload, OperationNotSuccessfulErr);
 
-        if not OperationResponse.GetResultAsStream(Stream) then
+        if not ABSOperationResponse.GetResultAsStream(InStream) then
             Error(ReadResponseFailedErr);
 
-        exit(OperationResponse);
+        exit(ABSOperationResponse);
     end;
 
     [NonDebuggable]
-    local procedure GetOperation(var OperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure GetOperation(var ABSOperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        Client: HttpClient;
-        RequestMsg: HttpRequestMessage;
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        HttpClient: HttpClient;
+        HttpRequestMessage: HttpRequestMessage;
     begin
-        PrepareRequestMsg(RequestMsg, OperationPayload, Enum::"Http Request Type"::GET);
+        PrepareRequestMsg(HttpRequestMessage, ABSOperationPayload, Enum::"Http Request Type"::GET);
 
-        OperationResponse := SendRequest(Client, RequestMsg, OperationNotSuccessfulErr);
-        exit(OperationResponse);
+        ABSOperationResponse := SendRequest(HttpClient, HttpRequestMessage, OperationNotSuccessfulErr);
+        exit(ABSOperationResponse);
     end;
     #endregion
 
     #region HEAD-Request
     [NonDebuggable]
-    procedure HeadOperation(var OperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    procedure HeadOperation(var ABSOperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        Client: HttpClient;
-        RequestMsg: HttpRequestMessage;
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        HttpClient: HttpClient;
+        HttpRequestMessage: HttpRequestMessage;
     begin
-        PrepareRequestMsg(RequestMsg, OperationPayload, Enum::"Http Request Type"::HEAD);
+        PrepareRequestMsg(HttpRequestMessage, ABSOperationPayload, Enum::"Http Request Type"::HEAD);
 
-        OperationResponse := SendRequest(Client, RequestMsg, OperationNotSuccessfulErr);
-        exit(OperationResponse);
+        ABSOperationResponse := SendRequest(HttpClient, HttpRequestMessage, OperationNotSuccessfulErr);
+        exit(ABSOperationResponse);
     end;
     #endregion HEAD-Request
 
     #region PUT-Request
     [NonDebuggable]
-    procedure PutOperation(var OperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    procedure PutOperation(var ABSOperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        Content: HttpContent;
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        HttpContent: HttpContent;
     begin
-        OperationResponse := PutOperation(OperationPayload, Content, OperationNotSuccessfulErr);
-        exit(OperationResponse);
+        ABSOperationResponse := PutOperation(ABSOperationPayload, HttpContent, OperationNotSuccessfulErr);
+        exit(ABSOperationResponse);
     end;
 
     [NonDebuggable]
-    procedure PutOperation(var OperationPayload: Codeunit "ABS Operation Payload"; Content: HttpContent; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    procedure PutOperation(var ABSOperationPayload: Codeunit "ABS Operation Payload"; HttpContent: HttpContent; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        Client: HttpClient;
-        RequestMsg: HttpRequestMessage;
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        HttpClient: HttpClient;
+        HttpRequestMessage: HttpRequestMessage;
     begin
-        PrepareRequestMsg(RequestMsg, OperationPayload, Enum::"Http Request Type"::PUT, Content);
+        PrepareRequestMsg(HttpRequestMessage, ABSOperationPayload, Enum::"Http Request Type"::PUT, HttpContent);
 
-        OperationResponse := SendRequest(Client, RequestMsg, OperationNotSuccessfulErr);
-        exit(OperationResponse);
+        ABSOperationResponse := SendRequest(HttpClient, HttpRequestMessage, OperationNotSuccessfulErr);
+        exit(ABSOperationResponse);
     end;
     #endregion
 
     #region DELETE-Request
     [NonDebuggable]
-    procedure DeleteOperation(var OperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    procedure DeleteOperation(var ABSOperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        Client: HttpClient;
-        RequestMsg: HttpRequestMessage;
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        HttpClient: HttpClient;
+        HttpRequestMessage: HttpRequestMessage;
     begin
-        PrepareRequestMsg(RequestMsg, OperationPayload, Enum::"Http Request Type"::DELETE);
+        PrepareRequestMsg(HttpRequestMessage, ABSOperationPayload, Enum::"Http Request Type"::DELETE);
 
-        OperationResponse := SendRequest(Client, RequestMsg, OperationNotSuccessfulErr);
-        exit(OperationResponse);
+        ABSOperationResponse := SendRequest(HttpClient, HttpRequestMessage, OperationNotSuccessfulErr);
+        exit(ABSOperationResponse);
     end;
     #endregion
 
     #region POST-Request
     [NonDebuggable]
-    procedure PostOperation(var OperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    procedure PostOperation(var ABSOperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        Content: HttpContent;
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        HttpContent: HttpContent;
     begin
-        OperationResponse := PostOperation(OperationPayload, Content, OperationNotSuccessfulErr);
-        exit(OperationResponse);
+        ABSOperationResponse := PostOperation(ABSOperationPayload, HttpContent, OperationNotSuccessfulErr);
+        exit(ABSOperationResponse);
     end;
 
     [NonDebuggable]
-    procedure PostOperation(var OperationPayload: Codeunit "ABS Operation Payload"; Content: HttpContent; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    procedure PostOperation(var ABSOperationPayload: Codeunit "ABS Operation Payload"; HttpContent: HttpContent; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        Client: HttpClient;
-        RequestMsg: HttpRequestMessage;
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        HttpClient: HttpClient;
+        HttpRequestMessage: HttpRequestMessage;
     begin
-        PrepareRequestMsg(RequestMsg, OperationPayload, Enum::"Http Request Type"::POST, Content);
+        PrepareRequestMsg(HttpRequestMessage, ABSOperationPayload, Enum::"Http Request Type"::POST, HttpContent);
 
-        OperationResponse := SendRequest(Client, RequestMsg, OperationNotSuccessfulErr);
-        exit(OperationResponse);
+        ABSOperationResponse := SendRequest(HttpClient, HttpRequestMessage, OperationNotSuccessfulErr);
+        exit(ABSOperationResponse);
     end;
     #endregion
 
     #region OPTIONS-Request
     [NonDebuggable]
-    procedure OptionsOperation(var OperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    procedure OptionsOperation(var ABSOperationPayload: Codeunit "ABS Operation Payload"; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        Client: HttpClient;
-        RequestMsg: HttpRequestMessage;
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        HttpClient: HttpClient;
+        HttpRequestMessage: HttpRequestMessage;
     begin
-        PrepareRequestMsg(RequestMsg, OperationPayload, Enum::"Http Request Type"::OPTIONS);
+        PrepareRequestMsg(HttpRequestMessage, ABSOperationPayload, Enum::"Http Request Type"::OPTIONS);
 
-        OperationResponse := SendRequest(Client, RequestMsg, OperationNotSuccessfulErr);
-        exit(OperationResponse);
+        ABSOperationResponse := SendRequest(HttpClient, HttpRequestMessage, OperationNotSuccessfulErr);
+        exit(ABSOperationResponse);
     end;
     #endregion
 
     #region Helper functions
     [NonDebuggable]
-    local procedure PrepareRequestMsg(var RequestMsg: HttpRequestMessage; OperationPayload: Codeunit "ABS Operation Payload"; HttpRequestType: Enum "Http Request Type")
+    local procedure PrepareRequestMsg(var HttpRequestMessage: HttpRequestMessage; ABSOperationPayload: Codeunit "ABS Operation Payload"; HttpRequestType: Enum "Http Request Type")
     var
-        BlobAPIHttpHeaderHelper: Codeunit "ABS HttpHeader Helper";
+        ABSHttpHeaderHelper: Codeunit "ABS HttpHeader Helper";
         Authorization: Interface "Storage Service Authorization";
     begin
-        RequestMsg.Method(Format(HttpRequestType));
-        RequestMsg.SetRequestUri(OperationPayload.ConstructUri());
-        BlobAPIHttpHeaderHelper.HandleRequestHeaders(HttpRequestType, RequestMsg, OperationPayload);
+        HttpRequestMessage.Method(Format(HttpRequestType));
+        HttpRequestMessage.SetRequestUri(ABSOperationPayload.ConstructUri());
+        ABSHttpHeaderHelper.HandleRequestHeaders(HttpRequestType, HttpRequestMessage, ABSOperationPayload);
 
-        Authorization := OperationPayload.GetAuthorization();
-        Authorization.Authorize(RequestMsg, OperationPayload.GetStorageAccountName());
+        Authorization := ABSOperationPayload.GetAuthorization();
+        Authorization.Authorize(HttpRequestMessage, ABSOperationPayload.GetStorageAccountName());
     end;
 
     [NonDebuggable]
-    local procedure PrepareRequestMsg(var RequestMsg: HttpRequestMessage; var OperationPayload: Codeunit "ABS Operation Payload"; HttpRequestType: Enum "Http Request Type"; Content: HttpContent)
+    local procedure PrepareRequestMsg(var HttpRequestMessage: HttpRequestMessage; var ABSOperationPayload: Codeunit "ABS Operation Payload"; HttpRequestType: Enum "Http Request Type"; HttpContent: HttpContent)
     var
-        BlobAPIHttpContentHelper: Codeunit "ABS HttpContent Helper";
-        BlobAPIHttpHeaderHelper: Codeunit "ABS HttpHeader Helper";
+        ABSHttpContentHelper: Codeunit "ABS HttpContent Helper";
+        ABSHttpHeaderHelper: Codeunit "ABS HttpHeader Helper";
     begin
-        if BlobAPIHttpContentHelper.ContentSet(Content) or BlobAPIHttpHeaderHelper.HandleContentHeaders(Content, OperationPayload) then
-            RequestMsg.Content := Content;
+        if ABSHttpContentHelper.ContentSet(HttpContent) or ABSHttpHeaderHelper.HandleContentHeaders(HttpContent, ABSOperationPayload) then
+            HttpRequestMessage.Content := HttpContent;
 
-        PrepareRequestMsg(RequestMsg, OperationPayload, HttpRequestType);
+        PrepareRequestMsg(HttpRequestMessage, ABSOperationPayload, HttpRequestType);
     end;
 
     [NonDebuggable]
-    local procedure SendRequest(var Client: HttpClient; RequestMsg: HttpRequestMessage; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
+    local procedure SendRequest(var HttpClient: HttpClient; HttpRequestMessage: HttpRequestMessage; OperationNotSuccessfulErr: Text): Codeunit "ABS Operation Response"
     var
-        OperationResponse: Codeunit "ABS Operation Response";
-        Response: HttpResponseMessage;
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        HttpResponseMessage: HttpResponseMessage;
     begin
-        if not Client.Send(RequestMsg, Response) then
+        if not HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
             Error(OperationNotSuccessfulErr);
 
-        if not Response.IsSuccessStatusCode() then
-            OperationResponse.SetError(StrSubstNo(HttpResponseInfoErr, OperationNotSuccessfulErr, Response.HttpStatusCode, Response.ReasonPhrase));
+        if not HttpResponseMessage.IsSuccessStatusCode() then
+            ABSOperationResponse.SetError(StrSubstNo(HttpResponseInfoErr, OperationNotSuccessfulErr, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase));
 
-        OperationResponse.SetHttpResponse(Response);
-        exit(OperationResponse);
+        ABSOperationResponse.SetHttpResponse(HttpResponseMessage);
+        exit(ABSOperationResponse);
     end;
     #endregion
 }

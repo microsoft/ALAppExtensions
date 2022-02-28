@@ -414,6 +414,20 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
             until TempInvoicePostBuffer.Next() = 0;
     end;
 
+    procedure PostAndSendAdvancePaymentVAT(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    var
+        SalesAdvLetterEntryCZZ2: Record "Sales Adv. Letter Entry CZZ";
+    begin
+        SalesAdvLetterEntryCZZ.TestField("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::Payment);
+        PostAdvancePaymentVAT(SalesAdvLetterEntryCZZ, 0D);
+
+        SalesAdvLetterEntryCZZ2.SetRange("Sales Adv. Letter No.", SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
+        SalesAdvLetterEntryCZZ2.SetRange(Cancelled, false);
+        SalesAdvLetterEntryCZZ2.SetRange("Related Entry", SalesAdvLetterEntryCZZ."Entry No.");
+        SalesAdvLetterEntryCZZ2.SetRange("Entry Type", SalesAdvLetterEntryCZZ2."Entry Type"::"VAT Payment");
+        SalesAdvLetterEntryCZZ2.EmailRecords(true);
+    end;
+
     local procedure CalculateAmountLCY(var GenJournalLine: Record "Gen. Journal Line")
     var
         CurrencyExchangeRate: Record "Currency Exchange Rate";
@@ -1351,11 +1365,6 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine."On Hold" := CustLedgerEntry."On Hold";
         GenJournalLine."Posting Group" := CustLedgerEntry."Customer Posting Group";
         GenJournalLine.Validate("VAT Date CZL", CustLedgerEntry."VAT Date CZL");
-#if not CLEAN19
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date" := CustLedgerEntry."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."System-Created Entry" := true;
     end;
 

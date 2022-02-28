@@ -1085,7 +1085,7 @@ report 18022 "Purchase Document - Test GST"
                                 if not DimMgt.CheckDimIDComb("Purchase Line"."Dimension Set ID") then
                                     AddError(DimMgt.GetDimCombErr());
 
-                                TableID[1] := DimMgt.TypeToTableID3(GetSalesLineType("Purchase Line"));
+                                TableID[1] := DimMgt.PurchLineTypeToTableID("Purchase Line".Type);
                                 No[1] := "Purchase Line"."No.";
                                 TableID[2] := Database::Job;
                                 No[2] := "Purchase Line"."Job No.";
@@ -2209,29 +2209,24 @@ report 18022 "Purchase Document - Test GST"
     procedure AddDimToTempLine(PurchLine: Record "Purchase Line")
     var
         SourceCodesetup: Record "Source Code Setup";
-        TableID: array[10] of Integer;
-        No: array[10] of Code[20];
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
     begin
         SourceCodesetup.Get();
-        TableID[1] := DimMgt.TypeToTableID3(GetSalesLineType(PurchLine));
-        No[1] := PurchLine."No.";
-        TableID[2] := Database::Job;
-        No[2] := PurchLine."Job No.";
-        TableID[3] := Database::"Responsibility Center";
-        No[3] := PurchLine."Responsibility Center";
+        DimMgt.AddDimSource(DefaultDimSource, DimMgt.PurchLineTypeToTableID(PurchLine.Type), PurchLine."No.");
+        DimMgt.AddDimSource(DefaultDimSource, Database::Job, PurchLine."Job No.");
+        DimMgt.AddDimSource(DefaultDimSource, Database::"Responsibility Center", PurchLine."Responsibility Center");
 
         PurchLine."Shortcut Dimension 1 Code" := '';
         PurchLine."Shortcut Dimension 2 Code" := '';
 
         PurchLine."Dimension Set ID" :=
-          DimMgt.GetDefaultDimID(
-              TableID,
-              No,
-              SourceCodesetup.Purchases,
-              PurchLine."Shortcut Dimension 1 Code",
-              PurchLine."Shortcut Dimension 2 Code",
-              PurchLine."Dimension Set ID",
-              Database::Vendor);
+            DimMgt.GetDefaultDimID(
+                DefaultDimSource,
+                SourceCodesetup.Purchases,
+                PurchLine."Shortcut Dimension 1 Code",
+                PurchLine."Shortcut Dimension 2 Code",
+                PurchLine."Dimension Set ID",
+                Database::Vendor);
     end;
 
     procedure FilterAppliedEntries()
@@ -2942,24 +2937,6 @@ report 18022 "Purchase Document - Test GST"
         if "Purchase Header".Ship then begin
             QtyToHandle := PurchaseLine."Return Qty. to Ship";
             QtyToHandleCaption := CopyStr(PurchaseLine.FieldCaption("Return Qty. to Ship"), 1, MaxStrLen(QtyToHandleCaption));
-        end;
-    end;
-
-    local procedure GetSalesLineType(var PurchaseLine: Record "Purchase Line"): Integer
-    begin
-        case PurchaseLine.Type of
-            PurchaseLine.Type::" ":
-                exit(0);
-            PurchaseLine.Type::"G/L Account":
-                exit(1);
-            PurchaseLine.Type::Item:
-                exit(2);
-            PurchaseLine.Type::Resource:
-                exit(3);
-            PurchaseLine.Type::"Fixed Asset":
-                exit(4);
-            PurchaseLine.Type::"Charge (Item)":
-                exit(5);
         end;
     end;
 

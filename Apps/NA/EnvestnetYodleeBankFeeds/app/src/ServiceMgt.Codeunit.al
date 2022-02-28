@@ -32,7 +32,7 @@
         AccountUnLinkingSummaryMsg: Label '%1 bank accounts have been unlinked.', Comment = '%1 = Number of accounts whose linking has been removed (e.g. 5)';
         BankAccountsAreLinkedMsg: Label 'All bank account links are up to date, or no online bank accounts exist.';
         NoNewBankAccountsMsg: Label 'No new bank account is created or linked because all online bank accounts are already linked.';
-        ConcatAccountSummaryMsg: Label '%1 %2', Comment = 'Used to concat AccountLinkingSummaryMsg and AccountUnLinkingSummaryMsg';
+        ConcatAccountSummaryMsg: Label '%1 %2', Comment = 'Used to concat AccountLinkingSummaryMsg (%1) and AccountUnLinkingSummaryMsg (%2)';
         UnlinkQst: Label 'The bank account has been unlinked from the online bank account.\\Do you want to clear the online bank login details?';
         PromptConsumerRemoveNoLinkingQst: Label 'No online bank accounts are connected to Envestnet Yodlee.\\Do you want to clear the online bank login details?';
         SuccessTxt: Label 'The request succeeded.';
@@ -73,7 +73,6 @@
         EnableYodleeQst: Label 'The Envestnet Yodlee Bank Feeds Service has not been enabled. Do you want to enable it?';
         TermsOfUseNotAcceptedErr: Label 'You must accept the Envestnet Yodlee terms of use before you can use the service.';
         GLBSetupPageIsCallee: Boolean;
-        SaaSModeUserProfileEmailAddressTok: Label 'navsvc@microsoft.com', Locked = true;
         ServiceUrlTok: Label 'https://rest.developer.yodlee.com/services/srest/restserver/v1.0/', Locked = true;
         BankAccLinkingUrlTok: Label 'https://node.developer.yodlee.com/authenticate/restserver/', Locked = true;
         DemoCompanyWithDefaultCredentialMsg: Label 'You cannot use the Envestnet Yodlee Bank Feeds Service on the demonstration company. Open another company and try again.';
@@ -121,27 +120,32 @@
         YodleeServiceIdentifierTxt: Label 'Yodlee', Locked = true;
         MissingCredentialsQst: Label 'The password is missing in the Envestnet Yodlee Bank Feeds Service Setup window.\\Do you want to open the Envestnet Yodlee Bank Feeds Service Setup window?';
         MissingCredentialsErr: Label 'The password is missing in the Envestnet Yodlee Bank Feeds Service Setup window.';
-        ProgressWindowMsg: Label 'Waiting for Envestnet Yodlee to complete the bank account refresh #1';
+        ProgressWindowMsg: Label 'Waiting for Envestnet Yodlee to complete the bank account refresh #1', Comment = '#1 is a number tracking the progress of the refresh';
         ProgressWindowUpdateTxt: Label '%1 seconds', Comment = '%1 - an integer';
         RefreshTakingTooLongTxt: Label 'Refreshing the bank account on Envestnet Yodlee is taking longer than expected.\\The refresh on Envestnet Yodlee can take up to 5 minutes to complete. You can import transactions up to the last successful refresh date while the refresh is running.';
         RefreshingBankAccountsTooLongTelemetryTxt: Label 'Refreshing bank accounts data for bank %1 is taking more than 90 seconds.', Locked = true;
-        ServiceKeyTooLongErr: Label 'The name of the key is too long. The maximum length is 50 characters.';
-        InvalidKeyErr: Label 'The name of the key is not valid.';
-        NamespaceKeyTemplateTxt: Label '%1_%2', Locked = true;
         VideoBankintegrationNameTxt: Label 'Set up bank integration';
         VideoBankintegrationTxt: Label 'https://go.microsoft.com/fwlink/?linkid=828679', Locked = true;
         RequestUnsuccessfulErr: Label 'The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.';
         UnauthorizedResponseCodeTok: Label '(401)', Locked = true;
         UnableToInsertUnlinkedBankAccToBufferErr: Label 'Unable to insert information about account that is linked on Yodlee. ProviderAccount id - %1, AccountId - %2.', Locked = true;
         StartingToRegisterUserTxt: Label 'Starting to register user %1 with currency code %2 on Yodlee.', Locked = true;
+        FastlinkDataJsonTok: Label '{"app":"%1","rsession":"%2","token":"%3","redirectReq":"%4","extraParams":"%5"}', Locked = true;
+        FastlinkLinkingExtraParamsTok: Label 'keyword=%1', Locked = true;
+        FastlinkMfaRefreshExtraParamsTok: Label 'siteAccountId=%1&flow=refresh&callback=%2', Locked = true;
+        FastlinkAccessConsentExtraParamsTok: Label 'siteAccountId=%1&flow=manageConsent&callback=%2', Locked = true;
+        FastlinkEditAccountExtraParamsTok: Label 'providerAccountId=%1&flow=edit&callback=%2', Locked = true;
+        BankAccountNameDisplayLbl: Label '%1 - %2', Locked = true;
+        LabelDateExprTok: Label '<%1D>', Locked = true;
 
     procedure SetValuesToDefault(var MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup");
     var
         CompanyInformationMgt: Codeunit "Company Information Mgt.";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
         HasCustomCredentialsInAKV: Boolean;
         ServiceURLValue: Text;
         BankAccLinkingURLValue: Text;
+        DefaultSaasModeUserProfileEmailAddressTok: Text;
     begin
         MSYodleeBankServiceSetup."User Profile Email Address" := '';
 
@@ -166,8 +170,9 @@
                   COPYSTR(BankAccLinkingURLValue, 1, MAXSTRLEN(MSYodleeBankServiceSetup."Bank Acc. Linking URL")));
         END;
 
-        IF EnvironmentInfo.IsSaaS() THEN
-            MSYodleeBankServiceSetup.VALIDATE("User Profile Email Address", SaaSModeUserProfileEmailAddressTok);
+        DefaultSaasModeUserProfileEmailAddressTok := 'cristina@contoso.com';
+        IF EnvironmentInformation.IsSaaS() THEN
+            MSYodleeBankServiceSetup.VALIDATE("User Profile Email Address", DefaultSaasModeUserProfileEmailAddressTok);
     end;
 
     procedure CheckSetup();
@@ -303,7 +308,7 @@
         EXIT(GetResponseValue(YodleeAPIStrings.GetConsumerTokenXPath(), ConsumerToken, ErrorText));
     end;
 
-    local procedure GetFastlinkToken(var CobrandToken: Text; var ConsumerToken: Text; var FastLinkToken: Text; var ErrorText: Text): Boolean;
+    local procedure GetFastlinkToken(CobrandToken: Text; ConsumerToken: Text; var FastLinkToken: Text; var ErrorText: Text): Boolean;
     var
         AuthorizationHeaderValue: Text;
     begin
@@ -341,7 +346,7 @@
             EXIT('');
         END;
 
-        Data := STRSUBSTNO('{"app":"%1","rsession":"%2","token":"%3","redirectReq":"%4","extraParams":"%5"}',
+        Data := STRSUBSTNO(FastlinkDataJsonTok,
             '10003600',
             ConsumerToken,// encoded by GetFastlinkToken
             TypeHelper.UrlEncode(FastlinkToken),
@@ -361,7 +366,7 @@
         // strip '&' as Yodlee seems to discard any text after this
         BankName := DELCHR(BankName, '=', '&');
 
-        ExtraParams := STRSUBSTNO('keyword=%1', TypeHelper.UrlEncode(BankName)); // prepopulate search with bank name
+        ExtraParams := STRSUBSTNO(FastlinkLinkingExtraParamsTok, TypeHelper.UrlEncode(BankName)); // prepopulate search with bank name
 
         Data := GetFastlinkData(ExtraParams, ErrorText);
         EXIT(ErrorText = '');
@@ -374,7 +379,7 @@
     begin
         ExtraParams :=
           STRSUBSTNO(
-            'siteAccountId=%1&flow=refresh&callback=%2', TypeHelper.UrlEncode(BankStatementServiceId), TypeHelper.UrlEncode(CallbackUrl));
+            FastlinkMfaRefreshExtraParamsTok, TypeHelper.UrlEncode(BankStatementServiceId), TypeHelper.UrlEncode(CallbackUrl));
 
         Data := GetFastlinkData(ExtraParams, ErrorText);
         EXIT(ErrorText = '');
@@ -387,7 +392,7 @@
     begin
         ExtraParams :=
           STRSUBSTNO(
-            'siteAccountId=%1&flow=manageConsent&callback=%2', TypeHelper.UrlEncode(OnlineBankAccountId), TypeHelper.UrlEncode(CallbackUrl));
+            FastlinkAccessConsentExtraParamsTok, TypeHelper.UrlEncode(OnlineBankAccountId), TypeHelper.UrlEncode(CallbackUrl));
 
         Data := GetFastlinkData(ExtraParams, ErrorText);
         EXIT(ErrorText = '');
@@ -400,7 +405,7 @@
     begin
         ExtraParams :=
           STRSUBSTNO(
-            'providerAccountId=%1&flow=edit&callback=%2', TypeHelper.UrlEncode(OnlineBankAccountId), TypeHelper.UrlEncode(CallbackUrl));
+            FastlinkEditAccountExtraParamsTok, TypeHelper.UrlEncode(OnlineBankAccountId), TypeHelper.UrlEncode(CallbackUrl));
 
         Data := GetFastlinkData(ExtraParams, ErrorText);
         EXIT(ErrorText = '');
@@ -577,7 +582,7 @@
         EXIT(TRUE);
     end;
 
-    local procedure TryGetLinkedSites(var SiteListXML: Text; var CobrandToken: Text; var ConsumerToken: Text): Boolean;
+    local procedure TryGetLinkedSites(var SiteListXML: Text; CobrandToken: Text; ConsumerToken: Text): Boolean;
     var
         ErrorText: Text;
         AuthorizationHeaderValue: Text;
@@ -605,7 +610,7 @@
 
     procedure UpdateBankAccountLinking(var BankAccount: Record "Bank Account"; ForceManualLinking: Boolean);
     var
-        MissingTempMSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link" temporary;
+        TempMissingMSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link" temporary;
         SiteListXML: Text;
         Summary: Text;
         UnlinkedAccounts: Integer;
@@ -614,10 +619,10 @@
         CheckServiceEnabled();
 
         SiteListXML := GetLinkedSites();
-        UnlinkedAccounts := MatchBankAccountIDs(SiteListXML, MissingTempMSYodleeBankAccLink);
-        LinkedAccounts := CreateNewAccountLinking(BankAccount, MissingTempMSYodleeBankAccLink, ForceManualLinking);
+        UnlinkedAccounts := MatchBankAccountIDs(SiteListXML, TempMissingMSYodleeBankAccLink);
+        LinkedAccounts := CreateNewAccountLinking(BankAccount, TempMissingMSYodleeBankAccLink, ForceManualLinking);
 
-        Summary := GetLinkingSummaryMessage(LinkedAccounts, UnlinkedAccounts, ForceManualLinking, MissingTempMSYodleeBankAccLink);
+        Summary := GetLinkingSummaryMessage(LinkedAccounts, UnlinkedAccounts, ForceManualLinking, TempMissingMSYodleeBankAccLink);
         IF Summary <> '' THEN
             MESSAGE(Summary);
     end;
@@ -750,20 +755,20 @@
     var
         Iterations: Integer;
         SecondsToGo: Integer;
-        ProgressWindow: Dialog;
+        ProgressDialog: Dialog;
     begin
         Iterations := 0;
         SecondsToGo := 90;
-        ProgressWindow.Open(ProgressWindowMsg);
-        ProgressWindow.Update(1, StrSubstNo(ProgressWindowUpdateTxt, SecondsToGo));
+        ProgressDialog.Open(ProgressWindowMsg);
+        ProgressDialog.Update(1, StrSubstNo(ProgressWindowUpdateTxt, SecondsToGo));
         // loop for max one minute and a half
         REPEAT
             SLEEP(3000);
             Iterations += 1;
             SecondsToGo -= 3;
-            ProgressWindow.Update(1, StrSubstNo(ProgressWindowUpdateTxt, SecondsToGo));
+            ProgressDialog.Update(1, StrSubstNo(ProgressWindowUpdateTxt, SecondsToGo));
         UNTIL RefreshDone(OnlineBankAccountId) OR (Iterations > 30);
-        ProgressWindow.Close();
+        ProgressDialog.Close();
 
         IF Iterations > 30 THEN BEGIN
             Session.LogMessage('00008OE', STRSUBSTNO(RefreshingBankAccountsTooLongTelemetryTxt, OnlineBankId), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
@@ -863,21 +868,6 @@
         if Evaluate(RefreshDateTime, RefreshDateTimeTxt, 9) then;
 
         exit(RefreshDateTime);
-    end;
-
-    local procedure GetNextScheduledRefreshBankDate(SiteID: Text; var AccountNode: XmlNode): DateTime;
-    var
-        TypeHelper: Codeunit "Type Helper";
-        RefreshDateTimestamp: BigInteger;
-        NextUpdateDateTime: DateTime;
-    begin
-        CheckServiceEnabled();
-        GetLinkedBankAccountsFromSite(SiteID, AccountNode);
-
-        EVALUATE(RefreshDateTimestamp, FindNodeText(AccountNode, '/root/root/refreshInfo/nextUpdateTime'));
-        NextUpdateDateTime := TypeHelper.EvaluateUnixTimestamp(RefreshDateTimestamp);
-
-        EXIT(NextUpdateDateTime);
     end;
 
     local procedure IsAutomaticLogonPossible(OnlineBankAccountID: Text): Boolean;
@@ -1028,47 +1018,6 @@
         EXIT(MarkUnlinkedRemainingBankAccounts(TempBankAccount));
     end;
 
-    local procedure MatchBankAccountIDsLegacyAPI(SiteListXML: Text; var MissingTempMSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link" temporary): Integer;
-    var
-        TempBankAccount: Record "Bank Account" temporary;
-        XmlDoc: XmlDocument;
-        ProviderAccountNode: XmlNode;
-        BankAccountsRootNode: XmlNode;
-        BankAccountsNodeList: XmlNodeList;
-        XmlRootElement: XmlElement;
-        BankAccountNode: XmlNode;
-        ProviderAccountID: Text[50];
-        ProviderID: Text[50];
-        ProviderName: Text[50];
-        BankAccountID: Text[50];
-    begin
-        XmlDocument.ReadFrom(SiteListXML, XmlDoc);
-        XmlDoc.GetRoot(XmlRootElement);
-        CopyLinkedBankAccountsToTemp(TempBankAccount);
-
-        FOREACH ProviderAccountNode IN XmlRootElement.GetChildNodes() DO BEGIN
-            ProviderAccountID := COPYSTR(FindNodeXML(ProviderAccountNode, YodleeAPIStrings.GetProviderAccountIdXPath()), 1, 50);
-
-            IF ProviderAccountID <> '' THEN BEGIN
-                ProviderID := COPYSTR(FindNodeXML(ProviderAccountNode, YodleeAPIStrings.GetProviderIdXPath()), 1, 50);
-                ProviderName := COPYSTR(FindNodeXML(ProviderAccountNode, YodleeAPIStrings.GetProviderNameXPath()), 1, 50);
-                Session.LogMessage('0000A07', ProviderName, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
-                Session.LogMessage('0000A08', ProviderID, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
-                GetLinkedBankAccountsFromSite(ProviderAccountID, BankAccountsRootNode);
-                BankAccountsRootNode.SelectNodes(YodleeAPIStrings.GetBankAccountsListXPath(), BankAccountsNodeList);
-                FOREACH BankAccountNode IN BankAccountsNodeList DO BEGIN
-                    BankAccountID := COPYSTR(FindNodeXML(BankAccountNode, YodleeAPIStrings.GetBankAccountIdXPath()), 1, 50);
-                    IF FindMatchingBankAccountId(TempBankAccount, ProviderAccountID, BankAccountID) THEN
-                        TempBankAccount.DELETE()
-                    ELSE
-                        CreateTempBankAccountFromBankStatement(ProviderAccountID, BankAccountID, BankAccountNode, MissingTempMSYodleeBankAccLink);
-                END;
-            END;
-        END;
-
-        EXIT(MarkUnlinkedRemainingBankAccounts(TempBankAccount));
-    end;
-
     local procedure CreateNewAccountLinking(var BankAccount: Record "Bank Account"; var MissingTempMSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link" temporary; ForceManualLinking: Boolean): Integer;
     var
         LinkedAccounts: Integer;
@@ -1171,7 +1120,7 @@
 
         IF (TempMSYodleeBankAccLink."Currency Code" <> '') THEN
             IF (BankAccountCurrencyCode <> TempMSYodleeBankAccLink."Currency Code") THEN
-                ERROR(STRSUBSTNO(CurrencyMismatchErr, BankAccountCurrencyCode, TempMSYodleeBankAccLink."Currency Code"));
+                ERROR(CurrencyMismatchErr, BankAccountCurrencyCode, TempMSYodleeBankAccLink."Currency Code");
 
         IF (TempMSYodleeBankAccLink."Currency Code" = '') AND (BankAccount."Currency Code" <> '') THEN
             IF NOT CONFIRM(STRSUBSTNO(LinkingToAccountWithEmptyCurrencyQst, TempMSYodleeBankAccLink.Name)) THEN
@@ -1310,7 +1259,7 @@
 
     local procedure GetBankAccountName(BankAccountNode: XmlNode): Text;
     begin
-        exit(StrSubstNo('%1 - %2', FindNodeText(BankAccountNode, YodleeAPIStrings.GetProviderNameXPath()), FindNodeText(BankAccountNode, YodleeAPIStrings.GetBankAccountNameXPath())));
+        exit(StrSubstNo(BankAccountNameDisplayLbl, FindNodeText(BankAccountNode, YodleeAPIStrings.GetProviderNameXPath()), FindNodeText(BankAccountNode, YodleeAPIStrings.GetBankAccountNameXPath())));
     end;
 
     local procedure VerifyTermsOfUseAccepted();
@@ -1405,22 +1354,22 @@
     [TryFunction]
     local procedure TryVerifyXMLChars(InputText: Text)
     var
-        XmlConvert: DotNet XmlConvert;
+        "System.Xml.XmlConvert": DotNet XmlConvert;
     begin
-        XmlConvert.VerifyXmlChars(InputText);
+        "System.Xml.XmlConvert".VerifyXmlChars(InputText);
     end;
 
     local procedure RemoveInvalidXMLCharacters(var InputText: Text)
     var
-        XmlConvert: DotNet XmlConvert;
-        InputTextStr: DotNet String;
+        "System.Xml.XmlConvert": DotNet XmlConvert;
+        "System.String": DotNet String;
         Character: Char;
     begin
         if not TryVerifyXMLChars(InputText) then begin
-            InputTextStr := InputText;
+            "System.String" := InputText;
             InputText := '';
-            foreach Character in InputTextStr do
-                if XmlConvert.IsXmlChar(Character) then
+            foreach Character in "System.String" do
+                if "System.Xml.XmlConvert".IsXmlChar(Character) then
                     InputText += Character;
         end;
         // so far, in icms we have only seen Char x014 coming from Yodlee
@@ -1505,11 +1454,11 @@
         ActivityLog: Record "Activity Log";
         DotNetExceptionHandler: Codeunit "DotNet Exception Handler";
         IsSuccessful: Boolean;
-        Client: HttpClient;
-        RequestMessage: HttpRequestMessage;
-        ResponseMessage: HttpResponseMessage;
-        ProcessingWindow: Dialog;
-        Content: HttpContent;
+        HttpClient: HttpClient;
+        HttpRequestMessage: HttpRequestMessage;
+        GetHttpResponseMessage: HttpResponseMessage;
+        ProcessingDialog: Dialog;
+        ReqHttpContent: HttpContent;
         RequestHeaders: HttpHeaders;
         ContentHeaders: HttpHeaders;
         BankFeedText: Text;
@@ -1524,7 +1473,7 @@
             ERROR(ErrorText);
 
         // prepare request message    
-        RequestMessage.GetHeaders(RequestHeaders);
+        HttpRequestMessage.GetHeaders(RequestHeaders);
         RequestHeaders.Add('Accept', 'application/json');
         RequestHeaders.Add('Accept-Encoding', 'utf-8');
         RequestHeaders.Add('Connection', 'Keep-alive');
@@ -1536,14 +1485,14 @@
             RequestHeaders.Add('Cobrand-Name', CobrandEnvironmentName);
         if AuthorizationHeaderValue <> '' then
             RequestHeaders.TryAddWithoutValidation('Authorization', AuthorizationHeaderValue);
-        RequestMessage.SetRequestUri(URL);
-        RequestMessage.Method(Method);
+        HttpRequestMessage.SetRequestUri(URL);
+        HttpRequestMessage.Method(Method);
         if BodyText <> '' then begin
-            Content.GetHeaders(ContentHeaders);
-            Content.WriteFrom(BodyText);
+            ReqHttpContent.GetHeaders(ContentHeaders);
+            ReqHttpContent.WriteFrom(BodyText);
             ContentHeaders.Remove('Content-Type');
             ContentHeaders.Add('Content-Type', YodleeAPIStrings.GetWebRequestContentType());
-            RequestMessage.Content(Content);
+            HttpRequestMessage.Content(ReqHttpContent);
         end;
 
         // Set tracing
@@ -1554,15 +1503,15 @@
         ResponseTempBlob.CreateInStream(GLBResponseInStream);
 
         IF GUIALLOWED() THEN
-            ProcessingWindow.Open(ProcessingWindowMsg);
+            ProcessingDialog.Open(ProcessingWindowMsg);
 
-        IsSuccessful := Client.Send(RequestMessage, ResponseMessage);
+        IsSuccessful := HttpClient.Send(HttpRequestMessage, GetHttpResponseMessage);
 
         IF GUIALLOWED() THEN
-            ProcessingWindow.Close();
+            ProcessingDialog.Close();
 
         if IsSuccessful then
-            ResponseMessage.Content().ReadAs(GLBResponseInStream)
+            GetHttpResponseMessage.Content().ReadAs(GLBResponseInStream)
         else begin
             DotNetExceptionHandler.Collect();
             UnsuccessfulRequestTelemetryTxt := DotNetExceptionHandler.GetMessage();
@@ -1571,13 +1520,13 @@
             Error(RequestUnsuccessfulErr);
         end;
 
-        IF NOT ResponseMessage.IsSuccessStatusCode() THEN
-            Errortext := STRSUBSTNO(RemoteServerErr, ResponseMessage.HttpStatusCode(), ResponseMessage.ReasonPhrase());
+        IF NOT GetHttpResponseMessage.IsSuccessStatusCode() THEN
+            Errortext := STRSUBSTNO(RemoteServerErr, GetHttpResponseMessage.HttpStatusCode(), GetHttpResponseMessage.ReasonPhrase());
 
         IF URL.ToLower().Contains('transactions') THEN BEGIN
-            ResponseMessage.Content().ReadAs(BankFeedText);
-            if ResponseMessage.Headers.Contains('Link') then begin
-                ResponseMessage.Headers.GetValues('Link', PaginationLinks);
+            GetHttpResponseMessage.Content().ReadAs(BankFeedText);
+            if GetHttpResponseMessage.Headers.Contains('Link') then begin
+                GetHttpResponseMessage.Headers.GetValues('Link', PaginationLinks);
                 if PaginationLinks[1].Contains(';rel=next') then begin
                     // use pagination link only up to rel=next, we are not interested in rel=count link
                     PaginationRelativeLink := CopyStr(PaginationLinks[1], PaginationLinks[1].IndexOf('/'), PaginationLinks[1].IndexOf(';rel=next') - PaginationLinks[1].IndexOf('/'));
@@ -1596,7 +1545,7 @@
                 ActivityLog.LogActivity(MSYodleeBankServiceSetup.RecordId(), ActivityLog.Status::Success, YodleeResponseTxt, 'gettransactions', BankFeedText);
         END;
 
-        ResponseMessage.Content().ReadAs(ResponseTxt);
+        GetHttpResponseMessage.Content().ReadAs(ResponseTxt);
         IF URL.ToLower().Contains('accounts?status=active') THEN BEGIN
             Session.LogMessage('0000BI7', ResponseTxt, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
             if GLBTraceLogEnabled then
@@ -1847,19 +1796,6 @@
         exit(true);
     end;
 
-    local procedure GetYodleeFastLinkURLFromAzureKeyVault(var YodleeFastLinkURLValue: Text): Boolean;
-    var
-        AzureKeyVault: Codeunit "Azure Key Vault";
-    begin
-        if not AzureKeyVault.GetAzureKeyVaultSecret(YodleeFastlinkUrlTxt, YodleeFastLinkURLValue) then
-            exit(false);
-
-        if YodleeFastLinkURLValue = '' then
-            exit(false);
-
-        exit(true);
-    end;
-
     local procedure GetAzureKeyVaultSecret(var SecretValue: Text; SecretName: Text): Boolean;
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
@@ -1938,7 +1874,7 @@
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
-    procedure HandleVANRegisterServiceConnection(var ServiceConnection: Record 1400);
+    procedure HandleVANRegisterServiceConnection(var ServiceConnection: Record 1400)
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         RecRef: RecordRef;
@@ -2032,7 +1968,7 @@
         IF NOT IsLinkedToYodleeService(BankAccount) THEN
             EXIT;
 
-        FromDate := CALCDATE(STRSUBSTNO('<%1D>', -BankAccount."Transaction Import Timespan"), TODAY());
+        FromDate := CALCDATE(STRSUBSTNO(LabelDateExprTok, -BankAccount."Transaction Import Timespan"), TODAY());
         ToDate := TODAY();
 
         // open filter page
@@ -2238,7 +2174,7 @@
     local procedure OnSimpleLinkStatementProvider(var OnlineBankAccLink: Record "Online Bank Acc. Link"; StatementProvider: Text);
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
-        MissingTempMSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link" temporary;
+        TempMissingMSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link" temporary;
         SiteListXML: Text;
     begin
         IF StatementProvider <> YodleeServiceIdentifierTxt THEN
@@ -2254,19 +2190,19 @@
             EXIT;
 
         SiteListXML := GetLinkedSites();
-        MatchBankAccountIDs(SiteListXML, MissingTempMSYodleeBankAccLink);
+        MatchBankAccountIDs(SiteListXML, TempMissingMSYodleeBankAccLink);
 
-        IF MissingTempMSYodleeBankAccLink.COUNT() = 0 THEN BEGIN
+        IF TempMissingMSYodleeBankAccLink.COUNT() = 0 THEN BEGIN
             UnregisterConsumer();
             MESSAGE(NoAccountLinkedMsg);
         END ELSE BEGIN
-            MissingTempMSYodleeBankAccLink.FINDSET();
+            TempMissingMSYodleeBankAccLink.FINDSET();
             REPEAT
                 OnlineBankAccLink.INIT();
-                OnlineBankAccLink.TRANSFERFIELDS(MissingTempMSYodleeBankAccLink);
+                OnlineBankAccLink.TRANSFERFIELDS(TempMissingMSYodleeBankAccLink);
                 OnlineBankAccLink.ProviderId := YodleeServiceIdentifierTxt;
                 OnlineBankAccLink.INSERT();
-            UNTIL MissingTempMSYodleeBankAccLink.NEXT() = 0
+            UNTIL TempMissingMSYodleeBankAccLink.NEXT() = 0
         END;
     end;
 
@@ -2329,10 +2265,11 @@
         MarkBankAccountLinked(BankAccount, MSYodleeBankAccLink);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Manual Setup", 'OnRegisterManualSetup', '', false, false)]
-    local procedure HandleRegisterBusinessSetup(var Sender: Codeunit 1875);
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', false, false)]
+    local procedure HandleRegisterBusinessSetup()
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
+        GuidedExperience: Codeunit "Guided Experience";
         ManualSetupCategory: Enum "Manual Setup Category";
     begin
         IF NOT MSYodleeBankServiceSetup.GET() THEN BEGIN
@@ -2341,9 +2278,11 @@
             MSYodleeBankServiceSetup.INSERT(TRUE);
         END;
 
-        Sender.Insert(
-          YodleeServiceNameTxt, YodleeBusinessSetupDescriptionTxt, YodleeBusinessSetupKeywordsTxt,
-          PAGE::"MS - Yodlee Bank Service Setup", 'e2743298-9ccb-49cd-9d8e-4b2d1ab91d36', ManualSetupCategory::Service);
+        GuidedExperience.InsertManualSetup(
+            YodleeServiceNameTxt, CopyStr(YodleeServiceNameTxt, 1, 50), YodleeBusinessSetupDescriptionTxt,
+            0, ObjectType::Page, PAGE::"MS - Yodlee Bank Service Setup", ManualSetupCategory::Service,
+            YodleeBusinessSetupKeywordsTxt
+        );
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Bank Account", 'OnAfterDeleteEvent', '', false, false)]
@@ -2383,10 +2322,10 @@
         BankAccount: Record "Bank Account";
         MyNotifications: Record "My Notifications";
         CompanyInformationMgt: Codeunit "Company Information Mgt.";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
         YodleeAwarenessNotification: Notification;
     begin
-        IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInfo.IsSaaS() THEN
+        IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInformation.IsSaaS() THEN
             EXIT;
 
         IF NOT MyNotifications.IsEnabled(GetYodleeAwarenessNotificationId()) then
@@ -2534,9 +2473,9 @@
     local procedure ValidateNotDemoCompanyOnSaas(): Boolean;
     var
         CompanyInformationMgt: Codeunit "Company Information Mgt.";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInfo.IsSaaS() THEN BEGIN
+        IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInformation.IsSaaS() THEN BEGIN
             MESSAGE(DemoCompanyWithDefaultCredentialMsg);
             EXIT(FALSE);
         END;
@@ -2547,9 +2486,9 @@
     var
         BankAccount: Record "Bank Account";
         CompanyInformationMgt: Codeunit "Company Information Mgt.";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInfo.IsSaaS() THEN
+        IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInformation.IsSaaS() THEN
             EXIT;
 
         BankAccount.INIT();
@@ -2594,9 +2533,9 @@
 
     procedure OpenPaymentReconJnlFromNotification(HostNotification: Notification)
     var
-        PaymentReconciliationJournals: Page "Pmt. Reconciliation Journals";
+        PmtReconciliationJournals: Page "Pmt. Reconciliation Journals";
     begin
-        PaymentReconciliationJournals.Run();
+        PmtReconciliationJournals.Run();
         Session.LogMessage('000020L', UserOpenedPaymentReconJournalsViaNotificationTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
     end;
 
@@ -2679,46 +2618,6 @@
         exit(NOT ErrorOccured);
     end;
 
-
-    local procedure ProcessSettingDevelopmentMode(IsolatedStorageKey: Code[50]; IsolatedStorageValue: Text): Boolean;
-    var
-        CompanyInformation: Record "Company Information";
-        EnableDeveloperMode: Boolean;
-    begin
-        IF IsolatedStorageKey <> CompanyInformation.GetDevBetaModeTxt() THEN
-            EXIT(FALSE);
-
-        IF NOT EVALUATE(EnableDeveloperMode, IsolatedStorageValue, 9) THEN
-            EXIT(FALSE);
-
-        CompanyInformation.Get();
-
-        IF (NOT EnableDeveloperMode) AND (CompanyInformation."Custom System Indicator Text" <> CompanyInformation.GetDevBetaModeTxt()) THEN
-            EXIT(FALSE);
-
-        IF EnableDeveloperMode THEN
-            CompanyInformation.VALIDATE("Custom System Indicator Text", CompanyInformation.GetDevBetaModeTxt())
-        ELSE
-            CLEAR(CompanyInformation."Custom System Indicator Text");
-
-        CompanyInformation.MODIFY(TRUE);
-        EXIT(TRUE);
-    end;
-
-    local procedure GenerateFullKey(Namespace: Code[50]; IsolatedStorageKey: Code[50]): Code[50];
-    VAR
-        Result: Code[50];
-    Begin
-        IF (Namespace = '') OR (IsolatedStorageKey = '') THEN
-            ERROR(InvalidKeyErr);
-
-        IF STRLEN(STRSUBSTNO(NamespaceKeyTemplateTxt, Namespace, IsolatedStorageKey)) > MAXSTRLEN(Result) THEN
-            ERROR(ServiceKeyTooLongErr);
-
-        Result := COPYSTR(STRSUBSTNO(NamespaceKeyTemplateTxt, Namespace, IsolatedStorageKey), 1, MAXSTRLEN(Result));
-        exit(Result);
-    end;
-
     local procedure HasCapability(): Boolean;
     var
         CryptographyManagement: Codeunit "Cryptography Management";
@@ -2738,13 +2637,16 @@
         exit(ErrTxt.Contains(BankStmtServiceStaleConversationCredentialsErrTxt) or ErrTxt.Contains(BankStmtServiceStaleConversationCredentialsExceptionTxt) or ErrTxt.Contains(StaleCredentialsErr) or ErrTxt.Contains(UnauthorizedResponseCodeTok));
     end;
 
+#if NOT CLEAN20
     [IntegrationEvent(false, false)]
-    local procedure OnAfterSuccessfulActivitySendTelemetry(Message: Text);
+    [Obsolete('This event is not being executed in code.', '20.0')]
+    local procedure OnAfterFailedActivitySendTelemetry(Message: Text);
     begin
     end;
+#endif
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterFailedActivitySendTelemetry(Message: Text);
+    local procedure OnAfterSuccessfulActivitySendTelemetry(Message: Text);
     begin
     end;
 
@@ -2763,10 +2665,13 @@
     begin
     end;
 
+#if not CLEAN20
     [IntegrationEvent(false, false)]
+    [Obsolete('This event is not being executed in code.', '20.0')]
     local procedure OnOnlineBankAccountCurrencyMismatchSendTelemetry(Message: Text);
     begin
     end;
+#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnOnlineAccountEmptyCurrencySendTelemetry(Message: Text);

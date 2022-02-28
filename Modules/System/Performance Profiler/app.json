@@ -1,0 +1,66 @@
+{
+  "id": "3ed12f72-47eb-4173-87c2-42ea99d60e67",
+  "name": "Performance Profiler",
+  "publisher": "Microsoft",
+  "brief":  "Provides functionality for performance profiling.",
+  "description":  "Provides functionality for recording scenarios within the product and presenting the insights about where the time was spent.",
+  "version": "20.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2103698",
+  "url": "https://go.microsoft.com/fwlink/?linkid=724011",
+  "logo": "",
+  "screenshots": [],
+  "platform": "20.0.0.0",
+  "dependencies":  [
+      {
+        "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+        "name":  "DotNet Aliases",
+        "publisher":  "Microsoft",
+        "version":  "20.0.0.0"
+      },
+      {
+        "id":  "9c9b6fdc-6a1a-4cab-aa92-47ba72534897",
+        "name":  "Business Chart",
+        "publisher":  "Microsoft",
+        "version":  "20.0.0.0"
+      },
+      {
+        "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
+        "name":  "BLOB Storage",
+        "publisher":  "Microsoft",
+        "version":  "20.0.0.0"
+      },
+      {
+          "id":  "de35f591-7216-4e60-8be1-1911d71a7fc2",
+          "name":  "Telemetry",
+          "publisher":  "Microsoft",
+          "version":  "20.0.0.0"
+      },
+      {
+        "id":  "a6444d0e-47ec-49c1-bb18-173e54b498d3",
+        "name":  "Document Sharing Service",
+        "publisher":  "Microsoft",
+        "version":  "20.0.0.0"
+      }
+  ],
+  "internalsVisibleTo":  [
+    {
+        "id":  "b5c15eed-62f1-41e8-b053-bd733426766f",
+        "name":  "Performance Profiler Test Library",
+        "publisher":  "Microsoft"
+    }
+  ],
+  "idRanges": [
+    {
+      "from": 24, 
+      "to": 24
+    },
+    {
+      "from": 1921, 
+      "to": 1926
+    }
+  ],
+  "target": "OnPrem",
+  "contextSensitiveHelpUrl": "https://docs.microsoft.com/dynamics365/business-central/"
+}

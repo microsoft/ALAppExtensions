@@ -213,7 +213,7 @@ codeunit 139654 "HybridBC Management Test"
     procedure TestGetHybridBCProductName()
     var
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
-        HybridBCWiard: Codeunit "Hybrid BC Wizard";
+        HybridBCWizard: Codeunit "Hybrid BC Wizard";
         ProductName: Text;
     begin
         // [GIVEN] Dynamics BC is set up as the intelligent cloud product
@@ -223,7 +223,7 @@ codeunit 139654 "HybridBC Management Test"
         ProductName := HybridCloudManagement.GetChosenProductName();
 
         // [THEN] The returned value is set to the Business Central product name.
-        Assert.AreEqual(HybridBCWiard.ProductName(), ProductName, 'Incorrect product name returned.');
+        Assert.AreEqual(HybridBCWizard.ProductName(), ProductName, 'Incorrect product name returned.');
     end;
 
     [Test]
@@ -306,30 +306,30 @@ codeunit 139654 "HybridBC Management Test"
     local procedure InsertNotification(SubscriptionId: Text; var RunId: Text; var StartTime: DateTime; var TriggerType: Text; ReplicationType: Integer; MessageCode: Code[10])
     var
         WebhookNotification: Record "Webhook Notification";
-        NotificationStream: OutStream;
+        NotificationOutStream: OutStream;
         NotificationText: Text;
     begin
         NotificationText := LibraryHybridManagement.GetNotificationPayload(SubscriptionId, RunId, StartTime, TriggerType, ReplicationType, AdditionalNotificationText(MessageCode));
         WebhookNotification.Init();
         WebhookNotification.ID := CreateGuid();
         WebhookNotification."Subscription ID" := CopyStr(SubscriptionIdTxt, 1, 150);
-        WebhookNotification.Notification.CreateOutStream(NotificationStream, TextEncoding::UTF8);
-        NotificationStream.WriteText(NotificationText);
+        WebhookNotification.Notification.CreateOutStream(NotificationOutStream, TextEncoding::UTF8);
+        NotificationOutStream.WriteText(NotificationText);
         WebhookNotification.Insert(true);
     end;
 
     local procedure InsertServiceNotification(ServiceType: Text; Version: Text)
     var
         WebhookNotification: Record "Webhook Notification";
-        NotificationStream: OutStream;
+        NotificationOutStream: OutStream;
         NotificationText: Text;
     begin
         NotificationText := LibraryHybridManagement.GetServiceNotificationPayload(ServiceSubscriptionIdTxt, ServiceType, Version);
         WebhookNotification.Init();
         WebhookNotification.ID := CreateGuid();
         WebhookNotification."Subscription ID" := CopyStr(ServiceSubscriptionIdTxt, 1, 150);
-        WebhookNotification.Notification.CreateOutStream(NotificationStream, TextEncoding::UTF8);
-        NotificationStream.WriteText(NotificationText);
+        WebhookNotification.Notification.CreateOutStream(NotificationOutStream, TextEncoding::UTF8);
+        NotificationOutStream.WriteText(NotificationText);
         WebhookNotification.Insert(true);
     end;
 }

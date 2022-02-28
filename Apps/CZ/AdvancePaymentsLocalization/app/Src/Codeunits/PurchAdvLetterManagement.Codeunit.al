@@ -1426,11 +1426,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         GenJournalLine."On Hold" := VendorLedgerEntry."On Hold";
         GenJournalLine."Posting Group" := VendorLedgerEntry."Vendor Posting Group";
         GenJournalLine.Validate("VAT Date CZL", VendorLedgerEntry."VAT Date CZL");
-#if not CLEAN19
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date" := VendorLedgerEntry."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
+        GenJournalLine.Validate("Original Doc. VAT Date CZL", VendorLedgerEntry."VAT Date CZL");
         GenJournalLine."System-Created Entry" := true;
     end;
 

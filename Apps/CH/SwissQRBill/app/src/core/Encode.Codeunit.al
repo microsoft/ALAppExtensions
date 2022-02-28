@@ -65,7 +65,7 @@ codeunit 11513 "Swiss QR-Bill Encode"
     local procedure FormatAltProcedureText(ProcName: Text; ProcValue: Text): Text
     begin
         if (ProcName <> '') and (ProcValue <> '') then
-            exit(StrSubstNo('%1: %2', ProcName, ProcValue));
+            exit(ProcName + ': ' + ProcValue);
     end;
 
     local procedure AddCreditorPartyInfo(var TargetText: Text; var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer")
@@ -145,7 +145,7 @@ codeunit 11513 "Swiss QR-Bill Encode"
     local procedure AddTextToLine(var TargetText: Text; AddText: Text)
     begin
         if AddText <> '' then
-            TargetText += StrSubstNo(' %1', AddText);
+            TargetText += ' ' + AddText;
     end;
 
     local procedure AddLineConditionally(var TargetText: Text; LineText: Text; Condition: Boolean)
