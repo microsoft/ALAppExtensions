@@ -711,6 +711,7 @@ codeunit 134689 "Email Message Unit Test"
     var
         Message: Codeunit "Email Message";
         Recipient: Text;
+        Recipient2: Text;
         ResultTo: List of [Text];
         ResultCc: List of [Text];
         ResultBCc: List of [Text];
@@ -721,13 +722,15 @@ codeunit 134689 "Email Message Unit Test"
         // Exercise
         Message.Create(ResultTo, 'Test subject', 'Test body', true, ResultCc, ResultBCc);
         Recipient := 'recipient1@test.com';
+        Recipient2 := 'recipient2@test.com';
         Message.AddRecipient(Enum::"Email Recipient Type"::"To", Recipient);
         Message.GetRecipients(Enum::"Email Recipient Type"::"To", ResultTo);
         Message.GetRecipients(Enum::"Email Recipient Type"::"Cc", ResultCc);
         Message.GetRecipients(Enum::"Email Recipient Type"::"BCc", ResultBCc);
 
         // Verify
-        Assert.AreEqual(Recipient, ResultTo.Get(0), 'A different recipient was expected');
+        Assert.AreEqual(Recipient, ResultTo.Get(1), 'A different recipient was expected');
+        Assert.AreEqual(Recipient2, ResultTo.Get(2), 'A different recipient was expected');
         Assert.AreEqual(ResultCc.Count, 0, 'Zero Cc recipients were expected');
         Assert.AreEqual(ResultBCc.Count, 0, 'Zero BCc recipients were expected');
     end;
@@ -739,6 +742,7 @@ codeunit 134689 "Email Message Unit Test"
         Message: Codeunit "Email Message";
         Recipient: Text;
         ResultTo: List of [Text];
+        Recipient2: Text;
         ResultCc: List of [Text];
         ResultBCc: List of [Text];
     begin
@@ -749,13 +753,15 @@ codeunit 134689 "Email Message Unit Test"
         Message.Create(ResultTo, 'Test subject', 'Test body', true, ResultCc, ResultBCc);
         Recipient := 'recipient1@test.com';
         Message.AddRecipient(Enum::"Email Recipient Type"::"Cc", Recipient);
+        Recipient2 := 'recipient2@test.com';
         Message.GetRecipients(Enum::"Email Recipient Type"::"To", ResultTo);
         Message.GetRecipients(Enum::"Email Recipient Type"::"Cc", ResultCc);
         Message.GetRecipients(Enum::"Email Recipient Type"::"BCc", ResultBCc);
 
         // Verify
         Assert.AreEqual(ResultTo.Count, 0, 'Zero To recipients were expected');
-        Assert.AreEqual(Recipient, ResultCc.Get(0), 'A different recipient was expected');
+        Assert.AreEqual(Recipient, ResultCc.Get(1), 'A different recipient was expected');
+        Assert.AreEqual(Recipient2, ResultCc.Get(2), 'A different recipient was expected');
         Assert.AreEqual(ResultBCc.Count, 0, 'Zero BCc recipients were expected');
     end;
 
@@ -765,6 +771,7 @@ codeunit 134689 "Email Message Unit Test"
     var
         Message: Codeunit "Email Message";
         Recipient: Text;
+        Recipient2: Text;
         ResultTo: List of [Text];
         ResultCc: List of [Text];
         ResultBCc: List of [Text];
@@ -776,6 +783,7 @@ codeunit 134689 "Email Message Unit Test"
         Message.Create(ResultTo, 'Test subject', 'Test body', true, ResultCc, ResultBCc);
         Recipient := 'recipient1@test.com';
         Message.AddRecipient(Enum::"Email Recipient Type"::"BCc", Recipient);
+        Recipient2 := 'recipient2@test.com';
         Message.GetRecipients(Enum::"Email Recipient Type"::"To", ResultTo);
         Message.GetRecipients(Enum::"Email Recipient Type"::"Cc", ResultCc);
         Message.GetRecipients(Enum::"Email Recipient Type"::"BCc", ResultBCc);
@@ -783,7 +791,8 @@ codeunit 134689 "Email Message Unit Test"
         // Verify
         Assert.AreEqual(ResultTo.Count, 0, 'Zero To recipients were expected');
         Assert.AreEqual(ResultCc.Count, 0, 'Zero Cc recipients were expected');
-        Assert.AreEqual(Recipient, ResultBCc.Get(0), 'A different recipient was expected');
+        Assert.AreEqual(Recipient, ResultBCc.Get(1), 'A different recipient was expected');
+        Assert.AreEqual(Recipient2, ResultBCc.Get(2), 'A different recipient was expected');
     end;
 
     [StrMenuHandler]
