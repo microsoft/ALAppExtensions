@@ -365,7 +365,7 @@ codeunit 8905 "Email Message Impl."
         Recipients: List of [Text];
         tmpRecipient: Text;
     begin
-        if Recipient <> '' then
+        if Recipient = '' then
             exit;
         EmailRecipientRecord.SetRange("Email Message Id", Message.Id);
         EmailRecipientRecord.SetRange("Email Recipient Type", RecipientType);
