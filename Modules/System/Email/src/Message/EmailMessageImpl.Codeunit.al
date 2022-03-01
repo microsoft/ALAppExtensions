@@ -367,11 +367,6 @@ codeunit 8905 "Email Message Impl."
     begin
         if Recipient = '' then
             exit;
-        EmailRecipientRecord.SetRange("Email Message Id", Message.Id);
-        EmailRecipientRecord.SetRange("Email Recipient Type", RecipientType);
-
-        if not EmailRecipientRecord.IsEmpty() then
-            EmailRecipientRecord.DeleteAll();
 
         Recipient := DelChr(Recipient, '<>'); // trim the whitespaces around
         Recipients := GetRecipients(RecipientType);
