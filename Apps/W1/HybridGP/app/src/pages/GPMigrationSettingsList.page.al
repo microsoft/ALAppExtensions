@@ -52,6 +52,13 @@ page 4021 "GP Migration Settings List"
                     ToolTip = 'Specifies whether to migrate inactive vendors.';
                     Width = 8;
                 }
+                field("Migrate Inactive Checkbooks"; "Migrate Inactive Checkbooks")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Migrate Inactive Checkbooks';
+                    ToolTip = 'Specifies whether to migrate inactive checkbooks.';
+                    Width = 8;
+                }
             }
         }
     }
