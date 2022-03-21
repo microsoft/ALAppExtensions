@@ -11,6 +11,7 @@ codeunit 139664 "GP Data Migration Tests"
     var
         GPCustomer: Record "GP Customer";
         GPVendor: Record "GP Vendor";
+        GPVendorAddress: Record "GP Vendor Address";
         CustomerFacade: Codeunit "Customer Data Migration Facade";
         CustomerMigrator: Codeunit "GP Customer Migrator";
         VendorMigrator: Codeunit "GP Vendor Migrator";
@@ -114,7 +115,7 @@ codeunit 139664 "GP Data Migration Tests"
         CreateVendorData();
 
         // [then] Then the correct number of Vendors are imported
-        Assert.AreEqual(52, GPVendor.Count(), 'Wrong number of Vendor read');
+        Assert.AreEqual(53, GPVendor.Count(), 'Wrong number of Vendor read');
 
         // [then] Then fields for Vendor 1 are correctly imported to temporary table
         GPVendor.SetRange(VENDORID, '1160');
@@ -147,7 +148,7 @@ codeunit 139664 "GP Data Migration Tests"
         MigrateVendors(GPVendor);
 
         // [then] Then the correct number of Vendors are applied
-        Assert.AreEqual(52, Vendor.Count(), 'Wrong number of Migrated Vendors read');
+        Assert.AreEqual(53, Vendor.Count(), 'Wrong number of Migrated Vendors read');
 
         // [then] Then fields for Vendors 1 are correctly applied
         Vendor.SetRange("No.", '1160');
@@ -170,6 +171,34 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('3% 15TH/NE', Vendor."Payment Terms Code", 'Payment Terms Code of Migrated Vendor is wrong');
         Assert.AreEqual('P-N-TXB-%P*6', Vendor."Tax Area Code", 'Tax Area Code of Migrated Vendor is wrong');
         Assert.AreEqual(true, Vendor."Tax Liable", 'Tax Liable of Migrated Vendor is wrong');
+
+        // [WHEN] the Remit To address differs from the originally selected main address
+        Vendor.Reset();
+        Vendor.SetRange("No.", 'ACETRAVE0001');
+        Vendor.FindFirst();
+
+        // [then] The Remit To address will have overridden the main address
+        Assert.AreEqual('A Travel Company', Vendor.Name, 'Name of Migrated Vendor is wrong');
+        Assert.AreEqual('Greg Powell', Vendor.Contact, 'Contact Name of Migrated Vendor is wrong');
+        Assert.AreEqual('Box 342', Vendor.Address, 'Address of Migrated Vendor is wrong');
+        Assert.AreEqual('', Vendor."Address 2", 'Address2 of Migrated Vendor is wrong');
+        Assert.AreEqual('Sydney', Vendor.City, 'City of Migrated Vendor is wrong');
+        Assert.AreEqual('29855501020000', Vendor."Phone No.", 'Phone No. of Migrated Vendor is wrong');
+        Assert.AreEqual('29455501020000', Vendor."Fax No.", 'Fax No. of Migrated Vendor is wrong');
+
+        // [WHEN] the Vendor does not have a Remit To address
+        Vendor.Reset();
+        Vendor.SetRange("No.", 'V3130');
+        Vendor.FindFirst();
+
+        // [then] The originally selected main address stays the same
+        Assert.AreEqual('Lmd Telecom, Inc.', Vendor.Name, 'Name of Migrated Vendor is wrong');
+        Assert.AreEqual('', Vendor.Contact, 'Contact Name of Migrated Vendor is wrong');
+        Assert.AreEqual('P.O. Box10158', Vendor.Address, 'Address of Migrated Vendor is wrong');
+        Assert.AreEqual('2201a Jacsboro Highway', Vendor."Address 2", 'Address2 of Migrated Vendor is wrong');
+        Assert.AreEqual('Fort Worth', Vendor.City, 'City of Migrated Vendor is wrong');
+        Assert.AreEqual('41327348230000', Vendor."Phone No.", 'Phone No. of Migrated Vendor is wrong');
+        Assert.AreEqual('41327348300000', Vendor."Fax No.", 'Fax No. of Migrated Vendor is wrong');
     end;
 
     [Test]
@@ -384,6 +413,7 @@ codeunit 139664 "GP Data Migration Tests"
             exit;
 
         GPCustomer.DeleteAll();
+        GPVendorAddress.DeleteAll();
         GPVendor.DeleteAll();
 
         if UnbindSubscription(GPDataMigrationTests) then
@@ -495,6 +525,7 @@ codeunit 139664 "GP Data Migration Tests"
     local procedure CreateVendorData()
     begin
         GPVendor.DeleteAll();
+        GPVendorAddress.DeleteAll();
 
         GPVendor.Init();
         GPVendor.VENDORID := '%#$!<>';
@@ -1795,7 +1826,69 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendor.UPSZONE := 'F4';
         GPVendor.TXIDNMBR := '45-0029728';
         GPVendor.Insert();
+
+        GPVendorAddress.Init();
+        GPVendorAddress.VENDORID := 'V3130';
+        GPVendorAddress.ADRSCODE := 'PRIMARY';
+        GPVendorAddress.VNDCNTCT := 'Test Contact';
+        GPVendorAddress.ADDRESS1 := 'P.O. Box10159';
+        GPVendorAddress.ADDRESS2 := '2201a Jacsboro Highway 2';
+        GPVendorAddress.CITY := 'Fort Worth';
+        GPVendorAddress.STATE := 'TX';
+        GPVendorAddress.ZIPCODE := '76114';
+        GPVendorAddress.PHNUMBR1 := '41327348230000';
+        GPVendorAddress.FAXNUMBR := '41327348300000';
+        GPVendorAddress.Insert();
+
+        GPVendor.Init();
+        GPVendor.VENDORID := 'ACETRAVE0001';
+        GPVendor.VENDNAME := 'A Travel Company';
+        GPVendor.SEARCHNAME := 'A Travel Company';
+        GPVendor.VNDCHKNM := 'A Travel Company';
+        GPVendor.ADDRESS1 := '123 Riley Street';
+        GPVendor.ADDRESS2 := '';
+        GPVendor.CITY := 'Sydney';
+        GPVendor.VNDCNTCT := 'Greg Powell';
+        GPVendor.PHNUMBR1 := '29855501010000';
+        GPVendor.PYMTRMID := 'Net 30';
+        GPVendor.SHIPMTHD := 'OVERNIGHT';
+        GPVendor.COUNTRY := 'Australia';
+        GPVendor.PYMNTPRI := '1';
+        GPVendor.AMOUNT := 6713.27000;
+        GPVendor.FAXNUMBR := '29455501010000';
+        GPVendor.ZIPCODE := '2086';
+        GPVendor.STATE := 'NSW';
+        GPVendor.INET1 := '';
+        GPVendor.INET2 := ' ';
+        GPVendor.TAXSCHID := 'AUSNSWST+20';
+        GPVendor.UPSZONE := '';
+        GPVendor.TXIDNMBR := '';
+        GPVendor.Insert();
+
+        GPVendorAddress.Init();
+        GPVendorAddress.VENDORID := 'ACETRAVE0001';
+        GPVendorAddress.ADRSCODE := 'PRIMARY';
+        GPVendorAddress.VNDCNTCT := 'Greg Powell';
+        GPVendorAddress.ADDRESS1 := '123 Riley Street';
+        GPVendorAddress.ADDRESS2 := '';
+        GPVendorAddress.CITY := 'Sydney';
+        GPVendorAddress.STATE := 'NSW';
+        GPVendorAddress.ZIPCODE := '2086';
+        GPVendorAddress.PHNUMBR1 := '29855501010000';
+        GPVendorAddress.FAXNUMBR := '29455501010000';
+        GPVendorAddress.Insert();
+
+        GPVendorAddress.Init();
+        GPVendorAddress.VENDORID := 'ACETRAVE0001';
+        GPVendorAddress.ADRSCODE := 'REMIT TO';
+        GPVendorAddress.VNDCNTCT := 'Greg Powell';
+        GPVendorAddress.ADDRESS1 := 'Box 342';
+        GPVendorAddress.ADDRESS2 := '';
+        GPVendorAddress.CITY := 'Sydney';
+        GPVendorAddress.STATE := 'NSW';
+        GPVendorAddress.ZIPCODE := '2000';
+        GPVendorAddress.PHNUMBR1 := '29855501020000';
+        GPVendorAddress.FAXNUMBR := '29455501020000';
+        GPVendorAddress.Insert();
     end;
 }
-
-
