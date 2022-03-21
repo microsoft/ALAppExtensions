@@ -124,7 +124,7 @@ codeunit 9044 "ABS Format Helper"
         foreach TagNode in TagNodesList do begin
             KeyValue := GetSingleNodeInnerText(TagNode, 'Key');
             Value := GetSingleNodeInnerText(TagNode, 'Value');
-            if (KeyValue = '') or (Value = '') then begin
+            if KeyValue = '' then begin
                 Clear(Tags);
                 exit;
             end;
