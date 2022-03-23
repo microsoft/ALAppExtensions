@@ -1,0 +1,132 @@
+/// <summary>
+/// Codeunit Shpfy Authentication Mgt. (ID 30199).
+/// </summary>
+codeunit 30199 "Shpfy Authentication Mgt."
+{
+    var
+        // https://shopify.dev/api/usage/access-scopes
+        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping', Locked
+
+
+    [NonDebuggable]
+    local procedure ApiKey(): Text
+    begin
+        //TODO: Get API Key
+    end;
+
+    [NonDebuggable]
+    local procedure SecretKey(): Text
+    begin
+        //TODO: Get SecretKey
+    end;
+
+    [NonDebuggable]
+    internal procedure InstallShopifyApp(InstalllToStore: Text)
+    var
+        OAuth2: Codeunit "OAuth2";
+        ShopifyAuthentication: Page "Shpfy Authentication";
+        State: Integer;
+        GrandOptionsTxt: Label 'value', Locked = true;
+        Url: Text;
+        RedirectUrl: Text;
+        Store: Text;
+        AuthorizationCode: Text;
+        InstallURLTxt: Label 'https://%1/admin/oauth/authorize?client_id=%2&scope=%3&redirect_uri=%4&state=%5&grant_options[]=%6', Comment = '%1 = Store, %2 = ApiKey, %3 = Scope, %3 = RedirectUrl, %4 = State, %6= GrantOptions', Locked = true;
+        NotMatchingStateErr: Label 'The state parameter value does not match.';
+    begin
+        OAuth2.GetDefaultRedirectURL(RedirectUrl);
+        State := Random(999);
+        Url := StrSubstNo(InstallURLTxt, InstalllToStore, ApiKey(), ScopeTxt, RedirectUrl, State, GrandOptionsTxt);
+        ShopifyAuthentication.SetOAuth2Properties(Url);
+        Commit();
+        ShopifyAuthentication.RunModal();
+        if State <> ShopifyAuthentication.State() then
+            Error(NotMatchingStateErr);
+        Store := ShopifyAuthentication.Store();
+        AuthorizationCode := ShopifyAuthentication.GetAuthorizationCode();
+        GetToken(Store, AuthorizationCode);
+    end;
+
+    [NonDebuggable]
+    local procedure GetToken(Store: Text; AuthorizationCode: Text)
+    var
+        JHelper: Codeunit "Shpfy Json Helper";
+        Body: Text;
+        Url: Text;
+        HttpClient: HttpClient;
+        RequestHeaders: HttpHeaders;
+        RequestHttpContent: HttpContent;
+        ResponseMessage: HttpResponseMessage;
+        JObject: JsonObject;
+        RequestBody: JsonObject;
+        AccessTokenURLTxt: Label 'https://%1/admin/oauth/access_token', Comment = '%1 = Store', Locked = true;
+    begin
+        RequestBody.Add('client_id', ApiKey());
+        RequestBody.Add('client_secret', SecretKey());
+        RequestBody.Add('code', AuthorizationCode);
+        RequestBody.WriteTo(Body);
+
+        Url := StrSubstNo(AccessTokenURLTxt, Store);
+
+        RequestHttpContent.WriteFrom(Body);
+        RequestHttpContent.GetHeaders(RequestHeaders);
+        RequestHeaders.Clear();
+        RequestHeaders.Add('Content-Type', 'application/json');
+
+        if not HttpClient.Post(Url, RequestHttpContent, ResponseMessage) then
+            exit;
+
+        Clear(Body);
+        ResponseMessage.Content().ReadAs(Body);
+        JObject.ReadFrom(Body);
+        SaveStoreInfo(Store, JHelper.GetValueAsText(JObject.AsToken(), 'scope'), JHelper.GetValueAsText(JObject.AsToken(), 'access_token'));
+    end;
+
+
+    [NonDebuggable]
+    local procedure SaveStoreInfo(Store: Text; ActualScope: Text; AccessToken: Text)
+    var
+        RegisteredStore: Record "Shpfy Registered Store";
+    begin
+        Store := Store.ToLower();
+        if not RegisteredStore.Get(Store) then begin
+            RegisteredStore.Init();
+            RegisteredStore.Store := CopyStr(Store, 1, MaxStrLen(RegisteredStore.Store));
+            RegisteredStore.Insert();
+        end;
+        RegisteredStore.RequestedScope := ScopeTxt;
+        RegisteredStore.ActualScope := CopyStr(ActualScope, 1, MaxStrLen(RegisteredStore.ActualScope));
+        RegisteredStore.Modify();
+        RegisteredStore.SetAccessToken(AccessToken);
+    end;
+
+    [NonDebuggable]
+    internal procedure GetAccessToken(Store: Text): Text
+    var
+        RegisteredStore: Record "Shpfy Registered Store";
+        AccessToken: Text;
+        NoAccessTokenErr: label 'No Access token for the store "%1".\Please request an access token for this store.', Comment = '%1 = Store';
+        ChangedScopeErr: Label 'The apllication scope is changed, please request a new access token for the store "%1".', Comment = '%1 = Store';
+    begin
+        if RegisteredStore.Get(Store) then
+            if RegisteredStore.RequestedScope = ScopeTxt then begin
+                AccessToken := RegisteredStore.GetAccessToken();
+                if AccessToken <> '' then
+                    exit(AccessToken)
+                else
+                    Error(NoAccessTokenErr, Store);
+            end else
+                Error(ChangedScopeErr, Store);
+        Error(NoAccessTokenErr, Store);
+    end;
+
+    [NonDebuggable]
+    internal procedure AccessTokenExist(Store: Text): Boolean
+    var
+        RegisteredStore: Record "Shpfy Registered Store";
+    begin
+        if RegisteredStore.Get(Store) then
+            if RegisteredStore.RequestedScope = ScopeTxt then
+                exit(RegisteredStore.GetAccessToken() <> '');
+    end;
+}
