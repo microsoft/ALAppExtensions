@@ -50,13 +50,13 @@ codeunit 139671 "GP Cloud Migration E2E Test"
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridCompany: Record "Hybrid Company";
         DummyHybridCompanyStatus: Record "Hybrid Company Status";
-        CloudMigE2EEventHandler: Codeunit "Cloud Mig E2E Event Handler";
+        //CloudMigE2EEventHandler: Codeunit "Cloud Mig E2E Event Handler";
         GPE2ETestEventHandler: Codeunit "GP E2E Test Event Handler";
         IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
     begin
         // [GIVEN] Cloud Migration has been succesfully setup
         Initialize();
-        BindSubscription(CloudMigE2EEventHandler);
+        //BindSubscription(CloudMigE2EEventHandler);
         BindSubscription(GPE2ETestEventHandler);
         InsertSetupRecords();
 
