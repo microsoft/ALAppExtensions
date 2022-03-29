@@ -5,6 +5,9 @@ codeunit 31097 "Substitute Report Handler CZL"
 
     var
         InstructionMgt: Codeunit "Instruction Mgt.";
+#if not CLEAN20
+        ReplaceMulIntRateMgt: Codeunit "Replace Mul. Int. Rate Mgt.";
+#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::ReportManagement, 'OnAfterSubstituteReport', '', false, false)]
     local procedure OnSubstituteGeneralReport(ReportId: Integer; var NewReportId: Integer)
@@ -14,13 +17,24 @@ codeunit 31097 "Substitute Report Handler CZL"
         if IsTestingEnvironment() then
             exit;
 
+#if not CLEAN20
+        if not ReplaceMulIntRateMgt.IsEnabled() then
+            case ReportId of
+                Report::"Finance Charge Memo CZL":
+                    begin
+                        NewReportId := Report::"Finance Charge Memo MIR CZL";
+                        exit;
+                    end;
+                Report::"Reminder CZL":
+                    begin
+                        NewReportId := Report::"Reminder MIR CZL";
+                        exit;
+                    end;
+            end;
+#endif
         if not InstructionMgt.IsEnabled(GetSubstituteGeneralReportsNotificationId()) then begin
             // "Use standard general reports substitution" in My Notifications is disabled
             case ReportId of
-#if not CLEAN17
-                Report::"Accounting Sheets CZL":
-                    NewReportId := Report::"Accounting Sheets";
-#endif
                 Report::"Balance Sheet CZL":
                     NewReportId := Report::"Balance Sheet";
                 Report::"Adjust Exchange Rates CZL":
@@ -33,10 +47,6 @@ codeunit 31097 "Substitute Report Handler CZL"
                     NewReportId := Report::"Close Income Statement";
                 Report::"Create Stockkeeping Unit CZL":
                     NewReportId := Report::"Create Stockkeeping Unit";
-#if not CLEAN17
-                Report::"G/L VAT Reconciliation CZL":
-                    NewReportId := Report::"G/L VAT Reconciliation CZ";
-#endif
                 Report::"Income Statement CZL":
                     NewReportId := Report::"Income Statement";
                 Report::"VAT Statement CZL":
@@ -67,10 +77,6 @@ codeunit 31097 "Substitute Report Handler CZL"
                     Message(UsedStandardReportMsg, NewReportId);
         end else
             case ReportId of
-#if not CLEAN17
-                Report::"Accounting Sheets":
-                    NewReportId := Report::"Accounting Sheets CZL";
-#endif
                 Report::"Balance Sheet":
                     NewReportId := Report::"Balance Sheet CZL";
                 Report::"Adjust Exchange Rates":
@@ -83,10 +89,6 @@ codeunit 31097 "Substitute Report Handler CZL"
                     NewReportId := Report::"Close Income Statement CZL";
                 Report::"Create Stockkeeping Unit":
                     NewReportId := Report::"Create Stockkeeping Unit CZL";
-#if not CLEAN17
-                Report::"G/L VAT Reconciliation CZ":
-                    NewReportId := Report::"G/L VAT Reconciliation CZL";
-#endif
                 Report::"Income Statement":
                     NewReportId := Report::"Income Statement CZL";
                 Report::"VAT Statement":

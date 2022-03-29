@@ -17,21 +17,29 @@ codeunit 2028 "Contact Picture Analyze"
 
     [EventSubscriber(ObjectType::Page, PAGE::"Contact Picture", 'OnAfterActionEvent', 'ImportPicture', false, false)]
     procedure OnAfterImportPictureAnalyzePicture(var Rec: Record Contact)
+    begin
+        AnalyzePicture(Rec);
+    end;
+
+    procedure AnalyzePicture(var ContactRec: Record Contact): Boolean
     var
         ImageAnalysisResult: Codeunit "Image Analysis Result";
         AnalysisType: Option Tags,Faces,Color;
     begin
         if ImageAnalyzerExtMgt.IsSaasAndCannotUseRelationshipMgmt() then
-            exit;
+            exit(false);
 
-        if not (Rec.Type = Rec.Type::Person) then
-            exit;
+        if not (ContactRec.Type = ContactRec.Type::Person) then
+            exit(false);
 
-        if not Rec.Image.HasValue() then
-            exit;
+        if not ContactRec.Image.HasValue() then
+            exit(false);
 
-        if ImageAnalyzerExtMgt.AnalyzePicture(Rec.Image.MediaId(), ImageAnalysisResult, AnalysisType::Faces) then
-            PopulateContact(Rec, ImageAnalysisResult);
+        if not ImageAnalyzerExtMgt.AnalyzePicture(ContactRec.Image.MediaId(), ImageAnalysisResult, AnalysisType::Faces) then
+            exit(false);
+
+        PopulateContact(ContactRec, ImageAnalysisResult);
+        exit(true);
     end;
 
     procedure PopulateContact(var Contact: Record Contact; ImageAnalysisResult: Codeunit "Image Analysis Result")

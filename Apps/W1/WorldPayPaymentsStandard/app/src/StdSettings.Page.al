@@ -20,6 +20,7 @@ page 1364 "MS - WorldPay Std. Settings"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'WorldPay Email';
+                    ToolTip = 'Specify the Account';
 
                     trigger OnValidate()
                     var

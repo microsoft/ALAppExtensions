@@ -16,6 +16,14 @@ pageextension 11755 "VAT Entries CZL" extends "VAT Entries"
                 Visible = false;
             }
         }
+        addafter("Document No.")
+        {
+            field("External Document No. CZL"; Rec."External Document No.")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the number that the vendor uses on the invoice they sent to you or number of receipt.';
+            }
+        }
         addafter("VAT Registration No.")
         {
             field("Registration No. CZL"; Rec."Registration No. CZL")

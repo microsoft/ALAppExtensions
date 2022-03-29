@@ -182,7 +182,6 @@ table 11716 "Stg Intrastat Jnl. Line"
         field(31062; "Statistic Indication"; Code[10])
         {
             Caption = 'Statistic Indication';
-            TableRelation = "Statistic Indication".Code WHERE("Tariff No." = FIELD("Tariff No."));
             ObsoleteState = Pending;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
             ObsoleteTag = '18.0';

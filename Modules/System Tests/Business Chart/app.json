@@ -1,0 +1,50 @@
+{
+    "id":  "1bd089ed-d023-4159-8299-25040fb51671",
+    "name":  "Business Chart Test",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for the Business Chart module",
+    "description":  "Tests for the Business Chart module",
+    "version":  "20.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "9c9b6fdc-6a1a-4cab-aa92-47ba72534897",
+                             "name":  "Business Chart",
+                             "publisher":  "Microsoft",
+                             "version":  "20.0.0.0"
+                         },
+                         {
+                             "id":  "be679cd3-54a9-4d9c-9381-5ed0eeb973b8",
+                             "name":  "Business Chart Test Library",
+                             "publisher":  "Microsoft",
+                             "version":  "20.0.0.0"
+                         },
+                         {
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "name":  "Library Assert",
+                             "publisher":  "Microsoft",
+                             "version":  "20.0.0.0"
+                         },
+                         {
+                             "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+                             "name":  "DotNet Aliases",
+                             "publisher":  "Microsoft",
+                             "version":  "20.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "20.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  135012,
+                         "to":  135012
+                     }
+                 ],
+    "target":  "OnPrem"
+}

@@ -586,7 +586,7 @@ table 11510 "Swiss QR-Bill Buffer"
             if MaxStrLength - BillInfoTextLen - 3 > 0 then
                 "Unstructured Message" :=
                     CopyStr(
-                        StrSubstNo('%1...', CopyStr("Unstructured Message", 1, MaxStrLength - BillInfoTextLen - 3)),
+                        CopyStr("Unstructured Message", 1, MaxStrLength - BillInfoTextLen - 3) + '...',
                         1, MaxStrLen("Unstructured Message"))
             else
                 "Unstructured Message" := '';

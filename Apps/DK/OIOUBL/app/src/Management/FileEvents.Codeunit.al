@@ -5,6 +5,11 @@
 
 codeunit 13667 "OIOUBL-File Events"
 {
+    procedure BlobCreated(var TempBlob: Codeunit "Temp Blob")
+    begin
+        OnBlobCreatedEvent(TempBlob);
+    end;
+
     procedure FileCreated(FilePath: Text)
     begin
         FileCreatedEvent(FilePath);
@@ -12,6 +17,11 @@ codeunit 13667 "OIOUBL-File Events"
 
     [IntegrationEvent(false, false)]
     local procedure FileCreatedEvent(FilePath: Text)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBlobCreatedEvent(var TempBlob: Codeunit "Temp Blob")
     begin
     end;
 }

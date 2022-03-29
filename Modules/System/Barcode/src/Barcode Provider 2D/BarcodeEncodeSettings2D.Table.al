@@ -39,6 +39,7 @@ table 9204 "Barcode Encode Settings 2D"
         /// </summary>
         field(3; "Quite Zone Width"; Integer)
         {
+            Caption = 'Quiet Zone Width';
             DataClassification = SystemMetadata;
         }
 

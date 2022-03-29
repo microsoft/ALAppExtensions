@@ -127,12 +127,12 @@ codeunit 1266 "Cryptography Management"
     /// <summary>
     /// Generates a hash from a stream based on the provided hash algorithm.
     /// </summary>
-    /// <param name="InputString">Input string.</param>
+    /// <param name="InputInStream">Input string.</param>
     /// <param name="HashAlgorithmType">The available hash algorithms include HMACMD5, HMACSHA1, HMACSHA256, HMACSHA384, and HMACSHA512.</param>
     /// <returns>Base64 hashed value.</returns>
-    procedure GenerateHash(InputString: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512): Text
+    procedure GenerateHash(InputInStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512): Text
     begin
-        exit(CryptographyManagementImpl.GenerateHash(InputString, HashAlgorithmType));
+        exit(CryptographyManagementImpl.GenerateHash(InputInStream, HashAlgorithmType));
     end;
 
     /// <summary>
@@ -206,7 +206,32 @@ codeunit 1266 "Cryptography Management"
         CryptographyManagementImpl.SignData(DataInStream, XmlString, HashAlgorithm, SignatureOutStream);
     end;
 
+    /// <summary>
+    /// Computes the hash value of the specified string and signs it.
+    /// </summary>
+    /// <param name="InputString">Input string for signing.</param>
+    /// <param name="SignatureKey">The private key to use in the hash algorithm.</param>
+    /// <param name="HashAlgorithm">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
+    /// <param name="SignatureOutStream">The stream to write the signature for the specified string.</param>
+    procedure SignData(InputString: Text; SignatureKey: Codeunit "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+    begin
+        CryptographyManagementImpl.SignData(InputString, SignatureKey, HashAlgorithm, SignatureOutStream);
+    end;
+
+    /// <summary>
+    /// Computes the hash value of the specified data and signs it.
+    /// </summary>
+    /// <param name="DataInStream">The stream of input data.</param>
+    /// <param name="SignatureKey">The private key to use in the hash algorithm.</param>
+    /// <param name="HashAlgorithm">The available hash algorithms are MD5, SHA1, SHA256, SHA384, and SHA512.</param>
+    /// <param name="SignatureOutStream">The stream to write the signature for the specified input data.</param>
+    procedure SignData(DataInStream: InStream; SignatureKey: Codeunit "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureOutStream: OutStream)
+    begin
+        CryptographyManagementImpl.SignData(DataInStream, SignatureKey, HashAlgorithm, SignatureOutStream);
+    end;
+
 #if not CLEAN19
+#pragma warning disable AL0432
     /// <summary>
     /// Computes the hash value of the specified string and signs it.
     /// </summary>
@@ -232,6 +257,7 @@ codeunit 1266 "Cryptography Management"
     begin
         CryptographyManagementImpl.SignData(DataInStream, SignatureKey, HashAlgorithm, SignatureOutStream);
     end;
+#pragma warning restore
 #endif
 
 #if not CLEAN18
@@ -291,6 +317,7 @@ codeunit 1266 "Cryptography Management"
     end;
 
 #if not CLEAN19
+#pragma warning disable AL0432
     /// <summary>
     /// Verifies that a digital signature is valid.
     /// </summary>
@@ -318,6 +345,7 @@ codeunit 1266 "Cryptography Management"
     begin
         exit(CryptographyManagementImpl.VerifyData(DataInStream, SignatureKey, HashAlgorithm, SignatureInStream));
     end;
+#pragma warning restore
 #endif
 
 #if not CLEAN18

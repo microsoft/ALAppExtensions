@@ -1,0 +1,62 @@
+{
+    "id":  "b300f707-59e0-4ce4-9770-85b3965a1d11",
+    "name":  "Email - SMTP API Tests",
+    "publisher":  "Microsoft",
+    "brief":  "Tests for the Email - SMTP API app",
+    "description":  "Tests for the Email - SMTP API app",
+    "version":  "20.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2173079",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
+    "logo":  "ExtensionLogo.png",
+    "dependencies":  [
+                         {
+                             "id":  "51493bda-1ba4-46dc-a72e-65eadc0e63b1",
+                             "name":  "Email - SMTP API Test Library",
+                             "publisher":  "Microsoft",
+                             "version":  "20.0.0.0"
+                         },
+                         {
+                            "id":  "8fc50dfb-d338-4fd9-9499-5e44cc8cbf50",
+                            "name":  "Email - SMTP API",
+                            "publisher":  "Microsoft",
+                            "version":  "20.0.0.0"
+                        },
+                         {
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "name":  "Library Assert",
+                             "publisher":  "Microsoft",
+                             "version":  "20.0.0.0"
+                         },
+                         {
+                             "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+                             "name":  "Any",
+                             "publisher":  "Microsoft",
+                             "version":  "20.0.0.0"
+                         },
+                         {
+                             "id":  "9856ae4f-d1a7-46ef-89bb-6ef056398228",
+                             "name":  "System Application Test Library",
+                             "publisher":  "Microsoft",
+                             "version":  "20.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "20.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  100000,
+                         "to":  150000
+                     }
+                 ],
+    "target":  "OnPrem",
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520"
+}

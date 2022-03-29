@@ -118,8 +118,8 @@ codeunit 10673 "Generate SAF-T File"
             '', GetSAFTShortText(Employee."Mobile Phone No."));
         ExportTaxRegistration(CompanyInformation."VAT Registration No.");
         ExportBankAccount(
-            CompanyInformation."Country/Region Code", CompanyInformation."Bank Name", CompanyInformation."Bank Account No.", CompanyInformation.IBAN,
-            CompanyInformation."Bank Branch No.", '');
+            CompanyInformation."Bank Name", CompanyInformation."Bank Account No.", CompanyInformation.IBAN,
+            CompanyInformation."Bank Branch No.", '', CompanyInformation."SWIFT Code", '', '');
         ExportBankAccounts();
         SAFTXMLHelper.FinalizeXMLNode();
     end;
@@ -332,9 +332,10 @@ codeunit 10673 "Generate SAF-T File"
         if CustomerBankAccount.FindSet() then
             repeat
                 ExportBankAccount(
-                    Customer."Country/Region Code", CombineWithSpace(CustomerBankAccount.Name, CustomerBankAccount."Name 2"),
+                    CombineWithSpace(CustomerBankAccount.Name, CustomerBankAccount."Name 2"),
                     CustomerBankAccount."Bank Account No.", CustomerBankAccount.IBAN,
-                    CustomerBankAccount."Bank Branch No.", CustomerBankAccount."Currency Code");
+                    CustomerBankAccount."Bank Branch No.", CustomerBankAccount."Bank Clearing Code",
+                    CustomerBankAccount."SWIFT Code", CustomerBankAccount."Currency Code", '');
             until CustomerBankAccount.Next() = 0;
         SAFTXMLHelper.AppendXMLNode('CustomerID', Customer."No.");
         CustomerPostingGroup.get(customer."Customer Posting Group");
@@ -418,12 +419,13 @@ codeunit 10673 "Generate SAF-T File"
         If VendorBankAccount.FindSet() then
             repeat
                 ExportBankAccount(
-                    Vendor."Country/Region Code", CombineWithSpace(VendorBankAccount.Name, VendorBankAccount."Name 2"),
+                    CombineWithSpace(VendorBankAccount.Name, VendorBankAccount."Name 2"),
                     VendorBankAccount."Bank Account No.", VendorBankAccount.IBAN,
-                    VendorBankAccount."Bank Branch No.", VendorBankAccount."Currency Code");
+                    VendorBankAccount."Bank Branch No.", VendorBankAccount."Bank Clearing Code",
+                    VendorBankAccount."SWIFT Code", VendorBankAccount."Currency Code", '');
             until VendorBankAccount.Next() = 0;
         If Vendor."Recipient Bank Account No." <> '' then
-            ExportBankAccount(Vendor."Country/Region Code", '', Vendor."Recipient Bank Account No.", '', '', '');
+            ExportBankAccount(Vendor."Bank Name", Vendor."Recipient Bank Account No.", '', '', '', Vendor.SWIFT, '', '');
         SAFTXMLHelper.AppendXMLNode('SupplierID', Vendor."No.");
         VendorPostingGroup.Get(Vendor."Vendor Posting Group");
         SAFTXMLHelper.AppendXMLNode('AccountID', VendorPostingGroup."Payables Account");
@@ -793,63 +795,35 @@ codeunit 10673 "Generate SAF-T File"
 
         repeat
             ExportBankAccount(
-                BankAccount."Country/Region Code", CombineWithSpace(BankAccount.Name, BankAccount."Name 2"),
+                CombineWithSpace(BankAccount.Name, BankAccount."Name 2"),
                 BankAccount."Bank Account No.", BankAccount.IBAN,
-                BankAccount."Bank Branch No.", BankAccount."Currency Code");
+                BankAccount."Bank Branch No.", BankAccount."Bank Clearing Code",
+                BankAccount."SWIFT Code", BankAccount."Currency Code", GetGLAccFromBankAccPostingGroup(BankAccount."Bank Acc. Posting Group"));
         until BankAccount.Next() = 0;
     end;
 
-    local procedure ExportBankAccount(CountryCode: Code[10]; BankName: Text; BankNumber: Text; IBAN: Text; BranchNo: Text; CurrencyCode: Code[10])
+    local procedure ExportBankAccount(BankName: Text; BankNumber: Text; IBAN: Text; BranchNo: Text; ClearingCode: Text; SWIFT: Text; CurrencyCode: Code[10]; AccNo: Code[20])
     var
-        TempNameValueBuffer: Record "Name/Value Buffer" temporary;
         SAFTExportMgt: Codeunit "SAF-T Export Mgt.";
-        Exported: Boolean;
+        SortCode: Text;
     begin
         if (IBAN = '') and (BankNumber = '') and (BankName = '') and (BranchNo = '') then
             exit;
 
-
-        GetBankAccInfo(TempNameValueBuffer, CountryCode, BankName, BankNumber, IBAN, BranchNo);
-        Exported := false;
-        if not TempNameValueBuffer.FindSet() then
-            exit;
-
         SAFTXMLHelper.AddNewXMLNode('BankAccount', '');
-        repeat
-            If TempNameValueBuffer.Value <> '' then begin
-                SAFTXMLHelper.AppendXMLNode(TempNameValueBuffer.Name, TempNameValueBuffer.Value);
-                Exported := true;
-            end;
-        until (TempNameValueBuffer.next() = 0) or Exported;
+        SAFTXMLHelper.AppendXMLNode('IBANNumber', IBAN);
+        SAFTXMLHelper.AppendXMLNode('BankAccountNumber', BankNumber);
+        SAFTXMLHelper.AppendXMLNode('BankAccountName', BankName);
+        if ClearingCode = '' then
+            SortCode := BranchNo
+        else
+            SortCode := ClearingCode;
+        SAFTXMLHelper.AppendXMLNode('SortCode', SortCode);
+        SAFTXMLHelper.AppendXMLNode('BIC', SWIFT);
+
         SAFTXMLHelper.AppendXMLNode('CurrencyCode', SAFTExportMgt.GetISOCurrencyCode(CurrencyCode));
+        SAFTXMLHelper.AppendXMLNode('GeneralLedgerAccountID', AccNo);
         SAFTXMLHelper.FinalizeXMLNode();
-    end;
-
-    local procedure GetBankAccInfo(var TempNameValueBuffer: Record "Name/Value Buffer" temporary; CountryCode: Code[10]; BankName: Text; BankNumber: Text; IBAN: Text; BranchNo: Text)
-    var
-        CompanyInformation: Record "Company Information";
-    begin
-        TempNameValueBuffer.Reset();
-        TempNameValueBuffer.DeleteAll();
-        CompanyInformation.Get();
-        if CountryCode = CompanyInformation."Country/Region Code" then begin
-            InsertTempNameValueBuffer(TempNameValueBuffer, 'BankAccountNumber', BankNumber);
-            InsertTempNameValueBuffer(TempNameValueBuffer, 'IBANNumber', IBAN);
-        end else begin
-            InsertTempNameValueBuffer(TempNameValueBuffer, 'IBANNumber', IBAN);
-            InsertTempNameValueBuffer(TempNameValueBuffer, 'BankAccountNumber', BankNumber);
-        end;
-        InsertTempNameValueBuffer(TempNameValueBuffer, 'BankAccountName', BankName);
-        InsertTempNameValueBuffer(TempNameValueBuffer, 'SortCode', BranchNo);
-    end;
-
-    local procedure InsertTempNameValueBuffer(var TempNameValueBuffer: Record "Name/Value Buffer" temporary; Name: Text; Value: Text)
-    begin
-        TempNameValueBuffer.Id += 1;
-        TempNameValueBuffer.Name := copystr(Name, 1, MaxStrLen(TempNameValueBuffer.Name));
-        TempNameValueBuffer.Value := copystr(Value, 1, MaxStrLen(TempNameValueBuffer.Value));
-        if not TempNameValueBuffer.Insert() then
-            TempNameValueBuffer.Modify();
     end;
 
     local procedure ExportPaymentTerms(PaymentTermsCode: Code[10])
@@ -950,6 +924,17 @@ codeunit 10673 "Generate SAF-T File"
             FirstName := copystr(ContactName, 1, SpacePos - 1);
             LastName := copystr(ContactName, SpacePos + 1, StrLen(ContactName) - SpacePos);
         end;
+    end;
+
+    local procedure GetGLAccFromBankAccPostingGroup(BankAccPostGroupCode: Code[20]): Code[20]
+    var
+        BankAccPostingGroup: Record "Bank Account Posting Group";
+    begin
+        if BankAccPostGroupCode = '' then
+            exit('');
+        if not BankAccPostingGroup.Get(BankAccPostGroupCode) then
+            exit('');
+        exit(BankAccPostingGroup."G/L Account No.");
     end;
 
     local procedure FinalizeExport(var SAFTExportLine: Record "SAF-T Export Line"; SAFTExportHeader: Record "SAF-T Export Header")

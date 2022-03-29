@@ -112,6 +112,20 @@ tableextension 11720 "Cust. Ledger Entry CZL" extends "Cust. Ledger Entry"
         OnAfterUpdateBankInfoCZL(Rec);
     end;
 
+    procedure CalcSuggestedAmountToApplyCZL(): Decimal
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        exit(CrossApplicationMgtCZL.CalcSuggestedAmountToApplyCustLedgerEntry(Rec));
+    end;
+
+    procedure DrillDownSuggestedAmountToApplyCZL()
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        CrossApplicationMgtCZL.DrillDownSuggestedAmountToApplyCustLedgerEntry(Rec);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateBankInfoCZL(var CustLedgerEntry: Record "Cust. Ledger Entry")
     begin

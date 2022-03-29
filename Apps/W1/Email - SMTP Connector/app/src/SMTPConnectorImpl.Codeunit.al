@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 4513 "SMTP Connector Impl."
+codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
 {
     Access = Internal;
     Permissions = tabledata "SMTP Account" = rimd;
@@ -11,8 +11,7 @@ codeunit 4513 "SMTP Connector Impl."
     var
         SMTPAccount: Record "SMTP Account";
         SMTPMessage: Codeunit "SMTP Message";
-        SMTPClient: Interface "SMTP Client";
-        SMTPClientInitialized: Boolean;
+        SMTPClient: Codeunit "SMTP Client";
         SmtpCategoryLbl: Label 'Email SMTP', Locked = true;
         ConnectorDescriptionTxt: Label 'Use SMTP to send emails.';
 
@@ -29,19 +28,13 @@ codeunit 4513 "SMTP Connector Impl."
         SmtpSendTelemetryMsg: Label 'Email sent.';
         TestEmailBodyTxt: Label '<p style="font-family:Verdana,Arial;font-size:10pt"><b>The user %1 sent this message to test their email settings. You do not need to reply to this message.</b></p><p style="font-family:Verdana,Arial;font-size:9pt"><b>Sent through SMTP Server:</b> %2<BR><b>SMTP Port:</b> %3<BR><b>Authentication:</b> %4<BR><b>Using Secure Connection:</b> %5<br/></p>', Comment = '%1 is an email address, such as user@domain.com; %2 is the name of a mail server, such as mail.live.com; %3 is the TCP port number, such as 25; %4 is the authentication method, such as Basic Authentication; %5 is a boolean value, such as True;', Locked = true;
         NotRegisteredAccountErr: Label 'We could not find the account. Typically, this is because the account has been deleted.';
-        SMTPConnectorBase64LogoTxt: Label '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', Locked = true;
-        FeatureNotificationMsg: Label 'Enhanced email capabilities are available as a replacement for this legacy feature.';
-        FeatureNotificationWithOldSmtpMsg: Label 'Enhanced email capabilities are enabled, and your legacy SMTP settings are copied to an account on the Email Accounts page. You can use both, but there is no synchronization between the two.';
-        SmtpNotificationMsg: Label 'SMTP settings for the %1 account were copied from your legacy SMTP setup.', Comment = '%1 = The name of the account that was copied.';
-        SmtpOnEditingNotificationMsg: Label 'If you have a legacy SMTP email setup that uses this account, you might also need to change those settings. Otherwise, that account or extensions that use it might stop working.';
-        GetStartedTxt: Label 'Get started';
-        LearnMoreTxt: Label 'Learn more';
-        GoThereNowTxt: Label 'Go there now';
-        LearnMoreUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2135107', Locked = true;
-        SmtpNotificationNameTxt: Label 'Notify that legacy SMTP email setup was copied';
-        SmtpNotificationDescTxt: Label 'The first time that the Email Accounts page is opened, show a notification saying that legacy SMTP settings has been copied to the new email setup.';
+        SMTPConnectorBase64LogoTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAExSURBVHgB7ZiBbYMwEEXPKANkg2IWaztBu0HTDdoN6GT2CNmAfrc5yaAEmtiuY+k/CVkgc/xnyzIgQgghhDSMsdZO0jCdNE7zArvFuZ+m6eC9/5I7o+/7fdd1r8j3gtO9Xr+0Bu5G5FJwZWsRVxPZCq7M1gA6P6PxcR1jzAhJh4KP8g+E4MMwHPBchzxvMg9/DAMa95/NgHPOnIo8oUC4uV/ULzYjGyMegn+g/cSzj3HmswJR0eIi1wTXi38WkIIitwS/WUAyiqQETxaQBJEcwbMJyBUiOYNnF1DWROQ3dJbgSnYBZUVESQquxJmzvswh1IhBsGc2xJ8NCIdFn/eU8Et2UoAggmYMM4L2QRJHfI0iAspJpCj8oKkNBWpDgdpQoDbNC/DXYm2aFyCEEEKa5htkbSOpWa7j1QAAAABJRU5ErkJggg==', Locked = true;
         ObfuscateLbl: Label '%1*%2@%3', Comment = '%1 = First character of username , %2 = Last character of username, %3 = Host', Locked = true;
 
+    /// <summary>
+    /// Gets the registered accounts for the SMTP connector.
+    /// </summary>
+    /// <param name="Accounts">Out parameter holding all the registered accounts for the SMTP connector.</param>
     procedure GetAccounts(var Accounts: Record "Email Account")
     var
         Account: Record "SMTP Account";
@@ -57,16 +50,25 @@ codeunit 4513 "SMTP Connector Impl."
             until Account.Next() = 0;
     end;
 
+    /// <summary>
+    /// Shows accounts information.
+    /// </summary>
+    /// <param name="AccountId">The ID of the account to show.</param>
     procedure ShowAccountInformation(AccountId: Guid)
     var
-        SMTPAccount: Record "SMTP Account";
+        SMTPAccountLocal: Record "SMTP Account";
     begin
-        if not SMTPAccount.Get(AccountId) then
+        if not SMTPAccountLocal.Get(AccountId) then
             Error(NotRegisteredAccountErr);
 
-        Page.Run(Page::"SMTP Account", SMTPAccount);
+        Page.Run(Page::"SMTP Account", SMTPAccountLocal);
     end;
 
+    /// <summary>
+    /// Register an e-mail account for the SMTP connector.
+    /// </summary>
+    /// <param name="Account">Out parameter holding details of the registered account.</param>
+    /// <returns>True if the registration was successful; false - otherwise.</returns>
     procedure RegisterAccount(var Account: Record "Email Account"): Boolean
     var
         SMTPAccountWizard: Page "SMTP Account Wizard";
@@ -76,25 +78,34 @@ codeunit 4513 "SMTP Connector Impl."
         exit(SMTPAccountWizard.GetAccount(Account));
     end;
 
+    /// <summary>
+    /// Deletes an e-mail account for the SMTP connector.
+    /// </summary>
+    /// <param name="AccountId">The ID of the e-mail account</param>
+    /// <returns>True if an account was deleted.</returns>
     procedure DeleteAccount(AccountId: Guid): Boolean
     var
-        SMTPAccount: Record "SMTP Account";
+        SMTPAccountLocal: Record "SMTP Account";
     begin
-        if SMTPAccount.Get(AccountId) then
-            exit(SMTPAccount.Delete());
+        if SMTPAccountLocal.Get(AccountId) then
+            exit(SMTPAccountLocal.Delete());
 
         exit(false);
     end;
 
-    internal procedure SetClient(Client: Interface "SMTP Client")
-    begin
-        SMTPClient := Client;
-        SMTPClientInitialized := true;
-    end;
-
+    /// <summary>
+    /// Sends an e-mail via the SMTP connector.
+    /// </summary>
+    /// <param name="Message">The e-mail message to send.</param>
+    /// <param name="AccountId">The ID of the account to be used for sending.</param>
+    /// <error>SMTP connector failed to connect to server.</error>
+    /// <error>SMTP connector failed to authenticate against server.</error>
+    /// <error>SMTP connector failed to send the email.</error>
+    [NonDebuggable]
     procedure Send(Message: Codeunit "Email Message"; AccountId: Guid)
     var
         Account: Record "SMTP Account";
+        SMTPAuthentication: Codeunit "SMTP Authentication";
         Result: Boolean;
         SMTPErrorCode: Text;
     begin
@@ -104,7 +115,7 @@ codeunit 4513 "SMTP Connector Impl."
         Initialize(Account);
 
         ClearLastError();
-        Result := SMTPClient.Connect();
+        Result := SMTPClient.Connect(Account.Server, Account."Server Port", Account."Secure Connection");
 
         if not Result then begin
             SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
@@ -112,7 +123,7 @@ codeunit 4513 "SMTP Connector Impl."
             Session.LogMessage('00009UB', StrSubstNo(SmtpConnectTelemetryErrorMsg,
                     SMTPAccount.Server,
                     SMTPAccount."Server Port",
-                    SMTPAccount.Authentication,
+                    SMTPAccount."Authentication Type",
                     SMTPErrorCode), Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
             Error(ConnectionFailureErr, SMTPAccount.Server);
@@ -121,21 +132,22 @@ codeunit 4513 "SMTP Connector Impl."
         Session.LogMessage('00009UV', StrSubstNo(SmtpConnectedTelemetryMsg,
                 SMTPAccount.Server,
                 SMTPAccount."Server Port",
-                SMTPAccount.Authentication), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+                SMTPAccount."Authentication Type"), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
-        if SMTPAccount.Authentication <> SMTPAccount.Authentication::Anonymous then begin
+        if SMTPAccount."Authentication Type" <> SMTPAccount."Authentication Type"::Anonymous then begin
             ClearLastError();
-            Result := SMTPClient.Authenticate();
+            SMTPAuthentication.SetBasicAuthInfo(Account."User Name", CopyStr(Account.GetPassword(Account."Password Key"), 1, 250));
+            Result := SMTPClient.Authenticate(Account."Authentication Type", SMTPAuthentication);
 
             if not Result then begin
-                Disconnect();
+                SMTPClient.Disconnect();
                 SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
 
                 Session.LogMessage('00009XD', StrSubstNo(SmtpAuthenticateTelemetryErrorMsg,
                         ObsfuscateEmailAddress(SMTPAccount."User Name"),
                         SMTPAccount.Server,
                         SMTPAccount."Server Port",
-                        SMTPAccount.Authentication,
+                        SMTPAccount."Authentication Type",
                         SMTPErrorCode), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
                 Error(AuthenticationFailureErr, SMTPAccount.Server);
@@ -145,19 +157,19 @@ codeunit 4513 "SMTP Connector Impl."
                     ObsfuscateEmailAddress(SMTPAccount."User Name"),
                     SMTPAccount.Server,
                     SMTPAccount."Server Port",
-                    SMTPAccount.Authentication), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+                    SMTPAccount."Authentication Type"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
         end;
 
-        SMTPMessage.BuildMessage(Message, SMTPAccount);
+        BuildSMTPMessage(Message, SMTPAccount, SMTPMessage);
 
         ClearLastError();
-        Result := SMTPClient.SendMessage();
+        Result := SMTPClient.Send(SMTPMessage);
 
         if not Result then begin
-            Disconnect();
+            SMTPClient.Disconnect();
 
             SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
-            Session.LogMessage('00009UZ', StrSubstNo(SmtpSendTelemetryErrorMsg, SMTPAccount.Authentication, SMTPErrorCode), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+            Session.LogMessage('00009UZ', StrSubstNo(SmtpSendTelemetryErrorMsg, SMTPAccount."Authentication Type", SMTPErrorCode), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
             Error(SendingFailureErr);
         end;
@@ -165,11 +177,49 @@ codeunit 4513 "SMTP Connector Impl."
         Session.LogMessage('00009UX', SmtpSendTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
     end;
 
+    local procedure BuildSMTPMessage(EmailMessage: Codeunit "Email Message"; SMTPAccount: Record "SMTP Account"; var SMTPMessage: Codeunit "SMTP Message")
+    var
+        Recipients: List of [Text];
+        AttachmentInStream: InStream;
+    begin
+        // From name/email address
+        SMTPMessage.AddFrom(SMTPAccount."Sender Name", SMTPAccount."Email Address");
+
+        // To, Cc and Bcc Recipients
+        EmailMessage.GetRecipients("Email Recipient Type"::"To", Recipients);
+        SMTPMessage.SetToRecipients(Recipients);
+        EmailMessage.GetRecipients("Email Recipient Type"::"Cc", Recipients);
+        SMTPMessage.SetCcRecipients(Recipients);
+        EmailMessage.GetRecipients("Email Recipient Type"::"Bcc", Recipients);
+        SMTPMessage.SetBccRecipients(Recipients);
+
+        // Subject
+        SMTPMessage.SetSubject(EmailMessage.GetSubject());
+
+        // Body
+        SMTPMessage.SetBody(EmailMessage.GetBody(), EmailMessage.IsBodyHTMLFormatted());
+
+        // Attachments
+        if EmailMessage.Attachments_First() then
+            repeat
+                EmailMessage.Attachments_GetContent(AttachmentInStream);
+                SMTPMessage.AddAttachment(AttachmentInStream, EmailMessage.Attachments_GetName());
+            until EmailMessage.Attachments_Next() = 0;
+    end;
+
+    /// <summary>
+    /// Gets a description of the SMTP connector.
+    /// </summary>
+    /// <returns>A short description of the SMTP connector.</returns>
     procedure GetDescription(): Text[250]
     begin
         exit(ConnectorDescriptionTxt);
     end;
 
+    /// <summary>
+    /// Gets the SMTP connector logo.
+    /// </summary>
+    /// <returns>A base64-formatted image to be used as logo.</returns>
     procedure GetLogoAsBase64(): Text
     begin
         exit(SMTPConnectorBase64LogoTxt);
@@ -179,20 +229,8 @@ codeunit 4513 "SMTP Connector Impl."
     /// Initializes variables for creating an SMTP email.
     /// </summary>
     procedure Initialize(Account: Record "SMTP Account")
-    var
-        Client: Codeunit "SMTP Client";
     begin
         SMTPAccount := Account;
-        SMTPMessage.Initialize();
-
-        if not SMTPClientInitialized then
-            SMTPClient := Client;
-        SMTPClient.Initialize(Account, SMTPMessage);
-    end;
-
-    procedure Disconnect()
-    begin
-        SMTPClient.Disconnect();
     end;
 
     procedure ApplyOffice365Smtp(var SMTPAccountConfig: Record "SMTP Account")
@@ -201,19 +239,8 @@ codeunit 4513 "SMTP Connector Impl."
         // Current source: http://technet.microsoft.com/library/dn554323.aspx
         SMTPAccountConfig.Server := CopyStr(GetO365SmtpServer(), 1, MaxStrLen(SMTPAccountConfig.Server));
         SMTPAccountConfig."Server Port" := 587;
-        SMTPAccountConfig.Authentication := SMTPAccountConfig.Authentication::Basic;
+        SMTPAccountConfig."Authentication Type" := SMTPAccountConfig."Authentication Type"::Basic;
         SMTPAccountConfig."Secure Connection" := true;
-    end;
-
-    /// <summary>
-    /// Transfers the addresses from InternetAddressList to into a List of [Text]
-    /// </summary>
-    procedure InternetAddressListToList(IAList: DotNet InternetAddressList; var Addresses: List of [Text])
-    var
-        Mailbox: DotNet MimeMailboxAddress;
-    begin
-        foreach Mailbox in IAList do
-            Addresses.Add(Mailbox.Address);
     end;
 
     procedure GetSmtpErrorCodeFromResponse(ErrorResponse: Text): Text
@@ -250,11 +277,11 @@ codeunit 4513 "SMTP Connector Impl."
             exit(false);
 
         // User Name is a mandatory field if the authentication type is Basic
-        if (SMTPAccount.Authentication = SMTPAccount.Authentication::Basic) and (SMTPAccount."User Name" = '') then
+        if (SMTPAccount."Authentication Type" = SMTPAccount."Authentication Type"::Basic) and (SMTPAccount."User Name" = '') then
             exit(false);
 
         // User Name is a mandatory field if the authentication type is NTLM
-        if (SMTPAccount.Authentication = SMTPAccount.Authentication::NTLM) and (SMTPAccount."User Name" = '') then
+        if (SMTPAccount."Authentication Type" = SMTPAccount."Authentication Type"::NTLM) and (SMTPAccount."User Name" = '') then
             exit(false);
 
         exit(true);
@@ -269,9 +296,6 @@ codeunit 4513 "SMTP Connector Impl."
 
         NewSMTPAccount.Id := CreateGuid();
         NewSMTPAccount.SetPassword(Password);
-#if not CLEAN17
-        NewSMTPAccount."Created By" := CopyStr(UserId(), 1, MaxStrLen(NewSMTPAccount."Created By"));
-#endif
 
         NewSMTPAccount.Insert();
 
@@ -296,26 +320,8 @@ codeunit 4513 "SMTP Connector Impl."
                            UserId(),
                            SMTPAccountForTestEmail.Server,
                            Format(SMTPAccountForTestEmail."Server Port"),
-                           SMTPAccountForTestEmail.Authentication,
+                           SMTPAccountForTestEmail."Authentication Type",
                            SMTPAccountForTestEmail."Secure Connection");
-    end;
-
-    [EventSubscriber(ObjectType::Page, Page::"SMTP Account", 'OnOpenPageEvent', '', false, false)]
-    local procedure ShowWarningOnOpenEmailAccounts()
-    begin
-        ShowNotificationOnEditingNewSMTPAccount();
-    end;
-
-    [EventSubscriber(ObjectType::Page, Page::"Email Accounts", 'OnOpenPageEvent', '', false, false)]
-    local procedure ShowNotificationOnOpenEmailAccounts()
-    begin
-        ShowNotificationForOldSmtp();
-    end;
-
-    [EventSubscriber(ObjectType::Page, Page::"SMTP Mail Setup", 'OnOpenPageEvent', '', false, false)]
-    local procedure ShowNotificationOnOpenSmtpMailSetup()
-    begin
-        ShowNotificationForNewEmailFeature();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Cleanup", 'OnClearCompanyConfig', '', false, false)]
@@ -324,154 +330,6 @@ codeunit 4513 "SMTP Connector Impl."
         SMTPAccounts: Record "SMTP Account";
     begin
         SMTPAccounts.ModifyAll(Server, '');
-    end;
-
-    local procedure ShowNotificationOnEditingNewSMTPAccount()
-    var
-        OldSMTPMail: Codeunit "SMTP Mail";
-        EmailFeature: Codeunit "Email Feature";
-        SmtpNotification: Notification;
-    begin
-        if not EmailFeature.IsEnabled() or not OldSMTPMail.IsEnabled() then
-            exit; // The email feature or the old smtp is not enabled, no need to show anything.
-
-        SmtpNotification.Id := GetSmtpEditingNotificationId();
-        SmtpNotification.Message := SmtpOnEditingNotificationMsg;
-        SmtpNotification.Scope := NotificationScope::LocalScope;
-        SmtpNotification.AddAction(GoThereNowTxt, Codeunit::"SMTP Connector Impl.", 'OpenSmtpMailSetup');
-        SmtpNotification.Send();
-    end;
-
-    local procedure ShowNotificationForOldSMTP()
-    var
-        OldSMTPMailSetup: Record "SMTP Mail Setup";
-        NewSMTPAccount: Record "SMTP Account";
-        SmtpNotification: Notification;
-    begin
-        if not IsSmtpNotificationEnabled() then
-            exit;
-
-        DisableSmtpNotification(); // show only notification once
-
-        if not OldSMTPMailSetup.FindFirst() then
-            exit;
-
-        // Filter on account settings that was copied
-        NewSMTPAccount.SetRange(Name, OldSMTPMailSetup."User ID");
-        NewSMTPAccount.SetRange("Email Address", OldSMTPMailSetup."User ID");
-        NewSMTPAccount.SetRange(Server, OldSMTPMailSetup."SMTP Server");
-        NewSMTPAccount.SetRange("Server Port", OldSMTPMailSetup."SMTP Server Port");
-        NewSMTPAccount.SetRange("User Name", OldSMTPMailSetup."User ID");
-
-        // Check if account is still there and no new accounts with same details were added
-        if not (NewSMTPAccount.Count() = 1) then
-            exit;
-
-        if not NewSMTPAccount.FindFirst() then
-            exit;
-
-        SmtpNotification.Id := GetSmtpNotificationId();
-        SmtpNotification.Message := StrSubstNo(SmtpNotificationMsg, NewSMTPAccount.Name);
-        SmtpNotification.Scope := NotificationScope::LocalScope;
-        SmtpNotification.Send();
-    end;
-
-    internal procedure ShowNotificationForNewEmailFeature()
-    var
-        SMTPMail: Codeunit "SMTP Mail";
-        EmailFeature: Codeunit "Email Feature";
-        FeatureNotification: Notification;
-    begin
-        if not EmailFeature.IsEnabled() then
-            exit; // The email feature is not enabled, no need to show anything.
-
-        FeatureNotification.Id := GetFeatureNotificationId();
-        FeatureNotification.AddAction(LearnMoreTxt, Codeunit::"SMTP Connector Impl.", 'OpenLearnMore');
-        FeatureNotification.AddAction(GetStartedTxt, Codeunit::"SMTP Connector Impl.", 'OpenEmailAccounts');
-
-        if SMTPMail.IsEnabled() then
-            FeatureNotification.Message := FeatureNotificationWithOldSmtpMsg
-        else
-            FeatureNotification.Message := FeatureNotificationMsg;
-
-        FeatureNotification.Scope := NotificationScope::LocalScope;
-        FeatureNotification.Send();
-    end;
-
-    local procedure IsSmtpNotificationEnabled(): Boolean
-    var
-        MyNotifications: Record "My Notifications";
-        SMTPMail: Codeunit "SMTP Mail";
-        EmailFeature: Codeunit "Email Feature";
-        UserPermissions: Codeunit "User Permissions";
-        NotificationIsEnabled: Boolean;
-    begin
-        if not UserPermissions.IsSuper(UserSecurityId()) then
-            exit(false);
-
-        // Only show notification if no user has seen it
-        MyNotifications.SetRange("Notification Id", GetSmtpNotificationId());
-        MyNotifications.SetRange(Enabled, false);
-        NotificationIsEnabled := MyNotifications.IsEmpty();
-
-        exit(NotificationIsEnabled and EmailFeature.IsEnabled() and SMTPMail.IsEnabled());
-    end;
-
-    [EventSubscriber(ObjectType::Page, Page::"My Notifications", 'OnInitializingNotificationWithDefaultState', '', false, false)]
-    local procedure OnInitializingNotificationWithDefaultState()
-    var
-        MyNotifications: Record "My Notifications";
-    begin
-        MyNotifications.InsertDefault(GetSmtpNotificationId(), SmtpNotificationNameTxt, SmtpNotificationDescTxt, true);
-    end;
-
-    local procedure DisableSmtpNotification()
-    var
-        MyNotifications: Record "My Notifications";
-    begin
-        if not MyNotifications.Disable(GetSmtpNotificationId()) then
-            MyNotifications.InsertDefault(GetSmtpNotificationId(), SmtpNotificationNameTxt, SmtpNotificationDescTxt, false);
-    end;
-
-    local procedure GetSmtpEditingNotificationId(): Guid
-    begin
-        exit('1e59d329-6a94-4f10-b47e-e1ee579fecbc');
-    end;
-
-    local procedure GetFeatureNotificationId(): Guid
-    begin
-        exit('32827ee4-0781-4a36-90c6-08d35e088491');
-    end;
-
-    local procedure GetSmtpNotificationId(): Guid
-    begin
-        exit('51522fbd-1664-4839-b236-baa60c72d8b5');
-    end;
-
-    local procedure GetEmailAddress(Account: Record "SMTP Account"): Text[250]
-    var
-        User: Record User;
-    begin
-        if Account."Sender Type" = Account."Sender Type"::Specific then
-            exit(Account."Email Address");
-
-        if User.Get(UserSecurityId()) then
-            exit(User."Contact Email");
-    end;
-
-    internal procedure OpenLearnMore(Notification: Notification)
-    begin
-        Hyperlink(LearnMoreUrlTxt);
-    end;
-
-    internal procedure OpenEmailAccounts(Notification: Notification)
-    begin
-        Page.Run(Page::"Email Accounts");
-    end;
-
-    internal procedure OpenSmtpMailSetup(Notification: Notification)
-    begin
-        Page.Run(Page::"SMTP Mail Setup");
     end;
 
     internal procedure GetO365SmtpServer(): Text

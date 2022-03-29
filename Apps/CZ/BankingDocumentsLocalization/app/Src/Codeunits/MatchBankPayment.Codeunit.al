@@ -100,19 +100,23 @@ codeunit 31362 "Match Bank Payment CZB"
 #endif
                         end;
                     SearchRuleLineCZB."Search Scope"::Customer:
+#if not CLEAN19
                         begin
                             FillMatchBankPaymentBufferCustomer();
-#if not CLEAN19
                             FillMatchBankPaymentBufferSalesAdvance();
-#endif
                         end;
+#else
+                        FillMatchBankPaymentBufferCustomer();
+#endif
                     SearchRuleLineCZB."Search Scope"::Vendor:
+#if not CLEAN19
                         begin
                             FillMatchBankPaymentBufferVendor();
-#if not CLEAN19
                             FillMatchBankPaymentBufferPurchAdvance();
-#endif
                         end;
+#else
+                        FillMatchBankPaymentBufferVendor();
+#endif
                     SearchRuleLineCZB."Search Scope"::Employee:
                         FillMatchBankPaymentBufferEmployee();
                 end;
@@ -172,13 +176,15 @@ codeunit 31362 "Match Bank Payment CZB"
                         if TempMatchBankPaymentBufferCZB."Letter No." = '' then begin
 #pragma warning restore AL0432
 #endif
-                            GenJournalLine.Validate("Applies-to Doc. Type", TempMatchBankPaymentBufferCZB."Document Type");
-                            GenJournalLine.Validate("Applies-to Doc. No.", TempMatchBankPaymentBufferCZB."Document No.");
-                            if GenJournalLine."Account Type" in [GenJournalLine."Account Type"::Customer, GenJournalLine."Account Type"::Vendor] then begin
-                                if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::Invoice then
-                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
-                                if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::"Credit Memo" then
-                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
+                            if not SearchRuleLineCZB."Match Related Party Only" then begin
+                                GenJournalLine.Validate("Applies-to Doc. Type", TempMatchBankPaymentBufferCZB."Document Type");
+                                GenJournalLine.Validate("Applies-to Doc. No.", TempMatchBankPaymentBufferCZB."Document No.");
+                                if GenJournalLine."Account Type" in [GenJournalLine."Account Type"::Customer, GenJournalLine."Account Type"::Vendor] then begin
+                                    if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::Invoice then
+                                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
+                                    if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::"Credit Memo" then
+                                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
+                                end;
                             end;
                             if BankAccount."Dimension from Apply Entry CZB" then
                                 GenJournalLine.Validate("Dimension Set ID", TempMatchBankPaymentBufferCZB."Dimension Set ID");
@@ -542,6 +548,8 @@ codeunit 31362 "Match Bank Payment CZB"
         AppliedAmount: Decimal;
         PostingGroupCode: Code[20];
     begin
+        if SearchRuleLineCZB."Match Related Party Only" then
+            exit;
         LinkCode := GenJournalLine."Document No." + ' ' + Format(GenJournalLine."Line No.");
         if GenJournalLine."Account Type" = GenJournalLine."Account Type"::Customer then
             AppliedAmount := ApplySalesAdvanceLetter(LetterNo, LinkCode, GenJournalLine.Amount, PostingGroupCode)

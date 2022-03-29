@@ -103,7 +103,7 @@ table 1070 "MS - PayPal Standard Account"
     end;
 
     var
-        MSPayPalWebhooksMgt: Codeunit "MS - PayPal Webhook Management";
+        MSPayPalWebhookManagement: Codeunit "MS - PayPal Webhook Management";
         PayPalTelemetryCategoryTok: Label 'AL Paypal', Locked = true;
         AccountIDCannotBeBlankErr: Label 'You must specify an account ID for this payment service.';
         RefreshWebhooksSubscriptionMsg: Label 'Deleting and recreating Webhook Subscription.', Locked = true;
@@ -201,7 +201,7 @@ table 1070 "MS - PayPal Standard Account"
 
         SubscriptionId := CopyStr(LowerCase("Account ID"), 1, MaxStrLen(SubscriptionId));
         WebhookSubscription.SETRANGE("Subscription ID", SubscriptionId);
-        WebhookSubscription.SetFilter("Created By", MSPayPalWebhooksMgt.GetCreatedByFilterForWebhooks());
+        WebhookSubscription.SetFilter("Created By", MSPayPalWebhookManagement.GetCreatedByFilterForWebhooks());
         WebhooksAdapterUri := LOWERCASE(WebhookManagement.GetNotificationUrl());
 
         if WebhookManagement.FindWebhookSubscriptionMatchingEndPointUri(WebhookSubscription, WebhooksAdapterUri, 0, 0) then begin
@@ -228,7 +228,7 @@ table 1070 "MS - PayPal Standard Account"
     begin
         SubscriptionId := CopyStr(LowerCase(AccountId), 1, MaxStrLen(SubscriptionId));
         WebhookSubscription.SETRANGE("Subscription ID", SubscriptionId);
-        WebhookSubscription.SetFilter("Created By", MSPayPalWebhooksMgt.GetCreatedByFilterForWebhooks());
+        WebhookSubscription.SetFilter("Created By", MSPayPalWebhookManagement.GetCreatedByFilterForWebhooks());
         IF NOT WebhookSubscription.IsEmpty() THEN BEGIN
             WebhookSubscription.DeleteAll(true);
             Session.LogMessage('00008H8', WebhookSubscriptionDeletedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);

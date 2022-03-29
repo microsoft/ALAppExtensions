@@ -14,6 +14,10 @@ permissionset 1907 "Camera and Media - Objects"
                   Codeunit "Media Upload Page Impl." = X,
                   Codeunit Camera = X,
                   Page "Media Upload" = X,
+#if CLEAN20                  
+                  Page Camera = X;
+#else
                   Page Camera = X,
                   Table "Temp Media" = X;
+#endif
 }

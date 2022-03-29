@@ -24,6 +24,7 @@ PermissionSet 75 "System Application - View"
                              "Upgrade Tags - View",
                              "User Login Times - View",
                              "Media - View",
+                             "Priv. Notice - View",
                              "Record Link Management - View",
                              "Table Information - View",
                              "User Permissions - View",

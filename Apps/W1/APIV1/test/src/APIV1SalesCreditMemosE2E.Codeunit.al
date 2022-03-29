@@ -43,7 +43,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
         ConnectorMock.AddAccount(EmailAccount); // Create an email account
         EmailScenario.SetDefaultEmailAccount(EmailAccount); // Set the email account as default
 
-        CreateSMTPMailSetup();
         DeleteJobQueueEntry(CODEUNIT::"Document-Mailing");
         DeleteJobQueueEntry(CODEUNIT::"APIV1 - Send Sales Document");
     end;
@@ -954,27 +953,6 @@ codeunit 139728 "APIV1 - Sales Credit Memos E2E"
 
         Assert.RecordsAreEqualExceptCertainFields(
           SalesHeader1RecordRef, SalesHeader2RecordRef, TempIgnoredFieldsForComparison, 'Credit Memos do not match');
-    end;
-
-    local procedure CreateSMTPMailSetup()
-    var
-        SMTPMailSetup: Record "SMTP Mail Setup";
-        IsNew: Boolean;
-    begin
-        IsNew := not SMTPMailSetup.FindFirst();
-
-        if IsNew then
-            SMTPMailSetup.Init();
-        SMTPMailSetup."SMTP Server" := 'SomeServer';
-        SMTPMailSetup."SMTP Server Port" := 1000;
-        SMTPMailSetup."Secure Connection" := true;
-        SMTPMailSetup.Authentication := SMTPMailSetup.Authentication::Basic;
-        SMTPMailSetup."User ID" := 'somebody@somewhere.com';
-        SMTPMailSetup.SetPassword('Some Password');
-        if IsNew then
-            SMTPMailSetup.Insert(true)
-        else
-            SMTPMailSetup.Modify(true);
     end;
 
     local procedure CreateEmailParameters(var SalesHeader: Record "Sales Header")

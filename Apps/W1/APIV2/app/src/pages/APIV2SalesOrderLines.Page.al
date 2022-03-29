@@ -333,7 +333,7 @@ page 30044 "APIV2 - Sales Order Lines"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(3);
+                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Sales Order Line");
                 }
                 part(location; "APIV2 - Locations")
                 {

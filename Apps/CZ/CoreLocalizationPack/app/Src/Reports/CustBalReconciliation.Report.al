@@ -369,7 +369,11 @@ report 11723 "Cust.- Bal. Reconciliation CZL"
                     LockTable();
                     Find();
                     "Last Statement No." += 1;
+#if not CLEAN20
+#pragma warning disable AL0432
                     "Last Statement Date" := Today();
+#pragma warning restore AL0432
+#endif
                     Modify();
                     Commit();
                 end else

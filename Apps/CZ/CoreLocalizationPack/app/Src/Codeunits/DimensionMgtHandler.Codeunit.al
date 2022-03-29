@@ -1,16 +1,28 @@
 codeunit 31318 "Dimension Mgt. Handler CZL"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::DimensionManagement, 'OnCheckDimValuePostingOnBeforeExit', '', false, false)]
-    local procedure UserChecksAllowedOnCheckDimValuePostingOnBeforeExit(DimSetID: Integer; var LastErrorMessage: Record "Error Message"; var ErrorMessageManagement: Codeunit "Error Message Management")
+    local procedure UserChecksAllowedOnCheckDimValuePostingOnBeforeExit(DimSetID: Integer; var LastErrorMessage: Record "Error Message"; var ErrorMessageManagement: Codeunit "Error Message Management";
+                                                                        var IsChecked: Boolean; var IsHandled: Boolean)
     var
         TempDimensionBuffer: Record "Dimension Buffer" temporary;
+        LastErrorID: Integer;
     begin
         if not IsUserDimCheckAllowed(UserSetup) then
             exit;
 
         if DimSetID <> 0 then
             GetDimBufForDimSetID(DimSetID, TempDimensionBuffer);
+        LastErrorID := GetLastDimErrorID(LastErrorMessage, ErrorMessageManagement);
         CheckUserDimensionValues(TempDimensionBuffer, LastErrorMessage, ErrorMessageManagement);
+        IsChecked := GetLastDimErrorID(LastErrorMessage, ErrorMessageManagement) = LastErrorID;
+        IsHandled := true;
+    end;
+
+    local procedure GetLastDimErrorID(var LastErrorMessage: Record "Error Message"; var ErrorMessageManagement: Codeunit "Error Message Management"): Integer
+    begin
+        if ErrorMessageManagement.IsActive() then
+            exit(ErrorMessageManagement.GetCachedLastErrorID());
+        exit(LastErrorMessage.ID);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::DimensionManagement, 'OnCheckValuePostingOnBeforeExit', '', false, false)]

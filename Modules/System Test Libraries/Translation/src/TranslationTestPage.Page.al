@@ -17,10 +17,12 @@ page 137121 "Translation Test Page"
                 field(PK; PK)
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the primary key.';
                 }
                 field(TextField; TranslatedTextField)
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specified the translated value.';
 
                     trigger OnAssistEdit()
                     begin

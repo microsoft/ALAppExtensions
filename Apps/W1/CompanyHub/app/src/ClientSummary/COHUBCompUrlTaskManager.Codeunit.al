@@ -359,19 +359,6 @@ codeunit 1155 "COHUB Comp. Url Task Manager"
         exit(FoundProperty);
     end;
 
-    local procedure GetIntegerKPIValue(KPIJsonObject: JsonObject; KPIPropertyName: Text; var IntegerValue: Decimal): Boolean;
-    var
-        PropertyBag: JsonToken;
-        FoundProperty: Boolean;
-    begin
-        FoundProperty := KPIJsonObject.Get(KPIPropertyName, PropertyBag);
-
-        if FoundProperty then
-            IntegerValue := PropertyBag.AsValue().AsInteger();
-
-        exit(FoundProperty);
-    end;
-
     local procedure ParseUserTasksFromJSON(UserTasksReponseJSON: Text; EnviromentNo: Code[20]; CompanyName: Text[50]; CompanyDisplayName: Text[50])
     var
         COHUBUserTask: Record "COHUB User Task";

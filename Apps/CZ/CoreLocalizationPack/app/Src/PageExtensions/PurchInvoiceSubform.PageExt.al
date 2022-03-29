@@ -23,5 +23,14 @@ pageextension 11786 "Purch. Invoice Subform CZL" extends "Purch. Invoice Subform
                 Visible = false;
             }
         }
+        addafter("FA Posting Date")
+        {
+            field("Maintenance Code CZL"; Rec."Maintenance Code")
+            {
+                ApplicationArea = Suite;
+                ToolTip = 'Specifies a maintenance code.';
+                Visible = false;
+            }
+        }
     }
 }

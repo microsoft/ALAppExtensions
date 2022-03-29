@@ -1,3 +1,4 @@
+#pragma warning disable AA0210
 codeunit 148064 "VAT Ctrl. Report CZL"
 {
     Subtype = Test;
@@ -829,20 +830,20 @@ codeunit 148064 "VAT Ctrl. Report CZL"
     end;
 
     [RequestPageHandler]
-    procedure VATCtrlReportGetEntHandler(var VATCtrlReportGetEnt: TestRequestPage "VAT Ctrl. Report Get Ent. CZL")
+    procedure VATCtrlReportGetEntHandler(var VATCtrlReportGetEntCZL: TestRequestPage "VAT Ctrl. Report Get Ent. CZL")
     var
         VariantValue: Variant;
     begin
         LibraryVariableStorage.Dequeue(VariantValue);
-        VATCtrlReportGetEnt.StartingDate.AssertEquals(VariantValue);
+        VATCtrlReportGetEntCZL.StartingDate.AssertEquals(VariantValue);
         LibraryVariableStorage.Dequeue(VariantValue);
-        VATCtrlReportGetEnt.EndingDate.AssertEquals(VariantValue);
+        VATCtrlReportGetEntCZL.EndingDate.AssertEquals(VariantValue);
         LibraryVariableStorage.Dequeue(VariantValue);
-        VATCtrlReportGetEnt.VATStatementTemplateCZL.AssertEquals(VariantValue);
+        VATCtrlReportGetEntCZL.VATStatementTemplateCZL.AssertEquals(VariantValue);
         LibraryVariableStorage.Dequeue(VariantValue);
-        VATCtrlReportGetEnt.VATStatementNameCZL.AssertEquals(VariantValue);
+        VATCtrlReportGetEntCZL.VATStatementNameCZL.AssertEquals(VariantValue);
         LibraryVariableStorage.Dequeue(VariantValue);
-        VATCtrlReportGetEnt.ProcessEntryTypeCZL.SetValue(VariantValue);
-        VATCtrlReportGetEnt.OK().Invoke();
+        VATCtrlReportGetEntCZL.ProcessEntryTypeCZL.SetValue(VariantValue);
+        VATCtrlReportGetEntCZL.OK().Invoke();
     end;
 }

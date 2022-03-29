@@ -338,7 +338,7 @@ codeunit 11787 "VAT Stmt XML Export Helper CZL"
     end;
 
 
-    procedure GetDeclarationAndFilledBy(var DeclarationType: Enum "VAT Ctrl. Report Decl Type CZL"; var FilledByEmployeeCode: Code[20]; ParamsXmlDoc: XmlDocument)
+    procedure GetDeclarationAndFilledBy(var DeclarationType: Enum "VAT Ctrl. Report Decl Type CZL"; var FilledByEmployeeCode: Code[20]; ParamsXmlDoc: XmlDocument)
     begin
         Evaluate(DeclarationType, GetRequestPageOptionValue(DeclarationTypeTok, ParamsXmlDoc), 9);
         Evaluate(FilledByEmployeeCode, GetRequestPageOptionValue(FilledByEmployeeNoTok, ParamsXmlDoc), 9);

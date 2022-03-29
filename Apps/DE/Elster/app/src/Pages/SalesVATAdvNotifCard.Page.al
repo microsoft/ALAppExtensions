@@ -34,30 +34,34 @@ page 11016 "Sales VAT Adv. Notif. Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies a description of the sales VAT advance notification.';
                 }
+#if not CLEAN20
                 field("XSL-Filename Desktop"; "XSL-Filename")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'XSL-Filename';
                     ToolTip = 'Specifies the path and the file name of the style sheet for the VAT advance notification that you submit to and receive from the tax authorities.';
-                    Visible = IsWindowsClient;
+                    Visible = false;
+                    ObsoleteTag = '20.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This functionality is not in use and not supported';
 
                     trigger OnAssistEdit()
                     var
                         FileMgt: Codeunit "File Management";
                     begin
-#if not CLEAN17
-                        "XSL-Filename" := CopyStr(FileMgt.OpenFileDialog(CopyStr(Text1140000Lbl, 1, 50), "XSL-Filename", Text1140001Lbl), 1, MaxStrLen("XSL-Filename"));
-#else
                         "XSL-Filename" := CopyStr(FileMgt.UploadFile(CopyStr(Text1140000Lbl, 1, 50), "XSL-Filename"), 1, MaxStrLen("XSL-Filename"));
-#endif
                     end;
                 }
                 field("XSL-Filename"; "XSL-Filename")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the path and the file name of the style sheet for the VAT advance notification that you submit to and receive from the tax authorities.';
-                    Visible = NOT IsWindowsClient;
+                    Visible = false;
+                    ObsoleteTag = '20.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This functionality is not in use and not supported';
                 }
+#endif
                 field("Starting Date"; "Starting Date")
                 {
                     ApplicationArea = Basic, Suite;
@@ -194,11 +198,11 @@ page 11016 "Sales VAT Adv. Notif. Card"
                 action("P&review")
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'P&review';
+                    Caption = 'P&review statement';
                     Image = "Report";
                     Promoted = true;
                     PromotedCategory = Process;
-                    ToolTip = 'Preview the sales VAT advance notification that you will send to the tax authorities.';
+                    ToolTip = 'View a VAT statement as a preview of the sales VAT advance notification that you will send to the tax authorities.';
 
                     trigger OnAction()
                     var
@@ -214,6 +218,22 @@ page 11016 "Sales VAT Adv. Notif. Card"
                         VATStatementPreviewPage.SetParameters(
                             "Incl. VAT Entries (Closing)", "Incl. VAT Entries (Period)", GetDateFilter());
                         VATStatementPreviewPage.Run();
+                    end;
+                }
+                action(PreviewAmounts)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Show amounts from XML file';
+                    Image = PreviewChecks;
+                    Promoted = true;
+                    PromotedCategory = Process;
+                    ToolTip = 'Show the amounts from the XML file that you will send to the tax authorities.';
+
+                    trigger OnAction()
+                    var
+                        ElsterManagement: Codeunit "Elster Management";
+                    begin
+                        ElsterManagement.ShowElecVATDeclOverview(Rec);
                     end;
                 }
                 separator("2")
@@ -278,20 +298,9 @@ page 11016 "Sales VAT Adv. Notif. Card"
         }
     }
 
-    trigger OnOpenPage()
-    var
-        ClientTypeManagement: Codeunit "Client Type Management";
-    begin
-        IsWindowsClient := ClientTypeManagement.GetCurrentClientType() = ClientType::Windows;
-    end;
-
     var
         VATStatementName: Record "VAT Statement Name";
         ReportPrint: Codeunit "Test Report-Print";
         Text1140000Lbl: Label 'Selection of the XSL-File';
-#if not CLEAN17
-        Text1140001Lbl: Label 'Extensible Stylesheet-Files|*.xsl|All Files|*.*';
-#endif
-        IsWindowsClient: Boolean;
 }
 

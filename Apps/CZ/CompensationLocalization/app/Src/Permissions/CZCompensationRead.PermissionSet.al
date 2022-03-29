@@ -9,6 +9,8 @@ permissionset 11770 "CZ Compensation - Read CZC"
     Assignable = false;
     Caption = 'CZ Compensation - Read';
 
+    IncludedPermissionSets = "CZ Compensation - Objects CZC";
+
     Permissions = tabledata "Compens. Report Selections CZC" = R,
                   tabledata "Compensation Header CZC" = R,
                   tabledata "Compensation Line CZC" = R,

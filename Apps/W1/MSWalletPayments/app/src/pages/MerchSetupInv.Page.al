@@ -1,5 +1,9 @@
+#if not CLEAN20
 page 1087 "MS - Wallet Merch. Setup Inv"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     Caption = 'Set up Microsoft Pay Payments';
     DataCaptionExpression = '';
     DeleteAllowed = false;
@@ -16,7 +20,7 @@ page 1087 "MS - Wallet Merch. Setup Inv"
                 InstructionalText = 'With Microsoft Pay Payments, your customers can pay you using credit cards and PayPal.';
                 field(LogoControlDetails; MSWalletMerchantTemplate.Logo)
                 {
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                     Caption = 'Logo';
                     ShowCaption = false;
                     Editable = false;
@@ -24,7 +28,7 @@ page 1087 "MS - Wallet Merch. Setup Inv"
                 }
                 field(TermsOfServiceControlSetup; TermsOfServiceLbl)
                 {
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                     Editable = false;
                     ShowCaption = false;
                     ToolTip = 'Specifies the Microsoft Pay Payments terms of service.';
@@ -50,7 +54,7 @@ page 1087 "MS - Wallet Merch. Setup Inv"
                         }
                         field(MerchantIDControl; "Merchant ID")
                         {
-                            ApplicationArea = Basic, Suite, Invoicing;
+                            ApplicationArea = Basic, Suite;
                             Editable = false;
                             ToolTip = 'Specifies the Merchant ID of the Microsoft Pay Payments merchant account.';
                         }
@@ -69,7 +73,7 @@ page 1087 "MS - Wallet Merch. Setup Inv"
                         }
                         field(ConfigureMsPayControl; ConfigureMsPayLbl)
                         {
-                            ApplicationArea = Basic, Suite, Invoicing;
+                            ApplicationArea = Basic, Suite;
                             Editable = false;
                             ShowCaption = false;
                             ToolTip = 'Specifies a link to Microsoft Pay Payments so you can configure your Microsoft Pay Payments merchant profile.';
@@ -88,7 +92,7 @@ page 1087 "MS - Wallet Merch. Setup Inv"
                         }
                         field(RemoveAccountControl; RemoveAccountLbl)
                         {
-                            ApplicationArea = Basic, Suite, Invoicing;
+                            ApplicationArea = Basic, Suite;
                             Editable = false;
                             ShowCaption = false;
                             ToolTip = 'Specifies that you want to disconnect your Microsoft Pay Payments account from Invoicing.';
@@ -128,4 +132,4 @@ page 1087 "MS - Wallet Merch. Setup Inv"
         EnablePopUpMsg: Label 'If you cannot see the Microsoft Pay Payments setup window, make sure your browser allows pop-ups.';
 
 }
-
+#endif

@@ -1300,64 +1300,37 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         exit(UserSetup."Salespers./Purch. Code");
     end;
 
-    procedure PrintRecord(ShowDialog: Boolean)
+    procedure PrintRecords(ShowRequestPage: Boolean)
     var
-        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
-        PrintReportID: Integer;
+        DocumentSendingProfile: Record "Document Sending Profile";
+        DummyReportSelections: Record "Report Selections";
+        IsHandled: Boolean;
     begin
-        PurchAdvLetterHeaderCZZ.Copy(Rec);
-        if not PurchAdvLetterHeaderCZZ.FindSet() then
-            exit;
-
-        AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
-        AdvanceLetterTemplateCZZ.TestField("Document Report ID");
-        if PurchAdvLetterHeaderCZZ.Count() > 1 then begin
-            PrintReportID := AdvanceLetterTemplateCZZ."Document Report ID";
-            PurchAdvLetterHeaderCZZ.Next();
-            repeat
-                AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
-                AdvanceLetterTemplateCZZ.TestField("Document Report ID", PrintReportID);
-            until PurchAdvLetterHeaderCZZ.Next() = 0;
-        end;
-        Report.Run(AdvanceLetterTemplateCZZ."Document Report ID", ShowDialog, false, PurchAdvLetterHeaderCZZ);
+        IsHandled := false;
+        OnBeforePrintRecords(Rec, ShowRequestPage, IsHandled);
+        if not IsHandled then
+            DocumentSendingProfile.TrySendToPrinterVendor(
+              DummyReportSelections.Usage::"Purchase Advance Letter CZZ".AsInteger(), Rec, FieldNo("Pay-to Vendor No."), ShowRequestPage);
     end;
 
     procedure PrintToDocumentAttachment()
     var
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
-        DocumentAttachment: Record "Document Attachment";
-        DocumentAttachmentMgmt: Codeunit "Document Attachment Mgmt";
-        TempBlob: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
-        DummyInStream: InStream;
-        ReportOutStream: OutStream;
-        DocumentInStream: InStream;
-        FileName: Text[250];
-        DocumentAttachmentFileNameTok: Label '%1', Comment = '%1 = Advance Letter No.', Locked = true;
     begin
-        PurchAdvLetterHeaderCZZ := Rec;
+        PurchAdvLetterHeaderCZZ.Copy(Rec);
+        if PurchAdvLetterHeaderCZZ.FindSet() then
+            repeat
+                DoPrintToDocumentAttachment(PurchAdvLetterHeaderCZZ);
+            until PurchAdvLetterHeaderCZZ.Next() = 0;
+    end;
+
+    local procedure DoPrintToDocumentAttachment(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    var
+        ReportSelections: Record "Report Selections";
+    begin
         PurchAdvLetterHeaderCZZ.SetRecFilter();
-        RecordRef.GetTable(PurchAdvLetterHeaderCZZ);
-        if not RecordRef.FindFirst() then
-            exit;
-
-        AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
-        AdvanceLetterTemplateCZZ.TestField("Document Report ID");
-        if not Report.RdlcLayout(AdvanceLetterTemplateCZZ."Document Report ID", DummyInStream) then
-            exit;
-
-        Clear(TempBlob);
-        TempBlob.CreateOutStream(ReportOutStream);
-        Report.SaveAs(AdvanceLetterTemplateCZZ."Document Report ID", '',
-                    ReportFormat::Pdf, ReportOutStream, RecordRef);
-
-        Clear(DocumentAttachment);
-        DocumentAttachment.InitFieldsFromRecRef(RecordRef);
-        FileName := DocumentAttachment.FindUniqueFileName(
-                    StrSubstNo(DocumentAttachmentFileNameTok, PurchAdvLetterHeaderCZZ."No."), 'pdf');
-        TempBlob.CreateInStream(DocumentInStream);
-        DocumentAttachment.SaveAttachmentFromStream(DocumentInStream, RecordRef, FileName);
-        DocumentAttachmentMgmt.ShowNotification(RecordRef, 1, true);
+        ReportSelections.SaveAsDocumentAttachment(
+            ReportSelections.Usage::"Purchase Advance Letter CZZ".AsInteger(), PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ."No.", PurchAdvLetterHeaderCZZ."Pay-to Vendor No.", true);
     end;
 
     procedure CheckPurchaseAdvanceLetterReleaseRestrictions()
@@ -1383,6 +1356,19 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         ApprovalsMgmt.OnDeleteRecordInApprovalRequest(RecordId);
     end;
 
+    procedure CalcSuggestedAmountToApply(): Decimal
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        exit(CrossApplicationMgtCZL.CalcSuggestedAmountToApplyPurchAdvLetterHeader(Rec."No."));
+    end;
+
+    procedure DrillDownSuggestedAmountToApply()
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        CrossApplicationMgtCZL.DrillDownSuggestedAmountToApplyPurchAdvLetterHeader(Rec."No.");
+    end;
 
     [IntegrationEvent(false, false)]
     local procedure OnValidatePaymentTermsCodeOnBeforeCalcDueDate(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CalledByFieldNo: Integer; CallingFieldNo: Integer; var IsHandled: Boolean)
@@ -1503,4 +1489,10 @@ table 31008 "Purch. Adv. Letter Header CZZ"
     local procedure OnBeforeDeleteRecordInApprovalRequest(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var IsHandled: Boolean);
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePrintRecords(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
 }

@@ -8,6 +8,7 @@ codeunit 20347 "Tax Subledger Posting Handler"
         TaxPostingBufferMgmt.SetSalesPurchLcy(GenJournalLine."Sales/Purch. (LCY)");
     end;
 
+#if not CLEAN20
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostCustomerEntry', '', false, false)]
     local procedure OnBeforePostCustomerEntry(var TotalSalesLineLCY: Record "Sales Line")
     var
@@ -15,9 +16,28 @@ codeunit 20347 "Tax Subledger Posting Handler"
     begin
         TaxPostingBufferMgmt.SetSalesPurchLcy(-TotalSalesLineLCY.Amount);
     end;
+#endif
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
+    local procedure OnPostLedgerEntryOnBeforeGenJnlPostLineSales(var TotalSalesLineLCY: Record "Sales Line")
+    var
+        TaxPostingBufferMgmt: Codeunit "Tax Posting Buffer Mgmt.";
+    begin
+        TaxPostingBufferMgmt.SetSalesPurchLcy(-TotalSalesLineLCY.Amount);
+    end;
+
+#if not CLEAN20
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostVendorEntry', '', false, false)]
     local procedure OnBeforePostVendorEntry(var TotalPurchLineLCY: Record "Purchase Line")
+    var
+        TaxPostingBufferMgmt: Codeunit "Tax Posting Buffer Mgmt.";
+    begin
+        TaxPostingBufferMgmt.SetSalesPurchLcy(-TotalPurchLineLCY.Amount);
+    end;
+#endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
+    local procedure OnPostLedgerEntryOnBeforeGenJnlPostLinePurchase(var TotalPurchLineLCY: Record "Purchase Line")
     var
         TaxPostingBufferMgmt: Codeunit "Tax Posting Buffer Mgmt.";
     begin

@@ -238,9 +238,9 @@ codeunit 139652 "Library - Hybrid Management"
 
     procedure GetNotificationPayload(SubscriptionId: Text; var RunId: Text; var StartTime: DateTime; var TriggerType: Text; AdditionalPropertiesJson: Text) Payload: Text
     var
-        HybridDeploymentSummary: Record "Hybrid Replication Summary";
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
     begin
-        Payload := GetNotificationPayload(SubscriptionId, RunId, StartTime, TriggerType, HybridDeploymentSummary.ReplicationType::Normal, AdditionalPropertiesJson);
+        Payload := GetNotificationPayload(SubscriptionId, RunId, StartTime, TriggerType, HybridReplicationSummary.ReplicationType::Normal, AdditionalPropertiesJson);
     end;
 
     procedure GetNotificationPayload(SubscriptionId: Text; var RunId: Text; var StartTime: DateTime; var TriggerType: Text; ReplicationType: Integer; AdditionalPropertiesJson: Text) Payload: Text

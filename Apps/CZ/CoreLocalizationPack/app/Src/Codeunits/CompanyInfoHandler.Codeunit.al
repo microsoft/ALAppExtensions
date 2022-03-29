@@ -15,8 +15,8 @@ codeunit 31041 "Company Info Handler CZL"
         BankOperationsFunctionsCZL.CheckCzBankAccountNo(Rec."Bank Account No.", Rec."Country/Region Code");
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::PeriodFormManagement, 'OnAfterCreatePeriodFormat', '', false, false)]
-    local procedure ChangeMonthPeriodOnAfterCreatePeriodFormat(PeriodType: Option Day,Week,Month,Quarter,Year,"Accounting Period"; Date: Date; var PeriodFormat: Text[10])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::PeriodPageManagement, 'OnAfterCreatePeriodFormat', '', false, false)]
+    local procedure ChangeMonthPeriodOnAfterCreatePeriodFormat(PeriodType: Enum "Analysis Period Type"; Date: Date; var PeriodFormat: Text[10])
     var
         Language: Codeunit Language;
         CSYTok: Label 'CSY', Locked = true;

@@ -30,7 +30,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [GIVEN] SMTP account with basic authentication.
         SMTPAccount.DeleteAll();
         SMTPAccount.Id := CreateGuid();
-        SMTPAccount.Authentication := SMTPAccount.Authentication::Basic;
+        SMTPAccount."Authentication Type" := SMTPAccount."Authentication Type"::Basic;
         SMTPAccount.Insert();
 
         // [GIVEN] OnPrem
@@ -45,7 +45,7 @@ codeunit 139762 "SMTP Account Auth Tests"
 
         // [WHEN] The authentication is changed to OAuth 2.0.
         // [THEN] A message is shown that all users need to authenticate (verified in the handler).
-        SMTPAccountPage.Authentication.Value := Format(SMTPAccount.Authentication::"OAuth 2.0");
+        SMTPAccountPage.Authentication.Value := Format(SMTPAccount."Authentication Type"::"OAuth 2.0");
 
         // [THEN] The actions related to OAuth 2.0 are still invisible (as server is not an O365 server).
         Assert.IsFalse(SMTPAccountPage."Authenticate with OAuth 2.0".Visible(), 'OAuth 2.0 actions should not be visible if the authentication is not OAuth 2.0 in SMTP setup');

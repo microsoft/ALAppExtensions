@@ -366,17 +366,21 @@ page 1990 "Checklist Banner"
     end;
 
     trigger Tour::TourEnded(PageId: Integer; Completed: Boolean; Data: Text)
+    var
+        ChecklistItemCode: Code[300];
     begin
         MarkTourAsDone(Data);
 
-        exit;
+        ChecklistItemCode := 'dummy value'; // this line is here because of bug 409754
     end;
 
     trigger Tour::SpotlightTourEnded(PageId: Integer; SpotlightTour: DotNet SpotlightTour; Completed: Boolean; Data: Text)
+    var
+        ChecklistItemCode: Code[300];
     begin
         MarkTourAsDone(Data);
 
-        exit;
+        ChecklistItemCode := 'dummy value'; // this line is here because of bug 409754
     end;
 
     local procedure InitializeTour()
@@ -475,9 +479,6 @@ page 1990 "Checklist Banner"
         IsLastChecklistItem: Boolean;
     begin
         UpdateChecklistCountsAfterStatusUpdate(Status);
-
-        Rec.Validate(Status, Status::Started);
-        Modify();
 
         if ChecklistItemBuffer.FindLast() then
             if ChecklistItemBuffer.Code = Rec.Code then

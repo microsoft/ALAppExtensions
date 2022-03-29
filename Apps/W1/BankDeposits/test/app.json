@@ -1,0 +1,45 @@
+{
+  "id": "55456f47-e1bc-4ed6-98a0-8336de116d00",
+  "name":  "_Exclude_Bank Deposits Tests",
+  "publisher":  "Microsoft",
+  "brief":  "Tests for the _Exclude_Bank Deposits extension.",
+  "description":  "Tests for the _Exclude_Bank Deposits extension.",
+  "version":  "20.0.0.0",
+  "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+  "help":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+  "contextSensitiveHelpUrl":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+  "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo":  "ExtensionLogo.png",
+  "dependencies":  [
+                       {
+                           "id":  "7a129d06-5fd6-4fb6-b82b-0bf539c779d0",
+                           "name":  "_Exclude_Bank Deposits",
+                           "publisher":  "Microsoft",
+                           "version":  "20.0.0.0"
+                       },
+                       {
+                           "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                           "name":  "Tests-TestLibraries",
+                           "publisher":  "Microsoft",
+                           "version":  "20.0.0.0"
+                       },
+                       {
+                           "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
+                           "publisher":  "Microsoft",
+                           "name":  "Library Variable Storage",
+                           "version":  "20.0.0.0"
+                       }
+                     ],
+  "screenshots":  [
+
+                  ],
+  "platform":  "20.0.0.0",
+  "target":  "OnPrem",
+  "resourceExposurePolicy": {
+      "allowDebugging": false,
+      "allowDownloadingSource": true,
+      "includeSourceInSymbolFile": true
+  },
+  "application":  "20.0.0.0"
+}

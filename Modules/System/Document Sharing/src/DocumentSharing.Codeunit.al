@@ -43,6 +43,20 @@ codeunit 9560 "Document Sharing"
     end;
 
     /// <summary>
+    /// Triggers the document sharing flow.
+    /// </summary>
+    /// <param name="FileName">Specifies the file name of the document (without file extension). It should only include valid filename characters.</param>
+    /// <param name="FileExtension">Specifies the file extension (e.g. '.pdf').</param>
+    /// <param name="InStream">Specifies the data to be shared (e.g. a report pdf).</param>
+    /// <param name="DocumentSharingIntent">Specifies the sharing intent of the document.</param>
+    procedure Share(FileName: Text; FileExtension: Text; InStream: Instream; DocumentSharingIntent: Enum "Document Sharing Intent")
+    var
+        DocumentSharingImpl: Codeunit "Document Sharing Impl.";
+    begin
+        DocumentSharingImpl.Share(FileName, FileExtension, Instream, DocumentSharingIntent);
+    end;
+
+    /// <summary>
     /// Checks if document sharing is enabled.
     /// </summary>
     /// <returns>Returns true if sharing is enabled, false otherwise.</returns>

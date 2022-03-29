@@ -1,0 +1,36 @@
+{
+  "id": "7a129d06-5fd6-4fb6-b82b-0bf539c779d0",
+  "name":  "_Exclude_Bank Deposits",
+  "publisher":  "Microsoft",
+  "version":  "20.0.0.0",
+  "brief":  "_Exclude_Bank Deposits",
+  "description":  "_Exclude_Bank Deposits",
+  "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+  "help":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+  "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo":  "ExtensionLogo.png",
+  "dependencies":  [
+
+                   ],
+  "internalsVisibleTo":  [
+                             {
+                                 "id":  "55456f47-e1bc-4ed6-98a0-8336de116d00",
+                                 "name":  "_Exclude_Bank Deposits Tests",
+                                 "publisher":  "Microsoft"
+                             }
+                         ],
+  "screenshots":  [
+
+                  ],
+  "platform":  "20.0.0.0",
+  "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520",
+  "resourceExposurePolicy": {
+      "allowDebugging": true,
+      "allowDownloadingSource": true,
+      "includeSourceInSymbolFile": true
+  },
+  "target":  "OnPrem",
+  "application":  "20.0.0.0",
+  "features": ["TranslationFile","GenerateCaptions"]
+}

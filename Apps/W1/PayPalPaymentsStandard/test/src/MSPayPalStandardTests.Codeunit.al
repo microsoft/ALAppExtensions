@@ -17,7 +17,6 @@ codeunit 139500 "MS - PayPal Standard Tests"
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         MSPayPalStdMockEvents: Codeunit "MS - PayPal Std Mock Events";
         ActiveDirectoryMockEvents: Codeunit "Active Directory Mock Events";
-        DatasetFileName: Text;
         Initialized: Boolean;
         UpdateOpenInvoicesManuallyTxt: Label 'A link for the PayPal payment service will be included for new sales documents. To add it to existing sales documents, you must manually select it in the Payment Service field on the sales document.';
         ExchangeWithExternalServicesMsg: Label 'This extension uses a third-party payment service from PayPal.';
@@ -47,7 +46,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure Initialize();
     var
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
         MSPayPalTransaction: Record "MS - PayPal Transaction";
         DummySalesHeader: Record "Sales Header";
@@ -57,9 +56,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
     begin
         BindActiveDirectoryMockEvents();
 
-        CompanyInfo.GET();
-        CompanyInfo."Allow Blank Payment Info." := TRUE;
-        CompanyInfo.MODIFY();
+        CompanyInformation.GET();
+        CompanyInformation."Allow Blank Payment Info." := TRUE;
+        CompanyInformation.MODIFY();
         LibraryVariableStorage.AssertEmpty();
 
         MSPayPalStandardAccount.DELETEALL();
@@ -89,15 +88,15 @@ codeunit 139500 "MS - PayPal Standard Tests"
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
         WebhookSubscription: Record "Webhook Subscription";
-        PayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
+        MSPayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
     begin
         Initialize();
         CreatePayPalStandardAccount(MSPayPalStandardAccount);
 
-        PayPalStandardSetup.OPENEDIT();
+        MSPayPalStandardSetup.OPENEDIT();
         LibraryVariableStorage.Enqueue(ExchangeWithExternalServicesMsg);
-        PayPalStandardSetup.Enabled.SETVALUE(TRUE);
-        PayPalStandardSetup.CLOSE();
+        MSPayPalStandardSetup.Enabled.SETVALUE(TRUE);
+        MSPayPalStandardSetup.CLOSE();
 
         WebhookSubscription.SETRANGE("Subscription ID", MSPayPalStandardAccount."Account ID");
         WebhookSubscription.SETFILTER("Created By", StrSubstNo('*%1*', PayPalCreatedByTok));
@@ -113,7 +112,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
         WebhookSubscription: Record "Webhook Subscription";
-        PayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
+        MSPayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
         newAcountId: Text[250];
     begin
         Initialize();
@@ -121,9 +120,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
         newAcountId := CopyStr(MSPayPalStandardAccount."Account ID" + '1', 1, 250);
 
-        PayPalStandardSetup.OPENEDIT();
-        PayPalStandardSetup."Account ID".SETVALUE(newAcountId);
-        PayPalStandardSetup.CLOSE();
+        MSPayPalStandardSetup.OPENEDIT();
+        MSPayPalStandardSetup."Account ID".SETVALUE(newAcountId);
+        MSPayPalStandardSetup.CLOSE();
 
         WebhookSubscription.SETRANGE("Subscription ID", newAcountId);
         WebhookSubscription.SETFILTER("Created By", StrSubstNo('*%1*', PayPalCreatedByTok));
@@ -139,17 +138,17 @@ codeunit 139500 "MS - PayPal Standard Tests"
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
         WebhookSubscription: Record "Webhook Subscription";
-        PayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
+        MSPayPalStandardSetup: TestPage "MS - PayPal Standard Setup";
     begin
         Initialize();
         CreateDefaultPayPalStandardAccount(MSPayPalStandardAccount);
 
         LibraryVariableStorage.Enqueue(TRUE);
 
-        PayPalStandardSetup.OPENEDIT();
-        PayPalStandardSetup.Enabled.SETVALUE(FALSE);
-        PayPalStandardSetup."Account ID".SETVALUE('');
-        PayPalStandardSetup.CLOSE();
+        MSPayPalStandardSetup.OPENEDIT();
+        MSPayPalStandardSetup.Enabled.SETVALUE(FALSE);
+        MSPayPalStandardSetup."Account ID".SETVALUE('');
+        MSPayPalStandardSetup.CLOSE();
 
         WebhookSubscription.SETRANGE("Subscription ID", MSPayPalStandardAccount."Account ID");
         WebhookSubscription.SETFILTER("Created By", '*%1*', PayPalCreatedByTok);
@@ -569,7 +568,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
         // Verify this is the one
         LibraryVariableStorage.Enqueue(UpdateOpenInvoicesManuallyTxt);
+#pragma warning disable AA0210
         MSPayPalStandardAccount.SETRANGE("Always Include on Documents", TRUE);
+#pragma warning restore
         MSPayPalStandardAccount.FINDFIRST();
         Assert.AreEqual(1, MSPayPalStandardAccount.COUNT(), '');
 
@@ -583,7 +584,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
         MSPayPalStandardAccount2.MODIFY(TRUE);
 
         // Verify 2 is now the only one
+#pragma warning disable AA0210
         MSPayPalStandardAccount.SETRANGE("Always Include on Documents", TRUE);
+#pragma warning restore
         MSPayPalStandardAccount.FINDFIRST();
         Assert.AreEqual(1, MSPayPalStandardAccount.COUNT(), '');
 
@@ -596,22 +599,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('EMailDialogHandler,MessageHandler,ConsentConfirmYes')]
-    procedure TestCoverLetterPaymentLinkSMTPSetup(); // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        TestCoverLetterPaymentLinkInternal();
-    end;
-
-    [Test]
     [HandlerFunctions('EmailEditorHandler,MessageHandler,CloseEmailEditorHandler,ConsentConfirmYes')]
     procedure TestCoverLetterPaymentLink();
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         TestCoverLetterPaymentLinkInternal();
     end;
 
@@ -622,9 +612,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         DummyPaymentMethod: Record "Payment Method";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
-        LibraryInvoicingApp: Codeunit "Library - Invoicing App";
         LibraryWorkflow: Codeunit "Library - Workflow";
-        EmailFeature: Codeunit "Email Feature";
         PostedSalesInvoice: TestPage "Posted Sales Invoice";
     begin
         Initialize();
@@ -637,10 +625,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument, SalesInvoiceHeader);
         PostedSalesInvoice.OPENEDIT();
         PostedSalesInvoice.GOTORECORD(SalesInvoiceHeader);
-        if EmailFeature.IsEnabled() then
-            LibraryWorkflow.SetUpEmailAccount()
-        else
-            LibraryInvoicingApp.SetupEmailTable();
+        LibraryWorkflow.SetUpEmailAccount();
 
         // Exercise
         PostedSalesInvoice.Email.INVOKE();
@@ -791,7 +776,9 @@ codeunit 139500 "MS - PayPal Standard Tests"
         // Exercise
         TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument, SalesInvoiceHeader);
 
+#pragma warning disable AA0210
         TempPaymentReportingArgument.SetRange("Payment Service ID", TempPaymentReportingArgument.GetPayPalServiceID());
+#pragma warning restore
         TempPaymentReportingArgument.FindFirst();
 
         // Verify
@@ -1138,7 +1125,6 @@ codeunit 139500 "MS - PayPal Standard Tests"
     var
         CustomReportLayout: Record "Custom Report Layout";
         ReportSelections: Record "Report Selections";
-        NativeReports: Codeunit "Native - Reports";
     begin
         ReportSelections.DELETEALL();
         CreateDefaultReportSelection();
@@ -1146,7 +1132,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         GetCustomBodyLayout(CustomReportLayout);
 
         ReportSelections.Reset();
-        ReportSelections.SetRange(Usage, NativeReports.PostedSalesInvoiceReportId());
+        ReportSelections.SetRange(Usage, ReportSelections.Usage::"S.Invoice");
         ReportSelections.FINDFIRST();
         ReportSelections.VALIDATE("Use for Email Attachment", TRUE);
         ReportSelections.VALIDATE("Use for Email Body", TRUE);
@@ -1157,12 +1143,11 @@ codeunit 139500 "MS - PayPal Standard Tests"
     local procedure CreateDefaultReportSelection();
     var
         ReportSelections: Record "Report Selections";
-        NativeReports: Codeunit "Native - Reports";
     begin
         ReportSelections.INIT();
-        ReportSelections.Usage := NativeReports.PostedSalesInvoiceReportId();
+        ReportSelections.Usage := ReportSelections.Usage::"S.Invoice";
         ReportSelections.Sequence := '1';
-        ReportSelections."Report ID" := REPORT::"Standard Sales - Invoice";
+        ReportSelections."Report ID" := GetReportID();
         ReportSelections.INSERT();
     end;
 
@@ -1310,50 +1295,6 @@ codeunit 139500 "MS - PayPal Standard Tests"
               'Status was not set correctly on Service Connections page');
     end;
 
-    local procedure VerifyPaymentServiceIsInReportDataset(var PaymentReportingArgument: Record "Payment Reporting Argument");
-    var
-        XMLBuffer: Record "XML Buffer";
-        ValueFound: Boolean;
-    begin
-        XMLBuffer.Load(DatasetFileName);
-        XMLBuffer.SETRANGE(Name, 'PaymentServiceURL');
-        XMLBuffer.FIND('-');
-
-        ValueFound := FALSE;
-        REPEAT
-            ValueFound := COPYSTR(PaymentReportingArgument.GetTargetURL(), 1, 250) = XMLBuffer.Value;
-            if ValueFound then
-                break;
-        UNTIL XMLBuffer.NEXT() = 0;
-        Assert.IsTrue(ValueFound, 'Cound not find target URL');
-        XMLBuffer.SETRANGE("Parent Entry No.", XMLBuffer."Parent Entry No.");
-        XMLBuffer.SETRANGE(Name, 'PaymentServiceURLText');
-        XMLBuffer.FIND('-');
-        Assert.AreEqual(PaymentReportingArgument."URL Caption", XMLBuffer.Value, '');
-        XMLBuffer.NEXT();
-    end;
-
-    local procedure VerifyPayPalURL(var PaymentReportingArgument: Record "Payment Reporting Argument"; MSPayPalStandardAccount: Record "MS - PayPal Standard Account"; SalesInvoiceHeader: Record "Sales Invoice Header");
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-        TargetURL: Text;
-        BaseURL: Text;
-    begin
-        TargetURL := PaymentReportingArgument.GetTargetURL();
-        BaseURL := MSPayPalStandardAccount.GetTargetURL();
-
-        SalesInvoiceHeader.CALCFIELDS("Amount Including VAT");
-        Assert.IsTrue(STRPOS(TargetURL, BaseURL) > 0, 'Base url was not set correctly');
-        Assert.IsTrue(STRPOS(TargetURL, SalesInvoiceHeader."No.") > 0, 'Document No. was not set correctly');
-        Assert.IsTrue(STRPOS(TargetURL, MSPayPalStandardAccount."Account ID") > 0, 'Account ID was not set correctly');
-        Assert.IsTrue(STRPOS(TargetURL, FORMAT(SalesInvoiceHeader."Amount Including VAT", 0, 9)) > 0, 'Total amount was not set correctly');
-
-        GeneralLedgerSetup.GET();
-        Assert.IsTrue(
-          STRPOS(TargetURL, GeneralLedgerSetup.GetCurrencyCode(SalesInvoiceHeader."Currency Code")) > 0,
-          'Currency Code was not set correctly');
-    end;
-
     local procedure VerifyBodyText(MSPayPalStandardAccount: Record "MS - PayPal Standard Account"; SalesInvoiceHeader: Record "Sales Invoice Header");
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
@@ -1376,7 +1317,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     end;
 
     [ModalPageHandler]
-    procedure AccountSetupPageModalPageHandler(var PayPalStandardSetup: TestPage "MS - PayPal Standard Setup");
+    procedure AccountSetupPageModalPageHandler(var MSPayPalStandardSetup: TestPage "MS - PayPal Standard Setup");
     var
         NewName: Text;
         NewDescription: Text;
@@ -1398,14 +1339,14 @@ codeunit 139500 "MS - PayPal Standard Tests"
         AccountID := LibraryVariableStorage.DequeueText();
         TargetURL := LibraryVariableStorage.DequeueText();
 
-        PayPalStandardSetup.Name.SETVALUE(NewName);
-        PayPalStandardSetup.Description.SETVALUE(NewDescription);
-        PayPalStandardSetup."Account ID".SETVALUE(AccountID);
+        MSPayPalStandardSetup.Name.SETVALUE(NewName);
+        MSPayPalStandardSetup.Description.SETVALUE(NewDescription);
+        MSPayPalStandardSetup."Account ID".SETVALUE(AccountID);
 
-        PayPalStandardSetup.Enabled.SETVALUE(Enabled);
-        PayPalStandardSetup."Always Include on Documents".SETVALUE(AlwaysIncludeOnDocument);
-        PayPalStandardSetup.TargetURL.SETVALUE(TargetURL);
-        PayPalStandardSetup.OK().INVOKE();
+        MSPayPalStandardSetup.Enabled.SETVALUE(Enabled);
+        MSPayPalStandardSetup."Always Include on Documents".SETVALUE(AlwaysIncludeOnDocument);
+        MSPayPalStandardSetup.TargetURL.SETVALUE(TargetURL);
+        MSPayPalStandardSetup.OK().INVOKE();
     end;
 
     [ModalPageHandler]
@@ -1455,12 +1396,6 @@ codeunit 139500 "MS - PayPal Standard Tests"
     procedure MessageHandler(Message: Text[1024]);
     begin
         Assert.ExpectedMessage(LibraryVariableStorage.DequeueText(), Message);
-    end;
-
-    [ModalPageHandler]
-    procedure EMailDialogHandler(var EMailDialog: TestPage "Email Dialog");
-    begin
-        LibraryVariableStorage.Enqueue(EMailDialog.BodyText.VALUE());
     end;
 
     [ModalPageHandler]

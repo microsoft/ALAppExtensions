@@ -34,4 +34,3 @@ codeunit 4051 "Upg Mig Named Forward Links"
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetLoadNamedForwardLinksUpgradeTag());
     end;
 }
-

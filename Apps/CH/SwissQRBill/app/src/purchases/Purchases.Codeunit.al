@@ -69,9 +69,9 @@ codeunit 11502 "Swiss QR-Bill Purchases"
 
         Result := ConfirmMsg = '';
         if not Result then begin
-            ConfirmMsg := StrSubstNo('%1\\%2', ConfirmMsg, ContinueQst);
+            ConfirmMsg := ConfirmMsg + '\\' + ContinueQst;
             if ImportWarningMsg then
-                ConfirmMsg := StrSubstNo('%1\\%2', ImportWarningTxt, ConfirmMsg);
+                ConfirmMsg := ImportWarningTxt + '\\' + ConfirmMsg;
             Result := Confirm(ConfirmMsg);
         end;
 
@@ -166,7 +166,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
 
     local procedure AddMessageText(var TargetMessage: Text; AddText: Text; Sep: Text)
     begin
-        TargetMessage += StrSubstNo('%1%2', Sep, AddText);
+        TargetMessage += Sep + AddText;
     end;
 
     local procedure ShowPurchDocPmtReferenceNotification(PurchaseHeader: Record "Purchase Header"; ShowNotification: Boolean; ImportWarningMsg: Boolean)
@@ -186,7 +186,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
         AddMessageText(NotifyMessage, StrSubstNo(DocumentNoTxt, PurchaseHeader."No."), ', ');
 
         if ImportWarningMsg then
-            NotifyMessage := StrSubstNo('%1 %2', ImportWarningTxt, NotifyMessage);
+            NotifyMessage := ImportWarningTxt + ' ' + NotifyMessage;
 
         Notification.Id := GetPurchDocPmtReferenceNotifyGuid();
         Notification.Message := NotifyMessage;
@@ -211,7 +211,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
         AddMessageText(NotifyMessage, StrSubstNo(VendLedgerEntryTxt, VendorLedgerEntry."Entry No."), ', ');
 
         if ImportWarningMsg then
-            NotifyMessage := StrSubstNo('%1 %2', ImportWarningTxt, NotifyMessage);
+            NotifyMessage := ImportWarningTxt + ' ' + NotifyMessage;
 
         Notification.Id := GetVLEPmtReferencetNotifyGuid();
         Notification.Message := NotifyMessage;
@@ -238,7 +238,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
         AddMessageText(NotifyMessage, StrSubstNo(JnlLineTxt, GenJournalLine."Line No."), ', ');
 
         if ImportWarningMsg then
-            NotifyMessage := StrSubstNo('%1 %2', ImportWarningTxt, NotifyMessage);
+            NotifyMessage := ImportWarningTxt + ' ' + NotifyMessage;
 
         Notification.Id := GetIncDocPmtReferenceNotifyGuid();
         Notification.Message := NotifyMessage;
@@ -265,7 +265,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
         AddMessageText(NotifyMessage, StrSubstNo(IncDocEntryTxt, IncomingDocument."Entry No."), ', ');
 
         if ImportWarningMsg then
-            NotifyMessage := StrSubstNo('%1 %2', ImportWarningTxt, NotifyMessage);
+            NotifyMessage := ImportWarningTxt + ' ' + NotifyMessage;
 
         Notification.Id := GetJnlLinePmtReferenceNotifyGuid();
         Notification.Message := NotifyMessage;
@@ -280,7 +280,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
         with PurchaseHeader do begin
             SetFilter(
                 "Document Type",
-                StrSubstNo('%1|%2', "Document Type"::Invoice, "Document Type"::Order));
+                Format("Document Type"::Invoice) + '|' + Format("Document Type"::Order));
             SetRange("Pay-to Vendor No.", VendorNo);
             SetRange("Payment Reference", DelChr(PmtReference));
             exit(FindFirst());
@@ -314,7 +314,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
         with IncomingDocument do begin
             SetFilter(
                 Status,
-                StrSubstNo('%1|%2|%3', Status::New, Status::"Pending Approval", Status::Released));
+                Format(Status::New) + '|' + Format(Status::"Pending Approval") + '|' + Format(Status::Released));
             SetRange("Vendor No.", VendorNo);
             SetRange("Swiss QR-Bill Reference No.", DelChr(PmtReference));
             exit(FindFirst());
@@ -437,7 +437,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
 
     local procedure PreparePurchaseJournalLine(var GenJournalLine: Record "Gen. Journal Line"; var GenJournalTemplate: Record "Gen. Journal Template"; var GenJournalBatch: Record "Gen. Journal Batch"; var LastLineNo: Integer; var NewDocumentNo: Code[20])
     var
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeriesManagement: Codeunit NoSeriesManagement;
     begin
         with GenJournalLine do begin
             GenJournalTemplate.Get("Journal Template Name");
@@ -449,7 +449,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
                 NewDocumentNo := "Document No.";
             end;
             if NewDocumentNo = '' then
-                NewDocumentNo := NoSeriesMgt.TryGetNextNo(GenJournalBatch."No. Series", WorkDate())
+                NewDocumentNo := NoSeriesManagement.TryGetNextNo(GenJournalBatch."No. Series", WorkDate())
             else
                 IncrementDocumentNo(GenJournalBatch, NewDocumentNo);
         end;
@@ -475,15 +475,15 @@ codeunit 11502 "Swiss QR-Bill Purchases"
     begin
         if IncomingDocument."Vendor Bank Account No." = '' then begin
             MessageResult := StrSubstNo(JournalProcessVendorNotFoundTxt, IncomingDocument."Vendor IBAN");
-            MessageResult := StrSubstNo('%1\\%2', SwissQRBillIncomingDoc.GetImportFailedTxt(), MessageResult);
+            MessageResult := SwissQRBillIncomingDoc.GetImportFailedTxt() + '\\' + MessageResult;
             exit(false);
         end;
 
         SwissQRBillIncomingDoc.UpdateGenJournalLineFromIncomingDoc(GenJournalLine, IncomingDocument);
         if FromFile then
-            MessageResult := StrSubstNo('%1\\%2', ImportSuccessMsg, ImportAnotherQst)
+            MessageResult := ImportSuccessMsg + '\\' + ImportAnotherQst
         else
-            MessageResult := StrSubstNo('%1\\%2', ImportSuccessMsg, ScanAnotherQst);
+            MessageResult := ImportSuccessMsg + '\\' + ScanAnotherQst;
 
         exit(true);
     end;
@@ -508,7 +508,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
                         StrSubstNo(PurchDocDiffVendorMsg,
                             IncomingDocument."Vendor No.", IncomingDocument."Vendor Name",
                             PurchaseHeader."Pay-to Vendor No.", PurchaseHeader."Pay-to Name");
-                    MessageResult := StrSubstNo('%1\\%2', SwissQRBillIncomingDoc.GetImportFailedTxt(), MessageResult);
+                    MessageResult := SwissQRBillIncomingDoc.GetImportFailedTxt() + '\\' + MessageResult;
                 end;
             else begin
                     PurchaseHeader.TestField("Pay-to Vendor No.");
@@ -533,6 +533,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
         Message(MessageResult)
     end;
 
+#if not CLEAN20
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostVendorEntry', '', false, false)]
     local procedure OnBeforePostVendorEntry(
             var GenJnlLine: Record "Gen. Journal Line";
@@ -544,13 +545,44 @@ codeunit 11502 "Swiss QR-Bill Purchases"
              var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     var
         QRBillCurrencyCode: Code[10];
+        ErrText: Text;
     begin
         if PurchHeader."Swiss QR-Bill" and (PurchHeader."Prepayment %" = 0) and (PurchHeader."Swiss QR-Bill Amount" <> 0) then begin
             QRBillCurrencyCode := SwissQRBillIncomingDoc.GetCurrency(PurchHeader."Swiss QR-Bill Currency");
-            if PurchHeader."Currency Code" <> QRBillCurrencyCode then
-                Error(StrSubstNo(CurrencyErr, QRBillCurrencyCode, PurchHeader."Currency Code"));
-            if Abs(TotalPurchLine."Amount Including VAT") <> PurchHeader."Swiss QR-Bill Amount" then
-                Error(StrSubstNo(AmountErr, PurchHeader."Swiss QR-Bill Amount", Abs(TotalPurchLine."Amount Including VAT")));
+            if PurchHeader."Currency Code" <> QRBillCurrencyCode then begin
+                ErrText := StrSubstNo(CurrencyErr, QRBillCurrencyCode, PurchHeader."Currency Code");
+                Error(ErrText);
+            end;
+            if Abs(TotalPurchLine."Amount Including VAT") <> PurchHeader."Swiss QR-Bill Amount" then begin
+                ErrText := StrSubstNo(AmountErr, PurchHeader."Swiss QR-Bill Amount", Abs(TotalPurchLine."Amount Including VAT"));
+                Error(ErrText);
+            end;
+            VoidPurchDocQRBill(PurchHeader);
+        end;
+    end;
+#endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
+    local procedure OnPostLedgerEntryOnBeforeGenJnlPostLine(
+            var GenJnlLine: Record "Gen. Journal Line";
+            var PurchHeader: Record "Purchase Header";
+            var TotalPurchLine: Record "Purchase Line";
+            var TotalPurchLineLCY: Record "Purchase Line";
+            var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    var
+        QRBillCurrencyCode: Code[10];
+        ErrText: Text;
+    begin
+        if PurchHeader."Swiss QR-Bill" and (PurchHeader."Prepayment %" = 0) and (PurchHeader."Swiss QR-Bill Amount" <> 0) then begin
+            QRBillCurrencyCode := SwissQRBillIncomingDoc.GetCurrency(PurchHeader."Swiss QR-Bill Currency");
+            if PurchHeader."Currency Code" <> QRBillCurrencyCode then begin
+                ErrText := StrSubstNo(CurrencyErr, QRBillCurrencyCode, PurchHeader."Currency Code");
+                Error(ErrText);
+            end;
+            if Abs(TotalPurchLine."Amount Including VAT") <> PurchHeader."Swiss QR-Bill Amount" then begin
+                ErrText := StrSubstNo(AmountErr, PurchHeader."Swiss QR-Bill Amount", Abs(TotalPurchLine."Amount Including VAT"));
+                Error(ErrText);
+            end;
             VoidPurchDocQRBill(PurchHeader);
         end;
     end;

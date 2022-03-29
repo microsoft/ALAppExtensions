@@ -110,6 +110,15 @@ codeunit 3711 Translation
     end;
 
     /// <summary>
+    /// Deletes all the translation for a table ID.
+    /// </summary>
+    /// <param name="TableID">The table that the translations will be deleted for.</param>
+    procedure Delete(TableID: Integer)
+    begin
+        TranslationImplementation.Delete(TableID);
+    end;
+
+    /// <summary>
     /// Copies the translation for a field from one record to another record on a persisted (non-temporary) record.
     /// </summary>
     /// <param name="FromRecVariant">The record from which the translations are copied.</param>

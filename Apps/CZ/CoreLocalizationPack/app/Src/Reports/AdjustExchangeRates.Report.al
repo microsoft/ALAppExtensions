@@ -85,6 +85,7 @@ report 31004 "Adjust Exchange Rates CZL"
                     var
                         BankAccount: Record "Bank Account";
                         GroupTotal: Boolean;
+                        ExchRateAdjmtAccountType: Enum "Exch. Rate Adjmt. Account Type";
                     begin
                         BankAccount.Copy("Bank Account");
                         if BankAccount.Next() = 1 then begin
@@ -99,7 +100,7 @@ report 31004 "Adjust Exchange Rates CZL"
                                   "Bank Account"."Currency Code", "Bank Account"."Bank Acc. Posting Group",
                                   TotalAdjBase, TotalAdjBaseLCY, TotalAdjAmount, 0, 0, 0, PostingDate, '',
                                   false, '');
-                                InsertExchRateAdjmtReg(3, "Bank Account"."Bank Acc. Posting Group", "Bank Account"."Currency Code");
+                                InsertExchRateAdjmtReg(ExchRateAdjmtAccountType::"Bank Account", "Bank Account"."Bank Acc. Posting Group", "Bank Account"."Currency Code");
                                 TotalBankAccountsAdjusted += 1;
                                 TempAdjustExchangeRateBuffer.Reset();
                                 TempAdjustExchangeRateBuffer.DeleteAll();
@@ -327,6 +328,8 @@ report 31004 "Adjust Exchange Rates CZL"
                 }
 
                 trigger OnAfterGetRecord()
+                var
+                    SkipCustLedgerEntry: Boolean;
                 begin
                     TempSumsDetailedCustLedgEntry.DeleteAll();
 
@@ -337,6 +340,15 @@ report 31004 "Adjust Exchange Rates CZL"
                         if TempCustLedgerEntry.Next() = 0 then
                             CurrReport.Break();
                     CustLedgerEntry.Get(TempCustLedgerEntry."Entry No.");
+
+                    SkipCustLedgerEntry := false;
+                    OnSkipCustLedgerEntry(CustLedgerEntry, SkipAdvancePayments, SkipCustLedgerEntry);
+                    if SkipCustLedgerEntry then
+                        CurrReport.Skip();
+#if not CLEAN19
+                    if SkipAdvancePayments and CustLedgerEntry.Prepayment then
+                        CurrReport.Skip();
+#endif
                     AdjustCustomerLedgerEntry(CustLedgerEntry, PostingDate);
 
                     Clear(AdjDebit);
@@ -511,6 +523,8 @@ report 31004 "Adjust Exchange Rates CZL"
                 }
 
                 trigger OnAfterGetRecord()
+                var
+                    SkipVendorLedgerEntry: Boolean;
                 begin
                     TempSumsDetailedVendorLedgEntry.DeleteAll();
 
@@ -521,6 +535,15 @@ report 31004 "Adjust Exchange Rates CZL"
                         if TempVendorLedgerEntry.Next() = 0 then
                             CurrReport.Break();
                     VendorLedgerEntry.Get(TempVendorLedgerEntry."Entry No.");
+
+                    SkipVendorLedgerEntry := false;
+                    OnSkipVendorLedgerEntry(VendorLedgerEntry, SkipAdvancePayments, SkipVendorLedgerEntry);
+                    if SkipVendorLedgerEntry then
+                        CurrReport.Skip();
+#if not CLEAN19
+                    if SkipAdvancePayments and VendorLedgerEntry.Prepayment then
+                        CurrReport.Skip();
+#endif
                     AdjustVendorLedgerEntry(VendorLedgerEntry, PostingDate);
 
                     Clear(AdjDebit);
@@ -922,6 +945,12 @@ report 31004 "Adjust Exchange Rates CZL"
                         MultiLine = true;
                         ToolTip = 'Specifies if you want to post in an additional reporting currency and adjust general ledger accounts for currency fluctuations between LCY and the additional reporting currency.';
                     }
+                    field(SkipAdvancePaymentsField; SkipAdvancePayments)
+                    {
+                        ApplicationArea = Suite;
+                        Caption = 'Skip Advance Payments';
+                        ToolTip = 'Specifies if you want to skip Advance Payments';
+                    }
                     field(PostField; Post)
                     {
                         ApplicationArea = Basic, Suite;
@@ -1185,6 +1214,7 @@ report 31004 "Adjust Exchange Rates CZL"
         VATEntryNo: Decimal;
         NewEntryNo: Integer;
         FirstEntry: Boolean;
+        SkipAdvancePayments: Boolean;
         MaxAdjExchRateBufIndex: Integer;
         RatesAdjustedMsg: Label 'One or more currency exchange rates have been adjusted.';
         NothingToAdjustMsg: Label 'There is nothing to adjust.';
@@ -1259,7 +1289,7 @@ report 31004 "Adjust Exchange Rates CZL"
         end;
     end;
 
-    local procedure InsertExchRateAdjmtReg(AdjustAccType: Integer; PostingGrCode: Code[20]; CurrencyCode: Code[10])
+    local procedure InsertExchRateAdjmtReg(ExchRateAdjmtAccountType: Enum "Exch. Rate Adjmt. Account Type"; PostingGrCode: Code[20]; CurrencyCode: Code[10])
     begin
         if not Post then
             exit;
@@ -1269,7 +1299,7 @@ report 31004 "Adjust Exchange Rates CZL"
 
         ExchRateAdjmtReg."No." := ExchRateAdjmtReg."No." + 1;
         ExchRateAdjmtReg."Creation Date" := PostingDate;
-        ExchRateAdjmtReg."Account Type" := AdjustAccType;
+        ExchRateAdjmtReg."Account Type" := ExchRateAdjmtAccountType;
         ExchRateAdjmtReg."Posting Group" := PostingGrCode;
         ExchRateAdjmtReg."Currency Code" := TempCurrency.Code;
         ExchRateAdjmtReg."Currency Factor" := TempCurrency."Currency Factor";
@@ -1386,6 +1416,7 @@ report 31004 "Adjust Exchange Rates CZL"
         TempDetailedCVLedgEntryBuffer: Record "Detailed CV Ledg. Entry Buffer" temporary;
         LastEntryNo: Integer;
         LastTransactionNo: Integer;
+        ExchRateAdjmtAccountType: Enum "Exch. Rate Adjmt. Account Type";
     begin
         if TempAdjustExchangeRateBuffer.FindSet() then begin
             // Summarize per currency and dimension combination
@@ -1452,7 +1483,7 @@ report 31004 "Adjust Exchange Rates CZL"
                                             Temp2AdjustExchangeRateBuffer."Posting Date", TempAdjustExchangeRateBuffer."IC Partner Code");
                                         if not TempDetailedCVLedgEntryBuffer.Insert() then
                                             TempDetailedCVLedgEntryBuffer."Transaction No." := 0;
-                                        InsertExchRateAdjmtReg(1, TempAdjustExchangeRateBuffer."Posting Group", TempAdjustExchangeRateBuffer."Currency Code");
+                                        InsertExchRateAdjmtReg(ExchRateAdjmtAccountType::Customer, TempAdjustExchangeRateBuffer."Posting Group", TempAdjustExchangeRateBuffer."Currency Code");
                                         TotalCustomersAdjusted += 1;
                                     end;
                                 2: // Vendor
@@ -1464,7 +1495,7 @@ report 31004 "Adjust Exchange Rates CZL"
                                             Temp2AdjustExchangeRateBuffer."Posting Date", TempAdjustExchangeRateBuffer."IC Partner Code");
                                         if not TempDetailedCVLedgEntryBuffer.Insert() then
                                             TempDetailedCVLedgEntryBuffer."Transaction No." := 0;
-                                        InsertExchRateAdjmtReg(2, TempAdjustExchangeRateBuffer."Posting Group", TempAdjustExchangeRateBuffer."Currency Code");
+                                        InsertExchRateAdjmtReg(ExchRateAdjmtAccountType::Vendor, TempAdjustExchangeRateBuffer."Posting Group", TempAdjustExchangeRateBuffer."Currency Code");
                                         TotalVendorsAdjusted += 1;
                                     end;
                             end;
@@ -1677,10 +1708,10 @@ report 31004 "Adjust Exchange Rates CZL"
         TotalAmount := TotalAmount + AmountToAdd;
     end;
 
-    local procedure PostGLAccAdjmt(GLAccNo: Code[20]; ExchRateAdjmt: Integer; Amount: Decimal; NetChange: Decimal; AddCurrNetChange: Decimal)
+    local procedure PostGLAccAdjmt(GLAccNo: Code[20]; ExchRateAdjustmentType: Enum "Exch. Rate Adjustment Type"; Amount: Decimal; NetChange: Decimal; AddCurrNetChange: Decimal)
     begin
         GenJournalLine.Init();
-        case ExchRateAdjmt of
+        case ExchRateAdjustmentType of
             "G/L Account"."Exchange Rate Adjustment"::"Adjust Amount":
                 begin
                     GenJournalLine."Additional-Currency Posting" := GenJournalLine."Additional-Currency Posting"::"Amount Only";
@@ -2633,6 +2664,16 @@ report 31004 "Adjust Exchange Rates CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnCloseRequestPage()
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSkipCustLedgerEntry(CustLedgerEntry: Record "Cust. Ledger Entry"; SkipAdvancePayments: Boolean; var SkipCustLedgerEntry: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSkipVendorLedgerEntry(VendorLedgerEntry: Record "Vendor Ledger Entry"; SkipAdvancePayments: Boolean; var SkipVendorLedgerEntry: Boolean)
     begin
     end;
 }

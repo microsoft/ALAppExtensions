@@ -10,9 +10,10 @@ codeunit 4021 "Hybrid BC Last Management"
         FailurePreparingDataErr: Label 'Failed to prepare data for the table. Inner error: %1';
         FailureCopyingTableErr: Label 'Failed to copy the table. Inner error: %1';
         UnsupportedVersionErr: Label 'The version of the on-premises deployment does not match the requirements of Business Central online. Check if the version was set correctly on the database. For more information, see the documentation - https://go.microsoft.com/fwlink/?linkid=2148701.';
-        IntelligentCloudTok: Label 'IntelligentCloud', Locked = true;
+        CloudMigrationTok: Label 'CloudMigration', Locked = true;
         CompanyUpgradeFailedMsg: Label 'Company upgrade failed', Locked = true;
         PerDatabaseUpgradeFailedMsg: Label 'Ped database upgrade failed', Locked = true;
+        CompanyUnderUpgradeErr: Label 'Cloud migration can�t be run, because an upgrade has started on company %1 (upgrade status: %2). Either exclude the company from migration or delete it, then try migration again.', Comment = '%1 - Name of company, %2 Status of upgrade for company';
 
     procedure GetAppId() AppId: Guid
     var
@@ -77,6 +78,36 @@ codeunit 4021 "Hybrid BC Last Management"
     begin
         UpdateStatusOnHybridReplicationCompleted(RunId, SubscriptionId);
         W1Management.SetUpgradePendingOnReplicationRunCompleted(RunId, SubscriptionId, NotificationText);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnVerifyCanReplicateCompanies', '', false, false)]
+    local procedure HandleVerifyCanReplicateCompanies(var Reason: Text; var CanReplicate: Boolean)
+    var
+        HybridCompany: Record "Hybrid Company";
+        HybridCompanyStatus: Record "Hybrid Company Status";
+        HybridBCLastWizard: Codeunit "Hybrid BC Last Wizard";
+    begin
+        if not HybridBCLastWizard.IsBCLastMigration() then
+            exit;
+
+        HybridCompany.SetRange(Replicate, true);
+        if not HybridCompany.FindSet() then begin
+            CanReplicate := true;
+            exit;
+        end;
+
+        repeat
+            if HybridCompanyStatus.Get(HybridCompany.Name) then
+                if HybridCompanyStatus.Replicated then
+                    if HybridCompanyStatus."Upgrade Status" in [HybridCompanyStatus."Upgrade Status"::Completed, HybridCompanyStatus."Upgrade Status"::Started, HybridCompanyStatus."Upgrade Status"::Failed] then begin
+                        Reason := StrSubstNo(CompanyUnderUpgradeErr, HybridCompany.Name, HybridCompanyStatus."Upgrade Status");
+                        CanReplicate := false;
+                        exit;
+                    end;
+        until HybridCompany.Next() = 0;
+
+        CanReplicate := true;
+        exit;
     end;
 
     local procedure UpdateStatusOnHybridReplicationCompleted(RunId: Text[50]; SubscriptionId: Text)
@@ -147,14 +178,14 @@ codeunit 4021 "Hybrid BC Last Management"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Management", 'OnAfterCompanyUpgradeFailed', '', true, false)]
     local procedure UpdateStatusOnCompanyUpgradeFailed(var HybridReplicationSummary: Record "Hybrid Replication Summary"; ErrorMessage: Text)
     begin
-        Session.LogMessage('0000EV2', CompanyUpgradeFailedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+        Session.LogMessage('0000EV2', CompanyUpgradeFailedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
         MarkCompanyUpgradeAsFailed(CopyStr(CompanyName(), 1, 50), ErrorMessage, HybridReplicationSummary)
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Management", 'OnAfterNonCompanyUpgradeFailed', '', true, false)]
     local procedure UpdateStatusOnNonCompanyMigrationFailed(var HybridReplicationSummary: Record "Hybrid Replication Summary"; ErrorMessage: Text)
     begin
-        Session.LogMessage('0000EV3', PerDatabaseUpgradeFailedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+        Session.LogMessage('0000EV3', PerDatabaseUpgradeFailedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
         MarkCompanyUpgradeAsFailed('', ErrorMessage, HybridReplicationSummary)
     end;
 
@@ -197,7 +228,7 @@ codeunit 4021 "Hybrid BC Last Management"
         if not GetBCLastProductEnabled() then
             exit;
 
-        SkipSetAllUpgradeTags := HybridCloudManagement.IsCompanyUnderUpgrade(NewCompanyName);
+        SkipSetAllUpgradeTags := HybridCloudManagement.IsCompanyUnderUpgrade(CopyStr(NewCompanyName, 1, 50));
     end;
 
     procedure GetBCLastProductEnabled(): Boolean

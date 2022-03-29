@@ -1,9 +1,13 @@
 codeunit 4025 "GP Cloud Migration"
 {
+    TableNo = "Hybrid Replication Summary";
+
     trigger OnRun();
     var
+        HybridCompanyStatus: Record "Hybrid Company Status";
         AssistedCompanySetupStatus: Record "Assisted Company Setup Status";
         HelperFunctions: Codeunit "Helper Functions";
+        HybridGPManagement: Codeunit "Hybrid GP Management";
         SetupStatus: Enum "Company Setup Status";
     begin
         if AssistedCompanySetupStatus.Get(CompanyName()) then begin
@@ -11,7 +15,25 @@ codeunit 4025 "GP Cloud Migration"
             if SetupStatus = SetupStatus::Completed then
                 InitiateGPMigration()
             else
-                SendTraceTag('000029K', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, CompanyFailedToMigrateMsg, DataClassification::SystemMetadata);
+                Session.LogMessage('000029K', CompanyFailedToMigrateMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
+        end;
+
+        Commit();
+        HybridCompanyStatus.Get(CompanyName);
+        HybridCompanyStatus."Upgrade Status" := HybridCompanyStatus."Upgrade Status"::Completed;
+        HybridCompanyStatus.Modify();
+
+        Clear(HybridCompanyStatus);
+        HybridCompanyStatus.SetFilter(Name, '<>''''');
+        HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Pending);
+        if HybridCompanyStatus.FindFirst() then begin
+            HybridGPManagement.InvokeCompanyUpgrade(Rec, HybridCompanyStatus.Name);
+            exit;
+        end;
+
+        if Rec.Find() then begin
+            Rec.Status := Rec.Status::Completed;
+            Rec.Modify();
         end;
     end;
 
@@ -34,7 +56,8 @@ codeunit 4025 "GP Cloud Migration"
         WizardIntegration: Codeunit "Wizard Integration";
         Flag: Boolean;
     begin
-        SendTraceTag('0000BBH', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, InitiateMigrationMsg, DataClassification::SystemMetadata);
+        Session.LogMessage('0000BBH', InitiateMigrationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
+
         SelectLatestVersion();
         HelperFunctions.SetProcessesRunning(true);
         HelperFunctions.CleanupBeforeSynchronization();
@@ -82,7 +105,7 @@ codeunit 4025 "GP Cloud Migration"
         CreateDataMigrationStatusRecords(Database::"Vendor", GPVendor.Count(), 4096, 4022);
         CreateDataMigrationStatusRecords(Database::"Item", GPItem.Count(), 4095, 4019);
 
-        SendTraceTag('0000BBI', HelperFunctions.GetMigrationTypeTxt(), Verbosity::Normal, StartMigrationMsg, DataClassification::SystemMetadata);
+        Session.LogMessage('0000BBI', StartMigrationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
         DataMigrationFacade.StartMigration(HelperFunctions.GetMigrationTypeTxt(), FALSE);
     end;
 

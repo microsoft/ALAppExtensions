@@ -15,7 +15,7 @@ permissionset 8704 "Telemetry - Objects"
                   Codeunit "Telemetry Loggers" = X,
                   Codeunit "Telemetry Loggers Impl." = X,
                   Codeunit "System Telemetry Logger" = X,
-                  Codeunit "Feature Telemetry" = X,
+                  Codeunit "Feature Telemetry" = x,
                   codeunit "Feature Telemetry Impl." = X,
                   Codeunit "Feature Uptake Status Impl." = X,
                   Table "Feature Uptake" = X;

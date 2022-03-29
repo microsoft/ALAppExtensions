@@ -817,7 +817,7 @@ table 11733 "Cash Document Line CZP"
                 TestField("Gen. Posting Type", "Gen. Posting Type"::Purchase);
             end;
         }
-        field(90; "FA Posting Type"; Enum "Cash Document FA Post.Type CZP")
+        field(90; "FA Posting Type"; Enum "Cash Document FA Post.Type CZP")
         {
             Caption = 'FA Posting Type';
             DataClassification = CustomerContent;
@@ -1693,6 +1693,81 @@ table 11733 "Cash Document Line CZP"
     end;
 #endif
 
+    procedure CalcRelatedAmountToApply(): Decimal
+    var
+        TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
+    begin
+        FindRelatedAmountToApply(TempCrossApplicationBufferCZL);
+        TempCrossApplicationBufferCZL.CalcSums("Amount (LCY)");
+        GetCashDocumentHeaderCZP();
+        case CashDocumentHeaderCZP."Document Type" of
+            CashDocumentHeaderCZP."Document Type"::Receipt:
+                exit(TempCrossApplicationBufferCZL."Amount (LCY)");
+            CashDocumentHeaderCZP."Document Type"::Withdrawal:
+                exit(-TempCrossApplicationBufferCZL."Amount (LCY)");
+        end
+    end;
+
+    procedure DrillDownRelatedAmountToApply()
+    var
+        TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
+    begin
+        FindRelatedAmountToApply(TempCrossApplicationBufferCZL);
+        Page.Run(Page::"Cross Application CZL", TempCrossApplicationBufferCZL);
+    end;
+
+    local procedure FindRelatedAmountToApply(var TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary)
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        EmployeeLedgerEntry: Record "Employee Ledger Entry";
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+        AppliesToAdvanceLetterNo: Code[20];
+    begin
+        if Rec."Account No." = '' then
+            exit;
+
+        case Rec."Account Type" of
+            Rec."Account Type"::Customer:
+                if Rec."Applies-to Doc. No." <> '' then begin
+                    CustLedgerEntry.SetCurrentKey("Customer No.");
+                    CustLedgerEntry.SetRange("Customer No.", Rec."Account No.");
+                    CustLedgerEntry.SetRange("Document Type", Rec."Applies-to Doc. Type");
+                    CustLedgerEntry.SetRange("Document No.", Rec."Applies-to Doc. No.");
+                    if CustLedgerEntry.FindFirst() then
+                        CrossApplicationMgtCZL.OnGetSuggestedAmountForCustLedgerEntry(CustLedgerEntry, TempCrossApplicationBufferCZL,
+                                                                                      Database::"Cash Document Line CZP", Rec."Cash Document No.", Rec."Line No.");
+                end;
+            Rec."Account Type"::Vendor:
+                begin
+                    if Rec."Applies-to Doc. No." <> '' then begin
+                        VendorLedgerEntry.SetCurrentKey("Vendor No.");
+                        VendorLedgerEntry.SetRange("Vendor No.", Rec."Account No.");
+                        VendorLedgerEntry.SetRange("Document Type", Rec."Applies-to Doc. Type");
+                        VendorLedgerEntry.SetRange("Document No.", Rec."Applies-to Doc. No.");
+                        if VendorLedgerEntry.FindFirst() then
+                            CrossApplicationMgtCZL.OnGetSuggestedAmountForVendLedgerEntry(VendorLedgerEntry, TempCrossApplicationBufferCZL,
+                                                                                          Database::"Cash Document Line CZP", Rec."Cash Document No.", Rec."Line No.");
+                    end;
+
+                    OnBeforeFindRelatedAmoutToApply(Rec, AppliesToAdvanceLetterNo);
+                    if AppliesToAdvanceLetterNo <> '' then
+                        CrossApplicationMgtCZL.OnGetSuggestedAmountForPurchAdvLetterHeader(AppliesToAdvanceLetterNo, TempCrossApplicationBufferCZL,
+                                                                                           Database::"Cash Document Line CZP", Rec."Cash Document No.", Rec."Line No.");
+                end;
+            Rec."Account Type"::Employee:
+                if Rec."Applies-to Doc. No." <> '' then begin
+                    EmployeeLedgerEntry.SetCurrentKey("Employee No.");
+                    EmployeeLedgerEntry.SetRange("Employee No.", Rec."Account No.");
+                    EmployeeLedgerEntry.SetRange("Document Type", Rec."Applies-to Doc. Type");
+                    EmployeeLedgerEntry.SetRange("Document No.", Rec."Applies-to Doc. No.");
+                    if EmployeeLedgerEntry.FindFirst() then
+                        CrossApplicationMgtCZL.OnGetSuggestedAmountForEmplLedgerEntry(EmployeeLedgerEntry, TempCrossApplicationBufferCZL,
+                                                                                      Database::"Cash Document Line CZP", Rec."Cash Document No.", Rec."Line No.");
+                end;
+        end;
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeIsEETTransaction(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETTransaction: Boolean; var IsHandled: Boolean)
     begin
@@ -1705,6 +1780,11 @@ table 11733 "Cash Document Line CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterIsEETCashRegister(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETCashRegister: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFindRelatedAmoutToApply(CashDocumentLineCZP: Record "Cash Document Line CZP"; var AppliesToAdvanceLetterNo: Code[20]);
     begin
     end;
 }

@@ -1,5 +1,9 @@
+#if not CLEAN20
 page 1085 "MS - Wallet Merchant Terms"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     Caption = 'Microsoft Pay Payments Merchant Terms';
     DeleteAllowed = false;
     InsertAllowed = false;
@@ -23,7 +27,7 @@ page 1085 "MS - Wallet Merchant Terms"
                 }
                 field(TermsOfServiceLbl; TermsOfServiceLbl)
                 {
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                     Editable = false;
                     ShowCaption = false;
                     ToolTip = 'Link to Microsoft Pay Payments Merchant Terms.';
@@ -35,7 +39,7 @@ page 1085 "MS - Wallet Merchant Terms"
                 }
                 field(PrivacyNoticeLbl; PrivacyNoticeLbl)
                 {
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                     Editable = false;
                     ShowCaption = false;
                     ToolTip = 'Link to Privacy notice.';
@@ -47,7 +51,7 @@ page 1085 "MS - Wallet Merchant Terms"
                 }
                 field("Accept Terms of Service"; "Accept Terms of Service")
                 {
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                     Editable = CanEditAcceptTerms;
                     ToolTip = 'Specifies if you accept the terms of service for Microsoft Pay Payments.';
                 }
@@ -135,4 +139,4 @@ page 1085 "MS - Wallet Merchant Terms"
         CanEditAcceptTerms: Boolean;
         IsInvoicing: Boolean;
 }
-
+#endif

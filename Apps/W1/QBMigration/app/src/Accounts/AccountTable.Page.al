@@ -13,6 +13,7 @@ page 1911 "MigrationQB AccountTable"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(AcctNum; AcctNum) { ApplicationArea = All; }
                 field(Name; Name) { ApplicationArea = All; }
                 field(SubAccount; SubAccount) { ApplicationArea = All; }
@@ -23,6 +24,7 @@ page 1911 "MigrationQB AccountTable"
                 field(AccountSubType; AccountSubType) { ApplicationArea = All; }
                 field(CurrentBalance; CurrentBalance) { ApplicationArea = All; }
                 field(CurrentBalanceWithSubAccounts; CurrentBalanceWithSubAccounts) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

@@ -12,18 +12,20 @@ codeunit 139651 "HybridBC Wizard Tests"
         ProductNameTxt: Label 'Dynamics 365 Business Central current version (v.%1)', Locked = true;
         NoCompaniesSelectedMsg: Label 'You must select at least one company to replicate to continue.';
 
-    local procedure Initialize(var wizard: TestPage "Hybrid Cloud Setup Wizard"; IsSaas: Boolean; CompanySelected: Boolean)
+    local procedure Initialize(var HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard"; IsSaas: Boolean; CompanySelected: Boolean)
     var
-        hybridDeploymentSetup: Record "Hybrid Deployment Setup";
+        HybridDeploymentSetup: Record "Hybrid Deployment Setup";
         HybridCompany: Record "Hybrid Company";
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
         AssistedSetupTestLibrary: Codeunit "Assisted Setup Test Library";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
     begin
-        hybridDeploymentSetup.DeleteAll();
-        hybridDeploymentSetup."Handler Codeunit ID" := Codeunit::"Library - Hybrid Management";
-        hybridDeploymentSetup.Insert();
+        HybridReplicationSummary.DeleteAll();
+        HybridDeploymentSetup.DeleteAll();
+        HybridDeploymentSetup."Handler Codeunit ID" := Codeunit::"Library - Hybrid Management";
+        HybridDeploymentSetup.Insert();
 
-        hybridDeploymentSetup.Get();
+        HybridDeploymentSetup.Get();
 
         if not Initialized then begin
             BindSubscription(LibraryHybridManagement);
@@ -33,11 +35,11 @@ codeunit 139651 "HybridBC Wizard Tests"
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(IsSaas);
         AssistedSetupTestLibrary.CallOnRegister();
         AssistedSetupTestLibrary.SetStatusToNotCompleted(Page::"Hybrid Cloud Setup Wizard");
-        wizard.Trap();
+        HybridCloudSetupWizard.Trap();
 
         Page.Run(Page::"Hybrid Cloud Setup Wizard");
 
-        wizard.AgreePrivacy.SetValue(true);
+        HybridCloudSetupWizard.AgreePrivacy.SetValue(true);
 
         HybridCompany.DeleteAll();
         HybridCompany.Init();
@@ -51,7 +53,7 @@ codeunit 139651 "HybridBC Wizard Tests"
     [HandlerFunctions('ProvidersBCPageHandler')]
     procedure TestSqlConfigurationWindow()
     var
-        wizard: TestPage "Hybrid Cloud Setup Wizard";
+        HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
         currentOption: Text;
         optionCount: Integer;
         sqlAzureTxt: Label 'Azure SQL';
@@ -60,10 +62,10 @@ codeunit 139651 "HybridBC Wizard Tests"
         // [SCENARIO] User starts wizard from saas environment and navigates to SQL Type window.
 
         // [GIVEN] User starts the wizard.
-        Initialize(wizard, true, true);
+        Initialize(HybridCloudSetupWizard, true, true);
         optionCount := 1;
 
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             // [GIVEN] User clicks 'Next' on Welcome window.
             ActionNext.Invoke();
 
@@ -72,7 +74,7 @@ codeunit 139651 "HybridBC Wizard Tests"
             ActionNext.Invoke();
 
             // [THEN] SQL Configuration window is displayed and expected SQL types are listed.
-            VerifySaasSqlConfigurationWindow(wizard);
+            VerifySaasSqlConfigurationWindow(HybridCloudSetupWizard);
             while optionCount <= "Sql Server Type".OptionCount() do begin
                 currentOption := "Sql Server Type".GetOption(optionCount);
 
@@ -95,22 +97,22 @@ codeunit 139651 "HybridBC Wizard Tests"
     [HandlerFunctions('ProvidersBCPageHandler,ConfirmNoHandler')]
     procedure TestAzureSqlScheduleFlow()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
-        wizard: TestPage "Hybrid Cloud Setup Wizard";
+        GuidedExperience: Codeunit "Guided Experience";
+        HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
     begin
         // [SCENARIO] User starts wizard from saas environment and navigates the wizard selecting Azure SQL server.
 
         // [GIVEN] User starts the wizard.
-        Initialize(wizard, true, true);
+        Initialize(HybridCloudSetupWizard, true, true);
 
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             // [THEN] Welcome window is displayed.
-            VerifySaasWelcomeWindow(wizard);
+            VerifySaasWelcomeWindow(HybridCloudSetupWizard);
             // [GIVEN] User clicks 'Next' on Welcome window.
             ActionNext.Invoke();
 
             // [THEN] Dynamics Product window is displayed.
-            VerifySaasDynamicsProductWindow(wizard);
+            VerifySaasDynamicsProductWindow(HybridCloudSetupWizard);
             // [GIVEN] User selects Dynamics Business Central.
             "Product Name".AssistEdit();
 
@@ -118,7 +120,7 @@ codeunit 139651 "HybridBC Wizard Tests"
             ActionNext.Invoke();
 
             // [THEN] SQL Configuration window is displayed.
-            VerifySaasSqlConfigurationWindow(wizard);
+            VerifySaasSqlConfigurationWindow(HybridCloudSetupWizard);
             // [WHEN] User selects Azure SQL.
             "Sql Server Type".SetValue(SqlServerTypeOption::AzureSql);
 
@@ -131,19 +133,19 @@ codeunit 139651 "HybridBC Wizard Tests"
             Assert.IsFalse(DownloadShir.Visible(), 'ADF Instructions window Download Self Hosted Integration Runtime should not be visible.');
 
             // [THEN] Company Selection window is displayed.
-            VerifyCompanySelectionWindow(wizard);
+            VerifyCompanySelectionWindow(HybridCloudSetupWizard);
 
             // [GIVEN] User clicks 'Next' on Company Selection window.
             ActionNext.Invoke();
 
             // [THEN] Done window is displayed.
-            VerifySaasDoneWindow(wizard, 1);
+            VerifySaasDoneWindow(HybridCloudSetupWizard, 1);
 
             // [GIVEN] User clicks 'Finish' on Done window.
             ActionFinish.Invoke();
 
             // [THEN] Status of assisted setup remains not completed.
-            Assert.IsTrue(AssistedSetup.IsComplete(Page::"Hybrid Cloud Setup Wizard"), 'Wizard status should be completed.');
+            Assert.IsTrue(GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard"), 'Wizard status should be completed.');
         end;
     end;
 
@@ -151,21 +153,21 @@ codeunit 139651 "HybridBC Wizard Tests"
     [HandlerFunctions('ProvidersBCPageHandler')]
     procedure TestLocalSqlNextAndBackFlows()
     var
-        wizard: TestPage "Hybrid Cloud Setup Wizard";
+        HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
     begin
         // [SCENARIO] User navigates the wizard selecting Local SQL server and clicks back on done window to verify correct windows are displayed.
 
         // [GIVEN] User starts the wizard.
-        Initialize(wizard, true, true);
+        Initialize(HybridCloudSetupWizard, true, true);
 
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             // [THEN] Welcome window is displayed.
-            VerifySaasWelcomeWindow(wizard);
+            VerifySaasWelcomeWindow(HybridCloudSetupWizard);
             // [GIVEN] User clicks 'Next' on Welcome window.
             ActionNext.Invoke();
 
             // [THEN] Dynamics Product window is displayed.
-            VerifySaasDynamicsProductWindow(wizard);
+            VerifySaasDynamicsProductWindow(HybridCloudSetupWizard);
             // [GIVEN] User selects Dynamics Business Central.
             "Product Name".AssistEdit();
 
@@ -173,7 +175,7 @@ codeunit 139651 "HybridBC Wizard Tests"
             ActionNext.Invoke();
 
             // [THEN] SQL Configuration window is displayed.
-            VerifySaasSqlConfigurationWindow(wizard);
+            VerifySaasSqlConfigurationWindow(HybridCloudSetupWizard);
 
             // [GIVEN] User selects Local SQL.
             "Sql Server Type".SetValue(SqlServerTypeOption::SQLServer);
@@ -185,18 +187,18 @@ codeunit 139651 "HybridBC Wizard Tests"
             ActionNext.Invoke();
 
             // [THEN] ADF IR Runtime window is displayed.
-            VerifySaasIRInstructionsWindow(wizard);
+            VerifySaasIRInstructionsWindow(HybridCloudSetupWizard);
             // [GIVEN] User clicks 'Next' on ADF Information window.
             ActionNext.Invoke();
 
             // [THEN] Company Selection window is displayed.
-            VerifyCompanySelectionWindow(wizard);
+            VerifyCompanySelectionWindow(HybridCloudSetupWizard);
 
             // [GIVEN] User clicks 'Next' on Company Selection window.
             ActionNext.Invoke();
 
             // [THEN] Done window is displayed.
-            VerifySaasDoneWindow(wizard, 1);
+            VerifySaasDoneWindow(HybridCloudSetupWizard, 1);
 
             // [GIVEN] User clicks 'Back' on Done window.
             ActionBack.Invoke();
@@ -210,22 +212,22 @@ codeunit 139651 "HybridBC Wizard Tests"
     [HandlerFunctions('ProvidersBCPageHandler,ConfirmNoHandler')]
     procedure TestExistingIntegrationRuntime()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
-        wizard: TestPage "Hybrid Cloud Setup Wizard";
+        GuidedExperience: Codeunit "Guided Experience";
+        HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
     begin
         // [SCENARIO] User navigates the wizard and enters an existing Runtime Name to verify correct windows are displayed.
 
         // [GIVEN] User starts the wizard.
-        Initialize(wizard, true, true);
+        Initialize(HybridCloudSetupWizard, true, true);
 
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             // [THEN] Welcome window is displayed.
-            VerifySaasWelcomeWindow(wizard);
+            VerifySaasWelcomeWindow(HybridCloudSetupWizard);
             // [GIVEN] User clicks 'Next' on Welcome window.
             ActionNext.Invoke();
 
             // [THEN] Dynamics Product window is displayed.
-            VerifySaasDynamicsProductWindow(wizard);
+            VerifySaasDynamicsProductWindow(HybridCloudSetupWizard);
             // [GIVEN] User selects Dynamics Business Central.
             "Product Name".AssistEdit();
 
@@ -233,7 +235,7 @@ codeunit 139651 "HybridBC Wizard Tests"
             ActionNext.Invoke();
 
             // [THEN] SQL Configuration window is displayed.
-            VerifySaasSqlConfigurationWindow(wizard);
+            VerifySaasSqlConfigurationWindow(HybridCloudSetupWizard);
             // [GIVEN] User selects SQL Server.
             "Sql Server Type".SetValue(SqlServerTypeOption::SQLServer);
 
@@ -250,19 +252,19 @@ codeunit 139651 "HybridBC Wizard Tests"
             Assert.IsFalse(DownloadShir.Visible(), 'ADF Instructions window should not be displayed.');
 
             // [THEN] Company Selection window is displayed.
-            VerifyCompanySelectionWindow(wizard);
+            VerifyCompanySelectionWindow(HybridCloudSetupWizard);
 
             // [GIVEN] User clicks 'Next' on Company Selection window.
             ActionNext.Invoke();
 
             // [THEN] Done window is displayed
-            VerifySaasDoneWindow(wizard, 1);
+            VerifySaasDoneWindow(HybridCloudSetupWizard, 1);
 
             // [GIVEN] User clicks 'Finish' on Done window.
             ActionFinish.Invoke();
 
             // [THEN] Status of assisted setup is completed.
-            Assert.IsTrue(AssistedSetup.IsComplete(Page::"Hybrid Cloud Setup Wizard"), 'Wizard status should be completed.');
+            Assert.IsTrue(GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard"), 'Wizard status should be completed.');
         end;
     end;
 
@@ -270,21 +272,21 @@ codeunit 139651 "HybridBC Wizard Tests"
     [HandlerFunctions('ProvidersBCPageHandler,ConfirmYesHandler')]
     procedure TestNoCompanyMessage()
     var
-        wizard: TestPage "Hybrid Cloud Setup Wizard";
+        HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
     begin
         // [SCENARIO] User navigates the wizard selecting Local SQL server and clicks back on done window to verify correct windows are displayed.
 
         // [GIVEN] User starts the wizard.
-        Initialize(wizard, true, false);
+        Initialize(HybridCloudSetupWizard, true, false);
 
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             // [THEN] Welcome window is displayed.
-            VerifySaasWelcomeWindow(wizard);
+            VerifySaasWelcomeWindow(HybridCloudSetupWizard);
             // [GIVEN] User clicks 'Next' on Welcome window.
             ActionNext.Invoke();
 
             // [THEN] Dynamics Product window is displayed.
-            VerifySaasDynamicsProductWindow(wizard);
+            VerifySaasDynamicsProductWindow(HybridCloudSetupWizard);
             // [GIVEN] User selects Dynamics Business Central.
             "Product Name".AssistEdit();
 
@@ -292,7 +294,7 @@ codeunit 139651 "HybridBC Wizard Tests"
             ActionNext.Invoke();
 
             // [THEN] SQL Configuration window is displayed.
-            VerifySaasSqlConfigurationWindow(wizard);
+            VerifySaasSqlConfigurationWindow(HybridCloudSetupWizard);
 
             // [GIVEN] User selects Local SQL.
             "Sql Server Type".SetValue(SqlServerTypeOption::SQLServer);
@@ -304,12 +306,12 @@ codeunit 139651 "HybridBC Wizard Tests"
             ActionNext.Invoke();
 
             // [THEN] ADF IR Runtime window is displayed.
-            VerifySaasIRInstructionsWindow(wizard);
+            VerifySaasIRInstructionsWindow(HybridCloudSetupWizard);
             // [GIVEN] User clicks 'Next' on ADF Information window.
             ActionNext.Invoke();
 
             // [THEN] Company Selection window is displayed.
-            VerifyCompanySelectionWindow(wizard);
+            VerifyCompanySelectionWindow(HybridCloudSetupWizard);
 
             // [GIVEN] Deselect all companies
             SelectAll.SetValue(false);
@@ -326,57 +328,57 @@ codeunit 139651 "HybridBC Wizard Tests"
     [HandlerFunctions('ConfirmYesHandler')]
     procedure TestNoProductSelectedError()
     var
-        wizard: TestPage "Hybrid Cloud Setup Wizard";
+        HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
     begin
         // [SCENARIO] User navigates the wizard selecting Local SQL server and clicks back on done window to verify correct windows are displayed.
 
         // [GIVEN] User starts the wizard.
-        Initialize(wizard, true, false);
+        Initialize(HybridCloudSetupWizard, true, false);
 
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             // [THEN] Welcome window is displayed.
-            VerifySaasWelcomeWindow(wizard);
+            VerifySaasWelcomeWindow(HybridCloudSetupWizard);
             // [GIVEN] User clicks 'Next' on Welcome window.
             ActionNext.Invoke();
 
             // [THEN] Dynamics Product window is displayed.
-            VerifySaasDynamicsProductWindow(wizard);
+            VerifySaasDynamicsProductWindow(HybridCloudSetupWizard);
 
             // [GIVEN] User clicks 'Next' on Dynamics Product window.
             AssertError ActionNext.Invoke();
         end;
     end;
 
-    local procedure VerifySaasWelcomeWindow(wizard: TestPage "Hybrid Cloud Setup Wizard")
+    local procedure VerifySaasWelcomeWindow(HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard")
     begin
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             Assert.IsFalse(ActionBack.Enabled(), 'Welcome window ActionBack should be disabled.');
             Assert.IsTrue(ActionNext.Enabled(), 'Welcome window ActionNext should be enabled.');
             Assert.IsFalse(ActionFinish.Enabled(), 'Welcome window ActionFinish should be disabled.');
         end;
     end;
 
-    local procedure VerifySaasDynamicsProductWindow(wizard: TestPage "Hybrid Cloud Setup Wizard")
+    local procedure VerifySaasDynamicsProductWindow(HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard")
     begin
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             Assert.IsTrue(ActionBack.Enabled(), 'Dynamics Product window ActionBack should be enabled.');
             Assert.IsTrue(ActionNext.Enabled(), 'Dynamics Product window ActionNext should be enabled.');
             Assert.IsFalse(ActionFinish.Enabled(), 'Dynamics Product window ActionFinish should be disabled.');
         end;
     end;
 
-    local procedure VerifySaasSqlConfigurationWindow(wizard: TestPage "Hybrid Cloud Setup Wizard")
+    local procedure VerifySaasSqlConfigurationWindow(HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard")
     begin
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             Assert.IsTrue(ActionBack.Enabled(), 'SQL Type window ActionBack should be enabled.');
             Assert.IsTrue(ActionNext.Enabled(), 'SQL Type window ActionNext should be enabled.');
             Assert.IsFalse(ActionFinish.Enabled(), 'SQL Type window ActionFinish should be disabled.');
         end;
     end;
 
-    local procedure VerifySaasIRInstructionsWindow(wizard: TestPage "Hybrid Cloud Setup Wizard")
+    local procedure VerifySaasIRInstructionsWindow(HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard")
     begin
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             Assert.IsTrue(ActionBack.Enabled(), 'ADF Info window ActionBack should be enabled.');
             Assert.IsTrue(ActionNext.Enabled(), 'ADF Info window ActionNext should be enabled.');
             Assert.IsFalse(ActionFinish.Enabled(), 'ADF Info window ActionFinish should be disabled.');
@@ -384,18 +386,18 @@ codeunit 139651 "HybridBC Wizard Tests"
         end;
     end;
 
-    local procedure VerifyCompanySelectionWindow(wizard: TestPage "Hybrid Cloud Setup Wizard")
+    local procedure VerifyCompanySelectionWindow(HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard")
     begin
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             Assert.IsTrue(ActionBack.Enabled(), 'ADF Connection window ActionBack should be enabled.');
             Assert.IsTrue(ActionNext.Enabled(), 'ADF Connection window ActionNext should be enabled.');
             Assert.IsFalse(ActionFinish.Enabled(), 'ADF Connection window ActionFinish should be disabled.');
         end;
     end;
 
-    local procedure VerifySaasDoneWindow(wizard: TestPage "Hybrid Cloud Setup Wizard"; executeNumber: Integer)
+    local procedure VerifySaasDoneWindow(HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard"; executeNumber: Integer)
     begin
-        with wizard do begin
+        with HybridCloudSetupWizard do begin
             Assert.IsTrue(ActionBack.Enabled(), StrSubstNo('Done window ActionBack should be enabled. Run %1', executeNumber));
             Assert.IsFalse(ActionNext.Enabled(), StrSubstNo('Done window ActionNext should be disabled. Run %1', executeNumber));
             Assert.IsTrue(ActionFinish.Enabled(), StrSubstNo('Done window ActionFinish should be enabled. Run %1', executeNumber));
@@ -416,10 +418,10 @@ codeunit 139651 "HybridBC Wizard Tests"
 
 
     [ModalPageHandler]
-    procedure ProvidersBCPageHandler(var productPage: TestPage "Hybrid Product Types")
+    procedure ProvidersBCPageHandler(var HybridProductTypes: TestPage "Hybrid Product Types")
     begin
-        productPage.FindFirstField("Display Name", GetProductName());
-        productPage.OK().Invoke();
+        HybridProductTypes.FindFirstField("Display Name", GetProductName());
+        HybridProductTypes.OK().Invoke();
     end;
 
     local procedure GetProductName(): Text

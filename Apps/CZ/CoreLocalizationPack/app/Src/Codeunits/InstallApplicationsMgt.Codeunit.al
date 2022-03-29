@@ -8,8 +8,10 @@ codeunit 31393 "Install Applications Mgt. CZL"
 
     procedure InsertTableDataPermissions(AppID: Guid; OldTableID: Integer; NewTableID: Integer)
     var
+#pragma warning disable AL0432
         Permission: Record Permission;
         PermissionSet: Record "Permission Set";
+#pragma warning restore AL0432
         TenantPermission: Record "Tenant Permission";
         TenantPermissionSet: Record "Tenant Permission Set";
     begin

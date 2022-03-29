@@ -6,7 +6,8 @@ page 6090 "FA Ledger Entries Issues"
     PageType = List;
     SourceTable = "FA Ledg. Entry w. Issue";
     SourceTableView = where(Corrected = FILTER(false));
-    Permissions = TableData "FA Ledg. Entry w. Issue" = rimd;
+    Permissions = tabledata "FA Ledg. Entry w. Issue" = rimd,
+                  tabledata "FA Ledger Entry" = rimd;
 
     layout
     {
@@ -35,21 +36,21 @@ page 6090 "FA Ledger Entries Issues"
                     ApplicationArea = FixedAssets;
                     ToolTip = 'Specifies the number of the related fixed asset. ';
                 }
-                field(Amount; Rec.Amount)
-                {
-                    ApplicationArea = FixedAssets;
-                    ToolTip = 'Specifies the entry amount in currency.';
-                }
+
 
                 field(OriginalAmount; OriginalAmount)
                 {
                     ApplicationArea = FixedAssets;
                     ToolTip = 'Specifies the entry amount in currency.';
                     DecimalPlaces = 0 : 15;
-                    Caption = 'Original Amount';
-
+                    Caption = 'Amount';
                 }
-
+                field(Amount; Rec.Amount)
+                {
+                    ApplicationArea = FixedAssets;
+                    ToolTip = 'Specifies the entry amount in currency.';
+                    Caption = 'Rounded Amount';
+                }
                 field(Rounding; Rounding)
                 {
                     ApplicationArea = FixedAssets;
@@ -96,12 +97,12 @@ page 6090 "FA Ledger Entries Issues"
             action("&Prepare")
             {
                 ApplicationArea = FixedAssets;
-                Caption = '&Find Entries with issues';
+                Caption = '&Find Entries with Issues';
                 Image = Navigate;
                 Promoted = true;
                 PromotedOnly = true;
                 PromotedCategory = Process;
-                ToolTip = 'Find Entries with issues';
+                ToolTip = 'Find Entries with Issues';
                 trigger OnAction()
                 begin
                     Codeunit.run(Codeunit::"FA Ledger Entries Scan");

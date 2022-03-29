@@ -87,4 +87,18 @@ codeunit 31025 "Intrastat Jnl.Line Handler CZL"
         UserSetupLineTypeCZL := UserSetupLineTypeCZL::"Intrastat Journal";
         UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, JournalTemplateName);
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Intrastat Jnl. Line", 'OnAfterGetCountryOfOriginCode', '', false, false)]
+    local procedure GetCountryOfOriginCode(var IntrastatJnlLine: Record "Intrastat Jnl. Line"; var CountryOfOriginCode: Code[10])
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+        StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
+    begin
+        StatutoryReportingSetupCZL.Get();
+        if StatutoryReportingSetupCZL."Get Country/Region of Origin" = StatutoryReportingSetupCZL."Get Country/Region of Origin"::"Item Card" then
+            exit;
+        if not ItemLedgerEntry.Get(IntrastatJnlLine."Source Entry No.") then
+            exit;
+        CountryOfOriginCode := ItemLedgerEntry."Country/Reg. of Orig. Code CZL";
+    end;
 }

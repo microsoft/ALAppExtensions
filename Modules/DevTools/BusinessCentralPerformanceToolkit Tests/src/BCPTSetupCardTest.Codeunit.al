@@ -384,6 +384,60 @@ codeunit 144741 "BCPT Setup Card Test"
         BCPTSetupCard.Close();
     end;
 
+    [Test]
+    procedure BCPTSetupMaxConcurrentUsers()
+    var
+        BCPTHeader: Record "BCPT Header";
+        BCPTLine: Record "BCPT Line";
+        BCPTSetupCard: TestPage "BCPT Setup Card";
+        LineCount: Integer;
+    begin
+        Initialize();
+        BCPTSetupCard.OpenNew();
+        BCPTSetupCard.Code.Value := CopyStr(CreateGuid(), 1, MaxStrLen(BCPTHeader.Code));
+        BCPTSetupCard.Description.Value := CopyStr(CreateGuid(), 1, MaxStrLen(BCPTHeader.Description));
+        for LineCount := 1 to 5 do begin
+            BCPTSetupCard.BCPTLines.New();
+            BCPTSetupCard.BCPTLines.CodeunitID.SetValue(Codeunit::"BCPT Empty Codeunit");
+            BCPTSetupCard.BCPTLines.CodeunitID.AssertEquals(Codeunit::"BCPT Empty Codeunit");
+            BCPTSetupCard.BCPTLines.NoOfInstances.SetValue(100);
+            BCPTSetupCard.BCPTLines.NoOfInstances.AssertEquals(100);
+            BCPTSetupCard.BCPTLines.RunInForeground.AssertEquals(false);
+            BCPTSetupCard.BCPTLines.Description.AssertEquals('');
+            BCPTSetupCard.BCPTLines.Status.AssertEquals(BCPTLine.Status::" ");
+            BCPTSetupCard.BCPTLines.MinDelay.AssertEquals(BCPTSetupCard.MinDelay.AsInteger());
+            BCPTSetupCard.BCPTLines.MaxDelay.AssertEquals(BCPTSetupCard.MaxDelay.AsInteger());
+            BCPTSetupCard.BCPTLines.Frequency.AssertEquals(5);
+            BCPTSetupCard.BCPTLines.FreqType.AssertEquals(BCPTLine."Delay Type"::Fixed);
+            BCPTSetupCard.BCPTLines.NoOfIterations.AssertEquals(0);
+            BCPTSetupCard.BCPTLines.Duration.AssertEquals(0);
+            BCPTSetupCard.BCPTLines.AvgDuration.AssertEquals(0);
+            BCPTSetupCard.BCPTLines.NoOfSQLStmts.AssertEquals(0);
+            BCPTSetupCard.BCPTLines.AvgSQLStmts.AssertEquals(0);
+            BCPTSetupCard.RefreshStatus.Invoke();
+            BCPTSetupCard.TotalNoOfSessions.AssertEquals(LineCount * 100);
+        end;
+        BCPTSetupCard.BCPTLines.New();
+        BCPTSetupCard.BCPTLines.CodeunitID.SetValue(Codeunit::"BCPT Empty Codeunit");
+        BCPTSetupCard.BCPTLines.CodeunitID.AssertEquals(Codeunit::"BCPT Empty Codeunit");
+        BCPTSetupCard.BCPTLines.NoOfInstances.SetValue(100);
+        BCPTSetupCard.BCPTLines.NoOfInstances.AssertEquals(100);
+        BCPTSetupCard.BCPTLines.RunInForeground.AssertEquals(false);
+        BCPTSetupCard.BCPTLines.Description.AssertEquals('');
+        BCPTSetupCard.BCPTLines.Status.AssertEquals(BCPTLine.Status::" ");
+        BCPTSetupCard.BCPTLines.MinDelay.AssertEquals(BCPTSetupCard.MinDelay.AsInteger());
+        BCPTSetupCard.BCPTLines.MaxDelay.AssertEquals(BCPTSetupCard.MaxDelay.AsInteger());
+        BCPTSetupCard.BCPTLines.Frequency.AssertEquals(5);
+        BCPTSetupCard.BCPTLines.FreqType.AssertEquals(BCPTLine."Delay Type"::Fixed);
+        BCPTSetupCard.BCPTLines.NoOfIterations.AssertEquals(0);
+        BCPTSetupCard.BCPTLines.Duration.AssertEquals(0);
+        BCPTSetupCard.BCPTLines.AvgDuration.AssertEquals(0);
+        BCPTSetupCard.BCPTLines.NoOfSQLStmts.AssertEquals(0);
+        BCPTSetupCard.BCPTLines.AvgSQLStmts.AssertEquals(0);
+        BCPTSetupCard.RefreshStatus.Invoke();
+        Assert.ExpectedError('The total number of sessions must be at most 500. Current attempted value is 600.');
+    end;
+
     local procedure Initialize()
     var
         BCPTHeader: Record "BCPT Header";

@@ -44,7 +44,7 @@ page 10696 "Elec. VAT Submission Wizard"
                     group(WizardDescription)
                     {
                         Caption = '';
-                        InstructionalText = 'This guide helps you to set up the integration with the Skatteetaten API to submit VAT returns.';
+                        InstructionalText = 'This guide helps you to set up the integration with the ID-Porten and use the Skatteetaten API to submit VAT returns.';
                     }
                 }
             }
@@ -53,7 +53,7 @@ page 10696 "Elec. VAT Submission Wizard"
                 Visible = AuthenticationStepVisible;
                 group(AuthenticationDetails)
                 {
-                    Caption = 'Setup the connect to ID-Porten to use the Skatteetaten API.';
+                    Caption = 'Set up the connection to the ID-Porten to use the Skatteetaten API.';
                     InstructionalText = 'Check your authorization status. If your status is Authorized, choose Next. If you are not authorized and have not yet specified the client ID and the client secret, choose Open Electronic VAT Setup. Then click the Status below to open the OAuth 2.0 setup page and use the Authorize action to complete the process.';
                 }
                 group(AuthenticationActionGroup)
@@ -90,7 +90,6 @@ page 10696 "Elec. VAT Submission Wizard"
                             OAuth20SetupPage.RunModal();
                             OAuth20Setup.Find();
                             UpdateAuthorizationStatus();
-                            NextActionEnabled := AuthorizationStatus = AuthorizationStatus::Authorized;
                         end;
                     }
                 }
@@ -100,7 +99,7 @@ page 10696 "Elec. VAT Submission Wizard"
                 Visible = VATCodesStepVisible;
                 group(VATCodesHeaderGroup)
                 {
-                    Caption = 'Setup your VAT Codes';
+                    Caption = 'Set up your VAT Codes';
                     InstructionalText = 'Make sure your VAT codes are ready for reporting.';
                 }
                 group(AddVATCodesGroup)
@@ -137,11 +136,11 @@ page 10696 "Elec. VAT Submission Wizard"
                 group(UpdateVATCodesGroup)
                 {
                     ShowCaption = false;
-                    InstructionalText = 'Some of the VAT codes must be set up to also report the base VAT. Choose Update to make sure all the VAT codes are ready for reporting.';
+                    InstructionalText = 'Some of the VAT codes must be set up to also report the VAT rate. Choose Update to make sure all the VAT codes are ready for reporting.';
                     field(AlreadyUpdatedVATCodesControl; VATCodesUpdatedText)
                     {
-                        Caption = 'You have already updated:';
-                        ToolTip = 'Specifies how many VAT codes are marked to report base VAT.';
+                        Caption = 'Codes for reporting VAT rate:';
+                        ToolTip = 'Specifies how many VAT codes are marked to report VAT Rate.';
                         ApplicationArea = Basic, Suite;
                         Editable = false;
 
@@ -155,7 +154,7 @@ page 10696 "Elec. VAT Submission Wizard"
                         ShowCaption = false;
                         ApplicationArea = Basic, Suite;
                         Editable = false;
-                        ToolTip = 'Updates the VAT codes that are required to report base VAT base and assigns the relevant VAT rate.';
+                        ToolTip = 'Updates the VAT codes that are required to report VAT rate and assigns the relevant VAT rate.';
 
                         trigger OnDrillDown()
                         var
@@ -171,7 +170,7 @@ page 10696 "Elec. VAT Submission Wizard"
             {
                 Visible = VATStatementStepVisible;
                 Caption = 'VAT Statement';
-                InstructionalText = 'Create a VAT statement with all required VAT codes. Make sure that VAT codes are specified in the VAT posting setup in advance. Specify the name of the VAT statement and click Create VAT statement. If you do not want to create a VAT statement, click Next.';
+                InstructionalText = 'Create a VAT statement with all required VAT codes. Make sure that VAT codes are specified in the VAT posting setup in advance. Select the template name, specify the name of the VAT statement and click Create VAT statement. If you do not want to create a VAT statement, click Next.';
 
                 group(VATStatementActionGroup)
                 {
@@ -310,7 +309,7 @@ page 10696 "Elec. VAT Submission Wizard"
         FinishActionEnabled: Boolean;
         MissingVATCodesExist: Boolean;
         SetupNotCompletedQst: Label 'A setup has not been completed.\\Are you sure that you want to exit?';
-        AuthorizationNotCompletedErr: Label 'You need to complete the authorization to submit your VAT return electronically.';
+        AuthorizationNotCompletedQst: Label 'The authorization has not been completed. You would not be able to submit your VAT return electronically. Do you want to continue?';
         ShowCodesLbl: Label 'Show Codes';
         AddCodesLbl: Label 'Add Codes';
         UpdateLbl: Label 'Update';
@@ -332,12 +331,11 @@ page 10696 "Elec. VAT Submission Wizard"
         ElectronicVATInstallation: Codeunit "Electronic VAT Installation";
         ElecVATOAuthMgt: Codeunit "Elec. VAT OAuth Mgt.";
     begin
-        if not ElecVATSetup.Get() then begin
-            ElectronicVATInstallation.InsertElectronicVATSetup();
-            ElecVATSetup.Get();
-        end;
+        ElectronicVATInstallation.RunExtensionSetup();
+        ElecVATSetup.Get();
         ElecVATOAuthMgt.GetOAuthSetup(OAuth20Setup);
         UpdateAuthorizationStatus();
+        ElecVATDataMgt.InsertMissingVATSpecificationsAndNotes();
         MissingVATCodesExist := ElecVATDataMgt.GetMissingVATCodes(TempMissingVATCode);
         SetVATCodesUpdatedText();
         EnableControls();
@@ -408,12 +406,15 @@ page 10696 "Elec. VAT Submission Wizard"
     end;
 
     local procedure ValidateControlsBeforeStep(Backwards: Boolean): Boolean
+    var
+        ConfirmManagement: Codeunit "Confirm Management";
     begin
         if (not Backwards) and WelcomeStepVisible and (not ElecVATSetup.Enabled) then
             if not ConfirmCustomerConsent() then
                 exit(false);
         if (Not Backwards) and AuthenticationStepVisible and (AuthorizationStatus <> AuthorizationStatus::Authorized) then
-            error(AuthorizationNotCompletedErr);
+            if not ConfirmManagement.GetResponse(AuthorizationNotCompletedQst, false) then
+                exit(false);
         exit(true);
     end;
 
@@ -433,7 +434,7 @@ page 10696 "Elec. VAT Submission Wizard"
     begin
         WelcomeStepVisible := false;
         BackActionEnabled := true;
-        NextActionEnabled := AuthorizationStatus = AuthorizationStatus::Authorized;
+        NextActionEnabled := true;
         AuthenticationStepVisible := true;
         VATCodesStepVisible := false;
         VATStatementStepVisible := false;

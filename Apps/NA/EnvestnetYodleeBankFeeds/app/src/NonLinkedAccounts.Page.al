@@ -116,6 +116,7 @@ page 1453 "MS - Yodlee NonLinked Accounts"
                 Image = UnLinkAccount;
                 Promoted = true;
                 PromotedIsBig = true;
+                PromotedOnly = true;
                 ToolTip = 'Remove the non-linked online bank account.';
 
                 trigger OnAction();

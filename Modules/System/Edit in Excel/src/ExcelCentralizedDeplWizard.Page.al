@@ -16,11 +16,27 @@ page 1480 "Excel Centralized Depl. Wizard"
     SourceTable = "Edit in Excel Settings";
     Extensible = false;
     AccessByPermission = tabledata "Edit in Excel Settings" = M;
+    Permissions = tabledata "Media Resources" = r;
 
     layout
     {
         area(content)
         {
+            group(Done)
+            {
+                Editable = false;
+                ShowCaption = false;
+                Visible = TopBannerVisible;
+                field(NotDoneIcon; MediaResourcesStandard."Media Reference")
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                    ShowCaption = false;
+                    ToolTip = ' ';
+                    Caption = ' ';
+                }
+            }
+
             group(Step1)
             {
                 Visible = Step1Visible;
@@ -28,37 +44,42 @@ page 1480 "Excel Centralized Depl. Wizard"
                 {
                     Caption = 'Business Central Excel add-in setup';
 
-                    group(IntroductionGroup)
+                    group("IntroductionSubgroup")
                     {
                         Caption = '';
-                        InstructionalText = 'If your organization does not allow users to access the Office Store (AppSource), administrators can configure Centralized Deployment to control which users or groups can continue accessing the Excel add-in.';
-                    }
-                    field(LearnHowExcelFilesAreImpactedField; LearnHowExcelFilesAreImpactedTxt)
-                    {
-                        ShowCaption = false;
-                        Editable = false;
-                        ApplicationArea = All;
 
-                        trigger OnDrillDown()
-                        begin
-                            Hyperlink('https://go.microsoft.com/fwlink/?linkid=2168300');
-                        end;
-                    }
-                    field(CentralizedDeploymentLinkField; CentralizedDeploymentLinkTxt)
-                    {
-                        ShowCaption = false;
-                        Editable = false;
-                        ApplicationArea = All;
+                        group(IntroductionGroup)
+                        {
+                            Caption = '';
+                            InstructionalText = 'If your organization does not allow users to access the Office Store (AppSource), administrators can configure Centralized Deployment to control which users or groups can continue accessing the Excel add-in.';
+                        }
+                        field(LearnHowExcelFilesAreImpactedField; LearnHowExcelFilesAreImpactedTxt)
+                        {
+                            ShowCaption = false;
+                            Editable = false;
+                            ApplicationArea = All;
 
-                        trigger OnDrillDown()
-                        begin
-                            Hyperlink('https://go.microsoft.com/fwlink/?linkid=2164357');
-                        end;
-                    }
-                    group(AffectsGroup)
-                    {
-                        Caption = '';
-                        InstructionalText = 'Enabling Centralized Deployment affects features that use the Excel add-in, such as the ‘Edit in Excel’ action, but has no impact on other Excel-related features and does not affect permissions assigned to users in Business Central.';
+                            trigger OnDrillDown()
+                            begin
+                                Hyperlink('https://go.microsoft.com/fwlink/?linkid=2168300');
+                            end;
+                        }
+                        field(CentralizedDeploymentLinkField; CentralizedDeploymentLinkTxt)
+                        {
+                            ShowCaption = false;
+                            Editable = false;
+                            ApplicationArea = All;
+
+                            trigger OnDrillDown()
+                            begin
+                                Hyperlink('https://go.microsoft.com/fwlink/?linkid=2164357');
+                            end;
+                        }
+                        group(AffectsGroup)
+                        {
+                            Caption = '';
+                            InstructionalText = 'Enabling Centralized Deployment affects features that use the Excel add-in, such as the ‘Edit in Excel’ action, but has no impact on other Excel-related features and does not affect permissions assigned to users in Business Central.';
+                        }
                     }
                 }
 
@@ -143,6 +164,7 @@ page 1480 "Excel Centralized Depl. Wizard"
                     field(DeploymentType; Rec."Use Centralized deployments")
                     {
                         Caption = 'Use Centralized Deployment';
+                        Tooltip = 'Enables Centralized Deployment on this environment.';
                         ApplicationArea = All;
                     }
                     field(LearnAboutConfiguringBcForCentralizedDeployment; LearnAboutConfiguringBcForCentralizedDeploymentLinkTxt)
@@ -217,18 +239,10 @@ page 1480 "Excel Centralized Depl. Wizard"
         EnableControls();
     end;
 
-    var
-        Step: Option Start,Step2,Finish;
-        BackActionEnabled: Boolean;
-        FinishActionEnabled: Boolean;
-        NextActionEnabled: Boolean;
-        Step1Visible: Boolean;
-        Step2Visible: Boolean;
-        Step3Visible: Boolean;
-        CentralizedDeploymentLinkTxt: Label 'Requirements for Centralized Deployment of Add-ins';
-        LearnHowExcelFilesAreImpactedTxt: Label 'Learn how Excel files are impacted by removing AppSource access';
-        GoToIntegratedAppsLinkTxt: Label '1. In the Microsoft 365 admin center, go to Integrated Apps.';
-        LearnAboutConfiguringBcForCentralizedDeploymentLinkTxt: Label 'Learn more about Configuring Business Central for Centralized Deployment​';
+    trigger OnInit()
+    begin
+        LoadTopBanners();
+    end;
 
     local procedure EnableControls()
     begin
@@ -293,4 +307,26 @@ page 1480 "Excel Centralized Depl. Wizard"
         Step2Visible := false;
         Step3Visible := false;
     end;
+
+    local procedure LoadTopBanners()
+    begin
+        if MediaResourcesStandard.Get('ASSISTEDSETUP-NOTEXT-400PX.PNG') and (CurrentClientType() = ClientType::Web)
+        then
+            TopBannerVisible := MediaResourcesStandard."Media Reference".HasValue();
+    end;
+
+    var
+        MediaResourcesStandard: Record "Media Resources";
+        TopBannerVisible: Boolean;
+        Step: Option Start,Step2,Finish;
+        BackActionEnabled: Boolean;
+        FinishActionEnabled: Boolean;
+        NextActionEnabled: Boolean;
+        Step1Visible: Boolean;
+        Step2Visible: Boolean;
+        Step3Visible: Boolean;
+        CentralizedDeploymentLinkTxt: Label 'Requirements for Centralized Deployment of Add-ins';
+        LearnHowExcelFilesAreImpactedTxt: Label 'Learn how Excel files are impacted by removing AppSource access';
+        GoToIntegratedAppsLinkTxt: Label '1. In the Microsoft 365 admin center, go to Integrated Apps.';
+        LearnAboutConfiguringBcForCentralizedDeploymentLinkTxt: Label 'Learn more about Configuring Business Central for Centralized Deployment​';
 }

@@ -101,9 +101,9 @@ page 9996 "Word Template Selection Wizard"
                             WordTemplatesImpl: Codeunit "Word Template Impl.";
                             RecordRef: RecordRef;
                         begin
-                            RecordRef.GetTable(Data);
+                            RecordRef.GetTable(DataVariant);
                             WordTemplatesImpl.SetFiltersOnRecord(RecordRef);
-                            Data := RecordRef;
+                            DataVariant := RecordRef;
 
                             Filters := RecordRef.GetFilters().Replace(', ', '\');
                             CurrPage.Update();
@@ -224,11 +224,11 @@ page 9996 "Word Template Selection Wizard"
                     InStream: InStream;
                 begin
                     WordTemplates.Load(Rec.Code);
-                    WordTemplates.Merge(Data, SplitDocuments, SaveFormat);
+                    WordTemplates.Merge(DataVariant, SplitDocuments, SaveFormat);
                     if AsDocumentStream then begin
-                        DocumentData.CreateOutStream(DocumentStream);
+                        DocumentDataTempBlob.CreateOutStream(DocumentOutStream);
                         WordTemplates.GetDocument(InStream);
-                        CopyStream(DocumentStream, InStream);
+                        CopyStream(DocumentOutStream, InStream);
                     end else
                         WordTemplates.DownloadDocument();
 
@@ -258,14 +258,14 @@ page 9996 "Word Template Selection Wizard"
                                 RecordRef.Open(Rec."Table ID");
                                 FieldRef := RecordRef.Field(RecordRef.SystemIdNo);
                                 FieldRef.SetRange(SystemId);
-                                Data := RecordRef;
+                                DataVariant := RecordRef;
                                 DataIntialized := true;
                             end else begin
                                 RecordRef.Open(Rec."Table ID");
-                                Data := RecordRef;
+                                DataVariant := RecordRef;
                             end;
 
-                        RecordRef := Data;
+                        RecordRef := DataVariant;
                         NumberOfRecords := RecordRef.Count();
                         RecordName := RecordRef.Caption();
                         SkipOverview := NumberOfRecords = 1;
@@ -274,7 +274,7 @@ page 9996 "Word Template Selection Wizard"
                     end;
 
                     if Step = Step::Output then begin
-                        RecordRef := Data;
+                        RecordRef := DataVariant;
                         NumberOfRecords := RecordRef.Count();
                         RecordName := RecordRef.Caption();
 
@@ -368,7 +368,7 @@ page 9996 "Word Template Selection Wizard"
             Error(NoSourceRecordErr);
 
         RecordRef.Open(TableId);
-        Data := RecordRef;
+        DataVariant := RecordRef;
         DataIntialized := true;
 
         Step := Step::Output;
@@ -383,7 +383,7 @@ page 9996 "Word Template Selection Wizard"
         RecordRef: RecordRef;
     begin
         RecordRef.GetTable(RecordVariant);
-        Data := RecordRef;
+        DataVariant := RecordRef;
         TableId := RecordRef.Number();
 
         SingleRecordSelected := RecordRef.Count() = 1;
@@ -431,7 +431,7 @@ page 9996 "Word Template Selection Wizard"
     /// <param name="InStream">Stream that will contain the word template.</param>
     internal procedure GetDocumentStream(var InStream: InStream)
     begin
-        DocumentData.CreateInStream(InStream);
+        DocumentDataTempBlob.CreateInStream(InStream);
     end;
 
     /// <summary>
@@ -460,9 +460,9 @@ page 9996 "Word Template Selection Wizard"
     end;
 
     var
-        DocumentData: Codeunit "Temp Blob";
-        DocumentStream: OutStream;
-        Data: Variant;
+        DocumentDataTempBlob: Codeunit "Temp Blob";
+        DocumentOutStream: OutStream;
+        DataVariant: Variant;
         DictOfRecords: Dictionary of [Integer, Guid];
         DataIntialized, FiltersSet, SingleRecordSelected : Boolean;
         WordTemplatesExist: Boolean;

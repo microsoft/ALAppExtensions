@@ -184,14 +184,14 @@ page 12 "Email Viewer"
         EmailViewer.CheckPermissions(Rec);
 
         EmailViewer.GetEmailAccount(Rec, EmailAccount);
-        EmailViewer.GetEmailMessage(Rec, EmailMessage);
+        EmailViewer.GetEmailMessage(Rec, EmailMessageImpl);
 
         UpdateFromField(EmailAccount);
-        EmailSubject := EmailMessage.GetSubject();
-        ToRecipient := EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::"To");
-        CcRecipient := EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::Cc);
-        BccRecipient := EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::Bcc);
-        EmailBody := EmailMessage.GetBody();
+        EmailSubject := EmailMessageImpl.GetSubject();
+        ToRecipient := EmailMessageImpl.GetRecipientsAsText(Enum::"Email Recipient Type"::"To");
+        CcRecipient := EmailMessageImpl.GetRecipientsAsText(Enum::"Email Recipient Type"::Cc);
+        BccRecipient := EmailMessageImpl.GetRecipientsAsText(Enum::"Email Recipient Type"::Bcc);
+        EmailBody := EmailMessageImpl.GetBody();
 
         if EmailSubject <> '' then
             CurrPage.Caption(EmailSubject)
@@ -199,9 +199,9 @@ page 12 "Email Viewer"
             CurrPage.Caption(PageCaptionTxt); // fallback to default caption
 
         HasSourceRecord := EmailImpl.HasSourceRecord(Rec."Message Id");
-        IsHTMLFormatted := EmailMessage.IsBodyHTMLFormatted();
-        HasAttachments := EmailMessage.Attachments_First();
-        CurrPage.Attachments.Page.UpdateValues(EmailMessage.GetId());
+        IsHTMLFormatted := EmailMessageImpl.IsBodyHTMLFormatted();
+        HasAttachments := EmailMessageImpl.Attachments_First();
+        CurrPage.Attachments.Page.UpdateValues(EmailMessageImpl.GetId(), false);
     end;
 
     trigger OnOpenPage()
@@ -210,8 +210,6 @@ page 12 "Email Viewer"
             exit;
 
         EmailViewer.CheckPermissions(Rec);
-
-        Rec.SetRange("User Security Id", UserSecurityId());
         CurrPage.SetTableView(Rec);
     end;
 
@@ -225,7 +223,7 @@ page 12 "Email Viewer"
 
     var
         EmailAccount: Record "Email Account";
-        EmailMessage: Codeunit "Email Message Impl.";
+        EmailMessageImpl: Codeunit "Email Message Impl.";
         EmailViewer: Codeunit "Email Viewer";
         EmailImpl: Codeunit "Email Impl";
         FromDisplayName: Text;

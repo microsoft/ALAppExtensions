@@ -41,10 +41,10 @@ page 8910 "Email Relation Picker"
 
     local procedure RecordName(TableID: Integer; SystemID: Guid): Text
     var
-        SourceReference: RecordRef;
+        SourceRecordRef: RecordRef;
     begin
-        SourceReference.Open(TableID);
-        SourceReference.GetBySystemId(SystemID);
-        exit(Format(SourceReference.RecordId(), 0, 1));
+        SourceRecordRef.Open(TableID);
+        SourceRecordRef.GetBySystemId(SystemID);
+        exit(Format(SourceRecordRef.RecordId(), 0, 1));
     end;
 }

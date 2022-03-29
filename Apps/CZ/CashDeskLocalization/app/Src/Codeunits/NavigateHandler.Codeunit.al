@@ -54,7 +54,8 @@ codeunit 11791 "Navigate Handler CZP"
             PostedCashDocumentHdrCZP.Reset();
             PostedCashDocumentHdrCZP.SetFilter("No.", DocNoFilter);
             PostedCashDocumentHdrCZP.SetFilter("Posting Date", PostingDateFilter);
-            PostedCashDocumentHdrCZP.FindFirst();
+            if not PostedCashDocumentHdrCZP.FindFirst() then
+                exit;
             PostingDate := PostedCashDocumentHdrCZP."Posting Date";
             DocType2 := CopyStr(Format(PostedCashDocumentHdrCZP."Document Type"), 1, MaxStrLen(DocType2));
             DocNo := PostedCashDocumentHdrCZP."No.";

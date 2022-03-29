@@ -24,12 +24,14 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
     var
         ServiceInvoiceHeader: Record "Service Invoice Header";
         RecordRef: RecordRef;
+        FileOutStream: OutStream;
     begin
-        RecordRef.Get(RecordID);
+        RecordRef.Get(Rec.RecordID);
         RecordRef.SetTable(ServiceInvoiceHeader);
 
-        ServerFilePath := CreateXML(ServiceInvoiceHeader);
-        Modify();
+        Rec."File Content".CreateOutStream(FileOutStream);
+        CreateXML(ServiceInvoiceHeader, FileOutStream);
+        Rec.Modify();
 
         ServiceInvoiceHeader."OIOUBL-Electronic Invoice Created" := true;
         ServiceInvoiceHeader.Modify();
@@ -40,33 +42,22 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
     procedure ExportXML(ServiceInvoiceHeader: Record "Service Invoice Header")
     var
         ServInvHeader2: Record "Service Invoice Header";
-        RecordExportBuffer: Record "Record Export Buffer";
         ElectronicDocumentFormat: Record "Electronic Document Format";
-#if not CLEAN17
-        RBMgt: Codeunit "File Management";
-        EnvironmentInfo: Codeunit "Environment Information";
-#endif
         OIOUBLManagement: Codeunit "OIOUBL-Management";
-        FromFile: Text[1024];
-#if not CLEAN17
-        DocumentType: Option "Quote","Order","Invoice","Credit Memo";
-#endif
+        TempBlob: Codeunit "Temp Blob";
+        FileOutStream: OutStream;
+        FileName: Text[250];
     begin
-        FromFile := CreateXML(ServiceInvoiceHeader);
+        TempBlob.CreateOutStream(FileOutStream);
+        CreateXML(ServiceInvoiceHeader, FileOutStream);
 
         ServiceMgtSetup.Get();
 
-#if not CLEAN17
-        if RBMgt.IsLocalFileSystemAccessible() and not EnvironmentInfo.IsSaaS() then
-            ServiceMgtSetup.OIOUBLVerifyAndSetPath(DocumentType::Invoice);
-#endif
+        FileName := ElectronicDocumentFormat.GetAttachmentFileName(ServiceInvoiceHeader."No.", 'Invoice', 'xml');
+        OIOUBLManagement.UpdateRecordExportBuffer(ServiceInvoiceHeader.RecordId(), TempBlob, FileName);
 
-        OIOUBLManagement.UpdateRecordExportBuffer(
-            ServiceInvoiceHeader.RecordId(),
-            CopyStr(FromFile, 1, MaxStrLen(RecordExportBuffer.ServerFilePath)),
-            ElectronicDocumentFormat.GetAttachmentFileName(ServiceInvoiceHeader."No.", 'Invoice', 'xml'));
-
-        OIOUBLManagement.ExportXMLFile(ServiceInvoiceHeader."No.", FromFile, ServiceMgtSetup."OIOUBL-Service Invoice Path");
+        OIOUBLManagement.ExportXMLFile(
+            ServiceInvoiceHeader."No.", TempBlob, ServiceMgtSetup."OIOUBL-Service Invoice Path", FileName);
 
         ServInvHeader2.Get(ServiceInvoiceHeader."No.");
         ServInvHeader2."OIOUBL-Electronic Invoice Created" := true;
@@ -116,7 +107,8 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
                 repeat
                     UpdateTaxAmtAndTaxableAmt(ServiceInvoiceLine.Amount, ServiceInvoiceLine."Amount Including VAT", TaxableAmount, TaxAmount);
                 until ServiceInvoiceLine.NEXT() = 0;
-                OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, ServiceInvoiceLine."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
+                OIOUBLXMLGenerator.InsertTaxSubtotal(
+                    TaxTotalElement, ServiceInvoiceLine."VAT Calculation Type".AsInteger(), TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
             end;
 
             TaxableAmount := 0;
@@ -128,7 +120,8 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
                     UpdateTaxAmtAndTaxableAmt(ServiceInvoiceLine.Amount, ServiceInvoiceLine."Amount Including VAT", TaxableAmount, TaxAmount);
                 until ServiceInvoiceLine.NEXT() = 0;
                 // Invoice->TaxTotal->TaxSubtotal
-                OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, ServiceInvoiceLine."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
+                OIOUBLXMLGenerator.InsertTaxSubtotal(
+                    TaxTotalElement, ServiceInvoiceLine."VAT Calculation Type".AsInteger(), TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
             end;
         end;
 
@@ -142,7 +135,8 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
             repeat
                 UpdateTaxAmtAndTaxableAmt(ServiceInvoiceLine.Amount, ServiceInvoiceLine."Amount Including VAT", TaxableAmount, TaxAmount);
             until ServiceInvoiceLine.NEXT() = 0;
-            OIOUBLXMLGenerator.InsertTaxSubtotal(TaxTotalElement, ServiceInvoiceLine."VAT Calculation Type", TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
+            OIOUBLXMLGenerator.InsertTaxSubtotal(
+                TaxTotalElement, ServiceInvoiceLine."VAT Calculation Type".AsInteger(), TaxableAmount, TaxAmount, VATPercentage, CurrencyCode);
         end;
 
         InvoiceElement.Add(TaxTotalElement);
@@ -182,7 +176,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
           InvoiceLineElement,
           ServiceInvoiceLine."Amount Including VAT",
           ServiceInvoiceLine.Amount,
-          ServiceInvoiceLine."VAT Calculation Type",
+          ServiceInvoiceLine."VAT Calculation Type".AsInteger(),
           ServiceInvoiceLine."VAT %",
           CurrencyCode);
         OIOUBLXMLGenerator.InsertItem(InvoiceLineElement, ServiceInvoiceLine.Description, ServiceInvoiceLine."No.");
@@ -194,7 +188,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         InvoiceElement.Add(InvoiceLineElement);
     end;
 
-    local procedure CreateXML(ServiceInvoiceHeader: Record "Service Invoice Header") FromFile: Text[250]
+    local procedure CreateXML(ServiceInvoiceHeader: Record "Service Invoice Header"; var FileOutstream: Outstream)
     var
         ServInvLine: Record "Service Invoice Line";
         ServInvLine2: Record "Service Invoice Line";
@@ -202,7 +196,6 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         DeliveryAddress: Record "Standard Address";
         BillToAddress: Record "Standard Address";
         CustomerContact: Record Contact;
-        RBMgt: Codeunit "File Management";
         PEPPOLManagement: Codeunit "PEPPOL Management";
         XMLCurrNode: XmlElement;
         XMLdocOut: XmlDocument;
@@ -213,8 +206,6 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         TotalAmount: Decimal;
         TotalInvDiscountAmount: Decimal;
         TotalTaxAmount: Decimal;
-        OutputFile: File;
-        FileOutstream: Outstream;
         IsHandled: Boolean;
     begin
         CODEUNIT.RUN(CODEUNIT::"OIOUBL-Check Service Invoice", ServiceInvoiceHeader);
@@ -239,8 +230,6 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         ServInvLine.SETFILTER("No.", '<>%1', ' ');
         if NOT ServInvLine.FINDSET() then
             EXIT;
-
-        FromFile := CopyStr(RBMgt.ServerTempFileName(''), 1, MaxStrLen(FromFile));
 
         // Invoice
         XmlDocument.ReadFrom(OIOUBLXMLGenerator.GetInvoiceHeader(), XMLdocOut);
@@ -342,7 +331,7 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
         // Invoice->AllowanceCharge
         if TotalInvDiscountAmount > 0 then
             OIOUBLXMLGenerator.InsertAllowanceCharge(XMLCurrNode, 1, 'Rabat',
-              OIOUBLXMLGenerator.GetTaxCategoryID(ServInvLine2."VAT Calculation Type", ServInvLine2."VAT %"),
+              OIOUBLXMLGenerator.GetTaxCategoryID(ServInvLine2."VAT Calculation Type".AsInteger(), ServInvLine2."VAT %"),
               TotalInvDiscountAmount, CurrencyCode, 0);
 
         // Invoice->TaxTotal
@@ -390,11 +379,8 @@ codeunit 13643 "OIOUBL-Export Service Invoice"
             InsertInvoiceLine(XMLCurrNode, ServiceInvoiceHeader, ServInvLine, CurrencyCode, UnitOfMeasureCode);
         until ServInvLine.NEXT() = 0;
 
-        OutputFile.Create(FromFile);
-        OutputFile.CreateOutStream(FileOutstream);
         OnCreateXMLOnBeforeXmlDocumentWriteToFileStream(XMLdocOut, ServiceInvoiceHeader, DocNameSpace, DocNameSpace2);
         XMLdocOut.WriteTo(FileOutstream);
-        OutputFile.Close();
     end;
 
     procedure ReadCompanyInfo();

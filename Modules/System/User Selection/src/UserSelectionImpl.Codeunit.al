@@ -19,7 +19,7 @@ codeunit 9844 "User Selection Impl."
             exit;
 
         User.FilterGroup(2);
-        User.SetFilter("License Type", '<>%1', User."License Type"::"External User");
+        User.SetFilter("License Type", '<>%1&<>%2', User."License Type"::"External User", User."License Type"::Application);
         User.FilterGroup(0);
     end;
 

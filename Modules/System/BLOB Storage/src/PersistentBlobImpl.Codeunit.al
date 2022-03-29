@@ -32,31 +32,31 @@ codeunit 4108 "Persistent Blob Impl."
             exit(PersistentBlob.Delete());
     end;
 
-    procedure CopyFromInStream("Key": BigInteger; Source: InStream): Boolean
+    procedure CopyFromInStream("Key": BigInteger; SourceInStream: InStream): Boolean
     var
         PersistentBlob: Record "Persistent Blob";
-        Destination: OutStream;
+        DestinationOutStream: OutStream;
     begin
         if not PersistentBlob.Get(Key) then
             exit(false);
 
-        PersistentBlob.Blob.CreateOutStream(Destination);
-        if not CopyStream(Destination, Source) then
+        PersistentBlob.Blob.CreateOutStream(DestinationOutStream);
+        if not CopyStream(DestinationOutStream, SourceInStream) then
             exit(false);
         exit(PersistentBlob.Modify());
     end;
 
-    procedure CopyToOutStream("Key": BigInteger; Destination: OutStream): Boolean
+    procedure CopyToOutStream("Key": BigInteger; DestinationOutStream: OutStream): Boolean
     var
         PersistentBlob: Record "Persistent Blob";
-        Source: InStream;
+        SourceInStream: InStream;
     begin
         if not PersistentBlob.Get(Key) then
             exit(false);
 
         PersistentBlob.CalcFields(Blob);
-        PersistentBlob.Blob.CreateInStream(Source);
-        exit(CopyStream(Destination, Source));
+        PersistentBlob.Blob.CreateInStream(SourceInStream);
+        exit(CopyStream(DestinationOutStream, SourceInStream));
     end;
 }
 

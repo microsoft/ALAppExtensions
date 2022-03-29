@@ -922,7 +922,7 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
         VATControlReportNo: Code[20];
         VATStatementReportSelection: Enum "VAT Statement Report Selection";
         PrintInIntegers: Boolean;
-        DeclarationType: Enum "VAT Ctrl. Report Decl Type CZL";
+        DeclarationType: Enum "VAT Ctrl. Report Decl Type CZL";
         FilledByEmployeeNo: Code[20];
         ReasonsObservedOnDate: Date;
         FastAppelReaction: Option " ",B,P;
@@ -1136,7 +1136,7 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
         end;
     end;
 
-    local procedure ConvertDeclarationType(DeclarationType: Enum "VAT Ctrl. Report Decl Type CZL"): Text
+    local procedure ConvertDeclarationType(DeclarationType: Enum "VAT Ctrl. Report Decl Type CZL"): Text
     begin
         case DeclarationType of
             DeclarationType::Recapitulative:

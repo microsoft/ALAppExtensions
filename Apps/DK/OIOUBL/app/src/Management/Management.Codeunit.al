@@ -13,8 +13,10 @@ codeunit 13646 "OIOUBL-Management"
         XmlFilterTxt: Label 'XML File(*.xml)|*.xml', Locked = true;
         ZipArchiveFilterTxt: Label 'Zip File (*.zip)|*.zip', Locked = true;
         ZipArchiveSaveDialogTxt: Label 'Export OIOUBL archive';
-        NonExistingDocumentFormatErr: Label 'The electronic document format %1 does not exist for the document type %2.';
+        NonExistingDocumentFormatErr: Label 'The electronic document format %1 does not exist for the document type %2.', Comment = '%1 - OIOUBL, %2 - Enum "Electronic Document Format Usage"';
         WrongFileNameErr: Label 'Wrong file name.';
+        FolderFileLbl: Label '%1\%2', Comment = '%1 - folder name, %2 - file name', Locked = true;
+        AddXMLExtensionLbl: Label '%1.xml', Comment = '%1 - file name', Locked = true;
 
     procedure ClearRecordExportBuffer()
     var
@@ -24,16 +26,37 @@ codeunit 13646 "OIOUBL-Management"
         RecordExportBuffer.DeleteAll();
     end;
 
+    procedure ExportXMLFile(DocNo: Code[20]; var TempBlob: Codeunit "Temp Blob"; FolderPath: Text; FileName: Text);
+    var
+        OIOUBLFileEvents: Codeunit "OIOUBL-File Events";
+        IsHandled: Boolean;
+    begin
+        if FileName = '' then
+            FileName := STRSUBSTNO(AddXMLExtensionLbl, DocNo);
+        OnExportXMLFileOnAfterSetFileName(FileName, DocNo);
+        if (FileName = '') or (StrPos(FileName, '\') > 0) then
+            Error(WrongFileNameErr);
+        FolderPath := DelChr(FolderPath, '>', '\');
+
+        OIOUBLFileEvents.BlobCreated(TempBlob);
+        OnExportXMLFileOnBeforeBLOBExport(DocNo, TempBlob, FileName, IsHandled);
+        if IsHandled then
+            exit;
+
+        if FolderPath <> '' then
+            FileName := StrSubstNo(FolderFileLbl, FolderPath, FileName);
+        FileManagement.BLOBExport(TempBlob, FileName, FolderPath <> '');
+    end;
+
+#if not CLEAN20
+    [Obsolete('Replaced by ExportXMLFile with TempBlob parameter.', '20.0')]
     procedure ExportXMLFile(DocNo: Code[20]; SourceFile: Text[1024]; FolderPath: Text);
     var
         OIOUBLFileEvents: Codeunit "OIOUBL-File Events";
-#if not CLEAN17
-        FilePath: Text;
-#endif
         FileName: Text;
         IsHandled: Boolean;
     begin
-        FileName := STRSUBSTNO('%1.xml', DocNo);
+        FileName := STRSUBSTNO(AddXMLExtensionLbl, DocNo);
         OnExportXMLFileOnAfterSetFileName(FileName, DocNo);
         if (FileName = '') or (StrPos(FileName, '\') > 0) then
             Error(WrongFileNameErr);
@@ -45,17 +68,9 @@ codeunit 13646 "OIOUBL-Management"
         if IsHandled then
             exit;
 
-#if not CLEAN17
-        if FileManagement.IsLocalFileSystemAccessible() then begin
-            FilePath := FileManagement.DownloadTempFile(SourceFile);
-            FileManagement.CopyClientFile(FilePath, STRSUBSTNO('%1\%2', FolderPath, FileName), true);
-        end else
-            DOWNLOAD(SourceFile, '', FolderPath, XmlFilterTxt, FileName);
-#else
         Download(SourceFile, '', FolderPath, XmlFilterTxt, FileName);
-#endif
     end;
-
+#endif
     procedure GetOIOUBLElectronicDocumentFormatCode(): Code[20];
     var
         ElectronicDocumentFormat: Record "Electronic Document Format";
@@ -111,7 +126,7 @@ codeunit 13646 "OIOUBL-Management"
         if ElectronicDocumentFormat.FindFirst() then
             exit(ElectronicDocumentFormat."Codeunit ID")
         else begin
-            ElectronicDocumentFormat.Usage := DocumentUsage;
+            ElectronicDocumentFormat.Usage := "Electronic Document Format Usage".FromInteger(DocumentUsage);
             Error(NonExistingDocumentFormatErr, OIOUBLFormatNameTxt, Format(ElectronicDocumentFormat.Usage));
         end;
     end;
@@ -172,6 +187,27 @@ codeunit 13646 "OIOUBL-Management"
             Database::"Service Cr.Memo Header"]);
     end;
 
+
+    procedure UpdateRecordExportBuffer(RecID: RecordID; var TempBlob: Codeunit "Temp Blob"; ClientFileName: Text[250]);
+    var
+        RecordExportBuffer: Record "Record Export Buffer";
+    begin
+        if RecordExportBuffer.IsEmpty() then
+            exit;
+
+        RecordExportBuffer.SetRange(RecordID, RecID);
+        RecordExportBuffer.SetRange("OIOUBL-User ID", UserId());
+        RecordExportBuffer.SetFilter("Electronic Document Format", '');
+        if RecordExportBuffer.FindFirst() then begin
+            RecordExportBuffer.SetFileContent(TempBlob);
+            RecordExportBuffer.ClientFileName := ClientFileName;
+            RecordExportBuffer."Electronic Document Format" := GetOIOUBLElectronicDocumentFormatCode();
+            RecordExportBuffer.Modify();
+        end;
+    end;
+
+#if not CLEAN20
+    [Obsolete('Replaced by UpdateRecordExportBuffer with TempBlob parameter.', '20.0')]
     procedure UpdateRecordExportBuffer(RecID: RecordID; ServerFilePath: Text[250]; ClientFileName: Text[250]);
     var
         RecordExportBuffer: Record "Record Export Buffer";
@@ -189,7 +225,7 @@ codeunit 13646 "OIOUBL-Management"
             RecordExportBuffer.Modify();
         end;
     end;
-
+#endif
     procedure WriteLogSalesInvoice(SalesInvoiceHeader: Record "Sales Invoice Header")
     var
         SegManagement: Codeunit SegManagement;
@@ -236,10 +272,9 @@ codeunit 13646 "OIOUBL-Management"
         DataCompression.CreateZipArchive();
         RecordExportBuffer.FindSet();
         repeat
-            FileManagement.BLOBImportFromServerFile(EntryTempBlob, RecordExportBuffer.ServerFilePath);
+            RecordExportBuffer.GetFileContent(EntryTempBlob);
             EntryTempBlob.CreateInStream(EntryFileInStream);
             DataCompression.AddEntry(EntryFileInStream, RecordExportBuffer.ClientFileName);
-            FileManagement.DeleteServerFile(RecordExportBuffer.ServerFilePath);
         until RecordExportBuffer.Next() = 0;
 
         ZipFilePath := FileManagement.ServerTempFileName('zip');
@@ -258,19 +293,9 @@ codeunit 13646 "OIOUBL-Management"
         TempBlob: Codeunit "Temp Blob";
         ZipInStream: InStream;
     begin
-#if not CLEAN17
-        if FileManagement.IsLocalFileSystemAccessible() then
-            FileManagement.CopyServerFile(ServerZipFilePath, StrSubstNo('%1\%2', ClientZipFolder, ClientZipFileName), true)
-        else begin
-            FileManagement.BLOBImportFromServerFile(TempBlob, ServerZipFilePath);
-            TempBlob.CreateInStream(ZipInStream);
-            DownloadFromStream(ZipInStream, ZipArchiveSaveDialogTxt, ClientZipFolder, ZipArchiveFilterTxt, ClientZipFileName);
-        end;
-#else
         FileManagement.BLOBImportFromServerFile(TempBlob, ServerZipFilePath);
         TempBlob.CreateInStream(ZipInStream);
         DownloadFromStream(ZipInStream, ZipArchiveSaveDialogTxt, ClientZipFolder, ZipArchiveFilterTxt, ClientZipFileName);
-#endif
     end;
 
     [IntegrationEvent(true, false)]
@@ -278,8 +303,15 @@ codeunit 13646 "OIOUBL-Management"
     begin
     end;
 
+#if not CLEAN20
+    [Obsolete('Replaced by OnExportXMLFileOnBeforeBLOBExport with TempBlob parameter.', '20.0')]
     [IntegrationEvent(true, false)]
     local procedure OnExportXMLFileOnBeforeDownload(DocNo: Code[20]; SourceFile: Text; FolderPath: Text; var IsHandled: Boolean)
+    begin
+    end;
+#endif
+    [IntegrationEvent(true, false)]
+    local procedure OnExportXMLFileOnBeforeBLOBExport(DocNo: Code[20]; var TempBlob: Codeunit "Temp Blob"; FileName: Text; var IsHandled: Boolean)
     begin
     end;
 
@@ -287,4 +319,5 @@ codeunit 13646 "OIOUBL-Management"
     local procedure OnExportXMLFileOnAfterSetFileName(var FileName: Text; DocNo: Code[20])
     begin
     end;
+
 }

@@ -61,11 +61,19 @@ page 13 "Email Editor"
                             ToolTip = 'Specifies the email addresses to send the email to.';
                             Editable = not EmailScheduled;
                             Importance = Promoted;
+                            Lookup = true;
 
                             trigger OnValidate()
                             begin
-                                EmailMessage.SetRecipients(Enum::"Email Recipient Type"::"To", ToRecipient);
+                                EmailMessageImpl.SetRecipients(Enum::"Email Recipient Type"::"To", ToRecipient);
+                                EmailEditor.VerifyRelatedRecords(Rec."Message Id");
                             end;
+
+                            trigger OnLookup(var Text: Text): Boolean
+                            begin
+                                exit(LookupRecipients(Text));
+                            end;
+
                         }
 
                         field(CcField; CcRecipient)
@@ -75,10 +83,17 @@ page 13 "Email Editor"
                             ToolTip = 'Specifies the email addresses of people who should receive a copy of the email.';
                             Editable = not EmailScheduled;
                             Importance = Additional;
+                            Lookup = true;
 
                             trigger OnValidate()
                             begin
-                                EmailMessage.SetRecipients(Enum::"Email Recipient Type"::Cc, CcRecipient);
+                                EmailMessageImpl.SetRecipients(Enum::"Email Recipient Type"::Cc, CcRecipient);
+                                EmailEditor.VerifyRelatedRecords(Rec."Message Id");
+                            end;
+
+                            trigger OnLookup(var Text: Text): Boolean
+                            begin
+                                exit(LookupRecipients(Text));
                             end;
                         }
 
@@ -89,10 +104,17 @@ page 13 "Email Editor"
                             ToolTip = 'Specifies the email addresses of people who should receive a blind carbon copy (Bcc) of the email. These addresses are not shown to other recipients.';
                             Editable = not EmailScheduled;
                             Importance = Additional;
+                            Lookup = true;
 
                             trigger OnValidate()
                             begin
-                                EmailMessage.SetRecipients(Enum::"Email Recipient Type"::Bcc, BccRecipient);
+                                EmailMessageImpl.SetRecipients(Enum::"Email Recipient Type"::Bcc, BccRecipient);
+                                EmailEditor.VerifyRelatedRecords(Rec."Message Id");
+                            end;
+
+                            trigger OnLookup(var Text: Text): Boolean
+                            begin
+                                exit(LookupRecipients(Text));
                             end;
                         }
 
@@ -106,8 +128,8 @@ page 13 "Email Editor"
 
                             trigger OnValidate()
                             begin
-                                EmailMessage.SetSubject(EmailSubject);
-                                EmailMessage.Modify();
+                                EmailMessageImpl.SetSubject(EmailSubject);
+                                EmailMessageImpl.Modify();
 
                                 Rec.Description := CopyStr(EmailSubject, 1, MaxStrLen(Rec.Description));
                                 Rec.Modify();
@@ -136,8 +158,8 @@ page 13 "Email Editor"
 
                     trigger OnValidate()
                     begin
-                        EmailMessage.SetBody(EmailBody);
-                        EmailMessage.Modify();
+                        EmailMessageImpl.SetBody(EmailBody);
+                        EmailMessageImpl.Modify();
                     end;
                 }
             }
@@ -158,8 +180,8 @@ page 13 "Email Editor"
 
                     trigger OnValidate()
                     begin
-                        EmailMessage.SetBody(EmailBody);
-                        EmailMessage.Modify();
+                        EmailMessageImpl.SetBody(EmailBody);
+                        EmailMessageImpl.Modify();
                     end;
                 }
             }
@@ -193,7 +215,7 @@ page 13 "Email Editor"
                 var
                     IsEmailDataValid: Boolean;
                 begin
-                    IsEmailDataValid := EmailEditor.ValidateEmailData(TempEmailAccount."Email Address", EmailMessage);
+                    IsEmailDataValid := EmailEditor.ValidateEmailData(TempEmailAccount."Email Address", EmailMessageImpl);
 
                     if IsEmailDataValid then begin
                         IsNewOutbox := false;
@@ -242,7 +264,7 @@ page 13 "Email Editor"
 
                 trigger OnAction()
                 begin
-                    EmailEditor.UploadAttachment(EmailMessage);
+                    EmailEditor.UploadAttachment(EmailMessageImpl);
 
                     CurrPage.Attachments.Page.UpdateDeleteEnablement();
                     CurrPage.Attachments.Page.Update();
@@ -263,7 +285,7 @@ page 13 "Email Editor"
                 trigger OnAction()
                 var
                 begin
-                    EmailEditor.LoadWordTemplate(EmailMessage, Rec."Message Id");
+                    EmailEditor.LoadWordTemplate(EmailMessageImpl, Rec."Message Id");
                 end;
             }
             action(ShowSourceRecord)
@@ -312,14 +334,14 @@ page 13 "Email Editor"
         EmailEditor.CheckPermissions(Rec);
 
         EmailEditor.GetEmailAccount(Rec, TempEmailAccount);
-        EmailEditor.GetEmailMessage(Rec, EmailMessage);
+        EmailEditor.GetEmailMessage(Rec, EmailMessageImpl);
 
         UpdateFromField(TempEmailAccount);
-        ToRecipient := EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::"To");
-        CcRecipient := EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::Cc);
-        BccRecipient := EmailMessage.GetRecipientsAsText(Enum::"Email Recipient Type"::Bcc);
-        EmailBody := EmailMessage.GetBody();
-        EmailSubject := EmailMessage.GetSubject();
+        ToRecipient := EmailMessageImpl.GetRecipientsAsText(Enum::"Email Recipient Type"::"To");
+        CcRecipient := EmailMessageImpl.GetRecipientsAsText(Enum::"Email Recipient Type"::Cc);
+        BccRecipient := EmailMessageImpl.GetRecipientsAsText(Enum::"Email Recipient Type"::Bcc);
+        EmailBody := EmailMessageImpl.GetBody();
+        EmailSubject := EmailMessageImpl.GetSubject();
 
         if EmailSubject <> '' then
             CurrPage.Caption(EmailSubject)
@@ -328,19 +350,19 @@ page 13 "Email Editor"
 
         EmailScheduled := Rec.Status in [Enum::"Email Status"::Queued, Enum::"Email Status"::Processing];
         HasSourceRecord := EmailImpl.HasSourceRecord(Rec."Message Id");
-        IsHTMLFormatted := EmailMessage.IsBodyHTMLFormatted();
-        CurrPage.Attachments.Page.UpdateValues(EmailMessage.GetId());
+        IsHTMLFormatted := EmailMessageImpl.IsBodyHTMLFormatted();
+        CurrPage.Attachments.Page.UpdateValues(EmailMessageImpl.GetId(), not EmailScheduled);
     end;
 
     trigger OnOpenPage()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        EmailEditor.CheckPermissions(Rec);
+        // Do not check permissions on compose
+        if Rec.Id <> 0 then
+            EmailEditor.CheckPermissions(Rec);
 
         FeatureTelemetry.LogUptake('0000CTQ', 'Emailing', Enum::"Feature Uptake Status"::Discovered);
-
-        Rec.SetRange("User Security Id", UserSecurityId());
         CurrPage.SetTableView(Rec);
 
         if not IsNewOutbox then begin // if the outbox is set as new, do not create new outbox
@@ -353,12 +375,19 @@ page 13 "Email Editor"
             Rec.SetRange(Id, Rec.Id);
             CurrPage.SetTableView(Rec);
         end;
+
+        EmailEditor.PopulateRelatedRecordCache(Rec."Message Id");
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     begin
         if IsNewOutbox then
             exit(ShowCloseOptionsMenu());
+    end;
+
+    protected procedure GetEmailMessage() EmailMessage: Codeunit "Email Message"
+    begin
+        EmailMessage.Get(Rec."Message Id");
     end;
 
     local procedure UpdateFromField(EmailAccount: Record "Email Account" temporary)
@@ -392,6 +421,15 @@ page 13 "Email Editor"
         exit(true);
     end;
 
+    internal procedure LookupRecipients(var Text: Text): Boolean
+    var
+        IsSuccess: Boolean;
+    begin
+        IsSuccess := EmailEditor.LookupRecipients(Rec."Message Id", Text);
+        HasSourceRecord := EmailImpl.HasSourceRecord(Rec."Message Id");
+        exit(IsSuccess);
+    end;
+
     internal procedure GetAction(): Enum "Email Action"
     begin
         exit(EmailAction);
@@ -404,12 +442,12 @@ page 13 "Email Editor"
 
     var
         TempEmailAccount: Record "Email Account" temporary;
-        EmailMessage: Codeunit "Email Message Impl.";
+        EmailMessageImpl: Codeunit "Email Message Impl.";
         EmailEditor: Codeunit "Email Editor";
         EmailImpl: Codeunit "Email Impl";
+
         EmailAction: Enum "Email Action";
         FromDisplayName: Text;
-        ToRecipient, CcRecipient, BccRecipient : Text;
         EmailScheduled: Boolean;
         IsNewOutbox: Boolean;
         HasSourceRecord: Boolean;
@@ -420,4 +458,7 @@ page 13 "Email Editor"
         CloseThePageQst: Label 'The email has not been sent.';
         OptionsOnClosePageNewEmailLbl: Label 'Keep as draft in Email Outbox,Discard email';
         PageCaptionTxt: Label 'Compose an Email';
+
+    protected var
+        ToRecipient, CcRecipient, BccRecipient : Text;
 }

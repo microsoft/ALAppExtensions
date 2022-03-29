@@ -1,4 +1,4 @@
-tableextension 31021 "Posted Gen. Journal Line CZL" extends "Posted Gen. Journal Line"
+tableextension 31021 "Posted Gen. Journal Line CZL" extends "Posted Gen. Journal Line"
 {
     fields
     {

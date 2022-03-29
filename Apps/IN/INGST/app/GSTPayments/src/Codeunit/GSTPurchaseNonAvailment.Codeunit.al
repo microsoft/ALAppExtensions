@@ -54,7 +54,6 @@ codeunit 18251 "GST Purchase Non Availment"
             TempFAGLPostBuf.Amount -= GenJournalLine."FA Non-Availment Amount";
     end;
 
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemJnlLineOnAfterPrepareItemJnlLine', '', false, false)]
     local procedure LoadGSTUnitCost(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line"; var ItemJournalLine: Record "Item Journal Line")
     var

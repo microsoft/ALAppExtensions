@@ -38,7 +38,7 @@ page 1152 "COHUB Company Summary"
                                 COHUBCore.GoToCompany(COHUBEnviroment, Rec."Company Name");
                     end;
                 }
-                field("Name"; Rec."Enviroment Name")
+                field("Name"; Rec."Environment Name")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Enviroment Name';

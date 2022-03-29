@@ -75,10 +75,10 @@ page 30004 "APIV2 - Aut. Users"
 
     trigger OnOpenPage()
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
         BindSubscription(AutomationAPIManagement);
-        if EnvironmentInfo.IsSaaS() then
+        if EnvironmentInformation.IsSaaS() then
             SetFilter("License Type", '<>%1', "License Type"::"External User");
     end;
 

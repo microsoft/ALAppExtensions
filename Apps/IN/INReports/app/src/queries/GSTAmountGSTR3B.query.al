@@ -23,7 +23,7 @@ query 18040 "GST Amount GSTR3B"
             column(Original_Invoice_No_; "Original Invoice No.")
             {
             }
-            column(Source_No_; "Source No.")
+            filter(Source_No_; "Source No.")
             {
             }
             filter(Source_Type; "Source Type")

@@ -46,22 +46,22 @@ codeunit 4101 "Persistent Blob"
     /// Save the content of the stream to the PersistentBlob.
     /// </summary>
     /// <param name="Key">The key of the BLOB.</param>
-    /// <param name="Source">The InStream from which content will be copied to the PersistentBlob.</param>
+    /// <param name="SourceInStream">The InStream from which content will be copied to the PersistentBlob.</param>
     /// <returns>True if the BLOB with the given key was updated with the contents of the source.</returns>
-    procedure CopyFromInStream("Key": BigInteger; Source: InStream): Boolean
+    procedure CopyFromInStream("Key": BigInteger; SourceInStream: InStream): Boolean
     begin
-        exit(PersistentBlobImpl.CopyFromInStream(Key, Source));
+        exit(PersistentBlobImpl.CopyFromInStream(Key, SourceInStream));
     end;
 
     /// <summary>
     /// Write the content of the PersistentBlob to the Destination OutStream.
     /// </summary>
     /// <param name="Key">The key of the BLOB.</param>
-    /// <param name="Destination">The OutStream to which the contents of the PersistentBlob will be copied.</param>
+    /// <param name="DestinationOutStream">The OutStream to which the contents of the PersistentBlob will be copied.</param>
     /// <returns>True if the BLOB with the given Key was copied to the Destination.</returns>
-    procedure CopyToOutStream("Key": BigInteger; Destination: OutStream): Boolean
+    procedure CopyToOutStream("Key": BigInteger; DestinationOutStream: OutStream): Boolean
     begin
-        exit(PersistentBlobImpl.CopyToOutStream(Key, Destination));
+        exit(PersistentBlobImpl.CopyToOutStream(Key, DestinationOutStream));
     end;
 }
 

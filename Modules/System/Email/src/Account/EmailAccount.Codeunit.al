@@ -14,19 +14,19 @@ codeunit 8894 "Email Account"
     /// Gets all of the email accounts registered in Business Central.
     /// </summary>
     /// <param name="LoadLogos">Flag, used to determine whether to load the logos for the accounts.</param>
-    /// <param name="Accounts">Out parameter holding the email accounts.</param>
-    procedure GetAllAccounts(LoadLogos: Boolean; var Accounts: Record "Email Account" temporary)
+    /// <param name="TempEmailAccount">Out parameter holding the email accounts.</param>
+    procedure GetAllAccounts(LoadLogos: Boolean; var TempEmailAccount: Record "Email Account" temporary)
     begin
-        EmailAccountImpl.GetAllAccounts(LoadLogos, Accounts);
+        EmailAccountImpl.GetAllAccounts(LoadLogos, TempEmailAccount);
     end;
 
     /// <summary>
     /// Gets all of the email accounts registered in Business Central.
     /// </summary>
-    /// <param name="Accounts">Out parameter holding the email accounts.</param>
-    procedure GetAllAccounts(var Accounts: Record "Email Account" temporary)
+    /// <param name="TempEmailAccount">Out parameter holding the email accounts.</param>
+    procedure GetAllAccounts(var TempEmailAccount: Record "Email Account" temporary)
     begin
-        EmailAccountImpl.GetAllAccounts(false, Accounts);
+        EmailAccountImpl.GetAllAccounts(false, TempEmailAccount);
     end;
 
     /// <summary>

@@ -10,7 +10,8 @@ table 1808 "Aggregated Assisted Setup"
     ObsoleteState = Removed;
     ObsoleteReason = 'Data available in Assisted Setup already- extensions also register in the same table.';
     ObsoleteTag = '19.0';
-
+    ReplicateData = false;
+    
     fields
     {
         field(1; "Page ID"; Integer)

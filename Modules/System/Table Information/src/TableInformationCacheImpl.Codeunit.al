@@ -89,26 +89,26 @@ codeunit 8700 "Table Information Cache Impl."
     local procedure CalcThirtyDayGrowth()
     var
         TableInformationCache: Record "Table Information Cache";
-        RecRef: RecordRef;
-        Field: FieldRef;
+        RecordRef: RecordRef;
+        FieldRef: FieldRef;
     begin
         SetBiggestTablesFilter(TableInformationCache);
         if TableInformationCache.FindSet() then
             repeat
-                RecRef.Open(TableInformationCache."Table No.");
+                RecordRef.Open(TableInformationCache."Table No.");
                 if not (TableInformationCache."Company Name" in ['', CrossCompanyDataLbl, CompanyName()]) then
-                    RecRef.ChangeCompany(TableInformationCache."Company Name");
+                    RecordRef.ChangeCompany(TableInformationCache."Company Name");
 
-                Field := RecRef.Field(RecRef.SystemCreatedAtNo);
+                FieldRef := RecordRef.Field(RecordRef.SystemCreatedAtNo);
 #pragma warning disable AA0217
-                Field.SetFilter(StrSubstNo('''''|<%1', CreateDateTime(CalcDate('<-30D>', Today), 0T)));
+                FieldRef.SetFilter(StrSubstNo('''''|<%1', CreateDateTime(CalcDate('<-30D>', Today), 0T)));
 #pragma warning restore AA0217
-                TableInformationCache."Last Period No. of Records" := RecRef.Count();
-                TableInformationCache."Last Period Data Size (KB)" := Round((RecRef.Count() * TableInformationCache."Record Size" / 1024), 1);
+                TableInformationCache."Last Period No. of Records" := RecordRef.Count();
+                TableInformationCache."Last Period Data Size (KB)" := Round((RecordRef.Count() * TableInformationCache."Record Size" / 1024), 1);
                 if TableInformationCache."Last Period Data Size (KB)" <> 0 then
                     TableInformationCache."Growth %" := Round(((TableInformationCache."Data Size (KB)" / TableInformationCache."Last Period Data Size (KB)") - 1), 0.01) * 100;
                 TableInformationCache.Modify();
-                RecRef.Close();
+                RecordRef.Close();
             until TableInformationCache.Next() = 0;
     end;
 

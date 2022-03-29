@@ -116,11 +116,11 @@ page 1909 "Media Upload"
     /// Gets the picture or video that was chosen when the page was opened.
     /// An error is thrown if the function is called without opening the page first.
     /// </summary>
-    /// <param name="Stream">The InStream to read the picture from.</param>
+    /// <param name="InStream">The InStream to read the picture from.</param>
     /// <error>The picture is not available.</error>
-    procedure GetMedia(Stream: Instream)
+    procedure GetMedia(InStream: Instream)
     begin
-        MediaUploadPageImpl.GetMedia(Stream);
+        MediaUploadPageImpl.GetMedia(InStream);
     end;
 
     trigger CameraProvider::PictureAvailable(FileName: Text; FilePath: Text)

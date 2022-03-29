@@ -12,6 +12,7 @@ page 1992 "Checklist Administration"
     PageType = Card;
     SourceTable = "Checklist Item Buffer";
     Editable = true;
+    InsertAllowed = false;
     DataCaptionExpression = '';
     Permissions = tabledata "Checklist Item Buffer" = rimd;
 

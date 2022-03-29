@@ -292,7 +292,7 @@ page 30046 "APIV2 - Sales Credit Mem Lines"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(7);
+                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Sales Credit Memo Line");
                 }
                 part(location; "APIV2 - Locations")
                 {

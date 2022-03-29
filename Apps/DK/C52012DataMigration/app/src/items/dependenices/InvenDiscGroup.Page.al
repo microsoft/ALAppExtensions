@@ -16,8 +16,10 @@ page 1885 "C5 InvenDiscGroup"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(DiscGroup;DiscGroup) { ApplicationArea=All; }
                 field(Comment;Comment) { ApplicationArea=All; }
+#pragma warning restore
             }
         }
     }

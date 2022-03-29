@@ -85,6 +85,11 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
             Caption = 'VAT Date';
             DataClassification = CustomerContent;
         }
+        field(34; "Original Document VAT Date"; Date)
+        {
+            Caption = 'Original Document VAT Date';
+            DataClassification = CustomerContent;
+        }
         field(35; "VAT Entry No."; Integer)
         {
             Caption = 'VAT Entry No.';
@@ -210,30 +215,17 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         DimensionManagement.ShowDimensionSet("Dimension Set ID", StrSubstNo(DimensionSetCaptionTok, TableCaption, "Entry No."));
     end;
 
-    procedure PrintRecord(ShowDialog: Boolean)
+    procedure PrintRecords(ShowRequestPage: Boolean)
     var
-        PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
-        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
-        AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
-        PrintReportID: Integer;
+        DocumentSendingProfile: Record "Document Sending Profile";
+        DummyReportSelections: Record "Report Selections";
+        IsHandled: Boolean;
     begin
-        PurchAdvLetterEntryCZZ.Copy(Rec);
-        if not PurchAdvLetterEntryCZZ.FindSet() then
-            exit;
-
-        PurchAdvLetterHeaderCZZ.Get(PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.");
-        AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
-        AdvanceLetterTemplateCZZ.TestField("Invoice/Cr. Memo Report ID");
-        if PurchAdvLetterEntryCZZ.Count() > 1 then begin
-            PrintReportID := AdvanceLetterTemplateCZZ."Invoice/Cr. Memo Report ID";
-            PurchAdvLetterEntryCZZ.Next();
-            repeat
-                PurchAdvLetterHeaderCZZ.Get(PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.");
-                AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
-                AdvanceLetterTemplateCZZ.TestField("Invoice/Cr. Memo Report ID", PrintReportID);
-            until PurchAdvLetterEntryCZZ.Next() = 0;
-        end;
-        Report.Run(AdvanceLetterTemplateCZZ."Invoice/Cr. Memo Report ID", ShowDialog, false, PurchAdvLetterEntryCZZ);
+        IsHandled := false;
+        OnBeforePrintRecords(DummyReportSelections, Rec, ShowRequestPage, IsHandled);
+        if not IsHandled then
+            DocumentSendingProfile.TrySendToPrinterVendor(
+              DummyReportSelections.Usage::"Purchase Advance VAT Document CZZ".AsInteger(), Rec, 0, ShowRequestPage);
     end;
 
     procedure CalcUsageVATAmountLines(var PurchInvHeader: Record "Purch. Inv. Header"; var VATAmountLine: Record "VAT Amount Line")
@@ -260,5 +252,10 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
                     VATAmountLine."Line Amount" := VATAmountLine."VAT Base";
                 VATAmountLine.InsertLine();
             until PurchAdvLetterEntryCZZ.Next() = 0;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePrintRecords(var ReportSelections: Record "Report Selections"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
+    begin
     end;
 }

@@ -15,7 +15,7 @@ codeunit 139760 "SMTP Connector Test"
     procedure TestMultipleAccountsCanBeRegistered()
     var
         EmailAccount: Record "Email Account";
-        SMTPConnector: Codeunit "SMTP Connector";
+        SMTPConnector: Codeunit "SMTP Connector Impl.";
         EmailAccounts: TestPage "Email Accounts";
         AccountIds: array[3] of Guid;
         AccountName: array[3] of Text[250];
@@ -55,7 +55,7 @@ codeunit 139760 "SMTP Connector Test"
     procedure TestShowAccountInformation()
     var
         EmailAccount: Record "Email Account";
-        SMTPConnector: Codeunit "SMTP Connector";
+        SMTPConnector: Codeunit "SMTP Connector Impl.";
     begin
         // [Scenario] Account Information is displayed in the "SMTP Account" page.
 
@@ -71,37 +71,6 @@ codeunit 139760 "SMTP Connector Test"
         // Verify in SMTPAccountModalPageHandler
     end;
 
-    [Test]
-    [Scope('OnPrem')]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    procedure TestSendMailPayloadMessage()
-    var
-        SMTPAccount: Record "SMTP Account";
-        EmailMessage: Codeunit "Email Message";
-        SMTPClientMock: Codeunit "SMTP Client Mock";
-        SMTPMessageMock: Codeunit "SMTP Message Mock";
-        SMTPMessage: Codeunit "SMTP Message";
-        SMTPConnectorImpl: Codeunit "SMTP Connector Impl.";
-        SMTPClient: Interface "SMTP Client";
-    begin
-        // [Scenario] Create a message and send
-        Initialize();
-
-        // [Given] SMTP Account and Email Message with recipients
-        SMTPClientMock.Initialize();
-        SMTPClientMock.AddAccount(SMTPAccount);
-        SMTPMessageMock.CreateEmailMessage(SMTPAccount.Id, EmailMessage);
-        SMTPMessageMock.GetMessage(EmailMessage, SMTPAccount.Id, SMTPMessage);
-        SMTPClientMock.InitializeClient(SMTPAccount, SMTPMessage, SMTPClient);
-        SMTPConnectorImpl.SetClient(SMTPClient);
-
-        // [When] Client connected, authenticated and email sent. No error should be thrown
-        SMTPConnectorImpl.Send(EmailMessage, SMTPAccount.Id);
-
-        // [Then] Message sent is the same as the created message
-        SMTPMessageMock.VerifyEmail();
-    end;
-
     local procedure Initialize()
     var
         SMTPAccount: Record "SMTP Account";
@@ -114,7 +83,7 @@ codeunit 139760 "SMTP Connector Test"
         SMTPAccountMock.Name(CopyStr(Any.AlphanumericText(250), 1, 250));
         SMTPAccountMock.Server('smtp.office365.com');
         SMTPAccountMock.ServerPort(587);
-        SMTPAccountMock.Authentication("SMTP Authentication"::Basic);
+        SMTPAccountMock.Authentication("SMTP Authentication Types"::Basic);
         SMTPAccountMock.EmailAddress('test' + Format(Index) + '@mail.com');
         SMTPAccountMock.UserID('test' + Format(Index) + '@mail.com');
         SMTPAccountMock.Password('testpassword');

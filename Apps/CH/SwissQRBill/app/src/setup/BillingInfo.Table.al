@@ -63,7 +63,7 @@ table 11511 "Swiss QR-Bill Billing Info"
 
     internal procedure GetBillingInformation(CustomerLedgerEntryNo: Integer): Text[140]
     var
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
         CustLedgerEntry: Record "Cust. Ledger Entry";
         SalesInvoiceLine: Record "Sales Invoice Line";
         ServiceInvoiceLine: Record "Service Invoice Line";
@@ -72,7 +72,7 @@ table 11511 "Swiss QR-Bill Billing Info"
         TempVATAmountLine: Record "VAT Amount Line" temporary;
         PaymentTermsCode: Code[10];
     begin
-        CompanyInfo.Get();
+        CompanyInformation.Get();
         CustLedgerEntry.Get(CustomerLedgerEntryNo);
         if CustLedgerEntry."Document Type" = CustLedgerEntry."Document Type"::Invoice then
             case true of
@@ -92,7 +92,7 @@ table 11511 "Swiss QR-Bill Billing Info"
             GetDocumentBillingInfo(
                 CustLedgerEntry."Document No.",
                 CustLedgerEntry."Document Date",
-                CompanyInfo."VAT Registration No.",
+                CompanyInformation."VAT Registration No.",
                 CustLedgerEntry."Posting Date",
                 TempVATAmountLine,
                 PaymentTermsCode));

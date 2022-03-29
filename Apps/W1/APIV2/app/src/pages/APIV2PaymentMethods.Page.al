@@ -57,7 +57,7 @@ page 30020 "APIV2 - Payment Methods"
     var
         PaymentMethod: Record "Payment Method";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        PaymentMethodRecordRef: RecordRef;
     begin
         PaymentMethod.SetRange(Code, Code);
         if not PaymentMethod.IsEmpty() then
@@ -65,9 +65,9 @@ page 30020 "APIV2 - Payment Methods"
 
         Insert(true);
 
-        RecRef.GetTable(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CurrentDateTime());
-        RecRef.SetTable(Rec);
+        PaymentMethodRecordRef.GetTable(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(PaymentMethodRecordRef, TempFieldSet, CurrentDateTime());
+        PaymentMethodRecordRef.SetTable(Rec);
 
         Modify(true);
         exit(false);

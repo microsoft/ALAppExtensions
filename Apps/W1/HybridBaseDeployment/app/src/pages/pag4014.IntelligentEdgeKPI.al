@@ -74,11 +74,11 @@ page 4014 "Intelligent Edge KPIs"
 
     trigger OnOpenPage()
     var
-        CalcAmts: Codeunit CalculateAmounts;
+        CalculateAmounts: Codeunit CalculateAmounts;
     begin
-        "Cash Available" := CalcAmts.CashAvailable();
-        "Sales Profitability" := CalcAmts.SalesProfitability("Net Income");
-        "Inventory Value" := CalcAmts.InventoryValue();
+        "Cash Available" := CalculateAmounts.CashAvailable();
+        "Sales Profitability" := CalculateAmounts.SalesProfitability("Net Income");
+        "Inventory Value" := CalculateAmounts.InventoryValue();
     end;
 
     procedure FormatAmount(): Text

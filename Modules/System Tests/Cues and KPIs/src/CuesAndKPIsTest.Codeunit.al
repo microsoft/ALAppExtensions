@@ -309,41 +309,41 @@ codeunit 135039 "Cues And KPIs Test"
     [Scope('OnPrem')]
     procedure ChangeUsersForSetupEntries()
     var
-        RecRef: RecordRef;
-        CueSetupAdminPage: TestPage "Cue Setup Administrator";
+        RecordRef: RecordRef;
+        CueSetupAdministratorPage: TestPage "Cue Setup Administrator";
     begin
         Initialize();
 
         // Verify the module highest permission level is sufficient ignore non Tables
         PermissionsMock.Set('Cues And KPIs Edit');
 
-        CueSetupAdminPage.OpenEdit();
+        CueSetupAdministratorPage.OpenEdit();
         // [GIVEN] The Cue Setup adming page is opened
         // [WHEN] There exists setup entries with no user id
         // insert for blank user
-        CueSetupAdminPage.New();
-        InsertIntoCueSetupAdminPage(CueSetupAdminPage, '', CueTableId, CueNormalIntegerFieldId,
+        CueSetupAdministratorPage.New();
+        InsertIntoCueSetupAdminPage(CueSetupAdministratorPage, '', CueTableId, CueNormalIntegerFieldId,
             CueStyle::None, 0, CueStyle::None, 1, CueStyle::None);
 
         // insert for dummy user
-        CueSetupAdminPage.New();
-        InsertIntoCueSetupAdminPage(CueSetupAdminPage, 'DummyUser', CueTableId, CueNormalDecimalFieldId,
+        CueSetupAdministratorPage.New();
+        InsertIntoCueSetupAdminPage(CueSetupAdministratorPage, 'DummyUser', CueTableId, CueNormalDecimalFieldId,
             CueStyle::None, 0, CueStyle::None, 1, CueStyle::None);
 
-        CueSetupAdminPage.Close();
+        CueSetupAdministratorPage.Close();
         // [THEN] It is possible to change the user for those entries.
-        RecRef.Open(9701); // Cue Setup
-        if RecRef.FindSet() then
+        RecordRef.Open(9701); // Cue Setup
+        if RecordRef.FindSet() then
             repeat
-                CuesAndKPIs.ChangeUserForSetupEntry(RecRef, Copystr(CompanyName(), 1, 30), CopyStr(UserId(), 1, 30));
-            until RecRef.Next() = 0;
+                CuesAndKPIs.ChangeUserForSetupEntry(RecordRef, Copystr(CompanyName(), 1, 30), CopyStr(UserId(), 1, 30));
+            until RecordRef.Next() = 0;
 
         // verify
-        CueSetupAdminPage.OpenView();
-        CueSetupAdminPage.First();
-        CueSetupAdminPage."User Name".AssertEquals(UserId());
-        CueSetupAdminPage.Next();
-        CueSetupAdminPage."User Name".AssertEquals(UserId());
+        CueSetupAdministratorPage.OpenView();
+        CueSetupAdministratorPage.First();
+        CueSetupAdministratorPage."User Name".AssertEquals(UserId());
+        CueSetupAdministratorPage.Next();
+        CueSetupAdministratorPage."User Name".AssertEquals(UserId());
     end;
 
     [Test]

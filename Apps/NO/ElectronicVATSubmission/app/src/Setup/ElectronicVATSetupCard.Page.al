@@ -46,6 +46,11 @@ page 10692 "Electronic VAT Setup Card"
                         ElecVATOAuthMgt.UpdateElecVATOAuthSetupRecordsWithClientIDAndSecret("Client ID", "Client Secret")
                     end;
                 }
+                field("Authentication URL"; "Authentication URL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the URL to connect to ID-Porten.';
+                }
                 field("Redirect URL"; "Redirect URL")
                 {
                     ApplicationArea = Basic, Suite;
@@ -71,6 +76,11 @@ page 10692 "Electronic VAT Setup Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the URL for the submission app.';
                 }
+                field("Disable Checks On Release"; "Disable Checks On Release")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies to disable checks when user clicks Release in the VAT return. Use this option when you are sure that checks are not correct.';
+                }
             }
         }
     }
@@ -82,7 +92,7 @@ page 10692 "Electronic VAT Setup Card"
             action(OpenOAuthSetup)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Open OAuth 2.0 setup page';
+                Caption = 'Open OAuth 2.0 setup';
                 Image = Setup;
                 Promoted = true;
                 PromotedCategory = Process;

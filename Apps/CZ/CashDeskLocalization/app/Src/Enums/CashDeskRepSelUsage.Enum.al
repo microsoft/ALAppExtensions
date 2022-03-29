@@ -1,4 +1,4 @@
-enum 11729 "Cash Desk Rep. Sel. Usage CZP"
+enum 11729 "Cash Desk Rep. Sel. Usage CZP"
 {
     Extensible = true;
 

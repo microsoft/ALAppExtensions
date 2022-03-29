@@ -689,7 +689,7 @@ codeunit 132605 "Checklist Banner Test"
     [RequestPageHandler]
     procedure RequestPageHandler(var ChecklistTestReport: TestRequestPage "Checklist Test Report")
     begin
-        ChecklistTestReport.SaveAsPdf('report.pdf');
+        ChecklistTestReport.OK().Invoke();
     end;
 
     [HyperlinkHandler]

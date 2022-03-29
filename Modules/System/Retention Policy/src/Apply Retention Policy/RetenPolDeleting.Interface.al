@@ -11,7 +11,7 @@ interface "Reten. Pol. Deleting"
     /// <summary>
     /// This function deletes the expired records for the retention policy according to the settings in the parameter table.
     /// </summary>
-    /// <param name="RecRef">The record reference with expired records for the retention policy.</param>
+    /// <param name="RecordRef">The record reference with expired records for the retention policy.</param>
     /// <param name="RetenPolDeletingParam">The parameter table for this run of apply retention policy.</param>
-    procedure DeleteRecords(var RecRef: RecordRef; var RetenPolDeletingParam: Record "Reten. Pol. Deleting Param" temporary);
+    procedure DeleteRecords(var RecordRef: RecordRef; var RetenPolDeletingParam: Record "Reten. Pol. Deleting Param" temporary);
 }

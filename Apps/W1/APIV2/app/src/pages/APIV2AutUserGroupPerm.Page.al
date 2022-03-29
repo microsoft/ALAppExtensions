@@ -27,7 +27,6 @@ page 30075 "APIV2 - Aut. User Group Perm."
                 field(userGroupCode; "User Group Code")
                 {
                     Caption = 'User Group Code';
-                    Editable = false;
                 }
                 field(roleId; "Role ID")
                 {
@@ -72,11 +71,6 @@ page 30075 "APIV2 - Aut. User Group Perm."
         end;
     end;
 
-    trigger OnNewRecord(BelowxRec: Boolean)
-    begin
-        CheckFilter();
-    end;
-
     trigger OnOpenPage()
     begin
         BindSubscription(AutomationAPIManagement);
@@ -86,6 +80,9 @@ page 30075 "APIV2 - Aut. User Group Perm."
     var
         AggregatePermissionSet: Record "Aggregate Permission Set";
     begin
+        if Rec."User Group Code" = '' then
+            CheckFilter();
+
         if Rec."Role ID" <> '' then
             AggregatePermissionSet.SetRange("Role ID", Rec."Role ID");
         if not IsNullGuid(Rec."App ID") then
@@ -101,10 +98,23 @@ page 30075 "APIV2 - Aut. User Group Perm."
         Rec."App ID" := AggregatePermissionSet."App ID";
     end;
 
+    trigger OnModifyRecord(): Boolean
+    var
+        UserGroupPermissionSet: Record "User Group Permission Set";
+    begin
+        UserGroupPermissionSet.GetBySystemId(Rec.SystemId);
+
+        if Rec."User Group Code" <> UserGroupPermissionSet."User Group Code" then
+            Error(UserGroupCodeNotEditableErr);
+
+        exit(true);
+    end;
+
     var
         AutomationAPIManagement: Codeunit "Automation - API Management";
         MultipleRoleIDErr: Label 'The permission set %1 is defined multiple times in this context.', Comment = '%1 will be replaced with a Role ID code value from the Permission Set table';
         UserGroupCodeNotSpecifiedForLinesErr: Label 'You must specify a User Group Code to access user group permissions.';
+        UserGroupCodeNotEditableErr: Label 'You cannot change the User Group Code for a user group permission.';
         FilterChecked: Boolean;
         ScopeDefined: Boolean;
 

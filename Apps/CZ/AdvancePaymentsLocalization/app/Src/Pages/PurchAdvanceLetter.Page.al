@@ -656,8 +656,8 @@ page 31181 "Purch. Advance Letter CZZ"
                     PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
                 begin
                     PurchAdvLetterHeaderCZZ := Rec;
-                    PurchAdvLetterHeaderCZZ.SetRecFilter();
-                    PurchAdvLetterHeaderCZZ.PrintRecord(true);
+                    CurrPage.SetSelectionFilter(PurchAdvLetterHeaderCZZ);
+                    PurchAdvLetterHeaderCZZ.PrintRecords(true);
                 end;
             }
             action(PrintToAttachment)

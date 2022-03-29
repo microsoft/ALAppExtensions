@@ -38,4 +38,12 @@ codeunit 11749 "Reminder Handler CZL"
         GenJournalLine."IBAN CZL" := ReminderHeader."IBAN CZL";
         GenJournalLine."SWIFT Code CZL" := ReminderHeader."SWIFT Code CZL";
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Issued Reminder Header", 'OnBeforeDeleteEvent', '', false, false)]
+    local procedure CheckDeletionAllowOnBeforeDeleteEvent(var Rec: Record "Issued Reminder Header")
+    var
+        PostSalesDelete: Codeunit "PostSales-Delete";
+    begin
+        PostSalesDelete.IsDocumentDeletionAllowed(Rec."Posting Date");
+    end;
 }

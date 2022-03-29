@@ -8,15 +8,21 @@
 /// </summary>
 enum 4511 "SMTP Authentication" implements "SMTP Authentication"
 {
+#if not CLEAN20
+    ObsoleteReason = 'Use SMTP Authentication Types from the SMTP API app.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '20.0';
+#else
+    Access = Internal;
+#endif
     Extensible = false;
-    DefaultImplementation = "SMTP Authentication" = "Basic SMTP Authentication";
 
     /// <summary>
     /// Anonymous SMTP authentication.
     /// </summary>
     value(1; Anonymous)
     {
-        Implementation = "SMTP Authentication" = "Anonymous SMTP Authentication";
+        Implementation = "SMTP Authentication" = "Dummy SMTP Authentication";
     }
 
     /// <summary>
@@ -24,7 +30,7 @@ enum 4511 "SMTP Authentication" implements "SMTP Authentication"
     /// </summary>
     value(3; Basic)
     {
-        Implementation = "SMTP Authentication" = "Basic SMTP Authentication";
+        Implementation = "SMTP Authentication" = "Dummy SMTP Authentication";
     }
 
     /// <summary>
@@ -32,7 +38,7 @@ enum 4511 "SMTP Authentication" implements "SMTP Authentication"
     /// </summary>
     value(4; "OAuth 2.0")
     {
-        Implementation = "SMTP Authentication" = "OAuth2 SMTP Authentication";
+        Implementation = "SMTP Authentication" = "Dummy SMTP Authentication";
     }
 
     /// <summary>
@@ -40,6 +46,6 @@ enum 4511 "SMTP Authentication" implements "SMTP Authentication"
     /// </summary>
     value(5; NTLM)
     {
-        Implementation = "SMTP Authentication" = "NTLM SMTP Authentication";
+        Implementation = "SMTP Authentication" = "Dummy SMTP Authentication";
     }
 }

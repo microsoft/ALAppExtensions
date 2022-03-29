@@ -2,10 +2,6 @@ pageextension 31039 "Purchase Invoice CZZ" extends "Purchase Invoice"
 {
     layout
     {
-        modify("Prepayment %")
-        {
-            Visible = not AdvancePaymentsEnabledCZZ;
-        }
 #if not CLEAN19
 #pragma warning disable AL0432
         modify("Prepayment Type")
@@ -14,10 +10,18 @@ pageextension 31039 "Purchase Invoice CZZ" extends "Purchase Invoice"
         }
 #pragma warning restore AL0432
 #endif
+#if not CLEAN20
+#pragma warning disable AL0432
+        modify("Prepayment %")
+        {
+            Visible = not AdvancePaymentsEnabledCZZ;
+        }
         modify("Compress Prepayment")
         {
             Visible = not AdvancePaymentsEnabledCZZ;
         }
+#pragma warning restore AL0432
+#endif
         addlast(factboxes)
         {
             part("Purch. Adv. Usage FactBox CZZ"; "Purch. Adv. Usage FactBox CZZ")

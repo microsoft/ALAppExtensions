@@ -13,6 +13,7 @@ page 1912 "MigrationQB CustomerTable"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(CompanyName; CompanyName) { ApplicationArea = All; }
                 field(GivenName; GivenName) { ApplicationArea = All; }
                 field(FamilyName; FamilyName) { ApplicationArea = All; }
@@ -29,6 +30,7 @@ page 1912 "MigrationQB CustomerTable"
                 field(Fax; Fax) { ApplicationArea = All; }
                 field(Taxable; Taxable) { ApplicationArea = All; }
                 field(DefaultTaxCodeRef; DefaultTaxCodeRef) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

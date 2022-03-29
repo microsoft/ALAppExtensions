@@ -39,10 +39,4 @@ codeunit 31229 "TransferOrder-Post Handler CZA"
     begin
         ItemJournalLine.Validate("Gen. Bus. Posting Group", TransferReceiptLine."Gen.Bus.Post.Group Receive CZA");
     end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Undo Transfer Shipment Line", 'OnAfterInitItemJnlLine', '', false, false)]
-    local procedure UndoShptValidateGenBusPostingGroupOnAfterInitItemJnlLine(var ItemJournalLine: Record "Item Journal Line"; TransferShipmentLine: Record "Transfer Shipment Line"; TransferShipmentHeader: Record "Transfer Shipment Header")
-    begin
-        ItemJournalLine.Validate("Gen. Bus. Posting Group", TransferShipmentLine."Gen.Bus.Post.Group Ship CZA");
-    end;
 }

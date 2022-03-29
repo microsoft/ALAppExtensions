@@ -23,6 +23,23 @@ page 8883 "Sent Emails"
     {
         area(Content)
         {
+            group(Filters)
+            {
+                ShowCaption = false;
+                field(DateFilter; NewerThanDate)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Show sent emails after';
+                    ToolTip = 'Specifies the range of emails to load sent after the date.';
+
+                    trigger OnValidate()
+                    begin
+                        EmailImpl.GetSentEmails(EmailAccountId, NewerThanDate, SourceTableID, SourceSystemID, Rec);
+                        CurrPage.Update(false);
+                        NoSentEmails := Rec.IsEmpty();
+                    end;
+                }
+            }
             repeater(SentEmails)
             {
                 field(Desc; Rec.Description)
@@ -129,7 +146,7 @@ page 8883 "Sent Emails"
 
                 trigger OnAction()
                 begin
-                    EmailViewer.RefreshSentMailForUser(EmailAccountId, NewerThanDate, SourceTableID, SourceSystemID, Rec);
+                    EmailImpl.GetSentEmails(EmailAccountId, NewerThanDate, SourceTableID, SourceSystemID, Rec);
                     CurrPage.Update(false);
                     NoSentEmails := Rec.IsEmpty();
                 end;
@@ -156,7 +173,8 @@ page 8883 "Sent Emails"
 
     trigger OnOpenPage()
     begin
-        EmailViewer.RefreshSentMailForUser(EmailAccountId, NewerThanDate, SourceTableID, SourceSystemID, Rec);
+        NewerThanDate := CreateDateTime(CalcDate('<-30D>', Today()), Time());
+        EmailImpl.GetSentEmails(EmailAccountId, NewerThanDate, SourceTableID, SourceSystemID, Rec);
         Rec.SetCurrentKey("Date Time Sent");
         NoSentEmails := Rec.IsEmpty();
         Rec.Ascending(false);
@@ -203,6 +221,11 @@ page 8883 "Sent Emails"
     begin
         SourceTableID := TableID;
         SourceSystemID := SystemID;
+    end;
+
+    internal procedure SetRelatedEntity(TableID: Integer)
+    begin
+        SourceTableID := TableID;
     end;
 
     var

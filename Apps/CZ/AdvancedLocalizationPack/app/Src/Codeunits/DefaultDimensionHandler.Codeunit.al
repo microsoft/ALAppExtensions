@@ -24,6 +24,7 @@ codeunit 31392 "Default Dimension Handler CZA"
         DimensionAutoCreateMgt.AutoCreateDimension(TableID, No);
     end;
 #if not CLEAN19
+#pragma warning disable AL0432
 
     [EventSubscriber(ObjectType::Table, Database::"Default Dimension", 'OnAfterValidateEvent', 'Automatic Create CZA', false, false)]
     local procedure TestSetupOnAfterValidateAutoCreateCZA(var Rec: Record "Default Dimension"; var xRec: Record "Default Dimension"; CurrFieldNo: Integer)
@@ -162,5 +163,6 @@ codeunit 31392 "Default Dimension Handler CZA"
                     Error(BaseAppDuplicityErr, DefaultDimension.FieldCaption("Automatic Cr. Value Posting"), CurrentModuleInfo.Name);
         end;
     end;
+#pragma warning restore AL0432
 #endif
 }

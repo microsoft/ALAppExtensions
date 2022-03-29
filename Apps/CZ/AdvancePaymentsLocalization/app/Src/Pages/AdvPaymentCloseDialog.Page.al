@@ -28,6 +28,13 @@ page 31177 "Adv. Payment Close Dialog CZZ"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies VAT date.';
                 }
+                field(OriginalDocumentVATDate; OriginalDocumentVATDate)
+                {
+                    Caption = 'Original Document VAT Date';
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies original document VAT date.';
+                    Visible = ShowOriginalDocumentVATDate;
+                }
                 field(CurrencyCode; CurrencyCode)
                 {
                     Caption = 'Currency Code';
@@ -64,16 +71,19 @@ page 31177 "Adv. Payment Close Dialog CZZ"
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         PostingDate: Date;
         VATDate: Date;
+        OriginalDocumentVATDate: Date;
         CurrencyCode: Code[10];
         ExternalDocumentNo: Code[35];
         CurrencyFactor: Decimal;
         CurrencyEnabled: Boolean;
         ShowExternalDocumentNo: Boolean;
+        ShowOriginalDocumentVATDate: Boolean;
 
     procedure SetValues(NewPostingDate: Date; NewVATDate: Date; NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; NewExternalDocumentNo: Code[35]; NewShowExternalDocumentNo: Boolean)
     begin
         PostingDate := NewPostingDate;
         VATDate := NewVATDate;
+        OriginalDocumentVATDate := VATDate;
         CurrencyCode := NewCurrencyCode;
         ExternalDocumentNo := NewExternalDocumentNo;
         CurrencyEnabled := CurrencyCode <> '';
@@ -82,6 +92,7 @@ page 31177 "Adv. Payment Close Dialog CZZ"
         else
             CurrencyFactor := CurrencyExchangeRate.ExchangeRate(PostingDate, CurrencyCode);
         ShowExternalDocumentNo := NewShowExternalDocumentNo;
+        ShowOriginalDocumentVATDate := ShowExternalDocumentNo;
     end;
 
     procedure GetValues(var NewPostingDate: Date; var NewVATDate: Date; var NewCurrencyFactor: Decimal)
@@ -89,6 +100,12 @@ page 31177 "Adv. Payment Close Dialog CZZ"
         NewPostingDate := PostingDate;
         NewVATDate := VATDate;
         NewCurrencyFactor := CurrencyFactor;
+    end;
+
+    procedure GetValues(var NewPostingDate: Date; var NewVATDate: Date; var NewOriginalDocumentVATDate: Date; var NewCurrencyFactor: Decimal)
+    begin
+        GetValues(NewPostingDate, NewVATDate, NewCurrencyFactor);
+        NewOriginalDocumentVATDate := OriginalDocumentVATDate;
     end;
 
     procedure GetExternalDocumentNo(): Code[35]

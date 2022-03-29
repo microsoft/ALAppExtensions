@@ -1,5 +1,9 @@
+#if not CLEAN20
 page 1081 "MS - Wallet Merchant Template"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     Caption = 'Microsoft Pay Payments Template';
     DeleteAllowed = false;
     InsertAllowed = false;
@@ -65,6 +69,7 @@ page 1081 "MS - Wallet Merchant Template"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                PromotedOnly = true;
                 ToolTip = 'Reset the values to the default.';
 
                 trigger OnAction();
@@ -99,4 +104,4 @@ page 1081 "MS - Wallet Merchant Template"
         PaymentRequestURL: Text;
         SetToDefaultMsg: Label 'The settings have been reset to the default.';
 }
-
+#endif

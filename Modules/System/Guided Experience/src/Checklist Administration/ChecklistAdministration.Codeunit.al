@@ -22,7 +22,7 @@ codeunit 1995 "Checklist Administration"
 
     procedure LookupGuidedExperienceItem(var ChecklistItemBuffer: Record "Checklist Item Buffer"; GuidedExperienceType: Enum "Guided Experience Type")
     var
-        GuidedExperienceItem: Record "Guided Experience Item";
+        TempGuidedExperienceItem: Record "Guided Experience Item" temporary;
         ChecklistItem: Record "Checklist Item";
         ChecklistImplementation: Codeunit "Checklist Implementation";
         LookupOK: Boolean;
@@ -30,19 +30,19 @@ codeunit 1995 "Checklist Administration"
         ShouldPopulateFields: Boolean;
         ShouldCreateDefaultChecklistItem: Boolean;
     begin
-        LookupOK := LookupGuidedExperienceItem(GuidedExperienceItem, GuidedExperienceType);
+        LookupOK := LookupGuidedExperienceItem(TempGuidedExperienceItem, GuidedExperienceType);
 
         HasChecklistItemBufferBeenModified := HasChecklistItemBufferChanged(ChecklistItemBuffer);
 
         if LookupOK then
-            if not ChecklistItem.Get(GuidedExperienceItem.Code) then begin
+            if not ChecklistItem.Get(TempGuidedExperienceItem.Code) then begin
                 if not HasChecklistItemBufferBeenModified then begin
                     ShouldPopulateFields := true;
                     ShouldCreateDefaultChecklistItem := true;
                 end else begin
-                    ChecklistImplementation.UpdateCode(ChecklistItemBuffer.Code, GuidedExperienceItem.Code);
-                    ChecklistItemBuffer.Code := GuidedExperienceItem.Code;
-                    PopulateGuidedExperienceFields(GuidedExperienceItem, ChecklistItemBuffer);
+                    ChecklistImplementation.UpdateCode(ChecklistItemBuffer.Code, TempGuidedExperienceItem.Code);
+                    ChecklistItemBuffer.Code := TempGuidedExperienceItem.Code;
+                    PopulateGuidedExperienceFields(TempGuidedExperienceItem, ChecklistItemBuffer);
 
                     UpdateStatusForUsers(ChecklistItemBuffer.Code);
                 end;
@@ -52,10 +52,10 @@ codeunit 1995 "Checklist Administration"
                     ShouldPopulateFields := true;
 
         if ShouldPopulateFields then
-            PopulateFields(GuidedExperienceItem, ChecklistItem, ChecklistItemBuffer);
+            PopulateFields(TempGuidedExperienceItem, ChecklistItem, ChecklistItemBuffer);
 
         if ShouldCreateDefaultChecklistItem then
-            ChecklistImplementation.InsertChecklistItem(GuidedExperienceItem.Code, ChecklistItem."Completion Requirements"::Anyone, 1);
+            ChecklistImplementation.InsertChecklistItem(TempGuidedExperienceItem.Code, ChecklistItem."Completion Requirements"::Anyone, 1);
     end;
 
     procedure GetObjectCaption(ObjectTypeToRun: Enum "Guided Experience Object Type"; ObjectID: Integer): Text[50]
@@ -100,17 +100,15 @@ codeunit 1995 "Checklist Administration"
         exit(false);
     end;
 
-    local procedure LookupGuidedExperienceItem(var GuidedExperienceItem: Record "Guided Experience Item"; GuidedExperienceType: Enum "Guided Experience Type"): Boolean
+    local procedure LookupGuidedExperienceItem(var GuidedExperienceItemTemp: Record "Guided Experience Item" temporary; GuidedExperienceType: Enum "Guided Experience Type"): Boolean
     var
         GuidedExperienceItemListLookup: Page "Guided Experience Item List";
     begin
-        GuidedExperienceItem.SetRange("Guided Experience Type", GuidedExperienceType);
-        GuidedExperienceItemListLookup.SetTableView(GuidedExperienceItem);
-        GuidedExperienceItemListLookup.SetRecord(GuidedExperienceItem);
+        GuidedExperienceItemListLookup.SetGuidedExperienceType(GuidedExperienceType);
         GuidedExperienceItemListLookup.LookupMode := true;
 
         if GuidedExperienceItemListLookup.RunModal() = Action::LookupOK then begin
-            GuidedExperienceItemListLookup.GetRecord(GuidedExperienceItem);
+            GuidedExperienceItemListLookup.GetRecord(GuidedExperienceItemTemp);
             exit(true);
         end;
     end;

@@ -12,13 +12,7 @@ codeunit 31278 "Release Compens. Document CZC"
     var
         CompensationHeaderCZC: Record "Compensation Header CZC";
         CompensationsSetupCZC: Record "Compensations Setup CZC";
-        MustBeLessOrEqualErr: Label '%1 must be less or equal to %2.', Comment = '%1 = Compensation Balance (LCY) FieldCaption, %2 = Max. Rounding Amount FieldCaption';
-#if not CLEAN19
-        UseChangedLedgerEntryQst: Label '%1 %2 %3 is already used. Do you want to use it for Compensation?', Comment = '%1 = Customer/Vendor LE TableCaption, %2 = Entry No. FieldCption, %3 = Entry No.';
-#endif
-        CurrencyFactorErr: Label 'All lines with currency %1 must have the same currency factor.', Comment = '%1 = Currency Code';
-        ApprovalProcessReleaseErr: Label 'This document can only be released when the approval process is complete.';
-        ApprovalProcessReopenErr: Label 'The approval process must be cancelled or completed to reopen this document.';
+        ConfirmManagement: Codeunit "Confirm Management";
 
     local procedure Code()
     begin
@@ -53,6 +47,7 @@ codeunit 31278 "Release Compens. Document CZC"
     procedure PerformManualRelease(var CompensationHeaderCZC: Record "Compensation Header CZC")
     var
         CompensationApprovMgtCZC: Codeunit "Compensation Approv. Mgt. CZC";
+        ApprovalProcessReleaseErr: Label 'This document can only be released when the approval process is complete.';
     begin
         if CompensationApprovMgtCZC.IsCompensationApprovalsWorkflowEnabled(CompensationHeaderCZC) and
            (CompensationHeaderCZC.Status = CompensationHeaderCZC.Status::Open)
@@ -63,6 +58,8 @@ codeunit 31278 "Release Compens. Document CZC"
     end;
 
     procedure PerformManualReopen(var CompensationHeaderCZC: Record "Compensation Header CZC")
+    var
+        ApprovalProcessReopenErr: Label 'The approval process must be cancelled or completed to reopen this document.';
     begin
         if CompensationHeaderCZC.Status = CompensationHeaderCZC.Status::"Pending Approval" then
             Error(ApprovalProcessReopenErr);
@@ -71,6 +68,8 @@ codeunit 31278 "Release Compens. Document CZC"
     end;
 
     local procedure CheckCompensationBalance(CompensationHeaderCZC: Record "Compensation Header CZC")
+    var
+        MustBeLessOrEqualErr: Label '%1 must be less or equal to %2.', Comment = '%1 = Compensation Balance (LCY) FieldCaption, %2 = Max. Rounding Amount FieldCaption';
     begin
         CompensationsSetupCZC.Get();
         CompensationHeaderCZC.CalcFields(CompensationHeaderCZC."Compensation Balance (LCY)");
@@ -85,6 +84,8 @@ codeunit 31278 "Release Compens. Document CZC"
         CustLedgerEntry: Record "Cust. Ledger Entry";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         CurrencyFactor: Decimal;
+        SuggestedAmountToApplyQst: Label '%1 Ledger Entry No. %2 is suggested to application on other documents in the system.\Do you want to use it for this Compensation?', Comment = '%1 = Source Type, %2 = Source Entry No.';
+        CurrencyFactorErr: Label 'All lines with currency %1 must have the same currency factor.', Comment = '%1 = Currency Code';
     begin
         CompensationLineCZC.SetRange(CompensationLineCZC."Compensation No.", CompensationHeaderCZC."No.");
         if CompensationLineCZC.FindSet() then
@@ -98,12 +99,6 @@ codeunit 31278 "Release Compens. Document CZC"
 #if not CLEAN19
 #pragma warning disable AL0432
                             CustLedgerEntry.TestField("Prepayment Type", CustLedgerEntry."Prepayment Type"::" ");
-                            CustLedgerEntry.CalcFields("Amount on Payment Order (LCY)");
-                            if CustLedgerEntry."Amount on Payment Order (LCY)" <> 0 then
-                                if not Confirm(UseChangedLedgerEntryQst, false,
-                                     CustLedgerEntry.TableCaption, CustLedgerEntry.FieldCaption("Entry No."), CustLedgerEntry."Entry No.")
-                                then
-                                    CustLedgerEntry.TestField("Amount on Payment Order (LCY)", 0);
 #pragma warning restore AL0432
 #endif
                         end;
@@ -114,16 +109,13 @@ codeunit 31278 "Release Compens. Document CZC"
 #if not CLEAN19
 #pragma warning disable AL0432
                             VendorLedgerEntry.TestField("Prepayment Type", VendorLedgerEntry."Prepayment Type"::" ");
-                            VendorLedgerEntry.CalcFields("Amount on Payment Order (LCY)");
-                            if VendorLedgerEntry."Amount on Payment Order (LCY)" <> 0 then
-                                if not Confirm(UseChangedLedgerEntryQst, false,
-                                     VendorLedgerEntry.TableCaption, VendorLedgerEntry.FieldCaption("Entry No."), VendorLedgerEntry."Entry No.")
-                                then
-                                    VendorLedgerEntry.TestField("Amount on Payment Order (LCY)", 0);
 #pragma warning restore AL0432
 #endif
                         end;
                 end;
+                if CompensationLineCZC.CalcRelatedAmountToApply() <> 0 then
+                    if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(SuggestedAmountToApplyQst, CompensationLineCZC."Source Type", CompensationLineCZC."Source Entry No."), false) then
+                        Error('');
             until CompensationLineCZC.Next() = 0;
 
         CompensationLineCZC.SetFilter(CompensationLineCZC."Currency Code", '<>%1', '');

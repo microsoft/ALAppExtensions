@@ -15,6 +15,7 @@ table 1876 "Business Setup Icon"
 #endif
     ObsoleteReason = 'The Manual Setup module and its objects have been consolidated in the Guided Experience module.';
     ObsoleteTag = '18.0';
+    ReplicateData = false;
 
     fields
     {

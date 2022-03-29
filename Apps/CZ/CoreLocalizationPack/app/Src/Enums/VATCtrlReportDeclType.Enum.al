@@ -1,4 +1,4 @@
-enum 31004 "VAT Ctrl. Report Decl Type CZL"
+enum 31004 "VAT Ctrl. Report Decl Type CZL"
 {
     Extensible = true;
 

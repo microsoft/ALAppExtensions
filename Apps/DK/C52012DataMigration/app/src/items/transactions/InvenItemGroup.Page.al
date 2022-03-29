@@ -17,6 +17,7 @@ page 1867 "C5 InvenItemGroup"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(Group;Group) { ApplicationArea=All; }
                 field(GroupName;GroupName) { ApplicationArea=All; }
                 field(SalesAcc;SalesAcc) { ApplicationArea=All; }
@@ -32,6 +33,7 @@ page 1867 "C5 InvenItemGroup"
                 field(InterimInflowAcc;InterimInflowAcc) { ApplicationArea=All; }
                 field(InterimOutflowAcc;InterimOutflowAcc) { ApplicationArea=All; }
                 field(PurchDiscAcc;PurchDiscAcc) { ApplicationArea=All; }
+#pragma warning restore
             }
         }
     }    

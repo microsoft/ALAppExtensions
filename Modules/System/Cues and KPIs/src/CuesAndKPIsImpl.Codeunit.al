@@ -183,12 +183,12 @@ codeunit 9702 "Cues And KPIs Impl."
         end;
     end;
 
-    procedure ChangeUserForSetupEntry(var RecRef: RecordRef; Company: Text[30]; UserName: Text[50])
+    procedure ChangeUserForSetupEntry(var RecordRef: RecordRef; Company: Text[30]; UserName: Text[50])
     var
         CueSetup: Record "Cue Setup";
     begin
         CueSetup.ChangeCompany(Company);
-        RecRef.SetTable(CueSetup);
+        RecordRef.SetTable(CueSetup);
         CueSetup.Rename(UserName, CueSetup."Table ID", CueSetup."Field No.");
     end;
 

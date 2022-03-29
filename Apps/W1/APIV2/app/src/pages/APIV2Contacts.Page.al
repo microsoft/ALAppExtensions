@@ -240,7 +240,7 @@ page 30071 "APIV2 - Contacts"
                     Multiplicity = ZeroOrOne;
                     EntityName = 'picture';
                     EntitySetName = 'pictures';
-                    SubPageLink = Id = Field(SystemId), "Parent Type" = const(5);
+                    SubPageLink = Id = Field(SystemId), "Parent Type" = const(Contact);
                 }
             }
         }
@@ -258,7 +258,7 @@ page 30071 "APIV2 - Contacts"
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
         Contact: Record Contact;
-        RecRef: RecordRef;
+        ContactRecordRef: RecordRef;
     begin
         if Name = '' then
             Error(NotProvidedContactNameErr);
@@ -269,9 +269,9 @@ page 30071 "APIV2 - Contacts"
 
         Insert(true);
 
-        RecRef.GetTable(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CurrentDateTime());
-        RecRef.SetTable(Rec);
+        ContactRecordRef.GetTable(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(ContactRecordRef, TempFieldSet, CurrentDateTime());
+        ContactRecordRef.SetTable(Rec);
 
         Modify(true);
         SetCalculatedFields();

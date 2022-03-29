@@ -18,6 +18,7 @@ page 1860 "C5 CustTable"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(Account; Account) { ApplicationArea = All; }
                 field(Name; Name) { ApplicationArea = All; }
                 field(Address1; Address1) { ApplicationArea = All; }
@@ -87,6 +88,7 @@ page 1860 "C5 CustTable"
                 field(VatGroup; VatGroup) { ApplicationArea = All; }
                 field(StdAccount; StdAccount) { ApplicationArea = All; }
                 field(VatNumberType; VatNumberType) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

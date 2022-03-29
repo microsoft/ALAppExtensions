@@ -948,13 +948,13 @@ codeunit 138702 "Retention Policy Test"
     end;
 
     [FilterPageHandler]
-    procedure RetentionPolicyFilterPageHandler(var RecRef: RecordRef): Boolean
+    procedure RetentionPolicyFilterPageHandler(var RecordRef: RecordRef): Boolean
     var
         FilterView: Text;
     begin
         FilterView := LibraryVariableStorage.DequeueText();
 
-        RecRef.SetView(FilterView);
+        RecordRef.SetView(FilterView);
         exit(true);
     end;
 

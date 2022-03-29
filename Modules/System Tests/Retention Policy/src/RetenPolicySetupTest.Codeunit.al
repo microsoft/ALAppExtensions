@@ -625,19 +625,19 @@ codeunit 138701 "Reten. Policy Setup Test"
     end;
 
     [FilterPageHandler]
-    procedure EmptyFilterPageHandler(var RecRef: RecordRef): Boolean
+    procedure EmptyFilterPageHandler(var RecordRef: RecordRef): Boolean
     begin
         exit(true);
     end;
 
     [FilterPageHandler]
-    procedure RetentionPolicyFilterPageHandler(var RecRef: RecordRef): Boolean
+    procedure RetentionPolicyFilterPageHandler(var RecordRef: RecordRef): Boolean
     var
         FilterView: Text;
     begin
         FilterView := LibraryVariableStorage.DequeueText();
 
-        RecRef.SetView(FilterView);
+        RecordRef.SetView(FilterView);
         exit(true);
     end;
 }

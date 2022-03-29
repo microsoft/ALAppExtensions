@@ -63,11 +63,12 @@ codeunit 149004 "BCPT Header"
         PerformanceRunFinishedLbl: Label 'Performance Toolkit run finished.', Locked = true;
         PerformanceRunCancelledLbl: Label 'Performance Toolkit run cancelled.', Locked = true;
     begin
-        TelemetryCustomDimensions.Add(BCPTHeader.FieldCaption(Code), BCPTHeader.Code);
-        TelemetryCustomDimensions.Add(BCPTHeader.FieldCaption("Duration (minutes)"), Format(BCPTHeader."Duration (minutes)"));
-        TelemetryCustomDimensions.Add(BCPTHeader.FieldCaption(CurrentRunType), Format(BCPTHeader.CurrentRunType));
+        TelemetryCustomDimensions.Add('Code', BCPTHeader.Code);
+        TelemetryCustomDimensions.Add('DurationInMinutes', Format(BCPTHeader."Duration (minutes)"));
+        TelemetryCustomDimensions.Add('CurrentRunType', Format(BCPTHeader.CurrentRunType));
+        TelemetryCustomDimensions.Add('RunID', Format(BCPTHeader.Version));
         BCPTHeader.CalcFields("Total No. of Sessions");
-        TelemetryCustomDimensions.Add(BCPTHeader.FieldCaption("Total No. of Sessions"), Format(BCPTHeader."Total No. of Sessions"));
+        TelemetryCustomDimensions.Add('SessionCount', Format(BCPTHeader."Total No. of Sessions"));
 
         BCPTHeader.Status := BCPTHeaderStatus;
 

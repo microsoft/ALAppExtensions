@@ -44,21 +44,11 @@ table 18870 "TCS Journal Line"
             trigger OnValidate()
             begin
                 if "Account No." = '' then begin
-                    CreateDim(
-                      DimensionManagement.TypeToTableID1("Account Type"), "Account No.",
-                      DimensionManagement.TypeToTableID1("Bal. Account Type"), "Bal. Account No.",
-                      Database::Job, '',
-                      Database::"Salesperson/Purchaser", '',
-                      Database::Campaign, '');
+                    CreateDimFromDefaultDim(FieldNo("Account No."));
                     exit;
                 end;
                 UpdateDataOnAccountNo();
-                CreateDim(
-                  DimensionManagement.TypeToTableID1("Account Type"), "Account No.",
-                  DimensionManagement.TypeToTableID1("Bal. Account Type"), "Bal. Account No.",
-                  Database::Job, '',
-                  Database::"Salesperson/Purchaser", '',
-                  Database::Campaign, '');
+                CreateDimFromDefaultDim(FieldNo("Account No."));
             end;
         }
         field(5; "Posting Date"; Date)
@@ -117,21 +107,11 @@ table 18870 "TCS Journal Line"
             trigger OnValidate()
             begin
                 if "Bal. Account No." = '' then begin
-                    CreateDim(
-                      DimensionManagement.TypeToTableID1("Bal. Account Type"), "Bal. Account No.",
-                      DimensionManagement.TypeToTableID1("Account Type"), "Account No.",
-                     Database::Job, '',
-                      Database::"Salesperson/Purchaser", '',
-                      Database::Campaign, '');
+                    CreateDimFromDefaultDim(FieldNo("Bal. Account No."));
                     exit;
                 end;
                 UpdateDataOnBalAccountNo();
-                CreateDim(
-                  DimensionManagement.TypeToTableID1("Bal. Account Type"), "Bal. Account No.",
-                  DimensionManagement.TypeToTableID1("Account Type"), "Account No.",
-                  Database::Job, '',
-                  Database::"Salesperson/Purchaser", '',
-                  Database::Campaign, '');
+                CreateDimFromDefaultDim(FieldNo("Bal. Account No."));
             end;
         }
         field(10; "Customer No."; Code[20])
@@ -712,36 +692,11 @@ table 18870 "TCS Journal Line"
         Description := '';
     end;
 
-    local procedure CreateDim(
-        Type1: Integer;
-        No1: Code[20];
-        Type2: Integer;
-        No2: Code[20];
-        Type3: Integer;
-        No3: Code[20];
-        Type4: Integer;
-        No4: Code[20];
-        Type5: Integer;
-        No5: Code[20])
-    var
-        TableID: array[10] of Integer;
-        No: array[10] of Code[20];
+    procedure CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
     begin
-        TableID[1] := Type1;
-        No[1] := No1;
-        TableID[2] := Type2;
-        No[2] := No2;
-        TableID[3] := Type3;
-        No[3] := No3;
-        TableID[4] := Type4;
-        No[4] := No4;
-        TableID[5] := Type5;
-        No[5] := No5;
         "Shortcut Dimension 1 Code" := '';
         "Shortcut Dimension 2 Code" := '';
-        "Dimension Set ID" :=
-          DimensionManagement.GetDefaultDimID(
-            TableID, No, '', "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+        "Dimension Set ID" := DimensionManagement.GetDefaultDimID(DefaultDimSource, '', "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
     end;
 
     local procedure ValidateShortcutDimCode(FieldNumber: Integer; var ShortcutDimCode: Code[20])
@@ -941,5 +896,22 @@ table 18870 "TCS Journal Line"
             TCSJournalLine."Bal. TCS Including SHECESS" := Abs(TCSManagement.RoundTCSAmount(TCSAmount));
         end;
         TCSJournalLine.Modify();
+    end;
+
+    procedure CreateDimFromDefaultDim(FromFieldNo: Integer)
+    var
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
+    begin
+        InitDefaultDimensionSources(DefaultDimSource, FromFieldNo);
+        CreateDim(DefaultDimSource);
+    end;
+
+    local procedure InitDefaultDimensionSources(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FromFieldNo: Integer)
+    begin
+        DimensionManagement.AddDimSource(DefaultDimSource, DimensionManagement.TypeToTableID1("Account Type".AsInteger()), Rec."Account No.", FromFieldNo = Rec.Fieldno("Account No."));
+        DimensionManagement.AddDimSource(DefaultDimSource, DimensionManagement.TypeToTableID1("Bal. Account Type".AsInteger()), Rec."Bal. Account No.", FromFieldNo = Rec.Fieldno("Bal. Account No."));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::Job, '', false);
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Salesperson/Purchaser", '', false);
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::Campaign, '', false);
     end;
 }

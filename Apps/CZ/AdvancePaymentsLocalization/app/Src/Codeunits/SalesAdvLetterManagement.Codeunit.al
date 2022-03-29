@@ -414,6 +414,20 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
             until TempInvoicePostBuffer.Next() = 0;
     end;
 
+    procedure PostAndSendAdvancePaymentVAT(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    var
+        SalesAdvLetterEntryCZZ2: Record "Sales Adv. Letter Entry CZZ";
+    begin
+        SalesAdvLetterEntryCZZ.TestField("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::Payment);
+        PostAdvancePaymentVAT(SalesAdvLetterEntryCZZ, 0D);
+
+        SalesAdvLetterEntryCZZ2.SetRange("Sales Adv. Letter No.", SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
+        SalesAdvLetterEntryCZZ2.SetRange(Cancelled, false);
+        SalesAdvLetterEntryCZZ2.SetRange("Related Entry", SalesAdvLetterEntryCZZ."Entry No.");
+        SalesAdvLetterEntryCZZ2.SetRange("Entry Type", SalesAdvLetterEntryCZZ2."Entry Type"::"VAT Payment");
+        SalesAdvLetterEntryCZZ2.EmailRecords(true);
+    end;
+
     local procedure CalculateAmountLCY(var GenJournalLine: Record "Gen. Journal Line")
     var
         CurrencyExchangeRate: Record "Currency Exchange Rate";
@@ -1350,12 +1364,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine."Salespers./Purch. Code" := CustLedgerEntry."Salesperson Code";
         GenJournalLine."On Hold" := CustLedgerEntry."On Hold";
         GenJournalLine."Posting Group" := CustLedgerEntry."Customer Posting Group";
-        GenJournalLine."VAT Date CZL" := CustLedgerEntry."VAT Date CZL";
-#if not CLEAN19
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date" := CustLedgerEntry."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
+        GenJournalLine.Validate("VAT Date CZL", CustLedgerEntry."VAT Date CZL");
         GenJournalLine."System-Created Entry" := true;
     end;
 
@@ -1446,9 +1455,6 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine: Record "Gen. Journal Line";
         CustLedgerEntry1: Record "Cust. Ledger Entry";
         CustLedgerEntry2: Record "Cust. Ledger Entry";
-#pragma warning disable AL0432
-        TempInvoicePostBuffer: Record "Invoice Post. Buffer" temporary;
-#pragma warning restore AL0432
         AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         NoSeriesManagement: Codeunit NoSeriesManagement;
@@ -1457,6 +1463,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         VATDocumentNo: Code[20];
         PostingDate: Date;
         VATDate: Date;
+        OriginalDocumentVATDate: Date;
         CurrencyFactor: Decimal;
         RemAmount: Decimal;
         RemAmountLCY: Decimal;
@@ -1471,7 +1478,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
         AdvPaymentCloseDialogCZZ.SetValues(WorkDate(), WorkDate(), SalesAdvLetterHeaderCZZ."Currency Code", 0, '', false);
         if AdvPaymentCloseDialogCZZ.RunModal() = Action::OK then begin
-            AdvPaymentCloseDialogCZZ.GetValues(PostingDate, VATDate, CurrencyFactor);
+            AdvPaymentCloseDialogCZZ.GetValues(PostingDate, VATDate, OriginalDocumentVATDate, CurrencyFactor);
             if (PostingDate = 0D) or (VATDate = 0D) then
                 Error(DateEmptyErr);
             if SalesAdvLetterHeaderCZZ."Currency Code" = '' then
@@ -1487,12 +1494,9 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                     RemAmountLCY := GetRemAmtLCYSalAdvPayment(SalesAdvLetterEntryCZZ, 0D);
                     if RemAmount <> 0 then begin
                         if VATDocumentNo = '' then begin
-                            BufferAdvanceVATLines(SalesAdvLetterEntryCZZ, TempInvoicePostBuffer, 0D, true);
-                            if not TempInvoicePostBuffer.IsEmpty() then begin
-                                AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
-                                AdvanceLetterTemplateCZZ.TestField("Advance Letter Cr. Memo Nos.");
-                                VATDocumentNo := NoSeriesManagement.GetNextNo(AdvanceLetterTemplateCZZ."Advance Letter Cr. Memo Nos.", PostingDate, true);
-                            end;
+                            AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
+                            AdvanceLetterTemplateCZZ.TestField("Advance Letter Cr. Memo Nos.");
+                            VATDocumentNo := NoSeriesManagement.GetNextNo(AdvanceLetterTemplateCZZ."Advance Letter Cr. Memo Nos.", PostingDate, true);
                         end;
 
                         SalesAdvLetterHeaderCZZ.Get(SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
@@ -1503,7 +1507,8 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                         GenJournalLine."Document No." := VATDocumentNo;
                         GenJournalLine."Posting Date" := PostingDate;
                         GenJournalLine."Document Date" := PostingDate;
-                        GenJournalLine."VAT Date CZL" := VATDate;
+                        GenJournalLine.Validate("VAT Date CZL", VATDate);
+                        GenJournalLine.Validate("Original Doc. VAT Date CZL", OriginalDocumentVATDate);
                         GenJournalLine."Adv. Letter No. (Entry) CZZ" := SalesAdvLetterEntryCZZ."Sales Adv. Letter No.";
                         GenJournalLine."Use Advance G/L Account CZZ" := true;
                         GenJournalLine.SetCurrencyFactor(SalesAdvLetterEntryCZZ."Currency Code", CurrencyFactor);
@@ -1539,7 +1544,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                         GenJournalLine."Document No." := VATDocumentNo;
                         GenJournalLine."Posting Date" := PostingDate;
                         GenJournalLine."Document Date" := PostingDate;
-                        GenJournalLine."VAT Date CZL" := VATDate;
+                        GenJournalLine.Validate("VAT Date CZL", VATDate);
                         GenJournalLine.SetCurrencyFactor(SalesAdvLetterEntryCZZ."Currency Code", CurrencyFactor);
                         GenJournalLine.Validate(Amount, -RemAmount);
                         OnBeforePostClosePaymentRepos(GenJournalLine, SalesAdvLetterHeaderCZZ);
@@ -1945,7 +1950,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 GenJournalLine.Init();
                 GenJournalLine."Document No." := DetailedCustLedgEntry1."Document No.";
                 GenJournalLine."Posting Date" := DetailedCustLedgEntry1."Posting Date";
-                GenJournalLine."VAT Date CZL" := GenJournalLine."Posting Date";
+                GenJournalLine.Validate("VAT Date CZL", GenJournalLine."Posting Date");
                 GenJournalLine."Account Type" := GenJournalLine."Account Type"::Customer;
                 GenJournalLine."Account No." := DetailedCustLedgEntry1."Customer No.";
                 GenJournalLine.Correction := true;

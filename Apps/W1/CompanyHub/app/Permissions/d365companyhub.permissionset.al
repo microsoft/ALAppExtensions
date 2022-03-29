@@ -7,6 +7,8 @@ permissionset 2143 "D365 COMPANY HUB"
 {
     Assignable = true;
 
+    IncludedPermissionSets = "Company Hub - Objects";
+
     Permissions = tabledata "COHUB Company Endpoint" = RIMD,
                   tabledata "COHUB Company KPI" = RIMD,
                   tabledata "COHUB Enviroment" = RIMD,

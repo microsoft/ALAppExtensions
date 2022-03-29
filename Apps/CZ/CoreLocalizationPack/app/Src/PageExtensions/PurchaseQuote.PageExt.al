@@ -2,6 +2,7 @@ pageextension 11737 "Purchase Quote CZL" extends "Purchase Quote"
 {
     layout
     {
+        movelast(General; "Posting Description")
         addlast("Invoice Details")
         {
             field("Last Unreliab. Check Date CZL"; Rec."Last Unreliab. Check Date CZL")
@@ -14,9 +15,11 @@ pageextension 11737 "Purchase Quote CZL" extends "Purchase Quote"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies if the vendor is unreliabe payer.';
             }
-        }
-        addafter("VAT Registration No.")
-        {
+            field("VAT Registration No. CZL"; Rec."VAT Registration No.")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+            }
             field("Registration No. CZL"; Rec."Registration No. CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -29,8 +32,18 @@ pageextension 11737 "Purchase Quote CZL" extends "Purchase Quote"
                 Importance = Additional;
             }
         }
-        addafter("Area")
+        addlast("Foreign Trade")
         {
+            field("Language Code CZL"; Rec."Language Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the language to be used on printouts for this document.';
+            }
+            field("VAT Country/Region Code CZL"; Rec."VAT Country/Region Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT country/region code of customer.';
+            }
             field("EU 3-Party Trade CZL"; Rec."EU 3-Party Trade CZL")
             {
                 ApplicationArea = BasicEU;
@@ -38,8 +51,20 @@ pageextension 11737 "Purchase Quote CZL" extends "Purchase Quote"
             }
             field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
             {
-                ApplicationArea = BasicEU;
-                ToolTip = 'Specifies when the purchase header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies when the sales header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
+            }
+            field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Transaction';
+                Editable = false;
+                ToolTip = 'Specifies if the entry is an Intrastat transaction.';
+            }
+            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies that entry will be excluded from intrastat.';
             }
         }
         addafter("Foreign Trade")

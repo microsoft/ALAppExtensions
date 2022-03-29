@@ -205,30 +205,34 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         DimensionManagement.ShowDimensionSet("Dimension Set ID", StrSubstNo(DimensionSetCaptionTok, TableCaption, "Entry No."));
     end;
 
-    procedure PrintRecord(ShowDialog: Boolean)
+    procedure PrintRecords(ShowRequestPage: Boolean)
     var
-        SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
-        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
-        AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
-        PrintReportID: Integer;
+        DocumentSendingProfile: Record "Document Sending Profile";
+        DummyReportSelections: Record "Report Selections";
+        IsHandled: Boolean;
     begin
-        SalesAdvLetterEntryCZZ.Copy(Rec);
-        if not SalesAdvLetterEntryCZZ.FindSet() then
-            exit;
+        IsHandled := false;
+        OnBeforePrintRecords(DummyReportSelections, Rec, ShowRequestPage, IsHandled);
+        if not IsHandled then
+            DocumentSendingProfile.TrySendToPrinter(
+              DummyReportSelections.Usage::"Sales Advance VAT Document CZZ".AsInteger(), Rec, 0, ShowRequestPage);
+    end;
 
-        SalesAdvLetterHeaderCZZ.Get(SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
-        AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
-        AdvanceLetterTemplateCZZ.TestField("Invoice/Cr. Memo Report ID");
-        if SalesAdvLetterEntryCZZ.Count() > 1 then begin
-            PrintReportID := AdvanceLetterTemplateCZZ."Invoice/Cr. Memo Report ID";
-            SalesAdvLetterEntryCZZ.Next();
-            repeat
-                SalesAdvLetterHeaderCZZ.Get(SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
-                AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
-                AdvanceLetterTemplateCZZ.TestField("Invoice/Cr. Memo Report ID", PrintReportID);
-            until SalesAdvLetterEntryCZZ.Next() = 0;
-        end;
-        Report.Run(AdvanceLetterTemplateCZZ."Invoice/Cr. Memo Report ID", ShowDialog, false, SalesAdvLetterEntryCZZ);
+    procedure EmailRecords(ShowDialog: Boolean)
+    var
+        DocumentSendingProfile: Record "Document Sending Profile";
+        DummyReportSelections: Record "Report Selections";
+        ReportDistributionManagement: Codeunit "Report Distribution Management";
+        DocumentTypeTxt: Text[50];
+        IsHandled: Boolean;
+    begin
+        DocumentTypeTxt := ReportDistributionManagement.GetFullDocumentTypeText(Rec);
+
+        IsHandled := false;
+        OnBeforeEmailRecords(DummyReportSelections, Rec, DocumentTypeTxt, ShowDialog, IsHandled);
+        if not IsHandled then
+            DocumentSendingProfile.TrySendToEMail(
+              DummyReportSelections.Usage::"Sales Advance VAT Document CZZ".AsInteger(), Rec, FieldNo("Document No."), DocumentTypeTxt, 0, ShowDialog);
     end;
 
     procedure CalcUsageVATAmountLines(var SalesInvoiceHeader: Record "Sales Invoice Header"; var VATAmountLine: Record "VAT Amount Line")
@@ -255,5 +259,15 @@ table 31006 "Sales Adv. Letter Entry CZZ"
                     VATAmountLine."Line Amount" := VATAmountLine."VAT Base";
                 VATAmountLine.InsertLine();
             until SalesAdvLetterEntryCZZ.Next() = 0;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePrintRecords(var ReportSelections: Record "Report Selections"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeEmailRecords(var ReportSelections: Record "Report Selections"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; DocTxt: Text; ShowDialog: Boolean; var IsHandled: Boolean)
+    begin
     end;
 }

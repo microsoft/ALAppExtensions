@@ -262,6 +262,23 @@ page 18358 "Service Transfer Order"
                         Codeunit.Run(Codeunit::"Service Transfer Post", Rec);
                     end;
                 }
+                action(Preview)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Preview Posting';
+                    Image = ViewPostedOrder;
+                    Promoted = true;
+                    PromotedCategory = Category5;
+                    ShortCutKey = 'Ctrl+Alt+F9';
+                    ToolTip = 'Review the different types of entries that will be created when you post the document or journal.';
+
+                    trigger OnAction()
+                    var
+                        ServTransferPost: Codeunit "Service Transfer Post";
+                    begin
+                        ServTransferPost.PreviewDocument(Rec);
+                    end;
+                }
             }
         }
     }

@@ -1,4 +1,4 @@
-codeunit 11710 "Data Class. Eval. Handler CZL"
+codeunit 11710 "Data Class. Eval. Handler CZL"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Class. Eval. Data Country", 'OnAfterClassifyCountrySpecificTables', '', false, false)]
     local procedure ApplyEvaluationClassificationsForPrivacyOnAfterClassifyCountrySpecificTables()
@@ -28,6 +28,9 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         GenJournalLine: Record "Gen. Journal Line";
         GenJournalTemplate: Record "Gen. Journal Template";
         GLAccount: Record "G/L Account";
+#pragma warning disable AL0432
+        GLAccountNetChange: Record "G/L Account Net Change";
+#pragma warning restore AL0432
         GLEntry: Record "G/L Entry";
         InventoryPostingSetup: Record "Inventory Posting Setup";
         InventorySetup: Record "Inventory Setup";
@@ -131,6 +134,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Commodity Setup CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Company Official CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Constant Symbol CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Cross Application Buffer CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Document Footer CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"EET Service Setup CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"EET Business Premises CZL");
@@ -264,6 +268,10 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Account", GLAccount.FieldNo("Net Change (VAT Date) CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Account", GLAccount.FieldNo("Debit Amount (VAT Date) CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Account", GLAccount.FieldNo("Credit Amount (VAT Date) CZL"));
+#pragma warning disable AL0432
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Account Type CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Account No. CZL"));
+#pragma warning restore AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("VAT Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Posting Setup", InventoryPostingSetup.FieldNo("Consumption Account CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Posting Setup", InventoryPostingSetup.FieldNo("Change In Inv.Of WIP Acc. CZL"));
@@ -274,6 +282,8 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Post Exp.Cost Conv.As Corr.CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Post Neg.Transf. As Corr.CZL"));
 #pragma warning disable AL0432
+        DataClassificationMgt.SetFieldToNormal(Database::"Invoice Post. Buffer", InvoicePostBuffer.FieldNo("Ext. Amount CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Invoice Post. Buffer", InvoicePostBuffer.FieldNo("Ext. Amount Incl. VAT CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Invoice Post. Buffer", InvoicePostBuffer.FieldNo("VAT Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Invoice Post. Buffer", InvoicePostBuffer.FieldNo("Correction CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Invoice Post. Buffer", InvoicePostBuffer.FieldNo("Original Doc. VAT Date CZL"));
@@ -381,6 +391,8 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header Archive", PurchaseHeaderArchive.FieldNo("EU 3-Party Intermed. Role CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header Archive", PurchaseHeaderArchive.FieldNo("EU 3-Party Trade CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Negative CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Ext. Amount CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Ext. Amount Incl. VAT CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Physical Transfer CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Tariff No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Statistic Indication CZL"));

@@ -57,11 +57,11 @@ page 30006 "APIV2 - Aut. Extension Upload"
     procedure Upload(var ActionContext: WebServiceActionContext)
     var
         ExtensionManagement: Codeunit "Extension Management";
-        FileStream: InStream;
+        FileInStream: InStream;
     begin
         if Content.HasValue() then begin
-            Content.CreateInStream(FileStream);
-            ExtensionManagement.UploadExtensionToVersion(FileStream, GlobalLanguage(), Rec.Schedule);
+            Content.CreateInStream(FileInStream);
+            ExtensionManagement.UploadExtensionToVersion(FileInStream, GlobalLanguage(), Rec.Schedule);
             Delete();
         end else
             Error(ExtensionContentEmptyErr);

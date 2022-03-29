@@ -9,6 +9,8 @@ permissionset 11750 "CZ Advance Payments - Read CZZ"
     Assignable = false;
     Caption = 'CZ Advance Payments - Read';
 
+    IncludedPermissionSets = "CZ Advance Payments - Obj. CZZ";
+
     Permissions = tabledata "Advance Letter Application CZZ" = R,
                   tabledata "Advance Letter Link Buffer CZZ" = R,
                   tabledata "Advance Letter Template CZZ" = R,

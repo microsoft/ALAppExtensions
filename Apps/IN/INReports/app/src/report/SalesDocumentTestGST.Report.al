@@ -1230,7 +1230,7 @@ report 18023 "Sales Document - Test GST"
                                 if not DimMgt.CheckDimIDComb("Sales Line"."Dimension Set ID") then
                                     AddError(DimMgt.GetDimCombErr());
 
-                                TableID[1] := DimMgt.TypeToTableID3(GetSalesLineType("Sales Line"));
+                                TableID[1] := DimMgt.SalesLineTypeToTableID("Sales Line".Type);
                                 No[1] := "Sales Line"."No.";
                                 TableID[2] := Database::Job;
                                 No[2] := "Sales Line"."Job No.";
@@ -2208,27 +2208,23 @@ report 18023 "Sales Document - Test GST"
     procedure AddDimToTempLine(SalesLine: Record "Sales Line")
     var
         SourceCodeSetup: Record "Source Code Setup";
-        TableID: array[10] of Integer;
-        No: array[10] of Code[20];
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
     begin
         SourceCodeSetup.Get();
-        TableID[1] := DimMgt.TypeToTableID3(GetSalesLineType("Sales Line"));
-        No[1] := SalesLine."No.";
-        TableID[2] := Database::Job;
-        No[2] := SalesLine."Job No.";
-        TableID[3] := Database::"Responsibility Center";
-        No[3] := SalesLine."Responsibility Center";
+        DimMgt.AddDimSource(DefaultDimSource, DimMgt.SalesLineTypeToTableID(SalesLine.Type), SalesLine."No.");
+        DimMgt.AddDimSource(DefaultDimSource, Database::Job, SalesLine."Job No.");
+        DimMgt.AddDimSource(DefaultDimSource, Database::"Responsibility Center", SalesLine."Responsibility Center");
 
         SalesLine."Shortcut Dimension 1 Code" := '';
         SalesLine."Shortcut Dimension 2 Code" := '';
-        SalesLine."Dimension Set ID" := DimMgt.GetDefaultDimID(
-            TableID,
-            No,
-            SourceCodeSetup.Sales,
-            SalesLine."Shortcut Dimension 1 Code",
-            SalesLine."Shortcut Dimension 2 Code",
-            SalesLine."Dimension Set ID",
-            Database::Customer);
+        SalesLine."Dimension Set ID" :=
+            DimMgt.GetDefaultDimID(
+                DefaultDimSource,
+                SourceCodeSetup.Sales,
+                SalesLine."Shortcut Dimension 1 Code",
+                SalesLine."Shortcut Dimension 2 Code",
+                SalesLine."Dimension Set ID",
+                Database::Customer);
     end;
 
     procedure FilterAppliedEntries()
@@ -2840,24 +2836,6 @@ report 18023 "Sales Document - Test GST"
                 else
                     exit(true);
         exit(true);
-    end;
-
-    local procedure GetSalesLineType(var SalesLine: Record "Sales Line"): Integer
-    begin
-        case SalesLine.Type of
-            SalesLine.Type::" ":
-                exit(0);
-            SalesLine.Type::"G/L Account":
-                exit(1);
-            SalesLine.Type::Item:
-                exit(2);
-            SalesLine.Type::Resource:
-                exit(3);
-            SalesLine.Type::"Fixed Asset":
-                exit(4);
-            SalesLine.Type::"Charge (Item)":
-                exit(5);
-        end;
     end;
 
     local procedure GetDimensionText(

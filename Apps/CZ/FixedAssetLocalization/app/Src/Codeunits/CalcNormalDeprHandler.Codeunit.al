@@ -6,11 +6,11 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
         DepreciationCalculation: Codeunit "Depreciation Calculation";
         AcquisitionDate: Date;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnAfterTransferValues', '', false, false)]
-    local procedure SetTaxDepreciationOnAfterTransferValues(FADepreciationBook: Record "FA Depreciation Book"; var DeprMethod: Option)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnAfterTransferValues2', '', false, false)]
+    local procedure SetTaxDepreciationOnAfterTransferValues(FADepreciationBook: Record "FA Depreciation Book"; var DeprMethod: Enum "FA Depr. Method Internal")
     begin
         if IsTaxDeprBook(FADepreciationBook) then
-            DeprMethod := 31240;  // Tax Depreciations
+            DeprMethod := Enum::"FA Depr. Method Internal".FromInteger(31240);  // Tax Depreciations
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnCalculateDeprAmountOnDeprMethodCaseLastEntry', '', false, false)]

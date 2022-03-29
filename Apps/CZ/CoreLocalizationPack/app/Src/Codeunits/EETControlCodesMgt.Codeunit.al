@@ -62,10 +62,9 @@ codeunit 31099 "EET Control Codes Mgt. CZL"
     [NonDebuggable]
     local procedure SignText(InputString: Text; IsolatedCertificate: Record "Isolated Certificate"; SignatureOutStream: OutStream)
     var
-        CertificateManagement: Codeunit "Certificate Management";
         EETTextSignProviderCZL: Codeunit "EET Text Sign. Provider CZL";
     begin
-        CertificateManagement.SignData(InputString, SignatureOutStream, IsolatedCertificate, EETTextSignProviderCZL);
+        EETTextSignProviderCZL.SignData(InputString, IsolatedCertificate, SignatureOutStream);
     end;
 
     local procedure InitBlob()

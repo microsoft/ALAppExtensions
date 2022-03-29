@@ -112,6 +112,20 @@ page 31161 "Cash Document Subform CZP"
                     BlankZero = true;
                     ToolTip = 'Specifies whether the unit price on the line should be displayed including or excluding VAT.';
                 }
+                field(RelatedAmountToApply; Rec.CalcRelatedAmountToApply())
+                {
+                    Caption = 'Related Amount to Apply (LCY)';
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the total Amount (LCY) related suggestions to apply.';
+                    BlankZero = true;
+                    Visible = false;
+
+                    trigger OnDrillDown()
+                    begin
+                        Rec.DrillDownRelatedAmountToApply();
+                    end;
+                }
                 field("Shortcut Dimension 1 Code"; Rec."Shortcut Dimension 1 Code")
                 {
                     ApplicationArea = Dimensions;

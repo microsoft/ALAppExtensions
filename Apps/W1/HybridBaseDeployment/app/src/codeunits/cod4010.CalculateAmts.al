@@ -14,38 +14,38 @@ codeunit 4010 CalculateAmounts
 
     procedure CashAvailable(): Decimal;
     var
-        AccountCategory: Record "G/L Account Category";
+        GLAccountCategory: Record "G/L Account Category";
     begin
-        AccountCategory.SetRange(Description, CashDescriptionTxt);  // Note, the description must be 'Cash'
-        if AccountCategory.Find('-') then
-            exit(AccountCategory.GetBalance());
+        GLAccountCategory.SetRange(Description, CashDescriptionTxt);  // Note, the description must be 'Cash'
+        if GLAccountCategory.Find('-') then
+            exit(GLAccountCategory.GetBalance());
     end;
 
     procedure SalesProfitability(var NetIncome: Decimal): Decimal;
     var
-        AccountCategoryIncome: Record "G/L Account Category";
-        AccountCategoryCOGS: Record "G/L Account Category";
-        AccountCategoryExpense: Record "G/L Account Category";
+        GLAccountCategoryIncome: Record "G/L Account Category";
+        GLAccountCategoryCOGS: Record "G/L Account Category";
+        GLAccountCategoryExpense: Record "G/L Account Category";
         Income: Decimal;
         COGS: Decimal;
         Expense: Decimal;
 
     begin
-        AccountCategoryIncome.SetRange("Account Category", AccountCategoryIncome."Account Category"::Income);
-        AccountCategoryIncome.SetRange(Indentation, 0);
-        if AccountCategoryIncome.Find('-') then;
+        GLAccountCategoryIncome.SetRange("Account Category", GLAccountCategoryIncome."Account Category"::Income);
+        GLAccountCategoryIncome.SetRange(Indentation, 0);
+        if GLAccountCategoryIncome.Find('-') then;
 
-        AccountCategoryCOGS.SetRange("Account Category", AccountCategoryCOGS."Account Category"::"Cost of Goods Sold");
-        AccountCategoryCOGS.SetRange(Indentation, 0);
-        if AccountCategoryCOGS.Find('-') then;
+        GLAccountCategoryCOGS.SetRange("Account Category", GLAccountCategoryCOGS."Account Category"::"Cost of Goods Sold");
+        GLAccountCategoryCOGS.SetRange(Indentation, 0);
+        if GLAccountCategoryCOGS.Find('-') then;
 
-        AccountCategoryExpense.SetRange("Account Category", AccountCategoryExpense."Account Category"::Expense);
-        AccountCategoryExpense.SetRange(Indentation, 0);
-        if AccountCategoryExpense.Find('-') then;
+        GLAccountCategoryExpense.SetRange("Account Category", GLAccountCategoryExpense."Account Category"::Expense);
+        GLAccountCategoryExpense.SetRange(Indentation, 0);
+        if GLAccountCategoryExpense.Find('-') then;
 
-        Income := -AccountCategoryIncome.GetBalance();
-        COGS := -AccountCategoryCOGS.GetBalance();
-        Expense := -AccountCategoryExpense.GetBalance();
+        Income := -GLAccountCategoryIncome.GetBalance();
+        COGS := -GLAccountCategoryCOGS.GetBalance();
+        Expense := -GLAccountCategoryExpense.GetBalance();
         NetIncome := Income + COGS + Expense;
 
         if Income <> 0 then
@@ -54,11 +54,11 @@ codeunit 4010 CalculateAmounts
 
     procedure InventoryValue(): Decimal;
     var
-        AccountCategory: Record "G/L Account Category";
+        GLAccountCategory: Record "G/L Account Category";
     begin
-        AccountCategory.SetRange(Description, InventoryDescriptionTxt);  // Note, the description must be 'Inventory'
-        if AccountCategory.Find('-') then
-            exit(AccountCategory.GetBalance());
+        GLAccountCategory.SetRange(Description, InventoryDescriptionTxt);  // Note, the description must be 'Inventory'
+        if GLAccountCategory.Find('-') then
+            exit(GLAccountCategory.GetBalance());
     end;
 
     procedure NumOfOverDueSalesInvoice(): text;
@@ -111,12 +111,12 @@ codeunit 4010 CalculateAmounts
 
     procedure NumOfPurchInvoicesDueThisWeek(): text;
     var
-        VendLedgerEntry: Record "Vendor Ledger Entry";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin
-        VendLedgerEntry.SetRange("Document Type", VendLedgerEntry."Document Type"::Invoice);
-        VendLedgerEntry.SetRange(Open, true);
-        VendLedgerEntry.SetFilter("Due Date", '%1..%2', CALCDATE('<0D>', WorkDate()), CALCDATE('<6D>', workdate()));
-        exit(StrSubstNo(PurchInvoicesDueThisWeekTxt, VendLedgerEntry.Count()));
+        VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Invoice);
+        VendorLedgerEntry.SetRange(Open, true);
+        VendorLedgerEntry.SetFilter("Due Date", '%1..%2', CALCDATE('<0D>', WorkDate()), CALCDATE('<6D>', workdate()));
+        exit(StrSubstNo(PurchInvoicesDueThisWeekTxt, VendorLedgerEntry.Count()));
     end;
 
     procedure DrillDownNumOfPurchInvoicesDueThisWeek()

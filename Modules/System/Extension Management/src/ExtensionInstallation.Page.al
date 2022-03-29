@@ -51,13 +51,13 @@ page 2503 "Extension Installation"
 
     local procedure GetDetailsFromFilters()
     var
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         i: Integer;
     begin
-        RecRef.GetTable(Rec);
-        for i := 1 to RecRef.FieldCount() do
-            ParseFilter(RecRef.FieldIndex(i));
-        RecRef.SetTable(Rec);
+        RecordRef.GetTable(Rec);
+        for i := 1 to RecordRef.FieldCount() do
+            ParseFilter(RecordRef.FieldIndex(i));
+        RecordRef.SetTable(Rec);
     end;
 
     local procedure ParseFilter(FieldRef: FieldRef)

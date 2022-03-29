@@ -444,12 +444,12 @@ codeunit 139656 "Hybrid Cloud Management Tests"
     local procedure InsertNotification(SubscriptionID: Text[50]; Body: Text)
     var
         WebhookNotification: Record "Webhook Notification";
-        NotificationStream: OutStream;
+        NotificationOutStream: OutStream;
     begin
         WebhookNotification.Init();
         WebhookNotification."Subscription ID" := SubscriptionID;
-        WebhookNotification.Notification.CreateOutStream(NotificationStream);
-        NotificationStream.WriteText(Body);
+        WebhookNotification.Notification.CreateOutStream(NotificationOutStream);
+        NotificationOutStream.WriteText(Body);
         WebhookNotification.Insert();
     end;
 }

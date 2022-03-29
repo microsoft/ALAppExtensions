@@ -11,7 +11,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
         dataitem(Vendor; Vendor)
         {
             DataItemTableView = SORTING("No.");
-            RequestFilterFields = "No.", "Print Statements", Blocked;
+            RequestFilterFields = "No.", Blocked;
             column(WORKDATE; Format(WorkDate()))
             {
             }
@@ -376,7 +376,8 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
             trigger OnAfterGetRecord()
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
-
+#if not CLEAN20
+#pragma warning disable AL0432
                 if not CurrReport.Preview() then begin
                     LockTable();
                     Find();
@@ -386,6 +387,8 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
                     Commit();
                 end else
                     "Last Statement No." += 1;
+#pragma warning restore AL0432
+#endif
 
                 if IncludeCustBalance then
                     CustomerNo := GetLinkedCustomerCZL()

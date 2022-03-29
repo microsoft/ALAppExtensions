@@ -145,6 +145,11 @@ table 18006 "GST Posting Buffer"
             Caption = 'No.';
             DataClassification = SystemMetadata;
         }
+        field(27; "External Document No."; Code[40])
+        {
+            Caption = 'External Document No.';
+            DataClassification = SystemMetadata;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';

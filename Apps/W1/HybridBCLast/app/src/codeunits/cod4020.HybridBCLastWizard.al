@@ -19,6 +19,16 @@ codeunit 4020 "Hybrid BC Last Wizard"
         exit(CopyStr(Name, 1, 250));
     end;
 
+    procedure IsBCLastMigration(): Boolean
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if not (IntelligentCloudSetup.Get()) then
+            exit(false);
+
+        exit(CanHandle(IntelligentCloudSetup."Product ID"));
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductDescription', '', false, false)]
     local procedure HandleGetHybridProductDescription(ProductId: Text; var ProductDescription: Text)
     begin

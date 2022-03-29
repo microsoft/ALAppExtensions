@@ -23,5 +23,14 @@ pageextension 31122 "Posted Purch. CM Subform CZL" extends "Posted Purch. Cr. Me
                 Visible = false;
             }
         }
+        addafter("FA Posting Type")
+        {
+            field("Maintenance Code CZL"; Rec."Maintenance Code")
+            {
+                ApplicationArea = Suite;
+                ToolTip = 'Specifies a maintenance code.';
+                Visible = false;
+            }
+        }
     }
 }

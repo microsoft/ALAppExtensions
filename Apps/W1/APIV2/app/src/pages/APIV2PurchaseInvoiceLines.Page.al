@@ -279,7 +279,7 @@ page 30047 "APIV2 - Purchase Invoice Lines"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(11);
+                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Purchase Invoice Line");
                 }
                 part(location; "APIV2 - Locations")
                 {
@@ -390,16 +390,5 @@ page 30047 "APIV2 - Purchase Invoice Lines"
         TempItemFieldSet.DeleteAll();
 
         Clear(Item);
-    end;
-
-    local procedure RegisterItemFieldSet(FieldNo: Integer)
-    begin
-        if TempItemFieldSet.Get(Database::Item, FieldNo) then
-            exit;
-
-        TempItemFieldSet.Init();
-        TempItemFieldSet.TableNo := Database::Item;
-        TempItemFieldSet.Validate("No.", FieldNo);
-        TempItemFieldSet.Insert(true);
     end;
 }

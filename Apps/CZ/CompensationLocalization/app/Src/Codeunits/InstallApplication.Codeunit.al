@@ -305,7 +305,7 @@ codeunit 31270 "Install Application CZC"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure CompanyInitialize()
     var
-        DataClassEvalHandlerCZC: Codeunit "Data Class. Eval. Handler CZC";
+        DataClassEvalHandlerCZC: Codeunit "Data Class. Eval. Handler CZC";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         InitCompensationsSetup();
@@ -364,13 +364,13 @@ codeunit 31270 "Install Application CZC"
 
     local procedure InitCompensationReportSelections()
     var
-        ReportUsage: Enum "Compens. Report Sel. Usage CZC";
+        ReportUsage: Enum "Compens. Report Sel. Usage CZC";
     begin
         InsertCompensationReportSelectionsCZC(ReportUsage::"Compensation", '1', Report::"Compensation CZC");
         InsertCompensationReportSelectionsCZC(ReportUsage::"Posted Compensation", '1', Report::"Posted Compensation CZC");
     end;
 
-    local procedure InsertCompensationReportSelectionsCZC(ReportUsage: Enum "Compens. Report Sel. Usage CZC"; ReportSequence: Code[10]; ReportID: Integer)
+    local procedure InsertCompensationReportSelectionsCZC(ReportUsage: Enum "Compens. Report Sel. Usage CZC"; ReportSequence: Code[10]; ReportID: Integer)
     var
         CompensReportSelectionsCZC: Record "Compens. Report Selections CZC";
     begin

@@ -16,6 +16,7 @@ codeunit 9027 "Plan Ids"
     end;
 
     var
+        M365CollaborationPlanGUIDTxt: Label '{57ff2da0-773e-42df-b2af-ffb7a2317929}', Locked = true;
         TeamMemberPlanGUIDTxt: Label '{d9a6391b-8970-4976-bd94-5f205007c8d8}', Locked = true;
         EssentialPlanGUIDTxt: Label '{920656a2-7dd8-4c83-97b6-a356414dbd36}', Locked = true;
         PremiumPlanGUIDTxt: Label '{8e9002c0-a1d8-4465-b952-817d2948e6e2}', Locked = true;
@@ -29,6 +30,7 @@ codeunit 9027 "Plan Ids"
         BasicPlanGUIDTxt: Label '{2ec8b6ca-ab13-4753-a479-8c2ffe4c323b}', Locked = true;
         AccountantHubPlanGuidTxt: Label '{5d60ea51-0053-458f-80a8-b6f426a1a0c1}', Locked = true;
         InfrastructurePlanGuidTxt: Label '{996DEF3D-B36C-4153-8607-A6FD3C01B89F}', Locked = true;
+        PremiumPartnerSandboxPlanGuidTxt: Label '{37b1c04b-a429-4139-a15e-067784a80a55}', Locked = true;
 #pragma warning disable AA0240
         DelegatedAdminGUIDTxt: Label '{00000000-0000-0000-0000-000000000007}', Locked = true;
         InternalAdminGUIDTxt: Label '{62e90394-69f5-4237-9190-012177145e10}', Locked = true;
@@ -52,6 +54,15 @@ codeunit 9027 "Plan Ids"
     procedure GetTeamMemberPlanId(): Guid
     begin
         exit(TeamMemberPlanGUIDTxt);
+    end;
+
+    /// <summary>
+    /// Returns the ID for the Microsoft 365 Collaboration plan.
+    /// </summary>
+    /// <returns>The ID for the Microsoft 365 Collaboration plan.</returns>
+    procedure GetM365CollaborationPlanId(): Guid
+    begin
+        exit(M365CollaborationPlanGUIDTxt);
     end;
 
     /// <summary>
@@ -196,5 +207,14 @@ codeunit 9027 "Plan Ids"
     procedure GetInfrastructurePlanId(): Guid
     begin
         exit(InfrastructurePlanGuidTxt);
+    end;
+
+    /// <summary>
+    /// Returns the ID for the D365 Business Central Premium Partner Sandbox plan.
+    /// </summary>
+    /// <returns>The ID for the D365 Business Central Premium Partner Sandbox plan.</returns>
+    procedure GetPremiumPartnerSandboxPlanId(): Guid
+    begin
+        exit(PremiumPartnerSandboxPlanGuidTxt);
     end;
 }

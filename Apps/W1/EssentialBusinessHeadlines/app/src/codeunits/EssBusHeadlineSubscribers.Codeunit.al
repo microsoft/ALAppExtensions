@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-
 codeunit 1438 "Ess. Bus. Headline Subscribers"
 {
 
@@ -14,18 +13,32 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
         exit(Session.GetExecutionContext() = Session.GetExecutionContext() ::Normal);
     end;
 
+#if not CLEAN19
+#pragma warning disable AS0072, AS0022, AS0018
+    [Obsolete('My Settings has been obsoleted', '19.0')]
     [EventSubscriber(ObjectType::Page, Page::"My Settings", 'OnBeforeLanguageChange', '', true, true)]
     procedure OnBeforeUpdateLanguage(OldLanguageId: Integer; NewLanguageId: Integer);
     begin
         InvalidateHeadlines();
     end;
 
+    [Obsolete('My Settings has been obsoleted', '19.0')]
     [EventSubscriber(ObjectType::Page, Page::"My Settings", 'OnBeforeWorkdateChange', '', true, true)]
     procedure OnBeforeUpdateWorkdate(OldWorkdate: Date; NewWorkdate: Date);
     begin
         InvalidateHeadlines();
     end;
-
+#pragma warning restore
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"User Settings", 'OnUpdateUserSettings', '', true, true)]
+    local procedure OnBeforeUpdateUserSettings(NewSettings: Record "User Settings"; OldSettings: Record "User Settings");
+    begin
+        if (OldSettings."Language ID" <> NewSettings."Language ID") or
+           (OldSettings."Work Date" <> NewSettings."Work Date")
+        then
+            InvalidateHeadlines();
+    end;
+#endif
     local procedure InvalidateHeadlines()
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";

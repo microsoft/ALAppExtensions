@@ -66,30 +66,30 @@ codeunit 600 "Data Archive"
     /// <summary> 
     /// Saves the supplied record to the currently open archive entry.
     /// </summary>
-    /// <param name="RecordVar">The record will be copied to the archive.</param>
+    /// <param name="RecordVariant">The record will be copied to the archive.</param>
     /// <error>The archive must be created or opened first.</error>
-    procedure SaveRecord(RecordVar: Variant);
+    procedure SaveRecord(RecordVariant: Variant);
     begin
-        DataArchiveImplementation.SaveRecord(RecordVar);
+        DataArchiveImplementation.SaveRecord(RecordVariant);
     end;
-    
+
     /// <summary> 
     /// Saves the supplied record to the currently open archive entry.
     /// </summary>
-    /// <param name="RecRef">The record will be copied to the archive.</param>
+    /// <param name="RecordRef">The record will be copied to the archive.</param>
     /// <error>The archive must be created or opened first.</error>
-    procedure SaveRecord(var RecRef: RecordRef)
+    procedure SaveRecord(var RecordRef: RecordRef)
     begin
-        DataArchiveImplementation.SaveRecord(RecRef);
+        DataArchiveImplementation.SaveRecord(RecordRef);
     end;
 
     /// <summary> 
     /// Saves all records within the filters to the currently open archive entry.
     /// </summary>
     /// <error>The archive must be created or opened first.</error>
-    procedure SaveRecords(var RecRef: RecordRef)
+    procedure SaveRecords(var RecordRef: RecordRef)
     begin
-        DataArchiveImplementation.SaveRecords(RecRef);
+        DataArchiveImplementation.SaveRecords(RecordRef);
     end;
 
     /// <summary> 
@@ -130,7 +130,7 @@ codeunit 600 "Data Archive"
     /// </summary>
     /// <param name="Exists">A subscriber should set the value to true if it is an implementation of IDataArchiveProvider.</param>
     procedure SetDataArchiveProvider(var NewDataArchiveProvider: Interface "Data Archive Provider")
-    begin 
+    begin
         DataArchiveImplementation.SetDataArchiveProvider(NewDataArchiveProvider);
     end;
 

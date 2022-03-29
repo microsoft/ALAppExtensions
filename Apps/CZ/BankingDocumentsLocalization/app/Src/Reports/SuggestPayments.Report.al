@@ -13,7 +13,11 @@ report 31280 "Suggest Payments CZB"
 
             dataitem("Cust. Ledger Entry"; "Cust. Ledger Entry")
             {
+#if not CLEAN18
                 DataItemTableView = sorting(Open, "Due Date") where(Open = const(true), "On Hold" = const(''), "Amount on Credit (LCY)" = const(0));
+#else
+                DataItemTableView = sorting(Open, "Due Date") where(Open = const(true), "On Hold" = const(''));
+#endif
 
                 trigger OnPreDataItem()
                 var
@@ -62,7 +66,11 @@ report 31280 "Suggest Payments CZB"
             }
             dataitem("Vendor Ledger Entry"; "Vendor Ledger Entry")
             {
+#if not CLEAN18
                 DataItemTableView = sorting(Open, "Due Date") where(Open = const(true), "On Hold" = const(''), "Amount on Credit (LCY)" = const(0));
+#else
+                DataItemTableView = sorting(Open, "Due Date") where(Open = const(true), "On Hold" = const(''));
+#endif
 
                 trigger OnPreDataItem()
                 var
@@ -113,7 +121,11 @@ report 31280 "Suggest Payments CZB"
             }
             dataitem("Vendor Ledger Entry Disc"; "Vendor Ledger Entry")
             {
+#if not CLEAN18
                 DataItemTableView = sorting(Open, "Due Date") where(Open = const(true), "On Hold" = const(''), "Amount on Credit (LCY)" = const(0));
+#else
+                DataItemTableView = sorting(Open, "Due Date") where(Open = const(true), "On Hold" = const(''));
+#endif
 
                 trigger OnPreDataItem()
                 var

@@ -323,13 +323,11 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
 
         // different vendor
         Assert.ExpectedMessage(
+            ImportFailedTxt + '\\' +
             StrSubstNo(
-                '%1\\%2',
-                ImportFailedTxt,
-                StrSubstNo(
-                    PurchDocDiffVendorMsg,
-                    Vendor[1]."No.", 'CR Name',
-                    Vendor[2]."No.", Vendor[2].Name)),
+                PurchDocDiffVendorMsg,
+                Vendor[1]."No.", 'CR Name',
+                Vendor[2]."No.", Vendor[2].Name),
             LibraryVariableStorage.DequeueText());
         VerifyPurchDoc(PurchaseHeader, false, '', '', 0, '', '', '', '');
 
@@ -372,7 +370,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         ScanToInvoice(PurchaseHeader);
 
         // decode failed
-        Assert.ExpectedMessage(StrSubstNo('%1\\%2', ImportFailedTxt, DecodeFailedTxt), LibraryVariableStorage.DequeueText());
+        Assert.ExpectedMessage(ImportFailedTxt + '\\' + DecodeFailedTxt, LibraryVariableStorage.DequeueText());
         VerifyPurchDoc(PurchaseHeader, false, '', '', 0, '', '', '', '');
 
         LibraryVariableStorage.AssertEmpty();
@@ -898,7 +896,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         Assert.IsTrue(ScanToJournal(GenJournalLine), '');
 
         // success scan
-        Assert.ExpectedMessage(StrSubstNo('%1\\%2', ImportSuccessMsg, ScanAnotherQst), LibraryVariableStorage.DequeueText());
+        Assert.ExpectedMessage(ImportSuccessMsg + '\\' + ScanAnotherQst, LibraryVariableStorage.DequeueText());
         VerifyJournalLine(
             GenJournalLine, true, VendorNo, PaymentReference, 'DOCNO123', -123.45, '', VendorBankAccountNo, 'Unstr Msg', BillInfo);
 
@@ -935,12 +933,12 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         Assert.IsTrue(ScanToJournal(GenJournalLine), '');
 
         // success scan
-        Assert.ExpectedMessage(StrSubstNo('%1\\%2', ImportSuccessMsg, ScanAnotherQst), LibraryVariableStorage.DequeueText());
+        Assert.ExpectedMessage(ImportSuccessMsg + '\\' + ScanAnotherQst, LibraryVariableStorage.DequeueText());
         VerifyJournalLine(
             GenJournalLine, true, VendorNo, PaymentReference[1], 'DOCNO1', -100, '', VendorBankAccountNo, 'Unstr Msg 1', 'S1/10/DOCNO1/');
 
         GenJournalLine.Next();
-        Assert.ExpectedMessage(StrSubstNo('%1\\%2', ImportSuccessMsg, ScanAnotherQst), LibraryVariableStorage.DequeueText());
+        Assert.ExpectedMessage(ImportSuccessMsg + '\\' + ScanAnotherQst, LibraryVariableStorage.DequeueText());
         VerifyJournalLine(
             GenJournalLine, true, VendorNo, PaymentReference[2], 'DOCNO2', -200, '', VendorBankAccountNo, 'Unstr Msg 2', 'S1/10/DOCNO2/');
 
@@ -1155,7 +1153,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
             AddMessageText(Result, StrSubstNo(DocumentNoTxt, "No."), '\');
         end;
 
-        exit(StrSubstNo('%1\\%2\\%3', ImportWarningTxt, Result, ContinueQst));
+        exit(ImportWarningTxt + '\\' + Result + '\\' + ContinueQst);
     end;
 
     local procedure CreatePmtReferenceJnlLineMsg(GenJournalLine: Record "Gen. Journal Line") Result: Text
@@ -1172,7 +1170,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
                 AddMessageText(Result, StrSubstNo(JnlLineTxt, "Line No."), '\');
             end;
 
-        exit(StrSubstNo('%1\\%2\\%3', ImportWarningTxt, Result, ContinueQst));
+        exit(ImportWarningTxt + '\\' + Result + '\\' + ContinueQst);
     end;
 
     local procedure CreatePmtReferenceIncDocMsg(IncomingDocument: Record "Incoming Document") Result: Text
@@ -1184,7 +1182,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
             AddMessageText(Result, StrSubstNo(IncDocEntryTxt, "Entry No."), '\');
         end;
 
-        exit(StrSubstNo('%1\\%2\\%3', ImportWarningTxt, Result, ContinueQst));
+        exit(ImportWarningTxt + '\\' + Result + '\\' + ContinueQst);
     end;
 
     local procedure CreatePmtReferenceVLEMsg(VendorLedgerEntry: Record "Vendor Ledger Entry") Result: Text
@@ -1196,12 +1194,12 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
             AddMessageText(Result, StrSubstNo(VendLedgerEntryTxt, "Entry No."), '\');
         end;
 
-        exit(StrSubstNo('%1\\%2\\%3', ImportWarningTxt, Result, ContinueQst));
+        exit(ImportWarningTxt + '\\' + Result + '\\' + ContinueQst);
     end;
 
     local procedure AddMessageText(var TargetMessage: Text; AddText: Text; Sep: Text)
     begin
-        TargetMessage += StrSubstNo('%1%2', Sep, AddText);
+        TargetMessage += Sep + AddText;
     end;
 
     local procedure MockVendorLedgerEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; VendorNo: Code[20]; PaymentReference: Code[50])

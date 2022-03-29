@@ -7,7 +7,8 @@ table 4509 "Email - Outlook API Setup"
 {
     DataClassification = SystemMetadata;
     DataPerCompany = false;
-
+    ReplicateData = false;
+    
     fields
     {
         field(1; Id; Integer)

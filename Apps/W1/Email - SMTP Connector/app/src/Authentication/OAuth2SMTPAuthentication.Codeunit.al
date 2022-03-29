@@ -1,39 +1,16 @@
-codeunit 4516 "OAuth2 SMTP Authentication" implements "SMTP Authentication"
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+codeunit 4516 "OAuth2 SMTP Authentication"
 {
     Access = Internal;
 
     var
-        NoOAuth2ProviderErr: Label 'No extension provided the OAuth 2.0 authentication.';
         CouldNotAuthenticateErr: Label 'Could not authenticate. To resolve the problem, choose the Authenticate action on the SMTP Account page.';
         AuthenticationSuccessfulMsg: Label '%1 was authenticated.', Comment = '%1 - user email, for example, admin@domain.com';
         AuthenticationFailedMsg: Label 'Could not authenticate.';
-
-    procedure Validate(var SMTPAccount: Record "SMTP Account");
-    begin
-        // do nothing
-    end;
-
-    [NonDebuggable]
-    procedure Authenticate(SmtpClient: DotNet SmtpClient; SMTPAccount: Record "SMTP Account");
-    var
-        SMTPConnectorImpl: Codeunit "SMTP Connector Impl.";
-        DotNetSaslMechanismOAuth2: DotNet SaslMechanismOAuth2;
-        CancellationToken: DotNet CancellationToken;
-        AccessToken: Text;
-        UserName: Text;
-    begin
-        // Implement the OAuth 2.0 authentication for SMTP Setup in an Exchange Online mailbox is used.
-        if SMTPAccount.Server = SMTPConnectorImpl.GetO365SmtpServer() then
-            GetOAuth2Credentials(UserName, AccessToken)
-        else
-            OnSMTPOAuth2Authenticate(UserName, AccessToken, SMTPAccount.Server);
-
-        if AccessToken = '' then
-            Error(NoOAuth2ProviderErr);
-
-        DotNetSaslMechanismOAuth2 := DotNetSaslMechanismOAuth2.SaslMechanismOAuth2(UserName, AccessToken);
-        SmtpClient.Authenticate(DotNetSaslMechanismOAuth2, CancellationToken);
-    end;
 
     /// <summary>
     /// Provide the credentials to authenticate using OAuth 2.0 for Exchange Online mailboxes.
@@ -119,15 +96,21 @@ codeunit 4516 "OAuth2 SMTP Authentication" implements "SMTP Authentication"
         UserName := JToken.AsValue().AsText();
     end;
 
-    /// <summary>
-    /// Provide the credentials for SMTP Setup to authenticate using OAuth 2.0.
-    /// </summary>
-    /// <param name="UserName">Authentication user name for SMTP client. Email address of the user who is attempting to authenticate.</param>
-    /// <param name="AccessToken">Acquired access token for SMTP client.</param>
-    /// <param name="SMTPServer">The SMTP server of the SMTP setup.</param>
-    [IntegrationEvent(false, false)]
     [NonDebuggable]
-    local procedure OnSMTPOAuth2Authenticate(var UserName: Text; var AccessToken: Text; SMTPServer: Text)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"SMTP Authentication", 'OnSMTPOAuth2Authenticate', '', false, false)]
+    local procedure OnSMTPOAuth2Authenticate(var Handled: Boolean; var SMTPAuthentication: Codeunit "SMTP Authentication"; SMTPServer: Text)
+    var
+        SMTPConnectorImpl: Codeunit "SMTP Connector Impl.";
+        UserName: Text;
+        AccessToken: Text;
     begin
+        if Handled then
+            exit;
+
+        if SMTPServer = SMTPConnectorImpl.GetO365SmtpServer() then begin
+            GetOAuth2Credentials(UserName, AccessToken);
+            SMTPAuthentication.SetOAuth2AuthInfo(CopyStr(UserName, 1, 250), CopyStr(AccessToken, 1, 250));
+            Handled := true;
+        end;
     end;
 }

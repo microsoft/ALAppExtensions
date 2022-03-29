@@ -14,7 +14,26 @@ codeunit 3960 Regex
         RegexImpl: Codeunit "Regex Impl.";
 
     /// <summary>
-    /// Gets the maximum number of entries in the current static cache of compiled regular expressions
+    /// Initializes a new instance of the Regex class for the specified regular expression.
+    /// </summary>
+    /// <param name="Pattern">A regular expression pattern to match.</param>
+    procedure Regex(Pattern: Text)
+    begin
+        RegexImpl.Regex(Pattern);
+    end;
+
+    /// <summary>
+    /// Initializes a new instance of the Regex class for the specified regular expression, with options that modify the pattern.
+    /// </summary>
+    /// <param name="Pattern">A regular expression pattern to match.</param>
+    /// <param name="RegexOptions">A combination of the enumeration values that modify the regular expression.</param>
+    procedure Regex(Pattern: Text; var RegexOptions: Record "Regex Options")
+    begin
+        RegexImpl.Regex(Pattern, RegexOptions);
+    end;
+
+    /// <summary>
+    /// Gets the maximum number of entries in the current static cache of compiled regular expressions.
     /// </summary>
     /// <returns>The maximum number of entries in the static cache.</returns>
     procedure GetCacheSize(): Integer
@@ -23,7 +42,7 @@ codeunit 3960 Regex
     end;
 
     /// <summary>
-    /// Sets the maximum number of entries in the current static cache of compiled regular expressions
+    /// Sets the maximum number of entries in the current static cache of compiled regular expressions.
     /// </summary>
     /// <param name="CacheSize">The maximum number of entries in the static cache.</param>
     procedure SetCacheSize(CacheSize: Integer)
@@ -82,6 +101,18 @@ codeunit 3960 Regex
     end;
 
     /// <summary>
+    /// Indicates whether the regular expression specified in the Regex constructor finds a match in the input string, beginning at the specified starting position in the string.
+    /// </summary>
+    /// <param name="Input">The string to search for a match.</param>
+    /// <param name="StartAt">The character position at which to start the search.</param>
+    /// <returns>True if the regular expression finds a match; otherwise, false.</returns>
+    /// <error>Regex is not Instantiated. Consider calling Regex() first or use an overload supporting a pattern.</error>
+    procedure IsMatch(Input: Text; StartAt: Integer): Boolean
+    begin
+        exit(RegexImpl.IsMatch(Input, StartAt));
+    end;
+
+    /// <summary>
     /// Indicates whether the regular expression finds a match in the input string, beginning at the specified starting position in the string.
     /// </summary>
     /// <param name="Input">The string to search for a match.</param>
@@ -103,6 +134,17 @@ codeunit 3960 Regex
     procedure IsMatch(Input: Text; Pattern: Text): Boolean
     begin
         exit(RegexImpl.IsMatch(Input, Pattern));
+    end;
+
+    /// <summary>
+    /// Indicates whether the regular expression specified in the Regex constructor finds a match in the input string.
+    /// </summary>
+    /// <param name="Input">The string to search for a match.</param>
+    /// <returns>True if the regular expression finds a match; otherwise, false.</returns>
+    /// <error>Regex is not Instantiated. Consider calling Regex() first or use an overload supporting a pattern.</error> 
+    procedure IsMatch(Input: Text): Boolean
+    begin
+        exit(RegexImpl.IsMatch(Input));
     end;
 
     /// <summary>
@@ -130,6 +172,18 @@ codeunit 3960 Regex
     end;
 
     /// <summary>
+    /// Searches the input string for the first occurrence of a regular expression specified in the Regex constructor, beginning at the specified starting position in the string.
+    /// </summary>
+    /// <param name="Input">The string to search for a match.</param>
+    /// <param name="StartAt">The zero-based character position at which to start the search.</param>
+    /// <param name="Matches">The Match object to write information about the match to.</param>
+    /// <error>Regex is not Instantiated. Consider calling Regex() first or use an overload supporting a pattern.</error> 
+    procedure Match(Input: Text; StartAt: Integer; var Matches: Record Matches)
+    begin
+        RegexImpl.Match(Input, StartAt, Matches);
+    end;
+
+    /// <summary>
     /// Searches the input string for the first occurrence of a regular expression, beginning at the specified starting position in the string.
     /// </summary>
     /// <param name="Input">The string to search for a match.</param>
@@ -147,12 +201,25 @@ codeunit 3960 Regex
     /// </summary>
     /// <param name="Input">The string to search for a match.</param>
     /// <param name="Pattern">A regular expression pattern to match.</param>
-    /// <param name="Beginning">The zero-based character position in the input string that defines the leftmost position to be searched.</param>
+    /// <param name="StartAt">The zero-based character position in the input string that defines the leftmost position to be searched.</param>
     /// <param name="Length">The number of characters in the substring to include in the search.</param>
     /// <param name="Matches">The Match object to write information about the match to.</param>
-    procedure Match(Input: Text; Pattern: Text; Beginning: Integer; Length: Integer; var Matches: Record Matches)
+    procedure Match(Input: Text; Pattern: Text; StartAt: Integer; Length: Integer; var Matches: Record Matches)
     begin
-        RegexImpl.Match(Input, Pattern, Beginning, Length, Matches);
+        RegexImpl.Match(Input, Pattern, StartAt, Length, Matches);
+    end;
+
+    /// <summary>
+    /// Searches the input string for the first occurrence of a regular expression specified in the Regex constructor, beginning at the specified starting position and searching only the specified number of characters.
+    /// </summary>
+    /// <param name="Input">The string to search for a match.</param>
+    /// <param name="StartAt">The zero-based character position in the input string that defines the leftmost position to be searched.</param>
+    /// <param name="Length">The number of characters in the substring to include in the search.</param>
+    /// <param name="Matches">The Match object to write information about the match to.</param>
+    /// <error>Regex is not Instantiated. Consider calling Regex() first or use an overload supporting a pattern.</error>
+    procedure Match(Input: Text; StartAt: Integer; Length: Integer; var Matches: Record Matches)
+    begin
+        RegexImpl.Match(Input, StartAt, Length, Matches);
     end;
 
     /// <summary>
@@ -160,13 +227,13 @@ codeunit 3960 Regex
     /// </summary>
     /// <param name="Input">The string to search for a match.</param>
     /// <param name="Pattern">A regular expression pattern to match.</param>
-    /// <param name="Beginning">The zero-based character position in the input string that defines the leftmost position to be searched.</param>
+    /// <param name="StartAt">The zero-based character position in the input string that defines the leftmost position to be searched.</param>
     /// <param name="Length">The number of characters in the substring to include in the search.</param>
     /// <param name="RegexOptions">A combination of the enumeration values that provide options for matching.</param>
     /// <param name="Matches">The Match object to write information about the match to.</param>
-    procedure Match(Input: Text; Pattern: Text; Beginning: Integer; Length: Integer; var RegexOptions: Record "Regex Options"; var Matches: Record Matches)
+    procedure Match(Input: Text; Pattern: Text; StartAt: Integer; Length: Integer; var RegexOptions: Record "Regex Options"; var Matches: Record Matches)
     begin
-        RegexImpl.Match(Input, Pattern, Beginning, Length, RegexOptions, Matches);
+        RegexImpl.Match(Input, Pattern, StartAt, Length, RegexOptions, Matches);
     end;
 
     /// <summary>
@@ -178,6 +245,18 @@ codeunit 3960 Regex
     procedure Match(Input: Text; Pattern: Text; var Matches: Record Matches)
     begin
         RegexImpl.Match(Input, Pattern, Matches);
+    end;
+
+    /// <summary>
+    /// Searches the input string for the first occurrence of the specified regular expression specified in the Regex constructor, using the specified matching options.
+    /// </summary>
+    /// <param name="Input">The string to search for a match.</param>
+    /// <param name="Pattern">A regular expression pattern to match.</param>
+    /// <param name="Matches">The Match object to write information about the match to.</param>
+    /// <error>Regex is not Instantiated. Consider calling Regex() first or use an overload supporting a pattern.</error>
+    procedure Match(Input: Text; var Matches: Record Matches)
+    begin
+        RegexImpl.Match(Input, Matches);
     end;
 
     /// <summary>
@@ -203,6 +282,19 @@ codeunit 3960 Regex
     procedure Replace(Input: Text; Pattern: Text; Replacement: Text; "Count": Integer): Text
     begin
         exit(RegexImpl.Replace(Input, Pattern, Replacement, "Count"));
+    end;
+
+    /// <summary>
+    /// Replaces strings that match a regular expression pattern specified in the Regex constructor with a specified replacement string.
+    /// </summary>
+    /// <param name="Input">The string to search for a match.</param>
+    /// <param name="Replacement">The replacement string.</param>
+    /// <param name="Count">The maximum number of times the replacement can occur.</param>
+    /// <returns>A new string that is identical to the input string, except that the replacement string takes the place of each matched string. If the pattern is not matched the method returns the current instance unchanged</returns>
+    /// <error>Regex is not Instantiated. Consider calling Regex() first or use an overload supporting a pattern.</error>
+    procedure Replace(Input: Text; Replacement: Text; "Count": Integer): Text
+    begin
+        exit(RegexImpl.Replace(Input, Replacement, "Count"));
     end;
 
     /// <summary>
@@ -234,6 +326,20 @@ codeunit 3960 Regex
     end;
 
     /// <summary>
+    /// In a specified input substring, replaces a specified maximum number of strings that match a regular expression pattern specified in the Regex constructor with a specified replacement string.
+    /// </summary>
+    /// <param name="Input">The string to search for a match.</param>
+    /// <param name="Replacement">The replacement string.</param>
+    /// <param name="Count">The maximum number of times the replacement can occur.</param>
+    /// <param name="StartAt">The character position in the input string where the search begins.</param>
+    /// <returns>A new string that is identical to the input string, except that the replacement string takes the place of each matched string. If the pattern is not matched the method returns the current instance unchanged</returns>
+    /// <error>Regex is not Instantiated. Consider calling Regex() first or use an overload supporting a pattern.</error>
+    procedure Replace(Input: Text; Replacement: Text; "Count": Integer; StartAt: Integer): Text
+    begin
+        exit(RegexImpl.Replace(Input, Replacement, "Count", StartAt));
+    end;
+
+    /// <summary>
     /// In a specified input substring, replaces a specified maximum number of strings that match a regular expression pattern with a specified replacement string.
     /// </summary>
     /// <param name="Input">The string to search for a match.</param>
@@ -261,6 +367,18 @@ codeunit 3960 Regex
     end;
 
     /// <summary>
+    /// Replaces all strings that match a specified regular expression specified in the Regex constructor with a specified replacement string.
+    /// </summary>
+    /// <param name="Input">The string to search for a match.</param>
+    /// <param name="Replacement">The replacement string.</param>
+    /// <returns>A new string that is identical to the input string, except that the replacement string takes the place of each matched string. If the pattern is not matched the method returns the current instance unchanged</returns>
+    /// <error>Regex is not Instantiated. Consider calling Regex() first or use an overload supporting a pattern.</error>
+    procedure Replace(Input: Text; Replacement: Text): Text
+    begin
+        exit(RegexImpl.Replace(Input, Replacement));
+    end;
+
+    /// <summary>
     /// Replaces all strings that match a specified regular expression with a specified replacement string. Specified options modify the matching operation.
     /// </summary>
     /// <param name="Input">The string to search for a match.</param>
@@ -274,7 +392,7 @@ codeunit 3960 Regex
     end;
 
     /// <summary>
-    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression specified in the Regex constructor.
+    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression pattern.
     /// </summary>
     /// <param name="Input">The string to split.</param>
     /// <param name="Pattern">A regular expression pattern to match.</param>
@@ -286,7 +404,19 @@ codeunit 3960 Regex
     end;
 
     /// <summary>
-    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression specified in the Regex constructor.
+    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression pattern specified in the Regex constructor.
+    /// </summary>
+    /// <param name="Input">The string to split.</param>
+    /// <param name="Count">The maximum number of times the split can occur.</param>
+    /// <param name="Array">An empty list that will be populated with the result of the split query.</param>
+    /// <error>Regex is not Instantiated. Consider calling Regex() first or use an overload supporting a pattern.</error>
+    procedure Split(Input: Text; "Count": Integer; var "Array": List of [Text])
+    begin
+        RegexImpl.Split(Input, "Count", "Array");
+    end;
+
+    /// <summary>
+    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression pattern.
     /// </summary>
     /// <param name="Input">The string to split.</param>
     /// <param name="Pattern">A regular expression pattern to match.</param>
@@ -299,7 +429,7 @@ codeunit 3960 Regex
     end;
 
     /// <summary>
-    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression specified in the Regex constructor. The search for the regular expression pattern starts at a specified character position in the input string.
+    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression pattern. The search for the pattern starts at a specified character position in the input string.
     /// </summary>
     /// <param name="Input">The string to split.</param>
     /// <param name="Pattern">A regular expression pattern to match.</param>
@@ -312,7 +442,20 @@ codeunit 3960 Regex
     end;
 
     /// <summary>
-    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression specified in the Regex constructor. The search for the regular expression pattern starts at a specified character position in the input string.
+    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression pattern specified in the Regex constructor. The search for the pattern starts at a specified character position in the input string.
+    /// </summary>
+    /// <param name="Input">The string to split.</param>
+    /// <param name="Count">The maximum number of times the split can occur.</param>
+    /// <param name="StartAt">The character position in the input string where the search will begin.</param>
+    /// <param name="Array">An empty list that will be populated with the result of the split query.</param>
+    /// <error>Regex is not Instantiated. Consider calling Regex() first or use an overload supporting a pattern.</error>
+    procedure Split(Input: Text; "Count": Integer; StartAt: Integer; var "Array": List of [Text])
+    begin
+        RegexImpl.Split(Input, "Count", StartAt, "Array");
+    end;
+
+    /// <summary>
+    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression pattern. The search for the pattern starts at a specified character position in the input string.
     /// </summary>
     /// <param name="Input">The string to split.</param>
     /// <param name="Pattern">A regular expression pattern to match.</param>
@@ -326,7 +469,7 @@ codeunit 3960 Regex
     end;
 
     /// <summary>
-    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression specified in the Regex constructor. Specified options modify the matching operation.
+    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression pattern. Specified options modify the matching operation.
     /// </summary>
     /// <param name="Input">The string to split.</param>
     /// <param name="Pattern">A regular expression pattern to match.</param>
@@ -337,7 +480,18 @@ codeunit 3960 Regex
     end;
 
     /// <summary>
-    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression specified in the Regex constructor. Specified options modify the matching operation.
+    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression pattern specified in the Regex constructor. Specified options modify the matching operation.
+    /// </summary>
+    /// <param name="Input">The string to split.</param>
+    /// <param name="Array">An empty list that will be populated with the result of the split query.</param>
+    /// <error>Regex is not Instantiated. Consider calling Regex() first or use an overload supporting a pattern.</error>
+    procedure Split(Input: Text; var "Array": List of [Text])
+    begin
+        RegexImpl.Split(Input, "Array");
+    end;
+
+    /// <summary>
+    /// Splits an input string a specified maximum number of times into an array of substrings, at the positions defined by a regular expression pattern. Specified options modify the matching operation.
     /// </summary>
     /// <param name="Input">The string to split.</param>
     /// <param name="Pattern">A regular expression pattern to match.</param>
@@ -378,7 +532,7 @@ codeunit 3960 Regex
     end;
 
     /// <summary>
-    /// Get the Groups for one particular Match  
+    /// Get the Groups for one particular Match.
     /// </summary>
     /// <param name="Matches">The Match record to get Groups for.</param>
     /// <param name="Groups">Groups Record to write the resulting Groups to.</param>
@@ -388,7 +542,7 @@ codeunit 3960 Regex
     end;
 
     /// <summary>
-    /// Get the Captures for one particular Group  
+    /// Get the Captures for one particular Group.
     /// </summary>
     /// <param name="Group">The Group record to get Captures for.</param>
     /// <param name="Captures">Captures Record to write the resulting Captures to.</param>

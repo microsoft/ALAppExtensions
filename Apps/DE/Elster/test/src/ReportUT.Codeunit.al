@@ -234,6 +234,63 @@ codeunit 148164 "Elster Report UT"
         VATStatementName.Delete(true);
     end;
 
+    [Test]
+    [HandlerFunctions('MessageHandler')]
+    procedure ShowAmountsFromTheCreatedXMLFile()
+    var
+        VATEntry: Record "VAT Entry";
+        VATStatementName: Record "VAT Statement Name";
+        VATStatementLine: Record "VAT Statement Line";
+        SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
+        SalesVATAdvNotifCard: TestPage "Sales VAT Adv. Notif. Card";
+        ElecVATDeclOverview: TestPage "Elec. VAT Decl. Overview";
+        VATProdPostingGroup: Code[20];
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 422698] Stan can see the amounts from the created XML file in UI
+
+        Initialize();
+
+        // [GIVEN] VAT Statement setup for "Kz37" (VAT Amount), "Kz50" (VAT Base)
+        VATProdPostingGroup := LibraryUtility.GenerateGUID();
+        CreateVATStatementName(VATStatementName);
+        CreateVATStatementLine(VATStatementName, '37', VATStatementLine."Amount Type"::Amount, VATProdPostingGroup);
+        CreateVATStatementLine(VATStatementName, '50', VATStatementLine."Amount Type"::Base, VATProdPostingGroup);
+        // [GIVEN] Posted VAT Entry with Amount "A", Base "B"
+        MockVATEntry(VATEntry, VATProdPostingGroup);
+        // [GIVEN] Sales VAT Advance notification entry
+        CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif, SalesVATAdvanceNotif.Period::Month, VATStatementName.Name);
+        ElecVATDeclOverview.Trap();
+
+        // [GIVEN] XML file has been generated
+        Report.Run(Report::"Create XML-File VAT Adv.Notif.", false, false, SalesVATAdvanceNotif);
+
+        // [GIVEN] "Sales VAT Adv. Notif. Card" page is opened
+        SalesVATAdvNotifCard.OpenEdit();
+        SalesVATAdvNotifCard.Filter.SetFilter("No.", SalesVATAdvanceNotif."No.");
+
+        // [WHEN] Stan press "Preview Amounts" from the "Sales VAT Adv. Notif. Card" page
+        SalesVATAdvNotifCard.PreviewAmounts.Invoke();
+
+        // [THEN] "Elec. VAT Decl. Overview" page opens with the code values
+        // #37 with amount "A"
+        // #50 with amount "B"
+        // #83 with zero amount
+        ElecVATDeclOverview.First();
+        ElecVATDeclOverview.Code.AssertEquals('#37');
+        ElecVATDeclOverview.Amount.AssertEquals(Format(VATEntry.Amount, 0, '<precision,2:2><Sign><Integer><Decimals><comma,.>'));
+        Assert.IsTrue(ElecVATDeclOverview.Next(), '');
+        ElecVATDeclOverview.Code.AssertEquals('#50');
+        ElecVATDeclOverview.Amount.AssertEquals(Format(Round(VATEntry.Base, 1, '<'), 0, '<precision,2:2><Sign><Integer><Decimals><comma,.>'));
+        ElecVATDeclOverview.Next();
+        ElecVATDeclOverview.Code.AssertEquals('#83');
+        ElecVATDeclOverview.Amount.AssertEquals('0.00');
+        Assert.IsFalse(ElecVATDeclOverview.Next(), '');
+
+        // Tear down
+        VATStatementName.Delete(true);
+    end;
+
     local procedure Initialize()
     var
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";

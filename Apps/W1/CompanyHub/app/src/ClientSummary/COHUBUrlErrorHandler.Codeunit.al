@@ -6,10 +6,10 @@ codeunit 1156 "COHUB Url Error Handler"
     trigger OnRun()
     var
         COHUBCore: Codeunit "COHUB Core";
-        RecRef: RecordRef;
+        SourceRecordRef: RecordRef;
     begin
-        RecRef.GetTable(Rec);
-        COHUBCore.LogFailure(GetLastErrorText(), RecRef);
+        SourceRecordRef.GetTable(Rec);
+        COHUBCore.LogFailure(GetLastErrorText(), SourceRecordRef);
     end;
 }
 

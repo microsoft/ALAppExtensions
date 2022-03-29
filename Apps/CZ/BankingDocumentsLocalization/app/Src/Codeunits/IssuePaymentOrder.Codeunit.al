@@ -15,6 +15,7 @@ codeunit 31353 "Issue Payment Order CZB"
         BankAccount: Record "Bank Account";
         PaymentOrderHeaderCZB: Record "Payment Order Header CZB";
         PaymentOrderManagementCZB: Codeunit "Payment Order Management CZB";
+        ConfirmManagement: Codeunit "Confirm Management";
         NothingtoIssueErr: Label 'There is nothing to issue.';
 #if not CLEAN19
         DuplicityFoundErr: Label '%1 %2 was found. Resolve this before issue banking document.', Comment = '%1 = TableCaption, %2 = No.';
@@ -104,10 +105,10 @@ codeunit 31353 "Issue Payment Order CZB"
             IsHandled := false;
             OnBeforeCheckPaymentOrderLine(PaymentOrderLineCZB, IsHandled);
             if not IsHandled then begin
+                PaymentOrderManagementCZB.CheckPaymentOrderLineApply(PaymentOrderLineCZB, true);
                 PaymentOrderManagementCZB.CheckPaymentOrderLineFormat(PaymentOrderLineCZB, false);
                 PaymentOrderManagementCZB.CheckPaymentOrderLineBankAccountNo(PaymentOrderLineCZB, false);
                 PaymentOrderManagementCZB.CheckPaymentOrderLineCustVendBlocked(PaymentOrderLineCZB, false);
-                PaymentOrderManagementCZB.CheckPaymentOrderLineApply(PaymentOrderLineCZB, false);
                 PaymentOrderManagementCZB.CheckPaymentOrderLineCustom(PaymentOrderLineCZB, false);
             end;
         until PaymentOrderLineCZB.Next() = 0;
@@ -184,8 +185,6 @@ codeunit 31353 "Issue Payment Order CZB"
     end;
 
     local procedure ConfirmProcess(ConfirmQuestion: Text)
-    var
-        ConfirmManagement: Codeunit "Confirm Management";
     begin
         if not ConfirmManagement.GetResponseOrDefault(ConfirmQuestion, false) then
             Error('');

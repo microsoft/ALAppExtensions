@@ -31,9 +31,6 @@ codeunit 11793 "Bank Account Handler CZP"
     local procedure CashDeskChangeAction(var BankAccount: Record "Bank Account"; RunTrigger: Boolean)
     var
         BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
-#if not CLEAN17
-        CashDeskDisableChangeErr: Label 'You cannot change Cash Desks because are obsolete.';
-#endif
     begin
         if NavApp.IsInstalling() then
             exit;
@@ -44,10 +41,6 @@ codeunit 11793 "Bank Account Handler CZP"
         BankAccountLedgerEntry.SetRange("Bank Account No.", BankAccount."No.");
         if BankAccountLedgerEntry.IsEmpty() then
             exit;
-#if not CLEAN17
-        if BankAccount."Account Type" = BankAccount."Account Type"::"Cash Desk" then
-            Error(CashDeskDisableChangeErr);
-#endif
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"Adjust Exchange Rates CZL", 'OnBeforeOnInitReport', '', false, false)]

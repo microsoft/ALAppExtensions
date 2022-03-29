@@ -22,7 +22,7 @@ codeunit 2503 "Extension Operation Impl"
         CurrentOperationProgressMsg: Label 'Extension deployment is in progress. Please check the Deployment Status page for updates.';
         ScheduledOperationMajorProgressMsg: Label 'Extension deployment has been scheduled for the next major version. Please check the Deployment Status page for updates.';
         ScheduledOperationMinorProgressMsg: Label 'Extension deployment has been scheduled for the next minor version. Please check the Deployment Status page for updates.';
-        DownloadExtensionSourceIsNotAllowedErr: Label 'You don''t have permission to download this extension.';
+        DownloadExtensionSourceIsNotAllowedErr: Label 'The effective policies for this package do not allow you to download the source code. Contact the extension provider for more information.';
         DialogTitleTxt: Label 'Export';
         OutExtTxt: Label 'Text Files (*.txt)|*.txt|*.*';
         NotSufficientPermissionErr: Label 'You do not have sufficient permissions to manage extensions. Please contact your administrator.';
@@ -45,17 +45,17 @@ codeunit 2503 "Extension Operation Impl"
     end;
 
 
-    procedure UploadExtension(PackageStream: InStream; lcid: Integer)
+    procedure UploadExtension(PackageInStream: InStream; lcid: Integer)
     var
         DotNetALPackageDeploymentSchedule: DotNet ALPackageDeploymentSchedule;
     begin
         CheckPermissions();
         DotNetALPackageDeploymentSchedule := DotNetALPackageDeploymentSchedule.Immediate;
         InitializeOperationInvoker();
-        DotNetALNavAppOperationInvoker.UploadPackage(PackageStream, DotNetALPackageDeploymentSchedule, Format(lcid));
+        DotNetALNavAppOperationInvoker.UploadPackage(PackageInStream, DotNetALPackageDeploymentSchedule, Format(lcid));
     end;
 
-    procedure DeployAndUploadExtension(PackageStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To"; SyncMode: Enum "Extension Sync Mode")
+    procedure DeployAndUploadExtension(PackageInStream: InStream; lcid: Integer; DeployTo: Enum "Extension Deploy To"; SyncMode: Enum "Extension Sync Mode")
     var
         DotNetALPackageDeploymentSchedule: DotNet ALPackageDeploymentSchedule;
         DotNetALNavAppSyncMode: DotNet ALNavAppSyncMode;
@@ -74,19 +74,19 @@ codeunit 2503 "Extension Operation Impl"
             DeployTo::"Current version":
                 begin
                     DotNetALPackageDeploymentSchedule := DotNetALPackageDeploymentSchedule.Immediate;
-                    DotNetALNavAppOperationInvoker.UploadPackage(PackageStream, DotNetALPackageDeploymentSchedule, Format(lcid), DotNetALNavAppSyncMode);
+                    DotNetALNavAppOperationInvoker.UploadPackage(PackageInStream, DotNetALPackageDeploymentSchedule, Format(lcid), DotNetALNavAppSyncMode);
                     Message(CurrentOperationProgressMsg);
                 end;
             DeployTo::"Next minor version":
                 begin
                     DotNetALPackageDeploymentSchedule := DotNetALPackageDeploymentSchedule.StageForNextMinorUpdate;
-                    DotNetALNavAppOperationInvoker.UploadPackage(PackageStream, DotNetALPackageDeploymentSchedule, Format(lcid), DotNetALNavAppSyncMode);
+                    DotNetALNavAppOperationInvoker.UploadPackage(PackageInStream, DotNetALPackageDeploymentSchedule, Format(lcid), DotNetALNavAppSyncMode);
                     Message(ScheduledOperationMinorProgressMsg);
                 end;
             DeployTo::"Next major version":
                 begin
                     DotNetALPackageDeploymentSchedule := DotNetALPackageDeploymentSchedule.StageForNextUpdate;
-                    DotNetALNavAppOperationInvoker.UploadPackage(PackageStream, DotNetALPackageDeploymentSchedule, Format(lcid), DotNetALNavAppSyncMode);
+                    DotNetALNavAppOperationInvoker.UploadPackage(PackageInStream, DotNetALPackageDeploymentSchedule, Format(lcid), DotNetALNavAppSyncMode);
                     Message(ScheduledOperationMajorProgressMsg);
                 end;
         end;

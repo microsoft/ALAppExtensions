@@ -1,5 +1,6 @@
 page 31191 "Advance Letter Link CZZ"
 {
+    Caption = 'Advance Letter Link';
     PageType = List;
     UsageCategory = None;
     SourceTable = "Advance Letter Link Buffer CZZ";

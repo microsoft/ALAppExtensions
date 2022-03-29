@@ -6,7 +6,9 @@
 /// <summary>
 /// Specifies the type of log message. 
 /// </summary>
+#pragma warning disable AL0659
 enum 3902 "Retention Policy Log Message Type"
+#pragma warning restore
 {
     Extensible = false;
 

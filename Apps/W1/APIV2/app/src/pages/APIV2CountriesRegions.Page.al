@@ -66,7 +66,7 @@ page 30027 "APIV2 - Countries/Regions"
     var
         CountryRegion: Record "Country/Region";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        CountryRegionRecordRef: RecordRef;
     begin
         CountryRegion.SetRange(Code, Code);
         if not CountryRegion.IsEmpty() then
@@ -74,9 +74,9 @@ page 30027 "APIV2 - Countries/Regions"
 
         Insert(true);
 
-        RecRef.GetTable(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CurrentDateTime());
-        RecRef.SetTable(Rec);
+        CountryRegionRecordRef.GetTable(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(CountryRegionRecordRef, TempFieldSet, CurrentDateTime());
+        CountryRegionRecordRef.SetTable(Rec);
 
         Modify(true);
         exit(false);

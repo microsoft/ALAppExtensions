@@ -167,22 +167,22 @@ table 1071 "MS - PayPal Standard Template"
     var
         TempBlob: Codeunit "Temp Blob";
         LogoHttpClient: HttpClient;
-        ResponseMessage: HttpResponseMessage;
+        ResponseHttpResponseMessage: HttpResponseMessage;
         ResponseInStream: InStream;
         LogoOutStream: OutStream;
     begin
-        if not LogoHttpClient.Get(LogoURL, ResponseMessage) then begin
-            Session.LogMessage('00008II', StrSubstNo(LogoFailedResponseTxt, ResponseMessage.HttpStatusCode()), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
+        if not LogoHttpClient.Get(LogoURL, ResponseHttpResponseMessage) then begin
+            Session.LogMessage('00008II', StrSubstNo(LogoFailedResponseTxt, ResponseHttpResponseMessage.HttpStatusCode()), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             exit(false);
         end;
-        if not ResponseMessage.IsSuccessStatusCode() then begin
-            Session.LogMessage('00008IJ', StrSubstNo(LogoFailedResponseTxt, ResponseMessage.HttpStatusCode()), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
+        if not ResponseHttpResponseMessage.IsSuccessStatusCode() then begin
+            Session.LogMessage('00008IJ', StrSubstNo(LogoFailedResponseTxt, ResponseHttpResponseMessage.HttpStatusCode()), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             exit(false);
         end;
 
         TempBlob.CreateInStream(ResponseInStream);
 
-        if not ResponseMessage.Content().ReadAs(ResponseInStream) then begin
+        if not ResponseHttpResponseMessage.Content().ReadAs(ResponseInStream) then begin
             Session.LogMessage('00008IK', LogoCannotReadResponseTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             exit(false);
         end;

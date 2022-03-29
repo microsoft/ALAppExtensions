@@ -9,8 +9,10 @@ codeunit 134685 "Email Test"
     Permissions = tabledata "Email Message" = rd,
                   tabledata "Email Message Attachment" = rd,
                   tabledata "Email Recipient" = rd,
-                  tabledata "Email Outbox" = rim,
-                  tabledata "Sent Email" = ri;
+                  tabledata "Email Outbox" = rimd,
+                  tabledata "Scheduled Task" = rd,
+                  tabledata "Sent Email" = rid;
+
     EventSubscriberInstance = Manual;
 
     var
@@ -19,7 +21,7 @@ codeunit 134685 "Email Test"
         Base64Convert: Codeunit "Base64 Convert";
         PermissionsMock: Codeunit "Permissions Mock";
         EmailMessageDoesNotExistMsg: Label 'The email message has been deleted by another user.', Locked = true;
-        EmailMessageOpenPermissionErr: Label 'You can only open your own email messages.';
+        EmailMessageOpenPermissionErr: Label 'You do not have permission to open the email message.';
         EmailMessageCannotBeEditedErr: Label 'The email message has already been sent and cannot be edited.';
         EmailMessageQueuedCannotDeleteAttachmentErr: Label 'Cannot delete the attachment because the email has been queued to be sent.';
         EmailMessageSentCannotDeleteAttachmentErr: Label 'Cannot delete the attachment because the email has already been sent.';
@@ -253,7 +255,7 @@ codeunit 134685 "Email Test"
     var
         TempAccount: Record "Email Account" temporary;
         EmailOutBox: Record "Email Outbox";
-        EmailAttachment: Record "Email Message Attachment";
+        EmailMessageAttachment: Record "Email Message Attachment";
         EmailMessage: Codeunit "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
         EmailEditor: TestPage "Email Editor";
@@ -287,7 +289,11 @@ codeunit 134685 "Email Test"
         Assert.IsFalse(EmailEditor.BccField.Editable(), 'Bcc field was editable');
         Assert.IsFalse(EmailEditor.SubjectField.Editable(), 'Subject field was editable');
         Assert.IsFalse(EmailEditor.BodyField.Editable(), 'Body field was editable');
+#if not CLEAN19
         Assert.IsFalse(EmailEditor.Upload.Enabled(), 'Upload Action was not disabled.');
+#else
+        Assert.IsFalse(EmailEditor.Attachments.Upload.Visible(), 'Upload Action is visible.');
+#endif
         Assert.IsFalse(EmailEditor.Send.Enabled(), 'Send Action was not disabled.');
 
         EmailOutBox.Status := Enum::"Email Status"::Processing;
@@ -304,11 +310,15 @@ codeunit 134685 "Email Test"
         Assert.IsFalse(EmailEditor.BccField.Editable(), 'Bcc field was editable');
         Assert.IsFalse(EmailEditor.SubjectField.Editable(), 'Subject field was editable');
         Assert.IsFalse(EmailEditor.BodyField.Editable(), 'Body field was editable');
+#if not CLEAN19
         Assert.IsFalse(EmailEditor.Upload.Enabled(), 'Upload Action was not disabled.');
+#else
+        Assert.IsFalse(EmailEditor.Attachments.Upload.Visible(), 'Upload Action is visible.');
+#endif
         Assert.IsFalse(EmailEditor.Send.Enabled(), 'Send Action was not disabled.');
-        EmailAttachment.SetRange("Email Message Id", EmailMessage.GetId());
-        EmailAttachment.FindFirst();
-        asserterror EmailAttachment.Delete();
+        EmailMessageAttachment.SetRange("Email Message Id", EmailMessage.GetId());
+        EmailMessageAttachment.FindFirst();
+        asserterror EmailMessageAttachment.Delete();
         Assert.ExpectedError(EmailMessageQueuedCannotDeleteAttachmentErr);
     end;
 
@@ -603,6 +613,56 @@ codeunit 134685 "Email Test"
 
     [Test]
     [Scope('OnPrem')]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure EnqueueScheduledEmailTest()
+    var
+        EmailOutbox: Record "Email Outbox";
+        ScheduleTasks: Record "Scheduled Task";
+        EmailMessage: Codeunit "Email Message";
+        ConnectorMock: Codeunit "Connector Mock";
+        AccountId: Guid;
+        DateTime: DateTime;
+    begin
+        // [Scenario] When enqueuing an existing email, it appears in the outbox
+        PermissionsMock.Set('Email Edit');
+
+        // [Given] An email message and an email account
+        CreateEmail(EmailMessage);
+        Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(AccountId);
+
+        // [When] Enqueuing the email message with the email account
+        ScheduleTasks.DeleteAll();
+        ClearLastError();
+
+        DateTime := CreateDateTime(CalcDate('<+1D>', Today()), Time());
+        Email.Enqueue(EmailMessage, AccountId, Enum::"Email Connector"::"Test Email Connector", DateTime);
+
+        // [Then] No error occurs
+        Assert.AreEqual('', GetLastErrorText(), 'There should be no errors when enqueuing an email.');
+
+        // [Then] Job is enqueued
+        Assert.AreEqual(ScheduleTasks.Count, 1, 'Enqueue should only add one entry to scheduled tasks');
+        Assert.IsTrue(ScheduleTasks.FindFirst(), 'The job should be in scheduled tasks');
+        Assert.AreEqual(Format(ScheduleTasks."Not Before", 0, '<Day,2>-<Month,2>-<Year> <Hours24,2>.<Minutes,2>.<Seconds,2>'), Format(DateTime, 0, '<Day,2>-<Month,2>-<Year> <Hours24,2>.<Minutes,2>.<Seconds,2>'), 'The jobs not before date should be equal to the datetime provided when enqueueing');
+
+        // [Then] The enqueued email should be the correct one 
+        EmailOutbox.SetRange("Message Id", EmailMessage.GetId());
+        Assert.AreEqual(1, EmailOutbox.Count(), 'There should be only one enqueued message');
+        Assert.IsTrue(EmailOutbox.FindFirst(), 'The message should be queued');
+
+        Assert.AreEqual(AccountId, EmailOutbox."Account Id", 'The account should be set');
+        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", EmailOutbox.Connector, 'The connector should be set');
+        Assert.AreEqual(EmailOutbox.Status::Queued, EmailOutbox.Status, 'The status should be ''Queued''');
+        Assert.AreEqual(UserSecurityId(), EmailOutbox."User Security Id", 'The user security ID should be the current user');
+        Assert.AreEqual(EmailMessage.GetSubject(), EmailOutbox.Description, 'The description does not match the email title');
+        Assert.AreEqual('', EmailOutbox."Error Message", 'The error message should be blank');
+        Assert.AreEqual(DateTime, EmailOutbox."Date Sending", 'The date sending does not match the datetime provided when enqueueing');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     procedure SendEmailMessageFailTest()
     var
         EmailOutbox: Record "Email Outbox";
@@ -640,9 +700,9 @@ codeunit 134685 "Email Test"
     procedure SendEmailMessageSuccessTest()
     var
         EmailOutbox: Record "Email Outbox";
-        EmailAttachment: Record "Email Message Attachment";
+        EmailMessageAttachment: Record "Email Message Attachment";
         SentEmail: Record "Sent Email";
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         EmailMessage: Codeunit "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
         Connector: Enum "Email Connector";
@@ -657,34 +717,34 @@ codeunit 134685 "Email Test"
         Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
 
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(Account);
+        ConnectorMock.AddAccount(EmailAccount);
 
         // [When] The email is Sent
-        Assert.IsTrue(Email.Send(EmailMessage, Account), 'Sending an email should have succeeded');
+        Assert.IsTrue(Email.Send(EmailMessage, EmailAccount), 'Sending an email should have succeeded');
 
         // [Then] There is a Sent Mail recond and no Outbox record
-        SentEmail.SetRange("Account Id", Account."Account Id");
+        SentEmail.SetRange("Account Id", EmailAccount."Account Id");
         SentEmail.SetRange("Message Id", EmailMessage.GetId());
 
         Assert.IsTrue(SentEmail.FindFirst(), 'The email sent record should exist');
         Assert.AreEqual(EmailMessage.GetId(), SentEmail."Message Id", 'Wrong email message');
-        Assert.AreEqual(Account."Email Address", SentEmail."Sent From", 'Wrong email address (sent from)');
+        Assert.AreEqual(EmailAccount."Email Address", SentEmail."Sent From", 'Wrong email address (sent from)');
         Assert.AreNotEqual(0DT, SentEmail."Date Time Sent", 'The Date Time Sent should be filled');
-        Assert.AreEqual(Account."Account Id", SentEmail."Account Id", 'Wrong account');
+        Assert.AreEqual(EmailAccount."Account Id", SentEmail."Account Id", 'Wrong account');
         Assert.AreEqual(Connector::"Test Email Connector".AsInteger(), SentEmail.Connector.AsInteger(), 'Wrong connector');
         Assert.AreEqual(EmailMessage.GetSubject(), SentEmail.Description, 'Wrong description');
 
         // There is no related outbox
-        EmailOutbox.SetRange("Account Id", Account."Account Id");
+        EmailOutbox.SetRange("Account Id", EmailAccount."Account Id");
         EmailOutbox.SetRange("Message Id", EmailMessage.GetId());
 
         Assert.AreEqual(0, EmailOutbox.Count(), 'Email Outbox was not empty.');
 
         //[Then] The attachments cannot be deleted
-        EmailAttachment.SetRange("Email Message Id", EmailMessage.GetId());
-        EmailAttachment.FindFirst();
+        EmailMessageAttachment.SetRange("Email Message Id", EmailMessage.GetId());
+        EmailMessageAttachment.FindFirst();
 
-        asserterror EmailAttachment.Delete();
+        asserterror EmailMessageAttachment.Delete();
         Assert.ExpectedError(EmailMessageSentCannotDeleteAttachmentErr);
     end;
 
@@ -737,8 +797,8 @@ codeunit 134685 "Email Test"
     procedure ShowMultipleSourceRecords()
     var
         EmailOutbox: Record "Email Outbox";
+        EmailMessageRecord: Record "Email Message";
         EmailMessage: Codeunit "Email Message";
-        Any: Codeunit Any;
         EmailTest: Codeunit "Email Test";
         EmailOutboxPage: Page "Email Outbox";
         EmailOutboxTestPage: TestPage "Email Outbox";
@@ -746,20 +806,21 @@ codeunit 134685 "Email Test"
         SystemId: Guid;
     begin
         BindSubscription(EmailTest);
+        EmailOutbox.DeleteAll();
 
         // [Scenario] Emails with multiple source documents, will see the email relation picker  
         // [Given] An Email with table id and source system id
-        TableId := Any.IntegerInRange(1, 10000);
-        SystemId := Any.GuidValue();
 
         // [And] The email is with a source and saved as draft
-        CreateEmailWithSource(EmailMessage, TableId, SystemId);
+        CreateEmail(EmailMessage);
         Email.SaveAsDraft(EmailMessage, EmailOutbox);
 
         // [When] An extra relation is added - We use email outbox to have a record that actually exists
+        EmailMessageRecord.Get(EmailMessage.GetId());
         TableId := Database::"Email Outbox";
         SystemId := EmailOutbox.SystemId;
-        Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source");
+        Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
+        Email.AddRelation(EmailMessage, Database::"Email Message", EmailMessageRecord.SystemId, Enum::"Email Relation Type"::"Related Entity", Enum::"Email Relation Origin"::"Compose Context");
 
         // [And] The Show Source Document button is clicked 
         EmailOutboxTestPage.Trap();
@@ -767,6 +828,7 @@ codeunit 134685 "Email Test"
         EmailOutboxPage.Run();
 
         Assert.IsTrue(EmailOutboxTestPage.ShowSourceRecord.Visible(), 'Show Source Record action should be visible');
+        Assert.IsTrue(EmailOutboxTestPage.ShowSourceRecord.Enabled(), 'Show Source Record action should be enabled');
         EmailOutboxTestPage.ShowSourceRecord.Invoke();
 
         // [Then] Email picker modal appears
@@ -785,6 +847,7 @@ codeunit 134685 "Email Test"
         BindSubscription(EmailTest);
 
         PermissionsMock.Set('Email Edit');
+        EmailOutbox.DeleteAll();
 
         // [Scenario] Emails with source document, will see the Source Document button 
         // [Given] An Email with table id and source system id
@@ -844,8 +907,8 @@ codeunit 134685 "Email Test"
     [Scope('OnPrem')]
     procedure SendEmailMessageWithSourceTest()
     var
-        SentEmail: Record "Sent Email";
-        Account: Record "Email Account";
+        TempSentEmail: Record "Sent Email" temporary;
+        EmailAccount: Record "Email Account";
         EmailMessage: Codeunit "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
         Any: Codeunit Any;
@@ -861,7 +924,7 @@ codeunit 134685 "Email Test"
         SystemId := Any.GuidValue();
 
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(Account);
+        ConnectorMock.AddAccount(EmailAccount);
 
         NumberOfEmails := Any.IntegerInRange(2, 5);
 
@@ -871,15 +934,15 @@ codeunit 134685 "Email Test"
             MessageIds.Add(EmailMessage.GetId());
 
             // [When] The email is Sent
-            Assert.IsTrue(Email.Send(EmailMessage, Account), 'Sending an email should have succeeded');
+            Assert.IsTrue(Email.Send(EmailMessage, EmailAccount), 'Sending an email should have succeeded');
         end;
 
-        SentEmail := Email.GetSentEmailsForRecord(TableId, SystemId);
+        Email.GetSentEmailsForRecord(TableId, SystemId, TempSentEmail);
 
         for i := 1 to NumberOfEmails do begin
-            SentEmail.SetCurrentKey("Message Id");
-            SentEmail.SetRange("Message Id", MessageIds.Get(i));
-            Assert.AreEqual(1, SentEmail.Count(), 'Did not find the email in Sent Emails ');
+            TempSentEmail.SetCurrentKey("Message Id");
+            TempSentEmail.SetRange("Message Id", MessageIds.Get(i));
+            Assert.AreEqual(1, TempSentEmail.Count(), 'Did not find the email in Sent Emails ');
         end;
     end;
 
@@ -909,7 +972,7 @@ codeunit 134685 "Email Test"
         TableId := Database::"Email Outbox";
         SystemId := EmailOutbox.SystemId;
 
-        Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source");
+        Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
 
         SourceText := StrSubstNo('%1: %2', EmailOutbox.TableCaption(), Format(EmailOutbox.Id));
         VariableStorage.Enqueue(SourceText);
@@ -955,7 +1018,7 @@ codeunit 134685 "Email Test"
         TableId := Database::"Email Outbox";
         SystemId := EmailOutbox.SystemId;
 
-        Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source");
+        Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
 
         SourceText := StrSubstNo('%1: %2', EmailOutbox.TableCaption(), Format(EmailOutbox.Id));
         VariableStorage.Enqueue(SourceText);
@@ -994,7 +1057,7 @@ codeunit 134685 "Email Test"
     [Scope('OnPrem')]
     procedure SendEmailInBackgroundSuccessTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         EmailMessage: Codeunit "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
         TestClientType: Codeunit "Test Client Type Subscriber";
@@ -1015,10 +1078,10 @@ codeunit 134685 "Email Test"
         Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
 
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(Account);
+        ConnectorMock.AddAccount(EmailAccount);
 
         // [When] The email is Sent
-        Email.Send(EmailMessage, Account);
+        Email.Send(EmailMessage, EmailAccount);
 
         // [Then] An event is fired to notify for the status of the email
         EmailTest.DequeueVariable(Variable);
@@ -1039,7 +1102,7 @@ codeunit 134685 "Email Test"
     [Scope('OnPrem')]
     procedure SendEmailInBackgroundFailTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         EmailMessage: Codeunit "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
         TestClientType: Codeunit "Test Client Type Subscriber";
@@ -1060,11 +1123,11 @@ codeunit 134685 "Email Test"
         Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
 
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(Account);
+        ConnectorMock.AddAccount(EmailAccount);
         ConnectorMock.FailOnSend(true);
 
         // [When] The email is Sent
-        Email.Send(EmailMessage, Account);
+        Email.Send(EmailMessage, EmailAccount);
 
         // [Then] An event is fired to notify for the status of the email
         EmailTest.DequeueVariable(Variable);
@@ -1085,7 +1148,7 @@ codeunit 134685 "Email Test"
     [Scope('OnPrem')]
     procedure SendEmailInBackgroundFailSubscriberFailsTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         EmailMessage: Codeunit "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
         TestClientType: Codeunit "Test Client Type Subscriber";
@@ -1108,11 +1171,11 @@ codeunit 134685 "Email Test"
         Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
 
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(Account);
+        ConnectorMock.AddAccount(EmailAccount);
         ConnectorMock.FailOnSend(true);
 
         // [When] The email is Sent
-        Email.Send(EmailMessage, Account);
+        Email.Send(EmailMessage, EmailAccount);
 
         // [Then] An event is fired to notify for the status of the email
         EmailTest.DequeueVariable(Variable);
@@ -1134,7 +1197,7 @@ codeunit 134685 "Email Test"
     [Scope('OnPrem')]
     procedure SendEmailInBackgroundSuccessSubscriberFailsTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         EmailOutbox: Record "Email Outbox";
         EmailMessage: Codeunit "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
@@ -1158,10 +1221,10 @@ codeunit 134685 "Email Test"
         Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
 
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(Account);
+        ConnectorMock.AddAccount(EmailAccount);
 
         // [When] The email is Sent
-        Email.Send(EmailMessage, Account);
+        Email.Send(EmailMessage, EmailAccount);
 
         // [Then] An event is fired to notify for the status of the email
         EmailTest.DequeueVariable(Variable);
@@ -1219,6 +1282,7 @@ codeunit 134685 "Email Test"
         BindSubscription(EmailTest);
 
         PermissionsMock.Set('Email Edit');
+        EmailOutbox.DeleteAll();
 
         // [Scenario] Emails with source document, GetEmailOutboxForRecord procedure will return Outbox Emails
         // [Given] Source Record - Email Outbox used as a source record for test email
@@ -1282,8 +1346,9 @@ codeunit 134685 "Email Test"
     [Test]
     procedure GetSentEmailsForRecordByVariant()
     var
+        SentEmail: Record "Sent Email";
         TempSentEmail: Record "Sent Email" temporary;
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         EmailMessage: Codeunit "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
         Any: Codeunit Any;
@@ -1293,13 +1358,13 @@ codeunit 134685 "Email Test"
     begin
         // [Scenario] When successfuly sending an email with source, GetSentEmailsForRecord return related Sent Emails. 
         PermissionsMock.Set('Email Edit');
+        SentEmail.DeleteAll();
 
         // [Given] An email with source and an email account
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(Account);
+        ConnectorMock.AddAccount(EmailAccount);
         TableId := Database::"Email Account";
-        SystemId := Account.SystemId;
-
+        SystemId := EmailAccount.SystemId;
         NumberOfEmails := Any.IntegerInRange(2, 5);
 
         for i := 1 to NumberOfEmails do begin
@@ -1308,11 +1373,11 @@ codeunit 134685 "Email Test"
             MessageIds.Add(EmailMessage.GetId());
 
             // [When] The email is Sent
-            Assert.IsTrue(Email.Send(EmailMessage, Account), 'Sending an email should have succeeded');
+            Assert.IsTrue(Email.Send(EmailMessage, EmailAccount), 'Sending an email should have succeeded');
         end;
 
         // [Then] GetSentEmailsForRecord procedure return related Sent Email records
-        Email.GetSentEmailsForRecord(Account, TempSentEmail);
+        Email.GetSentEmailsForRecord(EmailAccount, TempSentEmail);
         Assert.AreEqual(NumberOfEmails, TempSentEmail.Count(), 'Sent Emails count is not equal to Number of Emails sent.');
 
         for i := 1 to NumberOfEmails do begin
@@ -1334,7 +1399,7 @@ codeunit 134685 "Email Test"
         Any: Codeunit Any;
     begin
         EmailMessage.Create(Any.Email(), Any.UnicodeText(50), Any.UnicodeText(250), true);
-        Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source");
+        Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
     end;
 
     [StrMenuHandler]
@@ -1387,7 +1452,11 @@ codeunit 134685 "Email Test"
         Assert.IsTrue(EmailEditor.BccField.Editable(), 'Bcc field was not editable');
         Assert.IsTrue(EmailEditor.SubjectField.Editable(), 'Subject field was not editable');
         Assert.IsTrue(EmailEditor.BodyField.Editable(), 'Body field was not editable');
+#if not CLEAN19
         Assert.IsTrue(EmailEditor.Upload.Enabled(), 'Upload Action was not enabled.');
+#else
+        Assert.IsTrue(EmailEditor.Attachments.Upload.Visible(), 'Upload Action is not visible.');
+#endif
         Assert.IsTrue(EmailEditor.Send.Enabled(), 'Send Action was not enabled.');
     end;
 

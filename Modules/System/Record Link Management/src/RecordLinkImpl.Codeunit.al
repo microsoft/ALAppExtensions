@@ -16,26 +16,26 @@ codeunit 4470 "Record Link Impl."
         RemovingStatusMsg: Label '@1@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@';
         ResultMsg: Label '%1 orphaned links were removed.', Comment = '%1 = number of orphaned record links found.';
 
-    local procedure ResetNotifyOnLinks(RecVar: Variant)
+    local procedure ResetNotifyOnLinks(RecVariant: Variant)
     var
         RecordLink: Record "Record Link";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
-        RecRef.GetTable(RecVar);
-        RecordLink.SetRange("Record ID", RecRef.RecordId());
+        RecordRef.GetTable(RecVariant);
+        RecordLink.SetRange("Record ID", RecordRef.RecordId());
         RecordLink.SetRange(Notify, true);
         if not RecordLink.IsEmpty() then
             RecordLink.ModifyAll(Notify, false);
     end;
 
-    procedure CopyLinks(FromRecord: Variant; ToRecord: Variant)
+    procedure CopyLinks(FromRecordVariant: Variant; ToRecordVariant: Variant)
     var
-        RecRefTo: RecordRef;
+        RecordRefTo: RecordRef;
     begin
-        RecRefTo.GetTable(ToRecord);
-        RecRefTo.CopyLinks(FromRecord);
-        ResetNotifyOnLinks(RecRefTo);
-        RecordLinkManagement.OnAfterCopyLinks(FromRecord, ToRecord);
+        RecordRefTo.GetTable(ToRecordVariant);
+        RecordRefTo.CopyLinks(FromRecordVariant);
+        ResetNotifyOnLinks(RecordRefTo);
+        RecordLinkManagement.OnAfterCopyLinks(FromRecordVariant, ToRecordVariant);
     end;
 
     procedure WriteNote(var RecordLink: Record "Record Link"; Note: Text)

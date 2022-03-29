@@ -10,9 +10,9 @@ codeunit 9043 "ABS Helper Library"
 
     // #region Container-specific Helper
     [NonDebuggable]
-    procedure ContainerNodeListTotempRecord(NodeList: XmlNodeList; var Container: Record "ABS Container")
+    procedure ContainerNodeListTotempRecord(NodeList: XmlNodeList; var ABSContainer: Record "ABS Container")
     begin
-        NodeListToTempRecord(NodeList, './/Name', Container);
+        NodeListToTempRecord(NodeList, './/Name', ABSContainer);
     end;
 
     [NonDebuggable]
@@ -96,15 +96,15 @@ codeunit 9043 "ABS Helper Library"
     [NonDebuggable]
     procedure BlobNodeListToTempRecord(NodeList: XmlNodeList)
     var
-        ContainerContent: Record "ABS Container Content";
+        ABSContainerContent: Record "ABS Container Content";
     begin
-        BlobNodeListToTempRecord(NodeList, ContainerContent);
+        BlobNodeListToTempRecord(NodeList, ABSContainerContent);
     end;
 
     [NonDebuggable]
-    procedure BlobNodeListToTempRecord(NodeList: XmlNodeList; var ContainerContent: Record "ABS Container Content")
+    procedure BlobNodeListToTempRecord(NodeList: XmlNodeList; var ABSContainerContent: Record "ABS Container Content")
     begin
-        NodeListToTempRecord(NodeList, './/Name', ContainerContent);
+        NodeListToTempRecord(NodeList, './/Name', ABSContainerContent);
     end;
     // #endregion
 
@@ -154,32 +154,32 @@ codeunit 9043 "ABS Helper Library"
     end;
 
     [NonDebuggable]
-    local procedure NodeListToTempRecord(NodeList: XmlNodeList; XPathName: Text; var ContainerContent: Record "ABS Container Content")
+    local procedure NodeListToTempRecord(NodeList: XmlNodeList; XPathName: Text; var ABSContainerContent: Record "ABS Container Content")
     var
-        ContainerContentHelper: Codeunit "ABS Container Content Helper";
+        ABSContainerContentHelper: Codeunit "ABS Container Content Helper";
         Node: XmlNode;
     begin
-        ContainerContent.DeleteAll();
+        ABSContainerContent.DeleteAll();
 
         if NodeList.Count = 0 then
             exit;
 
         foreach Node in NodeList do
-            ContainerContentHelper.AddNewEntryFromNode(ContainerContent, Node, XPathName);
+            ABSContainerContentHelper.AddNewEntryFromNode(ABSContainerContent, Node, XPathName);
     end;
 
     [NonDebuggable]
-    local procedure NodeListToTempRecord(NodeList: XmlNodeList; XPathName: Text; var Container: Record "ABS Container")
+    local procedure NodeListToTempRecord(NodeList: XmlNodeList; XPathName: Text; var ABSContainer: Record "ABS Container")
     var
         ContainerHelper: Codeunit "ABS Container Helper";
         Node: XmlNode;
     begin
-        Container.DeleteAll();
+        ABSContainer.DeleteAll();
 
         if NodeList.Count = 0 then
             exit;
         foreach Node in NodeList do
-            ContainerHelper.AddNewEntryFromNode(Container, Node, XPathName);
+            ContainerHelper.AddNewEntryFromNode(ABSContainer, Node, XPathName);
     end;
     // #endregion
 
@@ -187,14 +187,14 @@ codeunit 9043 "ABS Helper Library"
     [NonDebuggable]
     procedure GetFieldByName(TableNo: Integer; FldName: Text; var FldNo: Integer): Boolean
     var
-        Fld: Record Field;
+        Field: Record Field;
     begin
         Clear(FldNo);
-        Fld.Reset();
-        Fld.SetRange(TableNo, TableNo);
-        Fld.SetRange(FieldName, CopyStr(FldName, 1, MaxStrLen(Fld.FieldName)));
-        if Fld.FindFirst() then
-            FldNo := Fld."No.";
+        Field.Reset();
+        Field.SetRange(TableNo, TableNo);
+        Field.SetRange(FieldName, CopyStr(FldName, 1, MaxStrLen(Field.FieldName)));
+        if Field.FindFirst() then
+            FldNo := Field."No.";
         exit(FldNo <> 0);
     end;
     // #endregion

@@ -17,11 +17,13 @@ page 1869 "C5 Payment"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(Payment; Payment) { ApplicationArea = All; }
                 field(Txt; Txt) { ApplicationArea = All; }
                 field(Method; Method) { ApplicationArea = All; }
                 field(Qty; Qty) { ApplicationArea = All; }
                 field(UnitCode; UnitCode) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

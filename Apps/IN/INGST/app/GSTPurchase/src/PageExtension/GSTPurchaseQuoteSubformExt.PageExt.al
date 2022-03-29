@@ -10,15 +10,13 @@ pageextension 18087 "GST Purchase Quote Subform Ext" extends "Purchase Quote Sub
                 FormatLine();
             end;
         }
-#if not CLEAN17
-        modify("Cross-Reference No.")
+        modify("Item Reference No.")
         {
             trigger OnAfterValidate()
             begin
                 SaveRecords();
             end;
         }
-#endif
         modify(Quantity)
         {
             trigger OnAfterValidate()

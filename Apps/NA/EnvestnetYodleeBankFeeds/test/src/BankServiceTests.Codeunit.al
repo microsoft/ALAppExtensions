@@ -41,7 +41,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         LinkingInsertedMsg: Label 'has been linked.';
         CurrencyErr: Label 'The bank feed that you are importing contains transactions in currencies other than';
         BankAccountErr: Label 'The bank feed that you are importing contains transactions for a different bank account.';
-        MatchSummaryMsg: Label '%1 payment lines out of %2 are applied.';
+        MatchSummaryMsg: Label '%1 payment lines out of %2 are applied.', Comment = '%2 is the total of lines, %1 is the ones applied';
         UriNotSecureErr: Label 'The URI is not secure.';
         UriNotValidErr: Label 'The URI is not valid.';
         DisableBankStatementSvcTxt: Label 'Do you want to disable the bank feed service?';
@@ -264,7 +264,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes')]
     procedure TestServiceHandles200();
     var
-        BankStatementServiceSetupPage: TestPage "MS - Yodlee Bank Service Setup";
+        MSYodleeBankServiceSetup: TestPage "MS - Yodlee Bank Service Setup";
     begin
         // Setup
         Initialize();
@@ -274,8 +274,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         LibraryVariableStorage.Enqueue(SetupSuccessfulTxt);
 
         // Exercise
-        BankStatementServiceSetupPage.OPENEDIT();
-        BankStatementServiceSetupPage.TestSetup.INVOKE();
+        MSYodleeBankServiceSetup.OPENEDIT();
+        MSYodleeBankServiceSetup.TestSetup.INVOKE();
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -285,7 +285,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     procedure TestServiceDisabledFromWarning();
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
-        BankStatementServiceSetupPage: TestPage "MS - Yodlee Bank Service Setup";
+        MSYodleeBankServiceSetupPage: TestPage "MS - Yodlee Bank Service Setup";
     begin
         // Setup
         Initialize();
@@ -297,11 +297,11 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         EnqueueConfirmMsgAndResponse(DisableBankStatementSvcTxt, TRUE);
 
         // Exercise
-        BankStatementServiceSetupPage.OPENEDIT();
-        BankStatementServiceSetupPage.ShowEnableWarning.DRILLDOWN();
+        MSYodleeBankServiceSetupPage.OPENEDIT();
+        MSYodleeBankServiceSetupPage.ShowEnableWarning.DRILLDOWN();
 
         // Assert
-        MSYodleeBankServiceSetup.FIND();
+        MSYodleeBankServiceSetup.FindFirst();
         Assert.IsFalse(MSYodleeBankServiceSetup.Enabled, '');
     end;
 
@@ -348,7 +348,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     procedure TestServiceChangingPassword();
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
-        BankStatementServiceSetupPage: TestPage "MS - Yodlee Bank Service Setup";
+        MSYodleeBankServiceSetupPage: TestPage "MS - Yodlee Bank Service Setup";
         OldPassword: Text;
         NewPassword: Text;
     begin
@@ -358,12 +358,12 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         NewPassword := CREATEGUID();
         OldPassword := CREATEGUID();
 
-        BankStatementServiceSetupPage.OPENEDIT();
+        MSYodleeBankServiceSetupPage.OPENEDIT();
         EnqueueConfirmMsgAndResponse(DataEncryptionTxt, FALSE);
-        BankStatementServiceSetupPage.CobrandPwd.VALUE := OldPassword + 'cob';
+        MSYodleeBankServiceSetupPage.CobrandPwd.VALUE := OldPassword + 'cob';
 
         EnqueueConfirmMsgAndResponse(DataEncryptionTxt, FALSE);
-        BankStatementServiceSetupPage.ConsumerPwd.VALUE := OldPassword + 'con';
+        MSYodleeBankServiceSetupPage.ConsumerPwd.VALUE := OldPassword + 'con';
 
         // Verify setup
         MSYodleeBankServiceSetup.FINDFIRST();
@@ -372,10 +372,10 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
 
         // Exercise
         EnqueueConfirmMsgAndResponse(DataEncryptionTxt, FALSE);
-        BankStatementServiceSetupPage.CobrandPwd.VALUE := NewPassword + 'cob';
+        MSYodleeBankServiceSetupPage.CobrandPwd.VALUE := NewPassword + 'cob';
 
         EnqueueConfirmMsgAndResponse(DataEncryptionTxt, FALSE);
-        BankStatementServiceSetupPage.ConsumerPwd.VALUE := NewPassword + 'con';
+        MSYodleeBankServiceSetupPage.ConsumerPwd.VALUE := NewPassword + 'con';
 
         // Assert
         MSYodleeBankServiceSetup.FIND();
@@ -403,7 +403,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         MSYodleeBankServiceSetup.MODIFY(TRUE);
 
         // Assert
-        MSYodleeBankServiceSetup.FIND();
+        MSYodleeBankServiceSetup.FindFirst();
         Assert.AreNotEqual('', MSYodleeBankServiceSetup."Service URL", '');
         Assert.AreNotEqual('', MSYodleeBankServiceSetup."Bank Acc. Linking URL", '');
     end;
@@ -412,27 +412,27 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
     procedure TestServiceDisallowsInsecureURLs();
     var
-        BankStatementServiceSetupPage: TestPage "MS - Yodlee Bank Service Setup";
+        MSYodleeBankServiceSetup: TestPage "MS - Yodlee Bank Service Setup";
     begin
         // Setup
         Initialize();
 
         // Exercise & Assert
-        BankStatementServiceSetupPage.OPENEDIT();
+        MSYodleeBankServiceSetup.OPENEDIT();
 
-        ASSERTERROR BankStatementServiceSetupPage."Service URL".VALUE := 'http://an.insecure.url';
+        ASSERTERROR MSYodleeBankServiceSetup."Service URL".VALUE := 'http://an.insecure.url';
         Assert.ExpectedError(UriNotSecureErr);
 
-        ASSERTERROR BankStatementServiceSetupPage."Bank Acc. Linking URL".VALUE := 'http://another.insecure.url';
+        ASSERTERROR MSYodleeBankServiceSetup."Bank Acc. Linking URL".VALUE := 'http://another.insecure.url';
         Assert.ExpectedError(UriNotSecureErr);
 
-        ASSERTERROR BankStatementServiceSetupPage."Bank Acc. Linking URL".VALUE := 'file://c:/a/strange/path/somewhere';
+        ASSERTERROR MSYodleeBankServiceSetup."Bank Acc. Linking URL".VALUE := 'file://c:/a/strange/path/somewhere';
         Assert.ExpectedError(UriNotSecureErr);
 
-        ASSERTERROR BankStatementServiceSetupPage."Service URL".VALUE := 'not a url';
+        ASSERTERROR MSYodleeBankServiceSetup."Service URL".VALUE := 'not a url';
         Assert.ExpectedError(UriNotValidErr);
 
-        ASSERTERROR BankStatementServiceSetupPage."Bank Acc. Linking URL".VALUE := 'this is also not a url';
+        ASSERTERROR MSYodleeBankServiceSetup."Bank Acc. Linking URL".VALUE := 'this is also not a url';
         Assert.ExpectedError(UriNotValidErr);
     end;
 
@@ -902,7 +902,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     procedure TestBankLinkingUpdateMissLinksCreateNew();
     var
         BankAccount: Record "Bank Account";
-        BankAccountNo: Variant;
+        BankAccountNo: Code[20];
+        BankAccountNoVariant: Variant;
     begin
         // Setup
         Initialize();
@@ -916,7 +917,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         UpdateBankAccountLink(BankAccount);
 
         // Assert
-        LibraryVariableStorage.Dequeue(BankAccountNo);
+        LibraryVariableStorage.Dequeue(BankAccountNoVariant);
+        BankAccountNo := BankAccountNoVariant;
         BankAccount.GET(BankAccountNo);
         LibraryVariableStorage.AssertEmpty();
         Assert.AreEqual(TRUE, BankAccount.IsLinkedToBankStatementServiceProvider(), '');
@@ -927,7 +929,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     procedure TestBankLinkingUpdateMissLinksReselect();
     var
         BankAccount: Record "Bank Account";
-        BankAccountNo: Variant;
+        BankAccountNo: Code[20];
+        BankAccountNoVariant: Variant;
     begin
         // Setup
         Initialize();
@@ -941,8 +944,9 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         UpdateBankAccountLink(BankAccount);
 
         // Assert
-        LibraryVariableStorage.Dequeue(BankAccountNo); // not needed but added in the create new handler
-        LibraryVariableStorage.Dequeue(BankAccountNo); // actual one to be used
+        LibraryVariableStorage.Dequeue(BankAccountNoVariant); // not needed but added in the create new handler
+        LibraryVariableStorage.Dequeue(BankAccountNoVariant); // actual one to be used
+        BankAccountNo := BankAccountNoVariant;
         BankAccount.GET(BankAccountNo);
         LibraryVariableStorage.AssertEmpty();
         Assert.AreEqual(TRUE, BankAccount.IsLinkedToBankStatementServiceProvider(), '');
@@ -982,7 +986,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     var
         BankAccount: Record "Bank Account";
         BankAccountList: TestPage "Bank Account List";
-        BankAccountNo: Variant;
+        BankAccountNo: Code[20];
+        BankAccountNoVariant: Variant;
     begin
         // Setup
         Initialize();
@@ -998,7 +1003,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         BankAccountList.CreateNewLinkedBankAccount.INVOKE();
 
         // Assert
-        LibraryVariableStorage.Dequeue(BankAccountNo);
+        LibraryVariableStorage.Dequeue(BankAccountNoVariant);
+        BankAccountNo := BankAccountNoVariant;
         BankAccount.GET(BankAccountNo);
         LibraryVariableStorage.AssertEmpty();
         Assert.AreEqual(TRUE, BankAccount.IsLinkedToBankStatementServiceProvider(), '');
@@ -1113,20 +1119,20 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     var
         BankAccount: Record "Bank Account";
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
-        BankAccRecon: Record "Bank Acc. Reconciliation";
-        PmtReconJnl: TestPage "Payment Reconciliation Journal";
+        BankAccReconciliation: Record "Bank Acc. Reconciliation";
+        PaymentReconciliationJournal: TestPage "Payment Reconciliation Journal";
     begin
         // Setup
         Initialize();
         SetupForOnlineImportingOfTransactions(MSYodleeBankServiceSetup, BankAccount);
 
         // Import bank transactions
-        LibraryERM.CreateBankAccReconciliation(BankAccRecon, BankAccount."No.", BankAccRecon."Statement Type"::"Payment Application");
-        OpenPmtReconJnl(BankAccRecon, PmtReconJnl);
-        PmtReconJnl.ImportBankTransactions.INVOKE();
+        LibraryERM.CreateBankAccReconciliation(BankAccReconciliation, BankAccount."No.", BankAccReconciliation."Statement Type"::"Payment Application");
+        OpenPmtReconJnl(BankAccReconciliation, PaymentReconciliationJournal);
+        PaymentReconciliationJournal.ImportBankTransactions.INVOKE();
 
-        VerifyPmtReconJnlWithOnlineTransactions(PmtReconJnl);
-        BankAccRecon.Delete(true);
+        VerifyPmtReconJnlWithOnlineTransactions(PaymentReconciliationJournal);
+        BankAccReconciliation.Delete(true);
     end;
 
     [Test]
@@ -1167,7 +1173,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     var
         BankAccount: Record "Bank Account";
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
-        PmtReconJnl: TestPage "Payment Reconciliation Journal";
+        PaymentReconciliationJournal: TestPage "Payment Reconciliation Journal";
         PmtReconciliationJournals: TestPage "Pmt. Reconciliation Journals";
     begin
         // Setup
@@ -1177,11 +1183,11 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         // Import bank transactions
         LibraryVariableStorage.Enqueue(BankAccount."No.");
         PmtReconciliationJournals.OPENVIEW();
-        PmtReconJnl.TRAP();
+        PaymentReconciliationJournal.TRAP();
         LibraryVariableStorage.Enqueue(STRSUBSTNO(MatchSummaryMsg, 0, 3));
         PmtReconciliationJournals.ImportBankTransactionsToNew.INVOKE();
 
-        VerifyPmtReconJnlWithOnlineTransactions(PmtReconJnl);
+        VerifyPmtReconJnlWithOnlineTransactions(PaymentReconciliationJournal);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -1334,7 +1340,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         BankAccount: Record "Bank Account";
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         JobQueueEntry: Record "Job Queue Entry";
-        PmtReconJnl: TestPage "Payment Reconciliation Journal";
+        PaymentReconciliationJournal: TestPage "Payment Reconciliation Journal";
     begin
         // Setup
         Initialize();
@@ -1347,10 +1353,10 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         JobQueueEntry."Record ID to Process" := BankAccount.RECORDID();
         JobQueueEntry."Object ID to Run" := CODEUNIT::"Automatic Import of Bank Stmt.";
 
-        PmtReconJnl.TRAP();
+        PaymentReconciliationJournal.TRAP();
         CODEUNIT.RUN(CODEUNIT::"Automatic Import of Bank Stmt.", JobQueueEntry);
 
-        VerifyPmtReconJnlWithOnlineTransactions(PmtReconJnl);
+        VerifyPmtReconJnlWithOnlineTransactions(PaymentReconciliationJournal);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -1363,7 +1369,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         JobQueueEntry: Record "Job Queue Entry";
         BankAccReconciliation: Record "Bank Acc. Reconciliation";
-        PmtReconJnl: TestPage "Payment Reconciliation Journal";
+        PaymentReconciliationJournal: TestPage "Payment Reconciliation Journal";
     begin
         // Setup
         Initialize();
@@ -1376,11 +1382,11 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         JobQueueEntry."Record ID to Process" := BankAccount.RECORDID();
         JobQueueEntry."Object ID to Run" := CODEUNIT::"Automatic Import of Bank Stmt.";
 
-        PmtReconJnl.TRAP();
+        PaymentReconciliationJournal.TRAP();
         CODEUNIT.RUN(CODEUNIT::"Automatic Import of Bank Stmt.", JobQueueEntry);
         CODEUNIT.RUN(CODEUNIT::"Automatic Import of Bank Stmt.", JobQueueEntry);
 
-        VerifyPmtReconJnlWithOnlineTransactions(PmtReconJnl);
+        VerifyPmtReconJnlWithOnlineTransactions(PaymentReconciliationJournal);
 
         BankAccReconciliation.SETRANGE("Bank Account No.", BankAccount."No.");
         Assert.AreEqual(1, BankAccReconciliation.COUNT(), 'Second import should not create a new Payment Rec Jnl');
@@ -1394,8 +1400,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     var
         BankAccount: Record "Bank Account";
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
-        BankAccRecon: Record "Bank Acc. Reconciliation";
-        PmtReconJnl: TestPage "Payment Reconciliation Journal";
+        BankAccReconciliation: Record "Bank Acc. Reconciliation";
+        PaymentReconciliationJournal: TestPage "Payment Reconciliation Journal";
     begin
         // Setup
         Initialize();
@@ -1406,9 +1412,9 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         BankAccount.MODIFY();
 
         // Import bank transactions
-        LibraryERM.CreateBankAccReconciliation(BankAccRecon, BankAccount."No.", BankAccRecon."Statement Type"::"Payment Application");
-        OpenPmtReconJnl(BankAccRecon, PmtReconJnl);
-        ASSERTERROR PmtReconJnl.ImportBankTransactions.INVOKE();
+        LibraryERM.CreateBankAccReconciliation(BankAccReconciliation, BankAccount."No.", BankAccReconciliation."Statement Type"::"Payment Application");
+        OpenPmtReconJnl(BankAccReconciliation, PaymentReconciliationJournal);
+        ASSERTERROR PaymentReconciliationJournal.ImportBankTransactions.INVOKE();
         Assert.ExpectedError(CurrencyErr);
     end;
 
@@ -1419,8 +1425,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         BankAccount: Record "Bank Account";
         MSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link";
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
-        BankAccRecon: Record "Bank Acc. Reconciliation";
-        PmtReconJnl: TestPage "Payment Reconciliation Journal";
+        BankAccReconciliation: Record "Bank Acc. Reconciliation";
+        PaymentReconciliationJournal: TestPage "Payment Reconciliation Journal";
     begin
         // Setup
         Initialize();
@@ -1432,9 +1438,9 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         MSYodleeBankAccLink.MODIFY();
 
         // Import bank transactions
-        LibraryERM.CreateBankAccReconciliation(BankAccRecon, BankAccount."No.", BankAccRecon."Statement Type"::"Payment Application");
-        OpenPmtReconJnl(BankAccRecon, PmtReconJnl);
-        ASSERTERROR PmtReconJnl.ImportBankTransactions.INVOKE();
+        LibraryERM.CreateBankAccReconciliation(BankAccReconciliation, BankAccount."No.", BankAccReconciliation."Statement Type"::"Payment Application");
+        OpenPmtReconJnl(BankAccReconciliation, PaymentReconciliationJournal);
+        ASSERTERROR PaymentReconciliationJournal.ImportBankTransactions.INVOKE();
         Assert.ExpectedError(BankAccountErr);
     end;
 
@@ -1451,7 +1457,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
 
         // exercise
         CreateLinkedBankAccount(BankAccount);
-        BankAccount.FIND();
+        BankAccount.FindFirst();
 
         // verify
         Assert.AreEqual(7, BankAccount."Transaction Import Timespan", '');
@@ -1977,7 +1983,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         PasswordHelper: Codeunit "Password Helper";
         Password: Text[50];
     begin
-        Password := PasswordHelper.GeneratePassword(MaxStrLen(Password));
+        Password := CopyStr(PasswordHelper.GeneratePassword(MaxStrLen(Password)), 1, 50);
         Assert.IsFalse(PasswordHelper.WeakYodleePassword(Password), 'The generated password does not conform with Yodlee standard for a strong password.')
     end;
 
@@ -2014,24 +2020,21 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
             MSYodleeBankAccLink.MODIFY();
     end;
 
-    local procedure VerifyPmtReconJnlWithOnlineTransactions(PmtReconJnl: TestPage "Payment Reconciliation Journal");
+    local procedure VerifyPmtReconJnlWithOnlineTransactions(PaymentReconciliationJournal: TestPage "Payment Reconciliation Journal");
     begin
         // verify that the transaction lines from the mock file are imported
-        PmtReconJnl.FIRST();
-        Assert.AreEqual(3465, PmtReconJnl."Statement Amount".ASDECIMAL(), '');
-        Assert.AreEqual('DESC1', PmtReconJnl."Transaction Text".VALUE(), '');
-        Assert.AreEqual(DMY2DATE(16, 1, 2013), PmtReconJnl."Transaction Date".ASDATE(), '');
-        PmtReconJnl.NEXT();
-        Assert.AreEqual(-3103, PmtReconJnl."Statement Amount".ASDECIMAL(), '');
-        Assert.AreEqual('DESC2', PmtReconJnl."Transaction Text".VALUE(), '');
-        Assert.AreEqual(DMY2DATE(14, 1, 2013), PmtReconJnl."Transaction Date".ASDATE(), '');
-        PmtReconJnl.NEXT();
-        Assert.AreEqual(5646, PmtReconJnl."Statement Amount".ASDECIMAL(), '');
-        Assert.AreEqual('DESC3', PmtReconJnl."Transaction Text".VALUE(), '');
-        Assert.AreEqual(DMY2DATE(10, 1, 2013), PmtReconJnl."Transaction Date".ASDATE(), '');
-
-        // verify feed ending balance from the mock file was imported
-        Assert.AreEqual(9044.78, PmtReconJnl.StatementEndingBalance.ASDECIMAL(), '');
+        PaymentReconciliationJournal.FIRST();
+        Assert.AreEqual(3465, PaymentReconciliationJournal."Statement Amount".ASDECIMAL(), '');
+        Assert.AreEqual('DESC1', PaymentReconciliationJournal."Transaction Text".VALUE(), '');
+        Assert.AreEqual(DMY2DATE(16, 1, 2013), PaymentReconciliationJournal."Transaction Date".ASDATE(), '');
+        PaymentReconciliationJournal.NEXT();
+        Assert.AreEqual(-3103, PaymentReconciliationJournal."Statement Amount".ASDECIMAL(), '');
+        Assert.AreEqual('DESC2', PaymentReconciliationJournal."Transaction Text".VALUE(), '');
+        Assert.AreEqual(DMY2DATE(14, 1, 2013), PaymentReconciliationJournal."Transaction Date".ASDATE(), '');
+        PaymentReconciliationJournal.NEXT();
+        Assert.AreEqual(5646, PaymentReconciliationJournal."Statement Amount".ASDECIMAL(), '');
+        Assert.AreEqual('DESC3', PaymentReconciliationJournal."Transaction Text".VALUE(), '');
+        Assert.AreEqual(DMY2DATE(10, 1, 2013), PaymentReconciliationJournal."Transaction Date".ASDATE(), '');
     end;
 
     local procedure VerifyActivityLogWithOnlineTransactions(var ActivityLog: Record "Activity Log");
@@ -2118,9 +2121,11 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     local procedure VerifyBankAccountPromptsMissingLink();
     var
         BankAccount: Record "Bank Account";
-        BankAccountNo: Variant;
+        BankAccountNo: Code[20];
+        BankAccountNoVariant: Variant;
     begin
-        LibraryVariableStorage.Dequeue(BankAccountNo);
+        LibraryVariableStorage.Dequeue(BankAccountNoVariant);
+        BankAccountNo := BankAccountNoVariant;
         BankAccount.GET(BankAccountNo);
         LibraryVariableStorage.AssertEmpty();
         Assert.AreEqual(TRUE, BankAccount.IsLinkedToBankStatementServiceProvider(), '');
@@ -2129,41 +2134,41 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     [ConfirmHandler]
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean);
     var
-        Response: Variant;
-        Msg: Variant;
+        ResponseVariant: Variant;
+        MsgVariant: Variant;
     begin
-        LibraryVariableStorage.Dequeue(Msg);
-        Assert.IsTrue(STRPOS(Question, Msg) > 0, Question);
-        LibraryVariableStorage.Dequeue(Response);
-        Reply := Response;
+        LibraryVariableStorage.Dequeue(MsgVariant);
+        Assert.IsTrue(STRPOS(Question, MsgVariant) > 0, Question);
+        LibraryVariableStorage.Dequeue(ResponseVariant);
+        Reply := ResponseVariant;
     end;
 
     [StrMenuHandler]
     procedure StrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024]);
     var
-        Selected: Variant;
-        Option1: Variant;
-        Option2: Variant;
-        Option3: Variant;
+        SelectedVariant: Variant;
+        Option1Variant: Variant;
+        Option2Variant: Variant;
+        Option3Variant: Variant;
         Pos1: Integer;
         Pos2: Integer;
         Pos3: Integer;
         Pos: Integer;
     begin
-        LibraryVariableStorage.Dequeue(Option1);
-        LibraryVariableStorage.Dequeue(Option2);
-        LibraryVariableStorage.Dequeue(Option3);
-        LibraryVariableStorage.Dequeue(Selected);
+        LibraryVariableStorage.Dequeue(Option1Variant);
+        LibraryVariableStorage.Dequeue(Option2Variant);
+        LibraryVariableStorage.Dequeue(Option3Variant);
+        LibraryVariableStorage.Dequeue(SelectedVariant);
 
-        Pos1 := STRPOS(Options, Option1);
-        Pos2 := STRPOS(Options, Option2);
-        Pos3 := STRPOS(Options, Option3);
-        Pos := STRPOS(Options, Selected);
+        Pos1 := STRPOS(Options, Option1Variant);
+        Pos2 := STRPOS(Options, Option2Variant);
+        Pos3 := STRPOS(Options, Option3Variant);
+        Pos := STRPOS(Options, SelectedVariant);
 
         Assert.IsTrue(Pos1 > 0, Options);
         Assert.IsTrue(Pos2 > 0, Options);
         Assert.IsTrue(Pos3 > 0, Options);
-        Assert.AreEqual(STRLEN(Options), STRLEN(Option1) + STRLEN(Option2) + STRLEN(Option3) + 2, Options);
+        Assert.AreEqual(STRLEN(Options), STRLEN(Option1Variant) + STRLEN(Option2Variant) + STRLEN(Option3Variant) + 2, Options);
 
         CASE Pos OF
             Pos1:
@@ -2176,61 +2181,61 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [ModalPageHandler]
-    procedure BankLinkingHandler(var BankAccountLinking: TestPage 1453);
+    procedure BankLinkingHandler(var MSYodleeNonLinkedAccounts: TestPage 1453);
     var
-        BankAccountNo: Variant;
+        BankAccountNoVariant: Variant;
     begin
-        LibraryVariableStorage.Dequeue(BankAccountNo);
+        LibraryVariableStorage.Dequeue(BankAccountNoVariant);
 
-        BankAccountLinking.LinkedBankAccount.VALUE := BankAccountNo;
-        LibraryVariableStorage.Enqueue(BankAccountNo);
-        BankAccountLinking.OK().INVOKE();
+        MSYodleeNonLinkedAccounts.LinkedBankAccount.VALUE := BankAccountNoVariant;
+        LibraryVariableStorage.Enqueue(BankAccountNoVariant);
+        MSYodleeNonLinkedAccounts.OK().INVOKE();
     end;
 
     [ModalPageHandler]
-    procedure CloseBankLinkingHandler(var BankAccountLinking: TestPage 1453);
+    procedure CloseBankLinkingHandler(var MSYodleeNonLinkedAccounts: TestPage 1453);
     begin
-        BankAccountLinking.OK().INVOKE();
+        MSYodleeNonLinkedAccounts.OK().INVOKE();
     end;
 
     [ModalPageHandler]
-    procedure BankLinkingActionHandler(var BankAccountLinking: TestPage 1453);
+    procedure BankLinkingActionHandler(var MSYodleeNonLinkedAccounts: TestPage 1453);
     begin
-        BankAccountLinking.LinkToExistingBankAccount.INVOKE();
-        BankAccountLinking.OK().INVOKE();
+        MSYodleeNonLinkedAccounts.LinkToExistingBankAccount.INVOKE();
+        MSYodleeNonLinkedAccounts.OK().INVOKE();
     end;
 
     [ModalPageHandler]
     procedure BankLinkingActionHandlerStepTwo(var BankAccountList: TestPage "Bank Account List");
     var
-        BankAccountNo: Variant;
+        BankAccountNoVariant: Variant;
     begin
-        LibraryVariableStorage.Dequeue(BankAccountNo);
-        BankAccountList.GOTOKEY(BankAccountNo);
+        LibraryVariableStorage.Dequeue(BankAccountNoVariant);
+        BankAccountList.GOTOKEY(BankAccountNoVariant);
 
-        LibraryVariableStorage.Enqueue(BankAccountNo);
+        LibraryVariableStorage.Enqueue(BankAccountNoVariant);
         BankAccountList.OK().INVOKE();
     end;
 
     [ModalPageHandler]
-    procedure BankLinkingCreateNewHandler(var BankAccountLinking: TestPage 1453);
+    procedure BankLinkingCreateNewHandler(var MSYodleeNonLinkedAccounts: TestPage 1453);
     var
         TempBankAccount: Record "Bank Account" temporary;
-        Answer: Variant;
+        AnswerVariant: Variant;
         Reselect: Boolean;
     begin
-        LibraryVariableStorage.Dequeue(Answer);
-        Reselect := Answer;
+        LibraryVariableStorage.Dequeue(AnswerVariant);
+        Reselect := AnswerVariant;
 
-        BankAccountLinking.LinkToNewBankAccount.INVOKE();
+        MSYodleeNonLinkedAccounts.LinkToNewBankAccount.INVOKE();
         IF Reselect THEN BEGIN
             TempBankAccount.GetUnlinkedBankAccounts(TempBankAccount);
             TempBankAccount.FINDFIRST();
             LibraryVariableStorage.Enqueue(TempBankAccount."No.");
-            BankAccountLinking.LinkedBankAccount.VALUE := TempBankAccount."No.";
+            MSYodleeNonLinkedAccounts.LinkedBankAccount.VALUE := TempBankAccount."No.";
         END;
 
-        BankAccountLinking.OK().INVOKE();
+        MSYodleeNonLinkedAccounts.OK().INVOKE();
     end;
 
     [ModalPageHandler]
@@ -2285,9 +2290,9 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [ModalPageHandler]
-    procedure FastlinkHandler(var OnlineBankAccountLinking: TestPage 1451);
+    procedure FastlinkHandler(var MSYodleeAccountLinking: TestPage 1451);
     begin
-        OnlineBankAccountLinking.OK().INVOKE();
+        MSYodleeAccountLinking.OK().INVOKE();
     end;
 
     local procedure EnqueueConfirmMsgAndResponse(Msg: Text; Response: Boolean);
@@ -2307,10 +2312,10 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     [MessageHandler]
     procedure MessageHandler(Message: Text[1024]);
     var
-        Msg: Variant;
+        MsgVariant: Variant;
     begin
-        LibraryVariableStorage.Dequeue(Msg);
-        Assert.IsTrue(STRPOS(Message, Msg) > 0, Message);
+        LibraryVariableStorage.Dequeue(MsgVariant);
+        Assert.IsTrue(STRPOS(Message, MsgVariant) > 0, Message);
     end;
 
     local procedure ConfigureVATPostingSetup();
@@ -2344,13 +2349,13 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         XMLRootNode := RootElement.AsXmlNode();
     end;
 
-    local procedure OpenPmtReconJnl(BankAccRecon: Record "Bank Acc. Reconciliation"; var PmtReconJnl: TestPage "Payment Reconciliation Journal");
+    local procedure OpenPmtReconJnl(BankAccReconciliation: Record "Bank Acc. Reconciliation"; var PaymentReconciliationJournal: TestPage "Payment Reconciliation Journal");
     var
         PmtReconciliationJournals: TestPage "Pmt. Reconciliation Journals";
     begin
         PmtReconciliationJournals.OPENVIEW();
-        PmtReconciliationJournals.GOTORECORD(BankAccRecon);
-        PmtReconJnl.TRAP();
+        PmtReconciliationJournals.GOTORECORD(BankAccReconciliation);
+        PaymentReconciliationJournal.TRAP();
         PmtReconciliationJournals.EditJournal.INVOKE();
     end;
 
@@ -2371,11 +2376,11 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     [ModalPageHandler]
     procedure PaymentBankAccountListHandler(var PaymentBankAccountList: TestPage 1282);
     var
-        BankAccountNoVar: Variant;
+        BankAccountNoVariant: Variant;
         BankAccountNo: Code[20];
     begin
-        LibraryVariableStorage.Dequeue(BankAccountNoVar);
-        BankAccountNo := BankAccountNoVar;
+        LibraryVariableStorage.Dequeue(BankAccountNoVariant);
+        BankAccountNo := BankAccountNoVariant;
         PaymentBankAccountList.FINDFIRSTFIELD("No.", BankAccountNo);
         PaymentBankAccountList.OK().INVOKE();
     end;

@@ -9,7 +9,8 @@ permissionset 134686 "Email Edit"
     IncludedPermissionSets = "Email - Edit";
 
     // Include Test Tables
-    Permissions = 
+    Permissions =
         tabledata "Test Email Connector Setup" = RIMD,
-        tabledata "Test Email Account" = RIMD; // Needed for the Record to get passed in Library Assert
+        tabledata "Test Email Account" = RIMD, // Needed for the Record to get passed in Library Assert
+        tabledata "Scheduled Task" = rd;        // Needed for enqueue tests
 }

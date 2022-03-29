@@ -135,7 +135,7 @@ page 31208 "Registration Log Details CZL"
         ResetEnabled: Boolean;
         ResetAllEnabled: Boolean;
 
-    local procedure UpdateAllDetailsStatus(Before: Enum "Reg. Log Detail Field Status CZL"; After: Enum "Reg. Log Detail Field Status CZL")
+    local procedure UpdateAllDetailsStatus(Before: Enum "Reg. Log Detailed Field Status CZL"; After: Enum "Reg. Log Detailed Field Status CZL")
     var
         RegistrationLogDetail: Record "Registration Log Detail CZL";
     begin

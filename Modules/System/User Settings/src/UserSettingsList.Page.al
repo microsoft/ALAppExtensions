@@ -19,7 +19,7 @@ page 9206 "User Settings List"
     SourceTableView = sorting("User ID") order(ascending);
     HelpLink = 'https://go.microsoft.com/fwlink/?linkid=2149387';
     AboutTitle = 'About user settings';
-    AboutText = 'User settings control the look and feel of the user interface the next time the users log in. Each user can also make their own choices in their My Settings page, unless you restrict their permissions.';
+    AboutText = '**User Settings** control the look and feel of the user interface the next time the users log in. Each user can also make their own choices in their **My Settings** page, unless you restrict their permissions.';
 
     layout
     {

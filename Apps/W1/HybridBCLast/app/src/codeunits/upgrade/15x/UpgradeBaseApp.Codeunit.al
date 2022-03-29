@@ -22,7 +22,6 @@ codeunit 4052 "Upg Mig - BaseApp"
         UpdateItems();
         UpdateJobs();
         UpdateItemTrackingCodes();
-        UpgradeVATReportSetup();
         UpgradeStandardCustomerSalesCodes();
         UpgradeStandardVendorPurchaseCode();
 
@@ -341,25 +340,6 @@ codeunit 4052 "Upg Mig - BaseApp"
             ItemTrackingCode.ModifyAll("Use Expiration Dates", true);
     end;
 
-    local procedure UpgradeVATReportSetup()
-    var
-        VATReportSetup: Record "VAT Report Setup";
-        DateFormulaText: Text;
-    begin
-        WITH VATReportSetup DO begin
-            if not Get() then
-                exit;
-            if IsPeriodReminderCalculation() OR ("Period Reminder Time" = 0) then
-                exit;
-
-            DateFormulaText := StrSubstNo('<%1D>', "Period Reminder Time");
-            Evaluate("Period Reminder Calculation", DateFormulaText);
-            "Period Reminder Time" := 0;
-
-            if Modify() then;
-        end;
-    end;
-
     local procedure UpgradeStandardCustomerSalesCodes()
     var
         StandardSalesCode: Record "Standard Sales Code";
@@ -451,4 +431,3 @@ codeunit 4052 "Upg Mig - BaseApp"
         TargetRecordRef.Modify();
     end;
 }
-

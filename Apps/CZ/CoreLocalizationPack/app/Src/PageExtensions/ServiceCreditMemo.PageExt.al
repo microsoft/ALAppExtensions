@@ -2,12 +2,40 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
 {
     layout
     {
-        addbefore("Posting Date")
+#if not CLEAN19
+#pragma warning disable AL0432
+        movelast(General; "Posting Description")
+        addlast(General)
+        {
+            field("Credit Memo Type CZL"; Rec."Credit Memo Type CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the type of credit memo (corrective tax document, internal correction, insolvency tax document).';
+            }
+        }
+#pragma warning restore AL0432
+#else
+        addlast(General)
         {
             field("Posting Description CZL"; Rec."Posting Description")
             {
-                ApplicationArea = Service;
-                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies a description of the purchase receipt. The posting description also appers on vendor and G/L entries.';
+                Visible = false;
+            }
+            field("Credit Memo Type CZL"; Rec."Credit Memo Type CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the type of credit memo (corrective tax document, internal correction, insolvency tax document).';
+            }
+        }
+#endif
+        addbefore("Location Code")
+        {
+            field("Reason Code CZL"; Rec."Reason Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the reason code on the entry.';
             }
         }
         addafter("Posting Date")
@@ -18,60 +46,8 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
             }
         }
-        addafter("Prices Including VAT")
+        addlast(Invoicing)
         {
-            field("Customer Posting Group CZL"; Rec."Customer Posting Group")
-            {
-                ApplicationArea = Service;
-                ToolTip = 'Specifies the customer''s market type to link business transakcions to.';
-            }
-            field("Reason Code CZL"; Rec."Reason Code")
-            {
-                ApplicationArea = Service;
-                ToolTip = 'Specifies the reason code on the entry.';
-            }
-        }
-        addafter("Currency Code")
-        {
-            field("VAT Currency Code CZL"; Rec."VAT Currency Code CZL")
-            {
-                ApplicationArea = Suite;
-                Importance = Promoted;
-                ToolTip = 'Specifies the currency of VAT on the service credit memo.';
-
-                trigger OnAssistEdit()
-                begin
-                    Clear(ChangeExchangeRate);
-                    if Rec."VAT Date CZL" <> 0D then
-                        ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Date CZL")
-                    else
-                        ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", WorkDate());
-                    if ChangeExchangeRate.RunModal() = Action::OK then begin
-                        Rec.Validate("VAT Currency Factor CZL", ChangeExchangeRate.GetParameter());
-                        CurrPage.Update();
-                    end;
-                    Clear(ChangeExchangeRate);
-                end;
-
-                trigger OnValidate()
-                begin
-                    CurrencyCodeOnAfterValidate();
-                    CurrPage.SaveRecord();
-                end;
-            }
-        }
-        addafter("Area")
-        {
-            field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies when the service header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
-            }
-            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies that entry will be excluded from intrastat.';
-            }
             field("VAT Registration No. CZL"; Rec."VAT Registration No.")
             {
                 ApplicationArea = Basic, Suite;
@@ -88,6 +64,45 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 ToolTip = 'Specifies the secondary VAT registration number for the vendor.';
                 Importance = Additional;
             }
+        }
+        addafter("Currency Code")
+        {
+            field("VAT Currency Code CZL"; Rec."VAT Currency Code CZL")
+            {
+                ApplicationArea = Suite;
+                Importance = Promoted;
+                ToolTip = 'Specifies the currency of VAT on the service credit memo.';
+
+                trigger OnAssistEdit()
+                var
+                    ChangeExchangeRate: Page "Change Exchange Rate";
+                begin
+                    if Rec."VAT Date CZL" <> 0D then
+                        ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Date CZL")
+                    else
+                        ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", WorkDate());
+                    if ChangeExchangeRate.RunModal() = Action::OK then begin
+                        Rec.Validate("VAT Currency Factor CZL", ChangeExchangeRate.GetParameter());
+                        CurrPage.Update();
+                    end;
+                end;
+
+                trigger OnValidate()
+                begin
+                    CurrPage.SaveRecord();
+                end;
+            }
+        }
+        addlast(Shipping)
+        {
+            field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if there is physical transfer of the item.';
+            }
+        }
+        addlast("Foreign Trade")
+        {
             field("Language Code CZL"; Rec."Language Code")
             {
                 ApplicationArea = Basic, Suite;
@@ -98,31 +113,22 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the VAT country/region code of customer.';
             }
-        }
-        addafter("Assigned User ID")
-        {
-            field("Credit Memo Type CZL"; Rec."Credit Memo Type CZL")
+            field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the type of credit memo (corrective tax document, internal correction, insolvency tax document).';
+                ToolTip = 'Specifies when the service header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
-        }
-        addafter("Location Code")
-        {
-            field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies if there is physical transfer of the item.';
-            }
-        }
-        addfirst("Foreign Trade")
-        {
             field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Intrastat Transaction';
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
+            }
+            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies that entry will be excluded from intrastat.';
             }
         }
         addafter("Foreign Trade")
@@ -190,12 +196,4 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
             }
         }
     }
-
-    var
-        ChangeExchangeRate: Page "Change Exchange Rate";
-
-    local procedure CurrencyCodeOnAfterValidate()
-    begin
-        CurrPage.ServLines.Page.UpdateForm(true);
-    end;
 }

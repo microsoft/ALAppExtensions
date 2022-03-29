@@ -12,6 +12,7 @@ permissionset 160 SECURITY
     IncludedPermissionSets = "System Application - Basic",
                              "Company - Edit",
                              "Permissions & Licenses - Edit",
+                             "Azure AD Plan - Admin",
                              "Session - Edit";
 
     Permissions = system "Tools, Security, Roles" = X,

@@ -86,7 +86,7 @@ codeunit 147101 "CD Sales Red Storno"
         ItemReceiptNo := InvtDocumentHeader."No.";
         LibraryInventory.CreateInvtDocumentLine(
           InvtDocumentHeader, InvtDocumentLine, Item."No.", LibraryRandom.RandDec(100, 2), Qty);
-        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, false, Qty, SerialNo, '', PackageNo);
+        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, false, Qty, SerialNo, '', PackageNo, 1);
         LibraryInventory.PostInvtDocument(InvtDocumentHeader);
         LibraryItemTracking.CheckLastItemLedgerEntry(ItemLedgerEntry, Item."No.", Location.Code, '', '', PackageNo[1], Qty);
 
@@ -98,7 +98,7 @@ codeunit 147101 "CD Sales Red Storno"
           InvtDocumentHeader);
         InvtDocumentHeader.Validate(Correction, true);
         InvtDocumentHeader.Modify();
-        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, false, Qty, SerialNo, '', PackageNo);
+        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, false, Qty, SerialNo, '', PackageNo, -1);
         ReservationEntry.Validate("Appl.-to Item Entry", ItemLedgerEntry."Entry No.");
         ReservationEntry.Modify();
         LibraryInventory.PostInvtDocument(InvtDocumentHeader);
@@ -140,7 +140,7 @@ codeunit 147101 "CD Sales Red Storno"
         ItemReceiptNo := InvtDocumentHeader."No.";
         LibraryInventory.CreateInvtDocumentLine(
           InvtDocumentHeader, InvtDocumentLine, Item."No.", LibraryRandom.RandDec(100, 2), Qty);
-        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, false, Qty, SerialNo, LotNo, PackageNo);
+        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, false, Qty, SerialNo, LotNo, PackageNo, 1);
         LibraryInventory.PostInvtDocument(InvtDocumentHeader);
         LibraryItemTracking.CheckLastItemLedgerEntry(ItemLedgerEntry, Item."No.", Location.Code, '', LotNo, PackageNo[1], Qty);
 
@@ -152,7 +152,7 @@ codeunit 147101 "CD Sales Red Storno"
           InvtDocumentHeader);
         InvtDocumentHeader.Validate(Correction, true);
         InvtDocumentHeader.Modify();
-        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, false, Qty, SerialNo, LotNo, PackageNo);
+        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, false, Qty, SerialNo, LotNo, PackageNo, -1);
         ReservationEntry.Validate("Appl.-to Item Entry", ItemLedgerEntry."Entry No.");
         ReservationEntry.Modify();
         LibraryInventory.PostInvtDocument(InvtDocumentHeader);
@@ -195,7 +195,7 @@ codeunit 147101 "CD Sales Red Storno"
         ItemReceiptNo := InvtDocumentHeader."No.";
         LibraryInventory.CreateInvtDocumentLine(
           InvtDocumentHeader, InvtDocumentLine, Item."No.", LibraryRandom.RandDec(100, 2), Qty);
-        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, true, Qty, SerialNo, LotNo, PackageNo);
+        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, true, Qty, SerialNo, LotNo, PackageNo, 1);
         LibraryInventory.PostInvtDocument(InvtDocumentHeader);
 
         for j := 1 to Qty do begin
@@ -211,7 +211,7 @@ codeunit 147101 "CD Sales Red Storno"
             "Invt. Doc. Document Type From"::"Posted Receipt", InvtReceiptHeader."No.", InvtDocumentHeader);
         InvtDocumentHeader.Validate(Correction, true);
         InvtDocumentHeader.Modify();
-        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, true, Qty, SerialNo, LotNo, PackageNo);
+        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, true, Qty, SerialNo, LotNo, PackageNo, -1);
         ReservationEntry.Validate("Appl.-to Item Entry", ItemLedgerEntry."Entry No.");
         ReservationEntry.Modify();
         LibraryInventory.PostInvtDocument(InvtDocumentHeader);
@@ -257,7 +257,7 @@ codeunit 147101 "CD Sales Red Storno"
         LibraryInventory.CreateInvtDocument(InvtDocumentHeader, InvtDocumentHeader."Document Type"::Receipt, Location.Code);
         LibraryInventory.CreateInvtDocumentLine(
           InvtDocumentHeader, InvtDocumentLine, Item."No.", LibraryRandom.RandDec(100, 2), Qty[ItemEntryType::Receipt]);
-        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, false, Qty[ItemEntryType::Receipt], SerialNo, '', PackageNo);
+        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, false, Qty[ItemEntryType::Receipt], SerialNo, '', PackageNo, 1);
         LibraryInventory.PostInvtDocument(InvtDocumentHeader);
 
         LibraryItemTracking.CheckLastItemLedgerEntry(ItemLedgerEntry, Item."No.", Location.Code, '', '', PackageNo[1], Qty[ItemEntryType::Receipt]);
@@ -329,7 +329,7 @@ codeunit 147101 "CD Sales Red Storno"
         LibraryInventory.CreateInvtDocument(InvtDocumentHeader, InvtDocumentHeader."Document Type"::Receipt, Location.Code);
         LibraryInventory.CreateInvtDocumentLine(
           InvtDocumentHeader, InvtDocumentLine, Item."No.", LibraryRandom.RandDec(100, 2), Qty[ItemEntryType::Receipt]);
-        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, false, Qty[ItemEntryType::Receipt], SerialNo, LotNo, PackageNo);
+        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, false, Qty[ItemEntryType::Receipt], SerialNo, LotNo, PackageNo, 1);
 
         LibraryInventory.PostInvtDocument(InvtDocumentHeader);
         LibraryItemTracking.CheckLastItemLedgerEntry(
@@ -407,7 +407,7 @@ codeunit 147101 "CD Sales Red Storno"
         LibraryInventory.CreateInvtDocument(InvtDocumentHeader, InvtDocumentHeader."Document Type"::Receipt, Location.Code);
         LibraryInventory.CreateInvtDocumentLine(
           InvtDocumentHeader, InvtDocumentLine, Item."No.", LibraryRandom.RandDec(100, 2), Qty[ItemEntryType::Receipt]);
-        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, true, Qty[ItemEntryType::Receipt], SerialNo, LotNo, PackageNo);
+        CreateItemReceiptLineTracking(InvtDocumentLine, ReservationEntry, true, Qty[ItemEntryType::Receipt], SerialNo, LotNo, PackageNo, 1);
         LibraryInventory.PostInvtDocument(InvtDocumentHeader);
 
         for j := 1 to Qty[ItemEntryType::Receipt] do begin
@@ -447,7 +447,7 @@ codeunit 147101 "CD Sales Red Storno"
             ItemTrackingSetup."Serial No." := SerialNo[j];
             ItemTrackingSetup."Lot No." := LotNo;
             ItemTrackingSetup."Package No." := PackageNo[1];
-            LibraryItemTracking.CreateItemReceiptItemTracking(ReservationEntry, InvtDocumentLine, ItemTrackingSetup, 1);
+            LibraryItemTracking.CreateItemReceiptItemTracking(ReservationEntry, InvtDocumentLine, ItemTrackingSetup, -1);
         end;
 
         ReservationEntry.Validate("Appl.-from Item Entry", ItemLedgerEntry."Entry No.");
@@ -510,7 +510,7 @@ codeunit 147101 "CD Sales Red Storno"
         exit(NoSeries.Code);
     end;
 
-    local procedure CreateItemReceiptLineTracking(var InvtDocumentLine: Record "Invt. Document Line"; var ReservationEntry: Record "Reservation Entry"; NewSerialTracking: Boolean; Qty: Decimal; var SerialNo: array[10] of Code[50]; LotNo: Code[50]; PackageNo: array[3] of Code[50])
+    local procedure CreateItemReceiptLineTracking(var InvtDocumentLine: Record "Invt. Document Line"; var ReservationEntry: Record "Reservation Entry"; NewSerialTracking: Boolean; Qty: Decimal; var SerialNo: array[10] of Code[50]; LotNo: Code[50]; PackageNo: array[3] of Code[50]; Sign: Integer)
     var
         ItemTrackingSetup: Record "Item Tracking Setup";
         j: Integer;
@@ -519,14 +519,14 @@ codeunit 147101 "CD Sales Red Storno"
             ItemTrackingSetup."Serial No." := '';
             ItemTrackingSetup."Lot No." := LotNo;
             ItemTrackingSetup."Package No." := PackageNo[1];
-            LibraryItemTracking.CreateItemReceiptItemTracking(ReservationEntry, InvtDocumentLine, ItemTrackingSetup, Qty);
+            LibraryItemTracking.CreateItemReceiptItemTracking(ReservationEntry, InvtDocumentLine, ItemTrackingSetup, Sign * Qty);
         end else
             for j := 1 to Qty do begin
                 UpdateSerialNos(SerialNo, j);
                 ItemTrackingSetup."Serial No." := SerialNo[j];
                 ItemTrackingSetup."Lot No." := LotNo;
                 ItemTrackingSetup."Package No." := PackageNo[1];
-                LibraryItemTracking.CreateItemReceiptItemTracking(ReservationEntry, InvtDocumentLine, ItemTrackingSetup, 1);
+                LibraryItemTracking.CreateItemReceiptItemTracking(ReservationEntry, InvtDocumentLine, ItemTrackingSetup, Sign * 1);
             end;
     end;
 }

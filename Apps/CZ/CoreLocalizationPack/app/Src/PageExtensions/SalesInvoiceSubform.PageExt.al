@@ -25,6 +25,16 @@ pageextension 11789 "Sales Invoice Subform CZL" extends "Sales Invoice Subform"
                 ToolTip = 'Specifies the origin country/region code.';
                 Visible = false;
             }
-        }        
+        }
     }
+
+    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
+    begin
+        ForceTotalsCalculation();
+    end;
+
+    trigger OnModifyRecord(): Boolean
+    begin
+        ForceTotalsCalculation();
+    end;
 }

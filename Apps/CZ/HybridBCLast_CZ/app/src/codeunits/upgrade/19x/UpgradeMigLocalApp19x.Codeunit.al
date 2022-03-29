@@ -1,3 +1,9 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+#if not CLEAN19
 codeunit 11802 "Upgrade Mig Local App 19x"
 {
     ObsoleteState = Pending;
@@ -124,3 +130,4 @@ codeunit 11802 "Upgrade Mig Local App 19x"
             until WorkflowStep.Next() = 0;
     end;
 }
+#endif

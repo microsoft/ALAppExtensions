@@ -58,6 +58,18 @@ codeunit 13601 "DK Core Event Subscribers"
             CheckedResult := true
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"VAT Setup Posting Groups", 'OnInitWithStandardValues', '', false, false)]
+    local procedure OnInitWithStandardValuesOnInitWithStandardValues(var Handled: Boolean; VATSetupPostingGroups: Record "VAT Setup Posting Groups");
+    begin
+        Handled := true;
+
+        VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('FULLNORMTok'), VATSetupPostingGroups.GetLabelTxt('FULLNORMTxt'), 100, '', '', false, true);
+        VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('FULLREDTok'), VATSetupPostingGroups.GetLabelTxt('FULLREDTxt'), 100, '', '', false, true);
+        VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('SERVNORMTok'), VATSetupPostingGroups.GetLabelTxt('SERVNORMTxt'), 25, '24010', '24020', true, true);
+        VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('STANDARDTok'), VATSetupPostingGroups.GetLabelTxt('STANDARDTxt'), 25, '24010', '24020', false, true);
+        VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('ZEROTok'), VATSetupPostingGroups.GetLabelTxt('ZEROTxt'), 0, '24010', '24020', false, true);
+    end;
+
     local procedure ValidateBankAcc(var BankAccountNo: Text[30]; var BankBranchNo: Text[20]; FieldToValidate: Text)
     begin
         case FieldToValidate of

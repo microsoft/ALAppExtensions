@@ -27,28 +27,19 @@ codeunit 8850 "Bank Statement File Wizard"
         exit(FileManagement.BLOBImportWithFilter(TempBlob, UploadDialogTitleLbl, '', StrSubstNo(UploadFilterLbl, UploadFileFormatLbl), UploadFileFormatLbl));
     end;
 
-    local procedure GetAppId(): Guid
-    var
-        Info: ModuleInfo;
-    begin
-        if IsNullGuid(Info.Id()) then
-            NavApp.GetCurrentModuleInfo(Info);
-        exit(Info.Id());
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Setup", 'OnRegister', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', false, false)]
     local procedure RegisterBankStatementFileSetupWizard()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
         Language: Codeunit Language;
-        AssistedSetupGroup: Enum "Assisted Setup Group";
-        VideoCategory: Enum "Video Category";
         CurrentGlobalLanguage: Integer;
     begin
+        GuidedExperience.InsertAssistedSetup(BankFileWizardTxt, BankFileWizardTxt, BankFileWizardDescriptionTxt, 0, ObjectType::Page, Page::"Bank Statement File Wizard", "Assisted Setup Group"::ReadyForBusiness, '', "Video Category"::ReadyForBusiness, '');
+
         CurrentGlobalLanguage := GlobalLanguage();
-        AssistedSetup.Add(GetAppId(), Page::"Bank Statement File Wizard", BankFileWizardTxt, AssistedSetupGroup::ReadyForBusiness, '', VideoCategory::ReadyForBusiness, '', BankFileWizardDescriptionTxt);
         GlobalLanguage(Language.GetDefaultApplicationLanguageId());
-        AssistedSetup.AddTranslation(Page::"Bank Statement File Wizard", Language.GetDefaultApplicationLanguageId(), BankFileWizardTxt);
+        GuidedExperience.AddTranslationForSetupObjectTitle("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Bank Statement File Wizard", Language.GetDefaultApplicationLanguageId(), BankFileWizardTxt);
+        GuidedExperience.AddTranslationForSetupObjectDescription("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Bank Statement File Wizard", Language.GetDefaultApplicationLanguageId(), BankFileWizardDescriptionTxt);
         GlobalLanguage(CurrentGlobalLanguage);
     end;
 

@@ -1,6 +1,6 @@
 table 1151 "COHUB Company KPI"
 {
-    DataCaptionFields = "Name", "Company Display Name";
+    DataCaptionFields = "Environment Name", "Company Display Name";
     ReplicateData = false;
     DataPerCompany = false;
     Access = Internal;
@@ -17,11 +17,34 @@ table 1151 "COHUB Company KPI"
         {
             DataClassification = CustomerContent;
         }
-        field(3; "Name"; Text[50])
+        field(130; "Environment Name"; Text[100])
         {
             FieldClass = FlowField;
             CalcFormula = Lookup("COHUB Enviroment".Name where("No." = field("Enviroment No.")));
         }
+#if not CLEAN20
+#pragma warning disable AL0685
+        field(3; "Name"; Text[50])
+        {
+            ObsoleteReason = 'Use the other field - Environment Name. This field has a wrong length.';
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.0';
+
+            FieldClass = FlowField;
+            CalcFormula = Lookup("COHUB Enviroment".Name where("No." = field("Enviroment No.")));
+        }
+#pragma warning restore AL0685
+#else
+        field(3; "Name"; Text[50])
+        {
+            ObsoleteReason = 'Use the other field - Environment Name. This field has a wrong length.';
+            ObsoleteState = Removed;
+            ObsoleteTag = '23.0';
+
+            FieldClass = FlowField;
+            CalcFormula = Lookup("COHUB Enviroment".Name where("No." = field("Enviroment No.")));
+        }
+#endif
         field(4; "Company Display Name"; Text[50])
         {
             DataClassification = CustomerContent;

@@ -34,6 +34,8 @@ codeunit 2751 "Universal Print Document Ready"
         if not UniversalPrinterSettings.Get(PrinterName) then
             exit;
 
+        FeatureTelemetry.LogUptake('0000GFX', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+
         if ObjectPayload.Get('objectname', PropertyBag) then
             FileName := PropertyBag.AsValue().AsText();
         if FileName = '' then
@@ -118,9 +120,8 @@ codeunit 2751 "Universal Print Document Ready"
             exit(false);
         end;
 
-        if GuiAllowed() then
-            Message(JobSentTxt, JobID);
-
+        FeatureTelemetry.LogUsage('0000GFY', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), 'Universal Print Job Sent');
+        Session.LogMessage('0000FSY', JobSentTelemtryTxt, Verbosity::Verbose, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
         exit(true);
     end;
 
@@ -131,12 +132,13 @@ codeunit 2751 "Universal Print Document Ready"
 
     var
         UniversalPrintGraphHelper: Codeunit "Universal Print Graph Helper";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         NoAccessToPrinterErr: Label 'You don''t have access to the printer %1.', Comment = '%1 = name of the printer';
         PrintJobTooLargeErr: Label 'Cannot send the print job because the size is too large. The size limit for print job is 10 MB.';
         UnableToCreateJobErr: Label 'The print job couldn''t be created.\\%1', Comment = '%1 = a more detailed error message';
         UnableToUploadDocErr: Label 'Could not upload the document to print job %1.\\%2', Comment = '%1 = a print job ID, %2 = a more detailed error message';
         UnableToStartJobErr: Label 'The print job %1 couldn''t be started.\\%2', Comment = '%1 = a print job ID, %2 = a more detailed error message';
-        JobSentTxt: Label 'The print job %1 has been sent for processing in Universal Print.', Comment = '%1 = a print job ID.';
+        JobSentTelemtryTxt: Label 'The print job has been sent for processing in Universal Print.', Locked = true;
         PrintShareNotFoundTelemetryTxt: Label 'Universal Print share is not found.', Locked = true;
         PrintJobNotCreatedTelemetryTxt: Label 'Creating Universal Print job failed.', Locked = true;
         PrintJobNotUploadedTelemetryTxt: Label 'Uploading Universal Print job of size %1 failed.', Locked = true, Comment = '%1 = Size of print job';

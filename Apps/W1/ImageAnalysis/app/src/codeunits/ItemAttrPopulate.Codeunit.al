@@ -11,41 +11,47 @@ codeunit 2026 "Item Attr Populate"
 
     [EventSubscriber(ObjectType::Page, Page::"Item Picture", 'OnAfterActionEvent', 'ImportPicture', false, false)]
     procedure OnAfterImportPictureAnalyzePicture(var Rec: Record Item)
+    begin
+        AnalyzePicture(Rec);
+    end;
+
+    procedure AnalyzePicture(var ItemRec: Record Item): Boolean
     var
-        ImageAnalysisTags: Record "MS - Image Analyzer Tags";
+        MSImageAnalyzerTags: Record "MS - Image Analyzer Tags";
         ImageAnalysisResult: Codeunit "Image Analysis Result";
         ImageAnalyzerTagsPage: Page "Image Analysis Tags";
         ConfidenceThresholdPercent: Decimal;
         AnalysisType: Option Tags,Faces,Color;
     begin
-        if Rec.Picture.Count() = 0 then
-            exit;
+        if ItemRec.Picture.Count() = 0 then
+            exit(false);
 
-        if not ImageAnalyzerExtMgt.AnalyzePicture(Rec.Picture.ITEM(Rec.Picture.Count()), ImageAnalysisResult, AnalysisType::Tags) then
-            exit;
+        if not ImageAnalyzerExtMgt.AnalyzePicture(ItemRec.Picture.Item(ItemRec.Picture.Count()), ImageAnalysisResult, AnalysisType::Tags) then
+            exit(false);
 
-        BuildTagListPrepopulateCategoryAndAttributes(Rec, ImageAnalysisResult, ImageAnalysisTags, ConfidenceThresholdPercent);
+        BuildTagListPrepopulateCategoryAndAttributes(ItemRec, ImageAnalysisResult, MSImageAnalyzerTags, ConfidenceThresholdPercent);
         Commit(); // to make sure runmodal does not fail below
 
         // open page
-        ImageAnalysisTags.Reset();
-        if ImageAnalysisTags.IsEmpty() then begin
+        MSImageAnalyzerTags.Reset();
+        if MSImageAnalyzerTags.IsEmpty() then begin
             Message(NoAttributesIdentifiedTxt);
-            exit;
+            exit(true);
         end;
 
-        ImageAnalyzerTagsPage.SetRecord(ImageAnalysisTags);
+        ImageAnalyzerTagsPage.SetRecord(MSImageAnalyzerTags);
         ImageAnalyzerTagsPage.SetConfidencePercent(ConfidenceThresholdPercent);
         ImageAnalyzerTagsPage.LookupMode(true);
         if ImageAnalyzerTagsPage.RunModal() = "Action"::LookupOK then begin
-            ImageAnalysisTags.Reset();
-            ImageAnalysisTags.FindSet();
-            ImageAnalysisTags.ApplyChanges(ImageAnalyzerTagsPage.GetItemDescription());
+            MSImageAnalyzerTags.Reset();
+            MSImageAnalyzerTags.FindSet();
+            MSImageAnalyzerTags.ApplyChanges(ImageAnalyzerTagsPage.GetItemDescription());
         end;
 
         // clear analysis results
-        ImageAnalysisTags.Reset();
-        ImageAnalysisTags.DeleteAll();
+        MSImageAnalyzerTags.Reset();
+        MSImageAnalyzerTags.DeleteAll();
+        exit(true);
     end;
 
     procedure BuildTagListPrepopulateCategoryAndAttributes(Item: Record Item; ImageAnalysisResult: Codeunit "Image Analysis Result"; var ImageAnalysisTags: Record "MS - Image Analyzer Tags"; var ConfidenceThresholdPercent: Decimal)
