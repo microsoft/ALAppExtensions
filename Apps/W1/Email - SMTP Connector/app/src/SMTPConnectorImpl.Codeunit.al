@@ -224,6 +224,17 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         end;
     end;
 
+    local procedure GetEmailAddress(Account: Record "SMTP Account"): Text[250]
+    var
+        User: Record User;
+    begin
+        if Account."Sender Type" = Account."Sender Type"::Specific then
+            exit(Account."Email Address");
+
+        if User.Get(UserSecurityId()) then
+            exit(User."Contact Email");
+    end;
+
     /// <summary>
     /// Gets a description of the SMTP connector.
     /// </summary>
