@@ -78,7 +78,7 @@ codeunit 132920 "ABS Blob Client Test"
         Assert.IsTrue(Response.IsSuccessful(), 'Operation GetBlobTags failed');
 
         // [THEN] The get tags are equal to set tags 
-        Assert.IsTrue(ABSTestLibrary.AreEqual(Tags, NewTags), 'Blob tag mismatch');
+        Assert.IsTrue(Assert.AreEqual(Tags, NewTags), 'Blob tag mismatch');
 
         // Clean-up
         ABSContainerClient.DeleteContainer(ContainerName);

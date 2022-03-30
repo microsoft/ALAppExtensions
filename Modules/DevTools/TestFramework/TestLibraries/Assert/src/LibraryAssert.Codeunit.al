@@ -72,6 +72,30 @@ codeunit 130002 "Library Assert"
     end;
 
     /// <summary>
+    /// Tests whether the specified dictionaries are equal.
+    /// </summary>
+    /// <param name="Expected">The first dicitonary to compare.</param>
+    /// <param name="Actual">The second dictionary to compare.</param>
+    /// <returns>True if the dictionaries are identical, otherwise false</returns>
+    procedure AreEqual(Expected: Dictionary of [Text, Text]; Actual: Dictionary of [Text, Text]): Boolean
+    var
+        "Key": Text;
+        ExpectedValue: Text;
+        ActualValue: Text;
+    begin
+        if Expected.Count() <> Actual.Count() then
+            exit(false);
+        foreach "Key" in Expected.Keys() do begin
+            if not Actual.Get("Key", ActualValue) then
+                exit(false);
+            Expected.Get("Key", ExpectedValue);
+            if ExpectedValue <> ActualValue then
+                exit(false);
+        end;
+        exit(true);
+    end;
+
+    /// <summary>
     /// Tests whether the specified DateTime values are equal and throws an exception if the two DateTime values are not equal.
     /// This function uses the high precision format type 1
     /// </summary>
