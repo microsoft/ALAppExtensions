@@ -183,7 +183,17 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         AttachmentInStream: InStream;
     begin
         // From name/email address
-        SMTPMessage.AddFrom(SMTPAccount."Sender Name", SMTPAccount."Email Address");
+        if EmailMessage.GetFromAddress() <> '' then
+            FromAddress := EmailMessage.GetFromAddress()
+        else
+            FromAddress := SMTPAccount."Email Address";
+
+        if EmailMessage.GetFromName() <> '' then
+            FromName := EmailMessage.GetFromName()
+        else
+            FromName := SMTPAccount."Sender Name";
+
+        SMTPMessage.AddFrom(FromName, FromAddress);
 
         // To, Cc and Bcc Recipients
         EmailMessage.GetRecipients("Email Recipient Type"::"To", Recipients);
