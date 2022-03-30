@@ -120,7 +120,9 @@ codeunit 9044 "ABS Format Helper"
         KeyValue: Text;
         Value: Text;
     begin
-        if not Document.SelectNodes('/Tags/TagSet/Tag', TagNodesList) then exit;
+        if not Document.SelectNodes('/Tags/TagSet/Tag', TagNodesList) then
+            exit;
+
         foreach TagNode in TagNodesList do begin
             KeyValue := GetSingleNodeInnerText(TagNode, 'Key');
             Value := GetSingleNodeInnerText(TagNode, 'Value');

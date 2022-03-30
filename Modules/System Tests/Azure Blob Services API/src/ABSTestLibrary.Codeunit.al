@@ -167,11 +167,14 @@ codeunit 132921 "ABS Test Library"
         ExpectedValue: Text;
         ActualValue: Text;
     begin
-        if Expected.Count() <> Actual.Count() then exit;
+        if Expected.Count() <> Actual.Count() then
+            exit(false);
         foreach "Key" in Expected.Keys() do begin
-            if not Actual.Get("Key", ActualValue) then exit;
+            if not Actual.Get("Key", ActualValue) then
+                exit(false);
             Expected.Get("Key", ExpectedValue);
-            if ExpectedValue <> ActualValue then exit;
+            if ExpectedValue <> ActualValue then
+                exit(false);
         end;
         exit(true);
     end;
