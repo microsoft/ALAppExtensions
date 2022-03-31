@@ -22,6 +22,54 @@ codeunit 134692 "Email E2E Tests"
         FromDisplayNameLbl: Label '%1 (%2)', Comment = '%1 - Account Name, %2 - Email address', Locked = true;
 
     [Test]
+    procedure SendFromNameAndAddressTest()
+    var
+        TempAccount: Record "Email Account" temporary;
+        SentEmail: Record "Sent Email";
+        EmailOutbox: Record "Email Outbox";
+        Any: Codeunit Any;
+        EmailMessage: Codeunit "Email Message";
+        Base64Convert: Codeunit "Base64 Convert";
+        ConnectorMock: Codeunit "Connector Mock";
+        Recipient, Subject, Body : Text;
+        FromName, FromAddress : Text[250];
+    begin
+        // [SCENARIO] When sending an email via the SMTP connector, allow the setting of the From Name and From Address to be set
+
+        // [GIVEN] An SMTP connector is installed and an SMTP account is added.
+        // Initialize
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
+
+        Recipient := Any.Email();
+        Subject := Any.UnicodeText(50);
+        Body := Any.UnicodeText(1024);
+        FromName := Any.AlphabeticText(50);
+        FromAddress := Any.Email();
+
+        EmailMessage.Create(Recipient, Subject, Body, true);
+        EmailMessage.AddAttachment('Attachment1', 'text/plain', Base64Convert.ToBase64('Content'));
+        EmailMessage.SetFrom(FromName, FromAddress);
+
+        // Save to Outbox
+        Email.SaveAsDraft(EmailMessage);
+        EmailOutbox.SetRange("Message Id", EmailMessage.GetId());
+        Assert.IsTrue(EmailOutbox.FindFirst(), 'Email should be in the outbox');
+        Assert.AreEqual(FromName, EmailOutbox."Send From", 'The from name should be on the sent email');
+        Assert.AreEqual(FromAddress, EmailOutbox."Send From Address", 'The from address should be on the sent email');
+
+        // Send the email
+        Email.Send(EmailMessage, TempAccount."Account Id", TempAccount.Connector);
+
+        SentEmail.SetRange("Message Id", EmailMessage.GetId());
+        Assert.IsTrue(SentEmail.FindFirst(), 'A sent email record should have been created');
+        Assert.AreEqual(FromName, SentEmail."Sent From", 'The from name should be on the sent email');
+        Assert.AreEqual(FromAddress, SentEmail."Sent From Address", 'The from address should be on the sent email');
+    end;
+
+    [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure DeleteSentEmailDeletesMessageTest()
     var
