@@ -75,6 +75,13 @@ table 8889 "Sent Email"
             DataClassification = CustomerContent;
             Description = 'The field is marked as internal in order to prevent modifying it from code.';
         }
+
+        field(15; "Sent From Address"; Text[250])
+        {
+            Access = Internal;
+            DataClassification = EndUserIdentifiableInformation;
+            Description = 'The field is marked as internal in order to prevent modifying it from code.';
+        }
     }
 
     keys

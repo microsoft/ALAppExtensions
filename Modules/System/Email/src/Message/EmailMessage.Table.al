@@ -37,6 +37,16 @@ table 8900 "Email Message"
             DataClassification = SystemMetadata;
             InitValue = True;
         }
+        field(6; "From Address"; Text[250])
+        {
+            Access = Internal;
+            DataClassification = SystemMetadata;
+        }
+        field(7; "From Name"; Text[250])
+        {
+            Access = Internal;
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

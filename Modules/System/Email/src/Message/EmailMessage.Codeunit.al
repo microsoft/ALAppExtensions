@@ -60,6 +60,16 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
+    /// Adds the mailbox that this email is being sent from.
+    /// </summary>
+    /// <param name="FromName">The name of the email sender</param>
+    /// <param name="FromAddress">The address of the email sender</param>
+    procedure SetFrom(FromName: Text[250]; FromAddress: Text[250])
+    begin
+        EmailMessageImpl.SetFrom(FromName, FromAddress);
+    end;
+
+    /// <summary>
     /// Gets the email message with the given ID.
     /// </summary>
     /// <param name="MessageId">The ID of the email message to get.</param>
@@ -76,6 +86,24 @@ codeunit 8904 "Email Message"
     procedure GetBody(): Text
     begin
         exit(EmailMessageImpl.GetBody());
+    end;
+
+    /// <summary>
+    /// Gets the sender address of the email message.
+    /// </summary>
+    /// <returns>The sender address of the email.</returns>
+    procedure GetFromAddress(): Text[250]
+    begin
+        exit(EmailMessageImpl.GetFromAddress());
+    end;
+
+    /// <summary>
+    /// Gets the sender name of the email message.
+    /// </summary>
+    /// <returns>The sender name of the email.</returns>
+    procedure GetFromName(): Text[250]
+    begin
+        exit(EmailMessageImpl.GetFromName());
     end;
 
     /// <summary>
