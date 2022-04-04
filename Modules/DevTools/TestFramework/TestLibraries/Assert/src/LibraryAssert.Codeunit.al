@@ -36,6 +36,9 @@ codeunit 130002 "Library Assert"
         PrimRecordNotFoundTok: Label 'DB:PrimRecordNotFound';
         NoFilterTok: Label 'DB:NoFilter';
         ErrorHasNotBeenThrownErr: Label 'The error has not been thrown.';
+        DictionaryDifferentSizeErr: Label 'Sizes of dictionaries do not match. Expected: %1, Actual: %2.', Locked = true;
+        MissingKeyErr: Label 'Key %1 is missing from the actual dictionary.', Locked = true;
+        DifferentKeyValueErr: Label 'Values for key %1 do not match. Expected: %2. Actual: %3.', Locked = true;
 
     /// <summary>
     /// Tests whether the specified condition is true and throws an exception if the condition is false.
@@ -72,27 +75,25 @@ codeunit 130002 "Library Assert"
     end;
 
     /// <summary>
-    /// Tests whether the specified dictionaries are equal.
+    /// Tests whether the specified dictionaries are equal and throws an exception if the two dictionaries are not equal.
     /// </summary>
     /// <param name="Expected">The first dicitonary to compare.</param>
     /// <param name="Actual">The second dictionary to compare.</param>
-    /// <returns>True if the dictionaries are identical, otherwise false</returns>
-    procedure AreEqual(Expected: Dictionary of [Text, Text]; Actual: Dictionary of [Text, Text]): Boolean
+    procedure AreEqual(Expected: Dictionary of [Text, Text]; Actual: Dictionary of [Text, Text])
     var
         "Key": Text;
         ExpectedValue: Text;
         ActualValue: Text;
     begin
         if Expected.Count() <> Actual.Count() then
-            exit(false);
+            Error(DictionaryDifferentSizeErr, Expected.Count(), Actual.Count());
         foreach "Key" in Expected.Keys() do begin
             if not Actual.Get("Key", ActualValue) then
-                exit(false);
+                Error(MissingKeyErr, "Key");
             Expected.Get("Key", ExpectedValue);
             if ExpectedValue <> ActualValue then
-                exit(false);
+                Error(DifferentKeyValueErr, "Key", ExpectedValue, ActualValue);
         end;
-        exit(true);
     end;
 
     /// <summary>

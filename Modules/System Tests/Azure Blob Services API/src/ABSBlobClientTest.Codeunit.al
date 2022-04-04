@@ -55,7 +55,7 @@ codeunit 132920 "ABS Blob Client Test"
         // [GIVEN] ABS Container 
         ContainerName := ABSTestLibrary.GetContainerName();
         ABSContainerClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), SharedKeyAuthorization);
-        ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+        //GM!! ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
         Response := ABSContainerClient.CreateContainer(ContainerName);
         Assert.IsTrue(Response.IsSuccessful(), 'Operation CreateContainer failed');
 
@@ -63,7 +63,7 @@ codeunit 132920 "ABS Blob Client Test"
         BlobName := ABSTestLibrary.GetBlobName();
         BlobContent := ABSTestLibrary.GetSampleTextBlobContent();
         ABSBlobClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), ContainerName, SharedKeyAuthorization);
-        ABSBlobClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+        //GM!! ABSBlobClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
         Response := ABSBlobClient.PutBlobBlockBlobText(BlobName, BlobContent);
         Assert.IsTrue(Response.IsSuccessful(), 'Operation PutBlobBlockBlob failed');
 
@@ -78,7 +78,10 @@ codeunit 132920 "ABS Blob Client Test"
         Assert.IsTrue(Response.IsSuccessful(), 'Operation GetBlobTags failed');
 
         // [THEN] The get tags are equal to set tags 
-        Assert.IsTrue(Assert.AreEqual(Tags, NewTags), 'Blob tag mismatch');
+        Assert.AreEqual(Tags, NewTags);
+
+        // Clean-up
+        ABSContainerClient.DeleteContainer(ContainerName);
     end;
 
     procedure LeaseBlobTest()
