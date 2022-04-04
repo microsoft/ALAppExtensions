@@ -35,6 +35,27 @@ codeunit 18007 "Cess Tax Type Setup"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Upgrade Subscribers", 'OnGetUpgradedTaxTypeConfig', '', false, false)]
+    local procedure OnGetUpgradedTaxTypeConfig(TaxType: Code[20]; var ConfigText: Text; var IsHandled: Boolean)
+    var
+        CessTaxTypeData: Codeunit "Cess Tax Type Data";
+        CESSTaxTypeLbl: Label 'GST CESS';
+    begin
+        if IsHandled then
+            exit;
+
+        if TaxType = CESSTaxTypeLbl then begin
+            ConfigText := CessTaxTypeData.GetText();
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Upgrade Subscribers", 'OnGetUpgradedUseCaseConfig', '', false, false)]
+    local procedure OnGetGSTConfig(CaseID: Guid; var IsHandled: Boolean; var Configtext: Text)
+    begin
+        Configtext := GetConfig(CaseID, IsHandled);
+    end;
+
     procedure GetConfig(CaseID: Guid; var Handled: Boolean): Text
     var
         "{6F2DE875-4569-41DB-A28E-021E4D00378A}Lbl": Label 'GST Use Cases';

@@ -563,7 +563,9 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
     var
         SalesHeader: Record "Sales Header";
         SalesInvLine: Record "Sales Invoice Line";
+        Currency: Record Currency;
         DocumentNo: Code[20];
+        UnitPrice: Decimal;
     begin
         // Verify XML data after Create Electronic Invoices for Item with more than two decimal digits in Unit Price.
 
@@ -580,8 +582,11 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
 
         // Verify: Verify ID and Issue Date for Create Electronic Invoice Report.
         VerifyElectronicDocumentData(DocumentNo, SalesHeader."Document Date");
+
         // Verify: Verify Unit Price on document matches Unit Price on Electronic Document
-        VerifyNodeDecimalValue('cbc:PriceAmount', SalesInvLine."Unit Price");
+        Currency.InitRoundingPrecision();
+        UnitPrice := Round(SalesInvLine.Amount / SalesInvLine.Quantity, Currency."Unit-Amount Rounding Precision");
+        VerifyNodeDecimalValue('cbc:PriceAmount', UnitPrice);
     end;
 
     [Test]
@@ -1547,7 +1552,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         ContactCard.OPENEDIT();
         // TODO
         // ContactCard.FILTER.SETFILTER("No.",ContactNo);
-        ContactCard."Phone No.".SETVALUE(LibraryUtility.GenerateGUID());
+        ContactCard."Phone No.".SETVALUE(LibraryUtility.GenerateRandomPhoneNo());
         ContactCard."Fax No.".SETVALUE(LibraryUtility.GenerateGUID());
         ContactCard."E-Mail".SETVALUE(LibraryUtility.GenerateRandomEmail());
         ContactCard.OK().INVOKE();

@@ -291,7 +291,7 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
     begin
         if not (Ship or Receive) then
             exit;
-        if IsIntrastatTransactionCZL() and ShipOrReceiveInventoriableTypeItems() then begin
+        if IsIntrastatTransactionCZL() and ShipOrReceiveInventoriableTypeItemsCZL() then begin
             StatutoryReportingSetupCZL.Get();
             if StatutoryReportingSetupCZL."Transaction Type Mandatory" then
                 TestField("Transaction Type");
@@ -314,6 +314,21 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         exit(GlobalIsIntrastatTransaction);
     end;
 
+    procedure ShipOrReceiveInventoriableTypeItemsCZL(): Boolean
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        SalesLine.Reset();
+        SalesLine.SetRange("Document Type", "Document Type");
+        SalesLine.SetRange("Document No.", "No.");
+        SalesLine.SetRange(Type, SalesLine.Type::Item);
+        if SalesLine.FindSet() then
+            repeat
+                if ((SalesLine."Qty. to Ship" <> 0) or (SalesLine."Return Qty. to Receive" <> 0)) and SalesLine.IsInventoriableItem() then
+                    exit(true);
+            until SalesLine.Next() = 0;
+    end;
+
     local procedure UpdateGlobalIsIntrastatTransaction(): Boolean
     var
         CountryRegion: Record "Country/Region";
@@ -323,18 +338,6 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         if "Intrastat Exclude CZL" then
             exit(false);
         exit(CountryRegion.IsIntrastatCZL("VAT Country/Region Code", false));
-    end;
-
-    [Obsolete('This procedure will be removed after removing feature from Base Application.', '17.0')]
-    procedure CopyRecCurrencyFactortoxRecCurrencyFactor(var Rec: Record "Sales Header"; var xRec: Record "Sales Header")
-    begin
-        xRec."Currency Factor" := Rec."Currency Factor";
-    end;
-
-    [Obsolete('This procedure will be removed after removing feature from Base Application.', '17.0')]
-    procedure IsCurrentFieldNoDiffZero(CurrFieldNo: Integer): Boolean
-    begin
-        exit(CurrFieldNo <> 0);
     end;
 
     [IntegrationEvent(false, false)]

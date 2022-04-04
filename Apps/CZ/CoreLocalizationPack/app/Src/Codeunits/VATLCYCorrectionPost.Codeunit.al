@@ -86,9 +86,6 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
         // Post to Purchase VAT Account
         SetGenJournalLine(GenJournalLine, VATLCYCorrectionBufferCZL, PurchVATAccount, VATLCYCorrectionBufferCZL."VAT Correction Amount", true);
         CopyFromVATEntry(GenJournalLine, VATEntry);
-#if not CLEAN17
-        SyncDeprecatedFields(GenJournalLine);
-#endif
         SetDefaultDimensions(GenJournalLine);
         OnPostCorrectionAmountOnBeforePostVATAccountLine(GenJournalLine);
         GenJnlPostLine.RunWithCheck(GenJournalLine);
@@ -97,9 +94,6 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
         // Post to VAT LCY Correction Rounding Account
         SetGenJournalLine(GenJournalLine, VATLCYCorrectionBufferCZL, VATLCYCorrRoundingAccNo, -VATLCYCorrectionBufferCZL."VAT Correction Amount", false);
         CopyFromVATEntry(GenJournalLine, VATEntry);
-#if not CLEAN17
-        SyncDeprecatedFields(GenJournalLine);
-#endif
         SetDefaultDimensions(GenJournalLine);
         OnPostCorrectionAmountOnBeforePostRoundingAccountLine(GenJournalLine);
         GenJnlPostLine.RunWithCheck(GenJournalLine);
@@ -183,16 +177,6 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
         PreviewMode := NewPreviewMode;
     end;
 
-#if not CLEAN17
-    [Obsolete('This procedure will be removed after removing feature from Base Application.', '17.5')]
-    local procedure SyncDeprecatedFields(var GenJournalLine: Record "Gen. Journal Line")
-    begin
-        GenJournalLine."VAT Date" := GenJournalLine."VAT Date CZL";
-        GenJournalLine."Original Document VAT Date" := GenJournalLine."Original Doc. VAT Date CZL";
-        GenJournalLine."Registration No." := GenJournalLine."Registration No. CZL";
-    end;
-
-#endif
     [IntegrationEvent(false, false)]
     local procedure OnPostCorrectionAmountOnBeforePostVATAccountLine(var GenJournalLine: Record "Gen. Journal Line")
     begin

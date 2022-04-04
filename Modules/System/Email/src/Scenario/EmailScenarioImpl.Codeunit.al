@@ -299,15 +299,15 @@ codeunit 8892 "Email Scenario Impl."
         exit(true);
     end;
 
-    local procedure GetDefaultAccount(var Account: Record "Email Account")
+    local procedure GetDefaultAccount(var EmailAccount: Record "Email Account")
     var
         Scenario: Record "Email Scenario";
     begin
         if not Scenario.Get(Enum::"Email Scenario"::Default) then
             exit;
 
-        Account."Account Id" := Scenario."Account Id";
-        Account.Connector := Scenario.Connector;
+        EmailAccount."Account Id" := Scenario."Account Id";
+        EmailAccount.Connector := Scenario.Connector;
     end;
 
     var

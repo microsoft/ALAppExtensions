@@ -3,7 +3,6 @@ codeunit 4015 "Hybrid GP Wizard"
     var
         ProductIdTxt: Label 'DynamicsGP', Locked = true;
         ProductNameTxt: Label 'Dynamics GP', Locked = true;
-        ReplicationCompletedServiceTypeTxt: Label 'ReplicationCompleted', Locked = true;
         TooManySegmentsErr: Label 'You have selected a company that has more than 9 segments. In order to migrate your data you need to reformat your Chart of Accounts in Dynamics GP to have less than 10 segments for these companies: %1', Comment = '%1 - Comma delimited list of companies.';
         AdditionalProcessesInProgressErr: Label 'Cannot start a new migration until the previous migration run and additional/posting processes have completed.';
         ProductDescriptionTxt: Label 'Use this option if you are migrating from Dynamics GP. The migration process transforms the Dynamics GP data to the Dynamics 365 Business Central format.';
@@ -42,47 +41,6 @@ codeunit 4015 "Hybrid GP Wizard"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnReplicationRunCompleted', '', false, false)]
-    local procedure HandleInitializationofGPSynchronization(RunId: Text[50]; SubscriptionId: Text; NotificationText: Text)
-    var
-        HybridCompany: Record "Hybrid Company";
-        HybridReplicationSummary: Record "Hybrid Replication Summary";
-        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
-        JsonManagement: Codeunit "JSON Management";
-        ServiceType: Text;
-        SesssionID: Integer;
-    begin
-        if HybridCloudManagement.CanHandleNotification(SubscriptionId, ProductIdTxt) then begin
-            // Do not process migration data for a diagnostic run since there should be none
-            if HybridReplicationSummary.Get(RunId) and (HybridReplicationSummary.ReplicationType = HybridReplicationSummary.ReplicationType::Diagnostic) then
-                exit;
-
-            JsonManagement.InitializeObject(NotificationText);
-            JsonManagement.GetStringPropertyValueByName('ServiceType', ServiceType);
-
-            case ServiceType of
-                ReplicationCompletedServiceTypeTxt:
-                    begin
-                        HybridCompany.SetRange(Replicate, true);
-                        if HybridCompany.FindSet() then
-                            repeat
-                                if TaskScheduler.CanCreateTask() then
-                                    TaskScheduler.CreateTask(
-                                        Codeunit::"GP Cloud Migration", 0, true, HybridCompany.Name, CurrentDateTime() + 5000)
-                                else
-                                    Session.StartSession(SesssionID, Codeunit::"GP Cloud Migration", HybridCompany.Name)
-                            until HybridCompany.Next() = 0;
-                    end;
-                else
-                    if not TaskScheduler.CanCreateTask() then
-                        TaskScheduler.CreateTask(
-                            Codeunit::"Install GP SmartLists", 0, true, CompanyName(), CurrentDateTime() + 1000)
-                    else
-                        Session.StartSession(SesssionID, Codeunit::"Install GP SmartLists", CompanyName())
-            end;
-        end;
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductName', '', false, false)]
     local procedure HandleGetHybridProductName(ProductId: Text; var ProductName: Text)
     begin
@@ -103,10 +61,8 @@ codeunit 4015 "Hybrid GP Wizard"
 
     [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanMapCustomTables', '', false, false)]
     local procedure OnCanMapCustomTables(var Enabled: Boolean)
-    var
-        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
-        if not (IntelligentCloudSetup.Get() and CanHandle(IntelligentCloudSetup."Product ID")) then
+        if not (GetGPMigrationEnabled()) then
             exit;
 
         Enabled := true;
@@ -114,10 +70,8 @@ codeunit 4015 "Hybrid GP Wizard"
 
     [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanRunDiagnostic', '', false, false)]
     local procedure OnCanRunDiagnostic(var CanRun: Boolean)
-    var
-        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
-        if not (IntelligentCloudSetup.Get() and CanHandle(IntelligentCloudSetup."Product ID")) then
+        if not (GetGPMigrationEnabled()) then
             exit;
 
         CanRun := true;
@@ -125,10 +79,8 @@ codeunit 4015 "Hybrid GP Wizard"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnCanSetupAdlMigration', '', false, false)]
     local procedure OnCanSetupAdlMigration(var CanSetup: Boolean)
-    var
-        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
-        if not (IntelligentCloudSetup.Get() and CanHandle(IntelligentCloudSetup."Product ID")) then
+        if not (GetGPMigrationEnabled()) then
             exit;
 
         CanSetup := true;
@@ -158,10 +110,8 @@ codeunit 4015 "Hybrid GP Wizard"
 
     [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanShowUpdateReplicationCompanies', '', false, false)]
     local procedure OnCanShowUpdateReplicationCompanies(var Enabled: Boolean)
-    var
-        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
-        if not (IntelligentCloudSetup.Get() and CanHandle(IntelligentCloudSetup."Product ID")) then
+        if not (GetGPMigrationEnabled()) then
             exit;
 
         Enabled := false;
@@ -202,5 +152,15 @@ codeunit 4015 "Hybrid GP Wizard"
     local procedure CanHandle(productId: Text): Boolean
     begin
         exit(productId = ProductIdTxt);
+    end;
+
+    procedure GetGPMigrationEnabled(): Boolean
+    var
+        InteligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if not InteligentCloudSetup.Get() then
+            exit(false);
+
+        exit(CanHandle(InteligentCloudSetup."Product ID"));
     end;
 }

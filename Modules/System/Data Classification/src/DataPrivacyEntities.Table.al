@@ -32,7 +32,7 @@ table 1180 "Data Privacy Entities"
         }
         field(4; "Key Field Name"; Text[30])
         {
-            CalcFormula = Lookup (Field.FieldName WHERE(TableNo = FIELD("Table No."),
+            CalcFormula = Lookup(Field.FieldName WHERE(TableNo = FIELD("Table No."),
                                                         "No." = FIELD("Key Field No.")));
             Caption = 'Key Field Name';
             FieldClass = FlowField;
@@ -48,7 +48,7 @@ table 1180 "Data Privacy Entities"
         }
         field(7; "Fields"; Integer)
         {
-            CalcFormula = Count (Field WHERE(TableNo = FIELD("Table No."),
+            CalcFormula = Count(Field WHERE(TableNo = FIELD("Table No."),
                                              Enabled = CONST(true),
                                              Class = CONST(Normal)));
             Caption = 'Fields';

@@ -3,6 +3,14 @@
 /// </summary>
 interface "SMTP Authentication"
 {
+#if not CLEAN20
+    ObsoleteReason = 'Use SMTP Auth from the SMTP API app.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '20.0';
+#else
+    Access = Internal;
+#endif
+
     /// <summary>
     /// Validate SMTP account.
     /// </summary>

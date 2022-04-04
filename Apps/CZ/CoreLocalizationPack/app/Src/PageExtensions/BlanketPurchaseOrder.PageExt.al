@@ -2,7 +2,7 @@ pageextension 31067 "Blanket Purchase Order CZL" extends "Blanket Purchase Order
 {
     layout
     {
-        addlast("Foreign Trade")
+        addlast("Invoice Details")
         {
             field("VAT Registration No. CZL"; Rec."VAT Registration No.")
             {
@@ -21,7 +21,7 @@ pageextension 31067 "Blanket Purchase Order CZL" extends "Blanket Purchase Order
                 Importance = Additional;
             }
         }
-        addafter("Area")
+        addlast("Foreign Trade")
         {
             field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
             {

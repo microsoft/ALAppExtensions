@@ -176,11 +176,12 @@ table 18318 "GST Credit Adjustment Journal"
             var
                 TypeText: Option " ","G/L Account",Item,Resource,"Fixed Asset","Charge (Item)";
                 TypeVal: Text;
+                DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
             begin
                 TypeVal := Format(Type);
                 Evaluate(Typetext, TypeVal);
-                CreateDim(
-                  DimMgt.TypeToTableID3(Typetext), "No.");
+                DimMgt.AddDimSource(DefaultDimSource, DimMgt.PurchLineTypeToTableID(Typetext), "No.");
+                CreateDim(DefaultDimSource);
             end;
         }
         field(24; "Gen. Bus. Posting Group"; Code[20])
@@ -287,6 +288,8 @@ table 18318 "GST Credit Adjustment Journal"
         end;
     end;
 
+#if not CLEAN20
+    [Obsolete('Replaced by CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])', '20.0')]
     procedure CreateDim(Type1: Integer; No1: Code[20])
     var
         SourceCodeSetup: Record "Source Code Setup";
@@ -312,6 +315,21 @@ table 18318 "GST Credit Adjustment Journal"
             "Dimension Set ID",
             "Shortcut Dimension 1 Code",
             "Shortcut Dimension 2 Code");
+    end;
+#endif
+
+    procedure CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+    begin
+        SourceCodeSetup.Get();
+        "Shortcut Dimension 1 Code" := '';
+        "Shortcut Dimension 2 Code" := '';
+        "Dimension Set ID" :=
+            DimMgt.GetDefaultDimID(
+                DefaultDimSource, SourceCodeSetup.Purchases, "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", "Dimension Set ID", 0);
+
+        DimMgt.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
     end;
 
     local procedure UpdateAllLineDim(NewParentDimSetID: Integer; OldParentDimSetID: Integer)

@@ -37,6 +37,9 @@ codeunit 31249 "Sync.Dep.Fld-TransShptLine CZA"
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Gen. Bus. Post. Group Receive", PreviousRecord."Gen.Bus.Post.Group Receive CZA");
         Rec."Gen. Bus. Post. Group Receive" := CopyStr(DepFieldTxt, 1, MaxStrLen(Rec."Gen. Bus. Post. Group Receive"));
         Rec."Gen.Bus.Post.Group Receive CZA" := CopyStr(NewFieldTxt, 1, MaxStrLen(Rec."Gen.Bus.Post.Group Receive CZA"));
+
+        SyncDepFldUtilities.SyncFields(Rec.Correction, Rec."Correction CZA", PreviousRecord.Correction, PreviousRecord."Correction CZA");
+        SyncDepFldUtilities.SyncFields(Rec."Transfer Order Line No.", Rec."Transfer Order Line No. CZA", PreviousRecord."Transfer Order Line No.", PreviousRecord."Transfer Order Line No. CZA");
     end;
 }
 #endif

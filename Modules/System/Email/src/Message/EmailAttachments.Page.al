@@ -52,15 +52,14 @@ page 8889 "Email Attachments"
                 Caption = 'Add File';
                 ToolTip = 'Attach files, such as documents or images, to the email.';
                 Scope = Page;
-                Visible = not IsMessageRead;
+                Visible = IsEmailEditable;
 
                 trigger OnAction()
                 var
                     EmailEditor: Codeunit "Email Editor";
                 begin
-                    EmailEditor.UploadAttachment(EmailMessage);
-                    UpdateDeleteEnablement();
-                    CurrPage.Update();
+                    EmailEditor.UploadAttachment(EmailMessageImpl);
+                    UpdateDeleteActionEnablement();
                 end;
             }
 
@@ -74,13 +73,14 @@ page 8889 "Email Attachments"
                 Caption = 'Add File from Source';
                 ToolTip = 'Attach a file that was originally attached to the source document, such as a Customer Record, Sales Invoice, etc.';
                 Scope = Page;
-                Visible = not IsMessageRead;
+                Visible = IsEmailEditable;
 
                 trigger OnAction()
                 var
                     EmailEditor: Codeunit "Email Editor";
                 begin
                     EmailEditor.AttachFromRelatedRecords(EmailMessageId);
+                    UpdateDeleteActionEnablement();
                 end;
             }
 
@@ -94,15 +94,14 @@ page 8889 "Email Attachments"
                 Caption = 'Add File from Word Template';
                 ToolTip = 'Create and Attach a document using a Word Template.';
                 Scope = Page;
-                Visible = not IsMessageRead;
+                Visible = IsEmailEditable;
 
                 trigger OnAction()
                 var
                     EmailEditor: Codeunit "Email Editor";
                 begin
-                    EmailEditor.AttachFromWordTemplate(EmailMessage, EmailMessageId);
-                    UpdateDeleteEnablement();
-                    CurrPage.Update();
+                    EmailEditor.AttachFromWordTemplate(EmailMessageImpl, EmailMessageId);
+                    UpdateDeleteActionEnablement();
                 end;
             }
 
@@ -117,7 +116,7 @@ page 8889 "Email Attachments"
                 Caption = 'Delete';
                 ToolTip = 'Delete the selected row.';
                 Scope = Repeater;
-                Visible = not IsMessageRead;
+                Visible = IsEmailEditable;
 
                 trigger OnAction()
                 var
@@ -126,36 +125,48 @@ page 8889 "Email Attachments"
                     if Confirm(DeleteQst) then begin
                         CurrPage.SetSelectionFilter(EmailMessageAttachment);
                         EmailMessageAttachment.DeleteAll();
-                        UpdateDeleteEnablement();
-                        CurrPage.Update();
+                        UpdateDeleteActionEnablement();
                     end;
                 end;
             }
         }
     }
 
-    internal procedure UpdateValues(MessageId: Guid)
+    protected procedure GetEmailMessage() EmailMessage: Codeunit "Email Message"
     begin
-        EmailMessageId := MessageId;
-
         EmailMessage.Get(EmailMessageId);
-        UpdateDeleteEnablement();
-        IsMessageRead := EmailMessage.IsRead();
     end;
 
-    internal procedure UpdateDeleteEnablement()
+    protected procedure UpdateDeleteActionEnablement()
     var
         EmailMessageAttachment: Record "Email Message Attachment";
     begin
         EmailMessageAttachment.SetFilter("Email Message Id", EmailMessageId);
         DeleteActionEnabled := not EmailMessageAttachment.IsEmpty();
+        CurrPage.Update();
+    end;
+
+#if not CLEAN20
+    internal procedure UpdateDeleteEnablement()
+    begin
+        UpdateDeleteActionEnablement();
+    end;
+#endif
+
+    internal procedure UpdateValues(MessageId: Guid; EmailEditable: Boolean)
+    begin
+        EmailMessageId := MessageId;
+
+        EmailMessageImpl.Get(EmailMessageId);
+        UpdateDeleteActionEnablement();
+        IsEmailEditable := EmailEditable;
     end;
 
     var
-        EmailMessage: Codeunit "Email Message Impl.";
+        EmailMessageImpl: Codeunit "Email Message Impl.";
         [InDataSet]
         DeleteActionEnabled: Boolean;
-        IsMessageRead: Boolean;
+        IsEmailEditable: Boolean;
         EmailMessageId: Guid;
         DeleteQst: Label 'Go ahead and delete?';
 }

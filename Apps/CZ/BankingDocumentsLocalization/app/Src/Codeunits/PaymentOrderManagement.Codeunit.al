@@ -6,12 +6,7 @@ codeunit 31356 "Payment Order Management CZB"
         TempErrorMessage: Record "Error Message" temporary;
         BankOperationsFunctionsCZB: Codeunit "Bank Operations Functions CZB";
         BankOperationsFunctionsCZL: Codeunit "Bank Operations Functions CZL";
-        MustBeSpecifiedErr: Label '''%1'' or ''%2'' in ''%3'' must be specified.', Comment = '%1 = Account No. FieldCaption; %2 = IBAN FieldCaption; %3 = RecordId';
-        CustVendBlockedErr: Label '%1 %2 in ''%3'' is Blocked.', Comment = '%1 = TableCaption; %2 = No.; %3 = RecordId';
-        PrivacyBlockedErr: Label '%1 %2 in ''%3'' is blocked for privacy.', Comment = '%1 = TableCaption; %2 = No.; %3 = RecordId';
-        CustVendLedgEntryAlreadyAppliedErr: Label '''%1'' %2 in ''%3'' is already applied on other payment order.', Comment = '%1 = Applies-to C/V Entry No. FieldCaption; %2 = Applies-to C/V Entry No; %3 = RecordId';
-        AccountNoMalformedErr: Label '''%1'' %2 in ''%3 is malformed.', Comment = '%1 = Account No. FieldCaption; %2 = Account No.; %3 = RecordId';
-        ContinueQst: Label 'Do you want to continue?';
+        ConfirmManagement: Codeunit "Confirm Management";
         ErrorMessageLogSuspended: Boolean;
 
     procedure PaymentOrderSelection(var PaymentOrderHeaderCZB: Record "Payment Order Header CZB"; var SelectedBankAccountForPaymentOrder: Boolean)
@@ -71,6 +66,7 @@ codeunit 31356 "Payment Order Management CZB"
     var
         TempErrorMessage2: Record "Error Message" temporary;
         IsHandled: Boolean;
+        MustBeSpecifiedErr: Label '%1 or %2 in %3 must be specified.', Comment = '%1 = Account No. FieldCaption; %2 = IBAN FieldCaption; %3 = RecordId';
     begin
         IsHandled := false;
         OnBeforeCheckPaymentOrderLineFormat(PaymentOrderLineCZB, ShowErrorMessages, TempErrorMessage2, IsHandled);
@@ -110,6 +106,7 @@ codeunit 31356 "Payment Order Management CZB"
         BankAccount: Record "Bank Account";
         TempErrorMessage2: Record "Error Message" temporary;
         IsHandled: Boolean;
+        AccountNoMalformedErr: Label '%1 %2 in %3 is malformed.', Comment = '%1 = Account No. FieldCaption; %2 = Account No.; %3 = RecordId';
     begin
         IsHandled := false;
         OnBeforeCheckPaymentOrderLineBankAccountNo(PaymentOrderLineCZB, ShowErrorMessages, TempErrorMessage2, IsHandled);
@@ -139,6 +136,8 @@ codeunit 31356 "Payment Order Management CZB"
         Vendor: Record Vendor;
         TempErrorMessage2: Record "Error Message" temporary;
         IsHandled: Boolean;
+        CustVendBlockedErr: Label '%1 %2 in %3 is blocked.', Comment = '%1 = TableCaption; %2 = No.; %3 = RecordId';
+        PrivacyBlockedErr: Label '%1 %2 in %3 is blocked for privacy.', Comment = '%1 = TableCaption; %2 = No.; %3 = RecordId';
     begin
         IsHandled := false;
         OnBeforeCheckPaymentOrderLineCustVendBlocked(PaymentOrderLineCZB, ShowErrorMessages, TempErrorMessage2, IsHandled);
@@ -181,6 +180,7 @@ codeunit 31356 "Payment Order Management CZB"
         TempErrorMessage2: Record "Error Message" temporary;
         ErrorMessageID: Integer;
         TempErrorMessageLogSuspended: Boolean;
+        SuggestedAmountToApplyQst: Label '%1 Ledger Entry No. %2 is suggested to application on other documents in the system.\Do you want to use it for this Payment Order?', Comment = '%1 = Type, %2 = Applies-to C/V/E Entry No.';
     begin
         TempErrorMessage.Reset();
         if TempErrorMessage.FindLast() then
@@ -189,9 +189,15 @@ codeunit 31356 "Payment Order Management CZB"
         TempErrorMessageLogSuspended := ErrorMessageLogSuspended;
         ErrorMessageLogSuspended := false;
 
-        CheckPaymentOrderLineApplyToOtherEntries(PaymentOrderLineCZB, false);
+        if ShowErrorMessages then
+            if PaymentOrderLineCZB."Applies-to C/V/E Entry No." <> 0 then
+                if PaymentOrderLineCZB.CalcRelatedAmountToApply() <> 0 then
+                    if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(SuggestedAmountToApplyQst, PaymentOrderLineCZB.Type, PaymentOrderLineCZB."Applies-to C/V/E Entry No."), false) then
+                        Error('');
+
+        CheckPaymentOrderLineApplyToOtherEntries(PaymentOrderLineCZB, ShowErrorMessages);
 #if not CLEAN19
-        CheckPaymentOrderLineApplyToAdvanceLetter(PaymentOrderLineCZB, false);
+        CheckPaymentOrderLineApplyToAdvanceLetter(PaymentOrderLineCZB, ShowErrorMessages);
 #endif
 
         ErrorMessageLogSuspended := TempErrorMessageLogSuspended;
@@ -220,6 +226,7 @@ codeunit 31356 "Payment Order Management CZB"
     var
         TempErrorMessage2: Record "Error Message" temporary;
         IsHandled: Boolean;
+        CustVendLedgEntryAlreadyAppliedErr: Label '%1 %2 in %3 is already applied on other or the same payment order.', Comment = '%1 = Applies-to C/V Entry No. FieldCaption; %2 = Applies-to C/V Entry No; %3 = RecordId';
     begin
         IsHandled := false;
         OnBeforeCheckPaymentOrderLineApplyToOtherEntries(PaymentOrderLineCZB, ShowErrorMessages, TempErrorMessage2, IsHandled);
@@ -241,17 +248,9 @@ codeunit 31356 "Payment Order Management CZB"
     local procedure IsLedgerEntryApplied(PaymentOrderLineCZB: Record "Payment Order Line CZB"): Boolean
     var
         PaymentOrderLineCZB2: Record "Payment Order Line CZB";
-        IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
     begin
         if PaymentOrderLineCZB."Applies-to C/V/E Entry No." = 0 then
             exit(false);
-
-        IssPaymentOrderLineCZB.SetRange(Type, PaymentOrderLineCZB.Type);
-        IssPaymentOrderLineCZB.SetRange("No.", PaymentOrderLineCZB."No.");
-        IssPaymentOrderLineCZB.SetRange("Applies-to C/V/E Entry No.", PaymentOrderLineCZB."Applies-to C/V/E Entry No.");
-        IssPaymentOrderLineCZB.SetRange(Status, IssPaymentOrderLineCZB.Status::" ");
-        if not IssPaymentOrderLineCZB.IsEmpty() then
-            exit(true);
 
         PaymentOrderLineCZB2.SetRange(Type, PaymentOrderLineCZB.Type);
         PaymentOrderLineCZB2.SetRange("No.", PaymentOrderLineCZB."No.");
@@ -306,9 +305,9 @@ codeunit 31356 "Payment Order Management CZB"
     procedure ProcessErrorMessages(ShowMessage: Boolean; RollBackOnError: Boolean)
     var
         PaymentOrderLineCZB: Record "Payment Order Line CZB";
-        ConfirmManagement: Codeunit "Confirm Management";
         IsHandled: Boolean;
         TwoPlaceholdersTok: Label '%1\\%2', Locked = true;
+        ContinueQst: Label 'Do you want to continue?';
     begin
         IsHandled := false;
         OnBeforeProcessErrorMessages(TempErrorMessage, ShowMessage, RollBackOnError, IsHandled);
@@ -344,8 +343,8 @@ codeunit 31356 "Payment Order Management CZB"
     local procedure CheckPaymentOrderLineApplyToAdvanceLetter(PaymentOrderLineCZB: Record "Payment Order Line CZB"; ShowErrorMessages: Boolean): Boolean
     var
         TempErrorMessage2: Record "Error Message" temporary;
-        AdvanceAlreadyAppliedErr: Label '''%1'' %2 in ''%3'' is already applied on other payment order.', Comment = '%1 = fieldcaption of Letter No.; %2 = Letter No.; %3 = recordid';
-        AdvanceLineAlreadyAppliedErr: Label '''%1'' and ''%2'' %3 %4 in ''%5'' is already applied on other payment order.', Comment = '%1 = fieldcaption of Letter No.; %2 = fieldcaption of Letter Line No.; %3 = Letter No.; %4 = Letter Line No.; %5 = recordid';
+        AdvanceAlreadyAppliedErr: Label '%1 %2 in %3 is already applied on other or the same payment order.', Comment = '%1 = fieldcaption of Letter No.; %2 = Letter No.; %3 = recordid';
+        AdvanceLineAlreadyAppliedErr: Label '%1 and %2 %3 %4 in %5 is already applied on other or the same payment order.', Comment = '%1 = fieldcaption of Letter No.; %2 = fieldcaption of Letter Line No.; %3 = Letter No.; %4 = Letter Line No.; %5 = recordid';
     begin
         if not IsAdvanceLetterApplied(PaymentOrderLineCZB) then
             exit(true);
@@ -372,17 +371,9 @@ codeunit 31356 "Payment Order Management CZB"
     local procedure IsAdvanceLetterApplied(PaymentOrderLineCZB: Record "Payment Order Line CZB"): Boolean
     var
         PaymentOrderLineCZB2: Record "Payment Order Line CZB";
-        IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
     begin
         if PaymentOrderLineCZB."Letter No." = '' then
             exit(false);
-
-        IssPaymentOrderLineCZB.SetRange("Letter Type", PaymentOrderLineCZB."Letter Type");
-        IssPaymentOrderLineCZB.SetRange("Letter No.", PaymentOrderLineCZB."Letter No.");
-        IssPaymentOrderLineCZB.SetRange("Letter Line No.", PaymentOrderLineCZB."Letter Line No.");
-        IssPaymentOrderLineCZB.SetRange(Status, IssPaymentOrderLineCZB.Status::" ");
-        if not IssPaymentOrderLineCZB.IsEmpty() then
-            exit(true);
 
         PaymentOrderLineCZB2.SetRange("Letter Type", PaymentOrderLineCZB."Letter Type");
         PaymentOrderLineCZB2.SetRange("Letter No.", PaymentOrderLineCZB."Letter No.");

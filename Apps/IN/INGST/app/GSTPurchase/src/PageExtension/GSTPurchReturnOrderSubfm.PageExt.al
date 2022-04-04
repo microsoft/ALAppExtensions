@@ -10,15 +10,13 @@ pageextension 18091 "GST Purch. Return Order Subfm" extends "Purchase Return Ord
                 FormatLine();
             end;
         }
-#if not CLEAN17
-        Modify("Cross-Reference No.")
+        Modify("Item Reference No.")
         {
             trigger OnAfterValidate()
             begin
                 SaveRecords();
             end;
         }
-#endif
         Modify(Quantity)
         {
             trigger OnAfterValidate()

@@ -10,7 +10,7 @@
 codeunit 131004 "Library - Variable Storage"
 {
     var
-        Assert: Codeunit "Library Assert";
+        LibraryAssert: Codeunit "Library Assert";
         Variables: array[25] of Variant;
         EndIndex: Integer;
         StartIndex: Integer;
@@ -31,7 +31,7 @@ codeunit 131004 "Library - Variable Storage"
         PreviousCount := TotalCount;
         if TotalCount <> 0 then begin
             ClearQueue();
-            Assert.AreEqual(0, PreviousCount, AssertEmptyErr);
+            LibraryAssert.AreEqual(0, PreviousCount, AssertEmptyErr);
         end;
     end;
 
@@ -40,7 +40,7 @@ codeunit 131004 "Library - Variable Storage"
     /// </summary>
     procedure AssertFull()
     begin
-        Assert.AreEqual(MaxLength(), TotalCount, AssertFullErr);
+        LibraryAssert.AreEqual(MaxLength(), TotalCount, AssertFullErr);
     end;
 
     /// <summary>
@@ -48,7 +48,7 @@ codeunit 131004 "Library - Variable Storage"
     /// </summary>
     procedure AssertNotOverflow()
     begin
-        Assert.IsFalse(TotalCount + 1 > MaxLength(), OverflowErr);
+        LibraryAssert.IsFalse(TotalCount + 1 > MaxLength(), OverflowErr);
     end;
 
     /// <summary>
@@ -56,7 +56,7 @@ codeunit 131004 "Library - Variable Storage"
     /// </summary>
     procedure AssertNotUnderflow()
     begin
-        Assert.IsTrue(TotalCount > 0, UnderflowErr);
+        LibraryAssert.IsTrue(TotalCount > 0, UnderflowErr);
     end;
 
     /// <summary>
@@ -65,8 +65,8 @@ codeunit 131004 "Library - Variable Storage"
     /// <param name="Index">The position in the queue to test.</param>
     procedure AssertPeekAvailable(Index: Integer)
     begin
-        Assert.IsTrue(Index > 0, OutOfBoundsErr);
-        Assert.IsTrue(Index <= TotalCount, OutOfBoundsErr);
+        LibraryAssert.IsTrue(Index > 0, OutOfBoundsErr);
+        LibraryAssert.IsTrue(Index <= TotalCount, OutOfBoundsErr);
     end;
 
     /// <summary>
@@ -88,35 +88,35 @@ codeunit 131004 "Library - Variable Storage"
     /// <summary>
     /// Reads the top value from the queue and removes it.
     /// </summary>
-    /// <param name="Variable">Returns the top value read from the queue. </param>
-    procedure Dequeue(var Variable: Variant)
+    /// <param name="Variant">Returns the top value read from the queue. </param>
+    procedure Dequeue(var Variant: Variant)
     begin
         StartIndex := (StartIndex mod MaxLength()) + 1;
         AssertNotUnderflow();
-        Variable := Variables[StartIndex];
+        Variant := Variables[StartIndex];
         TotalCount -= 1;
     end;
 
     /// <summary>
     /// Returns the value from a given index in the queue without dequeuing the value.
     /// </summary>
-    /// <param name="Variable">Returns the value that is stored in the queue.</param>
+    /// <param name="Variant">Returns the value that is stored in the queue.</param>
     /// <param name="Index">The position in the queue from which the value will be read.</param>
-    procedure Peek(var Variable: Variant; Index: Integer)
+    procedure Peek(var Variant: Variant; Index: Integer)
     begin
         AssertPeekAvailable(Index);
-        Variable := Variables[((StartIndex + (Index - 1)) mod MaxLength()) + 1];
+        Variant := Variables[((StartIndex + (Index - 1)) mod MaxLength()) + 1];
     end;
 
     /// <summary>
     /// Store one value in to the queue.
     /// </summary>
-    /// <param name="Variable">The value to add to the queue.</param>
-    procedure Enqueue(Variable: Variant)
+    /// <param name="Variant">The value to add to the queue.</param>
+    procedure Enqueue(Variant: Variant)
     begin
         EndIndex := (EndIndex mod MaxLength()) + 1;
         AssertNotOverflow();
-        Variables[EndIndex] := Variable;
+        Variables[EndIndex] := Variant;
         TotalCount += 1;
     end;
 
@@ -141,10 +141,10 @@ codeunit 131004 "Library - Variable Storage"
     /// </summary>
     procedure DequeueText(): Text
     var
-        ExpectedValue: Variant;
+        ExpectedVariantValue: Variant;
     begin
-        Dequeue(ExpectedValue);
-        exit(Format(ExpectedValue));
+        Dequeue(ExpectedVariantValue);
+        exit(Format(ExpectedVariantValue));
     end;
 
     /// <summary>
@@ -152,10 +152,10 @@ codeunit 131004 "Library - Variable Storage"
     /// </summary>
     procedure DequeueDecimal(): Decimal
     var
-        ExpectedValue: Variant;
+        ExpectedVariantValue: Variant;
     begin
-        Dequeue(ExpectedValue);
-        exit(ExpectedValue);
+        Dequeue(ExpectedVariantValue);
+        exit(ExpectedVariantValue);
     end;
 
     /// <summary>
@@ -163,10 +163,10 @@ codeunit 131004 "Library - Variable Storage"
     /// </summary>
     procedure DequeueInteger(): Integer
     var
-        ExpectedValue: Variant;
+        ExpectedVariantValue: Variant;
     begin
-        Dequeue(ExpectedValue);
-        exit(ExpectedValue);
+        Dequeue(ExpectedVariantValue);
+        exit(ExpectedVariantValue);
     end;
 
     /// <summary>
@@ -174,10 +174,10 @@ codeunit 131004 "Library - Variable Storage"
     /// </summary>
     procedure DequeueDate(): Date
     var
-        ExpectedValue: Variant;
+        ExpectedVariantValue: Variant;
     begin
-        Dequeue(ExpectedValue);
-        exit(ExpectedValue);
+        Dequeue(ExpectedVariantValue);
+        exit(ExpectedVariantValue);
     end;
 
     /// <summary>
@@ -185,10 +185,10 @@ codeunit 131004 "Library - Variable Storage"
     /// </summary>
     procedure DequeueDateTime(): DateTime
     var
-        ExpectedValue: Variant;
+        ExpectedVariantValue: Variant;
     begin
-        Dequeue(ExpectedValue);
-        exit(ExpectedValue);
+        Dequeue(ExpectedVariantValue);
+        exit(ExpectedVariantValue);
     end;
 
     /// <summary>
@@ -196,10 +196,10 @@ codeunit 131004 "Library - Variable Storage"
     /// </summary>
     procedure DequeueTime(): Time
     var
-        ExpectedValue: Variant;
+        ExpectedVariantValue: Variant;
     begin
-        Dequeue(ExpectedValue);
-        exit(ExpectedValue);
+        Dequeue(ExpectedVariantValue);
+        exit(ExpectedVariantValue);
     end;
 
     /// <summary>
@@ -207,10 +207,10 @@ codeunit 131004 "Library - Variable Storage"
     /// </summary>
     procedure DequeueBoolean(): Boolean
     var
-        ExpectedValue: Variant;
+        ExpectedVariantValue: Variant;
     begin
-        Dequeue(ExpectedValue);
-        exit(ExpectedValue);
+        Dequeue(ExpectedVariantValue);
+        exit(ExpectedVariantValue);
     end;
 
     /// <summary>
@@ -219,10 +219,10 @@ codeunit 131004 "Library - Variable Storage"
     /// <param name="Index">The position in the queue from which the value will be read.</param>
     procedure PeekText(Index: Integer): Text
     var
-        ExpectedValue: Variant;
+        ExpectedVariantValue: Variant;
     begin
-        Peek(ExpectedValue, Index);
-        exit(Format(ExpectedValue));
+        Peek(ExpectedVariantValue, Index);
+        exit(Format(ExpectedVariantValue));
     end;
 
     /// <summary>
@@ -231,10 +231,10 @@ codeunit 131004 "Library - Variable Storage"
     /// <param name="Index">The position in the queue from which the value will be read.</param>
     procedure PeekDecimal(Index: Integer): Decimal
     var
-        ExpectedValue: Variant;
+        ExpectedVariantValue: Variant;
     begin
-        Peek(ExpectedValue, Index);
-        exit(ExpectedValue);
+        Peek(ExpectedVariantValue, Index);
+        exit(ExpectedVariantValue);
     end;
 
     /// <summary>
@@ -243,10 +243,10 @@ codeunit 131004 "Library - Variable Storage"
     /// <param name="Index">The position in the queue from which the value will be read.</param>
     procedure PeekInteger(Index: Integer): Integer
     var
-        ExpectedValue: Variant;
+        ExpectedVariantValue: Variant;
     begin
-        Peek(ExpectedValue, Index);
-        exit(ExpectedValue);
+        Peek(ExpectedVariantValue, Index);
+        exit(ExpectedVariantValue);
     end;
 
     /// <summary>
@@ -255,10 +255,10 @@ codeunit 131004 "Library - Variable Storage"
     /// <param name="Index">The position in the queue from which the value will be read.</param>
     procedure PeekDate(Index: Integer): Date
     var
-        ExpectedValue: Variant;
+        ExpectedVariantValue: Variant;
     begin
-        Peek(ExpectedValue, Index);
-        exit(ExpectedValue);
+        Peek(ExpectedVariantValue, Index);
+        exit(ExpectedVariantValue);
     end;
 
     /// <summary>
@@ -267,10 +267,10 @@ codeunit 131004 "Library - Variable Storage"
     /// <param name="Index">The position in the queue from which the value will be read.</param>
     procedure PeekTime(Index: Integer): Time
     var
-        ExpectedValue: Variant;
+        ExpectedVariantValue: Variant;
     begin
-        Peek(ExpectedValue, Index);
-        exit(ExpectedValue);
+        Peek(ExpectedVariantValue, Index);
+        exit(ExpectedVariantValue);
     end;
 
     /// <summary>
@@ -279,10 +279,10 @@ codeunit 131004 "Library - Variable Storage"
     /// <param name="Index">The position in the queue from which the value will be read.</param>
     procedure PeekBoolean(Index: Integer): Boolean
     var
-        ExpectedValue: Variant;
+        ExpectedVariantValue: Variant;
     begin
-        Peek(ExpectedValue, Index);
-        exit(ExpectedValue);
+        Peek(ExpectedVariantValue, Index);
+        exit(ExpectedVariantValue);
     end;
 }
 

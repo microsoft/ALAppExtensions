@@ -1,5 +1,10 @@
+#if not CLEAN20
 page 1089 "MS - Wallet Merchant Callback"
 {
+
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     Caption = 'Confirm';
     Editable = false;
     PageType = NavigatePage;
@@ -21,7 +26,7 @@ page 1089 "MS - Wallet Merchant Callback"
                 {
                     ShowCaption = false;
                     Editable = false;
-                    ApplicationArea = Basic, Suite, Invoicing;
+                    ApplicationArea = Basic, Suite;
                     ExtendedDatatype = URL;
                 }
             }
@@ -40,7 +45,7 @@ page 1089 "MS - Wallet Merchant Callback"
         {
             action(Done)
             {
-                ApplicationArea = Basic, Suite, Invoicing;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Done';
                 Promoted = true;
                 PromotedOnly = true;
@@ -65,4 +70,4 @@ page 1089 "MS - Wallet Merchant Callback"
         MSWalletMerchantMgt: Codeunit "MS - Wallet Merchant Mgt";
         MerchantSignupUrl: Text;
 }
-
+#endif

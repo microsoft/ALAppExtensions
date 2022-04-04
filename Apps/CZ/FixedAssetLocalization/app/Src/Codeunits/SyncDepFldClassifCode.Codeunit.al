@@ -1,6 +1,6 @@
 #if not CLEAN18
 #pragma warning disable AL0432,AA0072
-codeunit 31301 "Sync.Dep.Fld-Classif. Code CZF"
+codeunit 31301 "Sync.Dep.Fld-Classif. Code CZF"
 {
     Access = Internal;
     Permissions = tabledata "Classification Code" = rimd,

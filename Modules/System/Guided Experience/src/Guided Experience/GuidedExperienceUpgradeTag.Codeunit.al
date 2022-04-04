@@ -17,4 +17,9 @@ codeunit 1998 "Guided Experience Upgrade Tag"
     begin
         exit('MS-387559-GuidedExperienceItemAddSpotlightTourType-20210810');
     end;
+
+    procedure GetGuidedExperienceTranslationUpdateTag(): Code[250]
+    begin
+        exit('MS-418689-GuidedExperienceItemTranslationUpdate-20211215');
+    end;
 }

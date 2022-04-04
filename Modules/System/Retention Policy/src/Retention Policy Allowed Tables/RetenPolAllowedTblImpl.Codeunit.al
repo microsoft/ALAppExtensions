@@ -235,33 +235,33 @@ codeunit 3906 "Reten. Pol. Allowed Tbl. Impl."
                 FilterText += '|' + Format(TableId);
     end;
 
-    procedure AddTableFilterToJsonArray(var TableFilters: JsonArray; RetentionPeriodEnum: Enum "Retention Period Enum"; DateFieldNo: Integer; Enabled: Boolean; Locked: Boolean; RecRef: RecordRef)
+    procedure AddTableFilterToJsonArray(var TableFilters: JsonArray; RetentionPeriodEnum: Enum "Retention Period Enum"; DateFieldNo: Integer; Enabled: Boolean; Locked: Boolean; RecordRef: RecordRef)
     var
         RetPeriodCalc: DateFormula;
     begin
         Evaluate(RetPeriodCalc, '');
-        AddTableFilterToJsonArray(TableFilters, RetentionPeriodEnum, RetPeriodCalc, DateFieldNo, Enabled, Locked, RecRef);
+        AddTableFilterToJsonArray(TableFilters, RetentionPeriodEnum, RetPeriodCalc, DateFieldNo, Enabled, Locked, RecordRef);
     end;
 
-    procedure AddTableFilterToJsonArray(var TableFilters: JsonArray; RetPeriodCalc: DateFormula; DateFieldNo: Integer; Enabled: Boolean; Locked: Boolean; RecRef: RecordRef)
+    procedure AddTableFilterToJsonArray(var TableFilters: JsonArray; RetPeriodCalc: DateFormula; DateFieldNo: Integer; Enabled: Boolean; Locked: Boolean; RecordRef: RecordRef)
     var
         RetentionPeriodEnum: Enum "Retention Period Enum";
     begin
-        AddTableFilterToJsonArray(TableFilters, RetentionPeriodEnum::Custom, RetPeriodCalc, DateFieldNo, Enabled, Locked, RecRef);
+        AddTableFilterToJsonArray(TableFilters, RetentionPeriodEnum::Custom, RetPeriodCalc, DateFieldNo, Enabled, Locked, RecordRef);
     end;
 
-    procedure AddTableFilterToJsonArray(var TableFilters: JsonArray; RetentionPeriodEnum: Enum "Retention Period Enum"; RetPeriodCalc: DateFormula; DateFieldNo: Integer; Enabled: Boolean; Locked: Boolean; RecRef: RecordRef)
+    procedure AddTableFilterToJsonArray(var TableFilters: JsonArray; RetentionPeriodEnum: Enum "Retention Period Enum"; RetPeriodCalc: DateFormula; DateFieldNo: Integer; Enabled: Boolean; Locked: Boolean; RecordRef: RecordRef)
     var
         JsonObject: JsonObject;
     begin
         // this code must match the parsing code in codeunit 3903 "Retention Policy Setup Impl."
-        JsonObject.Add('Table Id', RecRef.Number);
+        JsonObject.Add('Table Id', RecordRef.Number);
         JsonObject.Add('Retention Period', Format(RetentionPeriodEnum, 0, 9));
         JsonObject.Add('Ret. Period Calculation', Format(RetPeriodCalc, 0, 2));
         JsonObject.Add('Date Field No.', DateFieldNo);
         JsonObject.Add('Enabled', Enabled);
         JsonObject.Add('Locked', Locked);
-        JsonObject.Add('Table Filter', RecRef.GetView(false));
+        JsonObject.Add('Table Filter', RecordRef.GetView(false));
 
         TableFilters.add(JsonObject.AsToken())
     end;

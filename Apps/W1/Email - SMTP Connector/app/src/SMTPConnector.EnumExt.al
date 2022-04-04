@@ -14,6 +14,6 @@ enumextension 4511 "SMTP Connector" extends "Email Connector"
     value(2147483647; SMTP) // Max int value so it appears last
     {
         Caption = 'SMTP';
-        Implementation = "Email Connector" = "SMTP Connector";
+        Implementation = "Email Connector" = "SMTP Connector Impl.";
     }
 }

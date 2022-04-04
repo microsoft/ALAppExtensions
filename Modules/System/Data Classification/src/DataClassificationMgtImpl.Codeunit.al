@@ -61,7 +61,7 @@ codeunit 1753 "Data Classification Mgt. Impl."
     procedure FindSimilarFieldsInRelatedTables(var DataSensitivity: Record "Data Sensitivity")
     var
         TempDataPrivacyEntities: Record "Data Privacy Entities" temporary;
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         FieldCaptionFilter: Text;
         TableNoFilter: Text;
     begin
@@ -76,8 +76,8 @@ codeunit 1753 "Data Classification Mgt. Impl."
 
             FilterDataSensitivityByFieldCaption(DataSensitivity, FieldCaptionFilter);
 
-            RecRef.GetTable(TempDataPrivacyEntities);
-            TableNoFilter := GetFilterTextForFieldValuesInTable(RecRef, TempDataPrivacyEntities.FieldNo("Table No."));
+            RecordRef.GetTable(TempDataPrivacyEntities);
+            TableNoFilter := GetFilterTextForFieldValuesInTable(RecordRef, TempDataPrivacyEntities.FieldNo("Table No."));
 
             DataSensitivity.SetFilter("Table No", TableNoFilter);
 
@@ -137,15 +137,15 @@ codeunit 1753 "Data Classification Mgt. Impl."
     procedure GetTableNoFilterForTablesWhoseNameContains(Name: Text): Text
     var
         "Field": Record "Field";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
         TableNameFilterLbl: Label '*%1*', Comment = '%1 - Table name', Locked = true;
     begin
         Field.SetRange(DataClassification, Field.DataClassification::CustomerContent);
         Field.SetFilter(ObsoleteState, '<>%1', Field.ObsoleteState::Removed);
         Field.SetFilter(TableName, StrSubstNo(TableNameFilterLbl, Name));
 
-        RecRef.GetTable(Field);
-        exit(GetFilterTextForFieldValuesInTable(RecRef, Field.FieldNo(TableNo)));
+        RecordRef.GetTable(Field);
+        exit(GetFilterTextForFieldValuesInTable(RecordRef, Field.FieldNo(TableNo)));
     end;
 
     procedure PopulateFieldValue(FieldRef: FieldRef; var FieldContentBuffer: Record "Field Content Buffer")
@@ -340,15 +340,15 @@ codeunit 1753 "Data Classification Mgt. Impl."
             Field.DataClassification::EndUserPseudonymousIdentifiers));
     end;
 
-    local procedure GetFilterTextForFieldValuesInTable(var RecRef: RecordRef; FieldNo: Integer): Text
+    local procedure GetFilterTextForFieldValuesInTable(var RecordRef: RecordRef; FieldNo: Integer): Text
     var
         FilterText: Text;
         FilterTextOrLbl: Label '%1|%2', Comment = '%1 - Filter text, %2 - Field ref', Locked = true;
     begin
-        if RecRef.FindSet() then begin
+        if RecordRef.FindSet() then begin
             repeat
-                FilterText := StrSubstNo(FilterTextOrLbl, FilterText, RecRef.Field(FieldNo));
-            until RecRef.Next() = 0;
+                FilterText := StrSubstNo(FilterTextOrLbl, FilterText, RecordRef.Field(FieldNo));
+            until RecordRef.Next() = 0;
 
             // remove the first vertical bar from the filter text
             FilterText := DelChr(FilterText, '<', '|');

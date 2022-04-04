@@ -33,7 +33,7 @@ interface "Email Connector"
     /// <remarks>The out parameter must hold the account ID of the added account.</remarks>
     /// <param name="Account">Out parameter with the details of the registered Account.</param>
     /// <returns>True if an account was registered.</returns>
-    procedure RegisterAccount(var Account: Record "Email Account"): Boolean
+    procedure RegisterAccount(var EmailAccount: Record "Email Account"): Boolean
 
     /// <summary>
     /// Deletes an e-mail account for the connector.

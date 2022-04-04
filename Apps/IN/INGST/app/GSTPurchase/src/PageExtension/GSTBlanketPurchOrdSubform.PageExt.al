@@ -10,7 +10,7 @@ pageextension 18098 "GST Blanket Purch Ord Subform" extends "Blanket Purchase Or
                 FormatLine();
             end;
         }
-        modify("Cross-Reference No.")
+        modify("Item Reference No.")
         {
             trigger OnAfterValidate()
             begin

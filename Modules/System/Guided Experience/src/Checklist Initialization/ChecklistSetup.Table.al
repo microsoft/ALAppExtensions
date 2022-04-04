@@ -14,6 +14,18 @@ table 1996 "Checklist Setup"
             DataClassification = SystemMetadata;
             Caption = 'Is Setup Done';
         }
+
+        field(2; "Is Setup in Progress"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Is Setup in Progress';
+        }
+
+        field(3; "DateTime when Setup Started"; DateTime)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Date when Setup Started';
+        }
     }
 
     keys

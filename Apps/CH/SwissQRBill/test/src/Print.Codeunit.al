@@ -381,7 +381,7 @@ codeunit 148092 "Swiss QR-Bill Test Print"
 
         BilliingInfoString := SwissQRBillTestLibrary.GetBillInfoString(QRLayout, SalesInvoiceHeader."Cust. Ledger Entry No.");
 
-        UnstrMessage += StrSubstNo(' %1', BilliingInfoString);
+        UnstrMessage += ' ' + BilliingInfoString;
         VerifyReportDataset('CHF', 110, SwissQRBillTestLibrary.FormatReferenceNo(SalesInvoiceHeader."Payment Reference"), UnstrMessage);
     end;
 
@@ -499,7 +499,7 @@ codeunit 148092 "Swiss QR-Bill Test Print"
         PrintPostedSalesInvoice(SalesInvoiceHeader);
 
         BilliingInfoString := SwissQRBillTestLibrary.GetBillInfoString(QRLayout, SalesInvoiceHeader."Cust. Ledger Entry No.");
-        UnstrMessage += StrSubstNo(' %1', BilliingInfoString);
+        UnstrMessage += ' ' + BilliingInfoString;
         VerifyReportDataset('CHF', 110, SwissQRBillTestLibrary.FormatReferenceNo(SalesInvoiceHeader."Payment Reference"), UnstrMessage);
         VerifyReportDatasetAltProc(AltName[1], AltValue[1], AltName[2], AltValue[2]);
     end;
@@ -787,9 +787,9 @@ codeunit 148092 "Swiss QR-Bill Test Print"
     procedure PrintUmlautsUsingWesternEuropeanISO88591Codepage()
     var
         TempBlob: Codeunit "Temp Blob";
-        IBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
-        QRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
-        ErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
+        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
+        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
+        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
         OutStream: OutStream;
         UmlautChars: Text;
         i: Integer;
@@ -800,8 +800,8 @@ codeunit 148092 "Swiss QR-Bill Test Print"
             UmlautChars[i - 191] := i;
 
         TempBlob.CreateOutStream(OutStream);
-        IBarcodeProvider := QRCodeProvider.QRCodeProvider();
-        IBarcodeProvider.GetBarcodeStream(UmlautChars, OutStream, ErrorCorrectionLevel::Medium, 5, 0, 28591);
+        SwissQRBillIBarcodeProvider := SwissQRBillQRCodeProvider.QRCodeProvider();
+        SwissQRBillIBarcodeProvider.GetBarcodeStream(UmlautChars, OutStream, SwissQRBillErrorCorrectionLevel::Medium, 5, 0, 28591);
     end;
 
     local procedure Initialize()
@@ -898,16 +898,16 @@ codeunit 148092 "Swiss QR-Bill Test Print"
 
     local procedure GetReportCompanyInfo(IBANTypeLcl: Enum "Swiss QR-Bill IBAN Type") Result: Text
     var
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
         TempSwissQRBillBuffer: Record "Swiss QR-Bill Buffer" temporary;
         TempCustomer: Record Customer temporary;
         IBAN: Code[50];
     begin
-        CompanyInfo.Get();
+        CompanyInformation.Get();
         if IBANTypeLcl = IBANType::IBAN then
-            IBAN := CompanyInfo.IBAN
+            IBAN := CompanyInformation.IBAN
         else
-            IBAN := CompanyInfo."Swiss QR-Bill IBAN";
+            IBAN := CompanyInformation."Swiss QR-Bill IBAN";
         Result := SwissQRBillMgt.FormatIBAN(IBAN);
         TempSwissQRBillBuffer.SetCompanyInformation();
         if TempSwissQRBillBuffer.GetCreditorInfo(TempCustomer) then

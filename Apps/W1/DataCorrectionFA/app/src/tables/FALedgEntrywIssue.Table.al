@@ -71,5 +71,9 @@ table 6090 "FA Ledg. Entry w. Issue"
         {
 
         }
+        key(Key3; Corrected, "FA No.")
+        {
+
+        }
     }
 }

@@ -265,16 +265,16 @@ codeunit 27021 "DIOT Data Management"
 
     procedure GetAssistedSetupComplete(): Boolean
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
-        exit(AssistedSetup.IsComplete(Page::"DIOT Setup Wizard"));
+        exit(GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, Page::"DIOT Setup Wizard"));
     end;
 
     procedure SetAssistedSetupComplete()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
-        AssistedSetup.Complete(Page::"DIOT Setup Wizard");
+        GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"DIOT Setup Wizard");
     end;
 
     procedure GetNationalyForCountryCode(CountryRegionCode: Code[2]): Text

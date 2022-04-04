@@ -17,7 +17,9 @@ table 4009 "Migration Table Mapping"
             var
                 PublishedApp: Record "Published Application";
             begin
+#pragma warning disable AA0210
                 PublishedApp.SetRange(ID, "App ID");
+#pragma warning restore
                 PublishedApp.FindFirst();
 
                 if PublisherDenied(PublishedApp.Publisher) then
@@ -126,5 +128,18 @@ table 4009 "Migration Table Mapping"
     procedure InvalidExtensionPublishers(): Text
     begin
         exit(InvalidPublisherTxt);
+    end;
+
+    procedure UpdateExtensionName(var ExtensionName: Text)
+    var
+        PublishedApplication: Record "Published Application";
+        ExtensionNameFilterTxt: Label '@%1*', Comment = '%1 - name of extension', Locked = true;
+    begin
+        if ExtensionName <> '' then begin
+            PublishedApplication.SetFilter(Name, StrSubstNo(ExtensionNameFilterTxt, ExtensionName));
+            PublishedApplication.FindFirst();
+            ExtensionName := PublishedApplication.Name;
+            Validate("App ID", PublishedApplication.ID);
+        end;
     end;
 }

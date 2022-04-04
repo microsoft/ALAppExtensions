@@ -10,4 +10,13 @@ tableextension 31035 "Invt. Receipt Header CZL" extends "Invt. Receipt Header"
             DataClassification = CustomerContent;
         }
     }
+
+    procedure GetRegisterUserIDCZL(): Code[50]
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+    begin
+        ItemLedgerEntry.SetFilterFromInvtReceiptHeaderCZL(Rec);
+        if ItemLedgerEntry.FindFirst() then
+            exit(ItemLedgerEntry.GetRegisterUserIDCZL());
+    end;
 }

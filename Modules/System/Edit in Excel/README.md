@@ -1,3 +1,33 @@
+This module provides an API for the Edit in Excel funcitonality in Business Central.
+
+This module can be used to:
+- Enable Edit in Excel functionality on new pages
+- Modify the behaviour of the Edit in Excel functionality
+
+### How to download an Edit in Excel file
+```
+procedure Example()
+var
+    EditinExcel: Codeunit "Edit in Excel";
+    Filter: Text;
+    FileName: Text;
+begin
+    Filter := StrSubstNo('Journal_Batch_Name eq ''%1'' and Journal_Template_Name eq ''%2''', JournalBatchName, JournalTemplateName);
+    FileName := StrSubstNo('%1 (%2, %3)', CurrPage.Caption, JournalBatchName, JournalTemplateName);
+    EditinExcel.EditPageInExcel(CurrPage.Caption, CurrPage.ObjectId(false), Filter, FileName);
+end;
+```
+
+### How to override Edit in Excel functionality
+```
+[EventSubscriber(ObjectType::Codeunit, Codeunit::"Edit in Excel", 'OnEditInExcel', '', false, false)]
+local procedure OnEditInExcel(ServiceName: Text[240]; ODataFilter: Text; SearchFilter: Text; var Handled: Boolean)
+begin
+    if HandleOnEditInExcel(ServiceName, ODataFilter, SearchFilter) then
+        Handled := True;
+end;
+```
+
 # Public Objects
 ## Edit in Excel Settings (Table 1480)
 

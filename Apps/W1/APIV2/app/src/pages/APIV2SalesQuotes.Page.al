@@ -496,7 +496,7 @@ page 30037 "APIV2 - Sales Quotes"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(4);
+                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const("Sales Quote");
                 }
                 part(salesQuoteLines; "APIV2 - Sales Quote Lines")
                 {
@@ -511,7 +511,7 @@ page 30037 "APIV2 - Sales Quotes"
                     Multiplicity = ZeroOrOne;
                     EntityName = 'pdfDocument';
                     EntitySetName = 'pdfDocument';
-                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const(3);
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Sales Quote");
                 }
                 field(discountAmount; "Invoice Discount Amount")
                 {
@@ -609,7 +609,7 @@ page 30037 "APIV2 - Sales Quotes"
                     Caption = 'Attachments';
                     EntityName = 'attachment';
                     EntitySetName = 'attachments';
-                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const(3);
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Sales Quote");
                 }
             }
         }

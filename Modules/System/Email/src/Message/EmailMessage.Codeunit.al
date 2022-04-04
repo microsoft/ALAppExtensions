@@ -79,6 +79,24 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
+    /// Sets the body of the email message.
+    /// <param name="Body">The body to set to the email message.</param>
+    /// </summary>
+    procedure SetBody(Body: Text)
+    begin
+        EmailMessageImpl.SetBody(Body);
+    end;
+
+    /// <summary>
+    /// Appends to the body of the email message.
+    /// <param name="Value">The value to append to the body of the email message.</param>
+    /// </summary>
+    procedure AppendToBody(Value: Text)
+    begin
+        EmailMessageImpl.AppendToBody(Value);
+    end;
+
+    /// <summary>
     /// Gets the subject of the email message.
     /// </summary>
     /// <returns>The subject of the email.</returns>
@@ -88,12 +106,30 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
+    /// Sets the subject of the email message.
+    /// <param name="Subject">The subject to set to the email message.</param>
+    /// </summary>
+    procedure SetSubject(Subject: Text)
+    begin
+        EmailMessageImpl.SetSubject(Subject);
+    end;
+
+    /// <summary>
     /// Checks if the email body is formatted in HTML.
     /// </summary>
     /// <returns>True if the email body is formatted in HTML; otherwise - false.</returns>
     procedure IsBodyHTMLFormatted(): Boolean
     begin
         exit(EmailMessageImpl.IsBodyHTMLFormatted());
+    end;
+
+    /// <summary>
+    /// Sets whether the email body is formatted in HTML.
+    /// <param name="Value">True if the email body is formatted in HTML; otherwise - false.</param>
+    /// </summary>
+    procedure SetBodyHTMLFormatted(Value: Boolean)
+    begin
+        EmailMessageImpl.SetBodyHTMLFormatted(Value);
     end;
 
     /// <summary>
@@ -116,6 +152,36 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
+    /// Sets the recipents of a certain type of the email message.
+    /// </summary>
+    /// <param name="RecipientType">Specifies the type of the recipients.</param>
+    /// <param name="Recipients">Specifies the list of the recipients' email addresses as a semicolon (;) separated list.</param>
+    procedure SetRecipients(RecipientType: Enum "Email Recipient Type"; Recipients: Text)
+    begin
+        EmailMessageImpl.SetRecipients(RecipientType, Recipients);
+    end;
+
+    /// <summary>
+    /// Adds a recipent of a certain type to the email message.
+    /// </summary>
+    /// <param name="RecipientType">Specifies the type of the recipient.</param>
+    /// <param name="Recipient">Specifies the recipient's email address.</param>
+    procedure AddRecipient(RecipientType: Enum "Email Recipient Type"; Recipient: Text)
+    begin
+        EmailMessageImpl.AddRecipient(RecipientType, Recipient);
+    end;
+
+    /// <summary>
+    /// Sets the recipents of a certain type of the email message.
+    /// </summary>
+    /// <param name="RecipientType">Specifies the type of the recipients.</param>
+    /// <param name="Recipients">Specifies the list of the recipients' email addresses.</param>
+    procedure SetRecipients(RecipientType: Enum "Email Recipient Type"; Recipients: list of [Text])
+    begin
+        EmailMessageImpl.SetRecipients(RecipientType, Recipients);
+    end;
+
+    /// <summary>
     /// Adds a file attachment to the email message.
     /// </summary>
     /// <param name="AttachmentName">The name of the file attachment.</param>
@@ -132,11 +198,11 @@ codeunit 8904 "Email Message"
     /// </summary>
     /// <param name="AttachmentName">The name of the file attachment.</param>
     /// <param name="ContentType">The Content Type of the file attachment.</param>
-    /// <param name="AttachmentStream">The instream of the attachment.</param>
+    /// <param name="AttachmentInStream">The instream of the attachment.</param>
     /// <returns>True if the attachment was added; otherwise - false.</returns>
-    procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentStream: InStream)
+    procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentInStream: InStream)
     begin
-        EmailMessageImpl.AddAttachment(AttachmentName, ContentType, AttachmentStream);
+        EmailMessageImpl.AddAttachment(AttachmentName, ContentType, AttachmentInStream);
     end;
 
     /// <summary>
@@ -178,10 +244,10 @@ codeunit 8904 "Email Message"
     /// <summary>
     /// Gets the content of the current attachment.
     /// </summary>
-    /// <param name="AttachmentStream">Out parameter with the content of the current attachment.</param>
-    procedure Attachments_GetContent(var AttachmentStream: InStream)
+    /// <param name="AttachmentInStream">Out parameter with the content of the current attachment.</param>
+    procedure Attachments_GetContent(var AttachmentInStream: InStream)
     begin
-        EmailMessageImpl.Attachments_GetContent(AttachmentStream);
+        EmailMessageImpl.Attachments_GetContent(AttachmentInStream);
     end;
 
     /// <summary>

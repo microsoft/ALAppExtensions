@@ -115,18 +115,18 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
     procedure ImportGLTransactionsByIIFFileName(FileName: Text[250]; var TempImportGLTransaction: Record 1661 temporary);
     var
         TempCSVBuffer: Record 1234 temporary;
-        Window: Dialog;
+        WindowDialog: Dialog;
         Tab: Text[1];
         NonGJTransactionsDetected: Boolean;
     begin
-        Window.OPEN(ImportingMsg);
+        WindowDialog.OPEN(ImportingMsg);
 
         Tab[1] := 9;
         TempCSVBuffer.LoadData(FileName, Tab);
         VerifyIIFTransactionFile(TempCSVBuffer);
         InsertTransactionData(TempCSVBuffer, TempImportGLTransaction, NonGJTransactionsDetected);
 
-        Window.CLOSE();
+        WindowDialog.CLOSE();
 
         Session.LogMessage('00001SZ', STRSUBSTNO(TransactionsImportedTxt, TempImportGLTransaction.COUNT()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', QBPayrollImportTelemetryTok);
         IF NOT TempImportGLTransaction.ISEMPTY() AND NonGJTransactionsDetected THEN

@@ -63,7 +63,7 @@ codeunit 149000 "BCPT Start Tests"
     internal procedure StartBCPTSuite(var BCPTHeader: Record "BCPT Header")
     var
         BCPTHeader2: Record "BCPT Header";
-        Window: Dialog;
+        StatusDialog: Dialog;
     begin
         // If there is already a suite running, then error
         BCPTHeader2.SetRange(Status, BCPTHeader2.Status::Running);
@@ -71,9 +71,9 @@ codeunit 149000 "BCPT Start Tests"
             Error(CannotRunMultipleSuitesInParallelErr);
         Commit();
 
-        Window.Open('Starting background tasks and running any foreground tasks...');
+        StatusDialog.Open('Starting background tasks and running any foreground tasks...');
         Codeunit.Run(Codeunit::"BCPT Start Tests", BCPTHeader);
-        Window.Close();
+        StatusDialog.Close();
         if BCPTHeader.Find() then;
     end;
 

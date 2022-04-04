@@ -76,5 +76,17 @@ enum 18550 "Posting Document Type"
     {
         Caption = 'Gate Entry';
     }
+    value(19; "Service Shipment Header")
+    {
+        Caption = 'Posted Service Shipment';
+    }
+    value(20; "Service Invoice Header")
+    {
+        Caption = 'Posted Service Invoice';
+    }
+    value(21; "Service Cr.Memo Header")
+    {
+        Caption = 'Posted Service Credit Memo';
+    }
 
 }

@@ -20,7 +20,6 @@ interface "Barcode Image Provider 2D"
     /// <param name="InputText">The text to encode.</param>
     /// <param name="BarcodeSymbology2D">The 2D symbology to use for the encoding.</param>
     /// <returns>The encoded barcode.</returns>
-    /// 
     procedure EncodeImage(InputText: Text; BarcodeSymbology2D: Enum "Barcode Symbology 2D"): Codeunit "Temp Blob";
 
     /// <summary>

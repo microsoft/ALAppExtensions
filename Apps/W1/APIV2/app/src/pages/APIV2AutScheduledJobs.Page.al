@@ -50,7 +50,7 @@ page 30068 "APIV2 - Aut. Scheduled Jobs"
         }
     }
 
-    trigger OnOpenPage()
+    trigger OnFindRecord(Which: Text): Boolean
     var
         JobQueueCategoryCodeFilter: Text;
         SystemIdFilter: Text;
@@ -59,6 +59,8 @@ page 30068 "APIV2 - Aut. Scheduled Jobs"
         SystemIdFilter := GetFilter(SystemId);
         if (JobQueueCategoryCodeFilter = '') and (SystemIdFilter = '') then
             Error(FiltersNotSpecifiedErr);
+
+        exit(Rec.Find(Which));
     end;
 
     trigger OnAfterGetRecord()

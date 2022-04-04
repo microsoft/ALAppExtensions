@@ -47,6 +47,22 @@ codeunit 152 "User Permissions"
     end;
 
     /// <summary>
+    /// Checks whether a user has a specific permission set assigned.
+    /// </summary>
+    /// <param name="UserSecurityId">The user's security ID.</param>
+    /// <param name="Company">The company for which to check</param>
+    /// <param name="RoleId">The ID of the permission set.</param>
+    /// <param name="Scope">The scope of the permission set. System or tenant.</param>
+    /// <param name="AppId">The app ID of the permission set.</param>
+    /// <returns>True if the user has permission sets assigned.</returns>
+    procedure HasUserPermissionSetAssigned(UserSecurityId: Guid; Company: Text; RoleId: Code[20]; Scope: Option; AppId: Guid): Boolean
+    var
+        UserPermissionsImpl: Codeunit "User Permissions Impl.";
+    begin
+        exit(UserPermissionsImpl.HasUserPermissionSetAssigned(UserSecurityId, Company, RoleId, Scope, AppId));
+    end;
+
+    /// <summary>
     /// Checks whether custom permissions are assigned to the user.
     /// </summary>
     /// <param name="UserSecurityId">The security ID of the user to check for.</param>

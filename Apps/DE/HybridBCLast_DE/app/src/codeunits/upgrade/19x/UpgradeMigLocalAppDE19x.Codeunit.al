@@ -27,6 +27,7 @@ codeunit 11010 "Upgrade Mig Local App DE 19x"
         UpgradeTag: Codeunit "Upgrade Tag";
         UpgradeTagDefCountry: Codeunit "Upgrade Tag Def - Country";
     begin
+#pragma warning disable AL0432
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefCountry.GetCheckPartnerVATIDTag()) then
             exit;
 
@@ -38,5 +39,6 @@ codeunit 11010 "Upgrade Mig Local App DE 19x"
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefCountry.GetCheckPartnerVATIDTag());
     end;
+#pragma warning restore AL0432
 #endif
 }

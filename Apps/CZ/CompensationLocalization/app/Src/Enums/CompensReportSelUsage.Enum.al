@@ -1,4 +1,4 @@
-enum 31270 "Compens. Report Sel. Usage CZC"
+enum 31270 "Compens. Report Sel. Usage CZC"
 {
     Extensible = true;
 

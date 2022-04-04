@@ -17,17 +17,17 @@ page 31148 "EET Entry Status Log CZL"
                 field("Changed At"; Rec."Changed At")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the date and time of the last status change for the EET entry.';
+                    ToolTip = 'Specifies the date and time of the last status change for the EET entry.';
                 }
                 field(Status; Rec.Status)
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the current state of the EET entry.';
+                    ToolTip = 'Specifies the current state of the EET entry.';
                 }
                 field(Description; Rec.Description)
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies a description of the entry.';
+                    ToolTip = 'Specifies a description of the entry.';
                 }
                 field("EET Entry No."; Rec."EET Entry No.")
                 {

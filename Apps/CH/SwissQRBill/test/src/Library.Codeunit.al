@@ -13,6 +13,7 @@ codeunit 148090 "Swiss QR-Bill Test Library"
         LibraryService: Codeunit "Library - Service";
         LibraryUtility: Codeunit "Library - Utility";
         SwissQRBillMgt: Codeunit "Swiss QR-Bill Mgt.";
+        GeneralPostingType: Enum "General Posting Type";
 
     internal procedure CreateQRLayout(IBANType: Enum "Swiss QR-Bill IBAN Type"; ReferenceType: Enum "Swiss QR-Bill Payment Reference Type"; UnstrMsg: Text; BillInfo: Code[20]): Code[20]
     begin
@@ -70,7 +71,7 @@ codeunit 148090 "Swiss QR-Bill Test Library"
     begin
         FindDefaultVATPostingSetup(VATPostingSetup);
         CustomerNo := CreateCustomerWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
-        GLAccountNo := LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, 0);
+        GLAccountNo := LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, GeneralPostingType::Sale);
 
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, CustomerNo);
         SalesHeader.Validate("Currency Code", CurrencyCode);
@@ -96,7 +97,7 @@ codeunit 148090 "Swiss QR-Bill Test Library"
     begin
         FindDefaultVATPostingSetup(VATPostingSetup);
         CustomerNo := CreateCustomerWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
-        GLAccountNo := LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, 0);
+        GLAccountNo := LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, GeneralPostingType::Sale);
 
         LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Invoice, CustomerNo);
         ServiceHeader.Validate("Currency Code", CurrencyCode);
@@ -138,7 +139,7 @@ codeunit 148090 "Swiss QR-Bill Test Library"
     begin
         FindDefaultVATPostingSetup(VATPostingSetup);
         VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
-        GLAccountNo := LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, 0);
+        GLAccountNo := LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, GeneralPostingType::Purchase);
 
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendorNo);
         PurchaseHeader.Validate("Currency Code", CurrencyCode);
@@ -168,7 +169,7 @@ codeunit 148090 "Swiss QR-Bill Test Library"
         if Days > 0 then
             with PaymentTerms do begin
                 Validate("Discount %", Discount);
-                Evaluate("Discount Date Calculation", StrSubstNo('<%1D>', Days));
+                Evaluate("Discount Date Calculation", '<' + Format(Days) + 'D>');
                 Modify();
             end;
         exit(PaymentTerms.Code);
@@ -239,9 +240,9 @@ codeunit 148090 "Swiss QR-Bill Test Library"
 
     internal procedure UpdateCompanyQRIBAN()
     var
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
     begin
-        with CompanyInfo do begin
+        with CompanyInformation do begin
             Get();
             Validate("Swiss QR-Bill IBAN", 'CH5800791123000889012');
             Modify();
@@ -293,9 +294,12 @@ codeunit 148090 "Swiss QR-Bill Test Library"
     begin
         exit(
             ReplaceBackSlashWithLineBreak(
-                StrSubstNo(
-                    'SPC\0200\1\%1\S\CR Name\\\\\\\\\\\\\%2\%3\\\\\\\\QRR\%4\%5\EPD\%6',
-                    IBAN, FormatAmount(Amount), Currency, PaymentReference, UnstrMsg, BillInfo)));
+                'SPC\0200\1\' + IBAN +
+                '\S\CR Name\\\\\\\\\\\\\' + FormatAmount(Amount) +
+                '\' + Currency +
+                '\\\\\\\\QRR\' + PaymentReference +
+                '\' + UnstrMsg +
+                '\EPD\' + BillInfo));
     end;
 
     internal procedure ReplaceBackSlashWithLineBreak(Message: Text): Text
@@ -362,7 +366,7 @@ codeunit 148090 "Swiss QR-Bill Test Library"
 
     internal procedure GetRandomIBAN(): Code[50]
     begin
-        exit(CopyStr(StrSubstNo('CH%1', LibraryUtility.GenerateRandomNumericText(19)), 1, 50));
+        exit(CopyStr('CH' + LibraryUtility.GenerateRandomNumericText(19), 1, 50));
     end;
 
     internal procedure GetRandomQRPaymentReference(): Code[50]
@@ -372,7 +376,7 @@ codeunit 148090 "Swiss QR-Bill Test Library"
 
     internal procedure GetRandomCreditorReference(): Code[50]
     begin
-        exit(CopyStr(StrSubstNo('RF%1', LibraryUtility.GenerateRandomNumericText(23)), 1, 50));
+        exit(CopyStr('RF' + LibraryUtility.GenerateRandomNumericText(23), 1, 50));
     end;
 
     internal procedure GetFixedIBAN(): Code[50]
@@ -424,14 +428,12 @@ codeunit 148090 "Swiss QR-Bill Test Library"
         if StrLen(IBAN) = 21 then
             exit(
                 CopyStr(
-                    StrSubstNo(
-                        '%1 %2 %3 %4 %5 %6',
-                        CopyStr(IBAN, 1, 4),
-                        CopyStr(IBAN, 5, 4),
-                        CopyStr(IBAN, 9, 4),
-                        CopyStr(IBAN, 13, 4),
-                        CopyStr(IBAN, 17, 4),
-                        CopyStr(IBAN, 21, 1)),
+                    CopyStr(IBAN, 1, 4) + ' ' +
+                    CopyStr(IBAN, 5, 4) + ' ' +
+                    CopyStr(IBAN, 9, 4) + ' ' +
+                    CopyStr(IBAN, 13, 4) + ' ' +
+                    CopyStr(IBAN, 17, 4) + ' ' +
+                    CopyStr(IBAN, 21, 1),
                     1, 50)
             );
         exit(IBAN);
@@ -445,26 +447,24 @@ codeunit 148090 "Swiss QR-Bill Test Library"
                 if (StrLen(PaymentReference) > 4) and (StrLen(PaymentReference) < 26) then begin
                     while StrLen(PaymentReference) >= 4 do begin
                         if Result <> '' then
-                            Result += StrSubstNo(' %1', CopyStr(PaymentReference, 1, 4))
+                            Result += ' ' + CopyStr(PaymentReference, 1, 4)
                         else
                             Result := CopyStr(PaymentReference, 1, 4);
                         PaymentReference := DelStr(PaymentReference, 1, 4);
                     end;
                     if StrLen(PaymentReference) > 0 then
-                        Result += StrSubstNo(' %1', CopyStr(PaymentReference, 1));
+                        Result += ' ' + CopyStr(PaymentReference, 1);
                     exit(Result);
                 end;
             ReferenceType::"QR Reference":
                 if StrLen(PaymentReference) = 27 then
                     exit(
-                        StrSubstNo(
-                            '%1 %2 %3 %4 %5 %6',
-                            CopyStr(PaymentReference, 1, 2),
-                            CopyStr(PaymentReference, 3, 5),
-                            CopyStr(PaymentReference, 8, 5),
-                            CopyStr(PaymentReference, 13, 5),
-                            CopyStr(PaymentReference, 18, 5),
-                            CopyStr(PaymentReference, 23, 5)));
+                        CopyStr(PaymentReference, 1, 2) + ' ' +
+                        CopyStr(PaymentReference, 3, 5) + ' ' +
+                        CopyStr(PaymentReference, 8, 5) + ' ' +
+                        CopyStr(PaymentReference, 13, 5) + ' ' +
+                        CopyStr(PaymentReference, 18, 5) + ' ' +
+                        CopyStr(PaymentReference, 23, 5));
         end;
 
         exit(PaymentReference);

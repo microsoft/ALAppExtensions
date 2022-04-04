@@ -65,7 +65,7 @@ page 11516 "Swiss QR-Bill Setup Wizard"
                 {
                     ShowCaption = false;
 
-                    field(QRIBAN; CompanyInfo."Swiss QR-Bill IBAN")
+                    field(QRIBAN; CompanyInformation."Swiss QR-Bill IBAN")
                     {
                         ApplicationArea = All;
                         ShowMandatory = true;
@@ -76,13 +76,13 @@ page 11516 "Swiss QR-Bill Setup Wizard"
                         var
                             NewIBAN: Code[50];
                         begin
-                            NewIBAN := CompanyInfo."Swiss QR-Bill IBAN";
-                            CompanyInfo.Find();
-                            CompanyInfo.Validate("Swiss QR-Bill IBAN", NewIBAN);
-                            CompanyInfo.Modify();
+                            NewIBAN := CompanyInformation."Swiss QR-Bill IBAN";
+                            CompanyInformation.Find();
+                            CompanyInformation.Validate("Swiss QR-Bill IBAN", NewIBAN);
+                            CompanyInformation.Modify();
                         end;
                     }
-                    field(IBAN; CompanyInfo.IBAN)
+                    field(IBAN; CompanyInformation.IBAN)
                     {
                         ApplicationArea = All;
                         ShowMandatory = true;
@@ -345,10 +345,10 @@ page 11516 "Swiss QR-Bill Setup Wizard"
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean;
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
         if CloseAction = CloseAction::OK then
-            If not AssistedSetup.IsComplete(Page::"Swiss QR-Bill Setup Wizard") then
+            If not GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, Page::"Swiss QR-Bill Setup Wizard") then
                 if not Confirm(SetupNotCompletedQst) then
                     Error('');
     end;
@@ -382,7 +382,7 @@ page 11516 "Swiss QR-Bill Setup Wizard"
         MediaRepositoryStandard: Record "Media Repository";
         MediaResourcesFinished: Record "Media Resources";
         MediaResourcesStd: Record "Media Resources";
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
         SwissQRBillMgt: Codeunit "Swiss QR-Bill Mgt.";
         Step: Option Start,CompanySetup,BasicSetupFields,QRLayout,PaymentMethods,DocumentTypes,IncomingDoc,Finish;
         BackActionEnabled: Boolean;
@@ -439,9 +439,9 @@ page 11516 "Swiss QR-Bill Setup Wizard"
 
     local procedure FinishAction();
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
-        AssistedSetup.Complete(Page::"Swiss QR-Bill Setup Wizard");
+        GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"Swiss QR-Bill Setup Wizard");
         CurrPage.Close();
     end;
 
@@ -459,7 +459,7 @@ page 11516 "Swiss QR-Bill Setup Wizard"
     begin
         case Step of
             Step::CompanySetup:
-                if CompanyInfo."Swiss QR-Bill IBAN" = '' then
+                if CompanyInformation."Swiss QR-Bill IBAN" = '' then
                     exit(Confirm(QRIBANConfirmQst));
             Step::PaymentMethods:
                 if PaymentMethodsCount = 0 then
@@ -630,13 +630,13 @@ page 11516 "Swiss QR-Bill Setup Wizard"
 
     local procedure RefreshCompanyInfo()
     begin
-        CompanyInfo.Find();
+        CompanyInformation.Find();
         CompanyAddress := '';
-        SwissQRBillMgt.AddLineIfNotBlanked(CompanyAddress, CompanyInfo.Address);
-        SwissQRBillMgt.AddLineIfNotBlanked(CompanyAddress, CompanyInfo."Address 2");
-        SwissQRBillMgt.AddLineIfNotBlanked(CompanyAddress, CompanyInfo.City);
-        SwissQRBillMgt.AddLineIfNotBlanked(CompanyAddress, CompanyInfo."Post Code");
-        SwissQRBillMgt.AddLineIfNotBlanked(CompanyAddress, CompanyInfo."Country/Region Code");
+        SwissQRBillMgt.AddLineIfNotBlanked(CompanyAddress, CompanyInformation.Address);
+        SwissQRBillMgt.AddLineIfNotBlanked(CompanyAddress, CompanyInformation."Address 2");
+        SwissQRBillMgt.AddLineIfNotBlanked(CompanyAddress, CompanyInformation.City);
+        SwissQRBillMgt.AddLineIfNotBlanked(CompanyAddress, CompanyInformation."Post Code");
+        SwissQRBillMgt.AddLineIfNotBlanked(CompanyAddress, CompanyInformation."Country/Region Code");
     end;
 
     local procedure RefreshPaymentMethods()
@@ -655,8 +655,8 @@ page 11516 "Swiss QR-Bill Setup Wizard"
     begin
         FinishSummaryWarningText := '';
 
-        CompanyInfo.Find();
-        if CompanyInfo."Swiss QR-Bill IBAN" = '' then
+        CompanyInformation.Find();
+        if CompanyInformation."Swiss QR-Bill IBAN" = '' then
             FinishSummaryWarningText := FinishSummaryQRIBANLbl;
         if PaymentMethodsCount = 0 then
             SwissQRBillMgt.AddLine(FinishSummaryWarningText, FinishSummaryPaymentMethodsLbl);

@@ -72,7 +72,6 @@ report 31131 "Inventory Account To Date CZA"
                     }
                     column(Glob1Dim_GLE; "Global Dimension 1 Code")
                     {
-                        AutoFormatType = 1;
                     }
                     column(Glob2Dim_GLE; "Global Dimension 2 Code")
                     {
@@ -105,7 +104,6 @@ report 31131 "Inventory Account To Date CZA"
                             }
                             column(Glob1Dim_AGLE; "Global Dimension 1 Code")
                             {
-                                AutoFormatType = 1;
                             }
                             column(Glob2Dim_AGLE; "Global Dimension 2 Code")
                             {
@@ -117,6 +115,8 @@ report 31131 "Inventory Account To Date CZA"
                             trigger OnAfterGetRecord()
                             begin
                                 RepCount += 1;
+                                if RepCount > 1 then
+                                    RemAmount := 0;
                             end;
                         }
 
@@ -132,13 +132,9 @@ report 31131 "Inventory Account To Date CZA"
                     trigger OnAfterGetRecord()
                     begin
                         CalcFields("Applied Amount CZA");
-                        if ((Amount - "Applied Amount CZA") = 0) and (not ShowApplyEntries) then
-                            CurrReport.Skip();
-
                         RemAmount := Amount - "Applied Amount CZA";
                         if (RemAmount = 0) and (not ShowZeroRemainAmt) then
                             CurrReport.Skip();
-
                         Clear(RepCount);
                     end;
 
@@ -163,7 +159,7 @@ report 31131 "Inventory Account To Date CZA"
                     GLEntry.SetCurrentKey("G/L Account No.");
                     GLEntry.SetRange("G/L Account No.", "No.");
                     if not GLEntry.IsEmpty() then
-                        PageGroupNo := PageGroupNo + 1;
+                        PageGroupNo += 1;
                 end;
             end;
 
@@ -173,7 +169,7 @@ report 31131 "Inventory Account To Date CZA"
                 if GetFilter("Date Filter") <> '' then
                     ToDate := GetRangeMax("Date Filter");
                 if ToDate = 0D then
-                    ToDate := Today;
+                    ToDate := WorkDate();
             end;
         }
     }
@@ -198,15 +194,15 @@ report 31131 "Inventory Account To Date CZA"
                     field(NewShowApplyEntries; ShowApplyEntries)
                     {
                         ApplicationArea = Basic, Suite;
-                        Caption = 'Show Apllied Entries';
+                        Caption = 'Show Applied Entries';
                         MultiLine = true;
-                        ToolTip = 'Specifies when the apllied entries is to be show';
+                        ToolTip = 'Specifies when the applied entries is to be shown.';
                     }
                     field(NewShowZeroRemainAmt; ShowZeroRemainAmt)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Show Entries with zero Remainig Amt.';
-                        ToolTip = 'Specifies when the entries with zero remainig amt. is to be show';
+                        ToolTip = 'Specifies when the entries with zero remainig amount is to be shown.';
                     }
                 }
             }
@@ -249,5 +245,11 @@ report 31131 "Inventory Account To Date CZA"
     begin
         PrintOnlyOnePerPage := NewPrintOnlyOnePerPage;
         ShowApplyEntries := NewShowApplyEntries;
+    end;
+
+    procedure InitializeRequest(NewPrintOnlyOnePerPage: Boolean; NewShowApplyEntries: Boolean; NewShowZeroRemainAmt: Boolean)
+    begin
+        InitializeRequest(NewPrintOnlyOnePerPage, NewShowApplyEntries);
+        ShowZeroRemainAmt := NewShowZeroRemainAmt;
     end;
 }

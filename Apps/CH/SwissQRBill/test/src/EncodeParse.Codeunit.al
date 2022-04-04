@@ -882,21 +882,21 @@ codeunit 148094 "Swiss QR-Bill Test EncodeParse"
         end;
     end;
 
-    local procedure ClearErrorLogByContext(Context: Variant)
+    local procedure ClearErrorLogByContext(ContextVariant: Variant)
     var
         ErrorMessage: Record "Error Message";
     begin
-        ErrorMessage.SetContext(Context);
+        ErrorMessage.SetContext(ContextVariant);
         ErrorMessage.ClearLog();
     end;
 
-    local procedure VerifyErrorLogCountByContext(Context: Variant; ExpectedCount: Integer)
+    local procedure VerifyErrorLogCountByContext(ContextVariant: Variant; ExpectedCount: Integer)
     var
         ErrorMessage: Record "Error Message";
     begin
-        ErrorMessage.SetContext(Context);
+        ErrorMessage.SetContext(ContextVariant);
         Assert.AreEqual(ExpectedCount, ErrorMessage.ErrorMessageCount(ErrorMessage."Message Type"::Error), '');
-        ClearErrorLogByContext(Context);
+        ClearErrorLogByContext(ContextVariant);
     end;
 
     local procedure VerifyLastReferenceNo(ExpectedValue: BigInteger)

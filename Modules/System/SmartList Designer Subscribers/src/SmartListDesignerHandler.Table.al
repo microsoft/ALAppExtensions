@@ -14,6 +14,7 @@ table 2888 "SmartList Designer Handler"
     DataPerCompany = false;
     DataClassification = SystemMetadata;
     Extensible = false;
+    ReplicateData = false;
 #if not CLEAN19
     ObsoleteState = Pending;
     ObsoleteTag = '19.0';

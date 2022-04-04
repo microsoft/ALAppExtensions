@@ -213,6 +213,9 @@ codeunit 11725 "Cash Document-Release CZP"
     end;
 
     local procedure CheckCashDocumentLines(CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    var
+        SuggestedAmountToApplyQst: Label '%1 Ledger Entry %2 %3 is suggested to application on other documents in the system.\Do you want to use it for this Cash Document?', Comment = '%1 = Account Type, %2 = Applies-To Doc. Type, %3 = Applies-To Doc. No.';
+        IsHandled: Boolean;
     begin
         CashDocumentLineCZP.Reset();
         CashDocumentLineCZP.SetRange("Cash Desk No.", CashDocumentHeaderCZP."Cash Desk No.");
@@ -230,6 +233,18 @@ codeunit 11725 "Cash Document-Release CZP"
         CashDocumentLineCZP.SetRange(Amount, 0);
         if CashDocumentLineCZP.FindFirst() then
             CashDocumentLineCZP.FieldError(Amount);
+
+        CashDocumentLineCZP.SetRange(Amount);
+        if CashDocumentLineCZP.Findset() then
+            repeat
+                IsHandled := false;
+                OnBeforeCheckCashDocumentLine(CashDocumentLineCZP, IsHandled);
+                if not IsHandled then
+                    if CashDocumentLineCZP."Applies-To Doc. No." <> '' then
+                        if CashDocumentLineCZP.CalcRelatedAmountToApply() <> 0 then
+                            if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(SuggestedAmountToApplyQst, CashDocumentLineCZP."Account Type", CashDocumentLineCZP."Applies-To Doc. Type", CashDocumentLineCZP."Applies-To Doc. No."), false) then
+                                Error('');
+            until CashDocumentLineCZP.Next() = 0;
     end;
 
     local procedure CheckCashPaymentLimit(CashDocumentHeaderCZP: Record "Cash Document Header CZP")
@@ -297,6 +312,11 @@ codeunit 11725 "Cash Document-Release CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterReopenCashDocument(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckCashDocumentLine(CashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean)
     begin
     end;
 }

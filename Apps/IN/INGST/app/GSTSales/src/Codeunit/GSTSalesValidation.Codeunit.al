@@ -38,7 +38,9 @@ codeunit 18143 "GST Sales Validation"
         SalesHeader := VariantRec;
     end;
 
+#if not CLEAN20      
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnBeforeUpdateLocationCode', '', false, false)]
+    [Obsolete('Not actual after Non Inventoriable Item refactoring', '20.0')]
     local procedure HandledOnBeforeUpdateLocationCode(var SalesLine: Record "Sales Line"; var IsHandled: Boolean)
     var
         Item: Record Item;
@@ -47,6 +49,7 @@ codeunit 18143 "GST Sales Validation"
             if (Item."HSN/SAC Code" <> '') and (Item."GST Group Code" <> '') then
                 IsHandled := true;
     end;
+#endif
 
     //CopyDocument 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterCopySalesLineFromSalesLineBuffer', '', false, false)]
@@ -110,7 +113,11 @@ codeunit 18143 "GST Sales Validation"
         SalesLine."Total UPIT Amount" := SalesLine."Unit Price Incl. of Tax" * SalesLine.Quantity - SalesLine."Line Discount Amount";
     end;
 
+#if not CLEAN19
     //AssignPrice Inclusice of Tax
+#pragma warning disable AS0072
+    [Obsolete('Replaced by the new implementation (V16) of price calculation.', '19.0')]
+#pragma warning restore AS0072
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Price Calc. Mgt.", 'OnAfterFindSalesLineItemPrice', '', false, false)]
     local procedure AssignPriceInclusiveTax(var SalesLine: Record "Sales Line"; var TempSalesPrice: Record "Sales Price")
     begin
@@ -125,6 +132,7 @@ codeunit 18143 "GST Sales Validation"
             SalesLine."Total UPIT Amount" := SalesLine."Unit Price Incl. of Tax" * SalesLine.Quantity - SalesLine."Line Discount Amount";
         end;
     end;
+#endif
 
     //Check Accounting Period
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post (Yes/No)", 'OnAfterConfirmPost', '', false, false)]
@@ -505,6 +513,15 @@ codeunit 18143 "GST Sales Validation"
     begin
         if Rec."GST Dependency Type" = Rec."GST Dependency Type"::"Location Address" then
             Error(GSTDependencyTypeErr);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeValidateEvent', 'Ship-To Code', false, false)]
+    local procedure OnBeforeUpdateShipToAddress(var Rec: Record "Sales Header")
+    var
+        Customer: Record Customer;
+    begin
+        if Customer.Get(Rec."Sell-to Customer No.") then
+            Rec."GST Customer Type" := Customer."GST Customer Type";
     end;
 
     local procedure CalcTotalUPITAmount(var Rec: Record "Sales Line")
@@ -1653,6 +1670,66 @@ codeunit 18143 "GST Sales Validation"
 
         if CheckAllLinesExemptedSales(SalesHeader) and (SalesHeader."Invoice Type" = SalesHeader."Invoice Type"::"Bill of Supply") then
             Error(NonExemptedLinesErr);
+    end;
+
+
+    local procedure FilterTaxTransactionValue(
+        TaxTypeSetupCode: Code[10];
+        RecordId: RecordId): Boolean
+    var
+        TaxTransactionValue: Record "Tax Transaction Value";
+    begin
+        TaxTransactionValue.SetRange("Tax Type", TaxTypeSetupCode);
+        TaxTransactionValue.SetRange("Tax Record ID", RecordId);
+        TaxTransactionValue.SetFilter(Percent, '<>%1', 0);
+        if not TaxTransactionValue.IsEmpty() then
+            exit(true);
+    end;
+
+    local procedure IsGSTApplicable(SalesInvoiceHeader: Record "Sales Invoice Header"): Boolean
+    var
+        GSTSetup: Record "GST Setup";
+        SalesInvLine: Record "Sales Invoice Line";
+        TaxTransactionFound: Boolean;
+    begin
+        if not GSTSetup.Get() then
+            exit;
+
+        SalesInvLine.Reset();
+        SalesInvLine.SetRange("Document No.", SalesInvoiceHeader."No.");
+        SalesInvLine.SetFilter(Type, '<>%1', SalesInvLine.Type::" ");
+        if SalesInvLine.FindSet() then
+            repeat
+                GSTSetup.TestField("GST Tax Type");
+                TaxTransactionFound := FilterTaxTransactionValue(GSTSetup."GST Tax Type", SalesInvLine.RecordId);
+            until SalesInvLine.Next() = 0
+        else
+            exit(false);
+
+        exit(TaxTransactionFound);
+    end;
+
+    local procedure CreateReferenceInvoiceNo(SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesHeader: Record "Sales Header")
+    var
+        ReferenceInvoiceNo: Record "Reference Invoice No.";
+    begin
+        if not IsGSTApplicable(SalesInvoiceHeader) then
+            exit;
+
+        ReferenceInvoiceNo.Init();
+        ReferenceInvoiceNo."Document Type" := ReferenceInvoiceNo."Document Type"::"Credit Memo";
+        ReferenceInvoiceNo."Document No." := SalesHeader."No.";
+        ReferenceInvoiceNo."Source Type" := ReferenceInvoiceNo."Source Type"::Vendor;
+        ReferenceInvoiceNo."Source No." := SalesHeader."Bill-to Customer No.";
+        ReferenceInvoiceNo."Reference Invoice Nos." := SalesInvoiceHeader."No.";
+        ReferenceInvoiceNo.Verified := true;
+        ReferenceInvoiceNo.Insert();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Correct Posted Sales Invoice", 'OnAfterCreateCorrectiveSalesCrMemo', '', false, false)]
+    local procedure UpdateReferenceInvoiceNo(SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesHeader: Record "Sales Header"; var CancellingOnly: Boolean)
+    begin
+        CreateReferenceInvoiceNo(SalesInvoiceHeader, SalesHeader);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Sales Validation", 'OnBeforeSalesLineHSNSACEditable', '', false, false)]

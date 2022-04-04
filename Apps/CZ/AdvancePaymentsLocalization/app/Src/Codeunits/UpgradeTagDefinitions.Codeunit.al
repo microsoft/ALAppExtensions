@@ -4,12 +4,14 @@ codeunit 31089 "Upgrade Tag Definitions CZZ"
     local procedure RegisterPerDatabaseTags(var PerDatabaseUpgradeTags: List of [Code[250]])
     begin
         PerDatabaseUpgradeTags.Add(GetDataVersion190PerDatabaseUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetDataVersion200PerDatabaseUpgradeTag());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
     local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
         PerCompanyUpgradeTags.Add(GetDataVersion190PerCompanyUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetDataVersion200PerCompanyUpgradeTag());
     end;
 
     procedure GetDataVersion190PerDatabaseUpgradeTag(): Code[250]
@@ -17,8 +19,18 @@ codeunit 31089 "Upgrade Tag Definitions CZZ"
         exit('CZZ-UpgradeAdvancePaymentsLocalizationForCzech-PerDatabase-19.0');
     end;
 
+    procedure GetDataVersion200PerDatabaseUpgradeTag(): Code[250]
+    begin
+        exit('CZZ-UpgradeAdvancePaymentsLocalizationForCzech-PerDatabase-20.0');
+    end;
+
     procedure GetDataVersion190PerCompanyUpgradeTag(): Code[250]
     begin
         exit('CZZ-UpgradeAdvancePaymentsLocalizationForCzech-PerCompany-19.0');
+    end;
+
+    procedure GetDataVersion200PerCompanyUpgradeTag(): Code[250]
+    begin
+        exit('CZZ-UpgradeAdvancePaymentsLocalizationForCzech-PerCompany-20.0');
     end;
 }

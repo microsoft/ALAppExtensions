@@ -11,6 +11,7 @@ table 1480 "Edit in Excel Settings"
     DataClassification = SystemMetadata;
     Extensible = false;
     DataPerCompany = false;
+    ReplicateData = false;
 
     fields
     {

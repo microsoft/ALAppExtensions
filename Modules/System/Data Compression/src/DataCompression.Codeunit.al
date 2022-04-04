@@ -25,22 +25,22 @@ codeunit 425 "Data Compression"
     /// <summary>
     /// Creates a ZipArchive instance from the given InStream.
     /// </summary>
-    /// <param name="InputStream">The InStream that contains the content of the compressed archive.</param>
+    /// <param name="InputInStream">The InStream that contains the content of the compressed archive.</param>
     /// <param name="OpenForUpdate">Indicates whether the archive should be opened in Update mode. The default (false) indicated the archive will be opened in Read mode.</param>
-    procedure OpenZipArchive(InputStream: InStream; OpenForUpdate: Boolean)
+    procedure OpenZipArchive(InputInStream: InStream; OpenForUpdate: Boolean)
     begin
-        DataCompressionImpl.OpenZipArchive(InputStream, OpenForUpdate);
+        DataCompressionImpl.OpenZipArchive(InputInStream, OpenForUpdate);
     end;
 
     /// <summary>
     /// Creates a ZipArchive instance from the given InStream.
     /// </summary>
-    /// <param name="InputStream">The InStream that contains the content of the compressed archive.</param>
+    /// <param name="InputInStream">The InStream that contains the content of the compressed archive.</param>
     /// <param name="OpenForUpdate">Indicates whether the archive should be opened in Update mode. The default (false) indicated the archive will be opened in Read mode.</param>
     /// <param name="EncodingCodePageNumber">Specifies the code page number of the text encoding which is used for the compressed archive entry names in the input stream.</param>
-    procedure OpenZipArchive(InputStream: InStream; OpenForUpdate: Boolean; EncodingCodePageNumber: Integer)
+    procedure OpenZipArchive(InputInStream: InStream; OpenForUpdate: Boolean; EncodingCodePageNumber: Integer)
     begin
-        DataCompressionImpl.OpenZipArchive(InputStream, OpenForUpdate, EncodingCodePageNumber);
+        DataCompressionImpl.OpenZipArchive(InputInStream, OpenForUpdate, EncodingCodePageNumber);
     end;
 
     /// <summary>
@@ -56,10 +56,10 @@ codeunit 425 "Data Compression"
     /// <summary>
     /// Saves the ZipArchive to the given OutStream.
     /// </summary>
-    /// <param name="OutputStream">The OutStream to which the ZipArchive is saved.</param>
-    procedure SaveZipArchive(OutputStream: OutStream)
+    /// <param name="OutputOutStream">The OutStream to which the ZipArchive is saved.</param>
+    procedure SaveZipArchive(OutputOutStream: OutStream)
     begin
-        DataCompressionImpl.SaveZipArchive(OutputStream);
+        DataCompressionImpl.SaveZipArchive(OutputOutStream);
     end;
 
     /// <summary>
@@ -92,21 +92,21 @@ codeunit 425 "Data Compression"
     /// Extracts an entry from the ZipArchive.
     /// </summary>
     /// <param name="EntryName">The name of the ZipArchive entry to be extracted.</param>
-    /// <param name="OutputStream">The OutStream to which binary content of the extracted entry is saved.</param>
+    /// <param name="OutputOutStream">The OutStream to which binary content of the extracted entry is saved.</param>
     /// <param name="EntryLength">The length of the extracted entry.</param>
-    procedure ExtractEntry(EntryName: Text; OutputStream: OutStream; var EntryLength: Integer)
+    procedure ExtractEntry(EntryName: Text; OutputOutStream: OutStream; var EntryLength: Integer)
     begin
-        DataCompressionImpl.ExtractEntry(EntryName, OutputStream, EntryLength);
+        DataCompressionImpl.ExtractEntry(EntryName, OutputOutStream, EntryLength);
     end;
 
     /// <summary>
     /// Adds an entry to the ZipArchive.
     /// </summary>
-    /// <param name="StreamToAdd">The InStream that contains the binary content that should be added as an entry in the ZipArchive.</param>
+    /// <param name="InStreamToAdd">The InStream that contains the binary content that should be added as an entry in the ZipArchive.</param>
     /// <param name="PathInArchive">The path that the added entry should have within the ZipArchive.</param>
-    procedure AddEntry(StreamToAdd: InStream; PathInArchive: Text)
+    procedure AddEntry(InStreamToAdd: InStream; PathInArchive: Text)
     begin
-        DataCompressionImpl.AddEntry(StreamToAdd, PathInArchive);
+        DataCompressionImpl.AddEntry(InStreamToAdd, PathInArchive);
     end;
 
 
@@ -122,22 +122,22 @@ codeunit 425 "Data Compression"
 
     /// <summary>
     /// Compresses a stream with GZip algorithm.
-    /// <param name="InputStream">The InStream that contains the content that should be compressed.</param>
-    /// <param name="CompressedStream">The OutStream into which the compressed stream is copied to.</param>
+    /// <param name="InputInStream">The InStream that contains the content that should be compressed.</param>
+    /// <param name="CompressedOutStream">The OutStream into which the compressed stream is copied to.</param>
     /// </summary>
-    procedure GZipCompress(InputStream: InStream; CompressedStream: OutStream)
+    procedure GZipCompress(InputInStream: InStream; CompressedOutStream: OutStream)
     begin
-        DataCompressionImpl.GZipCompress(InputStream, CompressedStream);
+        DataCompressionImpl.GZipCompress(InputInStream, CompressedOutStream);
     end;
 
     /// <summary>
     /// Decompresses a GZipStream.
-    /// <param name="InputStream">The InStream that contains the content that should be decompressed.</param>
-    /// <param name="DecompressedStream">The OutStream into which the decompressed stream is copied to.</param>
+    /// <param name="InputInStream">The InStream that contains the content that should be decompressed.</param>
+    /// <param name="DecompressedOutStream">The OutStream into which the decompressed stream is copied to.</param>
     /// </summary>
-    procedure GZipDecompress(InputStream: InStream; DecompressedStream: OutStream)
+    procedure GZipDecompress(InputInStream: InStream; DecompressedOutStream: OutStream)
     begin
-        DataCompressionImpl.GZipDecompress(InputStream, DecompressedStream);
+        DataCompressionImpl.GZipDecompress(InputInStream, DecompressedOutStream);
     end;
 }
 

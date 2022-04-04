@@ -27,10 +27,6 @@ codeunit 31161 "Sync.Dep.Fld-UserSetup CZL"
     begin
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
-#if not CLEAN17
-        SyncDepFldUtilities.SyncFields(Rec."Allow VAT Posting From", Rec."Allow VAT Posting From CZL", PreviousRecord."Allow VAT Posting From", PreviousRecord."Allow VAT Posting From CZL");
-        SyncDepFldUtilities.SyncFields(Rec."Allow VAT Posting To", Rec."Allow VAT Posting To CZL", PreviousRecord."Allow VAT Posting To", PreviousRecord."Allow VAT Posting To CZL");
-#endif
         SyncDepFldUtilities.SyncFields(Rec."Check Document Date(work date)", Rec."Check Doc. Date(work date) CZL", PreviousRecord."Check Document Date(work date)", PreviousRecord."Check Doc. Date(work date) CZL");
         SyncDepFldUtilities.SyncFields(Rec."Check Document Date(sys. date)", Rec."Check Doc. Date(sys. date) CZL", PreviousRecord."Check Document Date(sys. date)", PreviousRecord."Check Doc. Date(sys. date) CZL");
         SyncDepFldUtilities.SyncFields(Rec."Check Posting Date (work date)", Rec."Check Post.Date(work date) CZL", PreviousRecord."Check Posting Date (work date)", PreviousRecord."Check Post.Date(work date) CZL");

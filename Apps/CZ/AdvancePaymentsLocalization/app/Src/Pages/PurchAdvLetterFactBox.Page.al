@@ -1,6 +1,6 @@
 page 31184 "Purch. Adv. Letter FactBox CZZ"
 {
-    Caption = 'Purchase Advance Letter FactBox';
+    Caption = 'Purchase Advance Letter';
     PageType = CardPart;
     SourceTable = "Purch. Adv. Letter Header CZZ";
     Editable = false;

@@ -15,6 +15,7 @@ page 1898 "C5 InvenBOM List"
         {
             repeater(General)
             {
+#pragma warning disable AA0218
                 field(BOMItemNumber; BOMItemNumber) { ApplicationArea = All; }
                 field(ItemNumber; ItemNumber) { ApplicationArea = All; }
                 field(Qty; Qty)
@@ -28,6 +29,7 @@ page 1898 "C5 InvenBOM List"
                 field(InvenLocation; InvenLocation) { ApplicationArea = All; }
                 field(Comment; Comment) { ApplicationArea = All; }
                 field(PriceGroup; PriceGroup) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

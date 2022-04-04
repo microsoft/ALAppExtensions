@@ -34,14 +34,14 @@ table 4511 "SMTP Account"
         field(4; Authentication; Enum "SMTP Authentication")
         {
             DataClassification = CustomerContent;
-
-            trigger OnValidate()
-            var
-                SMTPAuthentication: Interface "SMTP Authentication";
-            begin
-                SMTPAuthentication := Rec.Authentication;
-                SMTPAuthentication.Validate(Rec);
-            end;
+            ObsoleteReason = 'Replaced by "Authentication Types" as the enum is moving to SMTP API app.';
+#if not CLEAN20
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '22.0';
+#endif
         }
 
         field(5; "User Name"; Text[250])
@@ -96,25 +96,12 @@ table 4511 "SMTP Account"
         {
             DataClassification = EndUserIdentifiableInformation;
             ObsoleteReason = 'Unused, can be replaced by SystemCreatedBy and correlate with the User table''s  User Security Id.';
-#if CLEAN17
             ObsoleteState = Removed;
             ObsoleteTag = '20.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '17.3';
-
-            trigger OnLookup()
-            var
-                User: Record User;
-                UserLookup: Page "User Lookup";
-            begin
-                UserLookup.LookupMode(true);
-                if UserLookup.RunModal() = Action::LookupOK then begin
-                    UserLookup.GetRecord(User);
-                    Rec.Validate("Created By", User."User Name");
-                end;
-            end;
-#endif
+        }
+        field(13; "Authentication Type"; Enum "SMTP Authentication Types")
+        {
+            DataClassification = CustomerContent;
         }
     }
 

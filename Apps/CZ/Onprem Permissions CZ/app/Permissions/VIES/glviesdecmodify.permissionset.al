@@ -9,15 +9,10 @@ permissionset 11711 "GL-VIES DEC. MODIFY"
     Access = Public;
     Assignable = true;
     Caption = 'GL-Vies declaration modify';
-
-#if CLEAN17
-    Permissions = tabledata "Company Information" = R;
-#else
-    Permissions = tabledata "VIES Declaration Header" = RIMD,
-                  tabledata "VIES Declaration Line" = RIMD;
-#endif
     ObsoleteState = Pending;
     ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
     ObsoleteTag = '18.0';
+
+    Permissions = tabledata "Company Information" = R;
 }
 #endif

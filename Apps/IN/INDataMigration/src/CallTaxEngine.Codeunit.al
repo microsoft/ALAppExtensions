@@ -66,9 +66,9 @@ codeunit 19010 "Call Tax Engine"
 
     local procedure FinishAction()
     var
-        AssistedSetup: Codeunit "Assisted Setup";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
-        AssistedSetup.Complete(Page::"Finalize India Migration");
+        GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"Finalize India Migration");
     end;
 
     procedure InitTaxTypeProgressWindow()

@@ -2,12 +2,20 @@ pageextension 31031 "Issued Finance Charge Memo CZL" extends "Issued Finance Cha
 {
     layout
     {
-        addlast(Posting)
+        addlast(General)
         {
-            field("Customer Posting Group CZL"; Rec."Customer Posting Group")
+            field("Posting Description CZL"; Rec."Posting Description")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the customer''s market type to link business transakcions to.';
+                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
+            }
+        }
+        addbefore("Customer Posting Group")
+        {
+            field("VAT Bus. Posting Group CZL"; Rec."VAT Bus. Posting Group")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies a VAT business posting group code.';
             }
         }
         addafter(Posting)

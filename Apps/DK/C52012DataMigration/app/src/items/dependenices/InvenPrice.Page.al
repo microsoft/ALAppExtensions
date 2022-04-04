@@ -16,6 +16,7 @@ page 1888 "C5 InvenPrice"
         {
             group(General)
             {
+#pragma warning disable AA0218
                 field(ItemNumber;ItemNumber) { ApplicationArea=All; }
                 field(Price;Price) { ApplicationArea=All; }
                 field(PriceUnit;PriceUnit) { ApplicationArea=All; }
@@ -24,6 +25,7 @@ page 1888 "C5 InvenPrice"
                 field(ContributionRatio;ContributionRatio) { ApplicationArea=All; }
                 field(Date_;Date_) { ApplicationArea=All; }
                 field(SalesVat;SalesVat) { ApplicationArea=All; }
+#pragma warning restore
             }
         }
     }

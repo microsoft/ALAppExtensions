@@ -118,17 +118,17 @@ page 30060 "APIV2 - Vendor Payments"
                             exit;
                         end;
 
-                        PurchaseInvoiceHeader.Reset();
-                        if not PurchaseInvoiceAggregator.GetPurchaseInvoiceHeaderFromId(Format(AppliesToInvoiceIdText), PurchaseInvoiceHeader) then
+                        PurchInvHeader.Reset();
+                        if not PurchaseInvoiceAggregator.GetPurchaseInvoiceHeaderFromId(Format(AppliesToInvoiceIdText), PurchInvHeader) then
                             Error(AppliesToInvoiceIdDoesNotMatchAnInvoiceErr);
 
-                        AppliesToInvoiceNumberText := PurchaseInvoiceHeader."No.";
+                        AppliesToInvoiceNumberText := PurchInvHeader."No.";
 
                         if "Account No." = '' then
-                            if PurchaseInvoiceHeader."Pay-to Vendor No." <> '' then
-                                "Account No." := PurchaseInvoiceHeader."Pay-to Vendor No."
+                            if PurchInvHeader."Pay-to Vendor No." <> '' then
+                                "Account No." := PurchInvHeader."Pay-to Vendor No."
                             else
-                                "Account No." := PurchaseInvoiceHeader."Buy-from Vendor No.";
+                                "Account No." := PurchInvHeader."Buy-from Vendor No.";
                     end;
                 }
                 field(appliesToInvoiceNumber; AppliesToInvoiceNumberText)
@@ -142,19 +142,19 @@ page 30060 "APIV2 - Vendor Payments"
                     begin
                         "Applies-to Doc. No." := AppliesToInvoiceNumberText;
 
-                        if PurchaseInvoiceHeader."No." <> '' then begin
-                            if PurchaseInvoiceHeader."No." <> AppliesToInvoiceNumberText then
+                        if PurchInvHeader."No." <> '' then begin
+                            if PurchInvHeader."No." <> AppliesToInvoiceNumberText then
                                 Error(AppliesToDocValuesDontMatchErr);
                             exit;
                         end;
 
-                        if PurchaseInvoiceHeader.Get(AppliesToInvoiceNumberText) then begin
-                            AppliesToInvoiceIdText := PurchaseInvoiceAggregator.GetPurchaseInvoiceHeaderId(PurchaseInvoiceHeader);
+                        if PurchInvHeader.Get(AppliesToInvoiceNumberText) then begin
+                            AppliesToInvoiceIdText := PurchaseInvoiceAggregator.GetPurchaseInvoiceHeaderId(PurchInvHeader);
                             if "Account No." = '' then
-                                if PurchaseInvoiceHeader."Pay-to Vendor No." <> '' then
-                                    "Account No." := PurchaseInvoiceHeader."Pay-to Vendor No."
+                                if PurchInvHeader."Pay-to Vendor No." <> '' then
+                                    "Account No." := PurchInvHeader."Pay-to Vendor No."
                                 else
-                                    "Account No." := PurchaseInvoiceHeader."Buy-from Vendor No.";
+                                    "Account No." := PurchInvHeader."Buy-from Vendor No.";
                         end else
                             AppliesToInvoiceIdText := BlankGUID;
                     end;
@@ -177,7 +177,7 @@ page 30060 "APIV2 - Vendor Payments"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(1);
+                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Journal Line");
                 }
                 part(applyVendorEntries; "APIV2 - Apply Vendor Entries")
                 {
@@ -312,7 +312,7 @@ page 30060 "APIV2 - Vendor Payments"
 
     var
         Vendor: Record Vendor;
-        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        PurchInvHeader: Record "Purch. Inv. Header";
         GraphMgtVendorPayments: Codeunit "Graph Mgt - Vendor Payments";
         LibraryAPIGeneralJournal: Codeunit "Library API - General Journal";
         AppliesToInvoiceNumberText: Code[20];

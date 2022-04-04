@@ -630,10 +630,9 @@ page 18555 "Cash Receipt Voucher"
                     Editable = true;
                     MultiLine = true;
                     ToolTip = 'Specifies the Voucher Narration for the current document';
-
                     trigger OnValidate()
                     begin
-                        VoucherFunctions.SplitNarration(NarrationText, false, Rec);
+                        Error('Voucher Narration should be entered from Process - >Voucher Narration tab.');
                     end;
                 }
             }
@@ -865,7 +864,7 @@ page 18555 "Cash Receipt Voucher"
                         VoucherNarration.SetTableView(GenNarration);
                         VoucherNarration.RunModal();
 
-                        //  ShowOldNarration();
+                        // ShowOldNarration();
                         VoucherFunctions.ShowOldNarration(Rec);
                         CurrPage.Update(true);
                     end;
@@ -975,7 +974,7 @@ page 18555 "Cash Receipt Voucher"
                             if IsSimplePage then
                                 // If this page is opend in simple mode then use the current doc no. for every G/L lines that are created
                                 // from standard journal.
-                                StdGenJnl.CreateGenJnlFromStdJnlWithDocNo(StdGenJnl, CurrentJnlBatchName, CurrentDocNo)
+                                StdGenJnl.CreateGenJnlFromStdJnlWithDocNo(StdGenJnl, CurrentJnlBatchName, CurrentDocNo, 0D)
                             else
                                 StdGenJnl.CreateGenJnlFromStdJnl(StdGenJnl, CurrentJnlBatchName);
                             Message(CashReceiptInsertedMsg, StdGenJnl.Code);
@@ -1712,7 +1711,7 @@ page 18555 "Cash Receipt Voucher"
         HasIncomingDocument := "Incoming Document Entry No." <> 0;
         CurrPage.IncomingDocAttachFactBox.Page.SetCurrentRecordID(RecordId());
         SetUserInteractions();
-        VoucherFunctions.ShowOldNarration(Rec);
+        NarrationText := VoucherFunctions.ShowOldNarration(Rec);
         //  ShowOldNarration();
     end;
 

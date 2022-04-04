@@ -22,4 +22,18 @@ tableextension 11790 "Employee Ledger Entry CZL" extends "Employee Ledger Entry"
             DataClassification = CustomerContent;
         }
     }
+
+    procedure CalcSuggestedAmountToApplyCZL(): Decimal
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        exit(CrossApplicationMgtCZL.CalcSuggestedAmountToApplyEmployeeLedgerEntry(Rec));
+    end;
+
+    procedure DrillDownSuggestedAmountToApplyCZL()
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        CrossApplicationMgtCZL.DrillDownSuggestedAmountToApplyEmployeeLedgerEntry(Rec);
+    end;
 }

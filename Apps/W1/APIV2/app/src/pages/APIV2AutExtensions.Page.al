@@ -83,13 +83,13 @@ page 30002 "APIV2 - Aut. Extensions"
 
     trigger OnOpenPage()
     var
-        EnvironmentInfo: codeunit "Environment Information";
+        EnvironmentInformation: codeunit "Environment Information";
     begin
 
         BindSubscription(AutomationAPIManagement);
 
         FilterGroup(2);
-        if EnvironmentInfo.IsSaas() then
+        if EnvironmentInformation.IsSaas() then
             SetFilter("PerTenant Or Installed", '%1', true)
         else
             SetFilter("Tenant Visible", '%1', true);

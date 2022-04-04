@@ -55,7 +55,19 @@ codeunit 9026 "User Login Time Tracker"
     var
         UserLoginTimeTrackerImpl: Codeunit "User Login Time Tracker Impl.";
     begin
-        exit(UserLoginTimeTrackerImpl.GetPenultimateLoginDateTime());
+        exit(UserLoginTimeTrackerImpl.GetPenultimateLoginDateTime(UserSecurityId()));
+    end;
+
+    /// <summary>
+    /// Returns the penultimate login DateTime of a user.
+    /// </summary>
+    /// <param name="UserSecurityID">The security ID of the user.</param>
+    /// <returns>The penultimate login DateTime of a user, or 0DT if the user login cannot be found.</returns>
+    procedure GetPenultimateLoginDateTime(UserSecurityID: Guid): DateTime
+    var
+        UserLoginTimeTrackerImpl: Codeunit "User Login Time Tracker Impl.";
+    begin
+        exit(UserLoginTimeTrackerImpl.GetPenultimateLoginDateTime(UserSecurityID));
     end;
 
     /// <summary>

@@ -81,11 +81,11 @@ codeunit 3903 "Retention Policy Setup Impl."
 
     local procedure ConvertFilterViewToFilterText(FilterView: Text; TableId: Integer): Text
     var
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
-        RecRef.Open(TableId);
-        RecRef.SetView(FilterView);
-        exit(RecRef.GetFilters());
+        RecordRef.Open(TableId);
+        RecordRef.SetView(FilterView);
+        exit(RecordRef.GetFilters());
     end;
 
     local procedure CalcTableFilterBlob(var RetentionPolicySetupLine: Record "Retention Policy Setup Line"; var TempRetentionPolicySetupLine: Record "Retention Policy Setup Line" temporary): Boolean

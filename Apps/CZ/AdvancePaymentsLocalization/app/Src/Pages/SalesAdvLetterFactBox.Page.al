@@ -1,6 +1,6 @@
 page 31176 "Sales Adv. Letter FactBox CZZ"
 {
-    Caption = 'Sales Advance Letter FactBox';
+    Caption = 'Sales Advance Letter';
     PageType = CardPart;
     SourceTable = "Sales Adv. Letter Header CZZ";
     Editable = false;

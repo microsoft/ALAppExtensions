@@ -74,13 +74,13 @@ page 30030 "APIV2 - Units of Measure"
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        UnitofMeasureRecordRef: RecordRef;
     begin
         Insert(true);
 
-        RecRef.GetTable(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CurrentDateTime());
-        RecRef.SetTable(Rec);
+        UnitofMeasureRecordRef.GetTable(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(UnitofMeasureRecordRef, TempFieldSet, CurrentDateTime());
+        UnitofMeasureRecordRef.SetTable(Rec);
 
         exit(false);
     end;

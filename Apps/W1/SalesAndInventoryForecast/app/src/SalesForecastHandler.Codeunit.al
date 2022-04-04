@@ -17,7 +17,7 @@ codeunit 1850 "Sales Forecast Handler"
         SalesForecastNameTxt: Label 'Sales and Inventory Forecast';
         SalesForecastBusinessSetupDescriptionTxt: Label 'Set up and enable the Sales and Inventory Forecast service.';
         SalesForecastBusinessSetupKeywordsTxt: Label 'Sales,Inventory,Forecast';
-        UpdateDialogTxt: Label 'We''re updating the inventory forecast for item #1';
+        UpdateDialogTxt: Label 'We''re updating the inventory forecast for item #1', comment = '#1 = an Item No.';
 
     procedure CalculateForecast(var Item: Record Item; TimeSeriesManagement: Codeunit "Time Series Management"): Boolean
     var
@@ -280,15 +280,14 @@ codeunit 1850 "Sales Forecast Handler"
         exit(true);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Manual Setup", 'OnRegisterManualSetup', '', false, false)]
-    local procedure HandleRegisterBusinessSetup(var Sender: Codeunit "Manual Setup")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', false, false)]
+    local procedure HandleRegisterBusinessSetup(var Sender: Codeunit "Guided Experience")
     var
         ManualSetupCategory: Enum "Manual Setup Category";
     begin
-        Sender.Insert(
-          SalesForecastNameTxt, SalesForecastBusinessSetupDescriptionTxt,
-          SalesForecastBusinessSetupKeywordsTxt,
-          Page::"Sales Forecast Setup Card", 'c526b3e9-b8ca-4683-81ba-fcd5f6b1472a', ManualSetupCategory::Service);
+        Sender.InsertManualSetup(
+          SalesForecastNameTxt, SalesForecastNameTxt, SalesForecastBusinessSetupDescriptionTxt, 5,
+          ObjectType::Page, Page::"Sales Forecast Setup Card", ManualSetupCategory::Service, SalesForecastBusinessSetupKeywordsTxt);
     end;
 
     [IntegrationEvent(false, false)]

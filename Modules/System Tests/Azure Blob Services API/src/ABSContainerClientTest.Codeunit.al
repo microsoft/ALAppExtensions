@@ -7,7 +7,7 @@ codeunit 132919 "ABS Container Client Test"
 {
     Subtype = Test;
 
-    //[Test]
+    [Test]
     procedure CreateContainerSharedKeyTest()
     var
         Response: Codeunit "ABS Operation Response";
@@ -29,7 +29,7 @@ codeunit 132919 "ABS Container Client Test"
         Assert.IsTrue(Response.IsSuccessful(), 'Operation DeleteContainer failed');
     end;
 
-    //[Test]
+    [Test]
     procedure CreateContainerFailedTest()
     var
         Response: Codeunit "ABS Operation Response";
@@ -54,7 +54,7 @@ codeunit 132919 "ABS Container Client Test"
         Assert.IsTrue(Response.IsSuccessful(), 'Operation DeleteContainer failed');
     end;
 
-    //[Test]
+    [Test]
     procedure ListContainersTest()
     var
         Containers: Record "ABS Container";
@@ -87,6 +87,56 @@ codeunit 132919 "ABS Container Client Test"
             Response := ABSContainerClient.DeleteContainer(ContainerName);
             Assert.IsTrue(Response.IsSuccessful(), 'Operation DeleteContainer failed');
         end;
+    end;
+
+    [Test]
+    procedure LeaseContainerTest()
+    var
+        Response: Codeunit "ABS Operation Response";
+        ContainerName: Text;
+        LeaseId: Guid;
+        ProposedLeaseId: Guid;
+    begin
+        // [Scenarion] Given a storage account and a container name, CreateContainer creates a container and subsequent lease-operations
+        // (1) create a lease, (2) renew a lease, [(3) change a lease], (4) break a lease and (5) release the lease        
+        SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
+
+        ABSContainerClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), SharedKeyAuthorization);
+        ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ContainerName := ABSTestLibrary.GetContainerName();
+        Response := ABSContainerClient.CreateContainer(ContainerName);
+
+        Assert.IsTrue(Response.IsSuccessful(), 'Operation CreateContainer failed');
+
+        // [1st] Acquire Lease on Container
+        Response := ABSContainerClient.AcquireLease(ContainerName, 60, LeaseId);
+        Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseAcquire failed');
+        Assert.IsFalse(IsNullGuid(LeaseId), 'Operation LeaseAcquire failed (no LeaseId returned)');
+
+        // [2nd] Renew Lease on Container
+        Response := ABSContainerClient.RenewLease(ContainerName, LeaseId);
+        Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseRenew failed');
+
+        // This part works when testing against a "real" Azure Storage and not Azurite
+        if (AzuriteTestLibrary.GetStorageAccountName() <> 'devstoreaccount1') then begin // "devstoreaccount1" is the hardcoded name for Azurite test-account
+            // [3rd] Change Lease on Container
+            ProposedLeaseId := CreateGuid();
+            Response := ABSContainerClient.ChangeLease(ContainerName, LeaseId, ProposedLeaseId);
+            Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseChange failed');
+            Assert.IsFalse(IsNullGuid(LeaseId), 'Operation LeaseChange failed (no LeaseId returned)');
+        end;
+
+        // [4th] Break Lease on Container
+        Response := ABSContainerClient.BreakLease(ContainerName, LeaseId);
+        Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseBreak failed');
+
+        // [5th] Release Lease on Container
+        Response := ABSContainerClient.ReleaseLease(ContainerName, LeaseId);
+        Assert.IsTrue(Response.IsSuccessful(), 'Operation LeaseRelease failed');
+
+        // Clean-up
+        ABSContainerClient.DeleteContainer(ContainerName);
     end;
 
     var

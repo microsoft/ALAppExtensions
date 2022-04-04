@@ -18,4 +18,14 @@ pageextension 11792 "Sales Quote Subform CZL" extends "Sales Quote Subform"
             }
         }
     }
+
+    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
+    begin
+        ForceTotalsCalculation();
+    end;
+
+    trigger OnModifyRecord(): Boolean
+    begin
+        ForceTotalsCalculation();
+    end;
 }

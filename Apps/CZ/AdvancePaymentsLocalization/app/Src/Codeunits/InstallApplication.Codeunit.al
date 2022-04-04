@@ -68,7 +68,7 @@ codeunit 31087 "Install Application CZZ"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure CompanyInitialize()
     var
-        DataClassEvalHandlerCZZ: Codeunit "Data Class. Eval. Handler CZZ";
+        DataClassEvalHandlerCZZ: Codeunit "Data Class. Eval. Handler CZZ";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         DataClassEvalHandlerCZZ.ApplyEvaluationClassificationsForPrivacy();

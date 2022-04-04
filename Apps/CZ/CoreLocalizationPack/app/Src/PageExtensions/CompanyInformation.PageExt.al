@@ -56,18 +56,11 @@ pageextension 11700 "Company Information CZL" extends "Company Information"
     }
     actions
     {
-#if CLEAN17
         addafter("System Settings")
         {
             group("Other CZL")
             {
                 Caption = 'O&ther';
-#else
-#pragma warning disable AL0432
-        addfirst("O&ther")
-#pragma warning restore AL0432
-        {
-#endif
             action(OfficialsCZL)
             {
                 ApplicationArea = Basic, Suite;
@@ -85,10 +78,6 @@ pageextension 11700 "Company Information CZL" extends "Company Information"
                 ToolTip = 'Allows the setup of document footers for printout.';
             }
         }
-#if CLEAN17
         }
     }
-#else
-    }
-#endif
 }

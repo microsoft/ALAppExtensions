@@ -32,7 +32,7 @@ codeunit 31347 "Unreliable Payer Mgt. CZB"
     begin
         if not UnrelPayerServiceSetupCZL.Get() then begin
             UnrelPayerServiceSetupCZL.Init();
-            UnrelPayerServiceSetupCZL."Unreliable Payer Web Service" := UnreliablePayerMgtCZL.GetUnreliablePayerServiceURL();
+            UnreliablePayerMgtCZL.SetDefaultUnreliablePayerServiceURL(UnrelPayerServiceSetupCZL);
             UnrelPayerServiceSetupCZL.Enabled := false;
             UnrelPayerServiceSetupCZL.Insert();
         end;

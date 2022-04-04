@@ -31,6 +31,7 @@ codeunit 1460 SignedXml
         SignedXmlImpl.InitializeSignedXml(SigningXmlElement);
     end;
 #if not CLEAN19
+#pragma warning disable AL0432
     /// <summary>
     /// Sets the key used for signing a SignedXml object.
     /// </summary>
@@ -40,6 +41,7 @@ codeunit 1460 SignedXml
     begin
         SignedXmlImpl.SetSigningKey(SignatureKey);
     end;
+#pragma warning restore
 #endif
 
     /// <summary>
@@ -59,6 +61,15 @@ codeunit 1460 SignedXml
     procedure SetSigningKey(XmlString: Text; SignatureAlgorithm: Enum SignatureAlgorithm)
     begin
         SignedXmlImpl.SetSigningKey(XmlString, SignatureAlgorithm);
+    end;
+
+    /// <summary>
+    /// Sets the key used for signing a SignedXml object.
+    /// </summary>
+    /// <param name="SignatureKey">The key used for signing the SignedXml object.</param>
+    procedure SetSigningKey(SignatureKey: Codeunit "Signature Key")
+    begin
+        SignedXmlImpl.SetSigningKey(SignatureKey);
     end;
 
     /// <summary>

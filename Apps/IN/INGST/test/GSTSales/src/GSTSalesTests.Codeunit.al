@@ -40,6 +40,30 @@ codeunit 18196 "GST Sales Tests"
         PostedDocumentNoLbl: Label 'PostedDocumentNo';
         ReverseDocumentNoLbl: Label 'ReverseDocumentNo';
         PriceInclusiveOfTaxLbl: Label 'WithPIT';
+        PANErr: Label 'PAN No. must be entered in Company Information.';
+
+    [Test]
+    procedure CompanyInformationPANError()
+    var
+        CompanyInformation: Record "Company Information";
+        GSTRegistrationNos: Record "GST Registration Nos.";
+        State: Record State;
+    begin
+        // [SCENARIO] [GST Preparation - GST Registration No., Pan No. error for company info]
+        // [GIVEN] Get Company Information
+        CompanyInformation.Get();
+        CompanyInformation."P.A.N. No." := '';
+        CompanyInformation.Modify();
+
+        // [WHEN] Generate Record in GST registration No.
+        LibraryGST.CreateState(State);
+        GSTRegistrationNos.Init();
+        GSTRegistrationNos.Validate("State Code", State.Code);
+        asserterror GSTRegistrationNos.Validate("Code", State.Code);
+
+        //[THEN] Verified error message for Comapny Info Pan Error.
+        Assert.ExpectedError(PANErr);
+    end;
 
     [Test]
     [HandlerFunctions('TaxRatePageHandler')]

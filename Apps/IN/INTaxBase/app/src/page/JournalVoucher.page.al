@@ -635,7 +635,7 @@ page 18557 "Journal Voucher"
 
                     trigger OnValidate()
                     begin
-                        VoucherFunctions.SplitNarration(NarrationText, false, Rec);
+                        Error('Voucher Narration should be entered from Process - >Voucher Narration tab.');
                     end;
                 }
             }
@@ -854,11 +854,15 @@ page 18557 "Journal Voucher"
                         GenNarration: Record "Gen. Journal Narration";
                         VoucherNarration: Page "Voucher Narration";
                     begin
-                        GetGenJnlNarration(GenNarration, false);
+                        GenNarration.Reset();
+                        GenNarration.SetRange("Journal Template Name", "Journal Template Name");
+                        GenNarration.SetRange("Journal Batch Name", "Journal Batch Name");
+                        GenNarration.SetRange("Document No.", "Document No.");
+                        GenNarration.SetFilter("Gen. Journal Line No.", '%1', 0);
                         VoucherNarration.SetTableView(GenNarration);
                         VoucherNarration.RunModal();
 
-                        //ShowOldNarration();
+                        // ShowOldNarration();
                         VoucherFunctions.ShowOldNarration(Rec);
                         CurrPage.Update(true);
                     end;
@@ -968,7 +972,7 @@ page 18557 "Journal Voucher"
                             if IsSimplePage then
                                 // If this page is opend in simple mode then use the current doc no. for every G/L lines that are created
                                 // from standard journal.
-                                StdGenJnl.CreateGenJnlFromStdJnlWithDocNo(StdGenJnl, CurrentJnlBatchName, CurrentDocNo)
+                                StdGenJnl.CreateGenJnlFromStdJnlWithDocNo(StdGenJnl, CurrentJnlBatchName, CurrentDocNo, 0D)
                             else
                                 StdGenJnl.CreateGenJnlFromStdJnl(StdGenJnl, CurrentJnlBatchName);
                             Message(JournalVoucherInsertedMsg, StdGenJnl.Code);
@@ -1705,7 +1709,7 @@ page 18557 "Journal Voucher"
         HasIncomingDocument := "Incoming Document Entry No." <> 0;
         CurrPage.IncomingDocAttachFactBox.Page.SetCurrentRecordID(RecordId());
         SetUserInteractions();
-        VoucherFunctions.ShowOldNarration(Rec);
+        NarrationText := VoucherFunctions.ShowOldNarration(Rec);
         //  ShowOldNarration();
     end;
 

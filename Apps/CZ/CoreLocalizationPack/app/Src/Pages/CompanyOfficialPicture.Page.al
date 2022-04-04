@@ -37,8 +37,7 @@ page 11738 "Company Official Picture CZL"
 
                 trigger OnAction()
                 begin
-                    Rec.TestField("No.");
-                    Camera.AddPicture(Rec, Rec.FieldNo(Image));
+                    TakeNewPicture();
                 end;
             }
             action(ImportPicture)
@@ -133,9 +132,28 @@ page 11738 "Company Official Picture CZL"
         DeleteImageQst: Label 'Are you sure you want to delete the picture?';
         DeleteExportEnabled: Boolean;
         ImageExtensionTok: Label '.png', Locked = true;
+        MimeTypeTok: Label 'image/jpeg', Locked = true;
 
     local procedure SetEditableOnPictureActions()
     begin
         DeleteExportEnabled := Rec.Image.HasValue();
+    end;
+
+    local procedure TakeNewPicture()
+    var
+        PictureInstream: InStream;
+        PictureDescription: Text;
+    begin
+        Rec.TestField("No.");
+
+        if Rec.Image.HasValue() then
+            if not Confirm(OverrideImageQst) then
+                exit;
+
+        if Camera.GetPicture(PictureInstream, PictureDescription) then begin
+            Clear(Rec.Image);
+            Rec.Image.ImportStream(PictureInstream, PictureDescription, MimeTypeTok);
+            Rec.Modify(true)
+        end;
     end;
 }

@@ -43,11 +43,11 @@ codeunit 9013 "User Login Time Tracker Impl."
         exit(UserLogin."Last Login Date" >= FromDateTime);
     end;
 
-    procedure GetPenultimateLoginDateTime(): DateTime
+    procedure GetPenultimateLoginDateTime(UserSecurityId: Guid): DateTime
     var
         UserLogin: Record "User Login";
     begin
-        if UserLogin.Get(UserSecurityId()) then
+        if UserLogin.Get(UserSecurityId) then
             exit(UserLogin."Penultimate Login Date");
 
         exit(0DT);

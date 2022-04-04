@@ -27,8 +27,20 @@ codeunit 18661 "TDS For Customer Subscribers"
         end;
     end;
 
+#if not CLEAN20
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostCustomerEntry', '', false, false)]
     local procedure PostCustEntry(
+        var GenJnlLine: Record "Gen. Journal Line";
+        var SalesHeader: Record "Sales Header";
+        var TotalSalesLine: Record "Sales Line";
+        var TotalSalesLineLCY: Record "Sales Line")
+    begin
+        GenJnlLine."TDS Certificate Receivable" := SalesHeader."TDS Certificate Receivable";
+    end;
+#endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
+    local procedure OnPostLedgerEntryOnBeforeGenJnlPostLine(
         var GenJnlLine: Record "Gen. Journal Line";
         var SalesHeader: Record "Sales Header";
         var TotalSalesLine: Record "Sales Line";

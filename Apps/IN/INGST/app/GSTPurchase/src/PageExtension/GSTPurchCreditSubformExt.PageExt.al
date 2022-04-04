@@ -10,7 +10,7 @@ pageextension 18089 "GST Purch. Credit Subform Ext" extends "Purch. Cr. Memo Sub
                 FormatLine();
             end;
         }
-        Modify("Cross-Reference No.")
+        Modify("Item Reference No.")
         {
             trigger OnAfterValidate()
             begin

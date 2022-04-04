@@ -24,4 +24,14 @@ pageextension 11791 "Sales Cr. Memo Subform CZL" extends "Sales Cr. Memo Subform
             }
         }
     }
+
+    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
+    begin
+        ForceTotalsCalculation();
+    end;
+
+    trigger OnModifyRecord(): Boolean
+    begin
+        ForceTotalsCalculation();
+    end;
 }

@@ -145,10 +145,10 @@ codeunit 9042 "ABS Operation Payload"
     [NonDebuggable]
     internal procedure ConstructUri(): Text
     var
-        URIHelper: Codeunit "ABS URI Helper";
+        ABSURIHelper: Codeunit "ABS URI Helper";
     begin
-        URIHelper.SetOptionalUriParameter(UriParameters);
-        exit(URIHelper.ConstructUri(StorageBaseUrl, StorageAccountName, ContainerName, BlobName, Operation));
+        ABSURIHelper.SetOptionalUriParameter(UriParameters);
+        exit(ABSURIHelper.ConstructUri(StorageBaseUrl, StorageAccountName, ContainerName, BlobName, Operation));
     end;
 
     [NonDebuggable]
@@ -191,18 +191,18 @@ codeunit 9042 "ABS Operation Payload"
     end;
 
     [NonDebuggable]
-    procedure SetOptionalParameters(OptionalParameters: Codeunit "ABS Optional Parameters")
+    procedure SetOptionalParameters(ABSOptionalParameters: Codeunit "ABS Optional Parameters")
     var
         Optionals: Dictionary of [Text, Text];
         OptionalParameterKey: Text;
     begin
         // Add request headers
-        Optionals := OptionalParameters.GetRequestHeaders();
+        Optionals := ABSOptionalParameters.GetRequestHeaders();
         foreach OptionalParameterKey in Optionals.Keys() do
             AddRequestHeader(OptionalParameterKey, Optionals.Get(OptionalParameterKey));
 
         // Add URI parameters
-        Optionals := OptionalParameters.GetParameters();
+        Optionals := ABSOptionalParameters.GetParameters();
         foreach OptionalParameterKey in Optionals.Keys() do
             AddUriParameter(OptionalParameterKey, Optionals.Get(OptionalParameterKey));
     end;

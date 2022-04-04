@@ -129,6 +129,7 @@ page 8850 "Bank Statement File Wizard"
                             CurrentCodeNumber: Integer;
                             CurrCode: Text;
                         begin
+                            LastCodeNumber := 0;
                             if SkipStep2 then begin
                                 NextActionEnabled := true;
                                 DataExchDef.SetFilter(Code, DataExchangeCodeLbl + '*');
@@ -144,6 +145,7 @@ page 8850 "Bank Statement File Wizard"
                                 Clear(HeaderLines);
                                 Clear(ColumnCount);
                                 Clear(ColumnSeperator);
+                                Clear(LineSeparator);
                                 Clear(TransactionDateColumnNo);
                                 Clear(TransactionAmountColumnNo);
                                 Clear(DescriptionColumnNo);
@@ -177,6 +179,7 @@ page 8850 "Bank Statement File Wizard"
                         LineCount: Integer;
                         CRLF: Text[2];
                     begin
+                        LineCount := 0;
                         if FileUploaded then begin
                             Clear(FilePreviewHeaderTxt);
                             Clear(FilePreviewRestTxt);
@@ -236,7 +239,7 @@ page 8850 "Bank Statement File Wizard"
             group(Step4)
             {
                 Caption = '';
-                InstructionalText = 'Specify the column separator and column count for your bank statement file.';
+                InstructionalText = 'Specify the column separator, the number of columns, and line separator for your bank statement file.';
                 Visible = Step4Visible;
                 ShowCaption = false;
 
@@ -279,6 +282,13 @@ page 8850 "Bank Statement File Wizard"
                         NewFileToGetColumns := true;
                         NewFileToGetFormats := true;
                     end;
+                }
+                field(LineSeparator; LineSeparator)
+                {
+                    ApplicationArea = Suite;
+                    Caption = 'Line Separator';
+                    ToolTip = 'Specifies the character that separates each line in the bank statement file.';
+                    OptionCaption = 'CRLF,CR,LF';
                 }
                 group("File Preview Data")
                 {
@@ -514,7 +524,8 @@ page 8850 "Bank Statement File Wizard"
                             FileName := BankStatementFileWizard.UploadBankFile(TempBlob);
                             if FileName <> '' then begin
                                 FileUploaded2 := true;
-                                ReadTestBankFile();
+                                if not ReadTestBankFile() then
+                                    exit;
                             end;
                         end;
 
@@ -676,6 +687,7 @@ page 8850 "Bank Statement File Wizard"
         Step: Option Start,Step2,Step3,Step4,Step5,Step6,Step7,Finish;
         ColumnSeperator: Option " ",Comma,Semicolon;
         DecimalSeperator: Option " ","Dot","Comma";
+        LineSeparator: Option "CRLF","CR","LF";
         UploadFileLbl: Label 'Upload a bank statement file';
         DownloadSampleLbl: Label 'Download a sample bank statement file';
         FileSuccessfullyUploadedLbl: Label 'Bank statement file successfully uploaded';
@@ -689,7 +701,8 @@ page 8850 "Bank Statement File Wizard"
         LineDefLbl: Label 'Line Definition';
         BankPaymentFieldMappingLbl: Label 'Bank Payment Field Mapping';
         BankImportSetupLbl: Label 'Bank Import Setup';
-        DataExchDefAlreadyExistsErr: Label 'Data Exchange Definition with the code %1 already exists.', Comment = '%1 = Data Exchange Definition Code';
+        IncorrectLineSeparatorErr: Label 'The line separator in the uploaded file, %1, differs from your setup. To continue, go back a step or two and change your setup to use %1.', Comment = '%1 = Line separator';
+        DataExchDefAlreadyExistsErr: Label 'A data exchange definition with the code %1 already exists.', Comment = '%1 = Data Exchange Definition Code';
         CannotBeGreaterThanColumCountErr: Label 'Column number for %1 cannot be greater than column count.', Comment = '%1 = Name of the column';
         Step7InstructionLbl: Label 'The preview will show the first 10 lines from the file, and any problems will be colored red. It''s a good idea to verify that the decimal separator is correct. Using the wrong separator will result in incorrect amounts.';
         ChangeBankStatementImportFormatLbl: Label 'Bank Statement Import Format %1 is already defined for the Bank Account %2. Do you want to overwrite it with the new format?', Comment = '%1 = Bank Statement Import Format, %2 = Bank Account';
@@ -888,7 +901,7 @@ page 8850 "Bank Statement File Wizard"
         DataExchDef.Name := DataExchangeCode + ' ' + DataExchDefLbl;
         DataExchDef.Type := DataExchDef.Type::"Bank Statement Import";
         DataExchDef."File Type" := DataExchDef."File Type"::"Fixed Text";
-        DataExchDef."Reading/Writing XMLport" := 1220;
+        DataExchDef."Reading/Writing XMLport" := Xmlport::"Data Exch. Import - CSV";
         DataExchDef."Ext. Data Handling Codeunit" := Codeunit::"Read Data Exch. from File";
         DataExchDef."File Encoding" := DataExchDef."File Encoding"::WINDOWS;
         case ColumnSeperator of
@@ -896,6 +909,14 @@ page 8850 "Bank Statement File Wizard"
                 DataExchDef."Column Separator" := DataExchDef."Column Separator"::Comma;
             ColumnSeperator::Semicolon:
                 DataExchDef."Column Separator" := DataExchDef."Column Separator"::Semicolon;
+        end;
+        case LineSeparator of
+            LineSeparator::CR:
+                DataExchDef."Line Separator" := DataExchDef."Line Separator"::CR;
+            LineSeparator::LF:
+                DataExchDef."Line Separator" := DataExchDef."Line Separator"::LF;
+            LineSeparator::CRLF:
+                DataExchDef."Line Separator" := DataExchDef."Line Separator"::CRLF;
         end;
         DataExchDef."Header Lines" := HeaderLines;
         DataExchDef.Insert();
@@ -966,6 +987,7 @@ page 8850 "Bank Statement File Wizard"
         TypeHelper: Codeunit "Type Helper";
         Regex: Codeunit Regex;
         FileInStream: InStream;
+        FileSeparatorInStream: InStream;
         FileLine: Text;
         Seperator: Text;
         CRLF: Text[2];
@@ -976,7 +998,11 @@ page 8850 "Bank Statement File Wizard"
         if not TempBlob.HasValue() then
             exit;
         TempBlob.CreateInStream(FileInStream);
+        TempBlob.CreateInStream(FileSeparatorInStream);
         CRLF := TypeHelper.CRLFSeparator();
+
+        ReadLineSeparator(FileSeparatorInStream, LineSeparator);
+
         while not FileInStream.EOS() do begin
             LineCount += 1;
             if LineCount = 50 then
@@ -1018,10 +1044,12 @@ page 8850 "Bank Statement File Wizard"
         end;
     end;
 
-    local procedure ReadTestBankFile()
+    local procedure ReadTestBankFile(): Boolean
     var
         TypeHelper: Codeunit "Type Helper";
         FileInStream: InStream;
+        FileSeparatorInStream: InStream;
+        TestFileLineSeparator: Option "CRLF","CR","LF";
         FileLine: Text;
         LineCount: Integer;
         CRLF: Text[2];
@@ -1029,7 +1057,16 @@ page 8850 "Bank Statement File Wizard"
         if not TempBlob.HasValue() then
             exit;
         TempBlob.CreateInStream(FileInStream);
+        TempBlob.CreateInStream(FileSeparatorInStream);
         CRLF := TypeHelper.CRLFSeparator();
+
+        ReadLineSeparator(FileSeparatorInStream, TestFileLineSeparator);
+
+        if TestFileLineSeparator <> LineSeparator then begin
+            Message(IncorrectLineSeparatorErr, TestFileLineSeparator);
+            exit(false);
+        end;
+
         while not FileInStream.EOS() do begin
             LineCount += 1;
             if LineCount = 20 then
@@ -1037,6 +1074,7 @@ page 8850 "Bank Statement File Wizard"
             FileInStream.ReadText(FileLine);
             FileLinesList.Add(FileLine);
         end;
+        exit(true);
     end;
 
     local procedure RetrieveInformationFromBankFile()
@@ -1190,6 +1228,7 @@ page 8850 "Bank Statement File Wizard"
         Regex: Codeunit Regex;
         DateColumnNoFound: Boolean;
         AmountColumnNoFound: Boolean;
+        DescriptionColumnNoFound: Boolean;
         SeperatorRegex: Text;
         FileLine: Text;
         CurrValue: Text;
@@ -1228,8 +1267,13 @@ page 8850 "Bank Statement File Wizard"
                     TransactionAmountColumnNo := i + 1;
                     AmountColumnNoFound := true;
                 end;
-                if Matches.ReadValue().ToLower().Contains(Format(DescriptionLbl).ToLower()) or Matches.ReadValue().ToLower().Contains(Format(DetailLbl).ToLower()) then
+                if Matches.ReadValue().ToLower().Contains(Format(DescriptionLbl).ToLower()) or Matches.ReadValue().ToLower().Contains(Format(DetailLbl).ToLower()) then begin
                     DescriptionColumnNo := i + 1;
+                    DescriptionColumnNoFound := true;
+                end;
+
+                if DateColumnNoFound and AmountColumnNoFound and DescriptionColumnNoFound then
+                    break;
             end;
         end;
 
@@ -1360,6 +1404,31 @@ page 8850 "Bank Statement File Wizard"
 
             if i = HeaderLines + 10 then
                 break;
+        end;
+    end;
+
+    local procedure ReadLineSeparator(FileSeparatorInStream: InStream; var LineSeparator: Option "CRLF","CR","LF")
+    var
+        TypeHelper: Codeunit "Type Helper";
+        FileStart: Text;
+        CRLF: Text[2];
+    begin
+        CRLF := TypeHelper.CRLFSeparator();
+        FileSeparatorInStream.Read(FileStart, 4000); // Read first 4000 characters to determine the line separator
+
+        if FileStart.Contains(CRLF) then begin
+            LineSeparator := LineSeparator::CRLF;
+            exit;
+        end;
+
+        if FileStart.Contains(CRLF[1]) then begin
+            LineSeparator := LineSeparator::CR;
+            exit;
+        end;
+
+        if FileStart.Contains(CRLF[2]) then begin
+            LineSeparator := LineSeparator::LF;
+            exit;
         end;
     end;
 }

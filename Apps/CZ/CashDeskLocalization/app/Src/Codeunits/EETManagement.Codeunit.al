@@ -485,18 +485,7 @@ codeunit 31083 "EET Management CZP"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeGetAppliedDocumentAmountLCY(CashDocumentLineCZP: Record "Cash Document Line CZP"; var AppliedDocumentAmount: Decimal; var IsHandled: Boolean);
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterGetAppliedDocumentAmountLCY(CashDocumentLineCZP: Record "Cash Document Line CZP"; var AppliedDocumentAmount: Decimal);
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
     local procedure OnGetAppliedDocumentNo(CashDocumentLineCZP: Record "Cash Document Line CZP"; var AppliedDocumentNo: Code[20]);
     begin
     end;
 }
-

@@ -1,4 +1,4 @@
-codeunit 31093 "Data Class. Eval. Handler CZZ"
+codeunit 31093 "Data Class. Eval. Handler CZZ"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Class. Eval. Data Country", 'OnAfterClassifyCountrySpecificTables', '', false, false)]
     local procedure ApplyEvaluationClassificationsForPrivacyOnAfterClassifyCountrySpecificTables()
@@ -8,6 +8,7 @@ codeunit 31093 "Data Class. Eval. Handler CZZ"
 
     procedure ApplyEvaluationClassificationsForPrivacy()
     var
+        AccScheduleExtensionCZL: Record "Acc. Schedule Extension CZL";
         Company: Record Company;
         CashDocumentLineCZP: Record "Cash Document Line CZP";
         CashFlowSetup: Record "Cash Flow Setup";
@@ -45,6 +46,7 @@ codeunit 31093 "Data Class. Eval. Handler CZZ"
         DataClassificationMgt.SetFieldToPersonal(Database::"Purch. Adv. Letter Entry CZZ", PurchAdvLetterEntryCZZ.FieldNo("User ID"));
         DataClassificationMgt.SetFieldToPersonal(Database::"Sales Adv. Letter Entry CZZ", SalesAdvLetterEntryCZZ.FieldNo("User ID"));
 
+        DataClassificationMgt.SetFieldToNormal(Database::"Acc. Schedule Extension CZL", AccScheduleExtensionCZL.FieldNo("Advance Payments CZZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Cash Document Line CZP", CashDocumentLineCZP.FieldNo("Advance Letter No. CZZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Cash Flow Setup", CashFlowSetup.FieldNo("S. Adv. Letter CF Acc. No. CZZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Cash Flow Setup", CashFlowSetup.FieldNo("P. Adv. Letter CF Acc. No. CZZ"));

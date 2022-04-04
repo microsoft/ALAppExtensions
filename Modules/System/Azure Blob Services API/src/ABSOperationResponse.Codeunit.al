@@ -16,7 +16,7 @@ codeunit 9050 "ABS Operation Response"
     /// <returns>True if the operation was successful; otherwise - false.</returns>
     procedure IsSuccessful(): Boolean
     begin
-        exit(Response.IsSuccessStatusCode);
+        exit(HttpResponseMessage.IsSuccessStatusCode);
     end;
 
     /// <summary>
@@ -41,7 +41,7 @@ codeunit 9050 "ABS Operation Response"
     [TryFunction]
     internal procedure GetResultAsText(var Result: Text);
     begin
-        Response.Content.ReadAs(Result);
+        HttpResponseMessage.Content.ReadAs(Result);
     end;
 
     /// <summary>
@@ -50,19 +50,31 @@ codeunit 9050 "ABS Operation Response"
     /// <returns>The content of the response.</returns>
     [NonDebuggable]
     [TryFunction]
-    internal procedure GetResultAsStream(var Result: InStream)
+    internal procedure GetResultAsStream(var ResultInStream: InStream)
     begin
-        Response.Content.ReadAs(Result);
+        HttpResponseMessage.Content.ReadAs(ResultInStream);
     end;
 
     [NonDebuggable]
-    internal procedure SetHttpResponse(NewResponse: HttpResponseMessage)
+    internal procedure SetHttpResponse(NewHttpResponseMessage: HttpResponseMessage)
     begin
-        Response := NewResponse;
+        HttpResponseMessage := NewHttpResponseMessage;
+    end;
+
+    [NonDebuggable]
+    internal procedure GetHeaderValueFromResponseHeaders(HeaderName: Text): Text
+    var
+        Headers: HttpHeaders;
+        Values: array[100] of Text;
+    begin
+        Headers := HttpResponseMessage.Headers;
+        if not Headers.GetValues(HeaderName, Values) then
+            exit('');
+        exit(Values[1]);
     end;
 
     var
         [NonDebuggable]
-        Response: HttpResponseMessage;
+        HttpResponseMessage: HttpResponseMessage;
         ResponseError: Text;
 }

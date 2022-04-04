@@ -11,8 +11,8 @@ codeunit 9044 "ABS Format Helper"
     procedure AppendToUri(var Uri: Text; ParameterIdentifier: Text; ParameterValue: Text)
     var
         ConcatChar: Text;
-        AppendType1Lbl: Label '%1%2=%3', Comment = '%1 = Concatenation character, %2 = Parameter Identifer, %3 = Parameter Value';
-        AppendType2Lbl: Label '%1%2', Comment = '%1 = Concatenation character, %2 = Parameter Value';
+        AppendType1Lbl: Label '%1%2=%3', Comment = '%1 = Concatenation character, %2 = Parameter Identifer, %3 = Parameter Value', Locked = true;
+        AppendType2Lbl: Label '%1%2', Comment = '%1 = Concatenation character, %2 = Parameter Value', Locked = true;
     begin
         ConcatChar := '?';
         if Uri.Contains('?') then

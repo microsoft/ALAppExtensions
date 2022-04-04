@@ -13,18 +13,6 @@ pageextension 31288 "Payment Journal CZB" extends "Payment Journal"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the line no. of search rule.';
-                AssistEdit = true;
-
-                trigger OnAssistEdit()
-                var
-                    SearchRuleLineCZB: Record "Search Rule Line CZB";
-                begin
-                    if Rec."Search Rule Line No. CZB" = 0 then
-                        exit;
-                    SearchRuleLineCZB.Get(Rec."Search Rule Code CZB", Rec."Search Rule Line No. CZB");
-                    SearchRuleLineCZB.SetRecFilter();
-                    Page.RunModal(Page::"Search Rule Line Card CZB", SearchRuleLineCZB);
-                end;
             }
         }
     }

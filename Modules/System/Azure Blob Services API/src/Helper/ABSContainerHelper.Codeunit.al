@@ -8,52 +8,52 @@ codeunit 9055 "ABS Container Helper"
     Access = Internal;
 
     [NonDebuggable]
-    procedure AddNewEntryFromNode(var Container: Record "ABS Container"; var Node: XmlNode; XPathName: Text)
+    procedure AddNewEntryFromNode(var ABSContainer: Record "ABS Container"; var Node: XmlNode; XPathName: Text)
     var
-        HelperLibrary: Codeunit "ABS Helper Library";
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
         NameFromXml: Text;
         OuterXml: Text;
         ChildNodes: XmlNodeList;
         PropertiesNode: XmlNode;
     begin
-        NameFromXml := HelperLibrary.GetValueFromNode(Node, XPathName);
+        NameFromXml := ABSHelperLibrary.GetValueFromNode(Node, XPathName);
         Node.WriteTo(OuterXml);
         Node.SelectSingleNode('.//Properties', PropertiesNode);
         ChildNodes := PropertiesNode.AsXmlElement().GetChildNodes();
         if ChildNodes.Count = 0 then
-            AddNewEntry(Container, NameFromXml, OuterXml)
+            AddNewEntry(ABSContainer, NameFromXml, OuterXml)
         else
-            AddNewEntry(Container, NameFromXml, OuterXml, ChildNodes);
+            AddNewEntry(ABSContainer, NameFromXml, OuterXml, ChildNodes);
     end;
 
     [NonDebuggable]
-    procedure AddNewEntry(var Container: Record "ABS Container"; NameFromXml: Text; OuterXml: Text)
+    procedure AddNewEntry(var ABSContainer: Record "ABS Container"; NameFromXml: Text; OuterXml: Text)
     var
         ChildNodes: XmlNodeList;
     begin
-        AddNewEntry(Container, NameFromXml, OuterXml, ChildNodes);
+        AddNewEntry(ABSContainer, NameFromXml, OuterXml, ChildNodes);
     end;
 
     [NonDebuggable]
-    procedure AddNewEntry(var Container: Record "ABS Container"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList)
+    procedure AddNewEntry(var ABSContainer: Record "ABS Container"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList)
     var
         Outstr: OutStream;
     begin
-        Container.Init();
-        Container.Name := CopyStr(NameFromXml, 1, 250);
-        SetPropertyFields(Container, ChildNodes);
-        Container."XML Value".CreateOutStream(Outstr);
+        ABSContainer.Init();
+        ABSContainer.Name := CopyStr(NameFromXml, 1, 250);
+        SetPropertyFields(ABSContainer, ChildNodes);
+        ABSContainer."XML Value".CreateOutStream(Outstr);
         Outstr.Write(OuterXml);
-        Container.Insert(true);
+        ABSContainer.Insert(true);
     end;
 
     [NonDebuggable]
-    local procedure SetPropertyFields(var Container: Record "ABS Container"; ChildNodes: XmlNodeList)
+    local procedure SetPropertyFields(var ABSContainer: Record "ABS Container"; ChildNodes: XmlNodeList)
     var
-        FormatHelper: Codeunit "ABS Format Helper";
-        HelperLibrary: Codeunit "ABS Helper Library";
-        RecRef: RecordRef;
-        FldRef: FieldRef;
+        ABSFormatHelper: Codeunit "ABS Format Helper";
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
+        RecordRef: RecordRef;
+        FieldRef: FieldRef;
         ChildNode: XmlNode;
         PropertyName: Text;
         PropertyValue: Text;
@@ -63,22 +63,22 @@ codeunit 9055 "ABS Container Helper"
             PropertyName := ChildNode.AsXmlElement().Name;
             PropertyValue := ChildNode.AsXmlElement().InnerText;
             if PropertyValue <> '' then begin
-                RecRef.GetTable(Container);
-                if HelperLibrary.GetFieldByName(Database::"ABS Container", PropertyName, FldNo) then begin
-                    FldRef := RecRef.Field(FldNo);
-                    case FldRef.Type of
-                        FldRef.Type::DateTime:
-                            FldRef.Value := FormatHelper.ConvertToDateTime(PropertyValue);
-                        FldRef.Type::Integer:
-                            FldRef.Value := FormatHelper.ConvertToInteger(PropertyValue);
-                        FldRef.Type::Boolean:
-                            FldRef.Value := FormatHelper.ConvertToBoolean(PropertyValue);
+                RecordRef.GetTable(ABSContainer);
+                if ABSHelperLibrary.GetFieldByName(Database::"ABS Container", PropertyName, FldNo) then begin
+                    FieldRef := RecordRef.Field(FldNo);
+                    case FieldRef.Type of
+                        FieldRef.Type::DateTime:
+                            FieldRef.Value := ABSFormatHelper.ConvertToDateTime(PropertyValue);
+                        FieldRef.Type::Integer:
+                            FieldRef.Value := ABSFormatHelper.ConvertToInteger(PropertyValue);
+                        FieldRef.Type::Boolean:
+                            FieldRef.Value := ABSFormatHelper.ConvertToBoolean(PropertyValue);
                         else
-                            FldRef.Value := PropertyValue;
+                            FieldRef.Value := PropertyValue;
                     end;
                 end;
             end;
-            RecRef.SetTable(Container);
+            RecordRef.SetTable(ABSContainer);
         end;
     end;
 }

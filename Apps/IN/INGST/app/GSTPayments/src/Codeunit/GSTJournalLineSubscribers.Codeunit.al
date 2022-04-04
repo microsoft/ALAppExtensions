@@ -210,4 +210,28 @@ codeunit 18243 "GST Journal Line Subscribers"
                 error(GSTTDSTCSAmtPostiveErr);
         end;
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnSetJournalLineFieldsFromApplicationOnAfterFindFirstCustLedgEntryWithAppliesToDocNo', '', false, false)]
+    local procedure OnSetJournalLineFieldsFromApplicationOnAfterFindFirstCustLedgEntryWithAppliesToDocNo(var GenJournalLine: Record "Gen. Journal Line"; CustLedgEntry: Record "Cust. Ledger Entry")
+    var
+        CalculateTax: Codeunit "Calculate Tax";
+    begin
+        if CustLedgEntry."GST Group Code" <> '' then begin
+            GenJournalLine."GST Group Code" := CustLedgEntry."GST Group Code";
+            GenJournalLine.Validate("GST Group Code");
+
+            if CustLedgEntry."HSN/SAC Code" <> '' then begin
+                GenJournalLine."HSN/SAC Code" := CustLedgEntry."HSN/SAC Code";
+                GenJournalLine.Validate("HSN/SAC Code");
+
+                GenJournalLine."Location Code" := CustLedgEntry."Location Code";
+                GenJournalLine.Validate("Location Code");
+                GenJournalLine."Bal. Account Type" := CustLedgEntry."Bal. Account Type";
+                GenJournalLine."Bal. Account No." := CustLedgEntry."Bal. Account No.";
+                GenJournalLine.Validate("Bal. Account No.");
+
+                CalculateTax.OnAfterValidateGenJnlLineFields(GenJournalLine);
+            end;
+        end;
+    end;
 }

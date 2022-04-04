@@ -100,8 +100,8 @@ page 9987 "Word Templates Related Part"
             until Rec.Next() = 0;
     end;
 
-    internal procedure GetRelatedTables(var RelatedTableIds: Record "Word Templates Related Table" temporary)
+    internal procedure GetRelatedTables(var WordTemplatesRelatedTable: Record "Word Templates Related Table" temporary)
     begin
-        RelatedTableIds.Copy(Rec, true);
+        WordTemplatesRelatedTable.Copy(Rec, true);
     end;
 }

@@ -600,6 +600,58 @@ codeunit 139043 "Web Service Management Test"
             Assert.IsTrue(TenantWebService.Published, ObjectNameLbl + ' tenant web service record "Published" field should be checked.');
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestDeleteTenantWebService()
+    var
+        TenantWebService: Record "Tenant Web Service";
+        WebServiceAggregate: Record "Web Service Aggregate";
+        ObjectNameLbl: Label 'TestTenantWebService';
+    begin
+        PermissionsMock.Set('Web Service Admin');
+        Initialize();
+        WebServiceManagement.CreateTenantWebService(TenantWebService."Object Type"::Page, Page::"Dummy Page", ObjectNameLbl, true);
+
+        WebServiceManagement.LoadRecords(WebServiceAggregate);
+        Assert.IsTrue(WebServiceAggregate.Get(WebServiceAggregate."Object Type"::Page, ObjectNameLbl), 'Web Service should be present');
+
+        ClearLastError();
+        // Delete tenant web service
+        WebServiceManagement.DeleteWebService(WebServiceAggregate);
+        Assert.AreEqual('', GetLastErrorText(), 'No error should have occurred when deleting a tenant web service');
+
+        WebServiceManagement.LoadRecords(WebServiceAggregate);
+        Assert.IsFalse(WebServiceAggregate.Get(WebServiceAggregate."Object Type"::Page, ObjectNameLbl), 'Web Service should not be present');
+
+        Assert.IsFalse(TenantWebService.Get(TenantWebService."Object Type"::Page, ObjectNameLbl), 'Tenant web service should not be present');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestDeleteWebService()
+    var
+        WebService: Record "Web Service";
+        WebServiceAggregate: Record "Web Service Aggregate";
+        ObjectNameLbl: Label 'TestWebService';
+    begin
+        PermissionsMock.Set('Web Service Admin');
+        Initialize();
+        WebServiceManagement.CreateTenantWebService(WebService."Object Type"::Page, Page::"Dummy Page", ObjectNameLbl, true);
+
+        WebServiceManagement.LoadRecords(WebServiceAggregate);
+        Assert.IsTrue(WebServiceAggregate.Get(WebServiceAggregate."Object Type"::Page, ObjectNameLbl), 'Web Service should be present');
+
+        ClearLastError();
+        // Delete web service
+        WebServiceManagement.DeleteWebService(WebServiceAggregate);
+        Assert.AreEqual('', GetLastErrorText(), 'No error should have occurred when deleting a web service');
+
+        WebServiceManagement.LoadRecords(WebServiceAggregate);
+        Assert.IsFalse(WebServiceAggregate.Get(WebServiceAggregate."Object Type"::Page, ObjectNameLbl), 'Web Service should not be present');
+
+        Assert.IsFalse(WebService.Get(WebService."Object Type"::Page, ObjectNameLbl), 'Web service should not be present');
+    end;
+
     local procedure VerifyUrlHasServiceName(Url: Text; ServiceName: Text[240])
     begin
         Assert.IsTrue(

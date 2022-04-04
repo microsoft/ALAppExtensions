@@ -12,6 +12,7 @@ codeunit 130500 "Any"
 {
     var
         Seed: Integer;
+        SeedSet: Boolean;
 
     /// <summary>
     /// Provides an integer between 1 and the given value
@@ -125,7 +126,9 @@ codeunit 130500 "Any"
         if MinNumberOfDays >= MaxNumberOfDays then
             exit(StartingDate);
 
+#pragma warning disable AA0217
         exit(CalcDate(StrSubstNo('<+%1D>', IntegerInRange(MinNumberOfDays, MaxNumberOfDays)), StartingDate));
+#pragma warning restore
     end;
 
     /// <summary>
@@ -220,7 +223,18 @@ codeunit 130500 "Any"
     procedure SetSeed(NewSeed: Integer)
     begin
         Seed := NewSeed;
+        SeedSet := true;
         Randomize(Seed);
+    end;
+
+    /// <summary>.
+    /// Sets the default Seed for Pseudo-random number generation (no. of milliseconds since midnight of today).
+    /// Setting this value will change the numbers returned.
+    /// </summary>
+    procedure SetDefaultSeed()
+    begin
+        SeedSet := true;
+        Randomize();
     end;
 
     /// <summary>.
@@ -231,7 +245,7 @@ codeunit 130500 "Any"
     /// <returns>Pseudo-random integer value</returns>
     local procedure GetNextValue(MaxValue: Integer): Integer
     begin
-        if Seed = 0 then
+        if (not SeedSet) then
             SetSeed(1);
 
         exit(Random(MaxValue));

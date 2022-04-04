@@ -57,7 +57,7 @@ page 30025 "APIV2 - Item Categories"
     var
         ItemCategory: Record "Item Category";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        ItemCategoryRecordRef: RecordRef;
     begin
         ItemCategory.SetRange(Code, Code);
         if not ItemCategory.IsEmpty() then
@@ -65,9 +65,9 @@ page 30025 "APIV2 - Item Categories"
 
         Insert(true);
 
-        RecRef.GetTable(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CurrentDateTime());
-        RecRef.SetTable(Rec);
+        ItemCategoryRecordRef.GetTable(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(ItemCategoryRecordRef, TempFieldSet, CurrentDateTime());
+        ItemCategoryRecordRef.SetTable(Rec);
 
         Modify(true);
         exit(false);

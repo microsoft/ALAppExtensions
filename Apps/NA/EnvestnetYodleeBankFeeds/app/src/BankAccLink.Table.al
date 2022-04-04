@@ -40,6 +40,9 @@ table 1451 "MS - Yodlee Bank Acc. Link"
         {
             Clustered = true;
         }
+        key(Key2; "Online Bank Account ID")
+        {
+        }
     }
 
     fieldgroups

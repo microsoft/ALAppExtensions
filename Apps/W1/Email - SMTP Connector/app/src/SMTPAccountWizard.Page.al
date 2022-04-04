@@ -99,7 +99,7 @@ page 4511 "SMTP Account Wizard"
                 ToolTip = 'Specifies the port of the SMTP server. The default setting is 25.';
             }
 
-            field(Authentication; Rec.Authentication)
+            field(Authentication; Rec."Authentication Type")
             {
                 ApplicationArea = All;
                 Caption = 'Authentication';
@@ -231,9 +231,9 @@ page 4511 "SMTP Account Wizard"
     var
         EnvironmentInformation: Codeunit "Environment Information";
     begin
-        UserIDEditable := (Rec.Authentication = Rec.Authentication::Basic) or (Rec.Authentication = Rec.Authentication::"OAuth 2.0") or (Rec.Authentication = Rec.Authentication::NTLM);
-        PasswordEditable := (Rec.Authentication = Rec.Authentication::Basic) or (Rec.Authentication = Rec.Authentication::NTLM);
-        ShowMessageAboutSigningIn := (not EnvironmentInformation.IsSaaSInfrastructure()) and (Rec.Authentication = Rec.Authentication::"OAuth 2.0") and (Rec.Server = SMTPConnectorImpl.GetO365SmtpServer());
+        UserIDEditable := (Rec."Authentication Type" = Rec."Authentication Type"::Basic) or (Rec."Authentication Type" = Rec."Authentication Type"::"OAuth 2.0") or (Rec."Authentication Type" = Rec."Authentication Type"::NTLM);
+        PasswordEditable := (Rec."Authentication Type" = Rec."Authentication Type"::Basic) or (Rec."Authentication Type" = Rec."Authentication Type"::NTLM);
+        ShowMessageAboutSigningIn := (not EnvironmentInformation.IsSaaSInfrastructure()) and (Rec."Authentication Type" = Rec."Authentication Type"::"OAuth 2.0") and (Rec.Server = SMTPConnectorImpl.GetO365SmtpServer());
     end;
 
     internal procedure GetAccount(var EmailAccount: Record "Email Account"): Boolean

@@ -2,6 +2,7 @@ table 40025 "Cloud Migration ADL Setup"
 {
     TableType = Temporary;
     Extensible = false;
+    ReplicateData = false;
 
     fields
     {

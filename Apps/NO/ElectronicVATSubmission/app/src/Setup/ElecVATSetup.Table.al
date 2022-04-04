@@ -25,11 +25,22 @@ table 10686 "Elec. VAT Setup"
         }
         field(5; "Validate VAT Return Url"; Text[250])
         {
-            Caption = 'Validate VAT Return Url';
+            Caption = 'Validate VAT Return URL';
+        }
+        field(4; "Authentication URL"; Text[250])
+        {
+            Caption = 'Authentication URL';
+
+            trigger OnValidate()
+            var
+                ElecVATOAuthMgt: Codeunit "Elec. VAT OAuth Mgt.";
+            begin
+                ElecVATOAuthMgt.UpdateElecVATOAuthSetupRecordsWithAuthenticationURL("Authentication URL");
+            end;
         }
         field(6; "Exchange ID-Porten Token Url"; Text[250])
         {
-            Caption = 'Exchange ID-Porten Token Url';
+            Caption = 'Exchange ID-Porten Token URL';
         }
         field(7; "Submission Environment URL"; Text[250])
         {
@@ -60,6 +71,10 @@ table 10686 "Elec. VAT Setup"
             Caption = 'Client Secret';
             DataClassification = EndUserIdentifiableInformation;
         }
+        field(12; "Disable Checks On Release"; Boolean)
+        {
+            Caption = 'Disable Checks On Release';
+        }
     }
 
     trigger OnDelete()
@@ -71,12 +86,14 @@ table 10686 "Elec. VAT Setup"
     var
         RecordHasBeenRead: Boolean;
 
-    procedure GetRecordOnce()
+    procedure GetRecordOnce(): Boolean
     begin
         if RecordHasBeenRead then
-            exit;
-        Get();
+            exit(true);
+        if not Get() then
+            exit(false);
         RecordHasBeenRead := true;
+        exit(true);
     end;
 
     [NonDebuggable]
@@ -86,10 +103,7 @@ table 10686 "Elec. VAT Setup"
         if IsNullGuid(TokenKey) then
             TokenKey := CreateGuid();
 
-        if EncryptionEnabled() then
-            IsolatedStorage.SetEncrypted(TokenKey, TokenValue, DataScope::Company)
-        else
-            IsolatedStorage.Set(TokenKey, TokenValue, DataScope::Company);
+        IsolatedStorage.Set(TokenKey, TokenValue, DataScope::Company);
     end;
 
     [NonDebuggable]

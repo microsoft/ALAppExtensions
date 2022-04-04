@@ -8,21 +8,21 @@ codeunit 9048 "ABS HttpHeader Helper"
     Access = Internal;
 
     [NonDebuggable]
-    procedure HandleRequestHeaders(HttpRequestType: Enum "Http Request Type"; var Request: HttpRequestMessage; var OperationPayload: Codeunit "ABS Operation Payload")
+    procedure HandleRequestHeaders(HttpRequestType: Enum "Http Request Type"; var HttpRequestMessage: HttpRequestMessage; var ABSOperationPayload: Codeunit "ABS Operation Payload")
     var
-        FormatHelper: Codeunit "ABS Format Helper";
+        ABSFormatHelper: Codeunit "ABS Format Helper";
         UsedDateTimeText: Text;
         Headers: HttpHeaders;
         RequestHeaders: Dictionary of [Text, Text];
         HeaderKey: Text;
     begin
         // Add to the following headers to all requests
-        UsedDateTimeText := FormatHelper.GetRfc1123DateTime(CurrentDateTime());
-        OperationPayload.AddRequestHeader('x-ms-date', UsedDateTimeText);
-        OperationPayload.AddRequestHeader('x-ms-version', Format(OperationPayload.GetApiVersion()));
+        UsedDateTimeText := ABSFormatHelper.GetRfc1123DateTime(CurrentDateTime());
+        ABSOperationPayload.AddRequestHeader('x-ms-date', UsedDateTimeText);
+        ABSOperationPayload.AddRequestHeader('x-ms-version', Format(ABSOperationPayload.GetApiVersion()));
 
-        RequestHeaders := OperationPayload.GetRequestHeaders();
-        Request.GetHeaders(Headers);
+        RequestHeaders := ABSOperationPayload.GetRequestHeaders();
+        HttpRequestMessage.GetHeaders(Headers);
 
         foreach HeaderKey in RequestHeaders.Keys() do begin
             if Headers.Remove(HeaderKey) then;
@@ -31,15 +31,15 @@ codeunit 9048 "ABS HttpHeader Helper"
     end;
 
     [NonDebuggable]
-    procedure HandleContentHeaders(var Content: HttpContent; var OperationPayload: Codeunit "ABS Operation Payload"): Boolean
+    procedure HandleContentHeaders(var HttpContent: HttpContent; var ABSOperationPayload: Codeunit "ABS Operation Payload"): Boolean
     var
         Headers: HttpHeaders;
         ContentHeaders: Dictionary of [Text, Text];
         HeaderKey: Text;
     begin
-        Content.GetHeaders(Headers);
+        HttpContent.GetHeaders(Headers);
 
-        ContentHeaders := OperationPayload.GetContentHeaders();
+        ContentHeaders := ABSOperationPayload.GetContentHeaders();
 
         foreach HeaderKey in ContentHeaders.Keys() do begin
             if Headers.Remove(HeaderKey) then;

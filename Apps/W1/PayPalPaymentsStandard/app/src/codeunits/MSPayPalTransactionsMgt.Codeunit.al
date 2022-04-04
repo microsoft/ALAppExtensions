@@ -257,14 +257,14 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
 
     procedure GetNotificationJsonString(var WebhookNotification: Record "Webhook Notification"): Text;
     var
-        NotificationStream: InStream;
+        NotificationInStream: InStream;
         NotificationString: Text;
     begin
         NotificationString := '';
         WebhookNotification.CALCFIELDS(Notification);
         IF WebhookNotification.Notification.HASVALUE() THEN BEGIN
-            WebhookNotification.Notification.CREATEINSTREAM(NotificationStream);
-            NotificationStream.READ(NotificationString);
+            WebhookNotification.Notification.CREATEINSTREAM(NotificationInStream);
+            NotificationInStream.READ(NotificationString);
         END;
         EXIT(NotificationString);
     end;

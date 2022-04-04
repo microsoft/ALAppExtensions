@@ -4,7 +4,7 @@ codeunit 4014 "Notification Handler"
         UpgradeAvailableServiceTypeTxt: Label 'UpgradeAvailable', Locked = true;
         TenantCleanedUpServiceTypeTxt: Label 'TenantCleanedUp', Locked = true;
         CleanupNotificationMsg: Label 'Cloud Migration has been automatically disabled due to prolonged inactivity.';
-        IntelligentCloudTok: Label 'IntelligentCloud', Locked = true;
+        CloudMigrationTok: Label 'CloudMigration', Locked = true;
         RecievedWebhookNotificationMsg: Label 'Recieved Webhook Notification from Cloud Migration Service. Subscription ID %1', Locked = true;
         ProcessingServiceNotificationMsg: Label 'Processing Service Notification', Locked = true;
         ProcessingNotificationMsg: Label 'Processing Notification', Locked = true;
@@ -19,7 +19,7 @@ codeunit 4014 "Notification Handler"
         if Rec.IsTemporary() then
             exit;
 
-        Session.LogMessage('0000EUX', StrSubstNo(RecievedWebhookNotificationMsg, Rec."Subscription ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+        Session.LogMessage('0000EUX', StrSubstNo(RecievedWebhookNotificationMsg, Rec."Subscription ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
         SelectLatestVersion();
 
         case true of
@@ -34,32 +34,35 @@ codeunit 4014 "Notification Handler"
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
-        NotificationStream: InStream;
+        NotificationInStream: InStream;
         NotificationText: Text;
     begin
-        Session.LogMessage('0000EUY', ProcessingNotificationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+        Session.LogMessage('0000EUY', ProcessingNotificationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
 
-        WebhookNotification.Notification.CreateInStream(NotificationStream);
-        NotificationStream.ReadText(NotificationText);
+        WebhookNotification.Notification.CreateInStream(NotificationInStream);
+        NotificationInStream.ReadText(NotificationText);
 
         ParseReplicationSummary(HybridReplicationSummary, NotificationText);
 
-        if HybridCloudManagement.CheckFixDataOnReplicationCompleted(NotificationText) then
-            HybridCloudManagement.ScheduleDataFixOnReplicationCompleted(HybridReplicationSummary."Run ID", WebhookNotification."Subscription ID", NotificationText)
-        else
+        if HybridCloudManagement.CheckFixDataOnReplicationCompleted(NotificationText) then begin
+            HybridReplicationSummary.Status := HybridReplicationSummary.Status::RepairDataPending;
+            HybridReplicationSummary.Modify();
+            Commit();
+            HybridCloudManagement.ScheduleDataFixOnReplicationCompleted(HybridReplicationSummary."Run ID", WebhookNotification."Subscription ID", NotificationText);
+        end else
             HybridCloudManagement.OnReplicationRunCompleted(HybridReplicationSummary."Run ID", WebhookNotification."Subscription ID", NotificationText);
     end;
 
     local procedure HandleServiceNotification(var WebhookNotification: Record "Webhook Notification")
     var
         JsonManagement: Codeunit "JSON Management";
-        NotificationStream: InStream;
+        NotificationInStream: InStream;
         NotificationText: Text;
         ServiceType: Text;
     begin
-        Session.LogMessage('0000EUZ', ProcessingServiceNotificationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
-        WebhookNotification.Notification.CreateInStream(NotificationStream);
-        NotificationStream.ReadText(NotificationText);
+        Session.LogMessage('0000EUZ', ProcessingServiceNotificationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
+        WebhookNotification.Notification.CreateInStream(NotificationInStream);
+        NotificationInStream.ReadText(NotificationText);
         JsonManagement.InitializeObject(NotificationText);
         JsonManagement.GetStringPropertyValueByName('ServiceType', ServiceType);
 
@@ -122,7 +125,7 @@ codeunit 4014 "Notification Handler"
             if not Evaluate(HybridReplicationSummary.ReplicationType, Value) then;
 
         if JsonManagement.GetStringPropertyValueByName('Status', Value) then begin
-            Session.LogMessage('0000EV0', StrSubstNo(HybridReplicationStatusMsg, Format(Value), Format(HybridReplicationSummary.ReplicationType)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+            Session.LogMessage('0000EV0', StrSubstNo(HybridReplicationStatusMsg, Format(Value), Format(HybridReplicationSummary.ReplicationType)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
             if not Evaluate(HybridReplicationSummary.Status, Value) then;
         end;
 
@@ -164,7 +167,7 @@ codeunit 4014 "Notification Handler"
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         SourceProduct: Text;
     begin
-        Session.LogMessage('0000EV1', ProcessingCleanupNotificationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntelligentCloudTok);
+        Session.LogMessage('0000EV1', ProcessingCleanupNotificationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
         HybridCloudManagement.GetNotificationSource(SubscriptionID, SourceProduct);
         HybridCloudManagement.DisableMigration(SourceProduct, CleanupNotificationMsg, false);
     end;

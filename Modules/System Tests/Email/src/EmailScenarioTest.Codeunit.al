@@ -20,7 +20,7 @@ codeunit 134693 "Email Scenario Test"
     [Scope('OnPrem')]
     procedure GetEmailAccountScenarioNotExistsTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
     begin
         // [Scenario] When the email scenario isn't mapped an email account, GetEmailAccount returns false
         PermissionsMock.Set('Email Admin');
@@ -30,14 +30,14 @@ codeunit 134693 "Email Scenario Test"
 
         // [When] calling GetEmailAccount
         // [Then] false is retuned
-        Assert.IsFalse(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", Account), 'There should not be any account');
+        Assert.IsFalse(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", EmailAccount), 'There should not be any account');
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure GetEmailAccountNotExistsTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         NonExistentAccountId: Guid;
     begin
         // [Scenario] When the email scenario is mapped non-existing email account, GetEmailAccount returns false
@@ -50,14 +50,14 @@ codeunit 134693 "Email Scenario Test"
 
         // [When] calling GetEmailAccount
         // [Then] false is retuned
-        Assert.IsFalse(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", Account), 'There should not be any account mapped to the scenario');
+        Assert.IsFalse(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", EmailAccount), 'There should not be any account mapped to the scenario');
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure GetEmailAccountDefaultNotExistsTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         NonExistentAccountId: Guid;
     begin
         // [Scenario] When the default email scenario is mapped to a non-existing email account, GetEmailAccount returns false
@@ -70,14 +70,14 @@ codeunit 134693 "Email Scenario Test"
 
         // [When] calling GetEmailAccount
         // [Then] false is retuned
-        Assert.IsFalse(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", Account), 'There should not be any account mapped to the scenario');
+        Assert.IsFalse(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", EmailAccount), 'There should not be any account mapped to the scenario');
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure GetEmailAccountDefaultExistsTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         AccountId: Guid;
     begin
         // [Scenario] When the default email scenario is mapped to an existing email account, GetEmailAccount returns that account
@@ -90,16 +90,16 @@ codeunit 134693 "Email Scenario Test"
 
         // [When] calling GetEmailAccount
         // [Then] true is retuned and the email account is as expected
-        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", Account), 'There should be an email account');
-        Assert.AreEqual(AccountId, Account."Account Id", 'Wrong account ID');
-        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", Account.Connector, 'Wrong connector');
+        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", EmailAccount), 'There should be an email account');
+        Assert.AreEqual(AccountId, EmailAccount."Account Id", 'Wrong account ID');
+        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", EmailAccount.Connector, 'Wrong connector');
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure GetEmailAccountExistsTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         AccountId: Guid;
     begin
         // [Scenario] When the email scenario is mapped to an existing email account, GetEmailAccount returns that account
@@ -112,16 +112,16 @@ codeunit 134693 "Email Scenario Test"
 
         // [When] calling GetEmailAccount
         // [Then] true is retuned and the email account is as expected
-        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", Account), 'There should be an email account');
-        Assert.AreEqual(AccountId, Account."Account Id", 'Wrong account ID');
-        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", Account.Connector, 'Wrong connector');
+        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", EmailAccount), 'There should be an email account');
+        Assert.AreEqual(AccountId, EmailAccount."Account Id", 'Wrong account ID');
+        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", EmailAccount.Connector, 'Wrong connector');
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure GetEmailAccountDefaultDifferentTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         AccountId: Guid;
         DefaultAccountId: Guid;
     begin
@@ -137,20 +137,20 @@ codeunit 134693 "Email Scenario Test"
 
         // [When] calling GetEmailAccount
         // [Then] true is retuned and the email accounts are as expected
-        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", Account), 'There should be an email account');
-        Assert.AreEqual(AccountId, Account."Account Id", 'Wrong account ID');
-        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", Account.Connector, 'Wrong connector');
+        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", EmailAccount), 'There should be an email account');
+        Assert.AreEqual(AccountId, EmailAccount."Account Id", 'Wrong account ID');
+        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", EmailAccount.Connector, 'Wrong connector');
 
-        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::Default, Account), 'There should be an email account');
-        Assert.AreEqual(DefaultAccountId, Account."Account Id", 'Wrong account ID');
-        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", Account.Connector, 'Wrong connector');
+        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::Default, EmailAccount), 'There should be an email account');
+        Assert.AreEqual(DefaultAccountId, EmailAccount."Account Id", 'Wrong account ID');
+        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", EmailAccount.Connector, 'Wrong connector');
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure GetEmailAccountDefaultDifferentNotExistTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         NonExistingAccountId: Guid;
         DefaultAccountId: Guid;
     begin
@@ -166,20 +166,20 @@ codeunit 134693 "Email Scenario Test"
 
         // [When] calling GetEmailAccount
         // [Then] true is retuned and the email accounts are as expected
-        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", Account), 'There should be an email account');
-        Assert.AreEqual(DefaultAccountId, Account."Account Id", 'Wrong account ID');
-        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", Account.Connector, 'Wrong connector');
+        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", EmailAccount), 'There should be an email account');
+        Assert.AreEqual(DefaultAccountId, EmailAccount."Account Id", 'Wrong account ID');
+        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", EmailAccount.Connector, 'Wrong connector');
 
-        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::Default, Account), 'There should be an email account for the default scenario');
-        Assert.AreEqual(DefaultAccountId, Account."Account Id", 'Wrong default account ID');
-        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", Account.Connector, 'Wrong default account connector');
+        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::Default, EmailAccount), 'There should be an email account for the default scenario');
+        Assert.AreEqual(DefaultAccountId, EmailAccount."Account Id", 'Wrong default account ID');
+        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", EmailAccount.Connector, 'Wrong default account connector');
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure GetEmailAccountDifferentDefaultNotExistTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         AccountId: Guid;
         DefaultAccountId: Guid;
     begin
@@ -195,19 +195,19 @@ codeunit 134693 "Email Scenario Test"
 
         // [When] calling GetEmailAccount
         // [Then] true is retuned and the email account is as expected
-        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", Account), 'There should be an email account');
-        Assert.AreEqual(AccountId, Account."Account Id", 'Wrong account ID');
-        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", Account.Connector, 'Wrong connector');
+        Assert.IsTrue(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", EmailAccount), 'There should be an email account');
+        Assert.AreEqual(AccountId, EmailAccount."Account Id", 'Wrong account ID');
+        Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", EmailAccount.Connector, 'Wrong connector');
 
         // [Then] there's no account for the default email scenario
-        Assert.IsFalse(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::Default, Account), 'There should not be an email account for the default scenario');
+        Assert.IsFalse(EmailScenario.GetEmailAccount(Enum::"Email Scenario"::Default, EmailAccount), 'There should not be an email account for the default scenario');
     end;
 
     [Test]
     [Scope('OnPrem')]
     procedure SetEmailAccountTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         AnotherAccount: Record "Email Account";
         EmailScenarios: Record "Email Scenario";
         Scenario: Enum "Email Scenario";
@@ -217,17 +217,17 @@ codeunit 134693 "Email Scenario Test"
 
         // [Given] A random email account
         Initialize();
-        Account."Account Id" := Any.GuidValue();
-        Account.Connector := Enum::"Email Connector"::"Test Email Connector";
+        EmailAccount."Account Id" := Any.GuidValue();
+        EmailAccount.Connector := Enum::"Email Connector"::"Test Email Connector";
         Scenario := Scenario::Default;
 
         // [When] Setting the email account for the scenario
-        EmailScenario.SetEmailAccount(Scenario, Account);
+        EmailScenario.SetEmailAccount(Scenario, EmailAccount);
 
         // [Then] The scenario exists and is as expected
         Assert.IsTrue(EmailScenarios.Get(Scenario), 'The email scenario should exist');
-        Assert.AreEqual(EmailScenarios."Account Id", Account."Account Id", 'Wrong accound ID');
-        Assert.AreEqual(EmailScenarios.Connector, Account.Connector, 'Wrong connector');
+        Assert.AreEqual(EmailScenarios."Account Id", EmailAccount."Account Id", 'Wrong accound ID');
+        Assert.AreEqual(EmailScenarios.Connector, EmailAccount.Connector, 'Wrong connector');
 
         AnotherAccount."Account Id" := Any.GuidValue();
         AnotherAccount.Connector := Enum::"Email Connector"::"Test Email Connector";
@@ -245,7 +245,7 @@ codeunit 134693 "Email Scenario Test"
     [Scope('OnPrem')]
     procedure UnassignScenarioTest()
     var
-        Account: Record "Email Account";
+        EmailAccount: Record "Email Account";
         DefaultAccount: Record "Email Account";
         ResultAccount: Record "Email Account";
     begin
@@ -254,14 +254,14 @@ codeunit 134693 "Email Scenario Test"
 
         // [Given] Two accounts, one default and one not 
         Initialize();
-        ConnectorMock.AddAccount(Account);
+        ConnectorMock.AddAccount(EmailAccount);
         ConnectorMock.AddAccount(DefaultAccount);
         EmailScenario.SetDefaultEmailAccount(DefaultAccount);
-        EmailScenario.SetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", Account);
+        EmailScenario.SetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", EmailAccount);
 
         // mid-test verification
         EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Test Email Scenario", ResultAccount);
-        Assert.AreEqual(Account."Account Id", ResultAccount."Account Id", 'Wrong account');
+        Assert.AreEqual(EmailAccount."Account Id", ResultAccount."Account Id", 'Wrong account');
 
         // [When] Unassign the email scenario
         EmailScenario.UnassignScenario(Enum::"Email Scenario"::"Test Email Scenario");

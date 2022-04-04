@@ -86,6 +86,14 @@ table 31092 "Acc. Schedule Extension CZL"
             DataClassification = CustomerContent;
             OptionCaption = ' ,Yes,No';
             OptionMembers = " ",Yes,No;
+#if not CLEAN20
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '23.0';
+#endif
+            ObsoleteReason = 'Replaced by Advance Payments field in Advance Payments Localization for Czech app';
         }
         field(18; "Reverse Sign"; Boolean)
         {

@@ -31,12 +31,12 @@ page 31200 "User Setup Lines List CZL"
         }
         area(factboxes)
         {
-            systempart(Control2; Links)
+            systempart(Links; Links)
             {
                 ApplicationArea = RecordLinks;
                 Visible = false;
             }
-            systempart(Control3; Notes)
+            systempart(Notes; Notes)
             {
                 ApplicationArea = Notes;
                 Visible = true;

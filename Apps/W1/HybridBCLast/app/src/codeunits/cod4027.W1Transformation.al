@@ -51,6 +51,14 @@ codeunit 4027 "W1 Transformation"
         OnAfterW1TransformationForVersion(CountryCode, TargetVersion);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Company Handler", 'OnTransformPerCompanyTableDataForVersion', '', false, false)]
+    local procedure TransformPerCompanyTableData_20x(CountryCode: Text; TargetVersion: Decimal)
+    begin
+        if TargetVersion <> 20.0 then
+            exit;
+
+        OnAfterW1TransformationForVersion(CountryCode, TargetVersion);
+    end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Management", 'OnTransformNonCompanyTableDataForVersion', '', false, false)]
     local procedure TransformNonCompanyTableData_15x(CountryCode: Text; TargetVersion: Decimal)
@@ -92,6 +100,15 @@ codeunit 4027 "W1 Transformation"
     local procedure TransformNonCompanyTableData_19x(CountryCode: Text; TargetVersion: Decimal)
     begin
         if TargetVersion <> 19.0 then
+            exit;
+
+        OnAfterW1NonCompanyTransformationForVersion(CountryCode, TargetVersion);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Management", 'OnTransformNonCompanyTableDataForVersion', '', false, false)]
+    local procedure TransformNonCompanyTableData_20x(CountryCode: Text; TargetVersion: Decimal)
+    begin
+        if TargetVersion <> 20.0 then
             exit;
 
         OnAfterW1NonCompanyTransformationForVersion(CountryCode, TargetVersion);

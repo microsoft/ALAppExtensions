@@ -91,31 +91,6 @@ page 20028 "APIV1 - Sales Orders"
                 field(contactId; "Contact Graph Id")
                 {
                     Caption = 'contactId', Locked = true;
-
-                    trigger OnValidate()
-                    var
-                        Contact: Record "Contact";
-                        Customer: Record "Customer";
-                        GraphIntContact: Codeunit "Graph Int. - Contact";
-                    begin
-                        RegisterFieldSet(FIELDNO("Contact Graph Id"));
-
-                        IF "Contact Graph Id" = '' THEN
-                            ERROR(SellToContactIdHasToHaveValueErr);
-
-                        IF NOT GraphIntContact.FindOrCreateCustomerFromGraphContactSafe("Contact Graph Id", Customer, Contact) THEN
-                            EXIT;
-
-                        UpdateSellToCustomerFromSellToGraphContactId(Customer);
-
-                        IF Contact."Company No." = Customer."No." THEN BEGIN
-                            VALIDATE("Sell-To Contact No.", Contact."No.");
-                            VALIDATE("Sell-to Contact", Contact.Name);
-
-                            RegisterFieldSet(FIELDNO("Sell-To Contact No."));
-                            RegisterFieldSet(FIELDNO("Sell-to Contact"));
-                        END;
-                    end;
                 }
                 field(customerNumber; "Sell-to Customer No.")
                 {
@@ -550,7 +525,6 @@ page 20028 "APIV1 - Sales Orders"
         CouldNotFindSellToCustomerErr: Label 'The sell-to customer cannot be found.', Locked = true;
         CouldNotFindBillToCustomerErr: Label 'The bill-to customer cannot be found.', Locked = true;
         PartialOrderShipping: Boolean;
-        SellToContactIdHasToHaveValueErr: Label 'Sell-to contact Id must have a value set.', Locked = true;
         SalesOrderPermissionsErr: Label 'You do not have permissions to read Sales Orders.';
         CurrencyValuesDontMatchErr: Label 'The currency values do not match to a specific Currency.', Locked = true;
         CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.', Locked = true;
@@ -732,29 +706,6 @@ page 20028 "APIV1 - Sales Orders"
             "Shipping Advice" := "Shipping Advice"::Complete;
 
         RegisterFieldSet(FIELDNO("Shipping Advice"));
-    end;
-
-    local procedure UpdateSellToCustomerFromSellToGraphContactId(var Customer: Record Customer)
-    var
-        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
-        UpdateCustomer: Boolean;
-    begin
-        UpdateCustomer := "Sell-to Customer No." = '';
-        IF NOT UpdateCustomer THEN BEGIN
-            TempFieldBuffer.RESET();
-            TempFieldBuffer.SETRANGE("Field ID", FIELDNO("Customer Id"));
-            UpdateCustomer := NOT TempFieldBuffer.FINDFIRST();
-            TempFieldBuffer.RESET();
-        END;
-
-        IF UpdateCustomer THEN BEGIN
-            VALIDATE("Customer Id", Customer.SystemId);
-            VALIDATE("Sell-to Customer No.", Customer."No.");
-            RegisterFieldSet(FIELDNO("Customer Id"));
-            RegisterFieldSet(FIELDNO("Sell-to Customer No."));
-        END;
-
-        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(Customer);
     end;
 
     local procedure CheckPermissions()

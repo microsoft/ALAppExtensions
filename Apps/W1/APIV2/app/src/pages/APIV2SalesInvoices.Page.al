@@ -507,7 +507,7 @@ page 30012 "APIV2 - Sales Invoices"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const(8);
+                    SubPageLink = "Parent Id" = Field(Id), "Parent Type" = const("Sales Invoice");
                 }
                 part(salesInvoiceLines; "APIV2 - Sales Invoice Lines")
                 {
@@ -522,7 +522,7 @@ page 30012 "APIV2 - Sales Invoices"
                     Multiplicity = ZeroOrOne;
                     EntityName = 'pdfDocument';
                     EntitySetName = 'pdfDocument';
-                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const(5);
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Sales Invoice");
                 }
                 field(discountAmount; "Invoice Discount Amount")
                 {
@@ -598,7 +598,7 @@ page 30012 "APIV2 - Sales Invoices"
                     Caption = 'Attachments';
                     EntityName = 'attachment';
                     EntitySetName = 'attachments';
-                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const(5);
+                    SubPageLink = "Document Id" = Field(Id), "Document Type" = const("Sales Invoice");
                 }
             }
         }
@@ -933,12 +933,9 @@ page 30012 "APIV2 - Sales Invoices"
     end;
 
     local procedure SendPostedInvoice(var SalesInvoiceHeader: Record "Sales Invoice Header")
-    var
-        GraphIntBusinessProfile: Codeunit "Graph Int - Business Profile";
     begin
         O365SetupEmail.CheckMailSetup();
         CheckSendToEmailAddress(SalesInvoiceHeader."No.");
-        GraphIntBusinessProfile.SyncFromGraphSynchronously();
 
         SalesInvoiceHeader.SETRECFILTER();
         SalesInvoiceHeader.EmailRecords(false);
@@ -949,14 +946,12 @@ page 30012 "APIV2 - Sales Invoices"
         DummyO365SalesDocument: Record "O365 Sales Document";
         LinesInstructionMgt: Codeunit "Lines Instruction Mgt.";
         O365SendResendInvoice: Codeunit "O365 Send + Resend Invoice";
-        GraphIntBusinessProfile: Codeunit "Graph Int - Business Profile";
     begin
         O365SendResendInvoice.CheckDocumentIfNoItemsExists(SalesHeader, false, DummyO365SalesDocument);
         LinesInstructionMgt.SalesCheckAllLinesHaveQuantityAssigned(SalesHeader);
         O365SetupEmail.CheckMailSetup();
         CheckSendToEmailAddress(SalesHeader."No.");
 
-        GraphIntBusinessProfile.SyncFromGraphSynchronously();
         SalesHeader.SETRECFILTER();
         SalesHeader.EmailRecords(false);
     end;
@@ -964,11 +959,9 @@ page 30012 "APIV2 - Sales Invoices"
     local procedure SendCanceledInvoice(var SalesInvoiceHeader: Record "Sales Invoice Header")
     var
         JobQueueEntry: Record "Job Queue Entry";
-        GraphIntBusinessProfile: Codeunit "Graph Int - Business Profile";
     begin
         O365SetupEmail.CheckMailSetup();
         CheckSendToEmailAddress(SalesInvoiceHeader."No.");
-        GraphIntBusinessProfile.SyncFromGraphSynchronously();
 
         JobQueueEntry.Init();
         JobQueueEntry."Object Type to Run" := JobQueueEntry."Object Type to Run"::Codeunit;

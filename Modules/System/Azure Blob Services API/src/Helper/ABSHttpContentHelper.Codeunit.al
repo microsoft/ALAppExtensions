@@ -11,68 +11,68 @@ codeunit 9049 "ABS HttpContent Helper"
         ContentLengthLbl: Label '%1', Comment = '%1 = Length', Locked = true;
 
     [NonDebuggable]
-    procedure AddBlobPutBlockBlobContentHeaders(var Content: HttpContent; OperationPayload: Codeunit "ABS Operation Payload"; var SourceStream: InStream)
+    procedure AddBlobPutBlockBlobContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "ABS Operation Payload"; var SourceInStream: InStream)
     var
         BlobType: Enum "ABS Blob Type";
     begin
-        AddBlobPutContentHeaders(Content, OperationPayload, SourceStream, BlobType::BlockBlob)
+        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, SourceInStream, BlobType::BlockBlob)
     end;
 
     [NonDebuggable]
-    procedure AddBlobPutBlockBlobContentHeaders(var Content: HttpContent; OperationPayload: Codeunit "ABS Operation Payload"; SourceText: Text)
+    procedure AddBlobPutBlockBlobContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "ABS Operation Payload"; SourceText: Text)
     var
         BlobType: Enum "ABS Blob Type";
     begin
-        AddBlobPutContentHeaders(Content, OperationPayload, SourceText, BlobType::BlockBlob)
+        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, SourceText, BlobType::BlockBlob)
     end;
 
     [NonDebuggable]
-    procedure AddBlobPutPageBlobContentHeaders(OperationPayload: Codeunit "ABS Operation Payload"; ContentLength: Integer; ContentType: Text)
+    procedure AddBlobPutPageBlobContentHeaders(ABSOperationPayload: Codeunit "ABS Operation Payload"; ContentLength: Integer; ContentType: Text)
     var
         BlobType: Enum "ABS Blob Type";
-        Content: HttpContent;
+        HttpContent: HttpContent;
     begin
         if ContentLength = 0 then
             ContentLength := 512;
-        AddBlobPutContentHeaders(Content, OperationPayload, BlobType::PageBlob, ContentLength, ContentType)
+        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, BlobType::PageBlob, ContentLength, ContentType)
     end;
 
     [NonDebuggable]
-    procedure AddBlobPutAppendBlobContentHeaders(OperationPayload: Codeunit "ABS Operation Payload"; ContentType: Text)
+    procedure AddBlobPutAppendBlobContentHeaders(ABSOperationPayload: Codeunit "ABS Operation Payload"; ContentType: Text)
     var
         BlobType: Enum "ABS Blob Type";
-        Content: HttpContent;
+        HttpContent: HttpContent;
     begin
-        AddBlobPutContentHeaders(Content, OperationPayload, BlobType::AppendBlob, 0, ContentType)
+        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, BlobType::AppendBlob, 0, ContentType)
     end;
 
     [NonDebuggable]
-    local procedure AddBlobPutContentHeaders(var Content: HttpContent; OperationPayload: Codeunit "ABS Operation Payload"; var SourceStream: InStream; BlobType: Enum "ABS Blob Type")
+    local procedure AddBlobPutContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "ABS Operation Payload"; var SourceInStream: InStream; BlobType: Enum "ABS Blob Type")
     var
         Length: Integer;
     begin
         // Do this before calling "GetContentLength", because for some reason the system errors out with "Cannot access a closed Stream."
-        Content.WriteFrom(SourceStream);
+        HttpContent.WriteFrom(SourceInStream);
 
-        Length := GetContentLength(SourceStream);
+        Length := GetContentLength(SourceInStream);
 
-        AddBlobPutContentHeaders(Content, OperationPayload, BlobType, Length, 'application/octet-stream');
+        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, BlobType, Length, 'application/octet-stream');
     end;
 
     [NonDebuggable]
-    local procedure AddBlobPutContentHeaders(var Content: HttpContent; OperationPayload: Codeunit "ABS Operation Payload"; SourceText: Text; BlobType: Enum "ABS Blob Type")
+    local procedure AddBlobPutContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "ABS Operation Payload"; SourceText: Text; BlobType: Enum "ABS Blob Type")
     var
         Length: Integer;
     begin
-        Content.WriteFrom(SourceText);
+        HttpContent.WriteFrom(SourceText);
 
         Length := GetContentLength(SourceText);
 
-        AddBlobPutContentHeaders(Content, OperationPayload, BlobType, Length, 'text/plain; charset=UTF-8');
+        AddBlobPutContentHeaders(HttpContent, ABSOperationPayload, BlobType, Length, 'text/plain; charset=UTF-8');
     end;
 
     [NonDebuggable]
-    local procedure AddBlobPutContentHeaders(var Content: HttpContent; OperationPayload: Codeunit "ABS Operation Payload"; BlobType: Enum "ABS Blob Type"; ContentLength: Integer; ContentType: Text)
+    local procedure AddBlobPutContentHeaders(var HttpContent: HttpContent; ABSOperationPayload: Codeunit "ABS Operation Payload"; BlobType: Enum "ABS Blob Type"; ContentLength: Integer; ContentType: Text)
     var
         Headers: HttpHeaders;
         BlobServiceAPIOperation: Enum "ABS Operation";
@@ -80,39 +80,39 @@ codeunit 9049 "ABS HttpContent Helper"
         if ContentType = '' then
             ContentType := 'application/octet-stream';
 
-        Content.GetHeaders(Headers);
+        HttpContent.GetHeaders(Headers);
 
-        if not (OperationPayload.GetOperation() in [BlobServiceAPIOperation::PutPage]) then
-            OperationPayload.AddContentHeader('Content-Type', ContentType);
+        if not (ABSOperationPayload.GetOperation() in [BlobServiceAPIOperation::PutPage]) then
+            ABSOperationPayload.AddContentHeader('HttpContent-Type', ContentType);
 
         case BlobType of
             BlobType::PageBlob:
                 begin
-                    OperationPayload.AddRequestHeader('x-ms-blob-content-length', StrSubstNo(ContentLengthLbl, ContentLength));
-                    OperationPayload.AddContentHeader('Content-Length', StrSubstNo(ContentLengthLbl, 0));
+                    ABSOperationPayload.AddRequestHeader('x-ms-blob-content-length', StrSubstNo(ContentLengthLbl, ContentLength));
+                    ABSOperationPayload.AddContentHeader('HttpContent-Length', StrSubstNo(ContentLengthLbl, 0));
                 end;
             else
-                OperationPayload.AddContentHeader('Content-Length', StrSubstNo(ContentLengthLbl, ContentLength));
+                ABSOperationPayload.AddContentHeader('HttpContent-Length', StrSubstNo(ContentLengthLbl, ContentLength));
         end;
 
-        if not (OperationPayload.GetOperation() in [BlobServiceAPIOperation::PutBlock, BlobServiceAPIOperation::PutPage, BlobServiceAPIOperation::AppendBlock]) then
-            OperationPayload.AddRequestHeader('x-ms-blob-type', Format(BlobType));
+        if not (ABSOperationPayload.GetOperation() in [BlobServiceAPIOperation::PutBlock, BlobServiceAPIOperation::PutPage, BlobServiceAPIOperation::AppendBlock]) then
+            ABSOperationPayload.AddRequestHeader('x-ms-blob-type', Format(BlobType));
     end;
 
     [NonDebuggable]
-    procedure AddTagsContent(var Content: HttpContent; var OperationPayload: Codeunit "ABS Operation Payload"; Document: XmlDocument)
+    procedure AddTagsContent(var HttpContent: HttpContent; var ABSOperationPayload: Codeunit "ABS Operation Payload"; Document: XmlDocument)
     begin
-        AddXmlDocumentAsContent(Content, OperationPayload, Document);
+        AddXmlDocumentAsContent(HttpContent, ABSOperationPayload, Document);
     end;
 
     [NonDebuggable]
-    procedure AddBlockListContent(var Content: HttpContent; var OperationPayload: Codeunit "ABS Operation Payload"; Document: XmlDocument)
+    procedure AddBlockListContent(var HttpContent: HttpContent; var ABSOperationPayload: Codeunit "ABS Operation Payload"; Document: XmlDocument)
     begin
-        AddXmlDocumentAsContent(Content, OperationPayload, Document);
+        AddXmlDocumentAsContent(HttpContent, ABSOperationPayload, Document);
     end;
 
     [NonDebuggable]
-    local procedure AddXmlDocumentAsContent(var Content: HttpContent; var OperationPayload: Codeunit "ABS Operation Payload"; Document: XmlDocument)
+    local procedure AddXmlDocumentAsContent(var HttpContent: HttpContent; var ABSOperationPayload: Codeunit "ABS Operation Payload"; Document: XmlDocument)
     var
         Headers: HttpHeaders;
         Length: Integer;
@@ -121,19 +121,19 @@ codeunit 9049 "ABS HttpContent Helper"
         DocumentAsText := Format(Document);
         Length := StrLen(DocumentAsText);
 
-        Content.WriteFrom(DocumentAsText);
+        HttpContent.WriteFrom(DocumentAsText);
 
-        Content.GetHeaders(Headers);
-        OperationPayload.AddContentHeader('Content-Type', 'application/xml');
-        OperationPayload.AddContentHeader('Content-Length', Format(Length));
+        HttpContent.GetHeaders(Headers);
+        ABSOperationPayload.AddContentHeader('HttpContent-Type', 'application/xml');
+        ABSOperationPayload.AddContentHeader('HttpContent-Length', Format(Length));
     end;
 
     [NonDebuggable]
-    procedure ContentSet(Content: HttpContent): Boolean
+    procedure ContentSet(HttpContent: HttpContent): Boolean
     var
         VarContent: Text;
     begin
-        Content.ReadAs(VarContent);
+        HttpContent.ReadAs(VarContent);
         if StrLen(VarContent) > 0 then
             exit(true);
 
@@ -141,26 +141,26 @@ codeunit 9049 "ABS HttpContent Helper"
     end;
 
     /// <summary>
-    /// Retrieves the length of the given stream (used for "Content-Length" header in PUT-operations)
+    /// Retrieves the length of the given stream (used for "HttpContent-Length" header in PUT-operations)
     /// </summary>
-    /// <param name="SourceStream">The InStream for Request Body.</param>
+    /// <param name="SourceInStream">The InStream for Request Body.</param>
     /// <returns>The length of the current stream</returns>
     [NonDebuggable]
-    local procedure GetContentLength(var SourceStream: InStream): Integer
+    local procedure GetContentLength(var SourceInStream: InStream): Integer
     var
         MemoryStream: DotNet MemoryStream;
         Length: Integer;
     begin
         // Load the memory stream and get the size
         MemoryStream := MemoryStream.MemoryStream();
-        CopyStream(MemoryStream, SourceStream);
+        CopyStream(MemoryStream, SourceInStream);
         Length := MemoryStream.Length();
-        Clear(SourceStream);
+        Clear(SourceInStream);
         exit(Length);
     end;
 
     /// <summary>
-    /// Retrieves the length of the given stream (used for "Content-Length" header in PUT-operations)
+    /// Retrieves the length of the given stream (used for "HttpContent-Length" header in PUT-operations)
     /// </summary>
     /// <param name="SourceText">The Text for Request Body.</param>
     /// <returns>The length of the current stream</returns>

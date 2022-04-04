@@ -638,8 +638,26 @@ page 31171 "Sales Advance Letter CZZ"
                     SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
                 begin
                     SalesAdvLetterHeaderCZZ := Rec;
-                    SalesAdvLetterHeaderCZZ.SetRecFilter();
-                    SalesAdvLetterHeaderCZZ.PrintRecord(true);
+                    CurrPage.SetSelectionFilter(SalesAdvLetterHeaderCZZ);
+                    SalesAdvLetterHeaderCZZ.PrintRecords(true);
+                end;
+            }
+            action(Email)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = '&Send by Email';
+                Image = Email;
+                Promoted = true;
+                PromotedCategory = Report;
+                ToolTip = 'Prepare to email the document. The Send Email window opens prefilled with the customer''s email address so you can add or edit information.';
+
+                trigger OnAction()
+                var
+                    SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+                begin
+                    SalesAdvLetterHeaderCZZ := Rec;
+                    CurrPage.SetSelectionFilter(SalesAdvLetterHeaderCZZ);
+                    SalesAdvLetterHeaderCZZ.EmailRecords(true);
                 end;
             }
             action(PrintToAttachment)

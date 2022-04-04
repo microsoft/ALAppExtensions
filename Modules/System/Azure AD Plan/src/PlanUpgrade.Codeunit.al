@@ -20,6 +20,7 @@ codeunit 9057 "Plan Upgrade"
         RenamePlansAndDeleteOldPlans();
         RenameTeamMemberPlan();
         RenameDevicePlan();
+        AddPremiumPartnerSandbox();
     end;
 
     [NonDebuggable]
@@ -115,6 +116,32 @@ codeunit 9057 "Plan Upgrade"
         RenameOrCreatePlan(PlanIds.GetDevicePlanId(), 'Dynamics 365 Business Central Device - Embedded');
 
         UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetRenameDevicePlanUpgradeTag());
+    end;
+
+    [NonDebuggable]
+    local procedure AddPremiumPartnerSandbox()
+    var
+        Plan: Record "Plan";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        PlanUpgradeTag: Codeunit "Plan Upgrade Tag";
+        PlanIds: Codeunit "Plan Ids";
+        PlanId: Guid;
+        PlanName: Text[50];
+        RoleCenterId: Integer;
+    begin
+        if UpgradeTag.HasUpgradeTag(PlanUpgradeTag.GetPremiumPartnerSandboxUpgradeTag()) then
+            exit;
+
+        PlanId := PlanIds.GetPremiumPartnerSandboxPlanId();
+        PlanName := 'Dynamics 365 BC Premium Partner Sandbox';
+        RoleCenterId := 9022; // PAGE::"Business Manager Role Center"
+
+        if Plan.Get(PlanId) then
+            exit;
+
+        CreatePlan(PlanId, PlanName, RoleCenterId);
+
+        UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetPremiumPartnerSandboxUpgradeTag());
     end;
 
     [NonDebuggable]

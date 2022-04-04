@@ -51,7 +51,7 @@ codeunit 18001 "GST Base Validation"
                 8 .. 11:
                     CheckIsNumeric(RegistrationNo, Position);
                 13:
-                    CheckIsNumeric(RegistrationNo, Position);
+                    CheckIsAlphaNumeric(RegistrationNo, Position);
                 14:
                     CheckForZValue(RegistrationNo, Position);
                 15:
@@ -61,11 +61,11 @@ codeunit 18001 "GST Base Validation"
 
     //Same Funciton is called in GST Sales
     procedure VerifyPOSOutOfIndia(
-    PartyType: Enum "Party Type";
-    LocationStateCode: Code[10];
-    VendCustStateCode: Code[10];
-    GSTVendorType: Enum "GST Vendor Type";
-    GSTCustomerType: Enum "GST Customer Type")
+        PartyType: Enum "Party Type";
+        LocationStateCode: Code[10];
+        VendCustStateCode: Code[10];
+        GSTVendorType: Enum "GST Vendor Type";
+        GSTCustomerType: Enum "GST Customer Type")
     begin
         if LocationStateCode <> VendCustStateCode then
             Error(POSLOCDiffErr);
@@ -216,12 +216,18 @@ codeunit 18001 "GST Base Validation"
         if Rec."Document Type" = Rec."Document Type"::"Credit Memo" then
             Rec.Quantity := Abs(Rec.Quantity)
         else
-            Rec.Quantity := Abs(Rec.Quantity) * SignFactor;
+            if ((Rec."Transaction Type" = Rec."Transaction Type"::Sales) and (Rec."Document Type" = Rec."Document Type"::Refund)) then
+                Rec.Quantity := Abs(Rec.Quantity) * (-1)
+            else
+                Rec.Quantity := Abs(Rec.Quantity) * SignFactor;
 
         Rec."Remaining Base Amount" := Rec."GST Base Amount";
         Rec."Remaining GST Amount" := Rec."GST Amount";
         OriginalDocTypeEnum := DetailedGSTLedgerDocument2OriginalDocumentTypeEnum(Rec."Document Type");
-        Rec."Remaining Quantity" := Rec.Quantity;
+        if Rec."Document Type" = Rec."Document Type"::Refund then
+            Rec."Remaining Quantity" := 0
+        else
+            Rec."Remaining Quantity" := Rec.Quantity;
         Rec."Amount Loaded on Item" := Abs(Rec."Amount Loaded on Item");
         if (Rec."Amount Loaded on Item" <> Rec."GST Amount") and (Rec."Amount Loaded on Item" <> 0) and (Rec."GST Credit" = Rec."GST Credit"::"Non-Availment") then
             Rec."Amount Loaded on Item" := Rec."GST Amount";
@@ -356,7 +362,15 @@ codeunit 18001 "GST Base Validation"
     //GST Registration Nos. - Subscribers
     [EventSubscriber(ObjectType::Table, Database::"GST Registration Nos.", 'OnAfterValidateEvent', 'Code', false, false)]
     local procedure ValidateRegistrationCodeonAfterValidateEvent(var Rec: Record "GST Registration Nos."; var xRec: Record "GST Registration Nos.")
+    var
+        CompanyInformation: Record "Company Information";
     begin
+        CompanyInformation.Get();
+        if CompanyInformation."P.A.N. No." <> '' then
+            CheckGSTRegistrationNo(Rec."State Code", Rec.Code, CompanyInformation."P.A.N. No.")
+        else
+            Error(PANErr);
+
         if xRec.Code <> '' then
             CheckDependentDataInCompanyAndLocationAtEditing(xRec);
     end;
@@ -367,10 +381,7 @@ codeunit 18001 "GST Base Validation"
         CompanyInformation: Record "Company Information";
     begin
         CompanyInformation.Get();
-        if CompanyInformation."P.A.N. No." <> '' then
-            CheckGSTRegistrationNo(Rec."State Code", Rec.Code, CompanyInformation."P.A.N. No.")
-        else
-            Error(PANErr);
+        CheckGSTRegistrationNo(Rec."State Code", Rec.Code, CompanyInformation."P.A.N. No.");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"GST Registration Nos.", 'OnAfterDeleteEvent', '', false, false)]
@@ -1208,7 +1219,6 @@ codeunit 18001 "GST Base Validation"
                 end;
         end;
     end;
-
 
     local procedure UpdateECommOperatorGSTRegNo(
             DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";

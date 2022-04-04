@@ -507,22 +507,9 @@ codeunit 139505 "MS - WorldPay Standard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('EMailDialogHandler,MessageHandler')]
-    procedure TestCoverLetterPaymentLinkSMTPSetup(); // To be removed together with deprecated SMTP objects
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
-    begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(false);
-        TestCoverLetterPaymentLinkInternal();
-    end;
-
-    [Test]
     [HandlerFunctions('EmailEditorHandler,MessageHandler,CloseEmailEditorHandler')]
     procedure TestCoverLetterPaymentLink();
-    var
-        LibraryEmailFeature: Codeunit "Library - Email Feature";
     begin
-        LibraryEmailFeature.SetEmailFeatureEnabled(true);
         TestCoverLetterPaymentLinkInternal();
     end;
 
@@ -533,9 +520,7 @@ codeunit 139505 "MS - WorldPay Standard Tests"
         DummyPaymentMethod: Record "Payment Method";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
-        LibraryInvoicingApp: Codeunit "Library - Invoicing App";
         LibraryWorkflow: Codeunit "Library - Workflow";
-        EmailFeature: Codeunit "Email Feature";
         PostedSalesInvoice: TestPage "Posted Sales Invoice";
     begin
         Initialize();
@@ -553,10 +538,7 @@ codeunit 139505 "MS - WorldPay Standard Tests"
         PostedSalesInvoice.OPENEDIT();
         PostedSalesInvoice.GOTORECORD(SalesInvoiceHeader);
 
-        if EmailFeature.IsEnabled() then
-            LibraryWorkflow.SetUpEmailAccount()
-        else
-            LibraryInvoicingApp.SetupEmailTable();
+        LibraryWorkflow.SetUpEmailAccount();
 
         // Exercise
         PostedSalesInvoice.Email.INVOKE();
@@ -1109,12 +1091,6 @@ codeunit 139505 "MS - WorldPay Standard Tests"
     procedure MessageHandler(Message: Text[1024])
     begin
         Assert.ExpectedMessage(LibraryVariableStorage.DequeueText(), Message);
-    end;
-
-    [ModalPageHandler]
-    procedure EMailDialogHandler(var EMailDialog: TestPage "Email Dialog")
-    begin
-        LibraryVariableStorage.Enqueue(EMailDialog.BodyText.VALUE());
     end;
 
     [ModalPageHandler]

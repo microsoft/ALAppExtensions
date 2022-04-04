@@ -35,7 +35,8 @@ codeunit 31266 "Navigate Handler CZC"
             PostedCompensationHeaderCZC.Reset();
             PostedCompensationHeaderCZC.SetFilter("No.", DocNoFilter);
             PostedCompensationHeaderCZC.SetFilter("Posting Date", PostingDateFilter);
-            PostedCompensationHeaderCZC.FindFirst();
+            if not PostedCompensationHeaderCZC.FindFirst() then
+                exit;
             PostingDate := PostedCompensationHeaderCZC."Posting Date";
             DocType2 := CopyStr(Format(PostedCompensationHeaderCZC."Company Type"), 1, MaxStrLen(DocType2));
             DocNo := PostedCompensationHeaderCZC."No.";

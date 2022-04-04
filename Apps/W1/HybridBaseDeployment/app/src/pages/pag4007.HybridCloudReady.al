@@ -67,12 +67,14 @@ page 4007 "Intelligent Cloud Ready"
                             ApplicationArea = Basic, Suite;
                             ShowCaption = false;
                         }
+#pragma warning disable AA0218
                         field(ChecklistAgreement; InAgreement)
                         {
                             ApplicationArea = Basic, Suite;
                             Caption = 'I have read and understand the recommended steps';
                             Enabled = IsSuperAndSetupComplete;
                         }
+#pragma warning restore
                     }
                 }
             }

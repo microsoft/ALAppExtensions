@@ -2,14 +2,14 @@ Codeunit 1267 "Password Helper"
 {
     procedure GeneratePassword(Length: Integer): Text;
     var
-        DotNet_Regex: Codeunit DotNet_Regex;
+        Regex: Codeunit "Regex";
         PasswordHandler: Codeunit "Password Handler";
         Result: Text;
     begin
-        DotNet_Regex.Regex('[\[\]\{\}\(\)\+\-&%\.\^;,:\|=\\\/\?''"`\~><_]');
-        Result := DotNet_Regex.Replace(PasswordHandler.GeneratePassword(Length), '');
+        Regex.Regex('[\[\]\{\}\(\)\+\-&%\.\^;,:\|=\\\/\?''"`\~><_]');
+        Result := Regex.Replace(PasswordHandler.GeneratePassword(Length), '');
         while WeakYodleePassword(Result) do
-            Result := DotNet_Regex.Replace(PasswordHandler.GeneratePassword(Length), '');
+            Result := Regex.Replace(PasswordHandler.GeneratePassword(Length), '');
         exit(Result);
     end;
 
@@ -29,6 +29,7 @@ Codeunit 1267 "Password Helper"
 
         Length := StrLen(Password);
 
+        ReferenceChar := 0;
         for i := 1 to Length do begin
             CurrentChar := Password[i];
             if CurrentChar = ReferenceChar then

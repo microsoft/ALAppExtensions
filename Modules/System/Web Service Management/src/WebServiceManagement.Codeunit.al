@@ -65,11 +65,11 @@ codeunit 9750 "Web Service Management"
     /// Creates a tenant web service filter from a record reference.
     /// </summary>
     /// <param name="TenantWebServiceFilter">Record that the filter from record reference is inserted to.</param>
-    /// <param name="RecRef">Record reference that the filter is inserted from.</param>
+    /// <param name="RecordRef">Record reference that the filter is inserted from.</param>
     /// <param name="TenantWebServiceRecordId">The ID of the Tenant Web Service corresponding to the filter.</param>
-    procedure CreateTenantWebServiceFilterFromRecordRef(var TenantWebServiceFilter: Record "Tenant Web Service Filter"; var RecRef: RecordRef; TenantWebServiceRecordId: RecordID)
+    procedure CreateTenantWebServiceFilterFromRecordRef(var TenantWebServiceFilter: Record "Tenant Web Service Filter"; var RecordRef: RecordRef; TenantWebServiceRecordId: RecordID)
     begin
-        WebServiceManagementImpl.CreateTenantWebServiceFilterFromRecordRef(TenantWebServiceFilter, RecRef, TenantWebServiceRecordId);
+        WebServiceManagementImpl.CreateTenantWebServiceFilterFromRecordRef(TenantWebServiceFilter, RecordRef, TenantWebServiceRecordId);
     end;
 
     /// <summary>
@@ -237,5 +237,14 @@ codeunit 9750 "Web Service Management"
     procedure IsServiceNameValid(Value: Text): Boolean
     begin
         exit(WebServiceManagementImpl.IsServiceNameValid(Value));
+    end;
+
+    /// <summary> 
+    /// Deletes a webservice.
+    /// </summary>
+    /// <param name="WebServiceAggregate">The record to be deleted.</param>
+    procedure DeleteWebService(var WebServiceAggregate: Record "Web Service Aggregate")
+    begin
+        WebServiceManagementImpl.DeleteWebService(WebServiceAggregate);
     end;
 }

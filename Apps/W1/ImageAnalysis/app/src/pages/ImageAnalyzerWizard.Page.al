@@ -361,16 +361,20 @@ page 2029 "Image Analyzer Wizard"
         ItemAttrPopManagement: Codeunit "Image Analyzer Ext. Mgt.";
     begin
         ItemAttrPopManagement.HandleSetupAndEnable();
-        CurrPage.Close();
 
-        if not AnalyzePictureOnFinishSwitch then
+        if not AnalyzePictureOnFinishSwitch then begin
+            CurrPage.Close();
             exit;
+        end;
 
         if IsSetItemToFill then
-            ItemAttrPopulate.OnAfterImportPictureAnalyzePicture(ItemToFill);
+            if ItemAttrPopulate.AnalyzePicture(ItemToFill) then
+                CurrPage.Close();
 
         if IsSetContactToFill then
-            ContactPictureAnalyze.OnAfterImportPictureAnalyzePicture(ContactToFill);
+            if ContactPictureAnalyze.AnalyzePicture(ContactToFill) then
+                CurrPage.Close();
+
     end;
 
     local procedure ShowStartStep()

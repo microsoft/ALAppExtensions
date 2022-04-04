@@ -48,26 +48,26 @@
 
     procedure UpdateEnviromentCompany(EnviromentNumber: Code[20]; CompanyName: Text[50]; AssignedTo: Guid)
     var
-        EnviromentCompanyEndpoint: Record "COHUB Company Endpoint";
-        CompanyUrlTaskManager: Codeunit "COHUB Comp. Url Task Manager";
-        RecRef: RecordRef;
+        COHUBCompanyEndpoint: Record "COHUB Company Endpoint";
+        COHUBCompUrlTaskManager: Codeunit "COHUB Comp. Url Task Manager";
+        SourceRecordRef: RecordRef;
     begin
-        if EnviromentCompanyEndpoint.Get(EnviromentNumber, CompanyName, AssignedTo) then begin
-            RecRef.GetTable(EnviromentCompanyEndpoint);
-            CompanyUrlTaskManager.GatherKPIData(EnviromentCompanyEndpoint);
+        if COHUBCompanyEndpoint.Get(EnviromentNumber, CompanyName, AssignedTo) then begin
+            SourceRecordRef.GetTable(COHUBCompanyEndpoint);
+            COHUBCompUrlTaskManager.GatherKPIData(COHUBCompanyEndpoint);
         end;
     end;
 
     procedure SetUserTaskComplete(EnviromentNumber: Code[20]; CompanyName: Text[50]; AssignedTo: Guid; TaskId: Integer)
     var
-        EnviromentCompanyEndpoint: Record "COHUB Company Endpoint";
-        CompanyUrlTaskManager: Codeunit "COHUB Comp. Url Task Manager";
-        RecRef: RecordRef;
+        COHUBCompanyEndpoint: Record "COHUB Company Endpoint";
+        COHUBCompUrlTaskManager: Codeunit "COHUB Comp. Url Task Manager";
+        SourceRecordRef: RecordRef;
     begin
-        if EnviromentCompanyEndpoint.Get(EnviromentNumber, CompanyName, AssignedTo) then begin
-            RecRef.GetTable(EnviromentCompanyEndpoint);
+        if COHUBCompanyEndpoint.Get(EnviromentNumber, CompanyName, AssignedTo) then begin
+            SourceRecordRef.GetTable(COHUBCompanyEndpoint);
 
-            CompanyUrlTaskManager.SetTaskComplete(EnviromentCompanyEndpoint, TaskId);
+            COHUBCompUrlTaskManager.SetTaskComplete(COHUBCompanyEndpoint, TaskId);
         end;
     end;
 
@@ -129,12 +129,12 @@
     procedure ValidateEnviromentUrl(COHUBEnviroment: Record "COHUB Enviroment"): Boolean;
     var
         COHUBUrlTaskManager: Codeunit "COHUB Url Task Manager";
-        RecRef: RecordRef;
+        SourceRecordRef: RecordRef;
         EnviromentNameAndEnviroment: Text;
         EnviromentLink: Text;
         EnviromentName: Text;
     begin
-        RecRef.GetTable(COHUBEnviroment);
+        SourceRecordRef.GetTable(COHUBEnviroment);
         EnviromentLink := COHUBEnviroment.Link;
 
         if not EnviromentLink.ToLower().TrimStart().StartsWith(GetFixedClientUrl()) then
@@ -176,6 +176,7 @@
             EnviromentLink := CopyStr(EnviromentLink.Replace('/?', '?'), 1, MaxStrLen(EnviromentLink));
     end;
 
+#pragma warning disable AA0150
     procedure VerifyForDuplicates(CurrentCOHUBEnviroment: Record "COHUB Enviroment"; var EnviromentLink: Text[2048])
     var
         COHUBEnviroment: Record "COHUB Enviroment";
@@ -185,37 +186,38 @@
         if COHUBEnviroment.FindFirst() then
             Error(COHUBEnviromentExistsErr, COHUBEnviroment."No.", COHUBEnviroment.Name)
     end;
+#pragma warning restore AA0150
 
     procedure GetCRONUSEnviromentName(): Text[50];
     begin
         exit(CopyStr(CRONUSCompanyNameTxt, 1, 50));
     end;
 
-    procedure LogFailure(ErrorText: Text; RecRef: RecordRef)
+    procedure LogFailure(ErrorText: Text; SourceRecordRef: RecordRef)
     var
         ActivityLog: Record "Activity Log";
         COHUBEnviroment: Record "COHUB Enviroment";
-        EnviromentCompanyEndpoint: Record "COHUB Company Endpoint";
+        COHUBCompanyEndpoint: Record "COHUB Company Endpoint";
         ActivityDescription: Text;
         LogInformation: Text;
         UserInformation: Text;
     begin
-        case RecRef.Number() of
+        case SourceRecordRef.Number() of
             Database::"COHUB Enviroment":
                 begin
-                    RecRef.SetTable(COHUBEnviroment);
+                    SourceRecordRef.SetTable(COHUBEnviroment);
                     ActivityDescription := StrSubstNo(ActivityDescriptionEnviromentFailTxt, COHUBEnviroment.Name);
                 end;
             Database::"COHUB Company Endpoint":
                 begin
-                    RecRef.SetTable(EnviromentCompanyEndpoint);
-                    ActivityDescription := StrSubstNo(ActivityDescriptionCompanyFailTxt, EnviromentCompanyEndpoint."Company Name");
+                    SourceRecordRef.SetTable(COHUBCompanyEndpoint);
+                    ActivityDescription := StrSubstNo(ActivityDescriptionCompanyFailTxt, COHUBCompanyEndpoint."Company Name");
                 end;
         end;
 
         UserInformation := StrSubstNo(UserTxt, UserId());
         LogInformation := StrSubstNo(ErrorTxt, ErrorText);
-        ActivityLog.LogActivity(RecRef.RecordId(), ActivityLog.Status::Failed, CopyStr(ActivityContextTxt, 1, 30), ActivityDescription, UserInformation + LogInformation);
+        ActivityLog.LogActivity(SourceRecordRef.RecordId(), ActivityLog.Status::Failed, CopyStr(ActivityContextTxt, 1, 30), ActivityDescription, UserInformation + LogInformation);
         Session.LogMessage('0000CPW', LogInformation, Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', COHUBTelemetryCategoryTxt);
     end;
 
@@ -258,9 +260,9 @@
     var
     begin
         if IsPPE() then
-            exit('https://projectmadeira-ppe.com')
+            exit('https://api.businesscentral.dynamics-tie.com')
         else
-            exit('https://projectmadeira.com');
+            exit('https://api.businesscentral.dynamics.com');
     end;
 
     procedure GetResourceUrl(): Text;
@@ -269,13 +271,13 @@
         Handled: Boolean;
     begin
         if IsPPE() then
-            exit('https://projectmadeira-ppe.com');
+            exit('https://api.businesscentral.dynamics-tie.com');
 
         OnGetResourceURL(ResourceURL, Handled);
         if Handled then
             exit(ResourceURL);
 
-        exit('https://projectmadeira.com');
+        exit('https://api.businesscentral.dynamics.com');
     end;
 
     procedure ExportEnviroments()

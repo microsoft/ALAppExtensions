@@ -38,6 +38,7 @@ pageextension 18154 "GST Sales Quote Subform Ext" extends "Sales Quote Subform"
                     CalculateTax: Codeunit "Calculate Tax";
                 begin
                     CurrPage.SaveRecord();
+                    Rec.Validate("GST Place Of Supply");
                     CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
                 end;
             }

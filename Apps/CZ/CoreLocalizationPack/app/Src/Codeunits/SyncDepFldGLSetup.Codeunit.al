@@ -29,13 +29,6 @@ codeunit 31162 "Sync.Dep.Fld-GLSetup CZL"
             PreviousRecordRef.SetTable(PreviousRecord);
 
         SyncDepFldUtilities.SyncFields(Rec."Use VAT Date", Rec."Use VAT Date CZL", PreviousRecord."Use VAT Date", PreviousRecord."Use VAT Date CZL");
-#if not CLEAN17
-        SyncDepFldUtilities.SyncFields(Rec."Allow VAT Posting From", Rec."Allow VAT Posting From CZL", PreviousRecord."Allow VAT Posting From", PreviousRecord."Allow VAT Posting From CZL");
-        SyncDepFldUtilities.SyncFields(Rec."Allow VAT Posting To", Rec."Allow VAT Posting To CZL", PreviousRecord."Allow VAT Posting To", PreviousRecord."Allow VAT Posting To CZL");
-        SyncDepFldUtilities.SyncFields(Rec."Dont Check Dimension", Rec."Do Not Check Dimensions CZL", PreviousRecord."Dont Check Dimension", PreviousRecord."Do Not Check Dimensions CZL");
-        SyncDepFldUtilities.SyncFields(Rec."Check Posting Debit/Credit", Rec."Check Posting Debit/Credit CZL", PreviousRecord."Check Posting Debit/Credit", PreviousRecord."Check Posting Debit/Credit CZL");
-        SyncDepFldUtilities.SyncFields(Rec."Mark Neg. Qty as Correction", Rec."Mark Neg. Qty as Correct. CZL", PreviousRecord."Mark Neg. Qty as Correction", PreviousRecord."Mark Neg. Qty as Correct. CZL");
-#endif
 #if not CLEAN18
         SyncDepFldUtilities.SyncFields(Rec."Rounding Date", Rec."Rounding Date CZL", PreviousRecord."Rounding Date", PreviousRecord."Rounding Date CZL");
         SyncDepFldUtilities.SyncFields(Rec."Closed Period Entry Pos.Date", Rec."Closed Per. Entry Pos.Date CZL", PreviousRecord."Closed Period Entry Pos.Date", PreviousRecord."Closed Per. Entry Pos.Date CZL");
@@ -80,10 +73,6 @@ codeunit 31162 "Sync.Dep.Fld-GLSetup CZL"
             StatutoryReportingSetupCZL.Init();
             StatutoryReportingSetupCZL.Insert(false);
         end;
-#if not CLEAN17
-        StatutoryReportingSetupCZL."Company Official Nos." := Rec."Company Officials Nos.";
-        StatutoryReportingSetupCZL.Modify(false);
-#endif
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Statutory Reporting Setup CZL");
     end;
 }

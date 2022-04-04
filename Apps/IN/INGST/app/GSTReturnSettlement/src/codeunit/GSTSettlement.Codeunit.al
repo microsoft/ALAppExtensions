@@ -385,7 +385,7 @@ codeunit 18318 "GST Settlement"
             if VendorLedgerEntry.FindSet() then
                 repeat
                     VendorLedgerEntry.CalcFields("Remaining Amt. (LCY)");
-                    RemainingAmount := VendorLedgerEntry."Remaining Amt. (LCY)" - VendorLedgerEntry."Total TDS Including SHE CESS";
+                    RemainingAmount := VendorLedgerEntry."Remaining Amt. (LCY)" - Abs(VendorLedgerEntry."Total TDS Including SHE CESS");
                     FillAppBufferInvoice(
                         VendorLedgerEntry."Document No.",
                         VendorLedgerEntry."Location GST Reg. No.",

@@ -27,17 +27,17 @@ codeunit 6241 "Xml Validation Impl."
 
     procedure ValidateAgainstSchema(XmlDoc: XmlDocument; XmlSchemaDoc: XmlDocument; Namespace: Text)
     var
-        XmlDocBlob, XmlSchemaBlob : Codeunit "Temp Blob";
+        XmlDocTempBlob, XmlSchemaTempBlob : Codeunit "Temp Blob";
         XmlDocOutStream, XmlSchemaOutStream : OutStream;
         XmlDocInStream, XmlSchemaInStream : InStream;
     begin
-        XmlDocBlob.CreateOutStream(XmlDocOutStream);
+        XmlDocTempBlob.CreateOutStream(XmlDocOutStream);
         XmlDoc.WriteTo(XmlDocOutStream);
-        XmlDocBlob.CreateInStream(XmlDocInStream);
+        XmlDocTempBlob.CreateInStream(XmlDocInStream);
 
-        XmlSchemaBlob.CreateOutStream(XmlSchemaOutStream);
+        XmlSchemaTempBlob.CreateOutStream(XmlSchemaOutStream);
         XmlSchemaDoc.WriteTo(XmlSchemaOutStream);
-        XmlSchemaBlob.CreateInStream(XmlSchemaInStream);
+        XmlSchemaTempBlob.CreateInStream(XmlSchemaInStream);
 
         ValidateAgainstSchema(XmlDocInStream, XmlSchemaInStream, Namespace);
     end;

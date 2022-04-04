@@ -19,6 +19,7 @@ page 1900 "C5 VendTable List"
         {
             repeater(General)
             {
+#pragma warning disable AA0218
                 field("Error Message"; MigrationErrorText)
                 {
                     ApplicationArea = All;
@@ -96,6 +97,7 @@ page 1900 "C5 VendTable List"
                 field(CardType; CardType) { ApplicationArea = All; }
                 field(StdAccount; StdAccount) { ApplicationArea = All; }
                 field(VatNumberType; VatNumberType) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

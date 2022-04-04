@@ -226,6 +226,42 @@ codeunit 9047 "ABS Optional Parameters"
         SetRequestHeader('x-ms-requires-sync', ValueText);
     end;
 
+    /// <summary>
+    /// Sets the value for 'x-ms-lease-action' HttpHeader for a request.
+    /// </summary>
+    /// <param name="Value">Enum "ABS Lease Action" value specifying the HttpHeader value</param>    
+    internal procedure LeaseAction("Value": Enum "ABS Lease Action")
+    begin
+        SetRequestHeader('x-ms-lease-action', Format("Value"));
+    end;
+
+    /// <summary>
+    /// Sets the value for 'x-ms-lease-break-period' HttpHeader for a request.
+    /// </summary>
+    /// <param name="Value">Integer value specifying the HttpHeader value.</param>
+    internal procedure LeaseBreakPeriod("Value": Integer)
+    begin
+        SetRequestHeader('x-ms-lease-break-period', Format("Value"));
+    end;
+
+    /// <summary>
+    /// Sets the value for 'x-ms-lease-duration' HttpHeader for a request.
+    /// </summary>
+    /// <param name="Value">Integer value specifying the HttpHeader value.</param>
+    internal procedure LeaseDuration("Value": Integer)
+    begin
+        SetRequestHeader('x-ms-lease-duration', Format("Value"));
+    end;
+
+    /// <summary>
+    /// Sets the value for 'x-ms-proposed-lease-id' HttpHeader for a request.
+    /// </summary>
+    /// <param name="Value">Guid value specifying the HttpHeader value.</param>
+    internal procedure ProposedLeaseId("Value": Guid)
+    begin
+        SetRequestHeader('x-ms-proposed-lease-id', "Value");
+    end;
+
     local procedure SetRequestHeader(Header: Text; HeaderValue: Text)
     begin
         RequestHeaders.Remove(Header);

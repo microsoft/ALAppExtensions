@@ -3,7 +3,6 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
     var
         UnrelPayerServiceSetupCZL: Record "Unrel. Payer Service Setup CZL";
         CompanyInformation: Record "Company Information";
-        UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
         UnreliablePayerWSCZL: Codeunit "Unreliable Payer WS CZL";
         VATRegNoList: List of [Code[20]];
         UnreliablePayerServiceSetupRead: Boolean;
@@ -18,7 +17,8 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
 
     procedure GetUnreliablePayerServiceURL(): Text[250]
     begin
-        exit(UnreliablePayerServiceURLTok);
+        GetUnreliablePayerServiceSetup();
+        exit(UnrelPayerServiceSetupCZL."Unreliable Payer Web Service");
     end;
 
     procedure ImportUnrPayerStatus(ShowMessage: Boolean): Boolean
@@ -29,7 +29,13 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
         RecordLimit: Integer;
         RecordCountToSend: Integer;
         Index: Integer;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeImportUnrPayerStatus(VATRegNoList, ShowMessage, IsHandled);
+        if IsHandled then
+            exit(true);
+
         GetUnreliablePayerServiceSetup();
         RemainingRecordCount := GetVATRegNoCount();
         if RemainingRecordCount = 0 then
@@ -49,6 +55,7 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
             Index += RecordCountToSend;
         until RemainingRecordCount = 0;
 
+        OnAfterImportUnrPayerStatusOnBeforeMessage(VATRegNoList, InsertEntryCount);
         if ShowMessage then
             Message(ImportSuccessfulMsg, InsertEntryCount);
         exit(true);
@@ -83,12 +90,20 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
     var
         ResponseTempBlob: Codeunit "Temp Blob";
         InsertEntryCount: Integer;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeImportUnrPayerList(VATRegNoList, ShowMessage, IsHandled);
+        if IsHandled then
+            exit(true);
+
         GetUnreliablePayerServiceSetup();
         if not GetUnrPayerList(ResponseTempBlob) then
             exit(false);
 
         InsertEntryCount := ImportUnrPayerListResponse(ResponseTempBlob);
+
+        OnAfterImportUnrPayerListOnBeforeMessage(InsertEntryCount);
         if ShowMessage then
             Message(ImportSuccessfulMsg, InsertEntryCount);
         exit(true);
@@ -137,8 +152,9 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
             exit;
         if not UnrelPayerServiceSetupCZL.Get() then begin
             UnrelPayerServiceSetupCZL.Init();
-            UnrelPayerServiceSetupCZL."Unreliable Payer Web Service" := UnreliablePayerMgtCZL.GetUnreliablePayerServiceURL();
+            SetDefaultUnreliablePayerServiceURL(UnrelPayerServiceSetupCZL);
             UnrelPayerServiceSetupCZL.Enabled := false;
+            OnGetUnreliablePayerServiceSetupOnBeforeInsertUnrelPayerServiceSetupCZL(UnrelPayerServiceSetupCZL);
             UnrelPayerServiceSetupCZL.Insert();
         end;
         CompanyInformation.Get();
@@ -178,7 +194,13 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
     procedure GetLongVATRegNo(VatRegNo: Code[20]): Code[20]
     var
         TempCode: Code[1];
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeGetLongVATRegNo(VatRegNo, IsHandled);
+        if IsHandled then
+            exit(VatRegNo);
+
         if VatRegNo = '' then
             exit;
         TempCode := CopyStr(VatRegNo, 1, 1);
@@ -358,6 +380,12 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
         Page.Run(Page::"Unrel. Payer Service Setup CZL");
     end;
 
+    procedure SetDefaultUnreliablePayerServiceURL(var DefaultUnrelPayerServiceSetupCZL: Record "Unrel. Payer Service Setup CZL")
+    begin
+        DefaultUnrelPayerServiceSetupCZL."Unreliable Payer Web Service" := UnreliablePayerServiceURLTok;
+        OnAfterSetDefaultUnreliablePayerServiceURL(DefaultUnrelPayerServiceSetupCZL);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterIsVATRegNoExportPossible(VATRegNo: Code[20]; CountryCode: Code[10]; var ReturnValue: Boolean)
     begin
@@ -373,4 +401,38 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
     begin
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterSetDefaultUnreliablePayerServiceURL(var UnrelPayerServiceSetupCZL: Record "Unrel. Payer Service Setup CZL");
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeImportUnrPayerStatus(VATRegNoList: List of [Code[20]]; ShowMessage: Boolean; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterImportUnrPayerStatusOnBeforeMessage(VATRegNoList: List of [Code[20]]; var InsertEntryCount: Integer);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeImportUnrPayerList(VATRegNoList: List of [Code[20]]; ShowMessage: Boolean; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterImportUnrPayerListOnBeforeMessage(var InsertEntryCount: Integer);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetUnreliablePayerServiceSetupOnBeforeInsertUnrelPayerServiceSetupCZL(var UnrelPayerServiceSetupCZL: Record "Unrel. Payer Service Setup CZL");
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetLongVATRegNo(var VatRegNo: Code[20]; var IsHandled: Boolean);
+    begin
+    end;
 }

@@ -375,6 +375,7 @@ codeunit 20361 "Tax Json Deserialization"
         TaxJsonSingleInstance: Codeunit "Tax Json Single Instance";
         JToken: JsonToken;
         JArray: JsonArray;
+        UpgradedTaxType: Boolean;
         MajorVersion: Integer;
         MinorVersion: Integer;
         OldMajorVersion: Integer;
@@ -419,6 +420,7 @@ codeunit 20361 "Tax Json Deserialization"
                     MinorVersion := TaxType."Minor Version";
                 end;
             end;
+            UpgradedTaxType := true;
         end;
 
         foreach property in JObject.Keys() do begin
@@ -470,6 +472,11 @@ codeunit 20361 "Tax Json Deserialization"
         TaxType.Status := TaxType.Status::Released;
         TaxType."Effective From" := CurrentDateTime();
         TaxType.Modify();
+
+        if UpgradedTaxType then
+            LogTaxTypeUpgradeTelemetry(TaxType.Code, GetVersionText(TaxType."Major Version", TaxType."Minor Version"))
+        else
+            LogTaxTypeImportTelemetry(TaxType.Code, GetVersionText(TaxType."Major Version", TaxType."Minor Version"));
     end;
 
     local procedure UpdateTaxRateKeys(TaxType: Code[20])
@@ -509,6 +516,7 @@ codeunit 20361 "Tax Json Deserialization"
         Description: Text[250];
         property: Text;
         JToken: JsonToken;
+        UpgradedUseCase: Boolean;
         MajorVersion: Integer;
         MinorVersion: Integer;
         OldMajorVersion: Integer;
@@ -550,7 +558,10 @@ codeunit 20361 "Tax Json Deserialization"
                 end;
 
                 UseCase.Modify();
+                UseCase.SkipTreeOnDelete(true); //This will ensure that tree is not cleared at the time of usecase upgrade
+
                 UseCase.Delete(true);
+                UpgradedUseCase := true;
             end;
         end else
             UseCaseID := CreateGuid();
@@ -649,6 +660,11 @@ codeunit 20361 "Tax Json Deserialization"
         UseCase.Enable := true;
         UseCase."Effective From" := CurrentDateTime;
         UseCase.Modify();
+
+        if UpgradedUseCase then
+            LogUseCaseUpgradedTelemetry(UseCase.ID, GetVersionText(UseCase."Major Version", UseCase."Minor Version"))
+        else
+            LogUseCaseImportTelemetry(UseCase.ID, GetVersionText(UseCase."Major Version", UseCase."Minor Version"));
     end;
 
     local procedure ReadComputationScript(var UseCase: Record "Tax Use Case"; JObject: JsonObject)
@@ -2722,6 +2738,75 @@ codeunit 20361 "Tax Json Deserialization"
         UseCaseDialog.close();
     end;
 
+    local procedure LogTaxTypeUpgradeTelemetry(TaxType: Code[20]; VersionTxt: Text)
+    var
+        Dimensions: Dictionary of [Text, Text];
+    begin
+        Dimensions.Add('TaxType', TaxType);
+        Dimensions.Add('Version', VersionTxt);
+
+        Session.LogMessage(
+            'TE-TAXTYPE-UPGRADE',
+            TaxTypeUpgradedTxt,
+            Verbosity::Normal,
+            DataClassification::SystemMetadata,
+            TelemetryScope::ExtensionPublisher,
+            Dimensions);
+    end;
+
+    local procedure LogTaxTypeImportTelemetry(TaxType: Code[20]; VersionTxt: Text)
+    var
+        Dimensions: Dictionary of [Text, Text];
+    begin
+        Dimensions.Add('TaxType', TaxType);
+        Dimensions.Add('Version', VersionTxt);
+
+        Session.LogMessage(
+            'TE-TAXTYPE-IMPORT',
+            TaxTypeImportedTxt,
+            Verbosity::Normal,
+            DataClassification::SystemMetadata,
+            TelemetryScope::ExtensionPublisher,
+            Dimensions);
+    end;
+
+    local procedure LogUseCaseUpgradedTelemetry(CaseId: Guid; VersionTxt: Text)
+    var
+        Dimensions: Dictionary of [Text, Text];
+    begin
+        Dimensions.Add('CaseID', CaseId);
+        Dimensions.Add('Version', VersionTxt);
+
+        Session.LogMessage(
+            'TE-USECASE-UPGRADE',
+            UseCaseUpgradedTxt,
+            Verbosity::Normal,
+            DataClassification::SystemMetadata,
+            TelemetryScope::ExtensionPublisher,
+            Dimensions);
+    end;
+
+    local procedure LogUseCaseImportTelemetry(CaseId: Guid; VersionTxt: Text)
+    var
+        Dimensions: Dictionary of [Text, Text];
+    begin
+        Dimensions.Add('CaseID', CaseId);
+        Dimensions.Add('Version', VersionTxt);
+
+        Session.LogMessage(
+            'TE-USECASE-IMPORT',
+            UseCaseImportedTxt,
+            Verbosity::Normal,
+            DataClassification::SystemMetadata,
+            TelemetryScope::ExtensionPublisher,
+            Dimensions);
+    end;
+
+    local procedure GetVersionText(Major: Integer; Minor: Integer): Text
+    begin
+        exit(StrSubstNo(VersionLbl, Major, Minor));
+    end;
+
     var
         GlobalUseCase: Record "Tax Use Case";
         UseCaseMgmt: Codeunit "Use Case Mgmt.";
@@ -2740,6 +2825,11 @@ codeunit 20361 "Tax Json Deserialization"
         GlobalHideDialog: Boolean;
         GlobalSkipIndentation: Boolean;
         GlobalSkipVersionCheck: Boolean;
+        VersionLbl: Label '%1.%2', Comment = '%1 - Major Version, %2 - Minor Version';
+        TaxTypeImportedTxt: Label 'Tax Type Imported.', Locked = true;
+        TaxTypeUpgradedTxt: Label 'Tax Type Upgraded.', Locked = true;
+        UseCaseImportedTxt: Label 'Use Case Imported.', Locked = true;
+        UseCaseUpgradedTxt: Label 'Use Case Upgraded.', Locked = true;
         CannotReadPropertyErr: Label 'Cannot read property %1.', Comment = '%1 = Property name.';
         InvalidPropertyErr: Label 'Invalid Property';
         ColumnNameNotFoundErr: Label 'Column name %1 doest not exist for Tax Type : %2 and Use Case :%3.', Comment = '%1 = Column Name,%2 = Tax Type, %3 = use case name';

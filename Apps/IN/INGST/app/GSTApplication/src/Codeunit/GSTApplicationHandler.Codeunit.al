@@ -1387,6 +1387,8 @@ codeunit 18430 "GST Application Handler"
 
             GSTApplSessionMgt.GetOnlineCustLedgerEntry(OnlineCustLedgerEntry);
 
+            GetCustomerLedgerEntry(OnlineCustLedgerEntry, ApplyingCustLedgEntry);
+
             if ApplyingCustLedgEntry."GST on Advance Payment" then begin
                 GSTApplicationLibrary.ApplyCurrencyFactorInvoice(true);
                 TotalTCSInclSHECess := GSTApplSessionMgt.GetTotalTCSInclSHECessAmount();
@@ -1431,6 +1433,14 @@ codeunit 18430 "GST Application Handler"
                     ApplyingCustLedgEntry."Entry No.",
                     ApplyingCustLedgEntry."GST Group Code");
             end;
+        end;
+    end;
+
+    local procedure GetCustomerLedgerEntry(var OnlineCustLedgerEntry: Record "Cust. Ledger Entry"; var ApplyingCustLedgEntry: Record "Cust. Ledger Entry")
+    begin
+        if (OnlineCustLedgerEntry."Seller GST Reg. No." = '') and (OnlineCustLedgerEntry."Seller State Code" = '') then begin
+            OnlineCustLedgerEntry."Seller GST Reg. No." := ApplyingCustLedgEntry."Seller GST Reg. No.";
+            OnlineCustLedgerEntry."Seller State Code" := ApplyingCustLedgEntry."Seller State Code";
         end;
     end;
 
@@ -2442,12 +2452,12 @@ codeunit 18430 "GST Application Handler"
                 UnApplyGSTApplicationCreditMemo(TransactionType::Purchase, VendorLedgerEntry."Document No.");
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCreateGLEntriesForTotalAmountsUnapplyVendor', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCreateGLEntriesForTotalAmountsUnapplyVendorV19', '', false, false)]
     local procedure OnBeforeCreateGLEntriesForTotalAmountsUnapplyVendor(
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
         var VendorPostingGroup: Record "Vendor Posting Group";
         GenJournalLine: Record "Gen. Journal Line";
-        var TempInvoicePostBuffer: Record "Invoice Post. Buffer" temporary)
+        var TempDimPostingBuffer: Record "Dimension Posting Buffer" temporary)
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
@@ -2473,12 +2483,12 @@ codeunit 18430 "GST Application Handler"
                 UnApplyGSTApplicationCreditMemo(TransactionType::Sales, CustLedgerEntry."Document No.");
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCreateGLEntriesForTotalAmountsUnapply', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCreateGLEntriesForTotalAmountsUnapplyV19', '', false, false)]
     local procedure OnBeforeCreateGLEntriesForTotalAmountsUnapply(
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
         var CustomerPostingGroup: Record "Customer Posting Group";
         GenJournalLine: Record "Gen. Journal Line";
-        var TempInvoicePostBuffer: Record "Invoice Post. Buffer" temporary)
+        var TempIDimPostingBuffer: Record "Dimension Posting Buffer" temporary)
     var
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         TransactionType: Enum "Detail Ledger Transaction Type";

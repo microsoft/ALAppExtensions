@@ -17,6 +17,8 @@ codeunit 1999 "Guided Experience Upgrade"
     trigger OnUpgradePerCompany()
     begin
         InsertSpotlightTour();
+
+        UpdateTranslations();
     end;
 
     local procedure InsertSpotlightTour()
@@ -105,16 +107,16 @@ codeunit 1999 "Guided Experience Upgrade"
 
     local procedure InsertRecordCopyWithModifiedCode(RecVariant: Variant; FieldNo: Integer; Code: Code[300])
     var
-        RecRef: RecordRef;
-        RecRef2: RecordRef;
+        RecordRef: RecordRef;
+        RecordRef2: RecordRef;
     begin
-        RecRef.GetTable(RecVariant);
+        RecordRef.GetTable(RecVariant);
 
-        RecRef2.Open(RecRef.Number);
+        RecordRef2.Open(RecordRef.Number);
 
-        RecRef2.Copy(RecRef);
-        RecRef2.Field(FieldNo).Value(Code);
-        if RecRef2.Insert() then;
+        RecordRef2.Copy(RecordRef);
+        RecordRef2.Field(FieldNo).Value(Code);
+        if RecordRef2.Insert() then;
     end;
 
     local procedure GetCodeThatAccountsForSpotlightTourType(Code: Code[300]): Code[300]
@@ -122,5 +124,29 @@ codeunit 1999 "Guided Experience Upgrade"
         SpotlightTourType: Enum "Spotlight Tour Type";
     begin
         exit(StrSubstNo(CodeFormatLbl, Code, SpotlightTourType::None.AsInteger()));
+    end;
+
+    local procedure UpdateTranslations()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        GuidedExperienceUpgradeTag: Codeunit "Guided Experience Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(GuidedExperienceUpgradeTag.GetGuidedExperienceTranslationUpdateTag(), '') then
+            exit;
+
+        if UpgradeTag.HasUpgradeTag(GuidedExperienceUpgradeTag.GetGuidedExperienceTranslationUpdateTag()) then
+            exit;
+
+        DeleteTranslationsForGuidedExperienceItemsAndSpotlightTours();
+
+        UpgradeTag.SetUpgradeTag(GuidedExperienceUpgradeTag.GetGuidedExperienceTranslationUpdateTag());
+    end;
+
+    local procedure DeleteTranslationsForGuidedExperienceItemsAndSpotlightTours()
+    var
+        Translation: Codeunit Translation;
+    begin
+        Translation.Delete(Database::"Guided Experience Item");
+        Translation.Delete(Database::"Spotlight Tour Text");
     end;
 }

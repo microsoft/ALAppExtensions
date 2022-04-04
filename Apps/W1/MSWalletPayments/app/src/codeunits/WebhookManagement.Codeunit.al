@@ -1,5 +1,9 @@
+#if not CLEAN20
 codeunit 1083 "MS - Wallet Webhook Management"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     Permissions = TableData "MS - Wallet Charge" = rimd, TableData "Webhook Subscription" = rimd;
 
     var
@@ -446,13 +450,14 @@ codeunit 1083 "MS - Wallet Webhook Management"
     begin
     end;
 
-    [Scope('Internal')]
+    [Scope('OnPrem')]
     procedure CancelInvoiceLastPayment(SalesInvoiceDocumentNo: Code[20]): Boolean;
     var
         InvoiceCustLedgerEntry: Record "Cust. Ledger Entry";
         PaymentCustLedgerEntry: Record "Cust. Ledger Entry";
         ReversalEntry: Record "Reversal Entry";
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
+        ApplyUnapplyParameters: Record "Apply Unapply Parameters";
         CustEntryApplyPostedEntries: Codeunit "CustEntry-Apply Posted Entries";
     begin
         Session.LogMessage('00001PE', CancellingPaymentTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MSWalletTelemetryCategoryTok);
@@ -478,8 +483,10 @@ codeunit 1083 "MS - Wallet Webhook Management"
         IF NOT DetailedCustLedgEntry.FINDLAST() THEN
             EXIT(FALSE);
 
+        ApplyUnapplyParameters."Document No." := DetailedCustLedgEntry."Document No.";
+        ApplyUnapplyParameters."Posting Date" := DetailedCustLedgEntry."Posting Date";
         CustEntryApplyPostedEntries.PostUnApplyCustomerCommit(
-          DetailedCustLedgEntry, DetailedCustLedgEntry."Document No.", DetailedCustLedgEntry."Posting Date", true);
+          DetailedCustLedgEntry, ApplyUnapplyParameters, true);
 
         ReversalEntry.SetHideWarningDialogs();
         ReversalEntry.ReverseTransaction(PaymentCustLedgerEntry."Transaction No.");
@@ -620,6 +627,4 @@ codeunit 1083 "MS - Wallet Webhook Management"
         until MSWalletPayment.Next() = 0;
     end;
 }
-
-
-
+#endif

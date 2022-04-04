@@ -19,6 +19,7 @@ page 1899 "C5 CustTable List"
         {
             repeater(General)
             {
+#pragma warning disable AA0218
                 field("Error Message"; MigrationErrorText)
                 {
                     ApplicationArea = All;
@@ -94,6 +95,7 @@ page 1899 "C5 CustTable List"
                 field(VatGroup; VatGroup) { ApplicationArea = All; }
                 field(StdAccount; StdAccount) { ApplicationArea = All; }
                 field(VatNumberType; VatNumberType) { ApplicationArea = All; }
+#pragma warning restore
             }
         }
     }

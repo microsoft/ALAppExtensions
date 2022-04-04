@@ -49,7 +49,7 @@ interface "Reten. Pol. Filtering"
     /// This method is to count the records in the table specified in the RecRef.
     /// The method is only called when the base code does not have read permission to the table.
     /// </summary>
-    /// <param name="RecRef">A record reference.</param>
+    /// <param name="RecordRef">A record reference.</param>
     /// <returns>The number of records.</returns>
     /// <example>
     ///    procedure Count(RecRef:RecordRef): Integer
@@ -57,5 +57,5 @@ interface "Reten. Pol. Filtering"
     ///        exit(RecRef.Count())
     ///    end;
     /// </example>
-    procedure Count(RecRef: RecordRef): Integer
+    procedure Count(RecordRef: RecordRef): Integer
 }

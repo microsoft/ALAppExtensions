@@ -6,7 +6,9 @@
 /// <summary>
 /// The types of the action to take in response to permission conflicts arising out of changes to plans in Office users.
 /// </summary>
+#pragma warning disable AL0659
 enum 9017 "Azure AD Permission Change Action"
+#pragma warning restore
 {
     Extensible = false;
 

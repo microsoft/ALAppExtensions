@@ -19,5 +19,7 @@ permissionset 88 "Permissions & Licenses - Read"
                   tabledata "Permission Set" = R,
                   tabledata "Tenant License State" = R,
                   tabledata "Tenant Permission" = R,
-                  tabledata "Tenant Permission Set" = R;
+                  tabledata "Tenant Permission Set" = R,
+                  tabledata "Tenant Permission Set Rel." = R,
+                  tabledata "Expanded Permission" = R;
 }

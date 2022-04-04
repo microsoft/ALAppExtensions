@@ -1,0 +1,42 @@
+{
+    "id": "7c2785ec-13a5-470b-87a4-6838a2c19a3a",
+    "name": "Privacy Notice Tests",
+    "publisher": "Microsoft",
+    "brief": "",
+    "description": "Tests for Privacy Notice.",
+    "version": "20.0.0.0",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help": "",
+    "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo": "",
+    "dependencies": [
+        {
+            "id": "daa5d70e-eaf5-4256-bf80-53545ef7629a",
+            "name": "Privacy Notice",
+            "publisher": "Microsoft",
+            "version": "20.0.0.0"
+        },
+        {
+            "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+            "name": "Library Assert",
+            "publisher": "Microsoft",
+            "version": "20.0.0.0"
+        },
+        {
+            "id": "40860557-a18d-42ad-aecb-22b7dd80dc80",
+            "name": "Permissions Mock",
+            "publisher": "Microsoft",
+            "version": "20.0.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "20.0.0.0",
+    "idRanges": [
+        {
+            "from": 132535,
+            "to": 132536
+        }
+    ],
+    "target": "OnPrem"
+}

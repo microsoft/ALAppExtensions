@@ -2,12 +2,30 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
 {
     layout
     {
-        addafter("Document Date")
+        movelast(General; "Posting Description")
+        addlast(General)
         {
             field("Credit Memo Type CZL"; Rec."Credit Memo Type CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the type of credit memo (corrective tax document, internal correction, insolvency tax document).';
+            }
+        }
+        addbefore("Location Code")
+        {
+            field("Reason Code CZL"; Rec."Reason Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the reason code on the entry.';
+                Visible = true;
+            }
+        }
+        addafter("Order Date")
+        {
+            field("Correction CZL"; Rec.Correction)
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if you need to post a corrective entry to an account.';
             }
         }
         addafter("Posting Date")
@@ -24,8 +42,13 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
                 Visible = false;
             }
         }
-        addafter("VAT Registration No.")
+        addlast("Invoice Details")
         {
+            field("VAT Registration No. CZL"; Rec."VAT Registration No.")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+            }
             field("Registration No. CZL"; Rec."Registration No. CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -38,14 +61,6 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
                 Importance = Additional;
             }
         }
-        addafter("VAT Bus. Posting Group")
-        {
-            field("Customer Posting Group CZL"; Rec."Customer Posting Group")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the customer''s market type to link business transakcions to.';
-            }
-        }
         addafter("Currency Code")
         {
             field("VAT Currency Code CZL"; Rec."VAT Currency Code CZL")
@@ -55,8 +70,9 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
                 ToolTip = 'Specifies the currency of VAT on the sales return order.';
 
                 trigger OnAssistEdit()
+                var
+                    ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
-                    Clear(ChangeExchangeRate);
                     if Rec."VAT Date CZL" <> 0D then
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Date CZL")
                     else
@@ -65,14 +81,30 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
                         Rec.Validate("VAT Currency Factor CZL", ChangeExchangeRate.GetParameter());
                         CurrPage.Update();
                     end;
-                    Clear(ChangeExchangeRate);
                 end;
 
                 trigger OnValidate()
                 begin
-                    CurrencyCodeOnAfterValidate();
                     CurrPage.SaveRecord();
                 end;
+            }
+        }
+        addlast("Foreign Trade")
+        {
+            field("Language Code CZL"; Rec."Language Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the language to be used on printouts for this document.';
+            }
+            field("VAT Country/Region Code CZL"; Rec."VAT Country/Region Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT country/region code of customer.';
+            }
+            field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies when the sales header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
             field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
             {
@@ -81,18 +113,15 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
             }
-        }
-        addafter("Area")
-        {
-            field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies when the sales header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
-            }
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies that entry will be excluded from intrastat.';
+            }
+            field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
+            {
+                ApplicationArea = SalesReturnOrder;
+                ToolTip = 'Specifies if there is physical transfer of the item.';
             }
         }
         addafter("Foreign Trade")
@@ -159,21 +188,5 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
                 }
             }
         }
-        addafter("Ship-to")
-        {
-            field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
-            {
-                ApplicationArea = SalesReturnOrder;
-                ToolTip = 'Specifies if there is physical transfer of the item.';
-            }
-        }
     }
-
-    var
-        ChangeExchangeRate: Page "Change Exchange Rate";
-
-    local procedure CurrencyCodeOnAfterValidate()
-    begin
-        CurrPage.SalesLines.Page.UpdateForm(true);
-    end;
 }

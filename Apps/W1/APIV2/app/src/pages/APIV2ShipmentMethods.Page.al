@@ -57,7 +57,7 @@ page 30024 "APIV2 - Shipment Methods"
     var
         ShipmentMethod: Record "Shipment Method";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        ShipmentMethodRecordRef: RecordRef;
     begin
         ShipmentMethod.SetRange(Code, Code);
         if not ShipmentMethod.IsEmpty() then
@@ -65,9 +65,9 @@ page 30024 "APIV2 - Shipment Methods"
 
         Insert(true);
 
-        RecRef.GetTable(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CurrentDateTime());
-        RecRef.SetTable(Rec);
+        ShipmentMethodRecordRef.GetTable(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(ShipmentMethodRecordRef, TempFieldSet, CurrentDateTime());
+        ShipmentMethodRecordRef.SetTable(Rec);
 
         Modify(true);
         exit(false);

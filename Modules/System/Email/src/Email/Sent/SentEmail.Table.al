@@ -86,6 +86,9 @@ table 8889 "Sent Email"
         key(Message; "Message Id")
         {
         }
+        key(FiltersKey; "Account Id", "User Security Id", "Date Time Sent")
+        {
+        }
         key(UserSecurityId; "User Security Id")
         {
         }

@@ -1,4 +1,4 @@
-enum 11780 "Default VAT Date CZL"
+enum 11780 "Default VAT Date CZL"
 {
     Extensible = true;
 

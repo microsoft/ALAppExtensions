@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9203 "Dynamics 2D QR-Code Encoder" implements "Barcode Image Encoder 2D"
+codeunit 9224 "Dynamics 2D QR-Code Encoder" implements "Barcode Image Encoder 2D"
 {
     Access = Internal;
 

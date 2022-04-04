@@ -266,6 +266,7 @@ table 11714 "Stg Item Journal Line"
             Caption = 'Posting No. Series';
             TableRelation = "No. Series";
         }
+#pragma warning disable AL0603
         field(68; "Reserved Quantity"; Decimal)
         {
             AccessByPermission = tabledata "Purch. Rcpt. Header" = R;
@@ -281,6 +282,8 @@ table 11714 "Stg Item Journal Line"
             Editable = false;
             FieldClass = FlowField;
         }
+#pragma warning restore AL0603
+
         field(72; "Unit Cost (ACY)"; Decimal)
         {
             AutoFormatType = 1;
@@ -415,6 +418,7 @@ table 11714 "Stg Item Journal Line"
             DecimalPlaces = 0 : 5;
             Editable = false;
         }
+#pragma warning disable AL0603
         field(5468; "Reserved Qty. (Base)"; Decimal)
         {
             AccessByPermission = tabledata "Purch. Rcpt. Header" = R;
@@ -430,6 +434,7 @@ table 11714 "Stg Item Journal Line"
             Editable = false;
             FieldClass = FlowField;
         }
+#pragma warning restore AL0603
         field(5560; Level; Integer)
         {
             Caption = 'Level';
@@ -929,7 +934,6 @@ table 11714 "Stg Item Journal Line"
         field(31072; "Statistic Indication"; Code[10])
         {
             Caption = 'Statistic Indication';
-            TableRelation = "Statistic Indication".Code WHERE("Tariff No." = FIELD("Tariff No."));
             ObsoleteState = Pending;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
             ObsoleteTag = '18.0';
@@ -959,7 +963,6 @@ table 11714 "Stg Item Journal Line"
         field(31077; "Whse. Net Change Template"; Code[10])
         {
             Caption = 'Whse. Net Change Template';
-            TableRelation = "Whse. Net Change Template";
         }
         field(99000755; "Overhead Rate"; Decimal)
         {

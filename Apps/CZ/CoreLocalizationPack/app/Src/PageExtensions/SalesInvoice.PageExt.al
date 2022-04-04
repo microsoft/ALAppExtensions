@@ -2,6 +2,20 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
 {
     layout
     {
+        movelast(General; "Posting Description")
+        modify("Reason Code")
+        {
+            Visible = false;
+        }
+        addbefore("Location Code")
+        {
+            field("Reason Code CZL"; Rec."Reason Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the reason code on the entry.';
+                Visible = true;
+            }
+        }
         addafter("Posting Date")
         {
             field("VAT Date CZL"; Rec."VAT Date CZL")
@@ -16,16 +30,13 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
                 Visible = false;
             }
         }
-        addafter(Control203)
+        addlast("Invoice Details")
         {
-            field("Customer Posting Group CZL"; Rec."Customer Posting Group")
+            field("VAT Registration No. CZL"; Rec."VAT Registration No.")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the customer''s market type to link business transakcions to.';
+                ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
             }
-        }
-        addafter("VAT Registration No.")
-        {
             field("Registration No. CZL"; Rec."Registration No. CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -47,8 +58,9 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
                 ToolTip = 'Specifies the currency of VAT on the sales invoice.';
 
                 trigger OnAssistEdit()
+                var
+                    ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
-                    Clear(ChangeExchangeRate);
                     if Rec."VAT Date CZL" <> 0D then
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Date CZL")
                     else
@@ -57,14 +69,25 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
                         Rec.Validate("VAT Currency Factor CZL", ChangeExchangeRate.GetParameter());
                         CurrPage.Update();
                     end;
-                    Clear(ChangeExchangeRate);
                 end;
 
                 trigger OnValidate()
                 begin
-                    CurrencyCodeOnAfterValidate();
                     CurrPage.SaveRecord();
                 end;
+            }
+        }
+        addlast("Foreign Trade")
+        {
+            field("VAT Country/Region Code CZL"; Rec."VAT Country/Region Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT country/region code of customer.';
+            }
+            field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies when the sales header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
             field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
             {
@@ -72,14 +95,6 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
                 Caption = 'Intrastat Transaction';
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
-            }
-        }
-        addafter("Area")
-        {
-            field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies when the sales header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
@@ -152,12 +167,4 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
             }
         }
     }
-
-    var
-        ChangeExchangeRate: Page "Change Exchange Rate";
-
-    local procedure CurrencyCodeOnAfterValidate()
-    begin
-        CurrPage.SalesLines.Page.UpdatePage(true);
-    end;
 }

@@ -16,6 +16,7 @@ page 1906 "C5 CustContact"
         {
             repeater(General)
             {
+#pragma warning disable AA0218
                 field(Account;Account) { ApplicationArea=All; }
                 field(Name;Name) { ApplicationArea=All; }
                 field(Position;Position) { ApplicationArea=All; }
@@ -29,6 +30,7 @@ page 1906 "C5 CustContact"
                 field(LocalNumber;LocalNumber) { ApplicationArea=All; }
                 field(CellPhone;CellPhone) { ApplicationArea=All; }
                 field(PrimaryContact;PrimaryContact) { ApplicationArea=All; }
+#pragma warning restore
             }
         }
     }

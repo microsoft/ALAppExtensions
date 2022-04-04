@@ -72,33 +72,33 @@ codeunit 9018 "Azure AD Plan Impl."
     end;
 
     [NonDebuggable]
-    procedure IsGraphUserEntitledFromServicePlan(var GraphUser: DotNet UserInfo): Boolean
+    procedure IsGraphUserEntitledFromServicePlan(var GraphUserInfo: DotNet UserInfo): Boolean
     var
         AssignedPlan: DotNet ServicePlanInfo;
         ServicePlanIdValue: Variant;
     begin
-        if not IsNull(GraphUser.AssignedPlans()) then
-            foreach AssignedPlan in GraphUser.AssignedPlans() do
+        if not IsNull(GraphUserInfo.AssignedPlans()) then
+            foreach AssignedPlan in GraphUserInfo.AssignedPlans() do
                 if Format(AssignedPlan.CapabilityStatus()) = 'Enabled' then begin
                     ServicePlanIdValue := AssignedPlan.ServicePlanId();
                     if IsBCServicePlan(ServicePlanIdValue) then
                         exit(true);
                 end;
 
-        if IsDeviceRole(GraphUser) then
+        if IsDeviceRole(GraphUserInfo) then
             exit(true);
 
         exit(false);
     end;
 
     [NonDebuggable]
-    procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUser: DotNet UserInfo; AppendPermissionsOnNewPlan: Boolean; RemoveUserGroupsOnDeletePlan: Boolean)
+    procedure UpdateUserPlans(UserSecurityId: Guid; var GraphUserInfo: DotNet UserInfo; AppendPermissionsOnNewPlan: Boolean; RemoveUserGroupsOnDeletePlan: Boolean)
     var
         TempPlan: Record Plan temporary;
         UserPlan: Record "User Plan";
         HasUserBeenSetupBefore: Boolean;
     begin
-        GetGraphUserPlans(TempPlan, GraphUser);
+        GetGraphUserPlans(TempPlan, GraphUserInfo);
 
         // Has the user been setup earlier?
         UserPlan.SetRange("User Security ID", UserSecurityId);
@@ -115,10 +115,10 @@ codeunit 9018 "Azure AD Plan Impl."
     procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissionsOnNewPlan: Boolean; RemoveUserGroupsOnDeletePlan: Boolean; RemovePlansOnDeleteUser: Boolean)
     var
         TempDummyPlan: Record Plan temporary;
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
     begin
-        if AzureADGraphUser.GetGraphUser(UserSecurityID, true, GraphUser) then
-            UpdateUserPlans(UserSecurityId, GraphUser, AppendPermissionsOnNewPlan, RemoveUserGroupsOnDeletePlan)
+        if AzureADGraphUser.GetGraphUser(UserSecurityID, true, GraphUserInfo) then
+            UpdateUserPlans(UserSecurityId, GraphUserInfo, AppendPermissionsOnNewPlan, RemoveUserGroupsOnDeletePlan)
         else
             if RemovePlansOnDeleteUser then
                 RemoveUnassignedUserPlans(TempDummyPlan, UserSecurityId, RemoveUserGroupsOnDeletePlan);
@@ -145,13 +145,13 @@ codeunit 9018 "Azure AD Plan Impl."
     var
         User: Record User;
         UsersInPlan: Query "Users in Plans";
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
         UserPlanExists: Boolean;
     begin
         if not User.Get(UserSecurityID) then
             exit;
 
-        if not AzureADGraphUser.GetGraphUser(UserSecurityID, GraphUser) then
+        if not AzureADGraphUser.GetGraphUser(UserSecurityID, GraphUserInfo) then
             exit;
 
         // Is this the first user being setup
@@ -160,11 +160,11 @@ codeunit 9018 "Azure AD Plan Impl."
                 UserPlanExists := true;
 
         if not UserPlanExists then
-            if IsDeviceRole(GraphUser) then
+            if IsDeviceRole(GraphUserInfo) then
                 Error(DeviceUserCannotBeFirstUserErr);
 
-        UpdateUserFromAzureGraph(User, GraphUser);
-        UpdateUserPlans(User."User Security ID", GraphUser, true, true);
+        UpdateUserFromAzureGraph(User, GraphUserInfo);
+        UpdateUserPlans(User."User Security ID", GraphUserInfo, true, true);
     end;
 
     [TryFunction]
@@ -338,13 +338,13 @@ codeunit 9018 "Azure AD Plan Impl."
     local procedure GetAuthenticationEmailFromAuthenticationObjectID(UserAuthenticationObjectID: Text): Text
     var
         User: Record User;
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
     begin
         if AzureADGraphUser.GetUser(UserAuthenticationObjectID, User) then
             exit(User."Authentication Email")
         else begin
-            AzureADGraph.GetUserByObjectId(UserAuthenticationObjectID, GraphUser);
-            exit(AzureADGraphUser.GetAuthenticationEmail(GraphUser));
+            AzureADGraph.GetUserByObjectId(UserAuthenticationObjectID, GraphUserInfo);
+            exit(AzureADGraphUser.GetAuthenticationEmail(GraphUserInfo));
         end;
     end;
 
@@ -430,7 +430,7 @@ codeunit 9018 "Azure AD Plan Impl."
     end;
 
     [NonDebuggable]
-    local procedure GetGraphUserPlans(var TempPlan: Record "Plan" temporary; var GraphUser: DotNet UserInfo)
+    local procedure GetGraphUserPlans(var TempPlan: Record "Plan" temporary; var GraphUserInfo: DotNet UserInfo)
     var
         AssignedPlan: DotNet ServicePlanInfo;
         DirectoryRole: DotNet RoleInfo;
@@ -444,26 +444,26 @@ codeunit 9018 "Azure AD Plan Impl."
         TempPlan.DeleteAll();
 
         // Loop through assigned Azure AD Plans
-        if not IsNull(GraphUser.AssignedPlans()) then
-            foreach AssignedPlan in GraphUser.AssignedPlans() do
+        if not IsNull(GraphUserInfo.AssignedPlans()) then
+            foreach AssignedPlan in GraphUserInfo.AssignedPlans() do
                 if Format(AssignedPlan.CapabilityStatus()) = 'Enabled' then begin
                     ServicePlanIdValue := AssignedPlan.ServicePlanId();
                     if IsBCServicePlan(ServicePlanIdValue) or IsTest then begin
                         HaveAssignedPlans := true;
                         AddToTempPlan(ServicePlanIdValue, Format(AssignedPlan.ServicePlanName()), TempPlan);
-                        Session.LogMessage('00009KY', StrSubstNo(UserPlanAssignedMsg, Format(GraphUser.ObjectId()), Format(ServicePlanIdValue)), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                        Session.LogMessage('00009KY', StrSubstNo(UserPlanAssignedMsg, Format(GraphUserInfo.ObjectId()), Format(ServicePlanIdValue)), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                     end;
                 end;
 
         if not HaveAssignedPlans then
-            Session.LogMessage('00009KZ', StrSubstNo(UserHasNoPlansMsg, Format(GraphUser.ObjectId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+            Session.LogMessage('00009KZ', StrSubstNo(UserHasNoPlansMsg, Format(GraphUserInfo.ObjectId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
 
         // Loop through Azure AD Roles
-        if not IsNull(GraphUser.Roles()) then
-            foreach DirectoryRole in GraphUser.Roles() do
+        if not IsNull(GraphUserInfo.Roles()) then
+            foreach DirectoryRole in GraphUserInfo.Roles() do
                 if IsBCServicePlan(DirectoryRole.RoleTemplateId()) then begin
                     AddToTempPlan(Format(DirectoryRole.RoleTemplateId()), Format(DirectoryRole.DisplayName()), TempPlan);
-                    Session.LogMessage('00009L0', StrSubstNo(UserPlanAssignedMsg, Format(GraphUser.ObjectId()), Format(DirectoryRole.RoleTemplateId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                    Session.LogMessage('00009L0', StrSubstNo(UserPlanAssignedMsg, Format(GraphUserInfo.ObjectId()), Format(DirectoryRole.RoleTemplateId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                     SystemRoleAdded := true;
                 end;
 
@@ -471,26 +471,26 @@ codeunit 9018 "Azure AD Plan Impl."
         if HaveAssignedPlans or SystemRoleAdded then
             exit;
 
-        if IsDeviceRole(GraphUser) then begin
+        if IsDeviceRole(GraphUserInfo) then begin
             GetDevicesPlanInfo(DevicesPlanId, DevicesPlanName);
-            Session.LogMessage('00009L6', StrSubstNo(DevicePlanFoundMsg, DevicesPlanName, Format(GraphUser.ObjectId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+            Session.LogMessage('00009L6', StrSubstNo(DevicePlanFoundMsg, DevicesPlanName, Format(GraphUserInfo.ObjectId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             AddToTempPlan(DevicesPlanId, DevicesPlanName, TempPlan);
         end else
-            Session.LogMessage('00009L7', StrSubstNo(NotBCUserMsg, Format(GraphUser.ObjectId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+            Session.LogMessage('00009L7', StrSubstNo(NotBCUserMsg, Format(GraphUserInfo.ObjectId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
     end;
 
     [NonDebuggable]
-    local procedure IsDeviceRole(var GraphUser: DotNet UserInfo): Boolean
+    local procedure IsDeviceRole(var GraphUserInfo: DotNet UserInfo): Boolean
     var
         GroupInfo: DotNet GroupInfo;
     begin
-        if IsNull(GraphUser) then
+        if IsNull(GraphUserInfo) then
             exit(false);
 
-        if IsNull(GraphUser.Groups()) then
+        if IsNull(GraphUserInfo.Groups()) then
             exit(false);
 
-        foreach GroupInfo in GraphUser.Groups() do
+        foreach GroupInfo in GraphUserInfo.Groups() do
             if not IsNull(GroupInfo.DisplayName()) then
                 if GroupInfo.DisplayName().ToUpper() = UpperCase(DeviceGroupNameTxt) then
                     exit(true);
@@ -520,12 +520,12 @@ codeunit 9018 "Azure AD Plan Impl."
     end;
 
     [NonDebuggable]
-    local procedure UpdateUserFromAzureGraph(var User: Record User; var GraphUser: DotNet UserInfo): Boolean
+    local procedure UpdateUserFromAzureGraph(var User: Record User; var GraphUserInfo: DotNet UserInfo): Boolean
     var
         IsUserModified: Boolean;
     begin
-        AzureADGraphUser.GetGraphUser(User."User Security ID", GraphUser);
-        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUser);
+        AzureADGraphUser.GetGraphUser(User."User Security ID", GraphUserInfo);
+        IsUserModified := AzureADGraphUser.UpdateUserFromAzureGraph(User, GraphUserInfo);
         exit(IsUserModified);
     end;
 
@@ -545,19 +545,19 @@ codeunit 9018 "Azure AD Plan Impl."
     var
         TempPlan: Record "Plan" temporary;
         User: Record User;
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
     begin
         if not User.Get(UserSecurityID) then begin
             Session.LogMessage('0000DUD', StrSubstNo(UserNotInUserTableTxt, UserSecurityID()), Verbosity::Warning, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             exit(0);
         end;
 
-        if not AzureADGraphUser.GetGraphUser(UserSecurityID, GraphUser) then begin
+        if not AzureADGraphUser.GetGraphUser(UserSecurityID, GraphUserInfo) then begin
             Session.LogMessage('0000DUE', StrSubstNo(AzureGraphUserNotFoundTxt, UserSecurityID()), Verbosity::Warning, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             exit(0);
         end;
 
-        GetGraphUserPlans(TempPlan, GraphUser);
+        GetGraphUserPlans(TempPlan, GraphUserInfo);
 
         TempPlan.SetFilter("Role Center ID", '<>0');
 
@@ -578,7 +578,9 @@ codeunit 9018 "Azure AD Plan Impl."
         UserPlan: Record "User Plan";
         AzureADPlan: Codeunit "Azure AD Plan";
         PlanIds: Codeunit "Plan Ids";
-        UserGroupsAdded: Boolean;
+        PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
+        UserPermissions: Codeunit "User Permissions";
+        UserGroupsAdded, ShouldRemoveSuper : Boolean;
     begin
         // Have any plans been added to this user in O365, since last time he logged-in to NAV?
         // For each plan assigned to the user in Office
@@ -588,11 +590,12 @@ codeunit 9018 "Azure AD Plan Impl."
         UserPlan.Insert();
         AzureADPlan.OnUpdateUserAccessForSaaS(UserPlan."User Security ID", UserGroupsAdded);
 
-        // Don't remove SUPER permissions until we have a better story around permission assignment for DAs
-        //if UserGroupsAdded then begin
-        //UserPermissions.RemoveSuperPermissions(UserSecurityID());
-        //Commit();
-        //end;
+        // Remove SUPER from delegated admin only if the plan permssions have been configured and that configuration does not contain SUPER 
+        ShouldRemoveSuper := PlanConfigurationImpl.IsCustomized(PlanIds.GetDelegatedAdminPlanId()) and (not PlanConfigurationImpl.ConfigurationContainsSuper(PlanIds.GetDelegatedAdminPlanId()));
+        if UserGroupsAdded and ShouldRemoveSuper then begin
+            UserPermissions.RemoveSuperPermissions(UserSecurityID());
+            Commit();
+        end;
     end;
 
     [NonDebuggable]
@@ -601,7 +604,8 @@ codeunit 9018 "Azure AD Plan Impl."
         UserPlan: Record "User Plan";
         AzureADPlan: Codeunit "Azure AD Plan";
         UserPermissions: Codeunit "User Permissions";
-        UserGroupsAdded: Boolean;
+        PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
+        UserGroupsAdded, PlanConfigurationContainsSuper, IsPlanConfigurationCustomized, ShouldRemoveSuper : Boolean;
     begin
         // Have any plans been added to this user in O365, since last time he logged-in to NAV?
         // For each plan assigned to the user in Office
@@ -621,17 +625,25 @@ codeunit 9018 "Azure AD Plan Impl."
                     // This happens only for users who are created from O365 (i.e. are added to plans)
                     if AppendPermissionsOnNewPlan then
                         AzureADPlan.OnUpdateUserAccessForSaaS(UserPlan."User Security ID", UserGroupsAdded);
+
+                    PlanConfigurationContainsSuper := PlanConfigurationContainsSuper or PlanConfigurationImpl.ConfigurationContainsSuper(Plan."Plan ID");
+                    IsPlanConfigurationCustomized := IsPlanConfigurationCustomized or PlanConfigurationImpl.IsCustomized(Plan."Plan ID");
                 end;
             until Plan.Next() = 0;
 
         // Only remove SUPER if other permissions are granted (to avoid user lockout)
-        if UserGroupsAdded then begin
-            if not UserHadBeenSetupBefore then
-                if not IsUserAdmin(UserSecurityID) then
-                    UserPermissions.RemoveSuperPermissions(UserSecurityID);
-            if not IsTest then
-                Commit(); // Finalize the transaction. Else any further error can rollback and create elevation of privilege
+        if UserGroupsAdded and (not UserHadBeenSetupBefore) then begin
+            if IsPlanConfigurationCustomized then
+                ShouldRemoveSuper := not PlanConfigurationContainsSuper
+            else
+                ShouldRemoveSuper := not IsUserAdmin(UserSecurityID);
+
+            if ShouldRemoveSuper then
+                UserPermissions.RemoveSuperPermissions(UserSecurityID);
         end;
+
+        if not IsTest then
+            Commit(); // Finalize the transaction. Else any further error can rollback and create elevation of privilege
     end;
 
     [NonDebuggable]
@@ -667,12 +679,12 @@ codeunit 9018 "Azure AD Plan Impl."
     end;
 
     [NonDebuggable]
-    procedure GetPlanIDs(GraphUser: DotNet UserInfo; var PlanIDs: List of [Guid])
+    procedure GetPlanIDs(GraphUserInfo: DotNet UserInfo; var PlanIDs: List of [Guid])
     var
         TempPlan: Record Plan temporary;
     begin
         Clear(PlanIDs);
-        GetGraphUserPlans(TempPlan, GraphUser);
+        GetGraphUserPlans(TempPlan, GraphUserInfo);
         if TempPlan.FindSet() then
             repeat
                 PlanIDs.Add(TempPlan."Plan ID");
@@ -680,22 +692,22 @@ codeunit 9018 "Azure AD Plan Impl."
     end;
 
     [NonDebuggable]
-    procedure GetPlanNames(GraphUser: DotNet UserInfo; var PlanNames: List of [Text])
+    procedure GetPlanNames(GraphUserInfo: DotNet UserInfo; var PlanNames: List of [Text])
     var
         TempPlan: Record Plan temporary;
         Plan: Record Plan;
     begin
         Clear(PlanNames);
-        GetGraphUserPlans(TempPlan, GraphUser);
+        GetGraphUserPlans(TempPlan, GraphUserInfo);
         if TempPlan.FindSet() then
             repeat
                 // use the Business Central plan name instead of the Office Plan name, if possible.
                 if Plan.Get(TempPlan."Plan ID") then begin
                     PlanNames.Add(Plan.Name);
-                    Session.LogMessage('0000BK0', StrSubstNo(UserGotPlanTxt, GraphUser.ObjectId(), Plan."Plan ID", Plan.Name), Verbosity::Verbose, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                    Session.LogMessage('0000BK0', StrSubstNo(UserGotPlanTxt, GraphUserInfo.ObjectId(), Plan."Plan ID", Plan.Name), Verbosity::Verbose, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                 end else begin
                     PlanNames.Add(TempPlan.Name);
-                    Session.LogMessage('0000BK1', StrSubstNo(UserGotPlanTxt, GraphUser.ObjectId(), TempPlan."Plan ID", TempPlan.Name), Verbosity::Verbose, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                    Session.LogMessage('0000BK1', StrSubstNo(UserGotPlanTxt, GraphUserInfo.ObjectId(), TempPlan."Plan ID", TempPlan.Name), Verbosity::Verbose, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
                 end;
 
             until TempPlan.Next() = 0;
@@ -716,7 +728,7 @@ codeunit 9018 "Azure AD Plan Impl."
     end;
 
     [NonDebuggable]
-    procedure CheckIfPlansDifferent(GraphUser: DotNet UserInfo; UserSecID: Guid): Boolean
+    procedure CheckIfPlansDifferent(GraphUserInfo: DotNet UserInfo; UserSecID: Guid): Boolean
     var
         TempPlan: Record Plan temporary;
         UserPlan: Record "User Plan";
@@ -724,9 +736,9 @@ codeunit 9018 "Azure AD Plan Impl."
         UserPlanCount: Integer;
         TempPlanCount: Integer;
     begin
-        Session.LogMessage('0000BK2', StrSubstNo(PlansDifferentCheckTxt, GraphUser.ObjectId(), UserSecID), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+        Session.LogMessage('0000BK2', StrSubstNo(PlansDifferentCheckTxt, GraphUserInfo.ObjectId(), UserSecID), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
 
-        GetGraphUserPlans(TempPlan, GraphUser);
+        GetGraphUserPlans(TempPlan, GraphUserInfo);
 
         UserPlan.SetRange("User Security ID", UserSecID);
         UserPlanCount := UserPlan.Count();

@@ -1,8 +1,17 @@
 table 1081 "MS - Wallet Merchant Template"
 {
-    Caption = 'Microsoft Pay Payments Account Template';
+#if not CLEAN20
+    ObsoleteState = Pending;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '20.0';
     DrillDownPageID = 1081;
     LookupPageID = 1081;
+#else
+    ObsoleteState = Removed;
+    ObsoleteReason = 'MS Wallet have been deprecated';
+    ObsoleteTag = '23.0';
+#endif 
+    Caption = 'Microsoft Pay Payments Account Template';
     ReplicateData = false;
 
     fields
@@ -57,9 +66,6 @@ table 1081 "MS - Wallet Merchant Template"
         }
     }
 
-    var
-        InvalidPaymentRequestURLErr: Label 'The payment request URL is not valid.';
-
     procedure GetPaymentRequestURL(): Text;
     var
         InStream: InStream;
@@ -76,12 +82,8 @@ table 1081 "MS - Wallet Merchant Template"
 
     procedure SetPaymentRequestURL(PaymentRequestURL: Text);
     var
-        MSWalletMgt: Codeunit "MS - Wallet Mgt.";
         OutStream: OutStream;
     begin
-        if not MSWalletMgt.IsValidAndSecureURL(PaymentRequestURL) then
-            Error(InvalidPaymentRequestURLErr);
-
         "Payment Request URL Modified" := CurrentDateTime();
         "Payment Request URL".CREATEOUTSTREAM(OutStream);
         OutStream.WRITE(PaymentRequestURL);
@@ -106,4 +108,3 @@ table 1081 "MS - Wallet Merchant Template"
         EXIT(TRUE);
     end;
 }
-

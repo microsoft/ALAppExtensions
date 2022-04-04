@@ -297,7 +297,7 @@ page 30043 "APIV2 - Sales Invoice Lines"
                     Caption = 'Dimension Set Lines';
                     EntityName = 'dimensionSetLine';
                     EntitySetName = 'dimensionSetLines';
-                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const(9);
+                    SubPageLink = "Parent Id" = Field(SystemId), "Parent Type" = const("Sales Invoice Line");
                 }
                 part(location; "APIV2 - Locations")
                 {
@@ -409,16 +409,4 @@ page 30043 "APIV2 - Sales Invoice Lines"
 
         Clear(Item);
     end;
-
-    local procedure RegisterItemFieldSet(FieldNo: Integer)
-    begin
-        if TempItemFieldSet.Get(Database::Item, FieldNo) then
-            exit;
-
-        TempItemFieldSet.Init();
-        TempItemFieldSet.TableNo := Database::Item;
-        TempItemFieldSet.Validate("No.", FieldNo);
-        TempItemFieldSet.Insert(true);
-    end;
-
 }

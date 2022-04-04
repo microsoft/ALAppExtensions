@@ -197,7 +197,7 @@ codeunit 3970 "Image Impl."
         ImageFormat: DotNet ImageFormat;
         OutStream: OutStream;
     begin
-        case Format of 
+        case Format of
             Enum::"Image Format"::Bmp:
                 ImageFormat := ImageFormat.Bmp();
             Enum::"Image Format"::Emf:
@@ -225,7 +225,7 @@ codeunit 3970 "Image Impl."
         Image.Dispose();
 
         TempBlob := DstTempBlob;
-        
+
         CreateAndVerifyImage();
     end;
 

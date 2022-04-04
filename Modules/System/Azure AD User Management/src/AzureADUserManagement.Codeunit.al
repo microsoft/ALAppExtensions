@@ -33,12 +33,12 @@ codeunit 9010 "Azure AD User Management"
     /// <summary>    
     /// Creates a new user from an Azure AD user.
     /// </summary>
-    /// <param name="GraphUser">The Azure AD user.</param>
+    /// <param name="GraphUserInfo">The Azure AD user.</param>
     [Scope('OnPrem')]
     [NonDebuggable]
-    procedure CreateNewUserFromGraphUser(GraphUser: DotNet UserInfo)
+    procedure CreateNewUserFromGraphUser(GraphUserInfo: DotNet UserInfo)
     begin
-        AzureADUserMgmtImpl.CreateNewUserFromGraphUser(GraphUser);
+        AzureADUserMgmtImpl.CreateNewUserFromGraphUser(GraphUserInfo);
     end;
 
     /// <summary>    

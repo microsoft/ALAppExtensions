@@ -56,12 +56,7 @@ table 18747 "TDS Journal Line"
                 ReplaceInfo: Boolean;
             begin
                 if "Account No." = '' then begin
-                    CreateDim(
-                      DimensionManagement.TypeToTableID1(Rec."Account Type"), "Account No.",
-                      DimensionManagement.TypeToTableID1(Rec."Bal. Account Type"), "Bal. Account No.",
-                      Database::Job, '',
-                      Database::"Salesperson/Purchaser", "Salespers./Purch. Code",
-                      Database::Campaign, '');
+                    CreateDimFromDefaultDim(FieldNo("Account No."));
                     exit;
                 end;
                 case "Account Type" of
@@ -106,12 +101,7 @@ table 18747 "TDS Journal Line"
                                 Description := BankAccount.Name;
                         end;
                 end;
-                CreateDim(
-                  DimensionManagement.TypeToTableID1(Rec."Account Type"), "Account No.",
-                  DimensionManagement.TypeToTableID1(Rec."Bal. Account Type"), "Bal. Account No.",
-                  Database::Job, '',
-                  Database::"Salesperson/Purchaser", "Salespers./Purch. Code",
-                  Database::Campaign, '');
+                CreateDimFromDefaultDim(FieldNo("Account No."));
             end;
         }
         field(5; "Posting Date"; Date)
@@ -183,12 +173,7 @@ table 18747 "TDS Journal Line"
                 BankAccount: Record "Bank Account";
             begin
                 if "Bal. Account No." = '' then begin
-                    CreateDim(
-                      DimensionManagement.TypeToTableID1(Rec."Bal. Account Type"), "Bal. Account No.",
-                      DimensionManagement.TypeToTableID1(Rec."Account Type"), "Account No.",
-                      Database::Job, '',
-                      Database::"Salesperson/Purchaser", "Salespers./Purch. Code",
-                      Database::Campaign, '');
+                    CreateDimFromDefaultDim(FieldNo("Bal. Account No."));
                     exit;
                 end;
 
@@ -223,12 +208,7 @@ table 18747 "TDS Journal Line"
                                 Description := BankAccount.Name;
                         end;
                 end;
-                CreateDim(
-                  DimensionManagement.TypeToTableID1(Rec."Bal. Account Type"), "Bal. Account No.",
-                  DimensionManagement.TypeToTableID1(Rec."Account Type"), "Account No.",
-                  Database::Job, '',
-                  Database::"Salesperson/Purchaser", "Salespers./Purch. Code",
-                  Database::Campaign, '');
+                CreateDimFromDefaultDim(FieldNo("Bal. Account No."));
             end;
         }
         field(10; "Salespers./Purch. Code"; Code[20])
@@ -862,6 +842,8 @@ table 18747 "TDS Journal Line"
         Validate(Description, '');
     end;
 
+#if not CLEAN20
+    [Obsolete('Replaced by CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])', '20.0')]
     procedure CreateDim(
         Type1: Integer;
         No1: Code[20];
@@ -892,6 +874,15 @@ table 18747 "TDS Journal Line"
         "Dimension Set ID" :=
           DimensionManagement.GetDefaultDimID(
             TableID, No, "Source Code", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+    end;
+#endif
+
+    procedure CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    begin
+        "Shortcut Dimension 1 Code" := '';
+        "Shortcut Dimension 2 Code" := '';
+        "Dimension Set ID" :=
+            DimensionManagement.GetDefaultDimID(DefaultDimSource, "Source Code", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
     end;
 
     procedure ValidateShortcutDimCode(FieldNumber: Integer; var ShortcutDimCode: Code[20])
@@ -1012,5 +1003,22 @@ table 18747 "TDS Journal Line"
         end else
             TDSJournalLine."Bal. SHE Cess on TDS Amt" := TDSEntityManagement.RoundTDSAmount(
             (BalTDSIncludingSurchargeAmount) * TDSJournalLine."SHE Cess % Applied" / 100);
+    end;
+
+    procedure CreateDimFromDefaultDim(FromFieldNo: Integer)
+    var
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
+    begin
+        InitDefaultDimensionSources(DefaultDimSource, FromFieldNo);
+        CreateDim(DefaultDimSource);
+    end;
+
+    local procedure InitDefaultDimensionSources(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FromFieldNo: Integer)
+    begin
+        DimensionManagement.AddDimSource(DefaultDimSource, DimensionManagement.TypeToTableID1("Account Type".AsInteger()), Rec."Account No.", FromFieldNo = Rec.Fieldno("Account No."));
+        DimensionManagement.AddDimSource(DefaultDimSource, DimensionManagement.TypeToTableID1("Bal. Account Type".AsInteger()), Rec."Bal. Account No.", FromFieldNo = Rec.Fieldno("Bal. Account No."));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::Job, '', false);
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Salesperson/Purchaser", Rec."Salespers./Purch. Code", FromFieldNo = Rec.FieldNo("Salespers./Purch. Code"));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::Campaign, '', false);
     end;
 }

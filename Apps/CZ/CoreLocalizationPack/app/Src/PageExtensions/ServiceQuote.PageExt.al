@@ -2,8 +2,22 @@ pageextension 11761 "Service Quote CZL" extends "Service Quote"
 {
     layout
     {
-        addafter("VAT Registration No.")
+        addlast(General)
         {
+            field("Posting Description CZL"; Rec."Posting Description")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies a description of the purchase receipt. The posting description also appers on vendor and G/L entries.';
+                Visible = false;
+            }
+        }
+        addlast(Details)
+        {
+            field("VAT Registration No. CZL"; Rec."VAT Registration No.")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+            }
             field("Registration No. CZL"; Rec."Registration No. CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -16,22 +30,34 @@ pageextension 11761 "Service Quote CZL" extends "Service Quote"
                 Importance = Additional;
             }
         }
-        addafter("Area")
+        addlast(" Foreign Trade")
         {
+            field("Language Code CZL"; Rec."Language Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the language to be used on printouts for this document.';
+            }
+            field("VAT Country/Region Code CZL"; Rec."VAT Country/Region Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT country/region code of customer.';
+            }
             field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies when the service header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
-        }
-        addafter("Currency Code")
-        {
             field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Intrastat Transaction';
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
+            }
+            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies that entry will be excluded from intrastat.';
             }
         }
         addafter(" Foreign Trade")

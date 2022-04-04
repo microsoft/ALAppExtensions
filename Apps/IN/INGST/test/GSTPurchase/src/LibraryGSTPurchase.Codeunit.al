@@ -331,6 +331,8 @@ codeunit 18140 "Library - GST Purchase"
         ReceivableApplicable: Boolean;
         GLAccountNo: Code[20];
         TransactionNo: Integer;
+        OrderAddGSTRegNo: Code[20];
+        OrderAddressStateCode: code[10];
         DocumentType: Enum "Gen. Journal Document Type";
     begin
         PurchInvHeader.Get(DocumentNo);
@@ -341,6 +343,14 @@ codeunit 18140 "Library - GST Purchase"
 
         Vendor.Get(PurchInvHeader."Pay-to Vendor No.");
         SourceCodeSetup.Get();
+
+        if PurchInvHeader."Order Address Code" <> '' then begin
+            OrderAddGSTRegNo := PurchInvHeader."Order Address GST Reg. No.";
+            OrderAddressStateCode := PurchInvHeader."GST Order Address State";
+        end else begin
+            OrderAddGSTRegNo := PurchInvHeader."Vendor GST Reg. No.";
+            OrderAddressStateCode := Vendor."State Code";
+        end;
 
         TransactionNo := GetTransactionNo(DocumentNo, PurchInvHeader."Posting Date", DocumentType::Invoice);
 
@@ -505,13 +515,13 @@ codeunit 18140 "Library - GST Purchase"
             Assert.AreEqual(PurchInvHeader."Location State Code", DetailedGSTLedgerEntryInfo."Location State Code",
                 StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntryInfo.FieldCaption("Location State Code"), DetailedGSTLedgerEntryInfo.TableCaption));
 
-            Assert.AreEqual(Vendor."State Code", DetailedGSTLedgerEntryInfo."Buyer/Seller State Code",
+            Assert.AreEqual(OrderAddressStateCode, DetailedGSTLedgerEntryInfo."Buyer/Seller State Code",
                 StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntryInfo.FieldCaption("Buyer/Seller State Code"), DetailedGSTLedgerEntryInfo.TableCaption));
 
             Assert.AreEqual(PurchInvHeader."Location GST Reg. No.", DetailedGSTLedgerEntry."Location  Reg. No.",
                 StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldName("Location  Reg. No."), DetailedGSTLedgerEntry.TableCaption));
 
-            Assert.AreEqual(PurchInvHeader."Vendor GST Reg. No.", DetailedGSTLedgerEntry."Buyer/Seller Reg. No.",
+            Assert.AreEqual(OrderAddGSTRegNo, DetailedGSTLedgerEntry."Buyer/Seller Reg. No.",
                 StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldName("Buyer/Seller Reg. No."), DetailedGSTLedgerEntry.TableCaption));
 
             Assert.AreEqual(PurchInvLine."GST Group Type", DetailedGSTLedgerEntry."GST Group Type",
@@ -546,6 +556,9 @@ codeunit 18140 "Library - GST Purchase"
 
             Assert.AreEqual(EligibilityforITC, DetailedGSTLedgerEntry."Eligibility for ITC",
                 StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldCaption("Eligibility for ITC"), DetailedGSTLedgerEntry.TableCaption));
+
+            Assert.AreEqual(PurchInvHeader."Order Address Code", DetailedGSTLedgerEntryInfo."Order Address Code",
+                StrSubstNo(GSTLEVerifyErr, DetailedGSTLedgerEntry.FieldName(Quantity), DetailedGSTLedgerEntry.TableCaption));
         end;
     end;
 

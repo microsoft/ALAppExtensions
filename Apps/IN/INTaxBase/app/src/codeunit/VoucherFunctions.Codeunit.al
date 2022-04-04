@@ -97,26 +97,9 @@ codeunit 18546 "Voucher Functions"
 
     procedure SplitNarration(NarrationText: Text[2000]; IsLineNarration: Boolean; var GenJournalLine: Record "Gen. Journal Line")
     var
-        SPos: Integer;
-        EPos: Integer;
-        i: Integer;
-        Len: Integer;
-        loop: Decimal;
         SplitedText: List of [Text];
     begin
-        Clear(Len);
-        Clear(loop);
-        Len := StrLen(NarrationText);
-        loop := Round(Len / 250, 1, '>');
-        Clear(SPos);
-        Clear(EPos);
-        SPos := 0;
-        EPos := 0;
-        for i := 1 to loop do begin
-            EPos += 250;
-            SplitedText.Add(CopyStr(NarrationText, SPos + 1, EPos));
-            SPos := EPos;
-        end;
+        SplitedText := NarrationText.Split(',');
         UpdateNarration(SplitedText, IsLineNarration, GenJournalLine);
     end;
 
@@ -164,9 +147,10 @@ codeunit 18546 "Voucher Functions"
             GenJournalNarration.SetFilter("Gen. Journal Line No.", '%1', 0);
             if GenJournalNarration.FindSet() then
                 repeat
-                    NarrationText += GenJournalNarration.Narration;
+                    NarrationText += GenJournalNarration.Narration + ',';
                 until GenJournalNarration.Next() = 0;
         end;
+        NarrationText := DelChr(NarrationText, '>', ',');
         exit(NarrationText)
     end;
 

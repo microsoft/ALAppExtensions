@@ -11,8 +11,13 @@ codeunit 4029 "W1 Company Handler"
         CountryCode: Text;
         TargetVersion: Decimal;
         TargetVersions: List of [Decimal];
+        Handled: Boolean;
     begin
         HybridCompanyStatus.Get(CompanyName);
+        OnBeforeRunPerCompanyUpgrade(HybridCompanyStatus, Handled);
+        if Handled then
+            exit;
+
         if HybridCompanyStatus."Upgrade Status" <> HybridCompanyStatus."Upgrade Status"::Pending then
             Error(WrongUpgradeStatusForDataPerCompanyErr, HybridCompanyStatus."Upgrade Status");
 
@@ -35,12 +40,20 @@ codeunit 4029 "W1 Company Handler"
         HybridCompanyStatus.Modify();
 
         HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Pending);
-        if HybridCompanyStatus.FindFirst() then
-            W1Management.InvokePerCompanyUpgrade(Rec, HybridCompanyStatus.Name)
-        else begin
+        if HybridCompanyStatus.FindFirst() then begin
+            W1Management.InvokePerCompanyUpgrade(Rec, HybridCompanyStatus.Name);
+            exit;
+        end;
+
+        if Rec.Find() then begin
             Rec.Status := Rec.Status::Completed;
             Rec.Modify();
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeRunPerCompanyUpgrade(var HybridCompanyStatus: Record "Hybrid Company Status"; var Handled: Boolean)
+    begin
     end;
 
     [IntegrationEvent(false, false)]

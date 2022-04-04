@@ -10,15 +10,13 @@ codeunit 4026 "W1 Management"
         FinishNonCompanyTxt: Label 'Finish BC Last Intelligent Cloud transformation for non company tables.', Locked = true;
         CompanyTransformationFailedTxt: Label 'Company transformation failed with error: %1', Locked = true;
         NonCompanyTransformationFailedTxt: Label 'Non company transformation failed with error: %1', Locked = true;
+        UpgradeWillDisableReplicatonsQst: Label 'The upgrade must be triggered as the last step, because you''ll not be able to migrate further data after the upgrade. Before you start the upgrade, make sure that you have moved all companies that you want to move.\\Are you sure that you want to proceed?';
         TelemetryCategoryTok: Label 'HybridBCLast', Locked = true;
         W1CountryCodeTxt: Label 'W1', Locked = true;
         BaseAppExtensionIdTxt: Label '437dbf0e-84ff-417a-965d-ed2bb9650972', Locked = true;
-        CannotTriggerUpgradeErr: Label 'Upgrade cannot be started until all companies are successfully replicated.';
-        NoCompaniesAreSelectedForReplicationErr: Label 'No companies have been enabled for replication.';
-        CannotStartUpgradeNotAllComapniesAreMigratedErr: Label 'Cannot start upgrade because following companies are not ready to be migrated:%1', Comment = '%1 - Comma separated list of companies pending cloud migration';
         UpgradeWasScheduledMsg: Label 'Upgrade was succesfully scheduled';
-        ReplicationCompletedServiceTypeTxt: Label 'ReplicationCompleted', Locked = true;
-        CannotStartReplicationCompanyUpgradeFailedErr: Label 'You cannot start the replication because there are companies in which data upgrade has failed. After investigating the failure you must delete these companies and start the migration again.';
+        CannotStartUpgradeCompanyUpgradeCompletedErr: Label 'You cannot start the upgrade because one or more companies are already upgraded. If you want to run the upgrade again, you must delete these companies and start the migration again.';
+
 
     trigger OnRun()
     begin
@@ -43,84 +41,16 @@ codeunit 4026 "W1 Management"
 
         HybridReplicationSummary.Get(RunId);
         HybridReplicationSummary."Synced Version" := SyncedVersion;
-
-        if CompanyReplicatedSuccessfully(HybridReplicationSummary, JsonManagement) then begin
-            HybridReplicationSummary.Status := HybridReplicationSummary.Status::UpgradePending;
-            SetPendingOnHybridCompanyStatus();
-        end;
-
         HybridReplicationSummary.Modify();
-    end;
 
-    local procedure SetPendingOnHybridCompanyStatus()
-    var
-        HybridCompany: Record "Hybrid Company";
-    begin
-        InsertOrUpdateHybridCompanyStatus('');
-
-        HybridCompany.SetRange(Replicate, true);
-        if HybridCompany.FindSet() then
-            repeat
-                InsertOrUpdateHybridCompanyStatus(HybridCompany.Name);
-            until HybridCompany.Next() = 0;
-    end;
-
-    local procedure InsertOrUpdateHybridCompanyStatus(HybridCompanyName: Text[50])
-    var
-        HybridCompanyStatus: Record "Hybrid Company Status";
-        HybridCompanyStatusExist: Boolean;
-    begin
-        HybridCompanyStatusExist := HybridCompanyStatus.Get(HybridCompanyName);
-        HybridCompanyStatus.Replicated := true;
-        HybridCompanyStatus."Upgrade Status" := HybridCompanyStatus."Upgrade Status"::Pending;
-        if HybridCompanyStatusExist then
-            HybridCompanyStatus.Modify()
-        else begin
-            HybridCompanyStatus.Name := HybridCompanyName;
-            HybridCompanyStatus.Insert();
-        end;
-    end;
-
-    local procedure CompanyReplicatedSuccessfully(var HybridReplicationSummary: Record "Hybrid Replication Summary"; var JsonManagement: Codeunit "JSON Management"): Boolean
-    var
-        IntelligentCloudStatus: Record "Intelligent Cloud Status";
-        HybridCompany: Record "Hybrid Company";
-        ServiceType: Text;
-    begin
-        if HybridReplicationSummary.Status <> HybridReplicationSummary.Status::Completed then
-            exit(false);
-
-        if not (HybridReplicationSummary.ReplicationType in [HybridReplicationSummary.ReplicationType::Full, HybridReplicationSummary.ReplicationType::Normal]) then
-            exit(false);
-
-        HybridCompany.SetRange(Replicate, true);
-        if HybridCompany.IsEmpty() then
-            exit(false);
-
-        IntelligentCloudStatus.SetRange(Blocked, true);
-        if not IntelligentCloudStatus.IsEmpty() then
-            exit(false);
-
-        if not JsonManagement.GetStringPropertyValueByName('ServiceType', ServiceType) then
-            exit(false);
-
-        exit(ServiceType = ReplicationCompletedServiceTypeTxt);
+        HybridCloudManagement.SetUpgradePendingOnReplicationRunCompleted(RunId, SubscriptionId, NotificationText);
     end;
 
     procedure IsCompanyReadyForUpgrade(HybridCompany: Record "Hybrid Company"): Boolean
     var
-        HybridCompanyStatus: Record "Hybrid Company Status";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
-        if not HybridCompanyStatus.Get(HybridCompany.Name) then
-            exit(false);
-
-        if not (HybridCompanyStatus."Upgrade Status" = HybridCompanyStatus."Upgrade Status"::Pending) then
-            exit(false);
-
-        if not HybridCompanyStatus.Replicated then
-            exit(false);
-
-        exit(true);
+        exit(HybridCloudManagement.IsCompanyReadyForUpgrade(HybridCompany));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInvokeDataUpgrade', '', false, false)]
@@ -129,6 +59,7 @@ codeunit 4026 "W1 Management"
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         HybridCompanyStatus: Record "Hybrid Company Status";
         HybridBCLastManagement: Codeunit "Hybrid BC Last Management";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         if Handled then
@@ -137,7 +68,16 @@ codeunit 4026 "W1 Management"
         if not HybridBCLastManagement.GetBCLastProductEnabled() then
             exit;
 
-        VerifyCanStartUpgrade(HybridReplicationSummary);
+
+        HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Completed);
+        if not HybridCompanyStatus.IsEmpty() then
+            Error(CannotStartUpgradeCompanyUpgradeCompletedErr);
+
+        HybridCloudManagement.VerifyCanStartUpgrade(HybridReplicationSummary);
+
+        if GuiAllowed() then
+            if not Confirm(UpgradeWillDisableReplicatonsQst) then
+                exit;
 
         IntelligentCloudSetup.Get();
         if IntelligentCloudSetup."Upgrade Tag Backup ID" <> 0 then
@@ -149,39 +89,15 @@ codeunit 4026 "W1 Management"
         UpgradeNonCompanyData(HybridReplicationSummary);
         Commit();
 
+        Clear(HybridCompanyStatus);
         HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Pending);
+        HybridCompanyStatus.SetFilter(Name, '<>''''');
         HybridCompanyStatus.FindFirst();
         InvokePerCompanyUpgrade(HybridReplicationSummary, HybridCompanyStatus.Name);
 
         Handled := true;
         if GuiAllowed then
             Message(UpgradeWasScheduledMsg);
-    end;
-
-    local procedure VerifyCanStartUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary")
-    var
-        HybridCompany: Record "Hybrid Company";
-        HybridCompanyStatus: Record "Hybrid Company Status";
-        CompaniesNotReadyForUpgrade: Text;
-    begin
-        HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Failed);
-        if not HybridCompanyStatus.IsEmpty() then
-            Error(CannotStartReplicationCompanyUpgradeFailedErr);
-
-        HybridCompany.SetRange(Replicate, true);
-        if not HybridCompany.FindSet() then
-            Error(NoCompaniesAreSelectedForReplicationErr);
-
-        repeat
-            if not IsCompanyReadyForUpgrade(HybridCompany) then
-                CompaniesNotReadyForUpgrade += ', ' + HybridCompany.Name;
-        until HybridCompany.Next() = 0;
-
-        if CompaniesNotReadyForUpgrade <> '' then
-            Error(CannotStartUpgradeNotAllComapniesAreMigratedErr, CompaniesNotReadyForUpgrade.TrimStart(','));
-
-        if not (HybridReplicationSummary.Status = HybridReplicationSummary.Status::UpgradePending) then
-            Error(CannotTriggerUpgradeErr);
     end;
 
     procedure GetSupportedUpgradeVersions(var TargetVersions: List of [Decimal])
@@ -202,6 +118,9 @@ codeunit 4026 "W1 Management"
 
         if HybridBCLastManagement.IsSupportedUpgrade(19.0) then
             TargetVersions.Add(19.0);
+
+        if HybridBCLastManagement.IsSupportedUpgrade(20.0) then
+            TargetVersions.Add(20.0);
     end;
 
     procedure PopulateTableMapping();
@@ -250,10 +169,19 @@ codeunit 4026 "W1 Management"
     procedure InvokePerCompanyUpgrade(HybridReplicationSummary: Record "Hybrid Replication Summary"; CompanyName: Text[50])
     var
         HybridBCLastSetup: Record "Hybrid BC Last Setup";
+        CreateSession: Boolean;
         SessionID: Integer;
     begin
         if not HybridBCLastSetup.CanHandleCodeunit(Codeunit::"W1 Management") then
             exit;
+
+        CreateSession := true;
+        OnCreateSessionForUpgrade(CreateSession);
+
+        if not CreateSession then begin
+            Codeunit.Run(Codeunit::"W1 Management", HybridReplicationSummary);
+            exit;
+        end;
 
         if TaskScheduler.CanCreateTask() then
             TaskScheduler.CreateTask(Codeunit::"W1 Management", 0, true, CompanyName, 0DT, HybridReplicationSummary.RecordId(), GetDefaultPerCompanyUpgradeTimeout())
@@ -349,6 +277,11 @@ codeunit 4026 "W1 Management"
 
     [IntegrationEvent(false, false)]
     procedure OnLoadNonCompanyTableDataForVersion(HybridReplicationSummary: Record "Hybrid Replication Summary"; CountryCode: Text; TargetVersion: Decimal)
+    begin
+    end;
+
+    [InternalEvent(false)]
+    local procedure OnCreateSessionForUpgrade(var CreateSession: Boolean)
     begin
     end;
 }

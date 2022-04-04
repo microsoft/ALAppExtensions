@@ -337,14 +337,14 @@ page 30009 "APIV2 - Customers"
                     Multiplicity = ZeroOrOne;
                     EntityName = 'picture';
                     EntitySetName = 'pictures';
-                    SubPageLink = Id = Field(SystemId), "Parent Type" = const(1);
+                    SubPageLink = Id = Field(SystemId), "Parent Type" = const(Customer);
                 }
                 part(defaultDimensions; "APIV2 - Default Dimensions")
                 {
                     Caption = 'Default Dimensions';
                     EntityName = 'defaultDimension';
                     EntitySetName = 'defaultDimensions';
-                    SubPageLink = ParentId = Field(SystemId), "Parent Type" = const(1);
+                    SubPageLink = ParentId = Field(SystemId), "Parent Type" = const(Customer);
                 }
                 part(agedAccountsReceivable; "APIV2 - Aged AR")
                 {
@@ -359,7 +359,7 @@ page 30009 "APIV2 - Customers"
                     Caption = 'Contacts Information';
                     EntityName = 'contactInformation';
                     EntitySetName = 'contactsInformation';
-                    SubPageLink = "Related Id" = field(SystemId), "Related Type" = const(1);
+                    SubPageLink = "Related Id" = field(SystemId), "Related Type" = const(Customer);
                 }
             }
         }
@@ -377,7 +377,7 @@ page 30009 "APIV2 - Customers"
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
         Customer: Record Customer;
-        RecRef: RecordRef;
+        CustomerRecordRef: RecordRef;
     begin
         if Name = '' then
             Error(NotProvidedCustomerNameErr);
@@ -388,9 +388,9 @@ page 30009 "APIV2 - Customers"
 
         Insert(true);
 
-        RecRef.GetTable(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CurrentDateTime());
-        RecRef.SetTable(Rec);
+        CustomerRecordRef.GetTable(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(CustomerRecordRef, TempFieldSet, CurrentDateTime());
+        CustomerRecordRef.SetTable(Rec);
 
         Modify(true);
         SetCalculatedFields();

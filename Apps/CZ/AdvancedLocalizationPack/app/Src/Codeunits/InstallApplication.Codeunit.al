@@ -23,6 +23,7 @@ codeunit 31250 "Install Application CZA"
                   tabledata "Transfer Receipt Line" = m,
                   tabledata "Detailed G/L Entry CZA" = im,
                   tabledata "G/L Entry" = m,
+                  tabledata "Item Entry Relation" = m,
                   tabledata "Default Dimension" = m;
 
     var
@@ -85,6 +86,7 @@ codeunit 31250 "Install Application CZA"
         CopyTransferReceiptLine();
         CopyDetailedGLEntry();
         CopyGLEntry();
+        CopyItemEntryRelation();
         CopyDefaultDimension();
     end;
 
@@ -286,6 +288,8 @@ codeunit 31250 "Install Application CZA"
             repeat
                 TransferShipmentLine."Gen.Bus.Post.Group Ship CZA" := TransferShipmentLine."Gen. Bus. Post. Group Ship";
                 TransferShipmentLine."Gen.Bus.Post.Group Receive CZA" := TransferShipmentLine."Gen. Bus. Post. Group Receive";
+                TransferShipmentLine."Correction CZA" := TransferShipmentLine.Correction;
+                TransferShipmentLine."Transfer Order Line No. CZA" := TransferShipmentLine."Transfer Order Line No.";
                 TransferShipmentLine.Modify(false);
             until TransferShipmentLine.Next() = 0;
     end;
@@ -354,6 +358,17 @@ codeunit 31250 "Install Application CZA"
             until GLEntry.Next() = 0;
     end;
 
+    local procedure CopyItemEntryRelation();
+    var
+        ItemEntryRelation: Record "Item Entry Relation";
+    begin
+        if ItemEntryRelation.FindSet(true) then
+            repeat
+                ItemEntryRelation."Undo CZA" := ItemEntryRelation.Undo;
+                ItemEntryRelation.Modify(false);
+            until ItemEntryRelation.Next() = 0;
+    end;
+
     local procedure CopyDefaultDimension();
     var
         DefaultDimension: Record "Default Dimension";
@@ -388,7 +403,7 @@ codeunit 31250 "Install Application CZA"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure CompanyInitialize()
     var
-        DataClassEvalHandlerCZA: Codeunit "Data Class. Eval. Handler CZA";
+        DataClassEvalHandlerCZA: Codeunit "Data Class. Eval. Handler CZA";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         DataClassEvalHandlerCZA.ApplyEvaluationClassificationsForPrivacy();

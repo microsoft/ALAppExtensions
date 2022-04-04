@@ -321,16 +321,6 @@ dotnet
         }
     }
 
-    assembly("Microsoft.Dynamics.Nav.Client.BusinessChart")
-    {
-        Culture = 'neutral';
-        PublicKeyToken = '31bf3856ad364e35';
-
-        type("Microsoft.Dynamics.Nav.Client.BusinessChart.BusinessChartAddIn"; "BusinessChartAddIn")
-        {
-        }
-    }
-
     assembly("Microsoft.Dynamics.Nav.Client.BusinessChart.Model")
     {
         Culture = 'neutral';
@@ -686,6 +676,9 @@ dotnet
         }
 
         type("Microsoft.Dynamics.Nav.Runtime.CompoundTokenInfo"; "CompoundTokenInfo")
+        {
+        }
+        type("Microsoft.Dynamics.Nav.Runtime.NavSqlConnectionTelemetry"; "NavSqlConnectionTelemetry")
         {
         }
 
@@ -1220,6 +1213,10 @@ dotnet
         {
         }
 
+        type("System.Collections.Stack"; "Stack")
+        {
+        }
+
         type("System.Convert"; "Convert")
         {
         }
@@ -1518,6 +1515,10 @@ dotnet
         {
         }
 
+        type("Newtonsoft.Json.JsonSerializer"; "JsonSerializer")
+        {
+        }
+
         type("Newtonsoft.Json.JsonTextReader"; "JsonTextReader")
         {
         }
@@ -1735,6 +1736,10 @@ dotnet
         Version = '4.0.0.0';
         Culture = 'neutral';
         PublicKeyToken = 'b77a5c561934e089';
+
+        type("System.Collections.Generic.HashSet`1"; "GenericHashSet1")
+        {
+        }
 
         type("System.IO.MemoryMappedFiles.MemoryMappedFile"; "MemoryMappedFile")
         {
@@ -2233,7 +2238,7 @@ dotnet
 
     assembly("MailKit")
     {
-        Version = '2.2.0.0';
+        Version = '2.15.0.0';
         Culture = 'neutral';
         PublicKeyToken = '4e064fe7c44a8f1b';
 
@@ -2268,7 +2273,7 @@ dotnet
 
     assembly("MimeKit")
     {
-        Version = '2.2.0.0';
+        Version = '2.15.0.0';
         Culture = 'neutral';
         PublicKeyToken = 'bede1c8a46c66814';
 

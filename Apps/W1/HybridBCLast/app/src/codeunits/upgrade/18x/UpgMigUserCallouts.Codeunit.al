@@ -1,5 +1,10 @@
+#if not CLEAN20
 codeunit 4057 "Upg Mig User Callouts"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '20.0';
+
     trigger OnRun()
     begin
         // This code is based on standard app upgrade logic.
@@ -33,3 +38,4 @@ codeunit 4057 "Upg Mig User Callouts"
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetUserCalloutsUpgradeTag());
     end;
 }
+#endif

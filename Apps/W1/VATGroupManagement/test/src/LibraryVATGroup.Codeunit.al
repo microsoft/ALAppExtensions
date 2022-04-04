@@ -62,7 +62,7 @@ codeunit 139525 "Library - VAT Group"
     begin
         MockVATStatementReportLineBase(
           VATStatementReportLine,
-          VATStatementReportLine."VAT Report Config. Code"::"VAT Report", No, Amount, '', '');
+          VATStatementReportLine."VAT Report Config. Code"::"VAT Return", No, Amount, '', '');
     end;
 
     procedure MockVATStatementReportLineWithBoxNo(var VATStatementReportLine: Record "VAT Statement Report Line"; VATReportHeader: Record "VAT Report Header"; Amount: Decimal; RowNo: Code[10]; BoxNo: Text[30])

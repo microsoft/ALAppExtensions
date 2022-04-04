@@ -572,42 +572,44 @@ codeunit 139087 "Azure AD Graph Test"
         UnbindSubscription(AzureADGraphTest);
     end;
 
-    local procedure CreateGraphUser(var GraphUser: DotNet UserInfo; UserId: Text; UserGivenName: Text; UserSurname: Text; UserEmail: Text)
+    local procedure CreateGraphUser(var GraphUserInfo: DotNet UserInfo; UserId: Text; UserGivenName: Text; UserSurname: Text; UserEmail: Text)
     begin
-        GraphUser := GraphUser.UserInfo();
-        GraphUser.ObjectId := UserId;
-        GraphUser.UserPrincipalName := UserEmail;
-        GraphUser.Mail := UserEmail;
-        GraphUser.GivenName := UserGivenName;
-        GraphUser.Surname := UserSurname;
-        GraphUser.DisplayName := StrSubstNo('%1 %2', UserGivenName, UserSurname);
+        GraphUserInfo := GraphUserInfo.UserInfo();
+        GraphUserInfo.ObjectId := UserId;
+        GraphUserInfo.UserPrincipalName := UserEmail;
+        GraphUserInfo.Mail := UserEmail;
+        GraphUserInfo.GivenName := UserGivenName;
+        GraphUserInfo.Surname := UserSurname;
+#pragma warning disable AA0217
+        GraphUserInfo.DisplayName := StrSubstNo('%1 %2', UserGivenName, UserSurname);
+#pragma warning restore
     end;
 
     procedure SetCurrentUser(UserGivenName: Text; UserEmail: Text)
     var
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
     begin
-        CreateGraphUser(GraphUser, UserSecurityId(), UserGivenName, '', UserEmail);
-        MockGraphQuery.CurrentUserUserObject := GraphUser;
+        CreateGraphUser(GraphUserInfo, UserSecurityId(), UserGivenName, '', UserEmail);
+        MockGraphQuery.CurrentUserUserObject := GraphUserInfo;
     end;
 
     procedure AddGraphUser(UserId: Text; UserGivenName: Text; UserSurname: Text; UserEmail: Text)
     var
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
     begin
-        CreateGraphUser(GraphUser, UserId, UserGivenName, UserSurname, UserEmail);
-        MockGraphQuery.AddUser(GraphUser);
+        CreateGraphUser(GraphUserInfo, UserId, UserGivenName, UserSurname, UserEmail);
+        MockGraphQuery.AddUser(GraphUserInfo);
     end;
 
-    procedure AddAndReturnGraphUser(var GraphUser: DotNet UserInfo; UserId: Text; UserGivenName: Text; UserSurname: Text; UserEmail: Text)
+    procedure AddAndReturnGraphUser(var GraphUserInfo: DotNet UserInfo; UserId: Text; UserGivenName: Text; UserSurname: Text; UserEmail: Text)
     begin
-        CreateGraphUser(GraphUser, UserId, UserGivenName, UserSurname, UserEmail);
-        MockGraphQuery.AddUser(GraphUser);
+        CreateGraphUser(GraphUserInfo, UserId, UserGivenName, UserSurname, UserEmail);
+        MockGraphQuery.AddUser(GraphUserInfo);
     end;
 
     procedure AddUserPlan(UserId: Text; AssignedPlanId: Guid; AssignedPlanService: Text; CapabilityStatus: Text)
     var
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
         AssignedPlan: DotNet ServicePlanInfo;
         GuidVar: Variant;
     begin
@@ -617,8 +619,8 @@ codeunit 139087 "Azure AD Graph Test"
         AssignedPlan.ServicePlanName := AssignedPlanService;
         AssignedPlan.CapabilityStatus := CapabilityStatus;
 
-        GraphUser := MockGraphQuery.GetUserByObjectId(UserId);
-        MockGraphQuery.AddAssignedPlanToUser(GraphUser, AssignedPlan);
+        GraphUserInfo := MockGraphQuery.GetUserByObjectId(UserId);
+        MockGraphQuery.AddAssignedPlanToUser(GraphUserInfo, AssignedPlan);
     end;
 
     local procedure CreateDirectoryRole(var DirectoryRole: DotNet RoleInfo; RoleTemplateId: Text; RoleDescription: Text; RoleDisplayName: Text; RoleIsSystem: Boolean)
@@ -641,13 +643,13 @@ codeunit 139087 "Azure AD Graph Test"
 
     procedure AddUserRole(UserId: Text; RoleTemplateId: Text; RoleDescription: Text; RoleDisplayName: Text; RoleIsSystem: Boolean)
     var
-        GraphUser: DotNet UserInfo;
+        GraphUserInfo: DotNet UserInfo;
         DirectoryRole: DotNet RoleInfo;
     begin
         CreateDirectoryRole(DirectoryRole, RoleTemplateId, RoleDescription, RoleDisplayName, RoleIsSystem);
 
-        GraphUser := MockGraphQuery.GetUserByObjectId(UserId);
-        MockGraphQuery.AddUserRole(GraphUser, DirectoryRole);
+        GraphUserInfo := MockGraphQuery.GetUserByObjectId(UserId);
+        MockGraphQuery.AddUserRole(GraphUserInfo, DirectoryRole);
     end;
 
     procedure AddSubscribedSkuWithServicePlan(SkuId: Guid; PlanId: Guid; PlanName: Text)

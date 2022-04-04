@@ -15,6 +15,7 @@ codeunit 3961 "Regex Impl."
         DotNetCaptureCollection: DotNet CaptureCollection;
         TimeoutTooLowErr: Label 'The regular expression timeout should be at least 1000 ms';
         TimeoutTooHighErr: Label 'The regular expression timeout should be at most 10000 ms';
+        RegexIsNotInstantiatedErr: Label 'Regex is not Instantiated. Consider calling Regex() first or use an overload supporting a pattern.';
 
     procedure GetCacheSize(): Integer
     begin
@@ -57,6 +58,11 @@ codeunit 3961 "Regex Impl."
     procedure IsMatch(Input: Text; Pattern: Text; StartAt: Integer): Boolean
     begin
         Regex(Pattern);
+        exit(IsMatch(Input, StartAt))
+    end;
+
+    procedure IsMatch(Input: Text; StartAt: Integer): Boolean
+    begin
         exit(DotNetRegex.IsMatch(Input, StartAt))
     end;
 
@@ -69,6 +75,12 @@ codeunit 3961 "Regex Impl."
     procedure IsMatch(Input: Text; Pattern: Text): Boolean
     begin
         Regex(Pattern);
+        exit(IsMatch(Input));
+    end;
+
+    procedure IsMatch(Input: Text): Boolean
+    begin
+        CheckIfInstantiated();
         exit(DotNetRegex.IsMatch(Input));
     end;
 
@@ -84,27 +96,48 @@ codeunit 3961 "Regex Impl."
         Match(Input, StartAt, Matches);
     end;
 
+    procedure Match(Input: Text; StartAt: Integer; var Matches: Record Matches)
+    begin
+        CheckIfInstantiated();
+        DotNetMatchCollection := DotNetRegex.Matches(Input, StartAt);
+        InsertMatch(Matches);
+    end;
+
     procedure Match(Input: Text; Pattern: Text; StartAt: Integer; var RegexOptions: Record "Regex Options"; var Matches: Record Matches)
     begin
         Regex(Pattern, RegexOptions);
         Match(Input, StartAt, Matches);
     end;
 
-    procedure Match(Input: Text; Pattern: Text; Beginning: Integer; Length: Integer; var Matches: Record Matches)
+    procedure Match(Input: Text; Pattern: Text; StartAt: Integer; Length: Integer; var Matches: Record Matches)
     begin
         Regex(Pattern);
-        Match(Input, Beginning, Length, Matches)
+        Match(Input, StartAt, Length, Matches)
     end;
 
-    procedure Match(Input: Text; Pattern: Text; Beginning: Integer; Length: Integer; var RegexOptions: Record "Regex Options"; var Matches: Record Matches)
+    procedure Match(Input: Text; StartAt: Integer; Length: Integer; var Matches: Record Matches)
+    begin
+        CheckIfInstantiated();
+        Input := Input.Substring(1, StartAt + Length);
+        DotNetMatchCollection := DotNetRegex.Matches(Input, StartAt);
+        InsertMatch(Matches);
+    end;
+
+    procedure Match(Input: Text; Pattern: Text; StartAt: Integer; Length: Integer; var RegexOptions: Record "Regex Options"; var Matches: Record Matches)
     begin
         Regex(Pattern, RegexOptions);
-        Match(Input, Beginning, Length, Matches)
+        Match(Input, StartAt, Length, Matches)
     end;
 
     procedure Match(Input: Text; Pattern: Text; var Matches: Record Matches)
     begin
         Regex(Pattern);
+        Match(Input, Matches);
+    end;
+
+    procedure Match(Input: Text; var Matches: Record Matches)
+    begin
+        CheckIfInstantiated();
         DotNetMatchCollection := DotNetRegex.Matches(Input);
         InsertMatch(Matches);
     end;
@@ -119,6 +152,12 @@ codeunit 3961 "Regex Impl."
     procedure Replace(Input: Text; Pattern: Text; Replacement: Text; "Count": Integer): Text
     begin
         Regex(Pattern);
+        exit(Replace(Input, Replacement, "Count"));
+    end;
+
+    procedure Replace(Input: Text; Replacement: Text; "Count": Integer): Text
+    begin
+        CheckIfInstantiated();
         exit(DotNetRegex.Replace(Input, Replacement, "Count"));
     end;
 
@@ -131,6 +170,12 @@ codeunit 3961 "Regex Impl."
     procedure Replace(Input: Text; Pattern: Text; Replacement: Text; "Count": Integer; StartAt: Integer): Text
     begin
         Regex(Pattern);
+        exit(Replace(Input, Replacement, "Count", StartAt));
+    end;
+
+    procedure Replace(Input: Text; Replacement: Text; "Count": Integer; StartAt: Integer): Text
+    begin
+        CheckIfInstantiated();
         exit(DotNetRegex.Replace(Input, Replacement, "Count", StartAt));
     end;
 
@@ -143,6 +188,12 @@ codeunit 3961 "Regex Impl."
     procedure Replace(Input: Text; Pattern: Text; Replacement: Text): Text
     begin
         Regex(Pattern);
+        exit(Replace(Input, Replacement));
+    end;
+
+    procedure Replace(Input: Text; Replacement: Text): Text
+    begin
+        CheckIfInstantiated();
         exit(DotNetRegex.Replace(Input, Replacement));
     end;
 
@@ -158,6 +209,16 @@ codeunit 3961 "Regex Impl."
         Split(Input, "Count", "Array");
     end;
 
+    procedure Split(Input: Text; "Count": Integer; var "Array": List of [Text])
+    var
+        StringsDotNetArray: DotNet Array;
+        SplitElement: Text;
+    begin
+        CheckIfInstantiated();
+        StringsDotNetArray := DotNetRegex.Split(Input, "Count");
+        foreach SplitElement in StringsDotNetArray do "Array".Add(SplitElement);
+    end;
+
     procedure Split(Input: Text; Pattern: Text; "Count": Integer; var RegexOptions: Record "Regex Options"; var "Array": List of [Text])
     begin
         Regex(Pattern, RegexOptions);
@@ -170,6 +231,16 @@ codeunit 3961 "Regex Impl."
         Split(Input, "Count", StartAt, "Array");
     end;
 
+    procedure Split(Input: Text; "Count": Integer; StartAt: Integer; var "Array": List of [Text])
+    var
+        StringsDotNetArray: DotNet Array;
+        SplitElement: Text;
+    begin
+        CheckIfInstantiated();
+        StringsDotNetArray := DotNetRegex.Split(Input, "Count", StartAt);
+        foreach SplitElement in StringsDotNetArray do "Array".Add(SplitElement);
+    end;
+
     procedure Split(Input: Text; Pattern: Text; "Count": Integer; StartAt: Integer; var RegexOptions: Record "Regex Options"; var "Array": List of [Text])
     begin
         Regex(Pattern, RegexOptions);
@@ -180,6 +251,17 @@ codeunit 3961 "Regex Impl."
     begin
         Regex(Pattern);
         Split(Input, "Array");
+    end;
+
+    procedure Split(Input: Text; var "Array": List of [Text])
+    var
+        StringsDotNetArray: DotNet Array;
+        SplitElement: Text;
+    begin
+        CheckIfInstantiated();
+        StringsDotNetArray := DotNetRegex.Split(Input);
+        foreach SplitElement in StringsDotNetArray do
+            "Array".Add(SplitElement);
     end;
 
     procedure Split(Input: Text; Pattern: Text; var RegexOptions: Record "Regex Options"; var "Array": List of [Text])
@@ -203,33 +285,33 @@ codeunit 3961 "Regex Impl."
         exit(DotNetRegex.Unescape(String));
     end;
 
-    procedure MatchResult(var Match: Record Matches; Replacement: Text): Text
+    procedure MatchResult(var Matches: Record Matches; Replacement: Text): Text
     var
         MatchIndex: Integer;
     begin
-        MatchIndex := Match.MatchIndex;
+        MatchIndex := Matches.MatchIndex;
         exit(DotNetMatchCollection.Item(MatchIndex).Result(Replacement));
     end;
 
-    procedure Groups(var Match: Record Matches; var Groups: Record Groups)
+    procedure Groups(var Matches: Record Matches; var Groups: Record Groups)
     var
         MatchIndex: Integer;
     begin
-        MatchIndex := Match.MatchIndex;
+        MatchIndex := Matches.MatchIndex;
         DotNetGroupCollection := DotNetMatchCollection.Item(MatchIndex).Groups;
         InsertGroups(Groups);
     end;
 
-    procedure Captures(var "Group": Record Groups; var Captures: Record Captures)
+    procedure Captures(var Groups: Record Groups; var Captures: Record Captures)
     var
         GroupIndex: Integer;
     begin
-        GroupIndex := "Group".GroupIndex;
+        GroupIndex := Groups.GroupIndex;
         DotNetCaptureCollection := DotNetGroupCollection.Item(GroupIndex).Captures;
         InsertCaptures(Captures)
     end;
 
-    local procedure Regex(Pattern: Text)
+    procedure Regex(Pattern: Text)
     var
         RegexOptions: Record "Regex Options";
     begin
@@ -248,44 +330,10 @@ codeunit 3961 "Regex Impl."
         DotNetRegex := DotNetRegex.Regex(Pattern, DotNetRegexOptions, TimeoutDuration.FromMilliseconds(RegexOptions.MatchTimeoutInMs));
     end;
 
-    local procedure Match(Input: Text; StartAt: Integer; var Matches: Record Matches)
+    local procedure CheckIfInstantiated()
     begin
-        DotNetMatchCollection := DotNetRegex.Matches(Input, StartAt);
-        InsertMatch(Matches);
-    end;
-
-    local procedure Match(Input: Text; Beginning: Integer; Length: Integer; var Matches: Record Matches)
-    begin
-        Input := Input.Substring(1, Beginning + Length);
-        DotNetMatchCollection := DotNetRegex.Matches(Input, Beginning);
-        InsertMatch(Matches);
-    end;
-
-    local procedure Split(Input: Text; var "Array": List of [Text])
-    var
-        StringsDotNetArray: DotNet Array;
-        SplitElement: Text;
-    begin
-        StringsDotNetArray := DotNetRegex.Split(Input);
-        foreach SplitElement in StringsDotNetArray do "Array".Add(SplitElement);
-    end;
-
-    local procedure Split(Input: Text; "Count": Integer; StartAt: Integer; var "Array": List of [Text])
-    var
-        StringsDotNetArray: DotNet Array;
-        SplitElement: Text;
-    begin
-        StringsDotNetArray := DotNetRegex.Split(Input, "Count", StartAt);
-        foreach SplitElement in StringsDotNetArray do "Array".Add(SplitElement);
-    end;
-
-    local procedure Split(Input: Text; "Count": Integer; var "Array": List of [Text])
-    var
-        StringsDotNetArray: DotNet Array;
-        SplitElement: Text;
-    begin
-        StringsDotNetArray := DotNetRegex.Split(Input, "Count");
-        foreach SplitElement in StringsDotNetArray do "Array".Add(SplitElement);
+        if IsNull(DotNetRegex) then
+            Error(RegexIsNotInstantiatedErr);
     end;
 
     local procedure InsertMatch(var Matches: Record Matches)

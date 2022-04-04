@@ -10,15 +10,13 @@ pageextension 18090 "GST Purch. Invoice Subform Ext" extends "Purch. Invoice Sub
                 FormatLine();
             end;
         }
-#if not CLEAN17
-        Modify("Cross-Reference No.")
+        Modify("Item Reference No.")
         {
             trigger OnAfterValidate()
             begin
                 SaveRecords();
             end;
         }
-#endif
         Modify(Quantity)
         {
             trigger OnAfterValidate()

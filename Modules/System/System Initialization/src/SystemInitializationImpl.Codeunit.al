@@ -11,7 +11,13 @@ codeunit 151 "System Initialization Impl."
     var
         InitializationInProgress: Boolean;
 
+#if not CLEAN20
+#pragma warning disable AL0432
+#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company Triggers", 'OnCompanyOpen', '', false, false)]
+#if not CLEAN20
+#pragma warning restore AL0432
+#endif
     local procedure Init()
     var
         SystemInitialization: Codeunit "System Initialization";
@@ -32,6 +38,16 @@ codeunit 151 "System Initialization Impl."
 
         SystemInitialization.OnAfterInitialization();
 
+        InitializationInProgress := false;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company Triggers", 'OnCompanyOpenCompleted', '', false, false)]
+    local procedure InitCompany()
+    var
+        SystemInitialization: Codeunit "System Initialization";
+    begin
+        InitializationInProgress := true;
+        SystemInitialization.OnAfterLogin();
         InitializationInProgress := false;
     end;
 
