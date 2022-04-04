@@ -134,6 +134,11 @@ page 4511 "SMTP Account Wizard"
                 Editable = UserIDEditable;
                 Caption = 'User Name';
                 ToolTip = 'Specifies the username to use when authenticating with the SMTP server.';
+
+                trigger OnValidate()
+                begin
+                    IsNextEnabled := SMTPConnectorImpl.IsAccountValid(Rec);
+                end;
             }
 
             field(Password; Password)
