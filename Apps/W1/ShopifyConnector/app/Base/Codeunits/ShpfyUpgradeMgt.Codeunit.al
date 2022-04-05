@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30106 "Shpfy Upgrade Mgt."
 {
+    Access = Internal;
     Subtype = Upgrade;
 
     var

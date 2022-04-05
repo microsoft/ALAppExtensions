@@ -60,6 +60,7 @@ page 30108 "Shpfy Customer Templates"
                     Sync: Codeunit "Shpfy Background Syncs";
                 begin
                     Shop.Get(Rec.GetFilter("Shop Code"));
+                    Shop.SetRecFilter();
                     Sync.CountrySync(Shop);
                 end;
             }

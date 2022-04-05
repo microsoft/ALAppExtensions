@@ -3,6 +3,7 @@
 /// </summary>
 enum 30106 "Shpfy Customer Mapping" implements "Shpfy ICustomer Mapping"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; "By EMail/Phone")

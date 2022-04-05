@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30154 "Shpfy GraphQL Queries"
 {
+    Access = Internal;
     SingleInstance = true;
 
     /// <summary> 
@@ -58,7 +59,7 @@ codeunit 30154 "Shpfy GraphQL Queries"
     /// <param name="IGraphQL">VAR Interface "Shopify IGarphQL".</param>
     /// <param name="GraphQL">VAR Text.</param>
     /// <param name="ExpextedCost">VAR Integer.</param>
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     local procedure OnAfterGetGrapQLInfo(GraphQLType: enum "Shpfy GraphQL Type"; var Parameters: Dictionary of [Text, Text]; var IGraphQL: Interface "Shpfy IGraphQL"; var GraphQL: Text; var ExpextedCost: Integer)
     begin
     end;
@@ -69,7 +70,7 @@ codeunit 30154 "Shpfy GraphQL Queries"
     /// <param name="GraphQLType">enum "Shopify GraphQL Type".</param>
     /// <param name="GraphQL">VAR Text.</param>
     /// <param name="ExpextedCost">VAR Integer.</param>
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     local procedure OnAfterReplaceParameters(GraphQLType: enum "Shpfy GraphQL Type"; var GraphQL: Text; var ExpextedCost: Integer)
     begin
     end;
@@ -83,7 +84,7 @@ codeunit 30154 "Shpfy GraphQL Queries"
     /// <param name="GraphQL">VAR Text.</param>
     /// <param name="ExpextedCost">VAR Integer.</param>
     /// <param name="IsHandled">Boolean.</param>
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     local procedure OnBeforeGetGrapQLInfo(GraphQLType: enum "Shpfy GraphQL Type"; var Parameters: Dictionary of [Text, Text]; var IGraphQL: Interface "Shpfy IGraphQL"; var GraphQL: Text; var ExpextedCost: Integer; IsHandled: Boolean)
     begin
     end;
@@ -96,7 +97,7 @@ codeunit 30154 "Shpfy GraphQL Queries"
     /// <param name="GraphQL">VAR Text.</param>
     /// <param name="ExpextedCost">VAR Integer.</param>
     /// <param name="IsHandled">Boolean.</param>
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     local procedure OnBeforeReplaceParameters(GraphQLType: enum "Shpfy GraphQL Type"; var Parameters: Dictionary of [Text, Text]; var GraphQL: Text; var ExpextedCost: Integer; IsHandled: Boolean)
     begin
     end;
@@ -108,7 +109,7 @@ codeunit 30154 "Shpfy GraphQL Queries"
     /// <param name="Parameters">VAR Dictionary of [Text, Text].</param>
     /// <param name="IGraphQL">VAR Interface "Shopify IGarphQL".</param>
     /// <param name="IsHandled">Boolean.</param>
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     local procedure OnBeforeSetInterfaceCodeunit(GraphQLType: enum "Shpfy GraphQL Type"; var Parameters: Dictionary of [Text, Text]; var IGraphQL: Interface "Shpfy IGraphQL"; IsHandled: Boolean)
     begin
     end;

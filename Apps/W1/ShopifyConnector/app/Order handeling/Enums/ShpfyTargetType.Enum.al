@@ -3,6 +3,8 @@
 /// </summary>
 enum 30121 "Shpfy Target Type"
 {
+    Access = Internal;
+
     value(2; "Line Item")
     {
         Caption = 'Line Item';

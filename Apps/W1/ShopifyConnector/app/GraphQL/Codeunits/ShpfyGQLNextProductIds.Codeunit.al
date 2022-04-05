@@ -3,12 +3,13 @@
 /// </summary>
 codeunit 30139 "Shpfy GQL NextProductIds" implements "Shpfy IGraphQL"
 {
+    Access = Internal;
 
     /// <summary>
     /// GetGraphQL.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetGraphQL(): Text
+    internal procedure GetGraphQL(): Text
     begin
         exit('{"query":"{products(first:200, after:\"{{After}}\", query: \"updated_at:>''{{Time}}''\"){pageInfo{hasNextPage} edges{cursor node{id updatedAt}}}}"}');
     end;
@@ -17,7 +18,7 @@ codeunit 30139 "Shpfy GQL NextProductIds" implements "Shpfy IGraphQL"
     /// GetExpectedCost.
     /// </summary>
     /// <returns>Return value of type Integer.</returns>
-    procedure GetExpectedCost(): Integer
+    internal procedure GetExpectedCost(): Integer
     begin
         exit(220);
     end;

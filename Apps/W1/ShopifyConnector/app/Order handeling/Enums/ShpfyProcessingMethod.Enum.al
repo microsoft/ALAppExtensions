@@ -3,6 +3,7 @@
 /// </summary>
 enum 30118 "Shpfy Processing Method"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; Checkout)

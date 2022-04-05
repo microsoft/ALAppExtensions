@@ -3,6 +3,7 @@
 /// </summary>
 table 30103 "Shpfy Synchronization Info"
 {
+    Access = Internal;
     Caption = 'Synchronization Info';
     DataClassification = SystemMetadata;
 

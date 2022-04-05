@@ -6,6 +6,7 @@
 /// </summary>
 enum 30122 "Shpfy Tracking Companies"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; " ")

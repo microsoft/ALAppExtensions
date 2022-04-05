@@ -3,21 +3,25 @@
 /// </summary>
 codeunit 30199 "Shpfy Authentication Mgt."
 {
+    Access = Internal;
+
     var
         // https://shopify.dev/api/usage/access-scopes
-        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping', Locked
+        ScopeTxt: Label 'write_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping', Locked = true;
+    // ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping', Locked
 
 
     [NonDebuggable]
     local procedure ApiKey(): Text
     begin
-        //TODO: Get API Key
+        //TODO: Update API Key
+        exit('344328ba2621f7899a04d7fbdad473eb');
     end;
 
     [NonDebuggable]
     local procedure SecretKey(): Text
     begin
-        //TODO: Get SecretKey
+        exit('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');
     end;
 
     [NonDebuggable]

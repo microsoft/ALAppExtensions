@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30174 "Shpfy Create Product"
 {
+    Access = Internal;
     TableNo = Item;
 
     var

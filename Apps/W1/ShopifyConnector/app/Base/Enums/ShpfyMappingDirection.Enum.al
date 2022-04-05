@@ -3,6 +3,7 @@
 /// </summary>
 enum 30101 "Shpfy Mapping Direction"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; ShopifyToBC)

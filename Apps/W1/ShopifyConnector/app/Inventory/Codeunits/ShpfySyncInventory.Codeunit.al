@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30197 "Shpfy Sync Inventory"
 {
+    Access = Internal;
     TableNo = "Shpfy Shop Inventory";
 
     var

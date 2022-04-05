@@ -3,6 +3,7 @@
 /// </summary>
 enum 30109 "Shpfy Tax By"
 {
+    Access = Internal;
     Extensible = true;
     value(0; "No Taxes")
     {

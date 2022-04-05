@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30116 "Shpfy Customer Export"
 {
+    Access = Internal;
     TableNo = Customer;
 
     trigger OnRun()
@@ -35,7 +36,7 @@ codeunit 30116 "Shpfy Customer Export"
     /// </summary>
     /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
     /// <param name="MetadataField">Parameter of type FieldRef.</param>
-    procedure AddOrUpdateMetadata(ShopifyCustomer: Record "Shpfy Customer"; MetadataField: FieldRef)
+    internal procedure AddOrUpdateMetadata(ShopifyCustomer: Record "Shpfy Customer"; MetadataField: FieldRef)
     var
         Metafield: Record "Shpfy Metafield";
         Name: Text;
@@ -99,7 +100,7 @@ codeunit 30116 "Shpfy Customer Export"
     /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
     /// <param name="ShopAddress">Parameter of type Record "Shopify Customer Address".</param>
     /// <returns>Return value of type Boolean.</returns>
-    local procedure FillInShopifyCustomerData(Customer: Record Customer; var ShopifyCustomer: Record "Shpfy Customer"; var ShopAddress: Record "Shpfy Customer Address"): Boolean
+    internal procedure FillInShopifyCustomerData(Customer: Record Customer; var ShopifyCustomer: Record "Shpfy Customer"; var ShopAddress: Record "Shpfy Customer Address"): Boolean
     var
         CompanyInfo: Record "Company Information";
         Country: Record "Country/Region";
@@ -152,7 +153,7 @@ codeunit 30116 "Shpfy Customer Export"
                         if Province.FindFirst() then
                             ShopAddress.ProvinceCode := CopyStr(Province.Code, 1, MaxStrLen(ShopAddress.ProvinceCode))
                         else begin
-                            Province.SetFilter(Name, Customer.County + '%');
+                            Province.SetFilter(Name, Customer.County + '*');
                             if Province.FindFirst() then
                                 ShopAddress.ProvinceCode := CopyStr(Province.Code, 1, MaxStrLen(ShopAddress.ProvinceCode));
                         end;
@@ -239,7 +240,7 @@ codeunit 30116 "Shpfy Customer Export"
     /// <param name="FirstName">Parameter of type Text.</param>
     /// <param name="LastName">Parameter of type Text.</param>
     /// <param name="NameSource">Parameter of type enum "Shopify Name Source".</param>
-    local procedure SpiltNameIntoFirstAndLastName(Name: Text; var FirstName: Text[100]; var LastName: Text[100]; NameSource: enum "Shpfy Name Source")
+    internal procedure SpiltNameIntoFirstAndLastName(Name: Text; var FirstName: Text[100]; var LastName: Text[100]; NameSource: enum "Shpfy Name Source")
     begin
         Name := Name.Trim();
         if Name <> '' then begin

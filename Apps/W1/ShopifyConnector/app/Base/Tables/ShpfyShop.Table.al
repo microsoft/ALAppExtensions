@@ -3,6 +3,7 @@
 /// </summary>
 table 30102 "Shpfy Shop"
 {
+    Access = Internal;
     Caption = 'Shopify Shop';
     DataClassification = SystemMetadata;
     DrillDownPageId = "Shpfy Shops";
@@ -392,7 +393,7 @@ table 30102 "Shpfy Shop"
     /// <summary> 
     /// Calc Shop Id.
     /// </summary>
-    procedure CalcShopId()
+    internal procedure CalcShopId()
     var
         Shop: Record "Shpfy Shop";
         Hash: Codeunit "Shpfy Hash";

@@ -3,7 +3,6 @@
 /// </summary>
 page 30130 "Shpfy Credit Card Companies"
 {
-
     Caption = 'Shopify Credit Card Companies';
     PageType = List;
     SourceTable = "Shpfy Credit Card Company";

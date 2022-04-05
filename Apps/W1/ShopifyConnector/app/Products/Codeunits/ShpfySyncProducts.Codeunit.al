@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30185 "Shpfy Sync Products"
 {
+    Access = Internal;
     TableNo = "Shpfy Shop";
 
     trigger OnRun()

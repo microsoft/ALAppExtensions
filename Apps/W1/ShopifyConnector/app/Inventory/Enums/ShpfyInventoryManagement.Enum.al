@@ -3,6 +3,7 @@
 /// </summary>
 enum 30124 "Shpfy Inventory Management"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; SHOPIFY)

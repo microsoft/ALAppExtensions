@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30117 "Shpfy Customer Import"
 {
+    Access = Internal;
+
     trigger OnRun()
     var
         Address: Record "Shpfy Customer Address";

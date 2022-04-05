@@ -3,6 +3,7 @@
 /// </summary>
 enum 30131 "Shpfy Remove Product Action" implements "Shpfy IRemoveProductAction"
 {
+    Access = Internal;
     Extensible = true;
     DefaultImplementation = "Shpfy IRemoveProductAction" = "Shpfy RemoveProductDoNothing";
 

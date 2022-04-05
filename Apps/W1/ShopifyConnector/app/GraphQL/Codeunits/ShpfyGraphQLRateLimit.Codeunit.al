@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30153 "Shpfy GraphQL Rate Limit"
 {
+    Access = Internal;
     SingleInstance = true;
 
     var

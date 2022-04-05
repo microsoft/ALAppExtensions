@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30175 "Shpfy Item Reference Mgt."
 {
+    Access = Internal;
+
     var
         ProductEvents: Codeunit "Shpfy Product Events";
 

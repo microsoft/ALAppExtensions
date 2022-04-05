@@ -3,6 +3,7 @@
 /// </summary>
 enum 30126 "Shpfy Risk Level"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; " ")

@@ -1,9 +1,8 @@
 table 30114 "Shpfy Data Capture"
 {
+    Access = Internal;
     Caption = 'Data Capture';
     DataClassification = SystemMetadata;
-    Access = Internal;
-
 
     fields
     {
@@ -43,7 +42,7 @@ table 30114 "Shpfy Data Capture"
         key(Indx01; "Linked To Table", "Linked To Id") { }
     }
 
-    procedure GetData(): Text
+    internal procedure GetData(): Text
     var
         TypeHelper: Codeunit "Type Helper";
         InStream: InStream;
@@ -55,7 +54,7 @@ table 30114 "Shpfy Data Capture"
         end;
     end;
 
-    procedure Add(TableNo: Integer; SystemId: Guid; Data: Text)
+    internal procedure Add(TableNo: Integer; SystemId: Guid; Data: Text)
     var
         DataCapture: Record "Shpfy Data Capture";
         Hash: Codeunit "Shpfy Hash";
@@ -76,7 +75,7 @@ table 30114 "Shpfy Data Capture"
         DataCapture.Insert();
     end;
 
-    procedure Add(TableNo: Integer; SystemId: Guid; Data: JsonToken)
+    internal procedure Add(TableNo: Integer; SystemId: Guid; Data: JsonToken)
     begin
         Add(TableNo, SystemId, Format(Data));
     end;

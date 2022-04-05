@@ -3,6 +3,7 @@
 /// </summary>
 enum 30117 "Shpfy Financial Status"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; " ")

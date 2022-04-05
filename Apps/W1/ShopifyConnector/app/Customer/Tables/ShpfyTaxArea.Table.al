@@ -3,6 +3,7 @@
 /// </summary>
 table 30109 "Shpfy Tax Area"
 {
+    Access = Internal;
     DataClassification = CustomerContent;
     fields
     {

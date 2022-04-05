@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30119 "Shpfy Name = ''" implements "Shpfy ICustomer Name"
 {
+    Access = Internal;
+
     /// <summary> 
     /// Description for GetName.
     /// </summary>

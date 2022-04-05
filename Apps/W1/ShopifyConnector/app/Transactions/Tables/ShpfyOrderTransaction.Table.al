@@ -3,6 +3,7 @@
 /// </summary>
 table 30133 "Shpfy Order Transaction"
 {
+    Access = Internal;
     Caption = 'Shopify Order Transaction';
     DataClassification = SystemMetadata;
     LookupPageID = "Shpfy Order Transactions";

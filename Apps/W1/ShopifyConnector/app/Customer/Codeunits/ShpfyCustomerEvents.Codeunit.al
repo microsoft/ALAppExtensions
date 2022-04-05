@@ -3,7 +3,9 @@
 /// </summary>
 codeunit 30115 "Shpfy Customer Events"
 {
-    [IntegrationEvent(false, false)]
+    Access = Internal;
+
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Create Customer.
     /// </summary>
@@ -14,7 +16,7 @@ codeunit 30115 "Shpfy Customer Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Find Customer Template.
     /// </summary>
@@ -26,7 +28,7 @@ codeunit 30115 "Shpfy Customer Events"
     end;
 
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Create Customer.
     /// </summary>
@@ -38,7 +40,7 @@ codeunit 30115 "Shpfy Customer Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Send Create Shopify Customer.
     /// </summary>
@@ -49,7 +51,7 @@ codeunit 30115 "Shpfy Customer Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Send Update Shopify Customer.
     /// </summary>
@@ -62,7 +64,7 @@ codeunit 30115 "Shpfy Customer Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Find Customer Template.
     /// </summary>
@@ -74,7 +76,7 @@ codeunit 30115 "Shpfy Customer Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Find Mapping.
     /// </summary>
@@ -85,7 +87,7 @@ codeunit 30115 "Shpfy Customer Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Find Mapping.
     /// </summary>
@@ -97,7 +99,7 @@ codeunit 30115 "Shpfy Customer Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Update Customer.
     /// </summary>
@@ -108,7 +110,7 @@ codeunit 30115 "Shpfy Customer Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Update Customer.
     /// </summary>

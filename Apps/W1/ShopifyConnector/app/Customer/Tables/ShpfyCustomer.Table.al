@@ -3,6 +3,7 @@
 /// </summary>
 table 30105 "Shpfy Customer"
 {
+    Access = Internal;
     Caption = 'Shopify Customer';
     DataClassification = CustomerContent;
     DrillDownPageId = "Shpfy Customers";
@@ -147,7 +148,7 @@ table 30105 "Shpfy Customer"
     /// Get Comma Seperated Tags.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetCommaSeperatedTags(): Text
+    internal procedure GetCommaSeperatedTags(): Text
     var
         ShopifyTag: Record "Shpfy Tag";
     begin
@@ -158,7 +159,7 @@ table 30105 "Shpfy Customer"
     /// Get Note.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetNote(): Text
+    internal procedure GetNote(): Text
     var
         TypeHelper: Codeunit "Type Helper";
         InStream: InStream;
@@ -172,7 +173,7 @@ table 30105 "Shpfy Customer"
     /// Set Note.
     /// </summary>
     /// <param name="NewNote">Parameter of type Text.</param>
-    procedure SetNote(NewNote: Text)
+    internal procedure SetNote(NewNote: Text)
     var
         OutStream: OutStream;
     begin
@@ -186,7 +187,7 @@ table 30105 "Shpfy Customer"
     /// Update Tags.
     /// </summary>
     /// <param name="CommaSeperatedTags">Parameter of type Text.</param>
-    procedure UpdateTags(CommaSeperatedTags: Text)
+    internal procedure UpdateTags(CommaSeperatedTags: Text)
     var
         ShopifyTag: Record "Shpfy Tag";
     begin

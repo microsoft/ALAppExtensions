@@ -3,6 +3,7 @@
 /// </summary>
 interface "Shpfy ICustomer Name"
 {
+    Access = Internal;
 
     /// <summary> 
     /// Description for GetName.
@@ -11,5 +12,5 @@ interface "Shpfy ICustomer Name"
     /// <param name="LastName">Parameter of type Text.</param>
     /// <param name="CompanyName">Parameter of type Text.</param>
     /// <returns>Return variable "Text".</returns>
-    procedure GetName(FirstName: Text; LastName: Text; CompanyName: Text): Text;
+    internal procedure GetName(FirstName: Text; LastName: Text; CompanyName: Text): Text;
 }

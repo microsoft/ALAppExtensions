@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30155 "Shpfy Base64"
 {
+    Access = Internal;
+
     internal procedure IsBase64String(Data: Text): Boolean
     var
         RegEx: Codeunit Regex;

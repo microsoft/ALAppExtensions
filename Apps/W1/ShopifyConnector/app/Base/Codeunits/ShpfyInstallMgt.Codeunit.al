@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30105 "Shpfy Install Mgt."
 {
+    Access = Internal;
     Subtype = Install;
 
     trigger OnInstallAppPerDatabase()

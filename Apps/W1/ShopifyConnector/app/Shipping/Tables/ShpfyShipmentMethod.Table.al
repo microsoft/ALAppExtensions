@@ -3,6 +3,8 @@
 /// </summary>
 table 30131 "Shpfy Shipment Method"
 {
+    Access = Internal;
+    Caption = 'Shopify Shipment Method';
     DataClassification = CustomerContent;
 
     fields

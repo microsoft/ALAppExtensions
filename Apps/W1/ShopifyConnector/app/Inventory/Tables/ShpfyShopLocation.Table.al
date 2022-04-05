@@ -3,6 +3,7 @@
 /// </summary>
 table 30113 "Shpfy Shop Location"
 {
+    Access = Internal;
     Caption = 'Shopify Shop Location';
     DataClassification = CustomerContent;
     DrillDownPageId = "Shpfy Shop Locations";
@@ -104,7 +105,7 @@ table 30113 "Shpfy Shop Location"
     /// <summary> 
     /// Create Location Filter.
     /// </summary>
-    procedure CreateLocationFilter()
+    internal procedure CreateLocationFilter()
     var
         Location: Record Location;
         LocationFilter: Report "Shpfy Create Location Filter";

@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30159 "Shpfy REST Client"
 {
+    Access = Internal;
     SingleInstance = true;
 
     var

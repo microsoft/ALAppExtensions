@@ -27,7 +27,7 @@ report 30101 "Shpfy Create Location Filter"
     /// Get Location Filter.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetLocationFilter(): Text
+    internal procedure GetLocationFilter(): Text
     begin
         exit(LocationFilter);
     end;

@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30156 "Shpfy Hash"
 {
+    Access = Internal;
+
     /// <summary> X
     /// Calc Hash.
     /// </summary>

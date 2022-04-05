@@ -3,6 +3,7 @@
 /// </summary>
 enum 30103 "Shpfy Synchronization Type"
 {
+    Access = Internal;
 
     value(0; Undefined)
     {

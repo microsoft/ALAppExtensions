@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30158 "Shpfy Math"
 {
+    Access = Internal;
     SingleInstance = true;
 
 

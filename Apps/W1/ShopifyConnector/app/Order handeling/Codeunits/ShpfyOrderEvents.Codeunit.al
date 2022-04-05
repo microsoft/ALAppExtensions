@@ -4,7 +4,9 @@
 /// </summary>
 codeunit 30162 "Shpfy Order Events"
 {
-    [IntegrationEvent(false, false)]
+    Access = Internal;
+
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Modify Shopify Order.
     /// </summary>
@@ -14,7 +16,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After NewShopify Order.
     /// </summary>
@@ -23,7 +25,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Description for OnBeforeMapCustomer.
     /// </summary>
@@ -33,7 +35,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Description for OnAfterMapCustomer.
     /// </summary>
@@ -42,7 +44,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Description for OnBeforeMapShipmentMethod.
     /// </summary>
@@ -52,7 +54,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Description for OnAfterMapShipmentMethod.
     /// </summary>
@@ -61,7 +63,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Description for OnBeforeMapPaymentMethod.
     /// </summary>
@@ -71,7 +73,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Description for OnAfterMapPaymentMethod.
     /// </summary>
@@ -80,7 +82,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Release Sales Header.
     /// </summary>
@@ -91,7 +93,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Release Sales Header.
     /// </summary>
@@ -101,7 +103,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Create Item Sales Line.
     /// </summary>
@@ -113,7 +115,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Create Sales Header.
     /// </summary>
@@ -123,7 +125,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Create Shipping Cost Sales Line.
     /// </summary>
@@ -135,7 +137,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Create Sales Header.
     /// </summary>
@@ -146,7 +148,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Create Shipping Cost Sales Line.
     /// </summary>
@@ -159,7 +161,7 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Create Item Sales Line.
     /// </summary>

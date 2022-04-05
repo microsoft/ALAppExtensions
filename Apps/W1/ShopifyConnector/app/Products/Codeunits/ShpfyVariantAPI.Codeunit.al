@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30189 "Shpfy Variant API"
 {
+    Access = Internal;
+
     var
         Shop: Record "Shpfy Shop";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
@@ -15,7 +17,7 @@ codeunit 30189 "Shpfy Variant API"
     /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     /// <returns>Return variable "Found" of type Boolean.</returns>
-    procedure FindShopifyProductVariant(var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant") Found: Boolean;
+    internal procedure FindShopifyProductVariant(var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant") Found: Boolean;
     var
         Product: Record "Shpfy Product";
         Variant: Record "Shpfy Variant";

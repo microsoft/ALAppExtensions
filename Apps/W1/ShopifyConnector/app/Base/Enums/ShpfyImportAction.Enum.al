@@ -3,6 +3,7 @@
 /// </summary>
 enum 30100 "Shpfy Import Action"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; New)

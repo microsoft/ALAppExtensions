@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30181 "Shpfy Product Mapping"
 {
+    Access = Internal;
+
     var
         Shop: Record "Shpfy Shop";
         ProductApi: Codeunit "Shpfy Product API";
@@ -12,7 +14,7 @@ codeunit 30181 "Shpfy Product Mapping"
     /// <summary>
     /// FindMappings.
     /// </summary>
-    procedure FindMappings()
+    internal procedure FindMappings()
     var
         ShopifyProduct: Record "Shpfy Product";
     begin
@@ -26,7 +28,7 @@ codeunit 30181 "Shpfy Product Mapping"
     /// FindMapping.
     /// </summary>
     /// <param name="ShopifyProduct">VAR Record "Shopify Product".</param>
-    procedure FindMapping(var ShopifyProduct: Record "Shpfy Product")
+    internal procedure FindMapping(var ShopifyProduct: Record "Shpfy Product")
     var
         ShopifyVariant: Record "Shpfy Variant";
     begin
@@ -43,7 +45,7 @@ codeunit 30181 "Shpfy Product Mapping"
     /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     /// <returns>Return variable "Result" of type Boolean.</returns>
-    procedure FindMapping(var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant") Result: Boolean
+    internal procedure FindMapping(var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant") Result: Boolean
     var
         Item: Record Item;
         ItemVariant: Record "Item Variant";

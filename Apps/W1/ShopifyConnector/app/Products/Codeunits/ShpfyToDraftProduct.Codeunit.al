@@ -3,11 +3,13 @@
 /// </summary>
 codeunit 30187 "Shpfy ToDraftProduct" implements "Shpfy IRemoveProductAction"
 {
+    Access = Internal;
+
     /// <summary>
     /// RemoveProductAction.
     /// </summary>
     /// <param name="Product">VAR Record "Shopify Product".</param>
-    procedure RemoveProductAction(var Product: Record "Shpfy Product")
+    internal procedure RemoveProductAction(var Product: Record "Shpfy Product")
     var
         TempProduct: Record "Shpfy Product" temporary;
         ProductApi: Codeunit "Shpfy Product API";

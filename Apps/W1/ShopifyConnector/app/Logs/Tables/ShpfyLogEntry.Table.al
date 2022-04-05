@@ -3,6 +3,7 @@
 /// </summary>
 table 30115 "Shpfy Log Entry"
 {
+    Access = Internal;
     Caption = 'Shopify Log Entry';
     DataClassification = SystemMetadata;
     DrillDownPageID = "Shpfy Log Entries";
@@ -93,7 +94,7 @@ table 30115 "Shpfy Log Entry"
     /// Delete Entries.
     /// </summary>
     /// <param name="DaysOld">Parameter of type Integer.</param>
-    procedure DeleteEntries(DaysOld: Integer);
+    internal procedure DeleteEntries(DaysOld: Integer);
     begin
         if not Confirm(DeleteLogEntriesLbl) then
             exit;
@@ -112,7 +113,7 @@ table 30115 "Shpfy Log Entry"
     /// Get Request.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetRequest(): Text
+    internal procedure GetRequest(): Text
     var
         TypeHelper: Codeunit "Type Helper";
         InStream: InStream;
@@ -128,7 +129,7 @@ table 30115 "Shpfy Log Entry"
     /// Get Response.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetResponse(): Text
+    internal procedure GetResponse(): Text
     var
         TypeHelper: Codeunit "Type Helper";
         InStream: InStream;
@@ -144,7 +145,7 @@ table 30115 "Shpfy Log Entry"
     /// Set Request.
     /// </summary>
     /// <param name="Data">Parameter of type Text.</param>
-    procedure SetRequest(Data: Text)
+    internal procedure SetRequest(Data: Text)
     var
         OutStream: OutStream;
     begin
@@ -158,7 +159,7 @@ table 30115 "Shpfy Log Entry"
     /// Set Response.
     /// </summary>
     /// <param name="Data">Parameter of type Text.</param>
-    procedure SetResponse(Data: Text)
+    internal procedure SetResponse(Data: Text)
     var
         OutStream: OutStream;
     begin

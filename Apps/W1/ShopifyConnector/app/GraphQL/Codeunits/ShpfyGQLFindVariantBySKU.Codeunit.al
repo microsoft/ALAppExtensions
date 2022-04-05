@@ -3,12 +3,13 @@
 /// </summary>
 codeunit 30131 "Shpfy GQL FindVariantBySKU" implements "Shpfy IGraphQL"
 {
+    Access = Internal;
 
     /// <summary>
     /// GetGraphQL.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetGraphQL(): Text
+    internal procedure GetGraphQL(): Text
     begin
         exit('{"query":"{productVariants(query: \"sku:{{SKU}}\", first: 1) { edges { node { legacyResourceId product { legacyResourceId }}}}}"}');
     end;
@@ -17,7 +18,7 @@ codeunit 30131 "Shpfy GQL FindVariantBySKU" implements "Shpfy IGraphQL"
     /// GetExpectedCost.
     /// </summary>
     /// <returns>Return value of type Integer.</returns>
-    procedure GetExpectedCost(): Integer
+    internal procedure GetExpectedCost(): Integer
     begin
         exit(25);
     end;

@@ -3,6 +3,7 @@
 /// </summary>
 enum 30125 "Shpfy Inventory Policy"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; DENY)

@@ -4,12 +4,13 @@
 /// </summary>
 codeunit 30144 "Shpfy GQL OrderRisks" implements "Shpfy IGraphQL"
 {
+    Access = Internal;
 
     /// <summary>
     /// GetGraphQL.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetGraphQL(): Text
+    internal procedure GetGraphQL(): Text
     begin
         exit('{"query": "{order(id: \"gid://shopify/Order/{{OrderId}}\") {risks(first: 100) {level display message}}}"}');
     end;
@@ -18,7 +19,7 @@ codeunit 30144 "Shpfy GQL OrderRisks" implements "Shpfy IGraphQL"
     /// GetExpectedCost.
     /// </summary>
     /// <returns>Return value of type Integer.</returns>
-    procedure GetExpectedCost(): Integer
+    internal procedure GetExpectedCost(): Integer
     begin
         exit(2);
     end;

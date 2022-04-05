@@ -3,12 +3,13 @@
 /// </summary>
 codeunit 30142 "Shpfy GQL NextVariantImages" implements "Shpfy IGraphQL"
 {
+    Access = Internal;
 
     /// <summary>
     /// GetGraphQL.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetGraphQL(): Text
+    internal procedure GetGraphQL(): Text
     begin
         exit('{"query":"{productVariants(first:200, after:\"{{After}}\"){pageInfo{hasNextPage} edges{cursor node{legacyResourceId image(maxHeight: 360, maxWidth: 360) {id, transformedSrc}}}}}"}');
     end;
@@ -17,7 +18,7 @@ codeunit 30142 "Shpfy GQL NextVariantImages" implements "Shpfy IGraphQL"
     /// GetExpectedCost.
     /// </summary>
     /// <returns>Return value of type Integer.</returns>
-    procedure GetExpectedCost(): Integer
+    internal procedure GetExpectedCost(): Integer
     begin
         exit(420);
     end;

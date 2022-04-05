@@ -3,12 +3,13 @@
 /// </summary>
 codeunit 30136 "Shpfy GQL NextInvEntries" implements "Shpfy IGraphQL"
 {
+    Access = Internal;
 
     /// <summary>
     /// GetGraphQL.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetGraphQL(): Text
+    internal procedure GetGraphQL(): Text
     begin
         exit('{"query":"{location(id:\"gid://shopify/Location/{{LocationId}}\"){inventoryLevels(first:100, after:\"{{After}}\"){pageInfo{hasNextPage} edges{cursor node{id available item{id variant{id product{id}}}}}}}}"}');
     end;
@@ -17,7 +18,7 @@ codeunit 30136 "Shpfy GQL NextInvEntries" implements "Shpfy IGraphQL"
     /// GetExpectedCost.
     /// </summary>
     /// <returns>Return value of type Integer.</returns>
-    procedure GetExpectedCost(): Integer
+    internal procedure GetExpectedCost(): Integer
     begin
         exit(403);
     end;

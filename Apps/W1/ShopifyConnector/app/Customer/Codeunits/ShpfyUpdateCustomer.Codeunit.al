@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30124 "Shpfy Update Customer"
 {
+    Access = Internal;
     TableNo = "Shpfy Customer";
 
     var

@@ -3,10 +3,12 @@
 /// </summary>
 interface "Shpfy ICounty"
 {
+    Access = Internal;
+
     /// <summary> 
     /// Description for County.
     /// </summary>
     /// <param name="ShopifyCustomerAddress">Parameter of type Record "Shopify Customer Address".</param>
     /// <returns>Return variable "Text".</returns>
-    procedure County(ShopifyCustomerAddress: Record "Shpfy Customer Address"): Text;
+    internal procedure County(ShopifyCustomerAddress: Record "Shpfy Customer Address"): Text;
 }

@@ -3,15 +3,17 @@
 /// </summary>
 interface "Shpfy IGraphQL"
 {
+    Access = Internal;
+
     /// <summary>
     /// GetGraphQL.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetGraphQL(): Text;
+    internal procedure GetGraphQL(): Text;
 
     /// <summary>
     /// GetExpectedCost.
     /// </summary>
     /// <returns>Return value of type Integer.</returns>
-    procedure GetExpectedCost(): Integer;
+    internal procedure GetExpectedCost(): Integer;
 }

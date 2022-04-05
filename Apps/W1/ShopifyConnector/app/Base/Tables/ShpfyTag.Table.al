@@ -3,6 +3,7 @@
 /// </summary>
 table 30104 "Shpfy Tag"
 {
+    Access = Internal;
     Caption = 'Tag';
     DataClassification = CustomerContent;
 
@@ -52,7 +53,7 @@ table 30104 "Shpfy Tag"
     /// </summary>
     /// <param name="ParentId">Parameter of type BigInteger.</param>
     /// <returns>Return value of type Text.</returns>
-    procedure GetCommaSeperatedTags(ParentId: BigInteger): Text
+    internal procedure GetCommaSeperatedTags(ParentId: BigInteger): Text
     var
         ShopifyTag: Record "Shpfy Tag";
         Tags: TextBuilder;
@@ -74,7 +75,7 @@ table 30104 "Shpfy Tag"
     /// <param name="ParentTableNo">Parameter of type Integer.</param>
     /// <param name="ParentId">Parameter of type BigInteger.</param>
     /// <param name="CommaSeperatedTags">Parameter of type Text.</param>
-    procedure UpdateTags(ParentTableNo: Integer; ParentId: BigInteger; CommaSeperatedTags: Text)
+    internal procedure UpdateTags(ParentTableNo: Integer; ParentId: BigInteger; CommaSeperatedTags: Text)
     var
         ShopifyTag: Record "Shpfy Tag";
         Tags: List of [Text];
@@ -102,7 +103,7 @@ table 30104 "Shpfy Tag"
     /// <param name="ParentTableNo">Parameter of type Integer.</param>
     /// <param name="ParentId">Parameter of type BigInteger.</param>
     /// <param name="JTags">Parameter of type JsonArray.</param>
-    procedure UpdateTags(ParentTableNo: Integer; ParentId: BigInteger; JTags: JsonArray)
+    internal procedure UpdateTags(ParentTableNo: Integer; ParentId: BigInteger; JTags: JsonArray)
     var
         ShopifyTag: Record "Shpfy Tag";
         JTag: JsonToken;

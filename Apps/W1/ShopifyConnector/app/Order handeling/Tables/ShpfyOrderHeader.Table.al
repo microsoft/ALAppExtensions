@@ -3,6 +3,7 @@
 /// </summary>
 table 30118 "Shpfy Order Header"
 {
+    Access = Internal;
     Caption = 'Shopify Order Header';
     DataCaptionFields = "Shopify Order No.", "Sell-to Customer Name";
     DataClassification = SystemMetadata;
@@ -552,7 +553,7 @@ table 30118 "Shpfy Order Header"
     /// Get Work Description.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetWorkDescription(): Text
+    internal procedure GetWorkDescription(): Text
     var
         TypeHelper: Codeunit "Type Helper";
         InStream: InStream;
@@ -566,7 +567,7 @@ table 30118 "Shpfy Order Header"
     /// Set Work Description.
     /// </summary>
     /// <param name="NewWorkDescription">Parameter of type Text.</param>
-    procedure SetWorkDescription(NewWorkDescription: Text)
+    internal procedure SetWorkDescription(NewWorkDescription: Text)
     var
         OutStream: OutStream;
     begin
@@ -580,7 +581,7 @@ table 30118 "Shpfy Order Header"
     /// Update Tags.
     /// </summary>
     /// <param name="CommaSeperatedTags">Parameter of type Text.</param>
-    procedure UpdateTags(CommaSeperatedTags: Text)
+    internal procedure UpdateTags(CommaSeperatedTags: Text)
     var
         ShopifyTag: Record "Shpfy Tag";
     begin

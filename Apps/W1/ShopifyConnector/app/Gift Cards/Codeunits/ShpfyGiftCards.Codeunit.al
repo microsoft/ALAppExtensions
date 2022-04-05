@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30125 "Shpfy Gift Cards"
 {
+    Access = Internal;
+
     var
         JsonHelper: Codeunit "Shpfy Json Helper";
 

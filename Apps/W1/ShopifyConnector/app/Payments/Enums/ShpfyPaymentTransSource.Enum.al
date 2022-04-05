@@ -2,8 +2,8 @@
 /// Enum Shpfy Payment Transaction Source (ID 30114).
 /// </summary>
 enum 30114 "Shpfy Payment Trans. Source"
-
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; Unknown)

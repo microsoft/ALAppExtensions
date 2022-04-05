@@ -164,7 +164,7 @@ table 30121 "Shpfy Orders To Import"
     /// <summary> 
     /// Description for SetErrorMessage.
     /// </summary>
-    procedure SetErrorInfo()
+    internal procedure SetErrorInfo()
     var
         OutStream: OutStream;
     begin
@@ -181,7 +181,7 @@ table 30121 "Shpfy Orders To Import"
     /// Description for GetErrorMessage.
     /// </summary>
     /// <returns>Return variable "Text".</returns>
-    procedure GetErrorMessage(): Text
+    internal procedure GetErrorMessage(): Text
     var
         TypeHelper: Codeunit "Type Helper";
         InStream: InStream;
@@ -195,7 +195,7 @@ table 30121 "Shpfy Orders To Import"
     /// Description for GetErrorCallStack.
     /// </summary>
     /// <returns>Return variable "Text".</returns>
-    procedure GetErrorCallStack(): Text
+    internal procedure GetErrorCallStack(): Text
     var
         TypeHelper: Codeunit "Type Helper";
         InStream: InStream;
