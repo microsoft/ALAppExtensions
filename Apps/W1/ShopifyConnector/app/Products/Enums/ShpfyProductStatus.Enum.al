@@ -3,6 +3,8 @@
 /// </summary>
 enum 30130 "Shpfy Product Status"
 {
+    Access = Internal;
+
     value(0; Active)
     {
         Caption = 'Active';

@@ -3,6 +3,8 @@
 /// </summary>
 enum 30115 "Shpfy Allocation Method"
 {
+    Access = Internal;
+
     value(0; across)
     {
         Caption = 'Across';

@@ -3,6 +3,7 @@
 /// </summary>
 enum 30105 "Shpfy Customer Import Range"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; None)

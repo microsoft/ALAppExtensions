@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30182 "Shpfy Product Price Calc."
 {
+    Access = Internal;
     EventSubscriberInstance = Manual;
     SingleInstance = true;
 

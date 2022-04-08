@@ -3,6 +3,7 @@
 /// </summary>
 table 30117 "Shpfy Order Disc.Appl."
 {
+    Access = Internal;
     Caption = 'Shopify Order Discount Application';
     DataClassification = SystemMetadata;
 

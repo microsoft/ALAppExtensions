@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30160 "Shpfy Order Fulfillments"
 {
+    Access = Internal;
+
     var
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";

@@ -413,7 +413,7 @@ page 30101 "Shpfy Shop Card"
                     var
                         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                     begin
-                        BackgroundSyncs.ProductsSync(Rec);
+                        BackgroundSyncs.ProductsSync(Rec.Code);
                     end;
                 }
                 action(SyncImages)
@@ -430,7 +430,7 @@ page 30101 "Shpfy Shop Card"
                     var
                         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                     begin
-                        BackgroundSyncs.ProductImagesSync(Rec);
+                        BackgroundSyncs.ProductImagesSync(Rec.Code);
                     end;
                 }
                 action(SyncInventory)
@@ -447,7 +447,7 @@ page 30101 "Shpfy Shop Card"
                     var
                         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                     begin
-                        BackgroundSyncs.InventorySync(Rec);
+                        BackgroundSyncs.InventorySync(Rec.Code);
                     end;
                 }
                 action(SyncCustomers)
@@ -464,7 +464,7 @@ page 30101 "Shpfy Shop Card"
                     var
                         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                     begin
-                        BackgroundSyncs.CustomerSync(Rec);
+                        BackgroundSyncs.CustomerSync(Rec.Code);
                     end;
                 }
                 action(SyncPayouts)
@@ -481,7 +481,7 @@ page 30101 "Shpfy Shop Card"
                     var
                         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                     begin
-                        BackgroundSyncs.PayoutsSync(Rec);
+                        BackgroundSyncs.PayoutsSync(Rec.Code);
                     end;
                 }
                 action(SyncAll)
@@ -502,7 +502,6 @@ page 30101 "Shpfy Shop Card"
                         BackgroundSyncs.ProductsSync(Rec);
                         BackgroundSyncs.InventorySync(Rec);
                         BackgroundSyncs.ProductImagesSync(Rec);
-                        BackgroundSyncs.OrderSync(Rec);
                     end;
                 }
             }

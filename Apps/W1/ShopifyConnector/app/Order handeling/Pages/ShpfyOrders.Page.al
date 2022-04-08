@@ -232,11 +232,11 @@ page 30115 "Shpfy Orders"
                 trigger OnAction();
                 var
                     Shop: Record "Shpfy Shop";
+                    BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                 begin
                     if Rec.GetFilter("Shop Code") <> '' then
                         Shop.SetFilter(Code, Rec.GetFilter("Shop Code"));
-                    Commit();
-                    Report.Run(Report::"Shpfy Sync Orders from Shopify", true, false, Shop);
+                    BackgroundSyncs.OrderSync(Shop);
                 end;
             }
             Action(CreateSalesDocuments)

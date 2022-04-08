@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30103 "Shpfy Communication Mgt."
 {
+    Access = Internal;
     SingleInstance = true;
 
     var
@@ -18,7 +19,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// </summary>
     /// <param name="UrlPath">Parameter of type Text.</param>
     /// <returns>Return value of type Text.</returns>
-    procedure CreateWebRequestURL(UrlPath: Text): Text
+    internal procedure CreateWebRequestURL(UrlPath: Text): Text
     begin
         exit(CreateWebRequestURL(UrlPath, ApiVersion()))
     end;
@@ -29,7 +30,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="UrlPath">Parameter of type Text.</param>
     /// <param name="ApiVersion">Parameter of type Text.</param>
     /// <returns>Return value of type Text.</returns>
-    procedure CreateWebRequestURL(UrlPath: Text; ApiVersion: Text): Text
+    internal procedure CreateWebRequestURL(UrlPath: Text; ApiVersion: Text): Text
     begin
         ShopifyShop.TestField("Shopify URL");
         if UrlPath.StartsWith('gift_cards') then
@@ -49,7 +50,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// </summary>
     /// <param name="GraphQLType">Parameter of type Enum "Shopify GraphQL Type".</param>
     /// <returns>Return variable "JsonToken".</returns>
-    procedure ExecuteGraphQL(GraphQLType: Enum "Shpfy GraphQL Type"): JsonToken
+    internal procedure ExecuteGraphQL(GraphQLType: Enum "Shpfy GraphQL Type"): JsonToken
     var
         Parameters: Dictionary of [Text, Text];
     begin
@@ -62,7 +63,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="GraphQLType">Parameter of type Enum "Shopify GraphQL Type".</param>
     /// <param name="Parameters">Parameter of type Dictionary of [Text, Text].</param>
     /// <returns>Return variable "JsonToken".</returns>
-    procedure ExecuteGraphQL(GraphQLType: Enum "Shpfy GraphQL Type"; Parameters: Dictionary of [Text, Text]): JsonToken
+    internal procedure ExecuteGraphQL(GraphQLType: Enum "Shpfy GraphQL Type"; Parameters: Dictionary of [Text, Text]): JsonToken
     var
         ExpectedCost: Integer;
         GraphQLQuery: Text;
@@ -76,7 +77,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// </summary>
     /// <param name="GraphQLQuery">Parameter of type Text.</param>
     /// <returns>Return value of type JsonToken.</returns>
-    procedure ExecuteGraphQL(GraphQLQuery: Text): JsonToken
+    internal procedure ExecuteGraphQL(GraphQLQuery: Text): JsonToken
     begin
         exit(ExecuteGraphQL(GraphQLQuery, 0));
     end;
@@ -87,7 +88,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="GraphQLQuery">Parameter of type Text.</param>
     /// <param name="ExpectedCost">Parameter of type Decimal.</param>
     /// <returns>Return variable "JsonToken".</returns>
-    procedure ExecuteGraphQL(GraphQLQuery: Text; ExpectedCost: Decimal): JsonToken
+    internal procedure ExecuteGraphQL(GraphQLQuery: Text; ExpectedCost: Decimal): JsonToken
     var
         ResponseHeaders: HttpHeaders;
     begin
@@ -100,7 +101,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="GraphQLQuery">Parameter of type Text.</param>
     /// <param name="ResponseHeaders">Parameter of type HttpHeaders.</param>
     /// <returns>Return variable "JResponse" of type JsonToken.</returns>
-    procedure ExecuteGraphQL(GraphQLQuery: Text; var ResponseHeaders: HttpHeaders) JResponse: JsonToken
+    internal procedure ExecuteGraphQL(GraphQLQuery: Text; var ResponseHeaders: HttpHeaders) JResponse: JsonToken
     begin
         exit(ExecuteGraphQL(GraphQLQuery, ResponseHeaders, 0));
     end;
@@ -112,7 +113,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="ResponseHeaders">Parameter of type HttpHeaders.</param>
     /// <param name="ExpectedCost">Parameter of type Decimal.</param>
     /// <returns>Return variable JResponse of type JsonToken.</returns>
-    procedure ExecuteGraphQL(GraphQLQuery: Text; var ResponseHeaders: HttpHeaders; ExpectedCost: Decimal) JResponse: JsonToken
+    internal procedure ExecuteGraphQL(GraphQLQuery: Text; var ResponseHeaders: HttpHeaders; ExpectedCost: Decimal) JResponse: JsonToken
     var
         GraphQLRateLimit: Codeunit "Shpfy GraphQL Rate Limit";
         JsonHelper: Codeunit "Shpfy Json Helper";
@@ -137,7 +138,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="Method">Parameter of type Text.</param>
     /// <param name="JRequest">Parameter of type JsonToken.</param>
     /// <returns>Return value of type JsonToken.</returns>
-    procedure ExecuteWebRequest(Url: Text; Method: Text; JRequest: JsonToken): JsonToken
+    internal procedure ExecuteWebRequest(Url: Text; Method: Text; JRequest: JsonToken): JsonToken
     var
         ResponseHeaders: HttpHeaders;
     begin
@@ -152,7 +153,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="JRequest">Parameter of type JsonToken.</param>
     /// <param name="nextPageUrl">Parameter of type Text.</param>
     /// <returns>Return variable "JResponse" of type JsonToken.</returns>
-    procedure ExecuteWebRequest(Url: Text; Method: Text; JRequest: JsonToken; var nextPageUrl: Text) JResponse: JsonToken
+    internal procedure ExecuteWebRequest(Url: Text; Method: Text; JRequest: JsonToken; var nextPageUrl: Text) JResponse: JsonToken
     var
         ResponseHeaders: HttpHeaders;
         LinkInfo: List of [Text];
@@ -178,7 +179,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="JRequest">Parameter of type JsonToken.</param>
     /// <param name="ResponseHeaders">Parameter of type HttpHeaders.</param>
     /// <returns>Return variable "JResponse" of type JsonToken.</returns>
-    procedure ExecuteWebRequest(Url: Text; Method: Text; JRequest: JsonToken; var ResponseHeaders: HttpHeaders) JResponse: JsonToken
+    internal procedure ExecuteWebRequest(Url: Text; Method: Text; JRequest: JsonToken; var ResponseHeaders: HttpHeaders) JResponse: JsonToken
     var
         Request: Text;
     begin
@@ -193,7 +194,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="Method">Parameter of type Text.</param>
     /// <param name="Request">Parameter of type Text.</param>
     /// <returns>Return value of type Text.</returns>
-    procedure ExecuteWebRequest(Url: Text; Method: Text; Request: Text): Text
+    internal procedure ExecuteWebRequest(Url: Text; Method: Text; Request: Text): Text
     var
         ResponseHeaders: HttpHeaders;
     begin
@@ -208,7 +209,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="Request">Parameter of type Text.</param>
     /// <param name="ResponseHeaders">Parameter of type HttpHeaders.</param>
     /// <returns>Return variable "Response" of type Text.</returns>
-    procedure ExecuteWebRequest(Url: Text; Method: Text; Request: Text; var ResponseHeaders: HttpHeaders) Response: Text
+    internal procedure ExecuteWebRequest(Url: Text; Method: Text; Request: Text; var ResponseHeaders: HttpHeaders) Response: Text
     begin
         exit(ExecuteWebRequest(Url, Method, Request, ResponseHeaders, 5));
     end;
@@ -222,7 +223,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="ResponseHeaders">VAR HttpHeaders.</param>
     /// <param name="MaxRetries">Integer.</param>
     /// <returns>Return variable Response of type Text.</returns>
-    procedure ExecuteWebRequest(Url: Text; Method: Text; Request: Text; var ResponseHeaders: HttpHeaders; MaxRetries: Integer) Response: Text
+    internal procedure ExecuteWebRequest(Url: Text; Method: Text; Request: Text; var ResponseHeaders: HttpHeaders; MaxRetries: Integer) Response: Text
 
     var
         Wait: Duration;
@@ -271,7 +272,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// </summary>
     /// <param name="GId">Parameter of type Text.</param>
     /// <returns>Return variable "Result" of type BigInteger.</returns>
-    procedure GetIdOfGId(GId: Text) Result: BigInteger
+    internal procedure GetIdOfGId(GId: Text) Result: BigInteger
     var
         Parts: List of [Text];
     begin
@@ -285,7 +286,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// Set Shop.
     /// </summary>
     /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
-    procedure SetShop(Shop: Record "Shpfy Shop")
+    internal procedure SetShop(Shop: Record "Shpfy Shop")
     begin
         ShopifyShop := Shop;
     end;

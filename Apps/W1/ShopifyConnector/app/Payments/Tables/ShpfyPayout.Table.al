@@ -3,6 +3,7 @@
 /// </summary>
 table 30125 "Shpfy Payout"
 {
+    Access = Internal;
     Caption = 'Shopify Payout';
     DataClassification = CustomerContent;
 

@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30118 "Shpfy Customer Mapping"
 {
+    Access = Internal;
+
     var
         Shop: Record "Shpfy Shop";
         CustomerApi: Codeunit "Shpfy Customer API";
@@ -33,7 +35,7 @@ codeunit 30118 "Shpfy Customer Mapping"
     /// </summary>
     /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
     /// <returns>Return value of type Boolean.</returns>
-    procedure FindMapping(var ShopifyCustomer: Record "Shpfy Customer"): Boolean;
+    internal procedure FindMapping(var ShopifyCustomer: Record "Shpfy Customer"): Boolean;
     var
         Customer: Record Customer;
         Handled: Boolean;
@@ -67,7 +69,7 @@ codeunit 30118 "Shpfy Customer Mapping"
     /// </summary>
     /// <param name="Customer">Parameter of type Record Customer.</param>
     /// <returns>Return value of type BigInteger.</returns>
-    procedure FindMapping(Customer: Record Customer): BigInteger
+    internal procedure FindMapping(Customer: Record Customer): BigInteger
     var
         ShopifyCustomer: Record "Shpfy Customer";
         Handled: Boolean;

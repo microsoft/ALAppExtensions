@@ -11,16 +11,16 @@ tableextension 30106 "Shpfy Sales Ship. Hdr. Ext." extends "Sales Shipment Heade
             DataClassification = CustomerContent;
             Editable = false;
         }
-        field(30101; "Shpfy Fulfillment Id"; BigInteger)
-        {
-            Caption = 'Shopify Fulfillment Id';
-            DataClassification = CustomerContent;
-            Editable = false;
-        }
 
         field(30102; "Shpfy Order No."; Code[50])
         {
             Caption = 'Shopify Order No.';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(30103; "Shpfy Fulfillment Id"; BigInteger)
+        {
+            Caption = 'Shopify Fulfillment Id';
             DataClassification = CustomerContent;
             Editable = false;
         }

@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30157 "Shpfy Json Helper"
 {
+    Access = Internal;
     SingleInstance = true;
 
     #region ContainsToken

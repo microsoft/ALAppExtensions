@@ -3,6 +3,7 @@
 /// </summary>
 enum 30110 "Shpfy Tax Type"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; None)

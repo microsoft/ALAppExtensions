@@ -3,6 +3,7 @@
 /// </summary>
 table 30130 "Shpfy Order Shipping Cost"
 {
+    Access = Internal;
     Caption = 'Shopify Order Shipping Cost';
     DataClassification = CustomerContent;
     LookupPageID = "Shpfy Order Shipping Costs";

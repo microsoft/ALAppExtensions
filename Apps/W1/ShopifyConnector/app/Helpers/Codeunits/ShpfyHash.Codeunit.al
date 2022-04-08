@@ -3,12 +3,14 @@
 /// </summary>
 codeunit 30156 "Shpfy Hash"
 {
+    Access = Internal;
+
     /// <summary> X
     /// Calc Hash.
     /// </summary>
     /// <param name="TenantMedia">Parameter of type Record "Tenant Media".</param>
     /// <returns>Return value of type Integer.</returns>
-    internal procedure CalcHash(TenantMedia: Record "Tenant Media"): Integer
+    local procedure CalcHash(TenantMedia: Record "Tenant Media"): Integer
     var
         InStream: InStream;
     begin
@@ -25,7 +27,7 @@ codeunit 30156 "Shpfy Hash"
     /// <param name="Stream">Parameter of type InStream.</param>
     /// <param name="Length">Parameter of type Integer.</param>
     /// <returns>Return value of type Integer.</returns>
-    internal procedure CalcHash(Stream: InStream; Length: Integer): Integer
+    local procedure CalcHash(Stream: InStream; Length: Integer): Integer
     var
         Hash: BigInteger;
         MaxInt: BigInteger;

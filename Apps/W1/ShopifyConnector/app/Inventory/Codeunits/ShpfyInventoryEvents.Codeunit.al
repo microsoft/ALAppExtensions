@@ -3,8 +3,9 @@
 /// </summary>
 codeunit 30196 "Shpfy Inventory Events"
 {
+    Access = Internal;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Calculation Stock.
     /// </summary>
@@ -16,7 +17,7 @@ codeunit 30196 "Shpfy Inventory Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Calculation Stock.
     /// </summary>
@@ -29,7 +30,7 @@ codeunit 30196 "Shpfy Inventory Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     internal procedure OnBeforeExportStock(Item: Record Item; ShopifyShop: Record "Shpfy Shop"; ShopInventory: Record "Shpfy Shop Inventory"; ShopLocation: Record "Shpfy Shop Location"; var Handled: Boolean)
     begin
     end;

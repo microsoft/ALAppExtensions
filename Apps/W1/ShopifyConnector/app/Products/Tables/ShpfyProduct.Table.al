@@ -3,6 +3,7 @@
 /// </summary>
 table 30127 "Shpfy Product"
 {
+    Access = Internal;
     Caption = 'Shopify Product';
     DataClassification = CustomerContent;
 
@@ -162,7 +163,7 @@ table 30127 "Shpfy Product"
     /// Get Comma Seperated Tags.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetCommaSeperatedTags() Tags: Text
+    internal procedure GetCommaSeperatedTags() Tags: Text
     var
         ShopifyTag: Record "Shpfy Tag";
         Events: Codeunit "Shpfy Product Events";
@@ -176,7 +177,7 @@ table 30127 "Shpfy Product"
     /// Get Description Html.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetDescriptionHtml(): Text
+    internal procedure GetDescriptionHtml(): Text
     var
         TypeHelper: Codeunit "Type Helper";
         InStream: InStream;
@@ -190,7 +191,7 @@ table 30127 "Shpfy Product"
     /// Set Description Html.
     /// </summary>
     /// <param name="NewDescriptionHtml">Parameter of type Text.</param>
-    procedure SetDescriptionHtml(NewDescriptionHtml: Text)
+    internal procedure SetDescriptionHtml(NewDescriptionHtml: Text)
     var
         Hash: Codeunit "Shpfy Hash";
         OutStream: OutStream;
@@ -206,7 +207,7 @@ table 30127 "Shpfy Product"
     /// Update Tags.
     /// </summary>
     /// <param name="CommaSeperatedTags">Parameter of type Text.</param>
-    procedure UpdateTags(CommaSeperatedTags: Text)
+    internal procedure UpdateTags(CommaSeperatedTags: Text)
     var
         ShopifyTag: Record "Shpfy Tag";
     begin

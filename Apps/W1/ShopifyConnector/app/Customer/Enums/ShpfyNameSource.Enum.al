@@ -3,6 +3,7 @@
 /// </summary>
 enum 30108 "Shpfy Name Source" implements "Shpfy ICustomer Name"
 {
+    Access = Internal;
     Extensible = true;
     DefaultImplementation = "Shpfy ICustomer Name" = "Shpfy Name = ''";
 

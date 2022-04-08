@@ -3,6 +3,7 @@
 /// </summary>
 table 30112 "Shpfy Shop Inventory"
 {
+    Access = Internal;
     DataClassification = CustomerContent;
 
     fields

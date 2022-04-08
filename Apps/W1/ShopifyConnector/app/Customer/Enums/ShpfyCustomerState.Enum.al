@@ -3,6 +3,7 @@
 /// </summary>
 enum 30107 "Shpfy Customer State"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; Disabled)

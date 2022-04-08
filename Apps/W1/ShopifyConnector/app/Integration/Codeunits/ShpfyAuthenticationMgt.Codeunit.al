@@ -3,9 +3,9 @@
 /// </summary>
 codeunit 30199 "Shpfy Authentication Mgt."
 {
-    var
-        // https://shopify.dev/api/usage/access-scopes
-        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping', Locked
+    Access = Internal;
+    // https://shopify.dev/api/usage/access-scopes
+    ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping', Locked
 
 
     [NonDebuggable]
@@ -20,13 +20,14 @@ codeunit 30199 "Shpfy Authentication Mgt."
         //TODO: Get SecretKey
     end;
 
+
     [NonDebuggable]
     internal procedure InstallShopifyApp(InstalllToStore: Text)
     var
         OAuth2: Codeunit "OAuth2";
         ShopifyAuthentication: Page "Shpfy Authentication";
-        State: Integer;
-        GrandOptionsTxt: Label 'value', Locked = true;
+                                   State: Integer;
+                                   GrandOptionsTxt: Label 'value', Locked = true;
         Url: Text;
         RedirectUrl: Text;
         Store: Text;

@@ -3,8 +3,9 @@
 /// </summary>
 codeunit 30177 "Shpfy Product Events"
 {
+    Access = Internal;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Description for OnAfterSetProductTitle.
     /// </summary>
@@ -15,7 +16,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Create Item.
     /// </summary>
@@ -27,7 +28,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Create Item Variant.
     /// </summary>
@@ -40,7 +41,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Create Item Variant Code.
     /// </summary>
@@ -53,7 +54,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Create Product Body Html.
     /// </summary>
@@ -64,7 +65,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Find Item Template.
     /// </summary>
@@ -76,12 +77,12 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     internal procedure OnAfterGetCommaSeperatedTags(ShopifyProduct: Record "Shpfy Product"; var Tags: Text)
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Description for OnAfterGetBarcode.
     /// </summary>
@@ -94,7 +95,7 @@ codeunit 30177 "Shpfy Product Events"
     end;
 
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Create Item.
     /// </summary>
@@ -107,7 +108,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Create Item Variant.
     /// </summary>
@@ -121,7 +122,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Create Item Variant Code.
     /// </summary>
@@ -135,7 +136,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Create Product Body Html.
     /// </summary>
@@ -147,7 +148,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Find Item Template.
     /// </summary>
@@ -160,7 +161,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Description for OnBeforGetBarcode.
     /// </summary>
@@ -173,7 +174,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Description for OnBeforSetProductTitle.
     /// </summary>
@@ -185,7 +186,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Find Mapping.
     /// </summary>
@@ -198,7 +199,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Find Mapping.
     /// </summary>
@@ -212,7 +213,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Calculate Unit Price.
     /// </summary>
@@ -227,7 +228,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Calculate Unit Price.
     /// </summary>
@@ -243,7 +244,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Update Item.
     /// </summary>
@@ -255,7 +256,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised After Update Item Variant.
     /// </summary>
@@ -268,7 +269,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Update Item.
     /// </summary>
@@ -281,7 +282,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Update Item Variant.
     /// </summary>
@@ -295,7 +296,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Send Create Shopify Product.
     /// </summary>
@@ -306,7 +307,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Send Update Shopify Product.
     /// </summary>
@@ -317,7 +318,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Send Add Shopify Product Variant.
     /// </summary>
@@ -327,7 +328,7 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false)]
     /// <summary> 
     /// Raised Before Send Update Shopify Product Variant.
     /// </summary>

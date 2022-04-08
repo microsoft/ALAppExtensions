@@ -154,12 +154,12 @@
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Customer Address - Field Company - Property Caption</note>
         </trans-unit>
         <trans-unit id="Table 1118872714 - Field 3643848063 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>CountryCode</source>
+          <source>Country Code</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Customer Address - Field CountryCode - Property Caption</note>
         </trans-unit>
         <trans-unit id="Table 1118872714 - Field 281992329 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>CountryName</source>
+          <source>Country Name</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Customer Address - Field CountryName - Property Caption</note>
         </trans-unit>
@@ -204,12 +204,12 @@
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Customer Address - Field Phone - Property Caption</note>
         </trans-unit>
         <trans-unit id="Table 1118872714 - Field 2964567753 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>ProvinceCode</source>
+          <source>Province Code</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Customer Address - Field ProvinceCode - Property Caption</note>
         </trans-unit>
         <trans-unit id="Table 1118872714 - Field 4057624575 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>ProvinceName</source>
+          <source>Province Name</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Customer Address - Field ProvinceName - Property Caption</note>
         </trans-unit>
@@ -302,6 +302,11 @@
           <source>Last Characters</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Gift Card - Field Last Characters - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 3316406141 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Inventory Item</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Inventory Item - Property Caption</note>
         </trans-unit>
         <trans-unit id="Table 3316406141 - Field 864041823 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Country of Origin</source>
@@ -1928,6 +1933,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Registered Store - Field Store - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Table 2264499045 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Shipment Method</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Shipment Method - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Table 2264499045 - Field 3004954119 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Code</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -2672,11 +2682,6 @@
           <source>Product Images</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Shpfy Background Syncs - Method ProductImagesSync - NamedType SyncTypeTxt</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 4014190514 - Method 27725902 - NamedType 2739902161" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Products</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Shpfy Background Syncs - Method ProductPricesSync - NamedType SyncTypeTxt</note>
         </trans-unit>
         <trans-unit id="Codeunit 4014190514 - Method 2941445433 - NamedType 2739902161" size-unit="char" translate="yes" xml:space="preserve">
           <source>Products</source>
@@ -5803,6 +5808,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Create Sales Orders - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Report 3707284183 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sync Countries</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Sync Countries - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Report 3989958776 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Sync Customers</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -6412,11 +6422,6 @@
           <source>Specifies the tracking company in Shopify where you can track your items.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Shpfy Shipping Agents - Control Shpfy Carrier - Property ToolTip</note>
-        </trans-unit>
-        <trans-unit id="TableExtension 1817352690 - Field 1849056664 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 2990248934">
-          <source>Filter</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Shpfy Job Queue Entry - Field Shpfy Filter - Property Caption</note>
         </trans-unit>
         <trans-unit id="TableExtension 4263374072 - Field 3473767785 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 1192395785">
           <source>Shopify Order Id</source>

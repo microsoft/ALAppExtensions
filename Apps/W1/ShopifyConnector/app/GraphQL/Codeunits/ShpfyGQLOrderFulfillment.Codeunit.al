@@ -3,12 +3,13 @@
 /// </summary>
 codeunit 30143 "Shpfy GQL OrderFulfillment" implements "Shpfy IGraphQL"
 {
+    Access = Internal;
 
     /// <summary>
     /// GetGraphQL.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
-    procedure GetGraphQL(): Text
+    internal procedure GetGraphQL(): Text
     begin
         exit('{"query": "query {order(id: \"gid://shopify/Order/{{OrderId}}\") {fulfillmentOrders(first: 1) {edges {cursor node {assignedLocation {location {legacyResourceId}} lineItems(first: 250) {edges {node {lineItem {id}}}}}} pageInfo {hasNextPage}}}}"}');
     end;
@@ -17,7 +18,7 @@ codeunit 30143 "Shpfy GQL OrderFulfillment" implements "Shpfy IGraphQL"
     /// GetExpectedCost.
     /// </summary>
     /// <returns>Return value of type Integer.</returns>
-    procedure GetExpectedCost(): Integer
+    internal procedure GetExpectedCost(): Integer
     begin
         exit(500);
     end;

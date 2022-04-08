@@ -3,9 +3,9 @@
 /// </summary>
 table 30136 "Shpfy Registered Store"
 {
+    Access = Internal;
     Caption = 'Registered Store';
     DataClassification = SystemMetadata;
-    Access = Internal;
 
     fields
     {

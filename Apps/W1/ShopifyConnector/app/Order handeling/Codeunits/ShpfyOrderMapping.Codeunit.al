@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30163 "Shpfy Order Mapping"
 {
+    Access = Internal;
+
     var
         OrderEvents: Codeunit "Shpfy Order Events";
 

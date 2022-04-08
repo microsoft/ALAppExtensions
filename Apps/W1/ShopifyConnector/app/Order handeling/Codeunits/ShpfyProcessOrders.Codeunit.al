@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30167 "Shpfy Process Orders"
 {
+    Access = Internal;
+
     TableNo = "Shpfy Shop";
 
     var
@@ -24,7 +26,7 @@ codeunit 30167 "Shpfy Process Orders"
     /// SetShopifyOrderFilter.
     /// </summary>
     /// <param name="FilterString">Text.</param>
-    procedure SetShopifyOrderFilter(FilterString: Text)
+    internal procedure SetShopifyOrderFilter(FilterString: Text)
     begin
         ShopifyOrderFilter := FilterString;
     end;
@@ -33,7 +35,7 @@ codeunit 30167 "Shpfy Process Orders"
     /// Process Shopify Order.
     /// </summary>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    procedure ProcessShopifyOrder(ShopifyOrderHeader: Record "Shpfy Order Header")
+    internal procedure ProcessShopifyOrder(ShopifyOrderHeader: Record "Shpfy Order Header")
     var
         ProcessShopifyOrderCU: Codeunit "Shpfy Process Order";
     begin
@@ -60,7 +62,7 @@ codeunit 30167 "Shpfy Process Orders"
     /// Process Shopify Orders.
     /// </summary>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    procedure ProcessShopifyOrders(var ShopifyOrderHeader: Record "Shpfy Order Header")
+    internal procedure ProcessShopifyOrders(var ShopifyOrderHeader: Record "Shpfy Order Header")
     begin
         Commit();
         if ShopifyOrderHeader.FindSet() then

@@ -3,12 +3,14 @@
 /// </summary>
 codeunit 30109 "Shpfy County Name" implements "Shpfy ICounty"
 {
+    Access = Internal;
+
     /// <summary> 
     /// Description for County.
     /// </summary>
     /// <param name="CustomerAddress">Parameter of type Record "Shopify Customer Address".</param>
     /// <returns>Return variable "Text".</returns>
-    procedure County(CustomerAddress: Record "Shpfy Customer Address"): Text
+    internal procedure County(CustomerAddress: Record "Shpfy Customer Address"): Text
     var
         Customer: Record Customer;
     begin

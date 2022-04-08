@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30195 "Shpfy Inventory API"
 {
+    Access = Internal;
+
     var
         ShopifyShop: Record "Shpfy Shop";
         ShopifyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
@@ -15,7 +17,7 @@ codeunit 30195 "Shpfy Inventory API"
     /// <param name="ShopInventory">Parameter of type Record "Shopify Shop Inventory".</param>
     /// <param name="ShopLocation">Parameter of type Record "Shopify Shop Location".</param>
     /// <returns>Return variable "Stock" of type Decimal.</returns>
-    procedure GetStock(ShopInventory: Record "Shpfy Shop Inventory"; ShopLocation: Record "Shpfy Shop Location") Stock: Decimal
+    internal procedure GetStock(ShopInventory: Record "Shpfy Shop Inventory"; ShopLocation: Record "Shpfy Shop Location") Stock: Decimal
     var
         Item: Record Item;
         ItemUOM: Record "Item Unit of Measure";

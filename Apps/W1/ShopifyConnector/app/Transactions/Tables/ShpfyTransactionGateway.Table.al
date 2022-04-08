@@ -3,6 +3,7 @@
 /// </summary>
 table 30135 "Shpfy Transaction Gateway"
 {
+    Access = Internal;
     Caption = 'Shopify Transaction Gateway';
     DataClassification = SystemMetadata;
     DrillDownPageId = "Shpfy Transaction Gateways";

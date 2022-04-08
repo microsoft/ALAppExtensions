@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30188 "Shpfy Update Item"
 {
+    Access = Internal;
     TableNo = "Shpfy Variant";
 
     var

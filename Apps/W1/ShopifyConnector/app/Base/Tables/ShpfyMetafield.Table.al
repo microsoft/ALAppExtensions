@@ -3,6 +3,7 @@
 /// </summary>
 table 30101 "Shpfy Metafield"
 {
+    Access = Internal;
     DataClassification = CustomerContent;
 
     fields

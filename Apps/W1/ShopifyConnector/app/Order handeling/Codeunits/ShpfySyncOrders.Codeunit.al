@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30168 "Shpfy Sync Orders"
 {
+    Access = Internal;
+
     TableNo = "Shpfy Orders To Import";
     SingleInstance = true;
 

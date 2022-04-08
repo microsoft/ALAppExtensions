@@ -3,6 +3,7 @@
 /// </summary>
 table 30106 "Shpfy Customer Address"
 {
+    Access = Internal;
     Caption = 'Shopify Customer Address';
     DataClassification = CustomerContent;
 
@@ -57,22 +58,22 @@ table 30106 "Shpfy Customer Address"
         }
         field(10; CountryCode; Code[2])
         {
-            Caption = 'CountryCode';
+            Caption = 'Country Code';
             DataClassification = CustomerContent;
         }
         field(11; CountryName; Text[50])
         {
-            Caption = 'CountryName';
+            Caption = 'Country Name';
             DataClassification = CustomerContent;
         }
         field(12; ProvinceCode; Code[2])
         {
-            Caption = 'ProvinceCode';
+            Caption = 'Province Code';
             DataClassification = CustomerContent;
         }
         field(13; ProvinceName; Text[50])
         {
-            Caption = 'ProvinceName';
+            Caption = 'Province Name';
             DataClassification = CustomerContent;
         }
         field(14; Phone; Text[30])

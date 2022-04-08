@@ -1,7 +1,7 @@
 query 30100 "Shpfy Shipment Location"
 {
-    QueryType = Normal;
     Access = Internal;
+    QueryType = Normal;
 
     elements
     {

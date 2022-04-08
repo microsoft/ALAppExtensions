@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30190 "Shpfy Export Shipments"
 {
+    Access = Internal;
+
     var
         ShopifyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ShippingEvents: Codeunit "Shpfy Shipping Events";
@@ -11,7 +13,7 @@ codeunit 30190 "Shpfy Export Shipments"
     /// Create Shopify Fulfillment.
     /// </summary>
     /// <param name="SalesShipmentHeader">Parameter of type Record "Sales Shipment Header".</param>
-    procedure CreateShopifyFulfillment(var SalesShipmentHeader: Record "Sales Shipment Header");
+    internal procedure CreateShopifyFulfillment(var SalesShipmentHeader: Record "Sales Shipment Header");
     var
         ShipmentLocation: Query "Shpfy Shipment Location";
     begin

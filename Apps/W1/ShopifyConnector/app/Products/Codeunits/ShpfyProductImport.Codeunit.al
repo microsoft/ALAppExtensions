@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30180 "Shpfy Product Import"
 {
+    Access = Internal;
     trigger OnRun()
     var
         CreateItem: Codeunit "Shpfy Create Item";

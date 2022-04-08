@@ -3,6 +3,7 @@
 /// </summary>
 enum 30133 "Shpfy Transaction Status"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; " ")

@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30176 "Shpfy Product API"
 {
+    Access = Internal;
+
     var
         Shop: Record "Shpfy Shop";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
@@ -16,7 +18,7 @@ codeunit 30176 "Shpfy Product API"
     /// <param name="Product">Parameter of type Record "Shopify Product".</param>
     /// <param name="Item">Parameter of type Record Item.</param>
     /// <returns>Return value of type BigInteger.</returns>
-    procedure CreateShopifyProductImage(Product: Record "Shpfy Product"; Item: Record Item): BigInteger
+    internal procedure CreateShopifyProductImage(Product: Record "Shpfy Product"; Item: Record Item): BigInteger
     var
         JResponse: JsonToken;
         Method: Text;

@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30165 "Shpfy Orders API"
 {
+    Access = Internal;
+
     trigger OnRun()
     var
         LocalShop: Record "Shpfy Shop";

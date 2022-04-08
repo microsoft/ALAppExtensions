@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30114 "Shpfy Customer API"
 {
+    Access = Internal;
+
     var
         Shop: Record "Shpfy Shop";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
@@ -150,11 +152,6 @@ codeunit 30114 "Shpfy Customer API"
     /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
     /// <returns>Return value of type Boolean.</returns>
     internal procedure RetrieveShopifyCustomer(var ShopifyCustomer: Record "Shpfy Customer"): Boolean
-    begin
-        exit(RetrieveShopifyCustomer(ShopifyCustomer, false));
-    end;
-
-    internal procedure RetrieveShopifyCustomer(var ShopifyCustomer: Record "Shpfy Customer"; Forced: Boolean): Boolean
     var
         GraphQLType: Enum "Shpfy GraphQL Type";
         Parameters: Dictionary of [Text, Text];
@@ -167,7 +164,7 @@ codeunit 30114 "Shpfy Customer API"
         Parameters.Add('CustomerId', Format(ShopifyCustomer.Id));
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetCustomer, Parameters);
         if JHelper.GetJsonObject(JResponse, JCustomer, 'data.customer') then
-            exit(UpdateShopifyCustomerFields(ShopifyCustomer, JCustomer, Forced));
+            exit(UpdateShopifyCustomerFields(ShopifyCustomer, JCustomer));
     end;
 
     /// <summary> 
@@ -241,19 +238,54 @@ codeunit 30114 "Shpfy Customer API"
     /// <param name="ShopifyCustomerAddress">Parameter of type Record "Shopify Customer Address".</param>
     internal procedure UpdateCustomer(var ShopifyCustomer: Record "Shpfy Customer"; var ShopifyCustomerAddress: Record "Shpfy Customer Address")
     var
+        JItem: JsonToken;
+        JResponse: JsonToken;
+        GraphQuery: Text;
+        UpdateCustIdErr: Label 'Wrong updated Customer Id';
+        UpdateAddrIdErr: Label 'Wrong updated Address Id';
+    begin
+        GraphQuery := CreateGraphQueryUpdateCustomer(ShopifyCustomer, ShopifyCustomerAddress);
+
+        if GraphQuery <> '' then begin
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
+            if JResponse.SelectToken('$.data.customerCreate.customer', JItem) then
+                if JItem.IsObject then begin
+                    if ShopifyCustomer.Id <> CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JItem, 'id')) then
+                        Error(UpdateCustIdErr);
+                    ShopifyCustomer."Accepts Marketing" := JHelper.GetValueAsBoolean(JItem, 'acceptsMarketing');
+                    ShopifyCustomer."Accepts Marketing Update At" := JHelper.GetValueAsDateTime(JItem, 'acceptsMArketingUpdatedAt');
+                    ShopifyCustomer."Tax Exempt" := JHelper.GetValueAsBoolean(JItem, 'taxtExempt');
+                    ShopifyCustomer."Updated At" := JHelper.GetValueAsDateTime(JItem, 'updatedAt');
+                    ShopifyCustomer."Verified Email" := JHelper.GetValueAsBoolean(JItem, 'verifiedEmail');
+                end;
+            if JResponse.SelectToken('$.data.customerCreate.customer', JItem) then
+                if JItem.IsObject then
+                    ShopifyCustomer.Id := CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JItem, 'id'));
+
+            if (ShopifyCustomer.Id > 0) and JResponse.SelectToken('$.data.customerCreate.customer.defaultAddress', JItem) then
+                if JItem.IsObject then begin
+                    if (ShopifyCustomerAddress.Id <> CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JItem, 'id'))) then
+                        Error(UpdateAddrIdErr);
+                    ShopifyCustomerAddress.CustomerId := ShopifyCustomer.Id;
+#pragma warning disable AA0139
+                    ShopifyCustomerAddress.CountryName := JHelper.GetValueAsText(JItem, 'country', MaxStrLen(ShopifyCustomerAddress.CountryName));
+                    ShopifyCustomerAddress.ProvinceName := JHelper.GetValueAsText(JItem, 'province', MaxStrLen(ShopifyCustomerAddress.ProvinceName));
+#pragma warning restore AA0139
+                end;
+        end;
+    end;
+
+    internal procedure CreateGraphQueryUpdateCustomer(var ShopifyCustomer: Record "Shpfy Customer"; var ShopifyCustomerAddress: Record "Shpfy Customer Address"): Text
+    var
         xShopifyCustomer: Record "Shpfy Customer";
         xShopifyCustomerAddress: Record "Shpfy Customer Address";
         HasChange: Boolean;
-        JItem: JsonToken;
-        JResponse: JsonToken;
         GraphQuery: TextBuilder;
-        UpdateCustIdErr: Label 'Wrong updated Customer Id';
-        UpdateAddrIdErr: Label 'Wrong updated Address Id';
     begin
         xShopifyCustomer.Get(ShopifyCustomer.Id);
         xShopifyCustomerAddress.Get(ShopifyCustomerAddress.Id);
         Events.OnBeforeSendUpdateShopifyCustomer(Shop, ShopifyCustomer, ShopifyCustomerAddress, xShopifyCustomer, xShopifyCustomerAddress);
-        GraphQuery.Append('{"query":"mutation {customerCreate(input: {');
+        GraphQuery.Append('{"query":"mutation {customerUpdate(input: {');
         AddFieldToGraphQuery(GraphQuery, 'id', ShopifyCustomer.Id);
         if ShopifyCustomer."E-Mail" <> xShopifyCustomer."E-Mail" then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'email', ShopifyCustomer."E-Mail");
@@ -294,31 +326,7 @@ codeunit 30114 "Shpfy Customer API"
         if HasChange then begin
             GraphQuery.Remove(GraphQuery.Length - 1, 2);
             GraphQuery.Append('}}) {customer {id, acceptsMarketing, acceptsMarketingUpdatedAt, tags, updatedAt, veriefiedEmail, defaultAddress {id, province, country}}, userErrors {field, message}}}"}');
-            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
-            if JResponse.SelectToken('$.data.customerCreate.customer', JItem) then
-                if JItem.IsObject then begin
-                    if ShopifyCustomer.Id <> CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JItem, 'id')) then
-                        Error(UpdateCustIdErr);
-                    ShopifyCustomer."Accepts Marketing" := JHelper.GetValueAsBoolean(JItem, 'acceptsMarketing');
-                    ShopifyCustomer."Accepts Marketing Update At" := JHelper.GetValueAsDateTime(JItem, 'acceptsMArketingUpdatedAt');
-                    ShopifyCustomer."Tax Exempt" := JHelper.GetValueAsBoolean(JItem, 'taxtExempt');
-                    ShopifyCustomer."Updated At" := JHelper.GetValueAsDateTime(JItem, 'updatedAt');
-                    ShopifyCustomer."Verified Email" := JHelper.GetValueAsBoolean(JItem, 'verifiedEmail');
-                end;
-            if JResponse.SelectToken('$.data.customerCreate.customer', JItem) then
-                if JItem.IsObject then
-                    ShopifyCustomer.Id := CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JItem, 'id'));
-
-            if (ShopifyCustomer.Id > 0) and JResponse.SelectToken('$.data.customerCreate.customer.defaultAddress', JItem) then
-                if JItem.IsObject then begin
-                    if (ShopifyCustomerAddress.Id <> CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JItem, 'id'))) then
-                        Error(UpdateAddrIdErr);
-                    ShopifyCustomerAddress.CustomerId := ShopifyCustomer.Id;
-#pragma warning disable AA0139
-                    ShopifyCustomerAddress.CountryName := JHelper.GetValueAsText(JItem, 'country', MaxStrLen(ShopifyCustomerAddress.CountryName));
-                    ShopifyCustomerAddress.ProvinceName := JHelper.GetValueAsText(JItem, 'province', MaxStrLen(ShopifyCustomerAddress.ProvinceName));
-#pragma warning restore AA0139
-                end;
+            exit(GraphQuery.ToText());
         end;
     end;
 
@@ -328,7 +336,7 @@ codeunit 30114 "Shpfy Customer API"
     /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
     /// <param name="JCustomer">Parameter of type JsonObject.</param>
     /// <returns>Return variable "Result" of type Boolean.</returns>
-    internal procedure UpdateShopifyCustomerFields(var ShopifyCustomer: Record "Shpfy Customer"; JCustomer: JsonObject; Forced: Boolean) Result: Boolean
+    internal procedure UpdateShopifyCustomerFields(var ShopifyCustomer: Record "Shpfy Customer"; JCustomer: JsonObject) Result: Boolean
     var
         ShopifyAddress: Record "Shpfy Customer Address";
         TempTag: Record "Shpfy Tag" temporary;
@@ -347,7 +355,7 @@ codeunit 30114 "Shpfy Customer API"
         PhoneNo: Text;
     begin
         UpdatedAt := JHelper.GetValueAsDateTime(JCustomer, 'updatedAt');
-        if Forced or (UpdatedAt <= ShopifyCustomer."Updated At") then
+        if UpdatedAt <= ShopifyCustomer."Updated At" then
             exit(false);
         Result := true;
 
@@ -417,7 +425,6 @@ codeunit 30114 "Shpfy Customer API"
                 ShopifyAddress.Phone := CopyStr(PhoneNo, 1, MaxStrLen(ShopifyAddress.Phone));
                 ShopifyAddress.Default := false;
                 ShopifyAddress.Modify(false);
-
             end;
             Clear(ShopifyAddress);
             ShopifyAddress.SetRange(CustomerId, ShopifyCustomer.Id);
@@ -443,8 +450,5 @@ codeunit 30114 "Shpfy Customer API"
                 end;
             end;
         end;
-        if JHelper.GetJsonObject(JCustomer, JNode, 'metafields') then
-            if JHelper.GetJsonArray(JNode, JMetafields, 'edges') then
-                foreach JItem in JMetafields do;
     end;
 }

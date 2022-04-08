@@ -3,7 +3,9 @@
 /// </summary>
 codeunit 30192 "Shpfy Shipping Events"
 {
-    [IntegrationEvent(false, false)]
+    Access = Internal;
+
+    [InternalEvent(false)]
     internal procedure BeforeRetrieveTrackingUrl(var ShipingHeader: Record "Sales Shipment Header"; var TrackingUrl: Text; IsHandled: Boolean)
     begin
     end;

@@ -3,6 +3,7 @@
 /// </summary>
 codeunit 30153 "Shpfy GraphQL Rate Limit"
 {
+    Access = Internal;
     SingleInstance = true;
 
     var
@@ -52,7 +53,7 @@ codeunit 30153 "Shpfy GraphQL Rate Limit"
         WaitTime: Duration;
     begin
         if LastRequestedOn = 0DT then
-            LastRequestedOn := CurrentDateTime - 1;
+            LastRequestedOn := CurrentDateTime - 1000;
         if (ExpectedCost = 0) or (ExpectedCost > LastAvailable) then begin
             NextRequestAfter := CurrentDateTime;
             WaitTime := CalcWaitTime(ExpectedCost);
@@ -113,7 +114,7 @@ codeunit 30153 "Shpfy GraphQL Rate Limit"
 
     begin
         if not TryGoToSleep() then
-            Sleep(1000);
+            Sleep(100);
     end;
 
     [TryFunction]

@@ -3,6 +3,7 @@
 /// </summary>
 table 30123 "Shpfy Order Risk"
 {
+    Access = Internal;
     Caption = 'Shopify Order Risk';
     DataClassification = SystemMetadata;
 

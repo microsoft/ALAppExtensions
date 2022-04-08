@@ -3,6 +3,7 @@
 /// </summary>
 table 30122 "Shpfy Order Tax Line"
 {
+    Access = Internal;
     Caption = 'Shopify Order Tax Line';
     DataClassification = CustomerContent;
 

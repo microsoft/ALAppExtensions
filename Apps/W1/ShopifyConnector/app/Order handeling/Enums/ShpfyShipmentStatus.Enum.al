@@ -3,6 +3,7 @@
 /// </summary>
 enum 30119 "Shpfy Shipment Status"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; " ")

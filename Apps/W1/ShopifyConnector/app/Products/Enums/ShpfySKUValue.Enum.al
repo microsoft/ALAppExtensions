@@ -3,6 +3,7 @@
 /// </summary>
 enum 30132 "Shpfy SKU Value"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; " ")

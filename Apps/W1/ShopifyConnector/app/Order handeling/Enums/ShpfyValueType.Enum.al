@@ -3,6 +3,7 @@
 /// </summary>
 enum 30123 "Shpfy Value Type"
 {
+    Access = Internal;
     Extensible = true;
 
     value(3; "Fixed Amount")

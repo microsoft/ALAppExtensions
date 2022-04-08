@@ -3,6 +3,7 @@
 /// </summary>
 enum 30120 "Shpfy Target Selection"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; All)

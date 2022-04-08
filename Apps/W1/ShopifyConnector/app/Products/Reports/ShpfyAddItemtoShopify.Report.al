@@ -59,7 +59,7 @@ report 30106 "Shpfy Add Item to Shopify"
     /// Set Shop.
     /// </summary>
     /// <param name="Shop">Parameter of type Code[20].</param>
-    procedure SetShop(Shop: Code[20])
+    internal procedure SetShop(Shop: Code[20])
     begin
         ShopCode := Shop;
     end;

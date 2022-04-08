@@ -3,6 +3,7 @@
 /// </summary>
 enum 30116 "Shpfy Cancel Reason"
 {
+    Access = Internal;
     Extensible = true;
 
     value(0; " ")

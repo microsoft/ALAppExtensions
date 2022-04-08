@@ -3,13 +3,15 @@
 /// </summary>
 codeunit 30164 "Shpfy Order Mgt."
 {
+    Access = Internal;
+
     /// <summary> 
     /// Find Tax Area.
     /// </summary>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
     /// <param name="ShopTaxArea">Parameter of type Record "Shopify Tax Area".</param>
     /// <returns>Return value of type Boolean.</returns>
-    procedure FindTaxArea(ShopifyOrderHeader: Record "Shpfy Order Header"; var ShopTaxArea: Record "Shpfy Tax Area"): Boolean
+    internal procedure FindTaxArea(ShopifyOrderHeader: Record "Shpfy Order Header"; var ShopTaxArea: Record "Shpfy Tax Area"): Boolean
     var
         Shop: Record "Shpfy Shop";
     begin
@@ -129,7 +131,7 @@ codeunit 30164 "Shpfy Order Mgt."
     /// </summary>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
     /// <returns>Return value of type Text.</returns>
-    procedure FindTaxAreaCode(ShopifyOrderHeader: Record "Shpfy Order Header"): Text
+    internal procedure FindTaxAreaCode(ShopifyOrderHeader: Record "Shpfy Order Header"): Text
     var
         ShopTaxArea: Record "Shpfy Tax Area";
     begin
@@ -141,7 +143,7 @@ codeunit 30164 "Shpfy Order Mgt."
     /// Show Shopify Order.
     /// </summary>
     /// <param name="RecOrRecRef">Parameter of type Variant.</param>
-    procedure ShowShopifyOrder(var RecOrRecRef: Variant)
+    internal procedure ShowShopifyOrder(var RecOrRecRef: Variant)
     var
         ShopifyOrder: Record "Shpfy Order Header";
         RecRef: RecordRef;

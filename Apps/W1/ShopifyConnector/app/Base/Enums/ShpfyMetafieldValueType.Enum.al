@@ -3,6 +3,7 @@
 /// </summary>
 enum 30102 "Shpfy Metafield Value Type"
 {
+    Access = Internal;
     Extensible = false;
 
     value(0; String)

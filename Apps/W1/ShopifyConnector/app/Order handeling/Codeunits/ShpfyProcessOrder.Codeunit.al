@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 30166 "Shpfy Process Order"
 {
+    Access = Internal;
+
     TableNo = "Shpfy Order Header";
 
     var
