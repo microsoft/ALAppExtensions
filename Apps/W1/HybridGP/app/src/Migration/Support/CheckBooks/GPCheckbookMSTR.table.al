@@ -182,14 +182,18 @@ table 40099 "GP Checkbook MSTR"
     procedure MoveStagingData()
     var
         BankAccount: Record "Bank Account";
-        GPCheckbookTransactionsTable: Record "GP Checkbook Transactions";
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        MSFTCM20200Table: Record MSFTCM20200;
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        MigrateInactiveCheckbooks: Boolean;
     begin
-        GPCompanyMigrationSettings.FindFirst();
+        MigrateInactiveCheckbooks := false;
+        if GPCompanyAdditionalSettings.Get(CompanyName()) then
+            MigrateInactiveCheckbooks := GPCompanyAdditionalSettings."Migrate Inactive Checkbooks";
+
         if FindSet() then
             repeat
                 if not BankAccount.Get(CHEKBKID) then
-                    if GPCompanyMigrationSettings."Migrate Inactive Checkbooks" or not INACTIVE then begin
+                    if MigrateInactiveCheckbooks or not INACTIVE then begin
                         BankAccount.Init();
                         BankAccount."No." := DelChr(CHEKBKID, '>', ' ');
                         BankAccount.Name := DelChr(DSCRIPTN, '>', ' ');
@@ -200,7 +204,7 @@ table 40099 "GP Checkbook MSTR"
                         UpdateBankInfo(DelChr(BANKID, '>', ' '), BankAccount);
                         BankAccount.Insert(true);
 
-                        GPCheckbookTransactionsTable.MoveStagingData(BankAccount."No.", BankAccount."Bank Acc. Posting Group", CHEKBKID);
+                        MSFTCM20200Table.MoveStagingData(BankAccount."No.", BankAccount."Bank Acc. Posting Group", CHEKBKID);
                     end;
             until Next() = 0;
     end;

@@ -41,11 +41,12 @@ codeunit 4025 "GP Cloud Migration"
         CompanyFailedToMigrateMsg: Label 'Migration did not start because the company setup is still in process.', Locked = true;
         InitiateMigrationMsg: Label 'Initiate GP Migration.', Locked = true;
         StartMigrationMsg: Label 'Start Migration', Locked = true;
+        SourceTableNameCM20200Lbl: Label 'CM20200', Locked = true;
 
     local procedure InitiateGPMigration()
     var
         DataMigrationEntity: Record "Data Migration Entity";
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyMigrationSettingsTable: Record "GP Company Migration Settings";
         GPAccount: Record "GP Account";
         GPCustomer: Record "GP Customer";
         GPVendor: Record "GP Vendor";
@@ -95,8 +96,8 @@ codeunit 4025 "GP Cloud Migration"
         end;
 
         Commit();
-        if GPCompanyMigrationSettings.Get(CompanyName()) then begin
-            HelperFunctions.SetGlobalDimensions(CopyStr(GPCompanyMigrationSettings."Global Dimension 1", 1, 20), CopyStr(GPCompanyMigrationSettings."Global Dimension 2", 1, 20));
+        if GPCompanyMigrationSettingsTable.Get(CompanyName()) then begin
+            HelperFunctions.SetGlobalDimensions(CopyStr(GPCompanyMigrationSettingsTable."Global Dimension 1", 1, 20), CopyStr(GPCompanyMigrationSettingsTable."Global Dimension 2", 1, 20));
             HelperFunctions.UpdateGlobalDimensionNo();
         end;
 
@@ -133,5 +134,26 @@ codeunit 4025 "GP Cloud Migration"
         DataMigrationEntity.InsertRecord(Database::Vendor, HelperFunctions.GetNumberOfVendors());
         DataMigrationEntity.InsertRecord(Database::Item, HelperFunctions.GetNumberOfItems());
         exit(true);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInsertDefaultTableMappings', '', false, false)]
+    local procedure OnInsertDefaultTableMappings(DeleteExisting: Boolean; ProductID: Text[250])
+    begin
+        UpdateOrInsertRecord(Database::MSFTCM20200, SourceTableNameCM20200Lbl);
+    end;
+
+    local procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128])
+    var
+        MigrationTableMapping: Record "Migration Table Mapping";
+        CurrentModuleInfo: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(CurrentModuleInfo);
+        if MigrationTableMapping.Get(CurrentModuleInfo.Id(), TableID) then
+            MigrationTableMapping.Delete();
+
+        MigrationTableMapping."App ID" := CurrentModuleInfo.Id();
+        MigrationTableMapping.Validate("Table ID", TableID);
+        MigrationTableMapping."Source Table Name" := SourceTableName;
+        MigrationTableMapping.Insert();
     end;
 }
