@@ -16,7 +16,7 @@ table 30101 "Shpfy Metafield"
             Editable = false;
         }
 
-        field(2; Namespace; Text[20])
+        field(2; Namespace; Text[100])
         {
             Caption = 'Namespace';
             DataClassification = SystemMetadata;
@@ -91,7 +91,7 @@ table 30101 "Shpfy Metafield"
         Metafield: Record "Shpfy Metafield";
     begin
         if Namespace = '' then
-            Namespace := 'D365BC';
+            Namespace := 'Microsoft.Dynamics365.BusinessCentral';
         if Id = 0 then
             if Metafield.FindFirst() and (Metafield.Id < 0) then
                 Id := Metafield.Id - 1

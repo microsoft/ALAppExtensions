@@ -11,7 +11,7 @@ codeunit 30150 "Shpfy GQL VariantById" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{productVariant(id: \"gid://shopify/ProductVariant/{{VariantId}}\") {createdAt updatedAt availableForSale barcode compareAtPrice displayName inventoryPolicy position price sku taxCode taxable title weight product{id}selectedOptions{name value} inventoryItem{countryCodeOfOrigin createdAt id inventoryHistoryUrl legacyResourceId provinceCodeOfOrigin requiresShipping sku tracked updatedAt unitCost { amount currencyCode }} metafields(namespace: \"D365BC\", first: 10) {edges {node {id namespace ownerType legacyResourceId key value}}}}}"}');
+        exit('{"query":"{productVariant(id: \"gid://shopify/ProductVariant/{{VariantId}}\") {createdAt updatedAt availableForSale barcode compareAtPrice displayName inventoryPolicy position price sku taxCode taxable title weight product{id}selectedOptions{name value} inventoryItem{countryCodeOfOrigin createdAt id inventoryHistoryUrl legacyResourceId provinceCodeOfOrigin requiresShipping sku tracked updatedAt unitCost { amount currencyCode }} metafields(namespace: \"Microsoft.Dynamics365.BusinessCentral\", first: 10) {edges {node {id namespace ownerType legacyResourceId key value}}}}}"}');
     end;
 
     /// <summary>

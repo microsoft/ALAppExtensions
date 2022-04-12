@@ -43,14 +43,14 @@ codeunit 30116 "Shpfy Customer Export"
     begin
         Metafield.SetRange("Parent Table No.", Database::"Shpfy Customer");
         Metafield.SetRange("Owner Id", ShopifyCustomer.Id);
-        Metafield.SetRange(Namespace, 'D365BC');
+        Metafield.SetRange(Namespace, 'Microsoft.Dynamics365.BusinessCentral');
         Name := CleanName(MetadataField);
         Metafield.SetRange(Name, Name);
         if Metafield.FindFirst() then begin
             if Metafield.Value <> Format(MetadataField.Value) then;
         end else begin
             Clear(Metafield);
-            Metafield.Namespace := 'D365BC';
+            Metafield.Namespace := 'Microsoft.Dynamics365.BusinessCentral';
             Metafield.Validate("Parent Table No.", Database::"Shpfy Customer");
             Metafield."Owner Id" := ShopifyCustomer.Id;
             Metafield."Value Type" := Metafield."Value Type"::String;
