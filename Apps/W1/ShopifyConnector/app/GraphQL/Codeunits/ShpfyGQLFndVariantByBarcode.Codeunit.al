@@ -1,5 +1,5 @@
 /// <summary>
-/// Codeunit Shpfy GQL FndVariantByBarcode (ID 70007693) implements Interface Shpfy IGarphQL.
+/// Codeunit Shpfy GQL FndVariantByBarcode (ID 30132) implements Interface Shpfy IGarphQL.
 /// </summary>
 codeunit 30132 "Shpfy GQL FndVariantByBarcode" implements "Shpfy IGraphQL"
 {

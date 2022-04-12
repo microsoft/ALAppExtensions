@@ -175,7 +175,7 @@ page 30115 "Shpfy Orders"
             part(OrderTags; "Shpfy Tag Factbox")
             {
                 ApplicationArea = All;
-                SubPageLink = "Parent Table No." = const(70007604), "Parent Id" = field("Shopify Order Id");
+                SubPageLink = "Parent Table No." = const(30118), "Parent Id" = field("Shopify Order Id");
             }
             part(OrderAttributes; "Shpfy Order Attributes")
             {
