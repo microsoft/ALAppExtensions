@@ -4,7 +4,7 @@
 table 30103 "Shpfy Synchronization Info"
 {
     Access = Internal;
-    Caption = 'Synchronization Info';
+    Caption = 'Shopify Synchronization Info';
     DataClassification = SystemMetadata;
 
     fields

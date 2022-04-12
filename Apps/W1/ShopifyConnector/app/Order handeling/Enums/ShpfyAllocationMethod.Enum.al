@@ -4,6 +4,7 @@
 enum 30115 "Shpfy Allocation Method"
 {
     Access = Internal;
+    Caption = 'Shopify Allocation Method';
 
     value(0; across)
     {

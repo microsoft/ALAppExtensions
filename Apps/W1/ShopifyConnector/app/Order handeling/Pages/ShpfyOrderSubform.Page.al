@@ -3,7 +3,7 @@
 /// </summary>
 page 30122 "Shpfy Order Subform"
 {
-    Caption = 'Lines';
+    Caption = 'Shopify Order Lines';
     DeleteAllowed = false;
     InsertAllowed = false;
     PageType = ListPart;

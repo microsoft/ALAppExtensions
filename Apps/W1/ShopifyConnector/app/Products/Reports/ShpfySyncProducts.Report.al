@@ -3,7 +3,7 @@
 /// </summary>
 report 30108 "Shpfy Sync Products"
 {
-    Caption = 'Sync Products';
+    Caption = 'Shopify Sync Products';
     UsageCategory = Tasks;
     ApplicationArea = All;
     ProcessingOnly = true;

@@ -4,7 +4,7 @@
 report 30102 "Shpfy Sync Stock To Shopify"
 {
     ApplicationArea = All;
-    Caption = 'Sync Stock To Shopify';
+    Caption = 'Shopify Sync Stock To Shopify';
     ProcessingOnly = true;
     UsageCategory = Tasks;
 

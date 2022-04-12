@@ -4,7 +4,7 @@
 table 30104 "Shpfy Tag"
 {
     Access = Internal;
-    Caption = 'Tag';
+    Caption = 'Shopify Tag';
     DataClassification = CustomerContent;
 
     fields

@@ -3,6 +3,7 @@
 /// </summary>
 page 30101 "Shpfy Shop Card"
 {
+    Caption = 'Shopify Shop Card';
     PageType = Card;
     PromotedActionCategories = 'New,Process,Report,Related,Synchronization';
     SourceTable = "Shpfy Shop";

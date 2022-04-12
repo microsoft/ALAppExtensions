@@ -4,6 +4,7 @@
 enum 30121 "Shpfy Target Type"
 {
     Access = Internal;
+    Caption = 'Shopify Target Type';
 
     value(2; "Line Item")
     {

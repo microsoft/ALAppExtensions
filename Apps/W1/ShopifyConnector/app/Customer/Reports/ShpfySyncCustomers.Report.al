@@ -4,7 +4,7 @@
 report 30100 "Shpfy Sync Customers"
 {
     ApplicationArea = All;
-    Caption = 'Sync Customers';
+    Caption = 'Shopify Sync Customers';
     UsageCategory = Tasks;
     ProcessingOnly = true;
 

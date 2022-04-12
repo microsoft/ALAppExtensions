@@ -4,6 +4,7 @@
 enum 30130 "Shpfy Product Status"
 {
     Access = Internal;
+    Caption = 'Shopify Product Status';
 
     value(0; Active)
     {

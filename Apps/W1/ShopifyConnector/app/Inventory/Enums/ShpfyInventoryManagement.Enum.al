@@ -4,6 +4,7 @@
 enum 30124 "Shpfy Inventory Management"
 {
     Access = Internal;
+    Caption = 'Shopify Inventory Management';
     Extensible = true;
 
     value(0; SHOPIFY)

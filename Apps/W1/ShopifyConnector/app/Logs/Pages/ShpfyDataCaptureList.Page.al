@@ -4,7 +4,7 @@
 page 30118 "Shpfy Data Capture List"
 {
 
-    Caption = 'Data Capture List';
+    Caption = 'Shopify Data Capture List';
     PageType = List;
     SourceTable = "Shpfy Data Capture";
     SourceTableView = sorting("Entry No.") order(descending);

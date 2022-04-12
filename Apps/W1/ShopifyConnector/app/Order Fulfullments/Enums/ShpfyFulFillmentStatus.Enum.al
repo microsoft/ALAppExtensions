@@ -4,6 +4,7 @@
 enum 30112 "Shpfy FulFillment Status"
 {
     Access = Internal;
+    Caption = 'Shopify FulFillment Status';
     Extensible = true;
 
     value(0; " ")

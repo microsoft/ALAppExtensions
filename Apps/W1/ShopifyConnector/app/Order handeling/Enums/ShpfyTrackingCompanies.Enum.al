@@ -7,6 +7,7 @@
 enum 30122 "Shpfy Tracking Companies"
 {
     Access = Internal;
+    Caption = 'Shopify Tracking Companies';
     Extensible = true;
 
     value(0; " ")

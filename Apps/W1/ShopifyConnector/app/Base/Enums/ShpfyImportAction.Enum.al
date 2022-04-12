@@ -4,6 +4,7 @@
 enum 30100 "Shpfy Import Action"
 {
     Access = Internal;
+    Caption = 'Shopify Import Action';
     Extensible = true;
 
     value(0; New)

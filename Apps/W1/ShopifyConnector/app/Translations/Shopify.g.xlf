@@ -249,7 +249,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Customer Template - Field Shop Code - Property Caption</note>
         </trans-unit>
         <trans-unit id="Table 808022924 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Data Capture</source>
+          <source>Shopify Data Capture</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Data Capture - Property Caption</note>
         </trans-unit>
@@ -427,6 +427,11 @@
           <source>User ID</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Log Entry - Field User ID - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 617417509 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Metafield</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Metafield - Property Caption</note>
         </trans-unit>
         <trans-unit id="Table 617417509 - Field 415504711 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Id</source>
@@ -1438,6 +1443,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Order Transaction - Field Type - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Table 2708943593 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Orders To Import</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Orders To Import - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Table 2708943593 - Field 2279323338 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Action</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -1914,7 +1924,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Province - Field Tax Type - Property Caption</note>
         </trans-unit>
         <trans-unit id="Table 3569445581 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Registered Store</source>
+          <source>Shopify Registered Store</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Registered Store - Property Caption</note>
         </trans-unit>
@@ -2273,6 +2283,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Shop Collection Map - Field Version - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Table 1416671334 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Shop Inventory</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Shop Inventory - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Table 1416671334 - Field 558555078 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Inventory Item Id</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -2369,7 +2384,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Shop Location - Field Version - Property Caption</note>
         </trans-unit>
         <trans-unit id="Table 1323851180 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Synchronization Info</source>
+          <source>Shopify Synchronization Info</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Synchronization Info - Property Caption</note>
         </trans-unit>
@@ -2389,7 +2404,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Synchronization Info - Field Synchronization Type - Property Caption</note>
         </trans-unit>
         <trans-unit id="Table 2946594178 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Tag</source>
+          <source>Shopify Tag</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Tag - Property Caption</note>
         </trans-unit>
@@ -2412,6 +2427,11 @@
           <source>Entry No.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Tag - Field Tag - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 1443881130 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Tax Area</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Shpfy Tax Area - Property Caption</note>
         </trans-unit>
         <trans-unit id="Table 1443881130 - Field 2542713143 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Country Code</source>
@@ -2738,6 +2758,11 @@
           <note from="Developer" annotates="general" priority="2">%1 = Shopify customer id</note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Shpfy Update Customer - Method DoUpdateCustomer - NamedType NoDefaltAddressErr</note>
         </trans-unit>
+        <trans-unit id="Page 234408897 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Activities</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Activities - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Page 234408897 - Control 2294954182 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Shopify Shop info</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -2759,7 +2784,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Activities - Control UnprocessedOrders - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 881753888 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Waiting for a response - do not close this page</source>
+          <source>Shopify Waiting for a response - do not close this page</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Authentication - Property Caption</note>
         </trans-unit>
@@ -2784,7 +2809,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Credit Card Companies - Control Name - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 1491468912 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Adrresses</source>
+          <source>Shopify Customer Adrresses</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Customer Adresses - Property Caption</note>
         </trans-unit>
@@ -3104,7 +3129,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Customers - Action Sync - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 1266755742 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Data Capture List</source>
+          <source>Shopify Data Capture List</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Data Capture List - Property Caption</note>
         </trans-unit>
@@ -4119,7 +4144,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Order Shipping Costs - Action RetrievedShopifyData - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 2953146964 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Lines</source>
+          <source>Shopify Order Lines</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Order Subform - Property Caption</note>
         </trans-unit>
@@ -4998,6 +5023,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Shop Card - Property PromotedActionCategories</note>
         </trans-unit>
+        <trans-unit id="Page 1970429680 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Shop Card</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Shop Card - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Page 1970429680 - Method 1256266081 - NamedType 4118099340" size-unit="char" translate="yes" xml:space="preserve">
           <source>Reset Sync to</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -5479,7 +5509,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Shops - Control ShopifyURL - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 3069548221 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Tags</source>
+          <source>Shopify Tags</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Tag Factbox - Property Caption</note>
         </trans-unit>
@@ -5492,6 +5522,11 @@
           <source>Tag</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Tag Factbox - Control Tag - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 2270019439 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Tags</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Tags - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 2270019439 - Control 2801749846 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
           <source>Specifies the tags of a product that are used for filtering and search.</source>
@@ -5783,6 +5818,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Shpfy Variants - Action MapVariant - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Report 653247747 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Add Item to Shopify</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Add Item to Shopify - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Report 653247747 - ReportDataItem 3276313895 - Method 72583909 - NamedType 2602098311" size-unit="char" translate="yes" xml:space="preserve">
           <source>You must select a shop to add the items to.</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -5803,28 +5843,33 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Add Item to Shopify - Control Shop - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Report 3747876255 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Create Location Filter</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Create Location Filter - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Report 4079961511 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Shopify Create Sales Orders</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Create Sales Orders - Property Caption</note>
         </trans-unit>
         <trans-unit id="Report 3707284183 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Sync Countries</source>
+          <source>Shopify Sync Countries</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Sync Countries - Property Caption</note>
         </trans-unit>
         <trans-unit id="Report 3989958776 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Sync Customers</source>
+          <source>Shopify Sync Customers</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Sync Customers - Property Caption</note>
         </trans-unit>
         <trans-unit id="Report 4117878793 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Sync Images</source>
+          <source>Shopify Sync Images</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Sync Images - Property Caption</note>
         </trans-unit>
         <trans-unit id="Report 3468645198 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Sync Orders from Shopify</source>
+          <source>Shopify Sync Orders from Shopify</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Sync Orders from Shopify - Property Caption</note>
         </trans-unit>
@@ -5834,12 +5879,12 @@
           <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Sync Orders from Shopify - NamedType ProcessMsg</note>
         </trans-unit>
         <trans-unit id="Report 1613822294 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Sync Payments</source>
+          <source>Shopify Sync Payments</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Sync Payments - Property Caption</note>
         </trans-unit>
         <trans-unit id="Report 2187403677 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Sync Products</source>
+          <source>Shopify Sync Products</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Sync Products - Property Caption</note>
         </trans-unit>
@@ -5854,14 +5899,19 @@
           <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Sync Products - Control OnlySyncPrice - Property Caption</note>
         </trans-unit>
         <trans-unit id="Report 3438255597 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Sync Shipments To Shopify</source>
+          <source>Shopify Sync Shipments To Shopify</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Sync Shipm. To Shopify - Property Caption</note>
         </trans-unit>
         <trans-unit id="Report 2950919262 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Sync Stock To Shopify</source>
+          <source>Shopify Sync Stock To Shopify</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Report Shpfy Sync Stock To Shopify - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Query 3198841923 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Shipment Location</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Query Shpfy Shipment Location - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 3711439191 - Action 3480241704 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2521211343">
           <source>Manage Shopify Shops, customers, products, orders, gift cards, transactions and payouts.</source>
@@ -6498,6 +6548,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Shpfy Shipping Agent - Field Shpfy Tracking Company - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 3510068437 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Allocation Method</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Allocation Method - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 3510068437 - EnumValue 3584023649 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Across</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -6517,6 +6572,11 @@
           <source>Unknown</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Allocation Method - EnumValue Unknown - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 934733066 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Cancel Reason</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Cancel Reason - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 934733066 - EnumValue 1371923692 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
@@ -6548,6 +6608,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Cancel Reason - EnumValue Unknown - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 3593884509 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify County Source</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy County Source - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 3593884509 - EnumValue 3004954119 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Code</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -6558,6 +6623,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy County Source - EnumValue Name - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 2712089749 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Create Product Status Value</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Cr. Prod. Status Value - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 2712089749 - EnumValue 1090351696 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Active</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -6567,6 +6637,11 @@
           <source>Draft</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Cr. Prod. Status Value - EnumValue Draft - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1634264198 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Customer Import Range</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Customer Import Range - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 1634264198 - EnumValue 2590131546 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>All Customers</source>
@@ -6583,6 +6658,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Customer Import Range - EnumValue WithOrderImport - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 3255995616 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Customer Mapping</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Customer Mapping - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 3255995616 - EnumValue 3276295972 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>By Bill-to Info</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -6597,6 +6677,11 @@
           <source>Always take the default customer</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Customer Mapping - EnumValue DefaultCustomer - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1579780329 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Customer State</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Customer State - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 1579780329 - EnumValue 3497778660 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Declined</source>
@@ -6617,6 +6702,11 @@
           <source>Invited</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Customer State - EnumValue Invited - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 2734534355 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Financial Status</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Financial Status - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 2734534355 - EnumValue 1371923692 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
@@ -6663,6 +6753,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Financial Status - EnumValue Voided - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 3907763758 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify FulFillment Status</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy FulFillment Status - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 3907763758 - EnumValue 1371923692 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -6697,6 +6792,11 @@
           <source>Success</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy FulFillment Status - EnumValue Success - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1984319471 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify GraphQL Type</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy GraphQL Type - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 1984319471 - EnumValue 1235789037 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Find Customer Id By E-Mail</source>
@@ -6833,6 +6933,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy GraphQL Type - EnumValue UpdateOrderAttributes - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 789674161 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Import Action</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Import Action - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 789674161 - EnumValue 4137051400 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>New</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -6842,6 +6947,11 @@
           <source>Update</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Import Action - EnumValue Update - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 2636847231 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Inventory Management</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Inventory Management - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 2636847231 - EnumValue 519585812 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Fulfillment Service</source>
@@ -6858,6 +6968,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Inventory Management - EnumValue SHOPIFY - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 3113349866 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Inventory Policy</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Inventory Policy - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 3113349866 - EnumValue 1049621811 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Continue</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -6868,6 +6983,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Inventory Policy - EnumValue DENY - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 4230855559 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Mapping Direction</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Mapping Direction - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 4230855559 - EnumValue 224320628 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>BC to Shopify</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -6877,6 +6997,11 @@
           <source>Shopify to BC</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Mapping Direction - EnumValue ShopifyToBC - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3097813108 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify  Metafield Value Type</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Metafield Value Type - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 3097813108 - EnumValue 3883182266 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Integer</source>
@@ -6892,6 +7017,11 @@
           <source>String</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Metafield Value Type - EnumValue String - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1252581514 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Name Source</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Name Source - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 1252581514 - EnumValue 552006252 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Company Name</source>
@@ -6912,6 +7042,11 @@
           <source>None</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Name Source - EnumValue None - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 2723089908 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Order Fulfill. Status</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Order Fulfill. Status - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 2723089908 - EnumValue 1371923692 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
@@ -6953,6 +7088,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Order Fulfill. Status - EnumValue Unfilfilled - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 2315122553 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Payment Trans. Source</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Payment Trans. Source - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 2315122553 - EnumValue 1211660521 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Adjustment</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -6987,6 +7127,11 @@
           <source> </source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Payment Trans. Source - EnumValue Unknown - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 2979044366 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Payment Transcation Type</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Payment Trans. Type - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 2979044366 - EnumValue 1211660521 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Adjustment</source>
@@ -7048,6 +7193,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Payment Trans. Type - EnumValue Unknown - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 1109428354 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source> Payout Status</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Payout Status - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 1109428354 - EnumValue 3844911025 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Canceled</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -7077,6 +7227,11 @@
           <source> </source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Payout Status - EnumValue Unknown - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 749599948 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Processing Method</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Processing Method - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 749599948 - EnumValue 3424086012 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Checkout</source>
@@ -7113,6 +7268,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Processing Method - EnumValue Unknown - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 2900016621 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Product Status</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Product Status - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 2900016621 - EnumValue 1090351696 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Active</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -7128,6 +7288,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Product Status - EnumValue Draft - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 831900249 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Remove Product Action</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Remove Product Action - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 831900249 - EnumValue 3446056250 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -7142,6 +7307,11 @@
           <source>Status to Draft</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Remove Product Action - EnumValue StatusToDraft - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 2914775059 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Risk Level</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Risk Level - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 2914775059 - EnumValue 1371923692 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
@@ -7162,6 +7332,11 @@
           <source>Medium 😐</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Risk Level - EnumValue Medium - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1137870428 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Shipment Status</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Shipment Status - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 1137870428 - EnumValue 1371923692 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
@@ -7213,6 +7388,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Shipment Status - EnumValue Ready for Pickup - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 3853417718 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify SKU Value</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy SKU Value - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 3853417718 - EnumValue 1650050144 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Barcode</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -7238,6 +7418,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy SKU Value - EnumValue Vendor Item No. - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 1545563666 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Synchronization Type</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Synchronization Type - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 1545563666 - EnumValue 3606140129 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Customers</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -7257,6 +7442,11 @@
           <source> </source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Synchronization Type - EnumValue Undefined - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 91976311 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Target Selection</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Target Selection - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 91976311 - EnumValue 3703598467 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>All</source>
@@ -7278,6 +7468,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Target Selection - EnumValue Unknown - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 821324551 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Target Type</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Target Type - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 821324551 - EnumValue 3087891197 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Line Item</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -7292,6 +7487,11 @@
           <source>Unknown</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Target Type - EnumValue Unknown - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 1934711222 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Tax By</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Tax By - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 1934711222 - EnumValue 3138669267 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Bill-to -&gt; Sell-to -&gt; Ship-to</source>
@@ -7328,6 +7528,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Tax By - EnumValue Ship-to -&gt; Sell-to -&gt; Bill-to - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 4072814299 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Tax Type</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Tax Type - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 4072814299 - EnumValue 2516187263 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Harmonized</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -7342,6 +7547,11 @@
           <source>Normal</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Tax Type - EnumValue Normal - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3086077854 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Tracking Companies</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Tracking Companies - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 3086077854 - EnumValue 1371923692 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
@@ -7583,6 +7793,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Tracking Companies - EnumValue YunExpress - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Enum 2117079544 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Transaction Status</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Transaction Status - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Enum 2117079544 - EnumValue 1371923692 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -7607,6 +7822,11 @@
           <source>Success</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Transaction Status - EnumValue Success - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 3391064892 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopify Transaction Type</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Transaction Type - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 3391064892 - EnumValue 1371923692 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source> </source>
@@ -7637,6 +7857,11 @@
           <source>Void</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Transaction Type - EnumValue Void - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 791962577 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Shopoify Value Type</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy Value Type - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 791962577 - EnumValue 467024174 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Fixed Amount</source>

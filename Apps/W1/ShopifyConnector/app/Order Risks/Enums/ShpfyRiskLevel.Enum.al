@@ -4,6 +4,7 @@
 enum 30126 "Shpfy Risk Level"
 {
     Access = Internal;
+    Caption = 'Shopify Risk Level';
     Extensible = true;
 
     value(0; " ")

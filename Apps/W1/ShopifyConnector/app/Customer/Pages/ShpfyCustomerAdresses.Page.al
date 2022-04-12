@@ -3,7 +3,7 @@
 /// </summary>
 page 30105 "Shpfy Customer Adresses"
 {
-    Caption = 'Adrresses';
+    Caption = 'Shopify Customer Adrresses';
     Editable = false;
     PageType = ListPart;
     SourceTable = "Shpfy Customer Address";

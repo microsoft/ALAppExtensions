@@ -4,6 +4,7 @@
 enum 30106 "Shpfy Customer Mapping" implements "Shpfy ICustomer Mapping"
 {
     Access = Internal;
+    Caption = 'Shopify Customer Mapping';
     Extensible = true;
 
     value(0; "By EMail/Phone")

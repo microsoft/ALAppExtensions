@@ -173,11 +173,7 @@ codeunit 30195 "Shpfy Inventory API"
                 exit(JValue.AsBoolean());
     end;
 
-    /// <summary> 
-    /// Import Stock.
-    /// </summary>
-    /// <param name="ShopLocation">Parameter of type Record "Shopify Shop Location".</param>
-    internal procedure ImportStock(ShopLocation: Record "Shpfy Shop Location")
+    internal procedure ImportInventoryLevels(var ShopLocation: Record "Shpfy Shop Location"; var Parameters: Dictionary of [Text, Text]; var GraphQLType: Enum "Shpfy GraphQL Type"; var JInventoryLevels: JsonObject)
     var
         ShopInventory: Record "Shpfy Shop Inventory";
         ShopVariant: Record "Shpfy Variant";
@@ -185,71 +181,81 @@ codeunit 30195 "Shpfy Inventory API"
         ProductId: BigInteger;
         VariantId: BigInteger;
         Stock: Decimal;
-        Parameters: Dictionary of [Text, Text];
-        GraphQLType: Enum "Shpfy GraphQL Type";
         JArray: JsonArray;
         JInventoryItem: JsonObject;
-        JInventoryLevels: JsonObject;
         JNode: JsonObject;
         JProduct: JsonObject;
         JVariant: JsonObject;
         JItem: JsonToken;
-        JResponse: JsonToken;
         JValue: JsonValue;
         Cursor: Text;
+    begin
+        if JsonHelper.GetJsonArray(JInventoryLevels, JArray, 'edges') then begin
+            foreach JItem in JArray do begin
+                if JsonHelper.GetJsonValue(JItem.AsObject(), JValue, 'cursor') then
+                    Cursor := JValue.AsText()
+                else
+                    Clear(Cursor);
+                if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
+                    if JsonHelper.GetJsonValue(JNode, JValue, 'available') then
+                        Stock := JValue.AsInteger()
+                    else
+                        Stock := 0;
+                    InventoryItemId := 0;
+                    VariantId := 0;
+                    ProductId := 0;
+                    if JsonHelper.GetJsonObject(JNode, JInventoryItem, 'item') then begin
+                        InventoryItemId := GetId(JInventoryItem);
+                        if JsonHelper.GetJsonObject(JInventoryItem, JVariant, 'variant') then begin
+                            VariantId := GetId(JVariant);
+                            ShopVariant.SetRange(Id, VariantId);
+                            if not ShopVariant.IsEmpty then
+                                if JsonHelper.GetJsonObject(JVariant, JProduct, 'product') then begin
+                                    ProductId := GetId(JProduct);
+                                    if ShopInventory.Get(ShopLocation."Shop Code", ProductId, VariantId, ShopLocation.Id) then begin
+                                        ShopInventory.Validate("Shopify Stock", Stock);
+                                        ShopInventory."Inventory Item Id" := InventoryItemId;
+                                        ShopInventory.Modify();
+                                    end else begin
+                                        Clear(ShopInventory);
+                                        ShopInventory."Shop Code" := ShopLocation."Shop Code";
+                                        ShopInventory."Product Id" := ProductId;
+                                        ShopInventory."Variant Id" := VariantId;
+                                        ShopInventory."Location Id" := ShopLocation.Id;
+                                        ShopInventory."Inventory Item Id" := InventoryItemId;
+                                        ShopInventory.Validate("Shopify Stock", Stock);
+                                        ShopInventory.Insert();
+                                    end;
+                                end;
+                        end;
+                    end;
+                end;
+            end;
+            GraphQLType := GraphQLType::GetNextInventoryEntries;
+            if Parameters.ContainsKey('After') then
+                Parameters.Set('After', Cursor)
+            else
+                Parameters.Add('After', Cursor);
+        end;
+    end;
+
+    /// <summary> 
+    /// Import Stock.
+    /// </summary>
+    /// <param name="ShopLocation">Parameter of type Record "Shopify Shop Location".</param>
+    internal procedure ImportStock(ShopLocation: Record "Shpfy Shop Location")
+    var
+        Parameters: Dictionary of [Text, Text];
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        JInventoryLevels: JsonObject;
+        JResponse: JsonToken;
     begin
         Parameters.Add('LocationId', Format(ShopLocation.Id));
         GraphQLType := GraphQLType::GetInventoryEntries;
         repeat
             JResponse := ShopifyCommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
             if GetInventoryLevels(JResponse.AsObject(), JInventoryLevels) then
-                if JsonHelper.GetJsonArray(JInventoryLevels, JArray, 'edges') then begin
-                    foreach JItem in JArray do begin
-                        if JsonHelper.GetJsonValue(JItem.AsObject(), JValue, 'cursor') then
-                            Cursor := JValue.AsText()
-                        else
-                            Clear(Cursor);
-                        if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
-                            if JsonHelper.GetJsonValue(JNode, JValue, 'available') then
-                                Stock := JValue.AsInteger()
-                            else
-                                Stock := 0;
-                            InventoryItemId := 0;
-                            VariantId := 0;
-                            ProductId := 0;
-                            if JsonHelper.GetJsonObject(JNode, JInventoryItem, 'item') then begin
-                                InventoryItemId := GetId(JInventoryItem);
-                                if JsonHelper.GetJsonObject(JInventoryItem, JVariant, 'variant') then begin
-                                    VariantId := GetId(JVariant);
-                                    ShopVariant.SetRange(Id, VariantId);
-                                    if not ShopVariant.IsEmpty then
-                                        if JsonHelper.GetJsonObject(JVariant, JProduct, 'product') then begin
-                                            ProductId := GetId(JProduct);
-                                            if ShopInventory.Get(ShopLocation."Shop Code", ProductId, VariantId, ShopLocation.Id) then begin
-                                                ShopInventory.Validate("Shopify Stock", Stock);
-                                                ShopInventory."Inventory Item Id" := InventoryItemId;
-                                                ShopInventory.Modify();
-                                            end else begin
-                                                Clear(ShopInventory);
-                                                ShopInventory."Shop Code" := ShopLocation."Shop Code";
-                                                ShopInventory."Product Id" := ProductId;
-                                                ShopInventory."Variant Id" := VariantId;
-                                                ShopInventory."Location Id" := ShopLocation.Id;
-                                                ShopInventory."Inventory Item Id" := InventoryItemId;
-                                                ShopInventory.Validate("Shopify Stock", Stock);
-                                                ShopInventory.Insert();
-                                            end;
-                                        end;
-                                end;
-                            end;
-                        end;
-                    end;
-                    GraphQLType := GraphQLType::GetNextInventoryEntries;
-                    if Parameters.ContainsKey('After') then
-                        Parameters.Set('After', Cursor)
-                    else
-                        Parameters.Add('After', Cursor);
-                end;
+                ImportInventoryLevels(ShopLocation, Parameters, GraphQLType, JInventoryLevels);
         until not HasNextResults(JInventoryLevels);
     end;
 

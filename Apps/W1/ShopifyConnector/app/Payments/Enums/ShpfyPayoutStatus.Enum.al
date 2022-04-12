@@ -4,6 +4,7 @@
 enum 30128 "Shpfy Payout Status"
 {
     Access = Internal;
+    Caption = ' Payout Status';
     Extensible = true;
 
     value(0; Unknown)

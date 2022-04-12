@@ -1,7 +1,9 @@
 table 30121 "Shpfy Orders To Import"
 {
     Access = Internal;
+    Caption = 'Shopify Orders To Import';
     DataClassification = CustomerContent;
+
     fields
     {
         field(1; "Entry No."; Integer)

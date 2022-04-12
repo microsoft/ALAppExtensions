@@ -3,7 +3,7 @@
 /// </summary>
 page 30103 "Shpfy Tag Factbox"
 {
-    Caption = 'Tags';
+    Caption = 'Shopify Tags';
     DeleteAllowed = false;
     InsertAllowed = false;
     ModifyAllowed = false;

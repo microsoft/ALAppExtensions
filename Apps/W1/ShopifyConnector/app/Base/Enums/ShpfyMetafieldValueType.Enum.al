@@ -4,6 +4,7 @@
 enum 30102 "Shpfy Metafield Value Type"
 {
     Access = Internal;
+    Caption = 'Shopify  Metafield Value Type';
     Extensible = false;
 
     value(0; String)

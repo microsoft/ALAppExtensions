@@ -4,7 +4,7 @@
 report 30110 "Shpfy Sync Countries"
 {
     ApplicationArea = All;
-    Caption = 'Sync Countries';
+    Caption = 'Shopify Sync Countries';
     UsageCategory = Tasks;
     ProcessingOnly = true;
 

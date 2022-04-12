@@ -1,7 +1,7 @@
 table 30114 "Shpfy Data Capture"
 {
     Access = Internal;
-    Caption = 'Data Capture';
+    Caption = 'Shopify Data Capture';
     DataClassification = SystemMetadata;
 
     fields

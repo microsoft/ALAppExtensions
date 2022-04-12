@@ -3,6 +3,7 @@
 /// </summary>
 page 30104 "Shpfy Tags"
 {
+    Caption = 'Shopify Tags';
     PageType = List;
     SourceTable = "Shpfy Tag";
     UsageCategory = None;

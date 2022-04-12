@@ -4,6 +4,7 @@
 enum 30110 "Shpfy Tax Type"
 {
     Access = Internal;
+    Caption = 'Shopify Tax Type';
     Extensible = true;
 
     value(0; None)

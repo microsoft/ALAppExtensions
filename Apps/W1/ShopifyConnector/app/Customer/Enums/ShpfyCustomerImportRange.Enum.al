@@ -4,6 +4,7 @@
 enum 30105 "Shpfy Customer Import Range"
 {
     Access = Internal;
+    Caption = 'Shopify Customer Import Range';
     Extensible = true;
 
     value(0; None)

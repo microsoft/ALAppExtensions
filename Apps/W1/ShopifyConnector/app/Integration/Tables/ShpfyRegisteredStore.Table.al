@@ -4,7 +4,7 @@
 table 30136 "Shpfy Registered Store"
 {
     Access = Internal;
-    Caption = 'Registered Store';
+    Caption = 'Shopify Registered Store';
     DataClassification = SystemMetadata;
 
     fields

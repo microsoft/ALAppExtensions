@@ -4,6 +4,7 @@
 enum 30116 "Shpfy Cancel Reason"
 {
     Access = Internal;
+    Caption = 'Shopify Cancel Reason';
     Extensible = true;
 
     value(0; " ")

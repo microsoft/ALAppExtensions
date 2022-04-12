@@ -3,7 +3,7 @@
 /// </summary>
 report 30107 "Shpfy Sync Images"
 {
-    Caption = 'Sync Images';
+    Caption = 'Shopify Sync Images';
     UsageCategory = Tasks;
     ApplicationArea = All;
     ProcessingOnly = true;

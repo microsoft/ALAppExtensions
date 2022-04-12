@@ -4,6 +4,7 @@
 enum 30120 "Shpfy Target Selection"
 {
     Access = Internal;
+    Caption = 'Shopify Target Selection';
     Extensible = true;
 
     value(0; All)

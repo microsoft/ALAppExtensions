@@ -4,6 +4,7 @@
 enum 30103 "Shpfy Synchronization Type"
 {
     Access = Internal;
+    Caption = 'Shopify Synchronization Type';
 
     value(0; Undefined)
     {

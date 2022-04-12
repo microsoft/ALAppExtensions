@@ -3,6 +3,7 @@
 /// </summary>
 page 30100 "Shpfy Activities"
 {
+    Caption = 'Shopify Activities';
     PageType = CardPart;
     SourceTable = "Shpfy Cue";
     RefreshOnActivate = true;

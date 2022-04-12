@@ -3,6 +3,7 @@
 /// </summary>
 report 30101 "Shpfy Create Location Filter"
 {
+    Caption = 'Shopify Create Location Filter';
     ProcessingOnly = true;
     UseRequestPage = true;
     UsageCategory = None;

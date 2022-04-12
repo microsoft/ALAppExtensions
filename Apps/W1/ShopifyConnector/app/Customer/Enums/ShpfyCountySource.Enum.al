@@ -4,6 +4,7 @@
 enum 30104 "Shpfy County Source" implements "Shpfy ICounty"
 {
     Access = Internal;
+    Caption = 'Shopify County Source';
     Extensible = true;
     DefaultImplementation = "Shpfy ICounty" = "Shpfy County Name";
 

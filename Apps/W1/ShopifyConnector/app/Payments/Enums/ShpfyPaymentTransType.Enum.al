@@ -4,6 +4,7 @@
 enum 30127 "Shpfy Payment Trans. Type"
 {
     Access = Internal;
+    Caption = 'Shopify Payment Transcation Type';
     Extensible = true;
 
     value(0; Unknown)

@@ -4,7 +4,7 @@
 report 30104 "Shpfy Sync Orders from Shopify"
 {
     ApplicationArea = All;
-    Caption = 'Sync Orders from Shopify';
+    Caption = 'Shopify Sync Orders from Shopify';
     ProcessingOnly = true;
     UsageCategory = Tasks;
 

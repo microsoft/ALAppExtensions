@@ -4,6 +4,7 @@
 enum 30129 "Shpfy Cr. Prod. Status Value" implements "Shpfy ICreateProductStatusValue"
 {
     Access = Internal;
+    Caption = 'Shopify Create Product Status Value';
     Extensible = true;
     DefaultImplementation = "Shpfy ICreateProductStatusValue" = "Shpfy CreateProdStatusActive";
 

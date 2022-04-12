@@ -4,7 +4,7 @@
 report 30109 "Shpfy Sync Shipm. To Shopify"
 {
     ApplicationArea = All;
-    Caption = 'Sync Shipments To Shopify';
+    Caption = 'Shopify Sync Shipments To Shopify';
     ProcessingOnly = true;
     UsageCategory = Tasks;
 

@@ -4,6 +4,7 @@
 enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
 {
     Access = Internal;
+    Caption = 'Shopify GraphQL Type';
     Extensible = true;
 
     value(0; GetApiKey)

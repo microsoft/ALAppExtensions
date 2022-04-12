@@ -4,6 +4,7 @@
 enum 30114 "Shpfy Payment Trans. Source"
 {
     Access = Internal;
+    Caption = 'Shopify Payment Trans. Source';
     Extensible = true;
 
     value(0; Unknown)

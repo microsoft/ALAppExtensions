@@ -4,7 +4,7 @@
 report 30105 "Shpfy Sync Payments"
 {
     ApplicationArea = All;
-    Caption = 'Sync Payments';
+    Caption = 'Shopify Sync Payments';
     ProcessingOnly = true;
     UsageCategory = Tasks;
 

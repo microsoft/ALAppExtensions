@@ -4,6 +4,7 @@
 enum 30132 "Shpfy SKU Value"
 {
     Access = Internal;
+    Caption = 'Shopify SKU Value';
     Extensible = true;
 
     value(0; " ")
