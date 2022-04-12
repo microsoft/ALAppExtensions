@@ -196,7 +196,7 @@ codeunit 30181 "Shpfy Product Mapping"
                                             end;
                                     end;
                                 end;
-                            Shop."SKU Type"::Barcode:
+                            Shop."SKU Type"::"Bar Code":
                                 begin
                                     if ShopifyProduct."Has Variants" then
                                         case ShopifyVariant."UOM Option Id" of

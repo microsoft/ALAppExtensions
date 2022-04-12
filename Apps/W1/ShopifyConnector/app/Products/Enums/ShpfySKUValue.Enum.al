@@ -31,8 +31,8 @@ enum 30132 "Shpfy SKU Value"
         Caption = 'Vendor Item No.';
     }
 
-    value(5; "Barcode")
+    value(5; "Bar Code")
     {
-        Caption = 'Barcode';
+        Caption = 'Bar Code';
     }
 }

@@ -60,7 +60,7 @@ codeunit 30174 "Shpfy Create Product"
                             TempShopifyVariant.Title := ItemVariant.Description;
                             TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
                             case Shop."SKU Type" of
-                                Shop."SKU Type"::Barcode:
+                                Shop."SKU Type"::"Bar Code":
                                     TempShopifyVariant.SKU := TempShopifyVariant.Barcode;
                                 Shop."SKU Type"::"Item No.":
                                     TempShopifyVariant.SKU := Item."No.";
@@ -95,7 +95,7 @@ codeunit 30174 "Shpfy Create Product"
                     TempShopifyVariant.Title := ItemVariant.Description;
                     TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
                     case Shop."SKU Type" of
-                        Shop."SKU Type"::Barcode:
+                        Shop."SKU Type"::"Bar Code":
                             TempShopifyVariant.SKU := TempShopifyVariant.Barcode;
                         Shop."SKU Type"::"Item No.":
                             TempShopifyVariant.SKU := Item."No.";
@@ -132,7 +132,7 @@ codeunit 30174 "Shpfy Create Product"
                         TempShopifyVariant.Title := Item.Description;
                         TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
                         case Shop."SKU Type" of
-                            Shop."SKU Type"::Barcode:
+                            Shop."SKU Type"::"Bar Code":
                                 TempShopifyVariant.SKU := TempShopifyVariant.Barcode;
                             Shop."SKU Type"::"Item No.",
                             SHop."SKU Type"::"Item No. + Variant Code":
@@ -161,7 +161,7 @@ codeunit 30174 "Shpfy Create Product"
                 TempShopifyVariant.Title := ItemVariant.Description;
                 TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
                 case Shop."SKU Type" of
-                    Shop."SKU Type"::Barcode:
+                    Shop."SKU Type"::"Bar Code":
                         TempShopifyVariant.SKU := TempShopifyVariant.Barcode;
                     Shop."SKU Type"::"Item No.",
                     SHop."SKU Type"::"Item No. + Variant Code":

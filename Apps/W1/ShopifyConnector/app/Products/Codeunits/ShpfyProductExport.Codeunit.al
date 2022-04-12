@@ -235,7 +235,7 @@ codeunit 30178 "Shpfy Product Export"
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", '', ItemUoM.Code), 1, MaxStrLen(ShopifyVariant.Barcode));
             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
             case Shop."SKU Type" of
-                Shop."SKU Type"::Barcode:
+                Shop."SKU Type"::"Bar Code":
                     ShopifyVariant.SKU := ShopifyVariant.Barcode;
                 Shop."SKU Type"::"Item No.",
                 Shop."SKU Type"::"Item No. + Variant Code":
@@ -270,7 +270,7 @@ codeunit 30178 "Shpfy Product Export"
             ShopifyVariant.Title := ItemVariant.Description;
             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
             case Shop."SKU Type" of
-                Shop."SKU Type"::Barcode:
+                Shop."SKU Type"::"Bar Code":
                     ShopifyVariant.SKU := ShopifyVariant.Barcode;
                 Shop."SKU Type"::"Item No.":
                     ShopifyVariant.SKU := Item."No.";
@@ -309,7 +309,7 @@ codeunit 30178 "Shpfy Product Export"
             ShopifyVariant.Title := ItemVariant.Description;
             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
             case Shop."SKU Type" of
-                Shop."SKU Type"::Barcode:
+                Shop."SKU Type"::"Bar Code":
                     ShopifyVariant.SKU := ShopifyVariant.Barcode;
                 Shop."SKU Type"::"Item No.":
                     ShopifyVariant.SKU := Item."No.";

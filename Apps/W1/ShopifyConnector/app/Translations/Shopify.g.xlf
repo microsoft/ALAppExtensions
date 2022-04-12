@@ -7393,10 +7393,10 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy SKU Value - Property Caption</note>
         </trans-unit>
-        <trans-unit id="Enum 3853417718 - EnumValue 1650050144 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Barcode</source>
+        <trans-unit id="Enum 3853417718 - EnumValue 570180224 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Bar Code</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy SKU Value - EnumValue Barcode - Property Caption</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Shpfy SKU Value - EnumValue Bar Code - Property Caption</note>
         </trans-unit>
         <trans-unit id="Enum 3853417718 - EnumValue 568743302 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>Item No.</source>

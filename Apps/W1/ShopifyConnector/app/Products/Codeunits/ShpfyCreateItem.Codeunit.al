@@ -21,7 +21,7 @@ codeunit 30171 "Shpfy Create Item"
         if ShopifyProduct.Get(Rec."Product Id") then begin
             SetShop(ShopifyProduct."Shop Code");
             if IsNullGuid(ShopifyProduct.ItemSystemId) or (not Item.GetBySystemId(ShopifyProduct.ItemSystemId)) then
-                if ExistItem(Rec, Item) then begin
+                if ExistItem(ShopifyProduct, Rec, Item) then begin
                     ShopifyProduct.ItemSystemId := Item.SystemId;
                     ShopifyProduct.Modify();
                 end else begin
@@ -39,9 +39,33 @@ codeunit 30171 "Shpfy Create Item"
                     CreateItemVariant(ShopifyProduct, Rec, Item);
                 Shop."SKU Type"::"Item No.":
                     if IsNullGuid(Rec.ItemSystemId) or (not Item.GetBySystemId(Rec.ItemSystemId)) then
-                        if ExistItem(Rec, Item) then begin
-                            ShopifyProduct.ItemSystemId := Item.SystemId;
-                            ShopifyProduct.Modify();
+                        if ExistItem(ShopifyProduct, Rec, Item) then begin
+                            Rec.ItemSystemId := Item.SystemId;
+                            Rec.Modify();
+                        end else begin
+                            ProductEvents.OnBeforeCreateItem(Shop, ShopifyProduct, Rec, Item, Handled);
+                            if not Handled then begin
+                                DoCreateItem(ShopifyProduct, Rec, Item, true);
+                                ProductEvents.OnAfterCreateItem(Shop, ShopifyProduct, Rec, Item);
+                            end;
+                        end;
+                Shop."SKU Type"::"Vendor Item No.":
+                    if IsNullGuid(Rec.ItemSystemId) or (not Item.GetBySystemId(Rec.ItemSystemId)) then
+                        if ExistItem(ShopifyProduct, Rec, Item) then begin
+                            Rec.ItemSystemId := Item.SystemId;
+                            Rec.Modify();
+                        end else begin
+                            ProductEvents.OnBeforeCreateItem(Shop, ShopifyProduct, Rec, Item, Handled);
+                            if not Handled then begin
+                                DoCreateItem(ShopifyProduct, Rec, Item, true);
+                                ProductEvents.OnAfterCreateItem(Shop, ShopifyProduct, Rec, Item);
+                            end;
+                        end;
+                Shop."SKU Type"::"Bar Code":
+                    if IsNullGuid(Rec.ItemSystemId) or (not Item.GetBySystemId(Rec.ItemSystemId)) then
+                        if ExistItem(ShopifyProduct, Rec, Item) then begin
+                            Rec.ItemSystemId := Item.SystemId;
+                            Rec.Modify();
                         end else begin
                             ProductEvents.OnBeforeCreateItem(Shop, ShopifyProduct, Rec, Item, Handled);
                             if not Handled then begin
@@ -62,11 +86,11 @@ codeunit 30171 "Shpfy Create Item"
     local procedure CreateItemVariant(var ShopifyProduct: Record "Shpfy Product"; ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item);
     var
         ItemVariant: Record "Item Variant";
+        ShpfyCreateItem: Codeunit "Shpfy Create Item";
         IsHandled: Boolean;
         Codes: List of [Text];
         ItemNo: Text;
         VariantCode: Text;
-        ShpfyCreateItem: Codeunit "Shpfy Create Item";
     begin
         if (not ShopifyProduct."Has Variants") or ((ShopifyVariant."UOM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = '')) then begin
             Clear(ItemVariant);
@@ -92,7 +116,7 @@ codeunit 30171 "Shpfy Create Item"
                                         Clear(VariantCode);
                                 if Item."No." <> ItemNo then
                                     if IsNullGuid(ShopifyVariant.ItemSystemId) or (not Item.GetBySystemId(ShopifyVariant.ItemSystemId)) then
-                                        if ExistItem(ShopifyVariant, Item) then begin
+                                        if ExistItem(ShopifyProduct, ShopifyVariant, Item) then begin
                                             ShopifyVariant.ItemSystemId := Item.SystemId;
                                             ShopifyVariant.Modify();
                                         end else begin
@@ -163,7 +187,7 @@ codeunit 30171 "Shpfy Create Item"
             ItemRefMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, FindUoMCode(ShpfyVariant), ShpfyVariant.Barcode);
         if ShpfyVariant.SKU <> '' then
             case Shop."SKU Type" of
-                Shop."SKU Type"::Barcode:
+                Shop."SKU Type"::"Bar Code":
                     ItemRefMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, FindUoMCode(ShpfyVariant), ShpfyVariant.SKU);
                 Shop."SKU Type"::"Vendor Item No.":
                     if Item."Vendor No." <> '' then begin
@@ -189,6 +213,7 @@ codeunit 30171 "Shpfy Create Item"
         DimensionsTemplate: Record "Dimensions Template";
         ItemCategory: Record "Item Category";
         ItemUOM: Record "Item Unit of Measure";
+        ItemVariant: Record "Item Variant";
         Vendor: Record Vendor;
         ConfigTemplateManagement: Codeunit "Config. Template Management";
         RecRef: RecordRef;
@@ -264,16 +289,22 @@ codeunit 30171 "Shpfy Create Item"
             ShpfyProduct.ItemSystemId := Item.SystemId;
             ShpfyProduct.Modify();
         end;
+
+        Clear(ItemVariant);
+        CreateReferences(ShpfyProduct, ShopifyVariant, Item, ItemVariant);
     end;
 
     /// <summary> 
     /// Exist Item.
     /// </summary>
+    /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>/// 
     /// <param name="ShopifyVariant">Parameter of type Record "Shpfy Variant".</param>
     /// <param name="Item">Parameter of type Record Item.</param>
     /// <returns>Return value of type Boolean.</returns>
-    local procedure ExistItem(ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item): Boolean
+    local procedure ExistItem(ShopifyProduct: Record "Shpfy Product"; ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item): Boolean
     var
+        Vendor: Record Vendor;
+        ItemReference: Record "Item Reference";
         Code: Text;
     begin
         if ShopifyVariant.SKU <> '' then
@@ -286,6 +317,29 @@ codeunit 30171 "Shpfy Create Item"
                         ShopifyVariant.SKU.Split(Shop."SKU Field Separator").Get(1, Code);
                         if StrLen(Code) <= MaxStrLen(Item."No.") then
                             exit(Item.Get(Code.ToUpper()));
+                    end;
+                Shop."SKU Type"::"Vendor Item No.":
+                    if ShopifyProduct.Vendor <> '' then begin
+                        Vendor.SetFilter(Name, '@' + ShopifyProduct.Vendor);
+                        if Vendor.FindFirst() then begin
+                            Item.SetRange("Vendor No.", Vendor."No.");
+                            Item.SetRange("Vendor Item No.", '@' + ShopifyVariant.SKU.ToUpper());
+                            if Item.FindFirst() then
+                                exit(true);
+                            Clear(Item);
+                            ItemReference.SetRange("Reference Type", Enum::"Item Reference Type"::Vendor);
+                            ItemReference.SetRange("Reference Type No.", Vendor."No.");
+                            ItemReference.SetFilter("Reference No.", '@' + ShopifyVariant.SKU.ToUpper());
+                            if ItemReference.FindFirst() then
+                                exit(Item.Get(ItemReference."Item No."));
+                        end;
+                    end;
+                Shop."SKU Type"::"Bar Code":
+                    begin
+                        ItemReference.SetRange("Reference Type", Enum::"Item Reference Type"::"Bar Code");
+                        ItemReference.SetFilter("Reference No.", '@' + ShopifyVariant.SKU.ToUpper());
+                        if ItemReference.FindFirst() then
+                            exit(Item.Get(ItemReference."Item No."));
                     end;
             end;
 
