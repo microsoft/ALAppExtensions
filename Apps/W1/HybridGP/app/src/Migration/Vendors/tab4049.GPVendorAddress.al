@@ -37,6 +37,10 @@ table 4049 "GP Vendor Address"
         {
             DataClassification = CustomerContent;
         }
+        field(10; COUNTRY; Text[61])
+        {
+            DataClassification = CustomerContent;
+        }
         field(12; PHNUMBR1; Text[21])
         {
             DataClassification = CustomerContent;
@@ -59,6 +63,8 @@ table 4049 "GP Vendor Address"
     var
         OrderAddress: Record "Order Address";
         Vendor: Record Vendor;
+        CompanyInformation: Record "Company Information";
+        HelperFunctions: Codeunit "Helper Functions";
         Exists: Boolean;
     begin
         if Vendor.Get(VENDORID) then begin
@@ -73,8 +79,23 @@ table 4049 "GP Vendor Address"
             OrderAddress.Contact := VNDCNTCT;
             OrderAddress."Phone No." := PHNUMBR1;
             OrderAddress."Fax No." := FAXNUMBR;
+
+            if (CopyStr(OrderAddress."Phone No.", 1, 14) = '00000000000000') then
+                OrderAddress."Phone No." := '';
+
+            if (CopyStr(OrderAddress."Fax No.", 1, 14) = '00000000000000') then
+                OrderAddress."Fax No." := '';
+
             OrderAddress."Post Code" := ZIPCODE;
             OrderAddress.County := STATE;
+
+            if (CopyStr(COUNTRY, 1, 10) <> '') then begin
+                HelperFunctions.CreateCountryIfNeeded(CopyStr(COUNTRY, 1, 10), CopyStr(COUNTRY, 1, 10));
+                Country := CopyStr(COUNTRY, 1, 10);
+            end else begin
+                CompanyInformation.Get();
+                OrderAddress."Country/Region Code" := CompanyInformation."Country/Region Code";
+            end;
 
             if not Exists then
                 OrderAddress.Insert()

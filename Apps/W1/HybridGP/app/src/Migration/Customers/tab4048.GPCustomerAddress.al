@@ -91,6 +91,12 @@ table 4048 "GP Customer Address"
             ShipToAddress.County := STATE;
             ShipToAddress."Tax Area Code" := TAXSCHID;
 
+            if (CopyStr(ShipToAddress."Phone No.", 1, 14) = '00000000000000') then
+                ShipToAddress."Phone No." := '';
+
+            if (CopyStr(ShipToAddress."Fax No.", 1, 14) = '00000000000000') then
+                ShipToAddress."Fax No." := '';
+
             if not Exists then
                 ShipToAddress.Insert()
             else

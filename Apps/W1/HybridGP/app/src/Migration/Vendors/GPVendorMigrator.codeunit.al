@@ -158,8 +158,13 @@ codeunit 4022 "GP Vendor Migrator"
             GPVendor.CITY := GPVendorAddress.CITY;
             GPVendor.STATE := GPVendorAddress.STATE;
             GPVendor.ZIPCODE := GPVendorAddress.ZIPCODE;
-            GPVendor.PHNUMBR1 := GPVendorAddress.PHNUMBR1;
-            GPVendor.FAXNUMBR := GPVendorAddress.FAXNUMBR;
+            GPVendor.COUNTRY := GPVendorAddress.COUNTRY;
+
+            if (CopyStr(GPVendorAddress.PHNUMBR1, 1, 14) <> '00000000000000') then
+                GPVendor.PHNUMBR1 := GPVendorAddress.PHNUMBR1;
+
+            if (CopyStr(GPVendorAddress.FAXNUMBR, 1, 14) <> '00000000000000') then
+                GPVendor.FAXNUMBR := GPVendorAddress.FAXNUMBR;
         end;
 
         VendorName := CopyStr(GPVendor.VENDNAME, 1, 50);
@@ -182,11 +187,18 @@ codeunit 4022 "GP Vendor Migrator"
         VendorDataMigrationFacade.SetAddress(CopyStr(GPVendor.ADDRESS1, 1, 50),
             CopyStr(GPVendor.ADDRESS2, 1, 50), Country,
             CopyStr(GPVendor.ZIPCODE, 1, 20), CopyStr(GPVendor.CITY, 1, 30));
-        VendorDataMigrationFacade.SetContact(ContactName);
+
+        if (CopyStr(GPVendor.PHNUMBR1, 1, 14) = '00000000000000') then
+            GPVendor.PHNUMBR1 := '';
+
+        if (CopyStr(GPVendor.FAXNUMBR, 1, 14) = '00000000000000') then
+            GPVendor.FAXNUMBR := '';
+
         VendorDataMigrationFacade.SetPhoneNo(GPVendor.PHNUMBR1);
+        VendorDataMigrationFacade.SetFaxNo(GPVendor.FAXNUMBR);
+        VendorDataMigrationFacade.SetContact(ContactName);
         VendorDataMigrationFacade.SetVendorPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
         VendorDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
-        VendorDataMigrationFacade.SetFaxNo(GPVendor.FAXNUMBR);
         VendorDataMigrationFacade.SetEmail(COPYSTR(GPVendor.INET1, 1, 80));
         VendorDataMigrationFacade.SetHomePage(COPYSTR(GPVendor.INET2, 1, 80));
         VendorDataMigrationFacade.SetVendorPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
