@@ -5,7 +5,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
 {
     Access = Internal;
     // https://shopify.dev/api/usage/access-scopes
-    ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping', Locked
+    ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping', Locked = true;
 
 
     [NonDebuggable]
