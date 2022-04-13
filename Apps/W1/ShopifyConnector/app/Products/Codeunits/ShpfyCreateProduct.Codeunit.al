@@ -4,6 +4,11 @@
 codeunit 30174 "Shpfy Create Product"
 {
     Access = Internal;
+    Permissions =
+        tabledata Item = r,
+        tabledata "Item Reference" = r,
+        tabledata "Item Unit of Measure" = r,
+        tabledata "Item Variant" = r;
     TableNo = Item;
 
     var

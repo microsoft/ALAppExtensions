@@ -4,6 +4,20 @@
 codeunit 30178 "Shpfy Product Export"
 {
     Access = Internal;
+    Permissions =
+        tabledata "Extended Text Header" = r,
+        tabledata "Extended Text Line" = r,
+        tabledata Item = rim,
+        tabledata "Item Attr. Value Translation" = r,
+        tabledata "Item Attribute" = r,
+        tabledata "Item Attribute Translation" = r,
+        tabledata "Item Attribute Value" = r,
+        tabledata "Item Attribute Value Mapping" = r,
+        tabledata "Item Category" = r,
+        tabledata "Item Reference" = r,
+        tabledata "Item Unit of Measure" = rim,
+        tabledata "Item Variant" = rim,
+        tabledata Vendor = r;
     TableNo = "Shpfy Shop";
 
     trigger OnRun()

@@ -4,6 +4,10 @@
 codeunit 30190 "Shpfy Export Shipments"
 {
     Access = Internal;
+    Permissions =
+        tabledata "Sales Shipment Header" = rm,
+        tabledata "Sales Shipment Line" = r,
+        tabledata "Shipping Agent" = r;
 
     var
         ShopifyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";

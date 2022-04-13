@@ -4,6 +4,9 @@
 codeunit 30166 "Shpfy Process Order"
 {
     Access = Internal;
+    Permissions =
+        tabledata Item = rim,
+        tabledata "Item Variant" = rim;
 
     TableNo = "Shpfy Order Header";
 

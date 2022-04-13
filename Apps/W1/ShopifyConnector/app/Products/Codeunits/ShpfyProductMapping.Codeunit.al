@@ -4,6 +4,12 @@
 codeunit 30181 "Shpfy Product Mapping"
 {
     Access = Internal;
+    Permissions =
+        tabledata Item = r,
+        tabledata "Item Reference" = r,
+        tabledata "Item Variant" = r,
+        tabledata "Item Vendor" = r,
+        tabledata Vendor = r;
 
     var
         Shop: Record "Shpfy Shop";

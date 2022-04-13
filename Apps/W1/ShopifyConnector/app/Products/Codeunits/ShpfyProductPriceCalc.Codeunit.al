@@ -5,6 +5,14 @@ codeunit 30182 "Shpfy Product Price Calc."
 {
     Access = Internal;
     EventSubscriberInstance = Manual;
+    Permissions =
+        tabledata "Config. Template Header" = r,
+        tabledata Customer = rmid,
+        tabledata Item = r,
+        tabledata "Item Unit of Measure" = r,
+        tabledata "Sales Header" = rimd,
+        tabledata "Sales Line" = rmid,
+        tabledata "VAT Posting Setup" = r;
     SingleInstance = true;
 
     var

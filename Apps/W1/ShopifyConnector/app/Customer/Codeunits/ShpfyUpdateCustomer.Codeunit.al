@@ -4,6 +4,12 @@
 codeunit 30124 "Shpfy Update Customer"
 {
     Access = Internal;
+    Permissions =
+        tabledata "Config. Template Header" = r,
+        tabledata "Config. Template Line" = r,
+        tabledata "Country/Region" = r,
+        tabledata Customer = rim,
+        tabledata "Dimensions Template" = r;
     TableNo = "Shpfy Customer";
 
     var

@@ -4,6 +4,7 @@
 codeunit 30114 "Shpfy Customer API"
 {
     Access = Internal;
+    Permissions = tabledata Customer = rim;
 
     var
         Shop: Record "Shpfy Shop";

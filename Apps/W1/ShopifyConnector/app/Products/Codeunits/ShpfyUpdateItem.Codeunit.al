@@ -4,6 +4,11 @@
 codeunit 30188 "Shpfy Update Item"
 {
     Access = Internal;
+    Permissions =
+        tabledata Item = rim,
+        tabledata "Item Category" = r,
+        tabledata "Item Variant" = rim,
+        tabledata Vendor = r;
     TableNo = "Shpfy Variant";
 
     var

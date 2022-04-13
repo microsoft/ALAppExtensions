@@ -4,6 +4,7 @@
 codeunit 30179 "Shpfy Product Image Export"
 {
     Access = Internal;
+    Permissions = tabledata Item = r;
     TableNo = "Shpfy Product";
 
     trigger OnRun()

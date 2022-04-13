@@ -6,6 +6,8 @@ permissionset 30100 "Shpfy Permisions"
     Assignable = true;
     Caption = 'Shopify', MaxLength = 30;
 
+    IncludedPermissionSets = "Shpfy Inderect Perm";
+
     Permissions =
         table "Shpfy Credit Card Company" = X,
         tabledata "Shpfy Credit Card Company" = RMID,

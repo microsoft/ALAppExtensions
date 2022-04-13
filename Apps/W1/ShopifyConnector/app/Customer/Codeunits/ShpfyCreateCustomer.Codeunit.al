@@ -4,7 +4,12 @@
 codeunit 30110 "Shpfy Create Customer"
 {
     Access = Internal;
-
+    Permissions =
+        tabledata "Config. Template Header" = r,
+        tabledata "Config. Template Line" = r,
+        tabledata "Country/Region" = r,
+        tabledata Customer = rim,
+        tabledata "Dimensions Template" = r;
     TableNo = "Shpfy Customer Address";
 
     var

@@ -4,6 +4,9 @@
 codeunit 30163 "Shpfy Order Mapping"
 {
     Access = Internal;
+    Permissions =
+        tabledata Item = rim,
+        tabledata "Item Variant" = rim;
 
     var
         OrderEvents: Codeunit "Shpfy Order Events";

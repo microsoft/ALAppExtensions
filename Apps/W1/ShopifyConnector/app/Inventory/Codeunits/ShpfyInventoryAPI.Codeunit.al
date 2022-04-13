@@ -4,6 +4,9 @@
 codeunit 30195 "Shpfy Inventory API"
 {
     Access = Internal;
+    Permissions =
+        tabledata Item = r,
+        tabledata "Item Unit of Measure" = r;
 
     var
         ShopifyShop: Record "Shpfy Shop";

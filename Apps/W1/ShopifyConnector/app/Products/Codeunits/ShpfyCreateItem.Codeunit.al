@@ -4,6 +4,18 @@
 codeunit 30171 "Shpfy Create Item"
 {
     Access = Internal;
+    Permissions =
+        tabledata "Config. Template Header" = r,
+        tabledata "Config. Template Line" = r,
+        tabledata "Dimensions Template" = r,
+        tabledata Item = rim,
+        tabledata "Item Category" = rim,
+        tabledata "Item Reference" = rim,
+        tabledata "Item Unit of Measure" = rim,
+        tabledata "Item Variant" = rim,
+        tabledata "Item Vendor" = rim,
+        tabledata "Unit of Measure" = rim,
+        tabledata Vendor = rim;
     TableNo = "Shpfy Variant";
 
     var

@@ -4,6 +4,7 @@
 codeunit 30176 "Shpfy Product API"
 {
     Access = Internal;
+    Permissions = tabledata Item = r;
 
     var
         Shop: Record "Shpfy Shop";

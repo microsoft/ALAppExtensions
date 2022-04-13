@@ -4,6 +4,7 @@
 codeunit 30118 "Shpfy Customer Mapping"
 {
     Access = Internal;
+    Permissions = tabledata Customer = rim;
 
     var
         Shop: Record "Shpfy Shop";
