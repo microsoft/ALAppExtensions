@@ -129,15 +129,16 @@ codeunit 30181 "Shpfy Product Mapping"
                                 begin
                                     ItemVendor.SetRange("Vendor Item No.", ShopifyVariant.SKU);
                                     if ShopifyProduct.Vendor <> '' then
-                                        if Vendor.Get(ShopifyProduct.Vendor) then
-                                            ItemVendor.SetRange("Vendor No.", Vendor."No.")
-                                        else begin
-                                            Vendor.SetRange("Name", ShopifyProduct.Vendor);
+                                        if StrLen(ShopifyProduct.Vendor) <= MaxStrLen(Vendor."No.") then begin
+                                            if Vendor.Get(ShopifyProduct.Vendor) then
+                                                ItemVendor.SetRange("Vendor No.", Vendor."No.");
+                                        end else begin
+                                            Vendor.SetFilter("Name", '@' + ShopifyProduct.Vendor);
                                             if Vendor.FindFirst() then
                                                 ItemVendor.SetRange("Vendor No.", Vendor."No.")
                                             else begin
                                                 Clear(Vendor);
-                                                Vendor.SetRange("Search Name", ShopifyProduct.Vendor);
+                                                Vendor.SetFilter("Search Name", '@' + ShopifyProduct.Vendor);
                                                 if Vendor.FindFirst() then
                                                     ItemVendor.SetRange("Vendor No.", Vendor."No.");
                                             end;

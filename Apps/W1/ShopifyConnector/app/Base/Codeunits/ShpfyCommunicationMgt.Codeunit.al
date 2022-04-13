@@ -328,7 +328,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         exit(Result.ToText().TrimEnd());
     end;
 
-    //[NonDebuggable]
+    [NonDebuggable]
     /// <summary> 
     /// Create Http Request Message.
     /// </summary>
