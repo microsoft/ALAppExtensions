@@ -496,7 +496,7 @@ codeunit 30176 "Shpfy Product API"
 #pragma warning disable AA0139
         ShopifyProduct."Preview Url" := JHelper.GetValueAsText(JProduct, 'onlineStorePreviewUrl', MaxStrLen(ShopifyProduct."Preview Url"));
         ShopifyProduct.Url := JHelper.GetValueAsText(JProduct, 'onlineStoreUrl', MaxStrLen(ShopifyProduct.Url));
-        ShopifyProduct."Product Type" := JHelper.GetValueAsText(JProduct, 'product_type', MaxStrLen(ShopifyProduct."Product Type"));
+        ShopifyProduct."Product Type" := JHelper.GetValueAsText(JProduct, 'productType', MaxStrLen(ShopifyProduct."Product Type"));
 #pragma warning restore AA0139
         ShopifyProduct.UpdateTags(JHelper.GetArrayAsText(JProduct, 'tags'));
 #pragma warning disable AA0139

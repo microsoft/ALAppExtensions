@@ -261,10 +261,16 @@ codeunit 30103 "Shpfy Communication Mgt."
                     Client.Send(HttpRequestMsg, HttpResponseMsg);
                 end;
             end;
-        HttpResponseMsg.Content.ReadAs(Response);
+        if GetContent(HttpResponseMsg, Response) then;
         ResponseHeaders := HttpResponseMsg.Headers();
         CreateShopifyLogEntry(Url, Method, Request, HttpResponseMsg, Response);
         Commit();
+    end;
+
+    [TryFunction]
+    local procedure GetContent(HttpResponseMsg: HttpResponseMessage; var Response: Text)
+    begin
+        HttpResponseMsg.Content.ReadAs(Response);
     end;
 
     /// <summary> 
@@ -322,7 +328,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         exit(Result.ToText().TrimEnd());
     end;
 
-    [NonDebuggable]
+    //[NonDebuggable]
     /// <summary> 
     /// Create Http Request Message.
     /// </summary>
