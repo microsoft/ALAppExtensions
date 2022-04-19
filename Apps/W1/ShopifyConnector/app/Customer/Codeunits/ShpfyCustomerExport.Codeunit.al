@@ -117,9 +117,9 @@ codeunit 30116 "Shpfy Customer Export"
             SpiltNameIntoFirstAndLastName(Customer.Contact, ShopifyCustomer."First Name", ShopifyCustomer."Last Name", Shop."Contact Source")
         else
             if (Customer."Name 2" <> '') and (Shop."Name 2 Source" in [Shop."Name 2 Source"::FirstAndLastName, Shop."Name 2 Source"::LastAndFirstName]) then
-                SpiltNameIntoFirstAndLastName(Customer."Name 2", ShopifyCustomer."First Name", ShopifyCustomer."Last Name", Shop."Contact Source")
+                SpiltNameIntoFirstAndLastName(Customer."Name 2", ShopifyCustomer."First Name", ShopifyCustomer."Last Name", Shop."Name 2 Source")
             else
-                SpiltNameIntoFirstAndLastName(Customer.Name, ShopifyCustomer."First Name", ShopifyCustomer."Last Name", Shop."Contact Source");
+                SpiltNameIntoFirstAndLastName(Customer.Name, ShopifyCustomer."First Name", ShopifyCustomer."Last Name", Shop."Name Source");
 
 #pragma warning disable AA0139
         if Customer."E-Mail".Contains(';') then
