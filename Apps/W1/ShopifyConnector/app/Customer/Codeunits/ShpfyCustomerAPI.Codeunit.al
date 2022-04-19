@@ -150,11 +150,10 @@ codeunit 30114 "Shpfy Customer API"
         if Phone <> '' then begin
             Parameters.Add('Phone', Phone);
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::FindCustomerIdByPhone, Parameters);
-            if JHelper.GetJsonArray(JResponse, JCustomers, 'data.customers.edges') then begin
-                JCustomers.Get(1, JItem);
-                if JHelper.GetJsonObject(JItem.AsObject(), JCustomer, 'node') then
-                    exit(CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JCustomer, 'id')));
-            end;
+            if JHelper.GetJsonArray(JResponse, JCustomers, 'data.customers.edges') then
+                foreach JItem in JCustomers do
+                    if JHelper.GetJsonObject(JItem.AsObject(), JCustomer, 'node') then
+                        exit(CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JCustomer, 'id')));
         end;
     end;
 
