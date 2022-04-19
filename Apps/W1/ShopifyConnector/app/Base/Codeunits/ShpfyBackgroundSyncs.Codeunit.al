@@ -109,20 +109,19 @@ codeunit 30101 "Shpfy Background Syncs"
     /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
     internal procedure InventorySync(var Shop: Record "Shpfy Shop")
     var
-        ShopInventory: Record "Shpfy Shop Inventory";
         Parameters: Text;
         InventoryParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Shpfy Sync Stock To Shopify" id="30102"><DataItems><DataItem name="Shop">%1</DataItem></DataItems></ReportParameters>', Comment = '%1 = Shop Record View', Locked = true;
         SyncTypeTxt: Label 'Inventory';
     begin
         Parameters := StrSubstNo(InventoryParametersTxt, Shop.GetView());
-        EnqueueJobEntry(Report::"Shpfy Sync Stock To Shopify", Parameters, StrSubstNo(SyncDescriptionTxt, SyncTypeTxt, Shop.Code), Shop."Allow Background Syncs");
+        EnqueueJobEntry(Report::"Shpfy Sync Stock to Shopify", Parameters, StrSubstNo(SyncDescriptionTxt, SyncTypeTxt, Shop.Code), Shop."Allow Background Syncs");
     end;
 
     /// <summary> 
     /// Order Sync.
     /// </summary>
     /// <param name="OrdersToImport">Parameter of type Record "Shopify Orders To Import".</param>
-    internal procedure OrderSync(var OrdersToImport: Record "Shpfy Orders To Import")
+    internal procedure OrderSync(var OrdersToImport: Record "Shpfy Orders to Import")
     var
         Shop: Record "Shpfy Shop";
         ShopCode: Code[20];

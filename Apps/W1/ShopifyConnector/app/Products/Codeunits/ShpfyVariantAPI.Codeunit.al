@@ -34,15 +34,15 @@ codeunit 30189 "Shpfy Variant API"
                 ImportProduct.SetProduct(ShopifyProduct.Id);
                 Commit();
                 if ImportProduct.Run() then;
-                if Product.Get(ShopifyProduct.Id) and IsNullGuid(Product.ItemSystemId) then begin
-                    Product.ItemSystemId := ShopifyProduct.ItemSystemId;
+                if Product.Get(ShopifyProduct.Id) and IsNullGuid(Product."Item SystemId") then begin
+                    Product."Item SystemId" := ShopifyProduct."Item SystemId";
                     Product.Modify();
                 end;
             end;
             if Variant.Get(ShopifyVariant.Id) then
-                if IsNullGuid(Variant.ItemVariantSystemId) then begin
-                    Variant.ItemVariantSystemId := ShopifyVariant.ItemVariantSystemId;
-                    Variant.ItemSystemId := ShopifyVariant.ItemSystemId;
+                if IsNullGuid(Variant."Item Variant SystemId") then begin
+                    Variant."Item Variant SystemId" := ShopifyVariant."Item Variant SystemId";
+                    Variant."Item SystemId" := ShopifyVariant."Item SystemId";
                     Variant.Modify();
                 end
                 else begin
@@ -440,8 +440,8 @@ codeunit 30189 "Shpfy Variant API"
         Result := true;
         ShopifyVariant."Updated At" := UpdatedAt;
         ShopifyVariant."Created At" := JHelper.GetValueAsDateTime(JVariant, 'createdAt');
-        if IsNullGuid(ShopifyVariant.ItemSystemId) then
-            ShopifyVariant.ItemSystemId := ShopifyProduct.ItemSystemId;
+        if IsNullGuid(ShopifyVariant."Item SystemId") then
+            ShopifyVariant."Item SystemId" := ShopifyProduct."Item SystemId";
         ShopifyVariant."Available For Sales" := JHelper.GetValueAsBoolean(JVariant, 'availableForSale');
 #pragma warning disable AA0139
         ShopifyVariant.Barcode := JHelper.GetValueAsText(JVariant, 'barcode', MaxStrLen(ShopifyVariant.Barcode));
@@ -486,15 +486,15 @@ codeunit 30189 "Shpfy Variant API"
                         end;
                 end;
         end;
-        ShopifyVariant."UOM Option Id" := 0;
-        if Shop."UOM as Variant" then
-            case Shop."Option Name for UOM" of
+        ShopifyVariant."UoM Option Id" := 0;
+        if Shop."UoM as Variant" then
+            case Shop."Option Name for UoM" of
                 ShopifyVariant."Option 1 Name":
-                    ShopifyVariant."UOM Option Id" := 1;
+                    ShopifyVariant."UoM Option Id" := 1;
                 ShopifyVariant."Option 2 Name":
-                    ShopifyVariant."UOM Option Id" := 2;
+                    ShopifyVariant."UoM Option Id" := 2;
                 ShopifyVariant."Option 3 Name":
-                    ShopifyVariant."UOM Option Id" := 3;
+                    ShopifyVariant."UoM Option Id" := 3;
             end;
         RecRef.SetTable(ShopifyVariant);
         ShopifyVariant.Modify(false);
@@ -506,9 +506,9 @@ codeunit 30189 "Shpfy Variant API"
                 RecRef.GetTable(ShopifyInventoryItem);
                 if ShopifyInventoryItem.Id = 0 then
                     JHelper.GetValueIntoField(JNode, 'legacyResourceId', RecRef, ShopifyInventoryItem.FieldNo(Id));
-                JHelper.GetValueIntoField(JNode, 'countryCodeOfOrigin', RecRef, ShopifyInventoryItem.FieldNo("Country of Origin"));
+                JHelper.GetValueIntoField(JNode, 'countryCodeOfOrigin', RecRef, ShopifyInventoryItem.FieldNo("Country/Region of Origin"));
                 JHelper.GetValueIntoField(JNode, 'createdAt', RecRef, ShopifyInventoryItem.FieldNo("Create At"));
-                JHelper.GetValueIntoField(JNode, 'inventoryHistoryUrl', RecRef, ShopifyInventoryItem.FieldNo("History Url"));
+                JHelper.GetValueIntoField(JNode, 'inventoryHistoryUrl', RecRef, ShopifyInventoryItem.FieldNo("History URL"));
                 JHelper.GetValueIntoField(JNode, 'provinceCodeOfOrigin', RecRef, ShopifyInventoryItem.FieldNo("Province of Origin"));
                 JHelper.GetValueIntoField(JNode, 'requiresShipping', RecRef, ShopifyInventoryItem.FieldNo("Requires Shipping"));
                 JHelper.GetValueIntoField(JNode, 'tracked', RecRef, ShopifyInventoryItem.FieldNo(Tracked));

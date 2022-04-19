@@ -17,13 +17,13 @@ codeunit 30179 "Shpfy Product Image Export"
         if Shop."Sync Item Images" <> Shop."Sync Item Images"::"To Shopify" then
             exit;
 
-        if Rec.ItemSystemId <> NullGuid then
-            if Item.GetBySystemId(Rec.ItemSystemId) then
+        if Rec."Item SystemId" <> NullGuid then
+            if Item.GetBySystemId(Rec."Item SystemId") then
                 Hash := HashCalc.CalcItemImageHash(Item);
         if Hash <> Rec."Image Hash" then begin
             NewImageId := ProductApi.CreateShopifyProductImage(Rec, Item);
-            if NewImageId <> Rec.ImageId then
-                Rec.ImageId := Rec.ImageId;
+            if NewImageId <> Rec."Image Id" then
+                Rec."Image Id" := Rec."Image Id";
             Rec."Image Hash" := Hash;
             Rec.Modify();
         end;

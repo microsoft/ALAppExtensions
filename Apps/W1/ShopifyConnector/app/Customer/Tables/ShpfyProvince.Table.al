@@ -9,9 +9,9 @@ table 30108 "Shpfy Province"
 
     fields
     {
-        field(1; "Country Id"; BigInteger)
+        field(1; "Country/Region Id"; BigInteger)
         {
-            Caption = 'Country Id';
+            Caption = 'Country/Region Id';
             DataClassification = SystemMetadata;
             Editable = false;
         }
@@ -65,7 +65,7 @@ table 30108 "Shpfy Province"
 
     keys
     {
-        key(PK; Id, "Country Id")
+        key(PK; Id, "Country/Region Id")
         {
             Clustered = true;
         }

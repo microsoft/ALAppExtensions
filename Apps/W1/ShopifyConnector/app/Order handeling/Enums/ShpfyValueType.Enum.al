@@ -4,7 +4,7 @@
 enum 30123 "Shpfy Value Type"
 {
     Access = Internal;
-    Caption = 'Shopoify Value Type';
+    Caption = 'Shopify Value Type';
     Extensible = true;
 
     value(3; "Fixed Amount")

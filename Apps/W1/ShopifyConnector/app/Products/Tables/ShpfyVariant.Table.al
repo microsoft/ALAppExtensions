@@ -136,15 +136,15 @@ table 30129 "Shpfy Variant"
             TableRelation = "Shpfy Shop";
         }
 
-        field(101; ItemSystemId; Guid)
+        field(101; "Item SystemId"; Guid)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Item System Id';
+            Caption = 'Item SystemId';
         }
-        field(102; ItemVariantSystemId; Guid)
+        field(102; "Item Variant SystemId"; Guid)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Item Variant System Id';
+            Caption = 'Item Variant SystemId';
         }
         field(103; "Last Updated by BC"; DateTime)
         {
@@ -155,17 +155,17 @@ table 30129 "Shpfy Variant"
         {
             Caption = 'Item No.';
             FieldClass = FlowField;
-            CalcFormula = lookup(Item."No." where(SystemId = field(ItemSystemId)));
+            CalcFormula = lookup(Item."No." where(SystemId = field("Item SystemId")));
         }
         field(105; "Variant Code"; Code[10])
         {
             Caption = 'Variant No.';
             FieldClass = FlowField;
-            CalcFormula = lookup("Item Variant".Code where(SystemId = field(ItemVariantSystemId)));
+            CalcFormula = lookup("Item Variant".Code where(SystemId = field("Item Variant SystemId")));
         }
-        field(106; "UOM Option Id"; Integer)
+        field(106; "UoM Option Id"; Integer)
         {
-            Caption = 'UOM Option Id';
+            Caption = 'UoM Option Id';
             DataClassification = SystemMetadata;
         }
         field(107; "Mapped By Item"; Boolean)

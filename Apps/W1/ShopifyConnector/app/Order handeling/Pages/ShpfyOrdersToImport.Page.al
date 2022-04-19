@@ -1,13 +1,13 @@
 /// <summary>
-/// Page Shpfy Orders To Import (ID 30121).
+/// Page Shpfy Orders to Import (ID 30121).
 /// </summary>
-page 30121 "Shpfy Orders To Import"
+page 30121 "Shpfy Orders to Import"
 {
 
     ApplicationArea = All;
-    Caption = 'Shopify Orders To Import';
+    Caption = 'Shopify Orders to Import';
     PageType = List;
-    SourceTable = "Shpfy Orders To Import";
+    SourceTable = "Shpfy Orders to Import";
     UsageCategory = Lists;
     InsertAllowed = false;
     ModifyAllowed = false;
@@ -34,12 +34,12 @@ page 30121 "Shpfy Orders To Import"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the order number from Shopify.';
                 }
-                field("Action"; Rec."Action")
+                field("Action"; Rec."Import Action")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the action to take for this order.';
                 }
-                field(NumberOfItems; Rec."Number of Items")
+                field(NumberOfItems; Rec."Total Quantity of Items")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the sum of the line quantities on all lines in the document.';
@@ -176,7 +176,7 @@ page 30121 "Shpfy Orders To Import"
 
                 trigger OnAction()
                 var
-                    SelectedRec: Record "Shpfy Orders To Import";
+                    SelectedRec: Record "Shpfy Orders to Import";
                     Background: Codeunit "Shpfy Background Syncs";
                 begin
                     CurrPage.SetSelectionFilter(SelectedRec);

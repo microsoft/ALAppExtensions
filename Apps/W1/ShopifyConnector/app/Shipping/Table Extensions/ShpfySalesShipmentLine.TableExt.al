@@ -1,5 +1,5 @@
 /// <summary>
-/// TableExtension Shpfy Sales Ship. Line Ext. (ID 30107) extends Record Sales Shipment Line.
+/// TableExtension "Shpfy Sales Shipment Line (ID 30107) extends Record Sales Shipment Line.
 /// </summary>
 tableextension 30107 "Shpfy Sales Shipment Line" extends "Sales Shipment Line"
 {

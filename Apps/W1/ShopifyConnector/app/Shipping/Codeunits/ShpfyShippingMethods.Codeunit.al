@@ -15,7 +15,7 @@ codeunit 30193 "Shpfy Shipping Methods"
     /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
     internal procedure GetShippingMethods(var ShopifyShop: Record "Shpfy Shop")
     var
-        ShipmentMethod: Record "Shpfy Shipment Method";
+        ShipmentMethod: Record "Shpfy Shipment Method Mapping";
         Shop: Record "Shpfy Shop";
         JRates: JsonArray;
         JZones: JsonArray;

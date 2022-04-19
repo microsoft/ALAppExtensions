@@ -34,13 +34,13 @@ table 30111 "Shpfy Order Fulfillment"
             Caption = 'Tracking Number';
             DataClassification = SystemMetadata;
         }
-        field(6; "Tracking Url"; Text[250])
+        field(6; "Tracking URL"; Text[250])
         {
-            Caption = 'Tracking Url';
+            Caption = 'Tracking URL';
             DataClassification = SystemMetadata;
             ExtendedDatatype = URL;
         }
-        field(7; Status; Enum "Shpfy FulFillment Status")
+        field(7; Status; Enum "Shpfy Fulfillment Status")
         {
             Caption = 'Status';
             DataClassification = SystemMetadata;

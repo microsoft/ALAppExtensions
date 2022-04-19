@@ -22,9 +22,9 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             ExtendedDatatype = URL;
         }
-        field(5; "Log Activated"; Boolean)
+        field(5; "Log Enabled"; Boolean)
         {
-            Caption = 'Log Activated';
+            Caption = 'Log Enabled';
             DataClassification = SystemMetadata;
         }
         field(6; "Customer Price Group"; Code[10])
@@ -41,9 +41,9 @@ table 30102 "Shpfy Shop"
             TableRelation = "Customer Discount Group";
             ValidateTableRelation = true;
         }
-        field(8; "Shipping Cost Account"; Code[20])
+        field(8; "Shipping Charges Account"; Code[20])
         {
-            Caption = 'Shipping Cost Account';
+            Caption = 'Shipping Charges Account';
             DataClassification = SystemMetadata;
             TableRelation = "G/L Account";
             ValidateTableRelation = true;
@@ -181,32 +181,32 @@ table 30102 "Shpfy Shop"
             DataClassification = CustomerContent;
             InitValue = Code;
         }
-        field(36; "Default Customer"; Code[20])
+        field(36; "Default Customer No."; Code[20])
         {
-            Caption = 'Default Customer';
+            Caption = 'Default Customer No.';
             DataClassification = CustomerContent;
             TableRelation = Customer;
         }
-        field(37; "UOM as Variant"; Boolean)
+        field(37; "UoM as Variant"; Boolean)
         {
-            Caption = 'UOM as Variant';
+            Caption = 'UoM as Variant';
             DataClassification = CustomerContent;
 
             trigger OnValidate()
             begin
-                if "UOM as Variant" and ("Option Name for UOM" = '') then
-                    "Option Name for UOM" := 'Unit of Measure';
+                if "UoM as Variant" and ("Option Name for UoM" = '') then
+                    "Option Name for UoM" := 'Unit of Measure';
             end;
         }
-        field(38; "Option Name for UOM"; Text[50])
+        field(38; "Option Name for UoM"; Text[50])
         {
-            Caption = 'Variant Option Name for UOM';
+            Caption = 'Variant Option Name for UoM';
             DataClassification = CustomerContent;
 
             trigger OnValidate()
             begin
-                if "Option Name for UOM" = '' then
-                    "UOM as Variant" := false;
+                if "Option Name for UoM" = '' then
+                    "UoM as Variant" := false;
             end;
         }
         field(39; "Shopify Can Update Items"; Boolean)
@@ -275,14 +275,14 @@ table 30102 "Shpfy Shop"
             Caption = 'Customer Mapping Type';
             DataClassification = CustomerContent;
         }
-        field(50; "Create Product Status Value"; Enum "Shpfy Cr. Prod. Status Value")
+        field(50; "Status for Created Products"; Enum "Shpfy Cr. Prod. Status Value")
         {
-            Caption = 'Create Product Status Value';
+            Caption = 'Status for Created Products';
             DataClassification = CustomerContent;
         }
-        field(51; "Remove Product Action"; Enum "Shpfy Remove Product Action")
+        field(51; "Action for Removed Products"; Enum "Shpfy Remove Product Action")
         {
-            Caption = 'Remove Product Action';
+            Caption = 'Action for Removed Products';
             DataClassification = CustomerContent;
         }
         field(52; "Currency Code"; code[10])
@@ -315,9 +315,9 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             Editable = false;
         }
-        field(104; "SKU Type"; Enum "Shpfy SKU Value")
+        field(104; "SKU Mapping"; Enum "Shpfy SKU Mappging")
         {
-            Caption = 'SKU Type';
+            Caption = 'SKU Mapping';
             DataClassification = SystemMetadata;
 
         }
@@ -327,9 +327,9 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             InitValue = '|';
         }
-        field(106; "Tax Area Source"; Enum "Shpfy Tax By")
+        field(106; "Tax Area Priority"; Enum "Shpfy Tax By")
         {
-            Caption = 'Tax Area Source';
+            Caption = 'Tax Area Priority';
             DataClassification = CustomerContent;
             Description = 'Choose in which order the system try to find the county for the tax area.';
         }

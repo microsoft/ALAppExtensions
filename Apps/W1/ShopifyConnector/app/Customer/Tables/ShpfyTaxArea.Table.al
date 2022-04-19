@@ -8,9 +8,9 @@ table 30109 "Shpfy Tax Area"
     DataClassification = CustomerContent;
     fields
     {
-        field(1; "Country Code"; Code[20])
+        field(1; "Country/Region Code"; Code[20])
         {
-            Caption = 'Country Code';
+            Caption = 'Country/Region Code';
             DataClassification = CustomerContent;
         }
         field(2; County; Text[50])
@@ -38,7 +38,7 @@ table 30109 "Shpfy Tax Area"
     }
     keys
     {
-        key(PK; "Country Code", County)
+        key(PK; "Country/Region Code", County)
         {
             Clustered = true;
         }

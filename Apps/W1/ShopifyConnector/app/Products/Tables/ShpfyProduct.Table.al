@@ -43,15 +43,15 @@ table 30127 "Shpfy Product"
             Caption = 'Description as HTML';
             DataClassification = CustomerContent;
         }
-        field(7; "Preview Url"; Text[250])
+        field(7; "Preview URL"; Text[250])
         {
-            Caption = 'Preview Url';
+            Caption = 'Preview URL';
             DataClassification = CustomerContent;
             Editable = false;
         }
-        field(8; Url; Text[250])
+        field(8; URL; Text[250])
         {
-            Caption = 'Url';
+            Caption = 'URL';
             DataClassification = CustomerContent;
             Editable = false;
         }
@@ -82,7 +82,7 @@ table 30127 "Shpfy Product"
             DataClassification = CustomerContent;
             Editable = false;
         }
-        field(14; ImageId; BigInteger)
+        field(14; "Image Id"; BigInteger)
         {
             Caption = 'Image Id';
             DataClassification = CustomerContent;
@@ -102,9 +102,9 @@ table 30127 "Shpfy Product"
             TableRelation = "Shpfy Shop";
         }
 
-        field(101; ItemSystemId; Guid)
+        field(101; "Item SystemId"; Guid)
         {
-            Caption = 'Item System Id';
+            Caption = 'Item SystemId';
             DataClassification = SystemMetadata;
             Editable = false;
         }
@@ -116,7 +116,7 @@ table 30127 "Shpfy Product"
         }
         field(103; "Item No."; Code[20])
         {
-            CalcFormula = lookup(Item."No." where(SystemId = field(ItemSystemId)));
+            CalcFormula = lookup(Item."No." where(SystemId = field("Item SystemId")));
             Caption = 'Item No.';
             FieldClass = FlowField;
         }
@@ -151,7 +151,7 @@ table 30127 "Shpfy Product"
         IRemoveProduct: Interface "Shpfy IRemoveProductAction";
     begin
         if Shop.Get(Rec."Shop Code") then begin
-            IRemoveProduct := Shop."Remove Product Action";
+            IRemoveProduct := Shop."Action for Removed Products";
             IRemoveProduct.RemoveProductAction(Rec);
         end;
         ShopifyVariant.SetRange("Product Id", Id);

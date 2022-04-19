@@ -34,24 +34,24 @@ page 30107 "Shpfy Customers"
                         Customer: Record Customer;
                         CustomerCard: Page "Customer Card";
                     begin
-                        if Customer.GetBySystemId(Rec."Customer System Id") then begin
+                        if Customer.GetBySystemId(Rec."Customer SystemId") then begin
                             Customer.SetRecFilter();
                             CustomerCard.SetTableView(Customer);
                             CustomerCard.Run();
                         end;
                     end;
                 }
-                field(FirstName; Rec.FirstName)
+                field(FirstName; Rec."First Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the customer''s first name.';
                 }
-                field(LastName; Rec.LastName)
+                field(LastName; Rec."Last Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the customer''s last name.';
                 }
-                field(EMail; Rec."E-Mail")
+                field(EMail; Rec.Email)
                 {
                     ApplicationArea = All;
                     ToolTip = 'The unique email address of the customer. Attempting to assign the same email address to multiple customers returns an error.';
@@ -111,7 +111,7 @@ page 30107 "Shpfy Customers"
                 var
                     Customer: Record Customer;
                 begin
-                    if Customer.GetBySystemId(Rec."Customer System Id") then begin
+                    if Customer.GetBySystemId(Rec."Customer SystemId") then begin
                         Customer.SetRecFilter();
                         Page.Run(Page::"Customer Card", Customer);
                     end;

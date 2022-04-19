@@ -1,7 +1,7 @@
 /// <summary>
 /// Enum Shpfy FulFillment Status (ID 30112).
 /// </summary>
-enum 30112 "Shpfy FulFillment Status"
+enum 30112 "Shpfy Fulfillment Status"
 {
     Access = Internal;
     Caption = 'Shopify FulFillment Status';

@@ -27,9 +27,9 @@ table 30134 "Shpfy Payment Method Mapping"
             DataClassification = CustomerContent;
             TableRelation = "Shpfy Credit Card Company";
         }
-        field(4; "Payment Method"; Code[10])
+        field(4; "Payment Method Code"; Code[10])
         {
-            Caption = 'Payment Method';
+            Caption = 'Payment Method Code';
             DataClassification = CustomerContent;
             TableRelation = "Payment Method";
         }

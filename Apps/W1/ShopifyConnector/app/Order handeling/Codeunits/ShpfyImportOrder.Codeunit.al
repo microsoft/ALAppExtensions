@@ -5,7 +5,7 @@ codeunit 30161 "Shpfy Import Order"
 {
     Access = Internal;
     Permissions = tabledata "Sales Line" = rim;
-    TableNo = "Shpfy Orders To Import";
+    TableNo = "Shpfy Orders to Import";
 
     trigger OnRun()
     begin
@@ -22,14 +22,14 @@ codeunit 30161 "Shpfy Import Order"
     /// Description for Import.
     /// </summary>
     /// <param name="OrdersToImport">Parameter of type Record "Shopify Orders To Import".</param>
-    local procedure Import(OrdersToImport: Record "Shpfy Orders To Import")
+    local procedure Import(OrdersToImport: Record "Shpfy Orders to Import")
     var
         DataCapture: Record "Shpfy Data Capture";
         OrderHeader: Record "Shpfy Order Header";
         xOrderHeader: Record "Shpfy Order Header";
         FulFillments: Codeunit "Shpfy Order Fulfillments";
         Risks: Codeunit "Shpfy Order Risks";
-        ShippingCosts: Codeunit "Shpfy Shipping Costs";
+        ShippingCosts: Codeunit "Shpfy Shipping Charges";
         Transactions: Codeunit "Shpfy Transactions";
         RecRef: RecordRef;
         ImportAction: enum "Shpfy Import Action";
@@ -52,7 +52,7 @@ codeunit 30161 "Shpfy Import Order"
             if JToken.ReadFrom(Response) then
                 if JHelper.GetJsonObject(JToken, JOrder, 'order') then begin
                     Clear(OrderHeader);
-                    ImportAction := OrdersToImport.Action;
+                    ImportAction := OrdersToImport."Import Action";
                     Case ImportAction of
                         ImportAction::New:
                             begin
@@ -63,7 +63,7 @@ codeunit 30161 "Shpfy Import Order"
                                 //JHelper.GetValueIntoField(JOrder, 'browser_ip', RecRef, OrderHeader.FieldNo("Browser IP"));
                                 JHelper.GetValueIntoField(JOrder, 'checkout_id', RecRef, OrderHeader.FieldNo("Checkout Id"));
                                 JHelper.GetValueIntoField(JOrder, 'source_name', RecRef, OrderHeader.FieldNo("Source Name"));
-                                JHelper.GetValueIntoField(JOrder, 'contact_email', RecRef, OrderHeader.FieldNo("Contact e-mail"));
+                                JHelper.GetValueIntoField(JOrder, 'contact_email', RecRef, OrderHeader.FieldNo("Contact Email"));
                                 JHelper.GetValueIntoField(JOrder, 'order_status_url', RecRef, OrderHeader.FieldNo("Order Status URL"));
                                 PhoneNo := JHelper.GetValueAsText(JOrder, 'phone');
                                 PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
@@ -71,7 +71,7 @@ codeunit 30161 "Shpfy Import Order"
                                     FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
                                     LastName := JHelper.GetValueAsText(JAddress, 'last_name');
                                     CompanyName := JHelper.GetValueAsText(JAddress, 'company');
-                                    RecRef.Field(OrderHeader.FieldNo("Bill-to Firstname")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Bill-to Firstname"));
+                                    RecRef.Field(OrderHeader.FieldNo("Bill-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Bill-to First Name"));
                                     RecRef.Field(OrderHeader.FieldNo("Bill-to Lastname")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Bill-to Lastname"));
                                     RecRef.Field(OrderHeader.FieldNo("Bill-to Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Bill-to Name"));
                                     RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Bill-to Name 2"));
@@ -86,8 +86,8 @@ codeunit 30161 "Shpfy Import Order"
                                     JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Bill-to Address 2"));
                                     JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Bill-to Post Code"));
                                     JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Bill-to City"));
-                                    JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Bill-to Country Code"));
-                                    JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Bill-to Country Name"));
+                                    JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Bill-to Country/Region Code"));
+                                    JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Bill-to Country/Region Name"));
                                     JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Bill-to County"));
                                     if PhoneNo = '' then begin
                                         PhoneNo := JHelper.GetValueAsText(JAddress, 'phone');
@@ -98,7 +98,7 @@ codeunit 30161 "Shpfy Import Order"
                                         FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
                                         LastName := JHelper.GetValueAsText(JAddress, 'last_name');
                                         CompanyName := JHelper.GetValueAsText(JAddress, 'company');
-                                        RecRef.Field(OrderHeader.FieldNo("Bill-to Firstname")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Bill-to Firstname"));
+                                        RecRef.Field(OrderHeader.FieldNo("Bill-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Bill-to First Name"));
                                         RecRef.Field(OrderHeader.FieldNo("Bill-to Lastname")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Bill-to Lastname"));
                                         RecRef.Field(OrderHeader.FieldNo("Bill-to Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Bill-to Name"));
                                         RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Bill-to Name 2"));
@@ -113,8 +113,8 @@ codeunit 30161 "Shpfy Import Order"
                                         JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Bill-to Address 2"));
                                         JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Bill-to Post Code"));
                                         JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Bill-to City"));
-                                        JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Bill-to Country Code"));
-                                        JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Bill-to Country Name"));
+                                        JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Bill-to Country/Region Code"));
+                                        JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Bill-to Country/Region Name"));
                                         JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Bill-to County"));
                                         if PhoneNo = '' then begin
                                             PhoneNo := JHelper.GetValueAsText(JAddress, 'phone');
@@ -125,8 +125,8 @@ codeunit 30161 "Shpfy Import Order"
                                     FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
                                     LastName := JHelper.GetValueAsText(JAddress, 'last_name');
                                     CompanyName := JHelper.GetValueAsText(JAddress, 'company');
-                                    RecRef.Field(OrderHeader.FieldNo("Ship-to Firstname")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Ship-to Firstname"));
-                                    RecRef.Field(OrderHeader.FieldNo("Ship-to Lastname")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Ship-to Lastname"));
+                                    RecRef.Field(OrderHeader.FieldNo("Ship-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Ship-to First Name"));
+                                    RecRef.Field(OrderHeader.FieldNo("Ship-to Last Name")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Ship-to Last Name"));
                                     RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Ship-to Name"));
                                     RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Ship-to Name 2"));
                                     if RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name")).Value = RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name 2")).Value then
@@ -140,8 +140,8 @@ codeunit 30161 "Shpfy Import Order"
                                     JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Ship-to Address 2"));
                                     JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Ship-to Post Code"));
                                     JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Ship-to City"));
-                                    JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Ship-to Country Code"));
-                                    JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Ship-to Country Name"));
+                                    JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Ship-to Country/Region Code"));
+                                    JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Ship-to Country/Region Name"));
                                     JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Ship-to County"));
                                     JHelper.GetValueIntoField(JAddress, 'latitude', RecRef, OrderHeader.FieldNo("Ship-to Latitude"));
                                     JHelper.GetValueIntoField(JAddress, 'longitude', RecRef, OrderHeader.FieldNo("Ship-to Longitude"));
@@ -153,13 +153,13 @@ codeunit 30161 "Shpfy Import Order"
                                 //JHelper.GetValueIntoField(JOrder, 'client_details.browser_ip', RecRef, OrderHeader.FieldNo("Browser IP"));
                                 JHelper.GetValueIntoField(JOrder, 'client_details.session_hash', RecRef, OrderHeader.FieldNo("Session Hash"));
                                 JHelper.GetValueIntoField(JOrder, 'customer.id', RecRef, OrderHeader.FieldNo("Customer Id"));
-                                JHelper.GetValueIntoField(JOrder, 'contact_email', RecRef, OrderHeader.FieldNo("Contact e-mail"));
+                                JHelper.GetValueIntoField(JOrder, 'contact_email', RecRef, OrderHeader.FieldNo("Contact Email"));
                                 if JHelper.GetJsonObject(JOrder, JAddress, 'billing_address') then begin
                                     FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
                                     LastName := JHelper.GetValueAsText(JAddress, 'last_name');
                                     CompanyName := JHelper.GetValueAsText(JAddress, 'company');
-                                    RecRef.Field(OrderHeader.FieldNo("Sell-to Firstname")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Sell-to Firstname"));
-                                    RecRef.Field(OrderHeader.FieldNo("Sell-to Lastname")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Sell-to Lastname"));
+                                    RecRef.Field(OrderHeader.FieldNo("Sell-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Sell-to First Name"));
+                                    RecRef.Field(OrderHeader.FieldNo("Sell-to Last Name")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Sell-to Last Name"));
                                     RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Sell-to Customer Name"));
                                     RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Sell-to Customer Name 2"));
                                     if RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value = RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value then
@@ -173,8 +173,8 @@ codeunit 30161 "Shpfy Import Order"
                                     JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Sell-to Address 2"));
                                     JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Sell-to Post Code"));
                                     JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Sell-to City"));
-                                    JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Sell-to Country Code"));
-                                    JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Sell-to Country Name"));
+                                    JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Sell-to Country/Region Code"));
+                                    JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Sell-to Country/Region Name"));
                                     JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Sell-to County"));
                                 end else begin
                                     FirstName := JHelper.GetValueAsText(JAddress, 'customer.first_name');
@@ -183,8 +183,8 @@ codeunit 30161 "Shpfy Import Order"
                                         FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
                                         LastName := JHelper.GetValueAsText(JAddress, 'last_name');
                                         CompanyName := JHelper.GetValueAsText(JAddress, 'company');
-                                        RecRef.Field(OrderHeader.FieldNo("Sell-to Firstname")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Sell-to Firstname"));
-                                        RecRef.Field(OrderHeader.FieldNo("Sell-to Lastname")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Sell-to Lastname"));
+                                        RecRef.Field(OrderHeader.FieldNo("Sell-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Sell-to First Name"));
+                                        RecRef.Field(OrderHeader.FieldNo("Sell-to Last Name")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Sell-to Last Name"));
                                         RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Sell-to Customer Name"));
                                         RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Sell-to Customer Name 2"));
                                         if RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value = RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value then
@@ -198,8 +198,8 @@ codeunit 30161 "Shpfy Import Order"
                                         JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Sell-to Address 2"));
                                         JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Sell-to Post Code"));
                                         JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Sell-to City"));
-                                        JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Sell-to Country Code"));
-                                        JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Sell-to Country Name"));
+                                        JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Sell-to Country/Region Code"));
+                                        JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Sell-to Country/Region Name"));
                                         JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Sell-to County"));
                                     end;
                                 end;
@@ -235,7 +235,7 @@ codeunit 30161 "Shpfy Import Order"
                     JHelper.GetValueIntoField(JOrder, 'processed_at', RecRef, OrderHeader.FieldNo("Processed At"));
                     JHelper.GetValueIntoField(JOrder, 'total_line_items_price_set.shop_money.amount', RecRef, OrderHeader.FieldNo("Total Items Amount"));
                     JHelper.GetValueIntoField(JOrder, 'total_discounts_set.shop_money.amount', RecRef, OrderHeader.FieldNo("Discount Amount"));
-                    JHelper.GetValueIntoField(JOrder, 'total_shipping_price_set.shop_money.amount', RecRef, OrderHeader.FieldNo("Shipping Cost Amount"));
+                    JHelper.GetValueIntoField(JOrder, 'total_shipping_price_set.shop_money.amount', RecRef, OrderHeader.FieldNo("Shipping Charges Amount"));
                     JHelper.GetValueIntoField(JOrder, 'subtotal_price_set.shop_money.amount', RecRef, OrderHeader.FieldNo("subtotal Amount"));
                     JHelper.GetValueIntoField(JOrder, 'total_price_set.shop_money.amount', RecRef, OrderHeader.FieldNo("Total Amount"));
                     JHelper.GetValueIntoField(JOrder, 'total_tax_set.shop_money.amount', RecRef, OrderHeader.FieldNo("VAT Amount"));
@@ -287,7 +287,7 @@ codeunit 30161 "Shpfy Import Order"
                     Transactions.UpdateTransactionInfos(OrderHeader);
                     Risks.UpdateOrderRisks(OrderHeader);
 
-                    OrderHeader.CalcFields("Number of Items", "Number of Lines");
+                    OrderHeader.CalcFields("Total Quantity of Items", "Number of Lines");
 
                     if CheckToCloseOrder(OrderHeader) then
                         CloseOrder(OrderHeader);

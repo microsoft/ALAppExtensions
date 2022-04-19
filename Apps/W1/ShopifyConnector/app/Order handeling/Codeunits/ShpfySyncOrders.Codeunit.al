@@ -5,7 +5,7 @@ codeunit 30168 "Shpfy Sync Orders"
 {
     Access = Internal;
 
-    TableNo = "Shpfy Orders To Import";
+    TableNo = "Shpfy Orders to Import";
     SingleInstance = true;
 
     trigger OnRun()
@@ -33,7 +33,7 @@ codeunit 30168 "Shpfy Sync Orders"
                     if OrderHeader.Get(Rec.Id) then begin
                         Rec.Delete();
                         Commit();
-                        if OrderMapping.DoMapping(OrderHeader) and (Rec.Action = Rec.Action::New) and Shop."Auto Create Orders" then
+                        if OrderMapping.DoMapping(OrderHeader) and (Rec."Import Action" = Rec."Import Action"::New) and Shop."Auto Create Orders" then
                             CreateSalesDocument(OrderHeader);
                     end;
             until Rec.Next() = 0;
@@ -55,13 +55,13 @@ codeunit 30168 "Shpfy Sync Orders"
             if not ProcessShopifyOrder.Run(ShopifyOrderHeader) then begin
                 SelectLatestVersion();
                 ShopifyOrderHeader.Get(ShopifyOrderHeader."Shopify Order Id");
-                ShopifyOrderHeader.Error := true;
+                ShopifyOrderHeader."Has Error" := true;
                 ShopifyOrderHeader."Error Message" := CopyStr(Format(Time) + ' ' + GetLastErrorText(), 1, MaxStrLen(ShopifyOrderHeader."Error Message"));
                 ProcessShopifyOrder.CleanUpLastCreatedDocument();
             end else begin
                 SelectLatestVersion();
                 ShopifyOrderHeader.Get(ShopifyOrderHeader."Shopify Order Id");
-                ShopifyOrderHeader.Error := false;
+                ShopifyOrderHeader."Has Error" := false;
                 ShopifyOrderHeader."Error Message" := '';
                 ShopifyOrderHeader.Processed := true;
             end;

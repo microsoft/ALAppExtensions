@@ -23,17 +23,17 @@ page 30106 "Shpfy Customer Card"
                     ToolTip = 'Specifies the unique identifier for the customer in Shopify.';
                     Visible = false;
                 }
-                field(FirstName; Rec.FirstName)
+                field(FirstName; Rec."First Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the customer''s first name.';
                 }
-                field(LastName; Rec.LastName)
+                field(LastName; Rec."Last Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the customer''s last name.';
                 }
-                field(EMail; Rec."E-Mail")
+                field(EMail; Rec.Email)
                 {
                     ApplicationArea = All;
                     ToolTip = 'The unique email address of the customer. Attempting to assign the same e-mail address to multiple customers returns an error.';
@@ -71,7 +71,7 @@ page 30106 "Shpfy Customer Card"
                 Caption = 'Mapping';
                 Editable = false;
 
-                field(CustomerSystemId; Rec."Customer System Id")
+                field(CustomerSystemId; Rec."Customer SystemId")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the unique identifier for the customer in D365BC.';
@@ -89,7 +89,7 @@ page 30106 "Shpfy Customer Card"
                     begin
                         if CustomerNo <> '' then begin
                             Customer.Get(CustomerNo);
-                            Rec."Customer System Id" := Customer.SystemId;
+                            Rec."Customer SystemId" := Customer.SystemId;
                             GetMappedCustomer();
                         end;
                     end;
@@ -102,7 +102,7 @@ page 30106 "Shpfy Customer Card"
                         CustomerList.SetRecord(Customer);
                         if CustomerList.RunModal() = Action::LookupOK then begin
                             CustomerList.GetRecord(Customer);
-                            Rec."Customer System Id" := Customer.SystemId;
+                            Rec."Customer SystemId" := Customer.SystemId;
                             CustomerNo := Customer."No.";
                             Rec.Modify();
                         end;
@@ -129,7 +129,7 @@ page 30106 "Shpfy Customer Card"
             {
                 ApplicationArea = all;
                 Caption = '';
-                SubPageLink = CustomerId = field(Id);
+                SubPageLink = "Customer Id" = field(Id);
             }
         }
         area(FactBoxes)
@@ -159,7 +159,7 @@ page 30106 "Shpfy Customer Card"
                 var
                     Customer: Record Customer;
                 begin
-                    if Customer.GetBySystemId(Rec."Customer System Id") then begin
+                    if Customer.GetBySystemId(Rec."Customer SystemId") then begin
                         Customer.SetRecFilter();
                         Page.Run(Page::"Customer Card", Customer);
                     end;
@@ -195,11 +195,11 @@ page 30106 "Shpfy Customer Card"
     /// </summary>
     local procedure GetMappedCustomer()
     begin
-        if IsNullGuid(Rec."Customer System Id") then begin
+        if IsNullGuid(Rec."Customer SystemId") then begin
             Clear(Customer);
             Clear(CustomerNo);
         end else
-            if Customer.GetBySystemId(Rec."Customer System Id") then
+            if Customer.GetBySystemId(Rec."Customer SystemId") then
                 CustomerNo := Customer."No."
             else begin
                 Clear(Customer);

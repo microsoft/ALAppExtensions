@@ -34,7 +34,7 @@ page 30127 "Shpfy Variants"
                         Item: Record Item;
                         ItemCard: Page "Item Card";
                     begin
-                        if Item.GetBySystemId(Rec.ItemSystemId) then begin
+                        if Item.GetBySystemId(Rec."Item SystemId") then begin
                             Item.SetRecFilter();
                             ItemCard.SetTableView(Item);
                             ItemCard.Run();
@@ -53,7 +53,7 @@ page 30127 "Shpfy Variants"
                         ItemVariant: Record "Item Variant";
                         ItemVariants: Page "Item Variants";
                     begin
-                        if ItemVariant.GetBySystemId(Rec.ItemVariantSystemId) then begin
+                        if ItemVariant.GetBySystemId(Rec."Item Variant SystemId") then begin
                             ItemVariant.SetRecFilter();
                             ItemVariants.SetTableView(ItemVariant);
                             ItemVariants.Run();
@@ -178,8 +178,8 @@ page 30127 "Shpfy Variants"
                     ItemList.LookupMode := true;
                     if ItemList.RunModal() = Action::LookupOK then begin
                         ItemList.GetRecord(Item);
-                        Rec.ItemSystemId := Item.SystemId;
-                        Clear(Rec.ItemVariantSystemId);
+                        Rec."Item SystemId" := Item.SystemId;
+                        Clear(Rec."Item Variant SystemId");
                         Rec."Mapped By Item" := true;
                         Rec.Modify();
                     end;
@@ -204,13 +204,13 @@ page 30127 "Shpfy Variants"
                     ItemVariantList: Page "Item Variants";
                 begin
                     Rec.Testfield(Id);
-                    if Item.GetBySystemId(Rec.ItemSystemId) then begin
+                    if Item.GetBySystemId(Rec."Item SystemId") then begin
                         ItemVariantList.LookupMode := true;
                         ItemVariant.SetRange("Item No.", Item."No.");
                         ItemVariantList.SetTableView(ItemVariant);
                         if ItemVariantList.RunModal() = Action::LookupOK then begin
                             ItemVariantList.GetRecord(ItemVariant);
-                            Rec.ItemVariantSystemId := ItemVariant.SystemId;
+                            Rec."Item Variant SystemId" := ItemVariant.SystemId;
                             Rec."Mapped By Item" := false;
                             Rec.Modify();
                         end;

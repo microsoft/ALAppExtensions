@@ -84,7 +84,7 @@ codeunit 30116 "Shpfy Customer Export"
         Clear(ShopifyAddress);
         if FillInShopifyCustomerData(Customer, ShopifyCustomer, ShopifyAddress) then begin
             if CustomerApi.CreateCustomer(ShopifyCustomer, ShopifyAddress) then begin
-                ShopifyCustomer."Customer System Id" := Customer.SystemId;
+                ShopifyCustomer."Customer SystemId" := Customer.SystemId;
                 ShopifyCustomer."Last Updated by BC" := CurrentDateTime;
                 ShopifyCustomer.Insert();
                 ShopifyAddress.Insert();
@@ -114,21 +114,21 @@ codeunit 30116 "Shpfy Customer Export"
         xShopAddress := ShopAddress;
 
         if (Customer.Contact <> '') and (Shop."Contact Source" <> Shop."Contact Source"::None) then
-            SpiltNameIntoFirstAndLastName(Customer.Contact, ShopifyCustomer.FirstName, ShopifyCustomer.LastName, Shop."Contact Source")
+            SpiltNameIntoFirstAndLastName(Customer.Contact, ShopifyCustomer."First Name", ShopifyCustomer."Last Name", Shop."Contact Source")
         else
             if (Customer."Name 2" <> '') and (Shop."Name 2 Source" in [Shop."Name 2 Source"::FirstAndLastName, Shop."Name 2 Source"::LastAndFirstName]) then
-                SpiltNameIntoFirstAndLastName(Customer."Name 2", ShopifyCustomer.FirstName, ShopifyCustomer.LastName, Shop."Contact Source")
+                SpiltNameIntoFirstAndLastName(Customer."Name 2", ShopifyCustomer."First Name", ShopifyCustomer."Last Name", Shop."Contact Source")
             else
-                SpiltNameIntoFirstAndLastName(Customer.Name, ShopifyCustomer.FirstName, ShopifyCustomer.LastName, Shop."Contact Source");
+                SpiltNameIntoFirstAndLastName(Customer.Name, ShopifyCustomer."First Name", ShopifyCustomer."Last Name", Shop."Contact Source");
 
 #pragma warning disable AA0139
         if Customer."E-Mail".Contains(';') then
-            Customer."E-Mail".Split(';').Get(1, ShopifyCustomer."E-Mail")
+            Customer."E-Mail".Split(';').Get(1, ShopifyCustomer.Email)
         else
             if Customer."E-Mail".Contains(',') then
-                Customer."E-Mail".Split(',').Get(1, ShopifyCustomer."E-Mail")
+                Customer."E-Mail".Split(',').Get(1, ShopifyCustomer.Email)
             else
-                ShopifyCustomer."E-Mail" := Customer."E-Mail";
+                ShopifyCustomer.Email := Customer."E-Mail";
 #pragma warning restore AA0139
         ShopifyCustomer."Phone No." := Customer."Phone No.";
 
@@ -137,25 +137,25 @@ codeunit 30116 "Shpfy Customer Export"
         else
             if Shop."Name 2 Source" = Shop."Name 2 Source"::CompanyName then
                 ShopAddress.Company := Customer."Name 2";
-        ShopAddress.FirstName := CopyStr(ShopifyCustomer.FirstName, 1, MaxStrLen(ShopAddress.FirstName));
-        ShopAddress.LastName := CopyStr(ShopifyCustomer.LastName, 1, MaxStrLen(ShopAddress.LastName));
-        ShopAddress.Address1 := Customer.Address;
-        ShopAddress.Address2 := Customer."Address 2";
+        ShopAddress."First Name" := CopyStr(ShopifyCustomer."First Name", 1, MaxStrLen(ShopAddress."First Name"));
+        ShopAddress."Last Name" := CopyStr(ShopifyCustomer."Last Name", 1, MaxStrLen(ShopAddress."Last Name"));
+        ShopAddress."Address 1" := Customer.Address;
+        ShopAddress."Address 2" := Customer."Address 2";
         ShopAddress.Zip := Customer."Post Code";
         ShopAddress.City := Customer.City;
         if Customer.County <> '' then
             case Shop."County Source" of
                 Shop."County Source"::Code:
-                    ShopAddress.ProvinceCode := CopyStr(Customer.County, 1, MaxStrLen(ShopAddress.ProvinceCode));
+                    ShopAddress."Province Code" := CopyStr(Customer.County, 1, MaxStrLen(ShopAddress."Province Code"));
                 Shop."County Source"::Name:
                     begin
                         Province.SetRange(Name, Customer.County);
                         if Province.FindFirst() then
-                            ShopAddress.ProvinceCode := CopyStr(Province.Code, 1, MaxStrLen(ShopAddress.ProvinceCode))
+                            ShopAddress."Province Code" := CopyStr(Province.Code, 1, MaxStrLen(ShopAddress."Province Code"))
                         else begin
                             Province.SetFilter(Name, Customer.County + '*');
                             if Province.FindFirst() then
-                                ShopAddress.ProvinceCode := CopyStr(Province.Code, 1, MaxStrLen(ShopAddress.ProvinceCode));
+                                ShopAddress."Province Code" := CopyStr(Province.Code, 1, MaxStrLen(ShopAddress."Province Code"));
                         end;
                     end;
             end;
@@ -163,7 +163,7 @@ codeunit 30116 "Shpfy Customer Export"
             Customer."Country/Region Code" := CompanyInfo."Country/Region Code";
 
         if Country.Get(Customer."Country/Region Code") then
-            ShopAddress.CountryCode := Country."ISO Code";
+            ShopAddress."Country/Region Code" := Country."ISO Code";
 
         ShopAddress.Phone := Customer."Phone No.";
 
@@ -234,7 +234,7 @@ codeunit 30116 "Shpfy Customer Export"
     end;
 
     /// <summary> 
-    /// Spilt Name Into First And LastName.
+    /// Spilt Name Into First And Last Name.
     /// </summary>
     /// <param name="Name">Parameter of type Text.</param>
     /// <param name="FirstName">Parameter of type Text.</param>
@@ -267,10 +267,10 @@ codeunit 30116 "Shpfy Customer Export"
         ShopifyAddress: Record "Shpfy Customer Address";
     begin
         ShopifyCustomer.Get(CustomerID);
-        if ShopifyCustomer."Customer System Id" <> Customer.SystemId then
+        if ShopifyCustomer."Customer SystemId" <> Customer.SystemId then
             exit;  // An other customer with the same e-mail or phone is the source of it.
 
-        ShopifyAddress.SetRange(CustomerId, CustomerId);
+        ShopifyAddress.SetRange("Customer Id", CustomerId);
         ShopifyAddress.SetRange(Default, true);
         if not ShopifyAddress.FindFirst() then begin
             ShopifyAddress.SetRange(Default);

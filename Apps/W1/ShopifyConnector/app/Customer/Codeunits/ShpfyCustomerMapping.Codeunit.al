@@ -42,23 +42,23 @@ codeunit 30118 "Shpfy Customer Mapping"
         Handled: Boolean;
         Direction: enum "Shpfy Mapping Direction";
     begin
-        if not IsNullGuid(ShopifyCustomer."Customer System Id") then
-            if Customer.GetBySystemId(ShopifyCustomer."Customer System Id") then
+        if not IsNullGuid(ShopifyCustomer."Customer SystemId") then
+            if Customer.GetBySystemId(ShopifyCustomer."Customer SystemId") then
                 exit(true)
             else begin
-                Clear(ShopifyCustomer."Customer System Id");
+                Clear(ShopifyCustomer."Customer SystemId");
                 ShopifyCustomer.Modify();
             end;
 
         Direction := Direction::ShopifyToBC;
         CustomerEvents.OnBeforeFindMapping(Direction, ShopifyCustomer, Customer, Handled);
         if Handled then
-            exit(not IsNullGuid(ShopifyCustomer."Customer System Id"));
-        if IsNullGuid(ShopifyCustomer."Customer System Id") then
+            exit(not IsNullGuid(ShopifyCustomer."Customer SystemId"));
+        if IsNullGuid(ShopifyCustomer."Customer SystemId") then
             if DoFindMapping(Direction, ShopifyCustomer, Customer) then begin
                 CustomerEvents.OnAfterFindMapping(Direction, ShopifyCustomer, Customer);
                 if Customer.Get() then begin
-                    ShopifyCustomer."Customer System Id" := Customer.SystemId;
+                    ShopifyCustomer."Customer SystemId" := Customer.SystemId;
                     ShopifyCustomer.Modify();
                     exit(true);
                 end;
@@ -101,8 +101,8 @@ codeunit 30118 "Shpfy Customer Mapping"
         case Direction of
             Direction::ShopifyToBC:
                 begin
-                    if ShopifyCustomer."E-Mail" <> '' then begin
-                        FindCustomer.SetFilter("E-Mail", '@' + ShopifyCustomer."E-Mail");
+                    if ShopifyCustomer.Email <> '' then begin
+                        FindCustomer.SetFilter("E-Mail", '@' + ShopifyCustomer.Email);
                         if FindCustomer.FindFirst() then begin
                             Customer := FindCustomer;
                             exit(true);
@@ -122,7 +122,7 @@ codeunit 30118 "Shpfy Customer Mapping"
                 end;
             Direction::BCToShopify:
                 begin
-                    FindShopifyCustomer.SetRange("Customer System Id", Customer.SystemId);
+                    FindShopifyCustomer.SetRange("Customer SystemId", Customer.SystemId);
                     if FindShopifyCustomer.FindFirst() then begin
                         ShopifyCustomer := FindShopifyCustomer;
                         exit(true);
@@ -139,7 +139,7 @@ codeunit 30118 "Shpfy Customer Mapping"
                         ShopifyCustomer.Id := ShopifyCustomerId;
                         ShopifyCustomer.Insert(false);
                         if CustomerApi.RetrieveShopifyCustomer(ShopifyCustomer) then begin
-                            ShopifyCustomer."Customer System Id" := Customer.SystemId;
+                            ShopifyCustomer."Customer SystemId" := Customer.SystemId;
                             ShopifyCustomer.Modify(false);
                             exit(true);
                         end else begin

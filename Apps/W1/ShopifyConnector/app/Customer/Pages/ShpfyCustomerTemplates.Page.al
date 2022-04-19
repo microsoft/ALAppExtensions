@@ -14,7 +14,7 @@ page 30108 "Shpfy Customer Templates"
         {
             repeater(Group)
             {
-                field(CountryCode; Rec."Country Code")
+                field(CountryCode; Rec."Country/Region Code")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the Country Code.';
@@ -24,7 +24,7 @@ page 30108 "Shpfy Customer Templates"
                     ApplicationArea = All;
                     ToolTip = 'Specifies which customer template to use when creating unknown customers for this country. This template will only be used if the  field "Fix CustomerNo." is blank';
                 }
-                field(FixCustomerNo; Rec.FixCustomerNo)
+                field(FixCustomerNo; Rec."Default Customer No.")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the default customer for this country when not creating a customer for each webshop user.';
@@ -35,7 +35,7 @@ page 30108 "Shpfy Customer Templates"
             {
                 ApplicationArea = All;
                 Caption = 'Tax Areas';
-                SubPageLink = "Country Code" = field("Country Code");
+                SubPageLink = "Country/Region Code" = field("Country/Region Code");
             }
         }
     }

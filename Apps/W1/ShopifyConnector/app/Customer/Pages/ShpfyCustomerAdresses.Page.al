@@ -3,7 +3,7 @@
 /// </summary>
 page 30105 "Shpfy Customer Adresses"
 {
-    Caption = 'Shopify Customer Adrresses';
+    Caption = 'Adrresses';
     Editable = false;
     PageType = ListPart;
     SourceTable = "Shpfy Customer Address";
@@ -31,22 +31,22 @@ page 30105 "Shpfy Customer Adresses"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the customer''s company.';
                 }
-                field(FirstName; Rec.FirstName)
+                field(FirstName; Rec."First Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the customer''s first name.';
                 }
-                field(LastName; Rec.LastName)
+                field(LastName; Rec."Last Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the customer''s last name.';
                 }
-                field(Address1; Rec.Address1)
+                field(Address1; Rec."Address 1")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the customer''s address.';
                 }
-                field(Address2; Rec.Address2)
+                field(Address2; Rec."Address 2")
                 {
                     ApplicationArea = All;
                     Visible = false;
@@ -63,23 +63,23 @@ page 30105 "Shpfy Customer Adresses"
                     Visible = false;
                     ToolTip = 'Specifies the city of the address.';
                 }
-                field(CountryCode; Rec.CountryCode)
+                field(CountryCode; Rec."Country/Region Code")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the country/region of the address.';
                 }
-                field(CountryName; Rec.CountryName)
+                field(CountryName; Rec."Country/Region Name")
                 {
                     ApplicationArea = All;
                     Visible = false;
                     ToolTip = 'Specifies the country/region name of the address.';
                 }
-                field(ProvinceCode; Rec.ProvinceCode)
+                field(ProvinceCode; Rec."Province Code")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the customer''s region code. Typically a province, a state or a prefecture.';
                 }
-                field(ProvinceName; Rec.ProvinceName)
+                field(ProvinceName; Rec."Province Name")
                 {
                     ApplicationArea = All;
                     Visible = false;

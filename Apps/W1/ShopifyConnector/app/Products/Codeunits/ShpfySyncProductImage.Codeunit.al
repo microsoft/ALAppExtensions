@@ -54,12 +54,12 @@ codeunit 30184 "Shpfy Sync Product Image"
         ProductApi.SetShop(Shop);
         ProductApi.RetrieveShopifyProductImages(Images);
         foreach Id in Images.Keys do
-            if ShopifyProduct.Get(Id) and Item.GetBySystemId(ShopifyProduct.ItemSystemId) then begin
+            if ShopifyProduct.Get(Id) and Item.GetBySystemId(ShopifyProduct."Item SystemId") then begin
                 ImageData := Images.Get(Id);
                 foreach ImageId in ImageData.Keys do
-                    if ImageId <> ShopifyProduct.ImageId then
+                    if ImageId <> ShopifyProduct."Image Id" then
                         if UpdateItemImage(Item, ImageData.Get(ImageId)) then begin
-                            ShopifyProduct.ImageId := ImageId;
+                            ShopifyProduct."Image Id" := ImageId;
                             ShopifyProduct.Modify();
                         end;
             end;
@@ -68,7 +68,7 @@ codeunit 30184 "Shpfy Sync Product Image"
         Clear(Images);
         VariantApi.RetrieveShopifyProductVaraintImages(Images);
         foreach Id in Images.Keys do
-            if ShopifyVariant.Get(Id) and Item.GetBySystemId(ShopifyVariant.ItemSystemId) then begin
+            if ShopifyVariant.Get(Id) and Item.GetBySystemId(ShopifyVariant."Item SystemId") then begin
                 ImageData := Images.Get(Id);
                 foreach ImageId in ImageData.Keys do
                     if ImageId <> ShopifyVariant."Image Id" then

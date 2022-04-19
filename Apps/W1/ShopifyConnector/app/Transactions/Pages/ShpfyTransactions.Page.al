@@ -99,7 +99,7 @@ page 30134 "Shpfy Transactions"
                 field(CVVResultCode; Rec."CVV Result Code")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the response code from the credit card company indicating whether the customer entered the card security code, ord card verificaion value, correctly.';
+                    ToolTip = 'Specifies the response code from the credit card company indicating whether the customer entered the card security code, or card verificaion value, correctly.';
                 }
                 field(ErrorCode; Rec."Error Code")
                 {

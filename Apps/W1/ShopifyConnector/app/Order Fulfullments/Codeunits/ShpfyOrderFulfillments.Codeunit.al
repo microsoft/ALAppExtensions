@@ -9,13 +9,13 @@ codeunit 30160 "Shpfy Order Fulfillments"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
 
-    local procedure ConvertToFulFillmentStatus(Value: Text): Enum "Shpfy FulFillment Status"
+    local procedure ConvertToFulFillmentStatus(Value: Text): Enum "Shpfy Fulfillment Status"
     begin
         Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
-        if Enum::"Shpfy FulFillment Status".Names().Contains(Value) then
-            exit(Enum::"Shpfy FulFillment Status".FromInteger(Enum::"Shpfy FulFillment Status".Ordinals().Get(Enum::"Shpfy FulFillment Status".Names().IndexOf(Value))))
+        if Enum::"Shpfy Fulfillment Status".Names().Contains(Value) then
+            exit(Enum::"Shpfy Fulfillment Status".FromInteger(Enum::"Shpfy Fulfillment Status".Ordinals().Get(Enum::"Shpfy Fulfillment Status".Names().IndexOf(Value))))
         else
-            exit(Enum::"Shpfy FulFillment Status"::" ");
+            exit(Enum::"Shpfy Fulfillment Status"::" ");
     end;
 
     local procedure ConvertToShipmentStatus(Value: Text): Enum "Shpfy Shipment Status"
@@ -72,7 +72,7 @@ codeunit 30160 "Shpfy Order Fulfillments"
         JsonHelper.GetValueIntoField(JFulfillment, 'created_at', RecRef, OrderFulfillment.FieldNo("Created At"));
         JsonHelper.GetValueIntoField(JFulfillment, 'updated_at', RecRef, OrderFulfillment.FieldNo("Updated At"));
         JsonHelper.GetValueIntoField(JFulfillment, 'tracking_number', RecRef, OrderFulfillment.FieldNo("Tracking Number"));
-        JsonHelper.GetValueIntoField(JFulfillment, 'tracking_url', RecRef, OrderFulfillment.FieldNo("Tracking Url"));
+        JsonHelper.GetValueIntoField(JFulfillment, 'tracking_url', RecRef, OrderFulfillment.FieldNo("Tracking URL"));
         JsonHelper.GetValueIntoField(JFulfillment, 'tracking_company', RecRef, OrderFulfillment.FieldNo("Tracking Company"));
         JsonHelper.GetValueIntoField(JFulfillment, 'name', RecRef, OrderFulfillment.FieldNo(Name));
         JsonHelper.GetValueIntoField(JFulfillment, 'notify_customer', RecRef, OrderFulfillment.FieldNo("Notify Customer"));

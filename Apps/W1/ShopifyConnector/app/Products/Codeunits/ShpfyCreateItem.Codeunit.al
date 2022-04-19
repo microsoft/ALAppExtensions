@@ -32,27 +32,27 @@ codeunit 30171 "Shpfy Create Item"
     begin
         if ShopifyProduct.Get(Rec."Product Id") then begin
             SetShop(ShopifyProduct."Shop Code");
-            if IsNullGuid(ShopifyProduct.ItemSystemId) or (not Item.GetBySystemId(ShopifyProduct.ItemSystemId)) then
+            if IsNullGuid(ShopifyProduct."Item SystemId") or (not Item.GetBySystemId(ShopifyProduct."Item SystemId")) then
                 if ExistItem(ShopifyProduct, Rec, Item) then begin
-                    ShopifyProduct.ItemSystemId := Item.SystemId;
+                    ShopifyProduct."Item SystemId" := Item.SystemId;
                     ShopifyProduct.Modify();
                 end else begin
                     ProductEvents.OnBeforeCreateItem(Shop, ShopifyProduct, Rec, Item, Handled);
                     if not Handled then begin
                         DoCreateItem(ShopifyProduct, Rec, Item, true);
-                        ShopifyProduct.ItemSystemId := Item.SystemId;
+                        ShopifyProduct."Item SystemId" := Item.SystemId;
                         ShopifyProduct.Modify();
                         ProductEvents.OnAfterCreateItem(Shop, ShopifyProduct, Rec, Item);
                     end;
                 end;
-            case Shop."SKU Type" of
-                Shop."SKU Type"::"Item No. + Variant Code",
-                Shop."SKU Type"::"Variant Code":
+            case Shop."SKU Mapping" of
+                Shop."SKU Mapping"::"Item No. + Variant Code",
+                Shop."SKU Mapping"::"Variant Code":
                     CreateItemVariant(ShopifyProduct, Rec, Item);
-                Shop."SKU Type"::"Item No.":
-                    if IsNullGuid(Rec.ItemSystemId) or (not Item.GetBySystemId(Rec.ItemSystemId)) then
+                Shop."SKU Mapping"::"Item No.":
+                    if IsNullGuid(Rec."Item SystemId") or (not Item.GetBySystemId(Rec."Item SystemId")) then
                         if ExistItem(ShopifyProduct, Rec, Item) then begin
-                            Rec.ItemSystemId := Item.SystemId;
+                            Rec."Item SystemId" := Item.SystemId;
                             Rec.Modify();
                         end else begin
                             ProductEvents.OnBeforeCreateItem(Shop, ShopifyProduct, Rec, Item, Handled);
@@ -61,10 +61,10 @@ codeunit 30171 "Shpfy Create Item"
                                 ProductEvents.OnAfterCreateItem(Shop, ShopifyProduct, Rec, Item);
                             end;
                         end;
-                Shop."SKU Type"::"Vendor Item No.":
-                    if IsNullGuid(Rec.ItemSystemId) or (not Item.GetBySystemId(Rec.ItemSystemId)) then
+                Shop."SKU Mapping"::"Vendor Item No.":
+                    if IsNullGuid(Rec."Item SystemId") or (not Item.GetBySystemId(Rec."Item SystemId")) then
                         if ExistItem(ShopifyProduct, Rec, Item) then begin
-                            Rec.ItemSystemId := Item.SystemId;
+                            Rec."Item SystemId" := Item.SystemId;
                             Rec.Modify();
                         end else begin
                             ProductEvents.OnBeforeCreateItem(Shop, ShopifyProduct, Rec, Item, Handled);
@@ -73,10 +73,10 @@ codeunit 30171 "Shpfy Create Item"
                                 ProductEvents.OnAfterCreateItem(Shop, ShopifyProduct, Rec, Item);
                             end;
                         end;
-                Shop."SKU Type"::"Bar Code":
-                    if IsNullGuid(Rec.ItemSystemId) or (not Item.GetBySystemId(Rec.ItemSystemId)) then
+                Shop."SKU Mapping"::"Bar Code":
+                    if IsNullGuid(Rec."Item SystemId") or (not Item.GetBySystemId(Rec."Item SystemId")) then
                         if ExistItem(ShopifyProduct, Rec, Item) then begin
-                            Rec.ItemSystemId := Item.SystemId;
+                            Rec."Item SystemId" := Item.SystemId;
                             Rec.Modify();
                         end else begin
                             ProductEvents.OnBeforeCreateItem(Shop, ShopifyProduct, Rec, Item, Handled);
@@ -104,22 +104,22 @@ codeunit 30171 "Shpfy Create Item"
         ItemNo: Text;
         VariantCode: Text;
     begin
-        if (not ShopifyProduct."Has Variants") or ((ShopifyVariant."UOM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = '')) then begin
+        if (not ShopifyProduct."Has Variants") or ((ShopifyVariant."UoM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = '')) then begin
             Clear(ItemVariant);
             CreateReferences(ShopifyProduct, ShopifyVariant, Item, ItemVariant);
-            if IsNullGuid(ShopifyVariant.ItemSystemId) then begin
-                ShopifyVariant.ItemSystemId := ShopifyProduct.ItemSystemId;
+            if IsNullGuid(ShopifyVariant."Item SystemId") then begin
+                ShopifyVariant."Item SystemId" := ShopifyProduct."Item SystemId";
                 ShopifyVariant.Modify();
             end;
         end else begin
             ProductEvents.OnBeforeCreateItemVariant(Shop, ShopifyProduct, ShopifyVariant, Item, ItemVariant, IsHandled);
             if not IsHandled then begin
                 if ShopifyVariant.SKU <> '' then
-                    case Shop."SKU Type" of
-                        Shop."SKU Type"::"Variant Code":
+                    case Shop."SKU Mapping" of
+                        Shop."SKU Mapping"::"Variant Code":
                             if StrLen(ShopifyVariant.SKU) <= MaxStrLen(ItemVariant.Code) then
                                 VariantCode := ShopifyVariant.SKU;
-                        Shop."SKU Type"::"Item No. + Variant Code":
+                        Shop."SKU Mapping"::"Item No. + Variant Code":
                             begin
                                 Codes := ShopifyVariant.SKU.Split(Shop."SKU Field Separator");
                                 Codes.Get(1, ItemNo);
@@ -127,9 +127,9 @@ codeunit 30171 "Shpfy Create Item"
                                     if StrLen(VariantCode) > MaxStrLen(ItemVariant.Code) then
                                         Clear(VariantCode);
                                 if Item."No." <> ItemNo then
-                                    if IsNullGuid(ShopifyVariant.ItemSystemId) or (not Item.GetBySystemId(ShopifyVariant.ItemSystemId)) then
+                                    if IsNullGuid(ShopifyVariant."Item SystemId") or (not Item.GetBySystemId(ShopifyVariant."Item SystemId")) then
                                         if ExistItem(ShopifyProduct, ShopifyVariant, Item) then begin
-                                            ShopifyVariant.ItemSystemId := Item.SystemId;
+                                            ShopifyVariant."Item SystemId" := Item.SystemId;
                                             ShopifyVariant.Modify();
                                         end else begin
                                             ProductEvents.OnBeforeCreateItem(Shop, ShopifyProduct, ShopifyVariant, Item, IsHandled);
@@ -149,8 +149,8 @@ codeunit 30171 "Shpfy Create Item"
                     ItemVariant.Description := ShopifyVariant.Title;
                     ItemVariant.Insert();
                 end;
-                ShopifyVariant.ItemSystemId := Item.SystemId;
-                ShopifyVariant.ItemVariantSystemId := ItemVariant.SystemId;
+                ShopifyVariant."Item SystemId" := Item.SystemId;
+                ShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
                 ShopifyVariant.Modify();
                 ShpfyCreateItem.CreateReferences(ShopifyProduct, ShopifyVariant, Item, ItemVariant);
                 ProductEvents.OnAfterCreateItemVariant(Shop, ShopifyProduct, ShopifyVariant, Item, ItemVariant);
@@ -198,10 +198,10 @@ codeunit 30171 "Shpfy Create Item"
         if ShpfyVariant.Barcode <> '' then
             ItemRefMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, FindUoMCode(ShpfyVariant), ShpfyVariant.Barcode);
         if ShpfyVariant.SKU <> '' then
-            case Shop."SKU Type" of
-                Shop."SKU Type"::"Bar Code":
+            case Shop."SKU Mapping" of
+                Shop."SKU Mapping"::"Bar Code":
                     ItemRefMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, FindUoMCode(ShpfyVariant), ShpfyVariant.SKU);
-                Shop."SKU Type"::"Vendor Item No.":
+                Shop."SKU Mapping"::"Vendor Item No.":
                     if Item."Vendor No." <> '' then begin
                         if ItemVariant.code = '' then begin
                             Item."Vendor Item No." := ShpfyVariant.SKU;
@@ -239,10 +239,10 @@ codeunit 30171 "Shpfy Create Item"
         if ConfigTemplateHeader.Get(CurrentTemplateCode) then begin
             Clear(Item);
             if ShopifyVariant.SKU <> '' then
-                case Shop."SKU Type" of
-                    Shop."SKU Type"::"Item No.":
+                case Shop."SKU Mapping" of
+                    Shop."SKU Mapping"::"Item No.":
                         Item."No." := CopyStr(ShopifyVariant.SKU, 1, MaxStrLen(Item."No."));
-                    Shop."SKU Type"::"Item No. + Variant Code":
+                    Shop."SKU Mapping"::"Item No. + Variant Code":
                         begin
                             ShopifyVariant.SKU.Split(Shop."SKU Field Separator").Get(1, Code);
                             Item."No." := CopyStr(Code, 1, MaxStrLen(Item."No."));
@@ -255,7 +255,7 @@ codeunit 30171 "Shpfy Create Item"
             RecRef.SetTable(Item);
             Item.Description := ShpfyProduct.Title;
         end;
-        case ShopifyVariant."UOM Option Id" of
+        case ShopifyVariant."UoM Option Id" of
             1:
                 Code := ShopifyVariant."Option 1 Value";
             2:
@@ -295,10 +295,10 @@ codeunit 30171 "Shpfy Create Item"
 
         Item.Modify();
         if ForVariant then begin
-            ShopifyVariant.ItemSystemId := Item.SystemId;
+            ShopifyVariant."Item SystemId" := Item.SystemId;
             ShopifyVariant.Modify();
         end else begin
-            ShpfyProduct.ItemSystemId := Item.SystemId;
+            ShpfyProduct."Item SystemId" := Item.SystemId;
             ShpfyProduct.Modify();
         end;
 
@@ -320,17 +320,17 @@ codeunit 30171 "Shpfy Create Item"
         Code: Text;
     begin
         if ShopifyVariant.SKU <> '' then
-            case Shop."SKU Type" of
-                Shop."SKU Type"::"Item No.":
+            case Shop."SKU Mapping" of
+                Shop."SKU Mapping"::"Item No.":
                     if StrLen(ShopifyVariant.SKU) <= MaxStrLen(Item."No.") then
                         exit(Item.Get(ShopifyVariant.SKU.ToUpper()));
-                Shop."SKU Type"::"Item No. + Variant Code":
+                Shop."SKU Mapping"::"Item No. + Variant Code":
                     begin
                         ShopifyVariant.SKU.Split(Shop."SKU Field Separator").Get(1, Code);
                         if StrLen(Code) <= MaxStrLen(Item."No.") then
                             exit(Item.Get(Code.ToUpper()));
                     end;
-                Shop."SKU Type"::"Vendor Item No.":
+                Shop."SKU Mapping"::"Vendor Item No.":
                     if ShopifyProduct.Vendor <> '' then begin
                         Vendor.SetFilter(Name, '@' + ShopifyProduct.Vendor);
                         if Vendor.FindFirst() then begin
@@ -346,7 +346,7 @@ codeunit 30171 "Shpfy Create Item"
                                 exit(Item.Get(ItemReference."Item No."));
                         end;
                     end;
-                Shop."SKU Type"::"Bar Code":
+                Shop."SKU Mapping"::"Bar Code":
                     begin
                         ItemReference.SetRange("Reference Type", Enum::"Item Reference Type"::"Bar Code");
                         ItemReference.SetFilter("Reference No.", '@' + ShopifyVariant.SKU.ToUpper());
@@ -386,7 +386,7 @@ codeunit 30171 "Shpfy Create Item"
         UOM: Record "Unit of Measure";
         Code: Text;
     begin
-        case ShopifyVariant."UOM Option Id" of
+        case ShopifyVariant."UoM Option Id" of
             1:
                 Code := ShopifyVariant."Option 1 Value";
             2:

@@ -55,27 +55,27 @@ codeunit 30111 "Shpfy Cust. By Bill-to" implements "Shpfy ICustomer Mapping"
             CustomerApi.RetrieveShopifyCustomer(ShopifyCustomer);
         end;
         Address.SetAutoCalcFields("Customer No.");
-        Address.SetRange(CustomerId, CustomerId);
-        Address.SetFilter(Address1, FilterMgt.CleanFilterValue(JsonHelper.GetValueAsText(JCustomerInfo, 'Address'), MaxStrLen(Address.Address1)));
-        Address.SetFilter(Address2, FilterMgt.CleanFilterValue(JsonHelper.GetValueAsText(JCustomerInfo, 'Address2'), MaxStrLen(Address.Address2)));
+        Address.SetRange("Customer Id", CustomerId);
+        Address.SetFilter("Address 1", FilterMgt.CleanFilterValue(JsonHelper.GetValueAsText(JCustomerInfo, 'Address'), MaxStrLen(Address."Address 1")));
+        Address.SetFilter("Address 2", FilterMgt.CleanFilterValue(JsonHelper.GetValueAsText(JCustomerInfo, 'Address2'), MaxStrLen(Address."Address 2")));
         Address.SetRange(Zip, JsonHelper.GetValueAsText(JCustomerInfo, 'PostCode'));
         Address.SetRange(City, JsonHelper.GetValueAsText(JCustomerInfo, 'City'));
-        Address.SetRange(CountryCode, JsonHelper.GetValueAsText(JCustomerInfo, 'CountryCode'));
+        Address.SetRange("Country/Region Code", JsonHelper.GetValueAsText(JCustomerInfo, 'CountryCode'));
         if Address.IsEmpty then
             CustomerApi.RetrieveShopifyCustomer(ShopifyCustomer);
         if Address.FindSet() then
             repeat
                 IName := Shop."Name Source";
-                Name := IName.GetName(Address.FirstName, Address.LastName, Address.Company);
+                Name := IName.GetName(Address."First Name", Address."Last Name", Address.Company);
                 IName := Shop."Name 2 Source";
-                Name2 := IName.GetName(Address.FirstName, Address.LastName, Address.Company);
+                Name2 := IName.GetName(Address."First Name", Address."Last Name", Address.Company);
                 if Name = '' then begin
                     Name := Name2;
                     Name2 := '';
                 end;
                 if Name = '' then begin
                     IName := Shop."Contact Source";
-                    Name := IName.GetName(Address.FirstName, Address.LastName, Address.Company);
+                    Name := IName.GetName(Address."First Name", Address."Last Name", Address.Company);
                 end;
                 xName := Format(JsonHelper.GetValueAsText(JCustomerInfo, 'Name'));
                 Name := Format(Name);
@@ -101,7 +101,7 @@ codeunit 30111 "Shpfy Cust. By Bill-to" implements "Shpfy ICustomer Mapping"
         if (ShopifyCustomer."Customer No." = '') and (Shop."Auto Create Unknown Customers" or AllowCreate) then begin
             Clear(Address);
             Address.SetAutoCalcFields("Customer No.");
-            Address.SetRange(CustomerId, CustomerId);
+            Address.SetRange("Customer Id", CustomerId);
             Address.SetRange(Default, true);
             if Address.FindFirst() then begin
                 if Address."Customer No." = '' then begin
@@ -140,12 +140,12 @@ codeunit 30111 "Shpfy Cust. By Bill-to" implements "Shpfy ICustomer Mapping"
     begin
         Customer.SetRange(Name, Name);
         Customer.SetRange("Name 2", Name2);
-        Customer.SetRange(Address, Address.Address1);
-        Customer.SetRange("Address 2", CopyStr(Address.Address2, 1, MaxStrLen(Customer."Address 2")));
+        Customer.SetRange(Address, Address."Address 1");
+        Customer.SetRange("Address 2", CopyStr(Address."Address 2", 1, MaxStrLen(Customer."Address 2")));
         Customer.SetRange("Post Code", Address.Zip);
         Customer.SetRange(City, Address.City);
-        Customer.SetRange(County, Address.ProvinceCode);
-        Customer.SetRange("Country/Region Code", Address.CountryCode);
+        Customer.SetRange(County, Address."Province Code");
+        Customer.SetRange("Country/Region Code", Address."Country/Region Code");
         if Customer.FindFirst() then begin
             Address.CustomerSystemId := Customer.SystemId;
             Address.Modify();

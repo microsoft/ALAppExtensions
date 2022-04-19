@@ -14,14 +14,14 @@ table 30136 "Shpfy Registered Store"
             Caption = 'Store';
             DataClassification = SystemMetadata;
         }
-        field(2; RequestedScope; Text[1024])
+        field(2; "Requested Scope"; Text[1024])
         {
-            Caption = 'Scope';
+            Caption = 'Requested Scope';
             DataClassification = SystemMetadata;
         }
-        field(3; ActualScope; Text[1024])
+        field(3; "Actual Scope"; Text[1024])
         {
-            Caption = 'Scope';
+            Caption = 'Actual Scope';
             DataClassification = SystemMetadata;
         }
     }

@@ -24,7 +24,7 @@ codeunit 30174 "Shpfy Create Product"
         ShopifyProduct: Record "Shpfy Product";
     begin
         ShopifyProduct.SetRange("Shop Code", Shop.Code);
-        ShopifyProduct.SetRange(ItemSystemId, Rec.SystemId);
+        ShopifyProduct.SetRange("Item SystemId", Rec.SystemId);
         if ShopifyProduct.IsEmpty then
             CreateProduct(Rec);
     end;
@@ -44,15 +44,15 @@ codeunit 30174 "Shpfy Create Product"
     begin
         Clear(TempShopifyProduct);
         TempShopifyProduct."Shop Code" := Shop.Code;
-        TempShopifyProduct.ItemSystemId := Item.SystemId;
+        TempShopifyProduct."Item SystemId" := Item.SystemId;
         ProductExport.FillInProductFields(Item, TempShopifyProduct);
-        ICreateProductStatus := Shop."Create Product Status Value";
+        ICreateProductStatus := Shop."Status for Created Products";
         TempShopifyProduct.Status := ICreateProductStatus.GetStatus(Item);
         ItemVariant.SetRange("Item No.", Item."No.");
         if ItemVariant.FindSet(false, false) then
             repeat
                 TempShopifyProduct."Has Variants" := true;
-                if Shop."UOM as Variant" then begin
+                if Shop."UoM as Variant" then begin
                     ItemUoM.SetRange("Item No.", Item."No.");
                     if ItemUoM.FindSet(false, false) then
                         repeat
@@ -64,17 +64,17 @@ codeunit 30174 "Shpfy Create Product"
                             ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, ItemUoM.Code, TempShopifyVariant."Unit Cost", TempShopifyVariant.Price, TempShopifyVariant."Compare at Price");
                             TempShopifyVariant.Title := ItemVariant.Description;
                             TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
-                            case Shop."SKU Type" of
-                                Shop."SKU Type"::"Bar Code":
+                            case Shop."SKU Mapping" of
+                                Shop."SKU Mapping"::"Bar Code":
                                     TempShopifyVariant.SKU := TempShopifyVariant.Barcode;
-                                Shop."SKU Type"::"Item No.":
+                                Shop."SKU Mapping"::"Item No.":
                                     TempShopifyVariant.SKU := Item."No.";
-                                Shop."SKU Type"::"Item No. + Variant Code":
+                                Shop."SKU Mapping"::"Item No. + Variant Code":
                                     if ItemVariant.Code <> '' then
                                         TempShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
                                     else
                                         TempShopifyVariant.SKU := Item."No.";
-                                Shop."SKU Type"::"Vendor Item No.":
+                                Shop."SKU Mapping"::"Vendor Item No.":
                                     TempShopifyVariant.SKU := Item."Vendor Item No.";
                             end;
                             TempShopifyVariant."Tax Code" := Item."Tax Group Code";
@@ -82,12 +82,12 @@ codeunit 30174 "Shpfy Create Product"
                             TempShopifyVariant.Weight := Item."Gross Weight";
                             TempShopifyVariant."Option 1 Name" := 'Variant';
                             TempShopifyVariant."Option 1 Value" := ItemVariant.Code;
-                            TempShopifyVariant."Option 2 Name" := Shop."Option Name for UOM";
+                            TempShopifyVariant."Option 2 Name" := Shop."Option Name for UoM";
                             TempShopifyVariant."Option 2 Value" := ItemUoM.Code;
                             TempShopifyVariant."Shop Code" := Shop.Code;
-                            TempShopifyVariant.ItemSystemId := Item.SystemId;
-                            TempShopifyVariant.ItemVariantSystemId := ItemVariant.SystemId;
-                            TempShopifyVariant."UOM Option Id" := 2;
+                            TempShopifyVariant."Item SystemId" := Item.SystemId;
+                            TempShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
+                            TempShopifyVariant."UoM Option Id" := 2;
                             TempShopifyVariant.Insert(false);
                         until ItemUoM.Next() = 0;
                 end else begin
@@ -99,17 +99,17 @@ codeunit 30174 "Shpfy Create Product"
                     ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, Item."Sales Unit of Measure", TempShopifyVariant."Unit Cost", TempShopifyVariant.Price, TempShopifyVariant."Compare at Price");
                     TempShopifyVariant.Title := ItemVariant.Description;
                     TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
-                    case Shop."SKU Type" of
-                        Shop."SKU Type"::"Bar Code":
+                    case Shop."SKU Mapping" of
+                        Shop."SKU Mapping"::"Bar Code":
                             TempShopifyVariant.SKU := TempShopifyVariant.Barcode;
-                        Shop."SKU Type"::"Item No.":
+                        Shop."SKU Mapping"::"Item No.":
                             TempShopifyVariant.SKU := Item."No.";
-                        Shop."SKU Type"::"Item No. + Variant Code":
+                        Shop."SKU Mapping"::"Item No. + Variant Code":
                             if ItemVariant.Code <> '' then
                                 TempShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
                             else
                                 TempShopifyVariant.SKU := Item."No.";
-                        Shop."SKU Type"::"Vendor Item No.":
+                        Shop."SKU Mapping"::"Vendor Item No.":
                             TempShopifyVariant.SKU := CopyStr(GetVendorItemNo(Item."No.", TempShopifyVariant."Variant Code", Item."Sales Unit of Measure"), 1, MaxStrLen(TempShopifyVariant.SKU));
                     end;
                     TempShopifyVariant."Tax Code" := Item."Tax Group Code";
@@ -118,13 +118,13 @@ codeunit 30174 "Shpfy Create Product"
                     TempShopifyVariant."Option 1 Name" := 'Variant';
                     TempShopifyVariant."Option 1 Value" := ItemVariant.Code;
                     TempShopifyVariant."Shop Code" := Shop.Code;
-                    TempShopifyVariant.ItemSystemId := Item.SystemId;
-                    TempShopifyVariant.ItemVariantSystemId := ItemVariant.SystemId;
+                    TempShopifyVariant."Item SystemId" := Item.SystemId;
+                    TempShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
                     TempShopifyVariant.Insert(false);
                 end;
             until ItemVariant.Next() = 0
         else
-            if Shop."UOM as Variant" then begin
+            if Shop."UoM as Variant" then begin
                 ItemUoM.SetRange("Item No.", Item."No.");
                 if ItemUoM.FindSet(false, false) then
                     repeat
@@ -136,26 +136,26 @@ codeunit 30174 "Shpfy Create Product"
                         ProductPriceCalc.CalcPrice(Item, '', ItemUoM.Code, TempShopifyVariant."Unit Cost", TempShopifyVariant.Price, TempShopifyVariant."Compare at Price");
                         TempShopifyVariant.Title := Item.Description;
                         TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
-                        case Shop."SKU Type" of
-                            Shop."SKU Type"::"Bar Code":
+                        case Shop."SKU Mapping" of
+                            Shop."SKU Mapping"::"Bar Code":
                                 TempShopifyVariant.SKU := TempShopifyVariant.Barcode;
-                            Shop."SKU Type"::"Item No.",
-                            SHop."SKU Type"::"Item No. + Variant Code":
+                            Shop."SKU Mapping"::"Item No.",
+                            SHop."SKU Mapping"::"Item No. + Variant Code":
                                 if ItemVariant.Code <> '' then
                                     TempShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
                                 else
                                     TempShopifyVariant.SKU := Item."No.";
-                            Shop."SKU Type"::"Vendor Item No.":
+                            Shop."SKU Mapping"::"Vendor Item No.":
                                 TempShopifyVariant.SKU := Item."Vendor Item No.";
                         end;
                         TempShopifyVariant."Tax Code" := Item."Tax Group Code";
                         TempShopifyVariant.Taxable := true;
                         TempShopifyVariant.Weight := Item."Gross Weight";
-                        TempShopifyVariant."Option 1 Name" := Shop."Option Name for UOM";
+                        TempShopifyVariant."Option 1 Name" := Shop."Option Name for UoM";
                         TempShopifyVariant."Option 1 Value" := ItemUoM.Code;
                         TempShopifyVariant."Shop Code" := Shop.Code;
-                        TempShopifyVariant.ItemSystemId := Item.SystemId;
-                        TempShopifyVariant."UOM Option Id" := 1;
+                        TempShopifyVariant."Item SystemId" := Item.SystemId;
+                        TempShopifyVariant."UoM Option Id" := 1;
                         TempShopifyVariant.Insert(false);
                     until ItemUoM.Next() = 0;
             end else begin
@@ -165,23 +165,23 @@ codeunit 30174 "Shpfy Create Product"
                 ProductPriceCalc.CalcPrice(Item, '', Item."Sales Unit of Measure", TempShopifyVariant."Unit Cost", TempShopifyVariant.Price, TempShopifyVariant."Compare at Price");
                 TempShopifyVariant.Title := ItemVariant.Description;
                 TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
-                case Shop."SKU Type" of
-                    Shop."SKU Type"::"Bar Code":
+                case Shop."SKU Mapping" of
+                    Shop."SKU Mapping"::"Bar Code":
                         TempShopifyVariant.SKU := TempShopifyVariant.Barcode;
-                    Shop."SKU Type"::"Item No.",
-                    SHop."SKU Type"::"Item No. + Variant Code":
+                    Shop."SKU Mapping"::"Item No.",
+                    SHop."SKU Mapping"::"Item No. + Variant Code":
                         if ItemVariant.Code <> '' then
                             TempShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
                         else
                             TempShopifyVariant.SKU := Item."No.";
-                    Shop."SKU Type"::"Vendor Item No.":
+                    Shop."SKU Mapping"::"Vendor Item No.":
                         TempShopifyVariant.SKU := Item."Vendor Item No.";
                 end;
                 TempShopifyVariant."Tax Code" := Item."Tax Group Code";
                 TempShopifyVariant.Taxable := true;
                 TempShopifyVariant.Weight := Item."Gross Weight";
                 TempShopifyVariant."Shop Code" := Shop.Code;
-                TempShopifyVariant.ItemSystemId := Item.SystemId;
+                TempShopifyVariant."Item SystemId" := Item.SystemId;
                 TempShopifyVariant.Insert(false);
             end;
         TempShopifyProduct.Insert(false);

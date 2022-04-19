@@ -16,20 +16,18 @@ table 30105 "Shpfy Customer"
             Caption = 'Id';
             DataClassification = SystemMetadata;
         }
-
-        field(2; FirstName; Text[100])
+        field(2; "First Name"; Text[100])
         {
             Caption = 'First Name';
             DataClassification = CustomerContent;
         }
-
-        field(3; LastName; Text[100])
+        field(3; "Last Name"; Text[100])
         {
             Caption = 'Last Name';
             DataClassification = CustomerContent;
         }
 
-        field(4; "E-Mail"; Text[100])
+        field(4; Email; Text[100])
         {
             Caption = 'E-Mail';
             DataClassification = CustomerContent;
@@ -55,7 +53,7 @@ table 30105 "Shpfy Customer"
             DataClassification = CustomerContent;
         }
 
-        field(8; Currency; Code[3])
+        field(8; "ISO Currency Code"; Code[3])
         {
             Caption = 'ISO Currency Code';
             DataClassification = CustomerContent;
@@ -102,14 +100,14 @@ table 30105 "Shpfy Customer"
             DataClassification = SystemMetadata;
         }
 
-        field(101; "Customer System Id"; Guid)
+        field(101; "Customer SystemId"; Guid)
         {
-            Caption = 'Customer System Id';
+            Caption = 'Customer SystemId';
             DataClassification = SystemMetadata;
         }
         field(102; "Customer No."; Code[20])
         {
-            CalcFormula = lookup(Customer."No." where(SystemId = field("Customer System Id")));
+            CalcFormula = lookup(Customer."No." where(SystemId = field("Customer SystemId")));
             Caption = 'Customer No.';
             FieldClass = FlowField;
         }
@@ -122,7 +120,7 @@ table 30105 "Shpfy Customer"
             Clustered = true;
         }
 
-        key(Idx1; "Customer System Id") { }
+        key(Idx1; "Customer SystemId") { }
     }
 
     trigger OnDelete()
@@ -131,7 +129,7 @@ table 30105 "Shpfy Customer"
         Metafield: Record "Shpfy Metafield";
         Tag: Record "Shpfy Tag";
     begin
-        Address.SetRange(CustomerId, Id);
+        Address.SetRange("Customer Id", Id);
         if not Address.IsEmpty() then
             Address.DeleteAll(false);
 

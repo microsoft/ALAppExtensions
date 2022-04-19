@@ -14,6 +14,6 @@ codeunit 30108 "Shpfy County Code" implements "Shpfy ICounty"
     var
         Customer: Record Customer;
     begin
-        exit(CopyStr(CustomerAddress.ProvinceCode, 1, MaxStrLen(Customer.County)));
+        exit(CopyStr(CustomerAddress."Province Code", 1, MaxStrLen(Customer.County)));
     end;
 }

@@ -28,7 +28,7 @@ codeunit 30180 "Shpfy Product Import"
                         CreateItem.SetShop(Shop);
                         Clear(ShopifyVariant);
                         ShopifyVariant.SetRange("Product Id", ShopifyProduct.Id);
-                        ShopifyVariant.SetRange(ItemVariantSystemId, NullGuid);
+                        ShopifyVariant.SetRange("Item Variant SystemId", NullGuid);
                         if ShopifyVariant.FindSet() then
                             repeat
                                 CreateItem.Run(ShopifyVariant);

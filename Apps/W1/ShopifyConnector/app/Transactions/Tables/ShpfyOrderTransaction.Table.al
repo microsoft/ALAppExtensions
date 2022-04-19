@@ -76,14 +76,6 @@ table 30133 "Shpfy Order Transaction"
             DataClassification = SystemMetadata;
             Editable = false;
         }
-        field(12; "Paid Amount"; Decimal)
-        {
-            Caption = 'Paid Amount';
-            DataClassification = SystemMetadata;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Not used any more';
-            ObsoleteTag = '16.7.0.0';
-        }
         field(14; "Gift Card Id"; BigInteger)
         {
             Caption = 'Gift Card Id';
@@ -162,7 +154,7 @@ table 30133 "Shpfy Order Transaction"
         {
             Caption = 'Payment Method';
             FieldClass = FlowField;
-            CalcFormula = lookup("Shpfy Payment Method Mapping"."Payment Method" where("Shop Code" = field("Shop Code"), Gateway = field(Gateway), "Credit Card Company" = field("Credit Card Company")));
+            CalcFormula = lookup("Shpfy Payment Method Mapping"."Payment Method Code" where("Shop Code" = field("Shop Code"), Gateway = field(Gateway), "Credit Card Company" = field("Credit Card Company")));
         }
         field(105; "Payment Priority"; Integer)
         {

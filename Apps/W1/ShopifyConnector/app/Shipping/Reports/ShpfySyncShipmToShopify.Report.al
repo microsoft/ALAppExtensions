@@ -1,7 +1,7 @@
 /// <summary>
-/// Report Shpfy Shipments To Shopify (ID 30109).
+/// Report Shpfy Sync Shipm. to Shopify (ID 30109).
 /// </summary>
-report 30109 "Shpfy Sync Shipm. To Shopify"
+report 30109 "Shpfy Sync Shipm. to Shopify"
 {
     ApplicationArea = All;
     Caption = 'Shopify Sync Shipments To Shopify';

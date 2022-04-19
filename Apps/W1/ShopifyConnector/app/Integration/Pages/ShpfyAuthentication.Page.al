@@ -4,7 +4,7 @@
 page 30135 "Shpfy Authentication"
 {
     Extensible = false;
-    Caption = 'Shopify Waiting for a response - do not close this page';
+    Caption = 'Waiting for a response - do not close this page';
     DeleteAllowed = false;
     Editable = false;
     InsertAllowed = false;

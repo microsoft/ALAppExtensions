@@ -1,7 +1,7 @@
-table 30121 "Shpfy Orders To Import"
+table 30121 "Shpfy Orders to Import"
 {
     Access = Internal;
-    Caption = 'Shopify Orders To Import';
+    Caption = 'Shopify Orders to Import';
     DataClassification = CustomerContent;
 
     fields
@@ -13,7 +13,7 @@ table 30121 "Shpfy Orders To Import"
             DataClassification = SystemMetadata;
         }
 
-        field(2; ShopId; Integer)
+        field(2; "Shop Id"; Integer)
         {
             Caption = 'Shop Id';
             DataClassification = CustomerContent;
@@ -103,9 +103,9 @@ table 30121 "Shpfy Orders To Import"
             DataClassification = CustomerContent;
         }
 
-        field(17; "Number of Items"; Integer)
+        field(17; "Total Quantity of Items"; Integer)
         {
-            Caption = 'Number of Items';
+            Caption = 'Total Quantity of Items';
             DataClassification = CustomerContent;
         }
 
@@ -115,7 +115,7 @@ table 30121 "Shpfy Orders To Import"
             DataClassification = CustomerContent;
         }
 
-        field(19; Tags; Text[1024])
+        field(19; Tags; Text[2048])
         {
             Caption = 'Tags';
             DataClassification = CustomerContent;
@@ -131,9 +131,9 @@ table 30121 "Shpfy Orders To Import"
             FieldClass = FlowField;
             CalcFormula = exist("Shpfy Order Attribute" where("Order Id" = field(Id), "Key" = field("Attribute Key Filter")));
         }
-        field(100; "Action"; enum "Shpfy Import Action")
+        field(100; "Import Action"; enum "Shpfy Import Action")
         {
-            Caption = 'Action';
+            Caption = 'Import Action';
             DataClassification = CustomerContent;
         }
 
@@ -160,7 +160,7 @@ table 30121 "Shpfy Orders To Import"
         {
             Clustered = true;
         }
-        key(Idx1; Id, ShopId) { }
+        key(Idx1; Id, "Shop Id") { }
     }
 
     /// <summary> 

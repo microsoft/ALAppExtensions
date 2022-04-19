@@ -42,14 +42,14 @@ table 30118 "Shpfy Order Header"
             Caption = 'Sell-to Post Code';
             DataClassification = CustomerContent;
         }
-        field(9; "Sell-to Country Code"; Code[20])
+        field(9; "Sell-to Country/Region Code"; Code[20])
         {
-            Caption = 'Sell-to Country Code';
+            Caption = 'Sell-to Country/Region Code';
             DataClassification = CustomerContent;
         }
-        field(10; "Sell-to Country Name"; Text[50])
+        field(10; "Sell-to Country/Region Name"; Text[50])
         {
-            Caption = 'Sell-to Country Name';
+            Caption = 'Sell-to Country/Region Name';
             DataClassification = CustomerContent;
         }
         field(11; "Phone No."; Text[50])
@@ -70,14 +70,14 @@ table 30118 "Shpfy Order Header"
             DataClassification = CustomerContent;
             Editable = false;
         }
-        field(14; "Sell-to Firstname"; Text[50])
+        field(14; "Sell-to First Name"; Text[50])
         {
-            Caption = 'Sell-to Firstname';
+            Caption = 'Sell-to First Name';
             DataClassification = CustomerContent;
         }
-        field(15; "Sell-to Lastname"; Text[50])
+        field(15; "Sell-to Last Name"; Text[50])
         {
-            Caption = 'Sell-to Lastname';
+            Caption = 'Sell-to Last Name';
             DataClassification = CustomerContent;
         }
         field(16; Currency; Code[10])
@@ -104,12 +104,6 @@ table 30118 "Shpfy Order Header"
             DataClassification = CustomerContent;
             Editable = false;
         }
-        // field(20; "Browser IP"; Code[30])
-        // {
-        //     Caption = 'Browser IP';
-        //     DataClassification = CustomerContent;
-        //     Editable = false;
-        // }
         field(21; "Risk Level"; Enum "Shpfy Risk Level")
         {
             Caption = 'Risk Level';
@@ -134,9 +128,9 @@ table 30118 "Shpfy Order Header"
             DataClassification = SystemMetadata;
             Editable = false;
         }
-        field(25; "Contact e-mail"; Text[100])
+        field(25; "Contact Email"; Text[100])
         {
-            Caption = 'Contact e-mail';
+            Caption = 'Contact Email';
             DataClassification = CustomerContent;
             Editable = false;
         }
@@ -152,14 +146,14 @@ table 30118 "Shpfy Order Header"
             DataClassification = SystemMetadata;
             Editable = false;
         }
-        field(48; "Ship-to Firstname"; Text[50])
+        field(48; "Ship-to First Name"; Text[50])
         {
-            Caption = 'Ship-to Firstname';
+            Caption = 'Ship-to First Name';
             DataClassification = CustomerContent;
         }
-        field(49; "Ship-to Lastname"; Text[50])
+        field(49; "Ship-to Last Name"; Text[50])
         {
-            Caption = 'Ship-to Lastname';
+            Caption = 'Ship-to Last Name';
             DataClassification = CustomerContent;
         }
         field(50; "Ship-to Name"; Text[50])
@@ -187,14 +181,14 @@ table 30118 "Shpfy Order Header"
             Caption = 'Ship-to Post Code';
             DataClassification = CustomerContent;
         }
-        field(55; "Ship-to Country Code"; Code[20])
+        field(55; "Ship-to Country/Region Code"; Code[20])
         {
-            Caption = 'Ship-to Country Code';
+            Caption = 'Ship-to Country/Region Code';
             DataClassification = CustomerContent;
         }
-        field(56; "Ship-to Country Name"; Text[50])
+        field(56; "Ship-to Country/Region Name"; Text[50])
         {
-            Caption = 'Ship-to Country Name';
+            Caption = 'Ship-to Country/Region Name';
             DataClassification = CustomerContent;
         }
         field(57; "Ship-to Latitude"; Decimal)
@@ -205,7 +199,7 @@ table 30118 "Shpfy Order Header"
         }
         field(58; "Ship-to Longitude"; Decimal)
         {
-            Caption = 'Shipo-to Longitude';
+            Caption = 'Ship-to Longitude';
             DataClassification = CustomerContent;
             Editable = false;
         }
@@ -234,14 +228,14 @@ table 30118 "Shpfy Order Header"
             Caption = 'Bill-to Post Code';
             DataClassification = CustomerContent;
         }
-        field(65; "Bill-to Country Code"; Code[20])
+        field(65; "Bill-to Country/Region Code"; Code[20])
         {
-            Caption = 'Bill-to Country Code';
+            Caption = 'Bill-to Country/Region Code';
             DataClassification = CustomerContent;
         }
-        field(66; "Bill-to Country Name"; Text[50])
+        field(66; "Bill-to Country/Region Name"; Text[50])
         {
-            Caption = 'Bill-to Country Name';
+            Caption = 'Bill-to Country/Region Name';
             DataClassification = CustomerContent;
         }
         field(67; Test; Boolean)
@@ -329,14 +323,14 @@ table 30118 "Shpfy Order Header"
             DataClassification = SystemMetadata;
             Editable = false;
         }
-        field(83; "Bill-to Firstname"; Text[50])
+        field(83; "Bill-to First Name"; Text[50])
         {
-            Caption = 'Bill-to Firstname';
+            Caption = 'Bill-to First Name';
             DataClassification = CustomerContent;
         }
         field(84; "Bill-to Lastname"; Text[50])
         {
-            Caption = 'Bill-to Lastname';
+            Caption = 'Bill-to Last Name';
             DataClassification = CustomerContent;
         }
         field(87; "Processed At"; DateTime)
@@ -371,9 +365,9 @@ table 30118 "Shpfy Order Header"
             Caption = 'Updated At';
             DataClassification = SystemMetadata;
         }
-        field(94; "Shipping Cost Amount"; Decimal)
+        field(94; "Shipping Charges Amount"; Decimal)
         {
-            Caption = 'Shipping Cost Amount';
+            Caption = 'Shipping Charges Amount';
             DataClassification = SystemMetadata;
         }
         field(95; "Document Date"; Date)
@@ -424,15 +418,15 @@ table 30118 "Shpfy Order Header"
             DataClassification = SystemMetadata;
             TableRelation = "Shpfy Shop";
         }
-        field(501; "Customer Template"; Code[10])
+        field(501; "Customer Template Code"; Code[10])
         {
-            Caption = 'Customer Template';
+            Caption = 'Customer Template Code';
             DataClassification = SystemMetadata;
             TableRelation = "Config. Template Header".Code where("Table Id" = const(18));
         }
-        field(601; "Number of Items"; Decimal)
+        field(601; "Total Quantity of Items"; Decimal)
         {
-            Caption = 'Number of Items';
+            Caption = 'Total Quantity of Items';
             FieldClass = FlowField;
             CalcFormula = sum("Shpfy Order Line".Quantity where("Shopify Order Id" = field("Shopify Order Id"), "Gift Card" = const(false), Tip = const(false)));
         }
@@ -453,9 +447,9 @@ table 30118 "Shpfy Order Header"
             Caption = 'Sales Order No.';
             DataClassification = SystemMetadata;
         }
-        field(1002; "Error"; Boolean)
+        field(1002; "Has Error"; Boolean)
         {
-            Caption = 'Error';
+            Caption = 'Has Error';
             DataClassification = SystemMetadata;
         }
         field(1003; "Error Message"; Text[2048])
@@ -513,15 +507,15 @@ table 30118 "Shpfy Order Header"
             DataClassification = CustomerContent;
             TableRelation = Customer;
         }
-        field(1012; "Shipping Method"; Code[10])
+        field(1012; "Shipping Method Code"; Code[10])
         {
-            Caption = 'Shipping Method';
+            Caption = 'Shipping Method Code';
             DataClassification = CustomerContent;
             TableRelation = "Shipment Method";
         }
-        field(1013; "Payment Method"; Code[10])
+        field(1013; "Payment Method Code"; Code[10])
         {
-            Caption = 'Payment Method';
+            Caption = 'Payment Method Code';
             DataClassification = CustomerContent;
             TableRelation = "Payment Method";
         }

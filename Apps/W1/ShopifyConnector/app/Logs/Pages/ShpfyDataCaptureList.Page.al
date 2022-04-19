@@ -20,7 +20,7 @@ page 30118 "Shpfy Data Capture List"
                 field(EntryNo; Rec."Entry No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the number of the enty, as assigned from a specific number series when the entry was created.';
+                    ToolTip = 'Specifies the number of the entry, as assigned from a specific number series when the entry was created.';
                 }
                 field(SystemCreatedAt; Rec.SystemCreatedAt)
                 {

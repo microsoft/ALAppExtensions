@@ -60,7 +60,7 @@ page 30115 "Shpfy Orders"
                     Visible = false;
                     ToolTip = 'Specifies the postal code of the buy address.';
                 }
-                field(SellToCountryCode; Rec."Sell-to Country Code")
+                field(SellToCountryCode; Rec."Sell-to Country/Region Code")
                 {
                     ApplicationArea = All;
                     Visible = false;
@@ -78,7 +78,7 @@ page 30115 "Shpfy Orders"
                     Visible = false;
                     ToolTip = 'Specifies the postal code of the billing address.';
                 }
-                field(BillToCountryCode; Rec."Bill-to Country Code")
+                field(BillToCountryCode; Rec."Bill-to Country/Region Code")
                 {
                     ApplicationArea = All;
                     Visible = false;
@@ -96,7 +96,7 @@ page 30115 "Shpfy Orders"
                     Visible = false;
                     ToolTip = 'Specifies the ZIP code of the address that the products are shipped to.';
                 }
-                field(ShipToCountryCode; Rec."Ship-to Country Code")
+                field(ShipToCountryCode; Rec."Ship-to Country/Region Code")
                 {
                     ApplicationArea = All;
                     Visible = false;
@@ -146,7 +146,7 @@ page 30115 "Shpfy Orders"
                     StyleExpr = true;
                     ToolTip = 'Specifies the sales invoice number that has been created for the Shopify Order.';
                 }
-                field("Error"; Rec.Error)
+                field("Error"; Rec."Has Error")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether there is an error when creating a sales document.';

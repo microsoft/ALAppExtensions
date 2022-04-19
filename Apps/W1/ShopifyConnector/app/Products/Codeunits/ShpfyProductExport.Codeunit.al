@@ -24,7 +24,7 @@ codeunit 30178 "Shpfy Product Export"
     var
         ShopifyProduct: Record "Shpfy Product";
     begin
-        ShopifyProduct.SetFilter(ItemSystemId, '<>%1', NullGuid);
+        ShopifyProduct.SetFilter("Item SystemId", '<>%1', NullGuid);
         ShopifyProduct.SetFilter("Shop Code", Rec.GetFilter(Code));
         if ShopifyProduct.FindSet(false, false) then
             repeat
@@ -248,23 +248,23 @@ codeunit 30178 "Shpfy Product Export"
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", '', ItemUoM.Code), 1, MaxStrLen(ShopifyVariant.Barcode));
             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
-            case Shop."SKU Type" of
-                Shop."SKU Type"::"Bar Code":
+            case Shop."SKU Mapping" of
+                Shop."SKU Mapping"::"Bar Code":
                     ShopifyVariant.SKU := ShopifyVariant.Barcode;
-                Shop."SKU Type"::"Item No.",
-                Shop."SKU Type"::"Item No. + Variant Code":
+                Shop."SKU Mapping"::"Item No.",
+                Shop."SKU Mapping"::"Item No. + Variant Code":
                     ShopifyVariant.SKU := Item."No.";
-                Shop."SKU Type"::"Vendor Item No.":
+                Shop."SKU Mapping"::"Vendor Item No.":
                     ShopifyVariant.SKU := Item."Vendor Item No.";
             end;
             ShopifyVariant."Tax Code" := Item."Tax Group Code";
             ShopifyVariant.Taxable := true;
             ShopifyVariant.Weight := Item."Gross Weight";
-            ShopifyVariant."Option 1 Name" := Shop."Option Name for UOM";
+            ShopifyVariant."Option 1 Name" := Shop."Option Name for UoM";
             ShopifyVariant."Option 1 Value" := ItemUoM.Code;
             ShopifyVariant."Shop Code" := Shop.Code;
-            ShopifyVariant.ItemSystemId := Item.SystemId;
-            ShopifyVariant."UOM Option Id" := 1;
+            ShopifyVariant."Item SystemId" := Item.SystemId;
+            ShopifyVariant."UoM Option Id" := 1;
         end;
     end;
 
@@ -283,14 +283,14 @@ codeunit 30178 "Shpfy Product Export"
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"), 1, MaxStrLen(ShopifyVariant.Barcode));
             ShopifyVariant.Title := ItemVariant.Description;
             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
-            case Shop."SKU Type" of
-                Shop."SKU Type"::"Bar Code":
+            case Shop."SKU Mapping" of
+                Shop."SKU Mapping"::"Bar Code":
                     ShopifyVariant.SKU := ShopifyVariant.Barcode;
-                Shop."SKU Type"::"Item No.":
+                Shop."SKU Mapping"::"Item No.":
                     ShopifyVariant.SKU := Item."No.";
-                Shop."SKU Type"::"Item No. + Variant Code":
+                Shop."SKU Mapping"::"Item No. + Variant Code":
                     ShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code;
-                Shop."SKU Type"::"Vendor Item No.":
+                Shop."SKU Mapping"::"Vendor Item No.":
                     ShopifyVariant.SKU := Item."Vendor Item No.";
             end;
             ShopifyVariant."Tax Code" := Item."Tax Group Code";
@@ -299,9 +299,9 @@ codeunit 30178 "Shpfy Product Export"
             ShopifyVariant."Option 1 Name" := 'Variant';
             ShopifyVariant."Option 1 Value" := ItemVariant.Code;
             ShopifyVariant."Shop Code" := Shop.Code;
-            ShopifyVariant.ItemSystemId := Item.SystemId;
-            ShopifyVariant.ItemVariantSystemId := ItemVariant.SystemId;
-            ShopifyVariant."UOM Option Id" := 2;
+            ShopifyVariant."Item SystemId" := Item.SystemId;
+            ShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
+            ShopifyVariant."UoM Option Id" := 2;
         end;
     end;
 
@@ -322,14 +322,14 @@ codeunit 30178 "Shpfy Product Export"
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUoM.Code), 1, MaxStrLen(ShopifyVariant.Barcode));
             ShopifyVariant.Title := ItemVariant.Description;
             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
-            case Shop."SKU Type" of
-                Shop."SKU Type"::"Bar Code":
+            case Shop."SKU Mapping" of
+                Shop."SKU Mapping"::"Bar Code":
                     ShopifyVariant.SKU := ShopifyVariant.Barcode;
-                Shop."SKU Type"::"Item No.":
+                Shop."SKU Mapping"::"Item No.":
                     ShopifyVariant.SKU := Item."No.";
-                Shop."SKU Type"::"Item No. + Variant Code":
+                Shop."SKU Mapping"::"Item No. + Variant Code":
                     ShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code;
-                Shop."SKU Type"::"Vendor Item No.":
+                Shop."SKU Mapping"::"Vendor Item No.":
                     ShopifyVariant.SKU := Item."Vendor Item No.";
             end;
             ShopifyVariant."Tax Code" := Item."Tax Group Code";
@@ -337,12 +337,12 @@ codeunit 30178 "Shpfy Product Export"
             ShopifyVariant.Weight := Item."Gross Weight";
             ShopifyVariant."Option 1 Name" := 'Variant';
             ShopifyVariant."Option 1 Value" := ItemVariant.Code;
-            ShopifyVariant."Option 2 Name" := Shop."Option Name for UOM";
+            ShopifyVariant."Option 2 Name" := Shop."Option Name for UoM";
             ShopifyVariant."Option 2 Value" := ItemUoM.Code;
             ShopifyVariant."Shop Code" := Shop.Code;
-            ShopifyVariant.ItemSystemId := Item.SystemId;
-            ShopifyVariant.ItemVariantSystemId := ItemVariant.SystemId;
-            ShopifyVariant."UOM Option Id" := 2;
+            ShopifyVariant."Item SystemId" := Item.SystemId;
+            ShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
+            ShopifyVariant."UoM Option Id" := 2;
         end;
     end;
 
@@ -440,7 +440,6 @@ codeunit 30178 "Shpfy Product Export"
         ProductApi.SetShop(Shop);
         VariantApi.SetShop(Shop);
         ProductPriceCalc.SetShop(Shop);
-        //UpdateProduct.SetShop(Shop);
     end;
 
     /// <summary> 
@@ -459,7 +458,7 @@ codeunit 30178 "Shpfy Product Export"
         RecRef2: RecordRef;
         VariantAction: Option " ",Create,Update;
     begin
-        if ShopifyProduct.Get(ProductId) and Item.GetBySystemId(ShopifyProduct.ItemSystemId) then begin
+        if ShopifyProduct.Get(ProductId) and Item.GetBySystemId(ShopifyProduct."Item SystemId") then begin
             if Item.Blocked then
                 exit;
             TempShopifyProduct := ShopifyProduct;
@@ -474,14 +473,14 @@ codeunit 30178 "Shpfy Product Export"
             ShopifyVariant.SetRange("Product Id", ProductId);
             if ShopifyVariant.FindSet(false, false) then
                 repeat
-                    if not IsNullGuid(ShopifyVariant.ItemSystemId) then
-                        if Item.GetBySystemId(ShopifyVariant.ItemSystemId) then begin
+                    if not IsNullGuid(ShopifyVariant."Item SystemId") then
+                        if Item.GetBySystemId(ShopifyVariant."Item SystemId") then begin
                             Clear(ItemVariant);
-                            if not IsNullGuid((ShopifyVariant.ItemVariantSystemId)) then
-                                if ItemVariant.GetBySystemId(ShopifyVariant.ItemVariantSystemId) then;
+                            if not IsNullGuid((ShopifyVariant."Item Variant SystemId")) then
+                                if ItemVariant.GetBySystemId(ShopifyVariant."Item Variant SystemId") then;
                             Clear(ItemUoM);
-                            if Shop."UOM as Variant" then
-                                case ShopifyVariant."UOM Option Id" of
+                            if Shop."UoM as Variant" then
+                                case ShopifyVariant."UoM Option Id" of
                                     1:
                                         if ItemUoM.Get(Item."No.", ShopifyVariant."Option 1 Value") then
                                             ;
@@ -502,11 +501,11 @@ codeunit 30178 "Shpfy Product Export"
                     VariantAction := VariantAction::" ";
                     Clear(ShopifyVariant);
                     ShopifyVariant.SetRange("Product Id", ProductId);
-                    ShopifyVariant.SetRange(ItemVariantSystemId, ItemVariant.SystemId);
-                    if Shop."UOM as Variant" then begin
+                    ShopifyVariant.SetRange("Item Variant SystemId", ItemVariant.SystemId);
+                    if Shop."UoM as Variant" then begin
                         if ItemUoM.FindSet(false, false) then
                             repeat
-                                ShopifyVariant.SetRange("Option 2 Name", Shop."Option Name for UOM");
+                                ShopifyVariant.SetRange("Option 2 Name", Shop."Option Name for UoM");
                                 ShopifyVariant.SetRange("Option 2 Value", ItemUoM.Code);
                                 if ShopifyVariant.FindFirst() then begin
                                     VariantAction := VariantAction::Update;
@@ -515,7 +514,7 @@ codeunit 30178 "Shpfy Product Export"
                                 end else begin
                                     ShopifyVariant.SetRange("Option 2 Name");
                                     ShopifyVariant.SetRange("Option 2 Value");
-                                    ShopifyVariant.SetRange("Option 1 Name", Shop."Option Name for UOM");
+                                    ShopifyVariant.SetRange("Option 1 Name", Shop."Option Name for UoM");
                                     ShopifyVariant.SetRange("Option 1 Value", ItemUoM.Code);
                                     if ShopifyVariant.FindFirst() then begin
                                         VariantAction := VariantAction::Update;
@@ -524,7 +523,7 @@ codeunit 30178 "Shpfy Product Export"
                                     end else begin
                                         ShopifyVariant.SetRange("Option 1 Name");
                                         ShopifyVariant.SetRange("Option 1 Value");
-                                        ShopifyVariant.SetRange("Option 3 Name", Shop."Option Name for UOM");
+                                        ShopifyVariant.SetRange("Option 3 Name", Shop."Option Name for UoM");
                                         ShopifyVariant.SetRange("Option 3 Value", ItemUoM.Code);
                                         if ShopifyVariant.FindFirst() then begin
                                             VariantAction := VariantAction::Update;
@@ -553,11 +552,11 @@ codeunit 30178 "Shpfy Product Export"
             else begin
                 Clear(ShopifyVariant);
                 ShopifyVariant.SetRange("Product Id", ProductId);
-                ShopifyVariant.SetRange(ItemVariantSystemId);
-                if Shop."UOM as Variant" then
+                ShopifyVariant.SetRange("Item Variant SystemId");
+                if Shop."UoM as Variant" then
                     if ItemUoM.FindSet(false, false) then
                         repeat
-                            ShopifyVariant.SetRange("Option 1 Name", Shop."Option Name for UOM");
+                            ShopifyVariant.SetRange("Option 1 Name", Shop."Option Name for UoM");
                             ShopifyVariant.SetRange("Option 1 Value", ItemUoM.Code);
                             if ShopifyVariant.FindFirst() then begin
                                 VariantAction := VariantAction::Update;
@@ -566,7 +565,7 @@ codeunit 30178 "Shpfy Product Export"
                             end else begin
                                 ShopifyVariant.SetRange("Option 1 Name");
                                 ShopifyVariant.SetRange("Option 1 Value");
-                                ShopifyVariant.SetRange("Option 2 Name", Shop."Option Name for UOM");
+                                ShopifyVariant.SetRange("Option 2 Name", Shop."Option Name for UoM");
                                 ShopifyVariant.SetRange("Option 2 Value", ItemUoM.Code);
                                 if ShopifyVariant.FindFirst() then begin
                                     VariantAction := VariantAction::Update;
@@ -575,7 +574,7 @@ codeunit 30178 "Shpfy Product Export"
                                 end else begin
                                     ShopifyVariant.SetRange("Option 2 Name");
                                     ShopifyVariant.SetRange("Option 2 Value");
-                                    ShopifyVariant.SetRange("Option 3 Name", Shop."Option Name for UOM");
+                                    ShopifyVariant.SetRange("Option 3 Name", Shop."Option Name for UoM");
                                     ShopifyVariant.SetRange("Option 3 Value", ItemUoM.Code);
                                     if ShopifyVariant.FindFirst() then begin
                                         VariantAction := VariantAction::Update;

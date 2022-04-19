@@ -75,7 +75,7 @@ codeunit 30166 "Shpfy Process Order"
             SalesHeader."Sell-to Address" := CopyStr(ShopifyOrderHeader."Sell-to Address", 1, MaxStrLen(SalesHeader."Sell-to Address"));
             SalesHeader."Sell-to Address 2" := CopyStr(ShopifyOrderHeader."Sell-to Address 2", 1, MaxStrLen(SalesHeader."Sell-to Address 2"));
             SalesHeader."Sell-to City" := CopyStr(ShopifyOrderHeader."Sell-to City", 1, MaxStrLen(SalesHeader."Sell-to City"));
-            SalesHeader."Sell-to Country/Region Code" := GetCountryCode(CopyStr(ShopifyOrderHeader."Sell-to Country Code", 1, 10));
+            SalesHeader."Sell-to Country/Region Code" := GetCountryCode(CopyStr(ShopifyOrderHeader."Sell-to Country/Region Code", 1, 10));
             SalesHeader."Sell-to Post Code" := CopyStr(ShopifyOrderHeader."Sell-to Post Code", 1, MaxStrLen(SalesHeader."Sell-to Post Code"));
             SalesHeader."Sell-to County" := ShopifyOrderHeader."Sell-to County";
             SalesHeader."Sell-to Phone No." := CopyStr(DelChr(ShopifyOrderHeader."Phone No.", '=', DelChr(ShopifyOrderHeader."Phone No.", '=', '0123456789 +()/.')), 1, MaxStrLen(SalesHeader."Sell-to Phone No."));
@@ -86,7 +86,7 @@ codeunit 30166 "Shpfy Process Order"
             SalesHeader."Bill-to Address" := CopyStr(ShopifyOrderHeader."Bill-to Address", 1, MaxStrLen(SalesHeader."Bill-to Address"));
             SalesHeader."Bill-to Address 2" := CopyStr(ShopifyOrderHeader."Bill-to Address 2", 1, MaxStrLen(SalesHeader."Bill-to Address 2"));
             SalesHeader."Bill-to City" := CopyStr(ShopifyOrderHeader."Bill-to City", 1, MaxStrLen(SalesHeader."Bill-to City"));
-            SalesHeader."Bill-to Country/Region Code" := GetCountryCode(CopyStr(ShopifyOrderHeader."Bill-to Country Code", 1, 10));
+            SalesHeader."Bill-to Country/Region Code" := GetCountryCode(CopyStr(ShopifyOrderHeader."Bill-to Country/Region Code", 1, 10));
             SalesHeader."Bill-to Post Code" := CopyStr(ShopifyOrderHeader."Bill-to Post Code", 1, MaxStrLen(SalesHeader."Bill-to Post Code"));
             SalesHeader."Bill-to County" := CopyStr(ShopifyOrderHeader."Bill-to County", 1, MaxStrLen(SalesHeader."Bill-to County"));
             SalesHeader.Validate("Ship-to Code", '');
@@ -95,7 +95,7 @@ codeunit 30166 "Shpfy Process Order"
             SalesHeader."Ship-to Address" := copyStr(ShopifyOrderHeader."Ship-to Address", 1, MaxStrLen(SalesHeader."Ship-to Address"));
             SalesHeader."Ship-to Address 2" := CopyStr(ShopifyOrderHeader."Ship-to Address 2", 1, MaxStrLen(SalesHeader."Ship-to Address 2"));
             SalesHeader."Ship-to City" := CopyStr(ShopifyOrderHeader."Ship-to City", 1, MaxStrLen(SalesHeader."Ship-to City"));
-            SalesHeader."Ship-to Country/Region Code" := GetCountryCode(CopyStr(ShopifyOrderHeader."Ship-to Country Code", 1, 10));
+            SalesHeader."Ship-to Country/Region Code" := GetCountryCode(CopyStr(ShopifyOrderHeader."Ship-to Country/Region Code", 1, 10));
             SalesHeader."Ship-to Post Code" := CopyStr(ShopifyOrderHeader."Ship-to Post Code", 1, MaxStrLen(SalesHeader."Ship-to Post Code"));
             SalesHeader."Ship-to County" := CopyStr(ShopifyOrderHeader."Ship-to County", 1, MaxStrLen(SalesHeader."Ship-to County"));
             SalesHeader.Validate("Prices Including VAT", ShopifyOrderHeader."VAT Included" and PriceCalc.PricesIncludingVAT(ShopifyOrderHeader."Shop Code"));
@@ -107,10 +107,10 @@ codeunit 30166 "Shpfy Process Order"
                 SalesHeader.Validate("Location Code", ShopLocation."Default Location Code");
             if OrderMgt.FindTaxArea(ShopifyOrderHeader, ShopifyTaxArea) and (ShopifyTaxArea."Tax Area Code" <> '') then
                 SalesHeader.Validate("Tax Area Code", ShopifyTaxArea."Tax Area Code");
-            if ShopifyOrderHeader."Shipping Method" <> '' then
-                SalesHeader.Validate("Shipment Method Code", ShopifyOrderHeader."Shipping Method");
-            if ShopifyOrderHeader."Payment Method" <> '' then
-                SalesHeader.Validate("Payment Method Code", ShopifyOrderHeader."Payment Method");
+            if ShopifyOrderHeader."Shipping Method Code" <> '' then
+                SalesHeader.Validate("Shipment Method Code", ShopifyOrderHeader."Shipping Method Code");
+            if ShopifyOrderHeader."Payment Method Code" <> '' then
+                SalesHeader.Validate("Payment Method Code", ShopifyOrderHeader."Payment Method Code");
 
             SalesHeader.Modify(true);
 
@@ -138,7 +138,7 @@ codeunit 30166 "Shpfy Process Order"
         Item: REcord Item;
         SalesLine: Record "Sales Line";
         ShopifyOrderLine: Record "Shpfy Order Line";
-        ShopifyOrderShippingCost: Record "Shpfy Order Shipping Cost";
+        ShopifyOrderShippingCost: Record "Shpfy Order Shipping Charges";
         ShopLocation: Record "Shpfy Shop Location";
         IsHandled: Boolean;
         ShopfyOrderNoLbl: Label 'Shopify Order No.: %1', Comment = '%1 = Order No.';
@@ -201,7 +201,7 @@ codeunit 30166 "Shpfy Process Order"
         ShopifyOrderShippingCost.Reset();
         ShopifyOrderShippingCost.SetRange("Shopify Order Id", ShopifyOrderHeader."Shopify Order Id");
         if ShopifyOrderShippingCost.FindSet() then begin
-            ShopifyShop.TestField("Shipping Cost Account");
+            ShopifyShop.TestField("Shipping Charges Account");
             repeat
                 IsHandled := false;
                 OrderEvents.OnBeforeCreateShippingCostSalesLine(ShopifyOrderHeader, ShopifyOrderShippingCost, SalesHeader, SalesLine, IsHandled);
@@ -214,7 +214,7 @@ codeunit 30166 "Shpfy Process Order"
                     SalesLine.Insert(true);
 
                     SalesLine.Validate(Type, SalesLine.Type::"G/L Account");
-                    SalesLine.Validate("No.", ShopifyShop."Shipping Cost Account");
+                    SalesLine.Validate("No.", ShopifyShop."Shipping Charges Account");
                     SalesLine.Validate(Quantity, 1);
                     SalesLine.Validate(Description, ShopifyOrderShippingCost.Title);
                     SalesLine.Validate("Unit Price", ShopifyOrderShippingCost.Amount);

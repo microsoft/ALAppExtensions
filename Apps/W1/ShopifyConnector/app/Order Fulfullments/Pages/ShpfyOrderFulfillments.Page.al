@@ -51,7 +51,7 @@ page 30112 "Shpfy Order Fulfillments"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the tracking number of the fulfillment provided by the shipping company.';
                 }
-                field(TrackingUrl; Rec."Tracking Url")
+                field(TrackingUrl; Rec."Tracking URL")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the url of the tracking page for the fulfillment.';

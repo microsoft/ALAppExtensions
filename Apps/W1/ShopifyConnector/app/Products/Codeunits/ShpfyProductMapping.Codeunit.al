@@ -61,31 +61,31 @@ codeunit 30181 "Shpfy Product Mapping"
         SetShop(ShopifyProduct."Shop Code");
         Direction := Direction::ShopifyToBC;
         if Handled then begin
-            if not IsNullGuid(ShopifyProduct.ItemSystemId) then
+            if not IsNullGuid(ShopifyProduct."Item SystemId") then
                 if ShopifyProduct."Has Variants" then
-                    exit(((not IsNullGuid(ShopifyVariant.ItemVariantSystemId)) or (ShopifyVariant."Mapped By Item" and (not IsNullGuid(ShopifyVariant.ItemSystemId)))) or ((ShopifyVariant."UOM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = '')))
+                    exit(((not IsNullGuid(ShopifyVariant."Item Variant SystemId")) or (ShopifyVariant."Mapped By Item" and (not IsNullGuid(ShopifyVariant."Item SystemId")))) or ((ShopifyVariant."UoM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = '')))
                 else
                     exit(true);
         end else
-            if IsNullGuid(ShopifyProduct.ItemSystemId) or (ShopifyProduct."Has Variants" and IsNullGuid(ShopifyVariant.ItemVariantSystemId) and not ShopifyVariant."Mapped By Item") then begin
+            if IsNullGuid(ShopifyProduct."Item SystemId") or (ShopifyProduct."Has Variants" and IsNullGuid(ShopifyVariant."Item Variant SystemId") and not ShopifyVariant."Mapped By Item") then begin
                 ProductEvents.OnBeforeFindMapping(Direction, ShopifyProduct, ShopifyVariant, Item, ItemVariant, Handled);
                 if DoFindMapping(Direction, ShopifyProduct, ShopifyVariant, Item, ItemVariant) then begin
                     ProductEvents.OnAfterFindMapping(Direction, ShopifyProduct, ShopifyVariant, Item, ItemVariant);
                     if Item."No." <> '' then begin
-                        if IsNullGuid(ShopifyProduct.ItemSystemId) then begin
-                            ShopifyProduct.ItemSystemId := Item.SystemId;
+                        if IsNullGuid(ShopifyProduct."Item SystemId") then begin
+                            ShopifyProduct."Item SystemId" := Item.SystemId;
                             ShopifyProduct.Modify();
                         end;
-                        ShopifyVariant.ItemSystemId := Item.SystemId;
+                        ShopifyVariant."Item SystemId" := Item.SystemId;
                         if ItemVariant.Code <> '' then begin
-                            ShopifyVariant.ItemVariantSystemId := ItemVariant.SystemId;
+                            ShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
                             ShopifyVariant."Mapped By Item" := false;
                         end else begin
-                            Clear(ShopifyVariant.ItemVariantSystemId);
+                            Clear(ShopifyVariant."Item Variant SystemId");
                             ShopifyVariant."Mapped By Item" := true;
                         end;
                         ShopifyVariant.Modify();
-                        exit(ShopifyVariant."Mapped By Item" or (not ShopifyProduct."Has Variants") OR (not IsNullGuid(ShopifyVariant.ItemVariantSystemId)) or ((ShopifyVariant."UOM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = '')));
+                        exit(ShopifyVariant."Mapped By Item" or (not ShopifyProduct."Has Variants") OR (not IsNullGuid(ShopifyVariant."Item Variant SystemId")) or ((ShopifyVariant."UoM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = '')));
                     end;
                 end;
             end else
@@ -119,19 +119,19 @@ codeunit 30181 "Shpfy Product Mapping"
                 begin
                     Clear(Item);
                     Clear(ItemVariant);
-                    if not IsNullGuid(ShopifyProduct.ItemSystemId) then
-                        if FindItem.GetBySystemId(ShopifyProduct.ItemSystemId) then
+                    if not IsNullGuid(ShopifyProduct."Item SystemId") then
+                        if FindItem.GetBySystemId(ShopifyProduct."Item SystemId") then
                             Item := FindItem
                         else
                             Clear(ShopifyProduct.SystemId);
                     if (ShopifyVariant.SKU <> '') then
-                        case Shop."SKU Type" of
-                            Shop."SKU Type"::"Item No.":
+                        case Shop."SKU Mapping" of
+                            Shop."SKU Mapping"::"Item No.":
                                 if FindItem.Get(ShopifyVariant.SKU) then begin
                                     Item := FindItem;
                                     exit(true);
                                 end;
-                            Shop."SKU Type"::"Vendor Item No.":
+                            Shop."SKU Mapping"::"Vendor Item No.":
                                 begin
                                     ItemVendor.SetRange("Vendor Item No.", ShopifyVariant.SKU);
                                     if ShopifyProduct.Vendor <> '' then
@@ -162,7 +162,7 @@ codeunit 30181 "Shpfy Product Mapping"
                                         end;
                                     Clear(Founded);
                                     if ShopifyProduct."Has Variants" then
-                                        case ShopifyVariant."UOM Option Id" of
+                                        case ShopifyVariant."UoM Option Id" of
                                             1:
                                                 founded := ItemRefMgt.FindByReference(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), "Item Reference Type"::Vendor, CopyStr(ShopifyVariant."Option 1 Value", 1, 10), ItemNo, VariantCode);
                                             2:
@@ -184,7 +184,7 @@ codeunit 30181 "Shpfy Product Mapping"
                                                     exit(true);
                                         end;
                                 end;
-                            Shop."SKU Type"::"Item No. + Variant Code":
+                            Shop."SKU Mapping"::"Item No. + Variant Code":
                                 begin
                                     Codes := ShopifyVariant.SKU.Split(Shop."SKU Field Separator");
                                     Case Codes.Count of
@@ -203,10 +203,10 @@ codeunit 30181 "Shpfy Product Mapping"
                                             end;
                                     end;
                                 end;
-                            Shop."SKU Type"::"Bar Code":
+                            Shop."SKU Mapping"::"Bar Code":
                                 begin
                                     if ShopifyProduct."Has Variants" then
-                                        case ShopifyVariant."UOM Option Id" of
+                                        case ShopifyVariant."UoM Option Id" of
                                             1:
                                                 founded := ItemRefMgt.FindByBarcode(CopyStr(ShopifyVariant.SKU.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 1 Value", 1, 10), ItemNo, VariantCode);
                                             2:
@@ -233,10 +233,10 @@ codeunit 30181 "Shpfy Product Mapping"
                         if founded or (ItemVariant.Code <> '') then
                             Found := true
                         else
-                            Found := (not ShopifyProduct."Has Variants") or ((ShopifyVariant."UOM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = ''));
+                            Found := (not ShopifyProduct."Has Variants") or ((ShopifyVariant."UoM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = ''));
                     if not Found then
                         if ShopifyProduct."Has Variants" then
-                            case ShopifyVariant."UOM Option Id" of
+                            case ShopifyVariant."UoM Option Id" of
                                 1:
                                     Found := ItemRefMgt.FindByBarcode(CopyStr(ShopifyVariant.BarCode.ToUpper(), 1, 50), CopyStr(ShopifyVariant."Option 1 Value", 1, 10), ItemNo, VariantCode);
                                 2:

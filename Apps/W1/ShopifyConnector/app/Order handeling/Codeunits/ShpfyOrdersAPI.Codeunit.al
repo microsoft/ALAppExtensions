@@ -26,11 +26,11 @@ codeunit 30165 "Shpfy Orders API"
     /// <summary> 
     /// Get Orders To Import.
     /// </summary>
-    /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
-    internal procedure GetOrdersToImport(Shop: Record "Shpfy Shop")
+    /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
+    internal procedure GetOrdersToImport(ShopifyShop: Record "Shpfy Shop")
     var
         Orders: Record "Shpfy Order Header";
-        OrderToImport: Record "Shpfy Orders To Import";
+        OrderToImport: Record "Shpfy Orders to Import";
         RecRef: RecordRef;
         Id: BigInteger;
         LastSyncTime: DateTime;
@@ -45,10 +45,10 @@ codeunit 30165 "Shpfy Orders API"
         Cursor: Text;
         Tags: TextBuilder;
     begin
-        CommunicationMgt.SetShop(Shop);
+        CommunicationMgt.SetShop(ShopifyShop);
 
         Clear(OrderToImport);
-        LastSyncTime := Shop.GetLastSyncTime("Shpfy Synchronization Type"::Orders);
+        LastSyncTime := ShopifyShop.GetLastSyncTime("Shpfy Synchronization Type"::Orders);
         Parameters.Add('Time', Format(LastSyncTime, 0, 9));
         GraphQLType := GraphQLType::GetOrdersToImport;
         LastSyncTime := CurrentDateTime;
@@ -59,17 +59,17 @@ codeunit 30165 "Shpfy Orders API"
                     Cursor := JsonHelper.GetValueAsText(JItem.AsObject(), 'cursor');
                     if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
                         Id := JsonHelper.GetValueAsBigInteger(JNode, 'legacyResourceId');
-                        OrderToImport.SetCurrentKey(Id, "ShopId");
+                        OrderToImport.SetCurrentKey(Id, "Shop Id");
                         OrderToImport.SetRange(Id, Id);
-                        OrderToImport.SetRange(ShopId, Shop."Shop Id");
+                        OrderToImport.SetRange("Shop Id", ShopifyShop."Shop Id");
 
                         if not OrderToImport.IsEmpty then
                             OrderToImport.DeleteAll();
 
                         Clear(OrderToImport);
                         OrderToImport.Id := Id;
-                        OrderToImport.ShopId := Shop."Shop Id";
-                        OrderToImport."Shop Code" := Shop.Code;
+                        OrderToImport."Shop Id" := ShopifyShop."Shop Id";
+                        OrderToImport."Shop Code" := ShopifyShop.Code;
                         RecRef.GetTable(OrderToImport);
                         JsonHelper.GetValueIntoField(JNode, 'name', RecRef, OrderToImport.FieldNo("Order No."));
                         JsonHelper.GetValueIntoField(JNode, 'createdAt', RecRef, OrderToImport.FieldNo("Created At"));
@@ -77,7 +77,7 @@ codeunit 30165 "Shpfy Orders API"
                         JsonHelper.GetValueIntoField(JNode, 'test', RecRef, OrderToImport.FieldNo(Test));
                         JsonHelper.GetValueIntoField(JNode, 'fullyPaid', RecRef, OrderToImport.FieldNo("Fully Paid"));
                         JsonHelper.GetValueIntoField(JNode, 'unpaid', RecRef, OrderToImport.FieldNo(Unpaid));
-                        JsonHelper.GetValueIntoField(JNode, 'subtotalLineItemsQuantity', RecRef, OrderToImport.FieldNo("Number of Items"));
+                        JsonHelper.GetValueIntoField(JNode, 'subtotalLineItemsQuantity', RecRef, OrderToImport.FieldNo("Total Quantity of Items"));
                         JsonHelper.GetValueIntoField(JNode, 'totalPriceSet.shopMoney.amount', RecRef, OrderToImport.FieldNo("Order Amount"));
                         JsonHelper.GetValueIntoField(JNode, 'totalPriceSet.shopMoney.currencyCode', RecRef, OrderToImport.FieldNo("Currency Code"));
                         RecRef.SetTable(OrderToImport);
@@ -101,9 +101,9 @@ codeunit 30165 "Shpfy Orders API"
                         end;
                         Orders.SetRange("Shopify Order Id", Id);
                         if Orders.IsEmpty then
-                            OrderToImport.Action := OrderToImport.Action::New
+                            OrderToImport."Import Action" := OrderToImport."Import Action"::New
                         else
-                            OrderToImport.Action := OrderToImport.Action::Update;
+                            OrderToImport."Import Action" := OrderToImport."Import Action"::Update;
 
                         if not OrderToImport.Insert() then
                             OrderToImport.Modify();
@@ -120,7 +120,7 @@ codeunit 30165 "Shpfy Orders API"
                 break;
 
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.orders.pageInfo.hasNextPage');
-        Shop.SetLastSyncTime("Shpfy Synchronization Type"::Orders, LastSyncTime);
+        ShopifyShop.SetLastSyncTime("Shpfy Synchronization Type"::Orders, LastSyncTime);
         Commit();
     end;
 

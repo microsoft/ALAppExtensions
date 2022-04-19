@@ -59,7 +59,7 @@ page 30126 "Shpfy Products"
                         Item: Record Item;
                         ItemCard: Page "Item Card";
                     begin
-                        if Item.GetBySystemId(Rec.ItemSystemId) then begin
+                        if Item.GetBySystemId(Rec."Item SystemId") then begin
                             Item.SetRecFilter();
                             ItemCard.SetTableView(Item);
                             ItemCard.Run();
@@ -72,12 +72,12 @@ page 30126 "Shpfy Products"
                         ItemList: Page "Item List";
                     begin
                         ItemList.LookupMode := true;
-                        if not IsNullGuid(Rec.ItemSystemId) then
-                            if Item.GetBySystemId(Rec.ItemSystemId) then;
+                        if not IsNullGuid(Rec."Item SystemId") then
+                            if Item.GetBySystemId(Rec."Item SystemId") then;
                         ItemList.SetRecord(Item);
                         if ItemList.RunModal() = Action::LookupOK then begin
                             ItemList.GetRecord(Item);
-                            Rec.ItemSystemId := Item.SystemId;
+                            Rec."Item SystemId" := Item.SystemId;
                             Rec.Modify();
                         end;
                     end;
@@ -144,13 +144,13 @@ page 30126 "Shpfy Products"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the product''s vendor.';
                 }
-                field(Url; Rec.Url)
+                field(Url; Rec.URL)
                 {
                     ApplicationArea = All;
                     ExtendedDatatype = URL;
                     ToolTip = 'Specifies the url to the product on the webshop.';
                 }
-                field(PreviewUrl; Rec."Preview Url")
+                field(PreviewUrl; Rec."Preview URL")
                 {
                     ApplicationArea = All;
                     ExtendedDatatype = URL;
@@ -212,12 +212,12 @@ page 30126 "Shpfy Products"
                     ItemList.LookupMode := true;
                     if ItemList.RunModal() = Action::LookupOK then begin
                         ItemList.GetRecord(Item);
-                        Rec.ItemSystemId := Item.SystemId;
+                        Rec."Item SystemId" := Item.SystemId;
                         Rec.Modify();
                         ShopifyVariant.SetRange("Product Id", Rec.Id);
                         if Rec."Has Variants" then
-                            ShopifyVariant.SetRange(ItemSystemId, NullGuid);
-                        ShopifyVariant.ModifyAll(ItemSystemId, Rec.ItemSystemId);
+                            ShopifyVariant.SetRange("Item SystemId", NullGuid);
+                        ShopifyVariant.ModifyAll("Item SystemId", Rec."Item SystemId");
                     end;
                 end;
             }

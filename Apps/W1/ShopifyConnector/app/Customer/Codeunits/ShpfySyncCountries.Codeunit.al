@@ -33,12 +33,12 @@ codeunit 30107 "Shpfy Sync Countries"
         if JsonHelper.GetJsonValue(JCountry, JValue, 'code') then begin
             ShopCustomerTemplate.Init();
             ShopCustomerTemplate."Shop Code" := ShopifyShop.Code;
-            ShopCustomerTemplate."Country Code" := CopyStr(JValue.AsCode(), 1, MaxStrLen(ShopCustomerTemplate."Country Code"));
-            if (ShopCustomerTemplate."Country Code" <> '') and (ShopCustomerTemplate."Country Code" <> '*') then begin
+            ShopCustomerTemplate."Country/Region Code" := CopyStr(JValue.AsCode(), 1, MaxStrLen(ShopCustomerTemplate."Country/Region Code"));
+            if (ShopCustomerTemplate."Country/Region Code" <> '') and (ShopCustomerTemplate."Country/Region Code" <> '*') then begin
                 if ShopCustomerTemplate.Insert() then;
                 if JsonHelper.GetJsonArray(JCountry, JProvinces, 'provinces') then
                     foreach JProvince in JProvinces do
-                        ImportProvince(JProvince.AsObject(), ShopCustomerTemplate."Country Code");
+                        ImportProvince(JProvince.AsObject(), ShopCustomerTemplate."Country/Region Code");
             end;
         end;
     end;
@@ -55,7 +55,7 @@ codeunit 30107 "Shpfy Sync Countries"
     begin
         if JsonHelper.GetJsonValue(JProvince, JValue, 'name') then begin
             ShopifyTaxArea.Init();
-            ShopifyTaxArea."Country Code" := CopyStr(CountrCode, 1, MaxStrLen(ShopifyTaxArea."Country Code"));
+            ShopifyTaxArea."Country/Region Code" := CopyStr(CountrCode, 1, MaxStrLen(ShopifyTaxArea."Country/Region Code"));
             ShopifyTaxArea.County := CopyStr(JValue.AsText(), 1, MaxStrLen(ShopifyTaxArea.County));
             if ShopifyTaxArea.Insert() then;
         end;
@@ -74,7 +74,7 @@ codeunit 30107 "Shpfy Sync Countries"
         Url: Text;
     begin
         ShopCustomerTemplate.SetRange("Shop Code", ShopifyShop.Code);
-        ShopCustomerTemplate.SetFilter("Country Code", '%1|%2', '', '*');
+        ShopCustomerTemplate.SetFilter("Country/Region Code", '%1|%2', '', '*');
         ShopCustomerTemplate.DeleteAll(true);
         if ShopifyShop."Shopify URL".EndsWith('/') then
             Url := ShopifyShop."Shopify URL" + 'admin/countries.json'

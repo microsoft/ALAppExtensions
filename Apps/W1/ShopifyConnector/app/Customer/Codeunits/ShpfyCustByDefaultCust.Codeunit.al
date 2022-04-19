@@ -34,7 +34,7 @@ codeunit 30112 "Shpfy Cust. By Default Cust." implements "Shpfy ICustomer Mappin
     var
     begin
         SetShop(ShopCode);
-        exit(Shop."Default Customer");
+        exit(Shop."Default Customer No.");
     end;
 
 

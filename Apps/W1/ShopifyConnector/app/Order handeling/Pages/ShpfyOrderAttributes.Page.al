@@ -18,7 +18,7 @@ page 30114 "Shpfy Order Attributes"
                 field("Key"; Rec."Key")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The key or name of the attributte.';
+                    ToolTip = 'The key or name of the attribute.';
                 }
                 field(Value; Rec.Value)
                 {

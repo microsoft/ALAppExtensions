@@ -17,10 +17,10 @@ table 30107 "Shpfy Customer Template"
             ValidateTableRelation = true;
         }
 
-        field(2; "Country Code"; Code[20])
+        field(2; "Country/Region Code"; Code[20])
         {
             DataClassification = CustomerContent;
-            Caption = 'Country Code';
+            Caption = 'Country/Region Code';
         }
 
         field(3; "Customer Template Code"; Code[10])
@@ -30,10 +30,10 @@ table 30107 "Shpfy Customer Template"
             TableRelation = "Config. Template Header".Code where("Table Id" = const(18));
             ValidateTableRelation = true;
         }
-        field(4; FixCustomerNo; code[20])
+        field(4; "Default Customer No."; code[20])
         {
             DataClassification = CustomerContent;
-            Caption = 'Fix Customer No.';
+            Caption = 'Default Customer No.';
             TableRelation = Customer."No.";
             ValidateTableRelation = true;
         }
@@ -41,7 +41,7 @@ table 30107 "Shpfy Customer Template"
 
     keys
     {
-        key(PK; "Shop Code", "Country Code")
+        key(PK; "Shop Code", "Country/Region Code")
         {
             Clustered = true;
         }

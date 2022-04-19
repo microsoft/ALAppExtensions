@@ -21,10 +21,21 @@ codeunit 30114 "Shpfy Customer API"
     /// <returns>Return value of type Boolean.</returns>
     local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; Value: Variant): Boolean
     begin
+        AddFieldToGraphQuery(GraphQuery, FieldName, Value, true);
+    end;
+
+    local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; Value: Variant; ValueAsString: Boolean): Boolean
+    begin
         GraphQuery.Append(FieldName);
-        GraphQuery.Append(': \"');
+        if ValueAsString then
+            GraphQuery.Append(': \"')
+        else
+            GraphQuery.Append(': ');
         GraphQuery.Append(Format(Value));
-        GraphQuery.Append('\", ');
+        if ValueAsString then
+            GraphQuery.Append('\", ')
+        else
+            GraphQuery.Append(', ');
         exit(true);
     end;
 
@@ -33,35 +44,35 @@ codeunit 30114 "Shpfy Customer API"
         GraphQuery: TextBuilder;
     begin
         GraphQuery.Append('{"query":"mutation {customerCreate(input: {');
-        if ShopifyCustomer."E-Mail" <> '' then
-            AddFieldToGraphQuery(GraphQuery, 'email', ShopifyCustomer."E-Mail");
-        if ShopifyCustomer.FirstName <> '' then
-            AddFieldToGraphQuery(GraphQuery, 'firstName', ShopifyCustomer.FirstName);
-        if ShopifyCustomer.LastName <> '' then
-            AddFieldToGraphQuery(GraphQuery, 'lastName', ShopifyCustomer.LastName);
+        if ShopifyCustomer.Email <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'email', ShopifyCustomer.Email);
+        if ShopifyCustomer."First Name" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'firstName', ShopifyCustomer."First Name");
+        if ShopifyCustomer."Last Name" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'lastName', ShopifyCustomer."Last Name");
         if ShopifyCustomer."Phone No." <> '' then
             AddFieldToGraphQuery(GraphQuery, 'phone', ShopifyCustomer."Phone No.");
         GraphQuery.Append('addresses: {');
         if ShopifyCustomerAddress.Company <> '' then
             AddFieldToGraphQuery(GraphQuery, 'company', ShopifyCustomerAddress.Company);
-        if ShopifyCustomerAddress.FirstName <> '' then
-            AddFieldToGraphQuery(GraphQuery, 'firstName', ShopifyCustomerAddress.FirstName);
-        if ShopifyCustomerAddress.LastName <> '' then
-            AddFieldToGraphQuery(GraphQuery, 'lastName', ShopifyCustomerAddress.LastName);
+        if ShopifyCustomerAddress."First Name" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'firstName', ShopifyCustomerAddress."First Name");
+        if ShopifyCustomerAddress."Last Name" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'lastName', ShopifyCustomerAddress."Last Name");
         if ShopifyCustomerAddress.Phone <> '' then
             AddFieldToGraphQuery(GraphQuery, 'phone', ShopifyCustomerAddress.Phone);
-        if ShopifyCustomerAddress.Address1 <> '' then
-            AddFieldToGraphQuery(GraphQuery, 'address1', ShopifyCustomerAddress.Address1);
-        if ShopifyCustomerAddress.Address2 <> '' then
-            AddFieldToGraphQuery(GraphQuery, 'address2', ShopifyCustomerAddress.Address2);
+        if ShopifyCustomerAddress."Address 1" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'address1', ShopifyCustomerAddress."Address 1");
+        if ShopifyCustomerAddress."Address 2" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'address2', ShopifyCustomerAddress."Address 2");
         if ShopifyCustomerAddress.Zip <> '' then
             AddFieldToGraphQuery(GraphQuery, 'zip', ShopifyCustomerAddress.Zip);
         if ShopifyCustomerAddress.City <> '' then
             AddFieldToGraphQuery(GraphQuery, 'city', ShopifyCustomerAddress.City);
-        if ShopifyCustomerAddress.ProvinceCode <> '' then
-            AddFieldToGraphQuery(GraphQuery, 'provinceCode', ShopifyCustomerAddress.ProvinceCode);
-        if ShopifyCustomerAddress.CountryCode <> '' then
-            AddFieldToGraphQuery(GraphQuery, 'countryCode', ShopifyCustomerAddress.CountryCode);
+        if ShopifyCustomerAddress."Province Code" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'provinceCode', ShopifyCustomerAddress."Province Code");
+        if ShopifyCustomerAddress."Country/Region Code" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'countryCode', ShopifyCustomerAddress."Country/Region Code", false);
         GraphQuery.Remove(GraphQuery.Length - 1, 2);
         GraphQuery.Append('}}) {customer {id, addresses {id, country, province}}, userErrors {field, message}}}"}');
         exit(GraphQuery.ToText());
@@ -89,10 +100,10 @@ codeunit 30114 "Shpfy Customer API"
             if JItem.IsArray and (JItem.AsArray().Count = 1) then begin
                 JItem.AsArray().Get(0, JItem);
                 ShopifyCustomerAddress.Id := CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JItem, 'id'));
-                ShopifyCustomerAddress.CustomerId := ShopifyCustomer.Id;
+                ShopifyCustomerAddress."Customer Id" := ShopifyCustomer.Id;
 #pragma warning disable AA0139
-                ShopifyCustomerAddress.CountryName := JHelper.GetValueAsText(JItem, 'country');
-                ShopifyCustomerAddress.ProvinceName := JHelper.GetValueAsText(JItem, 'province');
+                ShopifyCustomerAddress."Country/Region Name" := JHelper.GetValueAsText(JItem, 'country');
+                ShopifyCustomerAddress."Province Name" := JHelper.GetValueAsText(JItem, 'province');
 #pragma warning restore AA0139
             end;
         exit(ShopifyCustomer.Id > 0);
@@ -267,10 +278,10 @@ codeunit 30114 "Shpfy Customer API"
                 if JItem.IsObject then begin
                     if (ShopifyCustomerAddress.Id <> CommunicationMgt.GetIdOfGId(JHelper.GetValueAsText(JItem, 'id'))) then
                         Error(UpdateAddrIdErr);
-                    ShopifyCustomerAddress.CustomerId := ShopifyCustomer.Id;
+                    ShopifyCustomerAddress."Customer Id" := ShopifyCustomer.Id;
 #pragma warning disable AA0139
-                    ShopifyCustomerAddress.CountryName := JHelper.GetValueAsText(JItem, 'country', MaxStrLen(ShopifyCustomerAddress.CountryName));
-                    ShopifyCustomerAddress.ProvinceName := JHelper.GetValueAsText(JItem, 'province', MaxStrLen(ShopifyCustomerAddress.ProvinceName));
+                    ShopifyCustomerAddress."Country/Region Name" := JHelper.GetValueAsText(JItem, 'country', MaxStrLen(ShopifyCustomerAddress."Country/Region Name"));
+                    ShopifyCustomerAddress."Province Name" := JHelper.GetValueAsText(JItem, 'province', MaxStrLen(ShopifyCustomerAddress."Province Name"));
 #pragma warning restore AA0139
                 end;
         end;
@@ -288,12 +299,12 @@ codeunit 30114 "Shpfy Customer API"
         Events.OnBeforeSendUpdateShopifyCustomer(Shop, ShopifyCustomer, ShopifyCustomerAddress, xShopifyCustomer, xShopifyCustomerAddress);
         GraphQuery.Append('{"query":"mutation {customerUpdate(input: {');
         AddFieldToGraphQuery(GraphQuery, 'id', ShopifyCustomer.Id);
-        if ShopifyCustomer."E-Mail" <> xShopifyCustomer."E-Mail" then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'email', ShopifyCustomer."E-Mail");
-        if ShopifyCustomer.FirstName <> xShopifyCustomer.FirstName then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'firstName', ShopifyCustomer.FirstName);
-        if ShopifyCustomer.LastName <> xShopifyCustomer.LastName then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'lastName', ShopifyCustomer.LastName);
+        if ShopifyCustomer.Email <> xShopifyCustomer.Email then
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'email', ShopifyCustomer.Email);
+        if ShopifyCustomer."First Name" <> xShopifyCustomer."First Name" then
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'firstName', ShopifyCustomer."First Name");
+        if ShopifyCustomer."Last Name" <> xShopifyCustomer."Last Name" then
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'lastName', ShopifyCustomer."Last Name");
         if ShopifyCustomer."Phone No." <> xShopifyCustomer."Phone No." then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'phone', ShopifyCustomer."Phone No.");
         if ShopifyCustomer.GetNote() <> xShopifyCustomer.GetNote() then
@@ -304,22 +315,22 @@ codeunit 30114 "Shpfy Customer API"
         AddFieldToGraphQuery(GraphQuery, 'id', ShopifyCustomerAddress.Id);
         if ShopifyCustomerAddress.Company <> '' then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'company', ShopifyCustomerAddress.Company);
-        if ShopifyCustomerAddress.FirstName <> xShopifyCustomer.FirstName then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'firstName', ShopifyCustomerAddress.FirstName);
-        if ShopifyCustomerAddress.LastName <> xShopifyCustomer.LastName then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'lastName', ShopifyCustomerAddress.LastName);
-        if ShopifyCustomerAddress.Address1 <> '' then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'address1', CommunicationMgt.EscapeGrapQLData(ShopifyCustomerAddress.Address1));
-        if ShopifyCustomerAddress.Address2 <> '' then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'address2', CommunicationMgt.EscapeGrapQLData(ShopifyCustomerAddress.Address2));
+        if ShopifyCustomerAddress."First Name" <> xShopifyCustomer."First Name" then
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'firstName', ShopifyCustomerAddress."First Name");
+        if ShopifyCustomerAddress."Last Name" <> xShopifyCustomer."Last Name" then
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'lastName', ShopifyCustomerAddress."Last Name");
+        if ShopifyCustomerAddress."Address 1" <> '' then
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'address1', CommunicationMgt.EscapeGrapQLData(ShopifyCustomerAddress."Address 1"));
+        if ShopifyCustomerAddress."Address 2" <> '' then
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'address2', CommunicationMgt.EscapeGrapQLData(ShopifyCustomerAddress."Address 2"));
         if ShopifyCustomerAddress.Zip <> '' then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'zip', ShopifyCustomerAddress.Zip);
         if ShopifyCustomerAddress.City <> '' then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'city', CommunicationMgt.EscapeGrapQLData(ShopifyCustomerAddress.City));
-        if ShopifyCustomerAddress.ProvinceCode <> '' then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'provinceCode', ShopifyCustomerAddress.ProvinceCode);
-        if ShopifyCustomerAddress.CountryCode <> '' then
-            HasChange := GraphQuery.Append('countryCode: ' + ShopifyCustomerAddress.CountryCode + ', ');
+        if ShopifyCustomerAddress."Province Code" <> '' then
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'provinceCode', ShopifyCustomerAddress."Province Code");
+        if ShopifyCustomerAddress."Country/Region Code" <> '' then
+            HasChange := GraphQuery.Append('countryCode: ' + ShopifyCustomerAddress."Country/Region Code" + ', ');
         if ShopifyCustomerAddress.Phone <> '' then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'phone', ShopifyCustomerAddress.Phone);
 
@@ -344,10 +355,8 @@ codeunit 30114 "Shpfy Customer API"
         NodeId: BigInteger;
         UpdatedAt: DateTime;
         JAddresses: JsonArray;
-        JMetafields: JsonArray;
         JTags: JsonArray;
         JAddress: JsonObject;
-        JNode: JsonObject;
         JItem: JsonToken;
         Ids: List of [BigInteger];
         OutStream: OutStream;
@@ -363,9 +372,9 @@ codeunit 30114 "Shpfy Customer API"
         ShopifyCustomer."Updated At" := UpdatedAt;
         ShopifyCustomer."Created At" := JHelper.GetValueAsDateTime(JCustomer, 'createdAt');
 #pragma warning disable AA0139
-        ShopifyCustomer.FirstName := JHelper.GetValueAsText(JCustomer, 'firstName', MaxStrLen(ShopifyCustomer.FirstName));
-        ShopifyCustomer.LastName := JHelper.GetValueAsText(JCustomer, 'lastName', MaxStrLen(ShopifyCustomer.LastName));
-        ShopifyCustomer."E-Mail" := JHelper.GetValueAsText(JCustomer, 'email', MaxStrLen(ShopifyCustomer."E-Mail"));
+        ShopifyCustomer."First Name" := JHelper.GetValueAsText(JCustomer, 'firstName', MaxStrLen(ShopifyCustomer."First Name"));
+        ShopifyCustomer."Last Name" := JHelper.GetValueAsText(JCustomer, 'lastName', MaxStrLen(ShopifyCustomer."Last Name"));
+        ShopifyCustomer.Email := JHelper.GetValueAsText(JCustomer, 'email', MaxStrLen(ShopifyCustomer.Email));
 #pragma warning restore AA0139
         PhoneNo := JHelper.GetValueAsText(JCustomer, 'phone');
         PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
@@ -404,22 +413,22 @@ codeunit 30114 "Shpfy Customer API"
                 ShopifyAddress.SetRange(Id, NodeId);
                 if not ShopifyAddress.FindFirst() then begin
                     ShopifyAddress.Init();
-                    ShopifyAddress.CustomerId := ShopifyCustomer.Id;
+                    ShopifyAddress."Customer Id" := ShopifyCustomer.Id;
                     ShopifyAddress.Id := NodeId;
                     ShopifyAddress.Insert(false);
                 end;
 #pragma warning disable AA0139
                 ShopifyAddress.Company := JHelper.GetValueAsText(JAddress, 'company', MaxStrLen(ShopifyAddress.Company));
-                ShopifyAddress.FirstName := JHelper.GetValueAsText(JAddress, 'firstName', MaxStrLen(ShopifyAddress.FirstName));
-                ShopifyAddress.LastName := JHelper.GetValueAsText(JAddress, 'lastName', MaxStrLen(ShopifyAddress.LastName));
-                ShopifyAddress.Address1 := JHelper.GetValueAsText(JAddress, 'address1', MaxStrLen(ShopifyAddress.Address1));
-                ShopifyAddress.Address2 := JHelper.GetValueAsText(JAddress, 'address2', MaxStrLen(ShopifyAddress.Address2));
+                ShopifyAddress."First Name" := JHelper.GetValueAsText(JAddress, 'firstName', MaxStrLen(ShopifyAddress."First Name"));
+                ShopifyAddress."Last Name" := JHelper.GetValueAsText(JAddress, 'lastName', MaxStrLen(ShopifyAddress."Last Name"));
+                ShopifyAddress."Address 1" := JHelper.GetValueAsText(JAddress, 'address1', MaxStrLen(ShopifyAddress."Address 1"));
+                ShopifyAddress."Address 2" := JHelper.GetValueAsText(JAddress, 'address2', MaxStrLen(ShopifyAddress."Address 2"));
                 ShopifyAddress.Zip := JHelper.GetValueAsText(JAddress, 'zip', MaxStrLen(ShopifyAddress.Zip));
                 ShopifyAddress.City := JHelper.GetValueAsText(JAddress, 'city', MaxStrLen(ShopifyAddress.City));
-                ShopifyAddress.CountryCode := JHelper.GetValueAsText(JAddress, 'countryCodeV2');
-                ShopifyAddress.CountryName := JHelper.GetValueAsText(JAddress, 'country');
-                ShopifyAddress.ProvinceCode := JHelper.GetValueAsText(JAddress, 'provinceCode', MaxStrLen(ShopifyAddress.ProvinceCode));
-                ShopifyAddress.ProvinceName := JHelper.GetValueAsText(JAddress, 'province', MaxStrLen(ShopifyAddress.ProvinceName));
+                ShopifyAddress."Country/Region Code" := JHelper.GetValueAsText(JAddress, 'countryCodeV2');
+                ShopifyAddress."Country/Region Name" := JHelper.GetValueAsText(JAddress, 'country');
+                ShopifyAddress."Province Code" := JHelper.GetValueAsText(JAddress, 'provinceCode', MaxStrLen(ShopifyAddress."Province Code"));
+                ShopifyAddress."Province Name" := JHelper.GetValueAsText(JAddress, 'province', MaxStrLen(ShopifyAddress."Province Name"));
 #pragma warning restore AA0139
                 PhoneNo := JHelper.GetValueAsText(JAddress, 'phone');
                 PhoneNo := CopyStr(DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()')), 1, MaxStrLen(ShopifyAddress.Phone));
@@ -428,7 +437,7 @@ codeunit 30114 "Shpfy Customer API"
                 ShopifyAddress.Modify(false);
             end;
             Clear(ShopifyAddress);
-            ShopifyAddress.SetRange(CustomerId, ShopifyCustomer.Id);
+            ShopifyAddress.SetRange("Customer Id", ShopifyCustomer.Id);
             Clear(FilterString);
             foreach NodeId in Ids do begin
                 FilterString.Append('&<>');

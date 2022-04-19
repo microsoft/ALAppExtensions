@@ -57,7 +57,7 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
     value(9; GetNextOrderFulfillment)
     {
         Caption = 'Get Next Order Fulfillment';
-        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextOrderFulfillm";
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextOrderFulfillment";
     }
     value(10; GetProductImages)
     {
@@ -118,7 +118,7 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
     {
         Caption = 'Find Variant by Barcode';
 
-        Implementation = "Shpfy IGraphQL" = "Shpfy GQL FndVariantByBarcode";
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL FindVariantByBarcode";
     }
     value(22; FindVariantBySKU)
     {

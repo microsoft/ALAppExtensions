@@ -14,6 +14,6 @@ codeunit 30109 "Shpfy County Name" implements "Shpfy ICounty"
     var
         Customer: Record Customer;
     begin
-        exit(CopyStr(CustomerAddress.ProvinceName.Trim(), 1, MaxStrLen(Customer.County)));
+        exit(CopyStr(CustomerAddress."Province Name".Trim(), 1, MaxStrLen(Customer.County)));
     end;
 }

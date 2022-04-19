@@ -42,18 +42,18 @@ codeunit 30195 "Shpfy Inventory API"
             ShopLocation.SetRange("Shop Code", ShopInventory."Shop Code");
             ShopLocation.SetRange(Id, ShopInventory."Location Id");
             ShopLocation.SetRange(Disabled, false);
-            if ShopLocation.FindFirst() and Item.GetBySystemId(ShopifyVariant.ItemSystemId) then begin
+            if ShopLocation.FindFirst() and Item.GetBySystemId(ShopifyVariant."Item SystemId") then begin
                 Events.OnBeforeCalculationStock(Item, ShopifyShop, ShopLocation."Location Filter", ShopInventory."Shopify Stock", Stock, IsHandled);
                 if not IsHandled then begin
                     Item.SetRange("Date Filter", 0D, Today);
                     Item.SetFilter("Location Filter", ShopLocation."Location Filter");
-                    if not IsNullGuid(ShopifyVariant.ItemVariantSystemId) then begin
+                    if not IsNullGuid(ShopifyVariant."Item Variant SystemId") then begin
                         ShopifyVariant.CalcFields("Variant Code");
                         Item.SetFilter("Variant Filter", ShopifyVariant."Variant Code");
                     end;
                     ItemAvailMgt.CalcAvailQuantities(Item, true, GrossRequirement, PlannedOrderRcpt, ScheduledRcpt, PlannedOrderReleases, ProjAvailableBalance, ExpectedInventory, QtyAvailable);
                     Stock := ProjAvailableBalance;
-                    case ShopifyVariant."UOM Option Id" of
+                    case ShopifyVariant."UoM Option Id" of
                         1:
                             UOM := CopyStr(ShopifyVariant."Option 1 Value", 1, MaxStrLen(UOM));
                         2:
@@ -83,7 +83,7 @@ codeunit 30195 "Shpfy Inventory API"
         Ishandled: Boolean;
     begin
         if ShopifyVariant.Get(ShopInventory."Variant Id") then
-            if Item.GetBySystemId(ShopifyVariant.ItemSystemId) then begin
+            if Item.GetBySystemId(ShopifyVariant."Item SystemId") then begin
                 Events.OnBeforeExportStock(Item, ShopifyShop, ShopInventory, ShopLocation, Ishandled);
 
                 if not Ishandled then begin

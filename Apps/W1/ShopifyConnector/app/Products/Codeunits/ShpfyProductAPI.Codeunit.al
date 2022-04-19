@@ -30,22 +30,22 @@ codeunit 30176 "Shpfy Product API"
     begin
         if Shop."Sync Item Images" = Shop."Sync Item Images"::"To Shopify" then
             if Item.Picture.Count > 0 then begin
-                CreateProductImageAsJson(Item, Product.Id, Product.ImageId).WriteTo(Request);
-                if Product.ImageId = 0 then begin
+                CreateProductImageAsJson(Item, Product.Id, Product."Image Id").WriteTo(Request);
+                if Product."Image Id" = 0 then begin
                     Method := 'POST';
                     Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(ProductUrlTxt, Product.Id));
                 end else begin
                     Method := 'PUT';
-                    Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(ProductImageUrlTxt, Product.Id, Product.ImageId));
+                    Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(ProductImageUrlTxt, Product.Id, Product."Image Id"));
                 end;
                 if JResponse.ReadFrom(CommunicationMgt.ExecuteWebRequest(Url, Method, Request)) then
                     exit(JHelper.GetValueAsBigInteger(JResponse, 'image.id'))
                 else
-                    exit(Product.ImageId);
+                    exit(Product."Image Id");
             end else
-                if Product.ImageId > 0 then begin
+                if Product."Image Id" > 0 then begin
                     Method := 'DELETE';
-                    Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(ProductImageUrlTxt, Product.Id, Product.ImageId));
+                    Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(ProductImageUrlTxt, Product.Id, Product."Image Id"));
                     CommunicationMgt.ExecuteWebRequest(Url, Method, Request);
                     exit(0);
                 end;
@@ -98,7 +98,7 @@ codeunit 30176 "Shpfy Product API"
             GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyProduct.Vendor));
             GraphQuery.Append('\"');
         end;
-        if ShopifyProduct."Has Variants" or (ShopifyVariant."UOM Option Id" > 0) then begin
+        if ShopifyProduct."Has Variants" or (ShopifyVariant."UoM Option Id" > 0) then begin
             GraphQuery.Append(', options: [\"');
             GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyVariant."Option 1 Name"));
             if ShopifyVariant."Option 2 Name" <> '' then begin
@@ -146,7 +146,7 @@ codeunit 30176 "Shpfy Product API"
             GraphQuery.Append(Format(ShopifyVariant."Compare at Price", 0, 9));
             GraphQuery.Append('\"');
         end;
-        if ShopifyProduct."Has Variants" or (ShopifyVariant."UOM Option Id" > 0) then begin
+        if ShopifyProduct."Has Variants" or (ShopifyVariant."UoM Option Id" > 0) then begin
             GraphQuery.Append(', options: [\"');
             GraphQuery.Append(ShopifyVariant."Option 1 Value");
             if ShopifyVariant."Option 2 Name" <> '' then begin
@@ -188,8 +188,8 @@ codeunit 30176 "Shpfy Product API"
         if NewShopifyProduct.Id = 0 then
             exit;
 #pragma warning disable AA0139
-        NewShopifyProduct."Preview Url" := JHelper.GetValueAsText(JResponse, 'data.productCreate.product.onlineStorePreviewUrl', MaxStrLen(NewShopifyProduct."Preview Url"));
-        NewShopifyProduct.Url := JHelper.GetValueAsText(JResponse, 'data.productCreate.product.onlineStoreUrl', MaxStrLen(NewShopifyProduct.Url));
+        NewShopifyProduct."Preview URL" := JHelper.GetValueAsText(JResponse, 'data.productCreate.product.onlineStorePreviewUrl', MaxStrLen(NewShopifyProduct."Preview URL"));
+        NewShopifyProduct.URL := JHelper.GetValueAsText(JResponse, 'data.productCreate.product.onlineStoreUrl', MaxStrLen(NewShopifyProduct.URL));
 #pragma warning restore AA0139
         NewShopifyProduct."Created At" := JHelper.GetValueAsDateTime(JResponse, 'data.productCreate.product.createdAt');
         NewShopifyProduct."Updated At" := JHelper.GetValueAsDateTime(JResponse, 'data.productCreate.product.updatedAt');
@@ -466,8 +466,8 @@ codeunit 30176 "Shpfy Product API"
 
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
 #pragma warning disable AA0139
-        ShopifyProduct."Preview Url" := JHelper.GetValueAsText(JResponse, 'data.productUpdate.product.onlineStorePreviewUrl', MaxStrLen(ShopifyProduct."Preview Url"));
-        ShopifyProduct.Url := JHelper.GetValueAsText(JResponse, 'data.productUpdate.product.onlineStoreUrl', MaxStrLen(ShopifyProduct.Url));
+        ShopifyProduct."Preview URL" := JHelper.GetValueAsText(JResponse, 'data.productUpdate.product.onlineStorePreviewUrl', MaxStrLen(ShopifyProduct."Preview URL"));
+        ShopifyProduct.URL := JHelper.GetValueAsText(JResponse, 'data.productUpdate.product.onlineStoreUrl', MaxStrLen(ShopifyProduct.URL));
 #pragma warning restore AA0139
         ShopifyProduct."Updated At" := JHelper.GetValueAsDateTime(JResponse, 'data.productUpdate.product.updatedAt');
     end;
@@ -495,8 +495,8 @@ codeunit 30176 "Shpfy Product API"
 #pragma warning restore AA0139
         ShopifyProduct.SetDescriptionHtml(JHelper.GetValueAsText(JProduct, 'descriptionHtml'));
 #pragma warning disable AA0139
-        ShopifyProduct."Preview Url" := JHelper.GetValueAsText(JProduct, 'onlineStorePreviewUrl', MaxStrLen(ShopifyProduct."Preview Url"));
-        ShopifyProduct.Url := JHelper.GetValueAsText(JProduct, 'onlineStoreUrl', MaxStrLen(ShopifyProduct.Url));
+        ShopifyProduct."Preview URL" := JHelper.GetValueAsText(JProduct, 'onlineStorePreviewUrl', MaxStrLen(ShopifyProduct."Preview URL"));
+        ShopifyProduct.URL := JHelper.GetValueAsText(JProduct, 'onlineStoreUrl', MaxStrLen(ShopifyProduct.URL));
         ShopifyProduct."Product Type" := JHelper.GetValueAsText(JProduct, 'productType', MaxStrLen(ShopifyProduct."Product Type"));
 #pragma warning restore AA0139
         ShopifyProduct.UpdateTags(JHelper.GetArrayAsText(JProduct, 'tags'));

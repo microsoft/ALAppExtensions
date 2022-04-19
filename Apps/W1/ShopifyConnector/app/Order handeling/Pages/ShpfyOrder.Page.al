@@ -35,7 +35,7 @@ page 30113 "Shpfy Order"
                     Editable = false;
                     ToolTip = 'Specifies the risk level from the Shopify order.';
                 }
-                field(TemplateCodeField; Rec."Customer Template")
+                field(TemplateCodeField; Rec."Customer Template Code")
                 {
                     ApplicationArea = All;
                     Caption = 'Customer Template Code';
@@ -50,12 +50,12 @@ page 30113 "Shpfy Order"
                     ShowMandatory = true;
                     ToolTip = 'Specifies the number of the customer who will buy the products.';
                 }
-                field(ShippingMethod; Rec."Shipping Method")
+                field(ShippingMethod; Rec."Shipping Method Code")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies how items on the Shopify Order are shipped to the customer.';
                 }
-                field("Payment Method"; Rec."Payment Method")
+                field("Payment Method"; Rec."Payment Method Code")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies how to make a payment, such as with bank transfer, cash, or check.';
@@ -199,7 +199,7 @@ page 30113 "Shpfy Order"
                     Editable = false;
                     ToolTip = 'Specifies the sales invoice number that has been created for the Shopify Order.';
                 }
-                field("Error"; Rec.Error)
+                field("Error"; Rec."Has Error")
                 {
                     ApplicationArea = All;
                     Editable = false;
@@ -241,7 +241,7 @@ page 30113 "Shpfy Order"
                     Editable = false;
                     ToolTip = 'Specifies the sum of the line amounts on all lines in the document minus any discount amounts.';
                 }
-                field(ShippingCostAmount; Rec."Shipping Cost Amount")
+                field(ShippingCostAmount; Rec."Shipping Charges Amount")
                 {
                     ApplicationArea = All;
                     Editable = false;
@@ -321,14 +321,14 @@ page 30113 "Shpfy Order"
                         Editable = false;
                         ToolTip = 'Specifies the city of the customer that the products are shipped to.';
                     }
-                    field(ShipToCountryCode; Rec."Ship-to Country Code")
+                    field(ShipToCountryCode; Rec."Ship-to Country/Region Code")
                     {
                         ApplicationArea = All;
                         Caption = 'Country Code';
                         Editable = false;
                         ToolTip = 'Specifies the country/region code of the address that the items are shipped to.';
                     }
-                    field(ShipToCountryName; Rec."Ship-to Country Name")
+                    field(ShipToCountryName; Rec."Ship-to Country/Region Name")
                     {
                         ApplicationArea = All;
                         Caption = 'Country Name';
@@ -384,14 +384,14 @@ page 30113 "Shpfy Order"
                         Editable = false;
                         ToolTip = 'Specifies the city of the customer that you sent the invoice or credit memo to.';
                     }
-                    field(BillToCountryCode; Rec."Bill-to Country Code")
+                    field(BillToCountryCode; Rec."Bill-to Country/Region Code")
                     {
                         ApplicationArea = All;
                         Caption = 'Country Code';
                         Editable = false;
                         ToolTip = 'Specifies the country/region code of the customer that you sent the invoice or credit memo to.';
                     }
-                    field(BillToCountryName; Rec."Bill-to Country Name")
+                    field(BillToCountryName; Rec."Bill-to Country/Region Name")
                     {
                         ApplicationArea = All;
                         Caption = 'Country Name';
@@ -573,7 +573,7 @@ page 30113 "Shpfy Order"
                 PromotedCategory = Category4;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                RunObject = Page "Shpfy Order Shipping Costs";
+                RunObject = Page "Shpfy Order Shipping Charges";
                 RunPageLink = "Shopify Order Id" = field("Shopify Order Id");
                 RunPageMode = View;
                 ToolTip = 'View the shipping costs associated to this Shopify Order.';

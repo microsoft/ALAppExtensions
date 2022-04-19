@@ -96,8 +96,8 @@ codeunit 30199 "Shpfy Authentication Mgt."
             RegisteredStore.Store := CopyStr(Store, 1, MaxStrLen(RegisteredStore.Store));
             RegisteredStore.Insert();
         end;
-        RegisteredStore.RequestedScope := ScopeTxt;
-        RegisteredStore.ActualScope := CopyStr(ActualScope, 1, MaxStrLen(RegisteredStore.ActualScope));
+        RegisteredStore."Requested Scope" := ScopeTxt;
+        RegisteredStore."Actual Scope" := CopyStr(ActualScope, 1, MaxStrLen(RegisteredStore."Actual Scope"));
         RegisteredStore.Modify();
         RegisteredStore.SetAccessToken(AccessToken);
     end;
@@ -108,10 +108,10 @@ codeunit 30199 "Shpfy Authentication Mgt."
         RegisteredStore: Record "Shpfy Registered Store";
         AccessToken: Text;
         NoAccessTokenErr: label 'No Access token for the store "%1".\Please request an access token for this store.', Comment = '%1 = Store';
-        ChangedScopeErr: Label 'The apllication scope is changed, please request a new access token for the store "%1".', Comment = '%1 = Store';
+        ChangedScopeErr: Label 'The application scope is changed, please request a new access token for the store "%1".', Comment = '%1 = Store';
     begin
         if RegisteredStore.Get(Store) then
-            if RegisteredStore.RequestedScope = ScopeTxt then begin
+            if RegisteredStore."Requested Scope" = ScopeTxt then begin
                 AccessToken := RegisteredStore.GetAccessToken();
                 if AccessToken <> '' then
                     exit(AccessToken)
@@ -128,7 +128,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
         RegisteredStore: Record "Shpfy Registered Store";
     begin
         if RegisteredStore.Get(Store) then
-            if RegisteredStore.RequestedScope = ScopeTxt then
+            if RegisteredStore."Requested Scope" = ScopeTxt then
                 exit(RegisteredStore.GetAccessToken() <> '');
     end;
 }

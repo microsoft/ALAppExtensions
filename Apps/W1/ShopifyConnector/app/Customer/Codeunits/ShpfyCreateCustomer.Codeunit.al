@@ -49,10 +49,10 @@ codeunit 30110 "Shpfy Create Customer"
         CurrentTemplateCode: Code[10];
     begin
 
-        ShopifyCustomer.Get(ShopifyAddress.CustomerId);
+        ShopifyCustomer.Get(ShopifyAddress."Customer Id");
 
         if TemplateCode = '' then
-            CurrentTemplateCode := FindCustomerTemplate(Shop, ShopifyAddress.CountryCode)
+            CurrentTemplateCode := FindCustomerTemplate(Shop, ShopifyAddress."Country/Region Code")
         else
             CurrentTemplateCode := TemplateCode;
         if (CurrentTemplateCode <> '') and ConfigTemplateHeader.Get(CurrentTemplateCode) then begin
@@ -72,8 +72,8 @@ codeunit 30110 "Shpfy Create Customer"
             Customer.Modify();
             ShopifyAddress.CustomerSystemId := Customer.SystemId;
             ShopifyAddress.Modify();
-            if IsNullGuid(ShopifyCustomer."Customer System Id") then begin
-                ShopifyCustomer."Customer System Id" := Customer.SystemId;
+            if IsNullGuid(ShopifyCustomer."Customer SystemId") then begin
+                ShopifyCustomer."Customer SystemId" := Customer.SystemId;
                 ShopifyCustomer.Modify();
             end;
             CustCont.OnModify(Customer);
@@ -99,7 +99,7 @@ codeunit 30110 "Shpfy Create Customer"
             end else begin
                 Clear(CustomerTemplate);
                 CustomerTemplate."Shop Code" := Shop.Code;
-                CustomerTemplate."Country Code" := CountryCode;
+                CustomerTemplate."Country/Region Code" := CountryCode;
                 CustomerTemplate.Insert();
             end;
             if Result = '' then begin

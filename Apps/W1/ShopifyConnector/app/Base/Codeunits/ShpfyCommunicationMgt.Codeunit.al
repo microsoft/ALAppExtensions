@@ -377,7 +377,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     var
         ShopifyLogEntry: Record "Shpfy Log Entry";
     begin
-        if ShopifyShop."Log Activated" then begin
+        if ShopifyShop."Log Enabled" then begin
             ShopifyLogEntry.Init();
             ShopifyLogEntry."Date and Time" := CurrentDateTime;
             ShopifyLogEntry.Time := TIME;

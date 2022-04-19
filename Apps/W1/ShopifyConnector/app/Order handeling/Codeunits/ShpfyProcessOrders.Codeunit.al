@@ -42,14 +42,14 @@ codeunit 30167 "Shpfy Process Orders"
         if not ShopifyOrderHeader.Processed then begin
             if not ProcessShopifyOrderCU.Run(ShopifyOrderHeader) then begin
                 ShopifyOrderHeader.Get(ShopifyOrderHeader."Shopify Order Id");
-                ShopifyOrderHeader.Error := true;
+                ShopifyOrderHeader."Has Error" := true;
                 ShopifyOrderHeader."Error Message" := CopyStr(Format(Time) + ' ' + GetLastErrorText(), 1, MaxStrLen(ShopifyOrderHeader."Error Message"));
                 ShopifyOrderHeader."Sales Order No." := '';
                 ShopifyOrderHeader."Sales Invoice No." := '';
                 ProcessShopifyOrderCU.CleanUpLastCreatedDocument();
             end else begin
                 ShopifyOrderHeader.Get(ShopifyOrderHeader."Shopify Order Id");
-                ShopifyOrderHeader.Error := false;
+                ShopifyOrderHeader."Has Error" := false;
                 ShopifyOrderHeader."Error Message" := '';
                 ShopifyOrderHeader.Processed := true;
             end;

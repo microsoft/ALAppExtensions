@@ -1,10 +1,10 @@
 /// <summary>
-/// Report Sync Shpfy Dtock To Shopify (ID 30102).
+/// Report Shpfy Sync Stock to Shopify (ID 30102).
 /// </summary>
-report 30102 "Shpfy Sync Stock To Shopify"
+report 30102 "Shpfy Sync Stock to Shopify"
 {
     ApplicationArea = All;
-    Caption = 'Shopify Sync Stock To Shopify';
+    Caption = 'Sync Stock To Shopify';
     ProcessingOnly = true;
     UsageCategory = Tasks;
 

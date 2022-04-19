@@ -50,7 +50,7 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the language of the Shopify Shop.';
                 }
-                field(LogActivated; Rec."Log Activated")
+                field(LogActivated; Rec."Log Enabled")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether the log is activated.';
@@ -117,13 +117,13 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether you want to synchronize item attributes to Shopify.';
                 }
-                field(UOMAsVariant; Rec."UOM as Variant")
+                field(UOMAsVariant; Rec."UoM as Variant")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies if you want to have the different unit of measures as an variant in Shopify.';
                     Visible = false;
                 }
-                field(OptionNameForUOM; Rec."Option Name for UOM")
+                field(OptionNameForUOM; Rec."Option Name for UoM")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the variant option name for the unit of measure.';
@@ -134,7 +134,7 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the prefix for variants. The variants you have defined in Shopify are created in Business Central based on an increasing number.';
                 }
-                field(SKUType; Rec."SKU Type")
+                field(SKUType; Rec."SKU Mapping")
                 {
                     ApplicationArea = all;
                     ToolTip = 'Specifies if and based on what you want to create variants in D365BC.';
@@ -144,12 +144,12 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies a field separator for the SKU if you use "Item. No + Variant Code" to create a variant.';
                 }
-                field(CreateProductStatusValue; Rec."Create Product Status Value")
+                field(CreateProductStatusValue; Rec."Status for Created Products")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the status of a product in Shopify when an item is create in Shopify via the sync.';
                 }
-                field(RemoveProductAction; Rec."Remove Product Action")
+                field(RemoveProductAction; Rec."Action for Removed Products")
                 {
                     ApplicationArea = all;
                     ToolTip = 'Specifies the status of a product in Shopify when an item is removed in Shopify via the sync.';
@@ -175,7 +175,7 @@ page 30101 "Shpfy Shop Card"
                 field(CustomerImportFromShopify; Rec."Customer Import From Shopify")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specified how Shopify customers are synced to Business Central. If you choose none and there exsits no mapping for that customer, the default customer will be used if exists.';
+                    ToolTip = 'Specified how Shopify customers are synced to Business Central. If you choose none and there exists no mapping for that customer, the default customer will be used if exists.';
                 }
                 field(CustomerMappingType; Rec."Customer Mapping Type")
                 {
@@ -194,7 +194,7 @@ page 30101 "Shpfy Shop Card"
                     ToolTip = 'Specifies which customer template to use when creating unknown customers and for calculating prices.';
                 }
 
-                field(DefaultCustomer; Rec."Default Customer")
+                field(DefaultCustomer; Rec."Default Customer No.")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the default customer when not creating a customer for each webshop user.';
@@ -239,7 +239,7 @@ page 30101 "Shpfy Shop Card"
             group(OrderProcessing)
             {
                 Caption = 'Order Processing';
-                field(ShippingCostAccount; Rec."Shipping Cost Account")
+                field(ShippingCostAccount; Rec."Shipping Charges Account")
                 {
                     ApplicationArea = All;
                     ShowMandatory = true;
@@ -265,7 +265,7 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether orders may be created automatically.';
                 }
-                field(TaxAreaSource; Rec."Tax Area Source")
+                field(TaxAreaSource; Rec."Tax Area Priority")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the tax area source and the sequence to be followed.';
@@ -287,7 +287,7 @@ page 30101 "Shpfy Shop Card"
                 PromotedCategory = Category4;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                RunObject = page "Shpfy Shop Locations";
+                RunObject = page "Shpfy Shop Locations Mapping";
                 RunPageLink = "Shop Code" = field(Code);
                 ToolTip = 'View the Shopify Shop locations and link them with the related location(s).';
             }
@@ -317,7 +317,7 @@ page 30101 "Shpfy Shop Card"
 
                 trigger OnAction()
                 var
-                    ShipmentMethod: Record "Shpfy Shipment Method";
+                    ShipmentMethod: Record "Shpfy Shipment Method Mapping";
                     Shop: Record "Shpfy Shop";
                     ShipmentMethods: Codeunit "Shpfy Shipping Methods";
                 begin
@@ -326,7 +326,7 @@ page 30101 "Shpfy Shop Card"
                     Shop.SetRecFilter();
                     ShipmentMethods.GetShippingMethods(Shop);
                     ShipmentMethod.SetRange("Shop Code", Rec.Code);
-                    Page.Run(Page::"Shpfy Shipment Methods", ShipmentMethod);
+                    Page.Run(Page::"Shpfy Shipment Methods Mapping", ShipmentMethod);
                 end;
             }
             action(PaymentMethods)
@@ -338,7 +338,7 @@ page 30101 "Shpfy Shop Card"
                 PromotedCategory = Category4;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                RunObject = page "Shpfy Payment Methods";
+                RunObject = page "Shpfy Payment Methods Mapping";
                 RunPageLink = "Shop Code" = field(Code);
                 ToolTip = 'Maps the Shopify payment methods to the related payment methods and prioritize them.';
             }

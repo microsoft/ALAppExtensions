@@ -24,7 +24,7 @@ codeunit 30117 "Shpfy Customer Import"
             if Shop."Auto Create Unknown Customers" or AllowCreate then begin
                 CreateCustomer.SetShop(Shop);
                 CreateCustomer.SetTemplateCode(TemplateCode);
-                Address.SetRange(CustomerId, ShopifyCustomer.Id);
+                Address.SetRange("Customer Id", ShopifyCustomer.Id);
                 Address.SetRange(Default, true);
                 if Address.FindFirst() then
                     CreateCustomer.Run(Address)

@@ -4,7 +4,7 @@
 report 30104 "Shpfy Sync Orders from Shopify"
 {
     ApplicationArea = All;
-    Caption = 'Shopify Sync Orders from Shopify';
+    Caption = 'Sync Orders from Shopify';
     ProcessingOnly = true;
     UsageCategory = Tasks;
 
@@ -15,11 +15,11 @@ report 30104 "Shpfy Sync Orders from Shopify"
         {
             RequestFilterFields = Code;
 
-            dataitem(OrdersToImport; "Shpfy Orders To Import")
+            dataitem(OrdersToImport; "Shpfy Orders to Import")
             {
                 DataItemLink = "Shop Code" = field(Code);
                 DataItemLinkReference = Shop;
-                RequestFilterFields = "Fully Paid", "Risk Level", "Financial Status", "Fulfillment Status", Confirmed, Action, "Attribute Key Filter", "Attribute Key Exists";
+                RequestFilterFields = "Fully Paid", "Risk Level", "Financial Status", "Fulfillment Status", Confirmed, "Import Action", "Attribute Key Filter", "Attribute Key Exists";
 
                 trigger OnPreDataItem()
                 begin
@@ -52,7 +52,7 @@ report 30104 "Shpfy Sync Orders from Shopify"
                         if OrderHeader.Get(OrdersToImport.Id) then begin
                             OrdersToImport.Delete();
                             Commit();
-                            if OrderMapping.DoMapping(OrderHeader) and (OrdersToImport.Action = OrdersToImport.Action::New) and Shop."Auto Create Orders" then
+                            if OrderMapping.DoMapping(OrderHeader) and (OrdersToImport."Import Action" = OrdersToImport."Import Action"::New) and Shop."Auto Create Orders" then
                                 CreateSalesDocument(OrderHeader);
                         end;
 
@@ -97,7 +97,7 @@ report 30104 "Shpfy Sync Orders from Shopify"
             if not ProcessShopifyOrder.Run(ShopifyOrderHeader) then begin
                 SelectLatestVersion();
                 ShopifyOrderHeader.Get(ShopifyOrderHeader."Shopify Order Id");
-                ShopifyOrderHeader.Error := true;
+                ShopifyOrderHeader."Has Error" := true;
                 ShopifyOrderHeader."Error Message" := CopyStr(Format(Time) + ' ' + GetLastErrorText(), 1, MaxStrLen(ShopifyOrderHeader."Error Message"));
                 ShopifyOrderHeader."Sales Order No." := '';
                 ShopifyOrderHeader."Sales Invoice No." := '';
@@ -105,7 +105,7 @@ report 30104 "Shpfy Sync Orders from Shopify"
             end else begin
                 SelectLatestVersion();
                 ShopifyOrderHeader.Get(ShopifyOrderHeader."Shopify Order Id");
-                ShopifyOrderHeader.Error := false;
+                ShopifyOrderHeader."Has Error" := false;
                 ShopifyOrderHeader."Error Message" := '';
                 ShopifyOrderHeader.Processed := true;
             end;

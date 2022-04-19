@@ -79,7 +79,7 @@ table 30112 "Shpfy Shop Inventory"
 
         field(9; "Last Calculated On"; DateTime)
         {
-            Caption = 'Last Calulated On';
+            Caption = 'Last Calculated On';
             DataClassification = CustomerContent;
         }
 

@@ -33,10 +33,10 @@ codeunit 30113 "Shpfy Cust. By Email/Phone" implements "Shpfy ICustomer Mapping"
     begin
         ShpfyCustomer.SetAutoCalcFields("Customer No.");
         if ShpfyCustomer.Get(CustomerId) then begin
-            if not IsNullGuid(ShpfyCustomer."Customer System Id") then begin
+            if not IsNullGuid(ShpfyCustomer."Customer SystemId") then begin
                 ShpfyCustomer.CalcFields("Customer No.");
                 if ShpfyCustomer."Customer No." = '' then begin
-                    Clear(ShpfyCustomer."Customer System Id");
+                    Clear(ShpfyCustomer."Customer SystemId");
                     ShpfyCustomer.Modify();
                 end else
                     exit(ShpfyCustomer."Customer No.");

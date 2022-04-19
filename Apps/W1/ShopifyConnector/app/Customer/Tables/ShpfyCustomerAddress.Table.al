@@ -15,7 +15,7 @@ table 30106 "Shpfy Customer Address"
             DataClassification = SystemMetadata;
             Editable = false;
         }
-        field(2; CustomerId; BigInteger)
+        field(2; "Customer Id"; BigInteger)
         {
             Caption = 'Customer Id';
             DataClassification = SystemMetadata;
@@ -26,22 +26,22 @@ table 30106 "Shpfy Customer Address"
             Caption = 'Company';
             DataClassification = CustomerContent;
         }
-        field(4; FirstName; Text[50])
+        field(4; "First Name"; Text[50])
         {
-            Caption = 'FirstName';
+            Caption = 'First Name';
             DataClassification = CustomerContent;
         }
-        field(5; LastName; Text[50])
+        field(5; "Last Name"; Text[50])
         {
-            Caption = 'LastName';
+            Caption = 'Last Name';
             DataClassification = CustomerContent;
         }
-        field(6; Address1; Text[100])
+        field(6; "Address 1"; Text[100])
         {
             Caption = 'Address1';
             DataClassification = CustomerContent;
         }
-        field(7; Address2; Text[100])
+        field(7; "Address 2"; Text[100])
         {
             Caption = 'Address2';
             DataClassification = CustomerContent;
@@ -56,22 +56,22 @@ table 30106 "Shpfy Customer Address"
             Caption = 'City';
             DataClassification = CustomerContent;
         }
-        field(10; CountryCode; Code[2])
+        field(10; "Country/Region Code"; Code[2])
         {
-            Caption = 'Country Code';
+            Caption = 'Country/Region Code';
             DataClassification = CustomerContent;
         }
-        field(11; CountryName; Text[50])
+        field(11; "Country/Region Name"; Text[50])
         {
-            Caption = 'Country Name';
+            Caption = 'Country/Region Name';
             DataClassification = CustomerContent;
         }
-        field(12; ProvinceCode; Code[2])
+        field(12; "Province Code"; Code[2])
         {
             Caption = 'Province Code';
             DataClassification = CustomerContent;
         }
-        field(13; ProvinceName; Text[50])
+        field(13; "Province Name"; Text[50])
         {
             Caption = 'Province Name';
             DataClassification = CustomerContent;
@@ -86,8 +86,9 @@ table 30106 "Shpfy Customer Address"
             Caption = 'Default';
             DataClassification = CustomerContent;
         }
-        field(101; ShipToAddressSystemId; Guid)
+        field(101; "Ship-To Address SystemId"; Guid)
         {
+            Caption = 'Ship-To Address SystemId';
             DataClassification = SystemMetadata;
         }
         field(102; CustomerSystemId; Guid)
@@ -120,7 +121,7 @@ table 30106 "Shpfy Customer Address"
                 Id := Math.Min(-1, CustomerAddress.Id - 1)
             else
                 Id := -1;
-        CustomerAddress.SetRange(CustomerId, CustomerId);
+        CustomerAddress.SetRange("Customer Id", "Customer Id");
         CustomerAddress.SetRange(Default, true);
         CustomerAddress.Default := CustomerAddress.IsEmpty();
     end;

@@ -19,9 +19,9 @@ table 30126 "Shpfy Inventory Item"
             Caption = 'Variant Id';
             DataClassification = CustomerContent;
         }
-        field(3; "Country of Origin"; Text[50])
+        field(3; "Country/Region of Origin"; Text[50])
         {
-            Caption = 'Country of Origin';
+            Caption = 'Country/Region of Origin';
             DataClassification = CustomerContent;
         }
         field(4; "Create At"; DateTime)
@@ -29,9 +29,9 @@ table 30126 "Shpfy Inventory Item"
             Caption = 'Create At';
             DataClassification = CustomerContent;
         }
-        field(5; "History Url"; Text[250])
+        field(5; "History URL"; Text[250])
         {
-            Caption = 'History Url';
+            Caption = 'History URL';
             DataClassification = CustomerContent;
         }
         field(6; "Province of Origin"; Text[50])
