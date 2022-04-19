@@ -259,7 +259,7 @@ codeunit 139700 "GP Checkbook Tests"
         MSFTCM20200Table.CMRECNUM := 100.00;
         MSFTCM20200Table.CHEKBKID := MyBankStr1;
         MSFTCM20200Table.CMTrxType := 3;
-        MSFTCM20200Table.TRXDATE := 20210801D;
+        MSFTCM20200Table.TRXDATE := CreateDateTime(20210801D, 0T);
         MSFTCM20200Table.TRXAMNT := 395.59;
         MSFTCM20200Table.CMLinkID := '1000';
         MSFTCM20200Table.DSCRIPTN := 'APCheck1 - Vendor Check';
@@ -269,7 +269,7 @@ codeunit 139700 "GP Checkbook Tests"
         MSFTCM20200Table.CMRECNUM := 120.00;
         MSFTCM20200Table.CHEKBKID := MyBankStr1;
         MSFTCM20200Table.CMTrxType := 1;
-        MSFTCM20200Table.TRXDATE := 20210802D;
+        MSFTCM20200Table.TRXDATE := CreateDateTime(20210802D, 0T);
         MSFTCM20200Table.TRXAMNT := 500.00;
         MSFTCM20200Table.CMLinkID := '1000';
         MSFTCM20200Table.DSCRIPTN := 'Deposit1';
@@ -279,7 +279,7 @@ codeunit 139700 "GP Checkbook Tests"
         MSFTCM20200Table.CMRECNUM := 125.00;
         MSFTCM20200Table.CHEKBKID := MyBankStr1;
         MSFTCM20200Table.CMTrxType := 2;
-        MSFTCM20200Table.TRXDATE := 20210902D;
+        MSFTCM20200Table.TRXDATE := CreateDateTime(20210902D, 0T);
         MSFTCM20200Table.TRXAMNT := 250.00;
         MSFTCM20200Table.CMLinkID := '1000';
         MSFTCM20200Table.DSCRIPTN := 'Receipt1';
@@ -289,7 +289,7 @@ codeunit 139700 "GP Checkbook Tests"
         MSFTCM20200Table.CMRECNUM := 130.00;
         MSFTCM20200Table.CHEKBKID := MyBankStr1;
         MSFTCM20200Table.CMTrxType := 3;
-        MSFTCM20200Table.TRXDATE := 20210801D;
+        MSFTCM20200Table.TRXDATE := CreateDateTime(20210801D, 0T);
         MSFTCM20200Table.TRXAMNT := 650.00;
         MSFTCM20200Table.CMLinkID := '2000';
         MSFTCM20200Table.DSCRIPTN := 'APCheck2 - NonVendor Check';
@@ -299,7 +299,7 @@ codeunit 139700 "GP Checkbook Tests"
         MSFTCM20200Table.CMRECNUM := 200.00;
         MSFTCM20200Table.CHEKBKID := MyBankStr2;
         MSFTCM20200Table.CMTrxType := 3;
-        MSFTCM20200Table.TRXDATE := 20210801D;
+        MSFTCM20200Table.TRXDATE := CreateDateTime(20210801D, 0T);
         MSFTCM20200Table.TRXAMNT := 450.36;
         MSFTCM20200Table.CMLinkID := '1000';
         MSFTCM20200Table.DSCRIPTN := 'APCheck3 - Vendor Check';
@@ -309,7 +309,7 @@ codeunit 139700 "GP Checkbook Tests"
         MSFTCM20200Table.CMRECNUM := 210.00;
         MSFTCM20200Table.CHEKBKID := MyBankStr2;
         MSFTCM20200Table.CMTrxType := 3;
-        MSFTCM20200Table.TRXDATE := 20210801D;
+        MSFTCM20200Table.TRXDATE := CreateDateTime(20210801D, 0T);
         MSFTCM20200Table.TRXAMNT := 450.36;
         MSFTCM20200Table.CMLinkID := '3000';
         MSFTCM20200Table.DSCRIPTN := 'APCheck4 - NonVendor Check';
@@ -319,7 +319,7 @@ codeunit 139700 "GP Checkbook Tests"
         MSFTCM20200Table.CMRECNUM := 400.00;
         MSFTCM20200Table.CHEKBKID := MyBankStr4;
         MSFTCM20200Table.CMTrxType := 3;
-        MSFTCM20200Table.TRXDATE := 20210801D;
+        MSFTCM20200Table.TRXDATE := CreateDateTime(20210801D, 0T);
         MSFTCM20200Table.TRXAMNT := 200.00;
         MSFTCM20200Table.CMLinkID := '1000';
         MSFTCM20200Table.DSCRIPTN := 'APCheck5 - Vendor Check';
@@ -329,7 +329,7 @@ codeunit 139700 "GP Checkbook Tests"
         MSFTCM20200Table.CMRECNUM := 410.00;
         MSFTCM20200Table.CHEKBKID := MyBankStr4;
         MSFTCM20200Table.CMTrxType := 4;
-        MSFTCM20200Table.TRXDATE := 20210801D;
+        MSFTCM20200Table.TRXDATE := CreateDateTime(20210801D, 0T);
         MSFTCM20200Table.TRXAMNT := 200.00;
         MSFTCM20200Table.CMLinkID := '1000';
         MSFTCM20200Table.DSCRIPTN := 'Withdrawl/Payroll Check1';
@@ -339,7 +339,7 @@ codeunit 139700 "GP Checkbook Tests"
         MSFTCM20200Table.CMRECNUM := 500.00;
         MSFTCM20200Table.CHEKBKID := MyBankStr5;
         MSFTCM20200Table.CMTrxType := 2;
-        MSFTCM20200Table.TRXDATE := 20210801D;
+        MSFTCM20200Table.TRXDATE := CreateDateTime(20210801D, 0T);
         MSFTCM20200Table.TRXAMNT := 200.00;
         MSFTCM20200Table.CMLinkID := '1000';
         MSFTCM20200Table.DSCRIPTN := 'Receipt2';
@@ -349,7 +349,7 @@ codeunit 139700 "GP Checkbook Tests"
         MSFTCM20200Table.CMRECNUM := 505.00;
         MSFTCM20200Table.CHEKBKID := MyBankStr5;
         MSFTCM20200Table.CMTrxType := 5;
-        MSFTCM20200Table.TRXDATE := 20210801D;
+        MSFTCM20200Table.TRXDATE := CreateDateTime(20210801D, 0T);
         MSFTCM20200Table.TRXAMNT := 200.00;
         MSFTCM20200Table.CMLinkID := '1000';
         MSFTCM20200Table.DSCRIPTN := 'IncreaseAdjustment1';
@@ -359,7 +359,7 @@ codeunit 139700 "GP Checkbook Tests"
         MSFTCM20200Table.CMRECNUM := 510.00;
         MSFTCM20200Table.CHEKBKID := MyBankStr5;
         MSFTCM20200Table.CMTrxType := 6;
-        MSFTCM20200Table.TRXDATE := 20210801D;
+        MSFTCM20200Table.TRXDATE := CreateDateTime(20210801D, 0T);
         MSFTCM20200Table.TRXAMNT := 200.00;
         MSFTCM20200Table.CMLinkID := '1000';
         MSFTCM20200Table.DSCRIPTN := 'DecreaseAdjustment1';
@@ -369,7 +369,7 @@ codeunit 139700 "GP Checkbook Tests"
         MSFTCM20200Table.CMRECNUM := 520.00;
         MSFTCM20200Table.CHEKBKID := MyBankStr5;
         MSFTCM20200Table.CMTrxType := 7;
-        MSFTCM20200Table.TRXDATE := 20210801D;
+        MSFTCM20200Table.TRXDATE := CreateDateTime(20210801D, 0T);
         MSFTCM20200Table.TRXAMNT := 200.00;
         MSFTCM20200Table.CMLinkID := '1000';
         MSFTCM20200Table.DSCRIPTN := 'BankTransfer1';
