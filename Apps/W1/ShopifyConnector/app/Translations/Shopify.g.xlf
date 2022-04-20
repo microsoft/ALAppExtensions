@@ -2654,7 +2654,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Shpfy Authentication Mgt. - Method InstallShopifyApp - NamedType NotMatchingStateErr</note>
         </trans-unit>
         <trans-unit id="Codeunit 4014190514 - NamedType 2275570571" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Shopify Sync of %1 for shop %2</source>
+          <source>Shopify Sync of %1 for shop(s) %2</source>
           <note from="Developer" annotates="general" priority="2">%1 = Synchronization Tyep, %2 = Synchronization Code</note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Shpfy Background Syncs - NamedType SyncDescriptionTxt</note>
         </trans-unit>

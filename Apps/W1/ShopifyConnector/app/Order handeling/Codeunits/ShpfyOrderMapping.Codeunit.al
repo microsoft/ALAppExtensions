@@ -38,7 +38,7 @@ codeunit 30163 "Shpfy Order Mapping"
                 OrderHeader.Modify();
             end;
 
-        Result := MapHeaderFields(OrderHeader, Shop, true);
+        Result := MapHeaderFields(OrderHeader, Shop, Shop."Auto Create Unknown Customers" and (Shop."Customer Import From Shopify" <> "Shpfy Customer Import Range"::None));
 
         OrderLine.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
         if OrderLine.FindSet(true, false) then
