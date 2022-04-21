@@ -1,5 +1,5 @@
 {
-    "id": "ec255f57-31d0-4ca2-b751-f2fa7c745abb",
+    "id": "9cae3227-e519-4ce4-89bd-cebbcab37a90",
     "name": "Connect to Shopify",
     "publisher": "Microsoft",
     "brief": "To be updated",
@@ -11,20 +11,32 @@
     "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo": "ExtensionLogo.png",
     "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2179727",
-    "internalsVisibleTo": [
+    "dependencies": [
         {
-            "id": "9cae3227-e519-4ce4-89bd-cebbcab37a90",
+            "id": "ec255f57-31d0-4ca2-b751-f2fa7c745abb",
             "name": "Connect to Shopify",
-            "publisher": "Microsoft"
+            "publisher": "Microsoft",
+            "version": "20.0.0.0"
+        },
+        {
+            "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+            "name": "Library Assert",
+            "publisher": "Microsoft",
+            "version": "20.0.0.0"
+        },
+        {
+            "id": "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+            "name": "Any",
+            "publisher": "Microsoft",
+            "version": "20.0.0.0"
         }
     ],
-    "dependencies": [],
     "screenshots": [],
     "platform": "20.0.0.0",
     "idRanges": [
         {
-            "from": 30100,
-            "to": 30299
+            "from": 30500,
+            "to": 30599
         }
     ],
     "target": "OnPrem",
