@@ -19,7 +19,7 @@ permissionsetextension 4027 "D365 TEAM MEMBER - HGP" extends "D365 TEAM MEMBER"
                   tabledata GPSOPTrackingNumbersWorkHist = RIMD,
                   tabledata GPSOPSerialLotWorkHist = RIMD,
                   tabledata "GP Customer Transactions" = RIMD,
-                  tabledata GPSOPDepositHist = RIMD,
+                  tabledata GPSOPDepositHist= RIMD,
                   tabledata GPPOPPOHist = RIMD,
                   tabledata GPRMHist = RIMD,
                   tabledata GPPOPReceiptHist = RIMD,
@@ -56,10 +56,5 @@ permissionsetextension 4027 "D365 TEAM MEMBER - HGP" extends "D365 TEAM MEMBER"
                   tabledata "GP Codes" = RIMD,
                   tabledata "GP Segment Name" = RIMD,
                   tabledata "GP Migration Errors" = RIMD,
-                  tabledata "GP Company Migration Settings" = RIMD,
-                  tabledata "GP Bank MSTR" = RIMD,
-                  tabledata "GP Checkbook MSTR" = RIMD,
-                  tabledata "GP Checkbook Transactions" = RIMD,
-                  tabledata MSFTCM20200 = RIMD,
-                  tabledata "GP Company Additional Settings" = RIMD;
+                  tabledata "GP Company Migration Settings" = RIMD;
 }

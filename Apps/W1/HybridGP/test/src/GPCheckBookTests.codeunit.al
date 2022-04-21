@@ -12,9 +12,9 @@ codeunit 139700 "GP Checkbook Tests"
         GPAccount: Record "GP Account";
         GPCheckbookMSTRTable: Record "GP Checkbook MSTR";
         Vendor: Record Vendor;
-        MSFTCM20200Table: Record MSFTCM20200;
+        GPCheckbookTransactionsTable: Record "GP Checkbook Transactions";
+        BankAccountPostingGroup: Record "Bank Account Posting Group";
         GPCompanyMigrationSettings: Record "GP Company Migration Settings";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         VendorPostingGroup: Record "Vendor Posting Group";
         BankAccount: Record "Bank Account";
         GenJournalTemplate: Record "Gen. Journal Template";
@@ -25,7 +25,6 @@ codeunit 139700 "GP Checkbook Tests"
         MyBankStr3: Label 'MyBank03', Comment = 'Bank name', Locked = true;
         MyBankStr4: Label 'MyBank04', Comment = 'Bank name', Locked = true;
         MyBankStr5: Label 'MyBank05', Comment = 'Bank name', Locked = true;
-        GPBankAccountPostingGroupLbl: Label 'GPBANKGROUP', Comment = 'Posting Group name', Locked = true;
 
     [Test]
     [TransactionModel(TransactionModel::AutoCommit)]
@@ -59,16 +58,11 @@ codeunit 139700 "GP Checkbook Tests"
         // [THEN] General Journal Lines are created
         GenJournalLine.SetFilter("Journal Batch Name", 'GPBANK');
         GenJournalLine.SetFilter("Journal Template Name", 'CASHRCPT');
-        Assert.RecordCount(GenJournalLine, 3);
+        Assert.RecordCount(GenJournalLine, 1);
 
         GenJournalLine.Reset();
         GenJournalLine.SetFilter("Journal Batch Name", 'GPBANK');
         GenJournalLine.SetFilter("Journal Template Name", 'PAYMENT');
-        Assert.RecordCount(GenJournalLine, 5);
-
-        GenJournalLine.Reset();
-        GenJournalLine.SetFilter("Journal Batch Name", 'GPBANK');
-        GenJournalLine.SetFilter("Journal Template Name", 'GENERAL');
         Assert.RecordCount(GenJournalLine, 4);
 
         // [WHEN] Batches are posted.
@@ -76,19 +70,19 @@ codeunit 139700 "GP Checkbook Tests"
 
         // [THEN] Bank Account Ledger entries are created
         BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr1));
-        Assert.RecordCount(BankAccountLedger, 4);
+        Assert.RecordCount(BankAccountLedger, 2);
 
         BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr2));
-        Assert.RecordCount(BankAccountLedger, 2);
+        Assert.RecordCount(BankAccountLedger, 1);
 
         BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr3));
         Assert.RecordCount(BankAccountLedger, 0);
 
         BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr4));
-        Assert.RecordCount(BankAccountLedger, 2);
+        Assert.RecordCount(BankAccountLedger, 1);
 
         BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr5));
-        Assert.RecordCount(BankAccountLedger, 4);
+        Assert.RecordCount(BankAccountLedger, 1);
     end;
 
     [Test]
@@ -99,7 +93,6 @@ codeunit 139700 "GP Checkbook Tests"
         BankAccountLedger: Record "Bank Account Ledger Entry";
         GenJournalLine: Record "Gen. Journal Line";
         HelperFunctions: Codeunit "Helper Functions";
-        test: Code[2];
     begin
         // [SCENARIO] CheckBooks are migrated from GP
         // [GIVEN] There are no records in the BankAcount table
@@ -146,12 +139,7 @@ codeunit 139700 "GP Checkbook Tests"
         GenJournalLine.Reset();
         GenJournalLine.SetFilter("Journal Batch Name", 'GPBANK');
         GenJournalLine.SetFilter("Journal Template Name", 'PAYMENT');
-        Assert.RecordCount(GenJournalLine, 3);
-
-        GenJournalLine.Reset();
-        GenJournalLine.SetFilter("Journal Batch Name", 'GPBANK');
-        GenJournalLine.SetFilter("Journal Template Name", 'GENERAL');
-        Assert.RecordCount(GenJournalLine, 4);
+        Assert.RecordCount(GenJournalLine, 2);
 
         // [WHEN] Batches are posted.
         HelperFunctions.PostGLTransactions();
@@ -161,27 +149,27 @@ codeunit 139700 "GP Checkbook Tests"
         Assert.RecordCount(BankAccountLedger, 0);
 
         BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr2));
-        Assert.RecordCount(BankAccountLedger, 2);
+        Assert.RecordCount(BankAccountLedger, 1);
 
         BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr3));
         Assert.RecordCount(BankAccountLedger, 0);
 
         BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr4));
-        Assert.RecordCount(BankAccountLedger, 2);
+        Assert.RecordCount(BankAccountLedger, 1);
 
         BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr5));
-        Assert.RecordCount(BankAccountLedger, 4);
+        Assert.RecordCount(BankAccountLedger, 1);
     end;
 
     local procedure ClearTables()
     begin
         BankAccount.DeleteAll();
+        BankAccountPostingGroup.DeleteAll();
         GPCheckbookMSTRTable.DeleteAll();
         GPCompanyMigrationSettings.DeleteAll();
-        GPCompanyAdditionalSettings.DeleteAll();
         GPAccount.DeleteAll();
         GPCheckbookMSTRTable.DeleteAll();
-        MSFTCM20200Table.DeleteAll();
+        GPCheckbookTransactionsTable.DeleteAll();
     end;
 
     local procedure Migrate()
@@ -197,13 +185,9 @@ codeunit 139700 "GP Checkbook Tests"
     local procedure ConfigureMigrationSettings(MigrateInactive: Boolean)
     begin
         GPCompanyMigrationSettings.Init();
-        GPCompanyMigrationSettings.Name := CompanyName();
+        GPCompanyMigrationSettings.Name := 'Setup';
+        GPCompanyMigrationSettings."Migrate Inactive Checkbooks" := MigrateInactive;
         GPCompanyMigrationSettings.Insert(true);
-
-        GPCompanyAdditionalSettings.Init();
-        GPCompanyAdditionalSettings.Name := GPCompanyMigrationSettings.Name;
-        GPCompanyAdditionalSettings."Migrate Inactive Checkbooks" := MigrateInactive;
-        GPCompanyAdditionalSettings.Insert(true);
     end;
 
     local procedure CreateCheckbookData()
@@ -251,129 +235,50 @@ codeunit 139700 "GP Checkbook Tests"
         GPCheckbookMSTRTable.Insert(true);
 
         // Transactions
-        ///   CMTrxType = 
-        ///        1        2        3                  4                    5                  6                  7
-        ///     Deposit, Receipt, APCheck, "Withdrawl/Payroll Check", IncreaseAdjustment, DecreaseAdjustment, BankTransfer;
-        /// 
-        MSFTCM20200Table.Init();
-        MSFTCM20200Table.CMRECNUM := 100.00;
-        MSFTCM20200Table.CHEKBKID := MyBankStr1;
-        MSFTCM20200Table.CMTrxType := 3;
-        MSFTCM20200Table.TRXDATE := 20210801D;
-        MSFTCM20200Table.TRXAMNT := 395.59;
-        MSFTCM20200Table.CMLinkID := '1000';
-        MSFTCM20200Table.DSCRIPTN := 'APCheck1 - Vendor Check';
-        MSFTCM20200Table.Insert(true);
+        GPCheckbookTransactionsTable.Init();
+        GPCheckbookTransactionsTable.CMRECNUM := 497.00;
+        GPCheckbookTransactionsTable.CHEKBKID := MyBankStr1;
+        GPCheckbookTransactionsTable.CMTrxType := 3;
+        GPCheckbookTransactionsTable.TRXDATE := 20210801D;
+        GPCheckbookTransactionsTable.TRXAMNT := 395.59;
+        GPCheckbookTransactionsTable.CMLinkID := '1000';
+        GPCheckbookTransactionsTable.Insert(true);
 
-        MSFTCM20200Table.Init();
-        MSFTCM20200Table.CMRECNUM := 120.00;
-        MSFTCM20200Table.CHEKBKID := MyBankStr1;
-        MSFTCM20200Table.CMTrxType := 1;
-        MSFTCM20200Table.TRXDATE := 20210802D;
-        MSFTCM20200Table.TRXAMNT := 500.00;
-        MSFTCM20200Table.CMLinkID := '1000';
-        MSFTCM20200Table.DSCRIPTN := 'Deposit1';
-        MSFTCM20200Table.Insert(true);
+        GPCheckbookTransactionsTable.Init();
+        GPCheckbookTransactionsTable.CMRECNUM := 498.00;
+        GPCheckbookTransactionsTable.CHEKBKID := MyBankStr1;
+        GPCheckbookTransactionsTable.CMTrxType := 3;
+        GPCheckbookTransactionsTable.TRXDATE := 20210801D;
+        GPCheckbookTransactionsTable.TRXAMNT := 650.00;
+        GPCheckbookTransactionsTable.CMLinkID := '1000';
+        GPCheckbookTransactionsTable.Insert(true);
 
-        MSFTCM20200Table.Init();
-        MSFTCM20200Table.CMRECNUM := 125.00;
-        MSFTCM20200Table.CHEKBKID := MyBankStr1;
-        MSFTCM20200Table.CMTrxType := 2;
-        MSFTCM20200Table.TRXDATE := 20210902D;
-        MSFTCM20200Table.TRXAMNT := 250.00;
-        MSFTCM20200Table.CMLinkID := '1000';
-        MSFTCM20200Table.DSCRIPTN := 'Receipt1';
-        MSFTCM20200Table.Insert(true);
+        GPCheckbookTransactionsTable.Init();
+        GPCheckbookTransactionsTable.CMRECNUM := 300.00;
+        GPCheckbookTransactionsTable.CHEKBKID := MyBankStr2;
+        GPCheckbookTransactionsTable.CMTrxType := 3;
+        GPCheckbookTransactionsTable.TRXDATE := 20210801D;
+        GPCheckbookTransactionsTable.TRXAMNT := 450.36;
+        GPCheckbookTransactionsTable.CMLinkID := '1000';
+        GPCheckbookTransactionsTable.Insert(true);
 
-        MSFTCM20200Table.Init();
-        MSFTCM20200Table.CMRECNUM := 130.00;
-        MSFTCM20200Table.CHEKBKID := MyBankStr1;
-        MSFTCM20200Table.CMTrxType := 3;
-        MSFTCM20200Table.TRXDATE := 20210801D;
-        MSFTCM20200Table.TRXAMNT := 650.00;
-        MSFTCM20200Table.CMLinkID := '2000';
-        MSFTCM20200Table.DSCRIPTN := 'APCheck2 - NonVendor Check';
-        MSFTCM20200Table.Insert(true);
+        GPCheckbookTransactionsTable.Init();
+        GPCheckbookTransactionsTable.CMRECNUM := 210.00;
+        GPCheckbookTransactionsTable.CHEKBKID := MyBankStr4;
+        GPCheckbookTransactionsTable.CMTrxType := 3;
+        GPCheckbookTransactionsTable.TRXDATE := 20210801D;
+        GPCheckbookTransactionsTable.TRXAMNT := 200.00;
+        GPCheckbookTransactionsTable.CMLinkID := '1000';
+        GPCheckbookTransactionsTable.Insert(true);
 
-        MSFTCM20200Table.Init();
-        MSFTCM20200Table.CMRECNUM := 200.00;
-        MSFTCM20200Table.CHEKBKID := MyBankStr2;
-        MSFTCM20200Table.CMTrxType := 3;
-        MSFTCM20200Table.TRXDATE := 20210801D;
-        MSFTCM20200Table.TRXAMNT := 450.36;
-        MSFTCM20200Table.CMLinkID := '1000';
-        MSFTCM20200Table.DSCRIPTN := 'APCheck3 - Vendor Check';
-        MSFTCM20200Table.Insert(true);
-
-        MSFTCM20200Table.Init();
-        MSFTCM20200Table.CMRECNUM := 210.00;
-        MSFTCM20200Table.CHEKBKID := MyBankStr2;
-        MSFTCM20200Table.CMTrxType := 3;
-        MSFTCM20200Table.TRXDATE := 20210801D;
-        MSFTCM20200Table.TRXAMNT := 450.36;
-        MSFTCM20200Table.CMLinkID := '3000';
-        MSFTCM20200Table.DSCRIPTN := 'APCheck4 - NonVendor Check';
-        MSFTCM20200Table.Insert(true);
-
-        MSFTCM20200Table.Init();
-        MSFTCM20200Table.CMRECNUM := 400.00;
-        MSFTCM20200Table.CHEKBKID := MyBankStr4;
-        MSFTCM20200Table.CMTrxType := 3;
-        MSFTCM20200Table.TRXDATE := 20210801D;
-        MSFTCM20200Table.TRXAMNT := 200.00;
-        MSFTCM20200Table.CMLinkID := '1000';
-        MSFTCM20200Table.DSCRIPTN := 'APCheck5 - Vendor Check';
-        MSFTCM20200Table.Insert(true);
-
-        MSFTCM20200Table.Init();
-        MSFTCM20200Table.CMRECNUM := 410.00;
-        MSFTCM20200Table.CHEKBKID := MyBankStr4;
-        MSFTCM20200Table.CMTrxType := 4;
-        MSFTCM20200Table.TRXDATE := 20210801D;
-        MSFTCM20200Table.TRXAMNT := 200.00;
-        MSFTCM20200Table.CMLinkID := '1000';
-        MSFTCM20200Table.DSCRIPTN := 'Withdrawl/Payroll Check1';
-        MSFTCM20200Table.Insert(true);
-
-        MSFTCM20200Table.Init();
-        MSFTCM20200Table.CMRECNUM := 500.00;
-        MSFTCM20200Table.CHEKBKID := MyBankStr5;
-        MSFTCM20200Table.CMTrxType := 2;
-        MSFTCM20200Table.TRXDATE := 20210801D;
-        MSFTCM20200Table.TRXAMNT := 200.00;
-        MSFTCM20200Table.CMLinkID := '1000';
-        MSFTCM20200Table.DSCRIPTN := 'Receipt2';
-        MSFTCM20200Table.Insert(true);
-
-        MSFTCM20200Table.Init();
-        MSFTCM20200Table.CMRECNUM := 505.00;
-        MSFTCM20200Table.CHEKBKID := MyBankStr5;
-        MSFTCM20200Table.CMTrxType := 5;
-        MSFTCM20200Table.TRXDATE := 20210801D;
-        MSFTCM20200Table.TRXAMNT := 200.00;
-        MSFTCM20200Table.CMLinkID := '1000';
-        MSFTCM20200Table.DSCRIPTN := 'IncreaseAdjustment1';
-        MSFTCM20200Table.Insert(true);
-
-        MSFTCM20200Table.Init();
-        MSFTCM20200Table.CMRECNUM := 510.00;
-        MSFTCM20200Table.CHEKBKID := MyBankStr5;
-        MSFTCM20200Table.CMTrxType := 6;
-        MSFTCM20200Table.TRXDATE := 20210801D;
-        MSFTCM20200Table.TRXAMNT := 200.00;
-        MSFTCM20200Table.CMLinkID := '1000';
-        MSFTCM20200Table.DSCRIPTN := 'DecreaseAdjustment1';
-        MSFTCM20200Table.Insert(true);
-
-        MSFTCM20200Table.Init();
-        MSFTCM20200Table.CMRECNUM := 520.00;
-        MSFTCM20200Table.CHEKBKID := MyBankStr5;
-        MSFTCM20200Table.CMTrxType := 7;
-        MSFTCM20200Table.TRXDATE := 20210801D;
-        MSFTCM20200Table.TRXAMNT := 200.00;
-        MSFTCM20200Table.CMLinkID := '1000';
-        MSFTCM20200Table.DSCRIPTN := 'BankTransfer1';
-        MSFTCM20200Table.Insert(true);
+        GPCheckbookTransactionsTable.Init();
+        GPCheckbookTransactionsTable.CMRECNUM := 220.00;
+        GPCheckbookTransactionsTable.CHEKBKID := MyBankStr5;
+        GPCheckbookTransactionsTable.CMTrxType := 2;
+        GPCheckbookTransactionsTable.TRXDATE := 20210801D;
+        GPCheckbookTransactionsTable.TRXAMNT := 200.00;
+        GPCheckbookTransactionsTable.CMLinkID := '1000';
+        GPCheckbookTransactionsTable.Insert(true);
     end;
 
     local procedure CreateAccounts()
