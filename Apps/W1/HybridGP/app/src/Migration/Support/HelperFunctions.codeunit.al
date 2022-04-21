@@ -63,7 +63,6 @@ Codeunit 4037 "Helper Functions"
         DocNoOutofBalanceMsg: Label 'Document No. %1 is out of balance by %2. Transactions will not be created. Please check the amount in the import file.', Comment = '%1 = Balance Amount', Locked = true;
         CustomerBatchNameTxt: Label 'GPCUST', Locked = true;
         VendorBatchNameTxt: Label 'GPVEND', Locked = true;
-        BankBatchNameTxt: Label 'GPBANK', Locked = true;
         GlDocNoTxt: Label 'G00001', Locked = true;
         MigrationTypeTxt: Label 'Great Plains';
         ImportedEntityTxt: Label 'Imported %1 data file.', Locked = true;
@@ -1330,23 +1329,6 @@ Codeunit 4037 "Helper Functions"
                 PostGLBatch(CopyStr(JournalBatchName, 1, 10));
         end;
 
-        OnSkipPostingBankBatches(SkipPosting);
-        if not SkipPosting then begin
-            // Post the Bank Batch, if created...
-            JournalBatchName := BankBatchNameTxt;
-            GenJnlLine.Reset();
-            GenJnlLine.SetRange("Journal Template Name", 'CASHRCPT');
-            GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-            if not GenJnlLine.IsEmpty() then
-                PostGLBatch(CopyStr(JournalBatchName, 1, 10), 'CASHRCPT');
-
-            GenJnlLine.Reset();
-            GenJnlLine.SetRange("Journal Template Name", 'PAYMENT');
-            GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-            if not GenJnlLine.IsEmpty() then
-                PostGLBatch(CopyStr(JournalBatchName, 1, 10), 'PAYMENT');
-        end;
-
         // Remove posted batches
         RemoveBatches();
         DurationAsInt := CurrentDateTime() - StartTime;
@@ -1354,20 +1336,15 @@ Codeunit 4037 "Helper Functions"
     end;
 
     procedure PostGLBatch(JournalBatchName: Code[10])
-    begin
-        PostGLBatch(JournalBatchName, 'GENERAL');
-    end;
-
-    procedure PostGLBatch(JournalBatchName: Code[10]; JournalTemplateName: Code[10])
     var
         GenJnlLine: Record "Gen. Journal Line";
         TotalBalance: Decimal;
     begin
         GenJnlLine.Reset();
-        GenJnlLine.SetRange("Journal Template Name", JournalTemplateName);
+        GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
         GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-        // Do not care about balances for Customer, Vendor, and Bank batches
-        if (JournalBatchName <> CustomerBatchNameTxt) and (JournalBatchName <> VendorBatchNameTxt) and (JournalBatchName <> BankBatchNameTxt) then begin
+        // Do not care about balances for Customer and Vendor batches
+        if (JournalBatchName <> CustomerBatchNameTxt) and (JournalBatchName <> VendorBatchNameTxt) then begin
             repeat
                 TotalBalance := TotalBalance + GenJnlLine.Amount;
             until GenJnlLine.Next() = 0;
@@ -1433,26 +1410,6 @@ Codeunit 4037 "Helper Functions"
         If GenJnlLine.Count() = 1 then begin
             GenJnlLine.DeleteAll();
             if GenJnlBatch.Get('GENERAL', JournalBatchName) then
-                GenJnlBatch.Delete();
-        end;
-
-        // Bank Batch
-        JournalBatchName := BankBatchNameTxt;
-        GenJnlLine.Reset();
-        GenJnlLine.SetRange("Journal Template Name", 'CASHRCPT');
-        GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-        If GenJnlLine.Count() = 1 then begin
-            GenJnlLine.DeleteAll();
-            if GenJnlBatch.Get('CASHRCPT', JournalBatchName) then
-                GenJnlBatch.Delete();
-        end;
-
-        GenJnlLine.Reset();
-        GenJnlLine.SetRange("Journal Template Name", 'PAYMENT');
-        GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-        If GenJnlLine.Count() = 1 then begin
-            GenJnlLine.DeleteAll();
-            if GenJnlBatch.Get('PAYMENT', JournalBatchName) then
                 GenJnlBatch.Delete();
         end;
     end;
@@ -1936,11 +1893,6 @@ Codeunit 4037 "Helper Functions"
 
     [IntegrationEvent(false, false)]
     local procedure OnSkipPostingVendorBatches(var SkipPosting: Boolean)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnSkipPostingBankBatches(var SkipPosting: Boolean)
     begin
     end;
 
