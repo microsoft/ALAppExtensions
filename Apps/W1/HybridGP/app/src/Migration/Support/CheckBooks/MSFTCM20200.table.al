@@ -35,11 +35,11 @@ table 40104 MSFTCM20200
         {
             DataClassification = CustomerContent;
         }
-        field(7; TRXDATE; DateTime)
+        field(7; TRXDATE; Date)
         {
             DataClassification = CustomerContent;
         }
-        field(8; GLPOSTDT; DateTime)
+        field(8; GLPOSTDT; Date)
         {
             DataClassification = CustomerContent;
         }
@@ -75,7 +75,7 @@ table 40104 MSFTCM20200
         {
             DataClassification = CustomerContent;
         }
-        field(17; clearedate; DateTime)
+        field(17; clearedate; Date)
         {
             DataClassification = CustomerContent;
         }
@@ -83,11 +83,11 @@ table 40104 MSFTCM20200
         {
             DataClassification = CustomerContent;
         }
-        field(19; VOIDDATE; DateTime)
+        field(19; VOIDDATE; Date)
         {
             DataClassification = CustomerContent;
         }
-        field(20; VOIDPDATE; DateTime)
+        field(20; VOIDPDATE; Date)
         {
             DataClassification = CustomerContent;
         }
@@ -119,7 +119,7 @@ table 40104 MSFTCM20200
         {
             DataClassification = CustomerContent;
         }
-        field(28; POSTEDDT; DateTime)
+        field(28; POSTEDDT; Date)
         {
             DataClassification = CustomerContent;
         }
@@ -127,7 +127,7 @@ table 40104 MSFTCM20200
         {
             DataClassification = CustomerContent;
         }
-        field(30; MODIFDT; DateTime)
+        field(30; MODIFDT; Date)
         {
             DataClassification = CustomerContent;
         }
@@ -163,11 +163,11 @@ table 40104 MSFTCM20200
         {
             DataClassification = CustomerContent;
         }
-        field(39; EXCHDATE; DateTime)
+        field(39; EXCHDATE; Date)
         {
             DataClassification = CustomerContent;
         }
-        field(40; TIME1; DateTime)
+        field(40; TIME1; Date)
         {
             DataClassification = CustomerContent;
         }
@@ -175,7 +175,7 @@ table 40104 MSFTCM20200
         {
             DataClassification = CustomerContent;
         }
-        field(42; EXPNDATE; DateTime)
+        field(42; EXPNDATE; Date)
         {
             DataClassification = CustomerContent;
         }
@@ -271,7 +271,7 @@ table 40104 MSFTCM20200
 
                 CreateGeneralJournalBatchIfNeeded(JournalTemplateName, NoSeries);
                 CreateGeneralJournalLine(GenJournalLine, DocumentType, JournalTemplateName, AccountType,
-                    Format(CMRECNUM), DSCRIPTN, DT2Date(TRXDATE), AccountNo, Amount, BankAccountNo, CMTrxType);
+                    Format(CMRECNUM), DSCRIPTN, TRXDATE, AccountNo, Amount, BankAccountNo, CMTrxType);
 
             until Next() = 0;
     end;
