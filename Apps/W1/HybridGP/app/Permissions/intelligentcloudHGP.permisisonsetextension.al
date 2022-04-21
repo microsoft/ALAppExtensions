@@ -56,5 +56,6 @@ permissionsetextension 4028 "INTELLIGENT CLOUD - HGP" extends "INTELLIGENT CLOUD
                   tabledata "GP Codes" = RIMD,
                   tabledata "GP Segment Name" = RIMD,
                   tabledata "GP Migration Errors" = RIMD,
-                  tabledata "GP Company Migration Settings" = RIMD;
+                  tabledata "GP Company Migration Settings" = RIMD,
+                  tabledata "GP Company Additional Settings" = RIMD;
 }

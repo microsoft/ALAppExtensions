@@ -11,6 +11,7 @@ codeunit 139700 "GP Checkbook Tests"
         GPCheckbookMSTRTable: Record "GP Checkbook MSTR";
         BankAccountPostingGroup: Record "Bank Account Posting Group";
         GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         BankAccount: Record "Bank Account";
         InvalidBankAccountMsg: Label '%1 should not have been created.', Comment = '%1 - bank account no.', Locked = true;
         MissingBankAccountMsg: Label '%1 should have been created.', Comment = '%1 - bank account no.', Locked = true;
@@ -85,6 +86,7 @@ codeunit 139700 "GP Checkbook Tests"
         BankAccountPostingGroup.DeleteAll();
         GPCheckbookMSTRTable.DeleteAll();
         GPCompanyMigrationSettings.DeleteAll();
+        GPCompanyAdditionalSettings.DeleteAll();
     end;
 
     local procedure Migrate()
@@ -95,9 +97,13 @@ codeunit 139700 "GP Checkbook Tests"
     local procedure ConfigureMigrationSettings(MigrateInactive: Boolean)
     begin
         GPCompanyMigrationSettings.Init();
-        GPCompanyMigrationSettings.Name := 'Setup';
-        GPCompanyMigrationSettings."Migrate Inactive Checkbooks" := MigrateInactive;
+        GPCompanyMigrationSettings.Name := CompanyName();
         GPCompanyMigrationSettings.Insert(true);
+
+        GPCompanyAdditionalSettings.Init();
+        GPCompanyAdditionalSettings.Name := GPCompanyMigrationSettings.Name;
+        GPCompanyAdditionalSettings."Migrate Inactive Checkbooks" := MigrateInactive;
+        GPCompanyAdditionalSettings.Insert(true);
     end;
 
     local procedure CreateCheckbookData()
