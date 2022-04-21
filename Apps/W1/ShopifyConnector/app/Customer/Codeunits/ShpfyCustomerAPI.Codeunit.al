@@ -21,7 +21,7 @@ codeunit 30114 "Shpfy Customer API"
     /// <returns>Return value of type Boolean.</returns>
     local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; Value: Variant): Boolean
     begin
-        AddFieldToGraphQuery(GraphQuery, FieldName, Value, true);
+        exit(AddFieldToGraphQuery(GraphQuery, FieldName, Value, true));
     end;
 
     local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; Value: Variant; ValueAsString: Boolean): Boolean
@@ -329,10 +329,9 @@ codeunit 30114 "Shpfy Customer API"
         if ShopifyCustomerAddress."Province Code" <> '' then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'provinceCode', ShopifyCustomerAddress."Province Code");
         if ShopifyCustomerAddress."Country/Region Code" <> '' then
-            HasChange := GraphQuery.Append('countryCode: ' + ShopifyCustomerAddress."Country/Region Code" + ', ');
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'countryCode', ShopifyCustomerAddress."Country/Region Code", false);
         if ShopifyCustomerAddress.Phone <> '' then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'phone', ShopifyCustomerAddress.Phone);
-
 
         if HasChange then begin
             GraphQuery.Remove(GraphQuery.Length - 1, 2);
