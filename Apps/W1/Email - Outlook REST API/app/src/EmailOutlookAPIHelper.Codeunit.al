@@ -47,8 +47,14 @@ codeunit 4509 "Email - Outlook API Helper"
         EmailAddressJson: JsonObject;
         FromJson: JsonObject;
     begin
-        EmailAddressJson.Add('address', Account."Email Address");
-        EmailAddressJson.Add('name', Account."Name");
+        if EmailMessage.GetFromAddress() <> '' then
+            EmailAddressJson.Add('address', EmailMessage.GetFromAddress())
+        else
+            EmailAddressJson.Add('address', Account."Email Address");
+        if EmailMessage.GetFromName() <> '' then
+            EmailAddressJson.Add('name', EmailMessage.GetFromName())
+        else
+            EmailAddressJson.Add('name', Account."Name");
 
         FromJson.Add('emailAddress', EmailAddressJson);
         EmailMessageJson.Add('from', FromJson);
