@@ -51,7 +51,8 @@ codeunit 134692 "Email E2E Tests"
 
         EmailMessage.Create(Recipient, Subject, Body, true);
         EmailMessage.AddAttachment('Attachment1', 'text/plain', Base64Convert.ToBase64('Content'));
-        EmailMessage.SetFrom(FromName, FromAddress);
+        EmailMessage.SetFromName(FromName);
+        EmailMessage.SetFromAddress(FromAddress);
 
         // Save to Outbox
         Email.SaveAsDraft(EmailMessage);
