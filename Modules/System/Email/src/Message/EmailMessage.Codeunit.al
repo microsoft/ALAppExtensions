@@ -63,10 +63,18 @@ codeunit 8904 "Email Message"
     /// Adds the mailbox that this email is being sent from.
     /// </summary>
     /// <param name="FromName">The name of the email sender</param>
-    /// <param name="FromAddress">The address of the email sender</param>
-    procedure SetFrom(FromName: Text[250]; FromAddress: Text[250])
+    procedure SetFromName(FromName: Text[250])
     begin
-        EmailMessageImpl.SetFrom(FromName, FromAddress);
+        EmailMessageImpl.SetFromName(FromName);
+    end;
+
+    /// <summary>
+    /// Adds the mailbox that this email is being sent from.
+    /// </summary>
+    /// <param name="FromAddress">The address of the email sender</param>
+    procedure SetFromAddress(FromAddress: Text[250])
+    begin
+        EmailMessageImpl.SetFromAddress(FromAddress);
     end;
 
     /// <summary>

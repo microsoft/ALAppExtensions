@@ -175,9 +175,14 @@ codeunit 8905 "Email Message Impl."
         Modify();
     end;
 
-    procedure SetFrom(FromName: Text[250]; FromAddress: Text[250])
+    procedure SetFromName(FromName: Text[250])
     begin
         EmailMessageRec."From Name" := FromName;
+        EmailMessageRec.Modify();
+    end;
+
+    procedure SetFromAddress(FromAddress: Text[250])
+    begin
         EmailMessageRec."From Address" := FromAddress;
         EmailMessageRec.Modify();
     end;
