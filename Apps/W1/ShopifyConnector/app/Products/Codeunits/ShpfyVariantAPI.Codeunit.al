@@ -101,7 +101,7 @@ codeunit 30189 "Shpfy Variant API"
             GraphQuery.Append(Format(ShopifyVariant.Price, 0, 9));
             GraphQuery.Append('\"')
         end;
-        if ShopifyVariant."Compare at Price" < ShopifyVariant.Price then begin
+        if ShopifyVariant."Compare at Price" > ShopifyVariant.Price then begin
             GraphQuery.Append(', compareAtPrice: \"');
             GraphQuery.Append(Format(ShopifyVariant."Compare at Price", 0, 9));
             GraphQuery.Append('\"');
