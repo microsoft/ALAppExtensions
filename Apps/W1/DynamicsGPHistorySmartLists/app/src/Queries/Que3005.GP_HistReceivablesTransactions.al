@@ -36,46 +36,6 @@ query 3005 GPHistReceivablesTrx
             {
                 Caption = 'Sales Amount';
             }
-            column(TRXDSCRN; TRXDSCRN)
-            {
-                Caption = 'Description';
-            }
-            column(CHEKNMBR; CHEKNMBR)
-            {
-                Caption = 'Check Number';
-            }
-            column(FRTAMNT; FRTAMNT)
-            {
-                Caption = 'Freight Amount';
-            }
-            column(MISCAMNT; MISCAMNT)
-            {
-                Caption = 'Misc Amount';
-            }
-            column(TAXAMNT; TAXAMNT)
-            {
-                Caption = 'Tax Amount';
-            }
-            column(CASHAMNT; CASHAMNT)
-            {
-                Caption = 'Cash Amount';
-            }
-            column(DISTKNAM; DISTKNAM)
-            {
-                Caption = 'Terms Disc Taken';
-            }
-            column(SLPRSNID; SLPRSNID)
-            {
-                Caption = 'Salesperson';
-            }
-            column(SLSTERCD; SLSTERCD)
-            {
-                Caption = 'Sales Territory';
-            }
-            column(PYMTRMID; PYMTRMID)
-            {
-                Caption = 'Payment Terms';
-            }
         }
     }
 
