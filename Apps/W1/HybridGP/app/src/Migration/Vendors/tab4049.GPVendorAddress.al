@@ -37,10 +37,6 @@ table 4049 "GP Vendor Address"
         {
             DataClassification = CustomerContent;
         }
-        field(10; COUNTRY; Text[61])
-        {
-            DataClassification = CustomerContent;
-        }
         field(12; PHNUMBR1; Text[21])
         {
             DataClassification = CustomerContent;
@@ -88,14 +84,6 @@ table 4049 "GP Vendor Address"
 
             OrderAddress."Post Code" := ZIPCODE;
             OrderAddress.County := STATE;
-
-            if (CopyStr(COUNTRY, 1, 10) <> '') then begin
-                HelperFunctions.CreateCountryIfNeeded(CopyStr(COUNTRY, 1, 10), CopyStr(COUNTRY, 1, 10));
-                Country := CopyStr(COUNTRY, 1, 10);
-            end else begin
-                CompanyInformation.Get();
-                OrderAddress."Country/Region Code" := CompanyInformation."Country/Region Code";
-            end;
 
             if not Exists then
                 OrderAddress.Insert()

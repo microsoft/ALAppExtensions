@@ -206,7 +206,6 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('Sydney', Vendor.City, 'City of Migrated Vendor is wrong');
         Assert.AreEqual('29855501020000', Vendor."Phone No.", 'Phone No. of Migrated Vendor is wrong');
         Assert.AreEqual('29455501020000', Vendor."Fax No.", 'Fax No. of Migrated Vendor is wrong');
-        Assert.AreEqual('AUSTRALIA', Vendor."Country/Region Code", 'Country of Migrated Vendor is wrong');
 
         // [WHEN] the Vendor does not have a Remit To address
         Vendor.Reset();
@@ -1339,7 +1338,6 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendorAddress.ZIPCODE := '2086';
         GPVendorAddress.PHNUMBR1 := '29855501010000';
         GPVendorAddress.FAXNUMBR := '29455501010000';
-        GPVendorAddress.COUNTRY := 'Australia';
         GPVendorAddress.Insert();
 
         GPVendorAddress.Init();
@@ -1353,7 +1351,6 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendorAddress.ZIPCODE := '2000';
         GPVendorAddress.PHNUMBR1 := '29855501020000';
         GPVendorAddress.FAXNUMBR := '29455501020000';
-        GPVendorAddress.COUNTRY := 'Australia';
         GPVendorAddress.Insert();
 
         GPVendor.Init();
@@ -1392,7 +1389,6 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendorAddress.ZIPCODE := '2086';
         GPVendorAddress.PHNUMBR1 := '61855501040000';
         GPVendorAddress.FAXNUMBR := '61855501040000';
-        GPVendorAddress.COUNTRY := 'Australia';
         GPVendorAddress.Insert();
 
         GPVendorAddress.Init();
@@ -1406,7 +1402,6 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendorAddress.ZIPCODE := '2086';
         GPVendorAddress.PHNUMBR1 := '00000000000000';
         GPVendorAddress.FAXNUMBR := '00000000000000';
-        GPVendorAddress.COUNTRY := 'Australia';
         GPVendorAddress.Insert();
 
         GPVendor.Init();

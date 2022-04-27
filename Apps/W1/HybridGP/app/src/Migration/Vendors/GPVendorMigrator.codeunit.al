@@ -158,7 +158,6 @@ codeunit 4022 "GP Vendor Migrator"
             GPVendor.CITY := GPVendorAddress.CITY;
             GPVendor.STATE := GPVendorAddress.STATE;
             GPVendor.ZIPCODE := GPVendorAddress.ZIPCODE;
-            GPVendor.COUNTRY := GPVendorAddress.COUNTRY;
 
             if (CopyStr(GPVendorAddress.PHNUMBR1, 1, 14) <> '00000000000000') then
                 GPVendor.PHNUMBR1 := GPVendorAddress.PHNUMBR1;
