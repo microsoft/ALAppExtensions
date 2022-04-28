@@ -69,7 +69,8 @@ codeunit 30180 "Shpfy Product Import"
             if not ShopifyProduct.FindFirst() then begin
                 ShopifyProduct.Id := Id;
                 ShopifyProduct."Shop Code" := Shop.Code;
-                ShopifyProduct.Insert(false);
+                if ShopifyProduct.Insert(false) then
+                    exit;
             end;
             if ProductApi.RetrieveShopifyProduct(ShopifyProduct) then begin
                 VariantApi.RetrieveShopifyProductVariantIds(ShopifyProduct, VariantIds);
@@ -80,7 +81,7 @@ codeunit 30180 "Shpfy Product Import"
                         ShopifyVariant.Id := VariantId;
                         ShopifyVariant."Product Id" := Id;
                         ShopifyVariant."Shop Code" := ShopifyProduct."Shop Code";
-                        ShopifyVariant.Insert(false);
+                        if ShopifyVariant.Insert(false) then;
                     end;
                     ShopifyInventoryItem.SetRange("Variant Id", VariantId);
                     if not ShopifyInventoryItem.FindSet() then
