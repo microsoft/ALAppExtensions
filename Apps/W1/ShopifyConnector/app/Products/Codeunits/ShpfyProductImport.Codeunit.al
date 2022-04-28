@@ -69,7 +69,7 @@ codeunit 30180 "Shpfy Product Import"
             if not ShopifyProduct.FindFirst() then begin
                 ShopifyProduct.Id := Id;
                 ShopifyProduct."Shop Code" := Shop.Code;
-                if ShopifyProduct.Insert(false) then
+                if not ShopifyProduct.Insert(false) then
                     exit;
             end;
             if ProductApi.RetrieveShopifyProduct(ShopifyProduct) then begin
@@ -81,13 +81,15 @@ codeunit 30180 "Shpfy Product Import"
                         ShopifyVariant.Id := VariantId;
                         ShopifyVariant."Product Id" := Id;
                         ShopifyVariant."Shop Code" := ShopifyProduct."Shop Code";
-                        if ShopifyVariant.Insert(false) then;
+                        if not ShopifyVariant.Insert(false) then;
                     end;
-                    ShopifyInventoryItem.SetRange("Variant Id", VariantId);
-                    if not ShopifyInventoryItem.FindSet() then
-                        Clear(ShopifyInventoryItem);
-                    if not VariantApi.RetrieveShopifyVariant(ShopifyProduct, ShopifyVariant, ShopifyInventoryItem) then
-                        ShopifyVariant.Delete();
+                    if ShopifyVariant.Get(VariantId) then begin
+                        ShopifyInventoryItem.SetRange("Variant Id", VariantId);
+                        if not ShopifyInventoryItem.FindSet() then
+                            Clear(ShopifyInventoryItem);
+                        if not VariantApi.RetrieveShopifyVariant(ShopifyProduct, ShopifyVariant, ShopifyInventoryItem) then
+                            ShopifyVariant.Delete();
+                    end;
                 end;
             end else
                 ShopifyProduct.Delete();
