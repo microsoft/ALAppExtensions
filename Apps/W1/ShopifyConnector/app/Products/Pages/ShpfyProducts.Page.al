@@ -3,13 +3,13 @@
 /// </summary>
 page 30126 "Shpfy Products"
 {
-
     ApplicationArea = All;
     Caption = 'Shopify Products';
     InsertAllowed = false;
     ModifyAllowed = true;
     PageType = List;
     PromotedActionCategories = 'New, Process, Report, Synchronization';
+    RefreshOnActivate = true;
     SourceTable = "Shpfy Product";
     UsageCategory = Lists;
 
@@ -22,8 +22,8 @@ page 30126 "Shpfy Products"
                 field(ShopCode; Rec."Shop Code")
                 {
                     ApplicationArea = All;
-                    Visible = false;
                     ToolTip = 'Specifies the Shopify Shop where these products are synchronized to/from.';
+                    Visible = false;
                 }
                 field(Id; Rec.Id)
                 {
@@ -321,9 +321,11 @@ page 30126 "Shpfy Products"
 
                     trigger OnAction()
                     var
+                        Shop: Record "Shpfy Shop";
                         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                     begin
-                        BackgroundSyncs.ProductsSync(Rec."Shop Code");
+                        Shop.SetFilter(Code, Rec.Getfilter("Shop Code"));
+                        BackgroundSyncs.ProductsSync(Shop);
                     end;
                 }
                 action(SyncProductPrices)
@@ -339,9 +341,11 @@ page 30126 "Shpfy Products"
 
                     trigger OnAction()
                     var
+                        Shop: Record "Shpfy Shop";
                         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                     begin
-                        BackgroundSyncs.ProductPricesSync(Rec."Shop Code");
+                        Shop.SetFilter(Code, Rec.Getfilter("Shop Code"));
+                        BackgroundSyncs.ProductPricesSync(Shop);
                     end;
                 }
                 action(SyncImages)
