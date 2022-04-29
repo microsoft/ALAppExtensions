@@ -148,6 +148,7 @@ codeunit 4018 "GP Customer Migrator"
     local procedure MigrateCustomerDetails(MigrationGPCustomer: Record "GP Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
     var
         CompanyInformation: Record "Company Information";
+        HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
         Country: Code[10];
         AddressFormatToSet: Option "Post Code+City","City+Post Code","City+County+Post Code","Blank Line+Post Code+City";
@@ -168,21 +169,15 @@ codeunit 4018 "GP Customer Migrator"
             CustomerDataMigrationFacade.CreatePostCodeIfNeeded(CopyStr(MigrationGPCustomer.ZIPCODE, 1, 20),
                 CopyStr(MigrationGPCustomer.CITY, 1, 30), CopyStr(MigrationGPCustomer.STATE, 1, 20), Country);
 
-
         CustomerDataMigrationFacade.SetAddress(CopyStr(MigrationGPCustomer.ADDRESS1, 1, 50),
             CopyStr(MigrationGPCustomer.ADDRESS2, 1, 50), Country, CopyStr(MigrationGPCustomer.ZIPCODE, 1, 20),
             CopyStr(MigrationGPCustomer.CITY, 1, 30));
+
         CustomerDataMigrationFacade.SetContact(CopyStr(MigrationGPCustomer.CNTCPRSN, 1, 50));
-
-        if (CopyStr(MigrationGPCustomer.PHONE1, 1, 14) = '00000000000000') then
-            MigrationGPCustomer.PHONE1 := '';
-
-        if (CopyStr(MigrationGPCustomer.FAX, 1, 14) = '00000000000000') then
-            MigrationGPCustomer.FAX := '';
-
+        MigrationGPCustomer.PHONE1 := HelperFunctions.CleanGPPhoneOrFaxNumber(MigrationGPCustomer.PHONE1);
+        MigrationGPCustomer.FAX := HelperFunctions.CleanGPPhoneOrFaxNumber(MigrationGPCustomer.FAX);
         CustomerDataMigrationFacade.SetPhoneNo(MigrationGPCustomer.PHONE1);
         CustomerDataMigrationFacade.SetFaxNo(MigrationGPCustomer.FAX);
-
         CustomerDataMigrationFacade.SetCustomerPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
         CustomerDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
         CustomerDataMigrationFacade.SetEmail(COPYSTR(MigrationGPCustomer.INET1, 1, 80));

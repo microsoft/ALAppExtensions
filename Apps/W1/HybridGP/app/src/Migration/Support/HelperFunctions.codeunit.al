@@ -1906,4 +1906,14 @@ Codeunit 4037 "Helper Functions"
         DataMigrationError."Error Message" := ErrorMessage;
         DataMigrationError.Insert();
     end;
+
+    procedure CleanGPPhoneOrFaxNumber(InValue: Text[30]) OutValue: Text[21]
+    begin
+        OutValue := CopyStr(InValue, 1, 21);
+
+        if (CopyStr(InValue, 1, 14) = '00000000000000') then
+            OutValue := '';
+
+        exit(OutValue);
+    end;
 }
