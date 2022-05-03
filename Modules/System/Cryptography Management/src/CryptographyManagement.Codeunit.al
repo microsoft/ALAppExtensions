@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -21,7 +21,23 @@ codeunit 1266 "Cryptography Management"
     /// </summary>
     /// <param name="InputString">The value to encrypt.</param>
     /// <returns>Encrypted value.</returns>
+    [Obsolete('Use Encrypt(Text[215]) instead', '20.0')]
     procedure Encrypt(InputString: Text): Text
+    var
+        EncryptionInputStringLengthExceededErr: Label 'Input string for encryption cannot exceed a length of 215 plain characters.';
+    begin
+        if (StrLen(InputString) > 215) then
+            Error(EncryptionInputStringLengthExceededErr);
+            
+        exit(Encrypt(InputString));
+    end;
+
+    /// <summary>
+    /// Returns plain text as an encrypted value.
+    /// </summary>
+    /// <param name="InputString">The input string that will be encrypted. The input string cannot exceed a length of 215 plain characters. If the input string includes special characters the length is even more reduced.</param>
+    /// <returns>Encrypted value.</returns>
+    procedure Encrypt(InputString: Text[215]): Text
     begin
         exit(CryptographyManagementImpl.Encrypt(InputString));
     end;
