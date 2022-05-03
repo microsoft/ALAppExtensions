@@ -199,7 +199,7 @@ Codeunit 148033 TestMatchFIKBankPmtApp
     END;
 
     [Test]
-    [HandlerFunctions('MessageHandler,PostAndReconcilePageHandler')]
+    [HandlerFunctions('MessageHandler,PostAndReconcilePageHandler,PostAndReconcilePageStatementDateHandler')]
     PROCEDURE TestMatchFIKEntryIsPaid();
     VAR
         BankAccReconciliation: Record "Bank Acc. Reconciliation";
@@ -409,6 +409,13 @@ Codeunit 148033 TestMatchFIKBankPmtApp
     procedure PostAndReconcilePageHandler(var PostPmtsAndRecBankAcc: TestPage "Post Pmts and Rec. Bank Acc.")
     begin
         PostPmtsAndRecBankAcc.OK().Invoke();
+    end;
+
+    [ConfirmHandler]
+    [Scope('OnPrem')]
+    procedure PostAndReconcilePageStatementDateHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
     end;
 
     [MessageHandler]

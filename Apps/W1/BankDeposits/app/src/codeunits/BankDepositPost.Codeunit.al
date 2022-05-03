@@ -4,7 +4,7 @@ codeunit 1690 "Bank Deposit-Post"
                   TableData "Vendor Ledger Entry" = r,
                   TableData "Bank Account Ledger Entry" = r,
                   TableData "Bank Acc. Comment Line" = rimd,
-                  TableData "Bank Deposit Header" = r,
+                  TableData "Bank Deposit Header" = rd,
                   TableData "Posted Bank Deposit Header" = rim,
                   TableData "Posted Bank Deposit Line" = rim;
     TableNo = "Bank Deposit Header";
@@ -336,6 +336,7 @@ codeunit 1690 "Bank Deposit-Post"
             Amount := BankDepositHeader."Total Deposit Amount";
             "Source Currency Amount" := BankDepositHeader."Total Deposit Amount";
             "Journal Template Name" := BankDepositHeader."Journal Template Name";
+            "Journal Batch Name" := BankDepositHeader."Journal Batch Name";
             Validate(Amount);
             "Amount (LCY)" := -TotalAmountLCY;
             OnBeforePostBalancingEntry(GenJournalLine, BankDepositHeader, GenJnlPostLine);

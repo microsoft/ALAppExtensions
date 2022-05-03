@@ -10,5 +10,7 @@ permissionset 9026 "User Login Times - Objects"
 
     Permissions = Codeunit "User Login Time Tracker Impl." = X,
                   Codeunit "User Login Time Tracker" = X,
+                  Codeunit "User Login Times Upgrade" = X,
+                  Table "User Environment Login" = X,
                   Table "User Login" = X;
 }

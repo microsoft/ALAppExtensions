@@ -9,14 +9,15 @@
 codeunit 9056 "Plan Installer"
 {
     Subtype = Install;
-    Permissions = tabledata "Plan" = ri,
-                  tabledata "Plan Configuration" = ri;
+    Permissions = tabledata "Plan" = ri;
 
     trigger OnInstallAppPerDatabase()
+    var
+        PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
     begin
         CreatePlans();
 
-        CreateDefaultPlanConfigurations();
+        PlanConfigurationImpl.CreateDefaultPlanConfigurations();
     end;
 
     local procedure CreatePlans()
@@ -60,24 +61,5 @@ codeunit 9056 "Plan Installer"
         Plan."Role Center ID" := RoleCenterId;
         Plan.SystemId := SystemId;
         Plan.Insert(true);
-    end;
-
-    local procedure CreateDefaultPlanConfigurations()
-    var
-        PlanConfiguration: Record "Plan Configuration";
-        Plan: Query Plan;
-    begin
-        if Plan.Open() then
-            while Plan.Read() do begin
-                PlanConfiguration.SetRange("Plan ID", Plan.Plan_ID);
-                if not PlanConfiguration.FindFirst() then begin
-                    PlanConfiguration.Init();
-                    PlanConfiguration."Plan ID" := Plan.Plan_ID;
-                    PlanConfiguration."Plan Name" := Plan.Plan_Name;
-                    PlanConfiguration.Insert();
-                end;
-
-                Clear(PlanConfiguration);
-            end;
     end;
 }

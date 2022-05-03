@@ -116,6 +116,9 @@ report 31073 "Phys. Inventory Document CZL"
                         if not Location.Get("Location Code") then
                             Clear(Location);
 
+                    ChangeCost := 0;
+                    ChangeQty := 0;
+
                     ItemLedgerEntry.Reset();
                     ItemLedgerEntry.SetCurrentKey("Item No.");
                     ItemLedgerEntry.SetRange("Document No.", "Document No.");
@@ -137,8 +140,8 @@ report 31073 "Phys. Inventory Document CZL"
                                 ItemLedgerEntry.FindSet();
                                 repeat
                                     ItemLedgerEntry.CalcFields("Cost Amount (Actual)");
-                                    ChangeCost := ChangeCost + ItemLedgerEntry."Cost Amount (Actual)";
-                                    ChangeQty := ChangeQty + ItemLedgerEntry.Quantity;
+                                    ChangeCost += ItemLedgerEntry."Cost Amount (Actual)";
+                                    ChangeQty += ItemLedgerEntry.Quantity;
                                 until ItemLedgerEntry.Next() = 0;
                                 ChangeCost := Round(ChangeCost / ChangeQty * ("Qty. (Phys. Inventory)" - "Qty. (Calculated)"), 0.01);
                             end;

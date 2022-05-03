@@ -470,5 +470,11 @@ tableextension 18004 "GST Gen. Journal Line Ext" extends "Gen. Journal Line"
             Caption = 'FA Non-Availment Amount';
             DataClassification = CustomerContent;
         }
+        field(18166; State; Code[10])
+        {
+            Caption = 'State';
+            DataClassification = CustomerContent;
+            TableRelation = State;
+        }
     }
 }

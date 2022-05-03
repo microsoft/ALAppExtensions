@@ -21,6 +21,8 @@ codeunit 9057 "Plan Upgrade"
         RenameTeamMemberPlan();
         RenameDevicePlan();
         AddPremiumPartnerSandbox();
+
+        AddDefaultPlanConfigurations();
     end;
 
     [NonDebuggable]
@@ -142,6 +144,21 @@ codeunit 9057 "Plan Upgrade"
         CreatePlan(PlanId, PlanName, RoleCenterId);
 
         UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetPremiumPartnerSandboxUpgradeTag());
+    end;
+
+    [NonDebuggable]
+    local procedure AddDefaultPlanConfigurations()
+    var
+        PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        PlanUpgradeTag: Codeunit "Plan Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(PlanUpgradeTag.GetPlanfigurationsUpgradeTag()) then
+            exit;
+
+        PlanConfigurationImpl.CreateDefaultPlanConfigurations();
+
+        UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetPlanfigurationsUpgradeTag());
     end;
 
     [NonDebuggable]

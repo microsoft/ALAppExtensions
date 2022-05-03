@@ -56,7 +56,7 @@ codeunit 18435 "Reference Invoice No. Mgt."
                     Error(SameDocErr);
 
                 if RefInvNo."Source Type" = RefInvNo."Source Type"::Vendor then begin
-                    VendorLedgerEntry.SetCurrentKey("Document No.", "Document Type", "Vendor No.");
+                    VendorLedgerEntry.SetCurrentKey("Document No.", "Vendor No.", "Entry No.");
                     VendorLedgerEntry.SetRange("Vendor No.", RefInvNo."Source No.");
                     VendorLedgerEntry.SetRange("Document No.", ReferenceInvoiceNo."Reference Invoice Nos.");
                     if VendorLedgerEntry.FindFirst() then begin
@@ -83,7 +83,7 @@ codeunit 18435 "Reference Invoice No. Mgt."
                 end;
 
                 if RefInvNo."Source Type" = RefInvNo."Source Type"::Customer then begin
-                    CustLedgerEntry.SetCurrentKey("Document No.", "Document Type", "Customer No.");
+                    CustLedgerEntry.SetCurrentKey("Document No.", "Customer No.", "Entry No.");
                     CustLedgerEntry.SetRange("Customer No.", RefInvNo."Source No.");
                     CustLedgerEntry.SetRange("Document No.", ReferenceInvoiceNo."Reference Invoice Nos.");
                     if CustLedgerEntry.FindFirst() then begin

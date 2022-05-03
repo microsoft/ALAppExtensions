@@ -418,7 +418,9 @@ page 1450 "MS - Yodlee Bank Service Setup"
     var
         EnvironmentInformation: Codeunit "Environment Information";
         CompanyInformationMgt: Codeunit "Company Information Mgt.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000GY3', 'Yodlee', Enum::"Feature Uptake Status"::Discovered);
         RESET();
         IF NOT GET() THEN BEGIN
             INIT();

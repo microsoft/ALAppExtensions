@@ -12,7 +12,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
 
     var
         Assert: Codeunit "Assert";
-        SalesInvLinesE2E: Codeunit "APIV2 - Sales Inv. Lines E2E";
+        APIV2SalesInvLinesE2E: Codeunit "APIV2 - Sales Inv. Lines E2E";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryGraphDocumentTools: Codeunit "Library - Graph Document Tools";
@@ -82,7 +82,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
         LineNo := PurchaseLine."Line No.";
 
         // [WHEN] we GET all the lines with the order ID from the web service
-        TargetURL := SalesInvLinesE2E.GetLinesURL(PurchaseLine.SystemId, Page::"APIV2 - Purchase Orders", OrderServiceNameTxt, OrderServiceLinesNameTxt);
+        TargetURL := APIV2SalesInvLinesE2E.GetLinesURL(PurchaseLine.SystemId, Page::"APIV2 - Purchase Orders", OrderServiceNameTxt, OrderServiceLinesNameTxt);
         LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
 
         // [THEN] the line returned should be valid (numbers and integration id)
@@ -152,7 +152,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
         LineNo2 := Format(PurchaseLine."Line No.");
 
         // [WHEN] we GET all the lines with the order ID from the web service
-        TargetURL := SalesInvLinesE2E.GetLinesURLWithDocumentIdFilter(OrderId, Page::"APIV2 - Purchase Orders", OrderServiceNameTxt, OrderServiceLinesNameTxt);
+        TargetURL := APIV2SalesInvLinesE2E.GetLinesURLWithDocumentIdFilter(OrderId, Page::"APIV2 - Purchase Orders", OrderServiceNameTxt, OrderServiceLinesNameTxt);
         LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
 
         // [THEN] the lines returned should be valid (numbers and integration ids)
@@ -233,7 +233,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
             OrderId,
             Page::"APIV2 - Purchase Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON, ResponseText);
 
         // [THEN] the line should be changed in the table and the response JSON text should contain our changed field
@@ -278,7 +278,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
             OrderId,
             Page::"APIV2 - Purchase Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
         asserterror LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON[1], ResponseText);
 
         TargetURL := LibraryGraphMgt
@@ -286,7 +286,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
             OrderId,
             Page::"APIV2 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
         asserterror LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON[2], ResponseText);
     end;
 
@@ -318,7 +318,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
             OrderId,
             Page::"APIV2 - Purchase Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] the line should no longer exist in the database
@@ -486,7 +486,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
             PurchaseHeader.SystemId,
             Page::"APIV2 - Purchase Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON, ResponseText);
 
         // [THEN] order discount is applied
@@ -537,7 +537,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
             PurchaseHeader.SystemId,
             Page::"APIV2 - Purchase Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] Lower order discount is applied
@@ -580,7 +580,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
             PurchaseHeader.SystemId,
             Page::"APIV2 - Purchase Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] Lower order discount is applied
@@ -653,7 +653,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
             PurchaseHeader.SystemId,
             Page::"APIV2 - Purchase Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON, ResponseText);
 
         // [THEN] order discount is kept
@@ -687,7 +687,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
             PurchaseHeader.SystemId,
             Page::"APIV2 - Purchase Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] Lower order discount is applied
@@ -806,7 +806,6 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
         PurchaseLine: Record "Purchase Line";
         GLAccount: Record "G/L Account";
         VATPostingSetup: Record "VAT Posting Setup";
-        IntegrationManagement: Codeunit "Integration Management";
         TargetURL: Text;
         ResponseText: Text;
         OrderLineJSON: Text;
@@ -822,7 +821,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
         CreateVATPostingSetup(VATPostingSetup, PurchaseLine."VAT Bus. Posting Group", PurchaseLine."VAT Prod. Posting Group");
         GetGLAccountWithVATPostingGroup(GLAccount, PurchaseLine."VAT Bus. Posting Group", PurchaseLine."VAT Prod. Posting Group");
 
-        OrderLineJSON := StrSubstNo('{"accountId":"%1"}', IntegrationManagement.GetIdWithoutBrackets(GLAccount.SystemId));
+        OrderLineJSON := StrSubstNo('{"accountId":"%1"}', LibraryGraphMgt.StripBrackets(GLAccount.SystemId));
 
         // [WHEN] we PATCH the line
         TargetURL := LibraryGraphMgt
@@ -830,7 +829,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
             OrderId,
             Page::"APIV2 - Purchase Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON, ResponseText);
 
         // [THEN] Line type is changed to Account
@@ -847,7 +846,6 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
         Item: Record "Item";
-        IntegrationManagement: Codeunit "Integration Management";
         ExpectedNumberOfLines: Integer;
         TargetURL: Text;
         ResponseText: Text;
@@ -858,7 +856,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
         // [GIVEN] An unposted Order with lines and a valid JSON describing the fields that we want to change
         Initialize();
         CreateOrderWithAllPossibleLineTypes(PurchaseHeader, ExpectedNumberOfLines);
-        OrderId := IntegrationManagement.GetIdWithoutBrackets(PurchaseHeader.SystemId);
+        OrderId := LibraryGraphMgt.StripBrackets(PurchaseHeader.SystemId);
         PurchaseLine.SetRange(Type, PurchaseLine.Type::"G/L Account");
         PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
         PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
@@ -868,7 +866,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
         Assert.AreNotEqual('', OrderId, 'ID should not be empty');
         LibraryInventory.CreateItem(Item);
 
-        OrderLineJSON := StrSubstNo('{"itemId":"%1"}', IntegrationManagement.GetIdWithoutBrackets(Item.SystemId));
+        OrderLineJSON := StrSubstNo('{"itemId":"%1"}', LibraryGraphMgt.StripBrackets(Item.SystemId));
         Commit();
 
         // [WHEN] we PATCH the line
@@ -877,7 +875,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
             PurchaseHeader.SystemId,
             Page::"APIV2 - Purchase Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON, ResponseText);
 
         // [THEN] Line type is changed to Item and other fields are updated
@@ -914,7 +912,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
             OrderId,
             Page::"APIV2 - Purchase Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(PurchaseLine.SystemId, OrderServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON, ResponseText);
 
         // [THEN] Line type is changed to Account
@@ -1080,22 +1078,21 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
     local procedure VerifyPurchaseIdsSetFromTxt(PurchaseLine: Record "Purchase Line"; JObjectTxt: Text)
     var
         JSONManagement: Codeunit "JSON Management";
-        JsonObject: DotNet JObject;
+        "Newtonsoft.Json.Linq.JObject": DotNet JObject;
     begin
         JSONManagement.InitializeObject(JObjectTxt);
-        JSONManagement.GetJSONObject(JsonObject);
-        LibraryGraphDocumentTools.VerifyPurchaseIdsSet(PurchaseLine, JsonObject);
+        JSONManagement.GetJSONObject("Newtonsoft.Json.Linq.JObject");
+        LibraryGraphDocumentTools.VerifyPurchaseIdsSet(PurchaseLine, "Newtonsoft.Json.Linq.JObject");
     end;
 
     local procedure VerifyIdsAreBlank(JsonObjectTxt: Text)
     var
-        IntegrationManagement: Codeunit "Integration Management";
         itemId: Text;
         accountId: Text;
         ExpectedId: Text;
         BlankGuid: Guid;
     begin
-        ExpectedId := IntegrationManagement.GetIdWithoutBrackets(BlankGuid);
+        ExpectedId := LibraryGraphMgt.StripBrackets(BlankGuid);
 
         Assert.IsTrue(LibraryGraphMgt.GetPropertyValueFromJSON(JsonObjectTxt, 'itemId', itemId), 'Could not find itemId');
         Assert.IsTrue(LibraryGraphMgt.GetPropertyValueFromJSON(JsonObjectTxt, 'accountId', accountId), 'Could not find accountId');
@@ -1138,10 +1135,9 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
     [Normal]
     local procedure CreateOrderLineJSON(ItemId: Guid; Quantity: Integer): Text
     var
-        IntegrationManagement: Codeunit "Integration Management";
         LineJSONTxt: Text;
     begin
-        LineJSONTxt := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', IntegrationManagement.GetIdWithoutBrackets(ItemId));
+        LineJSONTxt := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', LibraryGraphMgt.StripBrackets(ItemId));
         LineJSONTxt := LibraryGraphMgt.AddComplexTypetoJSON(LineJSONTxt, 'quantity', Format(Quantity));
         exit(LineJSONTxt);
     end;
@@ -1149,10 +1145,9 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
     [Normal]
     local procedure CreateOrderLineWithCostJSON(ItemId: Guid; Quantity: Integer; DirectUnitCost: Decimal): Text
     var
-        IntegrationManagement: Codeunit "Integration Management";
         LineJSONTxt: Text;
     begin
-        LineJSONTxt := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', IntegrationManagement.GetIdWithoutBrackets(ItemId));
+        LineJSONTxt := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', LibraryGraphMgt.StripBrackets(ItemId));
         LineJSONTxt := LibraryGraphMgt.AddComplexTypetoJSON(LineJSONTxt, 'quantity', Format(Quantity));
         LineJSONTxt := LibraryGraphMgt.AddComplexTypetoJSON(LineJSONTxt, 'directUnitCost', Format(DirectUnitCost));
         exit(LineJSONTxt);
@@ -1160,11 +1155,10 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
 
     local procedure CreateOrderLineJSONWithItemVariantId(ItemId: Guid; Quantity: Integer; ItemVariantId: Guid): Text
     var
-        IntegrationManagement: Codeunit "Integration Management";
         LineJsonText: Text;
     begin
         LineJsonText := CreateOrderLineJSON(ItemId, Quantity);
-        LineJsonText := LibraryGraphMgt.AddPropertytoJSON(LineJsonText, 'itemVariantId', IntegrationManagement.GetIdWithoutBrackets(ItemVariantId));
+        LineJsonText := LibraryGraphMgt.AddPropertytoJSON(LineJsonText, 'itemVariantId', LibraryGraphMgt.StripBrackets(ItemVariantId));
         exit(LineJsonText);
     end;
 
@@ -1187,7 +1181,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
         PurchaseOrder.PurchLines.Previous();
     end;
 
-    local procedure CreateDocumentWithItemAndDiscountPctPending(var Item: Record Item; var PurchaseHeader: Record "Purchase Header"; var DiscountPct: Decimal; var MinAmount: Decimal; DocumentType: Enum "Purchase Document Type")
+    local procedure CreateDocumentWithItemAndDiscountPctPending(var Item: Record Item; var PurchaseHeader: Record "Purchase Header"; var DiscountPct: Decimal; MinAmount: Decimal; DocumentType: Enum "Purchase Document Type")
     var
         PurchaseLine: Record "Purchase Line";
         Vendor: Record Vendor;

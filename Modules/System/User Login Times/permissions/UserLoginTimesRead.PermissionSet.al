@@ -10,5 +10,6 @@ PermissionSet 9008 "User Login Times - Read"
 
     IncludedPermissionSets = "User Login Times - Objects";
 
-    Permissions = tabledata "User Login" = r;
+    Permissions = tabledata "User Environment Login" = r,
+                  tabledata "User Login" = r;
 }

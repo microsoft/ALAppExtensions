@@ -27,7 +27,6 @@ codeunit 31375 "Sync.Dep.Fld-GLEntry CZA"
 
         SyncDepFldUtilities.SyncFields(Rec.Closed, Rec."Closed CZA", PreviousRecord.Closed, PreviousRecord."Closed CZA");
         SyncDepFldUtilities.SyncFields(Rec."Closed at Date", Rec."Closed at Date CZA", PreviousRecord."Closed at Date", PreviousRecord."Closed at Date CZA");
-        SyncDepFldUtilities.SyncFields(Rec."Applied Amount", Rec."Applied Amount CZA", PreviousRecord."Applied Amount", PreviousRecord."Applied Amount CZA");
     end;
 }
 #endif

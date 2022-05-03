@@ -33,6 +33,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
     begin
         Initialize();
 
+        ClearLastError();
         if EnvironmentInformation.IsSaaSInfrastructure() then begin
             AccessToken := AzureAdMgt.GetAccessToken(UrlHelper.GetGraphUrl(), '', false);
             if AccessToken = '' then begin
@@ -43,8 +44,12 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
             if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, OAuthAuthorityUrlTxt, Scopes, AccessToken)) or (AccessToken = '') then
                 OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, OAuthAuthorityUrlTxt, RedirectURL, Scopes, Enum::"Prompt Interaction"::None, AccessToken, OAuthErr);
 
-        if AccessToken = '' then
+        if AccessToken = '' then begin
+            if AzureADMgt.GetLastErrorMessage() <> '' then
+                Error(AzureADMgt.GetLastErrorMessage());
+            
             Error(CouldNotGetAccessTokenErr);
+        end
     end;
 
     internal procedure GetLastAuthorizationErrorMessage(): Text
@@ -92,7 +97,6 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
 
     var
         OAuth2: Codeunit OAuth2;
-
         [NonDebuggable]
         ClientId: Text;
         [NonDebuggable]
@@ -102,7 +106,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         Scopes: List of [Text];
         OAuthAuthorityUrlTxt: Label 'https://login.microsoftonline.com/common/oauth2', Locked = true;
         GraphScopesLbl: Label 'https://graph.microsoft.com/.default', Locked = true;
-        CouldNotGetAccessTokenErr: Label 'Could not get access token. Please, try to log out and log in again.';
+        CouldNotGetAccessTokenErr: Label 'Could not get access token.';
         EmailCategoryLbl: Label 'EmailOAuth', Locked = true;
         CouldNotAcquireAccessTokenErr: Label 'Failed to acquire access token.', Locked = true;
 }

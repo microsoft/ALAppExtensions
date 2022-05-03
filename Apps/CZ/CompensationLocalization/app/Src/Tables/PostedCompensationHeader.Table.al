@@ -110,6 +110,12 @@ table 31274 "Posted Compensation Header CZC"
             TableRelation = "No. Series";
             DataClassification = CustomerContent;
         }
+        field(85; "Language Code"; Code[10])
+        {
+            Caption = 'Language Code';
+            TableRelation = Language;
+            DataClassification = CustomerContent;
+        }
         field(90; "Balance (LCY)"; Decimal)
         {
             CalcFormula = sum("Posted Compensation Line CZC"."Ledg. Entry Rem. Amt. (LCY)" where("Compensation No." = field("No.")));

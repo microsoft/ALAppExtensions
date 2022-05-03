@@ -71,6 +71,7 @@ codeunit 10681 "Electronic VAT Installation"
         if not VATReportSetup.Get() then
             exit;
         VATReportSetup.Validate("Report VAT Base", true);
+        VATReportSetup.Validate("Report VAT Note", true);
         VATReportSetup.Modify(true);
     end;
 

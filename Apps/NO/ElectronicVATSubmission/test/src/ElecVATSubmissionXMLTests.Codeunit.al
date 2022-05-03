@@ -9,6 +9,7 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
         LibraryRandom: Codeunit "Library - Random";
         LibraryUtility: Codeunit "Library - Utility";
+        Assert: Codeunit Assert;
         IsInitialized: Boolean;
 
     trigger OnRun()
@@ -162,6 +163,25 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
         VerifyPeriodXMLNodesInSubmissionMessage(VATReportHeader, 'skattleggingsperiodeAar', 'aarlig');
     end;
 
+    [Test]
+    procedure VATNoteOfVATReturnLineExportsToXml()
+    var
+        VATReportHeader: Record "VAT Report Header";
+        VATStatementReportLine: Record "VAT Statement Report Line";
+    begin
+        // [SCENARIO 433237] The value of the "Note" field from the VAT return line exports to the xml file
+
+        Initialize();
+        LibraryElecVATSubmission.SetReportVATNoteInVATReportSetup(true);
+        LibraryElecVATSubmission.InsertElecVATReportHeader(VATReportHeader);
+        SetPeriodTypeWithFirstPeriodToVATReport(VATReportHeader, VATReportHeader."Period Type"::Month);
+        LibraryElecVATSubmission.InsertVATStatementReportLineWithBoxNo(
+            VATStatementReportLine, VATReportHeader, LibraryElecVATSubmission.CreateSimpleVATCode());
+        VATStatementReportLine.Validate(Note, LibraryUtility.GenerateGUID());
+        VATStatementReportLine.Modify(true);
+        VerifyVATNoteValueInSubmissionMessage(VATReportHeader, VATStatementReportLine.Note);
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(CODEUNIT::"Elec. VAT Submission XML Tests");
@@ -171,6 +191,7 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
 
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(CODEUNIT::"Elec. VAT Submission XML Tests");
         LibrarySetupStorage.SaveCompanyInformation();
+        LibrarySetupStorage.Save(Database::"VAT Report Setup");
         IsInitialized := true;
         Commit();
         LibraryTestInitialize.OnAfterTestSuiteInitialize(CODEUNIT::"Elec. VAT Submission XML Tests");
@@ -329,5 +350,20 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
         LoadFromVATReportSubmissionArchive(TempXMLBuffer, VATReportHeader);
         TempXMLBuffer.FindNodesByXPath(TempXMLBuffer, 'mvaMeldingDto/skattegrunnlagOgBeregnetSkatt/skattleggingsperiode/periode');
         LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, PeriodType, PeriodText);
+    end;
+
+    local procedure VerifyVATNoteValueInSubmissionMessage(VATReportHeader: Record "VAT Report Header"; VATNoteValue: Text)
+    var
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        VATReportMediator: Codeunit "VAT Report Mediator";
+    begin
+        VATReportMediator.Generate(VATReportHeader);
+        LoadFromVATReportSubmissionArchive(TempXMLBuffer, VATReportHeader);
+        TempXMLBuffer.FindNodesByXPath(
+            TempXMLBuffer, 'mvaMeldingDto/skattegrunnlagOgBeregnetSkatt/mvaSpesifikasjonslinje/merknad');
+        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'beskrivelse', VATNoteValue);
+        TempXMLBuffer.FindNodesByXPath(
+            TempXMLBuffer, 'mvaMeldingDto/skattegrunnlagOgBeregnetSkatt/mvaSpesifikasjonslinje/merknad/utvalgtMerknad');
+        Assert.RecordCount(TempXMLBuffer, 0);
     end;
 }

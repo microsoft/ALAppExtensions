@@ -57,12 +57,6 @@ page 1921 "Profiling Call Tree"
                     Caption = 'Total Time';
                     ToolTip = 'The amount of time spent in this method and the methods it calls.';
                 }
-                field(Samples; Rec."Hit Count")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Samples';
-                    ToolTip = 'The number of performance samples that were recorded for the method.';
-                }
                 field("App Name"; Rec."App Name")
                 {
                     ApplicationArea = All;

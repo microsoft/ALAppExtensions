@@ -182,20 +182,27 @@ table 40099 "GP Checkbook MSTR"
     procedure MoveStagingData()
     var
         BankAccount: Record "Bank Account";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        MigrateInactiveCheckbooks: Boolean;
     begin
+        MigrateInactiveCheckbooks := false;
+        if GPCompanyAdditionalSettings.Get(CompanyName()) then
+            MigrateInactiveCheckbooks := GPCompanyAdditionalSettings."Migrate Inactive Checkbooks";
+
         if FindSet() then
             repeat
-                if not BankAccount.Get(CHEKBKID) then begin
-                    BankAccount.Init();
-                    BankAccount."No." := DelChr(CHEKBKID, '>', ' ');
-                    BankAccount.Name := DelChr(DSCRIPTN, '>', ' ');
-                    BankAccount."Bank Account No." := DelChr(BNKACTNM, '>', ' ');
-                    BankAccount."Last Check No." := GetLastCheckNumber(NXTCHNUM);
-                    BankAccount."Balance Last Statement" := Last_Reconciled_Balance;
-                    BankAccount."Bank Acc. Posting Group" := GetBankAccPostingGroup(ACTINDX);
-                    UpdateBankInfo(DelChr(BANKID, '>', ' '), BankAccount);
-                    BankAccount.Insert(true);
-                end;
+                if not BankAccount.Get(CHEKBKID) then
+                    if MigrateInactiveCheckbooks or not INACTIVE then begin
+                        BankAccount.Init();
+                        BankAccount."No." := DelChr(CHEKBKID, '>', ' ');
+                        BankAccount.Name := DelChr(DSCRIPTN, '>', ' ');
+                        BankAccount."Bank Account No." := DelChr(BNKACTNM, '>', ' ');
+                        BankAccount."Last Check No." := GetLastCheckNumber(NXTCHNUM);
+                        BankAccount."Balance Last Statement" := Last_Reconciled_Balance;
+                        BankAccount."Bank Acc. Posting Group" := GetBankAccPostingGroup(ACTINDX);
+                        UpdateBankInfo(DelChr(BANKID, '>', ' '), BankAccount);
+                        BankAccount.Insert(true);
+                    end;
             until Next() = 0;
     end;
 

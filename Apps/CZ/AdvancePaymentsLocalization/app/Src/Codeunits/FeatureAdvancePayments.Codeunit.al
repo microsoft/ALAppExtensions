@@ -876,6 +876,9 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
 
     local procedure UpdateCustomerLedgerEntries(FeatureDataUpdateStatus: Record "Feature Data Update Status")
     var
+        SalesAdvanceLetterEntry: Record "Sales Advance Letter Entry";
+        AdvanceLink: Record "Advance Link";
+        AppliedCustLedgerEntry: Record "Cust. Ledger Entry";
         StartDateTime: DateTime;
     begin
         StartDateTime := CurrentDateTime();
@@ -884,36 +887,50 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
         CustLedgerEntry.SetRange("Prepayment Type", CustLedgerEntry."Prepayment Type"::Advance);
         if CustLedgerEntry.FindSet(true) then
             repeat
-                CustLedgerEntry."Adv. Letter Template Code CZZ" := GetSalesAdvanceLetterTemplateCode(CustLedgerEntry."Entry No.");
-                CustLedgerEntry."Advance Letter No. CZZ" := GetSalesAdvanceLetterNo(CustLedgerEntry."Entry No.");
+                SalesAdvanceLetterEntry.SetRange("Customer Entry No.", CustLedgerEntry."Entry No.");
+                if SalesAdvanceLetterEntry.FindFirst() then begin
+                    CustLedgerEntry.Validate("Advance Letter No. CZZ", SalesAdvanceLetterEntry."Letter No.");
+                    CustLedgerEntry.Validate("Adv. Letter Template Code CZZ", 'P_' + SalesAdvanceLetterEntry."Template Name");
+                end else begin
+                    AdvanceLink.SetRange("CV Ledger Entry No.", CustLedgerEntry."Entry No.");
+                    AdvanceLink.SetRange(Type, AdvanceLink.Type::Sale);
+                    AdvanceLink.SetRange("Entry Type", AdvanceLink."Entry Type"::"Link To Letter");
+                    if AdvanceLink.FindFirst() and (AdvanceLink.Count() = 1) then begin
+                        SalesAdvanceLetterHeader.Get(AdvanceLink."Document No.");
+                        CustLedgerEntry.Validate("Advance Letter No. CZZ", SalesAdvanceLetterHeader."No.");
+                        CustLedgerEntry.Validate("Adv. Letter Template Code CZZ", 'P_' + SalesAdvanceLetterHeader."Template Code");
+                    end;
+                end;
                 CustLedgerEntry.Modify();
+
+                if CustLedgerEntry."Advance Letter No. CZZ" <> '' then begin
+                    if CustLedgerEntry."Closed by Entry No." <> 0 then
+                        if AppliedCustLedgerEntry.Get(CustLedgerEntry."Closed by Entry No.") then
+                            if AppliedCustLedgerEntry."Advance Letter No. CZZ" = '' then begin
+                                AppliedCustLedgerEntry.Validate("Advance Letter No. CZZ", CustLedgerEntry."Advance Letter No. CZZ");
+                                AppliedCustLedgerEntry.Validate("Adv. Letter Template Code CZZ", CustLedgerEntry."Adv. Letter Template Code CZZ");
+                                AppliedCustLedgerEntry.Modify();
+                            end;
+                    AppliedCustLedgerEntry.SetCurrentKey("Closed by Entry No.");
+                    AppliedCustLedgerEntry.SetRange("Closed by Entry No.", CustLedgerEntry."Entry No.");
+                    if AppliedCustLedgerEntry.FindSet(true) then
+                        repeat
+                            if AppliedCustLedgerEntry."Advance Letter No. CZZ" = '' then begin
+                                AppliedCustLedgerEntry.Validate("Advance Letter No. CZZ", CustLedgerEntry."Advance Letter No. CZZ");
+                                AppliedCustLedgerEntry.Validate("Adv. Letter Template Code CZZ", CustLedgerEntry."Adv. Letter Template Code CZZ");
+                                AppliedCustLedgerEntry.Modify();
+                            end;
+                        until AppliedCustLedgerEntry.Next() = 0;
+                end;
             until CustLedgerEntry.Next() = 0;
         FeatureDataUpdateMgt.LogTask(FeatureDataUpdateStatus, CustLedgerEntry.TableCaption(), StartDateTime);
     end;
 
-    local procedure GetSalesAdvanceLetterTemplateCode(EntryNo: Integer): Code[20]
-    var
-        SalesAdvanceLetterEntry: Record "Sales Advance Letter Entry";
-    begin
-        SalesAdvanceLetterEntry.SetRange("Customer Entry No.", EntryNo);
-        if SalesAdvanceLetterEntry.FindFirst() then
-            exit('P_' + SalesAdvanceLetterEntry."Template Name");
-        exit('P_');
-    end;
-
-    local procedure GetSalesAdvanceLetterNo(EntryNo: Integer): Code[20]
-    var
-        AdvanceLink: Record "Advance Link";
-    begin
-        AdvanceLink.SetRange("CV Ledger Entry No.", EntryNo);
-        AdvanceLink.SetRange(Type, AdvanceLink.Type::Sale);
-        AdvanceLink.SetRange("Entry Type", AdvanceLink."Entry Type"::"Link To Letter");
-        if AdvanceLink.FindFirst() and (AdvanceLink.Count() = 1) then
-            exit(AdvanceLink."Document No.");
-    end;
-
     local procedure UpdateVendorLedgerEntries(FeatureDataUpdateStatus: Record "Feature Data Update Status")
     var
+        PurchAdvanceLetterEntry: Record "Purch. Advance Letter Entry";
+        AdvanceLink: Record "Advance Link";
+        AppliedVendorLedgerEntry: Record "Vendor Ledger Entry";
         StartDateTime: DateTime;
     begin
         StartDateTime := CurrentDateTime();
@@ -922,32 +939,43 @@ Codeunit 31085 "Feature Advance Payments CZZ" implements "Feature Data Update"
         VendorLedgerEntry.SetRange("Prepayment Type", VendorLedgerEntry."Prepayment Type"::Advance);
         if VendorLedgerEntry.FindSet(true) then
             repeat
-                VendorLedgerEntry."Adv. Letter Template Code CZZ" := GetPurchAdvanceLetterTemplateCode(VendorLedgerEntry."Entry No.");
-                VendorLedgerEntry."Advance Letter No. CZZ" := GetPurchAdvanceLetterNo(VendorLedgerEntry."Entry No.");
+                PurchAdvanceLetterEntry.SetRange("Vendor Entry No.", VendorLedgerEntry."Entry No.");
+                if PurchAdvanceLetterEntry.FindFirst() then begin
+                    VendorLedgerEntry.Validate("Advance Letter No. CZZ", PurchAdvanceLetterEntry."Letter No.");
+                    VendorLedgerEntry.Validate("Adv. Letter Template Code CZZ", 'N_' + PurchAdvanceLetterEntry."Template Name");
+                end else begin
+                    AdvanceLink.SetRange("CV Ledger Entry No.", CustLedgerEntry."Entry No.");
+                    AdvanceLink.SetRange(Type, AdvanceLink.Type::Purchase);
+                    AdvanceLink.SetRange("Entry Type", AdvanceLink."Entry Type"::"Link To Letter");
+                    if AdvanceLink.FindFirst() and (AdvanceLink.Count() = 1) then begin
+                        PurchAdvanceLetterHeader.Get(AdvanceLink."Document No.");
+                        VendorLedgerEntry.Validate("Advance Letter No. CZZ", PurchAdvanceLetterHeader."No.");
+                        VendorLedgerEntry.Validate("Adv. Letter Template Code CZZ", 'N_' + PurchAdvanceLetterHeader."Template Code");
+                    end;
+                end;
                 VendorLedgerEntry.Modify();
+
+                if VendorLedgerEntry."Advance Letter No. CZZ" <> '' then begin
+                    if VendorLedgerEntry."Closed by Entry No." <> 0 then
+                        if AppliedVendorLedgerEntry.Get(VendorLedgerEntry."Closed by Entry No.") then
+                            if AppliedVendorLedgerEntry."Advance Letter No. CZZ" = '' then begin
+                                AppliedVendorLedgerEntry.Validate("Advance Letter No. CZZ", VendorLedgerEntry."Advance Letter No. CZZ");
+                                AppliedVendorLedgerEntry.Validate("Adv. Letter Template Code CZZ", VendorLedgerEntry."Adv. Letter Template Code CZZ");
+                                AppliedVendorLedgerEntry.Modify();
+                            end;
+                    AppliedVendorLedgerEntry.SetCurrentKey("Closed by Entry No.");
+                    AppliedVendorLedgerEntry.SetRange("Closed by Entry No.", CustLedgerEntry."Entry No.");
+                    if AppliedVendorLedgerEntry.FindSet(true) then
+                        repeat
+                            if AppliedVendorLedgerEntry."Advance Letter No. CZZ" = '' then begin
+                                AppliedVendorLedgerEntry.Validate("Advance Letter No. CZZ", VendorLedgerEntry."Advance Letter No. CZZ");
+                                AppliedVendorLedgerEntry.Validate("Adv. Letter Template Code CZZ", VendorLedgerEntry."Adv. Letter Template Code CZZ");
+                                AppliedVendorLedgerEntry.Modify();
+                            end;
+                        until AppliedVendorLedgerEntry.Next() = 0;
+                end;
             until VendorLedgerEntry.Next() = 0;
         FeatureDataUpdateMgt.LogTask(FeatureDataUpdateStatus, VendorLedgerEntry.TableCaption(), StartDateTime);
-    end;
-
-    local procedure GetPurchAdvanceLetterTemplateCode(EntryNo: Integer): Code[20]
-    var
-        PurchAdvanceLetterEntry: Record "Purch. Advance Letter Entry";
-    begin
-        PurchAdvanceLetterEntry.SetRange("Vendor Entry No.", EntryNo);
-        if PurchAdvanceLetterEntry.FindFirst() then
-            exit('N_' + PurchAdvanceLetterEntry."Template Name");
-        exit('N_');
-    end;
-
-    local procedure GetPurchAdvanceLetterNo(EntryNo: Integer): Code[20]
-    var
-        AdvanceLink: Record "Advance Link";
-    begin
-        AdvanceLink.SetRange("CV Ledger Entry No.", EntryNo);
-        AdvanceLink.SetRange(Type, AdvanceLink.Type::Purchase);
-        AdvanceLink.SetRange("Entry Type", AdvanceLink."Entry Type"::"Link To Letter");
-        if AdvanceLink.FindFirst() and (AdvanceLink.Count() = 1) then
-            exit(AdvanceLink."Document No.");
     end;
 
     local procedure UpdateVATStatementLines(FeatureDataUpdateStatus: Record "Feature Data Update Status")

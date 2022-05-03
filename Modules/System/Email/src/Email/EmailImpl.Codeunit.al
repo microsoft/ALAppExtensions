@@ -134,12 +134,10 @@ codeunit 8900 "Email Impl"
         if not IsEnqueued then begin
             // Modify the outbox only if it hasn't been enqueued yet
             CreateOrUpdateEmailOutbox(EmailMessageImpl, EmailAccountId, EmailConnector, Enum::"Email Status"::Draft, '', EmailOutbox);
-            Commit(); // Commit the changes in case the message is to be open modally
-        end;
 
-        // Set the record as new so that there is a save prompt and no arrows
-        if not IsEnqueued then
+            // Set the record as new so that there is a save prompt and no arrows
             EmailEditor.SetAsNew();
+        end;
 
         exit(EmailEditor.Open(EmailOutbox, IsModal));
     end;
@@ -296,8 +294,9 @@ codeunit 8900 "Email Impl"
         repeat
             if AllObj.Get(AllObj."Object Type"::Table, EmailRelatedRecord."Table Id") then begin
                 SourceRecordRef.Open(EmailRelatedRecord."Table Id");
-                if SourceRecordRef.GetBySystemId(EmailRelatedRecord."System Id") then
-                    EmailRelatedRecord.Mark(true);
+                if SourceRecordRef.ReadPermission() then
+                    if SourceRecordRef.GetBySystemId(EmailRelatedRecord."System Id") then
+                        EmailRelatedRecord.Mark(true);
                 SourceRecordRef.Close();
             end;
         until EmailRelatedRecord.Next() = 0;

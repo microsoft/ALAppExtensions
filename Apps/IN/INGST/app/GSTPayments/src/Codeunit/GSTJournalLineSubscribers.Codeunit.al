@@ -61,8 +61,11 @@ codeunit 18243 "GST Journal Line Subscribers"
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterValidateEvent', 'GST Place of supply', false, false)]
     local procedure ValidateGSTPlaceofSuppply(var Rec: Record "Gen. Journal Line"; var xRec: Record "Gen. Journal Line")
+    var
+        CalculateTax: Codeunit "Calculate Tax";
     begin
         GSTJournalLineValidations.GSTPlaceofsuppply(rec, xrec);
+        CalculateTax.CallTaxEngineOnGenJnlLine(Rec, xRec);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterValidateEvent', 'GST Group Code', false, false)]
@@ -143,6 +146,21 @@ codeunit 18243 "GST Journal Line Subscribers"
     local procedure OnbeforevalidateAccountNo(var Rec: Record "Gen. Journal Line")
     begin
         GSTJournalLineValidations.BeforeValidateAccountNo(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterValidateEvent', 'Account no.', false, false)]
+    local procedure OnAfterValidateAccountNo(var Rec: Record "Gen. Journal Line")
+    begin
+        GSTJournalLineValidations.AfterValidateAccountNo(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterValidateEvent', 'Ship-to Code', false, false)]
+    local procedure OnAfterValidateShipToCode(var Rec: Record "Gen. Journal Line"; var xRec: Record "Gen. Journal Line")
+    var
+        CalculateTax: Codeunit "Calculate Tax";
+    begin
+        GSTJournalLineValidations.AfterValidateShipToCode(Rec);
+        CalculateTax.CallTaxEngineOnGenJnlLine(Rec, xRec);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterAccountNoOnValidateGetGLAccount', '', false, false)]
@@ -233,5 +251,61 @@ codeunit 18243 "GST Journal Line Subscribers"
                 CalculateTax.OnAfterValidateGenJnlLineFields(GenJournalLine);
             end;
         end;
+    end;
+
+#if not CLEAN20
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostBalancingEntry', '', false, false)]
+    local procedure OnBeforePostBalancingEntry(var GenJnlLine: Record "Gen. Journal Line"; var PurchHeader: Record "Purchase Header"; var TotalPurchLine: Record "Purchase Line"; var TotalPurchLineLCY: Record "Purchase Line"; PreviewMode: Boolean; CommitIsSupressed: Boolean; var VendLedgEntry: Record "Vendor Ledger Entry")
+    var
+        PaymentMethod: Record "Payment Method";
+        GLEntry: Record "G/L Entry";
+    begin
+        if PurchHeader."GST Vendor Type" <> PurchHeader."GST Vendor Type"::" " then
+            if PurchHeader."Payment Method Code" <> '' then
+                if PaymentMethod.Get(PurchHeader."Payment Method Code") then
+                    if PaymentMethod."Bal. Account No." <> '' then begin
+                        GLEntry.SetRange("External Document No.", GenJnlLine."External Document No.");
+                        GLEntry.SetRange("Document No.", GenJnlLine."Document No.");
+                        if (GenJnlLine."Document Type" = GenJnlLine."Document Type"::Payment) then begin
+                            GLEntry.SetRange("Document Type", GenJnlLine."Document Type"::Invoice);
+                            GLEntry.SetFilter("Credit Amount", '<>%1', 0);
+                        end
+                        else
+                            if (GenJnlLine."Document Type" = GenJnlLine."Document Type"::Refund) then begin
+                                GLEntry.SetRange("Document Type", GenJnlLine."Document Type"::"Credit Memo");
+                                GLEntry.SetFilter("Debit Amount", '<>%1', 0);
+                            end;
+
+                        if GLEntry.FindFirst() then
+                            GenJnlLine.Validate(Amount, GLEntry.Amount * -1);
+                    end;
+    end;
+#endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnPostBalancingEntryOnBeforeGenJnlPostLine', '', false, false)]
+    local procedure OnPostBalancingEntryOnBeforeGenJnlPostLine(var GenJnlLine: Record "Gen. Journal Line"; var PurchHeader: Record "Purchase Header"; var TotalPurchLine: Record "Purchase Line"; var TotalPurchLineLCY: Record "Purchase Line"; PreviewMode: Boolean; SuppressCommit: Boolean; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    var
+        PaymentMethod: Record "Payment Method";
+        GLEntry: Record "G/L Entry";
+    begin
+        if PurchHeader."GST Vendor Type" <> PurchHeader."GST Vendor Type"::" " then
+            if PurchHeader."Payment Method Code" <> '' then
+                if PaymentMethod.Get(PurchHeader."Payment Method Code") then
+                    if PaymentMethod."Bal. Account No." <> '' then begin
+                        GLEntry.SetRange("External Document No.", GenJnlLine."External Document No.");
+                        GLEntry.SetRange("Document No.", GenJnlLine."Document No.");
+                        if (GenJnlLine."Document Type" = GenJnlLine."Document Type"::Payment) then begin
+                            GLEntry.SetRange("Document Type", GenJnlLine."Document Type"::Invoice);
+                            GLEntry.SetFilter("Credit Amount", '<>%1', 0);
+                        end
+                        else
+                            if (GenJnlLine."Document Type" = GenJnlLine."Document Type"::Refund) then begin
+                                GLEntry.SetRange("Document Type", GenJnlLine."Document Type"::"Credit Memo");
+                                GLEntry.SetFilter("Debit Amount", '<>%1', 0);
+                            end;
+
+                        if GLEntry.FindFirst() then
+                            GenJnlLine.Validate(Amount, GLEntry.Amount * -1);
+                    end;
     end;
 }

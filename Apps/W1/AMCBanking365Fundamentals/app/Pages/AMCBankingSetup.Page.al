@@ -219,7 +219,10 @@ page 20101 "AMC Banking Setup"
     end;
 
     trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000H4M', 'AMC Banking 365 Fundamentals', Enum::"Feature Uptake Status"::"Set up");
         CheckedEncryption := false;
         if not Get() then begin
             Init();

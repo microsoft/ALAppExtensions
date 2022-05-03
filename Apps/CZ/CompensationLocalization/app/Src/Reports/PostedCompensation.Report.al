@@ -20,6 +20,69 @@ report 31271 "Posted Compensation CZC"
                 dataitem(PageLoop; "Integer")
                 {
                     DataItemTableView = sorting(Number) where(Number = const(1));
+                    column(ResidenceLbl; ResidenceLbl)
+                    {
+                    }
+                    column(BusinessNameLbl; BusinessNameLbl)
+                    {
+                    }
+                    column(RegistrationNoLbl; RegistrationNoLbl)
+                    {
+                    }
+                    column(BankConnectionLbl; BankConnectionLbl)
+                    {
+                    }
+                    column(ParagraphLbl; ParagraphLbl)
+                    {
+                    }
+                    column(RemainingAmountLbl; RemainingAmountLbl)
+                    {
+                    }
+                    column(CompensationAmountLbl; CompensationAmountLbl)
+                    {
+                    }
+                    column(LedgerEntryRemainingAmountLbl; LedgerEntryRemainingAmountLbl)
+                    {
+                    }
+                    column(LedgerEntryOriginalAmountLbl; LedgerEntryOriginalAmountLbl)
+                    {
+                    }
+                    column(DueDateLbl; DueDateLbl)
+                    {
+                    }
+                    column(EnterIntoForceLbl; EnterIntoForceLbl)
+                    {
+                    }
+                    column(NameAndSignatureLbl; NameAndSignatureLbl)
+                    {
+                    }
+                    column(InAndDateLbl; InAndDateLbl)
+                    {
+                    }
+                    column(SendBackLbl; SendBackLbl)
+                    {
+                    }
+                    column(ForLbl; ForLbl)
+                    {
+                    }
+                    column(MakeDateLbl; MakeDateLbl)
+                    {
+                    }
+                    column(CurrencyCodeLbl; CurrencyCodeLbl)
+                    {
+                    }
+                    column(VariableSymbolLbl; VariableSymbolLbl)
+                    {
+                    }
+                    column(DocumentNoLbl; DocumentNoLbl)
+                    {
+                    }
+                    column(DocumentTypeLbl; DocumentTypeLbl)
+                    {
+                    }
+                    column(PostingDateLbl; PostingDateLbl)
+                    {
+                    }
                     column(CompensationHeader_Address; CompanyAddress)
                     {
                     }
@@ -295,6 +358,8 @@ report 31271 "Posted Compensation CZC"
                         if Contact.Get("Company No.") then
                             CompanyRegistrationNo := Contact."Registration No. CZL";
                 end;
+
+                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
             end;
 
             trigger OnPreDataItem()
@@ -328,28 +393,7 @@ report 31271 "Posted Compensation CZC"
 
     labels
     {
-        ResidenceLbl = 'Residence:';
-        BusinessNameLbl = 'Business Name:';
-        RegistrationNoLbl = 'Reg. No.:';
-        BankConnectionLbl = 'Bank connection:';
-        ParagraphLbl = 'by reciprocally Compensation receibables by PAR. 1982-1991 of Civil Code No. 89/2012';
-        RemainingAmountLbl = 'Remaining Amount';
-        CompensationAmountLbl = 'Compensation Amount';
-        LedgerEntryRemainingAmountLbl = 'Ledg. Entry Remaining Amount';
-        LedgerEntryOriginalAmountLbl = 'Ledg. Entry Original Amount';
-        DueDateLbl = 'Due Date';
-        EnterIntoForceLbl = 'This agreement shall enter into force upon signature by both parties.';
-        NameAndSignatureLbl = 'Name and Signature';
         DotsLbl = '......................................................................';
-        InAndDateLbl = 'In .............................., date .................';
-        SendBackLbl = 'In case you agree, send one confirmed agreement back to our address.';
-        ForLbl = 'For';
-        MakeDateLbl = 'Make Date';
-        CurrencyCodeLbl = 'Currency Code';
-        VariableSymbolLbl = 'Variable Symbol';
-        DocumentNoLbl = 'Document No';
-        DocumentTypeLbl = 'Document Type';
-        PostingDateLbl = 'Posting Date';
     }
 
     var
@@ -358,13 +402,36 @@ report 31271 "Posted Compensation CZC"
         CustLedgerEntry: Record "Cust. Ledger Entry";
         GeneralLedgerSetup: Record "General Ledger Setup";
         TempCustomerPostedCompensationLineCZC, TempVendorPostedCompensationLineCZC : Record "Posted Compensation Line CZC" temporary;
+        Language: Codeunit Language;
         CompanyName, CompanyAddress, CompanyRegistrationNo, RemaningCompanyName : Text;
         CustomerDueDate, VendorDueDate : Date;
         NoOfCopies, NoOfLoops, OutputCounter : Integer;
+
         AgreementTxt: Label 'AGREEMENT %1', Comment = '%1 = Compensation No.';
         ToDateTxt: Label 'To Date %1', Comment = '%1 = Posting Date';
         ReceivablesTxt: Label 'Receivables %1', Comment = '%1 = Company Name';
         PayablesTxt: Label 'Payables %1', Comment = '%1 = Company Name';
         RemainingReceivablesAndPayablesTxt: Label 'Remaining Receivable and Payables of %1 to pay after realize Compensation.', Comment = '%1 = Company Name';
         AmountAfterCompensationTxt: Label 'for the variable symbol %1 are %2 %3 after the Compensation.', Comment = '%1 = Variable Symbol, %2 = Remaining Amount, %3 = Currency Code';
+        ResidenceLbl: Label 'Residence:';
+        BusinessNameLbl: Label 'Business Name:';
+        RegistrationNoLbl: Label 'Reg. No.:';
+        BankConnectionLbl: Label 'Bank connection:';
+        ParagraphLbl: Label 'by reciprocally Compensation receibables by PAR. 1982-1991 of Civil Code No. 89/2012';
+        RemainingAmountLbl: Label 'Remaining Amount';
+        CompensationAmountLbl: Label 'Compensation Amount';
+        LedgerEntryRemainingAmountLbl: Label 'Ledg. Entry Remaining Amount';
+        LedgerEntryOriginalAmountLbl: Label 'Ledg. Entry Original Amount';
+        DueDateLbl: Label 'Due Date';
+        EnterIntoForceLbl: Label 'This agreement shall enter into force upon signature by both parties.';
+        NameAndSignatureLbl: Label 'Name and Signature';
+        InAndDateLbl: Label 'In .............................., date .................';
+        SendBackLbl: Label 'In case you agree, send one confirmed agreement back to our address.';
+        ForLbl: Label 'For';
+        MakeDateLbl: Label 'Make Date';
+        CurrencyCodeLbl: Label 'Currency Code';
+        VariableSymbolLbl: Label 'Variable Symbol';
+        DocumentNoLbl: Label 'Document No';
+        DocumentTypeLbl: Label 'Document Type';
+        PostingDateLbl: Label 'Posting Date';
 }

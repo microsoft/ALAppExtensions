@@ -812,6 +812,7 @@ page 18493 "Subcontracting Order Subform"
                         trigger OnAction()
                         begin
                             ShowSubOrderDetailsReceiptForm();
+                             LineAmount := Rec."Line Amount";
                         end;
                     }
                 }
@@ -821,6 +822,10 @@ page 18493 "Subcontracting Order Subform"
 
     trigger OnAfterGetRecord()
     begin
+        if LineAmount <> 0 then begin
+            Rec."Line Amount" := LineAmount;
+            LineAmount := 0;
+        end;
         Rec.ShowShortcutDimCode(ShortcutDimCode);
     end;
 
@@ -852,6 +857,7 @@ page 18493 "Subcontracting Order Subform"
         TransferExtendedText: Codeunit "Transfer Extended Text";
         ShortcutDimCode: array[8] of Code[20];
         UpdateAllowedVar: Boolean;
+        LineAmount:Decimal;
         ViewModeMsg: Label 'Unable to run this function while in View mode.';
 
     procedure ApproveCalcInvDisc()

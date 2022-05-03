@@ -59,6 +59,41 @@ codeunit 18001 "GST Base Validation"
             end;
     end;
 
+    procedure CheckGSTRegistrationNoforGidandUid(StateCode: Code[10]; RegistrationNo: Code[20]; PANNo: Code[20])
+    var
+        State: Record State;
+        Position: Integer;
+    begin
+        if RegistrationNo = '' then
+            exit;
+
+        if StrLen(RegistrationNo) <> 15 then
+            Error(LengthErr);
+
+        State.Get(StateCode);
+        if State."State Code (GST Reg. No.)" <> CopyStr(RegistrationNo, 1, 2) then
+            Error(StateCodeErr, StateCode, State."State Code (GST Reg. No.)");
+
+        if PANNo <> '' then
+            if PANNo <> CopyStr(RegistrationNo, 3, 10) then
+                Error(SamePanErr, PANNo);
+
+        for Position := 3 to 15 do
+            case Position of
+                3 .. 7, 12:
+                    CheckIsAlphabet(RegistrationNo, Position);
+                8 .. 11:
+                    CheckIsNumeric(RegistrationNo, Position);
+                13:
+                    CheckIsAlphaNumeric(RegistrationNo, Position);
+                14:
+                    CheckIsAlphabet(RegistrationNo, Position);
+                15:
+                    CheckIsAlphaNumeric(RegistrationNo, Position)
+            end;
+    end;
+
+
     //Same Funciton is called in GST Sales
     procedure VerifyPOSOutOfIndia(
         PartyType: Enum "Party Type";

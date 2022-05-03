@@ -132,13 +132,13 @@ codeunit 1925 "Sampling Perf. Profiler Impl."
     var
         CpuProfileNode: DotNet CpuProfileNode;
         CpuProfileNodeArray: DotNet "Array";
-        NodeIterator: Integer;
+        NodeIdToNodeMap: DotNet GenericDictionary2;
+        NodeIdToSelfTimeMap: Dictionary of [Integer, BigInteger];
         // using a dictionary here as there is no "Set" AL type 
         ChildNodes: Dictionary of [Integer, Boolean];
-        NodeIdToSelfTimeMap: Dictionary of [Integer, BigInteger];
         ChildNodeId: Integer;
         NodeNumber: Integer;
-        NodeIdToNodeMap: DotNet GenericDictionary2;
+        NodeIterator: Integer;
     begin
         CheckRecordingExists();
 

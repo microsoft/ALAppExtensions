@@ -1484,11 +1484,20 @@ codeunit 134685 "Email Test"
         Reply := true;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnAfterSendEmail', '', true, true)]
-    local procedure OnAfterSendEmailSubscriber(MessageId: Guid; Status: Boolean)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnAfterEmailSent', '', true, true)]
+    local procedure OnAfterEmailSentSubscriber(SentEmail: Record "Sent Email")
     begin
-        VariableStorage.Enqueue(MessageId);
-        VariableStorage.Enqueue(Status);
+        VariableStorage.Enqueue(SentEmail."Message Id");
+        VariableStorage.Enqueue(True);
+        if ThrowError then
+            Error('');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnAfterEmailSendFailed', '', true, true)]
+    local procedure OnAfterEmailSendFailedSubscriber(EmailOutbox: Record "Email Outbox")
+    begin
+        VariableStorage.Enqueue(EmailOutbox."Message Id");
+        VariableStorage.Enqueue(False);
         if ThrowError then
             Error('');
     end;

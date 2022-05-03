@@ -9,11 +9,11 @@ permissionset 160 SECURITY
     Assignable = true;
     Caption = 'Assign permissions to users';
 
-    IncludedPermissionSets = "System Application - Basic",
-                             "Company - Edit",
+    IncludedPermissionSets = "Company - Edit",
                              "Permissions & Licenses - Edit",
                              "Azure AD Plan - Admin",
-                             "Session - Edit";
+                             "Session - Edit",
+                             "LOGIN";
 
     Permissions = system "Tools, Security, Roles" = X,
                   tabledata "Add-in" = imd,

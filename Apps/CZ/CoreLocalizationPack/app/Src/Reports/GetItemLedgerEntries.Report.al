@@ -72,6 +72,7 @@ report 31006 "Get Item Ledger Entries CZL"
                         "Item Ledger Entry Type"::Sale,
                         "Item Ledger Entry Type"::Purchase,
                         "Item Ledger Entry Type"::Transfer);
+                    OnAfterItemLedgerEntryOnPreDataItem("Item Ledger Entry");
                 end;
             }
             dataitem("Job Ledger Entry"; "Job Ledger Entry")
@@ -529,12 +530,18 @@ report 31006 "Get Item Ledger Entries CZL"
         exit(true);
     end;
 
-    local procedure HasCrossedBorder(ItemLedgerEntry: Record "Item Ledger Entry"): Boolean
+    local procedure HasCrossedBorder(ItemLedgerEntry: Record "Item Ledger Entry") Result: Boolean
     var
         ItemLedgerEntry2: Record "Item Ledger Entry";
         Location: Record Location;
         Include: Boolean;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeHasCrossedBorder(ItemLedgerEntry, Result, IsHandled);
+        if IsHandled then
+            exit(Result);
+
         case true of
             ItemLedgerEntry."Drop Shipment":
                 begin
@@ -1189,6 +1196,16 @@ report 31006 "Get Item Ledger Entries CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCalculateTotals(var ItemLedgerEntry: Record "Item Ledger Entry"; IntrastatJnlBatch: Record "Intrastat Jnl. Batch"; var TotalAmt: Decimal; var TotalCostAmt: Decimal)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterItemLedgerEntryOnPreDataItem(var ItemLedgerEntry: Record "Item Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeHasCrossedBorder(ItemLedgerEntry: Record "Item Ledger Entry"; var Result: Boolean; var IsHandled: Boolean)
     begin
     end;
 

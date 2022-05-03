@@ -21,10 +21,15 @@ pageextension 1702 BankAccountCardExt extends "Bank Account Card"
     }
 
     trigger OnOpenPage()
+#if not CLEAN21
     var
         FeatureBankDeposits: Codeunit "Feature Bank Deposits";
+#endif
     begin
+        ShouldSeePostedBankDeposits := true;
+#if not CLEAN21
         ShouldSeePostedBankDeposits := FeatureBankDeposits.ShouldSeePostedBankDeposits()
+#endif
     end;
 
     var

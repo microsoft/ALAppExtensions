@@ -241,24 +241,49 @@ codeunit 31017 "Upgrade Application CZL"
     var
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
     begin
+#if not CLEAN20
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
-            exit;
+#else
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
+           UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion230PerCompanyUpgradeTag())
+        then
+#endif
 
         if SalesReceivablesSetup.Get() then begin
-            SalesReceivablesSetup."Allow Alter Posting Groups CZL" := SalesReceivablesSetup."Allow Alter Posting Groups";
-            SalesReceivablesSetup.Modify(false);
-        end;
+#if not CLEAN20
+                SalesReceivablesSetup."Allow Alter Posting Groups CZL" := SalesReceivablesSetup."Allow Alter Posting Groups";
+#else
+            if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
+                SalesReceivablesSetup."Allow Alter Posting Groups CZL" := SalesReceivablesSetup."Allow Alter Posting Groups";
+            if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion230PerCompanyUpgradeTag()) then
+                SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups CZL";
+#endif
+                SalesReceivablesSetup.Modify(false);
+            end;
     end;
 
     local procedure UpgradePurchaseSetup();
     var
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
     begin
+#if not CLEAN20
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
+#else
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
+           UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion230PerCompanyUpgradeTag())
+        then
+#endif
             exit;
 
         if PurchasesPayablesSetup.Get() then begin
+#if not CLEAN20
             PurchasesPayablesSetup."Allow Alter Posting Groups CZL" := PurchasesPayablesSetup."Allow Alter Posting Groups";
+#else
+            if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
+                PurchasesPayablesSetup."Allow Alter Posting Groups CZL" := PurchasesPayablesSetup."Allow Alter Posting Groups";
+            if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion230PerCompanyUpgradeTag()) then
+                PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups CZL";
+#endif
             PurchasesPayablesSetup.Modify(false);
         end;
     end;
@@ -267,11 +292,24 @@ codeunit 31017 "Upgrade Application CZL"
     var
         ServiceMgtSetup: Record "Service Mgt. Setup";
     begin
+#if not CLEAN20
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
+#else
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) and
+           UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion230PerCompanyUpgradeTag())
+        then
+#endif
             exit;
 
         if ServiceMgtSetup.Get() then begin
+#if not CLEAN20
             ServiceMgtSetup."Allow Alter Posting Groups CZL" := ServiceMgtSetup."Allow Alter Cust. Post. Groups";
+#else
+            if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
+                ServiceMgtSetup."Allow Alter Posting Groups CZL" := ServiceMgtSetup."Allow Alter Posting Groups";
+            if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion230PerCompanyUpgradeTag()) then
+                ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Posting Groups CZL";
+#endif
             ServiceMgtSetup.Modify(false);
         end;
     end;

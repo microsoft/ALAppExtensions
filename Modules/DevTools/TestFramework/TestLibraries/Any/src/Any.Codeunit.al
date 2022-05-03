@@ -251,4 +251,3 @@ codeunit 130500 "Any"
         exit(Random(MaxValue));
     end;
 }
-

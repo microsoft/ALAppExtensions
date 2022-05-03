@@ -56,5 +56,6 @@ permissionsetextension 4025 "D365 BASIC - HGP" extends "D365 BASIC"
                   tabledata "GP Codes" = RIMD,
                   tabledata "GP Segment Name" = RIMD,
                   tabledata "GP Migration Errors" = RIMD,
-                  tabledata "GP Company Migration Settings" = RIMD;
+                  tabledata "GP Company Migration Settings" = RIMD,
+                  tabledata "GP Company Additional Settings" = RIMD;
 }

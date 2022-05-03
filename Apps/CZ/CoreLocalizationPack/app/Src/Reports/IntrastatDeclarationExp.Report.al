@@ -65,6 +65,7 @@ report 31107 "Intrastat Declaration Exp. CZL"
         Year: Text[4];
         LengthExceededErr: Label 'The formatted value %1 = %2 has exceeded the maximum length of %3 characters in %4', Comment = '%1=caption of a field, %2=text value, %3=integer, %4=key of record';
         NullSatementWithLinesErr: Label 'There must not be any Intrastat Jnl. Lines if you choose Null Statement!';
+        FileNameTxt: Label 'Intrastat_%1.csv', Comment = '%1 = name of intrastat journal batch';
 
     local procedure GetOneIntrastatJnlBatch()
     begin
@@ -126,14 +127,17 @@ report 31107 "Intrastat Declaration Exp. CZL"
     local procedure FinishExport()
     var
         IsHandled: Boolean;
+        FileName: Text;
     begin
         if not TempBlob.HasValue() then
             exit;
 
+        FileName := StrSubstNo(FileNameTxt, IntrastatJnlBatch.Name);
+
         IsHandled := false;
-        OnBeforeDownloadExport(TempBlob, IsHandled);
+        OnBeforeDownloadExport(TempBlob, IsHandled, FileName);
         if not IsHandled then
-            FileManagement.BLOBExport(TempBlob, '*.csv', true);
+            FileManagement.BLOBExport(TempBlob, FileName, true);
 
         IntrastatJnlBatch.Reported := true;
         OnBeforeModifyIntrastatJnlBatch(IntrastatJnlBatch);
@@ -327,7 +331,7 @@ report 31107 "Intrastat Declaration Exp. CZL"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeDownloadExport(var TempBlob: Codeunit "Temp Blob"; var IsHandled: Boolean)
+    local procedure OnBeforeDownloadExport(var TempBlob: Codeunit "Temp Blob"; var IsHandled: Boolean; var FileName: Text)
     begin
     end;
 

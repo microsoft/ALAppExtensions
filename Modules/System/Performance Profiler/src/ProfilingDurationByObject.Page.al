@@ -51,12 +51,6 @@ page 1923 "Profiling Duration By Object"
                         ProfilingDurationByMethod.RunModal();
                     end;
                 }
-                field(Samples; Rec."Hit Count")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Samples';
-                    ToolTip = 'The total number of times the application object was sampled.';
-                }
                 field("App Name"; Rec."App Name")
                 {
                     ApplicationArea = All;

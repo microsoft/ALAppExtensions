@@ -127,7 +127,7 @@ codeunit 18160 "e-Invoice Json Handler for Ser"
 
     local procedure WriteCancelJsonFileHeader()
     begin
-        JObject.Add('Version', '1.01');
+        JObject.Add('Version', '1.1');
         JsonArrayData.Add(JObject);
     end;
 
@@ -204,7 +204,7 @@ codeunit 18160 "e-Invoice Json Handler for Ser"
     local procedure WriteJsonFileHeader()
     begin
         JObject.Add('TaxSch', 'GST');
-        JObject.Add('Version', '1.03');
+        JObject.Add('Version', '1.1');
         JObject.Add('Irn', '');
         JsonArrayData.Add(JObject);
     end;

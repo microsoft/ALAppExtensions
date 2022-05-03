@@ -319,29 +319,29 @@ codeunit 139800 "APIV2 - Items E2E"
     [Test]
     procedure TestSuccessfulTemplateSelection()
     var
-        APITemplateApplication: TestPage "API Setup";
+        APISetup: TestPage "API Setup";
     begin
         // [SCENARIO] [184719] User can select the template for a particular API
 
         // [Given] The template selection page for selecting template for a specific API
         CreateSampleTemplate(Database::Item, Page::"APIV2 - Items");
 
-        APITemplateApplication.TRAP();
+        APISetup.TRAP();
         Page.RUN(Page::"API Setup");
-        APITemplateApplication.NEW();
+        APISetup.NEW();
 
         // [When] User selects the Page ID for an API
-        APITemplateApplication."Page ID".SetValue(Page::"APIV2 - Items");
+        APISetup."Page ID".SetValue(Page::"APIV2 - Items");
 
         // [Then] Templates in Template code is filtered only for the selected Page ID
-        APITemplateApplication."Template Code".SetValue(SampleTempCodeTxt);
+        APISetup."Template Code".SetValue(SampleTempCodeTxt);
     end;
 
     [Test]
     procedure TestSuccessfulTemplateSelectionWithSelectionCriteria()
     var
         ConfigTmplSelectionRules: Record "Config. Tmpl. Selection Rules";
-        APITemplateApplication: TestPage "API Setup";
+        APISetup: TestPage "API Setup";
         OutStream: OutStream;
     begin
         // [SCENARIO] [184719] User can select the template for a particular API with Selection Criteria
@@ -356,21 +356,21 @@ codeunit 139800 "APIV2 - Items E2E"
             ConfigTmplSelectionRules.Modify();
         end;
 
-        APITemplateApplication.TRAP();
+        APISetup.TRAP();
         Page.RUN(Page::"API Setup");
-        APITemplateApplication.NEW();
+        APISetup.NEW();
 
         // [When] User selects the Page ID and  for an API
-        APITemplateApplication."Page ID".SetValue(Page::"APIV2 - Items");
+        APISetup."Page ID".SetValue(Page::"APIV2 - Items");
 
         // [Then] Templates in Template Code only filtered for the selected Page ID
-        APITemplateApplication."Template Code".SetValue(SampleTempCodeTxt);
+        APISetup."Template Code".SetValue(SampleTempCodeTxt);
     end;
 
     [Test]
     procedure TestTempcodeCannotbeblankOrInvalidValue()
     var
-        APITemplateApplication: TestPage "API Setup";
+        APISetup: TestPage "API Setup";
     begin
         // [SCENARIO] [184719] User can not select the template for a particular API where the Template Code is Blank or Invalid
 
@@ -378,14 +378,14 @@ codeunit 139800 "APIV2 - Items E2E"
         CreateSampleTemplate(Database::Customer, Page::"Customer Card");
 
         // [When] User selects the Page ID for an API and keeps the Template Code blank or put a wrong Template code
-        APITemplateApplication.TRAP();
+        APISetup.TRAP();
         Page.RUN(Page::"API Setup");
-        APITemplateApplication.NEW();
-        APITemplateApplication."Page ID".SetValue(Page::"APIV2 - Items");
+        APISetup.NEW();
+        APISetup."Page ID".SetValue(Page::"APIV2 - Items");
 
         // [Then] Page returns error message
-        asserterror APITemplateApplication."Template Code".SetValue('');
-        asserterror APITemplateApplication."Template Code".SetValue(SampleTempCodeTxt);
+        asserterror APISetup."Template Code".SetValue('');
+        asserterror APISetup."Template Code".SetValue(SampleTempCodeTxt);
     end;
 
     [Test]
@@ -601,7 +601,7 @@ codeunit 139800 "APIV2 - Items E2E"
         TargetURL: Text;
         Response: Text;
         ResponseId: Text;
-        JObject: Dotnet JObject;
+        "Newtonsoft.Json.Linq.JObject": Dotnet JObject;
     begin
         // [SCENARIO] Create an item with Gen. Prod. Post. Group and Inventory Post. Group. Verify they can be read from the response when expanding them.
         // [GIVEN] an Item, with a Gen. Prod. Post. Group and with and Inventory Post. Group
@@ -627,12 +627,12 @@ codeunit 139800 "APIV2 - Items E2E"
         LibraryGraphMgt.GetFromWebService(Response, TargetURL);
 
         // [THEN] the response should include them as properties
-        LibraryGraphMgt.GetComplexPropertyFromJSON(Response, 'generalProductPostingGroup', JObject);
-        JSONManagement.GetStringPropertyValueFromJObjectByName(JObject, 'id', ResponseId);
+        LibraryGraphMgt.GetComplexPropertyFromJSON(Response, 'generalProductPostingGroup', "Newtonsoft.Json.Linq.JObject");
+        JSONManagement.GetStringPropertyValueFromJObjectByName("Newtonsoft.Json.Linq.JObject", 'id', ResponseId);
         Assert.AreEqual(GenProdPostGroupId, LowerCase(ResponseId), 'The id of the gen. prod. post. group is not the one on the response.');
 
-        LibraryGraphMgt.GetComplexPropertyFromJSON(Response, 'inventoryPostingGroup', JObject);
-        JSONManagement.GetStringPropertyValueFromJObjectByName(JObject, 'id', ResponseId);
+        LibraryGraphMgt.GetComplexPropertyFromJSON(Response, 'inventoryPostingGroup', "Newtonsoft.Json.Linq.JObject");
+        JSONManagement.GetStringPropertyValueFromJObjectByName("Newtonsoft.Json.Linq.JObject", 'id', ResponseId);
         Assert.AreEqual(InventoryPostGroupId, LowerCase(ResponseId), 'The id of the inventory post. group is not the one on the response.');
     end;
 

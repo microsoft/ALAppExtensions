@@ -173,10 +173,18 @@ codeunit 4018 "GP Customer Migrator"
             CopyStr(MigrationGPCustomer.ADDRESS2, 1, 50), Country, CopyStr(MigrationGPCustomer.ZIPCODE, 1, 20),
             CopyStr(MigrationGPCustomer.CITY, 1, 30));
         CustomerDataMigrationFacade.SetContact(CopyStr(MigrationGPCustomer.CNTCPRSN, 1, 50));
+
+        if (CopyStr(MigrationGPCustomer.PHONE1, 1, 14) = '00000000000000') then
+            MigrationGPCustomer.PHONE1 := '';
+
+        if (CopyStr(MigrationGPCustomer.FAX, 1, 14) = '00000000000000') then
+            MigrationGPCustomer.FAX := '';
+
         CustomerDataMigrationFacade.SetPhoneNo(MigrationGPCustomer.PHONE1);
+        CustomerDataMigrationFacade.SetFaxNo(MigrationGPCustomer.FAX);
+
         CustomerDataMigrationFacade.SetCustomerPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
         CustomerDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
-        CustomerDataMigrationFacade.SetFaxNo(MigrationGPCustomer.FAX);
         CustomerDataMigrationFacade.SetEmail(COPYSTR(MigrationGPCustomer.INET1, 1, 80));
         CustomerDataMigrationFacade.SetHomePage(COPYSTR(MigrationGPCustomer.INET2, 1, 80));
 

@@ -75,6 +75,13 @@ page 1694 "Posted Bank Deposit"
                     ApplicationArea = Suite;
                     ToolTip = 'Specifies the currency code of the bank account that the deposit was deposited in.';
                 }
+                field(Reversed; GLRegisterReversed)
+                {
+                    ApplicationArea = Suite;
+                    Editable = false;
+                    Caption = 'Reversed';
+                    ToolTip = 'Specifies if transactions from the corresponding G/L Register have been reversed.';
+                }
             }
             part(Subform; "Posted Bank Deposit Subform")
             {
@@ -150,8 +157,10 @@ page 1694 "Posted Bank Deposit"
                 var
                     PostedBankDepositHeader: Record "Posted Bank Deposit Header";
                     ReportSelections: Record "Report Selections";
+                    FeatureTelemetry: Codeunit "Feature Telemetry";
                     IsHandled: Boolean;
                 begin
+                    FeatureTelemetry.LogUptake('0000H7Y', 'Bank Deposit', Enum::"Feature Uptake Status"::Used);
                     if PostedBankDepositHeader.Get(Rec."No.") then begin
                         PostedBankDepositHeader.SetRange("No.", Rec."No.");
                         PostedBankDepositHeader.SetRange("Bank Account No.", Rec."Bank Account No.");
@@ -167,6 +176,30 @@ page 1694 "Posted Bank Deposit"
                         Error(BankDepositReportSelectionErr);
 
                     REPORT.Run(ReportSelections."Report ID", true, false, PostedBankDepositHeader);
+                    FeatureTelemetry.LogUsage('0000H7Z', 'Bank Deposit', 'Bank deposit printed');
+                end;
+            }
+            action(Undo)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = '&Undo Posting';
+                Ellipsis = true;
+                Image = Undo;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                ToolTip = 'Undo the posting of the bank deposit by reversing all related ledger entries.';
+
+                trigger OnAction()
+                begin
+                    if not GuiAllowed() then
+                        Error(BankDepositNonGUISessionErr);
+
+                    if not Confirm(UndoPostingQst) then
+                        exit;
+                    Rec.ReverseTransactions();
+                    CurrPage.Update(false);
                 end;
             }
             action("&Navigate")
@@ -189,7 +222,33 @@ page 1694 "Posted Bank Deposit"
     }
 
     var
+        GLRegisterReversed: Text;
         BankDepositReportSelectionErr: Label 'Bank deposit report has not been set up.';
+        UndoPostingQst: Label 'This will reverse all ledger entries that are related to the lines of the bank deposit. Do you want to continue?';
+        BankDepositNonGUISessionErr: Label 'To undo the posting of a bank deposit, you must sign in to Business Central from a web browser.';
+        YesTxt: Label 'Yes';
+        NoTxt: Label 'No';
+
+    trigger OnAfterGetCurrRecord()
+    var
+        GLRegister: Record "G/L Register";
+        GLRegNo: Integer;
+    begin
+        GLRegisterReversed := NoTxt;
+
+        if Rec.FindGLRegisterNo(GLRegNo) then begin
+            GLRegister.Get(GLRegNo);
+            if GLRegister.Reversed then
+                GLRegisterReversed := YesTxt;
+        end;
+    end;
+
+    trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        FeatureTelemetry.LogUptake('0000H8A', 'Bank Deposit', Enum::"Feature Uptake Status"::"Set up");
+    end;
 
     local procedure GetDifference(): Decimal
     begin

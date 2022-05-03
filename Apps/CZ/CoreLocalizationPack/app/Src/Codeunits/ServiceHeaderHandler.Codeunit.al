@@ -42,6 +42,10 @@ codeunit 11745 "Service Header Handler CZL"
     begin
         ServiceHeader."Registration No. CZL" := Customer."Registration No. CZL";
         ServiceHeader."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
+        if Customer."Transaction Type CZL" <> '' then
+            ServiceHeader."Transaction Type" := Customer."Transaction Type CZL";
+        ServiceHeader."Transaction Specification" := Customer."Transaction Specification CZL";
+        ServiceHeader."Transport Method" := Customer."Transport Method CZL";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyBillToCustomerFields', '', false, false)]

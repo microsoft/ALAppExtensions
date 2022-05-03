@@ -93,12 +93,14 @@ page 1691 "Bank Deposit List"
         }
     }
 
+#if not CLEAN21
     trigger OnInit()
     var
         FeatureBankDeposits: Codeunit "Feature Bank Deposits";
     begin
         FeatureBankDeposits.OpenPageGuard();
     end;
+#endif
 
     var
         BankDepositReportSelectionErr: Label 'Bank deposit test report has not been set up.';

@@ -45,7 +45,7 @@ codeunit 10532 "MTD Submit Return"
         TempBlob.CreateOutStream(OutStream, TEXTENCODING::UTF8);
         OutStream.Write(CombineSubmissionRequestResponse(RequestJson, ResponseJson));
         VATReportArchive.Delete();
-        VATReportArchive.ArchiveSubmissionMessage("VAT Report Config. Code", "No.", TempBlob, DummyGUID);
+        VATReportArchive.ArchiveSubmissionMessage("VAT Report Config. Code".AsInteger(), "No.", TempBlob, DummyGUID);
 
         if SubmitSuccess then begin
             // Mark as Submitted

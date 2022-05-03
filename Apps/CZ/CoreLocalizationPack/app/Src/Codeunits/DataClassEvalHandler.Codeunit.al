@@ -399,7 +399,11 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Country/Reg. of Orig. Code CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line Archive", PurchaseLineArchive.FieldNo("Physical Transfer CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchases & Payables Setup", PurchasesPayablesSetup.FieldNo("Default VAT Date CZL"));
+#if not CLEAN20
+#pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"Purchases & Payables Setup", PurchasesPayablesSetup.FieldNo("Allow Alter Posting Groups CZL"));
+#pragma warning restore AL0432
+#endif
         DataClassificationMgt.SetFieldToNormal(Database::"Purchases & Payables Setup", PurchasesPayablesSetup.FieldNo("Def. Orig. Doc. VAT Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Cr. Memo Hdr.", PurchCrMemoHdr.FieldNo("VAT Currency Factor CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Cr. Memo Hdr.", PurchCrMemoHdr.FieldNo("VAT Currency Code CZL"));
@@ -503,7 +507,11 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Line", SalesLine.FieldNo("Country/Reg. of Orig. Code CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Line Archive", SalesLineArchive.FieldNo("Physical Transfer CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales & Receivables Setup", SalesReceivablesSetup.FieldNo("Default VAT Date CZL"));
+#if not CLEAN20
+#pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"Sales & Receivables Setup", SalesReceivablesSetup.FieldNo("Allow Alter Posting Groups CZL"));
+#pragma warning restore AL0432
+#endif
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Shipment Header", SalesShipmentHeader.FieldNo("Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Shipment Header", SalesShipmentHeader.FieldNo("Tax Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Shipment Header", SalesShipmentHeader.FieldNo("Physical Transfer CZL"));
@@ -549,7 +557,11 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Service Line", ServiceLine.FieldNo("Statistic Indication CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Line", ServiceLine.FieldNo("Country/Reg. of Orig. Code CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Mgt. Setup", ServiceMgtSetup.FieldNo("Default VAT Date CZL"));
+#if not CLEAN20
+#pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"Service Mgt. Setup", ServiceMgtSetup.FieldNo("Allow Alter Posting Groups CZL"));
+#pragma warning restore AL0432
+#endif
         DataClassificationMgt.SetFieldToNormal(Database::"Service Shipment Header", ServiceShipmentHeader.FieldNo("Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Shipment Header", ServiceShipmentHeader.FieldNo("Tax Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Shipment Header", ServiceShipmentHeader.FieldNo("Physical Transfer CZL"));

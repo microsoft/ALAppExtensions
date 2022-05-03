@@ -141,12 +141,31 @@ codeunit 4022 "GP Vendor Migrator"
     local procedure MigrateVendorDetails(GPVendor: Record "GP Vendor"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
     var
         CompanyInformation: Record "Company Information";
+        GPVendorAddress: Record "GP Vendor Address";
         HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
         VendorName: Text[50];
         ContactName: Text[50];
         Country: Code[10];
     begin
+        // If the Remit To address is found, make that the main address
+        GPVendorAddress.SetRange(VENDORID, GPVendor.VENDORID);
+        GPVendorAddress.SetRange(ADRSCODE, 'REMIT TO');
+        if GPVendorAddress.FindFirst() then begin
+            GPVendor.VNDCNTCT := GPVendorAddress.VNDCNTCT;
+            GPVendor.ADDRESS1 := GPVendorAddress.ADDRESS1;
+            GPVendor.ADDRESS2 := GPVendorAddress.ADDRESS2;
+            GPVendor.CITY := GPVendorAddress.CITY;
+            GPVendor.STATE := GPVendorAddress.STATE;
+            GPVendor.ZIPCODE := GPVendorAddress.ZIPCODE;
+
+            if (CopyStr(GPVendorAddress.PHNUMBR1, 1, 14) <> '00000000000000') then
+                GPVendor.PHNUMBR1 := GPVendorAddress.PHNUMBR1;
+
+            if (CopyStr(GPVendorAddress.FAXNUMBR, 1, 14) <> '00000000000000') then
+                GPVendor.FAXNUMBR := GPVendorAddress.FAXNUMBR;
+        end;
+
         VendorName := CopyStr(GPVendor.VENDNAME, 1, 50);
         ContactName := CopyStr(GPVendor.VNDCNTCT, 1, 50);
         if not VendorDataMigrationFacade.CreateVendorIfNeeded(CopyStr(GPVendor.VENDORID, 1, 20), VendorName) then
@@ -167,15 +186,21 @@ codeunit 4022 "GP Vendor Migrator"
         VendorDataMigrationFacade.SetAddress(CopyStr(GPVendor.ADDRESS1, 1, 50),
             CopyStr(GPVendor.ADDRESS2, 1, 50), Country,
             CopyStr(GPVendor.ZIPCODE, 1, 20), CopyStr(GPVendor.CITY, 1, 30));
-        VendorDataMigrationFacade.SetContact(ContactName);
+
+        if (CopyStr(GPVendor.PHNUMBR1, 1, 14) = '00000000000000') then
+            GPVendor.PHNUMBR1 := '';
+
+        if (CopyStr(GPVendor.FAXNUMBR, 1, 14) = '00000000000000') then
+            GPVendor.FAXNUMBR := '';
+
         VendorDataMigrationFacade.SetPhoneNo(GPVendor.PHNUMBR1);
+        VendorDataMigrationFacade.SetFaxNo(GPVendor.FAXNUMBR);
+        VendorDataMigrationFacade.SetContact(ContactName);
         VendorDataMigrationFacade.SetVendorPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
         VendorDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
-        VendorDataMigrationFacade.SetFaxNo(GPVendor.FAXNUMBR);
         VendorDataMigrationFacade.SetEmail(COPYSTR(GPVendor.INET1, 1, 80));
         VendorDataMigrationFacade.SetHomePage(COPYSTR(GPVendor.INET2, 1, 80));
         VendorDataMigrationFacade.SetVendorPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
-
 
         if (CopyStr(GPVendor.SHIPMTHD, 1, 10) <> '') then begin
             VendorDataMigrationFacade.CreateShipmentMethodIfNeeded(CopyStr(GPVendor.SHIPMTHD, 1, 10), '');

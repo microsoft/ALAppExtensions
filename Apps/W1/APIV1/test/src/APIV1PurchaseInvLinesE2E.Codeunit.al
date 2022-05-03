@@ -13,7 +13,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
     var
         Assert: Codeunit "Assert";
         SalesInvoiceAggregator: Codeunit "Sales Invoice Aggregator";
-        SalesInvLinesE2E: Codeunit "APIV1 - Sales Inv. Lines E2E";
+        APIV1SalesInvLinesE2E: Codeunit "APIV1 - Sales Inv. Lines E2E";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryInventory: Codeunit "Library - Inventory";
@@ -85,7 +85,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
         LineNo := PurchaseLine."Line No.";
 
         // [WHEN] we GET all the lines with the unposted invoice ID from the web service
-        TargetURL := SalesInvLinesE2E.GetLinesURL(SalesInvoiceAggregator.GetIdFromDocumentIdAndSequence(InvoiceId, LineNo), PAGE::"APIV1 - Purchase Invoices", InvoiceServiceNameTxt, InvoiceServiceLinesNameTxt);
+        TargetURL := APIV1SalesInvLinesE2E.GetLinesURL(SalesInvoiceAggregator.GetIdFromDocumentIdAndSequence(InvoiceId, LineNo), PAGE::"APIV1 - Purchase Invoices", InvoiceServiceNameTxt, InvoiceServiceLinesNameTxt);
         LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
 
         // [THEN] the line returned should be valid (numbers and integration id)
@@ -157,7 +157,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
         LineNo2 := FORMAT(PurchaseLine."Line No.");
 
         // [WHEN] we GET all the lines with the unposted invoice ID from the web service
-        TargetURL := SalesInvLinesE2E.GetLinesURLWithDocumentIdFilter(InvoiceId, PAGE::"APIV1 - Purchase Invoices", InvoiceServiceNameTxt, InvoiceServiceLinesNameTxt);
+        TargetURL := APIV1SalesInvLinesE2E.GetLinesURLWithDocumentIdFilter(InvoiceId, PAGE::"APIV1 - Purchase Invoices", InvoiceServiceNameTxt, InvoiceServiceLinesNameTxt);
         LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
 
         // [THEN] the lines returned should be valid (numbers and integration ids)
@@ -320,7 +320,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
             InvoiceId,
             PAGE::"APIV1 - Purchase Invoices",
             InvoiceServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(InvoiceId, LineNo, InvoiceServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(InvoiceId, LineNo, InvoiceServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, InvoiceLineJSON, ResponseText);
 
         // [THEN] the line should be changed in the table and the response JSON text should contain our changed field
@@ -372,7 +372,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
             InvoiceId,
             PAGE::"APIV1 - Sales Invoices",
             InvoiceServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(InvoiceId, LineNo, InvoiceServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(InvoiceId, LineNo, InvoiceServiceLinesNameTxt));
         ASSERTERROR LibraryGraphMgt.PatchToWebService(TargetURL, InvoiceLineJSON[1], ResponseText);
 
         TargetURL := LibraryGraphMgt
@@ -380,7 +380,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
             InvoiceId,
             PAGE::"APIV1 - Sales Invoices",
             InvoiceServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(InvoiceId, LineNo, InvoiceServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(InvoiceId, LineNo, InvoiceServiceLinesNameTxt));
         ASSERTERROR LibraryGraphMgt.PatchToWebService(TargetURL, InvoiceLineJSON[2], ResponseText);
 
         TargetURL := LibraryGraphMgt
@@ -388,7 +388,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
             InvoiceId,
             PAGE::"APIV1 - Sales Invoices",
             InvoiceServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(InvoiceId, LineNo, InvoiceServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(InvoiceId, LineNo, InvoiceServiceLinesNameTxt));
         ASSERTERROR LibraryGraphMgt.PatchToWebService(TargetURL, InvoiceLineJSON[3], ResponseText);
     end;
 
@@ -420,7 +420,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
             InvoiceId,
             PAGE::"APIV1 - Purchase Invoices",
             InvoiceServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(InvoiceId, LineNo, InvoiceServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(InvoiceId, LineNo, InvoiceServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] the line should no longer exist in the database
@@ -456,7 +456,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
             PostedInvoiceId,
             PAGE::"APIV1 - Purchase Invoices",
             InvoiceServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PostedInvoiceId, LineNo, InvoiceServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(PostedInvoiceId, LineNo, InvoiceServiceLinesNameTxt));
         ASSERTERROR LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] the line should still exist, since it's not allowed to delete lines in posted invoices
@@ -617,7 +617,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
             PurchaseHeader.SystemId,
             PAGE::"APIV1 - Purchase Invoices",
             InvoiceServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseHeader.SystemId, PurchaseLine."Line No.", InvoiceServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(PurchaseHeader.SystemId, PurchaseLine."Line No.", InvoiceServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, InvoiceLineJSON, ResponseText);
 
         // [THEN] Invoice discount is applied
@@ -661,7 +661,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
             PurchaseHeader.SystemId,
             PAGE::"APIV1 - Purchase Invoices",
             InvoiceServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(PurchaseHeader.SystemId, PurchaseLine."Line No.", InvoiceServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(PurchaseHeader.SystemId, PurchaseLine."Line No.", InvoiceServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] Lower Invoice discount is applied
@@ -804,7 +804,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
             InvoiceId,
             PAGE::"APIV1 - Purchase Invoices",
             InvoiceServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(InvoiceId, LineNo, InvoiceServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(InvoiceId, LineNo, InvoiceServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, InvoiceLineJSON, ResponseText);
 
         // [THEN] Line type is changed to Account
@@ -869,9 +869,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
         Item2: Record "Item";
         ItemVariant: Record "Item Variant";
         PurchaseHeader: Record "Purchase Header";
-        ItemNo1: Code[20];
         ItemNo2: Code[20];
-        ItemVariantCode: Code[10];
         ResponseText: Text;
         TargetURL: Text;
         InvoiceLineJSON: Text;
@@ -881,9 +879,9 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
         // [GIVEN] An existing unposted invoice and a valid JSON describing the new invoice line with item variant
         Initialize();
         InvoiceID := CreatePurchaseInvoiceWithLines(PurchaseHeader);
-        ItemNo1 := LibraryInventory.CreateItem(Item1);
+        LibraryInventory.CreateItem(Item1);
         ItemNo2 := LibraryInventory.CreateItem(Item2);
-        ItemVariantCode := LibraryInventory.CreateItemVariant(ItemVariant, ItemNo2);
+        LibraryInventory.CreateItemVariant(ItemVariant, ItemNo2);
         Commit();
 
         // [WHEN] we POST the JSON to the web service
@@ -936,10 +934,9 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
     [Normal]
     local procedure CreateInvoiceLineJSON(ItemId: Guid; Quantity: Integer): Text
     var
-        IntegrationManagement: Codeunit "Integration Management";
         LineJSON: Text;
     begin
-        LineJSON := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', IntegrationManagement.GetIdWithoutBrackets(ItemId));
+        LineJSON := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', LibraryGraphMgt.StripBrackets(Format(ItemId)));
         LineJSON := LibraryGraphMgt.AddComplexTypetoJSON(LineJSON, 'quantity', FORMAT(Quantity));
         LineJSON := LibraryGraphMgt.AddComplexTypetoJSON(LineJSON, 'unitCost', FORMAT(1000));
         EXIT(LineJSON);
@@ -947,11 +944,10 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
 
     local procedure CreateInvoiceLineJSONWithItemVariantId(ItemId: Guid; Quantity: Integer; ItemVariantId: Guid): Text
     var
-        IntegrationManagement: Codeunit "Integration Management";
         LineJSON: Text;
     begin
         LineJSON := CreateInvoiceLineJSON(ItemId, Quantity);
-        LineJSON := LibraryGraphMgt.AddPropertytoJSON(LineJSON, 'itemVariantId', IntegrationManagement.GetIdWithoutBrackets(ItemVariantId));
+        LineJSON := LibraryGraphMgt.AddPropertytoJSON(LineJSON, 'itemVariantId', LibraryGraphMgt.StripBrackets(Format(ItemVariantId)));
         exit(LineJSON);
     end;
 
@@ -993,13 +989,12 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
 
     local procedure VerifyIdsAreBlank(JsonObjectTxt: Text)
     var
-        IntegrationManagement: Codeunit "Integration Management";
         itemId: Text;
         accountId: Text;
         ExpectedId: Text;
         BlankGuid: Guid;
     begin
-        ExpectedId := IntegrationManagement.GetIdWithoutBrackets(BlankGuid);
+        ExpectedId := LibraryGraphMgt.StripBrackets(Format(BlankGuid));
 
         Assert.IsTrue(LibraryGraphMgt.GetPropertyValueFromJSON(JsonObjectTxt, 'itemId', itemId), 'Could not find itemId');
         Assert.IsTrue(LibraryGraphMgt.GetPropertyValueFromJSON(JsonObjectTxt, 'accountId', accountId), 'Could not find accountId');

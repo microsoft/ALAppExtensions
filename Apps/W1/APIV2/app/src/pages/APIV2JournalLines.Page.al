@@ -133,18 +133,21 @@ page 30049 "APIV2 - JournalLines"
                             "Bal. Account No." := '';
                             exit;
                         end;
-                        if "Bal. Account Type" = "Bal. Account Type"::"G/L Account" then begin
-                            if not GLAccount.GetBySystemId("Balance Account Id") then
-                                Error(BalAccountIdDoesNotMatchAnAccountErr);
-                            "Bal. Account No." := GLAccount."No.";
+                        case "Bal. Account Type" of
+                            "Bal. Account Type"::"G/L Account":
+                                begin
+                                    if not GLAccount.GetBySystemId("Balance Account Id") then
+                                        Error(BalAccountIdDoesNotMatchAnAccountErr);
+                                    "Bal. Account No." := GLAccount."No.";
+                                end;
+                            "Bal. Account Type"::"Bank Account":
+                                begin
+                                    if not BankAccount.GetBySystemId("Balance Account Id") then
+                                        Error(BalAccountIdDoesNotMatchAnAccountErr);
+                                    "Bal. Account No." := BankAccount."No.";
+                                end;
                         end;
-                        if "Bal. Account Type" = "Bal. Account Type"::"Bank Account" then
-                            if not BankAccount.GetBySystemId("Balance Account Id") then
-                                Error(BalAccountIdDoesNotMatchAnAccountErr);
-                        "Bal. Account No." := BankAccount."No."
                     end;
-
-
                 }
                 field(balancingAccountNumber; "Bal. Account No.")
                 {

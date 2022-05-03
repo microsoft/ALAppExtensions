@@ -5,7 +5,8 @@
 
 Codeunit 138049 "User Login Test Library"
 {
-    Permissions = tabledata "User Login" = rim;
+    Permissions = tabledata "User Login" = rimd,
+                  tabledata "User Environment Login" = rid;
 
     /// <summary>
     /// Creates login information for a user.
@@ -17,6 +18,7 @@ Codeunit 138049 "User Login Test Library"
     procedure InsertUserLogin(UserSID: Guid; FirstLoginDate: Date; LastLoginDateTime: DateTime; PenultimateLoginDateTime: DateTime)
     var
         UserLogin: Record "User Login";
+        UserEnvironmentLogin: Record "User Environment Login";
     begin
         UserLogin."User SID" := UserSID;
         UserLogin."First Login Date" := FirstLoginDate;
@@ -24,6 +26,9 @@ Codeunit 138049 "User Login Test Library"
         UserLogin."Penultimate Login Date" := PenultimateLoginDateTime;
 
         UserLogin.Insert();
+
+        UserEnvironmentLogin."User SID" := UserSID;
+        UserEnvironmentLogin.Insert();
     end;
 
     /// <summary>
@@ -53,9 +58,24 @@ Codeunit 138049 "User Login Test Library"
     procedure DeleteAllLoginInformation(UserSID: Guid)
     var
         UserLogin: Record "User Login";
+        UserEnvironmentLogin: Record "User Environment Login";
     begin
         UserLogin.SetRange("User SID", UserSID);
-
         UserLogin.DeleteAll();
+
+        UserEnvironmentLogin.SetRange("User SID", UserSID);
+        UserEnvironmentLogin.DeleteAll();
+    end;
+
+    /// <summary>
+    /// Deletes all login information for all users.
+    /// </summary>
+    procedure DeleteAllLoginInformation()
+    var
+        UserLogin: Record "User Login";
+        UserEnvironmentLogin: Record "User Environment Login";
+    begin
+        UserLogin.DeleteAll();
+        UserEnvironmentLogin.DeleteAll();
     end;
 }

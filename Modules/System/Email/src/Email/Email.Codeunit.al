@@ -468,15 +468,18 @@ codeunit 8901 "Email"
     begin
     end;
 
+#if not CLEAN20
     /// <summary>
     /// Integration event that notifies senders about whether their email was successfully sent in the background.
     /// </summary>
     /// <param name="MessageId">The ID of the email in the queue.</param>
     /// <param name="Status">True if the message was successfully sent.</param>
     [IntegrationEvent(false, false)]
+    [Obsolete('This event has been replaced with OnAfterEmailSend which is isolated.', '20.1')]
     internal procedure OnAfterSendEmail(MessageId: Guid; Status: Boolean)
     begin
     end;
+#endif
 
     /// <summary>
     /// Integration event to get the names and IDs of attachments related to a source record. 
@@ -506,6 +509,24 @@ codeunit 8901 "Email"
     /// <param name="MessageId">The ID of the email that has been queued</param>
     [IntegrationEvent(false, false)]
     internal procedure OnEnqueuedInOutbox(MessageId: Guid)
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event that notifies senders when the email has been sent successfully. This event is isolated.
+    /// </summary>
+    /// <param name="SentEmail">The record of the sent email.</param>
+    [IntegrationEvent(false, false, true)]
+    internal procedure OnAfterEmailSent(SentEmail: Record "Sent Email")
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event that notifies senders when the email has been sent unsuccessfully. This event is isolated.
+    /// </summary>
+    /// <param name="EmailOutbox">The record of the email outbox that failed to send.</param>
+    [IntegrationEvent(false, false, true)]
+    internal procedure OnAfterEmailSendFailed(EmailOutbox: Record "Email Outbox")
     begin
     end;
 

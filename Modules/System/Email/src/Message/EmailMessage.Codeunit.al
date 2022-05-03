@@ -80,8 +80,8 @@ codeunit 8904 "Email Message"
 
     /// <summary>
     /// Sets the body of the email message.
-    /// <param name="Body">The body to set to the email message.</param>
     /// </summary>
+    /// <param name="Body">The body to set to the email message.</param>
     procedure SetBody(Body: Text)
     begin
         EmailMessageImpl.SetBody(Body);
@@ -107,8 +107,8 @@ codeunit 8904 "Email Message"
 
     /// <summary>
     /// Sets the subject of the email message.
-    /// <param name="Subject">The subject to set to the email message.</param>
     /// </summary>
+    /// <param name="Subject">The subject to set to the email message.</param>
     procedure SetSubject(Subject: Text)
     begin
         EmailMessageImpl.SetSubject(Subject);
@@ -162,16 +162,6 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
-    /// Adds a recipent of a certain type to the email message.
-    /// </summary>
-    /// <param name="RecipientType">Specifies the type of the recipient.</param>
-    /// <param name="Recipient">Specifies the recipient's email address.</param>
-    procedure AddRecipient(RecipientType: Enum "Email Recipient Type"; Recipient: Text)
-    begin
-        EmailMessageImpl.AddRecipient(RecipientType, Recipient);
-    end;
-
-    /// <summary>
     /// Sets the recipents of a certain type of the email message.
     /// </summary>
     /// <param name="RecipientType">Specifies the type of the recipients.</param>
@@ -179,6 +169,16 @@ codeunit 8904 "Email Message"
     procedure SetRecipients(RecipientType: Enum "Email Recipient Type"; Recipients: list of [Text])
     begin
         EmailMessageImpl.SetRecipients(RecipientType, Recipients);
+    end;
+
+    /// <summary>
+    /// Adds a recipient of a certain type to the email message.
+    /// </summary>
+    /// <param name="RecipientType">Specifies the type of the recipient.</param>
+    /// <param name="Recipient">Specifies the recipient's email address.</param>
+    procedure AddRecipient(RecipientType: Enum "Email Recipient Type"; Recipient: Text)
+    begin
+        EmailMessageImpl.AddRecipient(RecipientType, Recipient);
     end;
 
     /// <summary>

@@ -38,12 +38,6 @@ page 1924 "Profiling Duration By Method"
                     Caption = 'Time Spent';
                     ToolTip = 'The total time spent inside the method during the performance profiler recording.';
                 }
-                field("Sample Count"; Rec."Hit Count")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Sample Count';
-                    ToolTip = 'The total number of samples in which the method was recorded.';
-                }
             }
         }
     }

@@ -2,6 +2,12 @@ pageextension 11740 "Purchase Credit Memo CZL" extends "Purchase Credit Memo"
 {
     layout
     {
+#if not CLEAN20
+        modify("Vendor Posting Group")
+        {
+            Editable = IsPostingGroupEditableCZL;
+        }
+#endif
         movelast(General; "Posting Description")
         addafter("Posting Date")
         {
@@ -176,4 +182,18 @@ pageextension 11740 "Purchase Credit Memo CZL" extends "Purchase Credit Memo"
             }
         }
     }
+#if not CLEAN20
+
+    trigger OnOpenPage()
+    begin
+        PurchasesPayablesSetupCZL.GetRecordOnce();
+#pragma warning disable AL0432
+        IsPostingGroupEditableCZL := PurchasesPayablesSetupCZL."Allow Alter Posting Groups CZL";
+#pragma warning restore AL0432
+    end;
+
+    var
+        PurchasesPayablesSetupCZL: Record "Purchases & Payables Setup";
+        IsPostingGroupEditableCZL: Boolean;
+#endif
 }

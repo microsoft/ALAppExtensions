@@ -54,7 +54,7 @@ pageextension 18445 "GST Service Cr. Memo Subform" extends "Service Credit Memo 
             field("GST Place Of Supply"; Rec."GST Place Of Supply")
             {
                 ApplicationArea = Basic, Suite;
-                Editable = false;
+                Editable = true;
                 ToolTip = 'Specifies on which location state code system should consider for GST calculation in case of sale of product or service.';
             }
             field("GST Group Type"; Rec."GST Group Type")

@@ -365,7 +365,9 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("No."), DATABASE::"Sales Header");
         LibraryUtility.AddTempField(
           TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("Posting Description"), DATABASE::"Sales Header");
+#pragma warning disable AL0432
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO(Id), DATABASE::"Sales Header");
+#pragma warning restore AL0432
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("Order Date"), DATABASE::"Sales Header");    // it is always set as Today() in API
         LibraryUtility.AddTempField(TempIgnoredFieldsForComparison, ApiSalesHeader.FIELDNO("Shipment Date"), DATABASE::"Sales Header"); // it is always set as Today() in API
         // Special ignore case for ES
@@ -526,7 +528,6 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         OrderId: Guid;
         OrderNo: Code[20];
         OrderNoSeries: Code[20];
-        ShippingNo: Code[20];
         ResponseText: Text;
         TargetURL: Text;
     begin
@@ -537,7 +538,6 @@ codeunit 139711 "APIV1 - Sales Orders E2E"
         OrderId := SalesHeader.SystemId;
         OrderNo := SalesHeader."No.";
         OrderNoSeries := SalesHeader."No. Series";
-        ShippingNo := SalesHeader."Shipping No.";
         Commit();
 
         // [WHEN] A POST request is made to the API.

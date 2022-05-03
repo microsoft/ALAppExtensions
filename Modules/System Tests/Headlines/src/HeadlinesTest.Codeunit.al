@@ -165,7 +165,7 @@ codeunit 139481 "Headlines Test"
 
         // [WHEN] The user has logged in less than 10 minutes ago
         UserLoginTestLibrary.InsertUserLogin(UserSecurityId(), 0D, CurrentDateTime() - (9 * 60 * 1000), 0DT);
-    
+
         PermissionsMock.Set('Headlines Read');
 
         // [THEN] User greeting should be shown

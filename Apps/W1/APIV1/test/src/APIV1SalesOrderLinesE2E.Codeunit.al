@@ -13,7 +13,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
     var
         Assert: Codeunit "Assert";
         SalesInvoiceAggregator: Codeunit "Sales Invoice Aggregator";
-        SalesInvLinesE2E: Codeunit "APIV1 - Sales Inv. Lines E2E";
+        APIV1SalesInvLinesE2E: Codeunit "APIV1 - Sales Inv. Lines E2E";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryGraphDocumentTools: Codeunit "Library - Graph Document Tools";
@@ -86,7 +86,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         LineNo := SalesLine."Line No.";
 
         // [WHEN] we GET all the lines with the order ID from the web service
-        TargetURL := SalesInvLinesE2E.GetLinesURL(SalesInvoiceAggregator.GetIdFromDocumentIdAndSequence(OrderId, LineNo), PAGE::"APIV1 - Sales Orders", OrderServiceNameTxt, OrderServiceLinesNameTxt);
+        TargetURL := APIV1SalesInvLinesE2E.GetLinesURL(SalesInvoiceAggregator.GetIdFromDocumentIdAndSequence(OrderId, LineNo), PAGE::"APIV1 - Sales Orders", OrderServiceNameTxt, OrderServiceLinesNameTxt);
         LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
 
         // [THEN] the line returned should be valid (numbers and integration id)
@@ -158,7 +158,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         LineNo2 := FORMAT(SalesLine."Line No.");
 
         // [WHEN] we GET all the lines with the order ID from the web service
-        TargetURL := SalesInvLinesE2E.GetLinesURLWithDocumentIdFilter(OrderId, PAGE::"APIV1 - Sales Orders", OrderServiceNameTxt, OrderServiceLinesNameTxt);
+        TargetURL := APIV1SalesInvLinesE2E.GetLinesURLWithDocumentIdFilter(OrderId, PAGE::"APIV1 - Sales Orders", OrderServiceNameTxt, OrderServiceLinesNameTxt);
         LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
 
         // [THEN] the lines returned should be valid (numbers and integration ids)
@@ -239,7 +239,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
             OrderId,
             PAGE::"APIV1 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(OrderId, LineNo, OrderServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(OrderId, LineNo, OrderServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON, ResponseText);
 
         // [THEN] the line should be changed in the table and the response JSON text should contain our changed field
@@ -287,7 +287,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
             OrderId,
             PAGE::"APIV1 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(OrderId, LineNo, OrderServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(OrderId, LineNo, OrderServiceLinesNameTxt));
         ASSERTERROR LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON[1], ResponseText);
 
         TargetURL := LibraryGraphMgt
@@ -295,7 +295,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
             OrderId,
             PAGE::"APIV1 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(OrderId, LineNo, OrderServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(OrderId, LineNo, OrderServiceLinesNameTxt));
         ASSERTERROR LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON[2], ResponseText);
 
         TargetURL := LibraryGraphMgt
@@ -303,7 +303,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
             OrderId,
             PAGE::"APIV1 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(OrderId, LineNo, OrderServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(OrderId, LineNo, OrderServiceLinesNameTxt));
         ASSERTERROR LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON[3], ResponseText);
     end;
 
@@ -335,7 +335,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
             OrderId,
             PAGE::"APIV1 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(OrderId, LineNo, OrderServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(OrderId, LineNo, OrderServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] the line should no longer exist in the database
@@ -497,7 +497,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
             SalesHeader.SystemId,
             PAGE::"APIV1 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON, ResponseText);
 
         // [THEN] order discount is applied
@@ -547,7 +547,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
             SalesHeader.SystemId,
             PAGE::"APIV1 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] Lower order discount is applied
@@ -590,7 +590,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
             SalesHeader.SystemId,
             PAGE::"APIV1 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] Lower order discount is applied
@@ -662,7 +662,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
             SalesHeader.SystemId,
             PAGE::"APIV1 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON, ResponseText);
 
         // [THEN] order discount is kept
@@ -696,7 +696,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
             SalesHeader.SystemId,
             PAGE::"APIV1 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] Lower order discount is applied
@@ -815,12 +815,10 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         GLAccount: Record "G/L Account";
         SalesLine: Record "Sales Line";
         VATPostingSetup: Record "VAT Posting Setup";
-        IntegrationManagement: Codeunit "Integration Management";
         TargetURL: Text;
         ResponseText: Text;
         OrderLineJSON: Text;
         OrderId: Text;
-        LineNo: Integer;
     begin
         // [SCENARIO] PATCH a Type on a line of an unposted Order
         // [GIVEN] An unposted Order with lines and a valid JSON describing the fields that we want to change
@@ -828,12 +826,11 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         OrderId := CreateSalesOrderWithLines(SalesHeader);
         Assert.AreNotEqual('', OrderId, 'ID should not be empty');
         FindFirstSalesLine(SalesHeader, SalesLine);
-        LineNo := SalesLine."Line No.";
 
         CreateVATPostingSetup(VATPostingSetup, SalesLine."VAT Bus. Posting Group", SalesLine."VAT Prod. Posting Group");
         GetGLAccountWithVATPostingGroup(GLAccount, SalesLine."VAT Bus. Posting Group", SalesLine."VAT Prod. Posting Group");
 
-        OrderLineJSON := STRSUBSTNO('{"accountId":"%1"}', IntegrationManagement.GetIdWithoutBrackets(GLAccount.SystemId));
+        OrderLineJSON := STRSUBSTNO('{"accountId":"%1"}', LibraryGraphMgt.StripBrackets(Format(GLAccount.SystemId)));
 
         // [WHEN] we PATCH the line
         TargetURL := LibraryGraphMgt
@@ -841,7 +838,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
             OrderId,
             PAGE::"APIV1 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON, ResponseText);
 
         // [THEN] Line type is changed to Account
@@ -858,19 +855,17 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         SalesHeader: Record "Sales Header";
         Item: Record "Item";
         SalesLine: Record "Sales Line";
-        IntegrationManagement: Codeunit "Integration Management";
         ExpectedNumberOfLines: Integer;
         TargetURL: Text;
         ResponseText: Text;
         OrderLineJSON: Text;
         OrderId: Text;
-        LineNo: Integer;
     begin
         // [SCENARIO] PATCH a Type on a line of an unposted Order
         // [GIVEN] An unposted Order with lines and a valid JSON describing the fields that we want to change
         Initialize();
         CreateOrderWithAllPossibleLineTypes(SalesHeader, ExpectedNumberOfLines);
-        OrderId := IntegrationManagement.GetIdWithoutBrackets(SalesHeader.SystemId);
+        OrderId := LibraryGraphMgt.StripBrackets(Format(SalesHeader.SystemId));
         SalesLine.SETRANGE(Type, SalesLine.Type::"G/L Account");
         SalesLine.SETRANGE("Document No.", SalesHeader."No.");
         SalesLine.SETRANGE("Document Type", SalesHeader."Document Type");
@@ -878,10 +873,9 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         SalesLine.SETRANGE(Type);
 
         Assert.AreNotEqual('', OrderId, 'ID should not be empty');
-        LineNo := SalesLine."Line No.";
         LibraryInventory.CreateItem(Item);
 
-        OrderLineJSON := STRSUBSTNO('{"itemId":"%1"}', IntegrationManagement.GetIdWithoutBrackets(Item.SystemId));
+        OrderLineJSON := STRSUBSTNO('{"itemId":"%1"}', LibraryGraphMgt.StripBrackets(Format(Item.SystemId)));
         COMMIT();
 
         // [WHEN] we PATCH the line
@@ -890,7 +884,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
             SalesHeader.SystemId,
             PAGE::"APIV1 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON, ResponseText);
 
         // [THEN] Line type is changed to Item and other fields are updated
@@ -911,7 +905,6 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         ResponseText: Text;
         OrderLineJSON: Text;
         OrderId: Text;
-        LineNo: Integer;
     begin
         // [SCENARIO] PATCH a Type on a line of an unposted Order
         // [GIVEN] An unposted Order with lines and a valid JSON describing the fields that we want to change
@@ -919,7 +912,6 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         OrderId := CreateSalesOrderWithLines(SalesHeader);
         Assert.AreNotEqual('', OrderId, 'ID should not be empty');
         FindFirstSalesLine(SalesHeader, SalesLine);
-        LineNo := SalesLine."Line No.";
 
         OrderLineJSON := STRSUBSTNO('{"%1":"%2"}', LineTypeFieldNameTxt, FORMAT(SalesInvoiceLineAggregate."API Type"::Account));
 
@@ -929,7 +921,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
             OrderId,
             PAGE::"APIV1 - Sales Orders",
             OrderServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
+            APIV1SalesInvLinesE2E.GetLineSubURL(SalesHeader.SystemId, SalesLine."Line No.", OrderServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, OrderLineJSON, ResponseText);
 
         // [THEN] Line type is changed to Account
@@ -994,9 +986,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         Item2: Record "Item";
         ItemVariant: Record "Item Variant";
         SalesHeader: Record "Sales Header";
-        ItemNo1: Code[20];
         ItemNo2: Code[20];
-        ItemVariantCode: Code[10];
         ResponseText: Text;
         TargetURL: Text;
         OrderLineJSON: Text;
@@ -1006,9 +996,9 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         // [GIVEN] An existing order and a valid JSON describing the new order line with item variant
         Initialize();
         OrderId := CreateSalesOrderWithLines(SalesHeader);
-        ItemNo1 := LibraryInventory.CreateItem(Item1);
+        LibraryInventory.CreateItem(Item1);
         ItemNo2 := LibraryInventory.CreateItem(Item2);
-        ItemVariantCode := LibraryInventory.CreateItemVariant(ItemVariant, ItemNo2);
+        LibraryInventory.CreateItemVariant(ItemVariant, ItemNo2);
         Commit();
 
         // [WHEN] we POST the JSON to the web service
@@ -1052,21 +1042,19 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
     [Normal]
     local procedure CreateOrderLineJSON(ItemId: Guid; Quantity: Integer): Text
     var
-        IntegrationManagement: Codeunit "Integration Management";
         LineJSONTxt: Text;
     begin
-        LineJSONTxt := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', IntegrationManagement.GetIdWithoutBrackets(ItemId));
+        LineJSONTxt := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', LibraryGraphMgt.StripBrackets(Format(ItemId)));
         LineJSONTxt := LibraryGraphMgt.AddComplexTypetoJSON(LineJSONTxt, 'quantity', FORMAT(Quantity));
         EXIT(LineJSONTxt);
     end;
 
     local procedure CreateOrderLineJSONWithItemVariantId(ItemId: Guid; Quantity: Integer; ItemVariantId: Guid): Text
     var
-        IntegrationManagement: Codeunit "Integration Management";
         LineJsonText: Text;
     begin
         LineJsonText := CreateOrderLineJSON(ItemId, Quantity);
-        LineJsonText := LibraryGraphMgt.AddPropertytoJSON(LineJsonText, 'itemVariantId', IntegrationManagement.GetIdWithoutBrackets(ItemVariantId));
+        LineJsonText := LibraryGraphMgt.AddPropertytoJSON(LineJsonText, 'itemVariantId', LibraryGraphMgt.StripBrackets(Format(ItemVariantId)));
         exit(LineJsonText);
     end;
 
@@ -1132,13 +1120,12 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
 
     local procedure VerifyIdsAreBlank(JsonObjectTxt: Text)
     var
-        IntegrationManagement: Codeunit "Integration Management";
         itemId: Text;
         accountId: Text;
         ExpectedId: Text;
         BlankGuid: Guid;
     begin
-        ExpectedId := IntegrationManagement.GetIdWithoutBrackets(BlankGuid);
+        ExpectedId := LibraryGraphMgt.StripBrackets(Format(BlankGuid));
 
         Assert.IsTrue(LibraryGraphMgt.GetPropertyValueFromJSON(JsonObjectTxt, 'itemId', itemId), 'Could not find itemId');
         Assert.IsTrue(LibraryGraphMgt.GetPropertyValueFromJSON(JsonObjectTxt, 'accountId', accountId), 'Could not find accountId');

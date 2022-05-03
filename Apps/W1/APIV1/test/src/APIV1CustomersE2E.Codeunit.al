@@ -367,15 +367,18 @@ codeunit 139702 "APIV1 - Customers E2E"
     end;
 
     local procedure CreateSimpleCustomer(var Customer: Record "Customer")
+#if not CLEAN17
     var
         GraphMgtCustomer: Codeunit "Graph Mgt - Customer";
+#endif
     begin
         Customer.INIT();
         Customer."No." := NextCustomerNo();
         Customer.Name := LibraryUtility.GenerateGUID();
         Customer.INSERT(TRUE);
-
+#if not CLEAN17
         GraphMgtCustomer.UpdateIntegrationRecords(TRUE); // Currently need to do this as integration records aren't be created otherwise.
+#endif
         Customer.GET(Customer."No.");
 
         COMMIT(); // Need to commit in order to unlock tables and allow web service to pick up changes.

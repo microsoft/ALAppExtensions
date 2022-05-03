@@ -195,20 +195,6 @@ codeunit 139803 "APIV2 - Vendors E2E"
         Commit();
     end;
 
-    local procedure CreateVendorWithAddress(var Vendor: Record "Vendor")
-    var
-        CountryRegion: Record "Country/Region";
-    begin
-        CountryRegion.FindFirst();
-        CreateSimpleVendor(Vendor);
-        Vendor.Address := LibraryUtility.GenerateGUID();
-        Vendor."Address 2" := LibraryUtility.GenerateGUID();
-        Vendor.City := LibraryUtility.GenerateGUID();
-        Vendor.County := LibraryUtility.GenerateGUID();
-        Vendor."Country/Region Code" := CountryRegion.Code;
-        Vendor.Modify(true);
-    end;
-
     local procedure GetNextVendorID(): Text[20]
     var
         Vendor: Record "Vendor";

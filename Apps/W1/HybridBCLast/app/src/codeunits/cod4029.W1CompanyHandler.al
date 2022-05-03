@@ -8,13 +8,21 @@ codeunit 4029 "W1 Company Handler"
         HybridCompanyStatus: Record "Hybrid Company Status";
         TenantManagement: Codeunit "Environment Information";
         W1Management: Codeunit "W1 Management";
+        HybridDeployment: Codeunit "Hybrid Deployment";
         CountryCode: Text;
         TargetVersion: Decimal;
         TargetVersions: List of [Decimal];
         Handled: Boolean;
+        SkipSanitization: Boolean;
     begin
-        HybridCompanyStatus.Get(CompanyName);
+        HybridCompanyStatus.Get(CompanyName());
         OnBeforeRunPerCompanyUpgrade(HybridCompanyStatus, Handled);
+
+        OnSkipSanitizeCompanyBeforeUpgrade(SkipSanitization);
+
+        if not SkipSanitization then
+            HybridDeployment.SanitizeCompanyBeforeUpgrade();
+
         if Handled then
             exit;
 
@@ -68,6 +76,11 @@ codeunit 4029 "W1 Company Handler"
 
     [IntegrationEvent(false, false)]
     procedure OnLoadTableDataForVersion(HybridReplicationSummary: Record "Hybrid Replication Summary"; CountryCode: Text; TargetVersion: Decimal)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSkipSanitizeCompanyBeforeUpgrade(var SkipSanitization: Boolean)
     begin
     end;
 

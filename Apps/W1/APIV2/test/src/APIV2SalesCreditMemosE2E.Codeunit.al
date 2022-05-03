@@ -36,11 +36,11 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
 
     local procedure InitializeForSending()
     var
-        TempAccount: Record "Email Account" temporary;
+        TempEmailAccount: Record "Email Account" temporary;
         ConnectorMock: Codeunit "Connector Mock";
     begin
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(TempAccount);
+        ConnectorMock.AddAccount(TempEmailAccount);
         DeleteJobQueueEntry(CODEUNIT::"Document-Mailing");
         DeleteJobQueueEntry(CODEUNIT::"APIV2 - Send Sales Document");
     end;
@@ -499,7 +499,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         Assert.IsTrue(DraftCreditMemoEmailAddress <> '', StrSubstNo(EmptyParameterErr, 'Address'));
         Assert.IsTrue(DraftCreditMemoEmailSubject <> '', StrSubstNo(EmptyParameterErr, 'Subject'));
 
-        VerifyDraftSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Draft);
+        VerifyDraftSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Draft.AsInteger());
 
         // [WHEN] A POST request is made to the API.
         TargetURL :=
@@ -511,7 +511,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
 
         // [THEN] Credit memo is posted
         FindPostedCreditMemoByPreAssignedNo(DocumentNo, SalesCrMemoHeader);
-        VerifyPostedSalesCreditMemo(SalesCrMemoHeader."Draft Cr. Memo SystemId", TempSalesCrMemoEntityBuffer.Status::Open);
+        VerifyPostedSalesCreditMemo(SalesCrMemoHeader."Draft Cr. Memo SystemId", TempSalesCrMemoEntityBuffer.Status::Open.AsInteger());
 
         // [THEN] Email parameters are transferred from the draft credit memo to the posted credit memo
         PostedCreditMemoRecordRef.GetTable(SalesCrMemoHeader);
@@ -541,7 +541,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         DocumentNo := SalesHeader."No.";
         DocumentId := SalesHeader.SystemId;
         Commit();
-        VerifyDraftSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Draft);
+        VerifyDraftSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Draft.AsInteger());
 
         // [WHEN] A POST request is made to the API.
         TargetURL :=
@@ -554,7 +554,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
 
         // [THEN] Credit memo is posted
         FindPostedCreditMemoByPreAssignedNo(DocumentNo, SalesCrMemoHeader);
-        VerifyPostedSalesCreditMemo(SalesCrMemoHeader."Draft Cr. Memo SystemId", TempSalesCrMemoEntityBuffer.Status::Open);
+        VerifyPostedSalesCreditMemo(SalesCrMemoHeader."Draft Cr. Memo SystemId", TempSalesCrMemoEntityBuffer.Status::Open.AsInteger());
 
         // [THEN] Mailing job is created
         CheckJobQueueEntry(CODEUNIT::"Document-Mailing");
@@ -577,7 +577,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         SetCustomerEmail(SalesCrMemoHeader."Sell-to Customer No.");
         DocumentId := SalesCrMemoHeader."Draft Cr. Memo SystemId";
         Commit();
-        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Open);
+        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Open.AsInteger());
 
         // [WHEN] A POST request is made to the API.
         TargetURL :=
@@ -605,7 +605,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         SetCustomerEmail(SalesCrMemoHeader."Sell-to Customer No.");
         DocumentId := SalesCrMemoHeader."Draft Cr. Memo SystemId";
         Commit();
-        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Corrective);
+        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Corrective.AsInteger());
 
         // [WHEN] A POST request is made to the API.
         TargetURL :=
@@ -617,7 +617,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         Assert.AreEqual('', ResponseText, NotEmptyResponseErr);
 
         // [THEN] Credit memo is cancelled
-        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Canceled);
+        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Canceled.AsInteger());
     end;
 
     [Test]
@@ -638,7 +638,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         SetCustomerEmail(SalesCrMemoHeader."Sell-to Customer No.");
         DocumentId := SalesCrMemoHeader."Draft Cr. Memo SystemId";
         Commit();
-        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Corrective);
+        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Corrective.AsInteger());
 
         // [WHEN] A POST request is made to the API.
         TargetURL :=
@@ -650,7 +650,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         Assert.AreEqual('', ResponseText, NotEmptyResponseErr);
 
         // [THEN] Credit memo is cancelled
-        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Canceled);
+        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Canceled.AsInteger());
 
         // [THEN] Mailing job is created
         CheckJobQueueEntry(CODEUNIT::"APIV2 - Send Sales Document");
@@ -674,7 +674,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         SetCustomerEmail(SalesCrMemoHeader."Sell-to Customer No.");
         DocumentId := SalesCrMemoHeader."Draft Cr. Memo SystemId";
         Commit();
-        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Open);
+        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Open.AsInteger());
 
         // [WHEN] A POST request is made to the API.
         TargetURL :=
@@ -706,7 +706,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         SetCustomerEmail(SalesHeader."Sell-to Customer No.");
         DocumentId := SalesHeader.SystemId;
         Commit();
-        VerifyDraftSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Draft);
+        VerifyDraftSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Draft.AsInteger());
 
         // [WHEN] A POST request is made to the API.
         TargetURL :=
@@ -735,7 +735,7 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         SetCustomerEmail(SalesCrMemoHeader."Sell-to Customer No.");
         DocumentId := SalesCrMemoHeader."Draft Cr. Memo SystemId";
         Commit();
-        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Canceled);
+        VerifyPostedSalesCreditMemo(DocumentId, TempSalesCrMemoEntityBuffer.Status::Canceled.AsInteger());
 
         // [WHEN] A POST request is made to the API.
         TargetURL :=
@@ -933,12 +933,12 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
         EmailParameter: Record "Email Parameter";
     begin
         EmailParameter.SaveParameterValue(
-          SalesHeader."No.", SalesHeader."Document Type",
-          EmailParameter."Parameter Type"::Address,
+          SalesHeader."No.", SalesHeader."Document Type".AsInteger(),
+          EmailParameter."Parameter Type"::Address.AsInteger(),
           StrSubstNo('%1@home.local', CopyStr(CreateGuid(), 2, 8)));
         EmailParameter.SaveParameterValue(
-          SalesHeader."No.", SalesHeader."Document Type",
-          EmailParameter."Parameter Type"::Subject, Format(CreateGuid()));
+          SalesHeader."No.", SalesHeader."Document Type".AsInteger(),
+          EmailParameter."Parameter Type"::Subject.AsInteger(), Format(CreateGuid()));
     end;
 
     local procedure GetEmailParameters(var RecordRef: RecordRef; var Email: Text; var Subject: Text)
@@ -954,11 +954,11 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
                 begin
                     RecordRef.SetTable(SalesHeader);
                     if EmailParameter.GetEntryWithReportUsage(
-                         SalesHeader."No.", SalesHeader."Document Type", EmailParameter."Parameter Type"::Address)
+                         SalesHeader."No.", SalesHeader."Document Type".AsInteger(), EmailParameter."Parameter Type"::Address.AsInteger())
                     then
                         Email := EmailParameter.GetParameterValue();
                     if EmailParameter.GetEntryWithReportUsage(
-                         SalesHeader."No.", SalesHeader."Document Type", EmailParameter."Parameter Type"::Subject)
+                         SalesHeader."No.", SalesHeader."Document Type".AsInteger(), EmailParameter."Parameter Type"::Subject.AsInteger())
                     then
                         Subject := EmailParameter.GetParameterValue();
                 end;
@@ -966,11 +966,11 @@ codeunit 139828 "APIV2 - Sales Credit Memos E2E"
                 begin
                     RecordRef.SetTable(SalesCrMemoHeader);
                     if EmailParameter.GetEntryWithReportUsage(
-                         SalesCrMemoHeader."No.", SalesHeader."Document Type"::"Credit Memo", EmailParameter."Parameter Type"::Address)
+                         SalesCrMemoHeader."No.", SalesHeader."Document Type"::"Credit Memo".AsInteger(), EmailParameter."Parameter Type"::Address.AsInteger())
                     then
                         Email := EmailParameter.GetParameterValue();
                     if EmailParameter.GetEntryWithReportUsage(
-                         SalesCrMemoHeader."No.", SalesHeader."Document Type"::"Credit Memo", EmailParameter."Parameter Type"::Subject)
+                         SalesCrMemoHeader."No.", SalesHeader."Document Type"::"Credit Memo".AsInteger(), EmailParameter."Parameter Type"::Subject.AsInteger())
                     then
                         Subject := EmailParameter.GetParameterValue();
                 end;

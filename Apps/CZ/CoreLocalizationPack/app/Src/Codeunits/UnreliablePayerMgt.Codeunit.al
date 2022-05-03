@@ -13,7 +13,7 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
         ImportSuccessfulMsg: Label 'Import was successful. %1 new entries have been inserted.', Comment = '%1=Processed Entries Count';
         VendUnrVATPayerStatusNotCheckedQst: Label 'The unreliability VAT payer status has not been checked for vendor %1 (%2).\\Do you want to continue?', Comment = '%1=Vendor No.;%2=VAT Registration No.';
         VendUnrVATPayerQst: Label 'The vendor %1 (%2) is unreliable VAT payer.\\Do you want to continue?', Comment = '%1=Vendor No.;%2=VAT Registration No.';
-        UnreliablePayerServiceURLTok: Label 'http://adisrws.mfcr.cz/adistc/axis2/services/rozhraniCRPDPH.rozhraniCRPDPHSOAP', Locked = true;
+        UnreliablePayerServiceURLTok: Label 'https://adisrws.mfcr.cz/dpr/axis2/services/rozhraniCRPDPH.rozhraniCRPDPHSOAP', Locked = true;
 
     procedure GetUnreliablePayerServiceURL(): Text[250]
     begin

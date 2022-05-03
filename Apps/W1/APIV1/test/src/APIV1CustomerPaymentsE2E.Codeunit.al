@@ -425,7 +425,7 @@ codeunit 139743 "APIV1 - Customer Payments E2E"
         // [THEN] the customer payment shouldn't exist in the table
         GraphMgtCustomerPayments.SetCustomerPaymentsFilters(GenJournalLine);
         GenJournalLine.SetFilter("Line No.", Format(LineNo));
-        Assert.IsFalse(GenJournalLine.FindFirst(), 'The Customer Payment should be deleted.');
+        Assert.IsTrue(GenJournalLine.IsEmpty(), 'The Customer Payment should be deleted.');
     end;
 
     [Test]
@@ -788,30 +788,7 @@ codeunit 139743 "APIV1 - Customer Payments E2E"
         GraphMgtCustomerPayments.SetCustomerPaymentsFilters(GenJournalLine);
         Evaluate(LineNo, LineNoValue);
         GenJournalLine.SetRange("Line No.", LineNo);
-        GenJournalLine.FindFirst();
-    end;
-
-    local procedure VerifyCustomerFields(ExpectedCustomer: Record Customer; ResponseText: Text)
-    var
-        IntegrationManagement: Codeunit "Integration Management";
-        customerIdValue: Text;
-        customerNumberValue: Text;
-    begin
-        LibraryGraphMgt.GetObjectIDFromJSON(ResponseText, CustomerIdFieldTxt, customerIdValue);
-        LibraryGraphMgt.GetObjectIDFromJSON(ResponseText, CustomerNoNameTxt, customerNumberValue);
-
-        Assert.AreEqual(
-          IntegrationManagement.GetIdWithoutBrackets(ExpectedCustomer.SystemId), UpperCase(customerIdValue), 'Wrong setting for Customer Id');
-        Assert.AreEqual(ExpectedCustomer."No.", customerNumberValue, 'Wrong setting for Customer Number');
-    end;
-
-    local procedure VerifyValidPostRequest(ResponseText: Text; var LineNo: Text)
-    begin
-        Assert.AreNotEqual('', ResponseText, 'response JSON should not be blank');
-        Assert.IsTrue(
-          LibraryGraphMgt.GetObjectIDFromJSON(ResponseText, LineNumberNameTxt, LineNo),
-          'Could not find customer payments number');
-        LibraryGraphMgt.VerifyIDFieldInJsonWithoutIntegrationRecord(ResponseText, 'id');
+        Assert.IsFalse(GenJournalLine.IsEmpty(), 'Gen. Journal Line with that Line No. should exist.');
     end;
 
     local procedure GetJournalID(JournalName: Code[10]): Guid

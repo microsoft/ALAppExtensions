@@ -70,10 +70,22 @@ codeunit 1482 "Edit in Excel Impl."
     local procedure GenerateExcelFileName(TenantWebService: Record "Tenant Web Service") FileName: Text
     var
         PageMetadata: Record "Page Metadata";
+        QueryMetadata: Record "Query Metadata";
+        CodeunitMetadata: Record "CodeUnit Metadata";
     begin
-        if PageMetadata.Get(TenantWebService."Object ID") then
-            FileName := PageMetadata.Caption
-        else
+        case TenantWebService."Object Type" of
+            TenantWebService."Object Type"::Page:
+                if PageMetadata.Get(TenantWebService."Object ID") then
+                    FileName := PageMetadata.Caption;
+            TenantWebService."Object Type"::Query:
+                if QueryMetadata.Get(TenantWebService."Object ID") then
+                    FileName := QueryMetadata.Caption;
+            TenantWebService."Object Type"::Codeunit:
+                if CodeunitMetadata.Get(TenantWebService."Object ID") then
+                    FileName := CodeunitMetadata.Name;
+        end;
+
+        if FileName = '' then
             FileName := TenantWebService."Service Name".Replace('_Excel', '');
     end;
 

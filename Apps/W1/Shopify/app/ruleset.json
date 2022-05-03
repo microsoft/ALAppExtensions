@@ -1,0 +1,26 @@
+{
+    "name": "My Custom Rule Set",
+    "analyzerRules": [
+        {
+            "analyzerId": "Microsoft.Dynamics.Nav.CodeCop",
+            "rules": [
+                {                    
+                    "id": "PTE0001",             
+                    "action": "None"
+                },
+                {
+                    "id": "PTE0002",
+                    "action": "None"
+                },
+                {
+                    "id": "PTE0004",
+                    "action": "None"
+                },
+                {
+                    "id": "PTE0005",
+                    "action": "None"
+                }
+            ]
+        }
+    ]
+}

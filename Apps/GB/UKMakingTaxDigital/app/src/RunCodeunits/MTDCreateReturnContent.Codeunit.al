@@ -26,7 +26,7 @@ codeunit 10531 "MTD Create Return Content"
 
         TempBlob.CreateOutStream(OutStream, TEXTENCODING::UTF8);
         OutStream.WriteText(RequestJson);
-        VATReportArchive.ArchiveSubmissionMessage("VAT Report Config. Code", "No.", TempBlob, DummyGUID);
+        VATReportArchive.ArchiveSubmissionMessage("VAT Report Config. Code".AsInteger(), "No.", TempBlob, DummyGUID);
     end;
 
     local procedure CreateReturnContent(VATReportHeader: Record "VAT Report Header"): Text;

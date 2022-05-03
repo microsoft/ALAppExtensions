@@ -58,10 +58,13 @@ codeunit 8705 "Feature Uptake Status Impl."
         end;
     end;
 
+    [InherentPermissions(PermissionObjectType::TableData, Database::"Feature Uptake", 'rimd')]
     local procedure UpdateFeatureUptakeStatus(TempFeatureUptake: Record "Feature Uptake" temporary)
     var
         FeatureUptake: Record "Feature Uptake";
     begin
+        FeatureUptake.LockTable();
+
         if FeatureUptake.Get(TempFeatureUptake."Feature Name", TempFeatureUptake."User Security ID", TempFeatureUptake.Publisher) then begin
             if TempFeatureUptake."Feature Uptake Status" = Enum::"Feature Uptake Status"::Undiscovered then
                 FeatureUptake.Delete()
@@ -75,6 +78,7 @@ codeunit 8705 "Feature Uptake Status Impl."
         end;
     end;
 
+    [InherentPermissions(PermissionObjectType::TableData, Database::"Feature Uptake", 'r')]
     local procedure NeedToUpdateToFirstState(TempFeatureUptake: Record "Feature Uptake" temporary; var IsExpectedTransition: Boolean): Boolean
     var
         FeatureUptake: Record "Feature Uptake";
@@ -88,12 +92,12 @@ codeunit 8705 "Feature Uptake Status Impl."
         exit(true);
     end;
 
+    [InherentPermissions(PermissionObjectType::TableData, Database::"Feature Uptake", 'r')]
     local procedure NeedToUpdateToIntermediateState(TempFeatureUptake: Record "Feature Uptake" temporary; var IsExpectedTransition: Boolean): Boolean
     var
         FeatureUptake: Record "Feature Uptake";
         PreviousFeatureUptakeStatus: Enum "Feature Uptake Status";
     begin
-
         PreviousFeatureUptakeStatus := Enum::"Feature Uptake Status".FromInteger(TempFeatureUptake."Feature Uptake Status".AsInteger() - 1);
 
         if FeatureUptake.Get(TempFeatureUptake."Feature Name", TempFeatureUptake."User Security ID", TempFeatureUptake.Publisher) then begin
@@ -121,6 +125,7 @@ codeunit 8705 "Feature Uptake Status Impl."
         end;
     end;
 
+    [InherentPermissions(PermissionObjectType::TableData, Database::"Feature Uptake", 'r')]
     local procedure NeedToResetState(TempFeatureUptake: Record "Feature Uptake" temporary): Boolean
     var
         FeatureUptake: Record "Feature Uptake";

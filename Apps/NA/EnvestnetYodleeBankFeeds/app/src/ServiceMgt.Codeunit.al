@@ -1,4 +1,4 @@
-﻿codeunit 1450 "MS - Yodlee Service Mgt."
+codeunit 1450 "MS - Yodlee Service Mgt."
 {
     var
         ResponseTempBlob: Codeunit "Temp Blob";
@@ -783,10 +783,12 @@
 
     local procedure RefreshBankAccountDone(OnlineBankAccountId: Text): Boolean;
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         AccountNode: XmlNode;
         DatasetRefreshStatus: Text;
         ExtraComment: Text;
         ErrorText: Text;
+        EmittedError: Text;
     begin
         GetLinkedBankAccount(OnlineBankAccountID, AccountNode);
         DatasetRefreshStatus := FindNodeText(AccountNode, '/root/root/account/dataset[./name/text()=''BASIC_AGG_DATA'']/additionalStatus');
@@ -806,12 +808,16 @@
 
         ExtraComment := UserFriendlyRefreshErrorMessage(DatasetRefreshStatus);
         ErrorText := StrSubstNo(RefreshStatusErr, DatasetRefreshStatus, ExtraComment);
+        EmittedError := 'Refresh Code ' + DatasetRefreshStatus;
 
-        if (ExtraComment <> '') then
-            LogActivityFailed(BankRefreshTxt, ErrorText, FailureAction::RethrowError, '', StrSubstNo(TelemetryActivityFailureTxt, BankRefreshTxt, ErrorText), Verbosity::Warning)
+        if (ExtraComment <> '') then begin
+            EmittedError += ':' + ExtraComment;
+            LogActivityFailed(BankRefreshTxt, ErrorText, FailureAction::RethrowError, '', StrSubstNo(TelemetryActivityFailureTxt, BankRefreshTxt, ErrorText), Verbosity::Warning);
+        end
         else
             LogActivityFailed(BankRefreshTxt, ErrorText, FailureAction::RethrowError, '', StrSubstNo(TelemetryActivityFailureTxt, BankRefreshTxt, ErrorText), Verbosity::Error);
 
+        FeatureTelemetry.LogError('0000GYK', 'Yodlee', 'Polling bank data refresh', EmittedError);
         exit(true);
     end;
 
@@ -1448,11 +1454,17 @@
         EXIT(ErrorText = '');
     end;
 
+    local procedure UrlIsBankStatementImport(URL: Text): Boolean
+    begin
+        exit(URL.ToLower().Contains('transactions'));
+    end;
+
     local procedure ExecuteWebServiceRequest(URL: Text; Method: Text[6]; BodyText: Text; AuthorizationHeaderValue: Text; var ErrorText: Text) PaginationLink: Text
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         ActivityLog: Record "Activity Log";
         DotNetExceptionHandler: Codeunit "DotNet Exception Handler";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         IsSuccessful: Boolean;
         HttpClient: HttpClient;
         HttpRequestMessage: HttpRequestMessage;
@@ -1505,6 +1517,9 @@
         IF GUIALLOWED() THEN
             ProcessingDialog.Open(ProcessingWindowMsg);
 
+        if UrlIsBankStatementImport(URL) then
+            FeatureTelemetry.LogUptake('0000GY0', 'Yodlee', Enum::"Feature Uptake Status"::Used);
+
         IsSuccessful := HttpClient.Send(HttpRequestMessage, GetHttpResponseMessage);
 
         IF GUIALLOWED() THEN
@@ -1515,6 +1530,7 @@
         else begin
             DotNetExceptionHandler.Collect();
             UnsuccessfulRequestTelemetryTxt := DotNetExceptionHandler.GetMessage();
+            FeatureTelemetry.LogError('0000GXZ', 'Yodlee', 'Requesting to Yodlee', RequestUnsuccessfulErr);
             Session.LogMessage('0000B4T', UnsuccessfulRequestTelemetryTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
             Session.LogMessage('00009S2', RequestUnsuccessfulErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
             Error(RequestUnsuccessfulErr);
@@ -1523,7 +1539,7 @@
         IF NOT GetHttpResponseMessage.IsSuccessStatusCode() THEN
             Errortext := STRSUBSTNO(RemoteServerErr, GetHttpResponseMessage.HttpStatusCode(), GetHttpResponseMessage.ReasonPhrase());
 
-        IF URL.ToLower().Contains('transactions') THEN BEGIN
+        IF UrlIsBankStatementImport(URL) THEN BEGIN
             GetHttpResponseMessage.Content().ReadAs(BankFeedText);
             if GetHttpResponseMessage.Headers.Contains('Link') then begin
                 GetHttpResponseMessage.Headers.GetValues('Link', PaginationLinks);
@@ -1540,6 +1556,7 @@
             // all the other Yodlee requests process the response from GLBResponseInStream
             // after GetTransactions request, we processes them from BankFeedTextList, because it can come in multiple responses
             BankFeedTextList.Add(BankFeedText);
+            FeatureTelemetry.LogUsage('0000GY1', 'Yodlee', 'Bank Statement Imported');
             Session.LogMessage('000083Y', BankFeedText, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
             if GLBTraceLogEnabled then
                 ActivityLog.LogActivity(MSYodleeBankServiceSetup.RecordId(), ActivityLog.Status::Success, YodleeResponseTxt, 'gettransactions', BankFeedText);
@@ -1643,13 +1660,16 @@
 
     local procedure CheckForErrors(XMLRootNode: XmlNode; var ErrorText: Text): Boolean;
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         ErrorCode: Text;
     begin
         ErrorText := FindNodeText(XMLRootNode, YodleeAPIStrings.GetErrorDetailXPath());
         IF ErrorText <> '' THEN BEGIN
             ErrorCode := FindNodeText(XMLRootNode, YodleeAPIStrings.GetErrorCodeXPath());
-            IF ErrorCode = '415' THEN
+            IF ErrorCode = '415' THEN begin
                 ErrorText := StaleCredentialsErr;
+                FeatureTelemetry.LogError('0000GYL', 'Yodlee', 'Getting Response Value', StaleCredentialsErr);
+            end;
             EXIT(FALSE);
         END;
 
@@ -1659,8 +1679,10 @@
 
         IF FindNodeText(XMLRootNode, YodleeAPIStrings.GetErrorOccurredXPath()) = 'true' THEN BEGIN
             ErrorText := FindNodeText(XMLRootNode, YodleeAPIStrings.GetDetailedMessageXPath());
-            IF ErrorText = '' THEN
+            IF ErrorText = '' THEN begin
                 ErrorText := UnknownErr;
+                FeatureTelemetry.LogError('0000GYM', 'Yodlee', 'Getting Response Value', UnknownErr);
+            end;
 
             EXIT(FALSE);
         END;

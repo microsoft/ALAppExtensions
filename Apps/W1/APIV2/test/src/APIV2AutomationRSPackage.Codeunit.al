@@ -287,16 +287,16 @@ codeunit 139831 "APIV2 - Automation RS Package"
     var
         ConfigXMLExchange: Codeunit "Config. XML Exchange";
         ConfigPckgCompressionMgt: Codeunit "Config. Pckg. Compression Mgt.";
-        FileMgt: Codeunit "File Management";
+        FileManagement: Codeunit "File Management";
         DecompressedFile: Text;
     begin
-        DecompressedFile := FileMgt.ServerTempFileName('xml');
+        DecompressedFile := FileManagement.ServerTempFileName('xml');
         ConfigPackageTable.SetRange("Package Code", PackageCode);
         ConfigXMLExchange.SetHideDialog(true);
         ConfigXMLExchange.SetCalledFromCode(true);
         ConfigXMLExchange.ExportPackageXML(ConfigPackageTable, DecompressedFile);
         // compress the file
-        FilePath := FileMgt.ServerTempFileName('');
+        FilePath := FileManagement.ServerTempFileName('');
         ConfigPckgCompressionMgt.ServersideCompress(DecompressedFile, FilePath);
     end;
 
@@ -310,9 +310,9 @@ codeunit 139831 "APIV2 - Automation RS Package"
 
     local procedure ReadRSPackageFileIntoBlob(var TempBlobRSPackageFile: Codeunit "Temp Blob"; RSPackageFile: Text)
     var
-        FileMgt: Codeunit "File Management";
+        FileManagement: Codeunit "File Management";
     begin
-        FileMgt.BLOBImportFromServerFile(TempBlobRSPackageFile, RSPackageFile);
+        FileManagement.BLOBImportFromServerFile(TempBlobRSPackageFile, RSPackageFile);
     end;
 
     local procedure IsImportPending(var ConfigPackage: Record "Config. Package"): Boolean

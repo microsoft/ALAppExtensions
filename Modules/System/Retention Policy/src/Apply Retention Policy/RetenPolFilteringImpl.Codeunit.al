@@ -139,16 +139,20 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
                     // set filter for date in filtergroup 11
                     if MarkValue then
                         ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(RetentionPolicySetupLine."Date Field No.", ExpirationDate, RecordRef, 11, RetenPolFilteringParam."Null Date Replacement value")
-                    else
+                    else begin
                         // if ExpirationDate is >= today - 1, don't set filter and remove all records from temp
                         if ExpirationDate < Yesterday() then
                             ApplyRetentionPolicy.SetWhereNewerExpirationDateFilter(RetentionPolicySetupLine."Date Field No.", ExpirationDate, RecordRef, 11, RetenPolFilteringParam."Null Date Replacement value");
+                        // only go through marked records to unmark
+                        RecordRef.MarkedOnly(true);
+                    end;
 
                     if RecordRef.FindSet(false, false) then
                         repeat
                             RecordRef.Mark := MarkValue;
                         until RecordRef.Next() = 0;
                 end;
+                RecordRef.MarkedOnly(false);
                 ClearFilterGroupOnRecRef(RecordRef, 10);
                 ClearFilterGroupOnRecRef(RecordRef, 11);
             until RetentionPolicySetupLine.Next() = 0;

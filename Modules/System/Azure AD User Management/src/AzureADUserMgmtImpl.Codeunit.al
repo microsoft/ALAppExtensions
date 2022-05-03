@@ -67,7 +67,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         if not UserProperty.Get(ForUserSecurityId) then
             exit;
 
-        if not UserLoginTimeTracker.IsFirstLogin(ForUserSecurityId) then
+        if UserLoginTimeTracker.UserLoggedInEnvironment(ForUserSecurityId) then
             exit;
 
         // Licenses are assigned to users in Office 365 and synchronized to Business Central from the Users page.
@@ -673,7 +673,7 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
             exit;
 
         // Allow deletion of users only if they have never logged in.
-        if not UserLoginTimeTracker.IsFirstLogin(Rec."User Security ID") then
+        if UserLoginTimeTracker.UserLoggedInEnvironment(Rec."User Security ID") then
             Error(UserCannotBeDeletedAlreadyLoggedInErr, Rec."User Name");
 
         // Access control and user property are cleaned-up in the platform.
@@ -686,10 +686,21 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
     local procedure OnAddCommonCustomDimensions(var Sender: Codeunit "Telemetry Custom Dimensions")
     var
         PlanIds: Codeunit "Plan Ids";
+        UserAccountHelper: DotNet NavUserAccountHelper;
+        TenantInfo: DotNet TenantInfo;
         IsAdmin: Boolean;
     begin
+        if not UserAccountHelper.IsAzure() then
+            exit;
+
+        // Add IsAdmin
         IsAdmin := AzureADGraphUser.IsUserDelegatedAdmin() or AzureADPlan.IsPlanAssigned(PlanIds.GetInternalAdminPlanId());
         Sender.AddCommonCustomDimension('IsAdmin', Format(IsAdmin));
+
+        // Add CountryCode
+        AzureADGraph.GetTenantDetail(TenantInfo);
+        if not IsNull(TenantInfo) then
+            Sender.AddCommonCustomDimension('CountryCode', TenantInfo.CountryLetterCode());
     end;
 
     [InternalEvent(false)]

@@ -20,7 +20,6 @@ codeunit 148081 "MTDTestOAuthWebService"
         LibraryRandom: Codeunit "Library - Random";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
-        CheckCompanyVATNoAfterSuccessAuthorizationQst: Label 'Authorization successful.\Do you want to open the Company Information setup to verify the VAT registration number?';
         OAuthNotConfiguredErr: Label 'OAuth setup is not enabled for HMRC Making Tax Digital.';
         OpenSetupQst: Label 'Do you want to open the setup?';
         RetrievePaymentsErr: Label 'Not possible to retrieve VAT payments.';
@@ -47,69 +46,7 @@ codeunit 148081 "MTDTestOAuthWebService"
         ReasonTxt: Label 'Reason: ';
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,HyperlinkHandler')]
-    [Scope('OnPrem')]
-    procedure CheckVATRegNoAfterAuthorization_Deny()
-    var
-        OAuth20Setup: Record "OAuth 2.0 Setup";
-        OAuth20SetupPage: TestPage "OAuth 2.0 Setup";
-    begin
-        // [FEATURE] [UI] [Authorization]
-        // [SCENARIO 258181] PAG 1140 "OAuth 2.0 Setup" confirm about check VAT Reg. No. is shown after success authorization (deny confirm)
-        // [SCENARIO 324828] New Access Token Due DateTime is 2 hours from now (previous value is a blanked datetime)
-        // <parse key="Packet399" compare="MockServicePacket399" response="MakingTaxDigital\200_authorize.txt"/>
-        Initialize();
-        LibraryMakingTaxDigital.CreateOAuthSetup(OAuth20Setup, OAuth20Setup.Status::Disabled, '', 0DT);
-        LibraryMakingTaxDigital.MockAzureClientToken('MockServicePacket399');
-        OpenOAuthSetupPage(OAuth20SetupPage, OAuth20Setup);
-
-        LibraryVariableStorage.Enqueue(false); // deny confirm
-        LibraryMakingTaxDigital.EnableSaaS(true);
-        OAuth20SetupPage.RequestAuthorizationCode.Invoke(); // sync client tokens from azure
-        OAuth20SetupPage."Enter Authorization Code".SetValue('Test Authorization Code');
-        OAuth20SetupPage.Close();
-        LibraryMakingTaxDigital.EnableSaaS(false);
-
-        OAuth20Setup.Find();
-        OAuth20Setup.TestField(Status, OAuth20Setup.Status::Enabled);
-        Assert.ExpectedMessage(CheckCompanyVATNoAfterSuccessAuthorizationQst, LibraryVariableStorage.DequeueText());
-        VerifyAccessTokenDueDateTime(OAuth20Setup, 2); // TFS 324828
-        LibraryVariableStorage.AssertEmpty();
-    end;
-
-    [Test]
-    [HandlerFunctions('ConfirmHandler,CompanyInformation_MPH,HyperlinkHandler')]
-    [Scope('OnPrem')]
-    procedure CheckVATRegNoAfterAuthorization_Accept()
-    var
-        OAuth20Setup: Record "OAuth 2.0 Setup";
-        OAuth20SetupPage: TestPage "OAuth 2.0 Setup";
-    begin
-        // [FEATURE] [UI] [Authorization]
-        // [SCENARIO 258181] PAG 1140 "OAuth 2.0 Setup" confirm about check VAT Reg. No. is shown after success authorization (accept confirm)
-        // [SCENARIO 324828] New Access Token Due DateTime is 2 hours from now (previous value is 2+ hours old)
-        // <parse key="Packet399" compare="MockServicePacket399" response="MakingTaxDigital\200_authorize.txt"/>
-        Initialize();
-        LibraryMakingTaxDigital.CreateOAuthSetup(OAuth20Setup, OAuth20Setup.Status::Disabled, '', CreateDateTime(Today() - 1, Time()));
-        LibraryMakingTaxDigital.MockAzureClientToken('MockServicePacket399');
-        OpenOAuthSetupPage(OAuth20SetupPage, OAuth20Setup);
-
-        LibraryVariableStorage.Enqueue(true); // accept confirm
-        LibraryMakingTaxDigital.EnableSaaS(true);
-        OAuth20SetupPage.RequestAuthorizationCode.Invoke(); // sync client tokens from azure
-        OAuth20SetupPage."Enter Authorization Code".SetValue('Test Authorization Code');
-        OAuth20SetupPage.Close();
-        LibraryMakingTaxDigital.EnableSaaS(false);
-
-        OAuth20Setup.Find();
-        OAuth20Setup.TestField(Status, OAuth20Setup.Status::Enabled);
-        Assert.ExpectedMessage(CheckCompanyVATNoAfterSuccessAuthorizationQst, LibraryVariableStorage.DequeueText());
-        VerifyAccessTokenDueDateTime(OAuth20Setup, 2); // TFS 324828
-        LibraryVariableStorage.AssertEmpty();
-    end;
-
-    [Test]
-    [HandlerFunctions('ConfirmHandler,OAuth20SetupSetStatus_MPH')]
+    [HandlerFunctions('ConfirmHandler,OAuth20SetupSetStatus_MPH,MTDWebClientFPHeaders_MPH')]
     [Scope('OnPrem')]
     procedure CheckOAuthConfigured_GetPayments_AcceptOpenSetup_SetEnabled()
     var
@@ -130,6 +67,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
     [Scope('OnPrem')]
     procedure ParseErrors_Basic()
     begin
@@ -158,6 +96,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
     [Scope('OnPrem')]
     procedure ParseErrors_Advanced()
     var
@@ -187,6 +126,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
     [Scope('OnPrem')]
     procedure ParseErrors_Error429_TooManyReq()
     var
@@ -211,6 +151,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
     [Scope('OnPrem')]
     procedure MTDConnection_InvokeRequest_RefreshAccessToken_Negative()
     var
@@ -240,6 +181,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
     [Scope('OnPrem')]
     procedure MTDConnection_InvokeRequest_RefreshAccessToken_Positive()
     var
@@ -262,6 +204,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
     [Scope('OnPrem')]
     procedure MTDConnection_InvokeRequest_RefreshAccessToken_Positive_ExpireInSec()
     var
@@ -284,30 +227,13 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
     [Scope('OnPrem')]
     procedure FraudPreventionHeaders_WebClient()
     begin
         // [FEATURE] [Fraud Prevention]
         // [SCENARIO 316966] Fraud Prevention Headers are sent each http request (Web Client type)
         PerformFraudPreventionHeadersForGivenClientType(ClientType::Web);
-    end;
-
-    [Test]
-    [Scope('OnPrem')]
-    procedure FraudPreventionHeaders_WinClient()
-    begin
-        // [FEATURE] [Fraud Prevention]
-        // [SCENARIO 316966] Fraud Prevention Headers are sent each http request (Win Client type)
-        PerformFraudPreventionHeadersForGivenClientType(ClientType::Windows);
-    end;
-
-    [Test]
-    [Scope('OnPrem')]
-    procedure FraudPreventionHeaders_BatchClient()
-    begin
-        // [FEATURE] [Fraud Prevention]
-        // [SCENARIO 316966] Fraud Prevention Headers are sent each http request (Batch Client type)
-        PerformFraudPreventionHeadersForGivenClientType(ClientType::Background);
     end;
 
     local procedure Initialize()
@@ -344,7 +270,7 @@ codeunit 148081 "MTDTestOAuthWebService"
 
         RetrieveVATReturnPeriodsForGivenClientType(GivenClientType);
 
-        VerifyDefaultFPHeadersInLatestHttpLog(GivenClientType);
+        VerifyDefaultFPHeadersInLatestHttpLog();
         LibraryVariableStorage.AssertEmpty();
     end;
 
@@ -370,19 +296,13 @@ codeunit 148081 "MTDTestOAuthWebService"
         Assert.IsTrue(MTDConnection.InvokeRequest_RetrieveVATReturnPeriods(WorkDate(), WorkDate(), ResponseJson, HttpError, false), '');
     end;
 
-    local procedure OpenOAuthSetupPage(var OAuth20SetupPage: TestPage "OAuth 2.0 Setup"; OAuth20Setup: Record "OAuth 2.0 Setup")
-    begin
-        OAuth20SetupPage.Trap();
-        Page.Run(Page::"OAuth 2.0 Setup", OAuth20Setup);
-    end;
-
     local procedure VerifyParseErrorScenario(ExpectedMessage: Text)
     begin
         Assert.ExpectedErrorCode('Dialog');
         Assert.ExpectedError(StrSubstNo('%1\%2%3', RetrievePaymentsErr, LibraryMakingTaxDigital.GetResonLbl(), ExpectedMessage));
     end;
 
-    local procedure VerifyAccessTokenDueDateTime(OAuth20Setup: Record "OAuth 2.0 Setup"; Hours: Integer)
+    local procedure VerifyAccessTokenDueDateTime(var OAuth20Setup: Record "OAuth 2.0 Setup"; Hours: Integer)
     begin
         OAuth20Setup.Find();
         // +- 1 minute for test delay
@@ -391,7 +311,7 @@ codeunit 148081 "MTDTestOAuthWebService"
             'Access Token Due DateTime should be 2 hours from now');
     end;
 
-    local procedure VerifyDefaultFPHeadersInLatestHttpLog(GivenClientType: ClientType)
+    local procedure VerifyDefaultFPHeadersInLatestHttpLog()
     var
         JToken: JsonToken;
     begin
@@ -399,51 +319,10 @@ codeunit 148081 "MTDTestOAuthWebService"
         Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-CONNECTION-METHOD'), 'Gov-Client-Connection-Method');
         Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-VENDOR-VERSION'), 'Gov-Vendor-Version');
         Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-VENDOR-PRODUCT-NAME'), 'Gov-Vendor-Product-Name');
-        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-TIMEZONE'), 'Gov-Client-Timezone');
-        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-DEVICE-ID'), 'Gov-Client-Device-ID');
         Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-VENDOR-LICENSE-IDS'), 'Gov-Vendor-License-IDs');
-        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-PUBLIC-IP'), 'Gov-Client-Public-IP');
-        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-PUBLIC-IP-TIMESTAMP'), 'Gov-Client-Public-IP-Timestamp');
         Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-USER-IDS'), 'Gov-Client-User-IDs');
-
-        if GivenClientType = ClientType::Background then begin
-            AssertBlankedJsonValue(JToken, 'Request.Header.GOV-CLIENT-PUBLIC-PORT');
-            AssertBlankedJsonValue(JToken, 'Request.Header.GOV-CLIENT-LOCAL-IPS');
-            AssertBlankedJsonValue(JToken, 'Request.Header.GOV-CLIENT-LOCAL-IPS-TIMESTAMP');
-            AssertBlankedJsonValue(JToken, 'Request.Header.GOV-CLIENT-SCREENS');
-            AssertBlankedJsonValue(JToken, 'Request.Header.GOV-CLIENT-WINDOW-SIZE');
-            AssertBlankedJsonValue(JToken, 'Request.Header.GOV-CLIENT-MULTI-FACTOR');
-            AssertBlankedJsonValue(JToken, 'Request.Header.GOV-VENDOR-PUBLIC-IP');
-            AssertBlankedJsonValue(JToken, 'Request.Header.GOV-VENDOR-FORWARDED');
-        end else begin
-            Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-PUBLIC-PORT'), 'Gov-Client-Public-Port');
-            Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-LOCAL-IPS'), 'Gov-Client-Local-IPs');
-            Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-LOCAL-IPS-TIMESTAMP'), 'Gov-Client-Local-IPs-Timestamp');
-            Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-SCREENS'), 'Gov-Client-Screens');
-            Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-WINDOW-SIZE'), 'Gov-Client-Window-Size');
-            Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-MULTI-FACTOR'), 'Gov-Client-Multi-Factor');
-            Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-VENDOR-PUBLIC-IP'), 'Gov-Vendor-Public-IP');
-            Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-VENDOR-FORWARDED'), 'Gov-Vendor-Forwarded');
-        end;
-
-        if GivenClientType = ClientType::Web then begin
-            Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-BROWSER-PLUGINS'), 'Gov-Client-Browser-Plugins');
-            Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-BROWSER-JS-USER-AGENT'), 'Gov-Client-Browser-JS-User-Agent');
-            Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-BROWSER-DO-NOT-TRACK'), 'Gov-Client-Browser-Do-Not-Track');
-            AssertBlankedJsonValue(JToken, 'Request.Header.GOV-CLIENT-MAC-ADDRESSES');
-            AssertBlankedJsonValue(JToken, 'Request.Header.GOV-CLIENT-USER-AGENT');
-        end else begin
-            AssertBlankedJsonValue(JToken, 'Request.Header.GOV-CLIENT-BROWSER-PLUGINS');
-            AssertBlankedJsonValue(JToken, 'Request.Header.GOV-CLIENT-BROWSER-JS-USER-AGENT');
-            AssertBlankedJsonValue(JToken, 'Request.Header.GOV-CLIENT-BROWSER-DO-NOT-TRACK');
-            Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-MAC-ADDRESSES'), 'Gov-Client-MAC-Addresses');
-            Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-CLIENT-USER-AGENT'), 'Gov-Client-User-Agent');
-        end;
-    end;
-
-    local procedure AssertBlankedJsonValue(JToken: JsonToken; Path: Text)
-    begin
-        LibraryMakingTaxDigital.AssertBlankedJsonValue(JToken, Path);
+        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-VENDOR-PUBLIC-IP'), 'Gov-Vendor-Public-IP');
+        Assert.AreEqual('***', ReadJsonValue(JToken, 'Request.Header.GOV-VENDOR-FORWARDED'), 'Gov-Vendor-Forwarded');
     end;
 
     local procedure ReadJsonValue(JToken: JsonToken; Path: Text): Text
@@ -463,7 +342,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [ModalPageHandler]
-    procedure CompanyInformation_MPH(var OAuth20SetupPage: TestPage "Company Information")
+    procedure MTDWebClientFPHeaders_MPH(var MTDWebClientFPHeaders: TestPage "MTD Web Client FP Headers")
     begin
     end;
 

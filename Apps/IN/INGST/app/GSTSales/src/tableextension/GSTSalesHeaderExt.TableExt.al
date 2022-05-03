@@ -170,6 +170,7 @@ tableextension 18147 "GST Sales Header Ext" extends "Sales Header"
         field(18170; "Ship-to GST Customer Type"; Enum "GST Customer Type")
         {
             Caption = 'Ship-to GST Customer Type';
+            Editable = false;
             DataClassification = CustomerContent;
         }
         field(18178; "Time of Removal"; Time)
@@ -195,5 +196,16 @@ tableextension 18147 "GST Sales Header Ext" extends "Sales Header"
                     "Customer No." = field("e-Commerce Customer"));
             DataClassification = CustomerContent;
         }
+        field(18182; "GST-Ship to Customer Type"; Enum "GST Customer Type")
+        {
+            Caption = 'GST-Ship To Customer Type';
+            DataClassification = CustomerContent;
+        }
+        field(18183; "GST-Ship to Invoice Type"; Enum "Sales Invoice Type")
+        {
+            Caption = 'GST-Ship To Invoice Type';
+            DataClassification = CustomerContent;
+        }
+
     }
 }

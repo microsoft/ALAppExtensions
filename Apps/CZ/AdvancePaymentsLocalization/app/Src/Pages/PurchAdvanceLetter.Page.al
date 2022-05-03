@@ -401,20 +401,6 @@ page 31181 "Purch. Advance Letter CZZ"
                     RunObject = Page "Suggested Usage CZZ";
                     RunPageLink = "Advance Letter Type" = const(Purchase), "Advance Letter No." = field("No.");
                 }
-                action("A&pprovals")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'A&pprovals';
-                    Image = Approvals;
-                    ToolTip = 'This function opens the approvals entries.';
-
-                    trigger OnAction()
-                    var
-                        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
-                    begin
-                        ApprovalsMgmt.OpenApprovalEntriesPage(Rec.RecordId);
-                    end;
-                }
                 action(DocAttach)
                 {
                     ApplicationArea = Basic, Suite;
@@ -451,6 +437,24 @@ page 31181 "Purch. Advance Letter CZZ"
                     ToolTip = 'View a list of entries related to this document.';
                     RunObject = Page "Purch. Adv. Letter Entries CZZ";
                     RunPageLink = "Purch. Adv. Letter No." = field("No.");
+                }
+                action("A&pprovals")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'A&pprovals';
+                    Image = Approvals;
+                    Promoted = true;
+                    PromotedIsBig = true;
+                    PromotedCategory = Category5;
+                    PromotedOnly = true;
+                    ToolTip = 'This function opens the approvals entries.';
+
+                    trigger OnAction()
+                    var
+                        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
+                    begin
+                        ApprovalsMgmt.OpenApprovalEntriesPage(Rec.RecordId);
+                    end;
                 }
             }
         }
@@ -606,9 +610,6 @@ page 31181 "Purch. Advance Letter CZZ"
                     Caption = 'Send A&pproval Request';
                     Enabled = not OpenApprovalEntriesExist;
                     Image = SendApprovalRequest;
-                    Promoted = true;
-                    PromotedCategory = Category5;
-                    PromotedOnly = true;
                     ToolTip = 'Relations to the workflow.';
 
                     trigger OnAction()
@@ -625,8 +626,6 @@ page 31181 "Purch. Advance Letter CZZ"
                     Caption = 'Cancel Approval Re&quest';
                     Enabled = OpenApprovalEntriesExist;
                     Image = CancelApprovalRequest;
-                    Promoted = true;
-                    PromotedCategory = Category5;
                     ToolTip = 'Relations to the workflow.';
 
                     trigger OnAction()

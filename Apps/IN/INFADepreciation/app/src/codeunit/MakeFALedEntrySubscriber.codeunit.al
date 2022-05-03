@@ -55,7 +55,7 @@ codeunit 18638 "Make FA Led. Entry Subscriber"
         FixedAssetShift.SetRange("FA No.", FixedAsset."No.");
         FixedAssetShift.SetRange("Depreciation Book Code", FALedgerEntry."Depreciation Book Code");
         FixedAssetShift.SetRange("Line No.", FALedgerEntry."FA Shift Line No");
-        FixedAssetShift.SetRange("FA Posting Group", FALedgerEntry."FA Posting Group");
+        FixedAssetShift.SetRange("Fixed Asset Posting Group", FALedgerEntry."FA Posting Group");
         if FixedAssetShift.FindFirst() then
             FixedAssetShiftLineNo := FixedAssetShift."Line No.";
 
@@ -284,7 +284,7 @@ codeunit 18638 "Make FA Led. Entry Subscriber"
 
             FixedAssetShift.Reset();
             FixedAssetShift.SetRange("FA No.", FADeprBook."FA No.");
-            FixedAssetShift.SetRange("FA Posting Group", FALedgerEntry."FA Posting Group");
+            FixedAssetShift.SetRange("Fixed Asset Posting Group", FALedgerEntry."FA Posting Group");
             FixedAssetShift.SetRange("Depreciation Starting Date", FALedgerEntry."Depreciation Starting Date");
             FixedAssetShift.SetRange("Depreciation ending Date", FALedgerEntry."Depreciation Ending Date");
             FixedAssetShift.SetRange("Shift Type", FALedgerEntry."Shift Type");
