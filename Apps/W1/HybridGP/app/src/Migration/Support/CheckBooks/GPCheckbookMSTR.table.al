@@ -185,9 +185,7 @@ table 40099 "GP Checkbook MSTR"
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         MigrateInactiveCheckbooks: Boolean;
     begin
-        MigrateInactiveCheckbooks := false;
-        if GPCompanyAdditionalSettings.Get(CompanyName()) then
-            MigrateInactiveCheckbooks := GPCompanyAdditionalSettings."Migrate Inactive Checkbooks";
+        MigrateInactiveCheckbooks := GPCompanyAdditionalSettings.GetMigrateInactiveCheckbooks();
 
         if FindSet() then
             repeat
