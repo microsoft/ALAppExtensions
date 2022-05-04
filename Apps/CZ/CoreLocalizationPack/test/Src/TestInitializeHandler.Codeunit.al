@@ -1,5 +1,12 @@
 codeunit 148104 "Test Initialize Handler CZL"
 {
+#if not CLEAN20
+    SingleInstance = true;
+
+    var
+        ERMMulPostGrHandlerCZL: Codeunit "ERM Mul. Post. Gr. Handler CZL";
+
+#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Library - Test Initialize", 'OnTestInitialize', '', false, false)]
     local procedure UpdateRecordsOnTestInitialize(CallerCodeunitID: Integer)
     begin
@@ -26,7 +33,16 @@ codeunit 148104 "Test Initialize Handler CZL"
             137007, // "SCM Inventory Costing",
             137611: // "SCM Costing Rollup Sev 1":
                 UpdateInventorySetup();
+#if not CLEAN20
+            134195: // "ERM Multiple Posting Groups"
+                BindERMMulPostGrHandler();
+#endif
         end;
+#if not CLEAN20
+
+        if CallerCodeunitID <> 134195 then
+            TryUnbindERMMulPostGrHandler();
+#endif
     end;
 
     local procedure UpdateInventorySetup()
@@ -60,4 +76,15 @@ codeunit 148104 "Test Initialize Handler CZL"
             ReportSelections.Modify();
         end;
     end;
+#if not CLEAN20
+    local procedure BindERMMulPostGrHandler()
+    begin
+        BindSubscription(ERMMulPostGrHandlerCZL);
+    end;
+
+    local procedure TryUnbindERMMulPostGrHandler(): Boolean
+    begin
+        exit(UnbindSubscription(ERMMulPostGrHandlerCZL));
+    end;
+#endif
 }

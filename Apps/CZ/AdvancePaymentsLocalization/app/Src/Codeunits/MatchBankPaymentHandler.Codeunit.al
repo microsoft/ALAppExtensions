@@ -143,11 +143,13 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Match Bank Payment CZB", 'OnAfterValidateGenJournalLine', '', false, false)]
-    local procedure ValidateAdvanceNoOnAfterValidateGenJournalLine(var GenJournalLine: Record "Gen. Journal Line"; var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB")
+    local procedure ValidateAdvanceNoOnAfterValidateGenJournalLine(var GenJournalLine: Record "Gen. Journal Line"; var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; SearchRuleLineCZB: Record "Search Rule Line CZB")
     var
         OriginalGenJournalLine: Record "Gen. Journal Line";
     begin
         if not AdvancePaymentsMgtCZZ.IsEnabled() then
+            exit;
+        if SearchRuleLineCZB."Match Related Party Only" then
             exit;
         if TempMatchBankPaymentBufferCZB."Advance Letter No. CZZ" = '' then
             exit;

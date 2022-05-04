@@ -264,6 +264,28 @@ codeunit 9822 "Plan Configuration Impl."
         DeleteCustomizations(Rec."Plan ID")
     end;
 
+    #region Install/Upgrade
+    procedure CreateDefaultPlanConfigurations()
+    var
+        PlanConfiguration: Record "Plan Configuration";
+        Plan: Query Plan;
+    begin
+        if Plan.Open() then
+            while Plan.Read() do begin
+                PlanConfiguration.SetRange("Plan ID", Plan.Plan_ID);
+
+                if PlanConfiguration.IsEmpty() then begin
+                    PlanConfiguration.Init();
+                    PlanConfiguration."Plan ID" := Plan.Plan_ID;
+                    PlanConfiguration."Plan Name" := Plan.Plan_Name;
+                    PlanConfiguration.Insert();
+                end;
+
+                Clear(PlanConfiguration);
+            end;
+    end;
+    #endregion
+
     #region Telemetry
     [EventSubscriber(ObjectType::Page, Page::"Plan Configuration Card", 'OnOpenPageEvent', '', false, false)]
     local procedure LogFeatureTelemetryPlanConfigurationCard()

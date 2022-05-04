@@ -15,6 +15,7 @@ codeunit 9660 "Report Layouts Impl."
         ImportRdlcTxt: Label 'Choose RDLC layout file';
         ImportExcelTxt: Label 'Choose Excel layout file';
         ImportExternalTxt: Label 'Choose External layout file';
+        DefaultLayoutDeleteTxt: Label 'You are about to delete the currently selected default layout "%1", for report "%2". Do you want to continue? A new default layout must be selected manually from the Report Layout Selection page.', Comment = '%1 = Layout Name, %2 = Report Name';
         DefaultLayoutSetTxt: Label '"%1" has been set as the default layout for Report "%2"', Comment = '%1 = Layout Name, %2 = Report Name';
         FileFilterWordTxt: Label 'Word Files (*.docx)|*.docx', Comment = '{Split=r''\|''}{Locked=s''1''}';
         FileFilterRdlcTxt: Label 'SQL Report Builder (*.rdl;*.rdlc)|*.rdl;*.rdlc', Comment = '{Split=r''\|''}{Locked=s''1''}';
@@ -76,28 +77,28 @@ codeunit 9660 "Report Layouts Impl."
         if ReportLayoutNewDialog.RunModal() = Action::OK then
             case true of
                 ReportLayoutNewDialog.SelectedAddCustomLayout():
-                    UploadNewLayout(
+                    InsertNewLayout(
                     ReportLayoutNewDialog.SelectedReportID(), ReportLayoutNewDialog.SelectedLayoutName(),
                     ReportLayoutNewDialog.SelectedLayoutDescription(), SelectedReportLayoutList."Layout Format"::Custom,
-                    ReturnReportID, ReturnLayoutName);
+                    ReportLayoutNewDialog.SelectedLayoutIsGlobal(), ReturnReportID, ReturnLayoutName);
 
                 ReportLayoutNewDialog.SelectedAddWordLayout():
-                    UploadNewLayout(
+                    InsertNewLayout(
                     ReportLayoutNewDialog.SelectedReportID(), ReportLayoutNewDialog.SelectedLayoutName(),
                     ReportLayoutNewDialog.SelectedLayoutDescription(), SelectedReportLayoutList."Layout Format"::Word,
-                    ReturnReportID, ReturnLayoutName);
+                    ReportLayoutNewDialog.SelectedLayoutIsGlobal(), ReturnReportID, ReturnLayoutName);
 
                 ReportLayoutNewDialog.SelectedAddRDLCLayout():
-                    UploadNewLayout(
+                    InsertNewLayout(
                     ReportLayoutNewDialog.SelectedReportID(), ReportLayoutNewDialog.SelectedLayoutName(),
                     ReportLayoutNewDialog.SelectedLayoutDescription(), SelectedReportLayoutList."Layout Format"::RDLC,
-                    ReturnReportID, ReturnLayoutName);
+                    ReportLayoutNewDialog.SelectedLayoutIsGlobal(), ReturnReportID, ReturnLayoutName);
 
                 ReportLayoutNewDialog.SelectedAddExcelLayout():
-                    UploadNewLayout(
+                    InsertNewLayout(
                     ReportLayoutNewDialog.SelectedReportID(), ReportLayoutNewDialog.SelectedLayoutName(),
                     ReportLayoutNewDialog.SelectedLayoutDescription(), SelectedReportLayoutList."Layout Format"::Excel,
-                    ReturnReportID, ReturnLayoutName);
+                    ReportLayoutNewDialog.SelectedLayoutIsGlobal(), ReturnReportID, ReturnLayoutName);
             end;
     end;
 
@@ -111,16 +112,41 @@ codeunit 9660 "Report Layouts Impl."
         // Add to the report layout selection table
         if ReportLayoutSelection.get(SelectedReportLayoutList."Report ID", SelectedCompany) then begin
             ReportLayoutSelection.Type := GetReportLayoutSelectionCorrespondingEnum(SelectedReportLayoutList);
-            ReportLayoutSelection.Modify();
+            ReportLayoutSelection.Modify(true);
         end else begin
             ReportLayoutSelection."Report ID" := SelectedReportLayoutList."Report ID";
-            ReportLayoutSelection."Report Name" := SelectedReportLayoutList."Report Name";
             ReportLayoutSelection."Company Name" := SelectedCompany;
             ReportLayoutSelection."Custom Report Layout Code" := '';
             ReportLayoutSelection.Type := GetReportLayoutSelectionCorrespondingEnum(SelectedReportLayoutList);
             ReportLayoutSelection.Insert(true);
         end;
-        Message(DefaultLayoutSetTxt, SelectedReportLayoutList."Name", SelectedReportLayoutList."Report Name");
+        Message(DefaultLayoutSetTxt, SelectedReportLayoutList."Caption", SelectedReportLayoutList."Report Name");
+    end;
+
+    internal procedure UpdateDefaultLayoutSelectionName(SelectedReportLayoutList: Record "Report Layout List"; NewLayoutName: Text[250]): Boolean
+    begin
+        if TenantReportLayoutSelection.Get(SelectedReportLayoutList."Report ID", SelectedCompany, EmptyGuid) then
+            if TenantReportLayoutSelection."Layout Name" = SelectedReportLayoutList."Name" then begin
+                TenantReportLayoutSelection."Layout Name" := NewLayoutName;
+                TenantReportLayoutSelection.Modify(true);
+            end;
+    end;
+
+    internal procedure ConfirmDeleteDefaultLayoutSelection(SelectedReportLayoutList: Record "Report Layout List"; TenantReportLayoutSelection: Record "Tenant Report Layout Selection"): Boolean
+    var
+        ReportLayoutSelection: Record "Report Layout Selection";
+    begin
+        if Dialog.Confirm(StrSubstNo(DefaultLayoutDeleteTxt, SelectedReportLayoutList.Caption, SelectedReportLayoutList."Report Name"), false) then begin
+
+            // Clear the selection from the Tenant Report Layout Selection table.
+            if (TenantReportLayoutSelection."Layout Name" = SelectedReportLayoutList."Name") then
+                TenantReportLayoutSelection.Delete(true);
+
+            // Clear the selection from Report Layout Selection table and let platform set the new default layout for this report.
+            if ReportLayoutSelection.get(SelectedReportLayoutList."Report ID", SelectedCompany) then
+                ReportLayoutSelection.Delete(true);
+            exit(true);
+        end;
     end;
 
     local procedure GetReportLayoutSelectionCorrespondingEnum(SelectedReportLayoutList: Record "Report Layout List"): Integer
@@ -138,7 +164,7 @@ codeunit 9660 "Report Layouts Impl."
         end
     end;
 
-    internal procedure UploadNewLayout(ReportID: Integer; LayoutName: Text[250]; LayoutDescription: Text[250]; LayoutFormat: Option; var ReturnReportID: Integer; var ReturnLayoutName: Text)
+    internal procedure InsertNewLayout(ReportID: Integer; LayoutName: Text[250]; LayoutDescription: Text[250]; LayoutFormat: Option; LayoutIsGlobal: Boolean; var ReturnReportID: Integer; var ReturnLayoutName: Text)
     var
         TenantReportLayout: Record "Tenant Report Layout";
         FileManagement: Codeunit "File Management";
@@ -160,7 +186,12 @@ codeunit 9660 "Report Layouts Impl."
         TenantReportLayout.Init();
         TenantReportLayout."Report ID" := ReportID;
         TenantReportLayout."Name" := LayoutName;
-        TenantReportLayout."Company Name" := SelectedCompany;
+
+        if LayoutIsGlobal then
+            TenantReportLayout."Company Name" := ''
+        else
+            TenantReportLayout."Company Name" := SelectedCompany;
+
         TenantReportLayout."Layout Format" := LayoutFormat;
         TenantReportLayout."Description" := LayoutDescription;
 
@@ -188,8 +219,12 @@ codeunit 9660 "Report Layouts Impl."
         end;
 
         UploadFileName := TenantReportLayout."Name";
-        ClearLastError();
-        UploadResult := UploadIntoStream(DialogCaption, '', FileFilterTxt, UploadFileName, NVInStream);
+        OnBeforeUpload(UploadResult, UploadFileName, NVInStream);
+
+        if (not UploadResult) then begin
+            ClearLastError();
+            UploadResult := UploadIntoStream(DialogCaption, '', FileFilterTxt, UploadFileName, NVInStream);
+        end;
 
         if not UploadResult then begin
             ErrorMessage := GetLastErrorText();
@@ -203,15 +238,25 @@ codeunit 9660 "Report Layouts Impl."
         if TenantReportLayout."Layout Format" <> TenantReportLayout."Layout Format"::Custom then
             FileManagement.ValidateFileExtension(UploadFileName, FileFilterTxt);
 
-        if TenantReportLayout.Get(TenantReportLayout."Report ID", TenantReportLayout."Name", TenantReportLayout."App ID") then
-            TenantReportLayout.Delete(true);
-
         TenantReportLayout."Layout".ImportStream(NVInStream, TenantReportLayout."Description");
         TenantReportLayout."MIME Type" := CreateLayoutMime(UploadFileName);
         TenantReportLayout.Insert(true);
 
         ReturnReportID := TenantReportLayout."Report ID";
         ReturnLayoutName := TenantReportLayout."Name";
+    end;
+
+    internal procedure ReplaceLayout(ReportID: Integer; LayoutName: Text[250]; LayoutDescription: Text[250]; LayoutFormat: Option; var ReturnReportID: Integer; var ReturnLayoutName: Text)
+    var
+        TenantReportLayout: Record "Tenant Report Layout";
+    begin
+        TenantReportLayout."Report ID" := ReportID;
+        TenantReportLayout."Name" := LayoutName;
+
+        if TenantReportLayout.Get(ReportID, LayoutName, TenantReportLayout."App ID") then
+            TenantReportLayout.Delete(true);
+
+        InsertNewLayout(ReportID, LayoutName, LayoutDescription, LayoutFormat, TenantReportLayout."Company Name" = '', ReturnReportID, ReturnLayoutName);
     end;
 
     local procedure CreateLayoutMime(FileNameWithExtension: Text) MimeType: Text[255]
@@ -230,14 +275,22 @@ codeunit 9660 "Report Layouts Impl."
         ReportLayoutEditDialog: Page "Report Layout Edit Dialog";
         NewDescription: Text[250];
         NewLayoutName: Text[250];
+        CompanyName: Text[30];
         CreateCopy: Boolean;
         ForceCopy: Boolean;
         NewLayoutInStream: InStream;
         SourceLayoutOutStream: OutStream;
+        AllCompaniesTxt: Label '';
     begin
         ForceCopy := false; // Default behavior is not to create a copy.
         if not SelectedReportLayoutList."User Defined" then
             ForceCopy := true;
+
+        CompanyName := AllCompaniesTxt;
+        if SelectedReportLayoutList."User Defined" then
+            if TenantReportLayout.Get(SelectedReportLayoutList."Report ID", SelectedReportLayoutList.Name, EmptyGuid) then
+                CompanyName := TenantReportLayout."Company Name";
+
         ReportLayoutEditDialog.SetupDialog(SelectedReportLayoutList, ForceCopy);
         if ReportLayoutEditDialog.RunModal() = Action::OK then begin
 
@@ -247,14 +300,15 @@ codeunit 9660 "Report Layouts Impl."
 
             // Check if a layout having NewLayoutName already exists
             if TenantReportLayout.Get(SelectedReportLayoutList."Report ID", NewLayoutName, EmptyGuid) then
-                Error(LayoutAlreadyExistsErr, NewLayoutName);
+                if CreateCopy or (SelectedReportLayoutList.Name <> NewLayoutName) then
+                    Error(LayoutAlreadyExistsErr, NewLayoutName);
 
             if CreateCopy then begin
                 TenantReportLayout.Init();
                 TenantReportLayout.Name := NewLayoutName;
                 TenantReportLayout.Description := NewDescription;
                 TenantReportLayout."Report ID" := SelectedReportLayoutList."Report ID";
-                TenantReportLayout."Company Name" := SelectedCompany;
+                TenantReportLayout."Company Name" := CompanyName;
 
                 // Copy media stream
                 TempBlob.CreateOutStream(SourceLayoutOutStream);
@@ -263,14 +317,22 @@ codeunit 9660 "Report Layouts Impl."
                 TenantReportLayout."Layout".ImportStream(NewLayoutInStream, NewDescription);
 
                 TenantReportLayout."Layout Format" := SelectedReportLayoutList."Layout Format";
+                TenantReportLayout."MIME Type" := SelectedReportLayoutList."MIME Type";
                 TenantReportLayout.Insert(true);
             end else begin
                 TenantReportLayout.Get(SelectedReportLayoutList."Report ID", SelectedReportLayoutList."Name", EmptyGuid);
                 TenantReportLayout.Rename(SelectedReportLayoutList."Report ID", NewLayoutName, EmptyGuid);
                 TenantReportLayout.Description := NewDescription;
+
                 TenantReportLayout.Modify(true);
             end;
             NewEditedLayoutName := NewLayoutName;
+
+            // If the layout name was updated, we check if this layout is the default layout
+            // and update its reference in the tenant report layout selection table. 
+            if not CreateCopy then
+                if (SelectedReportLayoutList.Name <> NewLayoutName) then
+                    UpdateDefaultLayoutSelectionName(SelectedReportLayoutList, NewLayoutName);
         end;
     end;
 
@@ -324,5 +386,10 @@ codeunit 9660 "Report Layouts Impl."
     begin
         if Page.RunModal(Page::"Report Layouts", ReportLayoutList) = ACTION::LookupOK then
             Handled := true;
+    end;
+
+    [InternalEvent(false, false)]
+    local procedure OnBeforeUpload(var AlreadyUploaded: Boolean; var UploadFileName: Text; var FileInStream: InStream)
+    begin
     end;
 }

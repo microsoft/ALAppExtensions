@@ -11,6 +11,115 @@
       <rd:DataSourceID>7a34bfc7-4494-4806-a51d-7809d66feb59</rd:DataSourceID>
     </DataSource>
   </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+      <Fields>
+        <Field Name="CompanyInfo_Name">
+          <DataField>CompanyInfo_Name</DataField>
+        </Field>
+        <Field Name="CompanyInfo_Address">
+          <DataField>CompanyInfo_Address</DataField>
+        </Field>
+        <Field Name="CompanyInfo_City">
+          <DataField>CompanyInfo_City</DataField>
+        </Field>
+        <Field Name="CompanyInfo_Post_CodeAddress">
+          <DataField>CompanyInfo_Post_CodeAddress</DataField>
+        </Field>
+        <Field Name="CompanyInfo_VAT_Registration_No">
+          <DataField>CompanyInfo_VAT_Registration_No</DataField>
+        </Field>
+        <Field Name="CompanyInfo_Registration_No">
+          <DataField>CompanyInfo_Registration_No</DataField>
+        </Field>
+        <Field Name="CompanyInfo_Tax_Registration_No">
+          <DataField>CompanyInfo_Tax_Registration_No</DataField>
+        </Field>
+        <Field Name="DocumentNo">
+          <DataField>DocumentNo</DataField>
+        </Field>
+        <Field Name="PostingDate">
+          <DataField>PostingDate</DataField>
+        </Field>
+        <Field Name="Reason">
+          <DataField>Reason</DataField>
+        </Field>
+        <Field Name="Members">
+          <DataField>Members</DataField>
+        </Field>
+        <Field Name="Location_Name">
+          <DataField>Location_Name</DataField>
+        </Field>
+        <Field Name="ReportFilter">
+          <DataField>ReportFilter</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_Item_No">
+          <DataField>PhysInvLedgEntry_Item_No</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_Description">
+          <DataField>PhysInvLedgEntry_Description</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_Unit_of_Measure_Code">
+          <DataField>PhysInvLedgEntry_Unit_of_Measure_Code</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_Qty_Calculated">
+          <DataField>PhysInvLedgEntry_Qty_Calculated</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_Qty_CalculatedFormat">
+          <DataField>PhysInvLedgEntry_Qty_CalculatedFormat</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_Qty_Phys_Inventory">
+          <DataField>PhysInvLedgEntry_Qty_Phys_Inventory</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_Qty_Phys_InventoryFormat">
+          <DataField>PhysInvLedgEntry_Qty_Phys_InventoryFormat</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_QtyChange">
+          <DataField>PhysInvLedgEntry_QtyChange</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_QtyChangeFormat">
+          <DataField>PhysInvLedgEntry_QtyChangeFormat</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_Unit_Cost">
+          <DataField>PhysInvLedgEntry_Unit_Cost</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_Unit_CostFormat">
+          <DataField>PhysInvLedgEntry_Unit_CostFormat</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_ChangeCost">
+          <DataField>PhysInvLedgEntry_ChangeCost</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_ChangeCostFormat">
+          <DataField>PhysInvLedgEntry_ChangeCostFormat</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_CostChange">
+          <DataField>PhysInvLedgEntry_CostChange</DataField>
+        </Field>
+        <Field Name="PhysInvLedgEntry_CostChangeFormat">
+          <DataField>PhysInvLedgEntry_CostChangeFormat</DataField>
+        </Field>
+        <Field Name="ConfirmationText">
+          <DataField>ConfirmationText</DataField>
+        </Field>
+        <Field Name="Member1">
+          <DataField>Member1</DataField>
+        </Field>
+        <Field Name="Member2">
+          <DataField>Member2</DataField>
+        </Field>
+        <Field Name="Member3">
+          <DataField>Member3</DataField>
+        </Field>
+        <Field Name="Member4">
+          <DataField>Member4</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
   <ReportSections>
     <ReportSection>
       <Body>
@@ -2757,6 +2866,7 @@
                       <Value>=Globals!ExecutionTime</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
+                        <Format>g</Format>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -2770,6 +2880,9 @@
               <Width>5cm</Width>
               <ZIndex>2</ZIndex>
               <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
                 <VerticalAlign>Middle</VerticalAlign>
               </Style>
             </Textbox>
@@ -3499,113 +3612,4 @@ End Function
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Cm</rd:ReportUnitType>
   <rd:ReportID>e5f87075-66cb-4079-b5a9-88ee26f84a17</rd:ReportID>
-  <DataSets>
-    <DataSet Name="DataSet_Result">
-      <Fields>
-        <Field Name="CompanyInfo_Name">
-          <DataField>CompanyInfo_Name</DataField>
-        </Field>
-        <Field Name="CompanyInfo_Address">
-          <DataField>CompanyInfo_Address</DataField>
-        </Field>
-        <Field Name="CompanyInfo_City">
-          <DataField>CompanyInfo_City</DataField>
-        </Field>
-        <Field Name="CompanyInfo_Post_CodeAddress">
-          <DataField>CompanyInfo_Post_CodeAddress</DataField>
-        </Field>
-        <Field Name="CompanyInfo_VAT_Registration_No">
-          <DataField>CompanyInfo_VAT_Registration_No</DataField>
-        </Field>
-        <Field Name="CompanyInfo_Registration_No">
-          <DataField>CompanyInfo_Registration_No</DataField>
-        </Field>
-        <Field Name="CompanyInfo_Tax_Registration_No">
-          <DataField>CompanyInfo_Tax_Registration_No</DataField>
-        </Field>
-        <Field Name="DocumentNo">
-          <DataField>DocumentNo</DataField>
-        </Field>
-        <Field Name="PostingDate">
-          <DataField>PostingDate</DataField>
-        </Field>
-        <Field Name="Reason">
-          <DataField>Reason</DataField>
-        </Field>
-        <Field Name="Members">
-          <DataField>Members</DataField>
-        </Field>
-        <Field Name="Location_Name">
-          <DataField>Location_Name</DataField>
-        </Field>
-        <Field Name="ReportFilter">
-          <DataField>ReportFilter</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_Item_No">
-          <DataField>PhysInvLedgEntry_Item_No</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_Description">
-          <DataField>PhysInvLedgEntry_Description</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_Unit_of_Measure_Code">
-          <DataField>PhysInvLedgEntry_Unit_of_Measure_Code</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_Qty_Calculated">
-          <DataField>PhysInvLedgEntry_Qty_Calculated</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_Qty_CalculatedFormat">
-          <DataField>PhysInvLedgEntry_Qty_CalculatedFormat</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_Qty_Phys_Inventory">
-          <DataField>PhysInvLedgEntry_Qty_Phys_Inventory</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_Qty_Phys_InventoryFormat">
-          <DataField>PhysInvLedgEntry_Qty_Phys_InventoryFormat</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_QtyChange">
-          <DataField>PhysInvLedgEntry_QtyChange</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_QtyChangeFormat">
-          <DataField>PhysInvLedgEntry_QtyChangeFormat</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_Unit_Cost">
-          <DataField>PhysInvLedgEntry_Unit_Cost</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_Unit_CostFormat">
-          <DataField>PhysInvLedgEntry_Unit_CostFormat</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_ChangeCost">
-          <DataField>PhysInvLedgEntry_ChangeCost</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_ChangeCostFormat">
-          <DataField>PhysInvLedgEntry_ChangeCostFormat</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_CostChange">
-          <DataField>PhysInvLedgEntry_CostChange</DataField>
-        </Field>
-        <Field Name="PhysInvLedgEntry_CostChangeFormat">
-          <DataField>PhysInvLedgEntry_CostChangeFormat</DataField>
-        </Field>
-        <Field Name="ConfirmationText">
-          <DataField>ConfirmationText</DataField>
-        </Field>
-        <Field Name="Member1">
-          <DataField>Member1</DataField>
-        </Field>
-        <Field Name="Member2">
-          <DataField>Member2</DataField>
-        </Field>
-        <Field Name="Member3">
-          <DataField>Member3</DataField>
-        </Field>
-        <Field Name="Member4">
-          <DataField>Member4</DataField>
-        </Field>
-      </Fields>
-      <Query>
-        <DataSourceName>DataSource</DataSourceName>
-        <CommandText />
-      </Query>
-    </DataSet>
-  </DataSets>
 </Report>

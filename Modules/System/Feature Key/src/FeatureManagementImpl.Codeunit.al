@@ -74,6 +74,9 @@ codeunit 2610 "Feature Management Impl."
     /// Inserts record to "Feature Data Update Status" table to show the feature status per company.
     /// </summary>
     local procedure InitializeFeatureDataUpdateStatus(FeatureKey: Record "Feature Key"; var FeatureDataUpdateStatus: Record "Feature Data Update Status")
+    var
+        FeatureManagementFacade: Codeunit "Feature Management Facade";
+        InitializeHandled: Boolean;
     begin
         if FeatureDataUpdateStatus.Get(FeatureKey.ID, CompanyName()) then
             exit;
@@ -82,15 +85,17 @@ codeunit 2610 "Feature Management Impl."
         FeatureDataUpdateStatus."Feature Key" := FeatureKey.ID;
         FeatureDataUpdateStatus."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(FeatureDataUpdateStatus."Company Name"));
         FeatureDataUpdateStatus."Data Update Required" := FeatureKey."Data Update Required";
-        case FeatureKey.Enabled of
-            FeatureKey.Enabled::None:
-                FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Disabled;
-            FeatureKey.Enabled::"All Users":
-                if FeatureDataUpdateStatus."Data Update Required" then
-                    FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Pending
-                else
-                    FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Enabled;
-        end;
+        FeatureManagementFacade.OnInitializeFeatureDataUpdateStatus(FeatureDataUpdateStatus, InitializeHandled);
+        if not InitializeHandled then
+            case FeatureKey.Enabled of
+                FeatureKey.Enabled::None:
+                    FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Disabled;
+                FeatureKey.Enabled::"All Users":
+                    if FeatureDataUpdateStatus."Data Update Required" then
+                        FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Pending
+                    else
+                        FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Enabled;
+            end;
         // If the table extension is not in sync during upgrade then Get() always returns False, 
         // so the following insert will fail if the record does exist.
         if FeatureDataUpdateStatus.Insert() then;

@@ -2,6 +2,12 @@ pageextension 11727 "Sales Order CZL" extends "Sales Order"
 {
     layout
     {
+#if not CLEAN20
+        modify("Customer Posting Group")
+        {
+            Editable = IsPostingGroupEditableCZL;
+        }
+#endif
         movelast(General; "Posting Description")
         addbefore("Location Code")
         {
@@ -175,4 +181,18 @@ pageextension 11727 "Sales Order CZL" extends "Sales Order"
             Visible = false;
         }
     }
+#if not CLEAN20
+
+    trigger OnOpenPage()
+    begin
+        SalesReceivablesSetupCZL.GetRecordOnce();
+#pragma warning disable AL0432
+        IsPostingGroupEditableCZL := SalesReceivablesSetupCZL."Allow Alter Posting Groups CZL";
+#pragma warning restore AL0432
+    end;
+
+    var
+        SalesReceivablesSetupCZL: Record "Sales & Receivables Setup";
+        IsPostingGroupEditableCZL: Boolean;
+#endif
 }

@@ -30,7 +30,7 @@ codeunit 139745 "APIV1 - Journal Lines E2E"
         JournalLineJSON: Text;
         DimensionJSON: Text;
         Response: Text;
-        JArray: Dotnet JArray;
+        "Newtonsoft.Json.Linq.JArray": Dotnet JArray;
         FoundInResponse: Boolean;
         CurrentIndex: Integer;
     begin
@@ -55,11 +55,11 @@ codeunit 139745 "APIV1 - Journal Lines E2E"
         LibraryGraphMgt.PostToWebService(TargetURL, JournalLineJSON, Response);
 
         // [THEN] The dimension on the journal line should have the overriden dimension value.
-        GetDimensionsFromJSONText(Response, JArray);
+        GetDimensionsFromJSONText(Response, "Newtonsoft.Json.Linq.JArray");
 
         FoundInResponse := false;
-        for CurrentIndex := 0 to JArray.Count() - 1 do
-            if JObjectMatchesDimension(JArray.Item(CurrentIndex), DifferentDimensionValue) then
+        for CurrentIndex := 0 to "Newtonsoft.Json.Linq.JArray".Count() - 1 do
+            if JObjectMatchesDimension("Newtonsoft.Json.Linq.JArray".Item(CurrentIndex), DifferentDimensionValue) then
                 FoundInResponse := true;
 
         Assert.IsTrue(FoundInResponse, 'The overwritten dimension value was not found on the response.');
@@ -78,7 +78,7 @@ codeunit 139745 "APIV1 - Journal Lines E2E"
         Response: Text;
         FoundDefault: Boolean;
         FoundExtra: Boolean;
-        JArray: Dotnet JArray;
+        "Newtonsoft.Json.Linq.JArray": Dotnet JArray;
         CurrentIndex: Integer;
     begin
         // [SCENARIO] A journal line is added through the API on an account with default dimension, when specifying a different dimension on its creation it should have the default dimension added on top of the specified.
@@ -101,15 +101,15 @@ codeunit 139745 "APIV1 - Journal Lines E2E"
         JournalLineJSON := LibraryGraphMgt.AddComplexTypetoJSON(JournalLineJSON, 'dimensions', '[' + DimensionJSON + ']');
 
         LibraryGraphMgt.PostToWebService(TargetURL, JournalLineJSON, Response);
-        GetDimensionsFromJSONText(Response, JArray);
+        GetDimensionsFromJSONText(Response, "Newtonsoft.Json.Linq.JArray");
 
         // [THEN] The response should include both the default and the specified dimension.
         FoundDefault := false;
         FoundExtra := false;
-        for CurrentIndex := 0 to JArray.Count() - 1 do begin
-            if JObjectMatchesDimension(JArray.Item(CurrentIndex), DefaultDimensionValue) then
+        for CurrentIndex := 0 to "Newtonsoft.Json.Linq.JArray".Count() - 1 do begin
+            if JObjectMatchesDimension("Newtonsoft.Json.Linq.JArray".Item(CurrentIndex), DefaultDimensionValue) then
                 FoundDefault := true;
-            if JObjectMatchesDimension(JArray.Item(CurrentIndex), ExtraDimensionValue) then
+            if JObjectMatchesDimension("Newtonsoft.Json.Linq.JArray".Item(CurrentIndex), ExtraDimensionValue) then
                 FoundExtra := true;
         end;
 
@@ -127,7 +127,7 @@ codeunit 139745 "APIV1 - Journal Lines E2E"
         Response: Text;
         CurrentIndex: Integer;
         FoundInResponse: Boolean;
-        JArray: Dotnet JArray;
+        "Newtonsoft.Json.Linq.JArray": Dotnet JArray;
     begin
         // [SCENARIO] A journal line is added through the API on an account with default dimension, without specifying dimension on its creation it should have the default dimensions added.
         Initialize();
@@ -145,11 +145,11 @@ codeunit 139745 "APIV1 - Journal Lines E2E"
         LibraryGraphMgt.PostToWebService(TargetURL, JournalLineJSON, Response);
 
         // [THEN] The response should include the default dimension from the account on the journal line.
-        GetDimensionsFromJSONText(Response, JArray);
+        GetDimensionsFromJSONText(Response, "Newtonsoft.Json.Linq.JArray");
 
         FoundInResponse := false;
-        for CurrentIndex := 0 to JArray.Count() - 1 do
-            if JObjectMatchesDimension(JArray.Item(CurrentIndex), DimensionValue) then
+        for CurrentIndex := 0 to "Newtonsoft.Json.Linq.JArray".Count() - 1 do
+            if JObjectMatchesDimension("Newtonsoft.Json.Linq.JArray".Item(CurrentIndex), DimensionValue) then
                 FoundInResponse := true;
 
         Assert.IsTrue(FoundInResponse, 'The default dimension and dimension value was not found on the response.');
@@ -163,26 +163,26 @@ codeunit 139745 "APIV1 - Journal Lines E2E"
         JSONManagement: Codeunit "JSON Management";
         Assert: Codeunit "Assert";
 
-    procedure JObjectMatchesDimension(JObject: Dotnet JObject; DimensionValue: Record "Dimension Value"): Boolean
+    procedure JObjectMatchesDimension("Newtonsoft.Json.Linq.JObject": Dotnet JObject; DimensionValue: Record "Dimension Value"): Boolean
     var
         Dimension: Text;
     begin
-        JSONManagement.GetStringPropertyValueFromJObjectByPath(JObject, 'code', Dimension);
+        JSONManagement.GetStringPropertyValueFromJObjectByPath("Newtonsoft.Json.Linq.JObject", 'code', Dimension);
         if Dimension = DimensionValue."Dimension Code" then begin
-            JSONManagement.GetStringPropertyValueFromJObjectByPath(JObject, 'valueCode', Dimension);
+            JSONManagement.GetStringPropertyValueFromJObjectByPath("Newtonsoft.Json.Linq.JObject", 'valueCode', Dimension);
             Assert.AreEqual(Dimension, DimensionValue.Code, 'Dimension has required code but different value code');
             exit(true);
         end;
         exit(false);
     end;
 
-    procedure GetDimensionsFromJSONText(Response: Text; var DimensionsJArray: Dotnet JArray)
+    procedure GetDimensionsFromJSONText(Response: Text; var "Newtonsoft.Json.Linq.JArray": Dotnet JArray)
     var
-        JObject: Dotnet JObject;
+        "Newtonsoft.Json.Linq.JObject": Dotnet JObject;
     begin
         JSONManagement.InitializeObject(Response);
-        JSONManagement.GetJSONObject(JObject);
-        JSONManagement.GetArrayPropertyValueFromJObjectByName(JObject, 'dimensions', DimensionsJArray);
+        JSONManagement.GetJSONObject("Newtonsoft.Json.Linq.JObject");
+        JSONManagement.GetArrayPropertyValueFromJObjectByName("Newtonsoft.Json.Linq.JObject", 'dimensions', "Newtonsoft.Json.Linq.JArray");
     end;
 
     procedure CreateGeneralJournalBatch(var GenJournalBatch: Record "Gen. Journal Batch"; BalAccountType: Enum "Sales Document Type"; BalAccountNo: Code[20])

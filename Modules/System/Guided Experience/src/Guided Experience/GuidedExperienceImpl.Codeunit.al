@@ -1019,6 +1019,8 @@ codeunit 1991 "Guided Experience Impl."
         Language: Codeunit Language;
         CurrentLanguage: Integer;
     begin
+        if not (UserPersonalization.Scope = UserPersonalization.Scope::System) then
+            exit;
         CurrentLanguage := GlobalLanguage();
         GlobalLanguage(Language.GetDefaultApplicationLanguageId());
 

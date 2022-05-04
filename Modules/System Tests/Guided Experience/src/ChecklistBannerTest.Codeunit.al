@@ -27,7 +27,7 @@ codeunit 132605 "Checklist Banner Test"
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('SessionSettingsHandler,ChecklistBannerHandler,AssistedSetupWizardHandler,HyperlinkHandler,RequestPageHandler')]
+    [HandlerFunctions('ChecklistBannerHandler,AssistedSetupWizardHandler,HyperlinkHandler,RequestPageHandler')]
     procedure TestChecklistBanner()
     var
         GuidedExperienceItem1: Record "Guided Experience Item";
@@ -300,13 +300,6 @@ codeunit 132605 "Checklist Banner Test"
     procedure GetReportRunSuccessfully(): Boolean
     begin
         exit(ReportRunSuccessfully);
-    end;
-
-    [SessionSettingsHandler]
-    [Scope('OnPrem')]
-    procedure SessionSettingsHandler(var TestSessionSettings: SessionSettings): Boolean
-    begin
-        exit(true);
     end;
 
     [PageHandler]

@@ -53,7 +53,13 @@ codeunit 11724 "Cash Desk Management CZP"
     var
         CashDeskCZP: Record "Cash Desk CZP";
         CashDeskFilter: Text;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeCashDocumentSelection(CashDocumentHeaderCZP, CashDeskSelected, IsHandled);
+        if IsHandled then
+            exit;
+
         CashDeskSelected := true;
 
         CheckCashDesks();
@@ -554,7 +560,13 @@ codeunit 11724 "Cash Desk Management CZP"
         CashDeskCZP: Record "Cash Desk CZP";
         CashDeskUserCZP: Record "Cash Desk User CZP";
         CashDeskAllowedToUser: Boolean;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeGetCashDesksForCashDeskUser(UserCode, TempCashDeskCZP, IsHandled);
+        if IsHandled then
+            exit;
+
         TempCashDeskCZP.Reset();
         TempCashDeskCZP.DeleteAll();
 
@@ -651,6 +663,16 @@ codeunit 11724 "Cash Desk Management CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterIsCheckUserRightsEnabled(CashDeskNo: Code[20]; ActionType: Enum "Cash Document Action CZP"; var IsEnabled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCashDocumentSelection(var CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var CashDeskSelected: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetCashDesksForCashDeskUser(UserCode: Code[50]; var TempCashDeskCZP: Record "Cash Desk CZP" temporary; var IsHandled: Boolean)
     begin
     end;
 }

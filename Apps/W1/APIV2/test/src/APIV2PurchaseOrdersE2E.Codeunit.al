@@ -598,7 +598,6 @@ codeunit 139851 "APIV2 - Purchase Orders E2E"
         OrderId: Guid;
         OrderNo: Code[20];
         OrderNoSeries: Code[20];
-        ReceivingNo: Code[20];
         ResponseText: Text;
         TargetURL: Text;
     begin
@@ -610,7 +609,6 @@ codeunit 139851 "APIV2 - Purchase Orders E2E"
         OrderId := PurchaseHeader.SystemId;
         OrderNo := PurchaseHeader."No.";
         OrderNoSeries := PurchaseHeader."No. Series";
-        ReceivingNo := PurchaseHeader."Receiving No.";
         Commit();
 
         // [WHEN] A POST request is made to the API.

@@ -693,6 +693,18 @@ codeunit 18479 "GST Subcontracting"
         LibraryGST.VerifyGLEntries(PurchaseHeaderSecond."Document Type"::Invoice, DocumentNoSecond, 6);
     end;
 
+    [Test]
+    procedure CheckPurchRcptHeader()
+    var
+        PurchRcptHeader: Record "Purch. Rcpt. Header";
+    begin
+        if PurchRcptHeader.Get('107061') then
+            if PurchRcptHeader.Subcontracting then
+                exit
+            else
+                Error('Notfound');
+    end;
+
     local procedure CreateGSTSubconSetups(
         GSTVendorType: Enum "GST Vendor Type";
         GSTGroupType: Enum "GST Group Type";

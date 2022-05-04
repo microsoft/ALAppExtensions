@@ -20,9 +20,6 @@ codeunit 139811 "APIV2 - Sales Orders E2E"
         LibrarySales: Codeunit "Library - Sales";
         LibraryERM: Codeunit "Library - ERM";
         OrderServiceNameTxt: Label 'salesOrders', Locked = true;
-        CustomerIdFieldTxt: Label 'customerId', Locked = true;
-        CustomerNameFieldTxt: Label 'customerName', Locked = true;
-        CustomerNumberFieldTxt: Label 'customerNumber', Locked = true;
         DiscountAmountFieldTxt: Label 'discountAmount', Locked = true;
         ActionShipAndInvoiceTxt: Label 'Microsoft.NAV.shipAndInvoice', Locked = true;
         NotEmptyResponseErr: Label 'Response body should be empty.', Locked = true;
@@ -521,7 +518,6 @@ codeunit 139811 "APIV2 - Sales Orders E2E"
         OrderId: Guid;
         OrderNo: Code[20];
         OrderNoSeries: Code[20];
-        ShippingNo: Code[20];
         ResponseText: Text;
         TargetURL: Text;
     begin
@@ -532,7 +528,6 @@ codeunit 139811 "APIV2 - Sales Orders E2E"
         OrderId := SalesHeader.SystemId;
         OrderNo := SalesHeader."No.";
         OrderNoSeries := SalesHeader."No. Series";
-        ShippingNo := SalesHeader."Shipping No.";
         Commit();
 
         // [WHEN] A POST request is made to the API.
@@ -647,20 +642,4 @@ codeunit 139811 "APIV2 - Sales Orders E2E"
         LibraryGraphMgt.VerifyIDInJson(ResponseText);
     end;
 
-    local procedure VerifyCustomerFields(ExpectedCustomer: Record "Customer"; ResponseText: Text)
-    var
-        IntegrationManagement: Codeunit "Integration Management";
-        CustomerIdValue: Text;
-        CustomerNameValue: Text;
-        CustomerNumberValue: Text;
-    begin
-        LibraryGraphMgt.GetObjectIDFromJSON(ResponseText, CustomerIdFieldTxt, CustomerIdValue);
-        LibraryGraphMgt.GetObjectIDFromJSON(ResponseText, CustomerNameFieldTxt, CustomerNameValue);
-        LibraryGraphMgt.GetObjectIDFromJSON(ResponseText, CustomerNumberFieldTxt, CustomerNumberValue);
-
-        Assert.AreEqual(
-          IntegrationManagement.GetIdWithoutBrackets(ExpectedCustomer.SystemId), UpperCase(CustomerIdValue), 'Wrong setting for Customer Id');
-        Assert.AreEqual(ExpectedCustomer."No.", CustomerNumberValue, 'Wrong setting for Customer Number');
-        Assert.AreEqual(ExpectedCustomer.Name, CustomerNameValue, 'Wrong setting for Customer Name');
-    end;
 }

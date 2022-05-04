@@ -226,7 +226,7 @@ report 31004 "Adjust Exchange Rates CZL"
 
             trigger OnPostDataItem()
             begin
-                if (Code = '') and AdjCustVendBank then
+                if (Code = '') and (AdjCust or AdjVend or AdjBank) then
                     Error(NoCurrenciesFoundErr);
             end;
 
@@ -912,14 +912,18 @@ report 31004 "Adjust Exchange Rates CZL"
                         Caption = 'Document No.';
                         ToolTip = 'Specifies the document number that will appear on the general ledger entries that are created by the batch job.';
                     }
+#if not CLEAN20
                     field(AdjCustVendBankField; AdjCustVendBank)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Adjust Customer, Vendor and Bank Accounts';
-                        MultiLine = true;
+                        ObsoleteReason = 'Replaced by separated controls per account type';
+                        ObsoleteState = Pending;
+                        ObsoleteTag = '20.1';
                         ToolTip = 'Specifies if you want to adjust customer, vendor, and bank accounts for currency fluctuations.';
                         Visible = false;
                     }
+#endif
                     field(AdjCustField; AdjCust)
                     {
                         ApplicationArea = Basic, Suite;
@@ -1068,7 +1072,7 @@ report 31004 "Adjust Exchange Rates CZL"
             EndDate := EndDateReq;
         if PostingDocNo = '' then
             Error(DocNoFieldCaptionErr, GenJournalLine.FieldCaption("Document No."));
-        if not AdjCustVendBank and AdjGLAcc then
+        if (not AdjCust) and (not AdjVend) and (not AdjBank) and AdjGLAcc then
             if not Confirm(AdjGenLedgEntriesQst + ContinueQst, false) then
                 Error(AdjExchangeRatesErr);
 
@@ -1207,7 +1211,9 @@ report 31004 "Adjust Exchange Rates CZL"
         Correction: Boolean;
         HideUI: Boolean;
         OK: Boolean;
+#if not CLEAN20
         AdjCustVendBank: Boolean;
+#endif
         AdjGLAcc: Boolean;
         AddCurrCurrencyFactor: Decimal;
         VATEntryNoTotal: Decimal;
@@ -1325,7 +1331,9 @@ report 31004 "Adjust Exchange Rates CZL"
     begin
         InitializeRequest(NewStartDate, NewEndDate, NewPostingDescription, NewPostingDate);
         PostingDocNo := NewPostingDocNo;
-        AdjCustVendBank := NewAdjCustVendBank;
+        AdjBank := NewAdjCustVendBank;
+        AdjCust := NewAdjCustVendBank;
+        AdjVend := NewAdjCustVendBank;
         AdjGLAcc := NewAdjGLAcc;
     end;
 

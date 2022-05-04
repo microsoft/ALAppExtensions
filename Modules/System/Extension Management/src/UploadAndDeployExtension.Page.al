@@ -78,10 +78,16 @@ page 2507 "Upload And Deploy Extension"
                             SyncModeValue := SyncModeValue::Add;
                 end;
             }
+            field(Accepted; IsAccepted)
+            {
+                ApplicationArea = All;
+                Caption = 'Accept the privacy policy and the disclaimer';
+                ToolTip = 'Specifies that you accept the privacy policy and the disclaimer.';
+            }
             field(Disclaimer; DisclaimerLbl)
             {
                 ApplicationArea = All;
-                Caption = 'Disclaimer';
+                Caption = 'Microsft Business Central Disclaimer';
                 ToolTip = 'View the disclaimer.';
                 Editable = false;
                 ShowCaption = false;
@@ -89,14 +95,22 @@ page 2507 "Upload And Deploy Extension"
 
                 trigger OnDrillDown()
                 begin
-                    Message(DisclaimerMsg);
+                    Hyperlink(ExtensionInstallationImpl.GetDisclaimerURL());
                 end;
             }
-            field(Accepted; IsAccepted)
+            field(PrivacyAndCookies; PrivacyAndCookiesLbl)
             {
                 ApplicationArea = All;
-                Caption = 'Accept';
-                ToolTip = 'Specifies that you accept Disclaimer.';
+                Caption = 'Privacy and Cookies';
+                ToolTip = 'View the privacy and cookies.';
+                Editable = false;
+                ShowCaption = false;
+                Style = None;
+
+                trigger OnDrillDown()
+                begin
+                    Hyperlink(ExtensionInstallationImpl.GetPrivacyAndCookeisURL());
+                end;
             }
             field(BestPractices; 'Read more about the best practices for installing and publishing extensions')
             {
@@ -106,8 +120,6 @@ page 2507 "Upload And Deploy Extension"
                 ToolTip = 'Read more about the best practices for installing and publishing extensions.';
 
                 trigger OnDrillDown()
-                var
-                    ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
                 begin
                     Hyperlink(ExtensionInstallationImpl.GetInstallationBestPracticesURL());
                 end;
@@ -168,6 +180,7 @@ page 2507 "Upload And Deploy Extension"
     end;
 
     var
+        ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         FileStream: InStream;
         DeployToValue: Enum "Extension Deploy To";
         FilePath: Text;
@@ -178,8 +191,8 @@ page 2507 "Upload And Deploy Extension"
         DialogTitleTxt: Label 'Select .APP';
         AppFileFilterTxt: Label 'Extension Files|*.app', Locked = true;
         ExtensionNotUploadedMsg: Label 'Please upload an extension file before clicking "Deploy" button.';
-        DisclaimerLbl: Label 'Disclaimer';
-        DisclaimerMsg: Label 'The creator of this customized extension is responsible for its licensing. The customized extension is subject to the terms and conditions, privacy policy, support and billing offered by the creator, as applicable, and does not create any liability or obligation for Microsoft.\\The publisher of the customized extension must maintain compatibility with new releases of Dynamics 365 Business Central. An extension that is not compatible with a new release within 90 days of the release will be removed and the tenant upgraded.';
+        DisclaimerLbl: Label 'Microsoft Business Central PTE Disclaimer';
+        PrivacyAndCookiesLbl: Label 'Privacy and Cookies';
         IsAccepted: Boolean;
 }
 

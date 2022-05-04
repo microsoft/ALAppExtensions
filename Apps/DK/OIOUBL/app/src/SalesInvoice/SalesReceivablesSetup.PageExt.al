@@ -21,6 +21,12 @@ pageextension 13666 "OIOUBL-Sales Receivables Setup" extends "Sales & Receivable
                     ShowMandatory = true;
                 }
 
+                field("Document No. as Ext. Doc. No."; "Document No. as Ext. Doc. No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Use the internal document number if the External Document No. field is empty.';
+                }
+
                 group(OutputPaths)
                 {
                     Caption = 'Output Paths';

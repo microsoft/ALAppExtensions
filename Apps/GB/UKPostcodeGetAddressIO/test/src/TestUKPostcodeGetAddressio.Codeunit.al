@@ -104,24 +104,24 @@ codeunit 148018 "Test UK Postcode GetAddress.io"
         SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress, 3);
 
         // [THEN]
-        Assert.AreEqual('Microsoft Street, Microsoft Area', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
-        Assert.AreEqual('Microsoft Ltd', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Microsoft Ltd, Microsoft Street', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Microsoft Area', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
 
         // [WHEN]
         // - "line 4" is empty
         SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress, 4);
 
         // [THEN]
-        Assert.AreEqual('Microsoft Street, Microsoft Area', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
-        Assert.AreEqual('Microsoft Campus, Microsoft Ltd', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Microsoft Ltd, Microsoft Campus', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Microsoft Street, Microsoft Area', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
 
         // [WHEN]
         // - "Locality" is empty
         SimulateGetAddresIOSpecificAddressSelection(TempAutocompleteAddress, 5);
 
         // [THEN]
-        Assert.AreEqual('Microsoft Street', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
-        Assert.AreEqual('Microsoft Campus, Microsoft Ltd, Floor 3', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Floor 3, Microsoft Ltd, Microsoft Campus', TempAutocompleteAddress.Address, 'Retrieved selected value is incorrect.');
+        Assert.AreEqual('Microsoft Street', TempAutocompleteAddress."Address 2", 'Retrieved selected value is incorrect.');
     end;
 
     [Test]

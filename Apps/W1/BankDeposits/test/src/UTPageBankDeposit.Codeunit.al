@@ -21,6 +21,7 @@ codeunit 139768 "UT Page Bank Deposit"
         InitializeHandled: Boolean;
         ValueMustExistMsg: Label 'Value must exist.';
         PostingDateErr: Label 'Validation error for Field: Posting Date,  Message = ''Posting Date must have a value in Bank Deposit Header: No.=%1. It cannot be zero or empty. (Select Refresh to discard errors)''';
+        FeatureKeyIdTok: Label 'StandardizedBankReconciliationAndDeposits', Locked = true;
 
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
@@ -627,11 +628,10 @@ codeunit 139768 "UT Page Bank Deposit"
     local procedure EnableBankDepositsFeature()
     var
         FeatureDataUpdateStatus: Record "Feature Data Update Status";
-        BankDepositFeatureMgt: Codeunit "Bank Deposit Feature Mgt.";
         FeatureManagementFacade: Codeunit "Feature Management Facade";
         ID: Text[50];
     begin
-        ID := CopyStr(BankDepositFeatureMgt.GetFeatureKeyId(), 1, MaxStrLen(ID));
+        ID := FeatureKeyIdTok;
         if FeatureManagementFacade.IsEnabled(ID) then
             exit;
         GetBankDepositsFeature(FeatureDataUpdateStatus, ID);

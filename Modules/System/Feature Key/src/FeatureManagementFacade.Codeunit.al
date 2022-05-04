@@ -122,4 +122,18 @@ codeunit 2611 "Feature Management Facade"
     begin
     end;
 
+    [IntegrationEvent(false, false)]
+    internal procedure OnInitializeFeatureDataUpdateStatus(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; var InitializeHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnAfterFeatureEnableConfirmed(var FeatureKey: Record "Feature Key")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnAfterFeatureDisableConfirmed(FeatureKey: Record "Feature Key")
+    begin
+    end;
 }

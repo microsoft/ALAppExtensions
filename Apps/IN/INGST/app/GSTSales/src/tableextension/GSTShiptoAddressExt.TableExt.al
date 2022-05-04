@@ -23,5 +23,18 @@ tableextension 18157 "GST Ship-to Address Ext" extends "Ship-to Address"
             Caption = 'ARN No.';
             DataClassification = CustomerContent;
         }
+        field(18145; "Ship-to GST Customer Type"; Enum "GST Customer Type")
+        {
+            Caption = 'Ship-to GST Customer Type';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "Ship-to GST Customer Type" in ["Ship-to GST Customer Type"::Exempted,
+                                                    "Ship-to GST Customer Type"::Export,
+                                                    "Ship-to GST Customer Type"::Unregistered] then
+                    Error('Ship to Gst Customer Type is not allowed for Exempted,Export and Unregistered Customers');
+            end;
+        }
     }
 }

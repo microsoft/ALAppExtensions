@@ -23,6 +23,7 @@ codeunit 8906 "Email Editor"
             EmailEditor.SetAsNew();
 
         if IsModal then begin
+            Commit(); // Commit before opening modally
             EmailEditor.RunModal();
             exit(EmailEditor.GetAction());
         end

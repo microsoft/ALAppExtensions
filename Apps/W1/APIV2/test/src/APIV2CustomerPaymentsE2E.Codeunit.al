@@ -789,6 +789,7 @@ codeunit 139840 "APIV2 - Customer Payments E2E"
         Evaluate(LineNo, LineNoValue);
         GenJournalLine.SetRange("Line No.", LineNo);
         GenJournalLine.FindFirst();
+        Assert.IsFalse(GenJournalLine.IsEmpty(), 'Gen. Journal Line with that Line No. should exist.');
     end;
 
     local procedure GetJournalID(JournalName: Code[10]): Guid

@@ -8,8 +8,10 @@ codeunit 18191 "GST Sales Ship To Addr Tests"
         LibraryGST: Codeunit "Library GST";
         LibraryRandom: Codeunit "Library - Random";
         Storage: Dictionary of [Text, Code[20]];
+        Storage2: Dictionary of [Text, Enum "GST Customer Type"];
         StorageBoolean: Dictionary of [Text, Boolean];
         ComponentPerArray: array[20] of Decimal;
+        ShipToAddrCustomerType: Text;
         LocationStateCodeLbl: Label 'LocationStateCode';
         LocationCodeLbl: Label 'LocationCode';
         GSTGroupCodeLbl: Label 'GSTGroupCode';
@@ -278,6 +280,7 @@ codeunit 18191 "GST Sales Ship To Addr Tests"
         ShipToAddress.Validate(State, Storage.Get(ShipToGSTStateCodeLbl));
         ShipToAddress.Validate(Address, LibraryRandom.RandText(10));
         ShipToAddress.Validate("GST Registration No.", Storage.Get(ShipToGSTRegNoLbl));
+        ShipToAddress.Validate("Ship-to GST Customer Type", Storage2.Get(ShipToAddrCustomerType));
         ShipToAddress.Modify(true);
         exit(ShipToAddress.Code);
     end;
@@ -362,6 +365,9 @@ codeunit 18191 "GST Sales Ship To Addr Tests"
 
         CustomerNo := LibraryGST.CreateCustomerSetup();
         Storage.Set(CustomerNoLbl, CustomerNo);
+
+        if GSTCustomerType = GSTCustomerType::Registered then
+            Storage2.Set(ShipToAddrCustomerType, GSTCustomerType::"SEZ Unit");
 
         if IntraState and ShipToAddr then
             CreateSetupForInterStateCustomer(GSTCustomerType, IntraState)

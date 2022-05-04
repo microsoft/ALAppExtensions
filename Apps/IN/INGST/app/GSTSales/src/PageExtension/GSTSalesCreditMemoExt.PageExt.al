@@ -9,6 +9,11 @@ pageextension 18146 "GST Sales Credit Memo Ext" extends "Sales Credit Memo"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the Ship to Customer code on the sales document.';
             }
+            field("Ship-to Code"; Rec."Ship-to Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the Ship to Code code on the sales document.';
+            }
         }
         modify("Posting Date")
         {
@@ -195,6 +200,34 @@ pageextension 18146 "GST Sales Credit Memo Ext" extends "Sales Credit Memo"
                 end;
             }
         }
+        modify(Post)
+        {
+            trigger OnBeforeAction()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                GSTSalesValidation.ValidateGSTWithoutPaymentOfDutyOnPost(Rec);
+            end;
+        }
+        modify(PostAndSend)
+        {
+            trigger OnBeforeAction()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                GSTSalesValidation.ValidateGSTWithoutPaymentOfDutyOnPost(Rec);
+            end;
+        }
+        modify("Preview Posting")
+        {
+            trigger OnBeforeAction()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                GSTSalesValidation.ValidateGSTWithoutPaymentOfDutyOnPost(Rec);
+            end;
+        }
+
     }
     var
         UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use ‘E-Comm. Merchant Id’';

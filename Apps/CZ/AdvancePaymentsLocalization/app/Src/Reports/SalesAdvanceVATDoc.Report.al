@@ -219,6 +219,12 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                 column(CustAddr6; CustAddr[6])
                 {
                 }
+                column(OriginalAdvanceVATDocumentNo; OriginalAdvanceVATDocumentNo)
+                {
+                }
+                column(OriginalAdvanceVATDocumentNoLbl; OriginalAdvanceVATDocumentNoLbl)
+                {
+                }
                 dataitem(CopyLoop; "Integer")
                 {
                     DataItemTableView = sorting(Number);
@@ -348,9 +354,7 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                 begin
                     CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
 
-                    if ((TempSalesAdvLetterEntry.Amount > 0) and (TempSalesAdvLetterEntry."Entry Type" = TempSalesAdvLetterEntry."Entry Type"::"VAT Payment")) or
-                    ((TempSalesAdvLetterEntry.Amount < 0) and (TempSalesAdvLetterEntry."Entry Type" = TempSalesAdvLetterEntry."Entry Type"::"VAT Usage")) or
-                    (TempSalesAdvLetterEntry."Entry Type" = TempSalesAdvLetterEntry."Entry Type"::"VAT Close") then
+                    if IsCreditMemo(TempSalesAdvLetterEntry) then
                         DocumentLabel := CrMemoDocumentLbl
                     else
                         DocumentLabel := DocumentLbl;
@@ -388,6 +392,20 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                         PaymentMethod.Get("Payment Method Code");
                 end;
             }
+
+            trigger OnAfterGetRecord()
+            var
+                SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
+            begin
+                OriginalAdvanceVATDocumentNo := '';
+                if IsCreditMemo(TempSalesAdvLetterEntry) then begin
+                    SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", TempSalesAdvLetterEntry."Sales Adv. Letter No.");
+                    SalesAdvLetterEntryCZZ.SetRange("Related Entry", TempSalesAdvLetterEntry."Related Entry");
+                    SalesAdvLetterEntryCZZ.SetFilter("Entry No.", '<%1', TempSalesAdvLetterEntry."Entry No.");
+                    if SalesAdvLetterEntryCZZ.FindLast() then
+                        OriginalAdvanceVATDocumentNo := SalesAdvLetterEntryCZZ."Document No.";
+                end;
+            end;
         }
     }
 
@@ -430,6 +448,7 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
         NoOfCop: Integer;
         CopyNo: Integer;
         NoOfLoops: Integer;
+        OriginalAdvanceVATDocumentNo: Code[20];
         ExchangeRateTxt: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1=calculatedexchrate;%2=general ledger setup.LCY Code;%3=currexchrate.exchange rate amount;%4=currency code';
         DocumentLbl: Label 'VAT Document to Recieved Payment';
         CrMemoDocumentLbl: Label 'VAT Credit Memo to Received Payment';
@@ -446,4 +465,12 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
         TotalLbl: Label 'total';
         VATLbl: Label 'VAT';
         AdvanceLetterLbl: Label 'VAT Document to Advance Letter';
+        OriginalAdvanceVATDocumentNoLbl: Label 'Original Advance VAT Document No.';
+
+    local procedure IsCreditMemo(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"): Boolean
+    begin
+        exit(((SalesAdvLetterEntryCZZ.Amount > 0) and (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Payment")) or
+             ((SalesAdvLetterEntryCZZ.Amount < 0) and (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage")) or
+             (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Close"));
+    end;
 }

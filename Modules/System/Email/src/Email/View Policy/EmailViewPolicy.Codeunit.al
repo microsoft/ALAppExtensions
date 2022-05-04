@@ -32,7 +32,7 @@ codeunit 8930 "Email View Policy"
         exit(false);
     end;
 
-    procedure GetFilteredSentEmails(EmailRelatedRecord: Record "Email Related Record"; var AccessibleSentEmail: Record "Sent Email" temporary; var SentEmails: Record "Sent Email" temporary)
+    procedure GetFilteredSentEmails(var EmailRelatedRecord: Record "Email Related Record"; var AccessibleSentEmail: Record "Sent Email" temporary; var SentEmails: Record "Sent Email" temporary)
     begin
         if EmailRelatedRecord.FindSet() then
             repeat
@@ -45,7 +45,7 @@ codeunit 8930 "Email View Policy"
             until EmailRelatedRecord.Next() = 0;
     end;
 
-    procedure GetFilteredOutboxEmails(EmailRelatedRecord: Record "Email Related Record"; var AccessibleEmailOutbox: Record "Email Outbox" temporary; var EmailOutbox: Record "Email Outbox" temporary)
+    procedure GetFilteredOutboxEmails(var EmailRelatedRecord: Record "Email Related Record"; var AccessibleEmailOutbox: Record "Email Outbox" temporary; var EmailOutbox: Record "Email Outbox" temporary)
     begin
         if EmailRelatedRecord.FindSet() then
             repeat
@@ -71,6 +71,6 @@ codeunit 8930 "Email View Policy"
 
     procedure GetDefaultUserId(): Text
     begin
-        exit('');
+        exit('_');
     end;
 }

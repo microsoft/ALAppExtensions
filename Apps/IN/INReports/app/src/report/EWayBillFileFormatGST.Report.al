@@ -46,7 +46,8 @@ report 18036 "E-Way Bill File Format GST"
                                 TempExcelBuffer.AddColumn(SubType, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
                                 TempExcelBuffer.AddColumn(DocType, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
                                 TempExcelBuffer.AddColumn("Document No.", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-                                TempExcelBuffer.AddColumn("Posting Date", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
+                                TempExcelBuffer.AddColumn("Posting Date", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+                                TempExcelBuffer.AddColumn(GetTransactionType(), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
                                 TempExcelBuffer.AddColumn(GetFromOtherPartyName(), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
                                 TempExcelBuffer.AddColumn(GetFromGSTIN(), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
                                 TempExcelBuffer.AddColumn(GetFromAddress(true), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
@@ -81,6 +82,9 @@ report 18036 "E-Way Bill File Format GST"
                                 TempExcelBuffer.AddColumn(Abs(SGSTAmount), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
                                 TempExcelBuffer.AddColumn(Abs(IGSTAmount), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
                                 TempExcelBuffer.AddColumn(Abs(CessAmount), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                                TempExcelBuffer.AddColumn(Abs(CessNonAdvolAmount), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                                TempExcelBuffer.AddColumn(Abs(Others), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                                TempExcelBuffer.AddColumn(Abs(TotalInvoiceValue), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
                                 TempExcelBuffer.AddColumn(GetTransMode(), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
                                 TempExcelBuffer.AddColumn(GetDistance(), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
                                 TempExcelBuffer.AddColumn(GetTransName(), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
@@ -284,6 +288,11 @@ report 18036 "E-Way Bill File Format GST"
         SGSTAmount: Decimal;
         IGSTAmount: Decimal;
         CessAmount: Decimal;
+        Others: Decimal;
+        ServiceNo: Code[20];
+        DetailGstLENo: Code[20];
+        TotalInvoiceValue: Decimal;
+        CessNonAdvolAmount: Decimal;
         ServiceDoc: Boolean;
         StartDateErr: Label 'You must enter Start Date.';
         EndDateErr: Label 'You must enter End Date.';
@@ -301,22 +310,23 @@ report 18036 "E-Way Bill File Format GST"
         FromAddress1Txt: Label 'From Address1';
         FromAddress2Txt: Label 'From Address 2';
         FromPlaceTxt: Label 'From Place';
-        FromPinCodeTxt: Label 'From Pin Code';
-        FromStateTxt: Label 'From State';
+        TransactionTypeTxt: Label 'Transaction Type';
+        FromPinCodeTxt: Label 'Dispatch Pin Code';
+        FromStateTxt: Label 'Bill From State';
         ToOtherPartyNameTxt: Label 'To Other Party Name';
         ToGSTINTxt: Label 'To GSTIN';
         ToAddress1Txt: Label 'To Address 1';
         ToAddress2Txt: Label 'To Address 2';
         ToPlaceTxt: Label 'To Place';
-        ToPinCodeTxt: Label 'To Pin Code';
-        ToStateTxt: Label 'To State';
+        ToPinCodeTxt: Label 'Ship To Pin Code';
+        ToStateTxt: Label 'Bill To State';
         ProductTxt: Label 'Product';
         DescriptionTxt: Label 'Description';
         HSNTxt: Label 'HSN';
         UnitTxt: Label 'Unit';
         QtyTxt: Label 'Qty';
         AssessableValueTxt: Label 'Assessable Value';
-        TaxRateTxt: Label 'Tax Rate(S + C + I + Cess)';
+        TaxRateTxt: Label 'Rate(S + C + I + Cess + CESS NONADVOL)';
         CGSTTxt: Label 'CGST';
         SGSTTxt: Label 'SGST';
         IGSTTxt: Label 'IGST';
@@ -325,6 +335,9 @@ report 18036 "E-Way Bill File Format GST"
         SGSTAmountTxt: Label 'SGST Amount';
         IGSTAmountTxt: Label 'IGST Amount';
         CessAmountTxt: Label 'CESS Amount';
+        CessNonAdvolAmountTxt: Label 'CESS Non Advol Amount';
+        OthersTxt: Label 'Others';
+        TotalInvoiceValueTxt: Label 'Total Invoice Value';
         TransModeTxt: Label 'Trans Mode';
         DistaceTxt: Label 'Distance (Km)';
         TransNameTxt: Label 'Trans Name';
@@ -332,9 +345,10 @@ report 18036 "E-Way Bill File Format GST"
         TransDocNoTxt: Label 'Trans Doc No';
         TransDateTxt: Label 'Trans Date';
         VehicleNoTxt: Label 'Vehicle No.';
-        DispatchStateTxt: Label 'Dispatch State';
+        DispatchStateTxt: Label 'Dispatch From State';
         ShipToStateTxt: Label 'Ship To State';
         VehicleTypeTxt: Label 'Vehicle Type';
+        SupplyTypeDescTxt: Label 'Supply_Type_Desc';
         TransferSourceErr: Label 'Source No. must be blank for transAction type:Transfer.';
 
     local procedure MakeExcelHeader()
@@ -345,6 +359,7 @@ report 18036 "E-Way Bill File Format GST"
         TempExcelBuffer.AddColumn(DocTypeTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(DocNoTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(DocDateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn(TransactionTypeTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(FromOtherPartyNameTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(FromGSTINTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(FromAddress1Txt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
@@ -372,6 +387,9 @@ report 18036 "E-Way Bill File Format GST"
         TempExcelBuffer.AddColumn(SGSTAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(IGSTAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(CessAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn(CessNonAdvolAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn(OthersTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn(TotalInvoiceValueTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(TransModeTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(DistaceTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(TransNameTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
@@ -380,6 +398,7 @@ report 18036 "E-Way Bill File Format GST"
         TempExcelBuffer.AddColumn(TransDateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(VehicleNoTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(VehicleTypeTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn(SupplyTypeDescTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
     end;
 
     local procedure ClearVariables()
@@ -391,6 +410,8 @@ report 18036 "E-Way Bill File Format GST"
         SGSTAmount := 0;
         IGSTAmount := 0;
         CessAmount := 0;
+        CessNonAdvolAmount := 0;
+        TotalInvoiceValue := 0;
     end;
 
     local procedure InitializeVariables()
@@ -456,7 +477,10 @@ report 18036 "E-Way Bill File Format GST"
                 if "Detailed GST Ledger Entry"."Document Type" = "Detailed GST Ledger Entry"."Document Type"::Invoice then begin
                     SupplyType := SupplyType::Outward;
                     case "Detailed GST Ledger Entry"."GST Customer Type" of
-                        "Detailed GST Ledger Entry"."GST Customer Type"::Registered:
+                        "Detailed GST Ledger Entry"."GST Customer Type"::"Deemed Export",
+                        "Detailed GST Ledger Entry"."GST Customer Type"::"SEZ Development",
+                           "Detailed GST Ledger Entry"."GST Customer Type"::"SEZ Unit",
+                           "Detailed GST Ledger Entry"."GST Customer Type"::Registered:
                             begin
                                 SubType := SubType::Supply;
                                 DocType := DocType::"Tax Invoice";
@@ -468,10 +492,7 @@ report 18036 "E-Way Bill File Format GST"
                                 DocType := DocType::"Bill of Supply";
                             end;
 
-                        "Detailed GST Ledger Entry"."GST Customer Type"::"Deemed Export",
-                        "Detailed GST Ledger Entry"."GST Customer Type"::Export,
-                        "Detailed GST Ledger Entry"."GST Customer Type"::"SEZ Development",
-                        "Detailed GST Ledger Entry"."GST Customer Type"::"SEZ Unit":
+                        "Detailed GST Ledger Entry"."GST Customer Type"::Export:
                             begin
                                 SubType := SubType::Export;
                                 DocType := DocType::"Tax Invoice";
@@ -501,6 +522,7 @@ report 18036 "E-Way Bill File Format GST"
                     SupplyType := SupplyType::Inward;
                     case "Detailed GST Ledger Entry"."GST Vendor Type" of
                         "Detailed GST Ledger Entry"."GST Vendor Type"::Registered,
+                        "Detailed GST Ledger Entry"."GST Vendor Type"::SEZ,
                         "Detailed GST Ledger Entry"."GST Vendor Type"::Unregistered:
                             begin
                                 SubType := SubType::Supply;
@@ -514,7 +536,7 @@ report 18036 "E-Way Bill File Format GST"
                                 DocType := DocType::"Bill of Supply";
                             end;
 
-                        "Detailed GST Ledger Entry"."GST Vendor Type"::SEZ,
+
                         "Detailed GST Ledger Entry"."GST Vendor Type"::Import:
                             begin
                                 SubType := SubType::Import;
@@ -653,6 +675,26 @@ report 18036 "E-Way Bill File Format GST"
             end;
     end;
 
+    local procedure GetTransactionType() TransactionType: Text[30]
+    var
+        DetailedGSTLedEntryInfo: Record "Detailed GST Ledger Entry Info";
+    begin
+        case "Detailed GST Ledger Entry"."GST Place of Supply" of
+            "Detailed GST Ledger Entry"."GST Place of Supply"::"Bill-to Address":
+                TransactionType := 'Regular';
+            "Detailed GST Ledger Entry"."GST Place of Supply"::"Ship-to Address":
+                TransactionType := 'Bill To- Ship To';
+        end;
+        if "Detailed GST Ledger Entry"."Source Type" = "Detailed GST Ledger Entry"."Source Type"::Vendor then begin
+            DetailedGSTLedEntryInfo.SetRange(DetailedGSTLedEntryInfo."Entry No.", "Detailed GST Ledger Entry"."Entry No.");
+            if DetailedGSTLedEntryInfo.FindFirst() then
+                if DetailedGSTLedEntryInfo."Order Address Code" <> '' then
+                    TransactionType := 'Bill From- Dispatch From'
+                else
+                    TransactionType := 'Regular';
+        end;
+    end;
+
     local procedure GetPostCode() FromPostCode: Code[20]
     begin
         if SupplyType = SupplyType::Inward then
@@ -764,9 +806,9 @@ report 18036 "E-Way Bill File Format GST"
             ToGSTIN := CopyStr("Detailed GST Ledger Entry"."Location  Reg. No.", 1, 15)
         else
             case SubType of
-                SubType::Supply, SubType::Export:
+                SubType::Supply:
                     ToGSTIN := CopyStr("Detailed GST Ledger Entry"."Buyer/Seller Reg. No.", 1, 15);
-                SubType::"Recipient Not Known":
+                SubType::"Recipient Not Known", SubType::Export:
                     ToGSTIN := URPTxt;
                 SubType::Others:
                     if "Detailed GST Ledger Entry"."GST Vendor Type" = "Detailed GST Ledger Entry"."GST Vendor Type"::Unregistered then
@@ -963,6 +1005,7 @@ report 18036 "E-Way Bill File Format GST"
     local procedure GetGSTAmount()
     var
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+        DetailedGstLedgerEntryInfo: Record "Detailed GST Ledger Entry Info";
     begin
         DetailedGSTLedgerEntry.SetRange("Document Type", "Detailed GST Ledger Entry"."Document Type");
         DetailedGSTLedgerEntry.SetRange("Document No.", "Detailed GST Ledger Entry"."Document No.");
@@ -979,8 +1022,56 @@ report 18036 "E-Way Bill File Format GST"
                     IGSTAmount := DetailedGSTLedgerEntry."GST Amount";
 
                 if DetailedGSTLedgerEntry."GST Component Code" = CESSTxt then
-                    CESSAmount := DetailedGSTLedgerEntry."GST Amount";
+                    if DetailedGSTLedgerEntry."GST Customer Type" <> DetailedGSTLedgerEntry."GST Customer Type"::Exempted then begin
+                        DetailedGstLedgerEntryInfo.SetRange("Entry No.", DetailedGSTLedgerEntry."Entry No.");
+                        if DetailedGstLedgerEntryInfo.FindFirst() then
+                            CessNonAdvolAmount := (DetailedGSTLedgerEntry.Quantity * DetailedGstLedgerEntryInfo."Cess Amount Per Unit Factor");
+
+                        CESSAmount := ((DetailedGSTLedgerEntry."GST Amount") - (CessNonAdvolAmount));
+                    end;
+                GetTotalInvoiceValue(DetailedGSTLedgerEntry);
             until DetailedGSTLedgerEntry.Next() = 0;
+    end;
+    //Function For Showing Other Charges In 'Others' Field
+    local procedure GetOthersValue()
+    var
+        DetailedGstLedEntry: Record "Detailed GST Ledger Entry";
+    begin
+        if DetailGstLENo <> "Detailed GST Ledger Entry"."Document No." then begin
+            Others := 0;
+            DetailedGstLedEntry.SetRange("Document No.", "Detailed GST Ledger Entry"."Document No.");
+            DetailedGstLedEntry.SetRange("GST Group Type", DetailedGstLedEntry."GST Group Type"::Service);
+            if DetailedGstLedEntry.FindSet() then
+                repeat
+                    if ServiceNo <> DetailedGstLedEntry."No." then begin
+                        Others += DetailedGstLedEntry."GST Base Amount";
+                        ServiceNo := DetailedGstLedEntry."No.";
+                    end;
+                until DetailedGstLedEntry.Next() = 0;
+            DetailGstLENo := DetailedGstLedEntry."Document No.";
+            ServiceNo := '';
+        end;
+    end;
+
+    local procedure GetTotalInvoiceValue(var DetailedGstLedgerEntry: Record "Detailed GST Ledger Entry")
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        CustomerLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        if DetailedGstLedgerEntry."Transaction Type" = DetailedGstLedgerEntry."Transaction Type"::Purchase then begin
+            VendorLedgerEntry.SetRange("Document No.", DetailedGstLedgerEntry."Document No.");
+            if VendorLedgerEntry.Find('-') then
+                VendorLedgerEntry.CalcFields("Amount (LCY)");
+            TotalInvoiceValue := VendorLedgerEntry."Amount (LCY)";
+        end
+        else
+            if DetailedGstLedgerEntry."Transaction Type" = DetailedGstLedgerEntry."Transaction Type"::Sales then begin
+                CustomerLedgerEntry.SetRange("Document No.", DetailedGstLedgerEntry."Document No.");
+                if CustomerLedgerEntry.Find('-') then
+                    CustomerLedgerEntry.CalcFields("Amount (LCY)");
+                TotalInvoiceValue := CustomerLedgerEntry."Amount (LCY)";
+            end;
+
     end;
 
     local procedure GetTransMode() TransMode: Text[50]
@@ -1242,10 +1333,12 @@ report 18036 "E-Way Bill File Format GST"
     local procedure GetTaxRate() TaxRate: Text[12]
     var
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+        DetailedGstLedgerEntryInfo: Record "Detailed GST Ledger Entry Info";
         CGSTTaxRate: Decimal;
         SGSTTaxRate: Decimal;
         IGSTTaxRate: Decimal;
         CESSTaxRate: Decimal;
+        CESSAdvolTaxRate: Decimal;
     begin
         DetailedGSTLedgerEntry.SetRange("Document Type", "Detailed GST Ledger Entry"."Document Type");
         DetailedGSTLedgerEntry.SetRange("Document No.", "Detailed GST Ledger Entry"."Document No.");
@@ -1258,10 +1351,15 @@ report 18036 "E-Way Bill File Format GST"
                     CGSTTaxRate := DetailedGSTLedgerEntry."GST %";
                 if DetailedGSTLedgerEntry."GST Component Code" = 'IGST' then
                     IGSTTaxRate := DetailedGSTLedgerEntry."GST %";
-                if DetailedGSTLedgerEntry."GST Component Code" = 'CESS' then
+                if DetailedGSTLedgerEntry."GST Component Code" = 'CESS' then begin
                     CessTaxRate := DetailedGSTLedgerEntry."GST %";
+                    DetailedGstLedgerEntryInfo.SetRange("Entry No.", DetailedGSTLedgerEntry."Entry No.");
+                    if DetailedGstLedgerEntryInfo.FindFirst() then
+                        CESSAdvolTaxRate := DetailedGstLedgerEntryInfo."Cess Amount Per Unit Factor";
+                end;
+
                 TaxRate :=
-                  Format(SGSTTaxRate) + '+' + Format(CGSTTaxRate) + '+' + Format(IGSTTaxRate) + '+' + Format(CessTaxRate);
+                  Format(SGSTTaxRate) + '+' + Format(CGSTTaxRate) + '+' + Format(IGSTTaxRate) + '+' + Format(CessTaxRate) + '+' + Format(CESSAdvolTaxRate);
             until DetailedGSTLedgerEntry.Next() = 0;
     end;
 

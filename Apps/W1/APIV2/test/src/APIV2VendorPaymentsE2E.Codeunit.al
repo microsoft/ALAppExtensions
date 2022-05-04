@@ -806,7 +806,7 @@ codeunit 139843 "APIV2 - Vendor Payments E2E"
         GraphMgtVendorPayments.SetVendorPaymentsFilters(GenJournalLine);
         Evaluate(LineNo, LineNoValue);
         GenJournalLine.SetRange("Line No.", LineNo);
-        GenJournalLine.FindFirst();
+        Assert.IsFalse(GenJournalLine.IsEmpty(), 'Gen. Journal Line for such Line No. should be empty');
     end;
 
     local procedure GetJournalID(JournalName: Code[10]): Guid

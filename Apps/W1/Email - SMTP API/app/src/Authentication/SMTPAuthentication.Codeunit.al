@@ -16,7 +16,7 @@ codeunit 4620 "SMTP Authentication"
         [NonDebuggable]
         Password: Text[250];
         [NonDebuggable]
-        AccessToken: Text[250];
+        AccessToken: Text;
         [NonDebuggable]
         Server: Text[250];
 
@@ -49,11 +49,11 @@ codeunit 4620 "SMTP Authentication"
     /// <param name="User">User</param>
     /// <param name="Token">Token</param>
     [NonDebuggable]
-    procedure SetOAuth2AuthInfo(User: Text[250]; Token: Text[250])
+    procedure SetOAuth2AuthInfo(User: Text[250]; Token: Text)
     begin
         // Telemetry
         Username := CopyStr(User, 1, MaxStrLen(Username));
-        AccessToken := CopyStr(Token, 1, MaxStrLen(AccessToken));
+        AccessToken := Token;
     end;
 
     [NonDebuggable]
@@ -75,7 +75,7 @@ codeunit 4620 "SMTP Authentication"
     end;
 
     [NonDebuggable]
-    internal procedure GetAccessToken(): Text[250]
+    internal procedure GetAccessToken(): Text
     begin
         exit(AccessToken);
     end;

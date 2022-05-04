@@ -401,12 +401,11 @@ codeunit 139839 "APIV2 - Item Variants E2E"
     local procedure VerifyItemVariantInJson(JsonTxt: Text; ExpectedCode: Text; ExpectedItemNo: Text; ExpectedItemId: Text)
     var
         ItemVariant: Record "Item Variant";
-        IntegrationManagement: Codeunit "Integration Management";
         ItemVariantCode: Text;
         ItemNo: Text;
         ItemId: Text;
     begin
-        ExpectedItemId := LowerCase(IntegrationManagement.GetIdWithoutBrackets(ExpectedItemId));
+        ExpectedItemId := LowerCase(LibraryGraphMgt.StripBrackets(ExpectedItemId));
         Assert.IsTrue(LibraryGraphMgt.GetObjectIDFromJSON(JsonTxt, 'code', ItemVariantCode), 'Could not find code');
         Assert.IsTrue(LibraryGraphMgt.GetObjectIDFromJSON(JsonTxt, 'itemNumber', ItemNo), 'Could not find itemNumber');
         Assert.IsTrue(LibraryGraphMgt.GetObjectIDFromJSON(JsonTxt, 'itemId', ItemId), 'Could not find itemId');

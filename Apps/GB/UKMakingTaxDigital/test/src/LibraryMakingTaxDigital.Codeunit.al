@@ -374,13 +374,14 @@ codeunit 148080 "Library - Making Tax Digital"
                 Validate("MTD OAuth Setup Option", "MTD OAuth Setup Option"::Sandbox)
             else
                 Validate("MTD OAuth Setup Option", "MTD OAuth Setup Option"::Production);
+            "MTD FP Public IP Service URL" := 'dummy';
             Modify(true);
         end;
     end;
 
-    internal procedure FormatValue(Value: Variant): Text
+    internal procedure FormatValue(VariantValue: Variant): Text
     begin
-        exit(Format(Value, 0, 9));
+        exit(Format(VariantValue, 0, 9));
     end;
 
     internal procedure ParseVATReturnDetailsJson(var MTDReturnDetails: Record "MTD Return Details"; JsonString: Text)
@@ -454,9 +455,13 @@ codeunit 148080 "Library - Making Tax Digital"
     end;
 
     internal procedure AssertBlankedJsonValue(JToken: JsonToken; Path: Text)
+    var
+        ErrText: Text;
     begin
-        if JToken.SelectToken(Path, JToken) then
-            Error(StrSubstNo('Json value for the path ''%1'' should be blanked.', Path));
+        if JToken.SelectToken(Path, JToken) then begin
+            ErrText := StrSubstNo('Json value for the path ''%1'' should be blanked.', Path);
+            Error(ErrText);
+        end;
     end;
 
     local procedure ReadJsonValueToRecRef(RecordRef: RecordRef; JToken: JsonToken; KeyValue: Text; FieldNo: Integer) Result: Boolean

@@ -36,11 +36,14 @@ table 1367 "MS - WorldPay Transaction"
 
     procedure SetDetails(DetailsText: Text)
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         OutStream: OutStream;
     begin
+        FeatureTelemetry.LogUptake('0000H7U', 'WorldPay Payments Standard', Enum::"Feature Uptake Status"::Used);
         CLEAR(Details);
         Details.CREATEOUTSTREAM(OutStream);
         OutStream.WRITETEXT(DetailsText);
+        FeatureTelemetry.LogUsage('0000H7V', 'WorldPay Payments Standard', 'Transaction details set');
     end;
 
     procedure GetDetails(): Text

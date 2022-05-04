@@ -11,10 +11,7 @@ codeunit 8890 "Send Email"
     trigger OnRun()
     var
         EmailMessage: Codeunit "Email Message";
-        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        FeatureTelemetry.LogUptake('0000D0X', EmailFeatureNameLbl, Enum::"Feature Uptake Status"::Used, false, Dimensions);
-
         EmailMessage.Get(Rec.Id);
         EmailConnector.Send(EmailMessage, AccountId);
     end;
@@ -29,14 +26,7 @@ codeunit 8890 "Send Email"
         AccountId := NewAccountId;
     end;
 
-    procedure SetTelemetryDimensions(TelemetryDimensions: Dictionary of [Text, Text])
-    begin
-        Dimensions := TelemetryDimensions;
-    end;
-
     var
         EmailConnector: Interface "Email Connector";
-        Dimensions: Dictionary of [Text, Text];
         AccountId: Guid;
-        EmailFeatureNameLbl: Label 'Emailing', Locked = true;
 }

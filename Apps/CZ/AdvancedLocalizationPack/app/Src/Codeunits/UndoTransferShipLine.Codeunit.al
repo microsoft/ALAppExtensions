@@ -41,6 +41,7 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
         InventoryAdjustment: Codeunit "Inventory Adjustment";
         HideDialog: Boolean;
         NextLineNo: Integer;
+        CorrectionLineNo: Integer;
 
     procedure SetHideDialog(NewHideDialog: Boolean)
     begin
@@ -86,6 +87,7 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
             if not HideDialog then
                 WindowDialog.Open(UndoQtyPostingMsg);
 
+            CorrectionLineNo := GetNextTransferShipmentLineNo(TransferShipmentLineGlobal);
             PostedWhseShptLineFound :=
               WhseUndoQuantity.FindPostedWhseShptLine(
                 PostedWhseShipmentLine,
@@ -137,7 +139,6 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
         UndoPostingManagement.CollectItemLedgEntries(TempItemLedgerEntry, Database::"Transfer Shipment Line",
           TransferShipmentLineGlobal."Document No.", TransferShipmentLineGlobal."Line No.", TransferShipmentLineGlobal."Quantity (Base)", TransferShipmentLineGlobal."Item Shpt. Entry No.");
         UndoPostingManagement.CheckItemLedgEntries(TempItemLedgerEntry, TransferShipmentLineGlobal."Line No.");
-
     end;
 
     local procedure PostItemJnlLine(): Integer
@@ -155,8 +156,10 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
         ItemJournalLine."Document Date" := TransferShipmentHeader2."Posting Date";
         ItemJournalLine."Document Type" := ItemJournalLine."Document Type"::"Transfer Shipment";
         ItemJournalLine."Document No." := TransferShipmentHeader2."No.";
+        ItemJournalLine."Document Line No." := CorrectionLineNo;
         ItemJournalLine."Order Type" := ItemJournalLine."Order Type"::Transfer;
         ItemJournalLine."Order No." := TransferShipmentHeader2."Transfer Order No.";
+        ItemJournalLine."Order Line No." := TransferShipmentLineGlobal."Transfer Order Line No. CZA";
         ItemJournalLine."External Document No." := TransferShipmentHeader2."External Document No.";
         ItemJournalLine."Entry Type" := ItemJournalLine."Entry Type"::Transfer;
         ItemJournalLine."Item No." := TransferShipmentLineGlobal."Item No.";
@@ -214,25 +217,11 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
     local procedure InsertNewShipmentLine(OldTransferShipmentLine: Record "Transfer Shipment Line"; ItemShptEntryNo: Integer)
     var
         NewTransferShipmentLine: Record "Transfer Shipment Line";
-        LineSpacing: Integer;
-        NotEnoughSpaceErr: Label 'There is not enough space to insert correction lines.';
     begin
-        NewTransferShipmentLine.SetRange("Document No.", OldTransferShipmentLine."Document No.");
-        NewTransferShipmentLine."Document No." := OldTransferShipmentLine."Document No.";
-        NewTransferShipmentLine."Line No." := OldTransferShipmentLine."Line No.";
-        NewTransferShipmentLine.Find('=');
-
-        if NewTransferShipmentLine.Find('>') then begin
-            LineSpacing := (NewTransferShipmentLine."Line No." - OldTransferShipmentLine."Line No.") div 2;
-            if LineSpacing = 0 then
-                Error(NotEnoughSpaceErr);
-        end else
-            LineSpacing := 10000;
-
         NewTransferShipmentLine.Reset();
         NewTransferShipmentLine.Init();
         NewTransferShipmentLine.Copy(OldTransferShipmentLine);
-        NewTransferShipmentLine."Line No." := OldTransferShipmentLine."Line No." + LineSpacing;
+        NewTransferShipmentLine."Line No." := CorrectionLineNo;
         NewTransferShipmentLine."Item Shpt. Entry No." := ItemShptEntryNo;
         NewTransferShipmentLine.Quantity := -OldTransferShipmentLine.Quantity;
         NewTransferShipmentLine."Quantity (Base)" := -OldTransferShipmentLine."Quantity (Base)";
@@ -240,6 +229,27 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
         NewTransferShipmentLine.Insert();
 
         InsertItemEntryRelation(TempItemEntryRelationGlobal, NewTransferShipmentLine);
+    end;
+
+    local procedure GetNextTransferShipmentLineNo(TransferShipmentLine: Record "Transfer Shipment Line"): Integer
+    var
+        NextTransferShipmentLine: Record "Transfer Shipment Line";
+        LineSpacing: Integer;
+        NotEnoughSpaceErr: Label 'There is not enough space to insert correction lines.';
+    begin
+        NextTransferShipmentLine.SetRange("Document No.", TransferShipmentLine."Document No.");
+        NextTransferShipmentLine."Document No." := TransferShipmentLine."Document No.";
+        NextTransferShipmentLine."Line No." := TransferShipmentLine."Line No.";
+        NextTransferShipmentLine.Find('=');
+
+        if NextTransferShipmentLine.Next() = 1 then begin
+            LineSpacing := (NextTransferShipmentLine."Line No." - TransferShipmentLine."Line No.") div 2;
+            if LineSpacing = 0 then
+                Error(NotEnoughSpaceErr);
+        end else
+            LineSpacing := 10000;
+
+        exit(TransferShipmentLine."Line No." + LineSpacing);
     end;
 
     local procedure UpdateTransLine(TransferShipmentLine: Record "Transfer Shipment Line")
@@ -406,11 +416,7 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
             ItemJnlPostLine2.xSetExtLotSN(true);
             ItemJnlPostLine2.RunWithCheck(ItemJournalLine);
 
-            TempItemEntryRelation."Item Entry No." := ItemJournalLine."Item Shpt. Entry No." + 1;
-            TempItemEntryRelation."Serial No." := ItemJournalLine."Serial No.";
-            TempItemEntryRelation."Lot No." := ItemJournalLine."Lot No.";
-            TempItemEntryRelation."Undo CZA" := true;
-            TempItemEntryRelation.Insert();
+            ItemJnlPostLine2.CollectItemEntryRelation(TempItemEntryRelation);
             TempItemLedgerEntry := TempApplyToItemLedgerEntry;
             TempItemLedgerEntry.Insert();
         until TempApplyToItemLedgerEntry.Next() = 0;

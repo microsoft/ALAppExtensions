@@ -182,10 +182,10 @@ codeunit 139866 "APIV2 - Contacts E2E"
 
     local procedure GetSimpleContactJSON(var Contact: Record "Contact") ContactJson: Text
     var
-        NoSeriesManagement: Codeunit "NoSeriesManagement";
+        NoSeriesManagement2: Codeunit "NoSeriesManagement";
     begin
         if Contact."No." = '' then
-            Contact."No." := NoSeriesManagement.GetNextNo(SetupContactNumberSeries(), WorkDate(), false);
+            Contact."No." := NoSeriesManagement2.GetNextNo(SetupContactNumberSeries(), WorkDate(), false);
         if Contact.Name = '' then
             Contact.Name := LibraryUtility.GenerateGUID();
         ContactJson := LibraryGraphMgt.AddPropertytoJSON(ContactJson, 'number', Contact."No.");

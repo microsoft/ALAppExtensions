@@ -307,6 +307,7 @@ table 11737 "Posted Cash Document Hdr. CZP"
     var
         PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
         CashDeskRepSelectionsCZP: Record "Cash Desk Rep. Selections CZP";
+        IsHandled: Boolean;
     begin
         TestField("Document Type");
         PostedCashDocumentHdrCZP.Copy(Rec);
@@ -316,6 +317,12 @@ table 11737 "Posted Cash Document Hdr. CZP"
             PostedCashDocumentHdrCZP."Document Type"::Withdrawal:
                 CashDeskRepSelectionsCZP.SetRange(Usage, CashDeskRepSelectionsCZP.Usage::"Posted Cash Withdrawal");
         end;
+
+        IsHandled := false;
+        OnPrintRecordsOnBeforeFilterAndPrintReports(CashDeskRepSelectionsCZP, PostedCashDocumentHdrCZP, ShowRequestForm, IsHandled);
+        if IsHandled then
+            exit;
+
         CashDeskRepSelectionsCZP.SetFilter("Report ID", '<>0');
         CashDeskRepSelectionsCZP.FindSet();
         repeat
@@ -393,5 +400,10 @@ table 11737 "Posted Cash Document Hdr. CZP"
         DocumentAttachment.SetRange("Table ID", Database::"Posted Cash Document Hdr. CZP");
         DocumentAttachment.SetRange("No.", Rec."No.");
         exit(not DocumentAttachment.IsEmpty());
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnPrintRecordsOnBeforeFilterAndPrintReports(var CashDeskRepSelectionsCZP: Record "Cash Desk Rep. Selections CZP"; PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP"; ShowRequestForm: Boolean; var IsHandled: Boolean);
+    begin
     end;
 }

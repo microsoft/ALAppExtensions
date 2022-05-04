@@ -12,7 +12,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
 
     var
         Assert: Codeunit "Assert";
-        SalesInvLinesE2E: Codeunit "APIV2 - Sales Inv. Lines E2E";
+        APIV2SalesInvLinesE2E: Codeunit "APIV2 - Sales Inv. Lines E2E";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryGraphDocumentTools: Codeunit "Library - Graph Document Tools";
         LibraryInventory: Codeunit "Library - Inventory";
@@ -60,7 +60,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
         LineNo := SalesLine."Line No.";
 
         // [WHEN] we GET all the lines with the quote ID from the web service
-        TargetURL := SalesInvLinesE2E.GetLinesURL(SalesLine.SystemId, Page::"APIV2 - Sales Quotes", QuoteServiceNameTxt, QuoteServiceLinesNameTxt);
+        TargetURL := APIV2SalesInvLinesE2E.GetLinesURL(SalesLine.SystemId, Page::"APIV2 - Sales Quotes", QuoteServiceNameTxt, QuoteServiceLinesNameTxt);
         LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
 
         // [THEN] the line returned should be valid (numbers and integration id)
@@ -130,7 +130,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
         LineNo2 := Format(SalesLine."Line No.");
 
         // [WHEN] we GET all the lines with the quote ID from the web service
-        TargetURL := SalesInvLinesE2E.GetLinesURLWithDocumentIdFilter(QuoteId, Page::"APIV2 - Sales Quotes", QuoteServiceNameTxt, QuoteServiceLinesNameTxt);
+        TargetURL := APIV2SalesInvLinesE2E.GetLinesURLWithDocumentIdFilter(QuoteId, Page::"APIV2 - Sales Quotes", QuoteServiceNameTxt, QuoteServiceLinesNameTxt);
         LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
 
         // [THEN] the lines returned should be valid (numbers and integration ids)
@@ -211,7 +211,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
             QuoteId,
             Page::"APIV2 - Sales Quotes",
             QuoteServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, QuoteLineJSON, ResponseText);
 
         // [THEN] the line should be changed in the table and the response JSON text should contain our changed field
@@ -231,7 +231,6 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
         ResponseText: Text;
         TargetURL: Text;
         QuoteLineJSON: Array[2] of Text;
-        LineNo: Integer;
         QuoteId: Text;
         NewSequence: Integer;
     begin
@@ -243,7 +242,6 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
         SalesLine.SetRange("Document Type", SalesHeader."Document Type"::Quote);
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.FindFirst();
-        LineNo := SalesLine."Line No.";
 
         NewSequence := SalesLine."Line No." + 1;
         QuoteLineJSON[1] := LibraryGraphMgt.AddPropertytoJSON('', 'sequence', NewSequence);
@@ -256,7 +254,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
             QuoteId,
             Page::"APIV2 - Sales Quotes",
             QuoteServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
         asserterror LibraryGraphMgt.PatchToWebService(TargetURL, QuoteLineJSON[1], ResponseText);
 
         TargetURL := LibraryGraphMgt
@@ -264,7 +262,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
             QuoteId,
             Page::"APIV2 - Sales Quotes",
             QuoteServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
         asserterror LibraryGraphMgt.PatchToWebService(TargetURL, QuoteLineJSON[2], ResponseText);
     end;
 
@@ -297,7 +295,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
             QuoteId,
             Page::"APIV2 - Sales Quotes",
             QuoteServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] the line should no longer exist in the database
@@ -382,7 +380,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
             SalesHeader.SystemId,
             Page::"APIV2 - Sales Quotes",
             QuoteServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, QuoteLineJSON, ResponseText);
 
         // [THEN] discount is applied
@@ -432,7 +430,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
             SalesHeader.SystemId,
             Page::"APIV2 - Sales Quotes",
             QuoteServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] Lower discount is applied
@@ -475,7 +473,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
             SalesHeader.SystemId,
             Page::"APIV2 - Sales Quotes",
             QuoteServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] Lower discount is applied
@@ -547,7 +545,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
             SalesHeader.SystemId,
             Page::"APIV2 - Sales Quotes",
             QuoteServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, QuoteLineJSON, ResponseText);
 
         // [THEN] discount is kept
@@ -582,7 +580,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
             SalesHeader.SystemId,
             Page::"APIV2 - Sales Quotes",
             QuoteServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
 
         // [THEN] Lower discount is applied
@@ -674,7 +672,6 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
         ResponseText: Text;
         QuoteLineJSON: Text;
         QuoteId: Text;
-        LineNo: Integer;
     begin
         // [SCENARIO] PATCH a Type on a line of a quote
         // [GIVEN] a quote with lines and a valid JSON describing the fields that we want to change
@@ -682,7 +679,6 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
         QuoteId := CreateSalesQuoteWithLines(SalesHeader);
         Assert.AreNotEqual('', QuoteId, 'ID should not be empty');
         FindFirstSalesLine(SalesHeader, SalesLine);
-        LineNo := SalesLine."Line No.";
 
         QuoteLineJSON := StrSubstNo('{"%1":"%2"}', LineTypeFieldNameTxt, Format(SalesInvoiceLineAggregate."API Type"::Account));
 
@@ -692,7 +688,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
             QuoteId,
             Page::"APIV2 - Sales Quotes",
             QuoteServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, QuoteServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, QuoteLineJSON, ResponseText);
 
         // [THEN] Line type is changed to Account
@@ -757,9 +753,7 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
         Item2: Record "Item";
         ItemVariant: Record "Item Variant";
         SalesHeader: Record "Sales Header";
-        ItemNo1: Code[20];
         ItemNo2: Code[20];
-        ItemVariantCode: Code[10];
         ResponseText: Text;
         TargetURL: Text;
         QuoteLineJSON: Text;
@@ -769,9 +763,9 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
         // [GIVEN] An existing  quote and a valid JSON describing the new quote line with item variant
         Initialize();
         QuoteId := CreateSalesQuoteWithLines(SalesHeader);
-        ItemNo1 := LibraryInventory.CreateItem(Item1);
+        LibraryInventory.CreateItem(Item1);
         ItemNo2 := LibraryInventory.CreateItem(Item2);
-        ItemVariantCode := LibraryInventory.CreateItemVariant(ItemVariant, ItemNo2);
+        LibraryInventory.CreateItemVariant(ItemVariant, ItemNo2);
         Commit();
 
         // [WHEN] we POST the JSON to the web service
@@ -790,21 +784,19 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
     [Normal]
     local procedure CreateQuoteLineJSON(ItemId: Guid; Quantity: Integer): Text
     var
-        IntegrationManagement: Codeunit "Integration Management";
         LineJSON: Text;
     begin
-        LineJSON := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', IntegrationManagement.GetIdWithoutBrackets(ItemId));
+        LineJSON := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', LibraryGraphMgt.StripBrackets(ItemId));
         LineJSON := LibraryGraphMgt.AddPropertytoJSON(LineJSON, 'quantity', Quantity);
         exit(LineJSON);
     end;
 
     local procedure CreateQuoteLineJSONWithItemVariantId(ItemId: Guid; Quantity: Integer; ItemVariantId: Guid): Text
     var
-        IntegrationManagement: Codeunit "Integration Management";
         LineJSON: Text;
     begin
         LineJSON := CreateQuoteLineJSON(ItemId, Quantity);
-        LineJSON := LibraryGraphMgt.AddPropertytoJSON(LineJSON, 'itemVariantId', IntegrationManagement.GetIdWithoutBrackets(ItemVariantId));
+        LineJSON := LibraryGraphMgt.AddPropertytoJSON(LineJSON, 'itemVariantId', LibraryGraphMgt.StripBrackets(ItemVariantId));
         exit(LineJSON);
     end;
 
@@ -829,13 +821,12 @@ codeunit 139836 "APIV2 - Sales Quote Lines E2E"
 
     local procedure VerifyIdsAreBlank(JsonObjectTxt: Text)
     var
-        IntegrationManagement: Codeunit "Integration Management";
         itemId: Text;
         accountId: Text;
         ExpectedId: Text;
         BlankGuid: Guid;
     begin
-        ExpectedId := IntegrationManagement.GetIdWithoutBrackets(BlankGuid);
+        ExpectedId := LibraryGraphMgt.StripBrackets(BlankGuid);
 
         Assert.IsTrue(LibraryGraphMgt.GetPropertyValueFromJSON(JsonObjectTxt, 'itemId', itemId), 'Could not find itemId');
         Assert.IsTrue(LibraryGraphMgt.GetPropertyValueFromJSON(JsonObjectTxt, 'accountId', accountId), 'Could not find accountId');

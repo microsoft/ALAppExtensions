@@ -129,6 +129,12 @@ page 31272 "Compensation Card CZC"
                         UserMgt.DisplayUserInformation(Rec."User ID");
                     end;
                 }
+                field("Language Code"; Rec."Language Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the language to be used on printouts for this document.';
+                    Importance = Additional;
+                }
             }
             part(CompensationLinesCZC; "Compensation Subform CZC")
             {

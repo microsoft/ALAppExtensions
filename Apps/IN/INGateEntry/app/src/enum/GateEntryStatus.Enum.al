@@ -1,5 +1,7 @@
 enum 18602 "Gate Entry Status"
 {
+    Extensible = true;
+
     value(0; Open)
     {
         Caption = 'Open';

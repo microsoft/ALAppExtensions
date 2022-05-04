@@ -245,8 +245,6 @@ codeunit 1279 "Cryptography Management Impl."
     var
         Encoding: DotNet Encoding;
     begin
-        if InputString = '' then
-            exit(false);
         if not TryGenerateHash(HashBytes, Encoding.UTF8().GetBytes(InputString), Format(HashAlgorithmType)) then
             Error(GetLastErrorText());
         exit(true);

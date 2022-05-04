@@ -10,7 +10,8 @@ codeunit 9018 "Azure AD Plan Impl."
     Permissions = TableData Company = r,
                   TableData Plan = rimd,
                   TableData "User Plan" = rimd,
-                  TableData User = r;
+                  TableData User = r,
+                  TableData "User Personalization" = rm;
 
     var
         UserLoginTimeTracker: Codeunit "User Login Time Tracker";
@@ -42,6 +43,7 @@ codeunit 9018 "Azure AD Plan Impl."
         BasicPlanNameTxt: Label 'D365 Business Central Basic Financials', Locked = true;
         EssentialsPlanNameTxt: Label 'Dynamics 365 Business Central Essential', Locked = true;
         PremiumPlanNameTxt: Label 'Dynamics 365 Business Central Premium', Locked = true;
+        ClearPersonalizationTxt: Label 'Clear company in User Pesonalization', Locked = true;
 
     [NonDebuggable]
     procedure IsPlanAssigned(PlanGUID: Guid): Boolean
@@ -102,7 +104,7 @@ codeunit 9018 "Azure AD Plan Impl."
 
         // Has the user been setup earlier?
         UserPlan.SetRange("User Security ID", UserSecurityId);
-        HasUserBeenSetupBefore := not (UserPlan.IsEmpty() and UserLoginTimeTracker.IsFirstLogin(UserSecurityId));
+        HasUserBeenSetupBefore := not (UserPlan.IsEmpty() and (not UserLoginTimeTracker.UserLoggedInEnvironment(UserSecurityId)));
 
         // Have any plans been removed from this user in O365, since last time he logged-in to NAV?
         RemoveUnassignedUserPlans(TempPlan, UserSecurityId, RemoveUserGroupsOnDeletePlan);
@@ -601,22 +603,24 @@ codeunit 9018 "Azure AD Plan Impl."
     [NonDebuggable]
     local procedure AddNewlyAssignedUserPlans(var Plan: Record Plan; UserSecurityID: Guid; UserHadBeenSetupBefore: Boolean; AppendPermissionsOnNewPlan: Boolean)
     var
+        UserPersonalization: Record "User Personalization";
         UserPlan: Record "User Plan";
         AzureADPlan: Codeunit "Azure AD Plan";
         UserPermissions: Codeunit "User Permissions";
         PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
         UserGroupsAdded, PlanConfigurationContainsSuper, IsPlanConfigurationCustomized, ShouldRemoveSuper : Boolean;
     begin
-        // Have any plans been added to this user in O365, since last time he logged-in to NAV?
+        // Have any plans been added to this user in O365, since last time he logged-in to BC?
         // For each plan assigned to the user in Office
         if Plan.FindSet() then
             repeat
-                // Does this assignment exist in NAV? If not, add it.
+                // Does this assignment exist in BC? If not, add it.
+                UserPlan.LockTable();
                 UserPlan.SetRange("Plan ID", Plan."Plan ID");
                 UserPlan.SetRange("User Security ID", UserSecurityID);
+                
                 if UserPlan.IsEmpty() then begin
                     InsertFromTempPlan(Plan);
-                    UserPlan.LockTable();
                     UserPlan.Init();
                     UserPlan."Plan ID" := Plan."Plan ID";
                     UserPlan."User Security ID" := UserSecurityID;
@@ -633,9 +637,18 @@ codeunit 9018 "Azure AD Plan Impl."
 
         // Only remove SUPER if other permissions are granted (to avoid user lockout)
         if UserGroupsAdded and (not UserHadBeenSetupBefore) then begin
-            if IsPlanConfigurationCustomized then
+            if IsPlanConfigurationCustomized then begin
+                // For newly-created users clear the company in case they are logged in to a company they don't have permissions for. 
+                // Clearing the company in user personalization will make platform pick the right company on next login.
+                UserPersonalization.LockTable();
+                if UserPersonalization.Get(UserSecurityID) and (UserPersonalization.Company <> '') then begin
+                    UserPersonalization.Company := '';
+                    if UserPersonalization.Modify() then
+                        Session.LogMessage('0000GYC', ClearPersonalizationTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                end;
+
                 ShouldRemoveSuper := not PlanConfigurationContainsSuper
-            else
+            end else
                 ShouldRemoveSuper := not IsUserAdmin(UserSecurityID);
 
             if ShouldRemoveSuper then

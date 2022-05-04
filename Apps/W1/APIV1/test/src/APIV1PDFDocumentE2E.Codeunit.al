@@ -46,7 +46,6 @@ codeunit 139744 "APIV1 - PDF Document E2E"
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesHeader: Record "Sales Header";
         TempBlob: Codeunit "Temp Blob";
-        TypeHelper: Codeunit "Type Helper";
         InvoiceID1: Text;
         InvoiceID2: Text;
         ID1: Text;
@@ -70,7 +69,7 @@ codeunit 139744 "APIV1 - PDF Document E2E"
         // [WHEN] we GET the pdfDocument subpage content on the draft invoice
         TargetURL :=
           LibraryGraphMgt.CreateTargetURLWithSubpage(ID2, PAGE::"APIV1 - Sales Invoices", InvoiceServiceNameTxt, PDFDocumentServiceNameTxt);
-        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', TypeHelper.GetGuidAsString(ID2));
+        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', LowerCase(Format(SalesHeader.SystemId, 0, 4)));
         TargetURL := LibraryGraphMgt.STRREPLACE(TargetURL, PDFDocumentServiceNameTxt, SubPageWithContentTxt);
         Commit();
 
@@ -81,7 +80,7 @@ codeunit 139744 "APIV1 - PDF Document E2E"
         // [WHEN] we GET the pdfDocument subpage content on the posted invoice
         TargetURL :=
           LibraryGraphMgt.CreateTargetURLWithSubpage(ID1, PAGE::"APIV1 - Sales Invoices", InvoiceServiceNameTxt, PDFDocumentServiceNameTxt);
-        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', TypeHelper.GetGuidAsString(ID1));
+        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', LowerCase(Format(SalesInvoiceHeader."Draft Invoice SystemId", 0, 4)));
         TargetURL := LibraryGraphMgt.STRREPLACE(TargetURL, PDFDocumentServiceNameTxt, SubPageWithContentTxt);
         Commit();
 
@@ -98,7 +97,6 @@ codeunit 139744 "APIV1 - PDF Document E2E"
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
         SalesHeader: Record "Sales Header";
         TempBlob: Codeunit "Temp Blob";
-        TypeHelper: Codeunit "Type Helper";
         SCMID1: Text;
         SCMID2: Text;
         ID1: Text;
@@ -123,7 +121,7 @@ codeunit 139744 "APIV1 - PDF Document E2E"
         TargetURL :=
           LibraryGraphMgt.CreateTargetURLWithSubpage(
             ID2, PAGE::"APIV1 - Sales Credit Memos", SalesCreditMemoServiceNameTxt, PDFDocumentServiceNameTxt);
-        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', TypeHelper.GetGuidAsString(ID2));
+        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', LowerCase(Format(SalesHeader.SystemId, 0, 4)));
         TargetURL := LibraryGraphMgt.STRREPLACE(TargetURL, PDFDocumentServiceNameTxt, SubPageWithContentTxt);
         Commit();
 
@@ -135,7 +133,7 @@ codeunit 139744 "APIV1 - PDF Document E2E"
         TargetURL :=
           LibraryGraphMgt.CreateTargetURLWithSubpage(
             ID1, PAGE::"APIV1 - Sales Credit Memos", SalesCreditMemoServiceNameTxt, PDFDocumentServiceNameTxt);
-        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', TypeHelper.GetGuidAsString(ID1));
+        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', LowerCase(Format(SalesCrMemoHeader."Draft Cr. Memo SystemId", 0, 4)));
         TargetURL := LibraryGraphMgt.STRREPLACE(TargetURL, PDFDocumentServiceNameTxt, SubPageWithContentTxt);
         Commit();
 
@@ -151,7 +149,6 @@ codeunit 139744 "APIV1 - PDF Document E2E"
     var
         SalesHeader: Record "Sales Header";
         TempBlob: Codeunit "Temp Blob";
-        TypeHelper: Codeunit "Type Helper";
         QuoteID1: Text;
         ID1: Text;
         TargetURL: Text;
@@ -169,7 +166,7 @@ codeunit 139744 "APIV1 - PDF Document E2E"
         // [WHEN] we GET the pdfDocument subpage content on the draft quote
         TargetURL :=
           LibraryGraphMgt.CreateTargetURLWithSubpage(ID1, PAGE::"APIV1 - Sales Quotes", QuoteServiceNameTxt, PDFDocumentServiceNameTxt);
-        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', TypeHelper.GetGuidAsString(ID1));
+        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', LowerCase(Format(SalesHeader.SystemId, 0, 4)));
         TargetURL := LibraryGraphMgt.STRREPLACE(TargetURL, PDFDocumentServiceNameTxt, SubPageWithContentTxt);
         Commit();
 
@@ -185,7 +182,6 @@ codeunit 139744 "APIV1 - PDF Document E2E"
         PurchInvHeader: Record "Purch. Inv. Header";
         PurchaseHeader: Record "Purchase Header";
         TempBlob: Codeunit "Temp Blob";
-        TypeHelper: Codeunit "Type Helper";
         InvoiceID1: Text;
         InvoiceID2: Text;
         ID1: Text;
@@ -210,7 +206,7 @@ codeunit 139744 "APIV1 - PDF Document E2E"
         TargetURL :=
           LibraryGraphMgt.CreateTargetURLWithSubpage(
             ID2, PAGE::"APIV1 - Purchase Invoices", PurchaseInvoiceServiceNameTxt, PDFDocumentServiceNameTxt);
-        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', TypeHelper.GetGuidAsString(ID2));
+        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', LowerCase(Format(PurchaseHeader.SystemId, 0, 4)));
         TargetURL := LibraryGraphMgt.STRREPLACE(TargetURL, PDFDocumentServiceNameTxt, SubPageWithContentTxt);
         Commit();
 
@@ -222,7 +218,7 @@ codeunit 139744 "APIV1 - PDF Document E2E"
         TargetURL :=
           LibraryGraphMgt.CreateTargetURLWithSubpage(
             ID1, PAGE::"APIV1 - Purchase Invoices", PurchaseInvoiceServiceNameTxt, PDFDocumentServiceNameTxt);
-        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', TypeHelper.GetGuidAsString(ID1));
+        SubPageWithContentTxt := PDFDocumentServiceNameTxt + StrSubstNo('(%1)/content', Format(PurchInvHeader."Draft Invoice SystemId", 0, 4));
         TargetURL := LibraryGraphMgt.STRREPLACE(TargetURL, PDFDocumentServiceNameTxt, SubPageWithContentTxt);
         Commit();
 

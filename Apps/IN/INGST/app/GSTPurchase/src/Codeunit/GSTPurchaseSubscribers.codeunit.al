@@ -1220,6 +1220,7 @@ codeunit 18080 "GST Purchase Subscribers"
         PurchaseLine.SetRange("GST Group Type", PurchaseLine."GST Group Type"::Goods);
         PurchaseLine.SetFilter(Type, '<>%1&<>%2', PurchaseLine.Type::" ", PurchaseLine.Type::"Charge (Item)");
         PurchaseLine.SetFilter("GST Assessable Value", '%1', 0);
+        PurchaseLine.SetFilter("Qty. to Receive", '<>%1', 0);
         if not PurchaseLine.IsEmpty() then
             Error(GSTAssessableErr, PurchaseHeader."Document Type", PurchaseHeader."No.");
 
@@ -1379,7 +1380,7 @@ codeunit 18080 "GST Purchase Subscribers"
             until PurchseLine.Next() = 0;
     end;
 
-    
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Purchase Subscribers", 'OnBeforePurchaseLineHSNSACEditable', '', false, false)]
     local procedure SetGstHsnEditableforAllType(var IsEditable: Boolean; var IsHandled: Boolean)
     begin

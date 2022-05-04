@@ -116,6 +116,13 @@ codeunit 135013 "Sampling Perf. Profiler Test"
             SessionId(), 4, 1, 'Codeunit', 4, 'CodeUnit_TestNode4', 'TestNode4App',
             'TestPublisher2', 0, 'TestNode4FunctionName', 0, 0, 0);
 
+        PerfProfilerTestLibrary.InsertProfilingNode(VerificationProfilingNode,
+            SessionId(), 5, 1, 'Codeunit', 2, 'CodeUnit_TestNode2', 'TestNode2App',
+            'TestPublisher2', 0, 'TestNode2FunctionName', 100, 0, 0);
+
+        PerfProfilerTestLibrary.InsertProfilingNode(VerificationProfilingNode,
+            SessionId(), 6, 1, 'Codeunit', 3, 'CodeUnit_TestNode3', 'TestNode3App',
+            'TestPublisher1', 0, 'TestNode3FunctionName', 500, 0, 0);
         // [GIVEN] Performance profiler is initialized with the test profile 
         PerfProfilerTestLibrary.Initialize();
 

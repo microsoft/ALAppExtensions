@@ -455,8 +455,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
 #pragma warning disable AL0432
         TempInvoicePostBuffer: Record "Invoice Post. Buffer" temporary;
 #pragma warning restore AL0432
-        RestToDivide: Decimal;
-        RestLines: Decimal;
+        Coeff: Decimal;
     begin
         InvoicePostBuffer.Reset();
         InvoicePostBuffer.DeleteAll();
@@ -465,11 +464,10 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
             exit;
 
         PurchAdvLetterHeaderCZZ.Get(PurchAdvanceNo);
+        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
         GetCurrency(PurchAdvLetterHeaderCZZ."Currency Code");
 
-        RestToDivide := Amount;
-        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
-        RestLines := PurchAdvLetterHeaderCZZ."Amount Including VAT";
+        Coeff := Amount / PurchAdvLetterHeaderCZZ."Amount Including VAT";
 
         BufferAdvanceLines(PurchAdvanceNo, TempInvoicePostBuffer);
         TempInvoicePostBuffer.SetFilter(Amount, '<>0');
@@ -480,8 +478,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                 InvoicePostBuffer."VAT Prod. Posting Group" := TempInvoicePostBuffer."VAT Prod. Posting Group";
                 InvoicePostBuffer."VAT Calculation Type" := TempInvoicePostBuffer."VAT Calculation Type";
                 InvoicePostBuffer."VAT %" := TempInvoicePostBuffer."VAT %";
-
-                InvoicePostBuffer.Amount := Round(RestToDivide * TempInvoicePostBuffer.Amount / RestLines, CurrencyGlob."Amount Rounding Precision");
+                InvoicePostBuffer.Amount := Round(TempInvoicePostBuffer.Amount * Coeff, CurrencyGlob."Amount Rounding Precision");
                 case TempInvoicePostBuffer."VAT Calculation Type" of
                     TempInvoicePostBuffer."VAT Calculation Type"::"Normal VAT":
                         InvoicePostBuffer."VAT Amount" := Round(InvoicePostBuffer.Amount * TempInvoicePostBuffer."VAT %" / (100 + TempInvoicePostBuffer."VAT %"));
@@ -491,9 +488,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                 InvoicePostBuffer."VAT Base Amount" := InvoicePostBuffer.Amount - InvoicePostBuffer."VAT Amount";
                 CalculateAmountLCY(InvoicePostBuffer, PurchAdvLetterHeaderCZZ."Currency Code", CurrencyFactor);
                 InvoicePostBuffer.Insert();
-
-                RestToDivide := RestToDivide - InvoicePostBuffer.Amount;
-                RestLines := RestLines - TempInvoicePostBuffer.Amount;
             until TempInvoicePostBuffer.Next() = 0;
     end;
 
@@ -1630,6 +1624,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                             GenJournalLine.Validate("Original Doc. VAT Date CZL", OriginalDocumentVATDate);
                             GenJournalLine.SetCurrencyFactor(PurchAdvLetterEntryCZZ."Currency Code", CurrencyFactor);
                             GenJournalLine.Validate(Amount, RemAmount);
+                            GenJournalLine."Variable Symbol CZL" := PurchAdvLetterHeaderCZZ."Variable Symbol";
                             OnBeforePostClosePaymentRepos(GenJournalLine, PurchAdvLetterHeaderCZZ);
                             GenJnlPostLine.RunWithCheck(GenJournalLine);
                             OnAfterPostClosePaymentRepos(GenJournalLine, PurchAdvLetterHeaderCZZ);
@@ -2273,9 +2268,10 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         PurchAdvLetterEntryCZZ2: Record "Purch. Adv. Letter Entry CZZ";
         PurchAdvLetterEntryCZZ3: Record "Purch. Adv. Letter Entry CZZ";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
-        RestToDivide: Decimal;
-        RestLines: Decimal;
+        AmountToDivide: Decimal;
         AmountToPost: Decimal;
+        AmountTotal: Decimal;
+        Coeff: Decimal;
         VATAmountToPost: Decimal;
         VATDocAmtToDate: Decimal;
     begin
@@ -2294,8 +2290,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         TempInvoicePostBuffer1.CalcSums(Amount);
         VATDocAmtToDate := TempInvoicePostBuffer1.Amount;
         if VATDocAmtToDate <> 0 then begin
-            RestLines := VATDocAmtToDate;
-            RestToDivide := Amount;
+            Coeff := Amount / VATDocAmtToDate;
             TempInvoicePostBuffer1.FindSet();
             repeat
                 TempInvoicePostBuffer2.Init();
@@ -2304,7 +2299,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                 TempInvoicePostBuffer2."VAT Calculation Type" := TempInvoicePostBuffer1."VAT Calculation Type";
                 TempInvoicePostBuffer2."VAT %" := TempInvoicePostBuffer1."VAT %";
 
-                TempInvoicePostBuffer2."Amount (ACY)" := Round(RestToDivide * TempInvoicePostBuffer1.Amount / RestLines);
+                TempInvoicePostBuffer2."Amount (ACY)" := Round(TempInvoicePostBuffer1.Amount * Coeff);
                 case TempInvoicePostBuffer2."VAT Calculation Type" of
                     TempInvoicePostBuffer2."VAT Calculation Type"::"Normal VAT":
                         TempInvoicePostBuffer2."VAT Amount (ACY)" := Round(TempInvoicePostBuffer2."Amount (ACY)" * TempInvoicePostBuffer2."VAT %" / (100 + TempInvoicePostBuffer2."VAT %"));
@@ -2313,9 +2308,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                 end;
                 TempInvoicePostBuffer2."VAT Base Amount (ACY)" := TempInvoicePostBuffer2."Amount (ACY)" - TempInvoicePostBuffer2."VAT Amount (ACY)";
                 TempInvoicePostBuffer2.Insert();
-
-                RestToDivide := RestToDivide - TempInvoicePostBuffer2."Amount (ACY)";
-                RestLines := RestLines - TempInvoicePostBuffer1.Amount;
             until TempInvoicePostBuffer1.Next() = 0;
 
             if TempInvoicePostBuffer2.FindSet() then
@@ -2329,7 +2321,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
             TempInvoicePostBuffer1.CalcSums(Amount);
             TempInvoicePostBuffer2.CalcSums("Amount (ACY)");
             if TempInvoicePostBuffer1.Amount = 0 then
-                RestToDivide := TempInvoicePostBuffer2."Amount (ACY)"
+                AmountToDivide := TempInvoicePostBuffer2."Amount (ACY)"
             else begin
                 PurchAdvLetterEntryCZZ2.Reset();
                 PurchAdvLetterEntryCZZ2.SetRange("Purch. Adv. Letter No.", PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.");
@@ -2337,10 +2329,10 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                 PurchAdvLetterEntryCZZ2.SetRange("Related Entry", PurchAdvLetterEntryCZZ."Entry No.");
                 PurchAdvLetterEntryCZZ2.SetRange("Entry Type", PurchAdvLetterEntryCZZ2."Entry Type"::"VAT Payment");
                 PurchAdvLetterEntryCZZ2.CalcSums(Amount);
-                RestToDivide := Round(TempInvoicePostBuffer2."Amount (ACY)" * (VATDocAmtToDate - TempInvoicePostBuffer1.Amount) / PurchAdvLetterEntryCZZ2.Amount);
+                AmountToDivide := Round(TempInvoicePostBuffer2."Amount (ACY)" * (VATDocAmtToDate - TempInvoicePostBuffer1.Amount) / PurchAdvLetterEntryCZZ2.Amount);
             end;
 
-            RestLines := 0;
+            AmountTotal := 0;
             PurchAdvLetterEntryCZZ2.Reset();
             PurchAdvLetterEntryCZZ2.SetRange("Purch. Adv. Letter No.", PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.");
             PurchAdvLetterEntryCZZ2.SetRange(Cancelled, false);
@@ -2355,9 +2347,10 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                     PurchAdvLetterEntryCZZ3.SetRange("Entry Type", PurchAdvLetterEntryCZZ3."Entry Type"::"VAT Usage");
                     PurchAdvLetterEntryCZZ3.SetFilter("Posting Date", '>%1', ToDate);
                     PurchAdvLetterEntryCZZ3.CalcSums(Amount);
-                    RestLines += PurchAdvLetterEntryCZZ3.Amount;
+                    AmountTotal += PurchAdvLetterEntryCZZ3.Amount;
                 until PurchAdvLetterEntryCZZ2.Next() = 0;
 
+                Coeff := AmountToDivide / AmountTotal;
                 PurchAdvLetterEntryCZZ2.FindSet();
                 repeat
                     PurchAdvLetterEntryCZZ3.SetRange("Purch. Adv. Letter No.", PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.");
@@ -2367,7 +2360,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                     PurchAdvLetterEntryCZZ3.SetFilter("Posting Date", '>%1', ToDate);
                     if PurchAdvLetterEntryCZZ3.FindSet() then
                         repeat
-                            AmountToPost := Round(RestToDivide * PurchAdvLetterEntryCZZ3.Amount / RestLines);
+                            AmountToPost := Round(PurchAdvLetterEntryCZZ3.Amount * Coeff);
                             case PurchAdvLetterEntryCZZ3."VAT Calculation Type" of
                                 PurchAdvLetterEntryCZZ3."VAT Calculation Type"::"Normal VAT":
                                     VATAmountToPost := Round(AmountToPost * PurchAdvLetterEntryCZZ3."VAT %" / (100 + PurchAdvLetterEntryCZZ3."VAT %"));
@@ -2378,9 +2371,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                             VATPostingSetup.Get(PurchAdvLetterEntryCZZ3."VAT Bus. Posting Group", PurchAdvLetterEntryCZZ3."VAT Prod. Posting Group");
                             PostUnrealizedExchangeRate(PurchAdvLetterEntryCZZ, PurchAdvLetterHeaderCZZ, VATPostingSetup, -AmountToPost, -VATAmountToPost,
                                 PurchAdvLetterEntryCZZ2."Entry No.", 0, DocumentNo, PurchAdvLetterEntryCZZ3."Posting Date", PostDescription, GenJnlPostLine, false, false);
-
-                            RestToDivide := RestToDivide - AmountToPost;
-                            RestLines := RestLines - PurchAdvLetterEntryCZZ3.Amount;
                         until PurchAdvLetterEntryCZZ3.Next() = 0;
                 until PurchAdvLetterEntryCZZ2.Next() = 0;
             end;

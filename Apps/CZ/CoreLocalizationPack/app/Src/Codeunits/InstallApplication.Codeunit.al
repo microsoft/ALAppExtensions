@@ -617,7 +617,11 @@ codeunit 11748 "Install Application CZL"
     begin
         if SalesReceivablesSetup.Get() then begin
             SalesReceivablesSetup."Default VAT Date CZL" := SalesReceivablesSetup."Default VAT Date";
+#if not CLEAN20
             SalesReceivablesSetup."Allow Alter Posting Groups CZL" := SalesReceivablesSetup."Allow Alter Posting Groups";
+#else
+            SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups";
+#endif
             SalesReceivablesSetup.Modify(false);
         end;
     end;
@@ -628,7 +632,11 @@ codeunit 11748 "Install Application CZL"
     begin
         if PurchasesPayablesSetup.Get() then begin
             PurchasesPayablesSetup."Default VAT Date CZL" := PurchasesPayablesSetup."Default VAT Date";
+#if not CLEAN20
             PurchasesPayablesSetup."Allow Alter Posting Groups CZL" := PurchasesPayablesSetup."Allow Alter Posting Groups";
+#else
+            PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups";
+#endif
             PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" := PurchasesPayablesSetup."Default Orig. Doc. VAT Date";
             PurchasesPayablesSetup.Modify(false);
         end;
@@ -640,7 +648,11 @@ codeunit 11748 "Install Application CZL"
     begin
         if ServiceMgtSetup.Get() then begin
             ServiceMgtSetup."Default VAT Date CZL" := ServiceMgtSetup."Default VAT Date";
+#if not CLEAN20
             ServiceMgtSetup."Allow Alter Posting Groups CZL" := ServiceMgtSetup."Allow Alter Cust. Post. Groups";
+#else
+            ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Cust. Post. Groups";
+#endif
             ServiceMgtSetup.Modify(false);
         end;
     end;

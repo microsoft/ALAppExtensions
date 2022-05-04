@@ -138,8 +138,12 @@ codeunit 135104 "Perf. Profiler Test Library"
         TextPerfProfileTextBuilder.Append('Node2","objectId":2}},{"id":3,"callFrame":{"functionName":"TestNode3FunctionName","scriptId":"CodeUnit_3","url":"TestNode3","lineNumber":0,"columnNumber":0},"hitCount":1,"children"');
         TextPerfProfileTextBuilder.Append(':[],"declaringApplication":{"appName":"TestNode3App","appPublisher":"TestPublisher1","appVersion":"0.0.0.0"},"applicationDefinition":{"objectType":"CodeUnit","objectName":"CodeUnit');
         TextPerfProfileTextBuilder.Append('_TestNode3","objectId":3}},{"id":4,"callFrame":{"functionName":"TestNode4FunctionName","scriptId":"CodeUnit_4","url":"TestNode4","lineNumber":0,"columnNumber":0},"hitCount":1,"chil');
-        TextPerfProfileTextBuilder.Append('dren":[2],"declaringApplication":{"appName":"TestNode4App","appPublisher":"TestPublisher2","appVersion":"0.0.0.0"},"applicationDefinition":{"objectType":"CodeUnit","objectName":"Co');
-        TextPerfProfileTextBuilder.Append('deUnit_TestNode4","objectId":4}}],"startTime":63780017494528714,"endTime":63780017556442928,"samples":[1,2,3],"timeDeltas":[0,100000,500000],"kind":1}');
+        TextPerfProfileTextBuilder.Append('dren":[5],"declaringApplication":{"appName":"TestNode4App","appPublisher":"TestPublisher2","appVersion":"0.0.0.0"},"applicationDefinition":{"objectType":"CodeUnit","objectName":"Co');
+        TextPerfProfileTextBuilder.Append('deUnit_TestNode4","objectId":4}},{"id":5,"callFrame":{"functionName":"TestNode2FunctionName","scriptId":"CodeUnit_2","url":"TestNode2","lineNumber":0,"columnNumber":0},"hitCount":1');
+        TextPerfProfileTextBuilder.Append(',"children":[6],"declaringApplication":{"appName":"TestNode2App","appPublisher":"TestPublisher2","appVersion":"0.0.0.0"},"applicationDefinition":{"objectType":"CodeUnit","objectNam');
+        TextPerfProfileTextBuilder.Append('e":"CodeUnit_TestNode2","objectId":2}},{"id":6,"callFrame":{"functionName":"TestNode3FunctionName","scriptId":"CodeUnit_3","url":"TestNode3","lineNumber":0,"columnNumber":0},"hitCo');
+        TextPerfProfileTextBuilder.Append('unt":1,"children":[],"declaringApplication":{"appName":"TestNode3App","appPublisher":"TestPublisher1","appVersion":"0.0.0.0"},"applicationDefinition":{"objectType":"CodeUnit","obje');
+        TextPerfProfileTextBuilder.Append('ctName":"CodeUnit_TestNode3","objectId":3}}],"startTime":63780017494528714,"endTime":63780017556442928,"samples":[1,2,3,5,6],"timeDeltas":[0,100000,500000,100000,500000],"kind":1}');
         exit(TextPerfProfileTextBuilder.ToText());
     end;
 

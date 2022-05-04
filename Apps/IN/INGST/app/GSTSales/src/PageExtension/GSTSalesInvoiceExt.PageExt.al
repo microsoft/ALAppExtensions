@@ -266,6 +266,33 @@ pageextension 18148 "GST Sales Invoice Ext" extends "Sales Invoice"
                 end;
             }
         }
+        modify(Post)
+        {
+            trigger OnBeforeAction()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                GSTSalesValidation.ValidateGSTWithoutPaymentOfDutyOnPost(Rec);
+            end;
+        }
+        modify(PostAndSend)
+        {
+            trigger OnBeforeAction()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                GSTSalesValidation.ValidateGSTWithoutPaymentOfDutyOnPost(Rec);
+            end;
+        }
+        modify(Preview)
+        {
+            trigger OnBeforeAction()
+            var
+                GSTSalesValidation: Codeunit "GST Sales Validation";
+            begin
+                GSTSalesValidation.ValidateGSTWithoutPaymentOfDutyOnPost(Rec);
+            end;
+        }
     }
     var
         UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use ‘E-Comm. Merchant Id’';

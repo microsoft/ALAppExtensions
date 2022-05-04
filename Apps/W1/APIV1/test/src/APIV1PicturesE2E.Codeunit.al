@@ -865,13 +865,13 @@ codeunit 139742 "APIV1 - Pictures E2E"
     [Normal]
     local procedure ValidateImageMetadata(Response: Text)
     var
-        MetaDataJSON: Variant;
+        MetaDataJSONVariant: Variant;
         Height: Text;
         Width: Text;
     begin
-        LibraryGraphMgt.GetObjectFromJSONResponseByName(Response, 'value', MetaDataJSON, 1);
-        LibraryGraphMgt.GetObjectIDFromJSON(MetaDataJSON, 'height', Height);
-        LibraryGraphMgt.GetObjectIDFromJSON(MetaDataJSON, 'width', Width);
+        LibraryGraphMgt.GetObjectFromJSONResponseByName(Response, 'value', MetaDataJSONVariant, 1);
+        LibraryGraphMgt.GetObjectIDFromJSON(MetaDataJSONVariant, 'height', Height);
+        LibraryGraphMgt.GetObjectIDFromJSON(MetaDataJSONVariant, 'width', Width);
 
         Assert.AreEqual('1', Height, 'Height was not set to correct value');
         Assert.AreEqual('1', Width, 'Height was not set to correct value');
@@ -880,13 +880,13 @@ codeunit 139742 "APIV1 - Pictures E2E"
     [Normal]
     local procedure ValidateNoImageMetadata(Response: Text)
     var
-        MetaDataJSON: Variant;
+        MetaDataJSONVariant: Variant;
         Height: Text;
         Width: Text;
     begin
-        LibraryGraphMgt.GetObjectFromJSONResponseByName(Response, 'value', MetaDataJSON, 1);
-        LibraryGraphMgt.GetObjectIDFromJSON(MetaDataJSON, 'height', Height);
-        LibraryGraphMgt.GetObjectIDFromJSON(MetaDataJSON, 'width', Width);
+        LibraryGraphMgt.GetObjectFromJSONResponseByName(Response, 'value', MetaDataJSONVariant, 1);
+        LibraryGraphMgt.GetObjectIDFromJSON(MetaDataJSONVariant, 'height', Height);
+        LibraryGraphMgt.GetObjectIDFromJSON(MetaDataJSONVariant, 'width', Width);
 
         Assert.AreEqual('0', Height, 'Height was not set to correct value');
         Assert.AreEqual('0', Width, 'Height was not set to correct value');

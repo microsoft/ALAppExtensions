@@ -142,6 +142,13 @@ codeunit 18930 "Validation Events"
             Rec."Location Code" := CopyStr((GenJnBatch."Location Code"), 1, 10);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnModifyOnBeforeTestCheckPrinted', '', false, false)]
+    local procedure OnGenJnlLineOnAfterGetRecordOnAfterBalancingTypeVendorCase(var GenJournalLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    begin
+        if GenJournalLine."Check Printed" = true then
+            IsHandled := true;
+    end;
+
     local procedure ValidateVoucherAccount(
         VoucherType: Enum "Gen. Journal Template Type";
         GenJnlLine1: Record "Gen. Journal Line";

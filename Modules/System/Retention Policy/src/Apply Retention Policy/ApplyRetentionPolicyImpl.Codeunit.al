@@ -7,11 +7,7 @@ codeunit 3904 "Apply Retention Policy Impl."
 {
     Access = Internal;
     TableNo = "Retention Policy Setup";
-    Permissions = tabledata Permission = r,
-                  tabledata "Tenant Permission" = r,
-                  tabledata User = r,
-                  tabledata AllObjWithCaption = r,
-                  tabledata "Access Control" = r;
+    Permissions = tabledata AllObjWithCaption = r;
 
     var
         TotalNumberOfRecordsDeleted: Integer;
@@ -341,81 +337,11 @@ codeunit 3904 "Apply Retention Policy Impl."
 
     local procedure VerifyIndirectDeletePermission(TableId: Integer): Boolean
     var
-        Permission: Record Permission;
-        TenantPermission: Record "Tenant Permission";
+        TempDummyExpandedPermission: Record "Expanded Permission" temporary;
+        UserPermissions: Codeunit "User Permissions";
     begin
-        case true of
-            VerifyIndirectDeleteEntitlement(TableId):
-                exit(true); // entitlement requires indirect permission
-            VerifyDeleteSystemPermission(TableId, Permission."Delete Permission"::Yes):
-                exit(false); // user has direct delete permission
-            VerifyDeleteTenantPermission(TableId, TenantPermission."Delete Permission"::"Yes"):
-                exit(false); // user has direct delete permission
-            VerifyDeleteSystemPermission(TableId, Permission."Delete Permission"::Indirect):
-                exit(true); // user has indirect delete permission
-            VerifyDeleteTenantPermission(TableId, TenantPermission."Delete Permission"::"Indirect"):
-                exit(true); // user has indirect delete permission
-            else
-                exit(false); // no indirect permission found
-        end;
-    end;
-
-    local procedure VerifyIndirectDeleteEntitlement(TableID: Integer): Boolean
-    var
-        TempDummyPermission: Record Permission temporary;
-        User: Record User;
-        NavUserAccountHelper: DotNet NavUserAccountHelper;
-        EntitlementString: Text;
-        DeleteEntitlement: Option;
-    begin
-        if not User.Get(UserSecurityId()) then
-            exit(false);
-        EntitlementString := NavUserAccountHelper.GetEntitlementPermissionForObject(UserSecurityId(), TempDummyPermission."Object Type"::"Table Data", TableId);
-        Evaluate(DeleteEntitlement, SelectStr(4, EntitlementString));
-        if DeleteEntitlement = TempDummyPermission."Delete Permission"::Indirect then
-            exit(true);
-    end;
-
-    local procedure VerifyDeleteSystemPermission(TableId: Integer; DeletePermission: Option): Boolean
-    var
-        Permission: Record Permission;
-        AccessControl: Record "Access Control";
-    begin
-        Permission.Setrange("Object Type", Permission."Object Type"::"Table Data");
-        Permission.SetFilter("Object ID", '%1|%2', 0, TableId);
-        Permission.SetRange("Delete Permission", DeletePermission);
-        if Permission.FindSet() then begin
-            AccessControl.SetRange("User Security ID", UserSecurityId());
-            AccessControl.SetFilter("Company Name", '%1|%2', '', CompanyName());
-            AccessControl.Setrange(Scope, AccessControl.Scope::System);
-            repeat
-                AccessControl.SetRange("Role ID", Permission."Role ID");
-                if not AccessControl.IsEmpty() then
-                    exit(true); // permission found in a system permission set assigned to the user.
-            until Permission.Next() = 0;
-        end;
-        exit(false);
-    end;
-
-    local procedure VerifyDeleteTenantPermission(TableId: Integer; DeletePermission: Option): Boolean
-    var
-        TenantPermission: Record "Tenant Permission";
-        AccessControl: Record "Access Control";
-    begin
-        TenantPermission.Setrange("Object Type", TenantPermission."Object Type"::"Table Data");
-        TenantPermission.SetFilter("Object ID", '%1|%2', 0, TableId);
-        TenantPermission.SetRange("Delete Permission", DeletePermission);
-        if TenantPermission.FindSet() then begin
-            AccessControl.SetRange("User Security ID", UserSecurityId());
-            AccessControl.SetFilter("Company Name", '%1|%2', '', CompanyName());
-            AccessControl.Setrange(Scope, AccessControl.Scope::Tenant);
-            repeat
-                AccessControl.SetRange("Role ID", TenantPermission."Role ID");
-                if not AccessControl.IsEmpty() then
-                    exit(true); // permission found in a tenant permission set assigned to the user.
-            until TenantPermission.Next() = 0;
-        end;
-        exit(false);
+        TempDummyExpandedPermission := UserPermissions.GetEffectivePermission(TempDummyExpandedPermission."Object Type"::"Table Data", TableId);
+        exit(TempDummyExpandedPermission."Delete Permission" = TempDummyExpandedPermission."Delete Permission"::Indirect)
     end;
 
     procedure SetWhereOlderExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecordRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)

@@ -930,10 +930,10 @@ codeunit 18466 "Subcontracting Post"
                                             ItemJnlLine."Entry Type",
                                         Inbound,
                                         ItemTrackingSetup);
-                                    SNRequired := ItemTrackingSetup."Serial No. Required";
-                                    LotRequired := ItemTrackingSetup."Lot No. Required";
-                                    SNInfoRequired := ItemTrackingSetup."Serial No. Info Required";
-                                    LotInfoRequired := ItemTrackingSetup."Lot No. Info Required";
+                                        SNRequired := ItemTrackingSetup."Serial No. Required";
+                                        LotRequired := ItemTrackingSetup."Lot No. Required";
+                                        SNInfoRequired := ItemTrackingSetup."Serial No. Info Required";
+                                        LotInfoRequired := ItemTrackingSetup."Lot No. Info Required";
 
                                         CheckTrackingLine := (SNRequired = false) and (LotRequired = false);
                                         QuantitySent := 0;
@@ -2119,10 +2119,10 @@ codeunit 18466 "Subcontracting Post"
             ItemJnlLine."Entry Type",
                 Inbound,
                 ItemTrackingSetup);
-            SNRequired := ItemTrackingSetup."Serial No. Required";
-            LotRequired := ItemTrackingSetup."Lot No. Required";
-            SNInfoRequired := ItemTrackingSetup."Serial No. Info Required";
-            LotInfoRequired := ItemTrackingSetup."Lot No. Info Required";
+        SNRequired := ItemTrackingSetup."Serial No. Required";
+        LotRequired := ItemTrackingSetup."Lot No. Required";
+        SNInfoRequired := ItemTrackingSetup."Serial No. Info Required";
+        LotInfoRequired := ItemTrackingSetup."Lot No. Info Required";
 
         ReservEntry.Reset();
         ReservEntry.SetCurrentKey(
@@ -2392,9 +2392,14 @@ codeunit 18466 "Subcontracting Post"
     local procedure OnBeforeProcessAssocItemJnlLineSubcon(var PurchaseLine: Record "Purchase Line"; IsHandled: Boolean)
     var
         PurchHeader: Record "Purchase Header";
+        PurchRcptHeader: Record "Purch. Rcpt. Header";
     begin
         PurchHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
         if (not PurchHeader.Invoice) and (PurchaseLine.Type = PurchaseLine.Type::Item) and (PurchaseLine.Subcontracting) then begin
+            if PurchRcptHeader.Get(PurchaseLine."Receipt No.") then
+                if PurchRcptHeader.Subcontracting then
+                    exit;
+
             GetReceiptNo(PurchHeader."Receiving No.");
             PostSubcon(PurchaseLine);
         end;

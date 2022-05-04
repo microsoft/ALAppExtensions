@@ -13,8 +13,14 @@ pageextension 18147 "GST Sales. Cr. Memo Subfrm Ext" extends "Sales Cr. Memo Sub
         Modify("Quantity")
         {
             trigger OnAfterValidate()
+            var
+                CalculateTax: Codeunit "Calculate Tax";
             begin
                 SaveRecords();
+                if (Rec."GST Group Code" <> '') and (Rec."HSN/SAC Code" <> '') then begin
+                    Rec.Validate("GST Place Of Supply");
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
             end;
         }
         modify("Location Code")

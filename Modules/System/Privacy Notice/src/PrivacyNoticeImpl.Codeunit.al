@@ -6,7 +6,8 @@
 codeunit 1565 "Privacy Notice Impl."
 {
     Access = Internal;
-    Permissions = tabledata "Privacy Notice" = im;
+    Permissions = tabledata "Privacy Notice" = im,
+                  tabledata Company = r;
 
     var
         EmptyGuid: Guid;
@@ -49,6 +50,7 @@ codeunit 1565 "Privacy Notice Impl."
 
     procedure ConfirmPrivacyNoticeApproval(PrivacyNoticeId: Code[50]): Boolean
     var
+        Company: Record Company;
         PrivacyNotice: Record "Privacy Notice";
     begin
         Session.LogMessage('0000GK8', ConfirmPrivacyNoticeTelemetryTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
@@ -76,7 +78,11 @@ codeunit 1565 "Privacy Notice Impl."
             exit(false);
         end;
 
-        // If admin did not make a decision, check if user made a decision and if so, return that
+        // Admin did not make any decision //
+        if Company.Get(CompanyName()) and Company."Evaluation Company" then
+            exit(true); // Auto-agree for evaluation companies if admin has not explicitly disagreed
+
+        // Check if user made a decision and if so, return that
         PrivacyNotice.SetRange("User SID Filter", UserSecurityId());
         PrivacyNotice.CalcFields(Enabled, Disabled);
         if PrivacyNotice.Enabled then begin
@@ -92,6 +98,7 @@ codeunit 1565 "Privacy Notice Impl."
 
     procedure CheckPrivacyNoticeApprovalState(PrivacyNoticeId: Code[50]): Enum "Privacy Notice Approval State"
     var
+        Company: Record Company;
         PrivacyNotice: Record "Privacy Notice";
     begin
         Session.LogMessage('0000GKC', CheckPrivacyNoticeApprovalStateTelemetryTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
@@ -102,6 +109,8 @@ codeunit 1565 "Privacy Notice Impl."
         // If the Privacy Notice does not exist then re-initialize all Privacy Notices
         if not PrivacyNotice.Get(PrivacyNoticeId) then begin
             Session.LogMessage('0000GN7', PrivacyNoticeDoesNotExistTelemetryErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
+            if Company.Get(CompanyName()) and Company."Evaluation Company" then
+                exit("Privacy Notice Approval State"::Agreed); // Auto-agree for evaluation companies if admin has not explicitly disagreed
             exit("Privacy Notice Approval State"::"Not set"); // If there are no Privacy Notice then it is by default "Not set".
         end;
 
@@ -115,7 +124,11 @@ codeunit 1565 "Privacy Notice Impl."
             exit("Privacy Notice Approval State"::Disagreed);
         end;
 
-        // If admin did not make a decision, check if user made a decision and if so, return that
+        // Admin did not make any decision //
+        if Company.Get(CompanyName()) and Company."Evaluation Company" then
+            exit("Privacy Notice Approval State"::Agreed); // Auto-agree for evaluation companies if admin has not explicitly disagreed
+
+        // Check if user made a decision and if so, return that
         PrivacyNotice.SetRange("User SID Filter", UserSecurityId());
         PrivacyNotice.CalcFields(Enabled);
         if PrivacyNotice.Enabled then begin

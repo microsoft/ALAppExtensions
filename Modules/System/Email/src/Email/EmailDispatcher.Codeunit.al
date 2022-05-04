@@ -17,9 +17,6 @@ codeunit 8888 "Email Dispatcher"
         Success: Boolean;
         EmailCategoryLbl: Label 'Email', Locked = true;
         EmailFeatureNameLbl: Label 'Emailing', Locked = true;
-        SuccessfullySentEmailMsg: Label 'Email sent successfully', Locked = true;
-        SuccessfullySentEmailDetailedMsg: Label 'The email %1 was successfully sent using the %2 email connector.', Comment = '%1 - Email Message Id, %2 - Connector', Locked = true;
-        FailedToSendEmailErrorMsg: Label 'Could not send the email %1 because of the following error: %2. Call stack: %3.', Comment = '%1 - Email Message Id, %2 - Error message, %3 - Error call stack', Locked = true;
         FailedToFindEmailMessageMsg: Label 'Failed to find email message %1', Comment = '%1 - Email Message Id', Locked = true;
         FailedToFindEmailMessageErrorMsg: Label 'The email message has been deleted by another user.';
         AttachmentMsg: Label 'Sending email with attachment file size: %1, Content type: %2', Comment = '%1 - File size, %2 - Content type', Locked = true;
@@ -27,18 +24,19 @@ codeunit 8888 "Email Dispatcher"
     trigger OnRun()
     var
         EmailMessage: Record "Email Message";
+        SentEmail: Record "Sent Email";
         SendEmail: Codeunit "Send Email";
         Email: Codeunit Email;
+#if not CLEAN20
         ClientTypeManagement: Codeunit "Client Type Management";
+#endif
         FeatureTelemetry: Codeunit "Feature Telemetry";
         Dimensions: Dictionary of [Text, Text];
     begin
         Dimensions.Add('Connector', Format(Rec.Connector));
         Dimensions.Add('EmailMessageID', Format(Rec."Message Id", 0, 4));
         Dimensions.Add('EmailAccountID', Format(Rec."Account Id", 0, 4));
-        Dimensions.Add('Category', EmailCategoryLbl);
-
-        Session.LogMessage('0000CTM', Format(Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, Dimensions);
+        FeatureTelemetry.LogUptake('0000CTM', EmailFeatureNameLbl, Enum::"Feature Uptake Status"::Used, false, Dimensions);
 
         // -----------
         // NB: Avoid adding events here as any error would cause a roll-back and possibly an inconsistent state of the Email Outbox.
@@ -49,7 +47,6 @@ codeunit 8888 "Email Dispatcher"
         if EmailMessageImpl.Get(Rec."Message Id") then begin
             LogAttachments();
 
-            SendEmail.SetTelemetryDimensions(Dimensions);
             SendEmail.SetConnector(Rec.Connector);
             SendEmail.SetAccount(Rec."Account Id");
 
@@ -57,40 +54,40 @@ codeunit 8888 "Email Dispatcher"
             Success := SendEmail.Run(EmailMessage);
 
             if Success then begin
-                Session.LogMessage('0000CTV', SuccessfullySentEmailMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
-                Session.LogMessage('0000CTO', StrSubstNo(SuccessfullySentEmailDetailedMsg, Rec."Message Id", Rec.Connector), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, Dimensions);
-                FeatureTelemetry.LogUsage('0000CTQ', EmailFeatureNameLbl, 'Email sent');
+                FeatureTelemetry.LogUsage('0000CTQ', EmailFeatureNameLbl, 'Email sent', Dimensions);
 
-                InsertToSentEmail(Rec);
+                InsertToSentEmail(Rec, SentEmail);
 
                 Rec.Delete();
                 EmailMessageImpl.MarkAsRead();
                 Commit();
             end
             else begin
-                Dimensions.Add('ErrorText', GetLastErrorText(true));
-                Dimensions.Add('ErrorCallStack', GetLastErrorCallStack());
-                Session.LogMessage('0000CTP', StrSubstNo(FailedToSendEmailErrorMsg, Rec."Message Id", GetLastErrorText(true), GetLastErrorCallStack()), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
-                FeatureTelemetry.LogError('0000CTB', EmailFeatureNameLbl, 'Failed to send email', GetLastErrorText(true), GetLastErrorCallStack());
+                FeatureTelemetry.LogError('0000CTP', EmailFeatureNameLbl, 'Failed to send email', GetLastErrorText(true), GetLastErrorCallStack(), Dimensions);
 
                 UpdateOutboxError(GetLastErrorText(), Rec);
                 UpdateOutboxStatus(Rec, Rec.Status::Failed);
             end;
         end
         else begin
-            Session.LogMessage('0000CTR', StrSubstNo(FailedToFindEmailMessageMsg, Rec."Message Id"), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, Dimensions);
+            FeatureTelemetry.LogError('0000CTR', EmailFeatureNameLbl, 'Failed to find email', StrSubstNo(FailedToFindEmailMessageMsg, Rec."Message Id"), '', Dimensions);
             UpdateOutboxError(FailedToFindEmailMessageErrorMsg, Rec);
             UpdateOutboxStatus(Rec, Rec.Status::Failed);
         end;
 
+        if Success then
+            Email.OnAfterEmailSent(SentEmail)
+        else
+            Email.OnAfterEmailSendFailed(Rec);
+#if not CLEAN20
         if (ClientTypeManagement.GetCurrentClientType() = ClientType::Background) then
             Email.OnAfterSendEmail(Rec."Message Id", Success);
+#endif
     end;
 
-    local procedure InsertToSentEmail(EmailOutbox: Record "Email Outbox")
-    var
-        SentEmail: Record "Sent Email";
+    local procedure InsertToSentEmail(EmailOutbox: Record "Email Outbox"; var SentEmail: Record "Sent Email")
     begin
+        Clear(SentEmail);
         SentEmail.TransferFields(EmailOutbox);
         SentEmail."Date Time Sent" := CurrentDateTime();
         SentEmail.Insert();

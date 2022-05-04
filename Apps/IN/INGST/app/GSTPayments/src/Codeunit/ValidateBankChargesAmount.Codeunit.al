@@ -150,17 +150,19 @@ codeunit 18247 "Validate Bank Charges Amount"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Tax Transaction Value", 'OnBeforeTableFilterApplied', '', false, false)]
-    local procedure OnBeforeTableFilterApplied(var TaxRecordID: RecordID; TemplateNameFilter: Text; BatchFilter: Text; LineNoFilter: Integer; DocumentNoFilter: Text)
+    local procedure OnBeforeTableFilterApplied(var TaxRecordID: RecordID; TemplateNameFilter: Text; BatchFilter: Text; LineNoFilter: Integer; DocumentNoFilter: Text; TableIDFilter: Integer)
     var
         JnlBankCharges: Record "Journal Bank Charges";
     begin
-        JnlBankCharges.Reset();
-        JnlBankCharges.SetRange("Journal Template Name", TemplateNameFilter);
-        JnlBankCharges.SetRange("Journal Batch Name", BatchFilter);
-        JnlBankCharges.SetRange("Line No.", LineNoFilter);
-        JnlBankCharges.SetRange("Bank Charge", DocumentNoFilter);
-        if JnlBankCharges.FindFirst() then
-            TaxRecordID := JnlBankCharges.RecordId();
+        if TableIDFilter = Database::"Journal Bank Charges" then begin
+            JnlBankCharges.Reset();
+            JnlBankCharges.SetRange("Journal Template Name", TemplateNameFilter);
+            JnlBankCharges.SetRange("Journal Batch Name", BatchFilter);
+            JnlBankCharges.SetRange("Line No.", LineNoFilter);
+            JnlBankCharges.SetRange("Bank Charge", DocumentNoFilter);
+            if JnlBankCharges.FindFirst() then
+                TaxRecordID := JnlBankCharges.RecordId();
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostBankAccOnBeforeInitBankAccLedgEntry', '', false, false)]

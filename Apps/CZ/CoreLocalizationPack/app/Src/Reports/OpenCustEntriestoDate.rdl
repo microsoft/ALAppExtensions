@@ -74,7 +74,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!greCustomer__No__.Value</Value>
+                                                    <Value>=Fields!greCustomer__No__.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -108,7 +108,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!greCustomer_Name.Value</Value>
+                                                    <Value>=Fields!greCustomer_Name.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -145,7 +145,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -179,7 +179,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -213,7 +213,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -247,7 +247,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -281,7 +281,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -320,7 +320,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!Cust__Ledger_Entry__Posting_Date_.Value</Value>
+                                                    <Value>=Fields!Cust__Ledger_Entry__Posting_Date_.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -353,7 +353,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!Cust__Ledger_Entry__Document_Type_.Value</Value>
+                                                    <Value>=Fields!Cust__Ledger_Entry__Document_Type_.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -385,7 +385,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!Cust__Ledger_Entry__Document_No__.Value</Value>
+                                                    <Value>=Fields!Cust__Ledger_Entry__Document_No__.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -417,7 +417,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!Cust__Ledger_Entry_Description.Value</Value>
+                                                    <Value>=Fields!Cust__Ledger_Entry_Description.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -449,7 +449,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!Cust__Ledger_Entry__Due_Date_.Value</Value>
+                                                    <Value>=Fields!Cust__Ledger_Entry__Due_Date_.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -481,7 +481,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!ginDaysAfterDue.Value</Value>
+                                                    <Value>=Fields!ginDaysAfterDue.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -513,7 +513,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!greGLSetup__LCY_Code_.Value</Value>
+                                                    <Value>=Fields!greGLSetup__LCY_Code_.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -545,7 +545,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!Cust__Ledger_Entry__Original_Amt___LCY__.Value</Value>
+                                                    <Value>=Fields!Cust__Ledger_Entry__Original_Amt___LCY__.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!Cust__Ledger_Entry__Original_Amt___LCY__Format.Value</Format>
@@ -578,7 +578,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!Cust__Ledger_Entry__Remaining_Amt___LCY__.Value</Value>
+                                                    <Value>=Fields!Cust__Ledger_Entry__Remaining_Amt___LCY__.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!Cust__Ledger_Entry__Remaining_Amt___LCY__Format.Value</Format>
@@ -616,7 +616,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -648,7 +648,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -680,7 +680,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -712,7 +712,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -744,7 +744,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -776,7 +776,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -808,7 +808,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!gcoCurrency.Value</Value>
+                                                    <Value>=Fields!gcoCurrency.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -840,7 +840,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!Cust__Ledger_Entry__Original_Amount_.Value</Value>
+                                                    <Value>=Fields!Cust__Ledger_Entry__Original_Amount_.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!Cust__Ledger_Entry__Original_Amount_Format.Value</Format>
@@ -873,7 +873,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!Cust__Ledger_Entry__Remaining_Amount_.Value</Value>
+                                                    <Value>=Fields!Cust__Ledger_Entry__Remaining_Amount_.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!Cust__Ledger_Entry__Remaining_Amount_Format.Value</Format>
@@ -911,7 +911,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -943,7 +943,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -975,7 +975,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1007,7 +1007,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1039,7 +1039,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!TotalCaption.Value</Value>
+                                                    <Value>=Fields!TotalCaption.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1075,7 +1075,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!greGLSetup__LCY_Code_.Value</Value>
+                                                    <Value>=Fields!greGLSetup__LCY_Code_.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1107,7 +1107,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Sum(Fields!Cust__Ledger_Entry__Original_Amt___LCY__.Value)</Value>
+                                                    <Value>=Sum(Fields!Cust__Ledger_Entry__Original_Amt___LCY__.Value)</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!Cust__Ledger_Entry__Original_Amt___LCY__Format.Value</Format>
@@ -1140,7 +1140,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Sum(Fields!Cust__Ledger_Entry__Remaining_Amt___LCY__.Value)</Value>
+                                                    <Value>=Sum(Fields!Cust__Ledger_Entry__Remaining_Amt___LCY__.Value)</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!Cust__Ledger_Entry__Remaining_Amt___LCY__Format.Value</Format>
@@ -1178,7 +1178,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!greCustomer__No__.Value</Value>
+                                                    <Value>=Fields!greCustomer__No__.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1212,7 +1212,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!greCustomer_Name.Value</Value>
+                                                    <Value>=Fields!greCustomer_Name.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1249,7 +1249,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1283,7 +1283,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1317,7 +1317,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!greGLSetup__LCY_Code_.Value</Value>
+                                                    <Value>=Fields!greGLSetup__LCY_Code_.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1351,7 +1351,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Sum(Fields!Cust__Ledger_Entry__Original_Amt___LCY__.Value)</Value>
+                                                    <Value>=Sum(Fields!Cust__Ledger_Entry__Original_Amt___LCY__.Value)</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!Cust__Ledger_Entry__Original_Amt___LCY__Format.Value</Format>
@@ -1386,7 +1386,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Sum(Fields!Cust__Ledger_Entry__Remaining_Amt___LCY__.Value)</Value>
+                                                    <Value>=Sum(Fields!Cust__Ledger_Entry__Remaining_Amt___LCY__.Value)</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!Cust__Ledger_Entry__Remaining_Amt___LCY__Format.Value</Format>
@@ -1483,7 +1483,7 @@
                               <DataSetName>DataSet_Result</DataSetName>
                               <Top>0.00529cm</Top>
                               <Height>2.11505cm</Height>
-                              <Width>18cm</Width>
+                              <Width>18.00003cm</Width>
                               <Visibility>
                                 <Hidden>=(Fields!gboSkipDetail.Value AND Fields!gboSkipTotal.Value)</Hidden>
                               </Visibility>
@@ -1534,7 +1534,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto" />
+                                                    <Value />
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1566,7 +1566,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!BalanceCaption1.Value</Value>
+                                                    <Value>=Fields!BalanceCaption1.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1600,7 +1600,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!BalanceCaption2.Value</Value>
+                                                    <Value>=Fields!BalanceCaption2.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1634,7 +1634,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!BalanceCaption3.Value</Value>
+                                                    <Value>=Fields!BalanceCaption3.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1668,7 +1668,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!BalanceCaption4.Value</Value>
+                                                    <Value>=Fields!BalanceCaption4.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1702,7 +1702,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!BalanceCaption5.Value</Value>
+                                                    <Value>=Fields!BalanceCaption5.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1736,7 +1736,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!BalanceCaption6.Value</Value>
+                                                    <Value>=Fields!BalanceCaption6.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1770,7 +1770,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!BalanceCaption7.Value</Value>
+                                                    <Value>=Fields!BalanceCaption7.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1809,7 +1809,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!greGLSetup__LCY_Code_.Value</Value>
+                                                    <Value>=Fields!greGLSetup__LCY_Code_.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1843,7 +1843,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=LAST(Fields!gdeBalance_1_.Value)</Value>
+                                                    <Value>=LAST(Fields!gdeBalance_1_.Value)</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!gdeBalance_1_Format.Value</Format>
@@ -1878,7 +1878,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=LAST(Fields!gdeBalance_2_.Value)</Value>
+                                                    <Value>=LAST(Fields!gdeBalance_2_.Value)</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!gdeBalance_2_Format.Value</Format>
@@ -1913,7 +1913,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=LAST(Fields!gdeBalance_3_.Value)</Value>
+                                                    <Value>=LAST(Fields!gdeBalance_3_.Value)</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!gdeBalance_3_Format.Value</Format>
@@ -1948,7 +1948,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=LAST(Fields!gdeBalance_4_.Value)</Value>
+                                                    <Value>=LAST(Fields!gdeBalance_4_.Value)</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!gdeBalance_4_Format.Value</Format>
@@ -1983,7 +1983,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=LAST(Fields!gdeBalance_5_.Value)</Value>
+                                                    <Value>=LAST(Fields!gdeBalance_5_.Value)</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!gdeBalance_5_Format.Value</Format>
@@ -2018,7 +2018,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=LAST(Fields!gdeBalance_6_.Value)</Value>
+                                                    <Value>=LAST(Fields!gdeBalance_6_.Value)</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!gdeBalance_6_Format.Value</Format>
@@ -2053,7 +2053,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=LAST(Fields!gdeBalance_7_.Value)</Value>
+                                                    <Value>=LAST(Fields!gdeBalance_7_.Value)</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!gdeBalance_7_Format.Value</Format>
@@ -2154,7 +2154,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!of_itCaption.Value</Value>
+                                                    <Value>=Fields!of_itCaption.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -2188,7 +2188,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!greTCurrencyBuffer__No__.Value</Value>
+                                                    <Value>=Fields!greTCurrencyBuffer__No__.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -2220,7 +2220,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!greTCurrencyBuffer__Balance_after_Posting_.Value</Value>
+                                                    <Value>=Fields!greTCurrencyBuffer__Balance_after_Posting_.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!greTCurrencyBuffer__Balance_after_Posting_Format.Value</Format>
@@ -2253,7 +2253,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value EvaluationMode="Auto">=Fields!greTCurrencyBuffer__Net_Change_in_Jnl__.Value</Value>
+                                                    <Value>=Fields!greTCurrencyBuffer__Net_Change_in_Jnl__.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <Format>=Fields!greTCurrencyBuffer__Net_Change_in_Jnl__Format.Value</Format>
@@ -2419,7 +2419,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!TotalCaption_Control1104000029.Value</Value>
+                                  <Value>=Fields!TotalCaption_Control1104000029.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -2453,7 +2453,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greGLSetup__LCY_Code__Control72.Value</Value>
+                                  <Value>=Fields!greGLSetup__LCY_Code__Control72.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -2485,7 +2485,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greTTotalCurrencyBuffer__Balance_after_Posting_.Value</Value>
+                                  <Value>=Fields!greTTotalCurrencyBuffer__Balance_after_Posting_.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>=Fields!greTTotalCurrencyBuffer__Balance_after_Posting_Format.Value</Format>
@@ -2518,7 +2518,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greTTotalCurrencyBuffer__Net_Change_in_Jnl__.Value</Value>
+                                  <Value>=Fields!greTTotalCurrencyBuffer__Net_Change_in_Jnl__.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>=Fields!greTTotalCurrencyBuffer__Net_Change_in_Jnl__Format.Value</Format>
@@ -2556,7 +2556,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!of_itCaption_Control1104000028.Value</Value>
+                                  <Value>=Fields!of_itCaption_Control1104000028.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -2590,7 +2590,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greTTotalCurrencyBuffer__No__.Value</Value>
+                                  <Value>=Fields!greTTotalCurrencyBuffer__No__.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -2622,7 +2622,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greTTotalCurrencyBuffer__Balance_after_Posting__Control1104000009.Value</Value>
+                                  <Value>=Fields!greTTotalCurrencyBuffer__Balance_after_Posting__Control1104000009.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>=Fields!greTTotalCurrencyBuffer__Balance_after_Posting_Format.Value</Format>
@@ -2655,7 +2655,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greTTotalCurrencyBuffer__Net_Change_in_Jnl___Control1104000005.Value</Value>
+                                  <Value>=Fields!greTTotalCurrencyBuffer__Net_Change_in_Jnl___Control1104000005.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>=Fields!greTTotalCurrencyBuffer__Net_Change_in_Jnl___Control1104000005Format.Value</Format>
@@ -2777,7 +2777,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto" />
+                                  <Value />
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -2809,7 +2809,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!BalanceTCaption1.Value</Value>
+                                  <Value>=Fields!BalanceTCaption1.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -2843,7 +2843,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!BalanceTCaption2.Value</Value>
+                                  <Value>=Fields!BalanceTCaption2.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -2877,7 +2877,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!BalanceTCaption3.Value</Value>
+                                  <Value>=Fields!BalanceTCaption3.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -2911,7 +2911,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!BalanceTCaption4.Value</Value>
+                                  <Value>=Fields!BalanceTCaption4.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -2945,7 +2945,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!BalanceTCaption5.Value</Value>
+                                  <Value>=Fields!BalanceTCaption5.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -2979,7 +2979,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!BalanceTCaption6.Value</Value>
+                                  <Value>=Fields!BalanceTCaption6.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3013,7 +3013,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!BalanceTCaption7.Value</Value>
+                                  <Value>=Fields!BalanceTCaption7.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3052,7 +3052,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greGLSetup__LCY_Code__Control72.Value</Value>
+                                  <Value>=Fields!greGLSetup__LCY_Code__Control72.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3086,7 +3086,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!gdeBalanceT_1_.Value</Value>
+                                  <Value>=Fields!gdeBalanceT_1_.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>=Fields!gdeBalanceT_1_Format.Value</Format>
@@ -3121,7 +3121,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!gdeBalanceT_2_.Value</Value>
+                                  <Value>=Fields!gdeBalanceT_2_.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>=Fields!gdeBalanceT_2_Format.Value</Format>
@@ -3156,7 +3156,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!gdeBalanceT_3_.Value</Value>
+                                  <Value>=Fields!gdeBalanceT_3_.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>=Fields!gdeBalanceT_3_Format.Value</Format>
@@ -3191,7 +3191,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!gdeBalanceT_4_.Value</Value>
+                                  <Value>=Fields!gdeBalanceT_4_.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>=Fields!gdeBalanceT_4_Format.Value</Format>
@@ -3226,7 +3226,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!gdeBalanceT_5_.Value</Value>
+                                  <Value>=Fields!gdeBalanceT_5_.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>=Fields!gdeBalanceT_5_Format.Value</Format>
@@ -3261,7 +3261,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!gdeBalanceT_6_.Value</Value>
+                                  <Value>=Fields!gdeBalanceT_6_.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>=Fields!gdeBalanceT_6_Format.Value</Format>
@@ -3296,7 +3296,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!gdeBalanceT_7_.Value</Value>
+                                  <Value>=Fields!gdeBalanceT_7_.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>=Fields!gdeBalanceT_7_Format.Value</Format>
@@ -3428,7 +3428,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!General_Ledger_SpecificationCaption.Value</Value>
+                                  <Value>=Fields!General_Ledger_SpecificationCaption.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
@@ -3463,7 +3463,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto" />
+                                  <Value />
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3495,7 +3495,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto" />
+                                  <Value />
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3527,7 +3527,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto" />
+                                  <Value />
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3564,7 +3564,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greGLAcc_FIELDCAPTION__No___.Value</Value>
+                                  <Value>=Fields!greGLAcc_FIELDCAPTION__No___.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3597,7 +3597,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greGLAcc_FIELDCAPTION_Name_.Value</Value>
+                                  <Value>=Fields!greGLAcc_FIELDCAPTION_Name_.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3629,7 +3629,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greGLAcc_FIELDCAPTION__Balance_at_Date__.Value</Value>
+                                  <Value>=Fields!greGLAcc_FIELDCAPTION__Balance_at_Date__.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3663,7 +3663,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greGLAcc__Net_Change_Caption.Value</Value>
+                                  <Value>=Fields!greGLAcc__Net_Change_Caption.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3697,7 +3697,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change_Caption.Value</Value>
+                                  <Value>=Fields!greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change_Caption.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3736,7 +3736,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greTGLAccBuffer__No__.Value</Value>
+                                  <Value>=Fields!greTGLAccBuffer__No__.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3769,7 +3769,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greGLAcc_Name.Value</Value>
+                                  <Value>=Fields!greGLAcc_Name.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3794,24 +3794,23 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox23">
+                        <Textbox Name="BalanceToDate_GLAccDetail">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greTGLAccBuffer__Balance_after_Posting_.Value</Value>
+                                  <Value>=Fields!BalanceToDate_GLAccDetail.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
-                                    <Format>=Fields!greTGLAccBuffer__Balance_after_Posting_Format.Value</Format>
+                                    <Format>=Fields!BalanceToDate_GLAccDetailFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox23</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -3827,24 +3826,23 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox53">
+                        <Textbox Name="BalanceToDateByGL_GLAccDetail">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greGLAcc__Net_Change_.Value</Value>
+                                  <Value>=Fields!BalanceToDateByGL_GLAccDetail.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
-                                    <Format>=Fields!greGLAcc__Net_Change_Format.Value</Format>
+                                    <Format>=Fields!BalanceToDateByGL_GLAccDetailFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox53</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -3860,24 +3858,23 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox57">
+                        <Textbox Name="Difference_GLAccDetail">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change_.Value</Value>
+                                  <Value>=Fields!Difference_GLAccDetail.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
-                                    <Format>=Fields!greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change_Format.Value</Format>
+                                    <Format>=Fields!Difference_GLAccDetailFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox57</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -3905,7 +3902,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Fields!TotalCaption_Control1100170003.Value</Value>
+                                  <Value>=Fields!TotalCaption_Control1100170003.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3938,7 +3935,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto" />
+                                  <Value />
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                   </Style>
@@ -3963,24 +3960,23 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox71">
+                        <Textbox Name="SumBalanceToDate_GLAccDetail">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Sum(Fields!greTGLAccBuffer__Balance_after_Posting_.Value)</Value>
+                                  <Value>=Sum(Fields!BalanceToDate_GLAccDetail.Value)</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
-                                    <Format>=Fields!greTGLAccBuffer__Balance_after_Posting_Format.Value</Format>
+                                    <Format>=Fields!BalanceToDate_GLAccDetailFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox71</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -3996,24 +3992,23 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox72">
+                        <Textbox Name="SumBalanceToDateByGL_GLAccDetail">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Sum(Fields!greGLAcc__Net_Change_.Value)</Value>
+                                  <Value>=Sum(Fields!BalanceToDateByGL_GLAccDetail.Value)</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
-                                    <Format>=Fields!greGLAcc__Net_Change_Format.Value</Format>
+                                    <Format>=Fields!BalanceToDateByGL_GLAccDetailFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox72</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -4029,24 +4024,23 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox73">
+                        <Textbox Name="SumDifference_GLAccDetail">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value EvaluationMode="Auto">=Sum(Fields!greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change_.Value)</Value>
+                                  <Value>=Sum(Fields!Difference_GLAccDetail.Value)</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
-                                    <Format>=Fields!greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change_Format.Value</Format>
+                                    <Format>=Fields!Difference_GLAccDetailFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox73</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -4129,7 +4123,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value EvaluationMode="Auto">=Globals!PageNumber</Value>
+                      <Value>=Globals!PageNumber</Value>
                       <Style>
                         <FontSize>7pt</FontSize>
                       </Style>
@@ -4154,7 +4148,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value EvaluationMode="Auto">=User!UserID</Value>
+                      <Value>=User!UserID</Value>
                       <Style>
                         <FontSize>7pt</FontSize>
                       </Style>
@@ -4180,7 +4174,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value EvaluationMode="Auto">=Globals!ExecutionTime</Value>
+                      <Value>=Globals!ExecutionTime</Value>
                       <Style>
                         <FontSize>7pt</FontSize>
                         <Format>g</Format>
@@ -4206,7 +4200,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value EvaluationMode="Auto">=First(Fields!COMPANYNAME.Value, "DataSet_Result")</Value>
+                      <Value>=First(Fields!COMPANYNAME.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>7pt</FontSize>
                       </Style>
@@ -4229,7 +4223,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value EvaluationMode="Auto">=First(Fields!STRSUBSTNO_gtcText000_gteCustDateFilter_.Value, "DataSet_Result")</Value>
+                      <Value>=First(Fields!STRSUBSTNO_gtcText000_gteCustDateFilter_.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>7pt</FontSize>
                       </Style>
@@ -4252,7 +4246,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value EvaluationMode="Auto">=First(Fields!CurrReport_PAGENOCaption.Value, "DataSet_Result")</Value>
+                      <Value>=First(Fields!CurrReport_PAGENOCaption.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>7pt</FontSize>
                       </Style>
@@ -4276,7 +4270,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value EvaluationMode="Auto">=First(Fields!Open_Customer_Entries_at_DateCaption.Value, "DataSet_Result")</Value>
+                      <Value>=First(Fields!Open_Customer_Entries_at_DateCaption.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
                         <FontWeight>Bold</FontWeight>
@@ -4299,7 +4293,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value EvaluationMode="Auto">=First(Fields!gteInfoText.Value, "DataSet_Result")</Value>
+                      <Value>=First(Fields!gteInfoText.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>7pt</FontSize>
                         <FontWeight>Bold</FontWeight>
@@ -4327,7 +4321,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value EvaluationMode="Auto">=First(Fields!Customer_TABLECAPTION__________gteCustFilter.Value, "DataSet_Result")</Value>
+                      <Value>=First(Fields!Customer_TABLECAPTION__________gteCustFilter.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>7pt</FontSize>
                       </Style>
@@ -4354,7 +4348,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value EvaluationMode="Auto">=First(Fields!Cust__Ledger_Entry__TABLECAPTION__________gteLedgerEntryFilter.Value, "DataSet_Result")</Value>
+                      <Value>=First(Fields!Cust__Ledger_Entry__TABLECAPTION__________gteLedgerEntryFilter.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>7pt</FontSize>
                       </Style>
@@ -4385,7 +4379,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=First(Fields!CustomerNoCaption.Value, "DataSet_Result")</Value>
+                          <Value>=First(Fields!CustomerNoCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -4419,7 +4413,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=First(Fields!CustomerNameCaption.Value, "DataSet_Result")</Value>
+                          <Value>=First(Fields!CustomerNameCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -4455,7 +4449,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=First(Fields!CurrencyCodeCaption.Value, "DataSet_Result")</Value>
+                          <Value>=First(Fields!CurrencyCodeCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -4492,7 +4486,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=First(Fields!Original_AmountCaption.Value, "DataSet_Result")</Value>
+                          <Value>=First(Fields!Original_AmountCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -4531,7 +4525,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=First(Fields!RemainingAmountCaption.Value, "DataSet_Result")</Value>
+                          <Value>=First(Fields!RemainingAmountCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -4586,7 +4580,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=first(Fields!PostingDateCaption.Value, "DataSet_Result")</Value>
+                          <Value>=first(Fields!PostingDateCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -4615,7 +4609,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=FIRST(Fields!DocumentTypeCaption.Value, "DataSet_Result")</Value>
+                          <Value>=FIRST(Fields!DocumentTypeCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -4645,7 +4639,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=first(Fields!DocumentNoCaption.Value, "DataSet_Result")</Value>
+                          <Value>=first(Fields!DocumentNoCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -4675,7 +4669,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=first(Fields!DescriptionCaption.Value, "DataSet_Result")</Value>
+                          <Value>=first(Fields!DescriptionCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -4710,7 +4704,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=first(Fields!DueDateCaption.Value, "DataSet_Result")</Value>
+                          <Value>=first(Fields!DueDateCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -4745,7 +4739,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=first(Fields!ginDaysAfterDueCaption.Value, "DataSet_Result")</Value>
+                          <Value>=first(Fields!ginDaysAfterDueCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -4782,7 +4776,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=first(Fields!CurrencyCodeCaption.Value, "DataSet_Result")</Value>
+                          <Value>=first(Fields!CurrencyCodeCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -4817,7 +4811,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=first(Fields!Original_AmountCaption.Value, "DataSet_Result")</Value>
+                          <Value>=first(Fields!Original_AmountCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -4854,7 +4848,7 @@
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value EvaluationMode="Auto">=first(Fields!RemainingAmountCaption.Value, "DataSet_Result")</Value>
+                          <Value>=first(Fields!RemainingAmountCaption.Value, "DataSet_Result")</Value>
                           <Style>
                             <FontSize>7pt</FontSize>
                           </Style>
@@ -5304,41 +5298,23 @@ End Function
         <Field Name="greGLAcc_Name">
           <DataField>greGLAcc_Name</DataField>
         </Field>
-        <Field Name="greTGLAccBuffer__Balance_after_Posting_">
-          <DataField>greTGLAccBuffer__Balance_after_Posting_</DataField>
+        <Field Name="BalanceToDate_GLAccDetail">
+          <DataField>BalanceToDate_GLAccDetail</DataField>
         </Field>
-        <Field Name="greTGLAccBuffer__Balance_after_Posting_Format">
-          <DataField>greTGLAccBuffer__Balance_after_Posting_Format</DataField>
+        <Field Name="BalanceToDate_GLAccDetailFormat">
+          <DataField>BalanceToDate_GLAccDetailFormat</DataField>
         </Field>
-        <Field Name="greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change_">
-          <DataField>greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change_</DataField>
+        <Field Name="Difference_GLAccDetail">
+          <DataField>Difference_GLAccDetail</DataField>
         </Field>
-        <Field Name="greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change_Format">
-          <DataField>greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change_Format</DataField>
+        <Field Name="Difference_GLAccDetailFormat">
+          <DataField>Difference_GLAccDetailFormat</DataField>
         </Field>
-        <Field Name="greGLAcc__Net_Change_">
-          <DataField>greGLAcc__Net_Change_</DataField>
+        <Field Name="BalanceToDateByGL_GLAccDetail">
+          <DataField>BalanceToDateByGL_GLAccDetail</DataField>
         </Field>
-        <Field Name="greGLAcc__Net_Change_Format">
-          <DataField>greGLAcc__Net_Change_Format</DataField>
-        </Field>
-        <Field Name="greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change__Control1100170000">
-          <DataField>greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change__Control1100170000</DataField>
-        </Field>
-        <Field Name="greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change__Control1100170000Format">
-          <DataField>greTGLAccBuffer__Balance_after_Posting____greGLAcc__Net_Change__Control1100170000Format</DataField>
-        </Field>
-        <Field Name="greGLAcc__Net_Change__Control1100170001">
-          <DataField>greGLAcc__Net_Change__Control1100170001</DataField>
-        </Field>
-        <Field Name="greGLAcc__Net_Change__Control1100170001Format">
-          <DataField>greGLAcc__Net_Change__Control1100170001Format</DataField>
-        </Field>
-        <Field Name="greTGLAccBuffer__Balance_after_Posting__Control1100170002">
-          <DataField>greTGLAccBuffer__Balance_after_Posting__Control1100170002</DataField>
-        </Field>
-        <Field Name="greTGLAccBuffer__Balance_after_Posting__Control1100170002Format">
-          <DataField>greTGLAccBuffer__Balance_after_Posting__Control1100170002Format</DataField>
+        <Field Name="BalanceToDateByGL_GLAccDetailFormat">
+          <DataField>BalanceToDateByGL_GLAccDetailFormat</DataField>
         </Field>
         <Field Name="General_Ledger_SpecificationCaption">
           <DataField>General_Ledger_SpecificationCaption</DataField>

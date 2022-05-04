@@ -22,6 +22,6 @@ codeunit 8897 "Email Error Handler"
             Commit();
         end;
 
-        Email.OnAfterSendEmail(Rec."Message Id", false);
+        Email.OnAfterEmailSendFailed(Rec);
     end;
 }

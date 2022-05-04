@@ -1,6 +1,6 @@
 pageextension 1700 SalesReceivablesSetupExt extends "Sales & Receivables Setup"
 {
-    Caption = 'Sales & Receivales Setup';
+    Caption = 'Sales & Receivables Setup';
 
     layout
     {

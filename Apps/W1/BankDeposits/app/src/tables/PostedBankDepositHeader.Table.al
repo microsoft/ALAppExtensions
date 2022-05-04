@@ -153,6 +153,8 @@ table 1691 "Posted Bank Deposit Header"
     var
         PostedBankDepositDelete: Codeunit "Posted Bank Deposit-Delete";
         DimensionManagement: Codeunit DimensionManagement;
+        UnableToFindGLRegisterErr: Label 'Cannot find a G/L Register for the selected posted bank deposit.';
+        UnableToFindGLRegisterTelemetryErr: Label 'Cannot find a G/L Register for the selected posted bank deposit %1.', Locked = true;
 
     [Scope('OnPrem')]
     procedure FindEntries()
@@ -176,10 +178,61 @@ table 1691 "Posted Bank Deposit Header"
         Page.Run(Page::"Bank Account Ledger Entries", TempBankAccountLedgerEntry);
     end;
 
+    // no commits during the method execution. if one line fails to reverse, reversal of lines before it must not be committed
+    [CommitBehavior(CommitBehavior::Ignore)]
+    internal procedure ReverseTransactions(): Boolean
+    var
+        ReversalEntry: Record "Reversal Entry";
+        Attributes: Dictionary of [Text, Text];
+        GLRegNo: Integer;
+    begin
+        OnBeforeUndoPostedBankDeposit(Rec);
+
+        if not FindGLRegisterNo(GLRegNo) then begin
+            Attributes.Add('Posted Bank Deposit No.', "No.");
+            Session.LogMessage('0000GXF', UnableToFindGLRegisterTelemetryErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, Attributes);
+            Error(UnableToFindGLRegisterErr);
+        end;
+
+        ReversalEntry.ReverseRegister(GLRegNo);
+        OnAfterUndoPostedBankDeposit(Rec);
+        exit(true);
+    end;
+
+    internal procedure FindGLRegisterNo(var GLRegNo: Integer): Boolean
+    var
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
+        GLRegister: Record "G/L Register";
+    begin
+        PostedBankDepositLine.SetRange("Bank Deposit No.", "No.");
+        if not PostedBankDepositLine.FindFirst() then
+            exit(false);
+
+        GLRegister.SetFilter("From Entry No.", '<=' + Format(PostedBankDepositLine."Entry No."));
+        GLRegister.SetFilter("To Entry No.", '>=' + Format(PostedBankDepositLine."Entry No."));
+
+        if not GLRegister.FindFirst() then
+            exit(false);
+
+        GLRegNo := GLRegister."No.";
+        exit(true);
+    end;
+
     [Scope('OnPrem')]
     procedure ShowDocDim()
     begin
         DimensionManagement.ShowDimensionSet("Dimension Set ID", TableCaption() + ' ' + "No.");
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUndoPostedBankDeposit(var PostedBankDepositHeader: Record "Posted Bank Deposit Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUndoPostedBankDeposit(var PostedBankDepositHeader: Record "Posted Bank Deposit Header")
+    begin
+    end;
+
 }
 

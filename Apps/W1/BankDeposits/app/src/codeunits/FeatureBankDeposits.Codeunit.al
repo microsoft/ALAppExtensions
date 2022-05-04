@@ -24,7 +24,7 @@ codeunit 1698 "Feature Bank Deposits" implements "Feature Data Update"
         TaskDescription := DescriptionTxt;
     end;
 
-
+#if not CLEAN21
     [EventSubscriber(ObjectType::Table, Database::"Feature Data Update Status", 'OnAfterModifyEvent', '', false, false)]
     local procedure OnAfterFeatureDataUpdateStatusModify(var Rec: Record "Feature Data Update Status")
     var
@@ -38,6 +38,7 @@ codeunit 1698 "Feature Bank Deposits" implements "Feature Data Update"
             EnableFeature();
     end;
 
+    [Obsolete('Bank Deposits feature will be enabled by default', '21.0')]
     procedure EnableFeature()
     var
         DepositsPageMgt: Codeunit "Deposits Page Mgt.";
@@ -53,6 +54,7 @@ codeunit 1698 "Feature Bank Deposits" implements "Feature Data Update"
         Commit();
     end;
 
+    [Obsolete('Bank Deposits feature will be enabled by default', '21.0')]
     procedure DisableFeature()
     var
         BankDepositFeatureMgt: Codeunit "Bank Deposit Feature Mgt.";
@@ -61,6 +63,7 @@ codeunit 1698 "Feature Bank Deposits" implements "Feature Data Update"
         Commit();
     end;
 
+    [Obsolete('Bank Deposits feature will be enabled by default', '21.0')]
     procedure OpenPageGuard()
     var
         BankDepositFeatureMgt: Codeunit "Bank Deposit Feature Mgt.";
@@ -70,25 +73,29 @@ codeunit 1698 "Feature Bank Deposits" implements "Feature Data Update"
         PromptFeatureBlockingOpen();
     end;
 
+    [Obsolete('Bank Deposits feature will be enabled by default', '21.0')]
     procedure PromptFeatureBlockingOpen()
     var
         DepositsPageMgt: Codeunit "Deposits Page Mgt.";
     begin
         if not DepositsPageMgt.PromptDepositFeature() then
             Error(FeatureDisabledErr);
-        Error(ReopenAfterEnabledMsg);
+        Error('');
     end;
 
+    [Obsolete('Bank Deposits feature will be enabled by default', '21.0')]
     procedure ShouldSeePostedBankDeposits(): Boolean
     var
         PostedBankDepositHeader: Record "Posted Bank Deposit Header";
         BankDepositFeatureMgt: Codeunit "Bank Deposit Feature Mgt.";
     begin
-        exit(BankDepositFeatureMgt.IsEnabled() or (not PostedBankDepositHeader.IsEmpty()))
+        exit(BankDepositFeatureMgt.IsEnabled() or (not PostedBankDepositHeader.IsEmpty()));
     end;
+#endif
 
     var
         DescriptionTxt: Label 'Feature: Use standardized bank deposits.';
+#if not CLEAN21
         FeatureDisabledErr: Label 'This page cannot be used because the Bank Deposits feature is not switched on.';
-        ReopenAfterEnabledMsg: Label 'Reopen this page once you have switched on this capability in the Feature Management page: Standardized bank reconciliation and deposits.';
+#endif
 }

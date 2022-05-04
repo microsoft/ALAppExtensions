@@ -36,6 +36,7 @@ page 1360 "MS - WorldPay Standard Setup"
                         trigger OnValidate()
                         begin
                             VALIDATE("Account ID", DELCHR("Account ID", '<>'));
+                            FeatureTelemetry.LogUptake('0000H7W', 'WorldPay Payments Standard', Enum::"Feature Uptake Status"::"Set up");
                         end;
                     }
                     field(Enabled; Enabled)
@@ -142,6 +143,7 @@ page 1360 "MS - WorldPay Standard Setup"
     var
         MSWorldPayStandardMgt: Codeunit "MS - WorldPay Standard Mgt.";
     begin
+        FeatureTelemetry.LogUptake('0000H7X', 'WorldPay Payments Standard', Enum::"Feature Uptake Status"::Discovered);
         MSWorldPayStandardMgt.GetTemplate(MSWorldPayStdTemplate);
         MSWorldPayStdTemplate.RefreshLogoIfNeeded();
     end;
@@ -158,6 +160,7 @@ page 1360 "MS - WorldPay Standard Setup"
 
     var
         MSWorldPayStdTemplate: Record "MS - WorldPay Std. Template";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TargetURL: Text;
         TermsOfServiceEditable: Boolean;
         EnableServiceQst: Label 'The %1 is not enabled. Are you sure you want to exit?', Comment = '%1 = pagecaption (WorldPay Payments Standard Setup)';

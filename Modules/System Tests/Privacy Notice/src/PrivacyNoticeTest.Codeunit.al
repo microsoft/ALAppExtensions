@@ -7,7 +7,7 @@ codeunit 132535 "Privacy Notice Test"
         LibraryAssert: Codeunit "Library Assert";
         PrivacyNoticeInterface: Codeunit "Privacy Notice";
         PermissionsMock: Codeunit "Permissions Mock";
-        ShowPrivacyNotice: Boolean;
+        AllowShowingPrivacyNotice: Boolean;
         MessageReceived: Text[1024];
         AdminDisabledIntegrationMsg: Label 'Your admin has disabled the integration with %1, please contact your administrator to approve this integration.', Comment = '%1 = a service name such as Microsoft Teams';
         PrivacyPermissionSetAdminTxt: Label 'Priv. Notice - Admin', Locked = true;
@@ -127,6 +127,7 @@ codeunit 132535 "Privacy Notice Test"
         PrivacyNoticeTest: Codeunit "Privacy Notice Test";
     begin
         Init();
+        Commit(); // Write transaction started above
         PermissionsMock.Set(PrivacyPermissionSetAdminTxt);
 
         // [GIVEN] The default privacy notice does not exist
@@ -180,8 +181,76 @@ codeunit 132535 "Privacy Notice Test"
 
         // [WHEN] The admin triggers the privacy approval again
         // [THEN] The privacy notice dialog does not appear and it has been approved
-        ShowPrivacyNotice := false;
+        AllowShowingPrivacyNotice := false;
         LibraryAssert.IsTrue(PrivacyNoticeInterface.ConfirmPrivacyNoticeApproval(PrivacyNoticeName), 'The privacy notice approval was not saved.');
+    end;
+
+    [Test]
+    [HandlerFunctions('AcceptPrivacyNotice')]
+    procedure NoPrivacyNoticeInEvalCompany()
+    var
+        PrivacyNoticeName: Text[50];
+    begin
+        // [Scenario] Confirm that a privacy notice is by default Agreed to in Eval company but not in non-Eval company
+        Init();
+        PermissionsMock.Set(PrivacyPermissionSetAdminTxt);
+
+        // [GIVEN] A privacy notice
+        PrivacyNoticeName := 'NoPrivacyNoticeInEvalCompany';
+        PrivacyNoticeInterface.CreatePrivacyNotice(PrivacyNoticeName, PrivacyNoticeName);
+
+        // [GIVEN] We are in an evaluation company
+        PermissionsMock.ClearAssignments();
+        SetEvaluationCompany(true);
+        PermissionsMock.Set(PrivacyPermissionSetAdminTxt);
+
+        // [THEN] The status of the privacy notice is by default Agreed
+        LibraryAssert.AreEqual("Privacy Notice Approval State"::Agreed, PrivacyNoticeInterface.GetPrivacyNoticeApprovalState(PrivacyNoticeName), 'The privacy notice was not agreed to');
+        
+        // [WHEN] A privacy notice checked
+        // [THEN] The privacy notice is automatically approved without any UI
+        AllowShowingPrivacyNotice := false;
+        LibraryAssert.IsTrue(PrivacyNoticeInterface.ConfirmPrivacyNoticeApproval(PrivacyNoticeName), 'The privacy notice was not auto-approved');
+
+        // [GIVEN] We are in a non-evaluation company
+        PermissionsMock.ClearAssignments();
+        SetEvaluationCompany(false);
+        PermissionsMock.Set(PrivacyPermissionSetAdminTxt);
+        
+        // [THEN] The status of the privacy notice is by default "Not set"
+        LibraryAssert.AreEqual("Privacy Notice Approval State"::"Not set", PrivacyNoticeInterface.GetPrivacyNoticeApprovalState(PrivacyNoticeName), 'The privacy notice was not agreed to');
+        
+        // [WHEN] The privacy notice checked
+        // [THEN] The privacy notice is shown to the user (Handler function)
+        AllowShowingPrivacyNotice := true;
+        LibraryAssert.IsTrue(PrivacyNoticeInterface.ConfirmPrivacyNoticeApproval(PrivacyNoticeName), 'The privacy notice was not approved');
+    end;
+
+    [Test]
+    [HandlerFunctions('AcceptPrivacyNotice')]
+    procedure PrivacyNoticeShownIfDisagreedInEvalCompany()
+    var
+        PrivacyNoticeName: Text[50];
+    begin
+        Init();
+        PermissionsMock.Set(PrivacyPermissionSetAdminTxt);
+
+        // [GIVEN] A privacy notice that has been disagreed
+        PrivacyNoticeName := 'PrivacyNoticeShownIfDisagreedInEvalCompany';
+        PrivacyNoticeInterface.CreatePrivacyNotice(PrivacyNoticeName, PrivacyNoticeName);
+        PrivacyNoticeInterface.SetApprovalState(PrivacyNoticeName, "Privacy Notice Approval State"::Disagreed);
+
+        // [GIVEN] We are in an evaluation company
+        PermissionsMock.ClearAssignments();
+        SetEvaluationCompany(true);
+        PermissionsMock.Set(PrivacyPermissionSetAdminTxt);
+
+        // [THEN] The status of the privacy notice is disagreed
+        LibraryAssert.AreEqual("Privacy Notice Approval State"::Disagreed, PrivacyNoticeInterface.GetPrivacyNoticeApprovalState(PrivacyNoticeName), 'The privacy notice was not agreed to');
+        
+        // [WHEN] The privacy notice checked
+        // [THEN] The privacy notice is shown to the admin since it is currently disagreed to (Handler function)
+        LibraryAssert.IsTrue(PrivacyNoticeInterface.ConfirmPrivacyNoticeApproval(PrivacyNoticeName), 'The privacy notice was not approved');
     end;
     
     [Test]
@@ -216,7 +285,7 @@ codeunit 132535 "Privacy Notice Test"
 
         // [WHEN] The user triggers the privacy approval again
         // [THEN] The privacy notice dialog does not appear and it has been approved
-        ShowPrivacyNotice := false;
+        AllowShowingPrivacyNotice := false;
         LibraryAssert.IsTrue(PrivacyNoticeInterface.ConfirmPrivacyNoticeApproval(PrivacyNoticeName), 'The privacy notice approval was not saved.');
     end;
     
@@ -283,7 +352,7 @@ codeunit 132535 "Privacy Notice Test"
         // [WHEN] The user triggers the privacy approval
         // [THEN] The privacy notice dialog does not appear, a message appears explaining the approval was rejected and returns false
         PermissionsMock.Set(PrivacyPermissionSetViewTxt);
-        ShowPrivacyNotice := false;
+        AllowShowingPrivacyNotice := false;
         LibraryAssert.IsFalse(PrivacyNoticeInterface.ConfirmPrivacyNoticeApproval(PrivacyNoticeName), 'The privacy notice request should have been rejected.');
         LibraryAssert.AreEqual(StrSubstNo(AdminDisabledIntegrationMsg, PrivacyNoticeName), MessageReceived, 'Wrong message was received upon calling privacy approval.');
     end;
@@ -426,21 +495,31 @@ codeunit 132535 "Privacy Notice Test"
 
     local procedure Init()
     begin
-        ShowPrivacyNotice := true;
+        SetEvaluationCompany(false);
+        AllowShowingPrivacyNotice := true;
         Clear(MessageReceived);
+    end;
+
+    local procedure SetEvaluationCompany(EvaluationCompany: Boolean)
+    var
+        Company: Record Company;
+    begin
+        Company.Get(CompanyName());
+        Company."Evaluation Company" := EvaluationCompany;
+        Company.Modify();
     end;
 
     [ModalPageHandler]
     procedure AcceptPrivacyNotice(var PrivacyNotice: TestPage "Privacy Notice")
     begin
-        LibraryAssert.IsTrue(ShowPrivacyNotice, 'Accept privacy notice ModalPageHandler should not have been called!');
+        LibraryAssert.IsTrue(AllowShowingPrivacyNotice, 'Accept privacy notice ModalPageHandler should not have been called!');
         PrivacyNotice.Accept.Invoke();
     end;
 
     [ModalPageHandler]
     procedure RejectPrivacyNotice(var PrivacyNotice: TestPage "Privacy Notice")
     begin
-        LibraryAssert.IsTrue(ShowPrivacyNotice, 'Reject privacy notice ModalPageHandler should not have been called!');
+        LibraryAssert.IsTrue(AllowShowingPrivacyNotice, 'Reject privacy notice ModalPageHandler should not have been called!');
         PrivacyNotice.Reject.Invoke();
     end;
 
