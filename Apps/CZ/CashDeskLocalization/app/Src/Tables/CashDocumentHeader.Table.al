@@ -1029,6 +1029,7 @@ table 11732 "Cash Document Header CZP"
     var
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDeskRepSelectionsCZP: Record "Cash Desk Rep. Selections CZP";
+        IsHandled: Boolean;
     begin
         TestField("Document Type");
         CashDocumentHeaderCZP.Copy(Rec);
@@ -1038,6 +1039,12 @@ table 11732 "Cash Document Header CZP"
             CashDocumentHeaderCZP."Document Type"::Withdrawal:
                 CashDeskRepSelectionsCZP.SetRange(Usage, CashDeskRepSelectionsCZP.Usage::"Cash Withdrawal");
         end;
+
+        IsHandled := false;
+        OnPrintRecordsOnBeforeFilterAndPrintReports(CashDeskRepSelectionsCZP, CashDocumentHeaderCZP, ShowRequestForm, IsHandled);
+        if IsHandled then
+            exit;
+
         CashDeskRepSelectionsCZP.SetFilter("Report ID", '<>0');
         CashDeskRepSelectionsCZP.FindSet();
         repeat
@@ -1363,6 +1370,11 @@ table 11732 "Cash Document Header CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCalculateRoundingAmount(CashDocumentHeaderCZP: Record "Cash Document Header CZP"; RoundingMethod: Record "Rounding Method"; var RoundingAmount: Decimal);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnPrintRecordsOnBeforeFilterAndPrintReports(var CashDeskRepSelectionsCZP: Record "Cash Desk Rep. Selections CZP"; CashDocumentHeaderCZP: Record "Cash Document Header CZP"; ShowRequestForm: Boolean; var IsHandled: Boolean);
     begin
     end;
 }

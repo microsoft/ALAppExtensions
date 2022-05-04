@@ -102,7 +102,6 @@ codeunit 11421 "Create Elec. Tax Declaration"
         DigitalTaxDeclMgt.AddInstallationDistanceSalesWithinTheEC(TempNameValueBufferAmtCode);
         AddAmount(RootElement, VATStatementReportLine, TempNameValueBufferAmtCode.Name, TempNameValueBufferAmtCode.Value);
         AddContextElement(RootElement, 'MessageReferenceSupplierVAT', VATReportHeader."Additional Information");
-        DigitalTaxDeclMgt.AddSmallEntrepreneurProvisionReduction(TempNameValueBufferAmtCode);
         AddAmount(RootElement, VATStatementReportLine, TempNameValueBufferAmtCode.Name, TempNameValueBufferAmtCode.Value);
         AddContextElement(RootElement, 'SoftwarePackageName', 'Microsoft Dynamics NAV');
         AddContextElement(

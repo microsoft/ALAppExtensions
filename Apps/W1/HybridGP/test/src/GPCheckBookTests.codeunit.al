@@ -7,12 +7,12 @@ codeunit 139700 "GP Checkbook Tests"
     TestPermissions = Disabled;
 
     var
-        Assert: Codeunit Assert;
         GPCheckbookMSTRTable: Record "GP Checkbook MSTR";
         BankAccountPostingGroup: Record "Bank Account Posting Group";
         GPCompanyMigrationSettings: Record "GP Company Migration Settings";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         BankAccount: Record "Bank Account";
+        Assert: Codeunit Assert;
         InvalidBankAccountMsg: Label '%1 should not have been created.', Comment = '%1 - bank account no.', Locked = true;
         MissingBankAccountMsg: Label '%1 should have been created.', Comment = '%1 - bank account no.', Locked = true;
 
@@ -21,7 +21,6 @@ codeunit 139700 "GP Checkbook Tests"
     procedure TestGPCheckbookMigrationIncludeInactive()
     var
         BankAccount: Record "Bank Account";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] CheckBooks are migrated from GP
         // [GIVEN] There are no records in the BankAcount table
@@ -45,7 +44,6 @@ codeunit 139700 "GP Checkbook Tests"
     procedure TestGPCheckbookMigrationExcludeInactive()
     var
         BankAccount: Record "Bank Account";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] CheckBooks are migrated from GP
         // [GIVEN] There are no records in the BankAcount table

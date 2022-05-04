@@ -12,7 +12,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
 
     var
         Assert: Codeunit "Assert";
-        SalesInvLinesE2E: Codeunit "APIV2 - Sales Inv. Lines E2E";
+        APIV2SalesInvLinesE2E: Codeunit "APIV2 - Sales Inv. Lines E2E";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryInventory: Codeunit "Library - Inventory";
@@ -83,7 +83,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         LineNo := SalesLine."Line No.";
 
         // [WHEN] we GET all the lines with the credit memo ID from the web service
-        TargetURL := SalesInvLinesE2E.GetLinesURL(SalesLine.SystemId, Page::"APIV2 - Sales Credit Memos", CreditMemoServiceNameTxt, CreditMemoServiceLinesNameTxt);
+        TargetURL := APIV2SalesInvLinesE2E.GetLinesURL(SalesLine.SystemId, Page::"APIV2 - Sales Credit Memos", CreditMemoServiceNameTxt, CreditMemoServiceLinesNameTxt);
         LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
 
         // [THEN] the line returned should be valid (numbers and integration id)
@@ -146,7 +146,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         LineNo2 := Format(SalesLine."Line No.");
 
         // [WHEN] we GET all the lines with the credit memo ID from the web service
-        TargetURL := SalesInvLinesE2E.GetLinesURLWithDocumentIdFilter(CreditMemoId, Page::"APIV2 - Sales Credit Memos", CreditMemoServiceNameTxt, CreditMemoServiceLinesNameTxt);
+        TargetURL := APIV2SalesInvLinesE2E.GetLinesURLWithDocumentIdFilter(CreditMemoId, Page::"APIV2 - Sales Credit Memos", CreditMemoServiceNameTxt, CreditMemoServiceLinesNameTxt);
         LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
 
         // [THEN] the lines returned should be valid (numbers and integration ids)
@@ -298,7 +298,6 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         ResponseText: Text;
         TargetURL: Text;
         CreditMemoLineJSON: Array[2] of Text;
-        LineNo: Integer;
         CreditMemoId: Text;
         NewSequence: Integer;
     begin
@@ -310,7 +309,6 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         SalesLine.SetRange("Document Type", SalesHeader."Document Type"::"Credit Memo");
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.FindFirst();
-        LineNo := SalesLine."Line No.";
 
         NewSequence := SalesLine."Line No." + 1;
         CreditMemoLineJSON[1] := LibraryGraphMgt.AddPropertytoJSON('', 'sequence', NewSequence);
@@ -323,7 +321,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
             CreditMemoId,
             Page::"APIV2 - Sales Credit Memos",
             CreditMemoServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, CreditMemoServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, CreditMemoServiceLinesNameTxt));
         asserterror LibraryGraphMgt.PatchToWebService(TargetURL, CreditMemoLineJSON[1], ResponseText);
 
         TargetURL := LibraryGraphMgt
@@ -331,7 +329,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
             CreditMemoId,
             Page::"APIV2 - Sales Credit Memos",
             CreditMemoServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, CreditMemoServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(SalesLine.SystemId, CreditMemoServiceLinesNameTxt));
         asserterror LibraryGraphMgt.PatchToWebService(TargetURL, CreditMemoLineJSON[2], ResponseText);
     end;
 
@@ -788,7 +786,6 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         SalesHeader: Record "Sales Header";
         GLAccount: Record "G/L Account";
         SalesLine: Record "Sales Line";
-        IntegrationManagement: Codeunit "Integration Management";
         ResponseText: Text;
         CreditMemoLineJSON: Text;
         CreditMemoID: Text;
@@ -801,7 +798,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         FindFirstSalesLine(SalesHeader, SalesLine);
 
         GetGLAccount(GLAccount, SalesLine);
-        CreditMemoLineJSON := StrSubstNo('{"accountId":"%1"}', IntegrationManagement.GetIdWithoutBrackets(GLAccount.SystemId));
+        CreditMemoLineJSON := StrSubstNo('{"accountId":"%1"}', LibraryGraphMgt.StripBrackets(GLAccount.SystemId));
 
         // [WHEN] we PATCH the line
         ModifyCreditMemoLinesThroughAPI(CreditMemoID, SalesLine.SystemId, CreditMemoLineJSON, ResponseText);
@@ -820,7 +817,6 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         SalesHeader: Record "Sales Header";
         Item: Record "Item";
         SalesLine: Record "Sales Line";
-        IntegrationManagement: Codeunit "Integration Management";
         ExpectedNumberOfLines: Integer;
         ResponseText: Text;
         CreditMemoLineJSON: Text;
@@ -830,7 +826,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         // [GIVEN] An unposted credit memo with lines and a valid JSON describing the fields that we want to change
         Initialize();
         CreateCreditMemoWithDifferentLineTypes(SalesHeader, ExpectedNumberOfLines);
-        CreditMemoLineID := IntegrationManagement.GetIdWithoutBrackets(SalesHeader.SystemId);
+        CreditMemoLineID := LibraryGraphMgt.StripBrackets(SalesHeader.SystemId);
         SalesLine.SetRange(Type, SalesLine.Type::"Fixed Asset");
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.SetRange("Document Type", SalesHeader."Document Type");
@@ -840,7 +836,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         Assert.AreNotEqual('', CreditMemoLineID, 'ID should not be empty');
         LibraryInventory.CreateItem(Item);
 
-        CreditMemoLineJSON := StrSubstNo('{"itemId":"%1"}', IntegrationManagement.GetIdWithoutBrackets(Item.SystemId));
+        CreditMemoLineJSON := StrSubstNo('{"itemId":"%1"}', LibraryGraphMgt.StripBrackets(Item.SystemId));
         Commit();
 
         // [WHEN] we PATCH the line
@@ -931,9 +927,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         Item2: Record "Item";
         ItemVariant: Record "Item Variant";
         SalesHeader: Record "Sales Header";
-        ItemNo1: Code[20];
         ItemNo2: Code[20];
-        ItemVariantCode: Code[10];
         ResponseText: Text;
         CreditMemoLineJSON: Text;
         CreditMemoID: Text;
@@ -942,9 +936,9 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         // [GIVEN] An existing unposted credit memo and a valid JSON describing the new credit memo line with item variant
         Initialize();
         CreditMemoID := CreateSalesCreditMemoWithLines(SalesHeader);
-        ItemNo1 := LibraryInventory.CreateItem(Item1);
+        LibraryInventory.CreateItem(Item1);
         ItemNo2 := LibraryInventory.CreateItem(Item2);
-        ItemVariantCode := LibraryInventory.CreateItemVariant(ItemVariant, ItemNo2);
+        LibraryInventory.CreateItemVariant(ItemVariant, ItemNo2);
         Commit();
 
         // [WHEN] we POST the JSON to the web service
@@ -1003,10 +997,9 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
     [Normal]
     local procedure CreateCreditMemoLineJSON(ItemId: Guid; Quantity: Integer; ShipmentDate: Date): Text
     var
-        IntegrationManagement: Codeunit "Integration Management";
         LineJSON: Text;
     begin
-        LineJSON := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', IntegrationManagement.GetIdWithoutBrackets(ItemId));
+        LineJSON := LibraryGraphMgt.AddPropertytoJSON('', 'itemId', LibraryGraphMgt.StripBrackets(ItemId));
         LineJSON := LibraryGraphMgt.AddComplexTypetoJSON(LineJSON, 'quantity', Format(Quantity));
         LineJSON := LibraryGraphMgt.AddPropertytoJSON(LineJSON, 'shipmentDate', ShipmentDate);
 
@@ -1015,11 +1008,10 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
 
     local procedure CreateCreditMemoLineJSONWithItemVariantId(ItemId: Guid; Quantity: Integer; ShipmentDate: Date; ItemVariantId: Guid): Text
     var
-        IntegrationManagement: Codeunit "Integration Management";
         LineJSON: Text;
     begin
         LineJSON := CreateCreditMemoLineJSON(ItemId, Quantity, ShipmentDate);
-        LineJSON := LibraryGraphMgt.AddPropertytoJSON(LineJSON, 'itemVariantId', IntegrationManagement.GetIdWithoutBrackets(ItemVariantId));
+        LineJSON := LibraryGraphMgt.AddPropertytoJSON(LineJSON, 'itemVariantId', LibraryGraphMgt.StripBrackets(ItemVariantId));
         exit(LineJSON);
     end;
 
@@ -1074,7 +1066,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
             CreditMemoID,
             Page::"APIV2 - Sales Credit Memos",
             CreditMemoServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(LineId, CreditMemoServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(LineId, CreditMemoServiceLinesNameTxt));
         LibraryGraphMgt.PatchToWebService(TargetURL, CreditMemoLineJSON, ResponseText);
     end;
 
@@ -1087,7 +1079,7 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
             CreditMemoID,
             Page::"APIV2 - Sales Credit Memos",
             CreditMemoServiceNameTxt,
-            SalesInvLinesE2E.GetLineSubURL(LineId, CreditMemoServiceLinesNameTxt));
+            APIV2SalesInvLinesE2E.GetLineSubURL(LineId, CreditMemoServiceLinesNameTxt));
         LibraryGraphMgt.DeleteFromWebService(TargetURL, '', ResponseText);
     end;
 
@@ -1150,13 +1142,12 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
 
     local procedure VerifyIdsAreBlank(JsonObjectTxt: Text)
     var
-        IntegrationManagement: Codeunit "Integration Management";
         itemId: Text;
         accountId: Text;
         ExpectedId: Text;
         BlankGuid: Guid;
     begin
-        ExpectedId := IntegrationManagement.GetIdWithoutBrackets(BlankGuid);
+        ExpectedId := LibraryGraphMgt.StripBrackets(BlankGuid);
 
         Assert.IsTrue(LibraryGraphMgt.GetPropertyValueFromJSON(JsonObjectTxt, 'itemId', itemId), 'Could not find itemId');
         Assert.IsTrue(LibraryGraphMgt.GetPropertyValueFromJSON(JsonObjectTxt, 'accountId', accountId), 'Could not find accountId');

@@ -20,6 +20,7 @@ codeunit 1993 "Checklist Implementation"
         ChecklistItemDeletedLbl: Label 'Checklist item deleted.', Locked = true;
         ChangeBannerVisibilityLbl: Label 'Looking for your checklist to set up Business Central?';
         UserResurfacedBannerLbl: Label 'Checklist banner resurfaced.', Locked = true;
+        UserResurfacedBannerNewSessionLbl: Label 'Checklist banner resurfaced, new session requested.', Locked = true;
         ChecklistInitializedLbl: Label 'Checklist banner initialized.', Locked = true;
         MicrosoftLearnLongTitleLbl: Label 'Find training on Microsoft Learn', MaxLength = 53, Comment = '*Onboarding Checklist*';
         MicrosoftLearnShortTitleLbl: Label 'Microsoft Learn', MaxLength = 34, Comment = '*Onboarding Checklist*';
@@ -255,6 +256,11 @@ codeunit 1993 "Checklist Implementation"
     end;
 
     procedure SetChecklistVisibility(UserName: Text; Visible: Boolean)
+    begin
+        SetChecklistVisibility(UserName, Visible, false);
+    end;
+
+    procedure SetChecklistVisibility(UserName: Text; Visible: Boolean; SessionUpdateRequired: Boolean)
     var
         UserPersonalization: Record "User Personalization";
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
@@ -267,9 +273,12 @@ codeunit 1993 "Checklist Implementation"
 
             GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
             GuidedExperienceImpl.AddRoleDimension(Dimensions, UserPersonalization);
-            Session.LogMessage('0000EIS', UserResurfacedBannerLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
 
-            SessionSettings.RequestSessionUpdate(false);
+            If SessionUpdateRequired then begin
+                SessionSettings.RequestSessionUpdate(false);
+                Session.LogMessage('0000EIU', UserResurfacedBannerNewSessionLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
+            end else
+                Session.LogMessage('0000EIS', UserResurfacedBannerLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
         end;
     end;
 

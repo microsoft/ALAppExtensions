@@ -50,6 +50,13 @@ page 4751 "Recommended App Card"
         }
     }
 
+    trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        FeatureTelemetry.LogUptake('0000H7T', 'Recommended Apps', Enum::"Feature Uptake Status"::"Set up");
+    end;
+
     var
         RecommendedApps: Codeunit "Recommended Apps";
 }

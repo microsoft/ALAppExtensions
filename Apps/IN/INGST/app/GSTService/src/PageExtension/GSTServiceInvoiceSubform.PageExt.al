@@ -54,8 +54,13 @@ pageextension 18443 "GST Service Invoice Subform" extends "Service Invoice Subfo
             field("GST Place Of Supply"; Rec."GST Place Of Supply")
             {
                 ApplicationArea = Basic, Suite;
-                Editable = false;
+                Editable = true;
                 ToolTip = 'Specifies on which location state code system should consider for GST calculation in case of sale of product or service.';
+
+                trigger OnValidate()
+                begin
+                    CalculateTax.CallTaxEngineOnServiceLine(Rec, xRec);
+                end;
             }
             field("GST Group Type"; Rec."GST Group Type")
             {

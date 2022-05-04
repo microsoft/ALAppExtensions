@@ -13,6 +13,7 @@ codeunit 10539 "MTD Install"
         NoSeriesDescTxt: Label 'VAT Return Periods';
         VATReturnPeriodStartTxt: Label 'VATPER-0001', Locked = true;
         VATReturnPeriodEndTxt: Label 'VATPER-9999', Locked = true;
+        PeriodDateFormulaTxt: Label '<%1D>', Locked = true;
 
     trigger OnInstallAppPerCompany()
     var
@@ -131,6 +132,7 @@ codeunit 10539 "MTD Install"
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD OAuth Setup Option"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD Gov Test Scenario"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD Enabled"));
+        DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD FP Public IP Service URL"));
 #if not CLEAN19
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD Disable FraudPrev. Headers"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Report Setup", VATReportSetup.FieldNo("MTD FP WinClient Due DateTime"));
@@ -257,7 +259,7 @@ codeunit 10539 "MTD Install"
             if IsPeriodReminderCalculation() or ("Period Reminder Time" = 0) then
                 exit(false);
 
-            DateFormulaText := StrSubstNo('<%1D>', "Period Reminder Time");
+            DateFormulaText := StrSubstNo(PeriodDateFormulaTxt, "Period Reminder Time");
             Evaluate("Period Reminder Calculation", DateFormulaText);
             "Period Reminder Time" := 0;
             exit(true);

@@ -10,5 +10,6 @@ PermissionSet 9013 "User Login Times - View"
 
     IncludedPermissionSets = "User Login Times - Read";
 
-    Permissions = tabledata "User Login" = im;
+    Permissions = tabledata "User Environment Login" = i,
+                  tabledata "User Login" = im;
 }

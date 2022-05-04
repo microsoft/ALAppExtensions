@@ -5,6 +5,7 @@
 
 codeunit 134692 "Email E2E Tests"
 {
+    EventSubscriberInstance = Manual;
     SubType = Test;
     Permissions = tabledata "Email Message" = rid,
                   tabledata "Email Message Attachment" = r,
@@ -18,6 +19,7 @@ codeunit 134692 "Email E2E Tests"
         Assert: Codeunit "Library Assert";
         PermissionsMock: Codeunit "Permissions Mock";
         Email: Codeunit Email;
+        EmailE2ETests: Codeunit "Email E2E Tests";
         EmailWasQueuedForSendingMsg: Label 'The message was queued for sending.';
         FromDisplayNameLbl: Label '%1 (%2)', Comment = '%1 - Account Name, %2 - Email address', Locked = true;
 
@@ -292,7 +294,6 @@ codeunit 134692 "Email E2E Tests"
         Editor: TestPage "Email Editor";
     begin
         // [SCENARIO] A new email message can be create in the email editor page from the Accouns page
-
         // [GIVEN] A connector is installed and an account is added
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
@@ -319,6 +320,68 @@ codeunit 134692 "Email E2E Tests"
         Assert.AreEqual(TempAccount."Account Id", SentEmail."Account Id", 'A different account was expected');
         Assert.AreEqual(TempAccount."Email Address", SentEmail."Sent From", 'A different sent from was expected');
         Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", SentEmail.Connector, 'A different connector was expected');
+    end;
+
+    [Test]
+    procedure RunEmailDispatcherWithEventsErrorTest()
+    var
+        TempAccount: Record "Email Account" temporary;
+        EmailOutbox: Record "Email Outbox";
+        ConnectorMock: Codeunit "Connector Mock";
+        EmailMessage: Codeunit "Email Message";
+        Result: Boolean;
+    begin
+        // [SCENARIO] Event errors should not cause email dispatcher to fail. They should be running in isolated mode.
+        BindSubscription(EmailE2ETests);
+
+        // [GIVEN] A connector is installed and an account is added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
+
+        // [GIVEN] Email message is created and saved as draft
+        EmailMessage.Create('', '', '', false);
+        Email.SaveAsDraft(EmailMessage, EmailOutbox);
+        Commit();
+
+        // [WHEN] Run dispatcher
+        // [THEN] The dispatcher runs successfully
+        Result := Codeunit.Run(Codeunit::"Email Error Handler", EmailOutbox);
+        Assert.IsTrue(Result, GetLastErrorText());
+
+        UnBindSubscription(EmailE2ETests);
+    end;
+
+    [Test]
+    procedure RunErrorHandlerWithEventsErrorTest()
+    var
+        TempAccount: Record "Email Account" temporary;
+        EmailOutbox: Record "Email Outbox";
+        ConnectorMock: Codeunit "Connector Mock";
+        EmailMessage: Codeunit "Email Message";
+        Result: Boolean;
+    begin
+        // [SCENARIO] Event errors should not cause error handler to fail. They should running in isolated mode.
+        BindSubscription(EmailE2ETests);
+
+        // [GIVEN] A connector is installed and an account is added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        PermissionsMock.Set('Email Edit');
+
+        // [GIVEN] Email message is created and saved as draft
+        EmailMessage.Create('', '', '', false);
+        Email.SaveAsDraft(EmailMessage, EmailOutbox);
+        Commit();
+
+        // [WHEN] Assume dispatcher error'd, run error handler
+        // [THEN] The error handler runs successfully
+        Result := Codeunit.Run(Codeunit::"Email Error Handler", EmailOutbox);
+        Assert.IsTrue(Result, GetLastErrorText());
+
+        UnBindSubscription(EmailE2ETests);
     end;
 
     [Test]
@@ -856,5 +919,21 @@ codeunit 134692 "Email E2E Tests"
     procedure SaveAsDraftOnCloseHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
     begin
         Choice := 1;
+    end;
+
+    // This event is for ensuring that there are no open transactions when this event is invoked
+    // It will throw an error and if there are no open transcations, the event would be isolated
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnAfterEmailSent', '', false, false)]
+    local procedure OnAfterEmailSent(SentEmail: Record "Sent Email")
+    begin
+        Error('An open transcation exists');
+    end;
+
+    // This event is for ensuring that there are no open transactions when this event is invoked
+    // It will throw an error and if there are no open transcations, the event would be isolated
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Email, 'OnAfterEmailSendFailed', '', false, false)]
+    local procedure OnAfterEmailSendFailed(EmailOutbox: Record "Email Outbox")
+    begin
+        Error('An open transcation exists');
     end;
 }

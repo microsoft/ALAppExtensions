@@ -142,10 +142,10 @@ codeunit 139830 "APIV2 - GLEntries E2E"
     end;
 
     [ModalPageHandler]
-    procedure GeneralJournalTemplateHandler(var GeneralJournalTemplateHandler: TestPage 250)
+    procedure GeneralJournalTemplateHandler(var GeneralJournalTemplateList: TestPage 250)
     begin
-        GeneralJournalTemplateHandler.FILTER.SetFilter(Name, LibraryVariableStorage.DequeueText());
-        GeneralJournalTemplateHandler.OK().INVOKE();
+        GeneralJournalTemplateList.FILTER.SetFilter(Name, LibraryVariableStorage.DequeueText());
+        GeneralJournalTemplateList.OK().INVOKE();
     end;
 }
 

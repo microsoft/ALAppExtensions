@@ -30,7 +30,7 @@ page 9662 "Report Layout New Dialog"
                         Error(ReportNotFoundErr, ReportID);
                 end;
             }
-            field(ReportName; ReportMetadata."Name")
+            field(ReportName; ReportMetadata."Caption")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Report Name';
@@ -69,8 +69,15 @@ page 9662 "Report Layout New Dialog"
             {
                 ApplicationArea = Basic, Suite;
                 Visible = true;
-                ToolTip = 'Specified the format of the layout.';
+                Caption = 'Format Options';
+                ToolTip = 'Specifies the format of the layout.';
                 OptionCaption = 'RDLC,Word,Excel,External';
+            }
+            field(AvailableInAllCompanies; AvailableInAllCompanies)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Available in All Companies';
+                ToolTip = 'Specifies whether the layout should be available in all companies or just the current company.';
             }
         }
     }
@@ -79,6 +86,7 @@ page 9662 "Report Layout New Dialog"
     begin
         FormatOptions := FormatOptions::Excel;
         LayoutName := '';
+        AvailableInAllCompanies := true;
         if ReportID <> 0 then
             if ReportMetadata.Get(ReportID) then;
     end;
@@ -93,6 +101,7 @@ page 9662 "Report Layout New Dialog"
         LayoutNameEmptyErr: Label 'The layout name cannot be an empty value.';
         ReportNotFoundErr: Label 'A report with ID "%1" does not exist.', Comment = '%1 = ReportID';
         FormatOptions: Option "RDLC","Word","Excel","Custom"; // For Custom type, 'External' will be shown in UI
+        AvailableInAllCompanies: Boolean;
         emptyGuid: Guid;
 
     internal procedure SetReportID(NewReportID: Integer)
@@ -133,5 +142,10 @@ page 9662 "Report Layout New Dialog"
     internal procedure SelectedAddWordLayout(): Boolean
     begin
         exit(FormatOptions = FormatOptions::Word);
+    end;
+
+    internal procedure SelectedLayoutIsGlobal(): Boolean
+    begin
+        exit(AvailableInAllCompanies);
     end;
 }

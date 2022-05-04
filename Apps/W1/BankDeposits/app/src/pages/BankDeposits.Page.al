@@ -162,9 +162,15 @@ page 1692 "Bank Deposits"
 
     trigger OnInit()
     var
+#if not CLEAN21
         FeatureBankDeposits: Codeunit "Feature Bank Deposits";
+#endif
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000H80', 'Bank Deposit', Enum::"Feature Uptake Status"::Discovered);
+#if not CLEAN21
         FeatureBankDeposits.OpenPageGuard();
+#endif
     end;
 
     [IntegrationEvent(false, false)]

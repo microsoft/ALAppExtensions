@@ -25,7 +25,7 @@ codeunit 9996 "Upgrade Tag Impl."
     begin
         UpgradeTagExists := UpgradeTags.Get(Tag, TagCompanyName);
 
-        if GetExecutionContext() = ExecutionContext::Upgrade then begin
+        if (GetExecutionContext() = ExecutionContext::Upgrade) and (not UpgradeTagExists) then begin
             AddDefaultTelemetryParameters(TelemetryDimensions, Tag, TagCompanyName);
             TelemetryDimensions.Add('Value', Format(UpgradeTagExists, 0, 9));
             Session.LogMessage('0000EJ9', StrSubstNo(HasUpgradeTagTelemetryLbl, Tag), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);

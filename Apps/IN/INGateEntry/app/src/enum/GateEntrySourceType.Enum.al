@@ -1,5 +1,7 @@
 enum 18601 "Gate Entry Source Type"
 {
+    Extensible = true;
+
     value(0; " ")
     {
         Caption = '';

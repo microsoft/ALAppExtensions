@@ -24,7 +24,7 @@
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>4.66039in</Height>
+                  <Height>4.78539in</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -1932,6 +1932,82 @@ Cstr(Fields!PageLbl.Value)</Value>
                                       <TablixCell />
                                     </TablixCells>
                                   </TablixRow>
+                                  <TablixRow>
+                                    <Height>0.45cm</Height>
+                                    <TablixCells>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="OriginalAdvanceVATDocumentNoLbl">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Fields!OriginalAdvanceVATDocumentNoLbl.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Left</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>OriginalAdvanceVATDocumentNoLbl</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Style>None</Style>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                          <ColSpan>2</ColSpan>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell />
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="OriginalAdvanceVATDocumentNo">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Fields!OriginalAdvanceVATDocumentNo.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                      <FontWeight>Bold</FontWeight>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Left</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>OriginalAdvanceVATDocumentNo</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Style>None</Style>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                          <ColSpan>2</ColSpan>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell />
+                                    </TablixCells>
+                                  </TablixRow>
                                 </TablixRows>
                               </TablixBody>
                               <TablixColumnHierarchy>
@@ -1971,11 +2047,16 @@ Cstr(Fields!PageLbl.Value)</Value>
                                   <TablixMember />
                                   <TablixMember />
                                   <TablixMember />
+                                  <TablixMember>
+                                    <Visibility>
+                                      <Hidden>=Fields!OriginalAdvanceVATDocumentNo.Value = ""</Hidden>
+                                    </Visibility>
+                                  </TablixMember>
                                 </TablixMembers>
                               </TablixRowHierarchy>
                               <DataSetName>DataSet_Result</DataSetName>
                               <Left>0.00001cm</Left>
-                              <Height>8.60018cm</Height>
+                              <Height>9.05018cm</Height>
                               <Width>17.99996cm</Width>
                               <Style>
                                 <Border>
@@ -2056,7 +2137,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>11.38737cm</Top>
+                              <Top>11.70487cm</Top>
                               <Left>12.00001cm</Left>
                               <Height>0.45001cm</Height>
                               <Width>6.00001cm</Width>
@@ -2256,7 +2337,6 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <PaddingBottom>2pt</PaddingBottom>
                                             </Style>
                                           </Textbox>
-                                          <rd:Selected>true</rd:Selected>
                                         </CellContents>
                                       </TablixCell>
                                       <TablixCell>
@@ -2852,7 +2932,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>260.01157pt</Top>
+                              <Top>269.01157pt</Top>
                               <Height>0.70868in</Height>
                               <Width>5.5118in</Width>
                               <ZIndex>2</ZIndex>
@@ -2907,7 +2987,7 @@ Cstr(Fields!PageLbl.Value)</Value>
               </Filter>
             </Filters>
             <Left>0.00001cm</Left>
-            <Height>4.66039in</Height>
+            <Height>4.78539in</Height>
             <Width>17.99999cm</Width>
             <Style>
               <Border>
@@ -2916,7 +2996,7 @@ Cstr(Fields!PageLbl.Value)</Value>
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>11.83739cm</Height>
+        <Height>12.15488cm</Height>
         <Style>
           <Border />
         </Style>
@@ -3132,6 +3212,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                   </Style>
                 </Paragraph>
               </Paragraphs>
+              <Top>0in</Top>
               <Left>12cm</Left>
               <Height>0.5cm</Height>
               <Width>6cm</Width>
@@ -3450,6 +3531,12 @@ End Function</Code>
         </Field>
         <Field Name="VendAddr6">
           <DataField>VendAddr6</DataField>
+        </Field>
+        <Field Name="OriginalAdvanceVATDocumentNo">
+          <DataField>OriginalAdvanceVATDocumentNo</DataField>
+        </Field>
+        <Field Name="OriginalAdvanceVATDocumentNoLbl">
+          <DataField>OriginalAdvanceVATDocumentNoLbl</DataField>
         </Field>
         <Field Name="CopyNo">
           <DataField>CopyNo</DataField>

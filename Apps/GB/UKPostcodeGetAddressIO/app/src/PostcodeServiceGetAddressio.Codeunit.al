@@ -206,11 +206,15 @@ codeunit 9092 "Postcode Service GetAddress.io"
     local procedure ParseAddress(var TempAutocompleteAddress: Record "Autocomplete Address" temporary; AddressString: Text; EnteredPostcode: Text[20])
     var
         pos: Integer;
-        addr2: Text;
+        I: Integer;
+        addr: Text;
     begin
         // Format: "line1","line2","line3","line4","locality","Town/City","County"
-        // "Address" = the last non-empty line in ["line1", "line2"...] + "locality"
-        // "Address 2" = the rest of the non-empty lines in ["line1"...]
+        // When <= 2 first 4 fields available:
+        // Put all in "Address"
+        // Else:
+        // "Address 2" = the last non-empty line in ["line1", "line2"...] + "locality"
+        // "Address" = the rest of the non-empty lines in ["line1"...]
         pos := 4;
         while pos > 0 do begin
             if TrimStart(SELECTSTR(pos, AddressString)) <> '' then break;
@@ -219,21 +223,29 @@ codeunit 9092 "Postcode Service GetAddress.io"
 
         TempAutocompleteAddress.Init();
 
-        if pos < 1 then
-            TempAutocompleteAddress.Address := COPYSTR(TrimStart(SELECTSTR(5, AddressString)), 1, 100)
-        else
-            TempAutocompleteAddress.Address := COPYSTR(TrimStart(SELECTSTR(pos, AddressString)) + GetLineByPosition(5, AddressString), 1, 100);
+        case pos of
+            0:
+                TempAutocompleteAddress.Address := COPYSTR(TrimStart(SELECTSTR(5, AddressString)), 1, 100);
+            1:
+                TempAutocompleteAddress.Address := COPYSTR(TrimStart(SELECTSTR(1, AddressString)), 1, 100) + GetLineByPosition(5, AddressString);
+            2:
+                begin
+                    TempAutocompleteAddress.Address := COPYSTR(TrimStart(SELECTSTR(1, AddressString)), 1, 100) + GetLineByPosition(2, AddressString);
+                    TempAutocompleteAddress."Address 2" := COPYSTR(TrimStart(SELECTSTR(5, AddressString)), 1, 100);
+                end;
+            else begin
+                    TempAutocompleteAddress."Address 2" := COPYSTR(TrimStart(SELECTSTR(pos, AddressString)) + GetLineByPosition(5, AddressString), 1, 100);
 
-        pos := pos - 1;
-        while pos > 0 do begin
-            if addr2 = '' then
-                addr2 := TrimStart(SELECTSTR(pos, AddressString))
-            else
-                addr2 := addr2 + GetLineByPosition(pos, AddressString);
-            pos := pos - 1;
+                    for I := 1 to pos - 1 do
+                        if addr = '' then
+                            addr := TrimStart(SELECTSTR(I, AddressString))
+                        else
+                            addr := addr + GetLineByPosition(I, AddressString);
+
+                    TempAutocompleteAddress.Address := COPYSTR(addr, 1, 50);
+                end;
         end;
 
-        TempAutocompleteAddress."Address 2" := COPYSTR(addr2, 1, 50);
         TempAutocompleteAddress.City := COPYSTR(TrimStart(SELECTSTR(6, AddressString)), 1, 30);
         TempAutocompleteAddress.Postcode := EnteredPostcode;
         TempAutocompleteAddress.County := COPYSTR(TrimStart(SELECTSTR(7, AddressString)), 1, 30);

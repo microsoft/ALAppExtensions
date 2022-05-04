@@ -69,8 +69,11 @@ page 2610 "Feature Management"
                     begin
                         case Rec.Enabled of
                             Rec.Enabled::None:
-                                if Rec."Is One Way" then
-                                    Error(OneWayAlreadyEnabledErr);
+                                begin
+                                    if Rec."Is One Way" then
+                                        Error(OneWayAlreadyEnabledErr);
+                                    FeatureManagementFacade.OnAfterFeatureDisableConfirmed(Rec);
+                                end;
                             else begin
                                     if Rec."Is One Way" then
                                         Confirmed := Confirm(OneWayWarningMsg)
@@ -78,6 +81,8 @@ page 2610 "Feature Management"
                                         Confirmed := true;
                                     if not Confirmed then
                                         Error('');
+
+                                    FeatureManagementFacade.OnAfterFeatureEnableConfirmed(Rec);
 
                                     if not FeatureManagementFacade.Update(FeatureDataUpdateStatus) then
                                         Error('');

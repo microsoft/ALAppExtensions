@@ -15,10 +15,15 @@ pageextension 1701 SourceCodeSetupExt extends "Source Code Setup"
         }
     }
     trigger OnOpenPage()
+#if not CLEAN21
     var
         BankDepositFeatureMgt: Codeunit "Bank Deposit Feature Mgt.";
+#endif
     begin
-        BankDepositFeatureEnabled := BankDepositFeatureMgt.IsEnabled()
+        BankDepositFeatureEnabled := true;
+#if not CLEAN21
+        BankDepositFeatureEnabled := BankDepositFeatureMgt.IsEnabled();
+#endif
     end;
 
     var

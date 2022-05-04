@@ -113,6 +113,7 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
     begin
         VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"G/L Entry");
         VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Gen. Journal Line");
+        VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Posted Gen. Journal Line");
         VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"VAT Entry");
         VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Sales Header");
         VATDateHandlerCZL.InitVATDateFromRecordCZL(Database::"Sales Invoice Header");
@@ -131,7 +132,7 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
         OnAfterInitVATDateCZL();
     end;
 
-    
+
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterInitVATDateCZL()

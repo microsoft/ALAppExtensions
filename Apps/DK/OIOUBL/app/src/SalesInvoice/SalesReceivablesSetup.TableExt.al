@@ -35,6 +35,10 @@ tableextension 13645 "OIOUBL-Sales&Receivables Setup" extends "Sales & Receivabl
                 OIOUBLProfile.UpdateEmptyOIOUBLProfileCodes("OIOUBL-Default Profile Code", xRec."OIOUBL-Default Profile Code");
             end;
         }
+        field(13635; "Document No. as Ext. Doc. No."; Boolean)
+        {
+            Caption = 'Document No. as External Doc. No.';
+        }
     }
     keys
     {

@@ -353,7 +353,8 @@ codeunit 31250 "Install Application CZA"
             repeat
                 GLEntry."Closed CZA" := GLEntry.Closed;
                 GLEntry."Closed at Date CZA" := GLEntry."Closed at Date";
-                GLEntry."Applied Amount CZA" := GLEntry."Applied Amount";
+                GLEntry."Amount to Apply CZA" := GLEntry."Amount to Apply";
+                GLEntry."Applies-to ID CZA" := GLEntry."Applies-to ID";
                 GLEntry.Modify(false);
             until GLEntry.Next() = 0;
     end;

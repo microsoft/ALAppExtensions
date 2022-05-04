@@ -196,6 +196,17 @@ codeunit 9751 "Web Service Management Impl."
         exit(FilterText);
     end;
 
+    procedure RetrieveTenantWebServiceFilter(var TenantWebServiceFilter: Record "Tenant Web Service Filter"): Text
+    var
+        ReadInStream: InStream;
+        FilterText: Text;
+    begin
+        TenantWebServiceFilter.CalcFields(TenantWebServiceFilter.Filter);
+        TenantWebServiceFilter.Filter.CreateInStream(ReadInStream);
+        ReadInStream.ReadText(FilterText);
+        exit(FilterText);
+    end;
+
     procedure SetTenantWebServiceFilter(var TenantWebServiceFilter: Record "Tenant Web Service Filter"; FilterText: Text)
     var
         WriteOutStream: OutStream;
@@ -710,7 +721,25 @@ codeunit 9751 "Web Service Management Impl."
                 end;
             until TenantWebServiceColumns.Next() = 0;
 
+        ApplyFlowFilters(BaseRecordRef, UpdatedRecordRef, UpdatedFieldRef);
+
         exit(UpdatedRecordRef.GetView());
+    end;
+
+    local procedure ApplyFlowFilters(var BaseRecordRef: RecordRef; var UpdatedRecordRef: RecordRef; var UpdatedFieldRef: FieldRef)
+    var
+        FlowFilterFieldRef: FieldRef;
+        BaseFieldRef: FieldRef;
+        FieldIndex: Integer;
+    begin
+        for FieldIndex := 1 to BaseRecordRef.FieldCount do begin
+            FlowFilterFieldRef := BaseRecordRef.FieldIndex(FieldIndex);
+            if FlowFilterFieldRef.Class = FlowFilterFieldRef.Class::FlowFilter then begin
+                BaseFieldRef := BaseRecordRef.FieldIndex(FieldIndex);
+                UpdatedFieldRef := UpdatedRecordRef.FieldIndex(FieldIndex);
+                UpdatedFieldRef.SetFilter(BaseFieldRef.GetFilter());
+            end;
+        end;
     end;
 
     local procedure GenerateODataV3Url(ServiceRootUrlParam: Text; ServiceNameParam: Text; ObjectTypeParam: Option ,,,,,,,,"Page","Query"): Text

@@ -394,7 +394,8 @@ page 1693 "Bank Deposit Subform"
         Rec."Bal. Account No." := BankDepositHeader."Bank Account No.";
         Rec."Currency Code" := BankDepositHeader."Currency Code";
         Rec."Currency Factor" := BankDepositHeader."Currency Factor";
-        Rec.Validate("Posting Date", BankDepositHeader."Posting Date");
+        Rec."Document Date" := BankDepositHeader."Document Date";
+        Rec."Posting Date" := BankDepositHeader."Posting Date";
         Rec."External Document No." := BankDepositHeader."No.";
         Rec."Reason Code" := BankDepositHeader."Reason Code";
     end;

@@ -1307,7 +1307,7 @@ codeunit 18649 "FA Depreciation"
         FAShitf.Init();
         FAShitf.Validate("FA No.", FixedAsset."No.");
         FAShitf.Validate("Depreciation Book Code", FADepreciationBook."Depreciation Book Code");
-        FAShitf.Validate("FA Posting Group", FixedAsset."FA Posting Group");
+        FAShitf.Validate("Fixed Asset Posting Group", FixedAsset."FA Posting Group");
         FAShitf.Validate("Depreciation Starting Date", GetFiscalYearStartDateInc(WorkDate()));
         FAShitf.Validate("Depreciation ending Date", GetFiscalYearEndDateInc(WorkDate()));
         FAShitf.Validate("Depreciation Method", FAShitf."Depreciation Method"::"Straight-Line");

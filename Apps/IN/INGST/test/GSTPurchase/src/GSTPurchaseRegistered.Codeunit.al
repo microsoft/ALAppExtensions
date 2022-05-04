@@ -12,6 +12,8 @@ codeunit 18134 "GST Purchase Registered"
         ComponentPerArray: array[10] of Decimal;
         StorageBoolean: Dictionary of [Text[20], Boolean];
         OrderAddr: Boolean;
+        WithPaymentMethodCode: Boolean;
+        PaymentMethodCode: Code[10];
         ErrorLbl: Label 'State Code must have a value in Vendor: No.=%1.', Comment = '%1 = Vendor No.';
         OrderAddressLbl: Label 'Order Address are not Equal', Locked = true;
         PANNoErr: Label 'PAN No. must be entered.', Locked = true;
@@ -32,6 +34,40 @@ codeunit 18134 "GST Purchase Registered"
         PostedDocumentNoLbl: Label 'PostedDocumentNo';
         NotEqualLbl: Label 'Not Equal';
         InvoiceTypeLbl: Label 'InvoiceType';
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromGSTPurchOrderRegVendWithPaymentMethodCodeITCForItemIntraState()
+    var
+        PaymentMethod: Record "Payment Method";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        LibraryERM: Codeunit "Library - ERM";
+        DocumentNo: Code[20];
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type enum";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        // [SCENARIO] [397988] [Check if the system is calculating GST in case of Payment Method Code available with Bal. Account No. on Purchase Order]
+        // [FEATURE] [Goods, Purchase Order] [ITC, Registered Vendor, Intra-State]
+
+        // [GIVEN] Created GST Setup, Payment Method Code tax rates for Registered Vendor and GST Credit adjustment is Non Available with GST group type as Goods        
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Goods, true, false);
+        InitializeShareStep(true, false, false);
+        LibraryERM.CreatePaymentMethodWithBalAccount(PaymentMethod);
+        WithPaymentMethodCode := true;
+        PaymentMethodCode := PaymentMethod.Code;
+        SetStorageLibraryPurchaseText(NoOfLineLbl, Format(1));
+
+        // [WHEN] Create and Post Purchase Order with GST and Line Type as Item for Intrastate Transactions.
+        DocumentNo := CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::Item, DocumentType::Order);
+
+        // [THEN] GST ledger entries are created and Verified
+        LibraryGST.VerifyGLEntries(PurchaseHeader."Document Type"::Invoice, DocumentNo, 4);
+        VerifyGSTEntries(DocumentNo, Database::"Purch. Inv. Header");
+        WithPaymentMethodCode := false;
+    end;
 
     [Test]
     [HandlerFunctions('TaxRatePageHandler')]
@@ -2901,6 +2937,9 @@ codeunit 18134 "GST Purchase Registered"
             PurchaseHeader."Bill of Entry Date" := WorkDate();
             PurchaseHeader."Bill of Entry Value" := LibraryRandom.RandInt(1000);
         end;
+
+        if WithPaymentMethodCode then
+            PurchaseHeader.Validate("Payment Method Code", PaymentMethodCode);
 
         PurchaseHeader.Modify(true);
     end;

@@ -495,6 +495,7 @@ table 18466 "Applied Delivery Challan"
     var
         AppDelChEntry: Record "Applied Delivery Challan Entry";
         ReservMgt: Codeunit "Reservation Management";
+        ApplyDeliveryChallanMgt: Codeunit "Apply Delivery Challan Mgt.";
     begin
         AppDelChEntry.Reset();
         AppDelChEntry.SetRange("Document No.", AppliedDeliveryChallan."Document No.");
@@ -506,6 +507,7 @@ table 18466 "Applied Delivery Challan"
         AppDelChEntry.SetRange("Item No.", AppliedDeliveryChallan."Item No.");
         if AppDelChEntry.FindSet() then
             repeat
+                ApplyDeliveryChallanMgt.SetAppliedDeliveryChallanEntry(AppDelChEntry);
                 if DeleteItemTracking then
                     ReservMgt.SetItemTrackingHandling(1);
 
@@ -539,7 +541,6 @@ table 18466 "Applied Delivery Challan"
         if not AppDelChEntry.IsEmpty() then begin
             if ReservMgt.DeleteItemTrackingConfirm() then
                 DeleteItemTracking := true;
-
             exit(DeleteItemTracking);
         end;
 

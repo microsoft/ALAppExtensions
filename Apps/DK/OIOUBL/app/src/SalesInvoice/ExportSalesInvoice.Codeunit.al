@@ -132,20 +132,24 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
     local procedure InsertOrderLineReference(var InvoiceLineElement: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header"; SalesInvoiceLine: Record "Sales Invoice Line");
     var
         OrderLineReferenceElement: XmlElement;
+        ExternalDocumentNo: Code[35];
     begin
         OrderLineReferenceElement := XmlElement.Create('OrderLineReference', DocNameSpace2);
         OrderLineReferenceElement.Add(XmlElement.Create('LineID', DocNameSpace,
           FORMAT(SalesInvoiceLine."Line No.")));
+
+        ExternalDocumentNo := SalesInvoiceHeader."External Document No.";
+        if ExternalDocumentNo = '' then begin
+            SalesSetup.Get();
+            if SalesSetup."Document No. as Ext. Doc. No." then
+                ExternalDocumentNo := SalesInvoiceHeader."No.";
+        end;
         if SalesInvoiceHeader."Order No." <> '' then
             OIOUBLXMLGenerator.InsertOrderReference(OrderLineReferenceElement,
-              SalesInvoiceHeader."External Document No.",
-              '',
-              CalcDate('<0D>'))
+              ExternalDocumentNo, '', CalcDate('<0D>'))
         else
             OIOUBLXMLGenerator.InsertOrderReference(OrderLineReferenceElement,
-              SalesInvoiceHeader."External Document No.",
-              '',
-              CalcDate('<0D>'));
+              ExternalDocumentNo, '', CalcDate('<0D>'));
         InvoiceLineElement.Add(OrderLineReferenceElement);
     end;
 
@@ -221,6 +225,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         XMLCurrNode: XmlElement;
         XMLdocOut: XmlDocument;
         CurrencyCode: Code[10];
+        ExternalDocumentNo: Code[35];
         LineAmount: Decimal;
         TaxAmount: Decimal;
         TotalAmount: Decimal;
@@ -283,14 +288,20 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         XMLCurrNode.Add(XmlElement.Create('AccountingCostCode', DocNameSpace, SalesInvoiceHeader."OIOUBL-Account Code"));
 
         // Invoice->OrderReference
+        ExternalDocumentNo := SalesInvoiceHeader."External Document No.";
+        if ExternalDocumentNo = '' then begin
+            SalesSetup.Get();
+            if SalesSetup."Document No. as Ext. Doc. No." then
+                ExternalDocumentNo := SalesInvoiceHeader."No.";
+        end;
         if SalesInvoiceHeader."Order No." <> '' then
             OIOUBLXMLGenerator.InsertOrderReference(XMLCurrNode,
-              SalesInvoiceHeader."External Document No.",
+              ExternalDocumentNo,
               SalesInvoiceHeader."Order No.",
               SalesInvoiceHeader."Order Date")
         else
             OIOUBLXMLGenerator.InsertOrderReference(XMLCurrNode,
-              SalesInvoiceHeader."External Document No.",
+              ExternalDocumentNo,
               SalesInvoiceHeader."Pre-Assigned No.",
               SalesInvoiceHeader."Order Date");
 

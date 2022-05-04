@@ -22,6 +22,8 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         LibraryUtility: Codeunit "Library - Utility";
         LibraryRandom: Codeunit "Library - Random";
         LibraryMarketing: Codeunit "Library - Marketing";
+        LibrarySetupStorage: Codeunit "Library - Setup Storage";
+        IsInitialized: Boolean;
         BlankOrderDateErr: Label 'Order Date must have a value in Sales Header: Document Type=Invoice, No.=%1. It cannot be zero or empty.';
         CrMemoPathTxt: Label 'OIOUBL Service Cr. Memo Path';
         DescriptionErr: Label 'The %1 %2 contains lines in which the Type and the No. are specified, but the Description is empty.', Comment = '%1 = Field Caption, %2 = Field Value';
@@ -36,34 +38,37 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
 
     [Test]
     procedure SalesCrMemoExtDocNoError();
-    var
-        SalesHeader: Record "Sales Header";
     begin
-        // Verify error using blank External Document Number on Sales Credit Memo.
-        SetupForExtDocNoError(SalesHeader."Document Type"::"Credit Memo");
+        // [SCENARIO] Verify error using blank External Document Number on Sales Credit Memo.
+        SetupForExtDocNoError("Sales Document Type"::"Credit Memo");
     end;
 
     [Test]
     procedure SalesOrderExtDocNoError();
-    var
-        SalesHeader: Record "Sales Header";
     begin
-        // Verify error using blank External Document Number on Sales Order.
-        SetupForExtDocNoError(SalesHeader."Document Type"::Order);
+        // [SCENARIO] Verify error using blank External Document Number on Sales Order.
+        SetupForExtDocNoError("Sales Document Type"::Order);
     end;
 
-    local procedure SetupForExtDocNoError(DocumentType: Option);
+    [Test]
+    procedure SalesInvoiceExtDocNoError();
+    begin
+        // [SCENARIO 428611] Verify error using blank External Document Number on Sales Invoice.
+        SetupForExtDocNoError("Sales Document Type"::Invoice);
+    end;
+
+    local procedure SetupForExtDocNoError(DocumentType: Enum "Sales Document Type");
     var
         SalesLine: Record "Sales Line";
     begin
-        // Setup: Create Sales Order and modify External Document No. to blank.
+        // [GIVEN] Sales Document with blank External Document No..
         Initialize();
-        CreateSalesDocument(SalesLine, DocumentType, '', WORKDATE());  // Taken Blank value for External Document Number.
+        CreateSalesDocument(SalesLine, DocumentType, '', WorkDate());  // Taken Blank value for External Document Number.
 
-        // Exercise.
+        // [WHEN] Post Sales Document.
         asserterror PostSalesDocument(SalesLine);
 
-        // Verify: Verify error using blank External Document Number on Sales Order Line.
+        // [THEN] Error "You must specify the External Document No." is thrown.
         Assert.ExpectedError(ExternalDocumentNoErr);
     end;
 
@@ -673,6 +678,52 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         SalesHeader.TestField("OIOUBL-Sell-to Contact E-Mail", Contact."E-Mail");
     end;
 
+    [Test]
+    procedure PostSalesInvoiceWhenDocNoAsExtDocNoEnabled()
+    var
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        PostedDocNo: Code[20];
+    begin
+        // [SCENARIO 428611] Post Sales Invoice with blank External Document No. when "Document No. as Ext. Doc. No." is enabled.
+        Initialize();
+
+        // [GIVEN] "Document No. as Ext. Doc. No." is set on Sales & Receivables Setup.
+        // [GIVEN] Sales Invoice with blank External Document No.
+        UpdateDocNoAsExtDocNoOnSalesSetup(true);
+        CreateSalesDocument(SalesLine, "Sales Document Type"::Invoice, '', WorkDate());
+
+        // [WHEN] Post Sales Invoice.
+        PostedDocNo := PostSalesDocument(SalesLine);
+
+        // [THEN] Sales Invoice was posted, External Document No. is blank.
+        SalesInvoiceHeader.Get(PostedDocNo);
+        SalesInvoiceHeader.TestField("External Document No.", '');
+    end;
+
+    [Test]
+    procedure PostSalesCrMemoWhenDocNoAsExtDocNoEnabled()
+    var
+        SalesLine: Record "Sales Line";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        PostedDocNo: Code[20];
+    begin
+        // [SCENARIO 428611] Post Sales Credit Memo with blank External Document No. when "Document No. as Ext. Doc. No." is enabled.
+        Initialize();
+
+        // [GIVEN] "Document No. as Ext. Doc. No." is set on Sales & Receivables Setup.
+        // [GIVEN] Sales Credit Memo with blank External Document No.
+        UpdateDocNoAsExtDocNoOnSalesSetup(true);
+        CreateSalesDocument(SalesLine, "Sales Document Type"::"Credit Memo", '', WorkDate());
+
+        // [WHEN] Post Sales Credit Memo.
+        PostedDocNo := PostSalesDocument(SalesLine);
+
+        // [THEN] Sales Credit Memo was posted, External Document No. is blank.
+        SalesCrMemoHeader.Get(PostedDocNo);
+        SalesCrMemoHeader.TestField("External Document No.", '');
+    end;
+
     local procedure Initialize();
     var
         SalesHeader: Record "Sales Header";
@@ -680,13 +731,22 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
     begin
         SalesHeader.DontNotifyCurrentUserAgain(SalesHeader.GetModifyBillToCustomerAddressNotificationId());
         SalesHeader.DontNotifyCurrentUserAgain(SalesHeader.GetModifyCustomerAddressNotificationId());
-        UpdateCountryRegion();  // Update Country/Region.
 
-        DocumentSendingProfile.DELETEALL();
-        DocumentSendingProfile.INIT();
+        DocumentSendingProfile.DeleteAll();
+        DocumentSendingProfile.Init();
         DocumentSendingProfile.Default := true;
         DocumentSendingProfile."Electronic Format" := 'OIOUBL';
-        DocumentSendingProfile.INSERT();
+        DocumentSendingProfile.Insert();
+
+        LibrarySetupStorage.Restore();
+
+        if IsInitialized then
+            exit;
+
+        UpdateCountryRegion();  // Update Country/Region.
+        LibrarySetupStorage.SaveSalesSetup();
+
+        IsInitialized := true;
     end;
 
     local procedure CreateItem(): Code[20];
@@ -696,7 +756,7 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         exit(LibraryInventory.CreateItem(Item));
     end;
 
-    local procedure CreateSalesDocument(var SalesLine: Record "Sales Line"; DocumentType: Option; ExternalDocumentNo: Code[35]; OrderDate: Date);
+    local procedure CreateSalesDocument(var SalesLine: Record "Sales Line"; DocumentType: Enum "Sales Document Type"; ExternalDocumentNo: Code[35]; OrderDate: Date);
     var
         SalesHeader: Record "Sales Header";
         PostCode: Record "Post Code";
@@ -720,7 +780,7 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         SalesLine.MODIFY(true);
     end;
 
-    local procedure CreateServiceHeader(var ServiceHeader: Record "Service Header"; DocumentType: Option)
+    local procedure CreateServiceHeader(var ServiceHeader: Record "Service Header"; DocumentType: Enum "Service Document Type")
     var
         PostCode: Record "Post Code";
     begin
@@ -868,6 +928,15 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
                 CountryRegion.VALIDATE("OIOUBL-Country/Region Code", CountryRegion.Code);
                 CountryRegion.MODIFY(true);
             until CountryRegion.NEXT() = 0;
+    end;
+
+    local procedure UpdateDocNoAsExtDocNoOnSalesSetup(DocNoAsExtDocNo: Boolean)
+    var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+    begin
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup.Validate("Document No. as Ext. Doc. No.", DocNoAsExtDocNo);
+        SalesReceivablesSetup.Modify(true);
     end;
 
     local procedure VerifyGLEntries(DocumentNo: Code[20]; GLAccountNo: Code[20]; Amount: Decimal);

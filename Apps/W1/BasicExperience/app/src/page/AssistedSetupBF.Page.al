@@ -117,6 +117,7 @@ page 20600 "Assisted Setup BF"
                 var
                     GuidedExperience: Codeunit "Guided Experience";
                 begin
+                    FeatureTelemetry.LogUptake('0000H6Z', 'Basic Experience', Enum::"Feature Uptake Status"::"Set up");
                     GuidedExperience.CompleteAssistedSetup(ObjectType::Page, PAGE::"Assisted Setup BF");
                     CurrPage.Close();
                 end;
@@ -134,6 +135,7 @@ page 20600 "Assisted Setup BF"
         GuidedExperience: Codeunit "Guided Experience";
         BasicMgmt: Codeunit "Basic Mgmt BF";
     begin
+        FeatureTelemetry.LogUptake('0000H70', 'Basic Experience', Enum::"Feature Uptake Status"::Discovered);
         HasBCBasicLicense := BasicMgmt.IsSupportedLicense();
         GuidedExperience.ResetAssistedSetup(ObjectType::Page, PAGE::"Assisted Setup BF");
         IsComplete := GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, PAGE::"Assisted Setup BF");
@@ -164,6 +166,7 @@ page 20600 "Assisted Setup BF"
     var
         MediaRepository: Record "Media Repository";
         MediaResources: Record "Media Resources";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         Notification: Notification;
         TopBannerVisible: Boolean;
         IsComplete: Boolean;

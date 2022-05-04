@@ -12,7 +12,6 @@ codeunit 139732 "APIV1 - Default Dimensions E2E"
 
     var
         Assert: Codeunit "Assert";
-        TypeHelper: Codeunit "Type Helper";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibrarySales: Codeunit "Library - Sales";
         LibraryDimension: Codeunit "Library - Dimension";
@@ -615,8 +614,8 @@ codeunit 139732 "APIV1 - Default Dimensions E2E"
     begin
         LibraryDimension.CreateDimension(Dimension);
         LibraryDimension.CreateDimensionValue(DimensionValue, Dimension.Code);
-        ParentIdAsText := LOWERCASE(TypeHelper.GetGuidAsString(ParentId));
-        DimensionValueId := LOWERCASE(TypeHelper.GetGuidAsString(DimensionValue.SystemId));
+        ParentIdAsText := LowerCase(Format(ParentId, 0, 4));
+        DimensionValueId := LOWERCASE(Format(DimensionValue.SystemId, 0, 4));
         COMMIT();
 
         TargetURL :=
@@ -646,9 +645,9 @@ codeunit 139732 "APIV1 - Default Dimensions E2E"
     begin
         LibraryDimension.CreateDimension(Dimension);
         LibraryDimension.CreateDimensionValue(DimensionValue, Dimension.Code);
-        ParentIdAsText := LOWERCASE(TypeHelper.GetGuidAsString(ParentId));
-        DimensionId := LOWERCASE(TypeHelper.GetGuidAsString(Dimension.SystemId));
-        DimensionValueId := LOWERCASE(TypeHelper.GetGuidAsString(DimensionValue.SystemId));
+        ParentIdAsText := LOWERCASE(Format(ParentId, 0, 4));
+        DimensionId := LOWERCASE(Format(Dimension.SystemId, 0, 4));
+        DimensionValueId := LOWERCASE(Format(DimensionValue.SystemId, 0, 4));
         COMMIT();
 
         TargetURL :=
@@ -675,8 +674,8 @@ codeunit 139732 "APIV1 - Default Dimensions E2E"
     begin
         LibraryDimension.CreateDimension(Dimension);
         LibraryDimension.CreateDimensionValue(DimensionValue, Dimension.Code);
-        ParentIdAsText := LOWERCASE(TypeHelper.GetGuidAsString(ParentId));
-        DimensionValueId := LOWERCASE(TypeHelper.GetGuidAsString(DimensionValue.SystemId));
+        ParentIdAsText := LOWERCASE(Format(ParentId, 0, 4));
+        DimensionValueId := LOWERCASE(Format(DimensionValue.SystemId, 0, 4));
         COMMIT();
 
         TargetURL :=
@@ -705,9 +704,9 @@ codeunit 139732 "APIV1 - Default Dimensions E2E"
         LibraryDimension.CreateDimensionValue(DimensionValue, Dimension.Code);
         LibraryDimension.CreateDimension(Dimension2);
         LibraryDimension.CreateDimensionValue(DimensionValue2, Dimension2.Code);
-        ParentIdAsText := LOWERCASE(TypeHelper.GetGuidAsString(ParentId));
-        DimensionId := LOWERCASE(TypeHelper.GetGuidAsString(Dimension.SystemId));
-        DimensionValue2Id := LOWERCASE(TypeHelper.GetGuidAsString(DimensionValue2.SystemId));
+        ParentIdAsText := LOWERCASE(Format(ParentId, 0, 4));
+        DimensionId := LOWERCASE(Format(Dimension.SystemId, 0, 4));
+        DimensionValue2Id := LOWERCASE(Format(DimensionValue2.SystemId, 0, 4));
         COMMIT();
 
         TargetURL :=
@@ -734,9 +733,9 @@ codeunit 139732 "APIV1 - Default Dimensions E2E"
         LibraryDimension.CreateDimensionValue(DimensionValue, Dimension.Code);
         Dimension.VALIDATE(Blocked, TRUE);
         Dimension.MODIFY(TRUE);
-        ParentIdAsText := LOWERCASE(TypeHelper.GetGuidAsString(ParentId));
-        DimensionId := LOWERCASE(TypeHelper.GetGuidAsString(Dimension.SystemId));
-        DimensionValueId := LOWERCASE(TypeHelper.GetGuidAsString(DimensionValue.SystemId));
+        ParentIdAsText := LOWERCASE(Format(ParentId, 0, 4));
+        DimensionId := LOWERCASE(Format(Dimension.SystemId, 0, 4));
+        DimensionValueId := LOWERCASE(Format(DimensionValue.SystemId, 0, 4));
         COMMIT();
 
         TargetURL :=
@@ -763,9 +762,9 @@ codeunit 139732 "APIV1 - Default Dimensions E2E"
         LibraryDimension.CreateDimensionValue(DimensionValue, Dimension.Code);
         DimensionValue.VALIDATE(Blocked, TRUE);
         DimensionValue.MODIFY(TRUE);
-        ParentIdAsText := LOWERCASE(TypeHelper.GetGuidAsString(ParentId));
-        DimensionId := LOWERCASE(TypeHelper.GetGuidAsString(Dimension.SystemId));
-        DimensionValueId := LOWERCASE(TypeHelper.GetGuidAsString(DimensionValue.SystemId));
+        ParentIdAsText := LOWERCASE(Format(ParentId, 0, 4));
+        DimensionId := LOWERCASE(Format(Dimension.SystemId, 0, 4));
+        DimensionValueId := LOWERCASE(Format(DimensionValue.SystemId, 0, 4));
         COMMIT();
 
         TargetURL :=
@@ -796,8 +795,8 @@ codeunit 139732 "APIV1 - Default Dimensions E2E"
         DefaultDimension.VALIDATE("Dimension Value Code", DimensionValue.Code);
         DefaultDimension.INSERT(TRUE);
 
-        ParentIdAsText := LOWERCASE(TypeHelper.GetGuidAsString(ParentId));
-        DimensionId := LOWERCASE(TypeHelper.GetGuidAsString(Dimension.SystemId));
+        ParentIdAsText := LOWERCASE(Format(ParentId, 0, 4));
+        DimensionId := LOWERCASE(Format(Dimension.SystemId, 0, 4));
         COMMIT();
 
         TargetURL :=
@@ -833,9 +832,9 @@ codeunit 139732 "APIV1 - Default Dimensions E2E"
         DefaultDimension.VALIDATE("Dimension Value Code", DimensionValue.Code);
         DefaultDimension.INSERT(TRUE);
 
-        ParentIdAsText := LOWERCASE(TypeHelper.GetGuidAsString(ParentId));
-        DimensionId := LOWERCASE(TypeHelper.GetGuidAsString(Dimension.SystemId));
-        DimensionValueId := LOWERCASE(TypeHelper.GetGuidAsString(DimensionValue.SystemId));
+        ParentIdAsText := LOWERCASE(Format(ParentId, 0, 4));
+        DimensionId := LOWERCASE(Format(Dimension.SystemId, 0, 4));
+        DimensionValueId := LOWERCASE(Format(DimensionValue.SystemId, 0, 4));
         COMMIT();
 
         TargetURL :=
@@ -871,9 +870,9 @@ codeunit 139732 "APIV1 - Default Dimensions E2E"
         DefaultDimension.VALIDATE("Dimension Value Code", DimensionValue.Code);
         DefaultDimension.INSERT(TRUE);
 
-        ParentIdAsText := LOWERCASE(TypeHelper.GetGuidAsString(ParentId));
-        DimensionId := LOWERCASE(TypeHelper.GetGuidAsString(Dimension.SystemId));
-        DimensionValue2Id := LOWERCASE(TypeHelper.GetGuidAsString(DimensionValue2.SystemId));
+        ParentIdAsText := LOWERCASE(Format(ParentId, 0, 4));
+        DimensionId := LOWERCASE(Format(Dimension.SystemId, 0, 4));
+        DimensionValue2Id := LOWERCASE(Format(DimensionValue2.SystemId, 0, 4));
         COMMIT();
 
         TargetURL :=
@@ -914,9 +913,9 @@ codeunit 139732 "APIV1 - Default Dimensions E2E"
         DefaultDimension.VALIDATE("Dimension Value Code", DimensionValue.Code);
         DefaultDimension.INSERT(TRUE);
 
-        ParentIdAsText := LOWERCASE(TypeHelper.GetGuidAsString(ParentId));
-        DimensionId := LOWERCASE(TypeHelper.GetGuidAsString(Dimension.SystemId));
-        DimensionValue2Id := LOWERCASE(TypeHelper.GetGuidAsString(DimensionValue2.SystemId));
+        ParentIdAsText := LOWERCASE(Format(ParentId, 0, 4));
+        DimensionId := LOWERCASE(Format(Dimension.SystemId, 0, 4));
+        DimensionValue2Id := LOWERCASE(Format(DimensionValue2.SystemId, 0, 4));
         COMMIT();
 
         TargetURL :=
@@ -952,8 +951,8 @@ codeunit 139732 "APIV1 - Default Dimensions E2E"
         DefaultDimension.VALIDATE("Dimension Value Code", DimensionValue.Code);
         DefaultDimension.INSERT(TRUE);
 
-        ParentIdAsText := LOWERCASE(TypeHelper.GetGuidAsString(ParentId));
-        DimensionId := LOWERCASE(TypeHelper.GetGuidAsString(Dimension.SystemId));
+        ParentIdAsText := LOWERCASE(Format(ParentId, 0, 4));
+        DimensionId := LOWERCASE(Format(Dimension.SystemId, 0, 4));
         COMMIT();
 
         TargetURL :=

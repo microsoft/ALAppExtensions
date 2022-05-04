@@ -24,6 +24,11 @@ pageextension 18158 "GST Ship-to Address" extends "Ship-to Address"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies if the Ship to Address is defiened as consignee.';
             }
+            field("Ship-to GST Customer Type"; Rec."Ship-to GST Customer Type")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the type of Ship-to GST Customer Type for the Ship to Address. For example Registered/Sez/Deemed Export';
+            }
         }
     }
 }

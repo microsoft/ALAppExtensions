@@ -21,10 +21,15 @@ pageextension 1706 AccReceivableActivitiesExt extends "Acc. Receivable Activitie
     }
 
     trigger OnOpenPage()
+#if not CLEAN21
     var
         BankDepositFeatureMgt: Codeunit "Bank Deposit Feature Mgt.";
+#endif
     begin
+        BankDepositFeatureEnabled := true;
+#if not CLEAN21
         BankDepositFeatureEnabled := BankDepositFeatureMgt.IsEnabled();
+#endif
     end;
 
     var

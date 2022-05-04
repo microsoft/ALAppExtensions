@@ -19,11 +19,11 @@ table 9008 "User Login"
         }
         field(3; "Penultimate Login Date"; DateTime)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
         }
         field(4; "Last Login Date"; DateTime)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
         }
     }
 

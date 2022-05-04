@@ -66,6 +66,13 @@ page 1696 "Posted Bank Deposit List"
                     ToolTip = 'Specifies the currency code of the bank account that the deposit was deposited in.';
                     Visible = false;
                 }
+                field(Reversed; GLRegisterReversed)
+                {
+                    ApplicationArea = Suite;
+                    Editable = false;
+                    Caption = 'Reversed';
+                    ToolTip = 'Specifies if transactions from the corresponding G/L Register have been reversed.';
+                }
                 field("Language Code"; Rec."Language Code")
                 {
                     ApplicationArea = Basic, Suite;
@@ -97,6 +104,29 @@ page 1696 "Posted Bank Deposit List"
                                   "No." = FIELD("No.");
                     RunPageView = WHERE("Table Name" = CONST("Posted Bank Deposit Header"));
                     ToolTip = 'View a list of deposit comments.';
+                }
+                action(Undo)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = '&Undo Posting';
+                    Ellipsis = true;
+                    Image = Undo;
+                    Promoted = true;
+                    PromotedOnly = true;
+                    PromotedCategory = Process;
+                    PromotedIsBig = true;
+                    ToolTip = 'Undo the posting of the bank deposit by reversing all related ledger entries.';
+
+                    trigger OnAction()
+                    begin
+                        if not GuiAllowed() then
+                            Error(BankDepositNonGUISessionErr);
+
+                        if not Confirm(UndoPostingQst) then
+                            exit;
+                        Rec.ReverseTransactions();
+                        CurrPage.Update(false);
+                    end;
                 }
                 action(Dimensions)
                 {
@@ -155,6 +185,21 @@ page 1696 "Posted Bank Deposit List"
         }
     }
 
+    trigger OnAfterGetCurrRecord()
+    var
+        GLRegister: Record "G/L Register";
+        GLRegNo: Integer;
+    begin
+        GLRegisterReversed := false;
+
+        if Rec.FindGLRegisterNo(GLRegNo) then begin
+            GLRegister.Get(GLRegNo);
+            if GLRegister.Reversed then
+                GLRegisterReversed := true;
+        end;
+    end;
+
+#if not CLEAN21
     trigger OnInit()
     var
         FeatureBankDeposits: Codeunit "Feature Bank Deposits";
@@ -163,9 +208,13 @@ page 1696 "Posted Bank Deposit List"
             exit;
         FeatureBankDeposits.PromptFeatureBlockingOpen();
     end;
+#endif
 
     var
+        GLRegisterReversed: Boolean;
         BankDepositReportSelectionErr: Label 'Bank deposit report has not been set up.';
+        UndoPostingQst: Label 'This will reverse all ledger entries that are related to the lines of the bank deposit. Do you want to continue?';
+        BankDepositNonGUISessionErr: Label 'To undo the posting of a bank deposit, you must sign in to Business Central from a web browser.';
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforePrintPostedBankDeposit(var PostedBankDepositHeader: Record "Posted Bank Deposit Header"; var IsHandled: Boolean)

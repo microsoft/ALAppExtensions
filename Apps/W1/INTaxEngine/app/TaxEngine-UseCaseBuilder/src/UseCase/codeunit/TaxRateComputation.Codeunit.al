@@ -278,6 +278,7 @@ codeunit 20291 "Tax Rate Computation"
         RHSValue: Variant;
         ColumnScore: Integer;
         ColumnRank: Text;
+        ColumnValue: Text;
     begin
         TaxRateColumnSetup.SetCurrentKey(Sequence);
         TaxRateColumnSetup.SetRange("Tax Type", TaxRate."Tax Type");
@@ -292,7 +293,8 @@ codeunit 20291 "Tax Rate Computation"
                     if not QualifyRangeColumn(TaxRate, TaxRateColumnSetup, RHSValue, ColumnScore) then
                         exit(false);
 
-                    ColumnRank := PadStr(Format(ColumnScore, 0, 2), 10, '0');
+                    ColumnValue := Format(ColumnScore, 0, 2);
+                    ColumnRank := ColumnValue.PadLeft(10, '0');
                     Rank += ColumnRank;
                 end else
                     if (TaxRateColumnSetup."Column Type" in [
@@ -303,7 +305,8 @@ codeunit 20291 "Tax Rate Computation"
                         if not QualifyAllowBlankColumn(SymbolStore, TaxRate, TaxRateColumnSetup, ColumnScore) then
                             exit(false);
 
-                        ColumnRank := PadStr(Format(ColumnScore, 0, 2), 10, '0');
+                        ColumnValue := Format(ColumnScore, 0, 2);
+                        ColumnRank := ColumnValue.PadLeft(10, '0');
                         Rank += ColumnRank;
                     end;
             until TaxRateColumnSetup.Next() = 0;

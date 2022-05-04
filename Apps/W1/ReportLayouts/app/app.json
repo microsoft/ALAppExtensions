@@ -1,26 +1,32 @@
 {
-    "id": "b7174aae-753c-4e71-bacb-d973995dce5e",
-    "name": "_Exclude_ReportLayouts",
-    "publisher": "Microsoft",
+    "id":  "b7174aae-753c-4e71-bacb-d973995dce5e",
+    "name":  "_Exclude_ReportLayouts",
+    "publisher":  "Microsoft",
     "brief":  "Report layouts made available by extensions or created by users.",
     "description":  "The report layouts page shows all the report layouts made available from extensions or those defined by users.",
-    "version":  "20.0.0.0",
+    "version":  "20.1.0.0",
     "help":  "https://go.microsoft.com",
     "privacyStatement":  "https://go.microsoft.com",
     "EULA":  "https://go.microsoft.com",
     "url":  "https://go.microsoft.com",
     "contextSensitiveHelpUrl":  "https://go.microsoft.com",
     "logo":  "ExtensionLogo.png",
-    "dependencies": [],
-    "internalsVisibleTo": [
+    "dependencies":  [
 
-    ],
-    "application":  "20.0.0.0",
-    "target": "OnPrem",
-    "resourceExposurePolicy": {
-        "allowDebugging": false,
-        "allowDownloadingSource": true,
-        "includeSourceInSymbolFile": true
-    },
-    "platform": "20.0.0.0"
+                     ],
+    "internalsVisibleTo":  [
+        {
+            "id":  "cda5ad98-6726-4b70-a909-04d33c948314",
+            "name":  "Report Layouts Tests",
+            "publisher":  "Microsoft"
+        }
+                           ],
+    "application":  "20.1.0.0",
+    "target":  "OnPrem",
+    "resourceExposurePolicy":  {
+                                   "allowDebugging":  false,
+                                   "allowDownloadingSource":  true,
+                                   "includeSourceInSymbolFile":  true
+                               },
+    "platform":  "20.0.0.0"
 }

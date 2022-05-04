@@ -25,6 +25,7 @@ pageextension 11704 "Customer Card CZL" extends "Customer Card"
                 Importance = Additional;
             }
         }
+#if not CLEAN21
         addafter("Credit Limit (LCY)")
         {
             field(BalanceOfVendorCZL; BalanceAsVendor)
@@ -34,6 +35,10 @@ pageextension 11704 "Customer Card CZL" extends "Customer Card"
                 Editable = false;
                 Enabled = BalanceOfVendorEnabled;
                 ToolTip = 'Specifies the vendor''s balance which is connected with certain customer';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Duplicated field.';
+                ObsoleteTag = '21.0';
 
                 trigger OnDrillDown()
                 var
@@ -48,6 +53,7 @@ pageextension 11704 "Customer Card CZL" extends "Customer Card"
                 end;
             }
         }
+#endif
         addafter(PricesandDiscounts)
         {
             group("Foreign Trade")

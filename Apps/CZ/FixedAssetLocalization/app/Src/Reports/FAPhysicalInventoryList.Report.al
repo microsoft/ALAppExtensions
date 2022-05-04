@@ -259,12 +259,6 @@ report 31253 "FA Physical Inventory List CZF"
                 }
             }
         }
-
-        trigger OnOpenPage()
-        begin
-            FASetup.Get();
-            DeprBookCode := FASetup."Default Depr. Book";
-        end;
     }
 
     labels
@@ -298,7 +292,6 @@ report 31253 "FA Physical Inventory List CZF"
 
     var
         CompanyOfficialCZL: Record "Company Official CZL";
-        FASetup: Record "FA Setup";
         FADepreciationBook: Record "FA Depreciation Book";
         PrintFAValues, PrintZeroBookValue : Boolean;
         DocumentNo, DeprBookCode : Code[10];

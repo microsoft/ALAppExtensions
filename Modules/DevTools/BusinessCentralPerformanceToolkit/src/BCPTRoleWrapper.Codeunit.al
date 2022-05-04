@@ -122,6 +122,7 @@ codeunit 149002 "BCPT Role Wrapper"
         TestMethodLine: Record "Test Method Line";
         TestRunnerIsolDisabled: Codeunit "Test Runner - Isol. Disabled";
     begin
+        SetBCPTLine(BCPTLine);
         TestMethodLine."Line Type" := TestMethodLine."Line Type"::Codeunit;
         TestMethodLine."Skip Logging Results" := true;
         TestMethodLine."Test Codeunit" := BCPTLine."Codeunit ID";

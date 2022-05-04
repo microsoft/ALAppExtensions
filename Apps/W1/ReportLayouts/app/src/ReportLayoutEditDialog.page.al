@@ -30,7 +30,7 @@ page 9661 "Report Layout Edit Dialog"
                 Enabled = false;
                 ToolTip = 'Specifies the name of the report.';
             }
-            field(LayoutName; LayoutName)
+            field(LayoutName; NewLayoutName)
             {
                 ApplicationArea = Basic, Suite;
                 NotBlank = true;
@@ -40,11 +40,13 @@ page 9661 "Report Layout Edit Dialog"
 
                 trigger OnValidate()
                 begin
-                    "LayoutName" := "LayoutName".Trim();
-                    if "LayoutName" = '' then
+                    NewLayoutName := NewLayoutName.Trim();
+                    if NewLayoutName = '' then
                         Error(LayoutNameEmptyErr);
-                    if TenantReportLayout.Get(ReportID, LayoutName, emptyGuid) then
-                        Error(LayoutAlreadyExistsErr, LayoutName);
+
+                    if TenantReportLayout.Get(ReportID, NewLayoutName, emptyGuid) then
+                        if CreateCopy or (OldLayoutName <> NewLayoutName) then
+                            Error(LayoutAlreadyExistsErr, NewLayoutName);
                 end;
             }
             field(Description; Description)
@@ -71,7 +73,8 @@ page 9661 "Report Layout Edit Dialog"
     var
         TenantReportLayout: Record "Tenant Report Layout";
         ReportID: Integer;
-        LayoutName: Text[250];
+        OldLayoutName: Text[250];
+        NewLayoutName: Text[250];
         ReportName: Text;
         Description: Text[250];
         LayoutAlreadyExistsErr: Label 'A layout named %1 already exists.', Comment = '%1 = Layout Name';
@@ -87,7 +90,7 @@ page 9661 "Report Layout Edit Dialog"
 
     internal procedure SelectedLayoutName(): Text[250]
     begin
-        exit(LayoutName);
+        exit(NewLayoutName);
     end;
 
     internal procedure CopyOperationEnabled(): Boolean
@@ -100,7 +103,8 @@ page 9661 "Report Layout Edit Dialog"
         ReportID := ReportLayoutList."Report ID";
         ReportName := ReportLayoutList."Report Name";
         Description := ReportLayoutList."Description";
-        LayoutName := ReportLayoutList."Name";
+        OldLayoutName := ReportLayoutList."Caption";
+        NewLayoutName := OldLayoutName;
 
         if ForceCopy then begin
             CreateCopy := true;

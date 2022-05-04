@@ -69,7 +69,8 @@ codeunit 11743 "Sales Header Handler CZL"
     begin
         SalesHeader."Registration No. CZL" := SellToCustomer."Registration No. CZL";
         SalesHeader."Tax Registration No. CZL" := SellToCustomer."Tax Registration No. CZL";
-        SalesHeader."Transaction Type" := SellToCustomer."Transaction Type CZL";
+        if SellToCustomer."Transaction Type CZL" <> '' then
+            SalesHeader."Transaction Type" := SellToCustomer."Transaction Type CZL";
         SalesHeader."Transaction Specification" := SellToCustomer."Transaction Specification CZL";
         SalesHeader."Transport Method" := SellToCustomer."Transport Method CZL";
         if SalesHeader.IsCreditDocType() then

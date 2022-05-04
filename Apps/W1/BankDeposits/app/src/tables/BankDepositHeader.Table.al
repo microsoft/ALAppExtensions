@@ -49,16 +49,18 @@ table 1690 "Bank Deposit Header"
             TableRelation = Currency;
 
             trigger OnValidate()
+            var
+                LocalGenJournalLine: Record "Gen. Journal Line";
             begin
                 UpdateCurrencyFactor();
                 if "Currency Code" <> xRec."Currency Code" then begin
-                    GenJournalLine.SetRange("Journal Template Name", "Journal Template Name");
-                    GenJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
-                    if GenJournalLine.FindSet(true) then
+                    LocalGenJournalLine.SetRange("Journal Template Name", "Journal Template Name");
+                    LocalGenJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
+                    if LocalGenJournalLine.FindSet(true) then
                         repeat
-                            GenJournalLine.Validate("Currency Code", "Currency Code");
-                            GenJournalLine.Modify(true);
-                        until GenJournalLine.Next() = 0;
+                            LocalGenJournalLine.Validate("Currency Code", "Currency Code");
+                            LocalGenJournalLine.Modify(true);
+                        until LocalGenJournalLine.Next() = 0;
                 end;
             end;
         }
@@ -74,18 +76,23 @@ table 1690 "Bank Deposit Header"
             Caption = 'Posting Date';
 
             trigger OnValidate()
+            var
+                LocalGenJournalLine: Record "Gen. Journal Line";
+                OrigDocumentDate: Date;
             begin
                 TestField("Posting Date");
                 UpdateCurrencyFactor();
                 if "Document Date" = 0D then
                     "Document Date" := "Posting Date";
-                GenJournalLine.SetRange("Journal Template Name", "Journal Template Name");
-                GenJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
-                if GenJournalLine.FindSet(true) then
+                LocalGenJournalLine.SetRange("Journal Template Name", "Journal Template Name");
+                LocalGenJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
+                if LocalGenJournalLine.FindSet(true) then
                     repeat
-                        GenJournalLine.Validate("Posting Date", "Posting Date");
-                        GenJournalLine.Modify(true);
-                    until GenJournalLine.Next() = 0;
+                        OrigDocumentDate := LocalGenJournalLine."Document Date";
+                        LocalGenJournalLine.Validate("Posting Date", "Posting Date");
+                        LocalGenJournalLine."Document Date" := OrigDocumentDate;
+                        LocalGenJournalLine.Modify(true);
+                    until LocalGenJournalLine.Next() = 0;
             end;
         }
         field(6; "Total Deposit Amount"; Decimal)
@@ -234,10 +241,12 @@ table 1690 "Bank Deposit Header"
     }
 
     trigger OnDelete()
+    var
+        LocalGenJournalLine: Record "Gen. Journal Line";
     begin
-        GenJournalLine.SetRange("Journal Template Name", "Journal Template Name");
-        GenJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
-        GenJournalLine.DeleteAll(true);
+        LocalGenJournalLine.SetRange("Journal Template Name", "Journal Template Name");
+        LocalGenJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
+        LocalGenJournalLine.DeleteAll(true);
     end;
 
     trigger OnInsert()

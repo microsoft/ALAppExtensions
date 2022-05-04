@@ -28,6 +28,6 @@ page 1997 "Checklist Resurfacing"
         ChecklistImplementation: Codeunit "Checklist Implementation";
     begin
         if CloseAction = CloseAction::Yes then
-            ChecklistImplementation.SetChecklistVisibility(UserId(), true);
+            ChecklistImplementation.SetChecklistVisibility(UserId(), true, true);
     end;
 }

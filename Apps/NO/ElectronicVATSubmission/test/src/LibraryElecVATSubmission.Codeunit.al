@@ -91,6 +91,15 @@ codeunit 148130 "Library - Elec. VAT Submission"
         VATCode.Modify(true);
     end;
 
+    procedure SetReportVATNoteInVATReportSetup(NewReportVATNote: Boolean)
+    var
+        VATReportSetup: Record "VAT Report Setup";
+    begin
+        VATReportSetup.Get();
+        VATReportSetup.Validate("Report VAT Note", NewReportVATNote);
+        VATReportSetup.Modify(true);
+    end;
+
     procedure FindSubmissionXmlRequestHeaderElement(var TempXMLBuffer: Record "XML Buffer" temporary)
     begin
         TempXMLBuffer.FindNodesByXPath(TempXMLBuffer, 'mvaMeldingDto');

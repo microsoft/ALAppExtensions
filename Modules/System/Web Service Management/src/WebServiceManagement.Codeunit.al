@@ -83,6 +83,16 @@ codeunit 9750 "Web Service Management"
     end;
 
     /// <summary>
+    /// Returns the tenant web service filter for a given record.
+    /// </summary>
+    /// <param name="TenantWebServiceFilter">The record for getting filter.</param>
+    /// <returns>Tenant web service filter for the given record.</returns>
+    procedure RetrieveTenantWebServiceFilter(var TenantWebServiceFilter: Record "Tenant Web Service Filter"): Text
+    begin
+        exit(WebServiceManagementImpl.RetrieveTenantWebServiceFilter(TenantWebServiceFilter));
+    end;
+
+    /// <summary>
     /// Sets the tenant web service filter for a given record.
     /// </summary>
     /// <param name="TenantWebServiceFilter">The record for setting tenant web service filter.</param>

@@ -52,7 +52,9 @@ codeunit 11744 "Purchase Header Handler CZL"
     begin
         PurchaseHeader."Registration No. CZL" := Vendor."Registration No. CZL";
         PurchaseHeader."Tax Registration No. CZL" := Vendor."Tax Registration No. CZL";
-        if Vendor."Transaction Type CZL" <> PurchaseHeader."Transaction Type" then
+        if (Vendor."Transaction Type CZL" <> '') and
+           (Vendor."Transaction Type CZL" <> PurchaseHeader."Transaction Type")
+        then
             PurchaseHeader.Validate("Transaction Type", Vendor."Transaction Type CZL");
         if Vendor."Transaction Specification CZL" <> PurchaseHeader."Transaction Specification" then
             PurchaseHeader.Validate("Transaction Specification", Vendor."Transaction Specification CZL");

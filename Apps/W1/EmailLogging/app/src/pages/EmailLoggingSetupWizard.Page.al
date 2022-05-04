@@ -485,7 +485,7 @@ page 1681 "Email Logging Setup Wizard"
                     end else
                         Session.LogMessage('0000G0U', SkipCreatingEmailLoggingJobTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
 
-                    GuidedExperience.CompleteAssistedSetup(ObjectType::Page, PAGE::"Setup Email Logging");
+                    GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"Email Logging Setup Wizard");
 
                     Session.LogMessage('0000G0V', EmailLoggingSetupCompletedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
                     CurrPage.Close();
@@ -544,7 +544,7 @@ page 1681 "Email Logging Setup Wizard"
         GuidedExperience: Codeunit "Guided Experience";
     begin
         if CloseAction = Action::OK then
-            if GuidedExperience.AssistedSetupExistsAndIsNotComplete(ObjectType::Page, PAGE::"Setup Email Logging") then
+            if GuidedExperience.AssistedSetupExistsAndIsNotComplete(ObjectType::Page, Page::"Email Logging Setup Wizard") then
                 if not Confirm(NotSetUpQst, false) then
                     Error('');
     end;

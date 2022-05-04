@@ -6,6 +6,10 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
 #pragma warning disable AL0432
         movelast(General; "Posting Description")
 #pragma warning restore AL0432
+        modify("Vendor Posting Group")
+        {
+            Editable = IsPostingGroupEditableCZL;
+        }
 #else
         addlast(General)
         {
@@ -198,9 +202,25 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
             }
         }
     }
+#if not CLEAN20
+
+    trigger OnOpenPage()
+    begin
+        PurchasesPayablesSetupCZL.GetRecordOnce();
+#pragma warning disable AL0432
+        IsPostingGroupEditableCZL := PurchasesPayablesSetupCZL."Allow Alter Posting Groups CZL";
+#pragma warning restore AL0432
+    end;
+#endif
 
     var
+#if not CLEAN20
+        PurchasesPayablesSetupCZL: Record "Purchases & Payables Setup";
+#endif
         ChangeExchangeRate: Page "Change Exchange Rate";
+#if not CLEAN20
+        IsPostingGroupEditableCZL: Boolean;
+#endif
 
     local procedure CurrencyCodeOnAfterValidate()
     begin

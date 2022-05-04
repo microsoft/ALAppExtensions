@@ -75,6 +75,7 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
     end;
 
     [TryFunction]
+    [NonDebuggable]
     local procedure TryGetContentHeaders(var HttpRequestMessage: HttpRequestMessage; var RequestHttpHeaders: HttpHeaders)
     begin
         HttpRequestMessage.Content.GetHeaders(RequestHttpHeaders);

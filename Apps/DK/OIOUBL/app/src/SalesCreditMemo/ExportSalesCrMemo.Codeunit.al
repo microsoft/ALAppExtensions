@@ -181,6 +181,7 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         XMLdocOut: XmlDocument;
         XMLCurrNode: XmlElement;
         CurrencyCode: Code[10];
+        ExternalDocumentNo: Code[35];
         LineAmount: Decimal;
         TaxAmount: Decimal;
         TotalAmount: Decimal;
@@ -235,8 +236,14 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         XMLCurrNode.Add(XmlElement.Create('AccountingCostCode', DocNameSpace, SalesCrMemoHeader."OIOUBL-Account Code"));
 
         InsertDiscrepancyResponse(XMLCurrNode);
+        ExternalDocumentNo := SalesCrMemoHeader."External Document No.";
+        if ExternalDocumentNo = '' then begin
+            SalesSetup.Get();
+            if SalesSetup."Document No. as Ext. Doc. No." then
+                ExternalDocumentNo := SalesCrMemoHeader."No.";
+        end;
         OIOUBLXMLGenerator.InsertOrderReference(XMLCurrNode,
-          SalesCrMemoHeader."External Document No.",
+          ExternalDocumentNo,
           SalesCrMemoHeader."Applies-to Doc. No.",
           SalesCrMemoHeader."Posting Date");
 

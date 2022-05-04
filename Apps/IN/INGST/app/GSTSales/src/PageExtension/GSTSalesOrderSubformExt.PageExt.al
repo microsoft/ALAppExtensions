@@ -13,8 +13,14 @@ pageextension 18151 "GST Sales Order Subform Ext" extends "Sales Order Subform"
         Modify("Quantity")
         {
             trigger OnAfterValidate()
+            var
+                CalculateTax: Codeunit "Calculate Tax";
             begin
                 SaveRecords();
+                if (Rec."GST Group Code" <> '') and (Rec."HSN/SAC Code" <> '') then begin
+                    Rec.Validate("GST Place Of Supply");
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
             end;
         }
         modify("Location Code")

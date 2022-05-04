@@ -109,7 +109,7 @@ codeunit 4516 "OAuth2 SMTP Authentication"
 
         if SMTPServer = SMTPConnectorImpl.GetO365SmtpServer() then begin
             GetOAuth2Credentials(UserName, AccessToken);
-            SMTPAuthentication.SetOAuth2AuthInfo(CopyStr(UserName, 1, 250), CopyStr(AccessToken, 1, 250));
+            SMTPAuthentication.SetOAuth2AuthInfo(CopyStr(UserName, 1, 250), AccessToken);
             Handled := true;
         end;
     end;

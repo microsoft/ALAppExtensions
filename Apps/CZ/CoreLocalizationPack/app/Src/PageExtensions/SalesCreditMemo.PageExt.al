@@ -2,6 +2,12 @@ pageextension 11729 "Sales Credit Memo CZL" extends "Sales Credit Memo"
 {
     layout
     {
+#if not CLEAN20
+        modify("Customer Posting Group")
+        {
+            Editable = IsPostingGroupEditableCZL;
+        }
+#endif
         movelast(General; "Posting Description")
         addlast(General)
         {
@@ -189,4 +195,18 @@ pageextension 11729 "Sales Credit Memo CZL" extends "Sales Credit Memo"
             }
         }
     }
+#if not CLEAN20
+
+    trigger OnOpenPage()
+    begin
+        SalesReceivablesSetupCZL.GetRecordOnce();
+#pragma warning disable AL0432
+        IsPostingGroupEditableCZL := SalesReceivablesSetupCZL."Allow Alter Posting Groups CZL";
+#pragma warning restore AL0432
+    end;
+
+    var
+        SalesReceivablesSetupCZL: Record "Sales & Receivables Setup";
+        IsPostingGroupEditableCZL: Boolean;
+#endif
 }

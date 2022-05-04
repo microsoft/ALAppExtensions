@@ -7,7 +7,6 @@ page 1563 "Privacy Notice"
 {
     Caption = 'Please review terms and conditions';
     PageType = NavigatePage;
-    Editable = false;
     SourceTable = "Privacy Notice";
     SourceTableTemporary = true;
     Extensible = false;
@@ -31,7 +30,7 @@ page 1563 "Privacy Notice"
 
                 trigger OnDrillDown()
                 begin
-                    Hyperlink(Rec.Link);
+                    Hyperlink(PrivacyNoticeRecord.Link);
                 end;
             }
             label(ApproveForOrganization)
@@ -75,8 +74,8 @@ page 1563 "Privacy Notice"
                     PrivacyNotice: Codeunit "Privacy Notice";
                 begin
                     IsAgreed := true;
-                    if ID <> '' then
-                        PrivacyNotice.SetApprovalState(Rec.ID, "Privacy Notice Approval State"::Agreed);
+                    if PrivacyNoticeRecord.ID <> '' then
+                        PrivacyNotice.SetApprovalState(PrivacyNoticeRecord.ID, "Privacy Notice Approval State"::Agreed);
                     CurrPage.Close();
                 end;
             }
@@ -94,6 +93,7 @@ page 1563 "Privacy Notice"
     begin
         PrivacyText := StrSubstNo(PrivacyAgreementTxt, Rec."Integration Service Name", ProductName.Marketing());
         UserCanApproveForOrganization := PrivacyNotice.CanCurrentUserApproveForOrganization();
+        PrivacyNoticeRecord := Rec;
     end;
 
     procedure GetUserApprovalState(): Enum "Privacy Notice Approval State"
@@ -111,8 +111,9 @@ page 1563 "Privacy Notice"
     end;
 
     var
+        PrivacyNoticeRecord: Record "Privacy Notice";
         LearnMoreTxt: Label 'Privacy and Cookies';
-        PrivacyAgreementTxt: Label 'By enabling %1, you consent to your data being shared with Microsoft services that might be outside of your organization''s selected geographic boundaries and might have different compliance and security standards than %2. Your privacy is important to us, and you can choose whether to share data with the service. To learn more, follow the link below.', Comment = '%1 = the integration service name, ex. Microsoft Sharepoint, %2 = the full marketing name, such as Microsoft Dynamics 365 Business Central.';
+        PrivacyAgreementTxt: Label 'By using %1, you consent to your data being shared with Microsoft services that might be outside of your organization''s selected geographic boundaries and might have different compliance and security standards than %2. Your privacy is important to us, and you can choose whether to share data with the service. To learn more, follow the link below.', Comment = '%1 = the integration service name, ex. Microsoft Sharepoint, %2 = the full marketing name, such as Microsoft Dynamics 365 Business Central.';
         PrivacyText: Text;
         UserCanApproveForOrganization: Boolean;
         IsAgreed: Boolean;

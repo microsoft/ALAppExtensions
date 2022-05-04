@@ -8,13 +8,42 @@ codeunit 130044 "User Login Time Tracker Test"
     // Tests for the User Login Time Tracker codeunit
 
     Subtype = Test;
-    Permissions = tabledata "User Login" = rim;
+    Permissions = tabledata "User Login" = r,
+                  tabledata "User Environment Login" = r;
 
     var
         LibraryAssert: Codeunit "Library Assert";
         UserLoginTimeTracker: Codeunit "User Login Time Tracker";
         UserLoginTestLibrary: Codeunit "User Login Test Library";
         PermissionsMock: Codeunit "Permissions Mock";
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
+    procedure TestUserLoggedInEnvironment()
+    var
+        User: Record "User";
+        UserSecId: Guid;
+    begin
+        // [GIVEN] A new user
+        UserSecId := CreateGuid();
+        User.Init();
+        User."User Security ID" := UserSecId;
+        User.Insert();
+
+        PermissionsMock.Set('User Login View');
+
+        // [WHEN] Checking whether the user has logged in before
+        // [THEN] The result should be false, as the user is new and has never logged in
+        LibraryAssert.IsFalse(UserLoginTimeTracker.UserLoggedInEnvironment(UserSecId), 'The user has logged in before');
+
+        // [GIVEN] A User Login record corresponding to the new User
+        UserLoginTestLibrary.InsertUserLogin(UserSecId, Today(), CurrentDateTime(), 0DT);
+
+        // [WHEN] Checking whether the user has logged in before
+        // [THEN] The result should be true
+        LibraryAssert.IsTrue(UserLoginTimeTracker.UserLoggedInEnvironment(UserSecId), 'The user has not logged in before');
+    end;
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -194,9 +223,10 @@ codeunit 130044 "User Login Time Tracker Test"
     procedure TestCreateOrUpdateLoginInfo()
     var
         UserLogin: Record "User Login";
+        UserEnvironmentLogin: Record "User Environment Login";
     begin
         // [GIVEN] The User Login table is empty
-        UserLogin.DeleteAll();
+        UserLoginTestLibrary.DeleteAllLoginInformation();
 
         PermissionsMock.Set('User Login View');
 
@@ -206,13 +236,18 @@ codeunit 130044 "User Login Time Tracker Test"
         // [THEN] The User Login table should contain a single record (the one for the current test user)
         LibraryAssert.AreEqual(1, UserLogin.Count(), 'The User Login table should contain a single entry');
 
-        if UserLogin.FindSet() then;
+        LibraryAssert.IsTrue(UserLogin.Get(UserSecurityId()), 'There should be a User Login entry for the current user');
 
         // [THEN] The fields of the User Login table should be properly assigned	
         LibraryAssert.AreEqual(UserSecurityId(), UserLogin."User SID", 'The user security ID is incorrect');
         LibraryAssert.AreNotEqual(0D, UserLogin."First Login Date", 'The first login date should not be empty');
         LibraryAssert.AreEqual(0DT, UserLogin."Penultimate Login Date", 'The penultimate login date should be 0DT, as the user had only logged in once');
         LibraryAssert.AreNotEqual(0DT, UserLogin."Last Login Date", 'The last login date should not be empty');
+        LibraryAssert.AreEqual(UserLogin."First Login Date", DT2Date(UserLogin."Last Login Date"), 'First login and Last login should be on the same date');
+
+        // [THEN] The User Environment Login table should contain a single record (the one for the current test user)
+        LibraryAssert.AreEqual(1, UserEnvironmentLogin.Count(), 'The User Environment Login table should contain a single entry');
+        LibraryAssert.IsTrue(UserLogin.Get(UserSecurityId()), 'There should be a User Enviroment Login entry for the current user');
 
         // [WHEN] Calling CreateOrUpdateLoginInfo
         UserLoginTimeTracker.CreateOrUpdateLoginInfo();
@@ -220,12 +255,16 @@ codeunit 130044 "User Login Time Tracker Test"
         // [THEN] The User Login table should still contain a single record
         LibraryAssert.AreEqual(1, UserLogin.Count(), 'The User Login table should contain a single entry');
 
-        if UserLogin.FindFirst() then;
+        LibraryAssert.IsTrue(UserLogin.Get(UserSecurityId()), 'There should be a User Login entry for the current user');
 
         // [THEN] The fields of the User Login table should be properly assigned	
         LibraryAssert.AreEqual(UserSecurityId(), UserLogin."User SID", 'The user security ID is incorrect');
         LibraryAssert.AreNotEqual(0D, UserLogin."First Login Date", 'The first login date should not be empty');
         LibraryAssert.AreNotEqual(0DT, UserLogin."Penultimate Login Date", 'The penultimate not be empty');
         LibraryAssert.AreNotEqual(0DT, UserLogin."Last Login Date", 'The last login date not be empty');
+
+        // [THEN] The User Environment Login table should contain a single record (the one for the current test user)
+        LibraryAssert.AreEqual(1, UserEnvironmentLogin.Count(), 'The User Environment Login table should contain a single entry');
+        LibraryAssert.IsTrue(UserLogin.Get(UserSecurityId()), 'There should be a User Enviroment Login entry for the current user');
     end;
 }

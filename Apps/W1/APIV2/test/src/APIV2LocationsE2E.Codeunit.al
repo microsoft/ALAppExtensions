@@ -225,15 +225,15 @@ codeunit 139868 "APIV2 - Locations E2E"
     local procedure GetSalesOrderLineWithLocationJSON(Item: Record Item; var Location: Record Location) SalesOrderLineJSON: Text
     var
         JSONManagement: Codeunit "JSON Management";
-        JObjectDotNet: DotNet JObject;
+        "Newtonsoft.Json.Linq.JObject": DotNet JObject;
         LocationJSON: Text;
     begin
         SalesOrderLineJSON := LibraryGraphMgt.AddPropertytoJSON(SalesOrderLineJSON, 'itemId', FormatGuid(Item.SystemId));
         SalesOrderLineJSON := LibraryGraphMgt.AddPropertytoJSON(SalesOrderLineJSON, 'quantity', Random(5));
         LocationJSON := GetLocationJSON(Location);
         JSONManagement.InitializeObject(SalesOrderLineJSON);
-        JSONManagement.GetJSONObject(JObjectDotNet);
-        JSONManagement.AddJObjectToJObject(JObjectDotNet, 'location', LocationJSON);
+        JSONManagement.GetJSONObject("Newtonsoft.Json.Linq.JObject");
+        JSONManagement.AddJObjectToJObject("Newtonsoft.Json.Linq.JObject", 'location', LocationJSON);
         SalesOrderLineJSON := JSONManagement.WriteObjectToString();
         exit(SalesOrderLineJSON);
     end;

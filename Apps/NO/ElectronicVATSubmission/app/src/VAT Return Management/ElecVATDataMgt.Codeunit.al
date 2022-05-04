@@ -171,11 +171,13 @@ codeunit 10683 "Elec. VAT Data Mgt."
                     CalculateWith := VATStatementLine."Calculate with"::"Opposite Sign";
                 repeat
                     RowNo := TempRequiredVATCode.Code;
-                    If (SetupCount > 1) or ((TempVATPostingSetup."Sales SAF-T Standard Tax Code" <> '') and (TempVATPostingSetup."Purch. SAF-T Standard Tax Code" <> '')) then
+                    If (SetupCount > 1) or
+                       ((TempVATPostingSetup."Sales SAF-T Standard Tax Code" = TempRequiredVATCode.Code) and (TempVATPostingSetup."Purch. SAF-T Standard Tax Code" = TempRequiredVATCode.Code))
+                    then
                         BoxNo := ''
                     else
                         BoxNo := TempRequiredVATCode.Code;
-                    if TempVATPostingSetup."Sales SAF-T Standard Tax Code" <> '' then begin
+                    if TempVATPostingSetup."Sales SAF-T Standard Tax Code" = TempRequiredVATCode.Code then begin
                         LineNo += 10000;
                         AmountRowNo += 1;
                         if BoxNo = '' then
@@ -185,7 +187,7 @@ codeunit 10683 "Elec. VAT Data Mgt."
                             VATStatementLine."Gen. Posting Type"::Sale, LineNo, CalculateWith);
                         AddToFilter(RowTotalingFilter, VATStatementLine."Row No.");
                     end;
-                    if TempVATPostingSetup."Purch. SAF-T Standard Tax Code" <> '' then begin
+                    if TempVATPostingSetup."Purch. SAF-T Standard Tax Code" = TempRequiredVATCode.Code then begin
                         LineNo += 10000;
                         AmountRowNo += 1;
                         if BoxNo = '' then

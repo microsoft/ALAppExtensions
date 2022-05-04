@@ -753,5 +753,11 @@ codeunit 1432 "Satisfaction Survey Impl."
     begin
         exit(60000);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
+    local procedure HandleOnAfterLogin()
+    begin
+        ActivateSurvey();
+    end;
 }
 

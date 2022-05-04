@@ -677,6 +677,23 @@ codeunit 18244 "GST Journal Line Validations"
         end;
     end;
 
+    procedure AfterValidateAccountNo(var GenJournalLine: Record "Gen. Journal Line")
+    var
+        Customer: Record Customer;
+    begin
+        case GenJournalLine."Account Type" of
+            GenJournalLine."Account Type"::Customer:
+                if GenJournalLine."Account No." <> '' then
+                    if Customer.Get(GenJournalLine."Account No.") then
+                        GenJournalLine.State := Customer."State Code";
+        end;
+    end;
+
+    procedure AfterValidateShipToCode(var GenJournalLine: Record "Gen. Journal Line")
+    begin
+        CheckShipCode(GenJournalLine);
+    end;
+
     procedure AccountType(var GenJournalLine: Record "Gen. Journal Line")
     var
         Location: Record Location;
@@ -1012,6 +1029,7 @@ codeunit 18244 "GST Journal Line Validations"
             ShiptoAddress.Get(GenJnlLine."Account No.", GenJnlLine."Ship-to Code");
             GenJnlLine."GST Ship-to State Code" := ShiptoAddress.State;
             GenJnlLine."Ship-to GST Reg. No." := ShiptoAddress."GST Registration No.";
+            GenJnlLine.State := ShiptoAddress.State;
             if GenJnlLine."GST Customer Type" <> "GST Customer Type"::" " then
                 if GenJnlLine."GST Customer Type" in ["GST Customer Type"::Exempted, "GST Customer Type"::"Deemed Export",
                                            "GST Customer Type"::"SEZ Development", "GST Customer Type"::"SEZ Unit",
@@ -1020,6 +1038,8 @@ codeunit 18244 "GST Journal Line Validations"
                     if GenJnlLine."Ship-to GST Reg. No." = '' then
                         if ShiptoAddress."ARN No." = '' then
                             Error(ShiptoGSTARNErr);
+
+            UpdateGSTJurisdictionType(GenJnlLine);
         end;
         if GenJnlLine."GST on Advance Payment" and
            (GenJnlLine."GST Place of Supply" = GenJnlLine."GST Place of Supply"::"Ship-to Address") and (GenJnlLine."Ship-to Code" = '')
@@ -1145,9 +1165,9 @@ codeunit 18244 "GST Journal Line Validations"
             exit;
         end;
 
-        if GenJournalLine."Location State Code" <> GenJournalLine."GST Bill-to/BuyFrom State Code" then
-            GenJournalLine."GST Jurisdiction Type" := GenJournalLine."GST Jurisdiction Type"::Interstate
+        if GenJournalLine."Location State Code" = GenJournalLine.State then
+            GenJournalLine."GST Jurisdiction Type" := GenJournalLine."GST Jurisdiction Type"::Intrastate
         else
-            GenJournalLine."GST Jurisdiction Type" := GenJournalLine."GST Jurisdiction Type"::Intrastate;
+            GenJournalLine."GST Jurisdiction Type" := GenJournalLine."GST Jurisdiction Type"::Interstate;
     end;
 }

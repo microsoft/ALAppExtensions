@@ -97,7 +97,7 @@ codeunit 8905 "Email Message Impl."
         BodyInStream.Read(BodyText);
     end;
 
-    procedure SetBodyValue(BodyText: Text)
+    local procedure SetBodyValue(BodyText: Text)
     var
         BodyOutStream: OutStream;
     begin
@@ -119,18 +119,13 @@ codeunit 8905 "Email Message Impl."
 
     procedure AppendToBody(BodyText: Text)
     var
-        BodyOutStream: OutStream;
-        Body: Text;
+        ExistingBodyText: Text;
     begin
         if BodyText = '' then
             exit;
 
-        ReplaceRgbaColorsWithRgb(BodyText);
-        Body := GetBody();
-        Message.Body.CreateOutStream(BodyOutStream, TextEncoding::UTF8);
-        BodyOutStream.Write(Body);
-        BodyOutStream.Write(BodyText);
-        Modify();
+        ExistingBodyText := GetBody();
+        SetBody(ExistingBodyText + BodyText);
     end;
 
     procedure GetSubject(): Text[2048]
@@ -138,7 +133,7 @@ codeunit 8905 "Email Message Impl."
         exit(EmailMessageRec.Subject);
     end;
 
-    procedure SetSubjectValue(Subject: Text)
+    local procedure SetSubjectValue(Subject: Text)
     begin
         EmailMessageRec.Subject := CopyStr(Subject, 1, MaxStrLen(EmailMessageRec.Subject));
     end;
@@ -154,7 +149,7 @@ codeunit 8905 "Email Message Impl."
         exit(EmailMessageRec."HTML Formatted Body");
     end;
 
-    procedure SetBodyHTMLFormattedValue(Value: Boolean)
+    local procedure SetBodyHTMLFormattedValue(Value: Boolean)
     begin
         EmailMessageRec."HTML Formatted Body" := Value;
     end;
@@ -360,27 +355,22 @@ codeunit 8905 "Email Message Impl."
 
     procedure AddRecipient(RecipientType: Enum "Email Recipient Type"; Recipient: Text)
     var
-        EmailRecipientRecord: Record "Email Recipient";
-        UniqueRecipients: Dictionary of [Text, Text];
         Recipients: List of [Text];
-        tmpRecipient: Text;
     begin
+        Recipient := DelChr(Recipient, '<>'); // trim the whitespaces around
+
         if Recipient = '' then
             exit;
 
-        Recipient := DelChr(Recipient, '<>'); // trim the whitespaces around
+        Recipient := Recipient.ToLower();
+
         Recipients := GetRecipients(RecipientType);
-        foreach tmpRecipient in Recipients do
-            if UniqueRecipients.Add(tmpRecipient.ToLower(), tmpRecipient) then;
 
-        if UniqueRecipients.Add(Recipient.ToLower(), Recipient) then begin // Set the recipient key to lowercase to prevent duplicates
-            EmailRecipientRecord.Init();
-            EmailRecipientRecord."Email Message Id" := Message.Id;
-            EmailRecipientRecord."Email Recipient Type" := RecipientType;
-            EmailRecipientRecord."Email Address" := CopyStr(Recipient, 1, MaxStrLen(EmailRecipientRecord."Email Address"));
+        if Recipients.Contains(Recipient) then
+            exit;
 
-            EmailRecipientRecord.Insert();
-        end;
+        Recipients.Add(Recipient);
+        SetRecipients(RecipientType, Recipients);
     end;
 
     procedure Attachments_DeleteContent(): Boolean

@@ -53,7 +53,17 @@ Cstr(Fields!CompensationHeader_Name.Value) + Chr(177) +
 "" + Chr(177) +
 Cstr(Fields!CompensationHeader_Address.Value) + Chr(177) +
 "" + Chr(177) +
-Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
+Cstr(Fields!CompensationHeader_RegistrationNo.Value) + Chr(177) +
+"" + Chr(177) +
+Cstr(Fields!ParagraphLbl.Value) + Chr(177) +
+"" + Chr(177) +
+Cstr(Fields!BusinessNameLbl.Value) + Chr(177) +
+"" + Chr(177) +
+Cstr(Fields!ResidenceLbl.Value) + Chr(177) +
+"" + Chr(177) +
+Cstr(Fields!BankConnectionLbl.Value) + Chr(177) +
+"" + Chr(177) +
+Cstr(Fields!RegistrationNoLbl.Value)</Value>
                                       <Style>
                                         <FontFamily>Segoe UI</FontFamily>
                                         <FontSize>8pt</FontSize>
@@ -170,7 +180,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!PostingDateLbl.Value</Value>
+                                                    <Value>=Fields!PostingDateLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -202,7 +212,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!DocumentTypeLbl.Value</Value>
+                                                    <Value>=Fields!DocumentTypeLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -234,7 +244,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!DocumentNoLbl.Value</Value>
+                                                    <Value>=Fields!DocumentNoLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -266,7 +276,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!VariableSymbolLbl.Value</Value>
+                                                    <Value>=Fields!VariableSymbolLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -298,7 +308,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!CurrencyCodeLbl.Value</Value>
+                                                    <Value>=Fields!CurrencyCodeLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -330,7 +340,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!DueDateLbl.Value</Value>
+                                                    <Value>=Fields!DueDateLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -362,7 +372,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!LedgerEntryOriginalAmountLbl.Value</Value>
+                                                    <Value>=Fields!LedgerEntryOriginalAmountLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -396,7 +406,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!LedgerEntryRemainingAmountLbl.Value</Value>
+                                                    <Value>=Fields!LedgerEntryRemainingAmountLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -430,7 +440,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!CompensationAmountLbl.Value</Value>
+                                                    <Value>=Fields!CompensationAmountLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -464,7 +474,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!RemainingAmountLbl.Value</Value>
+                                                    <Value>=Fields!RemainingAmountLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -969,7 +979,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!PostingDateLbl.Value</Value>
+                                                    <Value>=Fields!PostingDateLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1001,7 +1011,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!DocumentTypeLbl.Value</Value>
+                                                    <Value>=Fields!DocumentTypeLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1033,7 +1043,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!DocumentNoLbl.Value</Value>
+                                                    <Value>=Fields!DocumentNoLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1065,7 +1075,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!VariableSymbolLbl.Value</Value>
+                                                    <Value>=Fields!VariableSymbolLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1097,7 +1107,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!CurrencyCodeLbl.Value</Value>
+                                                    <Value>=Fields!CurrencyCodeLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1129,7 +1139,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!DueDateLbl.Value</Value>
+                                                    <Value>=Fields!DueDateLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1161,7 +1171,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!LedgerEntryOriginalAmountLbl.Value</Value>
+                                                    <Value>=Fields!LedgerEntryOriginalAmountLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1195,7 +1205,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!LedgerEntryRemainingAmountLbl.Value</Value>
+                                                    <Value>=Fields!LedgerEntryRemainingAmountLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1229,7 +1239,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!CompensationAmountLbl.Value</Value>
+                                                    <Value>=Fields!CompensationAmountLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1263,7 +1273,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!RemainingAmountLbl.Value</Value>
+                                                    <Value>=Fields!RemainingAmountLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1926,7 +1936,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                                   <Paragraph>
                                                     <TextRuns>
                                                       <TextRun>
-                                                        <Value>=Parameters!EnterIntoForceLbl.Value</Value>
+                                                        <Value>=Fields!EnterIntoForceLbl.Value</Value>
                                                         <Style />
                                                       </TextRun>
                                                     </TextRuns>
@@ -1953,7 +1963,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                                   <Paragraph>
                                                     <TextRuns>
                                                       <TextRun>
-                                                        <Value>=Parameters!InAndDateLbl.Value</Value>
+                                                        <Value>=Fields!InAndDateLbl.Value</Value>
                                                         <Style />
                                                       </TextRun>
                                                     </TextRuns>
@@ -1983,7 +1993,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                                   <Paragraph>
                                                     <TextRuns>
                                                       <TextRun>
-                                                        <Value>=Parameters!InAndDateLbl.Value</Value>
+                                                        <Value>=Fields!InAndDateLbl.Value</Value>
                                                         <Style />
                                                       </TextRun>
                                                     </TextRuns>
@@ -2073,7 +2083,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                                   <Paragraph>
                                                     <TextRuns>
                                                       <TextRun>
-                                                        <Value>=Parameters!ForLbl.Value &amp; " " &amp; Fields!CompanyInfo_Name.Value</Value>
+                                                        <Value>=Fields!ForLbl.Value &amp; " " &amp; Fields!CompanyInfo_Name.Value</Value>
                                                         <Style />
                                                       </TextRun>
                                                     </TextRuns>
@@ -2105,7 +2115,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                                   <Paragraph>
                                                     <TextRuns>
                                                       <TextRun>
-                                                        <Value>=Parameters!ForLbl.Value &amp; " " &amp; Fields!CompensationHeader_Name.Value</Value>
+                                                        <Value>=Fields!ForLbl.Value &amp; " " &amp; Fields!CompensationHeader_Name.Value</Value>
                                                         <Style />
                                                       </TextRun>
                                                     </TextRuns>
@@ -2136,7 +2146,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                                   <Paragraph>
                                                     <TextRuns>
                                                       <TextRun>
-                                                        <Value>=Parameters!NameAndSignatureLbl.Value</Value>
+                                                        <Value>=Fields!NameAndSignatureLbl.Value</Value>
                                                         <Style>
                                                           <FontSize>8pt</FontSize>
                                                         </Style>
@@ -2163,7 +2173,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                                   <Paragraph>
                                                     <TextRuns>
                                                       <TextRun>
-                                                        <Value>=Parameters!NameAndSignatureLbl.Value</Value>
+                                                        <Value>=Fields!NameAndSignatureLbl.Value</Value>
                                                         <Style>
                                                           <FontSize>8pt</FontSize>
                                                         </Style>
@@ -2191,7 +2201,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                                   <Paragraph>
                                                     <TextRuns>
                                                       <TextRun>
-                                                        <Value>=Parameters!SendBackLbl.Value</Value>
+                                                        <Value>=Fields!SendBackLbl.Value</Value>
                                                         <Style />
                                                       </TextRun>
                                                     </TextRuns>
@@ -2221,7 +2231,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                                                   <Paragraph>
                                                     <TextRuns>
                                                       <TextRun>
-                                                        <Value>=Parameters!MakeDateLbl.Value &amp; " " &amp; Fields!WORKDATE.Value</Value>
+                                                        <Value>=Fields!MakeDateLbl.Value &amp; " " &amp; Fields!WORKDATE.Value</Value>
                                                         <Style />
                                                       </TextRun>
                                                     </TextRuns>
@@ -2385,7 +2395,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=Parameters!ParagraphLbl.Value</Value>
+                      <Value>=Code.GetData(19,1)</Value>
                       <Style>
                         <FontSize>12pt</FontSize>
                       </Style>
@@ -2466,7 +2476,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=Parameters!BusinessNameLbl.Value</Value>
+                      <Value>=Code.GetData(21,1)</Value>
                       <Style />
                     </TextRun>
                   </TextRuns>
@@ -2515,7 +2525,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=Parameters!ResidenceLbl.Value</Value>
+                      <Value>=Code.GetData(23,1)</Value>
                       <Style />
                     </TextRun>
                   </TextRuns>
@@ -2564,7 +2574,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=Parameters!BankConnectionLbl.Value</Value>
+                      <Value>=Code.GetData(25,1)</Value>
                       <Style />
                     </TextRun>
                   </TextRuns>
@@ -2613,7 +2623,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=Parameters!RegistrationNoLbl.Value</Value>
+                      <Value>=Code.GetData(27,1)</Value>
                       <Style />
                     </TextRun>
                   </TextRuns>
@@ -2662,7 +2672,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=Parameters!BusinessNameLbl.Value</Value>
+                      <Value>=Code.GetData(21,1)</Value>
                       <Style />
                     </TextRun>
                   </TextRuns>
@@ -2711,7 +2721,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=Parameters!ResidenceLbl.Value</Value>
+                      <Value>=Code.GetData(23,1)</Value>
                       <Style />
                     </TextRun>
                   </TextRuns>
@@ -2760,7 +2770,7 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=Parameters!RegistrationNoLbl.Value</Value>
+                      <Value>=Code.GetData(27,1)</Value>
                       <Style />
                     </TextRun>
                   </TextRuns>
@@ -2820,114 +2830,6 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
     </ReportSection>
   </ReportSections>
   <ReportParameters>
-    <ReportParameter Name="ResidenceLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>ResidenceLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>ResidenceLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="BusinessNameLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>BusinessNameLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>BusinessNameLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="RegistrationNoLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>RegistrationNoLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>RegistrationNoLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="BankConnectionLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>BankConnectionLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>BankConnectionLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="ParagraphLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>ParagraphLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>ParagraphLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="RemainingAmountLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>RemainingAmountLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>RemainingAmountLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="CompensationAmountLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>CompensationAmountLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>CompensationAmountLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="LedgerEntryRemainingAmountLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>LedgerEntryRemainingAmountLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>LedgerEntryRemainingAmountLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="LedgerEntryOriginalAmountLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>LedgerEntryOriginalAmountLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>LedgerEntryOriginalAmountLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="DueDateLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>DueDateLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>DueDateLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="EnterIntoForceLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>EnterIntoForceLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>EnterIntoForceLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="NameAndSignatureLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>NameAndSignatureLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>NameAndSignatureLbl</Prompt>
-    </ReportParameter>
     <ReportParameter Name="DotsLbl">
       <DataType>String</DataType>
       <DefaultValue>
@@ -2937,202 +2839,16 @@ Cstr(Fields!CompensationHeader_RegistrationNo.Value)</Value>
       </DefaultValue>
       <Prompt>DotsLbl</Prompt>
     </ReportParameter>
-    <ReportParameter Name="InAndDateLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>InAndDateLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>InAndDateLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="SendBackLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>SendBackLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>SendBackLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="ForLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>ForLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>ForLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="MakeDateLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>MakeDateLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>MakeDateLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="CurrencyCodeLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>CurrencyCodeLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>CurrencyCodeLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="VariableSymbolLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>VariableSymbolLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>VariableSymbolLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="DocumentNoLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>DocumentNoLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>DocumentNoLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="DocumentTypeLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>DocumentTypeLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>DocumentTypeLbl</Prompt>
-    </ReportParameter>
-    <ReportParameter Name="PostingDateLbl">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>PostingDateLbl</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>PostingDateLbl</Prompt>
-    </ReportParameter>
   </ReportParameters>
   <ReportParametersLayout>
     <GridLayoutDefinition>
       <NumberOfColumns>1</NumberOfColumns>
-      <NumberOfRows>22</NumberOfRows>
+      <NumberOfRows>1</NumberOfRows>
       <CellDefinitions>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>0</RowIndex>
-          <ParameterName>ResidenceLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>1</RowIndex>
-          <ParameterName>BusinessNameLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>2</RowIndex>
-          <ParameterName>RegistrationNoLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>3</RowIndex>
-          <ParameterName>BankConnectionLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>4</RowIndex>
-          <ParameterName>ParagraphLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>5</RowIndex>
-          <ParameterName>RemainingAmountLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>6</RowIndex>
-          <ParameterName>CompensationAmountLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>7</RowIndex>
-          <ParameterName>LedgerEntryRemainingAmountLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>8</RowIndex>
-          <ParameterName>LedgerEntryOriginalAmountLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>9</RowIndex>
-          <ParameterName>DueDateLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>10</RowIndex>
-          <ParameterName>EnterIntoForceLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>11</RowIndex>
-          <ParameterName>NameAndSignatureLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>12</RowIndex>
           <ParameterName>DotsLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>13</RowIndex>
-          <ParameterName>InAndDateLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>14</RowIndex>
-          <ParameterName>SendBackLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>15</RowIndex>
-          <ParameterName>ForLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>16</RowIndex>
-          <ParameterName>MakeDateLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>17</RowIndex>
-          <ParameterName>CurrencyCodeLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>18</RowIndex>
-          <ParameterName>VariableSymbolLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>19</RowIndex>
-          <ParameterName>DocumentNoLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>20</RowIndex>
-          <ParameterName>DocumentTypeLbl</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>21</RowIndex>
-          <ParameterName>PostingDateLbl</ParameterName>
         </CellDefinition>
       </CellDefinitions>
     </GridLayoutDefinition>
@@ -3223,6 +2939,69 @@ End Function</Code>
       <Fields>
         <Field Name="CompensationHeader_No">
           <DataField>CompensationHeader_No</DataField>
+        </Field>
+        <Field Name="ResidenceLbl">
+          <DataField>ResidenceLbl</DataField>
+        </Field>
+        <Field Name="BusinessNameLbl">
+          <DataField>BusinessNameLbl</DataField>
+        </Field>
+        <Field Name="RegistrationNoLbl">
+          <DataField>RegistrationNoLbl</DataField>
+        </Field>
+        <Field Name="BankConnectionLbl">
+          <DataField>BankConnectionLbl</DataField>
+        </Field>
+        <Field Name="ParagraphLbl">
+          <DataField>ParagraphLbl</DataField>
+        </Field>
+        <Field Name="RemainingAmountLbl">
+          <DataField>RemainingAmountLbl</DataField>
+        </Field>
+        <Field Name="CompensationAmountLbl">
+          <DataField>CompensationAmountLbl</DataField>
+        </Field>
+        <Field Name="LedgerEntryRemainingAmountLbl">
+          <DataField>LedgerEntryRemainingAmountLbl</DataField>
+        </Field>
+        <Field Name="LedgerEntryOriginalAmountLbl">
+          <DataField>LedgerEntryOriginalAmountLbl</DataField>
+        </Field>
+        <Field Name="DueDateLbl">
+          <DataField>DueDateLbl</DataField>
+        </Field>
+        <Field Name="EnterIntoForceLbl">
+          <DataField>EnterIntoForceLbl</DataField>
+        </Field>
+        <Field Name="NameAndSignatureLbl">
+          <DataField>NameAndSignatureLbl</DataField>
+        </Field>
+        <Field Name="InAndDateLbl">
+          <DataField>InAndDateLbl</DataField>
+        </Field>
+        <Field Name="SendBackLbl">
+          <DataField>SendBackLbl</DataField>
+        </Field>
+        <Field Name="ForLbl">
+          <DataField>ForLbl</DataField>
+        </Field>
+        <Field Name="MakeDateLbl">
+          <DataField>MakeDateLbl</DataField>
+        </Field>
+        <Field Name="CurrencyCodeLbl">
+          <DataField>CurrencyCodeLbl</DataField>
+        </Field>
+        <Field Name="VariableSymbolLbl">
+          <DataField>VariableSymbolLbl</DataField>
+        </Field>
+        <Field Name="DocumentNoLbl">
+          <DataField>DocumentNoLbl</DataField>
+        </Field>
+        <Field Name="DocumentTypeLbl">
+          <DataField>DocumentTypeLbl</DataField>
+        </Field>
+        <Field Name="PostingDateLbl">
+          <DataField>PostingDateLbl</DataField>
         </Field>
         <Field Name="CompensationHeader_Address">
           <DataField>CompensationHeader_Address</DataField>

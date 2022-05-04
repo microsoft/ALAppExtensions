@@ -219,6 +219,27 @@ codeunit 153 "User Permissions Impl."
         exit(not AccessControl.IsEmpty());
     end;
 
+    internal procedure GetEffectivePermission(UserSecurityIdToCheck: Guid; CompanyNameToCheck: Text; PermissionObjectType: Option "Table Data","Table",,"Report",,"Codeunit","XMLport","MenuSuite","Page","Query","System",,,,,,,,,; ObjectId: Integer): Text
+    var
+        NavUserAccountHelper: DotNet NavUserAccountHelper;
+    begin
+        exit(NavUserAccountHelper.GetEffectivePermissionForObject(UserSecurityIdToCheck, CompanyNameToCheck, PermissionObjectType, ObjectId));
+    end;
+
+    procedure GetEffectivePermission(PermissionObjectType: Option "Table Data","Table",,"Report",,"Codeunit","XMLport","MenuSuite","Page","Query","System",,,,,,,,,; ObjectId: Integer) TempExpandedPermission: Record "Expanded Permission" temporary
+    var
+        PermissionMask: Text;
+    begin
+        TempExpandedPermission."Object Type" := PermissionObjectType;
+        TempExpandedPermission."Object ID" := ObjectId;
+        PermissionMask := GetEffectivePermission(UserSecurityId(), CompanyName(), PermissionObjectType, ObjectId);
+        Evaluate(TempExpandedPermission."Read Permission", SelectStr(1, PermissionMask));
+        Evaluate(TempExpandedPermission."Insert Permission", SelectStr(2, PermissionMask));
+        Evaluate(TempExpandedPermission."Modify Permission", SelectStr(3, PermissionMask));
+        Evaluate(TempExpandedPermission."Delete Permission", SelectStr(4, PermissionMask));
+        Evaluate(TempExpandedPermission."Execute Permission", SelectStr(5, PermissionMask));
+    end;
+
     /// <summary>
     /// An event that indicates that subscribers should set the result that should be returned when the CanManageUsersOnTenant is called.
     /// </summary>

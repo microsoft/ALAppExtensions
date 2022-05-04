@@ -226,8 +226,7 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         UserSetup.DeleteAll();
         GraphMgtTimeRegistration.InitUserSetup();
         TimeSheetDetailId := CreateTimeSheet();
-        TimeSheetDetail.SetRange(SystemId, TimeSheetDetailId);
-        TimeSheetDetail.FindFirst();
+        TimeSheetDetail.GetBySystemId(TimeSheetDetailId);
         DocumentRecordRef.GetTable(TimeSheetDetail);
 
         TestCreateDimSetLine(DocumentRecordRef, TimeSheetDetailId, Page::"APIV2 - Time Registr. Entries", 'timeRegistrationEntries');
@@ -472,8 +471,7 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         UserSetup.DeleteAll();
         GraphMgtTimeRegistration.InitUserSetup();
         TimeSheetDetailId := CreateTimeSheet();
-        TimeSheetDetail.SetRange(SystemId, TimeSheetDetailId);
-        TimeSheetDetail.FindFirst();
+        TimeSheetDetail.GetBySystemId(TimeSheetDetailId);
         DocumentRecordRef.GetTable(TimeSheetDetail);
 
         TestGetDimSetLines(TimeSheetDetailId, 'Time Registration Entry', Page::"APIV2 - Time Registr. Entries", 'timeRegistrationEntries');
@@ -497,7 +495,7 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         // [GIVEN] Create Customer, Items and Sales Invoice for different Items.
         LibraryDimension.FindDimension(Dimension);
         CreateSalesOrder(
-          SalesHeader, SalesLine, '', Dimension.Code, DefaultDimension."Value Posting"::" ", SalesHeader."Document Type"::Invoice);
+          SalesHeader, SalesLine, '', Dimension.Code, DefaultDimension."Value Posting"::" ".AsInteger(), SalesHeader."Document Type"::Invoice);
 
         // [WHEN] Post the Sales Invoice.
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, false, false);
@@ -731,8 +729,7 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         UserSetup.DeleteAll();
         GraphMgtTimeRegistration.InitUserSetup();
         TimeSheetDetailId := CreateTimeSheet();
-        TimeSheetDetail.SetRange(SystemId, TimeSheetDetailId);
-        TimeSheetDetail.FindFirst();
+        TimeSheetDetail.GetBySystemId(TimeSheetDetailId);
         DocumentRecordRef.GetTable(TimeSheetDetail);
 
         TestModifyDimensionSetLine(DocumentRecordRef, TimeSheetDetailId, Page::"APIV2 - Time Registr. Entries", 'timeRegistrationEntries');
@@ -1058,8 +1055,7 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         // [SCENARIO] Create a dimension line in a time registration entry, use a DELETE method to remove it and then verify the deletion
         // [GIVEN] A Time registration entry
         TimeSheetDetailId := CreateTimeSheet();
-        TimeSheetDetail.SetRange(SystemId, TimeSheetDetailId);
-        TimeSheetDetail.FindFirst();
+        TimeSheetDetail.GetBySystemId(TimeSheetDetailId);
         DocumentRecordRef.GetTable(TimeSheetDetail);
 
         TestDeleteDimSetLine(DocumentRecordRef, TimeSheetDetailId, Page::"APIV2 - Time Registr. Entries", 'timeRegistrationEntries');
@@ -1532,7 +1528,7 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         CreateEmployee(Employee, ResourceNo);
 
         CreateTimeSheetHeader(TimeSheetHeaderNo, Date, ResourceNo);
-        TimeSheetLineNo := CreateTimeSheetLine(TimeSheetHeaderNo, TimeSheetLine.Type::Resource);
+        TimeSheetLineNo := CreateTimeSheetLine(TimeSheetHeaderNo, TimeSheetLine.Type::Resource.AsInteger());
         exit(CreateTimeSheetDetail(TimeSheetHeaderNo, TimeSheetLineNo, Date, Quantity));
     end;
 

@@ -13,13 +13,16 @@ codeunit 9844 "User Selection Impl."
 
     procedure HideExternalUsers(var User: Record User)
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        if not EnvironmentInfo.IsSaaS() then
+        if not EnvironmentInformation.IsSaaS() then
             exit;
 
         User.FilterGroup(2);
-        User.SetFilter("License Type", '<>%1&<>%2', User."License Type"::"External User", User."License Type"::Application);
+        if not EnvironmentInformation.IsSaaS() then
+            User.SetFilter("License Type", '<>%1', User."License Type"::Application)
+        else
+            User.SetFilter("License Type", '<>%1&<>%2', User."License Type"::"External User", User."License Type"::Application);
         User.FilterGroup(0);
     end;
 

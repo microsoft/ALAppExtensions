@@ -26,8 +26,34 @@ pageextension 18154 "GST Sales Quote Subform Ext" extends "Sales Quote Subform"
                 FormatLine();
             end;
         }
+        Modify("Quantity")
+        {
+            trigger OnAfterValidate()
+            var
+                CalculateTax: Codeunit "Calculate Tax";
+            begin
+                if (Rec."GST Group Code" <> '') and (Rec."HSN/SAC Code" <> '') then begin
+                    Rec.Validate("GST Place Of Supply");
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
+            end;
+        }
         addafter("Line Amount")
         {
+            field("GST Place Of Supply"; Rec."GST Place Of Supply")
+            {
+                ApplicationArea = Basic, Suite;
+                Editable = IsHSNSACEditable;
+                ToolTip = 'Specifies the GST Place of Supply. For example Bill-to Address, Ship-to Address, Location Address etc.';
+
+                trigger OnValidate()
+                var
+                    CalculateTax: Codeunit "Calculate Tax";
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
+            }
             field("GST Group Code"; Rec."GST Group Code")
             {
                 ApplicationArea = Basic, Suite;

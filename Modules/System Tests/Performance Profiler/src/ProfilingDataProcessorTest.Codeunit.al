@@ -70,12 +70,12 @@ codeunit 135014 "Profiling Data Processor Test"
     begin
         // [GIVEN] Expected profile nodes
         PerfProfilerTestLibrary.InsertProfilingNode(VerificationProfilingNode,
-            SessionId(), 2, 1, 'Codeunit', 2, 'CodeUnit_TestNode2', 'TestNode2App',
-            'TestPublisher2', 0, 'TestNode2FunctionName', 100, 0, 0);
+            SessionId(), 2, 2, 'Codeunit', 2, 'CodeUnit_TestNode2', 'TestNode2App',
+            'TestPublisher2', 0, 'TestNode2FunctionName', 200, 0, 0);
 
         PerfProfilerTestLibrary.InsertProfilingNode(VerificationProfilingNode,
-            SessionId(), 3, 1, 'Codeunit', 3, 'CodeUnit_TestNode3', 'TestNode3App',
-            'TestPublisher1', 0, 'TestNode3FunctionName', 500, 0, 0);
+            SessionId(), 3, 2, 'Codeunit', 3, 'CodeUnit_TestNode3', 'TestNode3App',
+            'TestPublisher1', 0, 'TestNode3FunctionName', 1000, 0, 0);
 
         // [GIVEN] Performance profiler is initialized with the test profile 
         PerfProfilerTestLibrary.Initialize();
@@ -97,12 +97,12 @@ codeunit 135014 "Profiling Data Processor Test"
     begin
         // [GIVEN] Expected profile nodes
         PerfProfilerTestLibrary.InsertProfilingNode(VerificationProfilingNode,
-            SessionId(), 2, 1, 'Codeunit', 2, 'CodeUnit_TestNode2', 'TestNode2App',
-            'TestPublisher2', 0, 'TestNode2FunctionName', 100, 0, 0);
+            SessionId(), 2, 2, 'Codeunit', 2, 'CodeUnit_TestNode2', 'TestNode2App',
+            'TestPublisher2', 0, 'TestNode2FunctionName', 200, 0, 0);
 
         PerfProfilerTestLibrary.InsertProfilingNode(VerificationProfilingNode,
-            SessionId(), 3, 1, 'Codeunit', 3, 'CodeUnit_TestNode3', 'TestNode3App',
-            'TestPublisher1', 0, 'TestNode3FunctionName', 500, 0, 0);
+            SessionId(), 3, 2, 'Codeunit', 3, 'CodeUnit_TestNode3', 'TestNode3App',
+            'TestPublisher1', 0, 'TestNode3FunctionName', 1000, 0, 0);
 
         // [GIVEN] Performance profiler is initialized with the test profile 
         PerfProfilerTestLibrary.Initialize();
@@ -125,8 +125,8 @@ codeunit 135014 "Profiling Data Processor Test"
     begin
         // [GIVEN] Expected profile nodes
         PerfProfilerTestLibrary.InsertProfilingNode(VerificationProfilingNode,
-            SessionId(), 3, 1, 'Codeunit', 3, 'CodeUnit_TestNode3', 'TestNode3App',
-            'TestPublisher1', 0, 'TestNode3FunctionName', 500, 0, 0);
+            SessionId(), 3, 2, 'Codeunit', 3, 'CodeUnit_TestNode3', 'TestNode3App',
+            'TestPublisher1', 0, 'TestNode3FunctionName', 1000, 0, 0);
 
         // [GIVEN] The table view filter for a specific app object
         TableViewFilter := 'WHERE(Object Type=Const(Codeunit),Object ID=Const(3))';

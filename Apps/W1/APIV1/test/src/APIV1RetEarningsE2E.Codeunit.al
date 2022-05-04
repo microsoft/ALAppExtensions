@@ -71,18 +71,18 @@ codeunit 139721 "APIV1 - Ret. Earnings E2E"
     local procedure GetIncomeStatementJSON(var AccScheduleLineEntity: Record "Acc. Schedule Line Entity") IncomeStatementJSON: Text
     var
         JSONManagement: Codeunit "JSON Management";
-        JsonObject: DotNet JObject;
+        "Newtonsoft.Json.Linq.JObject": DotNet JObject;
     begin
         JSONManagement.InitializeEmptyObject();
-        JSONManagement.GetJSONObject(JsonObject);
+        JSONManagement.GetJSONObject("Newtonsoft.Json.Linq.JObject");
         if AccScheduleLineEntity."Line No." = 0 then
             AccScheduleLineEntity."Line No." := LibraryRandom.RandIntInRange(1, 10000);
-        JSONManagement.AddJPropertyToJObject(JsonObject, 'lineNumber', AccScheduleLineEntity."Line No.");
+        JSONManagement.AddJPropertyToJObject("Newtonsoft.Json.Linq.JObject", 'lineNumber', AccScheduleLineEntity."Line No.");
 
         if AccScheduleLineEntity.Description = '' then
             AccScheduleLineEntity.Description := LibraryUtility.GenerateGUID();
 
-        JSONManagement.AddJPropertyToJObject(JsonObject, 'display', AccScheduleLineEntity.Description);
+        JSONManagement.AddJPropertyToJObject("Newtonsoft.Json.Linq.JObject", 'display', AccScheduleLineEntity.Description);
 
         IncomeStatementJSON := JSONManagement.WriteObjectToString();
     end;

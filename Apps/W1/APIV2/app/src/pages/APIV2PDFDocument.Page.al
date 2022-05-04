@@ -81,7 +81,7 @@ page 30056 "APIV2 - PDF Document"
             SetView(FilterView);
             if IsNullGuid(DocumentId) then
                 exit(false);
-            PdfGenerated := PDFDocumentManagement.GeneratePdfWithDocumentType(DocumentId, DocumentType, Rec);
+            PdfGenerated := PDFDocumentManagement.GeneratePdfBlobWithDocumentType(DocumentId, DocumentType, Rec);
         end;
         exit(true);
     end;

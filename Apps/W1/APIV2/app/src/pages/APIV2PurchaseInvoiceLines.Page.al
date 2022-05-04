@@ -210,8 +210,16 @@ page 30047 "APIV2 - Purchase Invoice Lines"
                     Caption = 'Tax Code';
 
                     trigger OnValidate()
+                    var
+                        GeneralLedgerSetup: Record "General Ledger Setup";
                     begin
-                        RegisterFieldSet(FieldNo("Tax Code"));
+                        if GeneralLedgerSetup.UseVat() then begin
+                            Validate("VAT Prod. Posting Group", CopyStr("Tax Code", 1, 20));
+                            RegisterFieldSet(FieldNo("VAT Prod. Posting Group"));
+                        end else begin
+                            Validate("Tax Group Code", CopyStr("Tax Code", 1, 20));
+                            RegisterFieldSet(FieldNo("Tax Group Code"));
+                        end;
                     end;
                 }
                 field(taxPercent; "VAT %")

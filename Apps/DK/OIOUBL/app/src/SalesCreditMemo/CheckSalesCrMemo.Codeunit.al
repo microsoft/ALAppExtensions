@@ -8,6 +8,7 @@ codeunit 13633 "OIOUBL-Check Sales Cr. Memo"
     TableNo = "Sales Cr.Memo Header";
     trigger OnRun();
     var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         IsHandled: Boolean;
     begin
@@ -32,7 +33,10 @@ codeunit 13633 "OIOUBL-Check Sales Cr. Memo"
         CompanyInfo.TESTFIELD("Post Code");
         CompanyInfo.TESTFIELD("Country/Region Code");
 
-        TESTFIELD("External Document No.");
+        SalesReceivablesSetup.Get();
+        if not SalesReceivablesSetup."Document No. as Ext. Doc. No." then
+            TESTFIELD("External Document No.");
+
         TESTFIELD("Sell-to Contact");
         TESTFIELD("VAT Registration No.");
         OIOUBLDocumentEncode.GetOIOUBLCountryRegionCode("Bill-to Country/Region Code");

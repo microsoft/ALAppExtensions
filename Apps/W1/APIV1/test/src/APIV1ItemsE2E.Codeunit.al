@@ -303,29 +303,29 @@ codeunit 139700 "APIV1 - Items E2E"
     [Test]
     procedure TestSuccessfulTemplateSelection()
     var
-        APITemplateApplication: TestPage "API Setup";
+        APISetup: TestPage "API Setup";
     begin
         // [SCENARIO] [184719] User can select the template for a particular API
 
         // [Given] The template selection page for selecting template for a specific API
         CreateSampleTemplate(DATABASE::Item, PAGE::"APIV1 - Items");
 
-        APITemplateApplication.TRAP();
+        APISetup.TRAP();
         PAGE.RUN(PAGE::"API Setup");
-        APITemplateApplication.NEW();
+        APISetup.NEW();
 
         // [When] User selects the Page ID for an API
-        APITemplateApplication."Page ID".SETVALUE(PAGE::"APIV1 - Items");
+        APISetup."Page ID".SETVALUE(PAGE::"APIV1 - Items");
 
         // [Then] Templates in Template code is filtered only for the selected Page ID
-        APITemplateApplication."Template Code".SETVALUE(SampleTempCodeTxt);
+        APISetup."Template Code".SETVALUE(SampleTempCodeTxt);
     end;
 
     [Test]
     procedure TestSuccessfulTemplateSelectionWithSelectionCriteria()
     var
         ConfigTmplSelectionRules: Record "Config. Tmpl. Selection Rules";
-        APITemplateApplication: TestPage "API Setup";
+        APISetup: TestPage "API Setup";
         OutStream: OutStream;
     begin
         // [SCENARIO] [184719] User can select the template for a particular API with Selection Criteria
@@ -340,21 +340,21 @@ codeunit 139700 "APIV1 - Items E2E"
             ConfigTmplSelectionRules.MODIFY();
         END;
 
-        APITemplateApplication.TRAP();
+        APISetup.TRAP();
         PAGE.RUN(PAGE::"API Setup");
-        APITemplateApplication.NEW();
+        APISetup.NEW();
 
         // [When] User selects the Page ID and  for an API
-        APITemplateApplication."Page ID".SETVALUE(PAGE::"APIV1 - Items");
+        APIsetup."Page ID".SETVALUE(PAGE::"APIV1 - Items");
 
         // [Then] Templates in Template Code only filtered for the selected Page ID
-        APITemplateApplication."Template Code".SETVALUE(SampleTempCodeTxt);
+        APISetup."Template Code".SETVALUE(SampleTempCodeTxt);
     end;
 
     [Test]
     procedure TestTempcodeCannotbeblankOrInvalidValue()
     var
-        APITemplateApplication: TestPage "API Setup";
+        APISetup: TestPage "API Setup";
     begin
         // [SCENARIO] [184719] User can not select the template for a particular API where the Template Code is Blank or Invalid
 
@@ -362,14 +362,14 @@ codeunit 139700 "APIV1 - Items E2E"
         CreateSampleTemplate(DATABASE::Customer, PAGE::"Customer Card");
 
         // [When] User selects the Page ID for an API and keeps the Template Code blank or put a wrong Template code
-        APITemplateApplication.TRAP();
+        APISetup.TRAP();
         PAGE.RUN(PAGE::"API Setup");
-        APITemplateApplication.NEW();
-        APITemplateApplication."Page ID".SETVALUE(PAGE::"APIV1 - Items");
+        APISetup.NEW();
+        APISetup."Page ID".SETVALUE(PAGE::"APIV1 - Items");
 
         // [Then] Page returns error message
-        ASSERTERROR APITemplateApplication."Template Code".SETVALUE('');
-        ASSERTERROR APITemplateApplication."Template Code".SETVALUE(SampleTempCodeTxt);
+        ASSERTERROR APISetup."Template Code".SETVALUE('');
+        ASSERTERROR APISetup."Template Code".SETVALUE(SampleTempCodeTxt);
     end;
 
     [Test]

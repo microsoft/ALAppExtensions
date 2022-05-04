@@ -18,12 +18,14 @@ codeunit 4751 "Recommended Apps Impl."
     procedure InsertApp(Id: Guid; SortingId: Integer; Name: Text[250]; Publisher: Text[250]; ShortDescription: Text[250]; LongDescription: Text[2048];
     RecommendedBy: Enum "App Recommended By"; AppSourceURL: Text): Boolean
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         MemoryStream: DotNet MemoryStream;
         LanguageCode: Text[5];
         PubId: Text[100];
         AId: Text[100];
         PAppId: Text[100];
     begin
+        FeatureTelemetry.LogUptake('0000H7Q', 'Recommended Apps', Enum::"Feature Uptake Status"::Used);
         // read the app information from the URL
         GetAppURLParametersFromAppSourceURL(Id, AppSourceURL, LanguageCode, PubId, AId, PAppId);
 
@@ -42,6 +44,8 @@ codeunit 4751 "Recommended Apps Impl."
         RecommendedApps.PubId := PubId;
         RecommendedApps.AId := AId;
         RecommendedApps.PAppId := PAppId;
+
+        FeatureTelemetry.LogUsage('0000H7R', 'Recommended Apps', 'Recommended apps inserted');
 
         exit(RecommendedApps.Insert());
     end;

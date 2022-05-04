@@ -40,7 +40,7 @@ page 9660 "Report Layouts"
                     Caption = 'Report Name';
                     ToolTip = 'Specifies the name of the report.';
                 }
-                field("Layout Name"; Rec."Name")
+                field("Layout Name"; Rec."Caption")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
@@ -129,6 +129,7 @@ page 9660 "Report Layouts"
                 PromotedIsBig = true;
                 Scope = Repeater;
                 PromotedCategory = Process;
+                Enabled = LayoutIsSelected;
                 ToolTip = 'Edit layout information.';
 
                 trigger OnAction()
@@ -153,6 +154,7 @@ page 9660 "Report Layouts"
                 Promoted = true;
                 PromotedIsBig = true;
                 PromotedCategory = Process;
+                Enabled = LayoutIsSelected;
                 ToolTip = 'Run the report using the selected layout.';
 
                 trigger OnAction()
@@ -170,6 +172,7 @@ page 9660 "Report Layouts"
                 Promoted = true;
                 PromotedIsBig = true;
                 PromotedCategory = Process;
+                Enabled = LayoutIsSelected;
                 ToolTip = 'Set the current layout as the default layout for the specified report.';
 
                 trigger OnAction()
@@ -187,6 +190,7 @@ page 9660 "Report Layouts"
                 Promoted = true;
                 PromotedIsBig = true;
                 PromotedCategory = Process;
+                Enabled = LayoutIsSelected;
                 ToolTip = 'Export the selected layout file.';
 
                 trigger OnAction()
@@ -204,6 +208,7 @@ page 9660 "Report Layouts"
                 Promoted = true;
                 PromotedIsBig = true;
                 PromotedCategory = Process;
+                Enabled = LayoutIsSelected;
                 ToolTip = 'Replace the existing layout file.';
 
                 trigger OnAction()
@@ -214,8 +219,8 @@ page 9660 "Report Layouts"
                     if not "User Defined" then
                         Error(ModifyNonUserLayoutErr);
 
-                    if Dialog.Confirm(ReplaceConfirmationTxt, false) then
-                        ReportLayoutsImpl.UploadNewLayout("Report ID", "Name", "Description", "Layout Format", ReturnReportID, ReturnLayoutName);
+                    if Dialog.Confirm(StrSubstNo(ReplaceConfirmationTxt, Rec."Name"), false) then
+                        ReportLayoutsImpl.ReplaceLayout("Report ID", "Name", "Description", "Layout Format", ReturnReportID, ReturnLayoutName);
                 end;
             }
         }
@@ -237,34 +242,52 @@ page 9660 "Report Layouts"
 
     trigger OnOpenPage()
     begin
-        ReportLayoutsImpl.SetSelectedCompany(CompanyName);
+        ReportLayoutsImpl.SetSelectedCompany(CompanyName());
     end;
 
     trigger OnDeleteRecord(): Boolean
     var
         TenantReportLayout: Record "Tenant Report Layout";
+        TenantReportLayoutSelection: Record "Tenant Report Layout Selection";
     begin
         TenantReportLayout.Init();
-        if TenantReportLayout.Get("Report ID", "Name", EmptyGuid) then
-            TenantReportLayout.Delete(true)
-        else
+        if Rec."User Defined" then begin
+            TenantReportLayout.Get(Rec."Report ID", Rec."Name", EmptyGuid);
+            // If the selected layout is the default layout for the current report.
+            if TenantReportLayoutSelection.Get(Rec."Report ID", CompanyName(), EmptyGuid) then
+                if TenantReportLayoutSelection."Layout Name" = Rec.Name then
+                    // selected layout is the default layout. In this case we confirm the deletion.
+                    if not ReportLayoutsImpl.ConfirmDeleteDefaultLayoutSelection(Rec, TenantReportLayoutSelection) then
+                        exit(false);
+
+            TenantReportLayout.Delete(true);
+
+        end else
             Error(ModifyNonUserLayoutErr);
 
         CurrPage.Update(false);
         exit(false);
     end;
 
+    trigger OnAfterGetCurrRecord()
+    begin
+        LayoutIsSelected := not ((Rec."Report ID" = 0) and (Rec.Name = ''));
+    end;
+
     var
         ReportLayoutsImpl: Codeunit "Report Layouts Impl.";
         EmptyGuid: Guid;
+        LayoutIsSelected: Boolean;
         ModifyNonUserLayoutErr: Label 'Only user-defined layouts can be modified or removed.';
         EditInfoExtensionLayoutTxt: Label 'Extension layouts info cannot be modified. Do you want to edit a copy of the layout instead ?';
-        ReplaceConfirmationTxt: Label 'This action will replace the layout file of the currently selected layout. Do you want to continue ?';
+        ReplaceConfirmationTxt: Label 'This action will replace the layout file of the currently selected layout "%1". Do you want to continue ?', Comment = '%1 = LayoutName';
 
     local procedure SetFocusedRecord(ReportID: Integer; LayoutName: Text)
     var
         CurrReportLayoutList: Record "Report Layout List";
     begin
+        if (ReportID = 0) or (LayoutName = '') then
+            exit;
         if CurrReportLayoutList.get(ReportID, LayoutName, EmptyGuid) then begin
             CurrPage.SetRecord(CurrReportLayoutList);
             CurrPage.Update(false);

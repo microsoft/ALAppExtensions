@@ -8,6 +8,9 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         PerDatabaseUpgradeTags.Add(GetDataVersion183PerDatabaseUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetDataVersion189PerDatabaseUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetDataVersion200PerDatabaseUpgradeTag());
+#if CLEAN20
+        PerDatabaseUpgradeTags.Add(GetDataVersion230PerDatabaseUpgradeTag());
+#endif
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
@@ -45,6 +48,12 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         exit('CZL-UpgradeCoreLocalizationPackForCzech-PerDatabase-20.0');
     end;
 
+#if CLEAN20
+    procedure GetDataVersion230PerDatabaseUpgradeTag(): Code[250]
+    begin
+        exit('CZL-UpgradeCoreLocalizationPackForCzech-PerDatabase-23.0');
+    end;
+#endif
     procedure GetDataVersion174PerCompanyUpgradeTag(): Code[250]
     begin
         exit('CZL-UpgradeCoreLocalizationPackForCzech-PerCompany-17.4');
