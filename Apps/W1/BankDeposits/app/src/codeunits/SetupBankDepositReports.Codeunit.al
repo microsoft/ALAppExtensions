@@ -18,10 +18,8 @@ codeunit 1697 "Setup Bank Deposit Reports"
     var
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
     begin
-        if not SalesReceivablesSetup.Get() then begin
-            SalesReceivablesSetup.Init();
-            SalesReceivablesSetup.Insert();
-        end;
+        if not SalesReceivablesSetup.Get() then
+            exit;
 
         InitBaseSeries(SalesReceivablesSetup."Bank Deposit Nos.", BankDepositNoSeriesCodeTxt, BankDepositNoSeriesDescriptionTxt, BankDepositNoSeriesStartingNoTxt, BankDepositNoSeriesEndingNoTxt, '', '', 1);
         SalesReceivablesSetup.Modify();
@@ -38,14 +36,21 @@ codeunit 1697 "Setup Bank Deposit Reports"
     internal procedure SetupJournalTemplateAndBatch()
     var
         SourceCodeSetup: Record "Source Code Setup";
+        SourceCode: Record "Source Code";
         GenJournalTemplate: Record "Gen. Journal Template";
         CashReceiptGenJournalTemplate: Record "Gen. Journal Template";
         GenJournalBatch: Record "Gen. Journal Batch";
     begin
-        if not SourceCodeSetup.Get() then begin
-            SourceCodeSetup.Init();
-            SourceCodeSetup.Insert();
+        if not SourceCodeSetup.Get() then
+            exit;
+
+        if not SourceCode.Get(BankDepositNoSeriesCodeTxt) then begin
+            SourceCode.Init();
+            SourceCode.Code := BankDepositNoSeriesCodeTxt;
+            SourceCode.Description := BankDepositNoSeriesDescriptionTxt;
+            SourceCode.Insert();
         end;
+
         SourceCodeSetup."Bank Deposit" := BankDepositNoSeriesCodeTxt;
         SourceCodeSetup.Modify();
 
