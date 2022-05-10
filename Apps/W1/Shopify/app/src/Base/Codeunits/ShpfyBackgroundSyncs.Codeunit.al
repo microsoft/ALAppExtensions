@@ -145,30 +145,30 @@ codeunit 30101 "Shpfy Background Syncs"
     /// Order Sync.
     /// </summary>
     /// <param name="OrdersToImport">Parameter of type Record "Shopify Orders To Import".</param>
-    internal procedure OrderSync(var Shop: Record "Shpfy Shop")
+    internal procedure OrderSync(var OrdersToImport: Record "Shpfy Orders to Import")
     var
-        SyncTypeTxt: Label 'Orders';
+        Shop: Record "Shpfy Shop";
+        ShopCode: Code[20];
         Parameters: Text;
-        OrderParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Sync Orders from Shopify" id="30104"><DataItems><DataItem name="Shop">%1</DataItem><DataItem name="OrdersToImport">VERSION(1) SORTING(Field1)</DataItem></DataItems></ReportParameters>', Comment = '%1 = Shop Record View', Locked = true;
-        StartDataItemShopTxt: Label '<DataItem name="Shop">', Locked = true;
-        EndDataItemShopTxt: Label '</DataItem><DataItem name="OrdersToImport">', Locked = true;
-        ShopView: Text;
-
+        FilterStrings: Dictionary of [Code[20], Text];
+        SyncDescriptionMsg: Label 'Shopify order sync of orders: %1', Comment = '%1 = Shop Code filter';
+        ImportOrderParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Sync Orders from Shopify" id="30104"><DataItems><DataItem name="Shop">%1</DataItem><DataItem name="OrdersToImport">%2</DataItem></DataItems></ReportParameters>', Comment = '%1 = Shop Record View, %2 = OrderToImport Record View', Locked = true;
     begin
-        Parameters := Report.RunRequestPage(Report::"Shpfy Sync Orders from Shopify", StrSubstNo(OrderParametersTxt, Shop.GetView()));
-        if Parameters = '' then
-            exit;
-        ShopView := Parameters.Substring(Parameters.IndexOf(StartDataItemShopTxt) + StrLen(StartDataItemShopTxt));
-        ShopView := ShopView.Substring(1, ShopView.IndexOf(EndDataItemShopTxt) - 1);
-        Parameters := Parameters.Replace(ShopView, '%1');
-        Clear(Shop);
-        Shop.SetView(ShopView);
-        Shop.SetRange("Allow Background Syncs", true);
-        if not Shop.IsEmpty then
-            EnqueueJobEntry(Report::"Shpfy Sync Orders from Shopify", StrSubstNo(Parameters, Shop.GetView()), StrSubstNo(SyncDescriptionTxt, SyncTypeTxt, Shop.GetFilter(Code)), true);
-        Shop.SetRange("Allow Background Syncs", false);
-        if not Shop.IsEmpty then
-            EnqueueJobEntry(Report::"Shpfy Sync Orders from Shopify", StrSubstNo(Parameters, Shop.GetView()), StrSubstNo(SyncDescriptionTxt, SyncTypeTxt, Shop.GetFilter(Code)), false);
+        if OrdersToImport.FindSet(false, false) then
+            repeat
+                if FilterStrings.ContainsKey(OrdersToImport."Shop Code") then
+                    FilterStrings.Set(OrdersToImport."Shop Code", FilterStrings.Get(OrdersToImport."Shop Code") + '|' + Format(OrdersToImport.Id))
+                else
+                    FilterStrings.Add(OrdersToImport."Shop Code", Format(OrdersToImport.Id));
+            until OrdersToImport.Next() = 0;
+
+        foreach ShopCode in FilterStrings.Keys do begin
+            Clear(Shop);
+            Shop.Get(ShopCode);
+            Shop.SetRecFilter();
+            Parameters := StrSubstNo(ImportOrderParametersTxt, Shop.GetView(), OrdersToImport.GetView());
+            EnqueueJobEntry(Report::"Shpfy Sync Orders from Shopify", Parameters, StrSubstNo(SyncDescriptionMsg, Shop.Code), Shop."Allow Background Syncs");
+        end;
     end;
 
     /// <summary> 
@@ -186,6 +186,8 @@ codeunit 30101 "Shpfy Background Syncs"
 
     begin
         Parameters := Report.RunRequestPage(Report::"Shpfy Sync Orders from Shopify", StrSubstNo(OrderParametersTxt, Shop.GetView()));
+        if Parameters = '' then
+            exit;
         ShopView := Parameters.Substring(Parameters.IndexOf(StartDataItemShopTxt) + StrLen(StartDataItemShopTxt));
         ShopView := ShopView.Substring(1, ShopView.IndexOf(EndDataItemShopTxt) - 1);
         Parameters := Parameters.Replace(ShopView, '%1');
