@@ -21,7 +21,7 @@ codeunit 30114 "Shpfy Customer API"
     /// <returns>Return value of type Boolean.</returns>
     local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; Value: Variant): Boolean
     begin
-        AddFieldToGraphQuery(GraphQuery, FieldName, Value, true);
+        exit(AddFieldToGraphQuery(GraphQuery, FieldName, Value, true));
     end;
 
     local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; Value: Variant; ValueAsString: Boolean): Boolean
