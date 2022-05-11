@@ -43,7 +43,7 @@ codeunit 30101 "Shpfy Background Syncs"
             until Shop.Next() = 0;
     end;
 
-    internal procedure CustomerSync(ShopCode: Code[10])
+    internal procedure CustomerSync(ShopCode: Code[20])
     var
         Shop: Record "Shpfy Shop";
     begin
