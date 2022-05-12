@@ -51,7 +51,7 @@ codeunit 2751 "Universal Print Document Ready"
         Success := SendPrintJob(UniversalPrinterSettings, DocumentStream, FileName, FileExtension, DocumentType);
     end;
 
-    internal procedure SendPrintJob(UniversalPrinterSettings: Record "Universal Printer Settings"; DocumentInStream: InStream; FileName: Text; FileExtension: Text; DocumentType: Text): Boolean
+    procedure SendPrintJob(UniversalPrinterSettings: Record "Universal Printer Settings"; DocumentInStream: InStream; FileName: Text; FileExtension: Text; DocumentType: Text): Boolean
     var
         UniversalPrinterSetup: Codeunit "Universal Printer Setup";
         TempBlob: Codeunit "Temp Blob";
