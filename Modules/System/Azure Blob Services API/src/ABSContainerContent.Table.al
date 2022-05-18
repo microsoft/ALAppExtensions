@@ -64,6 +64,7 @@ table 9043 "ABS Container Content"
             Caption = 'Content-Type', Locked = true;
             Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
         }
+#pragma warning disable AS0086
         field(15; "Blob Type"; Text[2048])
         {
             DataClassification = SystemMetadata;
@@ -71,6 +72,7 @@ table 9043 "ABS Container Content"
             Access = Internal;
             Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
         }
+#pragma warning restore AS0086
         field(100; "XML Value"; Blob)
         {
             DataClassification = SystemMetadata;
