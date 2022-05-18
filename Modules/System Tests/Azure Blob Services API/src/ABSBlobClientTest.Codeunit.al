@@ -42,6 +42,52 @@ codeunit 132920 "ABS Blob Client Test"
     end;
 
     [Test]
+    procedure ListBlobsTest()
+    var
+        ABSContainerContent: Record "ABS Container Content";
+        Response: Codeunit "ABS Operation Response";
+        ContainerName, FirstBlobName, SecondBlobName, BlobContent : Text;
+    begin
+        // [Scenarion] Given a storage account and a container with BLOBs, ListBlobs operation succeeds. 
+
+        SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
+
+        ContainerName := ABSTestLibrary.GetContainerName();
+        FirstBlobName := ABSTestLibrary.GetBlobName();
+        SecondBlobName := ABSTestLibrary.GetBlobName();
+        BlobContent := ABSTestLibrary.GetSampleTextBlobContent();
+
+        ABSContainerClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), SharedKeyAuthorization);
+        ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSContainerClient.CreateContainer(ContainerName);
+
+        ABSBlobClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), ContainerName, SharedKeyAuthorization);
+        ABSBlobClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        // Add a BLOB block
+        Response := ABSBlobClient.PutBlobBlockBlobText(FirstBlobName, BlobContent);
+        Assert.IsTrue(Response.IsSuccessful(), 'Adding the first BLOB failed');
+
+        ABSBlobClient.ListBlobs(ABSContainerContent);
+        Assert.AreEqual(1, ABSContainerContent.Count(), 'There should be exactly one BLOB in the container');
+
+        Assert.AreEqual('BlockBlob', ABSContainerContent."Blob Type", 'Wrong BLOB type');
+        Assert.AreNotEqual(0, ABSContainerContent."Content Length", 'Content Length should not be 0');
+        Assert.AreEqual('text/plain; charset=utf-8', ABSContainerContent."Content Type", 'Wrong Content type');
+
+        // Add another BLOB block
+        Response := ABSBlobClient.PutBlobBlockBlobText(SecondBlobName, BlobContent);
+        Assert.IsTrue(Response.IsSuccessful(), 'Adding the second BLOB failed');
+
+        ABSBlobClient.ListBlobs(ABSContainerContent);
+        Assert.AreEqual(2, ABSContainerContent.Count(), 'There should be two BLOBs in the container');
+
+        // Clean-up
+        ABSContainerClient.DeleteContainer(ContainerName);
+    end;
+
+    [Test]
     procedure LeaseBlobTest()
     var
         Response: Codeunit "ABS Operation Response";

@@ -185,17 +185,17 @@ codeunit 9043 "ABS Helper Library"
 
     // #region Format Helper
     [NonDebuggable]
-    procedure GetFieldByName(TableNo: Integer; FldName: Text; var FldNo: Integer): Boolean
+    procedure GetFieldByName(TableNo: Integer; FieldCaption: Text; var FieldNo: Integer): Boolean
     var
         Field: Record Field;
     begin
-        Clear(FldNo);
+        Clear(FieldNo);
         Field.Reset();
         Field.SetRange(TableNo, TableNo);
-        Field.SetRange(FieldName, CopyStr(FldName, 1, MaxStrLen(Field.FieldName)));
+        Field.SetRange("Field Caption", CopyStr(FieldCaption, 1, MaxStrLen(Field.FieldName)));
         if Field.FindFirst() then
-            FldNo := Field."No.";
-        exit(FldNo <> 0);
+            FieldNo := Field."No.";
+        exit(FieldNo <> 0);
     end;
     // #endregion
 }

@@ -49,23 +49,27 @@ table 9043 "ABS Container Content"
         field(12; "Last Modified"; DateTime)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Last Modified';
+            Caption = 'Last-Modified';
+            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
         }
         field(13; "Content Length"; Integer)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Content Length';
+            Caption = 'Content-Length';
+            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
         }
         field(14; "Content Type"; Text[2048])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Content Type';
+            Caption = 'Content-Type';
+            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
         }
-        field(15; "Blob Type"; Text[15])
+        field(15; "Blob Type"; Text[2048])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Blob Type';
+            Caption = 'BlobType';
             Access = Internal;
+            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
         }
         field(100; "XML Value"; Blob)
         {
