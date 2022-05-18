@@ -1079,7 +1079,6 @@ Codeunit 4037 "Helper Functions"
         GPBankMSTR: Record "GP Bank MSTR";
         GPCheckbookMSTR: Record "GP Checkbook MSTR";
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
-        MSFTCM20200Table: Record MSFTCM20200;
         MSFTSY40101Table: Record MSFTSY40101;
     begin
         GPAccount.DeleteAll();
@@ -1106,7 +1105,6 @@ Codeunit 4037 "Helper Functions"
         GPCheckbookMSTR.DeleteAll();
         GPCheckbookTransactions.DeleteAll();
 
-        MSFTCM20200Table.DeleteAll();
         MSFTSY40101Table.DeleteAll();
 
         Session.LogMessage('00007GH', 'Cleaned up staging tables.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
