@@ -4,8 +4,8 @@
         {
             "analyzerId": "Microsoft.Dynamics.Nav.CodeCop",
             "rules": [
-                {                    
-                    "id": "PTE0001",             
+                {
+                    "id": "PTE0001",
                     "action": "None"
                 },
                 {

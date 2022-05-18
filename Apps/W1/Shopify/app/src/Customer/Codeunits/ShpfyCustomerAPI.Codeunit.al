@@ -21,7 +21,7 @@ codeunit 30114 "Shpfy Customer API"
     /// <returns>Return value of type Boolean.</returns>
     local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; Value: Variant): Boolean
     begin
-        AddFieldToGraphQuery(GraphQuery, FieldName, Value, true);
+        exit(AddFieldToGraphQuery(GraphQuery, FieldName, Value, true));
     end;
 
     local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; Value: Variant; ValueAsString: Boolean): Boolean
@@ -265,7 +265,7 @@ codeunit 30114 "Shpfy Customer API"
                         Error(UpdateCustIdErr);
                     ShopifyCustomer."Accepts Marketing" := JHelper.GetValueAsBoolean(JItem, 'acceptsMarketing');
                     ShopifyCustomer."Accepts Marketing Update At" := JHelper.GetValueAsDateTime(JItem, 'acceptsMArketingUpdatedAt');
-                    ShopifyCustomer."Tax Exempt" := JHelper.GetValueAsBoolean(JItem, 'taxtExempt');
+                    ShopifyCustomer."Tax Exempt" := JHelper.GetValueAsBoolean(JItem, 'taxExempt');
                     ShopifyCustomer."Updated At" := JHelper.GetValueAsDateTime(JItem, 'updatedAt');
                     ShopifyCustomer."Verified Email" := JHelper.GetValueAsBoolean(JItem, 'verifiedEmail');
                 end;
@@ -292,12 +292,14 @@ codeunit 30114 "Shpfy Customer API"
         xShopifyCustomerAddress: Record "Shpfy Customer Address";
         HasChange: Boolean;
         GraphQuery: TextBuilder;
+        CustomerIdTxt: Label 'gid://shopify/Customer/%1', Comment = '%1 = Customer Id', Locked = true;
+        MailingAddressIdTxt: Label 'gid://shopify/MailingAddress/%1?model_name=CustomerAddress', Comment = '%1 = Address Id', Locked = true;
     begin
         xShopifyCustomer.Get(ShopifyCustomer.Id);
         xShopifyCustomerAddress.Get(ShopifyCustomerAddress.Id);
         Events.OnBeforeSendUpdateShopifyCustomer(Shop, ShopifyCustomer, ShopifyCustomerAddress, xShopifyCustomer, xShopifyCustomerAddress);
         GraphQuery.Append('{"query":"mutation {customerUpdate(input: {');
-        AddFieldToGraphQuery(GraphQuery, 'id', ShopifyCustomer.Id);
+        AddFieldToGraphQuery(GraphQuery, 'id', StrSubstNo(CustomerIdTxt, ShopifyCustomer.Id));
         if ShopifyCustomer.Email <> xShopifyCustomer.Email then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'email', ShopifyCustomer.Email);
         if ShopifyCustomer."First Name" <> xShopifyCustomer."First Name" then
@@ -311,7 +313,7 @@ codeunit 30114 "Shpfy Customer API"
 
         GraphQuery.Append('addresses: {');
 
-        AddFieldToGraphQuery(GraphQuery, 'id', ShopifyCustomerAddress.Id);
+        AddFieldToGraphQuery(GraphQuery, 'id', StrSubstNo(MailingAddressIdTxt, ShopifyCustomerAddress.Id));
         if ShopifyCustomerAddress.Company <> '' then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'company', ShopifyCustomerAddress.Company);
         if ShopifyCustomerAddress."First Name" <> xShopifyCustomer."First Name" then
@@ -336,7 +338,7 @@ codeunit 30114 "Shpfy Customer API"
 
         if HasChange then begin
             GraphQuery.Remove(GraphQuery.Length - 1, 2);
-            GraphQuery.Append('}}) {customer {id, acceptsMarketing, acceptsMarketingUpdatedAt, tags, updatedAt, veriefiedEmail, defaultAddress {id, province, country}}, userErrors {field, message}}}"}');
+            GraphQuery.Append('}}) {customer {id, acceptsMarketing, acceptsMarketingUpdatedAt, tags, updatedAt, verifiedEmail, defaultAddress {id, province, country}}, userErrors {field, message}}}"}');
             exit(GraphQuery.ToText());
         end;
     end;
