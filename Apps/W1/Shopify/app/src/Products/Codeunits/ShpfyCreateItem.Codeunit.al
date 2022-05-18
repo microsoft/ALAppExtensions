@@ -95,7 +95,7 @@ codeunit 30171 "Shpfy Create Item"
     /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     /// <param name="Item">Parameter of type Record Item.</param>
-    local procedure CreateItemVariant(var ShopifyProduct: Record "Shpfy Product"; ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item);
+    local procedure CreateItemVariant(var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item);
     var
         ItemVariant: Record "Item Variant";
         ShpfyCreateItem: Codeunit "Shpfy Create Item";
@@ -279,7 +279,9 @@ codeunit 30171 "Shpfy Create Item"
         end;
         if ShopifyVariant."Unit Cost" <> 0 then
             Item.Validate("Unit Cost", ShopifyVariant."Unit Cost");
-        if (Shop."Customer Price Group" <> '') and (ShopifyVariant.Price > 0) then;
+
+        if ShopifyVariant.Price <> 0 then
+            Item.Validate("Unit Price", ShopifyVariant.Price);
 
         if ShpfyProduct."Product Type" <> '' then begin
             ItemCategory.SetFilter(Description, FilterMgt.CleanFilterValue(ShpfyProduct."Product Type", MaxStrLen(ItemCategory.Description)));
