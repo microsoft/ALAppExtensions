@@ -69,7 +69,6 @@ table 9043 "ABS Container Content"
         {
             DataClassification = SystemMetadata;
             Caption = 'BlobType', Locked = true;
-            Access = Internal;
             Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
         }
 #pragma warning restore AS0086
