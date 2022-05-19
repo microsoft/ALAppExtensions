@@ -54,7 +54,7 @@ query 3006 GPOpenReceivablesTrx
             }
             column(CURTRXAM; CURTRXAM)
             {
-                Caption = 'Current Transactiosn Amount';
+                Caption = 'Current Transaction Amount';
             }
             column(FRTAMNT; FRTAMNT)
             {
