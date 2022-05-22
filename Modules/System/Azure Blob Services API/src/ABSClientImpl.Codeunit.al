@@ -471,6 +471,22 @@ codeunit 9051 "ABS Client Impl."
         exit(ABSOperationResponse);
     end;
 
+    procedure GetBlobTags(BlobName: Text; var Tags: Dictionary of [Text, Text]; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    var
+        OperationResponse: Codeunit "ABS Operation Response";
+        FormatHelper: Codeunit "ABS Format Helper";
+        Operation: Enum "ABS Operation";
+        ResponseText: Text;
+    begin
+        OperationPayload.SetOperation(Operation::GetBlobTags);
+        OperationPayload.SetOptionalParameters(OptionalParameters);
+        OperationPayload.SetBlobName(BlobName);
+
+        OperationResponse := BlobAPIWebRequestHelper.GetOperationAsText(OperationPayload, ResponseText, StrSubstNo(TagsOperationNotSuccessfulErr, 'get', 'Blob'));
+        Tags := FormatHelper.XmlDocumentToTagsDictionary(FormatHelper.TextToXmlDocument(ResponseText));
+        exit(OperationResponse);
+    end;
+
     procedure SetBlobTags(BlobName: Text; Tags: Dictionary of [Text, Text]): Codeunit "ABS Operation Response"
     var
         ABSOperationResponse: Codeunit "ABS Operation Response";
