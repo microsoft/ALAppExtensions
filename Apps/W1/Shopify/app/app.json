@@ -13,18 +13,6 @@
     "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2179727",
     "dependencies": [],
     "screenshots": [],
-    "internalsVisibleTo": [
-        {
-            "id": "a3447752-0d15-4547-92bb-25b726060c14",
-            "name": "Connector to Shopify Test",
-            "publisher": "Microsoft"
-        },
-        {
-            "id": "8e963d9b-3f84-43bf-8723-132a42f78f73",
-            "name": "Register Test Store",
-            "publisher": "Scapta"
-        }
-    ],
     "platform": "20.0.0.0",
     "idRanges": [
         {

@@ -327,7 +327,7 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             Editable = false;
         }
-        field(104; "SKU Mapping"; Enum "Shpfy SKU Mappging")
+        field(104; "SKU Mapping"; Enum "Shpfy SKU Mapping")
         {
             Caption = 'SKU Mapping';
             DataClassification = SystemMetadata;
