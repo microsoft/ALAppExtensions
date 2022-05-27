@@ -21,6 +21,13 @@ table 30102 "Shpfy Shop"
             Caption = 'Shopify URL';
             DataClassification = SystemMetadata;
             ExtendedDatatype = URL;
+
+            trigger OnValidate()
+            begin
+                if ("Shopify URL" <> '') then
+                    if not "Shopify URL".ToLower().StartsWith('https://') then
+                        "Shopify URL" := CopyStr('https://' + "Shopify URL", 1, MaxStrLen("Shopify URL"));
+            end;
         }
         field(3; Enabled; Boolean)
         {
