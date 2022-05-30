@@ -28,7 +28,6 @@ codeunit 30153 "Shpfy GraphQL Rate Limit"
             RestoreRate := JHelper.GetValueAsDecimal(JThrottleStatus, 'restoreRate');
             LastAvailable := JHelper.GetValueAsDecimal(JThrottleStatus, 'currentlyAvailable');
             LastRequestedOn := CurrentDateTime;
-            WaitTime := CalcWaitTime();
         end;
         NextRequestAfter := CurrentDateTime + WaitTime;
     end;
@@ -36,7 +35,7 @@ codeunit 30153 "Shpfy GraphQL Rate Limit"
     /// <summary> 
     /// Wait For Request Available.
     /// </summary>
-    internal procedure WaitForRequestAvailable()
+    local procedure WaitForRequestAvailable()
     begin
         if NextRequestAfter = 0DT then
             exit;
@@ -62,23 +61,11 @@ codeunit 30153 "Shpfy GraphQL Rate Limit"
         end;
     end;
 
-    local procedure CalcWaitTime(): Duration
-    var
-        WaitTime: Duration;
-    begin
-        if TryCalcWaitTime(WaitTime) then
-            exit(WaitTime);
-        WaitTime := 0;
-        exit(WaitTime);
-    end;
-
     local procedure CalcWaitTime(ExpectedCost: Decimal): Duration
     var
         WaitTime: Duration;
     begin
-        if ExpectedCost = 0 then
-            exit(CalcWaitTime());
-        if LastAvailable > (2 * ExpectedCost) then begin
+        if LastAvailable > ExpectedCost then begin
             WaitTime := 0;
             exit(WaitTime);
         end;
@@ -95,19 +82,9 @@ codeunit 30153 "Shpfy GraphQL Rate Limit"
     begin
         if RestoreRate = 0 then
             RestoreRate := 50;
-        WaitTime := (Math.Max(2 * ExpectedCost - LastAvailable, 250) / RestoreRate * 1000) - (CurrentDateTime - LastRequestedOn);
+        WaitTime := (Math.Max(ExpectedCost - LastAvailable, 0) / RestoreRate * 1000) - (CurrentDateTime - LastRequestedOn);
         if WaitTime < 0 then
             WaitTime := 0;
-    end;
-
-    [TryFunction]
-    local procedure TryCalcWaitTime(var WaitTime: Duration)
-    begin
-        WaitTime := (MaximumAvailable - LastAvailable) / RestoreRate * 1000;
-        if WaitTime < 0 then
-            WaitTime := 0;
-        if WaitTime > (MaximumAvailable * 1000) then
-            WaitTime := MaximumAvailable * 1000;
     end;
 
     local procedure GoToSleep(): Duration

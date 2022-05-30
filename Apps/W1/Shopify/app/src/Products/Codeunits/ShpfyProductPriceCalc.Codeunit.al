@@ -152,12 +152,16 @@ codeunit 30182 "Shpfy Product Price Calc."
     /// </summary>
     /// <param name="Code">Parameter of type Code[20].</param>
     internal procedure SetShop(Code: Code[20])
+    var
+        ShpfyShop: Record "Shpfy Shop";
     begin
-        if (Code <> '') and (Shop.Code <> Code) then begin
-            Clear(Shop);
-            Shop.Get(Code);
+        ShpfyShop.Get(Code);
+        if (Shop.Code <> ShpfyShop.Code) or (Shop.SystemModifiedAt < ShpfyShop.SystemModifiedAt) then begin
+            Shop := ShpfyShop;
             Clear(TempSalesHeader);
             TempSalesHeader.DeleteAll();
+            Clear(TempCustomer);
+            TempCustomer.DeleteAll();
             CreateTempSalesHeader();
         end;
     end;

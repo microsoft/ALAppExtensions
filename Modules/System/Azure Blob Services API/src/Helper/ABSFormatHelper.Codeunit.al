@@ -112,6 +112,42 @@ codeunit 9044 "ABS Format Helper"
     end;
 
     [NonDebuggable]
+    procedure XmlDocumentToTagsDictionary(Document: XmlDocument): Dictionary of [Text, Text]
+    var
+        Tags: Dictionary of [Text, Text];
+        TagNodesList: XmlNodeList;
+        TagNode: XmlNode;
+        KeyValue: Text;
+        Value: Text;
+    begin
+        if not Document.SelectNodes('/Tags/TagSet/Tag', TagNodesList) then
+            exit;
+
+        foreach TagNode in TagNodesList do begin
+            KeyValue := GetSingleNodeInnerText(TagNode, 'Key');
+            Value := GetSingleNodeInnerText(TagNode, 'Value');
+            if KeyValue = '' then begin
+                Clear(Tags);
+                exit;
+            end;
+            Tags.Add(KeyValue, Value);
+        end;
+        exit(Tags);
+    end;
+
+    [NonDebuggable]
+    local procedure GetSingleNodeInnerText(Node: XmlNode; XPath: Text): Text
+    var
+        ChildNode: XmlNode;
+        XmlElement: XmlElement;
+    begin
+        if not Node.SelectSingleNode(XPath, ChildNode) then
+            exit;
+        XmlElement := ChildNode.AsXmlElement();
+        exit(XmlElement.InnerText());
+    end;
+
+    [NonDebuggable]
     procedure TagsDictionaryToSearchExpression(Tags: Dictionary of [Text, Text]): Text
     var
         Helper: Codeunit "Uri";

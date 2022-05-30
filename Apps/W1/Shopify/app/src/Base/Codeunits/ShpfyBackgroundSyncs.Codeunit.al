@@ -43,7 +43,7 @@ codeunit 30101 "Shpfy Background Syncs"
             until Shop.Next() = 0;
     end;
 
-    internal procedure CustomerSync(ShopCode: Code[10])
+    internal procedure CustomerSync(ShopCode: Code[20])
     var
         Shop: Record "Shpfy Shop";
     begin
@@ -186,6 +186,8 @@ codeunit 30101 "Shpfy Background Syncs"
 
     begin
         Parameters := Report.RunRequestPage(Report::"Shpfy Sync Orders from Shopify", StrSubstNo(OrderParametersTxt, Shop.GetView()));
+        if Parameters = '' then
+            exit;
         ShopView := Parameters.Substring(Parameters.IndexOf(StartDataItemShopTxt) + StrLen(StartDataItemShopTxt));
         ShopView := ShopView.Substring(1, ShopView.IndexOf(EndDataItemShopTxt) - 1);
         Parameters := Parameters.Replace(ShopView, '%1');
