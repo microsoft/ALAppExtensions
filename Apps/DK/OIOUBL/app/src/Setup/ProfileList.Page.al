@@ -32,4 +32,13 @@ page 13645 "OIOUBL-Profile List"
     actions
     {
     }
+
+    trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        OIOUBLTok: Label 'DK OIOUBL extension', Locked = true;
+    begin
+        FeatureTelemetry.LogUptake('0000H8L', OIOUBLTok, Enum::"Feature Uptake Status"::Discovered);
+    end;
+
 }

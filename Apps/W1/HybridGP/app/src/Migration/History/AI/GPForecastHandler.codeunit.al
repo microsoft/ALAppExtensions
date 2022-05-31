@@ -13,10 +13,6 @@ codeunit 4034 "GPForecastHandler"
         TimeSeriesManagement: Codeunit "Time Series Management";
         SalesForecastHandler: Codeunit "Sales Forecast Handler";
         GPStatus: Option " ","Missing API","Not enough historical data","Out of limit";
-        ApiUrl: Text[250];
-        ApiKey: Text[200];
-        UsingStandardCredentials: Boolean;
-        LimitValue: Decimal;
         TimeSeriesLibState: Option Uninitialized,Initialized,"Data Prepared",Done;
         XINVOICETxt: Label 'INVOICE', Locked = true;
 
@@ -315,14 +311,8 @@ codeunit 4034 "GPForecastHandler"
 
         TempGPTimeSeriesBuffer.DeleteAll();
         TempGPForecastTemp.DeleteAll();
-        CashFlowSetup.GetMLCredentials(ApiUrl, ApiKey, LimitValue, UsingStandardCredentials);
-        TimeSeriesManagement.Initialize(ApiUrl, ApiKey, CashFlowSetup.TimeOut, UsingStandardCredentials);
-        TimeSeriesManagement.SetMaximumHistoricalPeriods(CashFlowSetup."Historical Periods");
-        TimeSeriesManagement.GetState(TimeSeriesLibState);
-        if not (TimeSeriesLibState = TimeSeriesLibState::Initialized) then
-            exit(false);
 
-        exit(true);
+        exit(TimeSeriesManagement.InitializeFromCashFlowSetup(TimeSeriesLibState));
     end;
 
     local procedure ComparePeriods(var NumberOfPeriodsWithHistoryLoc: integer; NumberOfPeriodsWithHistory: integer)

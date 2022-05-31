@@ -279,7 +279,7 @@ codeunit 9988 "Word Template Impl."
         CustomDimensions.Add('TemplateTableID', Format(WordTemplate."Table ID"));
 
         if Success then
-            FeatureTelemetry.LogUptake('0000ECP', 'Word templates', Enum::"Feature Uptake Status"::"Set up", false, CustomDimensions)
+            FeatureTelemetry.LogUptake('0000ECP', 'Word templates', Enum::"Feature Uptake Status"::"Set up", CustomDimensions)
         else begin
             FeatureTelemetry.LogError('0000ECQ', 'Word templates', 'Loading template', GetLastErrorText(true), GetLastErrorCallStack(), CustomDimensions);
             Session.LogMessage('0000ECR', StrSubstNo(FailedToLoadTemplateAllTxt, WordTemplate.SystemId, WordTemplate."Table ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', WordTemplatesCategoryTxt);
@@ -310,7 +310,7 @@ codeunit 9988 "Word Template Impl."
 
         CustomDimensions.Add('TemplateSystemID', WordTemplate.SystemId);
         CustomDimensions.Add('TemplateTableID', Format(WordTemplate."Table ID"));
-        FeatureTelemetry.LogUptake('0000FW3', 'Word templates', Enum::"Feature Uptake Status"::Used, false, CustomDimensions);
+        FeatureTelemetry.LogUptake('0000FW3', 'Word templates', Enum::"Feature Uptake Status"::Used, CustomDimensions);
 
         if Success then
             FeatureTelemetry.LogUsage('0000ECS', 'Word templates', 'Template applied', CustomDimensions)
@@ -350,7 +350,7 @@ codeunit 9988 "Word Template Impl."
 
         CustomDimensions.Add('TemplateSystemID', WordTemplate.SystemId);
         CustomDimensions.Add('TemplateTableID', Format(WordTemplate."Table ID"));
-        FeatureTelemetry.LogUptake('0000FW4', 'Word templates', Enum::"Feature Uptake Status"::Used, false, CustomDimensions);
+        FeatureTelemetry.LogUptake('0000FW4', 'Word templates', Enum::"Feature Uptake Status"::Used, CustomDimensions);
 
         if Success then
             FeatureTelemetry.LogUsage('0000ECV', 'Word templates', 'Template applied', CustomDimensions)

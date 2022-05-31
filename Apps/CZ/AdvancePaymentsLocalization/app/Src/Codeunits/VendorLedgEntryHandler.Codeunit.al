@@ -1,5 +1,8 @@
 codeunit 31021 "Vendor Ledg. Entry Handler CZZ"
 {
+    var
+        AppliedToAdvanceLetterErr: Label 'The entry is applied to advance letter and cannot be used to applying or unapplying.';
+
     [EventSubscriber(ObjectType::Table, Database::"Vendor Ledger Entry", 'OnAfterCopyVendLedgerEntryFromGenJnlLine', '', false, false)]
     local procedure VendorLedgerEntryOnAfterCopyVendLedgerEntryFromGenJnlLine(var VendorLedgerEntry: Record "Vendor Ledger Entry"; GenJournalLine: Record "Gen. Journal Line")
     var
@@ -31,6 +34,27 @@ codeunit 31021 "Vendor Ledg. Entry Handler CZZ"
         AdvanceLetterTemplateCZZ.TestField("Advance Letter G/L Account");
         GLAccountNo := AdvanceLetterTemplateCZZ."Advance Letter G/L Account";
         IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"VendEntry-Apply Posted Entries", 'OnApplyVendEntryFormEntryOnAfterCheckEntryOpen', '', false, false)]
+    local procedure CheckAdvanceOnApplyVendEntryFormEntryOnAfterCheckEntryOpen(ApplyingVendLedgEntry: Record "Vendor Ledger Entry")
+    begin
+        if (ApplyingVendLedgEntry."Advance Letter No. CZZ" <> '') or
+           (ApplyingVendLedgEntry."Adv. Letter Template Code CZZ" <> '')
+        then
+            Error(AppliedToAdvanceLetterErr);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"VendEntry-Apply Posted Entries", 'OnBeforeUnApplyVendor', '', false, false)]
+    local procedure CheckAdvanceOnBeforeUnApplyVendor(DtldVendLedgEntry: Record "Detailed Vendor Ledg. Entry")
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        VendorLedgerEntry.Get(DtldVendLedgEntry."Vendor Ledger Entry No.");
+        if (VendorLedgerEntry."Advance Letter No. CZZ" <> '') or
+           (VendorLedgerEntry."Adv. Letter Template Code CZZ" <> '')
+        then
+            Error(AppliedToAdvanceLetterErr);
     end;
 #if not CLEAN19
 #pragma warning disable AL0432

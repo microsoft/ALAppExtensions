@@ -11,6 +11,12 @@ codeunit 1998 "Guided Experience Upgrade Tag"
     local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
         PerCompanyUpgradeTags.Add(GetGuidedExperienceItemAddSpotlightTourTypeTag());
+        PerCompanyUpgradeTags.Add(GetGuidedExperienceUpdateTourDescriptionTag());
+    end;
+
+    procedure GetGuidedExperienceUpdateTourDescriptionTag(): Code[250]
+    begin
+        exit('MS-430905-GuidedExperienceItemTourDescriptionUpdate-20220505');
     end;
 
     procedure GetGuidedExperienceItemAddSpotlightTourTypeTag(): Code[250]

@@ -11,6 +11,8 @@ codeunit 10537 "MTD Connection"
     end;
 
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        UKMakingTaxTok: Label 'UK Making Tax Digital', Locked = true;
         OAuthNotConfiguredErr: Label 'OAuth setup is not enabled for HMRC Making Tax Digital.';
         OpenSetupMsg: Label 'Open service connections to setup.';
         OpenSetupQst: Label 'Do you want to open the setup?';
@@ -176,6 +178,7 @@ codeunit 10537 "MTD Connection"
         JObject2: JsonObject;
         HttpLogError: Text;
     begin
+        FeatureTelemetry.LogUptake('0000HFW', UKMakingTaxTok, Enum::"Feature Uptake Status"::"Used");
         OAuth20Setup.GET(GetOAuthSetupCode());
         VATReportSetup.Get();
 

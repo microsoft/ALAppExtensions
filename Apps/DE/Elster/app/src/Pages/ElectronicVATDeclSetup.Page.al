@@ -40,4 +40,13 @@ page 11019 "Electronic VAT Decl. Setup"
             }
         }
     }
+
+    trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        ElecVATAdvanceNotTok: Label 'DE Elec. VAT Advance Notifications', Locked = true;
+
+    begin
+        FeatureTelemetry.LogUptake('0001Q0E', ElecVATAdvanceNotTok, Enum::"Feature Uptake Status"::Discovered);
+    end;
 }

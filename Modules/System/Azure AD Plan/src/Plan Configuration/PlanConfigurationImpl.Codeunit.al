@@ -212,7 +212,7 @@ codeunit 9822 "Plan Configuration Impl."
 
         TelemetryDimensions.Add('Customized', Format(Rec.Customized));
         TelemetryDimensions.Add('PlanId', Format(Rec."Plan ID", 0, 4));
-        FeatureTelemetry.LogUptake('0000GLS', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::"Set up", false, TelemetryDimensions);
+        FeatureTelemetry.LogUptake('0000GLS', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::"Set up", TelemetryDimensions);
 
         Session.LogSecurityAudit(PlanConfigurationFeatureNameTok, SecurityOperationResult::Success,
             StrSubstNo(PlanConfigurationUpdatedLbl, Rec."Plan ID", Rec.Customized), AuditCategory::UserManagement);
@@ -310,7 +310,7 @@ codeunit 9822 "Plan Configuration Impl."
     begin
         Session.LogSecurityAudit(PlanConfigurationFeatureNameTok, SecurityOperationResult::Success,
             StrSubstNo(CustomPermissionSetInPlanRemovedLbl, StrSubstNo(CustomPermissionSetLbl, Rec."Role ID", Rec."App ID", Rec.Scope, Rec."Company Name", Rec."Plan ID")), AuditCategory::UserManagement);
-        FeatureTelemetry.LogUptake('0000GLT', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::"Set up", false, GetTelemetryDimensions(Rec, false));
+        FeatureTelemetry.LogUptake('0000GLT', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::"Set up", GetTelemetryDimensions(Rec, false));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Custom Permission Set In Plan", 'OnAfterInsertEvent', '', false, false)]
@@ -318,7 +318,7 @@ codeunit 9822 "Plan Configuration Impl."
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        FeatureTelemetry.LogUptake('0000GLU', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::"Set up", false, GetTelemetryDimensions(Rec, true));
+        FeatureTelemetry.LogUptake('0000GLU', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::"Set up", GetTelemetryDimensions(Rec, true));
 
         Session.LogSecurityAudit(PlanConfigurationFeatureNameTok, SecurityOperationResult::Success,
             StrSubstNo(CustomPermissionSetInPlanAddedLbl, StrSubstNo(CustomPermissionSetLbl, Rec."Role ID", Rec."App ID", Rec.Scope, Rec."Company Name", Rec."Plan ID")), AuditCategory::UserManagement);
@@ -329,8 +329,8 @@ codeunit 9822 "Plan Configuration Impl."
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        FeatureTelemetry.LogUptake('0000GLO', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::"Set up", false, GetTelemetryDimensions(Rec, true));
-        FeatureTelemetry.LogUptake('0000GPU', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::"Set up", false, GetTelemetryDimensions(xRec, false));
+        FeatureTelemetry.LogUptake('0000GLO', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::"Set up", GetTelemetryDimensions(Rec, true));
+        FeatureTelemetry.LogUptake('0000GPU', PlanConfigurationFeatureNameTok, Enum::"Feature Uptake Status"::"Set up", GetTelemetryDimensions(xRec, false));
 
         Session.LogSecurityAudit(PlanConfigurationFeatureNameTok, SecurityOperationResult::Success,
             StrSubstNo(CustomPermissionSetInPlanModifiedLbl, StrSubstNo(CustomPermissionSetLbl, xRec."Role ID", xRec."App ID", xRec.Scope, xRec."Company Name", xRec."Plan ID"),

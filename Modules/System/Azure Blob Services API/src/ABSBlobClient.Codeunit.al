@@ -491,7 +491,7 @@ codeunit 9053 "ABS Blob Client"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.GetBlobTags(BlobName, Tags, OptionalParameters))
+        exit(ABSClientImpl.GetBlobTags(BlobName, Tags, OptionalParameters))
     end;
 
     /// <summary>
@@ -504,7 +504,7 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure GetBlobTags(BlobName: Text; var Tags: XmlDocument; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.GetBlobTags(BlobName, Tags, OptionalParameters))
+        exit(ABSClientImpl.GetBlobTags(BlobName, Tags, OptionalParameters))
     end;
 
     /// <summary>
@@ -518,7 +518,7 @@ codeunit 9053 "ABS Blob Client"
     var
         OptionalParameters: Codeunit "ABS Optional Parameters";
     begin
-        exit(BlobServicesApiImpl.GetBlobTags(BlobName, Tags, OptionalParameters))
+        exit(ABSClientImpl.GetBlobTags(BlobName, Tags, OptionalParameters))
     end;
 
     /// <summary>
@@ -531,7 +531,7 @@ codeunit 9053 "ABS Blob Client"
     /// <returns>An operation reponse object</returns>
     procedure GetBlobTags(BlobName: Text; var Tags: Dictionary of [Text, Text]; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     begin
-        exit(BlobServicesApiImpl.GetBlobTags(BlobName, Tags, OptionalParameters))
+        exit(ABSClientImpl.GetBlobTags(BlobName, Tags, OptionalParameters))
     end;
 
     /// <summary>

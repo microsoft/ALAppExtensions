@@ -18,7 +18,10 @@ codeunit 13690 "MS - ECSL Report Export File"
     trigger OnRun();
     var
         CompanyInformation: Record "Company Information";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        VATTok: Label 'DK VAT-VIES Reporting', Locked = true;
     begin
+        FeatureTelemetry.LogUptake('0000H8R', VATTok, Enum::"Feature Uptake Status"::"Used");
         ErrorMessage.SetContext(RECORDID());
         ErrorMessage.ClearLog();
 
@@ -27,7 +30,9 @@ codeunit 13690 "MS - ECSL Report Export File"
 
         CompanyInformation.Get();
         CompanyVATRegNo := TrimVatPrefix(CompanyInformation."VAT Registration No.", CompanyInformation."Country/Region Code");
-        ExportFile(Rec)
+        ExportFile(Rec);
+
+        FeatureTelemetry.LogUsage('0000H8S', VATTok, 'ECSL report exported');
     end;
 
     local procedure ValidateReport(VATReportHeader: Record "VAT Report Header"): Boolean;

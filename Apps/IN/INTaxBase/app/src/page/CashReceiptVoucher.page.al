@@ -1584,7 +1584,7 @@ page 18555 "Cash Receipt Voucher"
                     var
                         ODataUtility: Codeunit ODataUtility;
                     begin
-                        ODataUtility.EditJournalWorksheetInExcel(CurrPage.Caption() [240], CurrPage.ObjectId(false), "Journal Batch Name", "Journal Template Name");
+                        ODataUtility.EditJournalWorksheetInExcel(CurrPage.Caption(), CurrPage.ObjectId(false), "Journal Batch Name", "Journal Template Name");
                     end;
                 }
                 action(PreviousDocNumberTrx)

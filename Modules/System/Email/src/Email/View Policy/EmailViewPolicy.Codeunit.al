@@ -14,13 +14,13 @@ codeunit 8930 "Email View Policy"
     var
         DefaultRecordCannotDeleteMsg: Label 'The default user email policy cannot be deleted.';
 
-    procedure CheckForDefaultEntry()
+    procedure CheckForDefaultEntry(EmailViewPolicy: Enum "Email View Policy")
     var
         EmailViewPolicyRecord: Record "Email View Policy";
     begin
         EmailViewPolicyRecord.SetRange("User ID", GetDefaultUserId());
         If EmailViewPolicyRecord.IsEmpty() then
-            InsertDefault();
+            InsertDefault(EmailViewPolicy)
     end;
 
     procedure CheckIfCanDeleteRecord(EmailViewPolicyRecord: Record "Email View Policy"): Boolean
@@ -58,14 +58,14 @@ codeunit 8930 "Email View Policy"
             until EmailRelatedRecord.Next() = 0;
     end;
 
-    local procedure InsertDefault()
+    local procedure InsertDefault(EmailViewPolicy: Enum "Email View Policy")
     var
         EmailViewPolicyRecord: Record "Email View Policy";
         NullGuid: Guid;
     begin
         EmailViewPolicyRecord."User ID" := CopyStr(GetDefaultUserId(), 1, 50);
         EmailViewPolicyRecord."User Security ID" := NullGuid;
-        EmailViewPolicyRecord."Email View Policy" := Enum::"Email View Policy"::AllRelatedRecordsEmails;
+        EmailViewPolicyRecord."Email View Policy" := EmailViewPolicy;
         EmailViewPolicyRecord.Insert();
     end;
 

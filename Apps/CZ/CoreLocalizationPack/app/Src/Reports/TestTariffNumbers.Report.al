@@ -1,5 +1,6 @@
 report 31105 "Test Tariff Numbers CZL"
 {
+    ApplicationArea = Basic, Suite;
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/TestTariffNumbers.rdl';
     Caption = 'Test Tariff Numbers';

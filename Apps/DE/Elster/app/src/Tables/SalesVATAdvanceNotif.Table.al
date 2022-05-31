@@ -251,6 +251,7 @@ table 11021 "Sales VAT Advance Notif."
 
     trigger OnInsert()
     begin
+        FeatureTelemetry.LogUptake('0001Q0G', ElecVATAdvanceNotTok, Enum::"Feature Uptake Status"::"Used");
         if xRec.FindLast() then;
         Period := xRec.Period;
         "Contact for Tax Office" := xRec."Contact for Tax Office";
@@ -260,6 +261,7 @@ table 11021 "Sales VAT Advance Notif."
             ElecVATDeclSetup.TestField("Sales VAT Adv. Notif. Nos.");
             NoSeriesMgt.InitSeries(ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.", xRec."No. Series", WorkDate(), "No.", "No. Series");
         end;
+        FeatureTelemetry.LogUsage('0001Q0H', ElecVATAdvanceNotTok, 'Elec. VAT advance notif generated');
     end;
 
     trigger OnRename()
@@ -275,6 +277,8 @@ table 11021 "Sales VAT Advance Notif."
     var
         ElecVATDeclSetup: Record "Elec. VAT Decl. Setup";
         NoSeriesMgt: Codeunit NoSeriesManagement;
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        ElecVATAdvanceNotTok: Label 'DE Elec. VAT Advance Notifications', Locked = true;
         WrongPlaceErr: Label 'Places of %1 in area %2 must be %3.';
         MustSpecStartingDateErr: Label 'You must specify a beginning of a month as starting date of the statement period.';
         StartingDateErr: Label 'The starting date is not the first date of a quarter.';

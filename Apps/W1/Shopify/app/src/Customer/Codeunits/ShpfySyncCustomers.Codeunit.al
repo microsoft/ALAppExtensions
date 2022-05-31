@@ -10,6 +10,7 @@ codeunit 30123 "Shpfy Sync Customers"
     var
         SyncStartTime: DateTime;
     begin
+        Rec.TestField(Enabled, true);
         SetShop(Rec);
         SyncStartTime := CurrentDateTime;
         if Shop."Customer Import From Shopify" = Shop."Customer Import From Shopify"::AllCustomers then

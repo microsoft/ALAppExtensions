@@ -189,7 +189,7 @@ codeunit 9059 "Custom User Group In Plan"
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        FeatureTelemetry.LogUptake('0000GLM', PlanConfigurationFeatureNameTxt, Enum::"Feature Uptake Status"::"Set up", false, GetTelemetryDimensions(Rec, false));
+        FeatureTelemetry.LogUptake('0000GLM', PlanConfigurationFeatureNameTxt, Enum::"Feature Uptake Status"::"Set up", GetTelemetryDimensions(Rec, false));
 
         Session.LogSecurityAudit(PlanConfigurationFeatureNameTxt, SecurityOperationResult::Success,
             StrSubstNo(CustomUserGroupInPlanRemovedLbl, Rec."User Group Code", Rec."Company Name", Rec."Plan ID"), AuditCategory::UserManagement);
@@ -200,7 +200,7 @@ codeunit 9059 "Custom User Group In Plan"
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        FeatureTelemetry.LogUptake('0000GLN', PlanConfigurationFeatureNameTxt, Enum::"Feature Uptake Status"::"Set up", false, GetTelemetryDimensions(Rec, true));
+        FeatureTelemetry.LogUptake('0000GLN', PlanConfigurationFeatureNameTxt, Enum::"Feature Uptake Status"::"Set up", GetTelemetryDimensions(Rec, true));
 
         Session.LogSecurityAudit(PlanConfigurationFeatureNameTxt, SecurityOperationResult::Success,
             StrSubstNo(CustomUserGroupInPlanAddedLbl, Rec."User Group Code", Rec."Company Name", Rec."Plan ID"), AuditCategory::UserManagement);
@@ -211,8 +211,8 @@ codeunit 9059 "Custom User Group In Plan"
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        FeatureTelemetry.LogUptake('0000GLO', PlanConfigurationFeatureNameTxt, Enum::"Feature Uptake Status"::"Set up", false, GetTelemetryDimensions(Rec, true));
-        FeatureTelemetry.LogUptake('0000GPU', PlanConfigurationFeatureNameTxt, Enum::"Feature Uptake Status"::"Set up", false, GetTelemetryDimensions(xRec, false));
+        FeatureTelemetry.LogUptake('0000GLO', PlanConfigurationFeatureNameTxt, Enum::"Feature Uptake Status"::"Set up", GetTelemetryDimensions(Rec, true));
+        FeatureTelemetry.LogUptake('0000GPU', PlanConfigurationFeatureNameTxt, Enum::"Feature Uptake Status"::"Set up", GetTelemetryDimensions(xRec, false));
 
         Session.LogSecurityAudit(PlanConfigurationFeatureNameTxt, SecurityOperationResult::Success,
             StrSubstNo(CustomUserGroupInPlanModifiedLbl, xRec."User Group Code", xRec."Company Name", xRec."Plan ID", Rec."User Group Code", Rec."Company Name", Rec."Plan ID"), AuditCategory::UserManagement);

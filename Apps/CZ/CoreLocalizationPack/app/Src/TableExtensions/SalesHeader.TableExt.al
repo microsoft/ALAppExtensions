@@ -48,7 +48,8 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
                 BankAccount: Record "Bank Account";
                 CustomerBankAccount: Record "Customer Bank Account";
             begin
-                TestField(Status, Status::Open);
+                if CurrFieldNo = Rec.FieldNo("Bank Account Code CZL") then
+                    TestField(Status, Status::Open);
                 if "Bank Account Code CZL" = '' then begin
                     UpdateBankInfoCZL('', '', '', '', '', '', '');
                     exit;

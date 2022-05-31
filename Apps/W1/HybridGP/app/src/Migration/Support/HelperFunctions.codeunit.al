@@ -58,65 +58,32 @@ Codeunit 4037 "Helper Functions"
         TransactionExistsMsg: Label 'Transactions have already been entered. In order to use the wizard, you will need to create a new company to migrate your data.';
         SavedJrnlLinesFoundMsg: Label 'Saved journal lines are found. In order to use the wizard, you will need to delete the journal lines before you migrate your data.';
         MigrationNotSupportedErr: Label 'This migration does not support the "Specific" costing method. Verify your costing method in Inventory Setup.';
-        AnArrayExpectedErr: Label 'An array was expected.';
         PostingGroupCodeTxt: Label 'GP', Locked = true;
         DocNoOutofBalanceMsg: Label 'Document No. %1 is out of balance by %2. Transactions will not be created. Please check the amount in the import file.', Comment = '%1 = Balance Amount', Locked = true;
         CustomerBatchNameTxt: Label 'GPCUST', Locked = true;
         VendorBatchNameTxt: Label 'GPVEND', Locked = true;
         GlDocNoTxt: Label 'G00001', Locked = true;
         MigrationTypeTxt: Label 'Great Plains';
-        ImportedEntityTxt: Label 'Imported %1 data file.', Locked = true;
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
 
+#if not CLEAN21
+    [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetEntities(EntityName: Text; var JArray: JsonArray): Boolean
-    var
-        JObject: JsonObject;
-        JToken: JsonToken;
-        FileName: Text;
     begin
-        FileName := GetFileNameByEntityName(EntityName);
-        if FileName <> '' then begin
-            GetFileContent(FileName, JObject);
-            JObject.Get(EntityName, JToken);
-            if not JToken.IsArray() then
-                Error(AnArrayExpectedErr);
-            JArray := JToken.AsArray();
-            Session.LogMessage('00007GL', StrSubstNo(ImportedEntityTxt, EntityName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
-            exit(true);
-        end;
         exit(false);
     end;
 
+    [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetEntitiesAsJToken(EntityName: Text; var JToken: JsonToken): Boolean
-    var
-        JObject: JsonObject;
-        FileName: Text;
     begin
-        FileName := GetFileNameByEntityName(EntityName);
-        if FileName <> '' then begin
-            GetFileContent(FileName, JObject);
-            JObject.Get(EntityName, JToken);
-            Session.LogMessage('00007GM', StrSubstNo(ImportedEntityTxt, EntityName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
-            exit(true);
-        end;
         exit(false);
     end;
 
+    [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetObjectCount(EntityName: Text; var ObjectCount: Integer)
-    var
-        JObject: JsonObject;
-        JToken: JsonToken;
-        FileName: Text;
     begin
-        ObjectCount := 0;
-        FileName := GetFileNameByEntityName(EntityName);
-        if FileName <> '' then begin
-            GetFileContent(FileName, JObject);
-            JObject.Get('MaxResults', JToken);
-            if JToken.IsValue() then
-                ObjectCount := JToken.AsValue().AsInteger();
-        end;
     end;
+#endif
 
     procedure GetTextFromJToken(JToken: JsonToken; Path: Text): Text
     var
@@ -216,18 +183,6 @@ Codeunit 4037 "Helper Functions"
         FRef := RRef.Field(FieldNo);
         WriteTextToField(FRef, Value);
         RRef.SetTable(RecordVariant);
-    end;
-
-    local procedure GetFileContent(FileName: Text; var JObject: JsonObject)
-    var
-        FileInStream: InStream;
-        TempFile: File;
-    begin
-        TempFile.TextMode(true);
-        TempFile.WriteMode(false);
-        TempFile.Open(FileName);
-        TempFile.CreateInStream(FileInStream);
-        JObject.ReadFrom(FileInStream);
     end;
 
     procedure TrimStringQuotes(Value: Text): Text
@@ -955,16 +910,12 @@ Codeunit 4037 "Helper Functions"
             until GPCodes.Next() = 0;
     end;
 
+#if not CLEAN21
+    [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetDimensionInfo()
-    var
-        JArray: JsonArray;
     begin
-        if GetEntities('Segment', JArray) then
-            GetSegmentsFromJson(JArray);
-
-        if GetEntities('CODE', JArray) then
-            GetCodesFromJson(JArray);
     end;
+#endif
 
     procedure AnyCompaniesWithTooManySegments(var CompanyList: List of [Text])
     var
@@ -1905,5 +1856,15 @@ Codeunit 4037 "Helper Functions"
         DataMigrationError."Scheduled For Retry" := false;
         DataMigrationError."Error Message" := ErrorMessage;
         DataMigrationError.Insert();
+    end;
+
+    procedure CleanGPPhoneOrFaxNumber(InValue: Text[30]) OutValue: Text[21]
+    begin
+        OutValue := CopyStr(InValue, 1, 21);
+
+        if (CopyStr(InValue, 1, 14) = '00000000000000') then
+            OutValue := '';
+
+        exit(OutValue);
     end;
 }

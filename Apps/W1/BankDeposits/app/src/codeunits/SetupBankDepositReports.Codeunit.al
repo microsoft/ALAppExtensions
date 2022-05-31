@@ -4,11 +4,24 @@
 // ------------------------------------------------------------------------------------------------
 codeunit 1697 "Setup Bank Deposit Reports"
 {
-    Subtype = Install;
-
-    trigger OnInstallAppPerCompany()
+    local procedure IsSetupCompleted(): Boolean
     var
+        ReportSelections: Record "Report Selections";
     begin
+        if not ReportSelections.Get(ReportSelections.Usage::"Bank Deposit", '1') then
+            exit(false);
+
+        if not ReportSelections.Get(ReportSelections.Usage::"Bank Deposit Test", '1') then
+            exit(false);
+
+        exit(true);
+    end;
+
+    internal procedure InsertSetupData()
+    begin
+        if IsSetupCompleted() then
+            exit;
+
         SetupNumberSeries();
         SetupJournalTemplateAndBatch();
         SetupReportSelections();
@@ -43,15 +56,17 @@ codeunit 1697 "Setup Bank Deposit Reports"
         GenJournalBatch: Record "Gen. Journal Batch";
     begin
         if not SourceCodeSetup.Get() then begin
-            SourceCodeSetup.Init();
-            SourceCodeSetup.Insert();
-        end;
-        SourceCodeSetup."Bank Deposit" := BankDepositNoSeriesCodeTxt;
-        SourceCodeSetup.Modify();
+            SourceCodeSetup."Bank Deposit" := BankDepositNoSeriesCodeTxt;
+            SourceCodeSetup.Insert()
+        end else
+            if SourceCodeSetup."Bank Deposit" = '' then begin
+                SourceCodeSetup."Bank Deposit" := BankDepositNoSeriesCodeTxt;
+                SourceCodeSetup.Modify();
+            end;
 
         GenJournalTemplate.SetRange(Type, "Gen. Journal Template Type"::"Bank Deposits");
         if not GenJournalTemplate.FindFirst() then begin
-            GenJournalTemplate.Name := BankDepositNoSeriesCodeTxt;
+            GenJournalTemplate.Name := SourceCodeSetup."Bank Deposit";
             GenJournalTemplate.Description := BankDepositJournalTemplateDescriptionTxt;
             GenJournalTemplate."Bal. Account Type" := "Gen. Journal Account Type"::"Bank Account";
             GenJournalTemplate."Source Code" := SourceCodeSetup."Bank Deposit";
@@ -65,7 +80,7 @@ codeunit 1697 "Setup Bank Deposit Reports"
 
             GenJournalBatch.SetRange("Journal Template Name", GenJournalTemplate.Name);
             GenJournalBatch.DeleteAll();
-            GenJournalBatch.Name := BankDepositNoSeriesCodeTxt;
+            GenJournalBatch.Name := SourceCodeSetup."Bank Deposit";
             GenJournalBatch."Journal Template Name" := GenJournalTemplate.Name;
             GenJournalBatch.Description := BankDepositJournalBatchDescriptionTxt;
             GenJournalBatch."Bal. Account Type" := "Gen. Journal Account Type"::"Bank Account";

@@ -12,6 +12,8 @@ page 30102 "Shpfy Shops"
     Editable = false;
     DeleteAllowed = true;
     InsertAllowed = true;
+    AboutTitle = 'About Shops';
+    AboutText = 'Set up the shops on Shopify that you want to connect to the *current* company in Business Central. These settings affect how the shops synchronize to and from Shopify.';
 
     layout
     {

@@ -4,6 +4,7 @@ codeunit 31025 "Intrastat Jnl.Line Handler CZL"
         Item: Record Item;
         TariffNumber: Record "Tariff Number";
         UnitOfMeasureManagement: Codeunit "Unit of Measure Management";
+        DefaultPartnerIdTok: Label 'QV123', Locked = true;
 
     [EventSubscriber(ObjectType::Table, Database::"Intrastat Jnl. Line", 'OnAfterValidateEvent', 'Tariff No.', false, false)]
     local procedure ClearStatisticIndicationCZLOnAfterTariffNoValidate(var Rec: Record "Intrastat Jnl. Line")
@@ -100,5 +101,38 @@ codeunit 31025 "Intrastat Jnl.Line Handler CZL"
         if not ItemLedgerEntry.Get(IntrastatJnlLine."Source Entry No.") then
             exit;
         CountryOfOriginCode := ItemLedgerEntry."Country/Reg. of Orig. Code CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Intrastat Jnl. Line", 'OnBeforeGetPartnerIDForCountry', '', false, false)]
+    local procedure GetPartnerIDForCountry(CountryRegionCode: Code[10]; VATRegistrationNo: Text[50]; IsPrivatePerson: Boolean; IsThirdPartyTrade: Boolean; var PartnerID: Text[50]; var IsHandled: Boolean)
+    var
+        CountryRegion: Record "Country/Region";
+    begin
+        if IsHandled then
+            exit;
+
+        PartnerID := DefaultPartnerIdTok;
+        IsHandled := true;
+
+        if IsPrivatePerson then
+            exit;
+
+        if IsThirdPartyTrade then
+            exit;
+
+        if CountryRegionCode = '' then
+            exit;
+
+        if VATRegistrationNo = '' then
+            exit;
+
+        if not CountryRegion.Get(CountryRegionCode) then
+            exit;
+
+        if not CountryRegion.IsEUCountry(CountryRegionCode) then
+            exit;
+
+        PartnerID := '';
+        IsHandled := false;
     end;
 }

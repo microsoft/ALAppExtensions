@@ -208,6 +208,7 @@ pageextension 4701 "VAT Report Extension" extends "VAT Report"
     var
         VATGroupSubmissionStatus: Codeunit "VAT Group Submission Status";
         VATGroupHelperFunctions: Codeunit "VAT Group Helper Functions";
+        VATGroupRetrievefromSubmission: Codeunit "VAT Group Retrieve From Sub.";
         NewerSubmissions: Notification;
     begin
         if not VATReportSetup.Get() then
@@ -225,6 +226,11 @@ pageextension 4701 "VAT Report Extension" extends "VAT Report"
                 NewerSubmissions.Scope(NotificationScope::LocalScope);
                 NewerSubmissions.Send();
             end;
+
+        if Rec."VAT Group Return" and (Rec.Status = Rec.Status::Open) then
+            VATGroupRetrievefromSubmission.Run(Rec);
+
+        CurrPage.VATReportLines.Page.SetColumnVisible(Rec."VAT Group Return");
     end;
 
     local procedure IsVATGroupSettlementTriggered(): Boolean

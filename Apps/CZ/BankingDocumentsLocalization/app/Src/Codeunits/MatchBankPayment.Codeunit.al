@@ -176,18 +176,18 @@ codeunit 31362 "Match Bank Payment CZB"
                         if TempMatchBankPaymentBufferCZB."Letter No." = '' then begin
 #pragma warning restore AL0432
 #endif
-                        if not SearchRuleLineCZB."Match Related Party Only" then begin
-                            GenJournalLine.Validate("Applies-to Doc. Type", TempMatchBankPaymentBufferCZB."Document Type");
-                            GenJournalLine.Validate("Applies-to Doc. No.", TempMatchBankPaymentBufferCZB."Document No.");
-                            if GenJournalLine."Account Type" in [GenJournalLine."Account Type"::Customer, GenJournalLine."Account Type"::Vendor] then begin
-                                if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::Invoice then
-                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
-                                if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::"Credit Memo" then
-                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
+                            if not SearchRuleLineCZB."Match Related Party Only" then begin
+                                GenJournalLine.Validate("Applies-to Doc. Type", TempMatchBankPaymentBufferCZB."Document Type");
+                                if GenJournalLine."Account Type" in [GenJournalLine."Account Type"::Customer, GenJournalLine."Account Type"::Vendor] then begin
+                                    if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::Invoice then
+                                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
+                                    if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::"Credit Memo" then
+                                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
+                                end;
+                                GenJournalLine.Validate("Applies-to Doc. No.", TempMatchBankPaymentBufferCZB."Document No.");
                             end;
-                        end;
-                        if BankAccount."Dimension from Apply Entry CZB" then
-                            GenJournalLine.Validate("Dimension Set ID", TempMatchBankPaymentBufferCZB."Dimension Set ID");
+                            if BankAccount."Dimension from Apply Entry CZB" then
+                                GenJournalLine.Validate("Dimension Set ID", TempMatchBankPaymentBufferCZB."Dimension Set ID");
 #if not CLEAN19
 #pragma warning disable AL0432
                         end else

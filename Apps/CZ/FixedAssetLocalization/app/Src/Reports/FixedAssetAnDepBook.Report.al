@@ -2,7 +2,7 @@ report 31241 "Fixed Asset - An. Dep.Book CZF"
 {
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/FixedAssetAnDepBook.rdl';
-    ApplicationArea = Basic, Suite;
+    ApplicationArea = FixedAssets;
     Caption = 'Fixed Asset - Depreciation Book Analysis';
     UsageCategory = ReportsAndAnalysis;
 
@@ -243,90 +243,90 @@ report 31241 "Fixed Asset - An. Dep.Book CZF"
                     Caption = 'Options';
                     field(DeprBookCodeCZF; DeprBookCode1)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Depreciation Book';
                         TableRelation = "Depreciation Book";
                         ToolTip = 'Specifies the depreciation book for the printing of entries.';
                     }
                     field(DeprBookCode2CZF; DeprBookCode2)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Depreciation Book';
                         TableRelation = "Depreciation Book";
                         ToolTip = 'Specifies the deprecation book code.';
                     }
                     field(StartingDateCZF; StartingDate)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Starting Date';
                         ToolTip = 'Specifies the starting date';
                     }
                     field(EndingDateCZF; EndingDate)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Ending Date';
                         ToolTip = 'Specifies the last date in the period.';
                     }
                     field(PostingType1CZF; PostingType1)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Amount Field 1';
                         TableRelation = "FA Posting Type"."FA Posting Type Name" where("FA Entry" = const(true), "FA Posting Type No." = filter(16 | 24 | 25));
                         ToolTip = 'Specifies the FA posting type which can be printed.';
                     }
                     field(Period1CZF; Period1)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Period 1';
                         ToolTip = 'Specifies the method for amounts calculation';
                     }
                     field(PostingType2CZF; PostingType2)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Amount Field 2';
                         TableRelation = "FA Posting Type"."FA Posting Type Name" where("FA Entry" = const(true), "FA Posting Type No." = filter(16 | 24 | 25));
                         ToolTip = 'Specifies the FA posting type which can be printed.';
                     }
                     field(Period2CZF; Period2)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Period 2';
                         ToolTip = 'Specifies the method for amounts calculation';
                     }
                     field(PostingType3CZF; PostingType3)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Amount Field 3';
                         TableRelation = "FA Posting Type"."FA Posting Type Name" where("FA Entry" = const(true), "FA Posting Type No." = filter(16 | 24 | 25));
                         ToolTip = 'Specifies the FA posting type which can be printed.';
                     }
                     field(Period3CZF; Period3)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Period 3';
                         ToolTip = 'Specifies the method for amounts calculation';
                     }
                     field(GroupTotalsCZF; GroupTotals)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Group Totals';
                         ToolTip = 'Specifies according to what the entries can be sumed.';
                     }
                     field(PrintDetailsCZF; PrintDetails)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Print per Fixed Asset';
                         ToolTip = 'Specifies if the sum will be printed in common or only the Specifiesed FA cards.';
                     }
                     field(SalesReportCZF; SalesReport)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Only Sold Assets';
                         ToolTip = 'Specifies only sold assets.';
                     }
                     field(BudgetReportCZF; BudgetReport)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Budget Report';
                         ToolTip = 'Specifies if the budget report will be used';
                     }

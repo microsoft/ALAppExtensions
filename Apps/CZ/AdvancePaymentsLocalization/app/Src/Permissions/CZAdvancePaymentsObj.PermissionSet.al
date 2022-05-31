@@ -36,6 +36,7 @@ permissionset 11752 "CZ Advance Payments - Obj. CZZ"
                   Codeunit "Payment Order Mgt. Handler CZZ" = X,
                   Codeunit "Post.Preview Event Handler CZZ" = X,
                   Codeunit "Post Preview Handler CZZ" = X,
+                  Codeunit "Prepayment Mgt. Handler CZZ" = X,
                   Codeunit "PurchAdvLetterManagement CZZ" = X,
                   Codeunit "Purch. Adv. Letter-Printed CZZ" = X,
                   Codeunit "Purchase Header Handler CZZ" = X,

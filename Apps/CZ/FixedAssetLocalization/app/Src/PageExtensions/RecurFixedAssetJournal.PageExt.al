@@ -6,7 +6,7 @@ pageextension 31214 "Recur. Fixed Asset Journal CZF" extends "Recurring Fixed As
         {
             field("Correction CZF"; Rec.Correction)
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = FixedAssets;
                 ToolTip = 'Specifies the entry as a corrective entry. You can use the field if you need to post a corrective entry to an account.';
                 Visible = false;
             }
