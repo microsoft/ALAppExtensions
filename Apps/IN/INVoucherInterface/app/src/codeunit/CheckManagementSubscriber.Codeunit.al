@@ -538,4 +538,22 @@ codeunit 18970 "Check Management Subscriber"
             CheckLedgerEntry.Modify(true);
         end;
     end;
+
+    [EventSubscriber(ObjectType::Report, Report::Check, 'OnAfterAssignGenJnlLineDocumentNo', '', false, false)]
+    local procedure OnAfterAssignGenJnlLineDocumentNo(var GenJnlLine: Record "Gen. Journal Line"; PreviousDocumentNo: Code[20])
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        ChequeNo: Code[20];
+    begin
+        if not GeneralLedgerSetup.Get() then
+            exit;
+
+        if not GeneralLedgerSetup."Activate Cheque No." then
+            exit;
+
+        ChequeNo := GenJnlLine."Document No.";
+        GenJnlLine."Document No." := PreviousDocumentNo;
+        GenJnlLine."Cheque No." := CopyStr(ChequeNo, 1, 10);
+        GenJnlLine."Cheque Date" := GenJnlLine."Posting Date";
+    end;
 }

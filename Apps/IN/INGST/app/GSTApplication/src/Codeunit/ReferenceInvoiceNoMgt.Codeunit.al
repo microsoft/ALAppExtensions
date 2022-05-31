@@ -1049,9 +1049,13 @@ codeunit 18435 "Reference Invoice No. Mgt."
         IsHandled: Boolean;
     begin
         IsHandled := false;
+#if not CLEAN23
         OnBeforeUpdateReferenceInvoiceNoPurchHeader(PurchaseHeader, IsHandled);
+#endif
+        OnBeforeUpdateReferenceInvoiceNoPurchaseHeader(PurchaseHeader, IsHandled);
         if IsHandled then
             exit;
+
         if not IsGSTApplicable("Transaction Type Enum"::Purchase, PurchaseHeader."Document Type", SalesDocType, PurchaseHeader."No.") then
             Error(ReferenceInvoiceNoErr);
 
@@ -1082,9 +1086,13 @@ codeunit 18435 "Reference Invoice No. Mgt."
         ISHandled: Boolean;
     begin
         IsHandled := false;
+#if not CLEAN23
         OnBeforeUpdateReferenceInvoiceNoSalesHeader(SalesHeader, IsHandled);
+#endif
+        OnBeforeUpdateRefInvoiceNoSalesHeader(SalesHeader, IsHandled);
         if IsHandled then
             exit;
+
         if not IsGSTApplicable("Transaction Type Enum"::Sales, PurchDocType, SalesHeader."Document Type", SalesHeader."No.") then
             Error(ReferenceInvoiceNoErr);
 
@@ -3248,7 +3256,10 @@ codeunit 18435 "Reference Invoice No. Mgt."
         IsHandled: Boolean;
     begin
         IsHandled := false;
+#if not CLEAN23
         OnBeforeCheckRefInvNoPurchHeader(PurchaseHeader, IsHandled);
+#endif
+        OnBeforeCheckRefInvNoPurchaseHeader(PurchaseHeader, IsHandled);
         if IsHandled then
             exit;
 
@@ -3284,9 +3295,13 @@ codeunit 18435 "Reference Invoice No. Mgt."
         IsHandled: Boolean;
     begin
         IsHandled := false;
+#if not CLEAN23
         OnBeforeCheckRefInvNoSalesHeader(SalesHeader, IsHandled);
+#endif
+        OnBeforeCheckRefInvoiceNoSalesHeader(SalesHeader, IsHandled);
         if IsHandled then
             exit;
+
         if not IsGSTApplicable("Transaction Type Enum"::Sales, SalesHeader."Document Type", SalesHeader."Document Type", SalesHeader."No.") then
             exit;
 
@@ -4690,25 +4705,53 @@ codeunit 18435 "Reference Invoice No. Mgt."
         CreatePostedReferenceInvoiceNoService(ServiceHeader, ServInvoiceNo, ServCrMemoNo);
     end;
 
+#if not CLEAN23
+    [Obsolete('Replaced by new integration event', '23.0')]
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheckRefInvNoPurchHeader(var PurchaseHeader: Record "Purchase Header"; IsHandled: Boolean)
     begin
     end;
-
+#endif
+#if not CLEAN23
+    [Obsolete('Replaced by new integration event', '23.0')]
     [IntegrationEvent(false, false)]
     local procedure OnBeforeUpdateReferenceInvoiceNoPurchHeader(var PurchaseHeader: Record "Purchase Header"; IsHandled: Boolean)
     begin
     end;
-
+#endif
+#if not CLEAN23
+    [Obsolete('Replaced by new integration event', '23.0')]
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheckRefInvNoSalesHeader(var SalesHeader: Record "Sales Header"; IsHandled: Boolean)
     begin
     end;
-
+#endif
+#if not CLEAN23
+    [Obsolete('Replaced by new integration event', '23.0')]
     [IntegrationEvent(false, false)]
     local procedure OnBeforeUpdateReferenceInvoiceNoSalesHeader(var SalesHeader: Record "Sales Header"; IsHandled: Boolean)
     begin
     end;
+#endif
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckRefInvNoPurchaseHeader(var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateReferenceInvoiceNoPurchaseHeader(var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckRefInvoiceNoSalesHeader(var SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateRefInvoiceNoSalesHeader(var SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
+    begin
+    end;
 
 }

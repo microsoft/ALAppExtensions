@@ -225,7 +225,7 @@ report 31029 "Create Purch. Adv. Letter CZZ"
     begin
         NewPurchaseHeader.TestField("Document Type", NewPurchaseHeader."Document Type"::Order);
         PurchaseHeader := NewPurchaseHeader;
-        PurchPost.GetPurchLines(PurchaseHeader, TempPurchaseLine, 1);
+        PurchPost.GetPurchLines(PurchaseHeader, TempPurchaseLine, 0);
         TempPurchaseLine.CalcSums("Amount Including VAT");
         TotalAmountInclVAT := TempPurchaseLine."Amount Including VAT";
 

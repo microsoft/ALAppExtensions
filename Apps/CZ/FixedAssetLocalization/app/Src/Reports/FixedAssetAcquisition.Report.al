@@ -2,7 +2,7 @@ report 31254 "Fixed Asset Acquisition CZF"
 {
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/FixedAssetAcquisition.rdl';
-    ApplicationArea = Basic, Suite;
+    ApplicationArea = FixedAssets;
     Caption = 'Fixed Asset Acquisition';
     UsageCategory = ReportsAndAnalysis;
 
@@ -201,14 +201,14 @@ report 31254 "Fixed Asset Acquisition CZF"
                     Caption = 'Options';
                     field(DeprBookCodeCZF; DeprBookCode)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Depreciation Book';
                         TableRelation = "Depreciation Book";
                         ToolTip = 'Specifies the depreciation book for the printing of entries.';
                     }
                     field(PrintFALedgDateCZF; PrintFALedgDate)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Print FA Ledger Entry Dates';
                         ToolTip = 'Specifies to print the fixed asset ledger entry dates.';
 
@@ -219,28 +219,28 @@ report 31254 "Fixed Asset Acquisition CZF"
                     }
                     field(AcquisitionReportNoCZF; AcquisitionReportNo)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Acquisition Report No.';
                         Editable = FAAcquisitionNoCtrlEditable;
                         ToolTip = 'Specifies a fixed asset receipt number.';
                     }
                     field(AcquisitionReportDateCZF; AcquisitionReportDate)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Acquisition Report Date';
                         Editable = FAAcquisitionDateCtrlEditable;
                         ToolTip = 'Specifies a fixed asset receipt date.';
                     }
                     field(UseReportStartDateCZF; UseReportStartDate)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Use Report Start Date';
                         Editable = FAUseStartReportDateCtrlEditable;
                         ToolTip = 'Specifies a fixed asset start date.';
                     }
                     field(Member1; Member[1])
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = '1. Persona';
                         ToolTip = 'Specifies an employee name from the Company Official table. Each persona will print on the report with a corresponding signature line for authorization.';
 
@@ -253,7 +253,7 @@ report 31254 "Fixed Asset Acquisition CZF"
                     }
                     field(Member2; Member[2])
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = '2. Persona';
                         ToolTip = 'Specifies an employee name from the Company Official table. Each persona will print on the report with a corresponding signature line for authorization.';
 

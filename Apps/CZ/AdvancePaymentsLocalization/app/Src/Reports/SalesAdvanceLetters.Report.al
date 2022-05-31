@@ -4,6 +4,7 @@ report 31019 "Sales Advance Letters CZZ"
     ApplicationArea = Basic, Suite;
     Caption = 'Sales Advance Letters';
     RDLCLayout = './Src/Reports/SalesAdvanceLetters.rdl';
+    DefaultLayout = RDLC;
 
     dataset
     {

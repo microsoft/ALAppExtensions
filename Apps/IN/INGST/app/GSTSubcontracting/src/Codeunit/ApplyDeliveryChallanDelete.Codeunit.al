@@ -4,35 +4,36 @@ codeunit 18472 "Apply Delivery Challan Mgt."
 
     var
         ForAppDelChEntry: Record "Applied Delivery Challan Entry";
-        TempTrackingSpecification: Record "Tracking Specification";
         CalcReservEntry: Record "Reservation Entry";
         CalcReservEntry3: Record "Reservation Entry";
-        Positive: boolean;
 
     procedure SetAppliedDeliveryChallanEntry(NewAppDelChEntry: Record "Applied Delivery Challan Entry")
     var
         Item2: Record Item;
-        DeliveryChallanLn: Record "Delivery Challan Line";
+        DeliveryChallanLine: Record "Delivery Challan Line";
     begin
         ClearAll();
-        TempTrackingSpecification.DeleteAll();
         ForAppDelChEntry := NewAppDelChEntry;
-        DeliveryChallanLn.Get(NewAppDelChEntry."Applied Delivery Challan No.", NewAppDelChEntry."App. Delivery Challan Line No.");
-        Item2.Get(NewAppDelChEntry."Item No.");
         CalcReservEntry."Source Type" := DATABASE::"Applied Delivery Challan Entry";
         CalcReservEntry."Source ID" := '';
         CalcReservEntry."Source Prod. Order Line" := 0;
         CalcReservEntry."Source Ref. No." := NewAppDelChEntry."Entry No.";
         CalcReservEntry."Item No." := NewAppDelChEntry."Item No.";
-        CalcReservEntry."Variant Code" := DeliveryChallanLn."Variant Code";
-        CalcReservEntry."Location Code" := DeliveryChallanLn."Vendor Location";
+
+        if DeliveryChallanLine.Get(NewAppDelChEntry."Applied Delivery Challan No.", NewAppDelChEntry."App. Delivery Challan Line No.") then begin
+            CalcReservEntry."Variant Code" := DeliveryChallanLine."Variant Code";
+            CalcReservEntry."Location Code" := DeliveryChallanLine."Vendor Location";
+            CalcReservEntry."Qty. per Unit of Measure" := DeliveryChallanLine."Quantity per";
+        end;
+
         CalcReservEntry."Serial No." := '';
         CalcReservEntry."Lot No." := '';
-        CalcReservEntry."Qty. per Unit of Measure" := DeliveryChallanLn."Quantity per";
-        CalcReservEntry.Description := Item2.Description;
+
+        if Item2.Get(NewAppDelChEntry."Item No.") then
+            CalcReservEntry.Description := Item2.Description;
+
         CalcReservEntry3 := CalcReservEntry;
         GetItemSetup(CalcReservEntry);
-        Positive := ForAppDelChEntry.Quantity > 0;
         SetPointerFilter(CalcReservEntry3);
     end;
 

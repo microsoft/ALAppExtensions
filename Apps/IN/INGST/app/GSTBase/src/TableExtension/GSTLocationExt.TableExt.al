@@ -88,4 +88,10 @@ tableextension 18009 "GST Location Ext" extends Location
             TableRelation = "No. Series";
         }
     }
+
+    procedure IsBondedWarehouse(LocationCode: Code[10]): Boolean
+    begin
+        if LocationCode <> '' then
+            exit(Rec."Bonded warehouse");
+    end;
 }

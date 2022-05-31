@@ -2380,7 +2380,15 @@ codeunit 18430 "GST Application Handler"
         AppliedAmt: Decimal;
         AppliedAmtLCY: Decimal;
     begin
-        GSTApplSessionMgt.GetGSTTransactionType(GSTTransactionType);
+        if Customer.Get(NewCVLedgEntryBuf."CV No.") then begin
+            SetGSTApplicationSourceSales(NewCVLedgEntryBuf, GenJnlLine, Customer);
+            GSTApplSessionMgt.GetGSTTransactionType(GSTTransactionType);
+        end
+        else
+            if Vendor.Get(NewCVLedgEntryBuf."CV No.") then begin
+                SetGSTApplicationSourcePurch(NewCVLedgEntryBuf, GenJnlLine, Vendor);
+                GSTApplSessionMgt.GetGSTTransactionType(GSTTransactionType);
+            end;
 
         case GSTTransactionType of
             GSTTransactionType::Purchase:
@@ -2507,5 +2515,12 @@ codeunit 18430 "GST Application Handler"
             DetailedGSTLedgerEntryInfo."Remaining Amount Closed" := (Rec."Remaining Base Amount" = 0);
             DetailedGSTLedgerEntryInfo.Modify();
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforeInvoiceRoundingAmount', '', false, false)]
+    local procedure OnBeforeInvoiceRoundingAmount(PurchHeader: Record "Purchase Header"; var InvoiceRoundingAmount: Decimal)
+    begin
+        if PurchHeader."GST Vendor Type" = "GST Vendor Type"::Import then
+            InvoiceRoundingAmount := 0;
     end;
 }

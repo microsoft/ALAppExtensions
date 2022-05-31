@@ -16,6 +16,7 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   codeunit "Bank Operations Functions CZL" = X,
                   codeunit "Cash Flow Handler CZL" = X,
                   codeunit "CNB Curr. Exch. Rate Mgt. CZL" = X,
+                  codeunit "Company Bank Acc. Handler CZL" = X,
                   codeunit "Company Info Handler CZL" = X,
                   codeunit "Contact Handler CZL" = X,
                   codeunit "Copy Document Mgt. Handler CZL" = X,
@@ -311,6 +312,11 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   report "Export VAT Ctrl. Dialog CZL" = X,
                   report "Export VAT Stmt. Dialog CZL" = X,
                   report "Finance Charge Memo CZL" = X,
+#if not CLEAN20
+#pragma warning disable AL0432
+                  report "Finance Charge Memo MIR CZL" = X,
+#pragma warning restore AL0432
+#endif
                   report "General Journal CZL" = X,
                   report "General Journal - Test CZL" = X,
                   report "General Ledger CZL" = X,
@@ -339,6 +345,11 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   report "Quantity Shipped Check CZL" = X,
                   report "Recon. Bank Account Entry CZL" = X,
                   report "Reminder CZL" = X,
+#if not CLEAN20
+#pragma warning disable AL0432
+                  report "Reminder MIR CZL" = X,
+#pragma warning restore AL0432
+#endif
                   report "Sales Credit Memo CZL" = X,
                   report "Sales Invoice CZL" = X,
                   report "Sales Order Confirmation CZL" = X,

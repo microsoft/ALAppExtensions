@@ -35,7 +35,9 @@ page 13640 "Setup DK Payroll Service"
     trigger OnOpenPage();
     var
         ImportPayrollDataExchDef: Codeunit ImportPayrollDataExchDef;
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000H8Y', 'DK payroll service', Enum::"Feature Uptake Status"::"Set up");
         Reset();
         if not get() then begin
             Init();

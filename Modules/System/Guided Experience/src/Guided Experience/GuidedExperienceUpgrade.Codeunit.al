@@ -17,8 +17,42 @@ codeunit 1999 "Guided Experience Upgrade"
     trigger OnUpgradePerCompany()
     begin
         InsertSpotlightTour();
-
+        UpdateTourDescriptions();
         UpdateTranslations();
+    end;
+
+    local procedure UpdateTourDescriptions()
+    var
+        GuidedExperienceItemRec: Record "Guided Experience Item";
+        Translation: Codeunit Translation;
+        UpgradeTag: Codeunit "Upgrade Tag";
+        GuidedExperienceUpgradeTag: Codeunit "Guided Experience Upgrade Tag";
+        BusinessManagerRoleCenterTourCodeTxt: Label 'TOUR_PAGE_9022__0', Locked = true;
+        BusinessManagerRoleCenterTourDescriptionTxt: Label 'The Business Manager home page offers metrics and activities that help run a business. We`ll also show you how to explore all Business Central features.';
+        OrderProcessorRoleCenterTourCodeTxt: Label 'TOUR_PAGE_9006__0', Locked = true;
+        OrderProcessorRoleCenterTourDescriptionTxt: Label 'The Sales Order Processor home page helps you stay on top of your sales documents. We`ll also show you how to explore all Business Central features.';
+        AccountantRoleCenterTourCodeTxt: Label 'TOUR_PAGE_9027__0', Locked = true;
+        AccountantRoleCenterTourDescriptionTxt: Label 'The Accountant home page makes it easier for businesses to keep their books. We`ll also show you how to explore all Business Central features.';
+    begin
+        if UpgradeTag.HasUpgradeTag(GuidedExperienceUpgradeTag.GetGuidedExperienceUpdateTourDescriptionTag()) then
+            exit;
+
+        GuidedExperienceItemRec.SetRange(Code, BusinessManagerRoleCenterTourCodeTxt);
+        GuidedExperienceItemRec.ModifyAll(Description, BusinessManagerRoleCenterTourDescriptionTxt);
+        if GuidedExperienceItemRec.FindFirst() then
+            Translation.Set(GuidedExperienceItemRec, 8, BusinessManagerRoleCenterTourDescriptionTxt);
+
+        GuidedExperienceItemRec.SetRange(Code, OrderProcessorRoleCenterTourCodeTxt);
+        GuidedExperienceItemRec.ModifyAll(Description, OrderProcessorRoleCenterTourDescriptionTxt);
+        if GuidedExperienceItemRec.FindFirst() then
+            Translation.Set(GuidedExperienceItemRec, 8, OrderProcessorRoleCenterTourDescriptionTxt);
+
+        GuidedExperienceItemRec.SetRange(Code, AccountantRoleCenterTourCodeTxt);
+        GuidedExperienceItemRec.ModifyAll(Description, AccountantRoleCenterTourDescriptionTxt);
+        if GuidedExperienceItemRec.FindFirst() then
+            Translation.Set(GuidedExperienceItemRec, 8, AccountantRoleCenterTourDescriptionTxt);
+
+        UpgradeTag.SetUpgradeTag(GuidedExperienceUpgradeTag.GetGuidedExperienceUpdateTourDescriptionTag());
     end;
 
     local procedure InsertSpotlightTour()

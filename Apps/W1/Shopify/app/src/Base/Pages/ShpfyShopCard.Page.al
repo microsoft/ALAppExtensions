@@ -8,6 +8,8 @@ page 30101 "Shpfy Shop Card"
     PromotedActionCategories = 'New,Process,Report,Related,Synchronization';
     SourceTable = "Shpfy Shop";
     UsageCategory = None;
+    AboutTitle = 'About Shopify shop details';
+    AboutText = 'Set up your Shopify shop and integrate it with Business Central. Specify which data to synchronize back and forth, such as items, inventory status, customers and orders.';
 
     layout
     {
@@ -21,54 +23,77 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ShowMandatory = true;
                     ToolTip = 'Specifies a code to identify this Shopify Shop.';
+                    AboutTitle = 'Name your shop';
+                    AboutText = 'Give your shop a name that will make it easy to find in Business Central. For example, a name might reflect what a shop sells, such as Furniture or Coffee, or the country or region it serves.';
                 }
                 field("Shopify URL"; Rec."Shopify URL")
                 {
                     ApplicationArea = All;
                     ShowMandatory = true;
                     ToolTip = 'Specifies the URL of the Shopify Shop.';
+                    AboutTitle = 'Get people to your shop';
+                    AboutText = 'Provide the URL that people will use to access your shop. For example, *https://myshop.myshopify.com*.';
 
                     trigger OnValidate()
                     begin
+                        Rec.TestField(Enabled, false);
                         CurrPage.SaveRecord();
+                    end;
+                }
+                field(Enabled; Enabled)
+                {
+                    ApplicationArea = All;
+                    ShowMandatory = true;
+                    ToolTip = 'Specifies if the service is enabled.';
+                    AboutTitle = 'Ready to connect the shop';
+                    AboutText = 'We just need the shop name and URL to connect it to Shopify. When you have checked all shop settings, enable the connection here.';
+
+                    trigger OnValidate()
+                    begin
+                        if Not Enabled then
+                            exit;
+                        Rec.RequestAccessToken();
                     end;
                 }
                 field(HasAccessKey; Rec.HasAccessToken())
                 {
                     ApplicationArea = All;
                     Caption = 'Has AccessKey';
+                    Importance = Additional;
                     ShowMandatory = true;
                     ToolTip = 'Is an access key available for this store.';
                 }
                 field(CurrencyCode; Rec."Currency Code")
                 {
                     ApplicationArea = All;
+                    Importance = Additional;
                     ToolTip = 'Specifies the currency of the Shopify Shop.';
                 }
                 field(LanguageCode; Rec."Language Code")
                 {
                     ApplicationArea = All;
+                    Importance = Additional;
                     ToolTip = 'Specifies the language of the Shopify Shop.';
-                }
-                field(Enabled; Enabled)
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies if the service is enabled.';
                 }
                 field(LogActivated; Rec."Log Enabled")
                 {
                     ApplicationArea = All;
+                    Importance = Additional;
                     ToolTip = 'Specifies whether the log is activated.';
                 }
                 field(AllowBackgroudSyncs; Rec."Allow Background Syncs")
                 {
                     ApplicationArea = All;
+                    Importance = Additional;
                     ToolTip = 'Specifies whether background syncs are allowed.';
                 }
             }
             group(ItemSync)
             {
                 Caption = 'Item Synchronization';
+                AboutTitle = 'Set up synchronization for items';
+                AboutText = '**Products** in Shopify are called **Items** in Business Central. Define how to synchronize items in *this* shop with Business Central. If one of the apps doesn''t have this data, you can quickly export items from Business Central to Shopify and vice versa.';
+
                 field(SyncItem; Rec."Sync Item")
                 {
                     ApplicationArea = All;
@@ -177,6 +202,8 @@ page 30101 "Shpfy Shop Card"
             group(CustomerSync)
             {
                 Caption = 'Customer Synchronization';
+                AboutTitle = 'Set up synchronization for customers';
+                AboutText = 'Specify how to synchronize customers between Shopify and Business Central. You can auto-create Shopify customers on Business Central or use the same customer entity for every sales order. When connected, Business Central can also update customer information in Shopify.';
                 field(CustomerImportFromShopify; Rec."Customer Import From Shopify")
                 {
                     ApplicationArea = All;
@@ -244,6 +271,8 @@ page 30101 "Shpfy Shop Card"
             group(OrderProcessing)
             {
                 Caption = 'Order Processing';
+                AboutTitle = 'Set up your order flow';
+                AboutText = 'Define how new orders in Shopify flow into Business Central. For example, you can require that Shopify orders are approved before they become a sales order or invoice in Business Central. You can also define how to post shipping revenue, and the address that determines where you pay taxes.';
                 field(ShippingCostAccount; Rec."Shipping Charges Account")
                 {
                     ApplicationArea = All;
@@ -559,14 +588,14 @@ page 30101 "Shpfy Shop Card"
 
     local procedure GetResetSyncTo(InitDateTime: DateTime): DateTime
     var
-        DateTimeDlg: Page "Date-Time Dialog";
+        DateTimeDialog: Page "Date-Time Dialog";
         ResetSyncLbl: Label 'Reset Sync to';
     begin
-        DateTimeDlg.SetDateTime(InitDateTime);
-        DateTimeDlg.Caption := ResetSyncLbl;
-        DateTimeDlg.LookupMode := true;
-        if DateTimeDlg.RunModal() = Action::LookupOK then
-            exit(DateTimeDlg.GetDateTime());
+        DateTimeDialog.SetDateTime(InitDateTime);
+        DateTimeDialog.Caption := ResetSyncLbl;
+        DateTimeDialog.LookupMode := true;
+        if DateTimeDialog.RunModal() = Action::LookupOK then
+            exit(DateTimeDialog.GetDateTime());
         exit(InitDateTime);
     end;
 }

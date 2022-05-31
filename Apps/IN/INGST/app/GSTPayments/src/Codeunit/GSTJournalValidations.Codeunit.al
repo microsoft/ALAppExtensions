@@ -102,8 +102,6 @@ codeunit 18246 "GST Journal Validations"
             else
                 BankCharge.TestField(Account);
 
-            JnlBankCharges."GST Inv. Rounding Precision" := GeneralLedgerSetup."Inv. Rounding Precision (LCY)";
-            JnlBankCharges."GST Inv. Rounding Type" := GSTBaseValidation.GenLedInvRoundingType2GSTInvRoundingTypeEnum(GeneralLedgerSetup."Inv. Rounding Type (LCY)");
         end else begin
             JnlBankCharges.TestField("GST Document Type", JnlBankCharges."GST Document Type"::" ");
             JnlBankCharges."GST Inv. Rounding Precision" := 0;
@@ -116,6 +114,9 @@ codeunit 18246 "GST Journal Validations"
         GenJnlLine: Record "Gen. Journal Line";
         CurrExchRate: Record "Currency Exchange Rate";
     begin
+        if JnlBankCharges."GST Group Code" <> '' then
+            GetRoundingPrecision(JnlBankCharges);
+
         JnlBankCharges.TestField("Foreign Exchange", false);
         GetGenJnlLine(GenJnlLine, JnlBankCharges."Journal Template Name", JnlBankCharges."Journal Batch Name", JnlBankCharges."Line No.");
         CheckBankChargeAmountSign(GenJnlLine, JnlBankCharges);
@@ -340,5 +341,48 @@ codeunit 18246 "GST Journal Validations"
             end;
         end;
         exit(DeemedAmount);
+    end;
+
+    local procedure GetRoundingPrecision(var JournalBankCharges: Record "Journal Bank Charges"): Decimal
+    var
+        TaxComponent: Record "Tax Component";
+        GSTSetup: Record "GST Setup";
+        TaxTransactionValue: Record "Tax Transaction Value";
+        TaxRecordID: RecordID;
+        GSTInvRoundingType: Enum "GST Inv Rounding Type";
+    begin
+        TaxRecordID := JournalBankCharges.RecordId();
+        if not GSTSetup.Get() then
+            exit;
+
+        GSTSetup.TestField("GST Tax Type");
+
+        // Assuming rounding precision for GST Tax Components are the same.
+        TaxTransactionValue.Reset();
+        TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type");
+        TaxTransactionValue.SetRange("Tax Record ID", TaxRecordId);
+        TaxTransactionValue.SetRange("Value Type", TaxTransactionValue."Value Type"::COMPONENT);
+        if TaxTransactionValue.FindFirst() then
+            if TaxComponent.Get(GSTSetup."GST Tax Type", TaxTransactionValue."Value ID") then begin
+                GSTInvRoundingType := TaxComponentDirections2DetailedGSTLedgerDirection(TaxComponent.Direction);
+                JournalBankCharges."GST Inv. Rounding Precision" := TaxComponent."Rounding Precision";
+                JournalBankCharges."GST Inv. Rounding Type" := GSTInvRoundingType;
+            end;
+    end;
+
+    local procedure TaxComponentDirections2DetailedGSTLedgerDirection(TaxComponentDirection: Enum "Rounding Direction"): Enum "GST Inv Rounding Type"
+    var
+        ConversionErr: Label 'Rounding Type %1 is not a valid option.', Comment = '%1 = GST Ledger Transaction Type';
+    begin
+        case TaxComponentDirection of
+            TaxComponentDirection::Nearest:
+                exit("GST Inv Rounding Type"::nearest);
+            TaxComponentDirection::Up:
+                exit("GST Inv Rounding Type"::Up);
+            TaxComponentDirection::Down:
+                exit("GST Inv Rounding Type"::Down);
+            else
+                Error(ConversionErr, TaxComponentDirection);
+        end;
     end;
 }

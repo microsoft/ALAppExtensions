@@ -614,7 +614,12 @@ page 4000 "Hybrid Cloud Setup Wizard"
     }
 
     trigger OnInit()
+    var
+        UserPermissions: Codeunit "User Permissions";
     begin
+        if not UserPermissions.IsSuper(UserSecurityId()) then
+            Error(RunWizardPermissionErr);
+
         LoadTopBanners();
 
         if not Get() then begin
@@ -715,6 +720,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
         NoCompaniesSelectedErr: Label 'You must select at least one company to replicate to continue.';
         DoneWithSignupMsg: Label 'Redirecting to SaaS Business Central solution.';
         NotificationIdTxt: Label 'ce917438-506c-4724-9b01-13c1b860e851', Locked = true;
+        RunWizardPermissionErr: Label 'You do not have permissions to run the cloud migration setup. Your user account must have the SUPER permission set.';
         CannotEnableReplicationForCompanyErr: Label 'You must start the cloud migration from a different company than where you are currently signed in. Change the company to a different one.';
         OpenCloudMigrationPageQst: Label 'The migration has now been set up.\\ Would you like to open the Cloud Migration Management page to manage your data migrations?';
         BlankProductIdErr: Label 'The ID of the specified product is blank. If you see this message again, contact technical support.';

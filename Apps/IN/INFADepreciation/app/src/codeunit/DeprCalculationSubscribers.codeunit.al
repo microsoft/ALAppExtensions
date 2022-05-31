@@ -384,6 +384,7 @@ codeunit 18632 "Depr Calculation Subscribers"
         FirstDeprDate: Date;
         SalvageValue: Decimal;
         MinusBookValue: Decimal;
+        UseDeprStartingDate: Boolean;
     begin
         DepreciationBook.Get(FADepreciationBook."Depreciation Book Code");
         if not DepreciationBook."Fiscal Year 365 Days" then
@@ -393,6 +394,12 @@ codeunit 18632 "Depr Calculation Subscribers"
         DeprStartingDate := FADepreciationBook."Depreciation Starting Date";
         DeprEndingDate := FADepreciationBook."Depreciation Ending Date";
         FirstDeprDate := DepreciationCalculation.GetFirstDeprDate(FixedAsset."No.", FADepreciationBook."Depreciation Book Code", DepreciationBook."Fiscal Year 365 Days");
+        UseDeprStartingDate := DepreciationCalculation.UseDeprStartingDate(FixedAsset."No.", FADepreciationBook."Depreciation Book Code");
+        IF UseDeprStartingDate THEN
+            FirstDeprDate := DeprStartingDate;
+        IF FirstDeprDate < DeprStartingDate THEN
+            FirstDeprDate := DeprStartingDate;
+
         SalvageValue := FADepreciationBook."Salvage Value";
         MinusBookValue := DepreciationCalculation.GetMinusBookValue(FixedAsset."No.", FADepreciationBook."Depreciation Book Code", 0D, 0D);
         RemainingLife := (DeprEndingDate - DeprStartingDate) - (FirstDeprDate - DeprStartingDate) + 1;

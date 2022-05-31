@@ -13,6 +13,6 @@ codeunit 13694 "Intrastat Export Lines"
         IntrastatJnlLine.COPYFILTERS(Rec);
         IntrastatJnlLine.SETRANGE("Journal Template Name", Rec."Journal Template Name");
         IntrastatJnlLine.SETRANGE("Journal Batch Name", "Journal Batch Name");
-        REPORT.RUN(REPORT::"Intrastat Export To Disk", TRUE, FALSE, IntrastatJnlLine);
+        REPORT.RUN(REPORT::"Intrastat - Make Disk Tax Auth", TRUE, FALSE, IntrastatJnlLine);
     end;
 }

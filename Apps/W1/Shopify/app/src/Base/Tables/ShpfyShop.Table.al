@@ -30,8 +30,10 @@ table 30102 "Shpfy Shop"
             var
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
             begin
-                if not xRec."Enabled" and Rec."Enabled" then
+                if Rec."Enabled" then begin
+                    Rec.TestField("Shopify URL");
                     Rec."Enabled" := CustomerConsentMgt.ConfirmUserConsent();
+                end;
             end;
         }
         field(5; "Log Enabled"; Boolean)
@@ -364,24 +366,24 @@ table 30102 "Shpfy Shop"
     [NonDebuggable]
     internal procedure GetAccessToken() Result: Text
     var
-        AuthorizationMgt: Codeunit "Shpfy Authentication Mgt.";
+        ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
         Store: Text;
     begin
         Rec.Testfield(Enabled, true);
         Store := GetStoreName();
         if Store <> '' then
-            exit(AuthorizationMgt.GetAccessToken(Store));
+            exit(ShpfyAuthenticationMgt.GetAccessToken(Store));
     end;
 
     [NonDebuggable]
     internal procedure RequestAccessToken()
     var
-        AuthorizationMgt: Codeunit "Shpfy Authentication Mgt.";
+        ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
         Store: Text;
     begin
         Store := GetStoreName();
         if Store <> '' then
-            AuthorizationMgt.InstallShopifyApp(Store);
+            ShpfyAuthenticationMgt.InstallShopifyApp(Store);
     end;
 
     [NonDebuggable]

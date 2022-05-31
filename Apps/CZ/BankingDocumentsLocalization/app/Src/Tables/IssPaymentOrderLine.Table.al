@@ -275,7 +275,7 @@ table 31259 "Iss. Payment Order Line CZB"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterIssuedPaymentOrderLineCancel(IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB")
+    local procedure OnAfterIssuedPaymentOrderLineCancel(var IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB")
     begin
     end;
 }
