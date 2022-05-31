@@ -1079,8 +1079,8 @@ Codeunit 4037 "Helper Functions"
         GPBankMSTR: Record "GP Bank MSTR";
         GPCheckbookMSTR: Record "GP Checkbook MSTR";
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
-        MSFTSY40100Table: Record MSFTSY40100;
-        MSFTSY40101Table: Record MSFTSY40101;
+        GPSY40100: Record GPSY40100;
+        GPSY40101: Record GPSY40101;
     begin
         GPAccount.DeleteAll();
         GPGLTransactions.DeleteAll();
@@ -1106,8 +1106,8 @@ Codeunit 4037 "Helper Functions"
         GPCheckbookMSTR.DeleteAll();
         GPCheckbookTransactions.DeleteAll();
 
-        MSFTSY40100Table.DeleteAll();
-        MSFTSY40101Table.DeleteAll();
+        GPSY40100.DeleteAll();
+        GPSY40101.DeleteAll();
 
         Session.LogMessage('00007GH', 'Cleaned up staging tables.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
     end;
@@ -1738,9 +1738,9 @@ Codeunit 4037 "Helper Functions"
 
     local procedure CreateFiscalPeriodsImp()
     var
-        MSFTSY40101: Record MSFTSY40101;
+        FiscalPeriods: Codeunit FiscalPeriods;
     begin
-        MSFTSY40101.MoveStagingData();
+        FiscalPeriods.MoveStagingData();
         Session.LogMessage('', 'Created Fiscal Periods', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetOpenFiscalPeriodsCreated();
     end;

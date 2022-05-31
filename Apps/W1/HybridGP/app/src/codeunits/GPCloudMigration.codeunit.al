@@ -41,8 +41,8 @@ codeunit 4025 "GP Cloud Migration"
         CompanyFailedToMigrateMsg: Label 'Migration did not start because the company setup is still in process.', Locked = true;
         InitiateMigrationMsg: Label 'Initiate GP Migration.', Locked = true;
         StartMigrationMsg: Label 'Start Migration', Locked = true;
-        SourceTableNameSY40100Lbl: Label 'SY40100', Locked = true;
-        SourceTableNameSY40101Lbl: Label 'SY40101', Locked = true;
+        GPSY40100Lbl: Label 'SY40100', Locked = true;
+        GPSY40101Lbl: Label 'SY40101', Locked = true;
 
     local procedure InitiateGPMigration()
     var
@@ -140,8 +140,8 @@ codeunit 4025 "GP Cloud Migration"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInsertDefaultTableMappings', '', false, false)]
     local procedure OnInsertDefaultTableMappings(DeleteExisting: Boolean; ProductID: Text[250])
     begin
-        UpdateOrInsertRecord(Database::MSFTSY40100, SourceTableNameSY40100Lbl);
-        UpdateOrInsertRecord(Database::MSFTSY40101, SourceTableNameSY40101Lbl);
+        UpdateOrInsertRecord(Database::GPSY40100, GPSY40100Lbl);
+        UpdateOrInsertRecord(Database::GPSY40101, GPSY40101Lbl);
     end;
 
     local procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128])

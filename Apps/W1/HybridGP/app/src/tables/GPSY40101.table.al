@@ -1,6 +1,8 @@
-table 40108 MSFTSY40101
+table 40108 GPSY40101
 {
     DataClassification = CustomerContent;
+    Description = 'Period Header';
+
     fields
     {
         field(1; YEAR1; Integer)
@@ -36,6 +38,7 @@ table 40108 MSFTSY40101
             DataClassification = CustomerContent;
         }
     }
+
     keys
     {
         key(Key1; YEAR1)
@@ -43,15 +46,4 @@ table 40108 MSFTSY40101
             Clustered = true;
         }
     }
-
-
-    procedure MoveStagingData()
-    var
-        MSFTSY40100: Record MSFTSY40100;
-    begin
-        if FindSet() then
-            repeat
-                MSFTSY40100.MoveStagingData(Rec);
-            until Next() = 0;
-    end;
 }

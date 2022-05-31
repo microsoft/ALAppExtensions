@@ -1,6 +1,7 @@
-table 40107 MSFTSY40100
+table 40107 GPSY40100
 {
     DataClassification = CustomerContent;
+    Description = 'Period Setup';
 
     fields
     {
@@ -73,6 +74,7 @@ table 40107 MSFTSY40100
             DataClassification = CustomerContent;
         }
     }
+
     keys
     {
         key(Key1; FORIGIN, YEAR1, PERIODID, SERIES, ODESCTN)
@@ -80,36 +82,4 @@ table 40107 MSFTSY40100
             Clustered = true;
         }
     }
-
-    procedure MoveStagingData(MSFTSY40101: Record MSFTSY40101)
-    var
-        AccountingPeriod: Record "Accounting Period";
-        InventorySetup: Record "Inventory Setup";
-        OutlookSynchTypeConv: Codeunit "Outlook Synch. Type Conv";
-        i: Integer;
-    begin
-        Rec.Reset();
-        Rec.SetFilter(YEAR1, Format(MSFTSY40101.YEAR1));
-        Rec.SetFilter(SERIES, '2');
-        if FindSet() then
-            for i := 1 to MSFTSY40101.NUMOFPER do begin
-                Rec.SetFilter(PERIODID, Format(i));
-                if FindFirst() then begin
-                    AccountingPeriod.Init();
-                    AccountingPeriod.Validate("Starting Date", DT2Date(OutlookSynchTypeConv.LocalDT2UTC(Rec.PERIODDT)));
-                    AccountingPeriod.Validate(Name, CopyStr(Rec.PERNAME.TrimEnd(), 1, 10));
-                    if i = 1 then begin
-                        AccountingPeriod."New Fiscal Year" := true;
-                        InventorySetup.Get();
-                        AccountingPeriod."Average Cost Calc. Type" := InventorySetup."Average Cost Calc. Type";
-                        AccountingPeriod."Average Cost Period" := InventorySetup."Average Cost Period";
-                    end;
-
-                    if not AccountingPeriod.Find('=') then
-                        AccountingPeriod.Insert();
-
-                    AccountingPeriod.UpdateAvgItems();
-                end;
-            end;
-    end;
 }
