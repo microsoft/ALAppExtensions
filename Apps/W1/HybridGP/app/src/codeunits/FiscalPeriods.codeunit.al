@@ -14,7 +14,7 @@ codeunit 40107 FiscalPeriods
     end;
 
 
-    procedure CreateFiscalPeriods(GPSY40101: Record GPSY40101)
+    local procedure CreateFiscalPeriods(GPSY40101: Record GPSY40101)
     var
         GPSY40100: Record GPSY40100;
         AccountingPeriod: Record "Accounting Period";
