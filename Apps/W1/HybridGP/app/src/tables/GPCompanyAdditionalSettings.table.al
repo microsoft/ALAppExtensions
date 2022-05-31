@@ -26,4 +26,15 @@ table 40105 "GP Company Additional Settings"
             Clustered = true;
         }
     }
+
+    procedure GetMigrateInactiveCheckbooks(): Boolean
+    var
+        MigrateInactiveCheckbooks: Boolean;
+    begin
+        MigrateInactiveCheckbooks := true;
+        if Rec.Get(CompanyName()) then
+            MigrateInactiveCheckbooks := Rec."Migrate Inactive Checkbooks";
+
+        exit(MigrateInactiveCheckbooks);
+    end;
 }

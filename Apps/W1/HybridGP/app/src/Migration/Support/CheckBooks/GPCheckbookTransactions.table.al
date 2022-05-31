@@ -26,6 +26,9 @@ table 40101 "GP Checkbook Transactions"
         {
             DataClassification = CustomerContent;
         }
+        ///        1        2        3                  4                    5                  6                  7
+        ///     Deposit, Receipt, APCheck, "Withdrawl/Payroll Check", IncreaseAdjustment, DecreaseAdjustment, BankTransfer;
+        ///         
         field(6; CMTrxType; Integer)
         {
             DataClassification = CustomerContent;
@@ -215,9 +218,4 @@ table 40101 "GP Checkbook Transactions"
             Clustered = true;
         }
     }
-
-    procedure MoveStagingData(CheckbookId: Code[15]; PostingGroup: Code[20])
-    begin
-
-    end;
 }
