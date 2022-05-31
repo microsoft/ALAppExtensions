@@ -49,24 +49,4 @@ codeunit 40107 FiscalPeriods
             end;
         end;
     end;
-
-
-    /*     procedure MoveStagingData()
-        var
-            GPSY40101: Record GPSY40101;
-            CreateFiscalYear: Report "Create Fiscal Year";
-            PeriodLength: DateFormula;
-        begin
-            if not GPSY40101.FindSet() then
-                exit;
-
-            repeat
-                Clear(CreateFiscalYear);
-                Evaluate(PeriodLength, '<1M>');
-                CreateFiscalYear.InitializeRequest(GPSY40101.NUMOFPER, PeriodLength, DT2Date(GPSY40101.FSTFSCDY));
-                CreateFiscalYear.UseRequestPage(false);
-                CreateFiscalYear.HideConfirmationDialog(true);
-                CreateFiscalYear.Run();
-            until GPSY40101.Next() = 0;
-        end; */
 }
