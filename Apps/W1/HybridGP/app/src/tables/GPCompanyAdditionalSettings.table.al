@@ -17,11 +17,6 @@ table 40105 "GP Company Additional Settings"
             InitValue = true;
             DataClassification = SystemMetadata;
         }
-        field(11; "Vendor EFT Bank Acc. Created"; Boolean)
-        {
-            DataClassification = SystemMetadata;
-            InitValue = false;
-        }
     }
 
     keys
@@ -31,13 +26,4 @@ table 40105 "GP Company Additional Settings"
             Clustered = true;
         }
     }
-
-    procedure GetSingleInstance();
-    begin
-        Reset();
-        if not Get() then begin
-            Init();
-            Insert();
-        end;
-    end;
 }

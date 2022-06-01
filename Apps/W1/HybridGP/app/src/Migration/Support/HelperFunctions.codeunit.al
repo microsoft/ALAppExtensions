@@ -36,7 +36,6 @@ Codeunit 4037 "Helper Functions"
 
     var
         GPConfiguration: Record "GP Configuration";
-        GPAdditionalConfiguration: Record "GP Company Additional Settings";
         CurrentAssetsTxt: Label 'Current Assets';
         PeriodTxt: Label 'Period';
         ARTxt: Label 'Accounts Receivable';
@@ -1786,9 +1785,9 @@ Codeunit 4037 "Helper Functions"
 
     local procedure SetVendorEFTBankAccountsCreated()
     begin
-        GPAdditionalConfiguration.GetSingleInstance();
-        GPAdditionalConfiguration."Vendor EFT Bank Acc. Created" := true;
-        GPAdditionalConfiguration.Modify();
+        GPConfiguration.GetSingleInstance();
+        GPConfiguration."Vendor EFT Bank Acc. Created" := true;
+        GPConfiguration.Modify();
     end;
 
     local procedure SetPreMigrationCleanupCompleted()
@@ -1836,8 +1835,8 @@ Codeunit 4037 "Helper Functions"
 
     local procedure VendorEFTBankAccountsCreated(): Boolean
     begin
-        GPAdditionalConfiguration.GetSingleInstance();
-        exit(GPAdditionalConfiguration."Vendor EFT Bank Acc. Created");
+        GPConfiguration.GetSingleInstance();
+        exit(GPConfiguration."Vendor EFT Bank Acc. Created");
     end;
 
     procedure PreMigrationCleanupCompleted(): Boolean
