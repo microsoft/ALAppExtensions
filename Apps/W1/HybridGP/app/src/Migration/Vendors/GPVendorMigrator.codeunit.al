@@ -18,7 +18,6 @@ codeunit 4022 "GP Vendor Migrator"
             exit;
         GPVendor.Get(RecordIdToMigrate);
         MigrateVendorDetails(GPVendor, Sender);
-        MigrateVendorAddresses(GPVendor);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
@@ -222,6 +221,7 @@ codeunit 4022 "GP Vendor Migrator"
         end;
 
         VendorDataMigrationFacade.ModifyVendor(true);
+        MigrateVendorAddresses(GPVendor);
     end;
 
     local procedure MigrateVendorAddresses(GPVendor: Record "GP Vendor")
@@ -375,5 +375,101 @@ codeunit 4022 "GP Vendor Migrator"
         HelperFunctions.UpdateFieldValue(RecordVariant, GPVendorTransactions.FieldNo(DOCTYPE), JToken.AsObject(), 'DOCTYPE');
         HelperFunctions.UpdateFieldValue(RecordVariant, GPVendorTransactions.FieldNo(PYMTRMID), JToken.AsObject(), 'PYMTRMID');
         HelperFunctions.UpdateFieldWithValue(RecordVariant, GPVendorTransactions.FieldNo(GLDocNo), DocumentNo);
+    end;
+
+    procedure MigrateVendorEFTBankAccounts()
+    var
+        GPSY06000Table: Record GPSY06000;
+        VendorTable: Record Vendor;
+        VendorBankAccountTable: Record "Vendor Bank Account";
+        GeneralLedgerSetupTable: Record "General Ledger Setup";
+        VendorBankAccountExists: Boolean;
+        CurrencyCode: Code[10];
+    begin
+        if not GPSY06000Table.FindSet() then
+            exit;
+
+        repeat
+            if not GPSY06000Table.INACTIVE and VendorTable.Get(GPSY06000Table.CustomerVendor_ID) then begin
+                CurrencyCode := CopyStr(GPSY06000Table.CURNCYID, 1, 10);
+                CreateCurrencyIfNeeded(CurrencyCode);
+                CreateSwiftCodeIfNeeded(GPSY06000Table.SWIFTADDR);
+
+                VendorBankAccountExists := VendorBankAccountTable.Get(VendorTable."No.", GPSY06000Table.EFTBankCode);
+                VendorBankAccountTable.Validate("Vendor No.", VendorTable."No.");
+                VendorBankAccountTable.Validate("Code", GPSY06000Table.EFTBankCode);
+                VendorBankAccountTable.Validate("Name", GPSY06000Table.BANKNAME);
+                VendorBankAccountTable.Validate("Bank Branch No.", GPSY06000Table.EFTBankBranchCode);
+                VendorBankAccountTable.Validate("Bank Account No.", CopyStr(GPSY06000Table.EFTBankAcct, 1, 30));
+                VendorBankAccountTable.Validate("Transit No.", GPSY06000Table.EFTTransitRoutingNo);
+                VendorBankAccountTable.Validate("IBAN", GPSY06000Table.IntlBankAcctNum);
+                VendorBankAccountTable.Validate("SWIFT Code", GPSY06000Table.SWIFTADDR);
+
+                GeneralLedgerSetupTable.Get();
+                if GeneralLedgerSetupTable."LCY Code" <> CurrencyCode then
+                    VendorBankAccountTable.Validate("Currency Code", CurrencyCode);
+
+                if not VendorBankAccountExists then
+                    VendorBankAccountTable.Insert()
+                else
+                    VendorBankAccountTable.Modify();
+
+                SetPreferredBankAccountIfNeeded(GPSY06000Table, VendorTable);
+            end;
+        until GPSY06000Table.Next() = 0;
+    end;
+
+    local procedure CreateCurrencyIfNeeded(CurrencyCode: Code[10])
+    var
+        CurrencyTable: Record Currency;
+        GPMC40200Table: Record GPMC40200;
+    begin
+        if (CurrencyCode <> '') and not CurrencyTable.Get(CurrencyCode) then begin
+            GPMC40200Table.SetRange("CURNCYID", CurrencyCode);
+            if GPMC40200Table.FindFirst() then begin
+                CurrencyTable.Validate("Symbol", GPMC40200Table.CRNCYSYM);
+                CurrencyTable.Validate("Code", CurrencyCode);
+                CurrencyTable.Validate("Description", CopyStr(GPMC40200Table.CRNCYDSC, 1, 30));
+                CurrencyTable.Validate("Invoice Rounding Type", CurrencyTable."Invoice Rounding Type"::Nearest);
+                CurrencyTable.Insert();
+            end;
+        end;
+    end;
+
+    local procedure CreateSwiftCodeIfNeeded(SWIFTADDR: Text[11])
+    var
+        SwiftCodeTable: Record "SWIFT Code";
+    begin
+        if (SWIFTADDR <> '') and not SwiftCodeTable.Get(SWIFTADDR) then begin
+            SwiftCodeTable.Validate("Code", SWIFTADDR);
+            SwiftCodeTable.Insert();
+        end;
+    end;
+
+    local procedure SetPreferredBankAccountIfNeeded(GPSY06000Table: Record GPSY06000; var VendorTable: Record Vendor)
+    var
+        SearchGPSY06000: Record GPSY06000;
+        ShouldSetAsPrimaryAccount: Boolean;
+        TrimmedADRSCODE: Code[15];
+    begin
+        TrimmedADRSCODE := GPSY06000Table.ADRSCODE.Trim();
+
+        // The Remit To is the preferred account
+        if TrimmedADRSCODE = 'REMIT TO' then
+            ShouldSetAsPrimaryAccount := true
+        else
+            if (TrimmedADRSCODE = 'PRIMARY') then begin
+                // If the Vendor does not have a Remit To account, then use the Primary account instead
+                SearchGPSY06000.SetRange("CustomerVendor_ID", GPSY06000Table.CustomerVendor_ID);
+                SearchGPSY06000.SetRange("ADRSCODE", 'REMIT TO');
+                SearchGPSY06000.SetRange("INACTIVE", false);
+                if not SearchGPSY06000.FindFirst() then
+                    ShouldSetAsPrimaryAccount := true
+            end;
+
+        if ShouldSetAsPrimaryAccount then begin
+            VendorTable.Validate(VendorTable."Preferred Bank Account Code", GPSY06000Table.EFTBankCode);
+            VendorTable.Modify(true);
+        end;
     end;
 }

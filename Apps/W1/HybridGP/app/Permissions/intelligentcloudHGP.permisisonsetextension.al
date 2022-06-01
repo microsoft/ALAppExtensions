@@ -19,7 +19,7 @@ permissionsetextension 4028 "INTELLIGENT CLOUD - HGP" extends "INTELLIGENT CLOUD
                   tabledata GPSOPTrackingNumbersWorkHist = RIMD,
                   tabledata GPSOPSerialLotWorkHist = RIMD,
                   tabledata "GP Customer Transactions" = RIMD,
-                  tabledata GPSOPDepositHist= RIMD,
+                  tabledata GPSOPDepositHist = RIMD,
                   tabledata GPPOPPOHist = RIMD,
                   tabledata GPRMHist = RIMD,
                   tabledata GPPOPReceiptHist = RIMD,
@@ -57,5 +57,7 @@ permissionsetextension 4028 "INTELLIGENT CLOUD - HGP" extends "INTELLIGENT CLOUD
                   tabledata "GP Segment Name" = RIMD,
                   tabledata "GP Migration Errors" = RIMD,
                   tabledata "GP Company Migration Settings" = RIMD,
-                  tabledata "GP Company Additional Settings" = RIMD;
+                  tabledata "GP Company Additional Settings" = RIMD,
+                  tabledata GPMC40200 = RIMD,
+                  tabledata GPSY06000 = RIMD;
 }
