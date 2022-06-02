@@ -15,8 +15,8 @@ codeunit 139701 "GP Fiscal Periods Tests"
     procedure TestGPFiscalPeriodsCalanderYears()
     var
         AccountingPeriod: Record "Accounting Period";
-        GPSY40101: Record GPSY40101;
-        GPSY40100: Record GPSY40100;
+        GPSY40101: Record "GP SY40101";
+        GPSY40100: Record "GP SY40100";
     begin
         // [SCENARIO] Fiscal Periods are migrated from GP
         // [GIVEN] There are no records in the Accounting Period table
@@ -53,8 +53,8 @@ codeunit 139701 "GP Fiscal Periods Tests"
     procedure TestGPFiscalPeriodsNonCalendarYears()
     var
         AccountingPeriod: Record "Accounting Period";
-        GPSY40101: Record GPSY40101;
-        GPSY40100: Record GPSY40100;
+        GPSY40101: Record "GP SY40101";
+        GPSY40100: Record "GP SY40100";
     begin
         // [SCENARIO] Fiscal Periods are migrated from GP
         // [GIVEN] There are no records in the Accounting Period table
@@ -92,8 +92,8 @@ codeunit 139701 "GP Fiscal Periods Tests"
     procedure TestGPFiscalPeriodsNonTypicalYears()
     var
         AccountingPeriod: Record "Accounting Period";
-        GPSY40101: Record GPSY40101;
-        GPSY40100: Record GPSY40100;
+        GPSY40101: Record "GP SY40101";
+        GPSY40100: Record "GP SY40100";
     begin
         // [SCENARIO] Fiscal Periods are migrated from GP
         // [GIVEN] There are no records in the Accounting Period table
@@ -128,15 +128,15 @@ codeunit 139701 "GP Fiscal Periods Tests"
     local procedure ClearTables()
     var
         AccountingPeriod: Record "Accounting Period";
-        GPSY40101: Record GPSY40101;
-        GPSY40100: Record GPSY40100;
+        GPSY40101: Record "GP SY40101";
+        GPSY40100: Record "GP SY40100";
     begin
         AccountingPeriod.DeleteAll();
         GPSY40101.DeleteAll();
         GPSY40100.DeleteAll();
     end;
 
-    local procedure Migrate(var GPSY40101: Record GPSY40101)
+    local procedure Migrate(var GPSY40101: Record "GP SY40101")
     var
         FiscalPeriods: Codeunit FiscalPeriods;
     begin
@@ -144,7 +144,7 @@ codeunit 139701 "GP Fiscal Periods Tests"
     end;
 
 
-    local procedure CreateCalendarYearPeriodData(var GPSY40101: Record GPSY40101; var GPSY40100: Record GPSY40100)
+    local procedure CreateCalendarYearPeriodData(var GPSY40101: Record "GP SY40101"; var GPSY40100: Record "GP SY40100")
     begin
         GPSY40101.Init();
         GPSY40101.YEAR1 := 2020;
@@ -221,7 +221,7 @@ codeunit 139701 "GP Fiscal Periods Tests"
         CreatePeriodSetupData(GPSY40100);
     end;
 
-    local procedure CreateNonCalendarPeriods(var GPSY40101: Record GPSY40101; var GPSY40100: Record GPSY40100)
+    local procedure CreateNonCalendarPeriods(var GPSY40101: Record "GP SY40101"; var GPSY40100: Record "GP SY40100")
     var
         year: Integer;
     begin
@@ -1001,7 +1001,7 @@ codeunit 139701 "GP Fiscal Periods Tests"
         GPSY40100.Insert(true);
     end;
 
-    local procedure CreateNonTypicalPeriods(var GPSY40101: Record GPSY40101; var GPSY40100: Record GPSY40100)
+    local procedure CreateNonTypicalPeriods(var GPSY40101: Record "GP SY40101"; var GPSY40100: Record "GP SY40100")
     var
         year: Integer;
     begin
@@ -1442,7 +1442,7 @@ codeunit 139701 "GP Fiscal Periods Tests"
         GPSY40100.Insert(true);
     end;
 
-    local procedure CreatePeriodSetupData(var GPSY40100: Record GPSY40100)
+    local procedure CreatePeriodSetupData(var GPSY40100: Record "GP SY40100")
     begin
         CreateSY40100Records(GPSY40100, 2020, 2, 12);
         CreateSY40100Records(GPSY40100, 2021, 2, 12);
@@ -1455,7 +1455,7 @@ codeunit 139701 "GP Fiscal Periods Tests"
         CreateSY40100Records(GPSY40100, 2028, 2, 12);
     end;
 
-    local procedure CreateSY40100Records(var GPSY40100: Record GPSY40100; Year: Integer; Series: Integer; NumberOfPeriods: Integer)
+    local procedure CreateSY40100Records(var GPSY40100: Record "GP SY40100"; Year: Integer; Series: Integer; NumberOfPeriods: Integer)
     var
         i: Integer;
         myDay: Integer;

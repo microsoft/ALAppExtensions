@@ -1,4 +1,4 @@
-table 40107 GPSY40100
+table 40107 "GP SY40100"
 {
     DataClassification = CustomerContent;
     Description = 'Period Setup';

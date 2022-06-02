@@ -1079,8 +1079,8 @@ Codeunit 4037 "Helper Functions"
         GPBankMSTR: Record "GP Bank MSTR";
         GPCheckbookMSTR: Record "GP Checkbook MSTR";
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
-        GPSY40100: Record GPSY40100;
-        GPSY40101: Record GPSY40101;
+        GPSY40100: Record "GP SY40100";
+        GPSY40101: Record "GP SY40101";
     begin
         GPAccount.DeleteAll();
         GPGLTransactions.DeleteAll();

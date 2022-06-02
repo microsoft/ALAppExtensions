@@ -140,8 +140,8 @@ codeunit 4025 "GP Cloud Migration"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInsertDefaultTableMappings', '', false, false)]
     local procedure OnInsertDefaultTableMappings(DeleteExisting: Boolean; ProductID: Text[250])
     begin
-        UpdateOrInsertRecord(Database::GPSY40100, GPSY40100Lbl);
-        UpdateOrInsertRecord(Database::GPSY40101, GPSY40101Lbl);
+        UpdateOrInsertRecord(Database::"GP SY40100", GPSY40100Lbl);
+        UpdateOrInsertRecord(Database::"GP SY40101", GPSY40101Lbl);
     end;
 
     local procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128])

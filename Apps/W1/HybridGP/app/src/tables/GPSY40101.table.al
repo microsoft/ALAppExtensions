@@ -1,4 +1,4 @@
-table 40108 GPSY40101
+table 40108 "GP SY40101"
 {
     DataClassification = CustomerContent;
     Description = 'Period Header';

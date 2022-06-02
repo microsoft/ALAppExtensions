@@ -3,7 +3,7 @@ codeunit 40107 FiscalPeriods
 
     procedure MoveStagingData()
     var
-        GPSY40101: Record GPSY40101;
+        GPSY40101: Record "GP SY40101";
     begin
         if not GPSY40101.FindSet() then
             exit;
@@ -14,9 +14,9 @@ codeunit 40107 FiscalPeriods
     end;
 
 
-    local procedure CreateFiscalPeriods(GPSY40101: Record GPSY40101)
+    local procedure CreateFiscalPeriods(GPSY40101: Record "GP SY40101")
     var
-        GPSY40100: Record GPSY40100;
+        GPSY40100: Record "GP SY40100";
         AccountingPeriod: Record "Accounting Period";
         InventorySetup: Record "Inventory Setup";
         OutlookSynchTypeConv: Codeunit "Outlook Synch. Type Conv";
