@@ -289,14 +289,12 @@ codeunit 4019 "GP Item Migrator"
         exit(ItemTypeOption::Service);
     end;
 
+#if not CLEAN21
+    [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetAll()
-    var
-        HelperFunctions: Codeunit "Helper Functions";
-        JArray: JsonArray;
     begin
-        HelperFunctions.GetEntities('Item', JArray);
-        GetItemsFromJson(JArray);
     end;
+#endif
 
     local procedure GetItemsFromJson(JArray: JsonArray)
     var

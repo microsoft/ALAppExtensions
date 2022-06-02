@@ -184,6 +184,13 @@ codeunit 4016 "Hybrid GP Management"
         StartNewSession := false;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnHandleFixDataOnReplicationCompleted', '', false, false)]
+    local procedure SkipDataRepair(var Handled: Boolean; var FixData: Boolean)
+    begin
+        Handled := true;
+        FixData := false;
+    end;
+
     procedure InvokeCompanyUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary"; CompanyName: Text[50])
     var
         CreateSession: Boolean;

@@ -12,6 +12,8 @@ page 30126 "Shpfy Products"
     PromotedActionCategories = 'New, Process, Report, Synchronization';
     SourceTable = "Shpfy Product";
     UsageCategory = Lists;
+    AboutTitle = 'About Shopify products';
+    AboutText = '**Products** in Shopify is called **items** in Business Central. This is a list of items you sell in your shop. Map each product you want to sell to an item so that you can synchronize their information.';
 
     layout
     {
@@ -274,6 +276,8 @@ page 30126 "Shpfy Products"
                 PromotedIsBig = true;
                 PromotedOnly = true;
                 ToolTip = 'Select which items you want to create as products in Shopify.';
+                AboutTitle = 'Define shop products';
+                AboutText = 'Here you select which items in Business Central you wish to push to become products in Shopify. When you selsect **Add Items** you will get an option to filter and select the items which are then brought into this list and can be synchronized to Shopify.';
 
                 trigger OnAction()
                 var

@@ -36,7 +36,7 @@ codeunit 8888 "Email Dispatcher"
         Dimensions.Add('Connector', Format(Rec.Connector));
         Dimensions.Add('EmailMessageID', Format(Rec."Message Id", 0, 4));
         Dimensions.Add('EmailAccountID', Format(Rec."Account Id", 0, 4));
-        FeatureTelemetry.LogUptake('0000CTM', EmailFeatureNameLbl, Enum::"Feature Uptake Status"::Used, false, Dimensions);
+        FeatureTelemetry.LogUptake('0000CTM', EmailFeatureNameLbl, Enum::"Feature Uptake Status"::Used, Dimensions);
 
         // -----------
         // NB: Avoid adding events here as any error would cause a roll-back and possibly an inconsistent state of the Email Outbox.

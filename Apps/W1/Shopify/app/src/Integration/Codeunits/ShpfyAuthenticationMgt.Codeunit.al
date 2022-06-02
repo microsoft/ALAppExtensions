@@ -7,7 +7,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
 
     var
         // https://shopify.dev/api/usage/access-scopes
-        ScopeTxt: Label 'write_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping', Locked = true;
+        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping', Locked = true;
         ShopifyAPIKeyAKVSecretNameLbl: Label 'ShopifyApiKey', Locked = true;
         ShopifyAPISecretAKVSecretNameLbl: Label 'ShopifyApiSecret', Locked = true;
         MissingAPIKeyTelemetryTxt: Label 'The api key has not been initialized.', Locked = true;

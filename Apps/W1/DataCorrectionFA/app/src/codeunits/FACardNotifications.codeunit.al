@@ -9,6 +9,8 @@ Codeunit 6091 "FA Card Notifications"
     var
         FALedgEntrywIssue: Record "FA Ledg. Entry w. Issue";
     begin
+        if not GuiAllowed then
+            exit;
         ScanEntries();
         FALedgEntrywIssue.SetRange(Corrected, false);
         FALedgEntrywIssue.SetRange("FA No.", Rec."No.");
@@ -52,7 +54,9 @@ Codeunit 6091 "FA Card Notifications"
         if FASetup."Last time scanned" > (CurrentDateTime + GetCacheRefreshInterval()) then
             exit;
 
+        CLEAR(FASetup);
         FASetup.LockTable();
+        FASetup.Get();
         FASetup."Last time scanned" := CurrentDateTime;
         FASetup.Modify();
         Commit();  // Clear the lock on FA Setup

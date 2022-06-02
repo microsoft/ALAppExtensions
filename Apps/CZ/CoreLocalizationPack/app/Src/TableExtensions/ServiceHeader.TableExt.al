@@ -48,7 +48,8 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
                 BankAccount: Record "Bank Account";
                 CustomerBankAccount: Record "Customer Bank Account";
             begin
-                TestField(Status, Status::Pending);
+                if CurrFieldNo = Rec.FieldNo("Bank Account Code CZL") then
+                    TestField(Status, Status::Pending);
                 if "Bank Account Code CZL" = '' then begin
                     UpdateBankInfoCZL('', '', '', '', '', '', '');
                     exit;

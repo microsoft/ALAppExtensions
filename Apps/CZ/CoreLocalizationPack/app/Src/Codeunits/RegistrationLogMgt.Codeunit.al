@@ -232,7 +232,7 @@ codeunit 11755 "Registration Log Mgt. CZL"
     begin
         XmlNamespaceManager.AddNamespace('D', Namespace);
         if XmlDoc.SelectSingleNode(XPath, XmlNamespaceManager, FoundXMLNode) then
-            exit(FoundXMLNode.AsXmlElement().InnerXml());
+            exit(FoundXMLNode.AsXmlElement().InnerText());
     end;
 
     procedure CheckARESForRegNo(var RecordRef: RecordRef; var RegistrationLogCZL: Record "Registration Log CZL"; RecordVariant: Variant; EntryNo: Code[20]; AccountType: Enum "Reg. Log Account Type CZL")

@@ -9,6 +9,7 @@ codeunit 9013 "User Login Time Tracker Impl."
     Permissions = tabledata "User Login" = rim,
                   tabledata "User Environment Login" = ri;
 
+    [InherentPermissions(PermissionObjectType::TableData, Database::"User Login", 'r')]
     procedure IsFirstLogin(UserSecurityID: Guid): Boolean
     var
         UserLogin: Record "User Login";
@@ -19,6 +20,7 @@ codeunit 9013 "User Login Time Tracker Impl."
         exit(UserLogin.IsEmpty());
     end;
 
+    [InherentPermissions(PermissionObjectType::TableData, Database::"User Login", 'r')]
     procedure AnyUserLoggedInSinceDate(FromDate: Date): Boolean
     var
         UserLogin: Record "User Login";
@@ -31,6 +33,7 @@ codeunit 9013 "User Login Time Tracker Impl."
         exit(not UserLogin.IsEmpty());
     end;
 
+    [InherentPermissions(PermissionObjectType::TableData, Database::"User Login", 'r')]
     procedure UserLoggedInSinceDateTime(FromDateTime: DateTime): Boolean
     var
         UserLogin: Record "User Login";
@@ -41,6 +44,7 @@ codeunit 9013 "User Login Time Tracker Impl."
         exit(UserLogin."Last Login Date" >= FromDateTime);
     end;
 
+    [InherentPermissions(PermissionObjectType::TableData, Database::"User Environment Login", 'r')]
     procedure UserLoggedInEnvironment(UserSecurityID: Guid): Boolean
     var
         UserEnvironmentLogin: Record "User Environment Login";
@@ -51,6 +55,7 @@ codeunit 9013 "User Login Time Tracker Impl."
         exit(not UserEnvironmentLogin.IsEmpty());
     end;
 
+    [InherentPermissions(PermissionObjectType::TableData, Database::"User Login", 'r')]
     procedure GetPenultimateLoginDateTime(UserSecurityId: Guid): DateTime
     var
         UserLogin: Record "User Login";
@@ -104,4 +109,3 @@ codeunit 9013 "User Login Time Tracker Impl."
 #endif
     end;
 }
-

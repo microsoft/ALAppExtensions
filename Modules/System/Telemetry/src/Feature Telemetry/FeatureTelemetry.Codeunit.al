@@ -132,7 +132,6 @@ codeunit 8703 "Feature Telemetry"
     /// <param name="FeatureName">The name of the feature.</param>
     /// <param name="FeatureUptakeStatus">The new status of the feature uptake.</param>
     /// <remarks>
-    /// This method may perform database write transactions, therefore it should not be used from within try functions.
     /// Expected feature uptake transitions:
     /// "Discovered" -> "Set up" -> "Used" (and only in this order; for example, if for a given feature the first status was logged as "Set up", no telemetry will be emitted)
     /// *Any state* -> "Undiscovered" (to reset the feature uptake status)
@@ -143,7 +142,27 @@ codeunit 8703 "Feature Telemetry"
         DummyCustomDimensions: Dictionary of [Text, Text];
     begin
         NavApp.GetCallerModuleInfo(CallerModuleInfo);
-        FeatureTelemetryImpl.LogUptake(EventId, FeatureName, FeatureUptakeStatus, false, false, DummyCustomDimensions, CallerModuleInfo);
+        FeatureTelemetryImpl.LogUptake(EventId, FeatureName, FeatureUptakeStatus, false, DummyCustomDimensions, CallerModuleInfo);
+    end;
+
+    /// <summary>
+    /// Sends telemetry about feature uptake.
+    /// </summary>
+    /// <param name="EventId">A unique ID of the event.</param>
+    /// <param name="FeatureName">The name of the feature.</param>
+    /// <param name="FeatureUptakeStatus">The new status of the feature uptake.</param>
+    /// <param name="CustomDimensions">A dictionary containing additional information about the event.</param>
+    /// <remarks>
+    /// Expected feature uptake transitions:
+    /// "Discovered" -> "Set up" -> "Used" (and only in this order; for example, if for a given feature the first status was logged as "Set up", no telemetry will be emitted)
+    /// *Any state* -> "Undiscovered" (to reset the feature uptake status)
+    /// </remarks>
+    procedure LogUptake(EventId: Text; FeatureName: Text; FeatureUptakeStatus: Enum "Feature Uptake Status"; CustomDimensions: Dictionary of [Text, Text])
+    var
+        CallerModuleInfo: ModuleInfo;
+    begin
+        NavApp.GetCallerModuleInfo(CallerModuleInfo);
+        FeatureTelemetryImpl.LogUptake(EventId, FeatureName, FeatureUptakeStatus, false, CustomDimensions, CallerModuleInfo);
     end;
 
     /// <summary>
@@ -154,7 +173,6 @@ codeunit 8703 "Feature Telemetry"
     /// <param name="FeatureUptakeStatus">The new status of the feature uptake.</param>
     /// <param name="IsPerUser">Specifies if the feature is targeted to be uptaken once for the tenant or uptaken individually by different users.</param>
     /// <remarks>
-    /// This method may perform database write transactions, therefore it should not be used from within try functions.
     /// Expected feature uptake transitions:
     /// "Discovered" -> "Set up" -> "Used" (and only in this order; for example, if for a given feature the first status was logged as "Set up", no telemetry will be emitted)
     /// *Any state* -> "Undiscovered" (to reset the feature uptake status)
@@ -165,7 +183,7 @@ codeunit 8703 "Feature Telemetry"
         DummyCustomDimensions: Dictionary of [Text, Text];
     begin
         NavApp.GetCallerModuleInfo(CallerModuleInfo);
-        FeatureTelemetryImpl.LogUptake(EventId, FeatureName, FeatureUptakeStatus, IsPerUser, false, DummyCustomDimensions, CallerModuleInfo);
+        FeatureTelemetryImpl.LogUptake(EventId, FeatureName, FeatureUptakeStatus, IsPerUser, DummyCustomDimensions, CallerModuleInfo);
     end;
 
     /// <summary>
@@ -177,7 +195,6 @@ codeunit 8703 "Feature Telemetry"
     /// <param name="IsPerUser">Specifies if the feature is targeted to be uptaken once for the tenant or uptaken individually by different users.</param>
     /// <param name="CustomDimensions">A dictionary containing additional information about the event.</param>
     /// <remarks>
-    /// This method may perform database write transactions, therefore it should not be used from within try functions.
     /// Expected feature uptake transitions:
     /// "Discovered" -> "Set up" -> "Used" (and only in this order; for example, if for a given feature the first status was logged as "Set up", no telemetry will be emitted)
     /// *Any state* -> "Undiscovered" (to reset the feature uptake status)
@@ -187,9 +204,10 @@ codeunit 8703 "Feature Telemetry"
         CallerModuleInfo: ModuleInfo;
     begin
         NavApp.GetCallerModuleInfo(CallerModuleInfo);
-        FeatureTelemetryImpl.LogUptake(EventId, FeatureName, FeatureUptakeStatus, IsPerUser, false, CustomDimensions, CallerModuleInfo);
+        FeatureTelemetryImpl.LogUptake(EventId, FeatureName, FeatureUptakeStatus, IsPerUser, CustomDimensions, CallerModuleInfo);
     end;
 
+#if not CLEAN21
     /// <summary>
     /// Sends telemetry about feature uptake.
     /// </summary>
@@ -197,20 +215,20 @@ codeunit 8703 "Feature Telemetry"
     /// <param name="FeatureName">The name of the feature.</param>
     /// <param name="FeatureUptakeStatus">The new status of the feature uptake.</param>
     /// <param name="IsPerUser">Specifies if the feature is targeted to be uptaken once for the tenant or uptaken individually by different users.</param>
-    /// <param name="PerformWriteTransactionsInASeparateSession">Specifies if database write transactions should be performed in a separate background session.</param>
+    /// <param name="PerformWriteTransactionsInASeparateSession">Not used.</param>
     /// <remarks>
-    /// This method may perform database write transactions, therefore it should not be used from within try functions, unless PerformWriteTransactionsInASeparateSession is true.
     /// Expected feature uptake transitions:
     /// "Discovered" -> "Set up" -> "Used" (and only in this order; for example, if for a given feature the first status was logged as "Set up", no telemetry will be emitted)
     /// *Any state* -> "Undiscovered" (to reset the feature uptake status)
     /// </remarks>
+    [Obsolete('Other overloads should be used instead.', '21.0')]
     procedure LogUptake(EventId: Text; FeatureName: Text; FeatureUptakeStatus: Enum "Feature Uptake Status"; IsPerUser: Boolean; PerformWriteTransactionsInASeparateSession: Boolean)
     var
         CallerModuleInfo: ModuleInfo;
         DummyCustomDimensions: Dictionary of [Text, Text];
     begin
         NavApp.GetCallerModuleInfo(CallerModuleInfo);
-        FeatureTelemetryImpl.LogUptake(EventId, FeatureName, FeatureUptakeStatus, IsPerUser, PerformWriteTransactionsInASeparateSession, DummyCustomDimensions, CallerModuleInfo);
+        FeatureTelemetryImpl.LogUptake(EventId, FeatureName, FeatureUptakeStatus, IsPerUser, DummyCustomDimensions, CallerModuleInfo);
     end;
 
     /// <summary>
@@ -220,20 +238,21 @@ codeunit 8703 "Feature Telemetry"
     /// <param name="FeatureName">The name of the feature.</param>
     /// <param name="FeatureUptakeStatus">The new status of the feature uptake.</param>
     /// <param name="IsPerUser">Specifies if the feature is targeted to be uptaken once for the tenant or uptaken individually by different users.</param>
-    /// <param name="PerformWriteTransactionsInASeparateSession">Specifies if database write transactions should be performed in a separate background session.</param>
+    /// <param name="PerformWriteTransactionsInASeparateSession">Not used.</param>
     /// <param name="CustomDimensions">A dictionary containing additional information about the event.</param>
     /// <remarks>
-    /// This method may perform database write transactions, therefore it should not be used from within try functions, unless PerformWriteTransactionsInASeparateSession is true.
     /// Expected feature uptake transitions:
     /// "Discovered" -> "Set up" -> "Used" (and only in this order; for example, if for a given feature the first status was logged as "Set up", no telemetry will be emitted)
     /// *Any state* -> "Undiscovered" (to reset the feature uptake status)
     /// </remarks>
+    [Obsolete('Other overloads should be used instead.', '21.0')]
     procedure LogUptake(EventId: Text; FeatureName: Text; FeatureUptakeStatus: Enum "Feature Uptake Status"; IsPerUser: Boolean; PerformWriteTransactionsInASeparateSession: Boolean; CustomDimensions: Dictionary of [Text, Text])
     var
         CallerModuleInfo: ModuleInfo;
     begin
         NavApp.GetCallerModuleInfo(CallerModuleInfo);
-        FeatureTelemetryImpl.LogUptake(EventId, FeatureName, FeatureUptakeStatus, IsPerUser, PerformWriteTransactionsInASeparateSession, CustomDimensions, CallerModuleInfo);
+        FeatureTelemetryImpl.LogUptake(EventId, FeatureName, FeatureUptakeStatus, IsPerUser, CustomDimensions, CallerModuleInfo);
     end;
+#endif
 }
 

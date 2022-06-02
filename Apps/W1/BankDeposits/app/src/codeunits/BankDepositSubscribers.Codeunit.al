@@ -4,17 +4,6 @@ codeunit 1695 "Bank Deposit Subscribers"
                   tabledata "Posted Bank Deposit Header" = rm,
                   tabledata "Posted Bank Deposit Line" = rm;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Approvals Mgmt.", 'OnCancelGeneralJournalBatchApprovalRequest', '', false, false)]
-    local procedure DeleteBankDepositsOnCancelGeneralJournalBatchApprovalRequest(var GenJournalBatch: Record "Gen. Journal Batch")
-    var
-        BankDepositHeader: Record "Bank Deposit Header";
-    begin
-        BankDepositHeader.SetCurrentKey("Journal Template Name", "Journal Batch Name");
-        BankDepositHeader.SetRange("Journal Template Name", GenJournalBatch."Journal Template Name");
-        BankDepositHeader.SetRange("Journal Batch Name", GenJournalBatch.Name);
-        BankDepositHeader.DeleteAll(true);
-    end;
-
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Template", 'OnAfterValidateType', '', false, false)]
     local procedure OnAfterValidateType(var GenJournalTemplate: Record "Gen. Journal Template"; SourceCodeSetup: Record "Source Code Setup")
     begin

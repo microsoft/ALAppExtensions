@@ -7,10 +7,9 @@ codeunit 30153 "Shpfy GraphQL Rate Limit"
     SingleInstance = true;
 
     var
-        JHelper: Codeunit "Shpfy Json Helper";
+        ShpfyJsonHelper: Codeunit "Shpfy Json Helper";
         NextRequestAfter: DateTime;
         LastRequestedOn: DateTime;
-        MaximumAvailable: Decimal;
         RestoreRate: Decimal;
         LastAvailable: Decimal;
 
@@ -24,9 +23,8 @@ codeunit 30153 "Shpfy GraphQL Rate Limit"
         WaitTime: Duration;
     begin
         if JThrottleStatus.IsObject then begin
-            MaximumAvailable := JHelper.GetValueAsDecimal(JThrottleStatus, 'maximumAvailable');
-            RestoreRate := JHelper.GetValueAsDecimal(JThrottleStatus, 'restoreRate');
-            LastAvailable := JHelper.GetValueAsDecimal(JThrottleStatus, 'currentlyAvailable');
+            RestoreRate := ShpfyJsonHelper.GetValueAsDecimal(JThrottleStatus, 'restoreRate');
+            LastAvailable := ShpfyJsonHelper.GetValueAsDecimal(JThrottleStatus, 'currentlyAvailable');
             LastRequestedOn := CurrentDateTime;
         end;
         NextRequestAfter := CurrentDateTime + WaitTime;

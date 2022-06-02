@@ -365,8 +365,12 @@ report 18041 "Posted Voucher"
             "Source Type"::Vendor:
                 if VendorLedgerEntry.Get("Entry No.") then
                     if IsGSTDocument(VendorLedgerEntry."Document Type", VendorLedgerEntry."Document No.") then begin
-                        GLAccount.Get("G/L Account No.");
-                        AccName := GLAccount.Name;
+                        if Vendor.Get("Source No.") then
+                            AccName := Vendor.Name
+                        else begin
+                            GLAccount.Get("G/L Account No.");
+                            AccName := GLAccount.Name;
+                        end;
                     end else begin
                         Vendor.Get("Source No.");
                         AccName := Vendor.Name;
@@ -378,8 +382,12 @@ report 18041 "Posted Voucher"
             "Source Type"::Customer:
                 if CustLedgerEntry.Get("Entry No.") then
                     if IsGSTDocument(CustLedgerEntry."Document Type", CustLedgerEntry."Document No.") then begin
-                        GLAccount.Get("G/L Account No.");
-                        AccName := GLAccount.Name;
+                        if Customer.Get("Source No.") then
+                            AccName := Customer.Name
+                        else begin
+                            GLAccount.Get("G/L Account No.");
+                            AccName := GLAccount.Name;
+                        end;
                     end else begin
                         Customer.Get("Source No.");
                         AccName := Customer.Name;

@@ -4,6 +4,7 @@ report 31252 "FA Assignment/Discard CZF"
     RDLCLayout = './Src/Reports/FAAssignmentDiscard.rdl';
     Caption = 'FA Assignment/Discard';
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = FixedAssets;
 
     dataset
     {

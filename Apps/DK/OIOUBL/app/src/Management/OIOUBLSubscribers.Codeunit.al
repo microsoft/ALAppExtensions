@@ -1,6 +1,6 @@
 codeunit 13622 "OIOUBL-Subscribers"
 {
-    [Obsolete('Replaced by subscriber ExportCustomerDocumentsOnBeforeSendToDisk.','15.4')]
+    [Obsolete('Replaced by subscriber ExportCustomerDocumentsOnBeforeSendToDisk.', '15.4')]
     [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnBeforeSend', '', false, false)]
     procedure ExportCustomerDocumentOnBeforeSend(VAR Sender: Record "Document Sending Profile"; ReportUsage: Integer; RecordVariant: Variant; DocNo: Code[20]; ToCust: Code[20]; DocName: Text[150]; CustomerFieldNo: Integer; DocumentNoFieldNo: Integer; VAR IsHandled: Boolean)
     begin
@@ -19,10 +19,13 @@ codeunit 13622 "OIOUBL-Subscribers"
         OIOUBLExportServiceCrMemo: Codeunit "OIOUBL-Export Service Cr.Memo";
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         DataTypeManagement: Codeunit "Data Type Management";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         RecRef: RecordRef;
+        OIOUBLTok: Label 'DK OIOUBL extension', Locked = true;
         ExportCodeunitID: Integer;
         IsStandardExportCodeunit: Boolean;
     begin
+        FeatureTelemetry.LogUptake('0000H8P', OIOUBLTok, Enum::"Feature Uptake Status"::"Used");
         if Sender.Disk <> Sender.Disk::"Electronic Document" then
             exit;
 
@@ -92,6 +95,7 @@ codeunit 13622 "OIOUBL-Subscribers"
 
         Commit();
         IsHandled := true;
+        FeatureTelemetry.LogUsage('0000H8Q', OIOUBLTok, 'OIOUBL subscriber sent');
     end;
 
     [EventSubscriber(ObjectType::Table, DATABASE::"Document Sending Profile", 'OnBeforeSendCustomerRecords', '', false, false)]

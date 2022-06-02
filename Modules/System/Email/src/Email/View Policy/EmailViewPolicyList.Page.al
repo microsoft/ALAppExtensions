@@ -56,9 +56,9 @@ page 8930 "Email View Policy List"
 
     trigger OnOpenPage()
     var
-        EmailViewPolicy: Codeunit "Email View Policy";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        EmailViewPolicy.CheckForDefaultEntry();
+        FeatureTelemetry.LogUptake('0000GOA', EmailViewPolicyLbl, Enum::"Feature Uptake Status"::Discovered);
     end;
 
     trigger OnDeleteRecord(): Boolean
@@ -79,4 +79,5 @@ page 8930 "Email View Policy List"
     var
         [InDataSet]
         IsDefault: Boolean;
+        EmailViewPolicyLbl: Label 'Email View Policy', Locked = true;
 }

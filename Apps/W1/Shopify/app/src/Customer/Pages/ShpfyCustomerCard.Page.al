@@ -8,6 +8,8 @@ page 30106 "Shpfy Customer Card"
     PageType = Card;
     SourceTable = "Shpfy Customer";
     UsageCategory = None;
+    AboutTitle = 'About Shopify customers';
+    AboutText = 'View or edit information about your customers in Shopify. If you aren''t auto-synchronizing customers, you can do that manually here. For even more details, open the [Customer Card](?page=21 "Opens the Customer Card").';
 
     layout
     {

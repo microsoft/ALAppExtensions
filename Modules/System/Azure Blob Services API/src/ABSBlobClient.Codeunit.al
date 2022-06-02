@@ -481,6 +481,60 @@ codeunit 9053 "ABS Blob Client"
     end;
 
     /// <summary>
+    /// The Get Blob Tags operation gets user-defined tags for the specified blob as XmlDocument.
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob-tags
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>   
+    /// <param name="Tags">The result XmlDocument with blob tags.</param>    
+    /// <returns>An operation reponse object</returns>
+    procedure GetBlobTags(BlobName: Text; var Tags: XmlDocument): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(ABSClientImpl.GetBlobTags(BlobName, Tags, OptionalParameters))
+    end;
+
+    /// <summary>
+    /// The Get Blob Tags operation gets user-defined tags for the specified blob as XmlDocument.
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob-tags
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>   
+    /// <param name="Tags">The result XmlDocument with blob tags.</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param> 
+    /// <returns>An operation reponse object</returns>
+    procedure GetBlobTags(BlobName: Text; var Tags: XmlDocument; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(ABSClientImpl.GetBlobTags(BlobName, Tags, OptionalParameters))
+    end;
+
+    /// <summary>
+    /// The Get Blob Tags operation gets user-defined tags for the specified blob as one or more key-value pairs.
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob-tags
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>   
+    /// <param name="Tags">The result Dictionary of [Text, Text] with blob tags.</param>    
+    /// <returns>An operation reponse object</returns>
+    procedure GetBlobTags(BlobName: Text; var Tags: Dictionary of [Text, Text]): Codeunit "ABS Operation Response"
+    var
+        OptionalParameters: Codeunit "ABS Optional Parameters";
+    begin
+        exit(ABSClientImpl.GetBlobTags(BlobName, Tags, OptionalParameters))
+    end;
+
+    /// <summary>
+    /// The Get Blob Tags operation gets user-defined tags for the specified blob as one or more key-value pairs.
+    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob-tags
+    /// </summary>
+    /// <param name="BlobName">The name of the blob.</param>   
+    /// <param name="Tags">The result Dictionary of [Text, Text] with blob tags.</param>
+    /// <param name="OptionalParameters">Optional parameters to pass.</param> 
+    /// <returns>An operation reponse object</returns>
+    procedure GetBlobTags(BlobName: Text; var Tags: Dictionary of [Text, Text]; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
+    begin
+        exit(ABSClientImpl.GetBlobTags(BlobName, Tags, OptionalParameters))
+    end;
+
+    /// <summary>
     /// The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection.
     /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/delete-blob
     /// </summary>

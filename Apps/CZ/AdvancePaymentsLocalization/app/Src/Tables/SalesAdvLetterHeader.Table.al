@@ -635,6 +635,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
                             if "Currency Factor" <> xRec."Currency Factor" then
                                 ConfirmCurrencyFactorUpdate();
                         end;
+                SetCompanyBankAccount();
             end;
         }
         field(71; "Currency Factor"; Decimal)
@@ -819,8 +820,6 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
     local procedure InitRecord()
     var
-        ResponsibilityCenter: Record "Responsibility Center";
-        CompanyInformation: Record "Company Information";
         UserSetupManagement: Codeunit "User Setup Management";
         AdvanceLbl: Label 'Advance Letter';
     begin
@@ -846,14 +845,6 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
         "Posting Description" := AdvanceLbl + ' ' + "No.";
         "Responsibility Center" := UserSetupManagement.GetRespCenter(0, "Responsibility Center");
-
-        if "Responsibility Center" = '' then begin
-            CompanyInformation.Get();
-            Validate("Bank Account Code", CompanyInformation."Default Bank Account Code CZL");
-        end else begin
-            ResponsibilityCenter.Get("Responsibility Center");
-            Validate("Bank Account Code", ResponsibilityCenter."Default Bank Account Code CZL");
-        end;
 
         OnAfterInitRecord(Rec);
     end;
@@ -1444,6 +1435,13 @@ table 31004 "Sales Adv. Letter Header CZZ"
             exit;
 
         ApprovalsMgmt.OnDeleteRecordInApprovalRequest(RecordId);
+    end;
+
+    local procedure SetCompanyBankAccount()
+    var
+        BankAccount: Record "Bank Account";
+    begin
+        Validate("Bank Account Code", BankAccount.GetDefaultBankAccountNoForCurrency("Currency Code"));
     end;
 
     [IntegrationEvent(false, false)]

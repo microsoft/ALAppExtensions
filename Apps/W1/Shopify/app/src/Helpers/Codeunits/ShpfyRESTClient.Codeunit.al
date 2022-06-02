@@ -8,7 +8,6 @@ codeunit 30159 "Shpfy REST Client"
 
     var
         LastResponseHeaders: HttpHeaders;
-        LastResultStatusCode: Integer;
         BaseUrl: Text;
         Client: HttpClient;
 
@@ -106,7 +105,6 @@ codeunit 30159 "Shpfy REST Client"
 
         if Client.send(RequestMessage, ResponseMessage) then begin
             ResponseMessage.Content.ReadAs(Response);
-            LastResultStatusCode := ResponseMessage.HttpStatusCode;
             LastResponseHeaders := ResponseMessage.Headers;
         end;
     end;

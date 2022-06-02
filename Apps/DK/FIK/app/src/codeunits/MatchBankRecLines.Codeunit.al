@@ -27,10 +27,14 @@ Codeunit 13651 FIK_MatchBankRecLines
     trigger OnRun();
     var
         TempBankAccReconciliation: Record "Bank Acc. Reconciliation" temporary;
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        FikTok: Label 'DK FIK', Locked = true;
     begin
+        FeatureTelemetry.LogUptake('0000H8V', FikTok, Enum::"Feature Uptake Status"::"Used");
         TempBankAccReconciliation.COPY(Rec);
         Code(TempBankAccReconciliation);
         Rec := TempBankAccReconciliation;
+        FeatureTelemetry.LogUsage('0000H8W', FikTok, 'FIK applied');
     end;
 
     PROCEDURE Code(VAR TempBankAccReconciliation: Record "Bank Acc. Reconciliation" temporary);

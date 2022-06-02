@@ -42,6 +42,195 @@ codeunit 132920 "ABS Blob Client Test"
     end;
 
     [Test]
+    procedure ListBlobsTest()
+    var
+        ABSContainerContent: Record "ABS Container Content";
+        Response: Codeunit "ABS Operation Response";
+        ContainerName, FirstBlobName, SecondBlobName, BlobContent : Text;
+    begin
+        // [Scenarion] Given a storage account and a container with BLOBs, ListBlobs operation succeeds. 
+
+        SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
+
+        ContainerName := ABSTestLibrary.GetContainerName();
+        FirstBlobName := ABSTestLibrary.GetBlobName();
+        SecondBlobName := ABSTestLibrary.GetBlobName();
+        BlobContent := ABSTestLibrary.GetSampleTextBlobContent();
+
+        ABSContainerClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), SharedKeyAuthorization);
+        ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSContainerClient.CreateContainer(ContainerName);
+
+        ABSBlobClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), ContainerName, SharedKeyAuthorization);
+        ABSBlobClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        // Add a BLOB block
+        Response := ABSBlobClient.PutBlobBlockBlobText(FirstBlobName, BlobContent);
+        Assert.IsTrue(Response.IsSuccessful(), 'Adding the first BLOB failed');
+
+        ABSBlobClient.ListBlobs(ABSContainerContent);
+        Assert.AreEqual(1, ABSContainerContent.Count(), 'There should be exactly one BLOB in the container');
+
+        Assert.AreEqual('BlockBlob', ABSContainerContent."Blob Type", 'Wrong BLOB type');
+        Assert.AreNotEqual(0, ABSContainerContent."Content Length", 'Content Length should not be 0');
+        Assert.AreEqual('text/plain; charset=utf-8', ABSContainerContent."Content Type", 'Wrong Content type');
+
+        // Add another BLOB block
+        Response := ABSBlobClient.PutBlobBlockBlobText(SecondBlobName, BlobContent);
+        Assert.IsTrue(Response.IsSuccessful(), 'Adding the second BLOB failed');
+
+        ABSBlobClient.ListBlobs(ABSContainerContent);
+        Assert.AreEqual(2, ABSContainerContent.Count(), 'There should be two BLOBs in the container');
+
+        // Clean-up
+        ABSContainerClient.DeleteContainer(ContainerName);
+    end;
+
+    procedure GetBlockBlobTagsTest()
+    var
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        Tags, BlobTags : Dictionary of [Text, Text];
+        ContainerName, BlobName, BlobContent : Text;
+    begin
+        // [SCENARIO] Given a storage account and a container, PutBlobBlockBlob operation succeeds and GetBlobAsText returns the content
+        // [GIVEN] Shared Key Authorization
+        SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
+
+        // [GIVEN] ABS Container 
+        ContainerName := ABSTestLibrary.GetContainerName();
+        ABSContainerClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), SharedKeyAuthorization);
+        ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSContainerClient.CreateContainer(ContainerName);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation CreateContainer failed');
+
+        // [GIVEN] Block Blob
+        BlobName := ABSTestLibrary.GetBlobName();
+        BlobContent := ABSTestLibrary.GetSampleTextBlobContent();
+        ABSBlobClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), ContainerName, SharedKeyAuthorization);
+        ABSBlobClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSBlobClient.PutBlobBlockBlobText(BlobName, BlobContent);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation PutBlobBlockBlob failed');
+
+        // [GIVEN] Blob Tags
+        Tags := ABSTestLibrary.GetBlobTags();
+
+        // [WHEN] Tags are Set
+        ABSOperationResponse := ABSBlobClient.SetBlobTags(BlobName, Tags);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation SetBlobTags failed: ' + ABSOperationResponse.GetError());
+
+        // [WHEN] Tags are Get
+        ABSOperationResponse := ABSBlobClient.GetBlobTags(BlobName, BlobTags);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation GetBlobTags failed: ' + ABSOperationResponse.GetError());
+
+        // [THEN] The get tags are equal to set tags 
+        Assert.AreEqual(Tags, BlobTags);
+
+        // Clean-up
+        ABSContainerClient.DeleteContainer(ContainerName);
+    end;
+
+    [Test]
+    procedure GetBlockBlobChangedTagsTest()
+    var
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        Tags, OldTags, NewTags : Dictionary of [Text, Text];
+        ContainerName, BlobName, BlobContent : Text;
+    begin
+        // [SCENARIO] Given a storage account and a container, PutBlobBlockBlob operation succeeds, then Tags are set and then changed
+        // [GIVEN] Shared Key Authorization
+        SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
+
+        // [GIVEN] ABS Container 
+        ContainerName := ABSTestLibrary.GetContainerName();
+        ABSContainerClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), SharedKeyAuthorization);
+        ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSContainerClient.CreateContainer(ContainerName);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation CreateContainer failed');
+
+        // [GIVEN] Block Blob
+        BlobName := ABSTestLibrary.GetBlobName();
+        BlobContent := ABSTestLibrary.GetSampleTextBlobContent();
+        ABSBlobClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), ContainerName, SharedKeyAuthorization);
+        ABSBlobClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSBlobClient.PutBlobBlockBlobText(BlobName, BlobContent);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation PutBlobBlockBlob failed');
+
+        // [GIVEN] Blob Tags
+        Tags := ABSTestLibrary.GetBlobTags();
+
+        // [WHEN] Tags are Set
+        ABSOperationResponse := ABSBlobClient.SetBlobTags(BlobName, Tags);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation SetBlobTags failed');
+
+        // [WHEN] Tags are Get
+        ABSOperationResponse := ABSBlobClient.GetBlobTags(BlobName, OldTags);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation GetBlobTags failed');
+
+        // [GIVEN] New Blob Tags
+        Tags := ABSTestLibrary.GetBlobTags();
+
+        // [WHEN] New Tags are Set
+        ABSOperationResponse := ABSBlobClient.SetBlobTags(BlobName, Tags);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation SetBlobTags failed');
+
+        // [WHEN] Tags are Get
+        ABSOperationResponse := ABSBlobClient.GetBlobTags(BlobName, NewTags);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation GetBlobTags failed');
+
+        // [THEN] The new tags are different then the old tags 
+        asserterror Assert.AreEqual(NewTags, OldTags);
+
+        // Clean-up
+        ABSContainerClient.DeleteContainer(ContainerName);
+    end;
+
+    [Test]
+    procedure GetBlockBlobEmptyTagsTest()
+    var
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        Tags, BlobTags : Dictionary of [Text, Text];
+        ContainerName, BlobName, BlobContent : Text;
+    begin
+        // [SCENARIO] Given a storage account and a container, empty Blob Tags dictionary, PutBlobBlockBlob operation succeeds and GetBlobAsText returns the content
+        // [GIVEN] Shared Key Authorization
+        SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
+
+        // [GIVEN] ABS Container 
+        ContainerName := ABSTestLibrary.GetContainerName();
+        ABSContainerClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), SharedKeyAuthorization);
+        ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSContainerClient.CreateContainer(ContainerName);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation CreateContainer failed');
+
+        // [GIVEN] Block Blob
+        BlobName := ABSTestLibrary.GetBlobName();
+        BlobContent := ABSTestLibrary.GetSampleTextBlobContent();
+        ABSBlobClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), ContainerName, SharedKeyAuthorization);
+        ABSBlobClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSBlobClient.PutBlobBlockBlobText(BlobName, BlobContent);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation PutBlobBlockBlob failed');
+
+        // [WHEN] Tags are Set
+        ABSOperationResponse := ABSBlobClient.SetBlobTags(BlobName, Tags);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation SetBlobTags failed');
+        // [WHEN] Tags are Get
+        ABSOperationResponse := ABSBlobClient.GetBlobTags(BlobName, BlobTags);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation GetBlobTags failed');
+
+        // [THEN] The get tags are equal to set tags 
+        Assert.AreEqual(Tags, BlobTags);
+
+        // Clean-up
+        ABSContainerClient.DeleteContainer(ContainerName);
+    end;
+
     procedure LeaseBlobTest()
     var
         Response: Codeunit "ABS Operation Response";

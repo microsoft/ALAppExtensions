@@ -11,7 +11,11 @@ tableextension 13614 CompanyInformation extends "Company Information"
         {
             Caption = 'Bank Creditor No.';
             trigger OnValidate();
+            var
+                FeatureTelemetry: Codeunit "Feature Telemetry";
+                FikTok: Label 'DK FIK', Locked = true;
             begin
+                FeatureTelemetry.LogUptake('0010H8X', FikTok, Enum::"Feature Uptake Status"::Discovered);
                 IF BankCreditorNo = '' THEN
                     EXIT;
                 IF STRLEN(BankCreditorNo) <> MAXSTRLEN(BankCreditorNo) THEN

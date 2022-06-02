@@ -225,7 +225,7 @@ report 31012 "Create Sales Adv. Letter CZZ"
     begin
         NewSalesHeader.TestField("Document Type", NewSalesHeader."Document Type"::Order);
         SalesHeader := NewSalesHeader;
-        SalesPost.GetSalesLines(SalesHeader, TempSalesLine, 1);
+        SalesPost.GetSalesLines(SalesHeader, TempSalesLine, 0);
         TempSalesLine.CalcSums("Amount Including VAT");
         TotalAmountInclVAT := TempSalesLine."Amount Including VAT";
 

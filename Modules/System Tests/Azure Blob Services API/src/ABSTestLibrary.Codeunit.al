@@ -30,6 +30,22 @@ codeunit 132921 "ABS Test Library"
         exit(Any.AlphabeticText(Any.IntegerInRange(5, 50)));
     end;
 
+    procedure GetBlobTags(): Dictionary of [Text, Text]
+    var
+        TagDictionary: Dictionary of [Text, Text];
+        i: Integer;
+    begin
+        for i := 1 to 10 do begin
+            Any.SetSeed(Random(2000));
+            TagDictionary.Add(
+                Any.AlphabeticText(Any.IntegerInRange(1, 10)),
+                Any.AlphabeticText(Any.IntegerInRange(1, 50))
+            );
+        end;
+
+        exit(TagDictionary);
+    end;
+
     procedure GetContainerName(): Text
     begin
         Any.SetSeed(Random(2000));

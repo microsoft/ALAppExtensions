@@ -6,7 +6,7 @@ pageextension 31205 "Accountant CZ Role Center CZF" extends "Accountant CZ Role 
         {
             action("Fixed Asset Card CZF")
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = FixedAssets;
                 Caption = 'Fixed Asset Card';
                 Ellipsis = true;
                 Image = Report;
@@ -15,7 +15,7 @@ pageextension 31205 "Accountant CZ Role Center CZF" extends "Accountant CZ Role 
             }
             action("FA Physical Inventory List CZF")
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = FixedAssets;
                 Caption = 'FA Physical Inventory List';
                 Ellipsis = true;
                 Image = Report;
@@ -24,7 +24,7 @@ pageextension 31205 "Accountant CZ Role Center CZF" extends "Accountant CZ Role 
             }
             action("Fixed Asset - Book Value 1 CZF")
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = FixedAssets;
                 Caption = 'Fixed Asset - Book Value 1';
                 Ellipsis = true;
                 Image = Report;
@@ -33,7 +33,7 @@ pageextension 31205 "Accountant CZ Role Center CZF" extends "Accountant CZ Role 
             }
             action("Fixed Asset - An. Dep.Book CZF")
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = FixedAssets;
                 Caption = 'Fixed Asset - Depreciation Book Analysis';
                 Ellipsis = true;
                 Image = Report;

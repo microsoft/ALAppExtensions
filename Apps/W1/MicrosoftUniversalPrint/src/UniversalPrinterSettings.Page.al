@@ -169,7 +169,7 @@ page 2750 "Universal Printer Settings"
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        FeatureTelemetry.LogUptake('0000GFZ', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered, false, true);
+        FeatureTelemetry.LogUptake('0000GFZ', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
     end;
 
     trigger OnDeleteRecord(): Boolean

@@ -4,6 +4,7 @@ report 31243 "FA - Analysis G/L Account CZF"
     RDLCLayout = './Src/Reports/FAAnalysisGLAccount.rdl';
     Caption = 'FA - Analysis G/L Account';
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = FixedAssets;
 
     dataset
     {

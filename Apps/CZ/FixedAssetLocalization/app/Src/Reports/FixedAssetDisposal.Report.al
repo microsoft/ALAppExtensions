@@ -2,7 +2,7 @@ report 31255 "Fixed Asset Disposal CZF"
 {
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/FixedAssetDisposal.rdl';
-    ApplicationArea = Basic, Suite;
+    ApplicationArea = FixedAssets;
     Caption = 'Fixed Asset Disposal';
     UsageCategory = ReportsAndAnalysis;
 
@@ -167,14 +167,14 @@ report 31255 "Fixed Asset Disposal CZF"
                     Caption = 'Options';
                     field(DeprBookCodeCZF; DeprBookCode)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Depreciation Book';
                         TableRelation = "Depreciation Book";
                         ToolTip = 'Specifies the depreciation book for the printing of entries.';
                     }
                     field(PrintFADispRepDateCZF; PrintFADispRepDate)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Print FA Disposal Report Date';
                         ToolTip = 'Specifies to print the fixed asset disposal report date.';
 
@@ -185,20 +185,20 @@ report 31255 "Fixed Asset Disposal CZF"
                     }
                     field(DisposalReportNoCZF; DisposalReportNo)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Disposal Report No.';
                         ToolTip = 'Specifies a fixed asset disposal report number.';
                     }
                     field(DisposalReportDateCZF; DisposalReportDate)
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = 'Disposal Report Date';
                         Editable = FADisposalReportDateCtrlEditable;
                         ToolTip = 'Specifies a fixed asset disposal report date.';
                     }
                     field(Member1; Member[1])
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = '1. Persona';
                         ToolTip = 'Specifies an employee name from the Company Official table. Each persona will print on the report with a corresponding signature line for authorization.';
 
@@ -211,7 +211,7 @@ report 31255 "Fixed Asset Disposal CZF"
                     }
                     field(Member2; Member[2])
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = FixedAssets;
                         Caption = '2. Persona';
                         ToolTip = 'Specifies an employee name from the Company Official table. Each persona will print on the report with a corresponding signature line for authorization.';
 
