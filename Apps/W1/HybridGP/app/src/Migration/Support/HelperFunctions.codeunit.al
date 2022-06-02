@@ -1071,8 +1071,8 @@ Codeunit 4037 "Helper Functions"
         GPSegments: Record "GP Segments";
         GPFiscalPeriods: Record "GP Fiscal Periods";
         GPPaymentTerms: Record "GP Payment Terms";
-        GPBankMaster: Record "GP Bank MSTR";
-        GPCheckbookMaster: Record "GP Checkbook MSTR";
+        GPBankMSTR: Record "GP Bank MSTR";
+        GPCheckbookMSTR: Record "GP Checkbook MSTR";
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
     begin
         GPAccount.DeleteAll();
@@ -1095,8 +1095,8 @@ Codeunit 4037 "Helper Functions"
         GPFiscalPeriods.DeleteAll();
         GPPaymentTerms.DeleteAll();
 
-        GPBankMaster.DeleteAll();
-        GPCheckbookMaster.DeleteAll();
+        GPBankMSTR.DeleteAll();
+        GPCheckbookMSTR.DeleteAll();
         GPCheckbookTransactions.DeleteAll();
 
         Session.LogMessage('00007GH', 'Cleaned up staging tables.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
@@ -1735,9 +1735,9 @@ Codeunit 4037 "Helper Functions"
 
     local procedure CreateCheckBooksImp()
     var
-        GPCheckbooks: Codeunit "GP Checkbook Migrator";
+        GPCheckbookMigrator: Codeunit "GP Checkbook Migrator";
     begin
-        GPCheckbooks.MoveCheckbookStagingData();
+        GPCheckbookMigrator.MoveCheckbookStagingData();
         Session.LogMessage('0000CAB', 'Created Checkbooks', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetCheckBooksCreated();
     end;
