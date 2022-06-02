@@ -1,4 +1,4 @@
-codeunit 40021 GPCheckbooks
+codeunit 40025 "GP Checkbook Migrator"
 {
     var
         BatchNameTxt: Label 'GPBANK', Locked = true;

@@ -1735,7 +1735,7 @@ Codeunit 4037 "Helper Functions"
 
     local procedure CreateCheckBooksImp()
     var
-        GPCheckbooks: Codeunit GPCheckbooks;
+        GPCheckbooks: Codeunit "GP Checkbook Migrator";
     begin
         GPCheckbooks.MoveCheckbookStagingData();
         Session.LogMessage('0000CAB', 'Created Checkbooks', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
