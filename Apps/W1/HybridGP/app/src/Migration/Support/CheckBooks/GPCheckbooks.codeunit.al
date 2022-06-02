@@ -34,7 +34,7 @@ codeunit 40021 GPCheckbooks
         until GPCheckbookMSTR.Next() = 0;
     end;
 
-    procedure MoveTransactionsData(BankAccountNo: Code[20]; BankAccPostingGroupCode: Code[20]; CheckbookID: Text[15])
+    local procedure MoveTransactionsData(BankAccountNo: Code[20]; BankAccPostingGroupCode: Code[20]; CheckbookID: Text[15])
     var
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
         PostingAccountNumber: Code[20];
@@ -207,7 +207,7 @@ codeunit 40021 GPCheckbooks
 
     local procedure IsNegativeAmount(CMRECNUM: Decimal; CMTrxNum: Text[21]): Boolean
     var
-        GPCM20600: Record GPCM20600;
+        GPCM20600: Record "GP CM20600";
         ShouldBeNegative: Boolean;
     begin
         ShouldBeNegative := false;
