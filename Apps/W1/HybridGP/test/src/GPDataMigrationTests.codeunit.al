@@ -12,8 +12,8 @@ codeunit 139664 "GP Data Migration Tests"
         GPCustomer: Record "GP Customer";
         GPVendor: Record "GP Vendor";
         GPVendorAddress: Record "GP Vendor Address";
-        GPSY06000: Record GPSY06000;
-        GPMC40200: Record GPMC40200;
+        GPSY06000: Record "GP SY06000";
+        GPMC40200: Record "GP MC40200";
         CustomerFacade: Codeunit "Customer Data Migration Facade";
         CustomerMigrator: Codeunit "GP Customer Migrator";
         VendorMigrator: Codeunit "GP Vendor Migrator";

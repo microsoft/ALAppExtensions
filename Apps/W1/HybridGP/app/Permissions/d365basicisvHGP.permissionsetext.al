@@ -58,6 +58,6 @@ permissionsetextension 4026 "D365 BASIC ISV - HGP" extends "D365 BASIC ISV"
                   tabledata "GP Migration Errors" = RIMD,
                   tabledata "GP Company Migration Settings" = RIMD,
                   tabledata "GP Company Additional Settings" = RIMD,
-                  tabledata GPMC40200 = RIMD,
-                  tabledata GPSY06000 = RIMD;
+                  tabledata "GP MC40200" = RIMD,
+                  tabledata "GP SY06000" = RIMD;
 }
