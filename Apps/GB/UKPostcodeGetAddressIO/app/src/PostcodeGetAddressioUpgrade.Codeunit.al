@@ -26,11 +26,30 @@ codeunit 9093 "Postcode GetAddress.io Upgrade"
         if AppInfo.DataVersion().Major() = 1 then
             NAVAPP.RESTOREARCHIVEDATA(DATABASE::"Postcode GetAddress.io Config");
         UpgradeSecretsToIsolatedStorage();
+        UpdateApiEndPoint();
     end;
 
     trigger OnValidateUpgradePerCompany()
     begin
         VerifySecretsUpgradeToIsolatedStorage();
+    end;
+
+    local procedure UpdateApiEndPoint()
+    var
+        PostcodeConfig: Record "Postcode GetAddress.io Config";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeEndPointTxt: Label 'https://api.getAddress.io/find/', Locked = True;
+        OldEndPointTxt: Label 'https://api.getaddress.io/v2/uk/', Locked = true;
+    begin
+        if UpgradeTag.HasUpgradeTag(GetUKPostcodeNewEndPointTag()) then
+            exit;
+
+        if PostcodeConfig.Get() then
+            if PostcodeConfig.EndpointURL = OldEndPointTxt then begin
+                PostcodeConfig.EndpointURL := UpgradeEndPointTxt;
+                PostcodeConfig.Modify();
+            end;
+        UpgradeTag.SetUpgradeTag(GetUKPostcodeNewEndPointTag());
     end;
 
     local procedure UpgradeSecretsToIsolatedStorage()
@@ -91,11 +110,17 @@ codeunit 9093 "Postcode GetAddress.io Upgrade"
         exit('MS-328257-UKPostcodeSecretsToIS-Validate-20190925');
     end;
 
+    internal procedure GetUKPostcodeNewEndPointTag(): Code[250]
+    begin
+        exit('MS-435041-UKPostCodeNewAPIEndPoint-202200505');
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
     local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
         PerCompanyUpgradeTags.Add(GetUKPostcodeSecretsToISUpgradeTag());
         PerCompanyUpgradeTags.Add(GetUKPostcodeSecretsToISValidationTag());
+        PerCompanyUpgradeTags.Add(GetUKPostcodeNewEndPointTag());
     end;
 }
 

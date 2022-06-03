@@ -36,24 +36,25 @@ codeunit 13603 "Install DK Core"
         NewLayoutReports.Add(117, './src/Reports/Reminder.rdlc');
         NewLayoutReports.Add(118, './src/Reports/FinanceChargeMemo.rdlc');
 
-        CompanyInformation.Get();
-        CompanyName := CopyStr(CompanyInformation.Name, 1, 30);
+        if CompanyInformation.Get() then begin
+            CompanyName := CopyStr(CompanyInformation.Name, 1, 30);
 
-        foreach ReportID in NewLayoutReports.Keys() do begin
-            if not TenantReportLayoutSelection.Get(ReportID, CompanyName, EmptyGuid) then begin
-                TenantReportLayoutSelection.Init();
-                TenantReportLayoutSelection."Company Name" := CompanyName;
-                TenantReportLayoutSelection."Layout Name" := NewLayoutReports.Get(ReportID);
-                TenantReportLayoutSelection."Report ID" := ReportID;
-                TenantReportLayoutSelection.Insert();
-            end;
+            foreach ReportID in NewLayoutReports.Keys() do begin
+                if not TenantReportLayoutSelection.Get(ReportID, CompanyName, EmptyGuid) then begin
+                    TenantReportLayoutSelection.Init();
+                    TenantReportLayoutSelection."Company Name" := CompanyName;
+                    TenantReportLayoutSelection."Layout Name" := NewLayoutReports.Get(ReportID);
+                    TenantReportLayoutSelection."Report ID" := ReportID;
+                    TenantReportLayoutSelection.Insert();
+                end;
 
-            if not ReportLayoutSelection.Get(ReportID, CompanyName) then begin
-                ReportLayoutSelection.Init();
-                ReportLayoutSelection."Report ID" := ReportID;
-                ReportLayoutSelection."Company Name" := CompanyName;
-                ReportLayoutSelection.Type := ReportLayoutSelection.Type::"RDLC (built-in)";
-                ReportLayoutSelection.Insert();
+                if not ReportLayoutSelection.Get(ReportID, CompanyName) then begin
+                    ReportLayoutSelection.Init();
+                    ReportLayoutSelection."Report ID" := ReportID;
+                    ReportLayoutSelection."Company Name" := CompanyName;
+                    ReportLayoutSelection.Type := ReportLayoutSelection.Type::"RDLC (built-in)";
+                    ReportLayoutSelection.Insert();
+                end;
             end;
         end;
     end;

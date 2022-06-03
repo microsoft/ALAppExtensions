@@ -139,7 +139,12 @@ report 31004 "Adjust Exchange Rates CZL"
                         GenJournalLine."Document No." := PostingDocNo;
                         GenJournalLine."Account Type" := GenJournalLine."Account Type"::"Bank Account";
                         GenJournalLine.Validate("Account No.", "No.");
-                        GenJournalLine.Description := PadStr(StrSubstNo(PostingDescription, Currency.Code, AdjBase), MaxStrLen(GenJournalLine.Description));
+                        if SummarizeEntries then
+                            GenJournalLine.Description :=
+                                CopyStr(StrSubstNo(PostingDescription, Currency.Code, AdjBase), 1, MaxStrLen(GenJournalLine.Description))
+                        else
+                            GenJournalLine.Description :=
+                                CopyStr(StrSubstNo(PostingDescription, Currency.Code, AdjBase, '', ''), 1, MaxStrLen(GenJournalLine.Description));
                         GenJournalLine.Validate(Amount, 0);
                         GenJournalLine."Amount (LCY)" := AdjAmount;
                         GenJournalLine."Source Currency Code" := Currency.Code;

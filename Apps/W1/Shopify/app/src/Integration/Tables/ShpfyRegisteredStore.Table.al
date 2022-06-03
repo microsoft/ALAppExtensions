@@ -36,13 +36,13 @@ table 30136 "Shpfy Registered Store"
     [NonDebuggable]
     internal procedure SetAccessToken(AccessToken: Text)
     begin
-        IsolatedStorage.Set('AccessToken(' + Rec.SystemId + ')', AccessToken, DataScope::Company);
+        IsolatedStorage.Set('AccessToken(' + Rec.SystemId + ')', AccessToken, DataScope::Module);
     end;
 
     [NonDebuggable]
     internal procedure GetAccessToken() Result: Text
     begin
-        if not IsolatedStorage.Get('AccessToken(' + Rec.SystemId + ')', DataScope::Company, Result) then
+        if not IsolatedStorage.Get('AccessToken(' + Rec.SystemId + ')', DataScope::Module, Result) then
             exit('');
     end;
 }

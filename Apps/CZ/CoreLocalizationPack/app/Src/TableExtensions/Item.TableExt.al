@@ -21,6 +21,9 @@ tableextension 11745 "Item CZL" extends Item
         ItemLedgerEntry: Record "Item Ledger Entry";
         ChangeErr: Label ' cannot be changed';
     begin
+        if "No." = '' then
+            exit;
+	
         ItemLedgerEntry.SetCurrentKey("Item No.", Open);
         ItemLedgerEntry.SetRange("Item No.", "No.");
         ItemLedgerEntry.SetRange(Open, true);

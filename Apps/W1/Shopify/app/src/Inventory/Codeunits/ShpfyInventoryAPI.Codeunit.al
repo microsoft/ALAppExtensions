@@ -18,12 +18,12 @@ codeunit 30195 "Shpfy Inventory API"
     /// Get Stock.
     /// </summary>
     /// <param name="ShopInventory">Parameter of type Record "Shopify Shop Inventory".</param>
-    /// <param name="ShopLocation">Parameter of type Record "Shopify Shop Location".</param>
     /// <returns>Return variable "Stock" of type Decimal.</returns>
-    internal procedure GetStock(ShopInventory: Record "Shpfy Shop Inventory"; ShopLocation: Record "Shpfy Shop Location") Stock: Decimal
+    internal procedure GetStock(ShopInventory: Record "Shpfy Shop Inventory") Stock: Decimal
     var
         Item: Record Item;
         ItemUOM: Record "Item Unit of Measure";
+        ShopLocation: Record "Shpfy Shop Location";
         ShopifyProduct: Record "Shpfy Product";
         ShopifyVariant: Record "Shpfy Variant";
         ItemAvailMgt: Codeunit "Item Availability Forms Mgt";
@@ -60,6 +60,8 @@ codeunit 30195 "Shpfy Inventory API"
                             UOM := CopyStr(ShopifyVariant."Option 1 Value", 2, MaxStrLen(UOM));
                         3:
                             UOM := CopyStr(ShopifyVariant."Option 1 Value", 3, MaxStrLen(UOM));
+                        else
+                            UOM := Item."Sales Unit of Measure";
                     end;
                     if (UOM <> '') and (UOM <> Item."Base Unit of Measure") then
                         if ItemUOM.Get(Item."No.", UOM) then
@@ -89,7 +91,7 @@ codeunit 30195 "Shpfy Inventory API"
                 if not Ishandled then begin
                     JInventoryItem.Add('location_id', ShopInventory."Location Id");
                     JInventoryItem.Add('inventory_item_id', ShopInventory."Inventory Item Id");
-                    ShopInventory.Validate(Stock, Round(GetStock(ShopInventory, ShopLocation), 1, '<'));
+                    ShopInventory.Validate(Stock, Round(GetStock(ShopInventory), 1, '<'));
                     ShopInventory.Modify();
                     JInventoryItem.Add('available', ShopInventory.Stock);
                 end;

@@ -60,13 +60,15 @@ codeunit 130017 "User Permissions Library"
     end;
 
     local procedure CreateUser(UserName: Code[50]; var User: Record User)
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
         User.Init();
 
         User."User Security ID" := CreateGuid();
         User."User Name" := UserName;
-        User."Windows Security ID" := CopyStr(SID(), 1, MaxStrLen(User."Windows Security ID"));
-
+        if not EnvironmentInformation.IsSaaS() then
+            User."Windows Security ID" := CopyStr(SID(), 1, MaxStrLen(User."Windows Security ID"));
         User.Insert(true);
     end;
 }

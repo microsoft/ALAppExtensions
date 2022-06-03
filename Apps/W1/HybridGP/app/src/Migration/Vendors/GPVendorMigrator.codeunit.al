@@ -158,12 +158,11 @@ codeunit 4022 "GP Vendor Migrator"
             GPVendor.CITY := GPVendorAddress.CITY;
             GPVendor.STATE := GPVendorAddress.STATE;
             GPVendor.ZIPCODE := GPVendorAddress.ZIPCODE;
-
-            if (CopyStr(GPVendorAddress.PHNUMBR1, 1, 14) <> '00000000000000') then
-                GPVendor.PHNUMBR1 := GPVendorAddress.PHNUMBR1;
-
-            if (CopyStr(GPVendorAddress.FAXNUMBR, 1, 14) <> '00000000000000') then
-                GPVendor.FAXNUMBR := GPVendorAddress.FAXNUMBR;
+            GPVendor.PHNUMBR1 := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.PHNUMBR1);
+            GPVendor.FAXNUMBR := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.FAXNUMBR);
+        end else begin
+            GPVendor.PHNUMBR1 := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendor.PHNUMBR1);
+            GPVendor.FAXNUMBR := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendor.FAXNUMBR);
         end;
 
         VendorName := CopyStr(GPVendor.VENDNAME, 1, 50);
@@ -186,12 +185,6 @@ codeunit 4022 "GP Vendor Migrator"
         VendorDataMigrationFacade.SetAddress(CopyStr(GPVendor.ADDRESS1, 1, 50),
             CopyStr(GPVendor.ADDRESS2, 1, 50), Country,
             CopyStr(GPVendor.ZIPCODE, 1, 20), CopyStr(GPVendor.CITY, 1, 30));
-
-        if (CopyStr(GPVendor.PHNUMBR1, 1, 14) = '00000000000000') then
-            GPVendor.PHNUMBR1 := '';
-
-        if (CopyStr(GPVendor.FAXNUMBR, 1, 14) = '00000000000000') then
-            GPVendor.FAXNUMBR := '';
 
         VendorDataMigrationFacade.SetPhoneNo(GPVendor.PHNUMBR1);
         VendorDataMigrationFacade.SetFaxNo(GPVendor.FAXNUMBR);
@@ -235,15 +228,12 @@ codeunit 4022 "GP Vendor Migrator"
             until GPVendorAddress.Next() = 0;
     end;
 
+#if not CLEAN21
+    [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetAll()
-    var
-        HelperFunctions: Codeunit "Helper Functions";
-        JArray: JsonArray;
     begin
-        HelperFunctions.GetEntities('Vendor', JArray);
-        GetVendorsFromJson(JArray);
-        GetTransactions();
     end;
+#endif
 
     procedure PopulateStagingTable(JArray: JsonArray)
     begin
@@ -311,16 +301,6 @@ codeunit 4022 "GP Vendor Migrator"
         HelperFunctions.UpdateFieldValue(RecordVariant, GPVendor.FieldNO(TAXSCHID), JToken.AsObject(), 'TAXSCHID');
         HelperFunctions.UpdateFieldValue(RecordVariant, GPVendor.FieldNO(UPSZONE), JToken.AsObject(), 'UPSZONE');
         HelperFunctions.UpdateFieldValue(RecordVariant, GPVendor.FieldNO(TXIDNMBR), JToken.AsObject(), 'TXIDNMBR');
-    end;
-
-    local procedure GetTransactions()
-    var
-        HelperFunctions: Codeunit "Helper Functions";
-        JArray: JsonArray;
-    begin
-        DocumentNo := 'V00000';
-        if (HelperFunctions.GetEntities('PMTrx', JArray)) then
-            GetPMTrxFromJson(JArray);
     end;
 
     procedure PopulateVendorStagingTable(JArray: JsonArray)

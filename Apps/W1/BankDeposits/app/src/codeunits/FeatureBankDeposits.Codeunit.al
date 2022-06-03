@@ -1,6 +1,7 @@
 codeunit 1698 "Feature Bank Deposits" implements "Feature Data Update"
 {
     Access = Internal;
+    Permissions = tabledata "Posted Bank Deposit Header" = r;
 
     procedure IsDataUpdateRequired(): Boolean;
     begin

@@ -12,6 +12,8 @@ page 30115 "Shpfy Orders"
     PromotedActionCategories = 'New,Process,Report,Order,Manage';
     SourceTable = "Shpfy Order Header";
     UsageCategory = Lists;
+    AboutTitle = 'About Shopify Orders';
+    AboutText = 'These orders from all your connected shops are ready to become sales orders or invoices in Business Central. They''re here because you aren''t automatically creating sales documents in Business Central.';
 
     layout
     {
@@ -23,11 +25,6 @@ page 30115 "Shpfy Orders"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the order number from Shopify';
-
-                    trigger OnDrillDown()
-                    begin
-                        Page.Run(Page::"Shpfy Order", Rec);
-                    end;
                 }
                 field(ShopCode; Rec."Shop Code")
                 {
@@ -228,6 +225,8 @@ page 30115 "Shpfy Orders"
                 PromotedIsBig = true;
                 PromotedOnly = true;
                 ToolTip = 'Synchronize orders from Shopify.';
+                AboutTitle = 'Synchronize orders manually';
+                AboutText = 'If you aren''t automatically synchronizing orders from Shopify, use this action to synchronize them yourself. This imports orders from all your connected shops so that you can work with them in Business Central.';
 
                 trigger OnAction();
                 var
@@ -335,6 +334,8 @@ page 30115 "Shpfy Orders"
                     PromotedIsBig = true;
                     PromotedOnly = true;
                     ToolTip = 'Open the order status page from Shopify.';
+                    AboutTitle = 'See the order on Shopify';
+                    AboutText = 'Access details about order on the Shopify administration portal. For example, you can track the status of the payment.';
 
                     trigger OnAction();
                     begin

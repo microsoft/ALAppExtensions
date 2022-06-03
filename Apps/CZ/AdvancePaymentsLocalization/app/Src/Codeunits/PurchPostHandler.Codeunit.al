@@ -40,4 +40,10 @@ codeunit 31022 "Purch.-Post Handler CZZ"
             AdvanceLetterApplicationCZZ.DeleteAll(true);
         end;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforeCreatePrepmtLines', '', false, false)]
+    local procedure DisablePrepmtLinesOnBeforeCreatePrepmtLines(var IsHandled: Boolean)
+    begin
+        IsHandled := true;
+    end;
 }

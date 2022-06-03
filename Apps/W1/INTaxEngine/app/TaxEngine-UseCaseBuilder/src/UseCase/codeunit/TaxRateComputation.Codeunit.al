@@ -374,8 +374,8 @@ codeunit 20291 "Tax Rate Computation"
     begin
         if TaxRateColumnSetup.Type = TaxRateColumnSetup.Type::Date then begin
             CompareDate := RHSValue;
-            TaxRateValue.SetFilter("Date Value", '<=%1', CompareDate);
-            TaxRateValue.SetFilter("Date Value To", '>=%1', CompareDate);
+            TaxRateValue.SetFilter("Date Value", '<=%1|%2', CompareDate, 0D);
+            TaxRateValue.SetFilter("Date Value To", '>=%1|%2', CompareDate, 0D);
         end else
             if TaxRateColumnSetup.Type = TaxRateColumnSetup.Type::Decimal then begin
                 CompareDecimal := RHSValue;
@@ -393,7 +393,7 @@ codeunit 20291 "Tax Rate Computation"
             TaxRateColumnSetup.Type::Date:
                 begin
                     CompareDate := RHSValue;
-                    TaxRateValue.SetFilter("Date Value", '<=%1', CompareDate);
+                    TaxRateValue.SetFilter("Date Value", '<=%1|%2', CompareDate, 0D);
                 end;
             TaxRateColumnSetup.Type::Decimal:
                 begin
@@ -412,7 +412,7 @@ codeunit 20291 "Tax Rate Computation"
             TaxRateColumnSetup.Type::Date:
                 begin
                     CompareDate := RHSValue;
-                    TaxRateValue.SetFilter("Date Value", '>=%1', CompareDate);
+                    TaxRateValue.SetFilter("Date Value", '>=%1|%2', CompareDate, 0D);
                 end;
             TaxRateColumnSetup.Type::Decimal:
                 begin

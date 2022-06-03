@@ -21,6 +21,27 @@ codeunit 134701 "Email View Policy Tests"
         EmailViewerErr: Label 'You do not have permission to open the email message.';
 
     [Test]
+    procedure OpenUserEmailViewPolicyPageDefaultPolicyTest()
+    var
+        EmailViewPolicyRecord: Record "Email View Policy";
+        EmailViewPolicy: Codeunit "Email View Policy";
+        EmailViewPolicyListPage: TestPage "Email View Policy List";
+    begin
+        // [Scenario] Opening User Email View Policies page does not change default policy
+        // [Given] There exists a default Email View Policy
+        EmailViewPolicyRecord.SetFilter("User Id", EmailViewPolicy.GetDefaultUserId());
+        Assert.IsTrue(EmailViewPolicyRecord.FindFirst(), 'There should exist a default Email View Policy');
+        Assert.AreEqual(Enum::"Email View Policy"::AllRelatedRecordsEmails, EmailViewPolicyRecord."Email View Policy", 'Default email view policy (for new tenant) should be All Related Records Emails');
+
+        // [Given] User opens the User Email View Policies page
+        EmailViewPolicyListPage.Trap();
+        Page.Run(Page::"Email View Policy List");
+
+        // [Then] The default Email View Policy remains unchanged
+        Assert.AreEqual(Enum::"Email View Policy"::AllRelatedRecordsEmails, EmailViewPolicyRecord."Email View Policy", 'Default email view policy should still be All Related Records Emails');
+    end;
+
+    [Test]
     procedure OwnEmailPolicySentEmailsTest()
     var
         EmailViewPolicy: Record "Email View Policy";

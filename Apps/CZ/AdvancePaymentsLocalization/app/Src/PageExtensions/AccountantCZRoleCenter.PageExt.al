@@ -10,7 +10,7 @@ pageextension 31206 "Accountant CZ Role Center CZZ" extends "Accountant CZ Role 
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'View or edit purchase advance letters.';
                 RunObject = Page "Purch. Advance Letters CZZ";
-                RunPageView = where(Status = const(Closed));
+                RunPageView = where(Status = filter(<> Closed));
             }
         }
         addafter("Sales Credit Memos")
@@ -21,7 +21,7 @@ pageextension 31206 "Accountant CZ Role Center CZZ" extends "Accountant CZ Role 
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'View or edit sales advance letters.';
                 RunObject = Page "Sales Advance Letters CZZ";
-                RunPageView = where(Status = const(Closed));
+                RunPageView = where(Status = filter(<> Closed));
             }
         }
         addafter("Purchase Credit Memo")

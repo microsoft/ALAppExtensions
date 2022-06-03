@@ -44,7 +44,7 @@ codeunit 30170 "Shpfy Order Risks"
     /// </summary>
     /// <param name="OrderHeader">Parameter of type Record "Shopify Order Header".</param>
     /// <param name="JRisks">Parameter of type JsonArray.</param>
-    local procedure UpdateOrderRisks(OrderHeader: Record "Shpfy Order Header"; JRisks: JsonArray)
+    internal procedure UpdateOrderRisks(OrderHeader: Record "Shpfy Order Header"; JRisks: JsonArray)
     var
         Risk: Record "Shpfy Order Risk";
         RecRef: RecordRef;

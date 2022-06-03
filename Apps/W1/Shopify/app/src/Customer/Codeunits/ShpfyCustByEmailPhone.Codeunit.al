@@ -29,7 +29,7 @@ codeunit 30113 "Shpfy Cust. By Email/Phone" implements "Shpfy ICustomer Mapping"
     internal procedure DoMapping(CustomerId: BigInteger; JCustomerInfo: JsonObject; ShopCode: Code[20]; TemplateCode: Code[10]; AllowCreate: Boolean): Code[20];
     var
         ShpfyCustomer: Record "Shpfy Customer";
-        CustomerImport: Codeunit "Shpfy Customer Import";
+        ShpfyCustomerImport: Codeunit "Shpfy Customer Import";
     begin
         ShpfyCustomer.SetAutoCalcFields("Customer No.");
         if ShpfyCustomer.Get(CustomerId) then begin
@@ -42,12 +42,12 @@ codeunit 30113 "Shpfy Cust. By Email/Phone" implements "Shpfy ICustomer Mapping"
                     exit(ShpfyCustomer."Customer No.");
             end;
         end else begin
-            CustomerImport.SetShop(ShopCode);
-            CustomerImport.SetTemplateCode(TemplateCode);
-            CustomerImport.SetCustomer(CustomerId);
-            CustomerImport.SetAllowCreate(AllowCreate);
-            CustomerImport.Run();
-            CustomerImport.GetCustomer(ShpfyCustomer);
+            ShpfyCustomerImport.SetShop(ShopCode);
+            ShpfyCustomerImport.SetTemplateCode(TemplateCode);
+            ShpfyCustomerImport.SetCustomer(CustomerId);
+            ShpfyCustomerImport.SetAllowCreate(AllowCreate);
+            ShpfyCustomerImport.Run();
+            ShpfyCustomerImport.GetCustomer(ShpfyCustomer);
             ShpfyCustomer.Find();
             ShpfyCustomer.CalcFields("Customer No.");
         end;

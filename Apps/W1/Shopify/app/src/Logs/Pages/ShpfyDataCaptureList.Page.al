@@ -35,8 +35,9 @@ page 30118 "Shpfy Data Capture List"
             }
             field(JsonViewer; Rec.GetData())
             {
-                Caption = 'Json Data';
                 ApplicationArea = All;
+                Caption = 'Json Data';
+                MultiLine = true;
                 ToolTip = 'The JSON data of that is received from Shopify.';
             }
         }

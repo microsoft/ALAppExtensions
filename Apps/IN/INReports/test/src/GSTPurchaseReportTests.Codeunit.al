@@ -30,6 +30,7 @@ codeunit 18044 "GST Purchase Report Tests"
         CGSTLbl: Label 'CGST';
         SGSTLbl: Label 'SGST';
         IGSTLbl: Label 'IGST';
+        GLAccNameLbl: Label 'GLAccName';
 
     [Test]
     [HandlerFunctions('TaxRatePageHandler')]
@@ -141,6 +142,62 @@ codeunit 18044 "GST Purchase Report Tests"
 
         // [THEN] Line Amount Verified on Purchase Return Order Report
         VerifyGSTAmountOnPurchaseRetOrderReport(DocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure TestPrintVoucherReportWithIntraStateTrans()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTVendorType: Enum "GST Vendor Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Test Posted Voucher Report with Intrastate Transactions
+        // [GIVEN] Created GST Setup for Registered Vendor For IntraState Transactions
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Goods, true, false);
+        InitializeSharedStep(true, false);
+
+        // [WHEN] Created and Posted Purchase Order with GST and Line Type as Item with Intrastate Transactions
+        PostedDocumentNo := CreateAndPostPurchaseDocument(
+           PurchaseHeader,
+           PurchaseLine,
+           LineType::Item,
+           DocumentType::Order);
+
+        // [THEN] GL Account Name Verified on Posted Voucher Report for Posted Vendor Ledger Entry
+        VerifyVendorNameOnPostedVoucherReport(PostedDocumentNo);
+    end;
+
+    local procedure VerifyVendorNameOnPostedVoucherReport(PostedDocumentNo: Code[20])
+    var
+        PurchInvHeader: Record "Purch. Inv. Header";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        GLEntry: Record "G/L Entry";
+        Vendor: Record Vendor;
+    begin
+        PurchInvHeader.SetRange("No.", PostedDocumentNo);
+        if PurchInvHeader.FindFirst() then begin
+            VendorLedgerEntry.SetRange("Posting Date", PurchInvHeader."Posting Date");
+            VendorLedgerEntry.SetRange("Document No.", PurchInvHeader."No.");
+            if VendorLedgerEntry.FindFirst() then begin
+                GLEntry.SetCurrentKey("Transaction No.");
+                GLEntry.SetRange("Transaction No.", VendorLedgerEntry."Transaction No.");
+                if GLEntry.FindFirst() then begin
+                    LibraryReportDataset.RunReportAndLoad(Report::"Posted Voucher", GLEntry, '');
+                    GLEntry.Reset();
+                    GLEntry.SetRange("Transaction No.", VendorLedgerEntry."Transaction No.");
+                    GLEntry.SetRange("Entry No.", VendorLedgerEntry."Entry No.");
+                    GLEntry.SetRange("Source Type", GLEntry."Source Type"::Vendor);
+                    if GLEntry.FindFirst() then
+                        if Vendor.Get(GLEntry."Source No.") then
+                            LibraryReportDataset.AssertElementWithValueExists(GLAccNameLbl, Vendor.Name);
+                end;
+            end;
+        end;
     end;
 
     local procedure VerifyGSTAmountOnPostedInvoiceReport(PostedDocumentNo: Code[20]; IntraState: Boolean)

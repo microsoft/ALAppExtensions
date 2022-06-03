@@ -163,10 +163,6 @@ page 30127 "Shpfy Variants"
                 ApplicationArea = All;
                 Caption = 'Map Product';
                 Image = Relationship;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ToolTip = 'Manually map products from Shopify with an item.';
 
                 trigger OnAction()
@@ -191,10 +187,6 @@ page 30127 "Shpfy Variants"
                 ApplicationArea = All;
                 Caption = 'Map Variant';
                 Image = Relationship;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ToolTip = 'Manually map products from Shopify with an item.';
 
                 trigger OnAction()

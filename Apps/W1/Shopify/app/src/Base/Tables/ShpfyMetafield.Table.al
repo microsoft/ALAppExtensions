@@ -88,13 +88,13 @@ table 30101 "Shpfy Metafield"
 
     trigger OnInsert()
     var
-        Metafield: Record "Shpfy Metafield";
+        ShpfyMetafield: Record "Shpfy Metafield";
     begin
         if Namespace = '' then
             Namespace := 'Microsoft.Dynamics365.BusinessCentral';
         if Id = 0 then
-            if Metafield.FindFirst() and (Metafield.Id < 0) then
-                Id := Metafield.Id - 1
+            if ShpfyMetafield.FindFirst() and (ShpfyMetafield.Id < 0) then
+                Id := ShpfyMetafield.Id - 1
             else
                 Id := -1;
     end;

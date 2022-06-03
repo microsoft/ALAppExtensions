@@ -85,4 +85,12 @@ pageextension 10539 "MTD Report Setup" extends "VAT Report Setup"
     actions
     {
     }
+
+    trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        UKMakingTaxTok: Label 'UK Making Tax Digital', Locked = true;
+    begin
+        FeatureTelemetry.LogUptake('0000HFU', UKMakingTaxTok, Enum::"Feature Uptake Status"::Discovered);
+    end;
 }

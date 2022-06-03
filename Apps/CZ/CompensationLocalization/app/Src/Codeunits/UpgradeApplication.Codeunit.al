@@ -57,7 +57,7 @@ codeunit 31263 "Upgrade Application CZC"
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZC.GetPostedCompensationLanguageCodeUpgradeTag());
     end;
 
-    local procedure GetLanguageCode(CompanyType: Enum "Compensation Company Type CZC"; CompanyNo: Code[20]): Code[10]
+    internal procedure GetLanguageCode(CompanyType: Enum "Compensation Company Type CZC"; CompanyNo: Code[20]): Code[10]
     var
         Customer: Record Customer;
         Vendor: Record Vendor;
@@ -67,20 +67,20 @@ codeunit 31263 "Upgrade Application CZC"
             CompanyType::Customer:
                 begin
                     Customer.SetLoadFields("Language Code");
-                    Customer.Get(CompanyNo);
-                    exit(Customer."Language Code");
+                    if Customer.Get(CompanyNo) then
+                        exit(Customer."Language Code");
                 end;
             CompanyType::Contact:
                 begin
                     Contact.SetLoadFields("Language Code");
-                    Contact.Get(CompanyNo);
-                    exit(Contact."Language Code");
+                    if Contact.Get(CompanyNo) then
+                        exit(Contact."Language Code");
                 end;
             CompanyType::Vendor:
                 begin
                     Vendor.SetLoadFields("Language Code");
-                    Vendor.Get(CompanyNo);
-                    exit(Vendor."Language Code");
+                    if Vendor.Get(CompanyNo) then
+                        exit(Vendor."Language Code");
                 end;
         end;
     end;

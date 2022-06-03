@@ -46,4 +46,12 @@ page 13646 "OIOUBL-setup"
     actions
     {
     }
+
+    trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        OIOUBLTok: Label 'DK OIOUBL extension', Locked = true;
+    begin
+        FeatureTelemetry.LogUptake('0000H8K', OIOUBLTok, Enum::"Feature Uptake Status"::"Set up");
+    end;
 }

@@ -1,6 +1,6 @@
 page 31247 "Classification Codes CZF"
 {
-    ApplicationArea = Basic, Suite;
+    ApplicationArea = FixedAssets;
     Caption = 'Classification Codes';
     PageType = List;
     SourceTable = "Classification Code CZF";
@@ -17,17 +17,17 @@ page 31247 "Classification Codes CZF"
                 ShowCaption = false;
                 field("Code"; Rec.Code)
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = FixedAssets;
                     ToolTip = 'Specifies the classification code for fixed asset.';
                 }
                 field(Description; Rec.Description)
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = FixedAssets;
                     ToolTip = 'Specifies description for classification groups.';
                 }
                 field("Classification Type"; Rec."Classification Type")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = FixedAssets;
                     ToolTip = 'Specifies the classification code. You can insert code with classification type CZ-CC, CZ-CPA or DNM.';
                 }
                 field("Depreciation Group"; Rec."Depreciation Group")

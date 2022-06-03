@@ -56,7 +56,7 @@ codeunit 8712 "Telemetry Impl."
         if Company.Get(CompanyName()) then
             CustomDimensions.Add('IsEvaluationCompany', Format(Company."Evaluation Company"));
         if UserPersonalization.Get(UserSecurityId()) then
-            if UserPersonalization.Scope = UserPersonalization.Scope::System then
+            if not IsNullGuid(UserPersonalization."App ID") then
                 CustomDimensions.Add('UserRole', UserPersonalization."Profile ID");
 
         GlobalLanguage(CurrentLanguage);

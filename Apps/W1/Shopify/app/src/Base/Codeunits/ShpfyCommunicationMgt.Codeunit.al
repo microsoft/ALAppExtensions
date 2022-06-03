@@ -7,9 +7,9 @@ codeunit 30103 "Shpfy Communication Mgt."
     SingleInstance = true;
 
     var
-        ShopifyShop: Record "Shpfy Shop";
-        CommunicationEvents: Codeunit "Shpfy Communication Events";
-        GraphQL: Codeunit "Shpfy GraphQL Queries";
+        ShpfyShop: Record "Shpfy Shop";
+        ShpfyCommunicationEvents: Codeunit "Shpfy Communication Events";
+        ShpfyGraphQLQueries: Codeunit "Shpfy GraphQL Queries";
         NextExecutionTime: DateTime;
         VersionTok: Label '2022-01', Locked = true;
         IsTestInProgress: Boolean;
@@ -31,17 +31,17 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <returns>Return value of type Text.</returns>
     internal procedure CreateWebRequestURL(UrlPath: Text; ApiVersion: Text): Text
     begin
-        ShopifyShop.TestField("Shopify URL");
+        ShpfyShop.TestField("Shopify URL");
         if UrlPath.StartsWith('gift_cards') then
-            if ShopifyShop."Shopify URL".EndsWith('/') then
-                exit(ShopifyShop."Shopify URL" + 'admin/' + UrlPath)
+            if ShpfyShop."Shopify URL".EndsWith('/') then
+                exit(ShpfyShop."Shopify URL" + 'admin/' + UrlPath)
             else
-                exit(ShopifyShop."Shopify URL" + '/admin/' + UrlPath)
+                exit(ShpfyShop."Shopify URL" + '/admin/' + UrlPath)
         else
-            if ShopifyShop."Shopify URL".EndsWith('/') then
-                exit(ShopifyShop."Shopify URL" + 'admin/api/' + ApiVersion + '/' + UrlPath)
+            if ShpfyShop."Shopify URL".EndsWith('/') then
+                exit(ShpfyShop."Shopify URL" + 'admin/api/' + ApiVersion + '/' + UrlPath)
             else
-                exit(ShopifyShop."Shopify URL" + '/admin/api/' + ApiVersion + '/' + UrlPath);
+                exit(ShpfyShop."Shopify URL" + '/admin/api/' + ApiVersion + '/' + UrlPath);
     end;
 
     /// <summary> 
@@ -67,7 +67,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         ExpectedCost: Integer;
         GraphQLQuery: Text;
     begin
-        GraphQLQuery := GraphQL.GetQuery(GraphQLType, Parameters, ExpectedCost);
+        GraphQLQuery := ShpfyGraphQLQueries.GetQuery(GraphQLType, Parameters, ExpectedCost);
         exit(ExecuteGraphQL(GraphQLQuery, ExpectedCost));
     end;
 
@@ -114,20 +114,20 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <returns>Return variable JResponse of type JsonToken.</returns>
     internal procedure ExecuteGraphQL(GraphQLQuery: Text; var ResponseHeaders: HttpHeaders; ExpectedCost: Decimal) JResponse: JsonToken
     var
-        GraphQLRateLimit: Codeunit "Shpfy GraphQL Rate Limit";
-        JsonHelper: Codeunit "Shpfy Json Helper";
+        ShpfyGraphQLRateLimit: Codeunit "Shpfy GraphQL Rate Limit";
+        ShpfyJsonHelper: Codeunit "Shpfy Json Helper";
         ErrorOnShopifyErr: Label 'Error(s) on Shopify:\ \%1', Comment = '%1 = Errors from json structure.';
     begin
-        GraphQLRateLimit.WaitForRequestAvailable(ExpectedCost);
+        ShpfyGraphQLRateLimit.WaitForRequestAvailable(ExpectedCost);
         if JResponse.ReadFrom(ExecuteWebRequest(CreateWebRequestURL('graphql.json'), 'POST', GraphQLQuery, ResponseHeaders, 0)) then
-            GraphQLRateLimit.SetQueryCost(JsonHelper.GetJsonToken(JResponse, 'extensions.cost.throttleStatus'));
+            ShpfyGraphQLRateLimit.SetQueryCost(ShpfyJsonHelper.GetJsonToken(JResponse, 'extensions.cost.throttleStatus'));
         while JResponse.AsObject().Contains('errors') and Format(JResponse).Contains('THROTTLED') do begin
-            GraphQLRateLimit.WaitForRequestAvailable(ExpectedCost);
+            ShpfyGraphQLRateLimit.WaitForRequestAvailable(ExpectedCost);
             if JResponse.ReadFrom(ExecuteWebRequest(CreateWebRequestURL('graphql.json'), 'POST', GraphQLQuery, ResponseHeaders, 0)) then
-                GraphQLRateLimit.SetQueryCost(JsonHelper.GetJsonToken(JResponse, 'extensions.cost.throttleStatus'));
+                ShpfyGraphQLRateLimit.SetQueryCost(ShpfyJsonHelper.GetJsonToken(JResponse, 'extensions.cost.throttleStatus'));
         end;
         if JResponse.AsObject().Contains('errors') then
-            Error(ErrorOnShopifyErr, Format(JsonHelper.GetJsonToken(JResponse, 'errors')));
+            Error(ErrorOnShopifyErr, Format(ShpfyJsonHelper.GetJsonToken(JResponse, 'errors')));
     end;
 
     /// <summary> 
@@ -245,7 +245,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         end;
 
         if IsTestInProgress then
-            CommunicationEvents.OnClientSend(HttpRequestMsg, HttpResponseMsg)
+            ShpfyCommunicationEvents.OnClientSend(HttpRequestMsg, HttpResponseMsg)
         else
             if Client.Send(HttpRequestMsg, HttpResponseMsg) then begin
                 Clear(RetryCounter);
@@ -293,7 +293,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
     internal procedure SetShop(Shop: Record "Shpfy Shop")
     begin
-        ShopifyShop := Shop;
+        ShpfyShop := Shop;
     end;
 
     /// <summary> 
@@ -347,9 +347,9 @@ codeunit 30103 "Shpfy Communication Mgt."
 
 
         if IsTestInProgress then
-            CommunicationEvents.OnGetAccessToken(AccessToken)
+            ShpfyCommunicationEvents.OnGetAccessToken(AccessToken)
         else
-            AccessToken := ShopifyShop.GetAccessToken();
+            AccessToken := ShpfyShop.GetAccessToken();
 
         Headers.Add('X-Shopify-Access-Token', AccessToken);
         HttpRequestMsg.Method := Method;
@@ -376,7 +376,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     var
         ShopifyLogEntry: Record "Shpfy Log Entry";
     begin
-        if ShopifyShop."Log Enabled" then begin
+        if ShpfyShop."Log Enabled" then begin
             ShopifyLogEntry.Init();
             ShopifyLogEntry."Date and Time" := CurrentDateTime;
             ShopifyLogEntry.Time := TIME;
@@ -453,8 +453,8 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <param name="ShopCode">Parameter of type Code[20].</param>
     internal procedure SetShop(ShopCode: Code[20])
     begin
-        Clear(ShopifyShop);
-        ShopifyShop.Get(ShopCode);
+        Clear(ShpfyShop);
+        ShpfyShop.Get(ShopCode);
     end;
 
     /// <summary>
@@ -476,7 +476,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     [NonDebuggable]
     internal procedure GetShopRecord() Shop: Record "Shpfy Shop";
     begin
-        Shop := ShopifyShop;
+        Shop := ShpfyShop;
     end;
 }
 

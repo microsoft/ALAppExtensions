@@ -241,10 +241,7 @@ codeunit 18440 "GST Service Validations"
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyBillToCustomerFields', '', false, false)]
     local procedure UpdateBilltoCustomerNoInfo(Customer: Record Customer; var ServiceHeader: Record "Service Header")
     begin
-        if not (Customer."GST Customer Type" in [
-            Customer."GST Customer Type"::Export,
-            Customer."GST Customer Type"::"SEZ Development",
-            Customer."GST Customer Type"::"SEZ Unit"]) then
+        if not (Customer."GST Customer Type" in [Customer."GST Customer Type"::Export]) then
             ServiceHeader."GST Bill-to State Code" := Customer."State Code";
 
         if not (Customer."GST Customer Type" in [Customer."GST Customer Type"::Export]) then

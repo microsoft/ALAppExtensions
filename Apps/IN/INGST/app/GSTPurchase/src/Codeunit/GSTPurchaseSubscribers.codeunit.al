@@ -1208,6 +1208,7 @@ codeunit 18080 "GST Purchase Subscribers"
     local procedure CheckBillOfEntry(var PurchaseHeader: Record "Purchase Header")
     var
         PurchaseLine: Record "Purchase Line";
+        Location: Record Location;
     begin
         if not (PurchaseHeader."GST Vendor Type" in [PurchaseHeader."GST Vendor Type"::Import, PurchaseHeader."GST Vendor Type"::SEZ]) then
             exit;
@@ -1217,12 +1218,16 @@ codeunit 18080 "GST Purchase Subscribers"
 
         PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
         PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
-        PurchaseLine.SetRange("GST Group Type", PurchaseLine."GST Group Type"::Goods);
+        PurchaseLine.SetFilter("GST Group Type", '%1', PurchaseLine."GST Group Type"::Goods);
         PurchaseLine.SetFilter(Type, '<>%1&<>%2', PurchaseLine.Type::" ", PurchaseLine.Type::"Charge (Item)");
         PurchaseLine.SetFilter("GST Assessable Value", '%1', 0);
         PurchaseLine.SetFilter("Qty. to Receive", '<>%1', 0);
-        if not PurchaseLine.IsEmpty() then
-            Error(GSTAssessableErr, PurchaseHeader."Document Type", PurchaseHeader."No.");
+        if PurchaseLine.FindSet() then
+            repeat
+                if Location.Get(PurchaseLine."Location Code") then
+                    if not Location.IsBondedWarehouse(Location.Code) then
+                        Error(GSTAssessableErr, PurchaseHeader."Document Type", PurchaseHeader."No.");
+            until PurchaseLine.Next() = 0;
 
         if PurchaseHeader."Without Bill Of Entry" then
             exit;
