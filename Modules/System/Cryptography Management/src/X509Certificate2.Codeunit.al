@@ -123,4 +123,26 @@ codeunit 1286 "X509Certificate2"
     begin
         X509Certificate2Impl.GetCertificatePropertiesAsJson(CertBase64Value, Password, CertPropertyJson);
     end;
+
+    /// <summary>
+    /// Gets Certificate public key
+    /// </summary>
+    /// <param name="CertBase64Value">Represents the certificate value encoded using the Base64 algorithm</param>
+    /// <param name="Password">Certificate Password</param>
+    [NonDebuggable]
+    procedure GetCertificatePublicKey(CertBase64Value: Text; Password: Text): Text
+    begin
+        exit(X509Certificate2Impl.GetCertificatePublicKey(CertBase64Value, Password));
+    end;
+
+    /// <summary>
+    /// Gets Certificate private key
+    /// </summary>
+    /// <param name="CertBase64Value">Represents the certificate value encoded using the Base64 algorithm</param>
+    /// <param name="Password">Certificate Password</param>
+    [NonDebuggable]
+    procedure GetCertificatePrivateKey(CertBase64Value: Text; Password: Text): Text
+    begin
+        exit(X509Certificate2Impl.GetCertificatePrivateKey(CertBase64Value, Password));
+    end;
 }
