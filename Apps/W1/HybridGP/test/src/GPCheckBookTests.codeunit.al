@@ -32,16 +32,16 @@ codeunit 139678 "GP Checkbook Tests"
     var
         BankAccount: Record "Bank Account";
         GenJournalLine: Record "Gen. Journal Line";
-        BankAccountLedger: Record "Bank Account Ledger Entry";
+        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] CheckBooks are migrated from GP
         // [GIVEN] There are no records in the BankAcount table
         ClearTables();
         GenJournalLine.DeleteAll();
-        BankAccountLedger.Reset();
-        BankAccountLedger.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1, MyBankStr2, MyBankStr3, MyBankStr4, MyBankStr5);
-        BankAccountLedger.DeleteAll();
+        BankAccountLedgerEntry.Reset();
+        BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1, MyBankStr2, MyBankStr3, MyBankStr4, MyBankStr5);
+        BankAccountLedgerEntry.DeleteAll();
 
         // [GIVEN] Some records are created in the staging table
         CreateCheckbookData();
@@ -65,20 +65,20 @@ codeunit 139678 "GP Checkbook Tests"
         HelperFunctions.PostGLTransactions();
 
         // [THEN] Bank Account Ledger entries are created
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr1));
-        Assert.RecordCount(BankAccountLedger, 4);
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr1));
+        Assert.RecordCount(BankAccountLedgerEntry, 4);
 
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr2));
-        Assert.RecordCount(BankAccountLedger, 2);
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr2));
+        Assert.RecordCount(BankAccountLedgerEntry, 2);
 
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr3));
-        Assert.RecordCount(BankAccountLedger, 0);
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr3));
+        Assert.RecordCount(BankAccountLedgerEntry, 0);
 
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr4));
-        Assert.RecordCount(BankAccountLedger, 4);
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr4));
+        Assert.RecordCount(BankAccountLedgerEntry, 4);
 
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr5));
-        Assert.RecordCount(BankAccountLedger, 7);
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr5));
+        Assert.RecordCount(BankAccountLedgerEntry, 7);
     end;
 
     [Test]
@@ -86,18 +86,17 @@ codeunit 139678 "GP Checkbook Tests"
     procedure TestGPCheckbookMigrationExcludeInactive()
     var
         BankAccount: Record "Bank Account";
-        BankAccountLedger: Record "Bank Account Ledger Entry";
+        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         GenJournalLine: Record "Gen. Journal Line";
         HelperFunctions: Codeunit "Helper Functions";
-        test: Code[2];
     begin
         // [SCENARIO] CheckBooks are migrated from GP
         // [GIVEN] There are no records in the BankAcount table
         ClearTables();
         GenJournalLine.DeleteAll();
-        BankAccountLedger.Reset();
-        BankAccountLedger.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1, MyBankStr2, MyBankStr3, MyBankStr4, MyBankStr5);
-        BankAccountLedger.DeleteAll();
+        BankAccountLedgerEntry.Reset();
+        BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1, MyBankStr2, MyBankStr3, MyBankStr4, MyBankStr5);
+        BankAccountLedgerEntry.DeleteAll();
 
         // [GIVEN] Some records are created in the staging table
         CreateCheckbookData();
@@ -136,20 +135,20 @@ codeunit 139678 "GP Checkbook Tests"
         HelperFunctions.PostGLTransactions();
 
         // [THEN] Bank Account Ledger entries are created
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr1));
-        Assert.RecordCount(BankAccountLedger, 0);
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr1));
+        Assert.RecordCount(BankAccountLedgerEntry, 0);
 
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr2));
-        Assert.RecordCount(BankAccountLedger, 2);
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr2));
+        Assert.RecordCount(BankAccountLedgerEntry, 2);
 
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr3));
-        Assert.RecordCount(BankAccountLedger, 0);
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr3));
+        Assert.RecordCount(BankAccountLedgerEntry, 0);
 
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr4));
-        Assert.RecordCount(BankAccountLedger, 4);
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr4));
+        Assert.RecordCount(BankAccountLedgerEntry, 4);
 
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr5));
-        Assert.RecordCount(BankAccountLedger, 7);
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr5));
+        Assert.RecordCount(BankAccountLedgerEntry, 7);
     end;
 
     [Test]
@@ -157,19 +156,18 @@ codeunit 139678 "GP Checkbook Tests"
     procedure TestGPCheckbookMigrationVerifySkipReconciled()
     var
         BankAccount: Record "Bank Account";
-        BankAccountLedger: Record "Bank Account Ledger Entry";
+        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         GenJournalLine: Record "Gen. Journal Line";
         HelperFunctions: Codeunit "Helper Functions";
-        test: Code[2];
-        x: Integer;
+        X: Integer;
     begin
         // [SCENARIO] CheckBooks are migrated from GP
         // [GIVEN] There are no records in the BankAcount table
         ClearTables();
         GenJournalLine.DeleteAll();
-        BankAccountLedger.Reset();
-        BankAccountLedger.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1, MyBankStr2, MyBankStr3, MyBankStr4, MyBankStr5);
-        BankAccountLedger.DeleteAll();
+        BankAccountLedgerEntry.Reset();
+        BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1, MyBankStr2, MyBankStr3, MyBankStr4, MyBankStr5);
+        BankAccountLedgerEntry.DeleteAll();
 
         // [GIVEN] Some records are created in the staging table
         //  including reconciled bank transactions
@@ -209,16 +207,16 @@ codeunit 139678 "GP Checkbook Tests"
         HelperFunctions.PostGLTransactions();
 
         // [THEN] Bank Account Ledger only unreconciled transactions are created.
-        BankAccountLedger.Reset();
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr2));
-        Assert.RecordCount(BankAccountLedger, 2);
+        BankAccountLedgerEntry.Reset();
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr2));
+        Assert.RecordCount(BankAccountLedgerEntry, 2);
 
         repeat
-            if BankAccountLedger."Entry No." <> 0 then begin
-                x := StrPos('Reconcile', BankAccountLedger.Description);
-                Assert.AreEqual(0, x, StrSubstNo(ExtraTransactionMsg, BankAccountLedger.Description));
+            if BankAccountLedgerEntry."Entry No." <> 0 then begin
+                X := StrPos('Reconcile', BankAccountLedgerEntry.Description);
+                Assert.AreEqual(0, X, StrSubstNo(ExtraTransactionMsg, BankAccountLedgerEntry.Description));
             end;
-        until BankAccountLedger.Next() = 0;
+        until BankAccountLedgerEntry.Next() = 0;
     end;
 
     [Test]
@@ -229,7 +227,6 @@ codeunit 139678 "GP Checkbook Tests"
         BankAccountLedger: Record "Bank Account Ledger Entry";
         GenJournalLine: Record "Gen. Journal Line";
         HelperFunctions: Codeunit "Helper Functions";
-        test: Code[2];
     begin
         // [SCENARIO] CheckBooks are migrated from GP
         // [GIVEN] There are no records in the BankAcount table
