@@ -25,7 +25,7 @@ codeunit 40025 "GP Checkbook Migrator"
                     BankAccount."Bank Account No." := DelChr(GPCheckbookMSTR.BNKACTNM, '>', ' ');
                     BankAccount."Last Check No." := GetLastCheckNumber(GPCheckbookMSTR.NXTCHNUM);
                     BankAccount."Balance Last Statement" := GPCheckbookMSTR.Last_Reconciled_Balance;
-                    BankAccount."Bank Acc. Posting Group" := GetBankAccPostingGroup(GPCheckbookMSTR.ACTINDX);
+                    BankAccount."Bank Acc. Posting Group" := GetOrCreateBankAccPostingGroup(GPCheckbookMSTR.ACTINDX);
                     UpdateBankInfo(DelChr(GPCheckbookMSTR.BANKID, '>', ' '), BankAccount);
                     BankAccount.Insert(true);
 
@@ -81,7 +81,7 @@ codeunit 40025 "GP Checkbook Migrator"
         BankAccount."Bank Branch No." := CopyStr(DelChr(GPBankMSTR.BNKBRNCH, '>', ' '), 1, 20);
     end;
 
-    local procedure GetBankAccPostingGroup(AcctIndex: Integer): Code[20]
+    local procedure GetOrCreateBankAccPostingGroup(AcctIndex: Integer): Code[20]
     var
         BankAccountPostingGroup: Record "Bank Account Posting Group";
         GPAccount: Record "GP Account";

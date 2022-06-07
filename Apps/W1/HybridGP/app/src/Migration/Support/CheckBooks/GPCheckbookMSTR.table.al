@@ -178,4 +178,12 @@ table 40099 "GP Checkbook MSTR"
             Clustered = true;
         }
     }
+
+    [Obsolete('This method is obsolete. Code has been moved to GP Checkbook Migrator codeunit.')]
+    procedure MoveStagingData()
+    var
+        GPCheckbookMigrator: codeunit "GP Checkbook Migrator";
+    begin
+        GPCheckbookMigrator.MoveCheckbookStagingData();
+    end;
 }
