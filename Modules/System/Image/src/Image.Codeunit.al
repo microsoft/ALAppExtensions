@@ -156,4 +156,8 @@ codeunit 3971 Image
         exit(ImageImpl.ToBase64());
     end;
 
+    procedure GetRotateFlipType() RotateFlipType: Enum "Rotate Flip Type";
+    begin
+        exit(ImageImpl.GetRotateFlipType());
+    end;
 }

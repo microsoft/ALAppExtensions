@@ -347,4 +347,33 @@ codeunit 3970 "Image Impl."
         TempBlob.CreateOutStream(OutStream);
         Bitmap.Save(OutStream, ImageCodec, EncoderParameters);
     end;
+
+    procedure GetRotateFlipType() RotateFlipType: Enum "Rotate Flip Type";
+    var
+        Image: DotNet Image;
+        PropertyItem: DotNet PropertyItem;
+        BitConverter: DotNet BitConverter;
+        PropertyList: DotNet IList;
+        ExifProp: Integer;
+        Value: Integer;
+    begin
+        ExifProp := 274;
+
+        LoadImage(Image);
+        PropertyList := Image.PropertyIdList();
+        if not PropertyList.Contains(ExifProp) then
+            exit;
+        PropertyItem := Image.GetPropertyItem(ExifProp);
+        Value := BitConverter.ToUInt16(PropertyItem.Value, 0);
+        case Value of
+            3, 4:
+                RotateFlipType := RotateFlipType::Rotate180FlipNone;
+            5, 6:
+                RotateFlipType := RotateFlipType::Rotate90FlipNone;
+            7, 8:
+                RotateFlipType := RotateFlipType::Rotate270FlipNone;
+            else
+                RotateFlipType := RotateFlipType::RotateNoneFlipNone;
+        end;
+    end;
 }

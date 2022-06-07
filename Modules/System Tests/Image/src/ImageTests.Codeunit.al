@@ -378,4 +378,17 @@ codeunit 135135 "Image Tests"
         Image.Save(ImageOutStream);
         Assert.IsFalse(TempBlob.HasValue(), 'Image should be empty');
     end;
+
+    [Test]
+    procedure GetRotateFlipTypeTest()
+    var
+        Image: Codeunit Image;
+        RotateFlipType: Enum "Rotate Flip Type";
+    begin
+        // [Given] base64 encoded data, create image
+        Image.FromBase64(ImageAsBase64Txt);
+
+        // [Then] verify image rotate flip type
+        Assert.AreEqual(RotateFlipType::RotateNoneFlipNone, Image.GetRotateFlipType(), 'Getting Rotation Type Filed');
+    end;
 }
