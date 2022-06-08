@@ -57,6 +57,8 @@ permissionsetextension 4027 "D365 TEAM MEMBER - HGP" extends "D365 TEAM MEMBER"
                   tabledata "GP Segment Name" = RIMD,
                   tabledata "GP Migration Errors" = RIMD,
                   tabledata "GP Company Migration Settings" = RIMD,
+                  tabledata "GP SY40100" = RIMD,
+                  tabledata "GP SY40101" = RIMD,
                   tabledata "GP Bank MSTR" = RIMD,
                   tabledata "GP Checkbook MSTR" = RIMD,
                   tabledata "GP Checkbook Transactions" = RIMD;

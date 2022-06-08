@@ -19,7 +19,7 @@ permissionsetextension 4025 "D365 BASIC - HGP" extends "D365 BASIC"
                   tabledata GPSOPTrackingNumbersWorkHist = RIMD,
                   tabledata GPSOPSerialLotWorkHist = RIMD,
                   tabledata "GP Customer Transactions" = RIMD,
-                  tabledata GPSOPDepositHist  = RIMD,
+                  tabledata GPSOPDepositHist = RIMD,
                   tabledata GPPOPPOHist = RIMD,
                   tabledata GPRMHist = RIMD,
                   tabledata GPPOPReceiptHist = RIMD,
@@ -57,6 +57,8 @@ permissionsetextension 4025 "D365 BASIC - HGP" extends "D365 BASIC"
                   tabledata "GP Segment Name" = RIMD,
                   tabledata "GP Migration Errors" = RIMD,
                   tabledata "GP Company Migration Settings" = RIMD,
+                  tabledata "GP SY40100" = RIMD,
+                  tabledata "GP SY40101" = RIMD,
                   tabledata "GP Bank MSTR" = RIMD,
                   tabledata "GP Checkbook MSTR" = RIMD,
                   tabledata "GP Checkbook Transactions" = RIMD;

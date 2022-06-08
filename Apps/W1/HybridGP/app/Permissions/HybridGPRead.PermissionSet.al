@@ -66,5 +66,7 @@ permissionset 4032 "HybridGP - Read"
                     tabledata "GP Company Migration Settings" = R,
                     tabledata "GP Migration Errors" = R,
                     tabledata "GP Segment Name" = R,
-                    tabledata "GP Company Additional Settings" = R;
+                    tabledata "GP Company Additional Settings" = R,
+                    tabledata "GP SY40100" = R,
+                    tabledata "GP SY40101" = R;
 }
