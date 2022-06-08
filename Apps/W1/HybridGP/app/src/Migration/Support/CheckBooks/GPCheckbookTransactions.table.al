@@ -26,6 +26,7 @@ table 40101 "GP Checkbook Transactions"
         {
             DataClassification = CustomerContent;
         }
+        //     1-Deposit, 2-Receipt, 3-APCheck, 4-"Withdrawl/Payroll Check", 5-IncreaseAdjustment, 6-DecreaseAdjustment, 7-BankTransfer;         
         field(6; CMTrxType; Integer)
         {
             DataClassification = CustomerContent;
@@ -216,6 +217,7 @@ table 40101 "GP Checkbook Transactions"
         }
     }
 
+    [Obsolete('This method is obsolete. Code has been moved to GP Checkbook Migrator codeunit.')]
     procedure MoveStagingData(CheckbookId: Code[15]; PostingGroup: Code[20])
     begin
 
