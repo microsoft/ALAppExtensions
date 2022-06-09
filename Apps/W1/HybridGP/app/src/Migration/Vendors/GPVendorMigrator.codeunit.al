@@ -8,6 +8,8 @@ codeunit 4022 "GP Vendor Migrator"
         VendorBatchNameTxt: Label 'GPVEND', Locked = true;
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
+        AddressCodeRemitTo: Label 'REMIT TO', Comment = 'GP ADRSCODE', Locked = true;
+        AddressCodePrimary: Label 'PRIMARY', Comment = 'GP ADRSCODE', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
     procedure OnMigrateVendor(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
@@ -386,11 +388,12 @@ codeunit 4022 "GP Vendor Migrator"
         VendorBankAccountExists: Boolean;
         CurrencyCode: Code[10];
     begin
+        GPSY06000.SetRange("INACTIVE", false);
         if not GPSY06000.FindSet() then
             exit;
 
         repeat
-            if not GPSY06000.INACTIVE and Vendor.Get(GPSY06000.CustomerVendor_ID) then begin
+            if Vendor.Get(GPSY06000.CustomerVendor_ID) then begin
                 CurrencyCode := CopyStr(GPSY06000.CURNCYID, 1, 10);
                 CreateCurrencyIfNeeded(CurrencyCode);
                 CreateSwiftCodeIfNeeded(GPSY06000.SWIFTADDR);
@@ -405,9 +408,9 @@ codeunit 4022 "GP Vendor Migrator"
                 VendorBankAccount.Validate("IBAN", GPSY06000.IntlBankAcctNum);
                 VendorBankAccount.Validate("SWIFT Code", GPSY06000.SWIFTADDR);
 
-                GeneralLedgerSetup.Get();
-                if GeneralLedgerSetup."LCY Code" <> CurrencyCode then
-                    VendorBankAccount.Validate("Currency Code", CurrencyCode);
+                if GeneralLedgerSetup.Get() then
+                    if GeneralLedgerSetup."LCY Code" <> CurrencyCode then
+                        VendorBankAccount.Validate("Currency Code", CurrencyCode);
 
                 if not VendorBankAccountExists then
                     VendorBankAccount.Insert()
@@ -455,13 +458,13 @@ codeunit 4022 "GP Vendor Migrator"
         TrimmedADRSCODE := GPSY06000.ADRSCODE.Trim();
 
         // The Remit To is the preferred account
-        if TrimmedADRSCODE = 'REMIT TO' then
+        if TrimmedADRSCODE = AddressCodeRemitTo then
             ShouldSetAsPrimaryAccount := true
         else
-            if (TrimmedADRSCODE = 'PRIMARY') then begin
+            if (TrimmedADRSCODE = AddressCodePrimary) then begin
                 // If the Vendor does not have a Remit To account, then use the Primary account instead
                 SearchGPSY06000.SetRange("CustomerVendor_ID", GPSY06000.CustomerVendor_ID);
-                SearchGPSY06000.SetRange("ADRSCODE", 'REMIT TO');
+                SearchGPSY06000.SetRange("ADRSCODE", AddressCodeRemitTo);
                 SearchGPSY06000.SetRange("INACTIVE", false);
                 if not SearchGPSY06000.FindFirst() then
                     ShouldSetAsPrimaryAccount := true
