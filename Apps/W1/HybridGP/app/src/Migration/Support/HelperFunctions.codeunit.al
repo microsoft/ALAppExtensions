@@ -549,6 +549,11 @@ Codeunit 4037 "Helper Functions"
         CreateFiscalPeriodsImp();
     end;
 
+    procedure CreateVendorEFTBankAccounts()
+    begin
+        CreateVendorEFTBankAccountsImp();
+    end;
+
     procedure CreateSetupRecordsIfNeeded()
     var
         CompanyInformation: Record "Company Information";
@@ -1035,6 +1040,8 @@ Codeunit 4037 "Helper Functions"
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
         GPSY40100: Record "GP SY40100";
         GPSY40101: Record "GP SY40101";
+        GPSY06000: Record "GP SY06000";
+        GPMC40200: Record "GP MC40200";
     begin
         GPAccount.DeleteAll();
         GPGLTransactions.DeleteAll();
@@ -1062,6 +1069,9 @@ Codeunit 4037 "Helper Functions"
 
         GPSY40100.DeleteAll();
         GPSY40101.DeleteAll();
+
+        GPSY06000.DeleteAll();
+        GPMC40200.DeleteAll();
 
         Session.LogMessage('00007GH', 'Cleaned up staging tables.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
     end;
@@ -1722,6 +1732,15 @@ Codeunit 4037 "Helper Functions"
         SetOpenFiscalPeriodsCreated();
     end;
 
+    local procedure CreateVendorEFTBankAccountsImp()
+    var
+        GPVendorMigrator: CodeUnit "GP Vendor Migrator";
+    begin
+        GPVendorMigrator.MigrateVendorEFTBankAccounts();
+        Session.LogMessage('', 'Created EFT Bank Accounts', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        SetVendorEFTBankAccountsCreated();
+    end;
+
     local procedure SetDimentionsCreated()
     begin
         GPConfiguration.GetSingleInstance();
@@ -1768,6 +1787,13 @@ Codeunit 4037 "Helper Functions"
     begin
         GPConfiguration.GetSingleInstance();
         GPConfiguration."Fiscal Periods Created" := true;
+        GPConfiguration.Modify();
+    end;
+
+    local procedure SetVendorEFTBankAccountsCreated()
+    begin
+        GPConfiguration.GetSingleInstance();
+        GPConfiguration."Vendor EFT Bank Acc. Created" := true;
         GPConfiguration.Modify();
     end;
 
@@ -1820,6 +1846,12 @@ Codeunit 4037 "Helper Functions"
         exit(GPConfiguration."Fiscal Periods Created");
     end;
 
+    local procedure VendorEFTBankAccountsCreated(): Boolean
+    begin
+        GPConfiguration.GetSingleInstance();
+        exit(GPConfiguration."Vendor EFT Bank Acc. Created");
+    end;
+
     procedure PreMigrationCleanupCompleted(): Boolean
     begin
         GPConfiguration.GetSingleInstance();
@@ -1867,7 +1899,10 @@ Codeunit 4037 "Helper Functions"
         if not OpenPurchaseOrdersCreated() then
             CreateOpenPOs();
 
-        if CheckBooksCreated() and OpenPurchaseOrdersCreated() and FiscalPeriodsCreated() then
+        if not VendorEFTBankAccountsCreated() then
+            CreateVendorEFTBankAccounts();
+
+        if CheckBooksCreated() and OpenPurchaseOrdersCreated() and FiscalPeriodsCreated() and VendorEFTBankAccountsCreated() then
             exit(true);
 
         exit(false);
