@@ -18,64 +18,69 @@ table 9043 "ABS Container Content"
         field(1; "Entry No."; Integer)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Entry No.';
+            Caption = 'Entry No.', Locked = true;
             Access = Internal;
         }
         field(2; "Parent Directory"; Text[2048])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Parent Directory';
+            Caption = 'Parent Directory', Locked = true;
         }
         field(3; Level; Integer)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Level';
+            Caption = 'Level', Locked = true;
         }
         field(4; "Full Name"; Text[2048])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Full Name';
+            Caption = 'Full Name', Locked = true;
         }
         field(10; Name; Text[2048])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Name';
+            Caption = 'Name', Locked = true;
         }
         field(11; "Creation Time"; DateTime)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Creation Time';
+            Caption = 'Creation Time', Locked = true;
         }
         field(12; "Last Modified"; DateTime)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Last Modified';
+            Caption = 'Last-Modified', Locked = true;
+            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
         }
         field(13; "Content Length"; Integer)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Content Length';
+            Caption = 'Content-Length', Locked = true;
+            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
         }
         field(14; "Content Type"; Text[2048])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Content Type';
+            Caption = 'Content-Type', Locked = true;
+            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
         }
-        field(15; "Blob Type"; Text[15])
+#pragma warning disable AS0086
+        field(15; "Blob Type"; Text[2048])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Blob Type';
-            Access = Internal;
+            Caption = 'BlobType', Locked = true;
+            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
         }
+#pragma warning restore AS0086
         field(100; "XML Value"; Blob)
         {
             DataClassification = SystemMetadata;
-            Caption = 'XML Value';
+            Caption = 'XML Value', Locked = true;
         }
         field(110; URI; Text[2048])
         {
             DataClassification = SystemMetadata;
-            Caption = 'URI';
+            Caption = 'URI', Locked = true;
         }
     }
 
@@ -86,5 +91,4 @@ table 9043 "ABS Container Content"
             Clustered = true;
         }
     }
-
 }

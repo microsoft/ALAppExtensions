@@ -3,7 +3,13 @@ codeunit 18543 "Calculate Tax"
     procedure CallTaxEngineOnGenJnlLine(
         var GenJournalLine: Record "Gen. Journal Line";
         var xGenJournalLine: Record "Gen. Journal Line")
+    var
+        IsHandled: Boolean;
     begin
+        OnBeforeCallTaxEngineForGenJnlLine(GenJournalLine, IsHandled);
+        if IsHandled then
+            exit;
+
         if GenJournalLine."System-Created Entry" then
             exit;
 
@@ -16,7 +22,13 @@ codeunit 18543 "Calculate Tax"
     procedure CallTaxEngineOnSalesLine(
         var SalesLine: Record "Sales Line";
         var xSalesLine: Record "Sales Line")
+    var
+        IsHandled: Boolean;
     begin
+        OnBeforeCallTaxEngineForSalesLine(SalesLine, IsHandled);
+        if IsHandled then
+            exit;
+
         if (SalesLine.Quantity = 0) and (xSalesLine.Quantity = 0) then
             exit;
 
@@ -26,7 +38,13 @@ codeunit 18543 "Calculate Tax"
     procedure CallTaxEngineOnPurchaseLine(
         var PurchaseLine: Record "Purchase Line";
         var xPurchaseLine: Record "Purchase Line")
+    var
+        IsHandled: Boolean;
     begin
+        OnBeforeCallTaxEngineForPurchaseLine(PurchaseLine, IsHandled);
+        if IsHandled then
+            exit;
+
         if (PurchaseLine.Quantity = 0) and (xPurchaseLine.Quantity = 0) then
             exit;
 
@@ -34,9 +52,15 @@ codeunit 18543 "Calculate Tax"
     end;
 
     procedure CallTaxEngineOnServiceLine(
-            var ServiceLine: Record "Service Line";
-            var xServiceLine: Record "Service Line")
+        var ServiceLine: Record "Service Line";
+        var xServiceLine: Record "Service Line")
+    var
+        IsHandled: Boolean;
     begin
+        OnBeforeCallTaxEngineForServiceLine(ServiceLine, IsHandled);
+        if IsHandled then
+            exit;
+
         if (ServiceLine.Quantity = 0) and (xServiceLine.Quantity = 0) then
             exit;
 
@@ -217,6 +241,26 @@ codeunit 18543 "Calculate Tax"
 
     [IntegrationEvent(false, false)]
     procedure OnAfterValidateFinChargeMemoLineFields(var FinanceChargeMemoLine: Record "Finance Charge Memo Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnBeforeCallTaxEngineForGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnBeforeCallTaxEngineForSalesLine(var SalesLine: Record "Sales Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnBeforeCallTaxEngineForPurchaseLine(var PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnBeforeCallTaxEngineForServiceLine(var ServiceLine: Record "Service Line"; var IsHandled: Boolean)
     begin
     end;
 }

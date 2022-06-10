@@ -346,7 +346,7 @@ page 2752 "Add Universal Printers Wizard"
     var
         UniversalPrinterSettings: Record "Universal Printer Settings";
     begin
-        FeatureTelemetry.LogUptake('0000GFV', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered, false, true);
+        FeatureTelemetry.LogUptake('0000GFV', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
         if not UniversalPrinterSettings.WritePermission() then
             Error(NoTablePermissionsErr);
 

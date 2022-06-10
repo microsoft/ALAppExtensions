@@ -36,24 +36,24 @@ codeunit 8704 "Feature Telemetry Impl."
         LogMessage(EventId, ErrorText, Verbosity::Error, CallerCustomDimensions, ErrorCustomDimensions, CallerModuleInfo);
     end;
 
-    procedure LogUptake(EventId: Text; FeatureName: Text; FeatureUptakeStatus: Enum "Feature Uptake Status"; IsPerUser: Boolean; PerformWriteTransactionsInASeparateSession: Boolean; CallerCustomDimensions: Dictionary of [Text, Text]; CallerModuleInfo: ModuleInfo)
+    procedure LogUptake(EventId: Text; FeatureName: Text; FeatureUptakeStatus: Enum "Feature Uptake Status"; IsPerUser: Boolean; CallerCustomDimensions: Dictionary of [Text, Text]; CallerModuleInfo: ModuleInfo)
     var
-        EnvironmentInformation: Codeunit "Environment Information";
         FeatureUptakeStatusImpl: Codeunit "Feature Uptake Status Impl.";
         Language: Codeunit Language;
+        UserAccountHelper: DotNet NavUserAccountHelper;
         UptakeCustomDimensions: Dictionary of [Text, Text];
         FeatureUptakeStatusText: Text;
         EventName: Text;
         CurrentLanguage: Integer;
         IsExpectedUpdate: Boolean;
     begin
-        if not EnvironmentInformation.IsSaaS() then
+        if not UserAccountHelper.IsAzure() then
             exit;
 
         CurrentLanguage := GlobalLanguage();
         GlobalLanguage(Language.GetDefaultApplicationLanguageId());
 
-        IsExpectedUpdate := FeatureUptakeStatusImpl.UpdateFeatureUptakeStatus(FeatureName, FeatureUptakeStatus, IsPerUser, PerformWriteTransactionsInASeparateSession, CallerModuleInfo.Publisher);
+        IsExpectedUpdate := FeatureUptakeStatusImpl.UpdateFeatureUptakeStatus(FeatureName, FeatureUptakeStatus, IsPerUser, true, CallerModuleInfo.Publisher);
         FeatureUptakeStatusText := Format(FeatureUptakeStatus);
         EventName := StrSubstNo(UptakeLbl, FeatureName, FeatureUptakeStatusText);
 

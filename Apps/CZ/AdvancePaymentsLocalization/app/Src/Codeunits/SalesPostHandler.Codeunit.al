@@ -41,4 +41,16 @@ codeunit 31008 "Sales-Post Handler CZZ"
             AdvanceLetterApplicationCZZ.DeleteAll(true);
         end;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforeCreatePrepaymentLines', '', false, false)]
+    local procedure DisableCreatePrepaymentLinesOnBeforeCreatePrepaymentLines(var IsHandled: Boolean)
+    begin
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforeCheckPrepmtAmtToDeduct', '', false, false)]
+    local procedure DisableCheckOnBeforeCheckPrepmtAmtToDeduct(var IsHandled: Boolean)
+    begin
+        IsHandled := true;
+    end;
 }

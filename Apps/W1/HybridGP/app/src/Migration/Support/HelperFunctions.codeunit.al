@@ -25,14 +25,15 @@ Codeunit 4037 "Helper Functions"
                     tabledata "Gen. Journal Line" = rimd,
                     tabledata "G/L - Item Ledger Relation" = rimd,
                     tabledata "G/L Register" = rimd,
-                    tableData "Bank Account" = rimd,
-                    tableData "Bank Account Posting Group" = rimd,
-                    tableData "Bank Account Ledger Entry" = rimd,
-                    tableData "Bank Acc. Reconciliation" = rimd,
-                    tableData "Bank Acc. Reconciliation Line" = rimd,
-                    tableData "Purchase Header" = rimd,
-                    tableData "Purchase Line" = rimd,
-                    tableData "Over-Receipt Code" = rimd;
+                    tabledata "Bank Account" = rimd,
+                    tabledata "Bank Account Posting Group" = rimd,
+                    tabledata "Bank Account Ledger Entry" = rimd,
+                    tabledata "Bank Acc. Reconciliation" = rimd,
+                    tabledata "Bank Acc. Reconciliation Line" = rimd,
+                    tabledata "Purchase Header" = rimd,
+                    tabledata "Purchase Line" = rimd,
+                    tabledata "Over-Receipt Code" = rimd,
+                    tabledata "Accounting Period" = rimd;
 
     var
         GPConfiguration: Record "GP Configuration";
@@ -58,65 +59,35 @@ Codeunit 4037 "Helper Functions"
         TransactionExistsMsg: Label 'Transactions have already been entered. In order to use the wizard, you will need to create a new company to migrate your data.';
         SavedJrnlLinesFoundMsg: Label 'Saved journal lines are found. In order to use the wizard, you will need to delete the journal lines before you migrate your data.';
         MigrationNotSupportedErr: Label 'This migration does not support the "Specific" costing method. Verify your costing method in Inventory Setup.';
-        AnArrayExpectedErr: Label 'An array was expected.';
         PostingGroupCodeTxt: Label 'GP', Locked = true;
         DocNoOutofBalanceMsg: Label 'Document No. %1 is out of balance by %2. Transactions will not be created. Please check the amount in the import file.', Comment = '%1 = Balance Amount', Locked = true;
         CustomerBatchNameTxt: Label 'GPCUST', Locked = true;
         VendorBatchNameTxt: Label 'GPVEND', Locked = true;
+        BankBatchNameTxt: Label 'GPBANK', Locked = true;
         GlDocNoTxt: Label 'G00001', Locked = true;
         MigrationTypeTxt: Label 'Great Plains';
-        ImportedEntityTxt: Label 'Imported %1 data file.', Locked = true;
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
+        GeneralTemplateNameTxt: Label 'GENERAL', Locked = true;
 
+
+#if not CLEAN21
+    [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetEntities(EntityName: Text; var JArray: JsonArray): Boolean
-    var
-        JObject: JsonObject;
-        JToken: JsonToken;
-        FileName: Text;
     begin
-        FileName := GetFileNameByEntityName(EntityName);
-        if FileName <> '' then begin
-            GetFileContent(FileName, JObject);
-            JObject.Get(EntityName, JToken);
-            if not JToken.IsArray() then
-                Error(AnArrayExpectedErr);
-            JArray := JToken.AsArray();
-            Session.LogMessage('00007GL', StrSubstNo(ImportedEntityTxt, EntityName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
-            exit(true);
-        end;
         exit(false);
     end;
 
+    [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetEntitiesAsJToken(EntityName: Text; var JToken: JsonToken): Boolean
-    var
-        JObject: JsonObject;
-        FileName: Text;
     begin
-        FileName := GetFileNameByEntityName(EntityName);
-        if FileName <> '' then begin
-            GetFileContent(FileName, JObject);
-            JObject.Get(EntityName, JToken);
-            Session.LogMessage('00007GM', StrSubstNo(ImportedEntityTxt, EntityName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
-            exit(true);
-        end;
         exit(false);
     end;
 
+    [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetObjectCount(EntityName: Text; var ObjectCount: Integer)
-    var
-        JObject: JsonObject;
-        JToken: JsonToken;
-        FileName: Text;
     begin
-        ObjectCount := 0;
-        FileName := GetFileNameByEntityName(EntityName);
-        if FileName <> '' then begin
-            GetFileContent(FileName, JObject);
-            JObject.Get('MaxResults', JToken);
-            if JToken.IsValue() then
-                ObjectCount := JToken.AsValue().AsInteger();
-        end;
     end;
+#endif
 
     procedure GetTextFromJToken(JToken: JsonToken; Path: Text): Text
     var
@@ -216,18 +187,6 @@ Codeunit 4037 "Helper Functions"
         FRef := RRef.Field(FieldNo);
         WriteTextToField(FRef, Value);
         RRef.SetTable(RecordVariant);
-    end;
-
-    local procedure GetFileContent(FileName: Text; var JObject: JsonObject)
-    var
-        FileInStream: InStream;
-        TempFile: File;
-    begin
-        TempFile.TextMode(true);
-        TempFile.WriteMode(false);
-        TempFile.Open(FileName);
-        TempFile.CreateInStream(FileInStream);
-        JObject.ReadFrom(FileInStream);
     end;
 
     procedure TrimStringQuotes(Value: Text): Text
@@ -350,7 +309,7 @@ Codeunit 4037 "Helper Functions"
         GenJournalBatch: Record "Gen. Journal Batch";
     begin
         GenJournalBatch.Reset();
-        GenJournalBatch.SetRange("Journal Template Name", 'GENERAL');
+        GenJournalBatch.SetRange("Journal Template Name", GeneralTemplateNameTxt);
         GenJournalBatch.SetFilter(Name, PostingGroupCodeTxt + '*');
         if GenJournalBatch.FindSet() then
             repeat
@@ -583,6 +542,11 @@ Codeunit 4037 "Helper Functions"
     procedure CreateOpenPOs()
     begin
         CreateOpenPOsImp();
+    end;
+
+    procedure CreateFiscalPeriods()
+    begin
+        CreateFiscalPeriodsImp();
     end;
 
     procedure CreateSetupRecordsIfNeeded()
@@ -955,16 +919,12 @@ Codeunit 4037 "Helper Functions"
             until GPCodes.Next() = 0;
     end;
 
+#if not CLEAN21
+    [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetDimensionInfo()
-    var
-        JArray: JsonArray;
     begin
-        if GetEntities('Segment', JArray) then
-            GetSegmentsFromJson(JArray);
-
-        if GetEntities('CODE', JArray) then
-            GetCodesFromJson(JArray);
     end;
+#endif
 
     procedure AnyCompaniesWithTooManySegments(var CompanyList: List of [Text])
     var
@@ -1070,9 +1030,11 @@ Codeunit 4037 "Helper Functions"
         GPSegments: Record "GP Segments";
         GPFiscalPeriods: Record "GP Fiscal Periods";
         GPPaymentTerms: Record "GP Payment Terms";
-        GPBankMaster: Record "GP Bank MSTR";
-        GPCheckbookMaster: Record "GP Checkbook MSTR";
+        GPBankMSTR: Record "GP Bank MSTR";
+        GPCheckbookMSTR: Record "GP Checkbook MSTR";
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
+        GPSY40100: Record "GP SY40100";
+        GPSY40101: Record "GP SY40101";
     begin
         GPAccount.DeleteAll();
         GPGLTransactions.DeleteAll();
@@ -1094,9 +1056,12 @@ Codeunit 4037 "Helper Functions"
         GPFiscalPeriods.DeleteAll();
         GPPaymentTerms.DeleteAll();
 
-        GPBankMaster.DeleteAll();
-        GPCheckbookMaster.DeleteAll();
+        GPBankMSTR.DeleteAll();
+        GPCheckbookMSTR.DeleteAll();
         GPCheckbookTransactions.DeleteAll();
+
+        GPSY40100.DeleteAll();
+        GPSY40101.DeleteAll();
 
         Session.LogMessage('00007GH', 'Cleaned up staging tables.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
     end;
@@ -1110,14 +1075,14 @@ Codeunit 4037 "Helper Functions"
         Dimension: Record Dimension;
         DimensionValue: Record "Dimension Value";
         DimensionSetEntry: Record "Dimension Set Entry";
-        DetailedCustLedgerEntry: Record "Detailed Cust. Ledg. Entry";
+        DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
         Vendor: Record Vendor;
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
         DataMigrationStatus: Record "Data Migration Status";
         Item: Record Item;
         ItemLedgerEntry: Record "Item Ledger Entry";
-        AvgCodeAdjmtEntryPoint: Record "Avg. Cost Adjmt. Entry Point";
+        AvgCostAdjmtEntryPoint: Record "Avg. Cost Adjmt. Entry Point";
         ValueEntry: Record "Value Entry";
         ItemUnitOfMeasure: Record "Item Unit of Measure";
         PaymentTerms: Record "Payment Terms";
@@ -1141,12 +1106,13 @@ Codeunit 4037 "Helper Functions"
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
         OverReceiptCode: Record "Over-Receipt Code";
+        AccountingPeriod: Record "Accounting Period";
     begin
         GPConfiguration.DeleteAll();
         GLEntry.DeleteAll(true);
         GLRegister.DeleteAll(true);
         CustLedgerEntry.DeleteAll(true);
-        DetailedCustLedgerEntry.DeleteAll(true);
+        DetailedCustLedgEntry.DeleteAll(true);
         Customer.DeleteAll(true);
         PurchaseLine.ModifyAll("Qty. Rcd. Not Invoiced", 0);
         PurchaseLine.DeleteAll(true);
@@ -1155,7 +1121,7 @@ Codeunit 4037 "Helper Functions"
         DetailedVendorLedgEntry.DeleteAll(true);
         Vendor.DeleteAll(true);
         ItemLedgerEntry.DeleteAll(true);
-        AvgCodeAdjmtEntryPoint.DeleteAll(true);
+        AvgCostAdjmtEntryPoint.DeleteAll(true);
         ValueEntry.DeleteAll(true);
         PostValueEntryToGL.DeleteAll(true);
         TrackingSpecification.DeleteAll(true);
@@ -1197,6 +1163,8 @@ Codeunit 4037 "Helper Functions"
         CleanupVatPostingSetup();
         GenJournalLine.DeleteAll(true);
         GLAccount.DeleteAll(true);
+
+        AccountingPeriod.DeleteAll();
 
         Commit();
         Session.LogMessage('00007GI', 'Cleaned up before Synchronization.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
@@ -1275,8 +1243,8 @@ Codeunit 4037 "Helper Functions"
 
     procedure PostGLTransactions();
     var
-        GenJnlLine: Record "Gen. Journal Line";
-        GenJnlBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
         JournalBatchName: Text;
         DurationAsInt: BigInteger;
         StartTime: DateTime;
@@ -1293,28 +1261,28 @@ Codeunit 4037 "Helper Functions"
         OnSkipPostingAccountBatches(SkipPosting);
         if not SkipPosting then begin
             // Post the Account batches
-            GenJnlBatch.Reset();
-            GenJnlBatch.SetRange("Journal Template Name", 'GENERAL');
-            GenJnlBatch.SetFilter(Name, PostingGroupCodeTxt + '*');
-            if GenJnlBatch.FindSet() then
+            GenJournalBatch.Reset();
+            GenJournalBatch.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+            GenJournalBatch.SetFilter(Name, PostingGroupCodeTxt + '*');
+            if GenJournalBatch.FindSet() then
                 repeat
-                    JournalBatchName := GenJnlBatch.Name;
-                    GenJnlLine.Reset();
-                    GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
-                    GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-                    if not GenJnlLine.IsEmpty() then
+                    JournalBatchName := GenJournalBatch.Name;
+                    GenJournalLine.Reset();
+                    GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+                    GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+                    if not GenJournalLine.IsEmpty() then
                         PostGLBatch(CopyStr(JournalBatchName, 1, 10));
-                until GenJnlBatch.Next() = 0;
+                until GenJournalBatch.Next() = 0;
         end;
 
         OnSkipPostingCustomerBatches(SkipPosting);
         if not SkipPosting then begin
             // Post the Customer Batch, if created...
             JournalBatchName := CustomerBatchNameTxt;
-            GenJnlLine.Reset();
-            GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
-            GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-            if not GenJnlLine.IsEmpty() then
+            GenJournalLine.Reset();
+            GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+            GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+            if not GenJournalLine.IsEmpty() then
                 PostGLBatch(CopyStr(JournalBatchName, 1, 10));
         end;
 
@@ -1322,10 +1290,21 @@ Codeunit 4037 "Helper Functions"
         if not SkipPosting then begin
             // Post the Vendor Batch, if created...
             JournalBatchName := VendorBatchNameTxt;
-            GenJnlLine.Reset();
-            GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
-            GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-            if not GenJnlLine.IsEmpty() then
+            GenJournalLine.Reset();
+            GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+            GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+            if not GenJournalLine.IsEmpty() then
+                PostGLBatch(CopyStr(JournalBatchName, 1, 10));
+        end;
+
+        OnSkipPostingBankBatches(SkipPosting);
+        if not SkipPosting then begin
+            // Post the Bank Batch, if created...
+            JournalBatchName := BankBatchNameTxt;
+            GenJournalLine.Reset();
+            GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+            GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+            if not GenJournalLine.IsEmpty() then
                 PostGLBatch(CopyStr(JournalBatchName, 1, 10));
         end;
 
@@ -1337,80 +1316,92 @@ Codeunit 4037 "Helper Functions"
 
     procedure PostGLBatch(JournalBatchName: Code[10])
     var
-        GenJnlLine: Record "Gen. Journal Line";
+        GenJournalLine: Record "Gen. Journal Line";
         TotalBalance: Decimal;
     begin
-        GenJnlLine.Reset();
-        GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
-        GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-        // Do not care about balances for Customer and Vendor batches
-        if (JournalBatchName <> CustomerBatchNameTxt) and (JournalBatchName <> VendorBatchNameTxt) then begin
+        GenJournalLine.Reset();
+        GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+        GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+        // Do not care about balances for Customer, Vendor, and Bank batches
+        if (JournalBatchName <> CustomerBatchNameTxt) and (JournalBatchName <> VendorBatchNameTxt) and (JournalBatchName <> BankBatchNameTxt) then begin
             repeat
-                TotalBalance := TotalBalance + GenJnlLine.Amount;
-            until GenJnlLine.Next() = 0;
+                TotalBalance := TotalBalance + GenJournalLine.Amount;
+            until GenJournalLine.Next() = 0;
             if TotalBalance = 0 then
-                if GenJnlLine.FindFirst() then
-                    codeunit.Run(codeunit::"Gen. Jnl.-Post Batch", GenJnlLine)
+                if GenJournalLine.FindFirst() then
+                    codeunit.Run(codeunit::"Gen. Jnl.-Post Batch", GenJournalLine)
                 else begin
                     Message(StrSubstNo(DocNoOutofBalanceMsg, GlDocNoTxt, FORMAT(TotalBalance)));
-                    if GenJnlLine.FindFirst() then
-                        GenJnlLine.DeleteAll();
+                    if GenJournalLine.FindFirst() then
+                        GenJournalLine.DeleteAll();
                 end;
         end else
-            if GenJnlLine.FindFirst() then
-                codeunit.Run(codeunit::"Gen. Jnl.-Post Batch", GenJnlLine);
+            if GenJournalLine.FindFirst() then
+                codeunit.Run(codeunit::"Gen. Jnl.-Post Batch", GenJournalLine);
     end;
 
     procedure RemoveBatches();
     var
-        GenJnlLine: Record "Gen. Journal Line";
-        GenJnlBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
         JournalBatchName: Text;
     begin
         // GL Batches
-        GenJnlBatch.Reset();
-        GenJnlBatch.SetRange("Journal Template Name", 'GENERAL');
-        if GenJnlBatch.FindSet() then
+        GenJournalBatch.Reset();
+        GenJournalBatch.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+        if GenJournalBatch.FindSet() then
             repeat
-                if strpos(GenJnlBatch.Name, PostingGroupCodeTxt) = 1 then begin
-                    GenJnlLine.Reset();
-                    GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
-                    GenJnlLine.SetRange("Journal Batch Name", GenJnlBatch.Name);
-                    GenJnlLine.SetRange("Account Type", GenJnlLine."Account Type"::"G/L Account");
-                    GenJnlLine.SetRange("Account No.", '');
-                    If GenJnlLine.Count() = 1 then begin
-                        GenJnlLine.DeleteAll();
-                        GenJnlBatch.Delete();
+                if strpos(GenJournalBatch.Name, PostingGroupCodeTxt) = 1 then begin
+                    GenJournalLine.Reset();
+                    GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+                    GenJournalLine.SetRange("Journal Batch Name", GenJournalBatch.Name);
+                    GenJournalLine.SetRange("Account Type", GenJournalLine."Account Type"::"G/L Account");
+                    GenJournalLine.SetRange("Account No.", '');
+                    If GenJournalLine.Count() = 1 then begin
+                        GenJournalLine.DeleteAll();
+                        GenJournalBatch.Delete();
                     end else
-                        GenJnlBatch.Delete();
+                        GenJournalBatch.Delete();
                 end;
-            until GenJnlBatch.Next() = 0;
+            until GenJournalBatch.Next() = 0;
 
 
         // Customer Batch
         JournalBatchName := CustomerBatchNameTxt;
-        GenJnlLine.Reset();
-        GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
-        GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-        GenJnlLine.SetRange("Account Type", GenJnlLine."Account Type"::Customer);
-        GenJnlLine.SetRange("Account No.", '');
-        If GenJnlLine.Count() = 1 then begin
-            GenJnlLine.DeleteAll();
-            if GenJnlBatch.Get('GENERAL', JournalBatchName) then
-                GenJnlBatch.Delete();
+        GenJournalLine.Reset();
+        GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+        GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+        GenJournalLine.SetRange("Account Type", GenJournalLine."Account Type"::Customer);
+        GenJournalLine.SetRange("Account No.", '');
+        If GenJournalLine.Count() = 1 then begin
+            GenJournalLine.DeleteAll();
+            if GenJournalBatch.Get(GeneralTemplateNameTxt, JournalBatchName) then
+                GenJournalBatch.Delete();
         end;
 
         // Vendor Batch
         JournalBatchName := VendorBatchNameTxt;
-        GenJnlLine.Reset();
-        GenJnlLine.SetRange("Journal Template Name", 'GENERAL');
-        GenJnlLine.SetRange("Journal Batch Name", JournalBatchName);
-        GenJnlLine.SetRange("Account Type", GenJnlLine."Account Type"::Vendor);
-        GenJnlLine.SetRange("Account No.", '');
-        If GenJnlLine.Count() = 1 then begin
-            GenJnlLine.DeleteAll();
-            if GenJnlBatch.Get('GENERAL', JournalBatchName) then
-                GenJnlBatch.Delete();
+        GenJournalLine.Reset();
+        GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+        GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+        GenJournalLine.SetRange("Account Type", GenJournalLine."Account Type"::Vendor);
+        GenJournalLine.SetRange("Account No.", '');
+        If GenJournalLine.Count() = 1 then begin
+            GenJournalLine.DeleteAll();
+            if GenJournalBatch.Get(GeneralTemplateNameTxt, JournalBatchName) then
+                GenJournalBatch.Delete();
+        end;
+
+        // Bank Batch
+        JournalBatchName := BankBatchNameTxt;
+        GenJournalLine.Reset();
+        GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+        GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+        GenJournalLine.SetRange("Account Type", GenJournalLine."Account Type"::"Bank Account");
+        If GenJournalLine.Count() = 1 then begin
+            GenJournalLine.DeleteAll();
+            if GenJournalBatch.Get(GeneralTemplateNameTxt, JournalBatchName) then
+                GenJournalBatch.Delete();
         end;
     end;
 
@@ -1706,9 +1697,9 @@ Codeunit 4037 "Helper Functions"
 
     local procedure CreateCheckBooksImp()
     var
-        CheckBookMaster: Record "GP Checkbook MSTR";
+        GPCheckbookMigrator: Codeunit "GP Checkbook Migrator";
     begin
-        CheckBookMaster.MoveStagingData();
+        GPCheckbookMigrator.MoveCheckbookStagingData();
         Session.LogMessage('0000CAB', 'Created Checkbooks', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetCheckBooksCreated();
     end;
@@ -1720,6 +1711,15 @@ Codeunit 4037 "Helper Functions"
         GPPOPPOHeader.MoveStagingData();
         Session.LogMessage('0000CQP', 'Created Open Purchase Orders', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetOpenPurchaseOrdersCreated();
+    end;
+
+    local procedure CreateFiscalPeriodsImp()
+    var
+        FiscalPeriods: Codeunit FiscalPeriods;
+    begin
+        FiscalPeriods.MoveStagingData();
+        Session.LogMessage('', 'Created Fiscal Periods', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        SetOpenFiscalPeriodsCreated();
     end;
 
     local procedure SetDimentionsCreated()
@@ -1761,6 +1761,13 @@ Codeunit 4037 "Helper Functions"
     begin
         GPConfiguration.GetSingleInstance();
         GPConfiguration."Open Purchase Orders Created" := true;
+        GPConfiguration.Modify();
+    end;
+
+    local procedure SetOpenFiscalPeriodsCreated()
+    begin
+        GPConfiguration.GetSingleInstance();
+        GPConfiguration."Fiscal Periods Created" := true;
         GPConfiguration.Modify();
     end;
 
@@ -1807,6 +1814,12 @@ Codeunit 4037 "Helper Functions"
         exit(GPConfiguration."Open Purchase Orders Created");
     end;
 
+    local procedure FiscalPeriodsCreated(): Boolean
+    begin
+        GPConfiguration.GetSingleInstance();
+        exit(GPConfiguration."Fiscal Periods Created");
+    end;
+
     procedure PreMigrationCleanupCompleted(): Boolean
     begin
         GPConfiguration.GetSingleInstance();
@@ -1844,13 +1857,17 @@ Codeunit 4037 "Helper Functions"
     procedure CreatePostMigrationData(): Boolean
     begin
         // this procedure might run multiple times depending upon migration errors.
+
+        if not FiscalPeriodsCreated() then
+            CreateFiscalPeriods();
+
         if not CheckBooksCreated() then
             CreateCheckbooks();
 
         if not OpenPurchaseOrdersCreated() then
             CreateOpenPOs();
 
-        if CheckBooksCreated() and OpenPurchaseOrdersCreated() then
+        if CheckBooksCreated() and OpenPurchaseOrdersCreated() and FiscalPeriodsCreated() then
             exit(true);
 
         exit(false);
@@ -1896,6 +1913,11 @@ Codeunit 4037 "Helper Functions"
     begin
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnSkipPostingBankBatches(var SkipPosting: Boolean)
+    begin
+    end;
+
     local procedure CreateDataMigrationErrorRecord(ErrorMessage: Text[250])
     var
         DataMigrationError: Record "Data Migration Error";
@@ -1905,5 +1927,15 @@ Codeunit 4037 "Helper Functions"
         DataMigrationError."Scheduled For Retry" := false;
         DataMigrationError."Error Message" := ErrorMessage;
         DataMigrationError.Insert();
+    end;
+
+    procedure CleanGPPhoneOrFaxNumber(InValue: Text[30]) OutValue: Text[21]
+    begin
+        OutValue := CopyStr(InValue, 1, 21);
+
+        if (CopyStr(InValue, 1, 14) = '00000000000000') then
+            OutValue := '';
+
+        exit(OutValue);
     end;
 }

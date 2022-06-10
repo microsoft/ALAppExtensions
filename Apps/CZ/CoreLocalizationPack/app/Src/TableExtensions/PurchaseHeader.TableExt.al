@@ -49,7 +49,8 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
                 VendorBankAccount: Record "Vendor Bank Account";
                 BankAccount: Record "Bank Account";
             begin
-                TestField(Status, Status::Open);
+                if CurrFieldNo = Rec.FieldNo("Bank Account Code CZL") then
+                    TestField(Status, Status::Open);
                 if "Bank Account Code CZL" = '' then begin
                     UpdateBankInfoCZL('', '', '', '', '', '', '');
                     exit;

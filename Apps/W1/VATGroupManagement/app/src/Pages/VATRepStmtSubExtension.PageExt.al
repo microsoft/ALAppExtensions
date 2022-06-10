@@ -20,6 +20,7 @@ pageextension 4704 "VAT Rep. Stmt. Sub. Extension" extends "VAT Report Statement
                 var
                     VATReportHeader: Record "VAT Report Header";
                     VATGroupHelperFunctions: Codeunit "VAT Group Helper Functions";
+                    VATGroupRetrievefromSubmission: Codeunit "VAT Group Retrieve From Sub.";
                 begin
                     if not VATReportHeader.Get(Rec."VAT Report Config. Code", Rec."VAT Report No.") then
                         exit;
@@ -27,6 +28,9 @@ pageextension 4704 "VAT Rep. Stmt. Sub. Extension" extends "VAT Report Statement
                         exit;
 
                     VATGroupHelperFunctions.PrepareVATCalculation(VATReportHeader, Rec);
+
+                    if VATReportHeader.Status = VATReportHeader.Status::Open then
+                        VATGroupRetrievefromSubmission.Run(VATReportHeader);
                 end;
             }
         }
@@ -38,19 +42,10 @@ pageextension 4704 "VAT Rep. Stmt. Sub. Extension" extends "VAT Report Statement
     }
 
     var
-        VATReportHeader: Record "VAT Report Header";
         IsColumnVisible: Boolean;
 
-    trigger OnAfterGetRecord()
-    var
-        VATGroupRetrievefromSubmission: Codeunit "VAT Group Retrieve From Sub.";
+    procedure SetColumnVisible(IsVisible: Boolean)
     begin
-        VATReportHeader.SetRange("No.", Rec."VAT Report No.");
-        VATReportHeader.SetRange("VAT Report Config. Code", Rec."VAT Report Config. Code");
-        if VATReportHeader.FindFirst() then
-            IsColumnVisible := VATReportHeader."VAT Group Return";
-
-        if IsColumnVisible and (VATReportHeader.Status = VATReportHeader.Status::Open) then
-            VATGroupRetrievefromSubmission.Run(VATReportHeader);
+        IsColumnVisible := IsVisible;
     end;
 }

@@ -560,6 +560,35 @@ codeunit 18143 "GST Sales Validation"
         AssignInvoiceType(Rec);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnBeforeUpdateLineDiscPct', '', false, false)]
+    local procedure OnBeforeUpdateLineDiscPct(var SalesLine: Record "Sales Line"; var IsHandled: Boolean; Currency: Record Currency)
+    var
+        LineDiscountPct: Decimal;
+        IsOutOfStandardDiscPctRange: Boolean;
+        LineDiscountPctErr: Label 'The value in the Line Discount % field must be between 0 and 100.';
+    begin
+        if not SalesLine."Price Inclusive of Tax" then
+            exit;
+
+        if Round(SalesLine.Quantity * SalesLine."Unit Price Incl. of Tax", Currency."Amount Rounding Precision") <> 0 then begin
+            LineDiscountPct :=
+                Round(
+                    SalesLine."Line Discount Amount" /
+                    Round(SalesLine.Quantity * SalesLine."Unit Price Incl. of Tax", Currency."Amount Rounding Precision") * 100,
+                    0.00001);
+
+            IsOutOfStandardDiscPctRange := not (LineDiscountPct in [0 .. 100]);
+
+            if IsOutOfStandardDiscPctRange then
+                Error(LineDiscountPctErr);
+
+            SalesLine."Line Discount %" := LineDiscountPct;
+        end else
+            SalesLine."Line Discount %" := 0;
+
+        IsHandled := true;
+    end;
+
     local procedure CalcTotalUPITAmount(var Rec: Record "Sales Line")
     begin
         if not Rec."Price Inclusive of Tax" then
@@ -1773,8 +1802,10 @@ codeunit 18143 "GST Sales Validation"
         SalesInvLine.SetFilter(Type, '<>%1', SalesInvLine.Type::" ");
         if SalesInvLine.FindSet() then
             repeat
-                GSTSetup.TestField("GST Tax Type");
-                TaxTransactionFound := FilterTaxTransactionValue(GSTSetup."GST Tax Type", SalesInvLine.RecordId);
+                if SalesInvLine."System-Created Entry" = false then begin
+                    GSTSetup.TestField("GST Tax Type");
+                    TaxTransactionFound := FilterTaxTransactionValue(GSTSetup."GST Tax Type", SalesInvLine.RecordId);
+                end;
             until SalesInvLine.Next() = 0
         else
             exit(false);

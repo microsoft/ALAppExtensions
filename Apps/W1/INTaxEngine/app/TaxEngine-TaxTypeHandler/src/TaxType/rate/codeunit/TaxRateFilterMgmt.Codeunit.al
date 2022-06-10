@@ -2,8 +2,7 @@ codeunit 20241 "Tax Rate Filter Mgmt."
 {
     var
         TempTaxRateFilter: Record "Tax Rate Filter" temporary;
-        TempTaxRateValueInterim: Record "Tax Rate Value" temporary;
-        TempGlobalTaxRateValue: Record "Tax Rate Value" temporary;
+        ColumnCounts: Dictionary of [Integer, Integer];
 
     procedure OpenTaxRateFilter(var TaxRate: Record "Tax Rate")
     var
@@ -18,13 +17,7 @@ codeunit 20241 "Tax Rate Filter Mgmt."
 
     procedure ClearTaxRateFilter(var TaxRate: Record "Tax Rate")
     begin
-        TaxRate.ClearMarks();
-        TaxRate.MarkedOnly(false);
-
-        TempTaxRateFilter.Reset();
-        TempTaxRateFilter.DeleteAll();
-
-        if TaxRate.FindSet() then;
+        ClearCache(TaxRate);
     end;
 
     procedure UpdateTaxRateFilters(TaxTypeCode: Code[20])
@@ -82,6 +75,7 @@ codeunit 20241 "Tax Rate Filter Mgmt."
         TaxRateFilters: Page "Tax Rate Filters";
         FilterApplied: Boolean;
     begin
+        TempTaxRateFilter.Reset();
         if TempTaxRateFilter.IsEmpty() then
             UpdateTempTaxRateFilter(TaxRate."Tax Type");
 
@@ -116,79 +110,127 @@ codeunit 20241 "Tax Rate Filter Mgmt."
         var TaxRateFilter: Record "Tax Rate Filter" temporary;
         var TaxRate: Record "Tax Rate";
         var FilterApplied: Boolean)
-    var
-        TempTaxRateValue: Record "Tax Rate Value" temporary;
     begin
-        FillTempTaxRates(TaxRate."Tax Type", TempTaxRateValue);
-
         TaxRateFilter.SetFilter(Value, '<>%1', '');
         if TaxRateFilter.FindSet() then begin
             FilterApplied := true;
             repeat
-                ApplyFilter(TempTaxRateValue, TaxRateFilter);
+                UpdateCountByColumnType(TaxRateFilter);
             until TaxRateFilter.Next() = 0;
-
-            MarkTaxRate(TaxRate, TempTaxRateValue);
         end;
+
+        if FilterApplied then
+            MarkRecordsForStats(TempTaxRateFilter, TaxRate);
     end;
 
-    local procedure FillTempTaxRates(
-        TaxTypeCode: Code[20];
-        var TempTaxRateValue: Record "Tax Rate Value" temporary)
+    local procedure MarkRecordsForStats(
+        var TaxRateFilter: Record "Tax Rate Filter" temporary;
+        var TaxRate: Record "Tax Rate")
     var
-        TaxRate: Record "Tax Rate";
+        ConfigIDList: List of [Guid];
     begin
-        DeleteTemp();
-
-        TaxRate.Setrange("Tax Type", TaxTypeCode);
-        if TaxRate.FindSet() then
-            repeat
-                FillRateValue(TempTaxRateValue, TaxRate.ID);
-            until TaxRate.Next() = 0;
+        ConfigIDList := GetConfigIDList(TaxRateFilter);
+        MarkTaxRate(TaxRate, TaxRateFilter."Tax Type", ConfigIDList);
     end;
 
-    local procedure FillRateValue(var TempTaxRateValue: Record "Tax Rate Value" temporary; ConfigID: Guid)
+    local procedure FilterTaxRateFilter(var TaxRateFilter: Record "Tax Rate Filter" temporary; ColumnID: Integer)
+    begin
+        TaxRateFilter.Reset();
+        TaxRateFilter.SetRange("Column ID", ColumnID);
+        TaxRateFilter.FindFirst();
+    end;
+
+    local procedure GetConfigIDList(var TaxRateFilter: Record "Tax Rate Filter" temporary): List of [Guid]
+    var
+        ColumnID: Integer;
+        RecordCount: Integer;
+        ConfigIDList: List of [Guid];
+    begin
+        while (ColumnCounts.Count) > 0 do begin
+            ColumnID := GetSmallestColumnID();
+            RecordCount := ColumnCounts.Get(ColumnID);
+            ColumnCounts.Remove(ColumnID);
+
+            if RecordCount = 0 then
+                break;
+
+            FilterTaxRateFilter(TaxRateFilter, ColumnID);
+            ConfigIDList := UpdateConfigIDList(TaxRateFilter, ConfigIDList);
+
+            if ConfigIDList.Count = 0 then
+                break;
+        end;
+
+        exit(ConfigIDList);
+    end;
+
+    local procedure CreateFilteredString(ConfigID: List of [Guid]): Text
+    var
+        i: Integer;
+        FilterTxt: Text;
+    begin
+        for i := 1 to ConfigID.Count do begin
+            if FilterTxt <> '' then
+                FilterTxt += '|';
+            FilterTxt += Format(ConfigID.Get(i));
+        end;
+
+        exit(FilterTxt);
+    end;
+
+    local procedure UpdateConfigIDList(TaxRateFilter: Record "Tax Rate Filter" temporary; ConfigIDList: List of [Guid]): List of [Guid]
+    var
+        TaxRateValue: Record "Tax Rate Value";
+        CurrentConfigIDList: List of [Guid];
+        ConfigIDList2: List of [Guid];
+        ConfigIDCount: Integer;
+        IsConfigEmpty: Boolean;
+        FilterTxt: Text;
+    begin
+        ApplyFilterByColumnType(TaxRateFilter, TaxRateValue);
+        IsConfigEmpty := ConfigIDList.Count = 0;
+
+        repeat
+            if (not IsConfigEmpty) then begin
+                ConfigIDCount := ConfigIDList.Count;
+                if ConfigIDCount > 500 then
+                    ConfigIDCount := 500;
+
+                ConfigIDList2 := ConfigIDList.GetRange(1, ConfigIDCount);
+                ConfigIDList.RemoveRange(1, ConfigIDCount);
+                FilterTxt := CreateFilteredString(ConfigIDList2);
+                TaxRateValue.SetFilter("Config ID", FilterTxt);
+            end;
+
+            if TaxRateValue.FindSet() then
+                repeat
+                    if IsConfigEmpty or (ConfigIDList2.Contains(TaxRateValue."Config ID")) then
+                        CurrentConfigIDList.Add(TaxRateValue."Config ID");
+                until TaxRateValue.Next() = 0;
+
+        until (ConfigIDList.Count = 0);
+
+        exit(CurrentConfigIDList);
+    end;
+
+    local procedure UpdateCountByColumnType(TaxRateFilter: Record "Tax Rate Filter")
     var
         TaxRateValue: Record "Tax Rate Value";
     begin
-        TaxRateValue.SetRange("Config ID", ConfigID);
-        if TaxRateValue.FindSet() then
-            repeat
-                TempTaxRateValue.Init();
-                TempTaxRateValue := TaxRateValue;
-                TempTaxRateValue.Insert();
-
-                TempGlobalTaxRateValue.Init();
-                TempGlobalTaxRateValue := TaxRateValue;
-                TempGlobalTaxRateValue.Insert();
-            until TaxRateValue.Next() = 0;
-    end;
-
-    local procedure DeleteTemp()
-    begin
-        TempGlobalTaxRateValue.Reset();
-        TempGlobalTaxRateValue.DeleteAll();
-    end;
-
-    local procedure ApplyFilter(
-        var TaxRateValue: Record "Tax Rate Value" temporary;
-        TaxRateFilter: Record "Tax Rate Filter")
-    begin
-        ApplyFilterByColumnType(TaxRateValue, TaxRateFilter);
-        MarkFilterRecords(TaxRateValue);
-        UpdateCacheRecords(TaxRateValue);
+        ApplyFilterByColumnType(TaxRateFilter, TaxRateValue);
+        ColumnCounts.Add(TaxRateFilter."Column ID", TaxRateValue.Count);
     end;
 
     local procedure ApplyFilterByColumnType(
-        var TaxRateValue: Record "Tax Rate Value" temporary;
-        TaxRateFilter: Record "Tax Rate Filter")
+        TaxRateFilter: Record "Tax Rate Filter";
+        var TaxRateValue: Record "Tax Rate Value")
     var
         TaxAttribute: Record "Tax Attribute";
         ScriptDataTypeMgmt: Codeunit "Script Data Type Mgmt.";
         RHSvalue: Variant;
         OptionText: Text;
     begin
-        TaxRateValue.Reset();
+        TaxRateValue.SetRange("Tax Type", TaxRateFilter."Tax Type");
         TaxRateValue.SetRange("Column ID", TaxRateFilter."Column ID");
 
         if TaxRateFilter.Type = TaxRateFilter.Type::Option then
@@ -228,9 +270,9 @@ codeunit 20241 "Tax Rate Filter Mgmt."
     end;
 
     local procedure ApplyFieldFilter(
-        var TaxRateValue: Record "Tax Rate Value" temporary;
+        var TaxRateValue: Record "Tax Rate Value";
         TaxRateFilter: Record "Tax Rate Filter";
-        FilterType: Enum "Conditional Operator";
+    FilterType: Enum "Conditional Operator";
         Value: Variant)
     begin
         if Format(Value).Contains('..') or Format(Value).Contains('|') then
@@ -269,7 +311,7 @@ codeunit 20241 "Tax Rate Filter Mgmt."
     end;
 
     local procedure ApplyFilterWithOperator(
-        var TaxRateValue: Record "Tax Rate Value" temporary;
+        var TaxRateValue: Record "Tax Rate Value";
         TaxRateFilter: Record "Tax Rate Filter";
         Operator: Text;
         Value: Variant)
@@ -323,54 +365,51 @@ codeunit 20241 "Tax Rate Filter Mgmt."
 
     local procedure MarkTaxRate(
         var TaxRate: Record "Tax Rate";
-        var TaxRateValue: Record "Tax Rate Value" temporary)
+        TaxTypeCode: Code[20];
+        ConfigIDList: List of [Guid])
+    var
+        i: Integer;
     begin
-        TaxRateValue.Reset();
-        if TaxRateValue.FindSet() then
-            repeat
-                TaxRate.Get(TaxRateValue."Tax Type", TaxRateValue."Config ID");
-                if not TaxRate.Mark() then
-                    TaxRate.Mark(true);
-            until TaxRateValue.Next() = 0;
+        for i := 1 to ConfigIDList.Count do begin
+            TaxRate.Get(TaxTypeCode, ConfigIDList.Get(i));
+            if not TaxRate.Mark() then
+                TaxRate.Mark(true);
+        end;
     end;
 
-    local procedure MarkFilterRecords(var TaxRateValue: Record "Tax Rate Value" temporary)
+    local procedure ClearCache(var TaxRate: Record "Tax Rate")
     begin
-        if TaxRateValue.FindSet() then
-            repeat
-                FillInterimRecord(TaxRateValue."Config ID");
-            until TaxRateValue.Next() = 0;
+        Clear(ColumnCounts);
+
+        TaxRate.ClearMarks();
+        TaxRate.MarkedOnly(false);
+
+        TempTaxRateFilter.Reset();
+        TempTaxRateFilter.DeleteAll();
+
+        if TaxRate.FindSet() then;
     end;
 
-    local procedure UpdateCacheRecords(var TaxRateValue: Record "Tax Rate Value" temporary)
+    local procedure GetSmallestColumnID(): Integer
+    var
+        SmallestColumnID: Integer;
+        SmallestValue: Integer;
+        ColumnID: Integer;
+        Value: Integer;
+        IsFirstIteration: Boolean;
     begin
-        TaxRateValue.Reset();
-        TaxRateValue.DeleteAll();
+        SmallestColumnID := 0;
+        SmallestValue := 0;
 
-        TempTaxRateValueInterim.Reset();
-        if TempTaxRateValueInterim.FindSet() then
-            repeat
-                TaxRateValue.Init();
-                TaxRateValue := TempTaxRateValueInterim;
-                TaxRateValue.Insert();
-                TempTaxRateValueInterim.Delete();
-            until TempTaxRateValueInterim.Next() = 0;
-    end;
+        foreach ColumnID in ColumnCounts.Keys() do begin
+            Value := ColumnCounts.Get(ColumnID);
+            if (Value < SmallestValue) or (not IsFirstIteration) then begin
+                SmallestValue := Value;
+                SmallestColumnID := ColumnID;
+                IsFirstIteration := true;
+            end;
+        end;
 
-    local procedure FillInterimRecord(ConfigID: Guid)
-    begin
-        TempTaxRateValueInterim.Reset();
-        TempTaxRateValueInterim.SetRange("Config ID", ConfigID);
-        if not TempTaxRateValueInterim.IsEmpty() then
-            exit;
-
-        TempGlobalTaxRateValue.Reset();
-        TempGlobalTaxRateValue.SetRange("Config ID", ConfigID);
-        if TempGlobalTaxRateValue.FindSet() then
-            repeat
-                TempTaxRateValueInterim.Init();
-                TempTaxRateValueInterim := TempGlobalTaxRateValue;
-                TempTaxRateValueInterim.Insert();
-            until TempGlobalTaxRateValue.Next() = 0;
+        exit(SmallestColumnID);
     end;
 }

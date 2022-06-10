@@ -36,7 +36,7 @@ table 3966 "Regex Options"
         field(4; Compiled; Boolean)
         {
             DataClassification = SystemMetadata;
-            Description = 'Specifies that the regular expression is compiled to an assembly';
+            Description = 'Specifies that the regular expression is compiled to Microsoft intermediate language (MSIL) code.';
         }
         field(5; Singleline; Boolean)
         {

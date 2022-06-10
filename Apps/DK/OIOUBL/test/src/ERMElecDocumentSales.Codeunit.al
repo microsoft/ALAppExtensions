@@ -38,6 +38,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         WrongInvoiceLineCountErr: Label 'Wrong count of "InvoiceLine".';
         BaseQuantityTxt: Label 'cbc:BaseQuantity';
         NonExistingDocumentFormatErr: Label 'The electronic document format OIOUBL does not exist for the document type %1.';
+        WrongFileNameErr: Label 'File name should be: %1', Comment = '%1 - Client File Name';
         isInitialized: Boolean;
 
     [Test]
@@ -961,6 +962,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         end;
         VerifyFileListInZipArchive(FileNameLst);
     end;
+
     [Test]
     [HandlerFunctions('ProfileSelectionMethodAndCloseEmailStrMenuHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler')]
     procedure SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmail();
@@ -1441,6 +1443,45 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         // [THEN] OIOUBL XML document is created, node cbc:ID has value "A".
         InitializeLibraryXPathXMLReader(OIOUBLNewFileMock.PopFilePath());
         LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex('//cac:OrderReference/cbc:ID', PostedDocNo, 0);
+    end;
+
+    [Test]
+    procedure SendPostedSalesInvoiceOIOUBLAndVerifyFileName()
+    var
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+        FileMgt: Codeunit "File Management";
+        PostedDocNo: Code[20];
+        ExpectedFileName: Text;
+        ActualFileName: Text;
+    begin
+        // [SCENARIO 435433] To verify if file name with Electronic Document option from Posted Sales Invoice is following a nomenclature : CompanyName - Invoice Document No.xml
+        Initialize();
+        CreateElectronicDocumentFormat(
+            OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", Codeunit::"OIOUBL-Export Sales Invoice");
+
+        // [GIVEN] Default DocumentSendingProfile with Printer = No; Disk = "Electronic Document", Format = OIOUBL;
+        // [GIVEN] E-Mail = No, E-Mail Attachment = "Electronic Document", Format = OIOUBL. One Posted Sales Invoice.
+        CreateDocumentSendingProfile(
+            DocumentSendingProfile, DocumentSendingProfile.Printer::No,
+            DocumentSendingProfile."E-Mail"::No,
+            DocumentSendingProfile."E-Mail Attachment"::"Electronic Document", OIOUBLFormatNameTxt,
+            DocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
+
+        PostedDocNo := CreateAndPostSalesDocument(SalesLine, "Sales Document Type"::Order);
+        SalesInvoiceHeader.Get(PostedDocNo);
+        SetDocumentSendingProfileToCustomer(SalesInvoiceHeader."Sell-to Customer No.", DocumentSendingProfile.Code);
+        ExpectedFileName := CopyStr(
+            StrSubstNo('%1 - %2 %3.%4', FileMgt.StripNotsupportChrInFileName(CompanyName), Format("Sales Document Type"::Invoice), SalesInvoiceHeader."No.", 'XML'), 1, 250);
+
+        // [WHEN] Export the xml file for electronic document
+        SalesInvoiceHeader.SetRecFilter();
+        ActualFileName := GetXMLExportFileName(SalesInvoiceHeader, OIOUBLFormatNameTxt);
+
+        // [THEN] Client File Name should be CompanyName - Invoice Document No.xml
+        Assert.AreEqual(ExpectedFileName, ActualFileName, StrSubstNo(WrongFileNameErr, ExpectedFileName));
     end;
 
     local procedure Initialize();
@@ -2126,6 +2167,16 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
             '//cac:LegalMonetaryTotal/cbc:LineExtensionAmount', FormatAmount(TotalLineExtensionAmount));
         LibraryXPathXMLReader.VerifyNodeValueByXPath(
             '//cac:AllowanceCharge/cbc:Amount', FormatAmount(TotalAllowanceChargeAmount));
+    end;
+
+    local procedure GetXMLExportFileName(DocumentVariant: Variant; FormatCode: Code[20]): Text
+    var
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+        TempBlob: Codeunit "Temp Blob";
+        ClientFileName: Text[250];
+    begin
+        ElectronicDocumentFormat.SendElectronically(TempBlob, ClientFileName, DocumentVariant, FormatCode);
+        exit(ClientFileName);
     end;
 
     [ConfirmHandler]

@@ -39,6 +39,10 @@ query 1441 "Top Customer Headline"
                     ColumnFilter = Reversed = filter (false);
                 }
 
+                filter(DocumentType; "Document Type")
+                {
+                }
+
                 filter(Amount; "Amount")
                 {
                     ColumnFilter = Amount = filter ('>0');

@@ -126,24 +126,6 @@
         }
     }
 
-    trigger OnAfterGetRecord()
-    var
-        CheckLedgerEntry: Record "Check Ledger Entry";
-        BankLedgerEntry: Record "Bank Account Ledger Entry";
-    begin
-        CheckLedgerEntry.SetRange("Check No.", Rec."Document No.");
-        if CheckLedgerEntry.FindFirst() then
-            if Rec."Check Printed" = true then begin
-                Rec.Validate("Cheque No.", CheckLedgerEntry."Check No.");
-                Rec.Validate("Cheque Date", CheckLedgerEntry."Check Date");
-                BankLedgerEntry.SetRange("Document No.", Rec."Document No.");
-                if BankLedgerEntry.FindFirst() then begin
-                    BankLedgerEntry.Validate("Cheque No.", CheckLedgerEntry."Check No.");
-                    BankLedgerEntry.Validate("Cheque Date", CheckLedgerEntry."Check Date");
-                end;
-            end;
-    end;
-
     var
         VoidCheckConfirmationLbl: Label 'Void Check %1?', Comment = '%1 = Check No';
         VoidAllCheckLbl: Label 'Void all printed checks?';

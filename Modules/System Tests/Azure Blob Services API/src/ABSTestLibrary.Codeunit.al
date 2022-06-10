@@ -37,13 +37,12 @@ codeunit 132921 "ABS Test Library"
     begin
         for i := 1 to 10 do begin
             Any.SetSeed(Random(2000));
-            Sleep(Any.IntegerInRange(5, 75));
-            Any.SetSeed(Random(5000));
             TagDictionary.Add(
-            Any.AlphabeticText(Any.IntegerInRange(1, 128)),
-            Any.AlphabeticText(Any.IntegerInRange(1, 256))
+                Any.AlphabeticText(Any.IntegerInRange(1, 10)),
+                Any.AlphabeticText(Any.IntegerInRange(1, 50))
             );
         end;
+
         exit(TagDictionary);
     end;
 

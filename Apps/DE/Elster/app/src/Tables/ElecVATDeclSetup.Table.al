@@ -32,8 +32,16 @@ table 11023 "Elec. VAT Decl. Setup"
     }
 
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        ElecVATAdvanceNotTok: Label 'DE Elec. VAT Advance Notifications', Locked = true;
         ElecVATDeclSetupQst: Label 'Sales VAT Adv. Notif. Path of the XML file is missing. Do you want to update it now?';
         MissingSetupElsterErr: Label 'Sales VAT Adv. Notif Path of the XML file is missing. Please Correct it.';
+
+    trigger OnInsert()
+    begin
+        FeatureTelemetry.LogUptake('0001Q0F', ElecVATAdvanceNotTok, Enum::"Feature Uptake Status"::"Set up");
+    end;
+
 
     procedure VerifyAndSetSalesVATAdvNotifPath()
     var

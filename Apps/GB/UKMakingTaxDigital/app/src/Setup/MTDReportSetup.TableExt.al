@@ -110,7 +110,10 @@ tableextension 10539 "MTD Report Setup" extends "VAT Report Setup"
             trigger OnValidate()
             var
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+                FeatureTelemetry: Codeunit "Feature Telemetry";
+                UKMakingTaxTok: Label 'UK Making Tax Digital', Locked = true;
             begin
+                FeatureTelemetry.LogUptake('0000HFV', UKMakingTaxTok, Enum::"Feature Uptake Status"::"Set up");
                 if not xRec."MTD Enabled" and "MTD Enabled" then
                     "MTD Enabled" := CustomerConsentMgt.ConfirmUserConsent();
             end;

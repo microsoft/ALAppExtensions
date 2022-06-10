@@ -183,6 +183,7 @@ codeunit 135035 "User Selection Test"
     local procedure Initialize();
     var
         User: Record User;
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
         if IsInitialized then
             exit;
@@ -191,7 +192,8 @@ codeunit 135035 "User Selection Test"
             User."User Security ID" := CreateGuid();
             User."User Name" := CopyStr(UserId(), 1, MaxStrLen(User."User Name"));
             User."Full Name" := User."User Name";
-            User."Windows Security ID" := CopyStr(Sid(User."User Name"), 1, MaxStrLen(User."Windows Security ID"));
+            if not EnvironmentInformation.IsSaaS() then
+                User."Windows Security ID" := CopyStr(Sid(User."User Name"), 1, MaxStrLen(User."Windows Security ID"));
             User.Insert();
         end;
 

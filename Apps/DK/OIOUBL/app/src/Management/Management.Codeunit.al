@@ -45,7 +45,7 @@ codeunit 13646 "OIOUBL-Management"
 
         if FolderPath <> '' then
             FileName := StrSubstNo(FolderFileLbl, FolderPath, FileName);
-        FileManagement.BLOBExport(TempBlob, FileName, FolderPath <> '');
+        FileManagement.BLOBExport(TempBlob, FileName, true);
     end;
 
 #if not CLEAN20

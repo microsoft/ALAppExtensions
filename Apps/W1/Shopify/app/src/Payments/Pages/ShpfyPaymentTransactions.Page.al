@@ -7,7 +7,6 @@ page 30124 "Shpfy Payment Transactions"
     Caption = 'Shopify Payment Transactions';
     Editable = false;
     PageType = ListPart;
-    PromotedActionCategories = 'New,Process,Report,Inspect';
     SourceTable = "Shpfy Payment Transaction";
     UsageCategory = None;
 
@@ -89,10 +88,6 @@ page 30124 "Shpfy Payment Transactions"
                 ApplicationArea = All;
                 Caption = 'Retrieved Shopify Data';
                 Image = Entry;
-                Promoted = true;
-                PromotedCategory = Category4;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ToolTip = 'View the data retrieved from Shopify.';
 
                 trigger OnAction();

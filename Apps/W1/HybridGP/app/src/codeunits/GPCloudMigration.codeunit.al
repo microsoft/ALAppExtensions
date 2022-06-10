@@ -41,6 +41,9 @@ codeunit 4025 "GP Cloud Migration"
         CompanyFailedToMigrateMsg: Label 'Migration did not start because the company setup is still in process.', Locked = true;
         InitiateMigrationMsg: Label 'Initiate GP Migration.', Locked = true;
         StartMigrationMsg: Label 'Start Migration', Locked = true;
+        GPSY40100Lbl: Label 'SY40100', Locked = true;
+        GPSY40101Lbl: Label 'SY40101', Locked = true;
+        GPCM20600Lbl: Label 'CM20600', Locked = true;
 
     local procedure InitiateGPMigration()
     var
@@ -133,5 +136,28 @@ codeunit 4025 "GP Cloud Migration"
         DataMigrationEntity.InsertRecord(Database::Vendor, HelperFunctions.GetNumberOfVendors());
         DataMigrationEntity.InsertRecord(Database::Item, HelperFunctions.GetNumberOfItems());
         exit(true);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInsertDefaultTableMappings', '', false, false)]
+    local procedure OnInsertDefaultTableMappings(DeleteExisting: Boolean; ProductID: Text[250])
+    begin
+        UpdateOrInsertRecord(Database::"GP SY40100", GPSY40100Lbl);
+        UpdateOrInsertRecord(Database::"GP SY40101", GPSY40101Lbl);
+        UpdateOrInsertRecord(Database::"GP CM20600", GPCM20600Lbl);
+    end;
+
+    local procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128])
+    var
+        MigrationTableMapping: Record "Migration Table Mapping";
+        CurrentModuleInfo: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(CurrentModuleInfo);
+        if MigrationTableMapping.Get(CurrentModuleInfo.Id(), TableID) then
+            MigrationTableMapping.Delete();
+
+        MigrationTableMapping."App ID" := CurrentModuleInfo.Id();
+        MigrationTableMapping.Validate("Table ID", TableID);
+        MigrationTableMapping."Source Table Name" := SourceTableName;
+        MigrationTableMapping.Insert();
     end;
 }

@@ -13,5 +13,6 @@ codeunit 1597 "Email Upgrade"
         EmailInstaller: Codeunit "Email Installer";
     begin
         EmailInstaller.AddRetentionPolicyAllowedTables(); // also sets the tag
+        EmailInstaller.SetDefaultEmailViewPolicy(Enum::"Email View Policy"::OwnEmails);
     end;
 }

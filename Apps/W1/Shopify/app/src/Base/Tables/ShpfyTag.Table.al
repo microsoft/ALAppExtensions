@@ -40,11 +40,11 @@ table 30104 "Shpfy Tag"
 
     trigger OnInsert()
     var
-        ShopifyTag: Record "Shpfy Tag";
+        ShpfyTag: Record "Shpfy Tag";
         MaxTagsErr: Label 'You can only specify 250 tags.';
     begin
-        ShopifyTag.SetRange("Parent Id", "Parent Id");
-        if ShopifyTag.Count() >= 250 then
+        ShpfyTag.SetRange("Parent Id", "Parent Id");
+        if ShpfyTag.Count() >= 250 then
             Error(MaxTagsErr);
     end;
 
@@ -55,15 +55,15 @@ table 30104 "Shpfy Tag"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetCommaSeperatedTags(ParentId: BigInteger): Text
     var
-        ShopifyTag: Record "Shpfy Tag";
+        ShpfyTag: Record "Shpfy Tag";
         Tags: TextBuilder;
     begin
-        ShopifyTag.SetRange("Parent Id", ParentId);
-        if ShopifyTag.FindSet(false, false) then begin
+        ShpfyTag.SetRange("Parent Id", ParentId);
+        if ShpfyTag.FindSet(false, false) then begin
             repeat
                 Tags.Append(',');
-                Tags.Append(ShopifyTag.Tag);
-            until ShopifyTag.Next() = 0;
+                Tags.Append(ShpfyTag.Tag);
+            until ShpfyTag.Next() = 0;
             Tags.Remove(1, 1);
         end;
         exit(Tags.ToText());
@@ -77,22 +77,22 @@ table 30104 "Shpfy Tag"
     /// <param name="CommaSeperatedTags">Parameter of type Text.</param>
     internal procedure UpdateTags(ParentTableNo: Integer; ParentId: BigInteger; CommaSeperatedTags: Text)
     var
-        ShopifyTag: Record "Shpfy Tag";
+        ShpfyTag: Record "Shpfy Tag";
         Tags: List of [Text];
         TagTxt: Text;
     begin
-        ShopifyTag.SetRange("Parent Id", ParentId);
-        if not ShopifyTag.IsEmpty() then
-            ShopifyTag.DeleteAll();
+        ShpfyTag.SetRange("Parent Id", ParentId);
+        if not ShpfyTag.IsEmpty() then
+            ShpfyTag.DeleteAll();
         Tags := CommaSeperatedTags.Split(',');
         foreach TagTxt in Tags do begin
             TagTxt := TagTxt.Trim();
             if TagTxt <> '' then begin
-                Clear(ShopifyTag);
-                ShopifyTag."Parent Table No." := ParentTableNo;
-                ShopifyTag."Parent Id" := ParentId;
-                ShopifyTag.Tag := CopyStr(TagTxt, 1, MaxStrLen(ShopifyTag.Tag));
-                ShopifyTag.Insert();
+                Clear(ShpfyTag);
+                ShpfyTag."Parent Table No." := ParentTableNo;
+                ShpfyTag."Parent Id" := ParentId;
+                ShpfyTag.Tag := CopyStr(TagTxt, 1, MaxStrLen(ShpfyTag.Tag));
+                ShpfyTag.Insert();
             end;
         end;
     end;

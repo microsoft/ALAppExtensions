@@ -275,7 +275,10 @@ page 1690 "Bank Deposit"
     end;
 
     trigger OnOpenPage()
+    var
+        SetupBankDepositReports: Codeunit "Setup Bank Deposit Reports";
     begin
+        SetupBankDepositReports.InsertSetupData();
         CurrentJnlBatchName := Rec."Journal Batch Name";
         if Rec."Journal Template Name" <> '' then begin
             GenJournalLine.FilterGroup(2);

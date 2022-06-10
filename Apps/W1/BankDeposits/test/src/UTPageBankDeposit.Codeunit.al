@@ -640,6 +640,8 @@ codeunit 139768 "UT Page Bank Deposit"
     end;
 
     local procedure Initialize()
+    var
+        SetupBankDepositReports: Codeunit "Setup Bank Deposit Reports";
     begin
         LibraryVariableStorage.Clear();
 
@@ -650,6 +652,7 @@ codeunit 139768 "UT Page Bank Deposit"
         if InitializeHandled then
             exit;
 
+        SetupBankDepositReports.InsertSetupData();
         OnAfterInitialize(InitializeHandled);
         Initialized := true;
     end;
