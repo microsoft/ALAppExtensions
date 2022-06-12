@@ -1,4 +1,4 @@
-table 40107 "GP CM20600"
+table 40109 "GP CM20600"
 {
     DataClassification = CustomerContent;
     Description = 'Transfers';

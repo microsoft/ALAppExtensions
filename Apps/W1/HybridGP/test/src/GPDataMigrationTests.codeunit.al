@@ -12,12 +12,26 @@ codeunit 139664 "GP Data Migration Tests"
         GPCustomer: Record "GP Customer";
         GPVendor: Record "GP Vendor";
         GPVendorAddress: Record "GP Vendor Address";
+        GPSY06000: Record "GP SY06000";
+        GPMC40200: Record "GP MC40200";
         CustomerFacade: Codeunit "Customer Data Migration Facade";
         CustomerMigrator: Codeunit "GP Customer Migrator";
         VendorMigrator: Codeunit "GP Vendor Migrator";
         VendorFacade: Codeunit "Vendor Data Migration Facade";
         Assert: Codeunit Assert;
         GPDataMigrationTests: Codeunit "GP Data Migration Tests";
+        VendorIdWithBankStr1: Label 'Vendor001', Comment = 'Vendor Id with bank account information', Locked = true;
+        VendorIdWithBankStr2: Label 'Vendor002', Comment = 'Vendor Id with bank account information', Locked = true;
+        VendorIdWithBankStr3: Label 'Vendor003', Comment = 'Vendor Id with bank account information', Locked = true;
+        VendorIdWithBankStr4: Label 'Vendor004', Comment = 'Vendor Id with bank account information', Locked = true;
+        ValidSwiftCodeStr: Label 'BOFAUS3N', Comment = 'Valid SWIFT Code', Locked = true;
+        ValidIBANStr: Label 'GB33BUKB20201555555555', Comment = 'Valid IBAN code', Locked = true;
+        AddressCodeRemitTo: Label 'REMIT TO', Comment = 'GP ADRSCODE', Locked = true;
+        AddressCodePrimary: Label 'PRIMARY', Comment = 'GP ADRSCODE', Locked = true;
+        AddressCodeWarehouse: Label 'WAREHOUSE', Comment = 'GP ADRSCODE', Locked = true;
+        AddressCodeOther: Label 'OTHER', Comment = 'Dummy GP ADRSCODE', Locked = true;
+        AddressCodeOther2: Label 'OTHER2', Comment = 'Dummy GP ADRSCODE', Locked = true;
+        CurrencyCodeUS: Label 'Z-US$', Comment = 'GP US Currency Code', Locked = true;
 
 
     [Test]
@@ -456,6 +470,111 @@ codeunit 139664 "GP Data Migration Tests"
         GPPaymentTerms.Insert();
     end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGPVendorBankAccountImport()
+    var
+        Vendor: Record Vendor;
+        VendorBankAccount: Record "Vendor Bank Account";
+        SwiftCode: Record "SWIFT Code";
+        Currency: Record Currency;
+        VendorBankAccountCount: Integer;
+        ActiveVendorBankAccountCount: Integer;
+    begin
+        VendorBankAccountCount := 10;
+        ActiveVendorBankAccountCount := 9;
+
+        // [SCENARIO] Vendors and their bank account information are queried from GP
+        // [GIVEN] GP data
+        Initialize();
+
+        // [WHEN] Data is imported
+        CreateGPVendorBankInformation();
+
+        // [then] Then the correct number of GPSY06000 are imported
+        Assert.AreEqual(VendorBankAccountCount, GPSY06000.Count(), 'Wrong number of GPSY06000 read.');
+
+        // [then] Then fields for the first record are correctly imported to temporary table
+        GPSY06000.SetRange(CustomerVendor_ID, VendorIdWithBankStr1);
+        GPSY06000.SetRange(ADRSCODE, AddressCodeRemitTo);
+        GPSY06000.FindFirst();
+
+        Assert.AreEqual(VendorIdWithBankStr1, GPSY06000.CustomerVendor_ID, 'CustomerVendor_ID of GPSY06000 is wrong.');
+        Assert.AreEqual(AddressCodeRemitTo, GPSY06000.ADRSCODE, 'ADRSCODE of GPSY06000 is wrong.');
+        Assert.AreEqual('V01_RemitTo', GPSY06000.EFTBankCode, 'EFTBankCode of GPSY06000 is wrong.');
+        Assert.AreEqual('V01_RemitTo_Name', GPSY06000.BANKNAME, 'BANKNAME of GPSY06000 is wrong.');
+        Assert.AreEqual('01234', GPSY06000.EFTBankBranchCode, 'EFTBankBranchCode of GPSY06000 is wrong.');
+        Assert.AreEqual('123456789', GPSY06000.EFTBankAcct, 'EFTBankAcct of GPSY06000 is wrong.');
+        Assert.AreEqual('123456789', GPSY06000.EFTTransitRoutingNo, 'EFTTransitRoutingNo of GPSY06000 is wrong.');
+        Assert.AreEqual(CurrencyCodeUS, GPSY06000.CURNCYID, 'CURNCYID of GPSY06000 is wrong.');
+        Assert.AreEqual(ValidIBANStr, GPSY06000.IntlBankAcctNum, 'IntlBankAcctNum of GPSY06000 is wrong.');
+        Assert.AreEqual(ValidSwiftCodeStr, GPSY06000.SWIFTADDR, 'SWIFTADDR of GPSY06000 is wrong.');
+
+        // [WHEN] data is migrated
+        GPVendor.Reset();
+        GPVendor.SetFilter(VENDORID, '%1|%2|%3|%4', VendorIdWithBankStr1, VendorIdWithBankStr2, VendorIdWithBankStr3, VendorIdWithBankStr4);
+        MigrateVendors(GPVendor);
+        RunPostMigration();
+
+        // [then] Then the currencies will be migrated
+        Currency.Reset();
+        Currency.SetRange(Code, CurrencyCodeUS);
+        Assert.AreEqual(true, Currency.FindFirst(), 'Currency was not created.');
+
+        // [then] Then the correct number of Vendor Bank Accounts are imported
+        VendorBankAccount.Reset();
+        VendorBankAccount.SetFilter("Vendor No.", '%1|%2|%3|%4', VendorIdWithBankStr1, VendorIdWithBankStr2, VendorIdWithBankStr3, VendorIdWithBankStr4);
+        Assert.AreEqual(ActiveVendorBankAccountCount, VendorBankAccount.Count(), 'Wrong number of migrated Vendor Bank Accounts read');
+
+        // [then] Then fields for Vendors 1 are correctly applied
+        VendorBankAccount.Reset();
+        VendorBankAccount.SetRange("Vendor No.", VendorIdWithBankStr1);
+        VendorBankAccount.SetRange(Code, 'V01_REMITTO');
+        VendorBankAccount.FindFirst();
+
+        Assert.AreEqual(Text.UpperCase(VendorIdWithBankStr1), VendorBankAccount."Vendor No.", 'Vendor No. of VendorBankAccount is wrong.');
+        Assert.AreEqual('V01_REMITTO', VendorBankAccount.Code, 'Code of VendorBankAccount is wrong.');
+        Assert.AreEqual('V01_RemitTo_Name', VendorBankAccount.Name, 'Name of VendorBankAccount is wrong.');
+        Assert.AreEqual('01234', VendorBankAccount."Bank Branch No.", 'Bank Branch No. of VendorBankAccount is wrong.');
+        Assert.AreEqual('123456789', VendorBankAccount."Bank Account No.", 'Bank Account No. of VendorBankAccount is wrong.');
+        Assert.AreEqual('123456789', VendorBankAccount."Transit No.", 'Transit No. of VendorBankAccount is wrong.');
+        Assert.AreEqual(CurrencyCodeUS, VendorBankAccount."Currency Code", 'Currency Code of VendorBankAccount is wrong.');
+        Assert.AreEqual(ValidIBANStr, VendorBankAccount.IBAN, 'IBAN of VendorBankAccount is wrong.');
+        Assert.AreEqual(ValidSwiftCodeStr, VendorBankAccount."SWIFT Code", 'SWIFT Code of VendorBankAccount is wrong.');
+
+        // [WHEN] the Vendor has a Remit To bank account
+        Vendor.Reset();
+        Vendor.SetRange("No.", VendorIdWithBankStr1);
+        Vendor.FindFirst();
+
+        // [then] The Remit To bank account will be the Vendor's preferred bank account
+        Assert.AreEqual('V01_REMITTO', Vendor."Preferred Bank Account Code", 'Preferred Bank Account Code of migrated Vendor should be Remit To account.');
+
+        // [WHEN] the Vendor does not have a Remit To bank account, but has a Primary bank account
+        Vendor.Reset();
+        Vendor.SetRange("No.", VendorIdWithBankStr2);
+        Vendor.FindFirst();
+
+        // [then] The Primary bank account will be the Vendor's preferred bank account
+        Assert.AreEqual('V02_PRIMARY', Vendor."Preferred Bank Account Code", 'Preferred Bank Account Code of migrated Vendor should be Primary account.');
+
+        // [WHEN] the Vendor does not have either a Remit To or Primary bank account
+        Vendor.Reset();
+        Vendor.SetRange("No.", VendorIdWithBankStr3);
+        Vendor.FindFirst();
+
+        // [then] The Vendor's preferred bank account will be blank
+        Assert.AreEqual('', Vendor."Preferred Bank Account Code", 'Preferred Bank Account Code of migrated Vendor should be blank.');
+
+        // [WHEN] the Vendor does not have an active Remit To but has a Primary bank account
+        Vendor.Reset();
+        Vendor.SetRange("No.", VendorIdWithBankStr4);
+        Vendor.FindFirst();
+
+        // [then] The Primary bank account will be the Vendor's preferred bank account
+        Assert.AreEqual('V04_PRIMARY', Vendor."Preferred Bank Account Code", 'Preferred Bank Account Code of migrated Vendor should be Primary account.');
+    end;
+
     [Normal]
     local procedure Initialize()
     begin
@@ -465,6 +584,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPCustomer.DeleteAll();
         GPVendorAddress.DeleteAll();
         GPVendor.DeleteAll();
+        GPSY06000.DeleteAll();
 
         if UnbindSubscription(GPDataMigrationTests) then
             exit;
@@ -484,6 +604,14 @@ codeunit 139664 "GP Data Migration Tests"
             repeat
                 VendorMigrator.OnMigrateVendor(VendorFacade, Vendors.RecordId());
             until Vendors.Next() = 0;
+    end;
+
+    local procedure RunPostMigration()
+    var
+        HelperFunctions: Codeunit "Helper Functions";
+
+    begin
+        HelperFunctions.CreatePostMigrationData();
     end;
 
     local procedure CreateCustomerData()
@@ -1329,7 +1457,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         GPVendorAddress.Init();
         GPVendorAddress.VENDORID := 'ACETRAVE0001';
-        GPVendorAddress.ADRSCODE := 'PRIMARY';
+        GPVendorAddress.ADRSCODE := AddressCodePrimary;
         GPVendorAddress.VNDCNTCT := 'Greg Powell';
         GPVendorAddress.ADDRESS1 := '123 Riley Street';
         GPVendorAddress.ADDRESS2 := '';
@@ -1342,7 +1470,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         GPVendorAddress.Init();
         GPVendorAddress.VENDORID := 'ACETRAVE0001';
-        GPVendorAddress.ADRSCODE := 'REMIT TO';
+        GPVendorAddress.ADRSCODE := AddressCodeRemitTo;
         GPVendorAddress.VNDCNTCT := 'Greg Powell';
         GPVendorAddress.ADDRESS1 := 'Box 342';
         GPVendorAddress.ADDRESS2 := '';
@@ -1380,7 +1508,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         GPVendorAddress.Init();
         GPVendorAddress.VENDORID := 'ACETRAVE0002';
-        GPVendorAddress.ADRSCODE := 'PRIMARY';
+        GPVendorAddress.ADRSCODE := AddressCodePrimary;
         GPVendorAddress.VNDCNTCT := 'Greg Powell Jr.';
         GPVendorAddress.ADDRESS1 := '124 Riley Street';
         GPVendorAddress.ADDRESS2 := '';
@@ -1393,7 +1521,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         GPVendorAddress.Init();
         GPVendorAddress.VENDORID := 'ACETRAVE0002';
-        GPVendorAddress.ADRSCODE := 'WAREHOUSE';
+        GPVendorAddress.ADRSCODE := AddressCodeWarehouse;
         GPVendorAddress.VNDCNTCT := 'Greg Powell Jr.';
         GPVendorAddress.ADDRESS1 := '124 Riley Street';
         GPVendorAddress.ADDRESS2 := '';
@@ -1981,7 +2109,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         GPVendorAddress.Init();
         GPVendorAddress.VENDORID := 'V3130';
-        GPVendorAddress.ADRSCODE := 'PRIMARY';
+        GPVendorAddress.ADRSCODE := AddressCodePrimary;
         GPVendorAddress.VNDCNTCT := 'Test Contact';
         GPVendorAddress.ADDRESS1 := 'P.O. Box10159';
         GPVendorAddress.ADDRESS2 := '2201a Jacsboro Highway 2';
@@ -1991,5 +2119,339 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendorAddress.PHNUMBR1 := '41327348230000';
         GPVendorAddress.FAXNUMBR := '41327348300000';
         GPVendorAddress.Insert();
+    end;
+
+    local procedure CreateGPVendorBankInformation()
+    var
+        Vendor: Record Vendor;
+        VendorBankAccount: Record "Vendor Bank Account";
+        SwiftCode: Record "SWIFT Code";
+    begin
+        GPVendorAddress.Reset();
+        GPVendorAddress.SetFilter(VENDORID, '%1|%2|%3|%4', VendorIdWithBankStr1, VendorIdWithBankStr2, VendorIdWithBankStr3, VendorIdWithBankStr4);
+        GPVendorAddress.DeleteAll();
+
+        GPVendor.Reset();
+        GPVendor.SetFilter(VENDORID, '%1|%2|%3|%4', VendorIdWithBankStr1, VendorIdWithBankStr2, VendorIdWithBankStr3, VendorIdWithBankStr4);
+        GPVendor.DeleteAll();
+
+        VendorBankAccount.Reset();
+        VendorBankAccount.SetFilter("Vendor No.", '%1|%2|%3|%4', VendorIdWithBankStr1, VendorIdWithBankStr2, VendorIdWithBankStr3, VendorIdWithBankStr4);
+        VendorBankAccount.DeleteAll();
+
+        Vendor.Reset();
+        Vendor.SetFilter("No.", '%1|%2|%3|%4', VendorIdWithBankStr1, VendorIdWithBankStr2, VendorIdWithBankStr3, VendorIdWithBankStr4);
+        Vendor.DeleteAll();
+
+        SwiftCode.Reset();
+        SwiftCode.SetRange(Code, ValidSwiftCodeStr);
+        SwiftCode.DeleteAll();
+
+        GPMC40200.DeleteAll();
+        GPMC40200.Init();
+        GPMC40200.CURNCYID := CurrencyCodeUS;
+        GPMC40200.CRNCYSYM := '$';
+        GPMC40200.CRNCYDSC := 'US Dollar';
+        GPMC40200.Insert();
+
+        // Vendor 1
+        GPVendor.Init();
+        GPVendor.VENDORID := VendorIdWithBankStr1;
+        GPVendor.VENDNAME := 'Vendor with bank account 1';
+        GPVendor.SEARCHNAME := GPVendor.VENDNAME;
+        GPVendor.VNDCHKNM := GPVendor.VENDNAME;
+        GPVendor.ADDRESS1 := '124 Main Street';
+        GPVendor.ADDRESS2 := '';
+        GPVendor.CITY := 'Orlando';
+        GPVendor.VNDCNTCT := 'Tester Testerson';
+        GPVendor.PHNUMBR1 := '00000000000000';
+        GPVendor.PYMTRMID := 'Net 30';
+        GPVendor.SHIPMTHD := 'OVERNIGHT';
+        GPVendor.COUNTRY := 'USA';
+        GPVendor.PYMNTPRI := '1';
+        GPVendor.AMOUNT := 0;
+        GPVendor.FAXNUMBR := '00000000000000';
+        GPVendor.ZIPCODE := '32830';
+        GPVendor.STATE := 'FL';
+        GPVendor.INET1 := '';
+        GPVendor.INET2 := ' ';
+        GPVendor.TAXSCHID := 'P-T-TXB-%PT%P*2';
+        GPVendor.UPSZONE := '';
+        GPVendor.TXIDNMBR := '';
+        GPVendor.Insert();
+
+        GPVendorAddress.Init();
+        GPVendorAddress.VENDORID := GPVendor.VENDORID;
+        GPVendorAddress.ADRSCODE := AddressCodeRemitTo;
+        GPVendorAddress.VNDCNTCT := GPVendor.VNDCNTCT;
+        GPVendorAddress.ADDRESS1 := GPVendor.ADDRESS1;
+        GPVendorAddress.ADDRESS2 := GPVendor.ADDRESS2;
+        GPVendorAddress.CITY := GPVendor.CITY;
+        GPVendorAddress.STATE := GPVendor.STATE;
+        GPVendorAddress.ZIPCODE := GPVendor.ZIPCODE;
+        GPVendorAddress.PHNUMBR1 := GPVendor.PHNUMBR1;
+        GPVendorAddress.FAXNUMBR := GPVendor.FAXNUMBR;
+        GPVendorAddress.Insert();
+
+        GPVendorAddress.Init();
+        GPVendorAddress.VENDORID := GPVendor.VENDORID;
+        GPVendorAddress.ADRSCODE := AddressCodePrimary;
+        GPVendorAddress.VNDCNTCT := GPVendor.VNDCNTCT;
+        GPVendorAddress.ADDRESS1 := GPVendor.ADDRESS1 + '_Primary';
+        GPVendorAddress.ADDRESS2 := GPVendor.ADDRESS2;
+        GPVendorAddress.CITY := GPVendor.CITY;
+        GPVendorAddress.STATE := GPVendor.STATE;
+        GPVendorAddress.ZIPCODE := GPVendor.ZIPCODE;
+        GPVendorAddress.PHNUMBR1 := GPVendor.PHNUMBR1;
+        GPVendorAddress.FAXNUMBR := GPVendor.FAXNUMBR;
+        GPVendorAddress.Insert();
+
+        GPSY06000.Init();
+        GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
+        GPSY06000.ADRSCODE := AddressCodeRemitTo;
+        GPSY06000.EFTBankCode := 'V01_RemitTo';
+        GPSY06000.BANKNAME := 'V01_RemitTo_Name';
+        GPSY06000.EFTBankBranchCode := '01234';
+        GPSY06000.EFTBankAcct := '123456789';
+        GPSY06000.EFTTransitRoutingNo := '123456789';
+        GPSY06000.CURNCYID := CurrencyCodeUS;
+        GPSY06000.IntlBankAcctNum := ValidIBANStr;
+        GPSY06000.SWIFTADDR := ValidSwiftCodeStr;
+        GPSY06000.Insert();
+
+        GPSY06000.Init();
+        GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
+        GPSY06000.ADRSCODE := AddressCodePrimary;
+        GPSY06000.EFTBankCode := 'V01_Primary';
+        GPSY06000.BANKNAME := 'V01_Primary_Name';
+        GPSY06000.EFTBankBranchCode := '12345';
+        GPSY06000.EFTBankAcct := '234567890';
+        GPSY06000.EFTTransitRoutingNo := '234567891';
+        GPSY06000.CURNCYID := CurrencyCodeUS;
+        GPSY06000.IntlBankAcctNum := ValidIBANStr;
+        GPSY06000.SWIFTADDR := ValidSwiftCodeStr;
+        GPSY06000.Insert();
+
+        GPSY06000.Init();
+        GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
+        GPSY06000.ADRSCODE := AddressCodeOther;
+        GPSY06000.EFTBankCode := 'V01_Other';
+        GPSY06000.BANKNAME := 'V01_Other_Name';
+        GPSY06000.EFTBankBranchCode := '23450';
+        GPSY06000.EFTBankAcct := '34567894';
+        GPSY06000.EFTTransitRoutingNo := '345678917';
+        GPSY06000.CURNCYID := CurrencyCodeUS;
+        GPSY06000.IntlBankAcctNum := ValidIBANStr;
+        GPSY06000.SWIFTADDR := ValidSwiftCodeStr;
+        GPSY06000.Insert();
+
+        // Vendor 2
+        GPVendor.Init();
+        GPVendor.VENDORID := VendorIdWithBankStr2;
+        GPVendor.VENDNAME := 'Vendor with bank account 2';
+        GPVendor.SEARCHNAME := GPVendor.VENDNAME;
+        GPVendor.VNDCHKNM := GPVendor.VENDNAME;
+        GPVendor.ADDRESS1 := '125 Main Street';
+        GPVendor.ADDRESS2 := '';
+        GPVendor.CITY := 'Orlando';
+        GPVendor.VNDCNTCT := 'Tester Testerson Jr.';
+        GPVendor.PHNUMBR1 := '00000000000000';
+        GPVendor.PYMTRMID := 'Net 30';
+        GPVendor.SHIPMTHD := 'OVERNIGHT';
+        GPVendor.COUNTRY := 'USA';
+        GPVendor.PYMNTPRI := '1';
+        GPVendor.AMOUNT := 0;
+        GPVendor.FAXNUMBR := '00000000000000';
+        GPVendor.ZIPCODE := '32830';
+        GPVendor.STATE := 'FL';
+        GPVendor.INET1 := '';
+        GPVendor.INET2 := ' ';
+        GPVendor.TAXSCHID := 'P-T-TXB-%PT%P*2';
+        GPVendor.UPSZONE := '';
+        GPVendor.TXIDNMBR := '';
+        GPVendor.Insert();
+
+        GPVendorAddress.Init();
+        GPVendorAddress.VENDORID := GPVendor.VENDORID;
+        GPVendorAddress.ADRSCODE := AddressCodePrimary;
+        GPVendorAddress.VNDCNTCT := GPVendor.VNDCNTCT;
+        GPVendorAddress.ADDRESS1 := GPVendor.ADDRESS1;
+        GPVendorAddress.ADDRESS2 := GPVendor.ADDRESS2;
+        GPVendorAddress.CITY := GPVendor.CITY;
+        GPVendorAddress.STATE := GPVendor.STATE;
+        GPVendorAddress.ZIPCODE := GPVendor.ZIPCODE;
+        GPVendorAddress.PHNUMBR1 := GPVendor.PHNUMBR1;
+        GPVendorAddress.FAXNUMBR := GPVendor.FAXNUMBR;
+        GPVendorAddress.Insert();
+
+        GPSY06000.Init();
+        GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
+        GPSY06000.ADRSCODE := AddressCodePrimary;
+        GPSY06000.EFTBankCode := 'V02_Primary';
+        GPSY06000.BANKNAME := 'V02_Primary_Name';
+        GPSY06000.EFTBankBranchCode := '23456';
+        GPSY06000.EFTBankAcct := '345678901';
+        GPSY06000.EFTTransitRoutingNo := '345678910';
+        GPSY06000.CURNCYID := CurrencyCodeUS;
+        GPSY06000.IntlBankAcctNum := ValidIBANStr;
+        GPSY06000.SWIFTADDR := ValidSwiftCodeStr;
+        GPSY06000.Insert();
+
+        GPSY06000.Init();
+        GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
+        GPSY06000.ADRSCODE := AddressCodeOther;
+        GPSY06000.EFTBankCode := 'V02_Other';
+        GPSY06000.BANKNAME := 'V02_Other_Name';
+        GPSY06000.EFTBankBranchCode := '23458';
+        GPSY06000.EFTBankAcct := '45678947';
+        GPSY06000.EFTTransitRoutingNo := '345678917';
+        GPSY06000.CURNCYID := CurrencyCodeUS;
+        GPSY06000.IntlBankAcctNum := ValidIBANStr;
+        GPSY06000.SWIFTADDR := ValidSwiftCodeStr;
+        GPSY06000.Insert();
+
+        // Vendor 3
+        GPVendor.Init();
+        GPVendor.VENDORID := VendorIdWithBankStr3;
+        GPVendor.VENDNAME := 'Vendor with bank account 3';
+        GPVendor.SEARCHNAME := GPVendor.VENDNAME;
+        GPVendor.VNDCHKNM := GPVendor.VENDNAME;
+        GPVendor.ADDRESS1 := '126 Main Street';
+        GPVendor.ADDRESS2 := '';
+        GPVendor.CITY := 'Orlando';
+        GPVendor.VNDCNTCT := 'Tester Testerson Sr.';
+        GPVendor.PHNUMBR1 := '00000000000000';
+        GPVendor.PYMTRMID := 'Net 30';
+        GPVendor.SHIPMTHD := 'OVERNIGHT';
+        GPVendor.COUNTRY := 'USA';
+        GPVendor.PYMNTPRI := '1';
+        GPVendor.AMOUNT := 0;
+        GPVendor.FAXNUMBR := '00000000000000';
+        GPVendor.ZIPCODE := '32830';
+        GPVendor.STATE := 'FL';
+        GPVendor.INET1 := '';
+        GPVendor.INET2 := ' ';
+        GPVendor.TAXSCHID := 'P-T-TXB-%PT%P*2';
+        GPVendor.UPSZONE := '';
+        GPVendor.TXIDNMBR := '';
+        GPVendor.Insert();
+
+        GPVendorAddress.Init();
+        GPVendorAddress.VENDORID := GPVendor.VENDORID;
+        GPVendorAddress.ADRSCODE := AddressCodePrimary;
+        GPVendorAddress.VNDCNTCT := GPVendor.VNDCNTCT;
+        GPVendorAddress.ADDRESS1 := GPVendor.ADDRESS1;
+        GPVendorAddress.ADDRESS2 := GPVendor.ADDRESS2;
+        GPVendorAddress.CITY := GPVendor.CITY;
+        GPVendorAddress.STATE := GPVendor.STATE;
+        GPVendorAddress.ZIPCODE := GPVendor.ZIPCODE;
+        GPVendorAddress.PHNUMBR1 := GPVendor.PHNUMBR1;
+        GPVendorAddress.FAXNUMBR := GPVendor.FAXNUMBR;
+        GPVendorAddress.Insert();
+
+        GPSY06000.Init();
+        GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
+        GPSY06000.ADRSCODE := AddressCodeOther;
+        GPSY06000.EFTBankCode := 'V03_Other';
+        GPSY06000.BANKNAME := 'V03_Other_Name';
+        GPSY06000.EFTBankBranchCode := '34567';
+        GPSY06000.EFTBankAcct := '456789012';
+        GPSY06000.EFTTransitRoutingNo := '456789102';
+        GPSY06000.CURNCYID := CurrencyCodeUS;
+        GPSY06000.IntlBankAcctNum := ValidIBANStr;
+        GPSY06000.SWIFTADDR := ValidSwiftCodeStr;
+        GPSY06000.Insert();
+
+        GPSY06000.Init();
+        GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
+        GPSY06000.ADRSCODE := AddressCodeOther2;
+        GPSY06000.EFTBankCode := 'V03_Other2';
+        GPSY06000.BANKNAME := 'V03_Other2_Name';
+        GPSY06000.EFTBankBranchCode := '34567';
+        GPSY06000.EFTBankAcct := '456789014';
+        GPSY06000.EFTTransitRoutingNo := '456789104';
+        GPSY06000.CURNCYID := CurrencyCodeUS;
+        GPSY06000.IntlBankAcctNum := ValidIBANStr;
+        GPSY06000.SWIFTADDR := ValidSwiftCodeStr;
+        GPSY06000.Insert();
+
+        // Vendor 4
+        GPVendor.Init();
+        GPVendor.VENDORID := VendorIdWithBankStr4;
+        GPVendor.VENDNAME := 'Vendor with bank account 4';
+        GPVendor.SEARCHNAME := GPVendor.VENDNAME;
+        GPVendor.VNDCHKNM := GPVendor.VENDNAME;
+        GPVendor.ADDRESS1 := '127 Main Street';
+        GPVendor.ADDRESS2 := '';
+        GPVendor.CITY := 'Orlando';
+        GPVendor.VNDCNTCT := 'Tester Testerson II';
+        GPVendor.PHNUMBR1 := '00000000000000';
+        GPVendor.PYMTRMID := 'Net 30';
+        GPVendor.SHIPMTHD := 'OVERNIGHT';
+        GPVendor.COUNTRY := 'USA';
+        GPVendor.PYMNTPRI := '1';
+        GPVendor.AMOUNT := 0;
+        GPVendor.FAXNUMBR := '00000000000000';
+        GPVendor.ZIPCODE := '32830';
+        GPVendor.STATE := 'FL';
+        GPVendor.INET1 := '';
+        GPVendor.INET2 := ' ';
+        GPVendor.TAXSCHID := 'P-T-TXB-%PT%P*2';
+        GPVendor.UPSZONE := '';
+        GPVendor.TXIDNMBR := '';
+        GPVendor.Insert();
+
+        GPVendorAddress.Init();
+        GPVendorAddress.VENDORID := GPVendor.VENDORID;
+        GPVendorAddress.ADRSCODE := AddressCodePrimary;
+        GPVendorAddress.VNDCNTCT := GPVendor.VNDCNTCT;
+        GPVendorAddress.ADDRESS1 := GPVendor.ADDRESS1;
+        GPVendorAddress.ADDRESS2 := GPVendor.ADDRESS2;
+        GPVendorAddress.CITY := GPVendor.CITY;
+        GPVendorAddress.STATE := GPVendor.STATE;
+        GPVendorAddress.ZIPCODE := GPVendor.ZIPCODE;
+        GPVendorAddress.PHNUMBR1 := GPVendor.PHNUMBR1;
+        GPVendorAddress.FAXNUMBR := GPVendor.FAXNUMBR;
+        GPVendorAddress.Insert();
+
+        GPSY06000.Init();
+        GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
+        GPSY06000.ADRSCODE := AddressCodeRemitTo;
+        GPSY06000.INACTIVE := true;
+        GPSY06000.EFTBankCode := 'V04_RemitTo';
+        GPSY06000.BANKNAME := 'V04_RemitTo_Name';
+        GPSY06000.EFTBankBranchCode := '01234';
+        GPSY06000.EFTBankAcct := '56789078';
+        GPSY06000.EFTTransitRoutingNo := '123456789';
+        GPSY06000.CURNCYID := CurrencyCodeUS;
+        GPSY06000.IntlBankAcctNum := ValidIBANStr;
+        GPSY06000.SWIFTADDR := ValidSwiftCodeStr;
+        GPSY06000.Insert();
+
+        GPSY06000.Init();
+        GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
+        GPSY06000.ADRSCODE := AddressCodePrimary;
+        GPSY06000.EFTBankCode := 'V04_Primary';
+        GPSY06000.BANKNAME := 'V04_Primary_Name';
+        GPSY06000.EFTBankBranchCode := '23456';
+        GPSY06000.EFTBankAcct := '345678909';
+        GPSY06000.EFTTransitRoutingNo := '456789107';
+        GPSY06000.CURNCYID := CurrencyCodeUS;
+        GPSY06000.IntlBankAcctNum := ValidIBANStr;
+        GPSY06000.SWIFTADDR := ValidSwiftCodeStr;
+        GPSY06000.Insert();
+
+        GPSY06000.Init();
+        GPSY06000.CustomerVendor_ID := GPVendor.VENDORID;
+        GPSY06000.ADRSCODE := AddressCodeOther;
+        GPSY06000.EFTBankCode := 'V04_Other';
+        GPSY06000.BANKNAME := 'V04_Other_Name';
+        GPSY06000.EFTBankBranchCode := '34567';
+        GPSY06000.EFTBankAcct := '56789025';
+        GPSY06000.EFTTransitRoutingNo := '456789102';
+        GPSY06000.CURNCYID := CurrencyCodeUS;
+        GPSY06000.IntlBankAcctNum := ValidIBANStr;
+        GPSY06000.SWIFTADDR := ValidSwiftCodeStr;
+        GPSY06000.Insert();
     end;
 }
