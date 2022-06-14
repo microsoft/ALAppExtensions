@@ -53,7 +53,7 @@ page 8700 "Table Information"
 
                     trigger OnDrillDown()
                     begin
-                        Hyperlink(GetUrl(CLIENTTYPE::Web, CompanyName, ObjectType::Table, "Table No."));
+                        Hyperlink(GetTableUrl(Rec));
                     end;
                 }
 
@@ -101,5 +101,13 @@ page 8700 "Table Information"
         else
             Rec.SetFilter("Company Name", '%1|%2', '', CompanyName);
         FilterGroup(0);
+    end;
+
+    local procedure GetTableUrl(TableInformation: Record "Table Information"): Text
+    begin
+        if TableInformation."Company Name" = '' then
+            exit(GetUrl(CLIENTTYPE::Web, CompanyName(), ObjectType::Table, TableInformation."Table No."))
+        else
+            exit(GetUrl(CLIENTTYPE::Web, TableInformation."Company Name", ObjectType::Table, TableInformation."Table No."))
     end;
 }
