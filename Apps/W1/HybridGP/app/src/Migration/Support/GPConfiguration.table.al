@@ -69,6 +69,11 @@ table 4024 "GP Configuration"
             DataClassification = SystemMetadata;
             InitValue = false;
         }
+        field(15; "Vendor EFT Bank Acc. Created"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
     }
 
     keys

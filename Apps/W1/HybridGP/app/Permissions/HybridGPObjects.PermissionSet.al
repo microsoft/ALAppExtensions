@@ -94,5 +94,7 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP Company Additional Settings" = X,
                     table "GP SY40100" = X,
                     table "GP SY40101" = X,
-                    tabledata "GP CM20600" = X;
+                    table "GP CM20600" = X,
+                    table "GP MC40200" = X,
+                    table "GP SY06000" = X;
 }
