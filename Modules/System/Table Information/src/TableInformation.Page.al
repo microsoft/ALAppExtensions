@@ -104,10 +104,14 @@ page 8700 "Table Information"
     end;
 
     local procedure GetTableUrl(TableInformation: Record "Table Information"): Text
+    var
+        Company: Text;
     begin
-        if TableInformation."Company Name" = '' then
-            exit(GetUrl(CLIENTTYPE::Web, CompanyName(), ObjectType::Table, TableInformation."Table No."))
-        else
-            exit(GetUrl(CLIENTTYPE::Web, TableInformation."Company Name", ObjectType::Table, TableInformation."Table No."))
+        Company := TableInformation."Company Name";
+
+        if Company = '' then
+            Company := CompanyName(); // use the current company for the URL for the cases when table is not per company
+
+        exit(GetUrl(ClientType::Web, Company, ObjectType::Table, TableInformation."Table No."));
     end;
 }
