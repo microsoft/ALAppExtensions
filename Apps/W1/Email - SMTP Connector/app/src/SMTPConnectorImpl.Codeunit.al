@@ -42,7 +42,7 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         if Account.FindSet() then
             repeat
                 Accounts."Account Id" := Account.Id;
-                Accounts."Email Address" := Account."Email Address";
+                Accounts."Email Address" := GetEmailAddress(Account);
                 Accounts.Name := Account.Name;
                 Accounts.Connector := Enum::"Email Connector"::SMTP;
 
@@ -184,7 +184,7 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         AttachmentInStream: InStream;
     begin
         // From name/email address
-        SMTPMessage.AddFrom(SMTPAccount."Sender Name", SMTPAccount."Email Address");
+        AddFrom(SMTPAccount, SMTPMessage);
 
         // To, Cc and Bcc Recipients
         EmailMessage.GetRecipients("Email Recipient Type"::"To", Recipients);
@@ -206,6 +206,34 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
                 EmailMessage.Attachments_GetContent(AttachmentInStream);
                 SMTPMessage.AddAttachment(AttachmentInStream, EmailMessage.Attachments_GetName());
             until EmailMessage.Attachments_Next() = 0;
+    end;
+
+    local procedure AddFrom(SMTPAccount: Record "SMTP Account"; var SMTPMessage: Codeunit "SMTP Message")
+    var
+        User: Record User;
+    begin
+        case SMTPAccount."Sender Type" of
+            SMTPAccount."Sender Type"::Specific:
+                SMTPMessage.AddFrom(SMTPAccount."Sender Name", SMTPAccount."Email Address");
+
+            SMTPAccount."Sender Type"::"Current User":
+                begin
+                    User.Get(UserSecurityId());
+                    User.TestField("Contact Email");
+                    SMTPMessage.AddFrom(User."Full Name", User."Contact Email");
+                end;
+        end;
+    end;
+
+    local procedure GetEmailAddress(Account: Record "SMTP Account"): Text[250]
+    var
+        User: Record User;
+    begin
+        if Account."Sender Type" = Account."Sender Type"::Specific then
+            exit(Account."Email Address");
+
+        if User.Get(UserSecurityId()) then
+            exit(User."Contact Email");
     end;
 
     /// <summary>
@@ -269,8 +297,8 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         if SMTPAccount.Name = '' then
             exit(false);
 
-        // Email Address is a mandatory field
-        if SMTPAccount."Email Address" = '' then
+        // Email Address is a mandatory field if a specific account is used
+        if (SMTPAccount."Sender Type" = SMTPAccount."Sender Type"::Specific) and (SMTPAccount."Email Address" = '') then
             exit(false);
 
         // Server is a mandatory field
