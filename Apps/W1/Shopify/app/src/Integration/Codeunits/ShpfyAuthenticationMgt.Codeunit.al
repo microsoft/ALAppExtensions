@@ -52,7 +52,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
         RedirectUrl: Text;
         Store: Text;
         AuthorizationCode: Text;
-        InstallURLTxt: Label 'https://%1/admin/oauth/authorize?client_id=%2&scope=%3&redirect_uri=%4&state=%5&grant_options[]=%6', Comment = '%1 = Store, %2 = ApiKey, %3 = Scope, %3 = RedirectUrl, %4 = State, %6= GrantOptions', Locked = true;
+        InstallURLTxt: Label 'https://%1/admin/oauth/authorize?client_id=%2&scope=%3&redirect_uri=%4&state=%5&grant_options[]=%6', Comment = '%1 = Store, %2 = ApiKey, %3 = Scope, %3 = RedirectUrl, %4 = State, %6 = GrantOptions', Locked = true;
         NotMatchingStateErr: Label 'The state parameter value does not match.';
     begin
         OAuth2.GetDefaultRedirectURL(RedirectUrl);

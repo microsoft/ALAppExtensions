@@ -35,10 +35,17 @@ codeunit 30174 "Shpfy Create Product"
     /// <param name="Item">Parameter of type Record Item.</param>
     local procedure CreateProduct(Item: Record Item)
     var
-        ItemUoM: Record "Item Unit of Measure";
-        ItemVariant: Record "Item Variant";
         TempShopifyProduct: Record "Shpfy Product" temporary;
         TempShopifyVariant: Record "Shpfy Variant" temporary;
+    begin
+        if CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant) then
+            ProductApi.CreateProduct(TempShopifyProduct, TempShopifyVariant);
+    end;
+
+    internal procedure CreateTempProduct(Item: Record Item; var TempShopifyProduct: Record "Shpfy Product" temporary; var TempShopifyVariant: Record "Shpfy Variant" temporary): Boolean
+    var
+        ItemUoM: Record "Item Unit of Measure";
+        ItemVariant: Record "Item Variant";
         Id: Integer;
         ICreateProductStatus: Interface "Shpfy ICreateProductStatusValue";
     begin
@@ -185,8 +192,7 @@ codeunit 30174 "Shpfy Create Product"
                 TempShopifyVariant.Insert(false);
             end;
         TempShopifyProduct.Insert(false);
-        if not VariantApi.FindShopifyProductVariant(TempShopifyProduct, TempShopifyVariant) then
-            ProductApi.CreateProduct(TempShopifyProduct, TempShopifyVariant);
+        exit(not VariantApi.FindShopifyProductVariant(TempShopifyProduct, TempShopifyVariant));
     end;
 
     /// <summary> 
