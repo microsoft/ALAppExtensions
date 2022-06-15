@@ -50,6 +50,45 @@ codeunit 139760 "SMTP Connector Test"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('SMTPAccountRegisterPageHandler')]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestCurrentUserAccountsCanBeRegistered()
+    var
+        EmailAccount: Record "Email Account";
+        SMTPConnector: Codeunit "SMTP Connector Impl.";
+        EmailAccounts: TestPage "Email Accounts";
+        AccountIds: array[3] of Guid;
+        AccountName: array[3] of Text[250];
+        Index: Integer;
+    begin
+        // [Scenario] Create multiple SMTP accounts
+        Initialize();
+        SetCurrentUserMailInfo();
+
+        // [When] Multiple accounts are registered
+        for Index := 1 to 3 do begin
+            SetCurentUserAccount(Index);
+
+            Assert.IsTrue(SMTPConnector.RegisterAccount(EmailAccount), 'Failed to register account.');
+            AccountIds[Index] := EmailAccount."Account Id";
+            AccountName[Index] := SMTPAccountMock.Name();
+
+            // [Then] Accounts are retrieved from the GetAccounts method
+            EmailAccount.DeleteAll();
+            SMTPConnector.GetAccounts(EmailAccount);
+            Assert.RecordCount(EmailAccount, Index);
+        end;
+
+        EmailAccounts.OpenView();
+        for Index := 1 to 3 do begin
+            EmailAccounts.GoToKey(AccountIds[Index], Enum::"Email Connector"::SMTP);
+            Assert.AreEqual(AccountName[Index], EmailAccounts.NameField.Value(), 'A different name was expected.');
+            Assert.AreEqual('j.doe@mail.com', EmailAccounts.EmailAddress.Value(), 'A different email address was expected.');
+        end;
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     [HandlerFunctions('SMTPAccountRegisterPageHandler,SMTPAccountShowPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestShowAccountInformation()
@@ -88,6 +127,29 @@ codeunit 139760 "SMTP Connector Test"
         SMTPAccountMock.UserID('test' + Format(Index) + '@mail.com');
         SMTPAccountMock.Password('testpassword');
         SMTPAccountMock.SecureConnection(true);
+        SMTPAccountMock.SenderType(Enum::"SMTP Connector Sender Type"::Specific);
+    end;
+
+    local procedure SetCurentUserAccount(Index: Integer)
+    begin
+        SMTPAccountMock.Name(CopyStr(Any.AlphanumericText(250), 1, 250));
+        SMTPAccountMock.Server('smtp.office365.com');
+        SMTPAccountMock.ServerPort(587);
+        SMTPAccountMock.Authentication("SMTP Authentication Types"::Basic);
+        SMTPAccountMock.UserID('test' + Format(Index) + '@mail.com');
+        SMTPAccountMock.Password('testpassword');
+        SMTPAccountMock.SenderType(Enum::"SMTP Connector Sender Type"::"Current User");
+        SMTPAccountMock.SecureConnection(true);
+    end;
+
+    local procedure SetCurrentUserMailInfo()
+    var
+        User: Record User;
+    begin
+        User.Get(UserSecurityId());
+        User."Contact Email" := 'j.doe@mail.com';
+        User."Full Name" := 'John Doe';
+        User.Modify();
     end;
 
     [ModalPageHandler]
@@ -99,7 +161,10 @@ codeunit 139760 "SMTP Connector Test"
         SMTPAccountWizard.ServerUrl.SetValue(SMTPAccountMock.Server());
         SMTPAccountWizard.ServerPort.SetValue(SMTPAccountMock.ServerPort());
         SMTPAccountWizard.Authentication.SetValue(SMTPAccountMock.Authentication());
-        SMTPAccountWizard.EmailAddress.SetValue(SMTPAccountMock.UserID());
+        SMTPAccountWizard.SenderTypeField.SetValue(SMTPAccountMock.SenderType());
+        if (SMTPAccountMock.SenderType() = Enum::"SMTP Connector Sender Type"::Specific) then
+            SMTPAccountWizard.EmailAddress.SetValue(SMTPAccountMock.UserID());
+        SMTPAccountWizard.UserName.SetValue(SMTPAccountMock.UserID());
         SMTPAccountWizard.Password.SetValue(SMTPAccountMock.Password());
         SMTPAccountWizard.SecureConnection.SetValue(SMTPAccountMock.SecureConnection());
 
@@ -116,6 +181,7 @@ codeunit 139760 "SMTP Connector Test"
         Assert.AreEqual(SMTPAccountMock.ServerPort(), SMTPAccount.ServerPort.AsInteger(), 'A different server port was expected.');
         Assert.AreEqual(Format(SMTPAccountMock.Authentication()), SMTPAccount.Authentication.Value(), 'A different authentication was expected.');
         Assert.AreEqual(SMTPAccountMock.SecureConnection(), SMTPAccount.SecureConnection.AsBoolean(), 'A different secure connection was expected.');
+        Assert.AreEqual(Format(SMTPAccountMock.SenderType()), SMTPAccount.SenderTypeField.Value(), 'A different sender type was expected.');
     end;
 
     var

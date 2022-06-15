@@ -107,10 +107,21 @@ codeunit 139756 "SMTP Account Mock"
         AccAllowSenderSubstitution := Value;
     end;
 
+    procedure SenderType(): Enum "SMTP Connector Sender Type"
+    begin
+        exit(AccSenderType);
+    end;
+
+    procedure SenderType(Value: Enum "SMTP Connector Sender Type")
+    begin
+        AccSenderType := Value;
+    end;
+
     var
         AccName: Text[250];
         AccServer: Text[250];
         AccAuthentication: Enum "SMTP Authentication Types";
+        AccSenderType: Enum "SMTP Connector Sender Type";
         AccUserID: Text[250];
         AccServerPort: Integer;
         AccSecureConnection: Boolean;
