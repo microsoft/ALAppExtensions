@@ -9,11 +9,15 @@ codeunit 139664 "GP Data Migration Tests"
     TestPermissions = Disabled;
 
     var
+        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPCustomer: Record "GP Customer";
         GPVendor: Record "GP Vendor";
         GPVendorAddress: Record "GP Vendor Address";
         GPSY06000: Record "GP SY06000";
         GPMC40200: Record "GP MC40200";
+        GPPM00100: Record "GP PM00100";
+        GPPM00200: Record "GP PM00200";
         CustomerFacade: Codeunit "Customer Data Migration Facade";
         CustomerMigrator: Codeunit "GP Customer Migrator";
         VendorMigrator: Codeunit "GP Vendor Migrator";
@@ -33,6 +37,17 @@ codeunit 139664 "GP Data Migration Tests"
         AddressCodeOther2: Label 'OTHER2', Comment = 'Dummy GP ADRSCODE', Locked = true;
         CurrencyCodeUS: Label 'Z-US$', Comment = 'GP US Currency Code', Locked = true;
 
+    local procedure ConfigureMigrationSettings(MigrateVendorClasses: Boolean)
+    begin
+        GPCompanyMigrationSettings.Init();
+        GPCompanyMigrationSettings.Name := CompanyName();
+        GPCompanyMigrationSettings.Insert(true);
+
+        GPCompanyAdditionalSettings.Init();
+        GPCompanyAdditionalSettings.Name := GPCompanyMigrationSettings.Name;
+        GPCompanyAdditionalSettings."Migrate Vendor Classes" := MigrateVendorClasses;
+        GPCompanyAdditionalSettings.Insert(true);
+    end;
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -575,6 +590,85 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('V04_PRIMARY', Vendor."Preferred Bank Account Code", 'Preferred Bank Account Code of migrated Vendor should be Primary account.');
     end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGPVendorClassesConfiguredToNotImport()
+    var
+        VendorPostingGroup: Record "Vendor Posting Group";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] Vendors and their class information are queried from GP
+        // [GIVEN] GP data
+        Initialize();
+
+        // [WHEN] Data is imported and migrated, but configured to NOT import Vendor Classes
+        CreateVendorData();
+        CreateVendorClassData();
+        ConfigureMigrationSettings(false);
+
+        GPVendor.Reset();
+        GPVendor.SetFilter("VENDORID", '%1|%2|%3', 'ACME', 'ADEMCO', 'AIRCARG');
+        MigrateVendors(GPVendor);
+        HelperFunctions.CreatePostMigrationData();
+
+        // [then] Then the Vendor Posting Groups will NOT be migrated
+        VendorPostingGroup.SetFilter("Code", '%1|%2|%3', 'USA-US-C', 'USA-US-I', 'USA-US-M');
+        Assert.AreEqual(0, VendorPostingGroup.Count(), 'Vendor Posting Groups were created when they should not have been.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGPVendorClassesImport()
+    var
+        Vendor: Record Vendor;
+        VendorPostingGroup: Record "Vendor Posting Group";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] Vendors and their class information are queried from GP
+        // [GIVEN] GP data
+        Initialize();
+
+        // [WHEN] Data is imported and migrated
+        CreateVendorData();
+        CreateVendorClassData();
+        ConfigureMigrationSettings(true);
+
+        GPVendor.Reset();
+        GPVendor.SetFilter("VENDORID", '%1|%2|%3', 'ACME', 'ADEMCO', 'AIRCARG');
+        MigrateVendors(GPVendor);
+        HelperFunctions.CreatePostMigrationData();
+
+        // [then] Then the Vendor Posting Groups will be migrated
+        VendorPostingGroup.SetFilter("Code", '%1|%2|%3', 'USA-US-C', 'USA-US-I', 'USA-US-M');
+        Assert.AreEqual(3, VendorPostingGroup.Count(), 'Vendor Posting Groups were not created.');
+
+        // [then] Then fields for the Vendor Posting Groups will be correct
+        VendorPostingGroup.Get('USA-US-C');
+        Assert.AreEqual('USA-US-C', VendorPostingGroup.Code, 'Code of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('U.S. Vendors-Contract Services', VendorPostingGroup.Description, 'Description of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('2100', VendorPostingGroup."Payables Account", 'Payables Account of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('8010', VendorPostingGroup."Service Charge Acc.", 'Service Charge Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('4600', VendorPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('2105', VendorPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('', VendorPostingGroup."Payment Tolerance Debit Acc.", 'Payment Tolerance Debit Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('', VendorPostingGroup."Payment Tolerance Credit Acc.", 'Payment Tolerance Credit Acc. of VendorPostingGroup is incorrect.');
+
+        VendorPostingGroup.Get('USA-US-M');
+        Assert.AreEqual('USA-US-M', VendorPostingGroup.Code, 'Code of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('U.S. Vendors-Misc. Expenses', VendorPostingGroup.Description, 'Description of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('', VendorPostingGroup."Payables Account", 'Payables Account of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('', VendorPostingGroup."Service Charge Acc.", 'Service Charge Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('', VendorPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('', VendorPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('', VendorPostingGroup."Payment Tolerance Debit Acc.", 'Payment Tolerance Debit Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('', VendorPostingGroup."Payment Tolerance Credit Acc.", 'Payment Tolerance Credit Acc. of VendorPostingGroup is incorrect.');
+
+        Vendor.Get('ACME');
+
+        // [then] The Vendors have the correct Vendor Posting Group set
+        Assert.AreEqual('USA-US-C', Vendor."Vendor Posting Group", 'Vendor Posting Group of migrated Vendor should be set.');
+    end;
+
     [Normal]
     local procedure Initialize()
     begin
@@ -585,6 +679,8 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendorAddress.DeleteAll();
         GPVendor.DeleteAll();
         GPSY06000.DeleteAll();
+        GPPM00100.DeleteAll();
+        GPPM00200.DeleteAll();
 
         if UnbindSubscription(GPDataMigrationTests) then
             exit;
@@ -2453,5 +2549,138 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY06000.IntlBankAcctNum := ValidIBANStr;
         GPSY06000.SWIFTADDR := ValidSwiftCodeStr;
         GPSY06000.Insert();
+    end;
+
+    local procedure CreateVendorClassData()
+    var
+        GPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
+    begin
+        GPAccount.Init();
+        GPAccount.AcctNum := '2100';
+        GPAccount.AcctIndex := 35;
+        GPAccount.Name := 'Accounts Payable';
+        GPAccount.Active := true;
+        GPAccount.Insert();
+
+        GLAccount.Init();
+        GLAccount.Validate("No.", GPAccount.AcctNum);
+        GLAccount.Validate(Name, GPAccount.Name);
+        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+        GLAccount.Insert();
+
+        GPAccount.Init();
+        GPAccount.AcctNum := '2105';
+        GPAccount.AcctIndex := 36;
+        GPAccount.Name := 'Purchases Discounts Available';
+        GPAccount.Active := true;
+        GPAccount.Insert();
+
+        GLAccount.Init();
+        GLAccount.Validate("No.", GPAccount.AcctNum);
+        GLAccount.Validate(Name, GPAccount.Name);
+        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+        GLAccount.Insert();
+
+        GPAccount.Init();
+        GPAccount.AcctNum := '4600';
+        GPAccount.AcctIndex := 139;
+        GPAccount.Name := 'Purchases Discounts Taken';
+        GPAccount.Active := true;
+        GPAccount.Insert();
+
+        GLAccount.Init();
+        GLAccount.Validate("No.", GPAccount.AcctNum);
+        GLAccount.Validate(Name, GPAccount.Name);
+        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+        GLAccount.Insert();
+
+        GPAccount.Init();
+        GPAccount.AcctNum := '8010';
+        GPAccount.AcctIndex := 190;
+        GPAccount.Name := 'Finance Charge Expense';
+        GPAccount.Active := true;
+        GPAccount.Insert();
+
+        GLAccount.Init();
+        GLAccount.Validate("No.", GPAccount.AcctNum);
+        GLAccount.Validate(Name, GPAccount.Name);
+        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+        GLAccount.Insert();
+
+        GPPM00100.Init();
+        GPPM00100.VNDCLSID := 'USA-US-C';
+        GPPM00100.VNDCLDSC := 'U.S. Vendors-Contract Services';
+        GPPM00100.PMAPINDX := 35;
+        GPPM00100.PMCSHIDX := 0;
+        GPPM00100.PMDAVIDX := 36;
+        GPPM00100.PMDTKIDX := 139;
+        GPPM00100.PMFINIDX := 190;
+        GPPM00100.PMMSCHIX := 184;
+        GPPM00100.PMFRTIDX := 281;
+        GPPM00100.PMTAXIDX := 83;
+        GPPM00100.PMWRTIDX := 0;
+        GPPM00100.PMPRCHIX := 270;
+        GPPM00100.PMRTNGIX := 0;
+        GPPM00100.PMTDSCIX := 0;
+        GPPM00100.ACPURIDX := 447;
+        GPPM00100.PURPVIDX := 446;
+        GPPM00100.Insert();
+
+        GPPM00100.Init();
+        GPPM00100.VNDCLSID := 'USA-US-I';
+        GPPM00100.VNDCLDSC := 'U.S. Vendors - Inventory';
+        GPPM00100.PMAPINDX := 35;
+        GPPM00100.PMCSHIDX := 0;
+        GPPM00100.PMDAVIDX := 36;
+        GPPM00100.PMDTKIDX := 139;
+        GPPM00100.PMFINIDX := 190;
+        GPPM00100.PMMSCHIX := 184;
+        GPPM00100.PMFRTIDX := 281;
+        GPPM00100.PMTAXIDX := 83;
+        GPPM00100.PMWRTIDX := 0;
+        GPPM00100.PMPRCHIX := 18;
+        GPPM00100.PMRTNGIX := 0;
+        GPPM00100.PMTDSCIX := 0;
+        GPPM00100.ACPURIDX := 447;
+        GPPM00100.PURPVIDX := 446;
+        GPPM00100.Insert();
+
+        GPPM00100.Init();
+        GPPM00100.VNDCLSID := 'USA-US-M';
+        GPPM00100.VNDCLDSC := 'U.S. Vendors-Misc. Expenses';
+        GPPM00100.PMAPINDX := 0;
+        GPPM00100.PMCSHIDX := 0;
+        GPPM00100.PMDAVIDX := 0;
+        GPPM00100.PMDTKIDX := 0;
+        GPPM00100.PMFINIDX := 0;
+        GPPM00100.PMMSCHIX := 0;
+        GPPM00100.PMFRTIDX := 0;
+        GPPM00100.PMTAXIDX := 0;
+        GPPM00100.PMWRTIDX := 0;
+        GPPM00100.PMPRCHIX := 0;
+        GPPM00100.PMRTNGIX := 0;
+        GPPM00100.PMTDSCIX := 0;
+        GPPM00100.ACPURIDX := 0;
+        GPPM00100.PURPVIDX := 0;
+        GPPM00100.Insert();
+
+        GPPM00200.Init();
+        GPPM00200.VENDORID := 'ACME';
+        GPPM00200.VENDNAME := 'Acme Truck Line';
+        GPPM00200.VNDCLSID := 'USA-US-C';
+        GPPM00200.Insert();
+
+        GPPM00200.Init();
+        GPPM00200.VENDORID := 'ADEMCO';
+        GPPM00200.VENDNAME := 'ADEMCO';
+        GPPM00200.VNDCLSID := 'USA-US-I';
+        GPPM00200.Insert();
+
+        GPPM00200.Init();
+        GPPM00200.VENDORID := 'AIRCARG';
+        GPPM00200.VENDNAME := 'American Airlines Cargo';
+        GPPM00200.VNDCLSID := 'USA-US-M';
+        GPPM00200.Insert();
     end;
 }

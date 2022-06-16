@@ -64,5 +64,7 @@ permissionsetextension 4025 "D365 BASIC - HGP" extends "D365 BASIC"
                   tabledata "GP Checkbook MSTR" = RIMD,
                   tabledata "GP Checkbook Transactions" = RIMD,
                   tabledata "GP MC40200" = RIMD,
-                  tabledata "GP SY06000" = RIMD;
+                  tabledata "GP SY06000" = RIMD,
+                  tabledata "GP PM00100" = RIMD,
+                  tabledata "GP PM00200" = RIMD;
 }
