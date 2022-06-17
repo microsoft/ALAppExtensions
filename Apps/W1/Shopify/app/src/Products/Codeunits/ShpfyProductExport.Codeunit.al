@@ -289,7 +289,10 @@ codeunit 30178 "Shpfy Product Export"
                 Shop."SKU Mapping"::"Item No.":
                     ShopifyVariant.SKU := Item."No.";
                 Shop."SKU Mapping"::"Item No. + Variant Code":
-                    ShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code;
+                    if ItemVariant.Code <> '' then
+                        ShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
+                    else
+                        ShopifyVariant.SKU := Item."No.";
                 Shop."SKU Mapping"::"Vendor Item No.":
                     ShopifyVariant.SKU := Item."Vendor Item No.";
             end;
@@ -328,7 +331,10 @@ codeunit 30178 "Shpfy Product Export"
                 Shop."SKU Mapping"::"Item No.":
                     ShopifyVariant.SKU := Item."No.";
                 Shop."SKU Mapping"::"Item No. + Variant Code":
-                    ShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code;
+                    if ItemVariant.Code <> '' then
+                        ShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
+                    else
+                        ShopifyVariant.SKU := Item."No.";
                 Shop."SKU Mapping"::"Vendor Item No.":
                     ShopifyVariant.SKU := Item."Vendor Item No.";
             end;

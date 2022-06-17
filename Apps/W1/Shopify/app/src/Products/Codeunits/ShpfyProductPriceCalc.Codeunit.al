@@ -120,7 +120,7 @@ codeunit 30182 "Shpfy Product Price Calc."
 
     local procedure CreateTempCustomer(ShopCode: code[20])
     var
-        ShopifyShop: REcord "Shpfy Shop";
+        ShopifyShop: Record "Shpfy Shop";
         ConfigTemplateHeader: Record "Config. Template Header";
         ConfigTemplateManagement: Codeunit "Config. Template Management";
         RecRef: RecordRef;

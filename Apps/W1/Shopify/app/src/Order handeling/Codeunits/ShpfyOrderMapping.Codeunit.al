@@ -71,25 +71,24 @@ codeunit 30163 "Shpfy Order Mapping"
         JCustomer: JsonObject;
     begin
         CustomerMapping.SetShop(OrderHeader."Shop Code");
-        if OrderHeader."Bill-to Customer No." = '' then
-            if AllowCreateCustomer then begin
-                OrderEvents.OnBeforeMapCustomer(OrderHeader, IsHandled);
-                if not IsHandled then begin
-                    JCustomer.Add('Name', OrderHeader."Bill-to Name");
-                    JCustomer.Add('Name2', OrderHeader."Bill-to Name 2");
-                    JCustomer.Add('Address', OrderHeader."Bill-to Address");
-                    JCustomer.Add('Address2', OrderHeader."Bill-to Address 2");
-                    JCustomer.Add('PostCode', OrderHeader."Bill-to Post Code");
-                    JCustomer.Add('City', OrderHeader."Bill-to City");
-                    JCustomer.Add('County', OrderHeader."Bill-to County");
-                    JCustomer.Add('CountryCode', OrderHeader."Bill-to Country/Region Code");
-                    OrderHeader."Bill-to Customer No." := CustomerMapping.DoMapping(OrderHeader."Customer Id", JCustomer, OrderHeader."Shop Code", OrderHeader."Customer Template Code", AllowCreateCustomer);
-                    if (OrderHeader."Bill-to Customer No." = '') and (not Shop."Auto Create Unknown Customers") and (Shop."Default Customer No." <> '') then
-                        OrderHeader."Bill-to Customer No." := Shop."Default Customer No.";
-                    OrderHeader."Sell-to Customer No." := OrderHeader."Bill-to Customer No.";
-                    OrderEvents.OnAfterMapCustomer(OrderHeader);
-                end;
+        if OrderHeader."Bill-to Customer No." = '' then begin
+            OrderEvents.OnBeforeMapCustomer(OrderHeader, IsHandled);
+            if not IsHandled then begin
+                JCustomer.Add('Name', OrderHeader."Bill-to Name");
+                JCustomer.Add('Name2', OrderHeader."Bill-to Name 2");
+                JCustomer.Add('Address', OrderHeader."Bill-to Address");
+                JCustomer.Add('Address2', OrderHeader."Bill-to Address 2");
+                JCustomer.Add('PostCode', OrderHeader."Bill-to Post Code");
+                JCustomer.Add('City', OrderHeader."Bill-to City");
+                JCustomer.Add('County', OrderHeader."Bill-to County");
+                JCustomer.Add('CountryCode', OrderHeader."Bill-to Country/Region Code");
+                OrderHeader."Bill-to Customer No." := CustomerMapping.DoMapping(OrderHeader."Customer Id", JCustomer, OrderHeader."Shop Code", OrderHeader."Customer Template Code", AllowCreateCustomer);
+                if (OrderHeader."Bill-to Customer No." = '') and (not Shop."Auto Create Unknown Customers") and (Shop."Default Customer No." <> '') then
+                    OrderHeader."Bill-to Customer No." := Shop."Default Customer No.";
+                OrderHeader."Sell-to Customer No." := OrderHeader."Bill-to Customer No.";
+                OrderEvents.OnAfterMapCustomer(OrderHeader);
             end;
+        end;
 
         if OrderHeader."Shipping Method Code" = '' then begin
             Clear(IsHandled);

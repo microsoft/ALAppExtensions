@@ -1,10 +1,10 @@
 /// <summary>
-/// Enum Shpfy SKU Mappging (ID 30132).
+/// Enum Shpfy SKU Mapping (ID 30132).
 /// </summary>
-enum 30132 "Shpfy SKU Mappging"
+enum 30132 "Shpfy SKU Mapping"
 {
     Access = Internal;
-    Caption = 'Shopify SKU Mappging';
+    Caption = 'Shopify SKU Mapping';
     Extensible = true;
 
     value(0; " ")

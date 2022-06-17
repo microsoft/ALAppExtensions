@@ -7,7 +7,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
 
     var
         // https://shopify.dev/api/usage/access-scopes
-        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping', Locked = true;
+        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping,read_shopify_payments_payouts', Locked = true;
         ShopifyAPIKeyAKVSecretNameLbl: Label 'ShopifyApiKey', Locked = true;
         ShopifyAPISecretAKVSecretNameLbl: Label 'ShopifyApiSecret', Locked = true;
         MissingAPIKeyTelemetryTxt: Label 'The api key has not been initialized.', Locked = true;
@@ -52,7 +52,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
         RedirectUrl: Text;
         Store: Text;
         AuthorizationCode: Text;
-        InstallURLTxt: Label 'https://%1/admin/oauth/authorize?client_id=%2&scope=%3&redirect_uri=%4&state=%5&grant_options[]=%6', Comment = '%1 = Store, %2 = ApiKey, %3 = Scope, %3 = RedirectUrl, %4 = State, %6= GrantOptions', Locked = true;
+        InstallURLTxt: Label 'https://%1/admin/oauth/authorize?client_id=%2&scope=%3&redirect_uri=%4&state=%5&grant_options[]=%6', Comment = '%1 = Store, %2 = ApiKey, %3 = Scope, %3 = RedirectUrl, %4 = State, %6 = GrantOptions', Locked = true;
         NotMatchingStateErr: Label 'The state parameter value does not match.';
     begin
         OAuth2.GetDefaultRedirectURL(RedirectUrl);
