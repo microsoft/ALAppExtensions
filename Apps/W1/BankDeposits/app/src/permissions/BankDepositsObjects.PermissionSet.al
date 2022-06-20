@@ -3,7 +3,7 @@
 /// do not include this permission set in any other permission set
 /// and do not change the Access and Assignable properties
 /// </summary>
-permissionset 1690 "Bank Deposits - Objects"
+permissionset 1690 "Bank Deposits - Obj."
 {
     Assignable = false;
     Access = Public;

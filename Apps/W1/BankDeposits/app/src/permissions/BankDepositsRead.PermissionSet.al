@@ -8,7 +8,7 @@ permissionset 1701 "Bank Deposits - Read"
     Assignable = false;
     Access = Public;
 
-    IncludedPermissionSets = "Bank Deposits - Objects";
+    IncludedPermissionSets = "Bank Deposits - Obj.";
 
     Permissions = tabledata "Bank Acc. Comment Line" = r,
                   tabledata "Bank Deposit Header" = r,
