@@ -7,6 +7,7 @@ codeunit 9101 "SP Client Impl."
         SPRequestManager: Codeunit "SP Request Manager";
         Authorization: Interface "ISP Authorization";
         ReadResponseFailedErr: Label 'Could not read response.';
+        IncorrectResponseErr: Label 'Incorrect response.';
 
     procedure Initialize(BaseUrl: Text; Auth: Interface "ISP Authorization")
     var
@@ -36,11 +37,20 @@ codeunit 9101 "SP Client Impl."
         SPRequestManager.SetAuthorization(Authorization);
         SPOperationResponse := SPRequestManager.Post(_SPUriBuilder);
         if SPOperationResponse.GetResultAsText(Result) then begin
+
             Context.ReadFrom(Result);
-            Context.AsObject().Get('d', Context);
-            Context.AsObject().Get('GetContextWebInformation', Context);
-            Context.AsObject().Get('FormDigestValue', Context);
+
+            if not Context.AsObject().Get('d', Context) then
+                Error(IncorrectResponseErr);
+
+            if not Context.AsObject().Get('GetContextWebInformation', Context) then
+                Error(IncorrectResponseErr);
+
+            if not Context.AsObject().Get('FormDigestValue', Context) then
+                Error(IncorrectResponseErr);
+
             exit(Context.AsValue().AsText());
+
         end else
             Error(ReadResponseFailedErr);
     end;
