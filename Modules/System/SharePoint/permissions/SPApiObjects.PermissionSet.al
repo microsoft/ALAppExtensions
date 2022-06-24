@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-permissionset 5000 "SP API - Objects"
+permissionset 9100 "SP API - Objects"
 {
     Access = Internal;
     Assignable = false;

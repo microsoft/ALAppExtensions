@@ -3,17 +3,15 @@
 /// </summary>
 codeunit 9100 "SP Client"
 {
-
     var
         SPClientImpl: Codeunit "SP Client Impl.";
-
 
     /// <summary>
     /// Initialize SharePoint client.
     /// </summary>
     /// <param name="BaseUrl">SharePoint URL to use.</param>
     /// <param name="Authorization">The authorization to use.</param>
-    procedure Initialize(BaseUrl: Text; Authorization: Interface "SP IAuthorization")
+    procedure Initialize(BaseUrl: Text; Authorization: Interface "ISP Authorization")
     begin
         SPClientImpl.Initialize(BaseUrl, Authorization);
     end;
@@ -24,15 +22,12 @@ codeunit 9100 "SP Client"
     /// <param name="BaseUrl">SharePoint URL to use.</param>    
     /// <param name="Namespace">Namespace to use.</param>
     /// <param name="Authorization">The authorization to use.</param>
-    procedure Initialize(BaseUrl: Text; Namespace: Text; Authorization: Interface "SP IAuthorization")
+    procedure Initialize(BaseUrl: Text; Namespace: Text; Authorization: Interface "ISP Authorization")
     begin
         SPClientImpl.Initialize(BaseUrl, Namespace, Authorization);
     end;
 
-
-
     #region Lists
-
 
     /// <summary>
     /// Get all lists on the given site.
@@ -52,7 +47,6 @@ codeunit 9100 "SP Client"
     begin
         SPClientImpl.GetListItems(ListTitle, SPListItem);
     end;
-
 
     /// <summary>
     /// Get all attachments for the given list item.
@@ -122,7 +116,6 @@ codeunit 9100 "SP Client"
         SPClientImpl.CreateList(ListTitle, ListDescription);
     end;
 
-
     /// <summary>
     /// Creates a new list item in specific list.
     /// </summary>
@@ -133,10 +126,10 @@ codeunit 9100 "SP Client"
     begin
         SPClientImpl.CreateListItem(ListTitle, ListItemEntityTypeFullName, ListItemTitle);
     end;
+
     #endregion
 
     #region Folders
-
 
     /// <summary>
     /// List all subfolders in the given folder.

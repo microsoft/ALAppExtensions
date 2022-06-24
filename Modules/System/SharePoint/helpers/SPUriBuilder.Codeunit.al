@@ -15,10 +15,10 @@ codeunit 9110 "SP Uri Builder"
 
     procedure GetHost(): Text
     var
-        Uri: Codeunit Uri;
+        _Uri: Codeunit Uri;
     begin
-        Uri.Init(ServerName);
-        exit(Uri.GetHost());
+        _Uri.Init(ServerName);
+        exit(_Uri.GetHost());
     end;
 
     procedure Initialize(_ServerName: Text; _Namespace: Text)

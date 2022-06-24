@@ -4,46 +4,46 @@ codeunit 9109 "SP Request Manager"
 
     var
         HttpClient: HttpClient;
-        Authorization: Interface "SP IAuthorization";
+        Authorization: Interface "ISP Authorization";
         HttpResponseInfoErr: Label '%1.\\Response Code: %2 %3', Comment = '%1 = Default Error Message ; %2 = Status Code; %3 = Reason Phrase';
 
         OperationNotSuccessfulErr: Label 'An error has occurred';
         BearerTxt: Label 'Bearer %1', Comment = '%1 - Bearer token', Locked = true;
 
-    procedure SetAuthorization(Auth: Interface "SP IAuthorization")
+    procedure SetAuthorization(Auth: Interface "ISP Authorization")
     begin
         Authorization := Auth;
     end;
 
-    procedure Get(UriBuilder: Codeunit "SP Uri Builder") OperationResponse: Codeunit "SP Operation Response"
+    procedure Get(SPUriBuilder: Codeunit "SP Uri Builder") OperationResponse: Codeunit "SP Operation Response"
     var
     begin
-        OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::GET, UriBuilder));
+        OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::GET, SPUriBuilder));
     end;
 
 
-    procedure Post(UriBuilder: Codeunit "SP Uri Builder") OperationResponse: Codeunit "SP Operation Response"
+    procedure Post(SPUriBuilder: Codeunit "SP Uri Builder") OperationResponse: Codeunit "SP Operation Response"
     var
         SPHttpContent: Codeunit "SP Http Content";
     begin
-        OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::POST, UriBuilder, SPHttpContent));
+        OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::POST, SPUriBuilder, SPHttpContent));
     end;
 
-    procedure Post(UriBuilder: Codeunit "SP Uri Builder"; SPHttpContent: Codeunit "SP Http Content") OperationResponse: Codeunit "SP Operation Response"
+    procedure Post(SPUriBuilder: Codeunit "SP Uri Builder"; SPHttpContent: Codeunit "SP Http Content") OperationResponse: Codeunit "SP Operation Response"
     var
         HttpRequestMessage: HttpRequestMessage;
     begin
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, UriBuilder, SPHttpContent);
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, SPUriBuilder, SPHttpContent);
         OperationResponse := SendRequest(HttpRequestMessage);
     end;
 
     [NonDebuggable]
-    local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; UriBuilder: Codeunit "SP Uri Builder") RequestMessage: HttpRequestMessage
+    local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; SPUriBuilder: Codeunit "SP Uri Builder") RequestMessage: HttpRequestMessage
     var
         Headers: HttpHeaders;
     begin
         RequestMessage.Method(Format(HttpRequestType));
-        RequestMessage.SetRequestUri(UriBuilder.GetUri());
+        RequestMessage.SetRequestUri(SPUriBuilder.GetUri());
         RequestMessage.GetHeaders(Headers);
         Headers.Add('Authorization', GetAuthenticationHeaderValue());
         Headers.Add('Accept', 'application/json');
@@ -52,14 +52,13 @@ codeunit 9109 "SP Request Manager"
 
 
 
-    local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; UriBuilder: Codeunit "SP Uri Builder";
-                                                           SPHttpContent: Codeunit "SP Http Content") RequestMessage: HttpRequestMessage
+    local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; SPUriBuilder: Codeunit "SP Uri Builder"; SPHttpContent: Codeunit "SP Http Content") RequestMessage: HttpRequestMessage
     var
         Headers: HttpHeaders;
         HttpContent: HttpContent;
     begin
         RequestMessage.Method(Format(HttpRequestType));
-        RequestMessage.SetRequestUri(UriBuilder.GetUri());
+        RequestMessage.SetRequestUri(SPUriBuilder.GetUri());
 
         RequestMessage.GetHeaders(Headers);
         Headers.Add('Authorization', GetAuthenticationHeaderValue());

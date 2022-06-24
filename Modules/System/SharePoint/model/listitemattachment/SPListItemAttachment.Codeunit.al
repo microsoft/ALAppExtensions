@@ -1,31 +1,31 @@
 codeunit 9102 "SP List Item Attachment"
 {
     Access = Internal;
-    procedure Parse(Payload: Text; var ListItemAttachment: Record "SP List Item Attachment" temporary)
+    procedure Parse(Payload: Text; var SPListItemAttachment: Record "SP List Item Attachment" temporary)
     var
         JObject: JsonObject;
     begin
         if JObject.ReadFrom(Payload) then
-            Parse(JObject, ListItemAttachment);
+            Parse(JObject, SPListItemAttachment);
     end;
 
-    procedure Parse(Payload: JsonObject; var ListItemAttachment: Record "SP List Item Attachment" temporary)
+    procedure Parse(Payload: JsonObject; var SPListItemAttachment: Record "SP List Item Attachment" temporary)
     var
         JToken: JsonToken;
     begin
         if Payload.Get('value', JToken) then
             foreach JToken in JToken.AsArray() do begin
-                ListItemAttachment := ParseSingle(JToken.AsObject());
-                ListItemAttachment.Insert();
+                SPListItemAttachment := ParseSingle(JToken.AsObject());
+                SPListItemAttachment.Insert();
             end;
     end;
 
-    procedure ParseSingle(Payload: Text; var ListItemAttachment: Record "SP List Item Attachment" temporary)
+    procedure ParseSingle(Payload: Text; var SPListItemAttachment: Record "SP List Item Attachment" temporary)
     var
         JObject: JsonObject;
     begin
         if JObject.ReadFrom(Payload) then
-            ListItemAttachment := ParseSingle(JObject);
+            SPListItemAttachment := ParseSingle(JObject);
     end;
 
     local procedure ParseSingle(Payload: JsonObject) ListItemAttachment: Record "SP List Item Attachment" temporary

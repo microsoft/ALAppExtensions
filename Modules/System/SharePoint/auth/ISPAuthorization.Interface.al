@@ -1,4 +1,4 @@
-interface "SP IAuthorization"
+interface "ISP Authorization"
 {
     procedure GetToken(): Text;
 }

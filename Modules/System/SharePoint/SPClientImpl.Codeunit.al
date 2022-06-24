@@ -1,142 +1,144 @@
 codeunit 9101 "SP Client Impl."
 {
-    //Access = Internal;
+    Access = Internal;
 
     var
-        UriBuilder: Codeunit "SP Uri Builder";
-        RequestManager: Codeunit "SP Request Manager";
-        Authorization: Interface "SP IAuthorization";
+        SPUriBuilder: Codeunit "SP Uri Builder";
+        SPRequestManager: Codeunit "SP Request Manager";
+        Authorization: Interface "ISP Authorization";
+        ReadResponseFailedErr: Label 'Could not read response.';
 
-    procedure Initialize(BaseUrl: Text; Auth: Interface "SP IAuthorization")
+    procedure Initialize(BaseUrl: Text; Auth: Interface "ISP Authorization")
     var
-        DefaultRequestManager: Codeunit "SP Request Manager";
+        DefaultSPRequestManager: Codeunit "SP Request Manager";
     begin
-        UriBuilder.Initialize(BaseUrl, 'Web');
-        UriBuilder.ResetPath();
+        SPUriBuilder.Initialize(BaseUrl, 'Web');
+        SPUriBuilder.ResetPath();
         Authorization := Auth;
-        RequestManager := DefaultRequestManager;
+        SPRequestManager := DefaultSPRequestManager;
     end;
 
-    procedure Initialize(BaseUrl: Text; Namespace: Text; Auth: Interface "SP IAuthorization")
+    procedure Initialize(BaseUrl: Text; Namespace: Text; Auth: Interface "ISP Authorization")
     begin
-        UriBuilder.Initialize(BaseUrl, Namespace);
-        UriBuilder.ResetPath();
+        SPUriBuilder.Initialize(BaseUrl, Namespace);
+        SPUriBuilder.ResetPath();
         Authorization := Auth;
     end;
 
     local procedure GetRequestDigest(BaseUrl: Text): Text
     var
-        OperationResponse: Codeunit "SP Operation Response";
-        _UriBuilder: Codeunit "SP Uri Builder";
+        SPOperationResponse: Codeunit "SP Operation Response";
+        _SPUriBuilder: Codeunit "SP Uri Builder";
         Context: JsonToken;
         Result: Text;
     begin
-        _UriBuilder.Initialize(BaseUrl, 'contextinfo');
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Post(_UriBuilder);
-        OperationResponse.GetResultAsText(Result);
-        Context.ReadFrom(Result);
-        Context.AsObject().Get('d', Context);
-        Context.AsObject().Get('GetContextWebInformation', Context);
-        Context.AsObject().Get('FormDigestValue', Context);
-
-        exit(Context.AsValue().AsText());
+        _SPUriBuilder.Initialize(BaseUrl, 'contextinfo');
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Post(_SPUriBuilder);
+        if SPOperationResponse.GetResultAsText(Result) then begin
+            Context.ReadFrom(Result);
+            Context.AsObject().Get('d', Context);
+            Context.AsObject().Get('GetContextWebInformation', Context);
+            Context.AsObject().Get('FormDigestValue', Context);
+            exit(Context.AsValue().AsText());
+        end else
+            Error(ReadResponseFailedErr);
     end;
 
     #region Lists
     procedure GetLists(var SPList: Record "SP List")
     var
         SPListParser: Codeunit "SP List";
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         Result: Text;
     begin
-        UriBuilder.ResetPath();
-        UriBuilder.SetObject('lists');
+        SPUriBuilder.ResetPath();
+        SPUriBuilder.SetObject('lists');
 
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Get(UriBuilder);
-        OperationResponse.GetResultAsText(Result);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Get(SPUriBuilder);
+        SPOperationResponse.GetResultAsText(Result);
         SPListParser.Parse(Result, SPList);
     end;
 
     procedure GetListItems(ListTitle: Text; var SPListItem: Record "SP List Item")
     var
         SPListItemParser: Codeunit "SP List Item";
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         Result: Text;
     begin
         //GET https://{site_url}/_api/web/lists/GetByTitle('Test')/items
-        UriBuilder.ResetPath();
-        UriBuilder.SetObject('lists');
-        UriBuilder.SetMethod('GetByTitle', ListTitle);
-        UriBuilder.SetObject('items');
+        SPUriBuilder.ResetPath();
+        SPUriBuilder.SetObject('lists');
+        SPUriBuilder.SetMethod('GetByTitle', ListTitle);
+        SPUriBuilder.SetObject('items');
 
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Get(UriBuilder);
-        OperationResponse.GetResultAsText(Result);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Get(SPUriBuilder);
+        SPOperationResponse.GetResultAsText(Result);
         SPListItemParser.Parse(Result, SPListItem);
     end;
 
     procedure GetListItemAttachments(ListTitle: Text; ListItemId: Integer; var SPListItemAttachment: Record "SP List Item Attachment")
     var
         SPListItemAttachmentParser: Codeunit "SP List Item Attachment";
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         Result: Text;
     begin
         //GET https://{site_url}/_api/web/lists/getbytitle('{list_title}')/items({item+id})/AttachmentFiles/
-        UriBuilder.ResetPath();
-        UriBuilder.SetObject('lists');
-        UriBuilder.SetMethod('GetByTitle', ListTitle);
-        UriBuilder.SetMethod('Items', ListItemId);
-        UriBuilder.SetObject('AttachmentFiles');
+        SPUriBuilder.ResetPath();
+        SPUriBuilder.SetObject('lists');
+        SPUriBuilder.SetMethod('GetByTitle', ListTitle);
+        SPUriBuilder.SetMethod('Items', ListItemId);
+        SPUriBuilder.SetObject('AttachmentFiles');
 
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Get(UriBuilder);
-        OperationResponse.GetResultAsText(Result);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Get(SPUriBuilder);
+        SPOperationResponse.GetResultAsText(Result);
         SPListItemAttachmentParser.Parse(Result, SPListItemAttachment);
     end;
 
 
     procedure GetListItemAttachmentContent(ListTitle: Text; ListItemId: Integer; FileName: Text)
     var
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         FileInStream: InStream;
     begin
         //GET https://{site_url}/_api/web/lists/getbytitle('{list_title}')/items({item_id})/AttachmentFiles('{file_name}')/$value
-        UriBuilder.ResetPath();
-        UriBuilder.SetObject('lists');
-        UriBuilder.SetMethod('GetByTitle', ListTitle);
-        UriBuilder.SetMethod('Items', ListItemId);
-        UriBuilder.SetMethod('AttachmentFiles', FileName);
-        UriBuilder.SetObject('$value');
+        SPUriBuilder.ResetPath();
+        SPUriBuilder.SetObject('lists');
+        SPUriBuilder.SetMethod('GetByTitle', ListTitle);
+        SPUriBuilder.SetMethod('Items', ListItemId);
+        SPUriBuilder.SetMethod('AttachmentFiles', FileName);
+        SPUriBuilder.SetObject('$value');
 
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Get(UriBuilder);
-        OperationResponse.GetResultAsStream(FileInStream);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Get(SPUriBuilder);
+        SPOperationResponse.GetResultAsStream(FileInStream);
         DownloadFromStream(FileInStream, '', '', '', FileName);
     end;
 
     procedure GetListItemAttachmentContent(OdataId: Text)
     var
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         FileInStream: InStream;
         FileName: Text;
     begin
         //GET https://{site_url}/_api/web/lists/getbytitle('{list_title}')/items({item_id})/AttachmentFiles('{file_name}')/$value
-        UriBuilder.ResetPath(OdataId);
-        UriBuilder.SetObject('$value');
-        FileName := UriBuilder.GetMethodParameter('AttachmentFiles');
+        SPUriBuilder.ResetPath(OdataId);
+        SPUriBuilder.SetObject('$value');
+        FileName := SPUriBuilder.GetMethodParameter('AttachmentFiles');
 
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Get(UriBuilder);
-        OperationResponse.GetResultAsStream(FileInStream);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Get(SPUriBuilder);
+        SPOperationResponse.GetResultAsStream(FileInStream);
 
         DownloadFromStream(FileInStream, '', '', '', FileName);
     end;
 
     procedure CreateListItemAttachment(ListTitle: Text; ListItemId: Integer; var SPListItemAttachment: Record "SP List Item Attachment")
     var
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         SPHttpContent: Codeunit "SP Http Content";
         SPListItemAttachmentParser: Codeunit "SP List Item Attachment";
         FileName: Text;
@@ -147,40 +149,40 @@ codeunit 9101 "SP Client Impl."
             exit;
 
         //GET https://{site_url}/_api/web/lists/getbytitle('{list_title}')/items({item_id})/AttachmentFiles('{file_name}')/$value
-        UriBuilder.ResetPath();
-        UriBuilder.SetObject('lists');
-        UriBuilder.SetMethod('GetByTitle', ListTitle);
-        UriBuilder.SetMethod('Items', ListItemId);
-        UriBuilder.SetObject('AttachmentFiles');
-        UriBuilder.SetMethod('add', 'FileName', '''' + FileName + '''');
+        SPUriBuilder.ResetPath();
+        SPUriBuilder.SetObject('lists');
+        SPUriBuilder.SetMethod('GetByTitle', ListTitle);
+        SPUriBuilder.SetMethod('Items', ListItemId);
+        SPUriBuilder.SetObject('AttachmentFiles');
+        SPUriBuilder.SetMethod('add', 'FileName', '''' + FileName + '''');
 
         SPHttpContent.FromFileInStream(FileInStream);
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Post(UriBuilder, SPHttpContent);
-        OperationResponse.GetResultAsText(Result);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Post(SPUriBuilder, SPHttpContent);
+        SPOperationResponse.GetResultAsText(Result);
         SPListItemAttachmentParser.ParseSingle(Result, SPListItemAttachment);
     end;
 
 
     procedure CreateListItemAttachment(ListTitle: Text; ListItemId: Integer; FileName: Text; var FileInStream: InStream; var SPListItemAttachment: Record "SP List Item Attachment")
     var
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         SPHttpContent: Codeunit "SP Http Content";
         SPListItemAttachmentParser: Codeunit "SP List Item Attachment";
         Result: Text;
     begin
         //GET https://{site_url}/_api/web/lists/getbytitle('{list_title}')/items({item_id})/AttachmentFiles('{file_name}')/$value
-        UriBuilder.ResetPath();
-        UriBuilder.SetObject('lists');
-        UriBuilder.SetMethod('GetByTitle', ListTitle);
-        UriBuilder.SetMethod('Items', ListItemId);
-        UriBuilder.SetObject('AttachmentFiles');
-        UriBuilder.SetMethod('add', 'FileName', '''' + FileName + '''');
+        SPUriBuilder.ResetPath();
+        SPUriBuilder.SetObject('lists');
+        SPUriBuilder.SetMethod('GetByTitle', ListTitle);
+        SPUriBuilder.SetMethod('Items', ListItemId);
+        SPUriBuilder.SetObject('AttachmentFiles');
+        SPUriBuilder.SetMethod('add', 'FileName', '''' + FileName + '''');
 
         SPHttpContent.FromFileInStream(FileInStream);
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Post(UriBuilder, SPHttpContent);
-        OperationResponse.GetResultAsText(Result);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Post(SPUriBuilder, SPHttpContent);
+        SPOperationResponse.GetResultAsText(Result);
         SPListItemAttachmentParser.ParseSingle(Result, SPListItemAttachment);
     end;
 
@@ -189,12 +191,12 @@ codeunit 9101 "SP Client Impl."
     procedure CreateList(ListTitle: Text; ListDescription: Text)
     var
         SPHttpContent: Codeunit "SP Http Content";
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         Request, Metadata : JsonObject;
         Result: Text;
     begin
-        UriBuilder.ResetPath();
-        UriBuilder.SetObject('lists');
+        SPUriBuilder.ResetPath();
+        SPUriBuilder.SetObject('lists');
 
         Metadata.Add('type', 'SP.List');
         Request.Add('__metadata', Metadata);
@@ -206,24 +208,24 @@ codeunit 9101 "SP Client Impl."
 
 
         SPHttpContent.FromJson(Request);
-        SPHttpContent.SetRequestDigest(GetRequestDigest(UriBuilder.GetHost()));
+        SPHttpContent.SetRequestDigest(GetRequestDigest(SPUriBuilder.GetHost()));
 
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Post(UriBuilder, SPHttpContent);
-        OperationResponse.GetResultAsText(Result);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Post(SPUriBuilder, SPHttpContent);
+        SPOperationResponse.GetResultAsText(Result);
     end;
 
     procedure CreateListItem(ListTitle: Text; ListItemEntityTypeFullName: Text; ListItemTitle: Text)
     var
         SPHttpContent: Codeunit "SP Http Content";
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         Request, Metadata : JsonObject;
         Result: Text;
     begin
-        UriBuilder.ResetPath();
-        UriBuilder.SetObject('lists');
-        UriBuilder.SetMethod('GetByTitle', ListTitle);
-        UriBuilder.SetObject('items');
+        SPUriBuilder.ResetPath();
+        SPUriBuilder.SetObject('lists');
+        SPUriBuilder.SetMethod('GetByTitle', ListTitle);
+        SPUriBuilder.SetObject('items');
 
         Metadata.Add('type', ListItemEntityTypeFullName);
         Request.Add('__metadata', Metadata);
@@ -231,11 +233,11 @@ codeunit 9101 "SP Client Impl."
 
 
         SPHttpContent.FromJson(Request);
-        SPHttpContent.SetRequestDigest(GetRequestDigest(UriBuilder.GetHost()));
+        SPHttpContent.SetRequestDigest(GetRequestDigest(SPUriBuilder.GetHost()));
 
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Post(UriBuilder, SPHttpContent);
-        OperationResponse.GetResultAsText(Result);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Post(SPUriBuilder, SPHttpContent);
+        SPOperationResponse.GetResultAsText(Result);
     end;
 
 
@@ -249,16 +251,16 @@ codeunit 9101 "SP Client Impl."
     procedure GetSubFoldersByServerRelativeUrl(ServerRelativeUrl: Text; var SPFolder: Record "SP Folder")
     var
         SPFolderParser: Codeunit "SP Folder";
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         Result: Text;
     begin
-        UriBuilder.ResetPath();
-        UriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
-        UriBuilder.SetObject('Folders');
+        SPUriBuilder.ResetPath();
+        SPUriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
+        SPUriBuilder.SetObject('Folders');
 
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Get(UriBuilder);
-        OperationResponse.GetResultAsText(Result);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Get(SPUriBuilder);
+        SPOperationResponse.GetResultAsText(Result);
         SPFolderParser.Parse(Result, SPFolder);
     end;
 
@@ -266,32 +268,32 @@ codeunit 9101 "SP Client Impl."
     procedure GetFolderFilesByServerRelativeUrl(ServerRelativeUrl: Text; var SPFile: Record "SP File" temporary)
     var
         SPFileParser: Codeunit "SP File";
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         Result: Text;
     begin
-        UriBuilder.ResetPath();
-        UriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
-        UriBuilder.SetObject('Files');
+        SPUriBuilder.ResetPath();
+        SPUriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
+        SPUriBuilder.SetObject('Files');
 
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Get(UriBuilder);
-        OperationResponse.GetResultAsText(Result);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Get(SPUriBuilder);
+        SPOperationResponse.GetResultAsText(Result);
         SPFileParser.Parse(Result, SPFile);
     end;
 
 
     procedure GetFileContent(OdataId: Text; FileName: Text)
     var
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         FileInStream: InStream;
     begin
         //GET https://{site_url}/_api/web/lists/getbytitle('{list_title}')/items({item_id})/AttachmentFiles('{file_name}')/$value
-        UriBuilder.ResetPath(OdataId);
-        UriBuilder.SetObject('$value');
+        SPUriBuilder.ResetPath(OdataId);
+        SPUriBuilder.SetObject('$value');
 
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Get(UriBuilder);
-        OperationResponse.GetResultAsStream(FileInStream);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Get(SPUriBuilder);
+        SPOperationResponse.GetResultAsStream(FileInStream);
 
         DownloadFromStream(FileInStream, '', '', '', FileName);
     end;
@@ -300,15 +302,15 @@ codeunit 9101 "SP Client Impl."
     procedure GetDocumentLibraryRootFolder(OdataID: Text; var SPFolder: Record "SP Folder")
     var
         SPFolderParser: Codeunit "SP Folder";
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         Result: Text;
     begin
-        UriBuilder.ResetPath(OdataID);
-        UriBuilder.SetObject('rootfolder');
+        SPUriBuilder.ResetPath(OdataID);
+        SPUriBuilder.SetObject('rootfolder');
 
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Get(UriBuilder);
-        OperationResponse.GetResultAsText(Result);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Get(SPUriBuilder);
+        SPOperationResponse.GetResultAsText(Result);
         SPFolderParser.ParseSingle(Result, SPFolder);
     end;
 
@@ -316,12 +318,12 @@ codeunit 9101 "SP Client Impl."
     procedure CreateFolder(ServerRelativeUrl: Text)
     var
         SPHttpContent: Codeunit "SP Http Content";
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         Request, Metadata : JsonObject;
         Result: Text;
     begin
-        UriBuilder.ResetPath();
-        UriBuilder.SetObject('folders');
+        SPUriBuilder.ResetPath();
+        SPUriBuilder.SetObject('folders');
 
         Metadata.Add('type', 'SP.Folder');
         Request.Add('__metadata', Metadata);
@@ -329,18 +331,18 @@ codeunit 9101 "SP Client Impl."
 
 
         SPHttpContent.FromJson(Request);
-        SPHttpContent.SetRequestDigest(GetRequestDigest(UriBuilder.GetHost()));
+        SPHttpContent.SetRequestDigest(GetRequestDigest(SPUriBuilder.GetHost()));
 
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Post(UriBuilder, SPHttpContent);
-        OperationResponse.GetResultAsText(Result);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Post(SPUriBuilder, SPHttpContent);
+        SPOperationResponse.GetResultAsText(Result);
     end;
 
 
 
     procedure AddFileToFolder(ServerRelativeUrl: Text)
     var
-        OperationResponse: Codeunit "SP Operation Response";
+        SPOperationResponse: Codeunit "SP Operation Response";
         SPHttpContent: Codeunit "SP Http Content";
         FileName: Text;
         FileInStream: InStream;
@@ -350,15 +352,15 @@ codeunit 9101 "SP Client Impl."
             exit;
 
         //GET https://{site_url}/_api/web/lists/getbytitle('{list_title}')/items({item_id})/AttachmentFiles('{file_name}')/$value
-        UriBuilder.ResetPath();
-        UriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
-        UriBuilder.SetObject('Files');
-        UriBuilder.SetMethod('add', 'url', '''' + FileName + '''');
+        SPUriBuilder.ResetPath();
+        SPUriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
+        SPUriBuilder.SetObject('Files');
+        SPUriBuilder.SetMethod('add', 'url', '''' + FileName + '''');
 
         SPHttpContent.FromFileInStream(FileInStream);
-        RequestManager.SetAuthorization(Authorization);
-        OperationResponse := RequestManager.Post(UriBuilder, SPHttpContent);
-        OperationResponse.GetResultAsText(Result);
+        SPRequestManager.SetAuthorization(Authorization);
+        SPOperationResponse := SPRequestManager.Post(SPUriBuilder, SPHttpContent);
+        SPOperationResponse.GetResultAsText(Result);
     end;
     #endregion
 
