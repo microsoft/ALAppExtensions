@@ -210,12 +210,13 @@ codeunit 4017 "GP Account Migrator"
             exit(false);
 
         FirstYear := 0;
-        repeat
-            if GPGL10111.YEAR1 = HistYear then begin
-                FirstYear := HistYear;
-                BeginningBalance := GPGL10111.PERDBLNC;
-            end;
-        until GPGL10111.Next() = 0;
+        GPGL10111.SetFilter(YEAR1, '>= %1', HistYear);
+        GPGL10111.SetCurrentKey(YEAR1);
+        GPGL10111.SetAscending(YEAR1, true);
+        if GPGL10111.FindFirst() then begin
+            FirstYear := GPGL10111.YEAR1;
+            BeginningBalance := GPGL10111.PERDBLNC;
+        end;
 
         if FirstYear = 0 then
             exit(false);
@@ -237,9 +238,20 @@ codeunit 4017 "GP Account Migrator"
                 BeginningBalance,
                 BeginningBalance,
                 '',
-                ''
+                GetRetainedEarningsAccount()
                 );
         end;
         exit(true);
+    end;
+
+    local procedure GetRetainedEarningsAccount(): Code[20]
+    var
+        GPAccount: Record "GP Account";
+    begin
+        GPAccount.SetFilter(AccountCategory, Format(27));
+        if GPAccount.FindFirst() then
+            exit(CopyStr(GPAccount.AcctNum, 1, 20));
+
+        exit('');
     end;
 }
