@@ -17,7 +17,7 @@ table 40105 "GP Company Additional Settings"
             InitValue = true;
             DataClassification = SystemMetadata;
         }
-        field(11; "Year"; Integer)
+        field(11; "Oldest GL Year to Migrate"; Integer)
         {
             DataClassification = SystemMetadata;
         }
@@ -45,7 +45,7 @@ table 40105 "GP Company Additional Settings"
     procedure GetInitialYear(): Integer
     begin
         if Rec.Get(CompanyName()) then
-            exit(Rec."Year");
+            exit(Rec."Oldest GL Year to Migrate");
 
         exit(0);
     end;
