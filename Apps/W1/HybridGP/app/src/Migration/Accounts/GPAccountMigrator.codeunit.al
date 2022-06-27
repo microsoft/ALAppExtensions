@@ -6,6 +6,7 @@ codeunit 4017 "GP Account Migrator"
         PostingGroupCodeTxt: Label 'GP', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
         DescriptionTrxTxt: Label 'Migrated transaction', Locked = true;
+        BeginningBalanceTrxTxt: Label 'Beginning Balance', Locked = true;
         GlDocNoTxt: Label 'G00001', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
@@ -98,20 +99,30 @@ codeunit 4017 "GP Account Migrator"
         GPGLTransactions: Record "GP GLTransactions";
         GenJournalLine: Record "Gen. Journal Line";
         GPFiscalPeriods: Record "GP Fiscal Periods";
-        Sender: Codeunit "Data Migration Facade Helper";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
         PostingGroupCode: Text;
         DimSetID: Integer;
+        InitialYear: Integer;
     begin
+        InitialYear := GPCompanyAdditionalSettings.GetInitialYear();
+
         GPGLTransactions.Reset();
         GPGLTransactions.SetCurrentKey(YEAR1, PERIODID, ACTINDX);
         GPGLTransactions.SetFilter(ACTINDX, '= %1', GPAccount.AcctIndex);
+
+        if not GPAccount.IncomeBalance then
+            if InitialYear > 0 then
+                if CreateBeginningBalance(InitialYear, GPAccount.AcctIndex) then
+                    GPGLTransactions.SetFilter(YEAR1, '>= %1', InitialYear);
+
         if GPGLTransactions.FindSet() then
             repeat
                 PostingGroupCode := PostingGroupCodeTxt + format(GPGLTransactions.YEAR1) + '-' + format(GPGLTransactions.PERIODID);
 
                 if GPFiscalPeriods.Get(GPGLTransactions.PERIODID, GPGLTransactions.YEAR1) then begin
-                    Sender.CreateGeneralJournalBatchIfNeeded(CopyStr(PostingGroupCode, 1, 10), '', '');
-                    Sender.CreateGeneralJournalLine(
+                    DataMigrationFacadeHelper.CreateGeneralJournalBatchIfNeeded(CopyStr(PostingGroupCode, 1, 10), '', '');
+                    DataMigrationFacadeHelper.CreateGeneralJournalLine(
                         GenJournalLine,
                         CopyStr(PostingGroupCode, 1, 10),
                         CopyStr(GlDocNoTxt, 1, 20),
@@ -134,25 +145,25 @@ codeunit 4017 "GP Account Migrator"
 
     local procedure CreateDimSet(GPGLTransactions: Record "GP GLTransactions"): Integer
     var
-        TempDimSetEntry: Record "Dimension Set Entry" temporary;
-        DimVal: Record "Dimension Value";
+        TempDimensionSetEntry: Record "Dimension Set Entry" temporary;
+        DimensionValue: Record "Dimension Value";
         GPSegments: Record "GP Segments";
         HelperFunctions: Codeunit "Helper Functions";
-        DimMgt: Codeunit DimensionManagement;
+        DimensionManagement: Codeunit DimensionManagement;
         NewDimSetID: Integer;
     begin
         if GPSegments.FindSet() then
             repeat
-                DimVal.Get(HelperFunctions.CheckDimensionName(GPSegments.Id), GetSegmentValue(GPGLTransactions, GPSegments.SegmentNumber));      //'0000'); GPGLTransactions ACTNUMBR_1 - 9
-                TempDimSetEntry.Init();
-                TempDimSetEntry.Validate("Dimension Code", DimVal."Dimension Code");
-                TempDimSetEntry.Validate("Dimension Value Code", DimVal.Code);
-                TempDimSetEntry.Validate("Dimension Value ID", DimVal."Dimension Value ID");
-                TempDimSetEntry.Insert(true);
+                DimensionValue.Get(HelperFunctions.CheckDimensionName(GPSegments.Id), GetSegmentValue(GPGLTransactions, GPSegments.SegmentNumber));      //'0000'); GPGLTransactions ACTNUMBR_1 - 9
+                TempDimensionSetEntry.Init();
+                TempDimensionSetEntry.Validate("Dimension Code", DimensionValue."Dimension Code");
+                TempDimensionSetEntry.Validate("Dimension Value Code", DimensionValue.Code);
+                TempDimensionSetEntry.Validate("Dimension Value ID", DimensionValue."Dimension Value ID");
+                TempDimensionSetEntry.Insert(true);
             until GPSegments.Next() = 0;
 
-        NewDimSetID := DimMgt.GetDimensionSetID(TempDimSetEntry);
-        TempDimSetEntry.DeleteAll();
+        NewDimSetID := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
+        TempDimensionSetEntry.DeleteAll();
         exit(NewDimSetID);
     end;
 
@@ -176,5 +187,59 @@ codeunit 4017 "GP Account Migrator"
             8:
                 exit(GPGLTransactions.ACTNUMBR_8);
         end;
+    end;
+
+    local procedure CreateBeginningBalance(HistYear: Integer; AccountIndex: Integer): Boolean
+    var
+        GPGL10111: Record "GP GL10111";
+        GPAccount: Record "GP Account";
+        GenJournalLine: Record "Gen. Journal Line";
+        GPFiscalPeriods: Record "GP Fiscal Periods";
+        DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
+        BeginningBalance: Decimal;
+        PostingGroupCode: Text;
+        FirstYear: Integer;
+    begin
+        if not GPAccount.Get(AccountIndex) then
+            exit(false);
+
+        GPGL10111.SetRange(ACTINDX, AccountIndex);
+        GPGL10111.SetRange(PERIODID, 0);
+
+        if not GPGL10111.FindSet() then
+            exit(false);
+
+        FirstYear := 0;
+        repeat
+            if GPGL10111.YEAR1 = HistYear then begin
+                FirstYear := HistYear;
+                BeginningBalance := GPGL10111.PERDBLNC;
+            end;
+        until GPGL10111.Next() = 0;
+
+        if FirstYear = 0 then
+            exit(false);
+
+        PostingGroupCode := PostingGroupCodeTxt + format(FirstYear) + 'BB';
+
+        GPFiscalPeriods.SetRange(YEAR1, FirstYear);
+        if GPFiscalPeriods.FindFirst() then begin
+            DataMigrationFacadeHelper.CreateGeneralJournalBatchIfNeeded(CopyStr(PostingGroupCode, 1, 10), '', '');
+            DataMigrationFacadeHelper.CreateGeneralJournalLine(
+                GenJournalLine,
+                CopyStr(PostingGroupCode, 1, 10),
+                CopyStr(GlDocNoTxt, 1, 20),
+                CopyStr('Beginning Balance', 1, 50),
+                GenJournalLine."Account Type"::"G/L Account",
+                CopyStr(GPAccount.AcctNum, 1, 20),
+                GPFiscalPeriods.PERIODDT,
+                0D,
+                BeginningBalance,
+                BeginningBalance,
+                '',
+                ''
+                );
+        end;
+        exit(true);
     end;
 }

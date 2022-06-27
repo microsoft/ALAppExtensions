@@ -17,6 +17,10 @@ table 40105 "GP Company Additional Settings"
             InitValue = true;
             DataClassification = SystemMetadata;
         }
+        field(11; "Year"; Integer)
+        {
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys
@@ -36,5 +40,13 @@ table 40105 "GP Company Additional Settings"
             MigrateInactiveCheckbooks := Rec."Migrate Inactive Checkbooks";
 
         exit(MigrateInactiveCheckbooks);
+    end;
+
+    procedure GetInitialYear(): Integer
+    begin
+        if Rec.Get(CompanyName()) then
+            exit(Rec."Year");
+
+        exit(0);
     end;
 }

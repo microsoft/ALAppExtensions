@@ -7,6 +7,8 @@ codeunit 139661 "GP Account Tests"
     TestPermissions = Disabled;
 
     var
+        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         Assert: Codeunit Assert;
         GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade";
         MSGPAccountMigrationTests: Codeunit "GP Account Tests";
@@ -111,6 +113,68 @@ codeunit 139661 "GP Account Tests"
         until Dimensions.Next() = 0;
     end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestLimitingGPHistYear()
+    var
+        GPGLTransactions: Record "GP GLTransactions";
+        DimensionSetEntry: Record "Dimension Set Entry";
+        GPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
+        GPSegements: Record "GP Segments";
+        GPCodes: Record "GP Codes";
+        GPFiscalPeriods: Record "GP Fiscal Periods";
+        GPGL10111: Record "GP GL10111";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] Beginning balance entry is created when using limiting GP hist year
+        // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
+        if not BindSubscription(MSGPAccountMigrationTests) then
+            exit;
+        ClearTables();
+
+        // [GIVEN] Some records are created in the staging table
+        CreateAccountData(GPAccount);
+        CreateLimitGPHistData(GPGL10111, GPAccount, GPFiscalPeriods);
+        CreateDimensionData(GPSegements, GPCodes);
+        HelperFunctions.CreateDimensions();
+        CreateFiscalPeriods(GPFiscalPeriods);
+        CreateTrxData(GPGLTransactions);
+
+        // [GIVEN] A limiting year is used
+        ConfigureMigrationSettings(2020);
+
+        // [WHEN] MigrationAccounts is called
+        GPAccount.FindSet();
+        repeat
+            Migrate(GPAccount);
+        until GPAccount.Next() = 0;
+
+        // [THEN] G/L Account's and beginnging balances are created for staging table entries
+        Assert.RecordCount(GLAccount, 9);
+
+        // [THEN] Accounts are created with correct settings
+        GPAccount.FindSet();
+        GLAccount.FindSet();
+        repeat
+            Assert.AreEqual(GPAccount.AcctNum, GLAccount."No.",
+                StrSubstNo(InvalidAccountNoMsg, GPAccount.AcctNum, GLAccount."No."));
+
+            Assert.AreEqual(GLAccount."Account Type"::Posting, GLAccount."Account Type",
+                StrSubstNo(InvalidAccountTypeMsg, GLAccount."Account Type"::Posting, GLAccount."Account Type"));
+
+            Assert.AreEqual(true, GLAccount."Direct Posting", 'Direct posting not set correctly.');
+
+            Assert.AreEqual(HelperFunctions.ConvertAccountCategory(GPAccount), GLAccount."Account Category",
+                StrSubstNo(InvalidAccountCategoryMsg, HelperFunctions.ConvertAccountCategory(GPAccount), GLAccount."Account Category"));
+
+            Assert.AreEqual(HelperFunctions.ConvertDebitCreditType(GPAccount), GLAccount."Debit/Credit",
+                'Debit/Credit not set correctly.');
+            GPAccount.Next();
+        until GLAccount.Next() = 0;
+    end;
+
     local procedure ClearTables()
     var
         GPGLTransactions: Record "GP GLTransactions";
@@ -134,6 +198,8 @@ codeunit 139661 "GP Account Tests"
         DimensionValues.DeleteAll();
         GPFiscalPeriods.DeleteAll();
         GPGLTransactions.DeleteAll();
+        GPCompanyMigrationSettings.DeleteAll();
+        GPCompanyAdditionalSettings.DeleteAll();
     end;
 
     local procedure Migrate(GPAccount: Record "GP Account")
@@ -550,5 +616,106 @@ codeunit 139661 "GP Account Tests"
         GPGLTransactions.DEBITAMT := 406.99;
         GPGLTransactions.CRDTAMNT := 0.00;
         GPGLTransactions.Insert();
+    end;
+
+    local procedure CreateLimitGPHistData(GPGL10111: Record "GP GL10111"; var GPAccount: Record "GP Account"; GPFiscalPeriods: Record "GP Fiscal Periods")
+    begin
+        GPAccount.Reset();
+        GPAccount.Init();
+        GPAccount.AcctNum := '2110';
+        GPAccount.AcctIndex := 39;
+        GPAccount.Name := 'Accounts Payable';
+        GPAccount.SearchName := 'Accounts Payable';
+        GPAccount.AccountCategory := 5;
+        GPAccount.IncomeBalance := false;
+        GPAccount.DebitCredit := 1;
+        GPAccount.Active := true;
+        GPAccount.DirectPosting := true;
+        GPAccount.AccountSubcategoryEntryNo := 5;
+        GPAccount.AccountType := 1;
+        GPAccount.Insert(true);
+
+        GPAccount.Reset();
+        GPAccount.Init();
+        GPAccount.AcctNum := '3030';
+        GPAccount.AcctIndex := 127;
+        GPAccount.Name := 'Retained Earnings';
+        GPAccount.SearchName := 'Retained Earnings';
+        GPAccount.AccountCategory := 5;
+        GPAccount.IncomeBalance := false;
+        GPAccount.DebitCredit := 1;
+        GPAccount.Active := true;
+        GPAccount.DirectPosting := true;
+        GPAccount.AccountSubcategoryEntryNo := 5;
+        GPAccount.AccountType := 1;
+        GPAccount.Insert(true);
+
+        GPGL10111.Reset();
+        GPGL10111.Init();
+        GPGL10111.ACTINDX := 39;
+        GPGL10111.YEAR1 := 2020;
+        GPGL10111.PERIODID := 0;
+        GPGL10111.Ledger_ID := 1;
+        GPGL10111.ACCATNUM := 13;
+        GPGL10111.PERDBLNC := -150.00;
+        GPGL10111.DEBITAMT := 0.00;
+        GPGL10111.CRDTAMNT := 150.00;
+        GPGL10111.Insert();
+
+        GPGL10111.Reset();
+        GPGL10111.Init();
+        GPGL10111.ACTINDX := 127;
+        GPGL10111.YEAR1 := 2020;
+        GPGL10111.PERIODID := 0;
+        GPGL10111.Ledger_ID := 1;
+        GPGL10111.ACCATNUM := 27;
+        GPGL10111.PERDBLNC := 150.00;
+        GPGL10111.DEBITAMT := 150.00;
+        GPGL10111.CRDTAMNT := 0.00;
+        GPGL10111.Insert();
+
+        GPGL10111.Reset();
+        GPGL10111.Init();
+        GPGL10111.ACTINDX := 39;
+        GPGL10111.YEAR1 := 2021;
+        GPGL10111.PERIODID := 0;
+        GPGL10111.Ledger_ID := 1;
+        GPGL10111.ACCATNUM := 13;
+        GPGL10111.PERDBLNC := -280.00;
+        GPGL10111.DEBITAMT := 0.00;
+        GPGL10111.CRDTAMNT := 280.00;
+        GPGL10111.Insert();
+
+        GPGL10111.Reset();
+        GPGL10111.Init();
+        GPGL10111.ACTINDX := 127;
+        GPGL10111.YEAR1 := 2021;
+        GPGL10111.PERIODID := 0;
+        GPGL10111.Ledger_ID := 1;
+        GPGL10111.ACCATNUM := 27;
+        GPGL10111.PERDBLNC := 280.00;
+        GPGL10111.DEBITAMT := 280.00;
+        GPGL10111.CRDTAMNT := 0.00;
+        GPGL10111.Insert();
+
+        GPFiscalPeriods.Reset();
+        GPFiscalPeriods.Init();
+        GPFiscalPeriods.PERIODID := 1;
+        GPFiscalPeriods.YEAR1 := 2020;
+        GPFiscalPeriods.PERIODDT := 20200101D;
+        GPFiscalPeriods.PERDENDT := 20200101D;
+        GPFiscalPeriods.Insert(true);
+    end;
+
+    local procedure ConfigureMigrationSettings(InitialHistYear: Integer)
+    begin
+        GPCompanyMigrationSettings.Init();
+        GPCompanyMigrationSettings.Name := CompanyName();
+        GPCompanyMigrationSettings.Insert(true);
+
+        GPCompanyAdditionalSettings.Init();
+        GPCompanyAdditionalSettings.Name := GPCompanyMigrationSettings.Name;
+        GPCompanyAdditionalSettings.Year := InitialHistYear;
+        GPCompanyAdditionalSettings.Insert(true);
     end;
 }
