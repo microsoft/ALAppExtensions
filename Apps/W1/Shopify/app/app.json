@@ -30,11 +30,6 @@
             "id": "96da1317-c2e8-42ec-aa19-216e33d0da19",
             "name": "Scaptify",
             "publisher": "Scapta"
-        },
-        {
-            "id": "8e963d9b-3f84-43bf-8723-132a42f78f73",
-            "name": "Register Test Store",
-            "publisher": "Scapta"
         }
     ],
     "resourceExposurePolicy": {

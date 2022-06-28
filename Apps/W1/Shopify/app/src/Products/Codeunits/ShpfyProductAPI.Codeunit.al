@@ -66,6 +66,7 @@ codeunit 30176 "Shpfy Product API"
         JToken: JsonToken;
         Data: Text;
         GraphQuery: TextBuilder;
+
     begin
         ShopifyVariant.FindSet();
         Events.OnBeforeSendCreateShopifyProduct(Shop, ShopifyProduct, ShopifyVariant);
