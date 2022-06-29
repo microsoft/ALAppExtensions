@@ -355,7 +355,7 @@ codeunit 3970 "Image Impl."
         BitConverter: DotNet BitConverter;
         PropertyList: DotNet IList;
         OrientationPropertyId: Integer;
-        Value: Integer;
+        OrientationValue: Integer;
     begin
         OrientationPropertyId := 274; // exif property tag orientation, ID = 0x0112 which corresponds to integer value 274 (https://docs.microsoft.com/en-gb/windows/win32/gdiplus/-gdiplus-constant-property-item-descriptions#propertytagorientation)
 
@@ -364,13 +364,23 @@ codeunit 3970 "Image Impl."
         if not PropertyList.Contains(OrientationPropertyId) then
             exit;
         PropertyItem := Image.GetPropertyItem(OrientationPropertyId);
-        Value := BitConverter.ToUInt16(PropertyItem.Value, 0);
-        case Value of
-            3, 4:
+        OrientationValue := BitConverter.ToUInt16(PropertyItem.Value, 0);
+        case OrientationValue of
+            1:
+                RotateFlipType := RotateFlipType::RotateNoneFlipNone;
+            2:
+                RotateFlipType := RotateFlipType::RotateNoneFlipX;
+            3:
                 RotateFlipType := RotateFlipType::Rotate180FlipNone;
-            5, 6:
+            4:
+                RotateFlipType := RotateFlipType::Rotate180FlipX;
+            5:
+                RotateFlipType := RotateFlipType::Rotate90FlipX;
+            6:
                 RotateFlipType := RotateFlipType::Rotate90FlipNone;
-            7, 8:
+            7:
+                RotateFlipType := RotateFlipType::Rotate270FlipX;
+            8:
                 RotateFlipType := RotateFlipType::Rotate270FlipNone;
             else
                 RotateFlipType := RotateFlipType::RotateNoneFlipNone;

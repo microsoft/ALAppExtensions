@@ -156,7 +156,11 @@ codeunit 3971 Image
         exit(ImageImpl.ToBase64());
     end;
 
-    procedure GetRotateFlipType() RotateFlipType: Enum "Rotate Flip Type";
+    /// <summary>
+    /// Gets the image rotation flip type.
+    /// </summary>
+    /// <returns>The type of rotation and flip of the image.</returns>
+    procedure GetRotateFlipType(): Enum "Rotate Flip Type"
     begin
         exit(ImageImpl.GetRotateFlipType());
     end;
