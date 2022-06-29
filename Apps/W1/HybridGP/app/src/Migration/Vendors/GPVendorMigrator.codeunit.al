@@ -468,9 +468,11 @@ codeunit 4022 "GP Vendor Migrator"
         AccountNumber: Code[20];
         MigrateVendorClasses: Boolean;
     begin
-        MigrateVendorClasses := GPCompanyAdditionalSettings.GetMigrateVendorClasses();
+        if not GPPM00200.FindSet() then
+            exit;
 
-        if not MigrateVendorClasses or not GPPM00200.FindSet() then
+        MigrateVendorClasses := GPCompanyAdditionalSettings.GetMigrateVendorClasses();
+        if not MigrateVendorClasses then
             exit;
 
         repeat

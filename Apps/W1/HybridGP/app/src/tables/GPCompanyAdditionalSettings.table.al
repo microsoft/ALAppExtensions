@@ -18,7 +18,7 @@ table 40105 "GP Company Additional Settings"
         }
         field(11; "Migrate Vendor Classes"; Boolean)
         {
-            InitValue = true;
+            InitValue = false;
             DataClassification = SystemMetadata;
         }
     }
@@ -46,7 +46,6 @@ table 40105 "GP Company Additional Settings"
     var
         MigrateVendorClasses: Boolean;
     begin
-        MigrateVendorClasses := true;
         if Rec.Get(CompanyName()) then
             MigrateVendorClasses := Rec."Migrate Vendor Classes";
 
