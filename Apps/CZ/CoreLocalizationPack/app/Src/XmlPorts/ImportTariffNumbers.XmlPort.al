@@ -52,19 +52,33 @@ XmlPort 31106 "Import Tariff Numbers CZL"
                         TextType = Text;
                         XmlName = 'DO';
                     }
-                    textelement(popis)
-                    {
-                        MaxOccurs = Once;
-                        MinOccurs = Once;
-                        TextType = Text;
-                        XmlName = 'POPIS';
-                    }
                     textelement(mj_i)
                     {
                         MaxOccurs = Once;
                         MinOccurs = Once;
                         TextType = Text;
                         XmlName = 'MJ_I';
+                    }
+                    textelement(trida)
+                    {
+                        MaxOccurs = Once;
+                        MinOccurs = Once;
+                        TextType = Text;
+                        XmlName = 'TRIDA';
+                    }
+                    textelement(tridarim)
+                    {
+                        MaxOccurs = Once;
+                        MinOccurs = Once;
+                        TextType = Text;
+                        XmlName = 'TRIDARIM';
+                    }
+                    textelement(popis)
+                    {
+                        MaxOccurs = Once;
+                        MinOccurs = Once;
+                        TextType = Text;
+                        XmlName = 'POPIS';
                     }
                     textelement(popisan)
                     {

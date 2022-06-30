@@ -87,7 +87,6 @@ codeunit 132920 "ABS Blob Client Test"
         ABSContainerClient.DeleteContainer(ContainerName);
     end;
 
-    [Test]
     procedure GetBlockBlobTagsTest()
     var
         ABSOperationResponse: Codeunit "ABS Operation Response";
@@ -232,7 +231,6 @@ codeunit 132920 "ABS Blob Client Test"
         ABSContainerClient.DeleteContainer(ContainerName);
     end;
 
-    [Test]
     procedure LeaseBlobTest()
     var
         Response: Codeunit "ABS Operation Response";

@@ -15,6 +15,12 @@ codeunit 31021 "Vendor Ledg. Entry Handler CZZ"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Vendor Ledger Entry", 'OnIsRelatedToAdvanceLetterCZL', '', false, false)]
+    local procedure GetOnIsRelatedToAdvanceLetterCZL(VendorLedgerEntry: Record "Vendor Ledger Entry"; var IsRelatedToAdvanceLetter: Boolean)
+    begin
+        IsRelatedToAdvanceLetter := IsRelatedToAdvanceLetter or (VendorLedgerEntry."Advance Letter No. CZZ" <> '');
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Journal Line Handler CZL", 'OnBeforeGetPayablesAccountNo', '', false, false)]
     local procedure GetPayablesAccountNo(VendorLedgerEntry: Record "Vendor Ledger Entry"; var GLAccountNo: Code[20]; var IsHandled: Boolean)
     var

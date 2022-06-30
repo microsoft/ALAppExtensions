@@ -236,7 +236,7 @@ table 31075 "VIES Declaration Header CZL"
         field(20; "Declaration Type"; Option)
         {
             Caption = 'Declaration Type';
-            OptionCaption = 'Normal,Corrective,Corrective-Supplementary';
+            OptionCaption = 'Normal,Corrective,Corrective-Supplementary (Obsolete)';
             OptionMembers = Normal,Corrective,"Corrective-Supplementary";
             DataClassification = CustomerContent;
 
@@ -248,6 +248,8 @@ table 31075 "VIES Declaration Header CZL"
                         Error(LineExistErr, FieldCaption("Declaration Type"));
                     if "Declaration Type" = "Declaration Type"::Normal then
                         "Corrected Declaration No." := '';
+                    if "Declaration Type" = "Declaration Type"::"Corrective-Supplementary" then
+                        Error(NoLongerSupportedErr);
                 end;
             end;
         }
@@ -545,6 +547,7 @@ table 31075 "VIES Declaration Header CZL"
         RenameErr: Label 'You cannot rename a %1.', Comment = '%1 = tablecaption';
         LineExistErr: Label 'You cannot change %1 because you already have declaration lines.', Comment = '%1 = fieldcaption';
         PeriodNumberErr: Label 'The permitted values for %1 are from 1 to %2.', Comment = '%1 = period number fieldcaption; %2 = max periodnumber';
+        NoLongerSupportedErr: Label 'The Corrective-Supplementary type is no longer supported.';
 
     procedure InitRecord()
     begin
@@ -686,7 +689,7 @@ table 31075 "VIES Declaration Header CZL"
     begin
         Testfield(Status, Status::Released);
         if "Declaration Type" = "Declaration Type"::"Corrective-Supplementary" then
-            FieldError("Declaration Type");
+            Error(NoLongerSupportedErr);
         StatutoryReportingSetupCZL.Get();
         StatutoryReportingSetupCZL.Testfield("VIES Declaration Export No.");
 

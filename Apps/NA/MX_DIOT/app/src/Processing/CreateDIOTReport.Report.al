@@ -45,8 +45,10 @@ report 27030 "Create DIOT Report"
         TempDIOTReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary;
         TempErrorMessage: Record "Error Message" temporary;
         DIOTDataMgmt: Codeunit "DIOT Data Management";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         StartingDate: Date;
         EndingDate: Date;
+        MXDIOTTok: Label 'MX Setup and Generate DIOT Report', Locked = true;
         BlankStartingDateErr: Label 'Please provide a starting date.';
         BlankEndingDateErr: Label 'Please provide an ending date.';
         EndingDateBeforeStartinDateErr: Label 'Ending date cannot be before starting date.';
@@ -73,11 +75,13 @@ report 27030 "Create DIOT Report"
 
     trigger OnPostReport()
     begin
+        FeatureTelemetry.LogUptake('0000HQN', MXDIOTTok, Enum::"Feature Uptake Status"::"Used");
         DIOTDataMgmt.CollectDIOTDataSet(TempDIOTReportBuffer, TempDIOTReportVendorBuffer, TempErrorMessage, StartingDate, EndingDate);
         if TempErrorMessage.HasErrors(false) then
             TempErrorMessage.ShowErrors()
         else
             DIOTDataMgmt.WriteDIOTFile(TempDIOTReportBuffer, TempDIOTReportVendorBuffer);
+        FeatureTelemetry.LogUsage('0000HQO', MXDIOTTok, 'MX DIOT Reports Generated');
     end;
 
 }

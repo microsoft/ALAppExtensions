@@ -25,7 +25,6 @@ codeunit 4751 "Recommended Apps Impl."
         AId: Text[100];
         PAppId: Text[100];
     begin
-        FeatureTelemetry.LogUptake('0000H7Q', 'Recommended Apps', Enum::"Feature Uptake Status"::Used);
         // read the app information from the URL
         GetAppURLParametersFromAppSourceURL(Id, AppSourceURL, LanguageCode, PubId, AId, PAppId);
 

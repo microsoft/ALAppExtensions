@@ -17,6 +17,7 @@ codeunit 148169 "Elster VAT Adv. Notification"
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
+        LibrarySetupStorage: Codeunit "Library - Setup Storage";
         IsInitialized: Boolean;
         RollBackChangesErr: Label 'Roll-back the changes done by this test case.';
 
@@ -24,47 +25,151 @@ codeunit 148169 "Elster VAT Adv. Notification"
     procedure CheckFieldValuesOnSalesVATAdvanceNotification()
     var
         SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
-        SalesVATAdvanceNotif2: Record "Sales VAT Advance Notif.";
+        ContactForTaxOffice: Text[30];
     begin
         // [SCENARIO 283574] Verify Default field Values on New Sales VAT Advance Notification Record after creating First record.
-
-        // Setup: Create and Update Sales VAT Advance Notification Record for the first time.
         Initialize();
+        SalesVATAdvanceNotif.DeleteAll(true);
+
+        // [GIVEN] Sales VAT Advance Notification record with Period = Quarter and Contact for Tax Office = "Stan".
+        ContactForTaxOffice := LibraryUtility.GenerateGUID();
         CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif);
-        UpdateSalesVATAdvanceNotif(SalesVATAdvanceNotif);
+        UpdateSalesVATAdvanceNotif(SalesVATAdvanceNotif, SalesVATAdvanceNotif.Period::Quarter, ContactForTaxOffice);
 
-        // Exercise: Create new Sales VAT Advance Notification record.
-        CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif2);
+        // [WHEN] Create new Sales VAT Advance Notification record.
+        CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif);
 
-        // Verify: Verify that New record will take values from previous record.
-        SalesVATAdvanceNotif2.TestField(Period, SalesVATAdvanceNotif.Period);
-        SalesVATAdvanceNotif2.TestField("Contact for Tax Office", SalesVATAdvanceNotif."Contact for Tax Office");
+        // [THEN] Verify that New record will take values from previous record.
+        SalesVATAdvanceNotif.TestField(Period, SalesVATAdvanceNotif.Period::Quarter);
+        SalesVATAdvanceNotif.TestField("Contact for Tax Office", ContactForTaxOffice);
 
         // Tear-Down
         asserterror Error(RollBackChangesErr);
     end;
 
+    [Test]
+    procedure ContactForTaxOfficeWhenFirstSalesVATAdvNotifAndVATRepresentativeBlank()
+    var
+        SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
+    begin
+        // [SCENARIO 436931] Contact for Tax Office value when first Sales VAT Advance Notification is created and VAT Representative is blank.
+        Initialize();
+        SalesVATAdvanceNotif.DeleteAll(true);
+
+        // [GIVEN] Company Information has blank VAT Representative.
+        UpdateVATRepresentativeOnCompanyInfo('');
+
+        // [WHEN] Create the first Sales VAT Advance Notification record.
+        CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif);
+
+        // [THEN] Contact for Tax Office is blank for this record.
+        SalesVATAdvanceNotif.TestField("Contact for Tax Office", '');
+    end;
+
+    [Test]
+    procedure ContactForTaxOfficeWhenFirstSalesVATAdvNotifAndVATRepresentativeNonBlank()
+    var
+        SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
+        VATRepresentative: Text[45];
+    begin
+        // [SCENARIO 436931] Contact for Tax Office value when first Sales VAT Advance Notification is created and VAT Representative is not blank.
+        Initialize();
+        SalesVATAdvanceNotif.DeleteAll(true);
+
+        // [GIVEN] Company Information has VAT Representative = 'Anna'.
+        VATRepresentative := LibraryUtility.GenerateGUID();
+        UpdateVATRepresentativeOnCompanyInfo(VATRepresentative);
+
+        // [WHEN] Create the first Sales VAT Advance Notification record.
+        CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif);
+
+        // [THEN] Contact for Tax Office is 'Anna' for this record.
+        SalesVATAdvanceNotif.TestField(
+            "Contact for Tax Office", CopyStr(VATRepresentative, 1, MaxStrLen(SalesVATAdvanceNotif."Contact for Tax Office")));
+    end;
+
+    [Test]
+    procedure ContactForTaxOfficeWhenNonFirstSalesVATAdvNotifAndVATRepresentativeBlank()
+    var
+        SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
+        ContactForTaxOffice: Text[30];
+    begin
+        // [SCENARIO 436931] Contact for Tax Office value when non-initial Sales VAT Advance Notification is created and VAT Representative is blank.
+        Initialize();
+        SalesVATAdvanceNotif.DeleteAll(true);
+
+        // [GIVEN] Company Information has blank VAT Representative.
+        UpdateVATRepresentativeOnCompanyInfo('');
+
+        // [GIVEN] Sales VAT Advance Notification record with Contact for Tax Office = 'Stan'.
+        ContactForTaxOffice := LibraryUtility.GenerateGUID();
+        CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif);
+        UpdateSalesVATAdvanceNotif(SalesVATAdvanceNotif, SalesVATAdvanceNotif.Period, ContactForTaxOffice);
+
+        // [WHEN] Create another Sales VAT Advance Notification record.
+        CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif);
+
+        // [THEN] Contact for Tax Office is 'Stan' for this record.
+        SalesVATAdvanceNotif.TestField("Contact for Tax Office", ContactForTaxOffice);
+    end;
+
+    [Test]
+    procedure ContactForTaxOfficeWhenNonFirstSalesVATAdvNotifAndVATRepresentativeNonBlank()
+    var
+        SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
+        ContactForTaxOffice: Text[30];
+    begin
+        // [SCENARIO 436931] Contact for Tax Office value when non-initial Sales VAT Advance Notification is created and VAT Representative is not blank.
+        Initialize();
+        SalesVATAdvanceNotif.DeleteAll(true);
+
+        // [GIVEN] Company Information has VAT Representative = 'Anna'.
+        UpdateVATRepresentativeOnCompanyInfo(LibraryUtility.GenerateGUID());
+
+        // [GIVEN] Sales VAT Advance Notification record with Contact for Tax Office = 'Stan'.
+        ContactForTaxOffice := LibraryUtility.GenerateGUID();
+        CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif);
+        UpdateSalesVATAdvanceNotif(SalesVATAdvanceNotif, SalesVATAdvanceNotif.Period, ContactForTaxOffice);
+
+        // [WHEN] Create another Sales VAT Advance Notification record.
+        CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif);
+
+        // [THEN] Contact for Tax Office is 'Stan' for this record.
+        SalesVATAdvanceNotif.TestField("Contact for Tax Office", ContactForTaxOffice);
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Elster VAT Adv. Notification");
-        // Lazy Setup.
+        LibrarySetupStorage.Restore();
+
         if IsInitialized then
             exit;
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Elster VAT Adv. Notification");
 
         LibraryERMCountryData.CreateVATData();
-        IsInitialized := true;
+        LibrarySetupStorage.SaveCompanyInformation();
         Commit();
+
+        IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Elster VAT Adv. Notification");
     end;
 
-    local procedure UpdateSalesVATAdvanceNotif(var SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.");
+    local procedure UpdateSalesVATAdvanceNotif(var SalesVATAdvanceNotif: Record "Sales VAT Advance Notif."; PeriodValue: Option; ContactForTaxOffice: Text[30]);
     begin
-        SalesVATAdvanceNotif.Validate("XSL-Filename", TemporaryPath() + SalesVATAdvanceNotif.Description + SalesVATAdvanceNotif."No." + '.xsl');
-        SalesVATAdvanceNotif.Validate(Period, SalesVATAdvanceNotif.Period::Quarter);
-        SalesVATAdvanceNotif.Validate("Contact for Tax Office", LibraryUtility.GenerateGUID());
+        SalesVATAdvanceNotif.Validate(Period, PeriodValue);
+        SalesVATAdvanceNotif.Validate("Contact for Tax Office", ContactForTaxOffice);
         SalesVATAdvanceNotif.Modify(true);
-    END;
+    end;
+
+    local procedure UpdateVATRepresentativeOnCompanyInfo(VATRepresentative: Text[45])
+    var
+        CompanyInformation: Record "Company Information";
+    begin
+        CompanyInformation.Get();
+        CompanyInformation.Validate("VAT Representative", VATRepresentative);
+        CompanyInformation.Modify(true);
+    end;
 
     local procedure CreateSalesVATAdvanceNotif(var SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.");
     begin

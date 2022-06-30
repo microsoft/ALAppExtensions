@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "The Basic Experience extension provides core financial capabilities for small businesses.",
     "description":  "The Basic Experience gives small companies access to the Business Central features that are at the absolute core of doing business. For example, when you install this extension you can invoice customers, pay vendors, manage inventory, and keep your finances in order.",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2130900",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2130800",
@@ -35,5 +35,5 @@
     "features":  [
                      "TranslationFile"
                  ],
-    "application":  "20.2.0.0"
+    "application":  "20.3.0.0"
 }

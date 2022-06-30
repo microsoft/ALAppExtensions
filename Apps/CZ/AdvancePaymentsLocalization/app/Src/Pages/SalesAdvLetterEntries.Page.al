@@ -265,6 +265,7 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                     Caption = 'Find Entries';
                     Image = Navigate;
                     Ellipsis = true;
+                    ShortCutKey = 'Ctrl+Alt+Q';
                     ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
                     trigger OnAction()

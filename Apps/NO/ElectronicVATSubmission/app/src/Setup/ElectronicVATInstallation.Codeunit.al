@@ -3,6 +3,8 @@ codeunit 10681 "Electronic VAT Installation"
     Subtype = Install;
 
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        NOVATReportTok: Label 'NO VAT Reporting', Locked = true;
         AssistedSetupTxt: Label 'Set up an electronic VAT submission';
         AssistedSetupDescriptionTxt: Label 'Connect to the ID-porten integration point and submit your VAT return to Skatteetaten.';
         AssistedSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2181211', Locked = true;
@@ -79,6 +81,7 @@ codeunit 10681 "Electronic VAT Installation"
     var
         VATReportsConfiguration: Record "VAT Reports Configuration";
     begin
+        FeatureTelemetry.LogUptake('0000HTK', NOVATReportTok, Enum::"Feature Uptake Status"::"Set up");
         if VATReportsConfiguration.Get(VATReportsConfiguration."VAT Report Type"::"VAT Return", ElectronicVATLbl) then
             exit;
         VATReportsConfiguration.Validate("VAT Report Type", VATReportsConfiguration."VAT Report Type"::"VAT Return");

@@ -69,7 +69,6 @@ Codeunit 4037 "Helper Functions"
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
         GeneralTemplateNameTxt: Label 'GENERAL', Locked = true;
 
-
 #if not CLEAN21
     [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetEntities(EntityName: Text; var JArray: JsonArray): Boolean
@@ -1728,7 +1727,7 @@ Codeunit 4037 "Helper Functions"
         FiscalPeriods: Codeunit FiscalPeriods;
     begin
         FiscalPeriods.MoveStagingData();
-        Session.LogMessage('', 'Created Fiscal Periods', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        Session.LogMessage('0000HRB', 'Created Fiscal Periods', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetOpenFiscalPeriodsCreated();
     end;
 
@@ -1737,7 +1736,7 @@ Codeunit 4037 "Helper Functions"
         GPVendorMigrator: CodeUnit "GP Vendor Migrator";
     begin
         GPVendorMigrator.MigrateVendorEFTBankAccounts();
-        Session.LogMessage('', 'Created EFT Bank Accounts', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        Session.LogMessage('0000HRC', 'Created EFT Bank Accounts', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetVendorEFTBankAccountsCreated();
     end;
 

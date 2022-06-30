@@ -247,10 +247,18 @@ codeunit 31356 "Payment Order Management CZB"
 
     local procedure IsLedgerEntryApplied(PaymentOrderLineCZB: Record "Payment Order Line CZB"): Boolean
     var
+        IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
         PaymentOrderLineCZB2: Record "Payment Order Line CZB";
     begin
         if PaymentOrderLineCZB."Applies-to C/V/E Entry No." = 0 then
             exit(false);
+
+        IssPaymentOrderLineCZB.SetRange(Type, PaymentOrderLineCZB.Type);
+        IssPaymentOrderLineCZB.SetRange("No.", PaymentOrderLineCZB."No.");
+        IssPaymentOrderLineCZB.SetRange("Applies-to C/V/E Entry No.", PaymentOrderLineCZB."Applies-to C/V/E Entry No.");
+        IssPaymentOrderLineCZB.SetRange(Status, IssPaymentOrderLineCZB.Status::" ");
+        if not IssPaymentOrderLineCZB.IsEmpty() then
+            exit(true);
 
         PaymentOrderLineCZB2.SetRange(Type, PaymentOrderLineCZB.Type);
         PaymentOrderLineCZB2.SetRange("No.", PaymentOrderLineCZB."No.");

@@ -12,6 +12,8 @@ codeunit 8700 "Table Information Cache Impl."
     var
         ProgressDialogLbl: Label 'Progress: @1@@@@@@@@@@', Comment = 'The string should always end with @1@@@@@@@@@@.';
         CrossCompanyDataLbl: Label '(Cross-Company Data)', MaxLength = 30;
+        FailedToCalculateGrowthTxt: Label 'Failed to calculate growth for table %1 %2', Locked = true;
+        CategoryTok: Label 'Table Information Cache', Locked = true;
 
     procedure RefreshTableInformationCache()
     var
@@ -89,26 +91,12 @@ codeunit 8700 "Table Information Cache Impl."
     local procedure CalcThirtyDayGrowth()
     var
         TableInformationCache: Record "Table Information Cache";
-        RecordRef: RecordRef;
-        FieldRef: FieldRef;
     begin
         SetBiggestTablesFilter(TableInformationCache);
         if TableInformationCache.FindSet() then
             repeat
-                RecordRef.Open(TableInformationCache."Table No.");
-                if not (TableInformationCache."Company Name" in ['', CrossCompanyDataLbl, CompanyName()]) then
-                    RecordRef.ChangeCompany(TableInformationCache."Company Name");
-
-                FieldRef := RecordRef.Field(RecordRef.SystemCreatedAtNo);
-#pragma warning disable AA0217
-                FieldRef.SetFilter(StrSubstNo('''''|<%1', CreateDateTime(CalcDate('<-30D>', Today), 0T)));
-#pragma warning restore AA0217
-                TableInformationCache."Last Period No. of Records" := RecordRef.Count();
-                TableInformationCache."Last Period Data Size (KB)" := Round((RecordRef.Count() * TableInformationCache."Record Size" / 1024), 1);
-                if TableInformationCache."Last Period Data Size (KB)" <> 0 then
-                    TableInformationCache."Growth %" := Round(((TableInformationCache."Data Size (KB)" / TableInformationCache."Last Period Data Size (KB)") - 1), 0.01) * 100;
-                TableInformationCache.Modify();
-                RecordRef.Close();
+                if not TryCalcThirtyDayGrowthForTable(TableInformationCache) then
+                    Session.LogMessage('00001PV', StrSubstNo(FailedToCalculateGrowthTxt, TableInformationCache."Table No.", TableInformationCache."Table Name"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
             until TableInformationCache.Next() = 0;
     end;
 
@@ -126,5 +114,35 @@ codeunit 8700 "Table Information Cache Impl."
             TableInformationCache.FindFirst();
         end;
         TableInformationCache.FilterGroup := 0;
+    end;
+
+    [TryFunction]
+    local procedure TryCalcThirtyDayGrowthForTable(var TableInformationCache: Record "Table Information Cache")
+    var
+        RecordRef: RecordRef;
+        FieldRef: FieldRef;
+    begin
+        RecordRef.Open(TableInformationCache."Table No.");
+        if not (TableInformationCache."Company Name" in ['', CrossCompanyDataLbl, CompanyName()]) then
+            RecordRef.ChangeCompany(TableInformationCache."Company Name");
+
+        FieldRef := RecordRef.Field(RecordRef.SystemCreatedAtNo);
+#pragma warning disable AA0217
+        FieldRef.SetFilter(StrSubstNo('''''|<%1', CreateDateTime(CalcDate('<-30D>', Today), 0T)));
+#pragma warning restore AA0217
+        TableInformationCache."Last Period No. of Records" := RecordRef.Count();
+        TableInformationCache."Last Period Data Size (KB)" := Round((RecordRef.Count() * TableInformationCache."Record Size" / 1024), 1);
+        if TableInformationCache."Last Period Data Size (KB)" <> 0 then
+            TableInformationCache."Growth %" := Round(((TableInformationCache."Data Size (KB)" / TableInformationCache."Last Period Data Size (KB)") - 1), 0.01) * 100;
+        TableInformationCache.Modify();
+        RecordRef.Close();
+    end;
+
+    procedure GetTableUrl(Company: Text; TableNo: Integer): Text
+    begin
+        if Company = '' then
+            Company := CompanyName(); // use the current company for the URL for the cases when table is not per company
+
+        exit(GetUrl(ClientType::Web, Company, ObjectType::Table, TableNo));
     end;
 }

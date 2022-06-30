@@ -24,8 +24,8 @@ table 31273 "Compensation Line CZC"
 
             trigger OnValidate()
             begin
-                Clear("Source Entry No.");
-                Validate("Source Entry No.");
+                if "Source Type" <> xRec."Source Type" then
+                    Validate("Source No.", '');
             end;
         }
         field(20; "Source No."; Code[20])
@@ -34,6 +34,12 @@ table 31273 "Compensation Line CZC"
             TableRelation = if ("Source Type" = const(Customer)) Customer."No." else
             if ("Source Type" = const(Vendor)) Vendor."No.";
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "Source No." <> xRec."Source No." then
+                    Validate("Source Entry No.", 0);
+            end;
         }
         field(22; "Posting Group"; Code[20])
         {
@@ -79,23 +85,41 @@ table 31273 "Compensation Line CZC"
                 case "Source Type" of
                     "Source Type"::Customer:
                         begin
-                            if "Source Entry No." <> 0 then
-                                if CustLedgerEntry.Get("Source Entry No.") then;
                             CustLedgerEntry.SetCurrentKey(Open);
                             CustLedgerEntry.SetRange(Open, true);
                             CustLedgerEntry.SetRange(Prepayment, false);
                             CustLedgerEntry.SetRange("Compensation Amount (LCY) CZC", 0);
+                            if CustLedgerEntry.FindSet() then
+                                repeat
+                                    if not CustLedgerEntry.RelatedToAdvanceLetterCZL() then
+                                        CustLedgerEntry.Mark(true);
+                                until CustLedgerEntry.Next() = 0;
+                            CustLedgerEntry.MarkedOnly(true);
+                            if Rec."Source Entry No." <> 0 then begin
+                                CustLedgerEntry.SetRange("Entry No.", Rec."Source Entry No.");
+                                if CustLedgerEntry.FindFirst() then;
+                                CustLedgerEntry.SetRange("Entry No.");
+                            end;
                             if Action::LookupOK = Page.RunModal(0, CustLedgerEntry) then
                                 Validate("Source Entry No.", CustLedgerEntry."Entry No.");
                         end;
                     "Source Type"::Vendor:
                         begin
-                            if "Source Entry No." <> 0 then
-                                if not VendorLedgerEntry.Get("Source Entry No.") then;
                             VendorLedgerEntry.SetCurrentKey(Open);
                             VendorLedgerEntry.SetRange(Open, true);
                             VendorLedgerEntry.SetRange(Prepayment, false);
                             VendorLedgerEntry.SetRange("Compensation Amount (LCY) CZC", 0);
+                            if VendorLedgerEntry.FindSet() then
+                                repeat
+                                    if not VendorLedgerEntry.RelatedToAdvanceLetterCZL() then
+                                        VendorLedgerEntry.Mark(true);
+                                until VendorLedgerEntry.Next() = 0;
+                            VendorLedgerEntry.MarkedOnly(true);
+                            if Rec."Source Entry No." <> 0 then begin
+                                VendorLedgerEntry.SetRange("Entry No.", Rec."Source Entry No.");
+                                if VendorLedgerEntry.FindFirst() then;
+                                VendorLedgerEntry.SetRange("Entry No.");
+                            end;
                             if Action::LookupOK = Page.RunModal(0, VendorLedgerEntry) then
                                 Validate("Source Entry No.", VendorLedgerEntry."Entry No.");
                         end;
@@ -106,6 +130,7 @@ table 31273 "Compensation Line CZC"
             var
                 CustLedgerEntry: Record "Cust. Ledger Entry";
                 VendorLedgerEntry: Record "Vendor Ledger Entry";
+                RelatedToAdvanceLetterErr: Label '%1 %2 is related to Advance Letter.', Comment = '%1 = Ledger Entry TableCaption, %2 = Ledger Entry No.';
             begin
                 case "Source Type" of
                     "Source Type"::Customer:
@@ -116,6 +141,8 @@ table 31273 "Compensation Line CZC"
                             if CustLedgerEntry."Entry No." <> 0 then begin
                                 CustLedgerEntry.TestField(Open, true);
                                 CustLedgerEntry.TestField(Prepayment, false);
+                                if CustLedgerEntry.RelatedToAdvanceLetterCZL() then
+                                    Error(RelatedToAdvanceLetterErr, CustLedgerEntry.TableCaption(), CustLedgerEntry."Entry No.");
 #if not CLEAN19
 #pragma warning disable AL0432
                                 CustLedgerEntry.TestField("Prepayment Type", CustLedgerEntry."Prepayment Type"::" ");
@@ -146,6 +173,8 @@ table 31273 "Compensation Line CZC"
                             if VendorLedgerEntry."Entry No." <> 0 then begin
                                 VendorLedgerEntry.TestField(Open, true);
                                 VendorLedgerEntry.TestField(Prepayment, false);
+                                if VendorLedgerEntry.RelatedToAdvanceLetterCZL() then
+                                    Error(RelatedToAdvanceLetterErr, VendorLedgerEntry.TableCaption(), VendorLedgerEntry."Entry No.");
 #if not CLEAN19
 #pragma warning disable AL0432
                                 VendorLedgerEntry.TestField("Prepayment Type", VendorLedgerEntry."Prepayment Type"::" ");

@@ -91,21 +91,15 @@ codeunit 11736 "Sales Handler CZP"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterPostSalesDoc', '', false, false)]
-    local procedure CreateCashDocumentOnAfterPostSalesDoc(var SalesHeader: Record "Sales Header"; SalesInvHdrNo: Code[20]; SalesCrMemoHdrNo: Code[20])
-    var
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterFinalizePostingOnBeforeCommit', '', false, false)]
+    local procedure CreateCashDocumentOnAfterFinalizePostingOnBeforeCommit(var SalesHeader: Record "Sales Header"; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesCrMemoHeader: Record "Sales Cr.Memo Header")
     begin
         if (SalesHeader."Cash Desk Code CZP" = '') or not SalesHeader.Invoice then
             exit;
 
-        if SalesHeader."Document Type" in [SalesHeader."Document Type"::Order, SalesHeader."Document Type"::Invoice] then begin
-            SalesInvoiceHeader.Get(SalesInvHdrNo);
-            CashDeskManagementCZP.CreateCashDocumentFromSalesInvoice(SalesInvoiceHeader);
-        end else begin
-            SalesCrMemoHeader.Get(SalesCrMemoHdrNo);
+        if SalesHeader."Document Type" in [SalesHeader."Document Type"::Order, SalesHeader."Document Type"::Invoice] then
+            CashDeskManagementCZP.CreateCashDocumentFromSalesInvoice(SalesInvoiceHeader)
+        else
             CashDeskManagementCZP.CreateCashDocumentFromSalesCrMemo(SalesCrMemoHeader);
-        end;
     end;
 }

@@ -355,7 +355,7 @@ page 31273 "Compensation Subform CZC"
                     Caption = 'Find Entries';
                     Ellipsis = true;
                     Image = Navigate;
-                    ShortcutKey = 'Shift+Ctrl+I';
+                    ShortcutKey = 'Ctrl+Alt+Q';
                     ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry.';
 
                     trigger OnAction()

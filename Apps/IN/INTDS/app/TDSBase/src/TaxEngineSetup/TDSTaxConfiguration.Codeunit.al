@@ -51,7 +51,7 @@ codeunit 18694 "TDS Tax Configuration"
 
     local procedure UpdateTDSUseCases()
     begin
-        UseCases.Add('{DB230097-4AA7-44E2-9373-02A467DC95AC}', 2);
+        UseCases.Add('{DB230097-4AA7-44E2-9373-02A467DC95AC}', 3);
         UseCases.Add('{5D4C69D3-E776-4E9D-B397-09336BFDC884}', 1);
         UseCases.Add('{FED919F2-CBDB-45F9-9383-0E1607897400}', 2);
         UseCases.Add('{B0C259BC-64CC-4818-887A-3337D357CDFF}', 2);
@@ -80,6 +80,7 @@ codeunit 18694 "TDS Tax Configuration"
         UseCases.Add('{25C2D9C3-2A87-41A6-9AB9-DC76E818DF0C}', 1);
         UseCases.Add('{08737F79-35F1-4670-BD1D-E41764E3A9DE}', 1);
         UseCases.Add('{f8bf58d9-7681-458d-9dfc-71ea23a9f853}', 1);
+        UseCases.Add('{1abe2c56-9700-4a30-a14a-5e8ecc2f32dd}', 1);
     end;
 
     var
