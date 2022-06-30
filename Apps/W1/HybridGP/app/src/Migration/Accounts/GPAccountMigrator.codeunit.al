@@ -141,57 +141,6 @@ codeunit 4017 "GP Account Migrator"
         end;
     end;
 
-    procedure CreateBeginningBalances()
-    var
-        GPGL10111: Record "GP GL10111";
-        GPAccount: Record "GP Account";
-        GenJournalLine: Record "Gen. Journal Line";
-        GPFiscalPeriods: Record "GP Fiscal Periods";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
-        BeginningBalance: Decimal;
-        PostingGroupCode: Text;
-        FirstYear: Integer;
-        InitialYear: Integer;
-    begin
-        InitialYear := GPCompanyAdditionalSettings.GetInitialYear();
-
-        GPAccount.SetRange(IncomeBalance, false);
-        if GPAccount.FindSet() then
-            repeat
-                Clear(GPGL10111);
-                Clear(GPFiscalPeriods);
-                GPGL10111.SetRange(ACTINDX, GPAccount.AcctIndex);
-                GPGL10111.SetFilter(YEAR1, '>= %1', InitialYear);
-                GPGL10111.SetCurrentKey(YEAR1);
-                GPGL10111.SetAscending(YEAR1, true);
-                if GPGL10111.FindFirst() then begin
-                    FirstYear := GPGL10111.YEAR1;
-                    BeginningBalance := GPGL10111.PERDBLNC;
-                    PostingGroupCode := PostingGroupCodeTxt + format(FirstYear) + 'BB';
-                    GPFiscalPeriods.SetRange(YEAR1, FirstYear);
-                    if GPFiscalPeriods.FindFirst() then begin
-                        DataMigrationFacadeHelper.CreateGeneralJournalBatchIfNeeded(CopyStr(PostingGroupCode, 1, 10), '', '');
-                        DataMigrationFacadeHelper.CreateGeneralJournalLine(
-                            GenJournalLine,
-                            CopyStr(PostingGroupCode, 1, 10),
-                            CopyStr(GlDocNoTxt, 1, 20),
-                            CopyStr('Beginning Balance', 1, 50),
-                            GenJournalLine."Account Type"::"G/L Account",
-                            CopyStr(GPAccount.AcctNum, 1, 20),
-                            GPFiscalPeriods.PERIODDT,
-                            0D,
-                            BeginningBalance,
-                            BeginningBalance,
-                            '',
-                            ''
-                            );
-                    end;
-                end;
-
-            until GPAccount.Next() = 0;
-    end;
-
     local procedure MigrateAccountDetails(GPAccount: Record "GP Account"; GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade")
     var
         HelperFunctions: Codeunit "Helper Functions";
