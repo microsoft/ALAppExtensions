@@ -375,4 +375,80 @@ codeunit 4018 "GP Customer Migrator"
         HelperFunctions.UpdateFieldWithValue(RecordVariant, MigrationGPCustTrans.FieldNo(GLDocNo), DocumentNo);
     end;
 
+    procedure MigrateCustomerClasses()
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPRM00101: Record "GP RM00101";
+        GPRM00201: Record "GP RM00201";
+        CustomerPostingGroup: Record "Customer Posting Group";
+        Customer: Record Customer;
+        HelperFunctions: Codeunit "Helper Functions";
+        ClassId: Text[20];
+        AccountNumber: Code[20];
+        MigrateCustomerClasses: Boolean;
+    begin
+        if not GPRM00101.FindSet() then
+            exit;
+
+        MigrateCustomerClasses := GPCompanyAdditionalSettings.GetMigrateCustomerClasses();
+        if not MigrateCustomerClasses then
+            exit;
+
+        repeat
+            Clear(GPRM00201);
+            Clear(CustomerPostingGroup);
+
+            ClassId := GPRM00101.CUSTCLAS.Trim();
+            if ClassId <> '' then
+                if Customer.Get(GPRM00101.CUSTNMBR) then begin
+                    if not CustomerPostingGroup.Get(ClassId) then
+                        if GPRM00201.Get(ClassId) then begin
+                            CustomerPostingGroup.Validate("Code", ClassId);
+                            CustomerPostingGroup.Validate("Description", GPRM00201.CLASDSCR);
+
+                            // Receivables Account
+                            AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMARACC);
+                            if AccountNumber <> '' then begin
+                                HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+                                CustomerPostingGroup.Validate("Receivables Account", AccountNumber);
+                            end;
+
+                            // Payment Disc. Debit Acc.
+                            AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMTAKACC);
+                            if AccountNumber <> '' then begin
+                                HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+                                CustomerPostingGroup.Validate("Payment Disc. Debit Acc.", AccountNumber);
+                            end;
+
+                            // Additional Fee Account
+                            AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMFCGACC);
+                            if AccountNumber <> '' then begin
+                                HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+                                CustomerPostingGroup.Validate("Additional Fee Account", AccountNumber);
+                            end;
+
+                            // Payment Disc. Credit Acc.
+                            AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMAVACC);
+                            if AccountNumber <> '' then begin
+                                HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+                                CustomerPostingGroup.Validate("Payment Disc. Credit Acc.", AccountNumber);
+                            end;
+
+                            // Payment Tolerance Debit Acc.
+                            // Payment Tolerance Credit Acc.
+                            AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPRM00201.RMWRACC);
+                            if AccountNumber <> '' then begin
+                                HelperFunctions.EnsureAccountHasGenProdPostingAccount(AccountNumber);
+                                CustomerPostingGroup.Validate("Payment Tolerance Debit Acc.", AccountNumber);
+                                CustomerPostingGroup.Validate("Payment Tolerance Credit Acc.", AccountNumber);
+                            end;
+
+                            CustomerPostingGroup.Insert();
+                        end;
+
+                    Customer.Validate("Customer Posting Group", ClassId);
+                    Customer.Modify(true);
+                end;
+        until GPRM00101.Next() = 0;
+    end;
 }

@@ -66,5 +66,7 @@ permissionsetextension 4028 "INTELLIGENT CLOUD - HGP" extends "INTELLIGENT CLOUD
                   tabledata "GP MC40200" = RIMD,
                   tabledata "GP SY06000" = RIMD,
                   tabledata "GP PM00100" = RIMD,
-                  tabledata "GP PM00200" = RIMD;
+                  tabledata "GP PM00200" = RIMD,
+                  tabledata "GP RM00101" = RIMD,
+                  tabledata "GP RM00201" = RIMD;
 }
