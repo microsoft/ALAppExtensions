@@ -74,6 +74,11 @@ table 4024 "GP Configuration"
             DataClassification = SystemMetadata;
             InitValue = false;
         }
+        field(16; "Vendor Classes Created"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
     }
 
     keys
@@ -91,5 +96,16 @@ table 4024 "GP Configuration"
             Init();
             Insert();
         end;
+    end;
+
+    procedure IsAllPostMigrationDataCreated(): Boolean
+    begin
+        exit(
+                "CheckBooks Created" and
+                "Open Purchase Orders Created" and
+                "Fiscal Periods Created" and
+                "Vendor EFT Bank Acc. Created" and
+                "Vendor Classes Created"
+            );
     end;
 }
