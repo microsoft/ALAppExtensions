@@ -28,11 +28,13 @@ codeunit 139661 "GP Account Tests"
         GPCodes: Record "GP Codes";
         GPFiscalPeriods: Record "GP Fiscal Periods";
         HelperFunctions: Codeunit "Helper Functions";
+        StartTime: DateTime;
     begin
         // [SCENARIO] G/L Accounts are migrated from GP
         // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
         if not BindSubscription(MSGPAccountMigrationTests) then
             exit;
+        StartTime := CurrentDateTime;
         ClearTables();
 
         // [GIVEN] Some records are created in the staging table
@@ -51,6 +53,7 @@ codeunit 139661 "GP Account Tests"
         // [THEN] G/L Account's, transactions, and dimension sets are created for all staging table entries
         Assert.RecordCount(GLAccount, 7);
         Assert.RecordCount(GPGLTransactions, 3);
+        DimensionSetEntry.SetFilter(SystemCreatedAt, '> %1', StartTime);
         Assert.RecordCount(DimensionSetEntry, 6);
 
         // [THEN] Accounts are created with correct settings
@@ -193,7 +196,7 @@ codeunit 139661 "GP Account Tests"
         GPSegements.DeleteAll();
         GLAccount.DeleteAll();
         GenJournalLine.DeleteAll();
-        DimensionSetEntry.DeleteAll();
+        //DimensionSetEntry.DeleteAll();
         Dimensions.DeleteAll();
         DimensionValues.DeleteAll();
         GPFiscalPeriods.DeleteAll();
@@ -207,6 +210,7 @@ codeunit 139661 "GP Account Tests"
         GPAccountMigrator: Codeunit "GP Account Migrator";
     begin
         GPAccountMigrator.OnMigrateGlAccount(GLAccDataMigrationFacade, GPAccount.RecordId());
+        GPAccountMigrator.OnCreateOpeningBalanceTrx(GLAccDataMigrationFacade, GPAccount.RecordId);
         GPAccountMigrator.OnMigrateAccountTransactions(GLAccDataMigrationFacade, GPAccount.RecordId());
     end;
 
@@ -620,10 +624,9 @@ codeunit 139661 "GP Account Tests"
 
     local procedure CreateLimitGPHistData(GPGL10111: Record "GP GL10111"; var GPAccount: Record "GP Account"; GPFiscalPeriods: Record "GP Fiscal Periods")
     begin
-        GPAccount.Reset();
         GPAccount.Init();
         GPAccount.AcctNum := '2110';
-        GPAccount.AcctIndex := 39;
+        GPAccount.AcctIndex := 7;
         GPAccount.Name := 'Accounts Payable';
         GPAccount.SearchName := 'Accounts Payable';
         GPAccount.AccountCategory := 5;
@@ -638,10 +641,10 @@ codeunit 139661 "GP Account Tests"
         GPAccount.Reset();
         GPAccount.Init();
         GPAccount.AcctNum := '3030';
-        GPAccount.AcctIndex := 127;
+        GPAccount.AcctIndex := 8;
         GPAccount.Name := 'Retained Earnings';
         GPAccount.SearchName := 'Retained Earnings';
-        GPAccount.AccountCategory := 5;
+        GPAccount.AccountCategory := 27;
         GPAccount.IncomeBalance := false;
         GPAccount.DebitCredit := 1;
         GPAccount.Active := true;
@@ -652,7 +655,7 @@ codeunit 139661 "GP Account Tests"
 
         GPGL10111.Reset();
         GPGL10111.Init();
-        GPGL10111.ACTINDX := 39;
+        GPGL10111.ACTINDX := 7;
         GPGL10111.YEAR1 := 2020;
         GPGL10111.PERIODID := 0;
         GPGL10111.Ledger_ID := 1;
@@ -664,7 +667,7 @@ codeunit 139661 "GP Account Tests"
 
         GPGL10111.Reset();
         GPGL10111.Init();
-        GPGL10111.ACTINDX := 127;
+        GPGL10111.ACTINDX := 8;
         GPGL10111.YEAR1 := 2020;
         GPGL10111.PERIODID := 0;
         GPGL10111.Ledger_ID := 1;
@@ -676,7 +679,7 @@ codeunit 139661 "GP Account Tests"
 
         GPGL10111.Reset();
         GPGL10111.Init();
-        GPGL10111.ACTINDX := 39;
+        GPGL10111.ACTINDX := 7;
         GPGL10111.YEAR1 := 2021;
         GPGL10111.PERIODID := 0;
         GPGL10111.Ledger_ID := 1;
@@ -688,7 +691,7 @@ codeunit 139661 "GP Account Tests"
 
         GPGL10111.Reset();
         GPGL10111.Init();
-        GPGL10111.ACTINDX := 127;
+        GPGL10111.ACTINDX := 8;
         GPGL10111.YEAR1 := 2021;
         GPGL10111.PERIODID := 0;
         GPGL10111.Ledger_ID := 1;
@@ -715,7 +718,7 @@ codeunit 139661 "GP Account Tests"
 
         GPCompanyAdditionalSettings.Init();
         GPCompanyAdditionalSettings.Name := GPCompanyMigrationSettings.Name;
-        GPCompanyAdditionalSettings.Year := InitialHistYear;
+        GPCompanyAdditionalSettings."Oldest GL Year to Migrate" := InitialHistYear;
         GPCompanyAdditionalSettings.Insert(true);
     end;
 }
