@@ -8,8 +8,8 @@ codeunit 4022 "GP Vendor Migrator"
         VendorBatchNameTxt: Label 'GPVEND', Locked = true;
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
-        AddressCodeRemitTo: Label 'REMIT TO', Comment = 'GP ADRSCODE', Locked = true;
-        AddressCodePrimary: Label 'PRIMARY', Comment = 'GP ADRSCODE', Locked = true;
+        AddressCodeRemitToTxt: Label 'REMIT TO', Comment = 'GP ADRSCODE', Locked = true;
+        AddressCodePrimaryTxt: Label 'PRIMARY', Comment = 'GP ADRSCODE', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
     procedure OnMigrateVendor(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
@@ -438,13 +438,13 @@ codeunit 4022 "GP Vendor Migrator"
         TrimmedADRSCODE := GPSY06000.ADRSCODE.Trim();
 
         // The Remit To is the preferred account
-        if TrimmedADRSCODE = AddressCodeRemitTo then
+        if TrimmedADRSCODE = AddressCodeRemitToTxt then
             ShouldSetAsPrimaryAccount := true
         else
-            if (TrimmedADRSCODE = AddressCodePrimary) then begin
+            if (TrimmedADRSCODE = AddressCodePrimaryTxt) then begin
                 // If the Vendor does not have a Remit To account, then use the Primary account instead
                 SearchGPSY06000.SetRange("CustomerVendor_ID", GPSY06000.CustomerVendor_ID);
-                SearchGPSY06000.SetRange("ADRSCODE", AddressCodeRemitTo);
+                SearchGPSY06000.SetRange("ADRSCODE", AddressCodeRemitToTxt);
                 SearchGPSY06000.SetRange("INACTIVE", false);
                 if not SearchGPSY06000.FindFirst() then
                     ShouldSetAsPrimaryAccount := true

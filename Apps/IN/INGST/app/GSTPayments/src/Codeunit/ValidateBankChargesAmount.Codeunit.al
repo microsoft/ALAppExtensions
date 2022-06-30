@@ -193,6 +193,19 @@ codeunit 18247 "Validate Bank Charges Amount"
         CheckLedgerEntry.Amount := CheckLedgerEntry.Amount - Abs(TotalBankChargeAmount);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforePostDeferral', '', false, false)]
+    local procedure OnBeforePostDeferral(var GenJournalLine: Record "Gen. Journal Line"; var AccountNo: Code[20]; var IsHandled: Boolean)
+    var
+        DeferralHeader: Record "Deferral Header";
+        DeferralDocType: Enum "Deferral Document Type";
+    begin
+        if not DeferralHeader.Get(DeferralDocType::"G/L", GenJournalLine."Journal Template Name", GenJournalLine."Journal Batch Name", 0, '', GenJournalLine."Line No.") then
+            if GenJournalLine."GST Group Code" <> '' then
+                IsHandled := true
+            else
+                IsHandled := false;
+    end;
+
     local procedure InsertDetaildGSTBufferBankCharge(var GenJnlLine: Record "Gen. Journal Line")
     var
         GLSetup: Record "General Ledger Setup";

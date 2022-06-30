@@ -2,7 +2,7 @@
     "id":  "e1bc644c-1e88-4055-8650-86af327fc8b7",
     "name":  "_Exclude_BurntInExtension",
     "publisher":  "Microsoft",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
     "help":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
@@ -19,5 +19,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "20.2.0.0"
+    "application":  "20.3.0.0"
 }

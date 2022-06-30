@@ -235,7 +235,7 @@ table 11733 "Cash Document Line CZP"
             var
                 GenJournalLine: Record "Gen. Journal Line";
                 CashDocumentPostCZP: Codeunit "Cash Document-Post CZP";
-                PaymentToleranceMgt: Codeunit "Payment Tolerance Management";
+                PaymentToleranceManagement: Codeunit "Payment Tolerance Management";
                 AccountNo: Code[20];
                 AccountType: Enum "Gen. Journal Account Type";
                 PreviousAmount: Decimal;
@@ -280,9 +280,11 @@ table 11733 "Cash Document Line CZP"
                 "Applies-To Doc. No." := GenJournalLine."Applies-to Doc. No.";
                 "Applies-to ID" := GenJournalLine."Applies-to ID";
                 Validate(Amount, SignAmount() * GenJournalLine.Amount);
-                if PreviousAmount <> 0 then
-                    if not PaymentToleranceMgt.PmtTolGenJnl(GenJournalLine) then
+                if PreviousAmount <> 0 then begin
+                    PaymentToleranceManagement.SetSuppressCommit(true);
+                    if not PaymentToleranceManagement.PmtTolGenJnl(GenJournalLine) then
                         exit;
+                end;
             end;
 
             trigger OnValidate()
@@ -293,11 +295,13 @@ table 11733 "Cash Document Line CZP"
                 VendorLedgEntry: Record "Vendor Ledger Entry";
                 EmployeeLedgEntry: Record "Employee Ledger Entry";
                 CashDocumentPostCZP: Codeunit "Cash Document-Post CZP";
+                PaymentToleranceManagement: Codeunit "Payment Tolerance Management";
             begin
                 GetCashDocumentHeaderCZP();
                 CashDocumentPostCZP.InitGenJnlLine(CashDocumentHeaderCZP, Rec);
                 CashDocumentPostCZP.GetGenJnlLine(GenJournalLine);
                 GenJournalLine.SetSuppressCommit(true);
+                PaymentToleranceManagement.SetSuppressCommit(true);
                 GenJournalBatch.Insert(); // only for "Applies-to Doc. No." validation
                 GenJournalLine.Validate("Applies-to Doc. No.");
                 GenJournalBatch.Delete();
@@ -972,7 +976,6 @@ table 11733 "Cash Document Line CZP"
         CashDeskEventCZP: Record "Cash Desk Event CZP";
         TempCashDocumentLineCZP: Record "Cash Document Line CZP" temporary;
         FixedAsset: Record "Fixed Asset";
-        PaymentToleranceManagement: Codeunit "Payment Tolerance Management";
         DimensionManagement: Codeunit DimensionManagement;
         ConfirmManagement: Codeunit "Confirm Management";
         RenameErr: Label 'You cannot rename a %1.', Comment = '%1 = TableCaption';
@@ -1065,6 +1068,7 @@ table 11733 "Cash Document Line CZP"
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         GenJournalLine: Record "Gen. Journal Line";
         CashDocumentPostCZP: Codeunit "Cash Document-Post CZP";
+        PaymentToleranceManagement: Codeunit "Payment Tolerance Management";
     begin
         GetCashDocumentHeaderCZP();
 
@@ -1082,6 +1086,7 @@ table 11733 "Cash Document Line CZP"
         if (Amount <> xRec.Amount) and (xRec.Amount <> 0) or (xRec."Applies-To Doc. No." <> '') or (xRec."Applies-to ID" <> '') then begin
             CashDocumentPostCZP.InitGenJnlLine(CashDocumentHeaderCZP, Rec);
             CashDocumentPostCZP.GetGenJnlLine(GenJournalLine);
+            PaymentToleranceManagement.SetSuppressCommit(true);
             PaymentToleranceManagement.PmtTolGenJnl(GenJournalLine);
         end;
     end;
@@ -1129,6 +1134,8 @@ table 11733 "Cash Document Line CZP"
     end;
 
     local procedure GetAmtToApplyCust(CustLedgerEntry: Record "Cust. Ledger Entry"; GenJournalLine: Record "Gen. Journal Line"): Decimal
+    var
+        PaymentToleranceManagement: Codeunit "Payment Tolerance Management";
     begin
         if PaymentToleranceManagement.CheckCalcPmtDiscGenJnlCust(GenJournalLine, CustLedgerEntry, 0, false) then
             if (CustLedgerEntry."Amount to Apply" = 0) or
@@ -1141,6 +1148,8 @@ table 11733 "Cash Document Line CZP"
     end;
 
     local procedure GetAmtToApplyVend(VendorLedgerEntry: Record "Vendor Ledger Entry"; GenJournalLine: Record "Gen. Journal Line"): Decimal
+    var
+        PaymentToleranceManagement: Codeunit "Payment Tolerance Management";
     begin
         if PaymentToleranceManagement.CheckCalcPmtDiscGenJnlVend(GenJournalLine, VendorLedgerEntry, 0, false) then
             if (VendorLedgerEntry."Amount to Apply" = 0) or

@@ -61,9 +61,15 @@ codeunit 11739 "Workflow Handler CZP"
     local procedure AddWorkflowTableRelationsToLibrary()
     var
         ApprovalEntry: Record "Approval Entry";
+        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
+        CashDocumentLineCZP: Record "Cash Document Line CZP";
     begin
         WorkflowSetup.InsertTableRelation(Database::"Cash Document Header CZP", 0,
           Database::"Approval Entry", ApprovalEntry.FieldNo("Record ID to Approve"));
+        WorkflowSetup.InsertTableRelation(Database::"Cash Document Header CZP", CashDocumentHeaderCZP.FieldNo("Cash Desk No."),
+          Database::"Cash Document Line CZP", CashDocumentLineCZP.FieldNo("Cash Desk No."));
+        WorkflowSetup.InsertTableRelation(Database::"Cash Document Header CZP", CashDocumentHeaderCZP.FieldNo("No."),
+          Database::"Cash Document Line CZP", CashDocumentLineCZP.FieldNo("Cash Document No."));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Response Handling", 'OnAddWorkflowResponsePredecessorsToLibrary', '', false, false)]

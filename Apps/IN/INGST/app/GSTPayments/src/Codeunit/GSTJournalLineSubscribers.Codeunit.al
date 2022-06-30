@@ -308,4 +308,61 @@ codeunit 18243 "GST Journal Line Subscribers"
                             GenJnlLine.Validate(Amount, GLEntry.Amount * -1);
                     end;
     end;
+
+#if not CLEAN20
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostBalancingEntry', '', false, false)]
+    local procedure OnBeforePostBalancingEntryforSales(var GenJnlLine: Record "Gen. Journal Line"; SalesHeader: Record "Sales Header")
+    var
+        PaymentMethod: Record "Payment Method";
+        GLEntry: Record "G/L Entry";
+    begin
+        if SalesHeader."GST Customer Type" <> SalesHeader."GST Customer Type"::" " then
+            if SalesHeader."Payment Method Code" <> '' then
+                if PaymentMethod.Get(SalesHeader."Payment Method Code") then
+                    if PaymentMethod."Bal. Account No." <> '' then begin
+                        GLEntry.SetRange("External Document No.", GenJnlLine."External Document No.");
+                        GLEntry.SetRange("Document No.", GenJnlLine."Document No.");
+                        if (GenJnlLine."Document Type" = GenJnlLine."Document Type"::Payment) then begin
+                            GLEntry.SetRange("Document Type", GenJnlLine."Document Type"::Invoice);
+                            GLEntry.SetFilter("Debit Amount", '<>%1', 0);
+                        end
+                        else
+                            if (GenJnlLine."Document Type" = GenJnlLine."Document Type"::Refund) then begin
+                                GLEntry.SetRange("Document Type", GenJnlLine."Document Type"::"Credit Memo");
+                                GLEntry.SetFilter("Credit Amount", '<>%1', 0);
+                            end;
+
+                        if GLEntry.FindFirst() then
+                            GenJnlLine.Validate(Amount, (GLEntry.Amount * -1));
+
+                    end;
+    end;
+#endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPostBalancingEntryOnBeforeGenJnlPostLine', '', false, false)]
+    local procedure OnPostBalancingEntryOnBeforeGenJnlPostLineforSales(var GenJnlLine: Record "Gen. Journal Line"; SalesHeader: Record "Sales Header")
+    var
+        PaymentMethod: Record "Payment Method";
+        GLEntry: Record "G/L Entry";
+    begin
+        if SalesHeader."GST Customer Type" <> SalesHeader."GST Customer Type"::" " then
+            if SalesHeader."Payment Method Code" <> '' then
+                if PaymentMethod.Get(SalesHeader."Payment Method Code") then
+                    if PaymentMethod."Bal. Account No." <> '' then begin
+                        GLEntry.SetRange("External Document No.", GenJnlLine."External Document No.");
+                        GLEntry.SetRange("Document No.", GenJnlLine."Document No.");
+                        if (GenJnlLine."Document Type" = GenJnlLine."Document Type"::Payment) then begin
+                            GLEntry.SetRange("Document Type", GenJnlLine."Document Type"::Invoice);
+                            GLEntry.SetFilter("Debit Amount", '<>%1', 0);
+                        end
+                        else
+                            if (GenJnlLine."Document Type" = GenJnlLine."Document Type"::Refund) then begin
+                                GLEntry.SetRange("Document Type", GenJnlLine."Document Type"::"Credit Memo");
+                                GLEntry.SetFilter("Credit Amount", '<>%1', 0);
+                            end;
+
+                        if GLEntry.FindFirst() then
+                            GenJnlLine.Validate(Amount, (GLEntry.Amount * -1));
+                    end;
+    end;
 }

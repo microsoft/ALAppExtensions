@@ -61,9 +61,13 @@ codeunit 31277 "Workflow Handler CZC"
     local procedure AddWorkflowTableRelationsToLibrary()
     var
         ApprovalEntry: Record "Approval Entry";
+        CompensationHeaderCZC: Record "Compensation Header CZC";
+        CompensationLineCZC: Record "Compensation Line CZC";
     begin
         WorkflowSetup.InsertTableRelation(Database::"Compensation Header CZC", 0,
           Database::"Approval Entry", ApprovalEntry.FieldNo("Record ID to Approve"));
+        WorkflowSetup.InsertTableRelation(Database::"Compensation Header CZC", CompensationHeaderCZC.FieldNo("No."),
+          Database::"Compensation Line CZC", CompensationLineCZC.FieldNo("Compensation No."));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Response Handling", 'OnAddWorkflowResponsePredecessorsToLibrary', '', false, false)]

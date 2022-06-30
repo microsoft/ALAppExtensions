@@ -108,9 +108,20 @@ page 10686 "SAF-T Exports"
                 var
                     SAFTExportMgt: Codeunit "SAF-T Export Mgt.";
                 begin
+                    FeatureTelemetry.LogUptake('1000HT7', NOValueAddedTaxTok, Enum::"Feature Uptake Status"::"Used");
                     SAFTExportMgt.DownloadZipFileFromExportHeader(Rec);
+                    FeatureTelemetry.LogUsage('1000HT8', NOValueAddedTaxTok, 'NO Downloaded the Generated SAF-T Files');
                 end;
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        FeatureTelemetry.LogUptake('1000HT5', NOValueAddedTaxTok, Enum::"Feature Uptake Status"::Discovered);
+    end;
+
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        NOValueAddedTaxTok: Label 'NO Set Up Value-added Tax', Locked = true;
 }

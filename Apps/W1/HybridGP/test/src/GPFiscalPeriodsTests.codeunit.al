@@ -1,4 +1,4 @@
-codeunit 139701 "GP Fiscal Periods Tests"
+codeunit 139680 "GP Fiscal Periods Tests"
 {
     // [FEATURE] [GP Data Migration]
 
@@ -26,7 +26,7 @@ codeunit 139701 "GP Fiscal Periods Tests"
         CreateCalendarYearPeriodData(GPSY40101, GPSY40100);
 
         // [WHEN] Fiscal Period migration code is called
-        Migrate(GPSY40101);
+        MigrateData();
 
         // [THEN] Accounting Periods are created
         //     9 years with 12 periods per year = 108
@@ -64,7 +64,7 @@ codeunit 139701 "GP Fiscal Periods Tests"
         CreateNonCalendarPeriods(GPSY40101, GPSY40100);
 
         // [WHEN] Fiscal Period migration code is called
-        Migrate(GPSY40101);
+        MigrateData();
 
         // [THEN] Accounting Periods are created
         //     6 years with 12 periods per year = 72
@@ -103,7 +103,7 @@ codeunit 139701 "GP Fiscal Periods Tests"
         CreateNonTypicalPeriods(GPSY40101, GPSY40100);
 
         // [WHEN] Fiscal Period migration code is called
-        Migrate(GPSY40101);
+        MigrateData();
 
         // [THEN] Accounting Periods are created
         //     40 periods (6, 6, 24, 4) over 4 years 
@@ -136,7 +136,7 @@ codeunit 139701 "GP Fiscal Periods Tests"
         GPSY40100.DeleteAll();
     end;
 
-    local procedure Migrate(var GPSY40101: Record "GP SY40101")
+    local procedure MigrateData()
     var
         FiscalPeriods: Codeunit FiscalPeriods;
     begin

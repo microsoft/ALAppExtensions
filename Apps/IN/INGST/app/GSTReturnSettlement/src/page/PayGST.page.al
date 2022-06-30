@@ -204,7 +204,7 @@ page 18322 "Pay GST"
                 {
                     Caption = 'Dimensions';
                     Image = Dimensions;
-                    ShortCutKey = 'Shift+Ctrl+D';
+                    ShortCutKey = 'Alt+D';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the process to view or edit dimentions, that can be assigned to transactions to distribute cost and analyze transaction history.';
 

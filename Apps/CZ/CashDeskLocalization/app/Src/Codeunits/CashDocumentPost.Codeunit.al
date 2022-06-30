@@ -34,7 +34,9 @@ codeunit 11729 "Cash Document-Post CZP"
         CashDeskCZP.TestField(Blocked, false);
         CashDocumentHeaderCZP.CalcFields(CashDocumentHeaderCZP."Amount Including VAT", CashDocumentHeaderCZP."Amount Including VAT (LCY)");
         if CashDocumentHeaderCZP."Amount Including VAT" <> CashDocumentHeaderCZP."Released Amount" then
-            Error(IsNotEqualErr, CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Amount Including VAT"), CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Released Amount"));
+            Error(NotEqualErr,
+                CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Amount Including VAT"),
+                CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Released Amount"));
 
         SourceCodeSetup.Get();
         SourceCodeSetup.TestField("Cash Desk CZP");
@@ -87,7 +89,7 @@ codeunit 11729 "Cash Document-Post CZP"
         WindowDialog: Dialog;
         DialogMsg: Label 'Posting Document #1#################################\\Posting Lines #2######\', Comment = '%1 = Cash Desk No. & "Cash Document Type & No., %2 = Line Count';
         PostingDateOutRangeErr: Label 'is not within your range of allowed posting dates';
-        IsNotEqualErr: Label '%1 is not equal %2.', Comment = '%1 = Amount Including VAT FieldCaption, %2 = Released Amount FieldCaption)';
+        NotEqualErr: Label '%1 is not equal %2.', Comment = '%1 = Amount Including VAT FieldCaption, %2 = Released Amount FieldCaption';
         CheckDimErr: Label 'A dimension used in %1 %2, %3, %4 has caused an error.\\%5.', Comment = '%1 = TableCaption, %2 = Cash Desk No., %3 = Cash Document No., %4 = Cash Document Line No., %5 = Error Text';
         PreviewMode: Boolean;
 

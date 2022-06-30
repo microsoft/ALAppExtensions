@@ -321,6 +321,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        InventorySetup.SetLoadFields("Date Order Inventory Change", "Post Neg. Transfers as Corr.", "Post Exp. Cost Conv. as Corr.");
         if InventorySetup.Get() then begin
             InventorySetup."Date Order Invt. Change CZL" := InventorySetup."Date Order Inventory Change";
             InventorySetup."Post Neg.Transf. As Corr.CZL" := InventorySetup."Post Neg. Transfers as Corr.";
@@ -336,6 +337,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        DepreciationBook.SetLoadFields("Mark Reclass. as Corrections");
         if DepreciationBook.FindSet(true) then
             repeat
                 DepreciationBook."Mark Reclass. as Correct. CZL" := DepreciationBook."Mark Reclass. as Corrections";
@@ -350,6 +352,8 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        ItemJournalLine.SetLoadFields("Tariff No.", "Physical Transfer", "Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value", "Net Weight", "Country/Region of Origin Code",
+                                      "Statistic Indication", "Intrastat Transaction", "G/L Correction");
         if ItemJournalLine.FindSet(true) then
             repeat
                 ItemJournalLine."Tariff No. CZL" := ItemJournalLine."Tariff No.";
@@ -372,6 +376,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        JobJournalLine.SetLoadFields(Correction, "Tariff No.", "Net Weight", "Country/Region of Origin Code", "Statistic Indication", "Intrastat Transaction");
         if JobJournalLine.FindSet(true) then
             repeat
                 JobJournalLine."Correction CZL" := JobJournalLine.Correction;
@@ -391,6 +396,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        SalesLine.SetLoadFields(Negative, "Physical Transfer", "Country/Region of Origin Code");
         if SalesLine.FindSet(true) then
             repeat
                 SalesLine."Negative CZL" := SalesLine.Negative;
@@ -409,6 +415,7 @@ codeunit 31017 "Upgrade Application CZL"
         then
             exit;
 
+        PurchaseLine.SetLoadFields(Negative, "Physical Transfer", "Country/Region of Origin Code", "Ext. Amount (LCY)", "Ext.Amount Including VAT (LCY)");
         if PurchaseLine.FindSet(true) then
             repeat
                 if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then begin
@@ -431,6 +438,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        ServiceLine.SetLoadFields(Negative, "Physical Transfer", "Country/Region of Origin Code");
         if ServiceLine.FindSet(true) then
             repeat
                 ServiceLine."Negative CZL" := ServiceLine.Negative;
@@ -447,6 +455,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        ValueEntry.SetLoadFields("G/L Correction", "Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
         if ValueEntry.FindSet(true) then
             repeat
                 ValueEntry."G/L Correction CZL" := ValueEntry."G/L Correction";
@@ -475,6 +484,7 @@ codeunit 31017 "Upgrade Application CZL"
                 ApplAcrossPostGrpEntryNo.Add(ApplAcrCustPostGroupsCZL.Entry_No_);
 
 #endif
+        DetailedCustLedgEntry.SetLoadFields("Entry No.", "Customer Posting Group", "Entry Type", "Transaction No.");
         if DetailedCustLedgEntry.FindSet(true) then
             repeat
                 DetailedCustLedgEntry."Customer Posting Group CZL" := DetailedCustLedgEntry."Customer Posting Group";
@@ -509,6 +519,7 @@ codeunit 31017 "Upgrade Application CZL"
                 ApplAcrossPostGrpEntryNo.Add(ApplAcrVendPostGroupsCZL.Entry_No_);
 
 #endif
+        DetailedVendorLedgEntry.SetLoadFields("Entry No.", "Vendor Posting Group", "Entry Type", "Transaction No.");
         if DetailedVendorLedgEntry.FindSet(true) then
             repeat
                 DetailedVendorLedgEntry."Vendor Posting Group CZL" := DetailedVendorLedgEntry."Vendor Posting Group";
@@ -592,6 +603,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion174PerCompanyUpgradeTag()) then
             exit;
 
+        IsolatedCertificate.SetLoadFields("Certificate Code");
         if IsolatedCertificate.FindSet() then
             repeat
                 IsolatedCertificate."Certificate Code CZL" := IsolatedCertificate."Certificate Code";
@@ -781,6 +793,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        ShipmentMethod.SetLoadFields("Include Item Charges (Amount)", "Intrastat Delivery Group Code", "Incl. Item Charges (Stat.Val.)", "Adjustment %");
         if ShipmentMethod.FindSet() then
             repeat
                 ShipmentMethod."Incl. Item Charges (Amt.) CZL" := ShipmentMethod."Include Item Charges (Amount)";
@@ -801,6 +814,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        TariffNumber.SetLoadFields("Full Name ENG", "Description EN CZL", "Supplem. Unit of Measure Code", "Supplem. Unit of Measure Code");
         if TariffNumber.FindSet() then
             repeat
                 TariffNumber."Description EN CZL" := CopyStr(TariffNumber."Full Name ENG", 1, MaxStrLen(TariffNumber."Description EN CZL"));
@@ -823,6 +837,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        StatisticIndication.SetLoadFields(Code, "Full Name ENG");
         if StatisticIndication.FindSet() then
             repeat
                 if StatisticIndicationCZL.Get(StatisticIndication.Code) then begin
@@ -911,6 +926,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        Customer.SetLoadFields("Transaction Type", "Transaction Specification", "Transport Method");
         if Customer.FindSet(true) then
             repeat
                 Customer."Transaction Type CZL" := Customer."Transaction Type";
@@ -927,6 +943,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        Vendor.SetLoadFields("Transaction Type", "Transaction Specification", "Transport Method");
         if Vendor.FindSet(true) then
             repeat
                 Vendor."Transaction Type CZL" := Vendor."Transaction Type";
@@ -943,6 +960,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        Item.SetLoadFields("Specific Movement");
         if Item.FindSet(true) then
             repeat
                 Item."Specific Movement CZL" := Item."Specific Movement";
@@ -957,6 +975,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        UnitofMeasure.SetLoadFields("Tariff Number UOM Code");
         if UnitofMeasure.FindSet(true) then
             repeat
                 UnitofMeasure."Tariff Number UOM Code CZL" := CopyStr(UnitofMeasure."Tariff Number UOM Code", 1, 10);
@@ -971,6 +990,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        VATPostingSetup.SetLoadFields("Intrastat Service");
         if VATPostingSetup.FindSet(true) then
             repeat
                 VATPostingSetup."Intrastat Service CZL" := VATPostingSetup."Intrastat Service";
@@ -987,6 +1007,8 @@ codeunit 31017 "Upgrade Application CZL"
         then
             exit;
 
+        SalesHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                  "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
         if SalesHeader.FindSet(true) then
             repeat
                 if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
@@ -1016,6 +1038,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        SalesShipmentHeader.SetLoadFields("Physical Transfer", "Intrastat Exclude");
         if SalesShipmentHeader.FindSet(true) then
             repeat
                 SalesShipmentHeader."Physical Transfer CZL" := SalesShipmentHeader."Physical Transfer";
@@ -1033,6 +1056,8 @@ codeunit 31017 "Upgrade Application CZL"
         then
             exit;
 
+        SalesInvoiceHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                         "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
         if SalesInvoiceHeader.FindSet(true) then
             repeat
                 if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
@@ -1062,6 +1087,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        SalesInvoiceLine.SetLoadFields("Country/Region of Origin Code");
         if SalesInvoiceLine.FindSet(true) then
             repeat
                 SalesInvoiceLine."Country/Reg. of Orig. Code CZL" := SalesInvoiceLine."Country/Region of Origin Code";
@@ -1078,6 +1104,8 @@ codeunit 31017 "Upgrade Application CZL"
         then
             exit;
 
+        SalesCrMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                        "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
         if SalesCrMemoHeader.FindSet(true) then
             repeat
                 if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
@@ -1107,6 +1135,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        SalesCrMemoLine.SetLoadFields("Country/Region of Origin Code");
         if SalesCrMemoLine.FindSet(true) then
             repeat
                 SalesCrMemoLine."Country/Reg. of Orig. Code CZL" := SalesCrMemoLine."Country/Region of Origin Code";
@@ -1123,6 +1152,8 @@ codeunit 31017 "Upgrade Application CZL"
         then
             exit;
 
+        SalesHeaderArchive.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.",
+                                         "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
         if SalesHeaderArchive.FindSet(true) then
             repeat
                 if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
@@ -1150,6 +1181,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        SalesLineArchive.SetLoadFields("Physical Transfer");
         if SalesLineArchive.FindSet(true) then
             repeat
                 SalesLineArchive."Physical Transfer CZL" := SalesLineArchive."Physical Transfer";
@@ -1166,6 +1198,8 @@ codeunit 31017 "Upgrade Application CZL"
         then
             exit;
 
+        PurchaseHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                     "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
         if PurchaseHeader.FindSet(true) then
             repeat
                 if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
@@ -1195,6 +1229,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        PurchRcptHeader.SetLoadFields("Physical Transfer", "Intrastat Exclude");
         if PurchRcptHeader.FindSet(true) then
             repeat
                 PurchRcptHeader."Physical Transfer CZL" := PurchRcptHeader."Physical Transfer";
@@ -1210,6 +1245,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        PurchRcptLine.SetLoadFields("Country/Region of Origin Code");
         if PurchRcptLine.FindSet(true) then
             repeat
                 PurchRcptLine."Country/Reg. of Orig. Code CZL" := PurchRcptLine."Country/Region of Origin Code";
@@ -1226,6 +1262,8 @@ codeunit 31017 "Upgrade Application CZL"
         then
             exit;
 
+        PurchInvHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.",
+                                     "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Physical Transfer", "Intrastat Exclude");
         if PurchInvHeader.FindSet(true) then
             repeat
                 if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
@@ -1254,6 +1292,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        PurchInvLine.SetLoadFields("Country/Region of Origin Code");
         if PurchInvLine.FindSet(true) then
             repeat
                 PurchInvLine."Country/Reg. of Orig. Code CZL" := PurchInvLine."Country/Region of Origin Code";
@@ -1270,6 +1309,8 @@ codeunit 31017 "Upgrade Application CZL"
         then
             exit;
 
+        PurchCrMemoHdr.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.",
+                                     "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
         if PurchCrMemoHdr.FindSet(true) then
             repeat
                 if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
@@ -1297,6 +1338,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        PurchCrMemoLine.SetLoadFields("Country/Region of Origin Code");
         if PurchCrMemoLine.FindSet(true) then
             repeat
                 PurchCrMemoLine."Country/Reg. of Orig. Code CZL" := PurchCrMemoLine."Country/Region of Origin Code";
@@ -1313,6 +1355,8 @@ codeunit 31017 "Upgrade Application CZL"
         then
             exit;
 
+        PurchaseHeaderArchive.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.",
+                                            "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
         if PurchaseHeaderArchive.FindSet(true) then
             repeat
                 if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
@@ -1340,6 +1384,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        PurchaseLineArchive.SetLoadFields("Physical Transfer");
         if PurchaseLineArchive.FindSet(true) then
             repeat
                 PurchaseLineArchive."Physical Transfer CZL" := PurchaseLineArchive."Physical Transfer";
@@ -1356,6 +1401,8 @@ codeunit 31017 "Upgrade Application CZL"
         then
             exit;
 
+        ServiceHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                    "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
         if ServiceHeader.FindSet(true) then
             repeat
                 if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
@@ -1385,6 +1432,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        ServiceShipmentHeader.SetLoadFields("Physical Transfer", "Intrastat Exclude");
         if ServiceShipmentHeader.FindSet(true) then
             repeat
                 ServiceShipmentHeader."Physical Transfer CZL" := ServiceShipmentHeader."Physical Transfer";
@@ -1402,6 +1450,8 @@ codeunit 31017 "Upgrade Application CZL"
         then
             exit;
 
+        ServiceInvoiceHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                           "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
         if ServiceInvoiceHeader.FindSet(true) then
             repeat
                 if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
@@ -1431,6 +1481,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        ServiceInvoiceLine.SetLoadFields("Country/Region of Origin Code");
         if ServiceInvoiceLine.FindSet(true) then
             repeat
                 ServiceInvoiceLine."Country/Reg. of Orig. Code CZL" := ServiceInvoiceLine."Country/Region of Origin Code";
@@ -1447,6 +1498,8 @@ codeunit 31017 "Upgrade Application CZL"
         then
             exit;
 
+        ServiceCrMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                          "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Physical Transfer", "Intrastat Exclude");
         if ServiceCrMemoHeader.FindSet(true) then
             repeat
                 if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then begin
@@ -1476,6 +1529,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        ServiceCrMemoLine.SetLoadFields("Country/Region of Origin Code");
         if ServiceCrMemoLine.FindSet(true) then
             repeat
                 ServiceCrMemoLine."Country/Reg. of Orig. Code CZL" := ServiceCrMemoLine."Country/Region of Origin Code";
@@ -1490,6 +1544,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        ReturnShipmentHeader.SetLoadFields("Physical Transfer", "Intrastat Exclude");
         if ReturnShipmentHeader.FindSet(true) then
             repeat
                 ReturnShipmentHeader."Physical Transfer CZL" := ReturnShipmentHeader."Physical Transfer";
@@ -1505,6 +1560,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        ReturnReceiptHeader.SetLoadFields("Physical Transfer", "Intrastat Exclude");
         if ReturnReceiptHeader.FindSet(true) then
             repeat
                 ReturnReceiptHeader."Physical Transfer CZL" := ReturnReceiptHeader."Physical Transfer";
@@ -1520,6 +1576,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        TransferHeader.SetLoadFields("Intrastat Exclude");
         if TransferHeader.FindSet(true) then
             repeat
                 TransferHeader."Intrastat Exclude CZL" := TransferHeader."Intrastat Exclude";
@@ -1534,6 +1591,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        TransferLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
         if TransferLine.FindSet(true) then
             repeat
                 TransferLine."Tariff No. CZL" := TransferLine."Tariff No.";
@@ -1550,6 +1608,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        TransferReceiptHeader.SetLoadFields("Intrastat Exclude");
         if TransferReceiptHeader.FindSet(true) then
             repeat
                 TransferReceiptHeader."Intrastat Exclude CZL" := TransferReceiptHeader."Intrastat Exclude";
@@ -1564,6 +1623,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        TransferShipmentHeader.SetLoadFields("Intrastat Exclude");
         if TransferShipmentHeader.FindSet(true) then
             repeat
                 TransferShipmentHeader."Intrastat Exclude CZL" := TransferShipmentHeader."Intrastat Exclude";
@@ -1578,6 +1638,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        ItemLedgerEntry.SetLoadFields("Tariff No.", "Physical Transfer", "Net Weight", "Country/Region of Origin Code", "Statistic Indication", "Intrastat Transaction");
         if ItemLedgerEntry.FindSet(true) then
             repeat
                 ItemLedgerEntry."Tariff No. CZL" := ItemLedgerEntry."Tariff No.";
@@ -1597,6 +1658,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        JobLedgerEntry.SetLoadFields("Tariff No.", "Net Weight", "Country/Region of Origin Code", "Statistic Indication", "Intrastat Transaction");
         if JobLedgerEntry.FindSet(true) then
             repeat
                 JobLedgerEntry."Tariff No. CZL" := JobLedgerEntry."Tariff No.";
@@ -1615,6 +1677,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        ItemCharge.SetLoadFields("Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
         if ItemCharge.FindSet(true) then
             repeat
                 ItemCharge."Incl. in Intrastat Amount CZL" := ItemCharge."Incl. in Intrastat Amount";
@@ -1630,6 +1693,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        ItemChargeAssignmentPurch.SetLoadFields("Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
         if ItemChargeAssignmentPurch.FindSet(true) then
             repeat
                 ItemChargeAssignmentPurch."Incl. in Intrastat Amount CZL" := ItemChargeAssignmentPurch."Incl. in Intrastat Amount";
@@ -1645,6 +1709,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        ItemChargeAssignmentSales.SetLoadFields("Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
         if ItemChargeAssignmentSales.FindSet(true) then
             repeat
                 ItemChargeAssignmentSales."Incl. in Intrastat Amount CZL" := ItemChargeAssignmentSales."Incl. in Intrastat Amount";
@@ -1660,6 +1725,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        PostedGenJournalLine.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code");
         if PostedGenJournalLine.FindSet(true) then
             repeat
                 PostedGenJournalLine."Specific Symbol CZL" := PostedGenJournalLine."Specific Symbol";
@@ -1681,6 +1747,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        IntrastatJnlBatch.SetLoadFields("Declaration No.", "Statement Type");
         if IntrastatJnlBatch.FindSet(true) then
             repeat
                 IntrastatJnlBatch."Declaration No. CZL" := IntrastatJnlBatch."Declaration No.";
@@ -1696,6 +1763,9 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        IntrastatJnlLine.SetLoadFields("Additional Costs", "Source Entry Date", "Statistic Indication", "Statistics Period", "Declaration No.", "Statement Type",
+                                       "Prev. Declaration No.", "Prev. Declaration Line No.", "Specific Movement", "Supplem. UoM Code", "Supplem. UoM Quantity",
+                                       "Supplem. UoM Net Weight", "Base Unit of Measure");
         if IntrastatJnlLine.FindSet(true) then
             repeat
                 IntrastatJnlLine."Additional Costs CZL" := IntrastatJnlLine."Additional Costs";
@@ -1722,6 +1792,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        InventoryPostingSetup.SetLoadFields("Change In Inv.Of Product Acc.", "Change In Inv.Of WIP Acc.", "Consumption Account");
         if InventoryPostingSetup.FindSet() then
             repeat
                 InventoryPostingSetup."Change In Inv.OfProd. Acc. CZL" := InventoryPostingSetup."Change In Inv.Of Product Acc.";
@@ -1738,6 +1809,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        GeneralPostingSetup.SetLoadFields("Invt. Rounding Adj. Account");
         if GeneralPostingSetup.FindSet() then
             repeat
                 GeneralPostingSetup."Invt. Rounding Adj. Acc. CZL" := GeneralPostingSetup."Invt. Rounding Adj. Account";
@@ -1752,6 +1824,9 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        UserSetup.SetLoadFields("Check Document Date(work date)", "Check Document Date(sys. date)", "Check Posting Date (work date)", "Check Posting Date (sys. date)",
+                                "Check Bank Accounts", "Check Journal Templates", "Check Dimension Values", "Allow Posting to Closed Period", "Allow Complete Job", "Employee No.",
+                                "User Name", "Allow Item Unapply", "Check Location Code", "Check Release Location Code", "Check Whse. Net Change Temp.");
         if UserSetup.FindSet() then
             repeat
                 UserSetup."Check Doc. Date(work date) CZL" := UserSetup."Check Document Date(work date)";
@@ -1803,6 +1878,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion183PerCompanyUpgradeTag()) then
             exit;
 
+        AccScheduleLine.SetLoadFields("Source Table", "Totaling Type");
         if AccScheduleLine.FindSet(true) then
             repeat
                 AccScheduleLine."Source Table CZL" := AccScheduleLine."Source Table";
@@ -2020,6 +2096,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
 
+        GenJournalTemplate.SetLoadFields("Not Check Doc. Type");
         GenJournalTemplate.SetRange("Not Check Doc. Type", true);
         if GenJournalTemplate.FindSet() then
             repeat
@@ -2034,6 +2111,8 @@ codeunit 31017 "Upgrade Application CZL"
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion180PerCompanyUpgradeTag()) then
             exit;
+
+        VATEntry.SetLoadFields("VAT Identifier");
         VATEntry.SetFilter("VAT Identifier", '<>%1', '');
         if VATEntry.FindSet(true) then
             repeat
@@ -2049,6 +2128,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
+        CustLedgerEntry.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code");
         if CustLedgerEntry.FindSet(true) then
             repeat
                 CustLedgerEntry."Specific Symbol CZL" := CustLedgerEntry."Specific Symbol";
@@ -2070,6 +2150,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
+        VendorLedgerEntry.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code");
         if VendorLedgerEntry.FindSet(true) then
             repeat
                 VendorLedgerEntry."Specific Symbol CZL" := VendorLedgerEntry."Specific Symbol";
@@ -2091,6 +2172,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
+        GenJournalLine.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code");
         if GenJournalLine.FindSet(true) then
             repeat
                 GenJournalLine."Specific Symbol CZL" := GenJournalLine."Specific Symbol";
@@ -2112,6 +2194,8 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
+        ReminderHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
+                                     "Bank Name", "Transit No.", IBAN, "SWIFT Code");
         if ReminderHeader.FindSet(true) then
             repeat
                 ReminderHeader."Specific Symbol CZL" := ReminderHeader."Specific Symbol";
@@ -2135,6 +2219,8 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
+        IssuedReminderHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
+                                           "Bank Name", "Transit No.", IBAN, "SWIFT Code");
         if IssuedReminderHeader.FindSet(true) then
             repeat
                 IssuedReminderHeader."Specific Symbol CZL" := IssuedReminderHeader."Specific Symbol";
@@ -2158,6 +2244,8 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
+        FinanceChargeMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
+                                              "Bank Name", "Transit No.", IBAN, "SWIFT Code");
         if FinanceChargeMemoHeader.FindSet(true) then
             repeat
                 FinanceChargeMemoHeader."Specific Symbol CZL" := FinanceChargeMemoHeader."Specific Symbol";
@@ -2181,6 +2269,8 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetDataVersion189PerCompanyUpgradeTag()) then
             exit;
 
+        IssuedFinChargeMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
+                                                "Bank Name", "Transit No.", IBAN, "SWIFT Code");
         if IssuedFinChargeMemoHeader.FindSet(true) then
             repeat
                 IssuedFinChargeMemoHeader."Specific Symbol CZL" := IssuedFinChargeMemoHeader."Specific Symbol";

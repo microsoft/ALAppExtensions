@@ -1,3 +1,5 @@
+#if not CLEAN21
+#pragma warning disable AL0432
 codeunit 31414 "Adj. Exch. Rates handler CZZ"
 {
     [EventSubscriber(ObjectType::Report, Report::"Adjust Exchange Rates CZL", 'OnSkipCustLedgerEntry', '', false, false)]
@@ -30,3 +32,5 @@ codeunit 31414 "Adj. Exch. Rates handler CZZ"
         SkipVendorLedgerEntry := true;
     end;
 }
+#pragma warning restore AL0432
+#endif

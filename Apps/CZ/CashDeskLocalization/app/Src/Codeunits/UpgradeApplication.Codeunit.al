@@ -84,6 +84,7 @@ codeunit 31107 "Upgrade Application CZP"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerCompanyUpgradeTag()) then
             exit;
 
+        CashDeskUser.SetLoadFields("Cash Desk No.", "User ID", "Post EET Only");
         if CashDeskUser.FindSet() then
             repeat
                 if CashDeskUserCZP.Get(CashDeskUser."Cash Desk No.", CashDeskUser."User ID") then begin
@@ -101,6 +102,7 @@ codeunit 31107 "Upgrade Application CZP"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerCompanyUpgradeTag()) then
             exit;
 
+        CashDeskEvent.SetLoadFields(Code, "EET Transaction");
         if CashDeskEvent.FindSet() then
             repeat
                 if CashDeskEventCZP.Get(CashDeskEvent.Code) then begin
@@ -122,6 +124,7 @@ codeunit 31107 "Upgrade Application CZP"
             exit;
 
         GeneralLedgerSetup.Get();
+        CashDocumentLine.SetLoadFields("Cash Desk No.", "Cash Document No.", "Line No.", Prepayment, "Advance Letter Link Code", "EET Transaction");
         if CashDocumentLine.FindSet() then
             repeat
                 if CashDocumentLineCZP.Get(CashDocumentLine."Cash Desk No.", CashDocumentLine."Cash Document No.", CashDocumentLine."Line No.") then begin
@@ -144,6 +147,7 @@ codeunit 31107 "Upgrade Application CZP"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerCompanyUpgradeTag()) then
             exit;
 
+        PostedCashDocumentHeader.SetLoadFields("Cash Desk No.", "No.", "EET Entry No.");
         if PostedCashDocumentHeader.FindSet() then
             repeat
                 if PostedCashDocumentHdrCZP.Get(PostedCashDocumentHeader."Cash Desk No.", PostedCashDocumentHeader."No.") then begin
@@ -161,6 +165,7 @@ codeunit 31107 "Upgrade Application CZP"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZP.GetDataVersion174PerCompanyUpgradeTag()) then
             exit;
 
+        PostedCashDocumentLine.SetLoadFields("Cash Desk No.", "Cash Document No.", "Line No.", "EET Transaction");
         if PostedCashDocumentLine.FindSet() then
             repeat
                 if PostedCashDocumentLineCZP.Get(PostedCashDocumentLine."Cash Desk No.", PostedCashDocumentLine."Cash Document No.", PostedCashDocumentLine."Line No.") then begin
