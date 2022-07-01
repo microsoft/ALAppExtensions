@@ -128,6 +128,8 @@ codeunit 139661 "GP Account Tests"
         GPCodes: Record "GP Codes";
         GPFiscalPeriods: Record "GP Fiscal Periods";
         GPGL10111: Record "GP GL10111";
+        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HelperFunctions: Codeunit "Helper Functions";
     begin
@@ -141,7 +143,6 @@ codeunit 139661 "GP Account Tests"
         CreateAccountData(GPAccount);
         CreateLimitGPHistData(GPGL10111, GPAccount, GPFiscalPeriods);
         CreateDimensionData(GPSegements, GPCodes);
-        HelperFunctions.CreateDimensions();
         CreateFiscalPeriods(GPFiscalPeriods);
         CreateTrxData(GPGLTransactions);
 
@@ -154,28 +155,73 @@ codeunit 139661 "GP Account Tests"
             Migrate(GPAccount);
         until GPAccount.Next() = 0;
 
-        // [THEN] G/L Account's and beginnging balances are created for staging table entries
+        // [THEN] Accounts are created
         Assert.RecordCount(GLAccount, 9);
 
-        // [THEN] Accounts are created with correct settings
+        // [THEN] Journal entries are created
+        GenJournalBatch.SetRange("Journal Template Name", 'GENERAL');
+        GenJournalBatch.SetFilter(Name, 'GP2020BB');
+        GenJournalBatch.FindSet();
+        Assert.RecordCount(GenJournalBatch, 1);
+
+        GenJournalLine.SetRange("Journal Template Name", 'GENERAL');
+        GenJournalLine.SetRange("Journal Batch Name", 'GP2020BB');
+        GenJournalLine.FindSet();
+        Assert.RecordCount(GenJournalLine, 2);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestLimitingGPHistYearNotUsed()
+    var
+        GPGLTransactions: Record "GP GLTransactions";
+        DimensionSetEntry: Record "Dimension Set Entry";
+        GPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
+        GPSegements: Record "GP Segments";
+        GPCodes: Record "GP Codes";
+        GPFiscalPeriods: Record "GP Fiscal Periods";
+        GPGL10111: Record "GP GL10111";
+        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] Beginning balance entry is created when using limiting GP hist year
+        // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
+        if not BindSubscription(MSGPAccountMigrationTests) then
+            exit;
+        ClearTables();
+
+        // [GIVEN] Some records are created in the staging table
+        CreateAccountData(GPAccount);
+        CreateLimitGPHistData(GPGL10111, GPAccount, GPFiscalPeriods);
+        CreateDimensionData(GPSegements, GPCodes);
+        CreateFiscalPeriods(GPFiscalPeriods);
+        CreateTrxData(GPGLTransactions);
+
+        // [GIVEN] A limiting year is NOT used
+        //ConfigureMigrationSettings(2020);
+
+        // [WHEN] MigrationAccounts is called
         GPAccount.FindSet();
-        GLAccount.FindSet();
         repeat
-            Assert.AreEqual(GPAccount.AcctNum, GLAccount."No.",
-                StrSubstNo(InvalidAccountNoMsg, GPAccount.AcctNum, GLAccount."No."));
+            Migrate(GPAccount);
+        until GPAccount.Next() = 0;
 
-            Assert.AreEqual(GLAccount."Account Type"::Posting, GLAccount."Account Type",
-                StrSubstNo(InvalidAccountTypeMsg, GLAccount."Account Type"::Posting, GLAccount."Account Type"));
+        // [THEN] Accounts are created
+        Assert.RecordCount(GLAccount, 9);
 
-            Assert.AreEqual(true, GLAccount."Direct Posting", 'Direct posting not set correctly.');
+        // [THEN] Journal entries are created
+        GenJournalBatch.SetRange("Journal Template Name", 'GENERAL');
+        GenJournalBatch.SetFilter(Name, 'GP2020BB');
+        GenJournalBatch.FindSet();
+        Assert.RecordCount(GenJournalBatch, 0);
 
-            Assert.AreEqual(HelperFunctions.ConvertAccountCategory(GPAccount), GLAccount."Account Category",
-                StrSubstNo(InvalidAccountCategoryMsg, HelperFunctions.ConvertAccountCategory(GPAccount), GLAccount."Account Category"));
-
-            Assert.AreEqual(HelperFunctions.ConvertDebitCreditType(GPAccount), GLAccount."Debit/Credit",
-                'Debit/Credit not set correctly.');
-            GPAccount.Next();
-        until GLAccount.Next() = 0;
+        GenJournalLine.SetRange("Journal Template Name", 'GENERAL');
+        GenJournalLine.SetRange("Journal Batch Name", 'GP2020BB');
+        GenJournalLine.FindSet();
+        Assert.RecordCount(GenJournalLine, 0);
     end;
 
     local procedure ClearTables()
@@ -188,7 +234,6 @@ codeunit 139661 "GP Account Tests"
         GenJournalLine: Record "Gen. Journal Line";
         Dimensions: Record Dimension;
         DimensionValues: Record "Dimension Value";
-        DimensionSetEntry: Record "Dimension Set Entry";
         GPFiscalPeriods: Record "GP Fiscal Periods";
     begin
         GPAccount.DeleteAll();
@@ -196,7 +241,6 @@ codeunit 139661 "GP Account Tests"
         GPSegements.DeleteAll();
         GLAccount.DeleteAll();
         GenJournalLine.DeleteAll();
-        //DimensionSetEntry.DeleteAll();
         Dimensions.DeleteAll();
         DimensionValues.DeleteAll();
         GPFiscalPeriods.DeleteAll();
