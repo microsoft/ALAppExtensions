@@ -79,6 +79,11 @@ table 4024 "GP Configuration"
             DataClassification = SystemMetadata;
             InitValue = false;
         }
+        field(17; "Customer Classes Created"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
     }
 
     keys
@@ -105,7 +110,8 @@ table 4024 "GP Configuration"
                 "Open Purchase Orders Created" and
                 "Fiscal Periods Created" and
                 "Vendor EFT Bank Acc. Created" and
-                "Vendor Classes Created"
+                "Vendor Classes Created" and
+                "Customer Classes Created"
             );
     end;
 }
