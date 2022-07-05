@@ -51,7 +51,7 @@ codeunit 9109 "SharePoint Request Manager"
     end;
 
 
-
+    [NonDebuggable]
     local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; SharePointUriBuilder: Codeunit "SharePoint Uri Builder"; SharePointHttpContent: Codeunit "SharePoint Http Content") RequestMessage: HttpRequestMessage
     var
         Headers: HttpHeaders;
@@ -101,6 +101,7 @@ codeunit 9109 "SharePoint Request Manager"
 
     end;
 
+    [NonDebuggable]
     local procedure GetAuthenticationHeaderValue() Value: Text;
     begin
 
