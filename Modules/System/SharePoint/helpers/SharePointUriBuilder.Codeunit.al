@@ -15,16 +15,16 @@ codeunit 9110 "SharePoint Uri Builder"
 
     procedure GetHost(): Text
     var
-        _Uri: Codeunit Uri;
+        NewUri: Codeunit Uri;
     begin
-        _Uri.Init(ServerName);
-        exit(_Uri.GetHost());
+        NewUri.Init(ServerName);
+        exit(NewUri.GetHost());
     end;
 
-    procedure Initialize(_ServerName: Text; _Namespace: Text)
+    procedure Initialize(NewServerName: Text; NewNamespace: Text)
     begin
-        ServerName := _ServerName;
-        Namespace := _Namespace;
+        ServerName := NewServerName;
+        Namespace := NewNamespace;
 
         if ServerName.StartsWith('https://') then
             ServerName := ServerName.Substring(9);

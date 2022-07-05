@@ -43,7 +43,6 @@ codeunit 9103 "SharePoint List Item"
             if not JToken.AsValue().IsNull() then
                 SharePointListItem.Attachments := JToken.AsValue().AsBoolean();
 
-
         if Payload.Get('ContentTypeId', JToken) then
             SharePointListItem."Content Type Id" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointListItem.Title));
 

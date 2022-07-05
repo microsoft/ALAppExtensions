@@ -29,13 +29,13 @@ codeunit 9101 "SharePoint Client Impl."
     local procedure GetRequestDigest(BaseUrl: Text): Text
     var
         SharePointOperationResponse: Codeunit "SharePoint Operation Response";
-        _SharePointUriBuilder: Codeunit "SharePoint Uri Builder";
+        NewSharePointUriBuilder: Codeunit "SharePoint Uri Builder";
         Context: JsonToken;
         Result: Text;
     begin
-        _SharePointUriBuilder.Initialize(BaseUrl, 'contextinfo');
+        NewSharePointUriBuilder.Initialize(BaseUrl, 'contextinfo');
         SharePointRequestManager.SetAuthorization(Authorization);
-        SharePointOperationResponse := SharePointRequestManager.Post(_SharePointUriBuilder);
+        SharePointOperationResponse := SharePointRequestManager.Post(NewSharePointUriBuilder);
         if SharePointOperationResponse.GetResultAsText(Result) then begin
 
             Context.ReadFrom(Result);
