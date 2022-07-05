@@ -1,4 +1,4 @@
-Codeunit 9108 "SP Operation Response"
+Codeunit 9108 "SharePoint Operation Response"
 {
     Access = Internal;
 

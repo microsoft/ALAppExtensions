@@ -1,38 +1,42 @@
-codeunit 9102 "SP List Item Attachment"
+codeunit 9102 "SharePoint List Item Atch."
 {
     Access = Internal;
-    procedure Parse(Payload: Text; var SPListItemAttachment: Record "SP List Item Attachment" temporary)
+    procedure Parse(Payload: Text; var SharePointListItemAtch: Record "SharePoint List Item Atch" temporary)
     var
         JObject: JsonObject;
     begin
         if JObject.ReadFrom(Payload) then
-            Parse(JObject, SPListItemAttachment);
+            Parse(JObject, SharePointListItemAtch);
     end;
 
-    procedure Parse(Payload: JsonObject; var SPListItemAttachment: Record "SP List Item Attachment" temporary)
+    procedure Parse(Payload: JsonObject; var SharePointListItemAtch: Record "SharePoint List Item Atch" temporary)
     var
         JToken: JsonToken;
     begin
         if Payload.Get('value', JToken) then
             foreach JToken in JToken.AsArray() do begin
-                SPListItemAttachment := ParseSingle(JToken.AsObject());
-                SPListItemAttachment.Insert();
+                SharePointListItemAtch := ParseSingle(JToken.AsObject());
+                SharePointListItemAtch.Insert();
             end;
     end;
 
-    procedure ParseSingle(Payload: Text; var SPListItemAttachment: Record "SP List Item Attachment" temporary)
+    procedure ParseSingle(Payload: Text; var SharePointListItemAtch: Record "SharePoint List Item Atch" temporary)
     var
         JObject: JsonObject;
     begin
         if JObject.ReadFrom(Payload) then
-            SPListItemAttachment := ParseSingle(JObject);
+            SharePointListItemAtch := ParseSingle(JObject);
     end;
 
-    local procedure ParseSingle(Payload: JsonObject) ListItemAttachment: Record "SP List Item Attachment" temporary
+    local procedure ParseSingle(Payload: JsonObject) ListItemAttachment: Record "SharePoint List Item Atch" temporary
     var
         JToken: JsonToken;
     begin
         ListItemAttachment.Init();
+
+        if Payload.Get('UniqueId', JToken) then
+            ListItemAttachment."Unique Id" := JToken.AsValue().AsText();
+
         if Payload.Get('odata.id', JToken) then
             ListItemAttachment.OdataId := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItemAttachment.OdataId));
 

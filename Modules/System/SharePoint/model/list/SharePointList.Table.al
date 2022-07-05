@@ -1,7 +1,7 @@
-table 9105 "SP List"
+table 9105 "SharePoint List"
 {
-    DataClassification = CustomerContent;
-    Caption = 'SP List';
+    DataClassification = SystemMetadata;
+    Caption = 'SharePoint List';
     TableType = Temporary;
 
 

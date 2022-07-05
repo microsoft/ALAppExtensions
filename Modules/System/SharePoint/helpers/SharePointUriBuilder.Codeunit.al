@@ -1,4 +1,4 @@
-codeunit 9110 "SP Uri Builder"
+codeunit 9110 "SharePoint Uri Builder"
 {
 
     Access = Internal;

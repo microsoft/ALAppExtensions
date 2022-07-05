@@ -1,34 +1,34 @@
-codeunit 9106 "SP File"
+codeunit 9106 "SharePoint File"
 {
     Access = Internal;
-    procedure Parse(Payload: Text; var SPFile: Record "SP File" temporary)
+    procedure Parse(Payload: Text; var SharePointFile: Record "SharePoint File" temporary)
     var
         JObject: JsonObject;
     begin
         if JObject.ReadFrom(Payload) then
-            Parse(JObject, SPFile);
+            Parse(JObject, SharePointFile);
     end;
 
-    procedure ParseSingle(Payload: Text; var SPFile: Record "SP File" temporary)
+    procedure ParseSingle(Payload: Text; var SharePointFile: Record "SharePoint File" temporary)
     var
         JObject: JsonObject;
     begin
         if JObject.ReadFrom(Payload) then
-            SPFile := ParseSingle(JObject);
+            SharePointFile := ParseSingle(JObject);
     end;
 
-    procedure Parse(Payload: JsonObject; var SPFile: Record "SP File" temporary)
+    procedure Parse(Payload: JsonObject; var SharePointFile: Record "SharePoint File" temporary)
     var
         JToken: JsonToken;
     begin
         if Payload.Get('value', JToken) then
             foreach JToken in JToken.AsArray() do begin
-                SPFile := ParseSingle(JToken.AsObject());
-                SPFile.Insert();
+                SharePointFile := ParseSingle(JToken.AsObject());
+                SharePointFile.Insert();
             end;
     end;
 
-    local procedure ParseSingle(Payload: JsonObject) File: Record "SP File" temporary
+    local procedure ParseSingle(Payload: JsonObject) File: Record "SharePoint File" temporary
     var
         JToken: JsonToken;
     begin

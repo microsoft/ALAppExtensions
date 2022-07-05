@@ -1,7 +1,7 @@
-table 9106 "SP Folder"
+table 9100 "SharePoint File"
 {
-    DataClassification = CustomerContent;
-    Caption = 'SP Folder';
+    DataClassification = SystemMetadata;
+    Caption = 'SharePoint File';
     TableType = Temporary;
 
 
@@ -26,13 +26,13 @@ table 9106 "SP Folder"
         }
 
 
-        field(4; "Item Count"; Integer)
+        field(4; Length; Integer)
         {
             DataClassification = CustomerContent;
-            Caption = 'Item Count';
+            Caption = 'Length';
         }
 
-        field(5; "Exists"; Boolean)
+        field(5; Exists; Boolean)
         {
             DataClassification = CustomerContent;
             Caption = 'Exists';
@@ -42,6 +42,12 @@ table 9106 "SP Folder"
         {
             DataClassification = CustomerContent;
             Caption = 'Server Relative Url';
+        }
+
+        field(7; Title; Text[250])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Title';
         }
 
 

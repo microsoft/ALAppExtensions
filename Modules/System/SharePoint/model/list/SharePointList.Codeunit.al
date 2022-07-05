@@ -1,26 +1,26 @@
-codeunit 9104 "SP List"
+codeunit 9104 "SharePoint List"
 {
     Access = Internal;
-    procedure Parse(Payload: Text; var SPList: Record "SP List" temporary)
+    procedure Parse(Payload: Text; var SharePointList: Record "SharePoint List" temporary)
     var
         JObject: JsonObject;
     begin
         if JObject.ReadFrom(Payload) then
-            Parse(JObject, SPList);
+            Parse(JObject, SharePointList);
     end;
 
-    procedure Parse(Payload: JsonObject; var SPList: Record "SP List" temporary)
+    procedure Parse(Payload: JsonObject; var SharePointList: Record "SharePoint List" temporary)
     var
         JToken: JsonToken;
     begin
         if Payload.Get('value', JToken) then
             foreach JToken in JToken.AsArray() do begin
-                SPList := ParseSingle(JToken.AsObject());
-                SPList.Insert();
+                SharePointList := ParseSingle(JToken.AsObject());
+                SharePointList.Insert();
             end;
     end;
 
-    local procedure ParseSingle(Payload: JsonObject) ListItem: Record "SP List" temporary
+    local procedure ParseSingle(Payload: JsonObject) ListItem: Record "SharePoint List" temporary
     var
         JToken: JsonToken;
     begin

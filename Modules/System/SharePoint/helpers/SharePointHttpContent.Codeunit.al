@@ -1,4 +1,4 @@
-codeunit 9107 "SP Http Content"
+codeunit 9107 "SharePoint Http Content"
 {
     Access = Internal;
 
