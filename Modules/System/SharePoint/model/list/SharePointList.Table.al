@@ -9,68 +9,68 @@ table 9105 "SharePoint List"
     {
         field(1; Id; Guid)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Id';
         }
 
         field(2; Title; Text[250])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Title';
         }
 
         field(3; Created; DateTime)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Created';
         }
 
         field(4; Description; Text[250])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Description';
         }
 
         field(5; "Base Template"; Text[250])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Base Template';
         }
 
         field(6; "Base Type"; Text[250])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Base Type';
         }
 
         field(7; "Is Catalog"; Boolean)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Is Catalog';
         }
 
         field(8; "List Item Entity Type"; Text[250])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'List Item Entity Type Full Name';
         }
 
         field(101; OdataId; Text[2048])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Odata.Id';
         }
 
 
         field(102; OdataType; Text[2048])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Odata.Type';
         }
 
         field(103; OdataEditLink; Text[2048])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Odata.EditLink';
         }
 

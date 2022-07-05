@@ -9,58 +9,58 @@ table 9106 "SharePoint Folder"
     {
         field(1; "Unique Id"; Guid)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Unique Id';
         }
 
         field(2; Name; Text[250])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Title';
         }
 
         field(3; Created; DateTime)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Created';
         }
 
 
         field(4; "Item Count"; Integer)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Item Count';
         }
 
         field(5; "Exists"; Boolean)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Exists';
         }
 
         field(6; "Server Relative Url"; Text[2024])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Server Relative Url';
         }
 
 
         field(101; OdataId; Text[2048])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Odata.Id';
         }
 
 
         field(102; OdataType; Text[2048])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Odata.Type';
         }
 
         field(103; OdataEditLink; Text[2048])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Odata.EditLink';
         }
     }

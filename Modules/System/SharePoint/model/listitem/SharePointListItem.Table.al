@@ -9,50 +9,50 @@ table 9103 "SharePoint List Item"
     {
         field(1; Guid; Guid)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Id';
         }
 
         field(2; Title; Text[250])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Title';
         }
 
         field(3; Created; DateTime)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Created';
         }
 
         field(4; Attachments; Boolean)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Attachments';
         }
 
         field(5; "File System Object Type"; Integer)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'File System Object Type';
         }
 
 
         field(6; "Content Type Id"; Text[250])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Content Type Id';
         }
 
         field(7; Id; Integer)
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'Id';
         }
 
         field(8; "List Title"; Text[250])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Caption = 'List Title';
         }
     }
