@@ -1939,7 +1939,13 @@ codeunit 18430 "GST Application Handler"
     var
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
         CreditMemoNo: Code[20];
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeApplyGSTApplicationCreditMemo(CVLedgerEntryBuffer, OldCVLedgerEntryBuffer, TransactionType, IsHandled);
+        if IsHandled then
+            exit;
+
         if (CVLedgerEntryBuffer."Document Type" <> CVLedgerEntryBuffer."Document Type"::"Credit Memo") and
           (OldCVLedgerEntryBuffer."Document Type" <> OldCVLedgerEntryBuffer."Document Type"::"Credit Memo") then
             exit;
@@ -2393,15 +2399,17 @@ codeunit 18430 "GST Application Handler"
         case GSTTransactionType of
             GSTTransactionType::Purchase:
                 begin
+                    GSTApplSessionMgt.SetOnlinePostApplication(false);
                     GSTApplSessionMgt.GetGSTApplicationSourcePurch(TransactionNo, GSTTransactionType, VendNo);
                     GSTApplSessionMgt.GetGSTApplicationAmount(AppliedAmt, AppliedAmtLCY);
-
                     if Vendor.Get(VendNo) then begin
                         if GenJnlLine."Document Type" in [GenJnlLine."Document Type"::Invoice, GenJnlLine."Document Type"::Payment] then
                             if OldCVLedgEntryBuf."Currency Code" <> '' then begin
-                                if NewCVLedgEntryBuf."Original Currency Factor" > OldCVLedgEntryBuf."Original Currency Factor" then begin
+                                if (NewCVLedgEntryBuf."Original Currency Factor" > OldCVLedgEntryBuf."Original Currency Factor") or (NewCVLedgEntryBuf."Original Currency Factor" < OldCVLedgEntryBuf."Original Currency Factor") then begin
                                     AppliedForeignCurrAmt := Round(AppliedAmt / NewCVLedgEntryBuf."Adjusted Currency Factor");
                                     PostGSTPurchaseApplication(GenJnlLine, NewCVLedgEntryBuf, OldCVLedgEntryBuf, AppliedForeignCurrAmt);
+                                    if Vendor."GST Vendor Type" <> Vendor."GST Vendor Type"::" " then
+                                        GSTApplSessionMgt.SetOnlinePostApplication(true);
                                 end else
                                     PostGSTPurchaseApplication(GenJnlLine, NewCVLedgEntryBuf, OldCVLedgEntryBuf, AppliedAmtLCY);
                             end else
@@ -2517,10 +2525,87 @@ codeunit 18430 "GST Application Handler"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforeInvoiceRoundingAmount', '', false, false)]
-    local procedure OnBeforeInvoiceRoundingAmount(PurchHeader: Record "Purchase Header"; var InvoiceRoundingAmount: Decimal)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterInitGLEntry', '', false, false)]
+    local procedure OnAfterInitGLEntry(var GLEntry: Record "G/L Entry"; GenJournalLine: Record "Gen. Journal Line"; Amount: Decimal; AddCurrAmount: Decimal; UseAddCurrAmount: Boolean; var CurrencyFactor: Decimal)
+    var
+        LastEntryNo: Integer;
     begin
-        if PurchHeader."GST Vendor Type" = "GST Vendor Type"::Import then
-            InvoiceRoundingAmount := 0;
+        if GSTApplSessionMgt.GetOnlinePostApplication() then begin
+            LastEntryNo := GSTApplSessionMgt.GetOnlinePostApplicationLastEntryNo();
+            if LastEntryNo <> 0 then begin
+                GLEntry."Entry No." := LastEntryNo + 1;
+                GSTApplSessionMgt.SetOnlinePostApplicationLastEntryNo(GLEntry."Entry No.");
+            end
+            else begin
+                LastEntryNo := InitNextEntryNo();
+                GLEntry."Entry No." := LastEntryNo;
+                GSTApplSessionMgt.SetOnlinePostApplicationLastEntryNo(LastEntryNo);
+            end;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"VendEntry-Apply Posted Entries", 'OnAfterPostApplyVendLedgEntry', '', false, false)]
+    local procedure OnAfterPostApplyVendLedgEntry(GenJournalLine: Record "Gen. Journal Line"; VendorLedgerEntry: Record "Vendor Ledger Entry"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    begin
+        if GSTApplSessionMgt.GetOnlinePostApplication() then begin
+            GSTApplSessionMgt.SetOnlinePostApplication(false);
+            GSTApplSessionMgt.SetOnlinePostApplicationLastEntryNo(0);
+            GSTApplSessionMgt.SetOnlinePostApplicationLastEntryNoForGLRegister(0);
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterInitGLRegister', '', false, false)]
+    local procedure OnAfterInitGLRegister(var GLRegister: Record "G/L Register"; var GenJournalLine: Record "Gen. Journal Line")
+    var
+        LastEntryNo: Integer;
+    begin
+        if GSTApplSessionMgt.GetOnlinePostApplication() then begin
+            LastEntryNo := GSTApplSessionMgt.GetOnlinePostApplicationLastEntryNoForGLRegister();
+            if LastEntryNo <> 0 then begin
+                GLRegister."No." := LastEntryNo + 1;
+                GSTApplSessionMgt.SetOnlinePostApplicationLastEntryNoForGLRegister(GLRegister."No.");
+            end
+            else begin
+                LastEntryNo := InitGLRegNextEntryNo();
+                GLRegister."No." := LastEntryNo;
+                GSTApplSessionMgt.SetOnlinePostApplicationLastEntryNoForGLRegister(GLRegister."No.");
+            end;
+        end
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeUpdateGLReg', '', false, false)]
+    local procedure OnBeforeUpdateGLReg(IsTransactionConsistent: Boolean; var IsGLRegInserted: Boolean; var GLReg: Record "G/L Register"; var IsHandled: Boolean; var GenJnlLine: Record "Gen. Journal Line"; GlobalGLEntry: Record "G/L Entry")
+    begin
+        if GSTApplSessionMgt.GetOnlinePostApplication() then
+            IsGLRegInserted := true;
+    end;
+
+    local procedure InitNextEntryNo(): Integer
+    var
+        GLEntry: Record "G/L Entry";
+        LastEntryNo: Integer;
+        LastTransactionNo: Integer;
+    begin
+        GLEntry.LockTable();
+        GLEntry.GetLastEntry(LastEntryNo, LastTransactionNo);
+        exit(LastEntryNo + 1);
+    end;
+
+    local procedure InitGLRegNextEntryNo(): Integer
+    var
+        GLReg: Record "G/L Register";
+        LastEntryNo: Integer;
+    begin
+        GLReg.LockTable();
+        if GLReg.FindLast() then
+            LastEntryNo := GLReg."No." + 1
+        else
+            LastEntryNo := 1;
+        exit(LastEntryNo);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeApplyGSTApplicationCreditMemo(CVLedgerEntryBuffer: Record "CV Ledger Entry Buffer"; OldCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer"; TransactionType: Enum "Detail Ledger Transaction Type"; var IsHandled: Boolean)
+    begin
     end;
 }

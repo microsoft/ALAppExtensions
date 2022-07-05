@@ -336,7 +336,7 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             Editable = false;
         }
-        field(104; "SKU Mapping"; Enum "Shpfy SKU Mapping")
+        field(104; "SKU Mapping"; Enum "Shpfy SKU Mappging")
         {
             Caption = 'SKU Mapping';
             DataClassification = SystemMetadata;
@@ -371,6 +371,7 @@ table 30102 "Shpfy Shop"
 
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure GetAccessToken() Result: Text
     var
         ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
@@ -383,6 +384,7 @@ table 30102 "Shpfy Shop"
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure RequestAccessToken()
     var
         ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
@@ -394,6 +396,7 @@ table 30102 "Shpfy Shop"
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure HasAccessToken(): Boolean
     var
         AuthorizationMgt: Codeunit "Shpfy Authentication Mgt.";

@@ -162,7 +162,7 @@ codeunit 134689 "Email Message Unit Test"
         // Exercise
         Message.Create(Recipients, 'Test subject', 'Test body', true);
         Message.AddAttachment('Attachment1', 'text/plain', Base64Convert.ToBase64('Content'));
-        Message.AddAttachment('Attachment1', 'text/plain', InStream);
+        Message.AddAttachment('Attachment2', 'text/plain', InStream);
 
         // Verify
         Assert.IsTrue(Message.Attachments_First(), 'First attachment was not found');
@@ -173,15 +173,17 @@ codeunit 134689 "Email Message Unit Test"
         Assert.AreEqual('Q29udGVudA==', Message.Attachments_GetContentBase64(), 'A different attachment content was expected');
         Assert.IsFalse(Message.Attachments_IsInline(), 'Attachment was not expected to be inline');
         Assert.AreEqual('text/plain', Message.Attachments_GetContentType(), 'A different attachment content type was expected');
+        Assert.AreEqual(7, Message.Attachments_GetLength(), 'A different attachment length was expected');
 
         Assert.IsTrue(Message.Attachments_Next() <> 0, 'Second attachment was not found');
         Message.Attachments_GetContent(InStream);
         InStream.ReadText(Result);
-        Assert.AreEqual('Attachment1', Message.Attachments_GetName(), 'A different attachment name was expected');
+        Assert.AreEqual('Attachment2', Message.Attachments_GetName(), 'A different attachment name was expected');
         Assert.AreEqual('Content', Result, 'A different attachment content was expected');
         Assert.AreEqual('Q29udGVudA==', Message.Attachments_GetContentBase64(), 'A different attachment content was expected');
         Assert.IsFalse(Message.Attachments_IsInline(), 'Attachment was not expected to be inline');
         Assert.AreEqual('text/plain', Message.Attachments_GetContentType(), 'A different attachment content type was expected');
+        Assert.AreEqual(7, Message.Attachments_GetLength(), 'A different attachment length was expected');
 
         Assert.IsTrue(Message.Attachments_Next() = 0, 'A third attachment was found.');
     end;
@@ -209,7 +211,7 @@ codeunit 134689 "Email Message Unit Test"
         // Exercise
         Message.Create(Recipients, 'Test subject', 'Test body', true);
         Message.AddAttachment('Attachment1', 'text/plain', Base64Convert.ToBase64('Content'));
-        Message.AddAttachment('Attachment1', 'text/plain', InStream);
+        Message.AddAttachment('Attachment2', 'text/plain', InStream);
 
         // Verify
         Assert.IsTrue(Message.Attachments_Next() <> 0, 'First attachment was not found');
@@ -220,15 +222,17 @@ codeunit 134689 "Email Message Unit Test"
         Assert.AreEqual('Q29udGVudA==', Message.Attachments_GetContentBase64(), 'A different attachment content was expected');
         Assert.IsFalse(Message.Attachments_IsInline(), 'Attachment was not expected to be inline');
         Assert.AreEqual('text/plain', Message.Attachments_GetContentType(), 'A different attachment content type was expected');
+        Assert.AreEqual(7, Message.Attachments_GetLength(), 'A different attachment length was expected');
 
         Assert.IsTrue(Message.Attachments_Next() <> 0, 'Second attachment was not found');
         Message.Attachments_GetContent(InStream);
         InStream.ReadText(Result);
-        Assert.AreEqual('Attachment1', Message.Attachments_GetName(), 'A different attachment name was expected');
+        Assert.AreEqual('Attachment2', Message.Attachments_GetName(), 'A different attachment name was expected');
         Assert.AreEqual('Content', Result, 'A different attachment content was expected');
         Assert.AreEqual('Q29udGVudA==', Message.Attachments_GetContentBase64(), 'A different attachment content was expected');
         Assert.IsFalse(Message.Attachments_IsInline(), 'Attachment was not expected to be inline');
         Assert.AreEqual('text/plain', Message.Attachments_GetContentType(), 'A different attachment content type was expected');
+        Assert.AreEqual(7, Message.Attachments_GetLength(), 'A different attachment length was expected');
 
         Assert.IsTrue(Message.Attachments_Next() = 0, 'A third attachment was found.');
     end;

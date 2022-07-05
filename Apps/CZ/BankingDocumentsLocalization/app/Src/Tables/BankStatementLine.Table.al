@@ -195,10 +195,13 @@ table 31253 "Bank Statement Line CZB"
 
                 if "Bank Statement Currency Code" <> '' then begin
                     GetBankStatementCurrency();
-                    "Amount (Bank Stat. Currency)" :=
-                      Round(CurrencyExchangeRate.ExchangeAmtLCYToFCY(BankStatementHeaderCZB."Document Date",
-                          "Bank Statement Currency Code", "Amount (LCY)",
-                          "Bank Statement Currency Factor"), BankStatementCurrency."Amount Rounding Precision")
+                    if BankStatementCurrency.Code = "Bank Statement Currency Code" then
+                        "Amount (Bank Stat. Currency)" := Amount
+                    else
+                        "Amount (Bank Stat. Currency)" :=
+                          Round(CurrencyExchangeRate.ExchangeAmtLCYToFCY(BankStatementHeaderCZB."Document Date",
+                              "Bank Statement Currency Code", "Amount (LCY)",
+                              "Bank Statement Currency Factor"), BankStatementCurrency."Amount Rounding Precision")
                 end else
                     "Amount (Bank Stat. Currency)" := "Amount (LCY)";
 

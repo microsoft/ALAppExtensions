@@ -1,4 +1,3 @@
-#if not CLEAN20
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -27,8 +26,10 @@ codeunit 9222 "User Settings Upgrade"
 
         if ExtraSettings.FindSet() then
             repeat
-                ApplicationUserSettings.TransferFields(ExtraSettings);
-                ApplicationUserSettings.Insert();
+                if not ApplicationUserSettings.Get(ExtraSettings."User Security ID") then begin
+                    ApplicationUserSettings.TransferFields(ExtraSettings);
+                    ApplicationUserSettings.Insert();
+                end;
             until ExtraSettings.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(GetUserSettingsUpgradeTag());
@@ -38,5 +39,10 @@ codeunit 9222 "User Settings Upgrade"
     begin
         exit('MS-417094-UserSettingsTransferFields-20211125');
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerDatabaseUpgradeTags', '', false, false)]
+    local procedure RegisterPerDatabaseUpgradeTags(var PerDatabaseUpgradeTags: List of [Code[250]])
+    begin
+        PerDatabaseUpgradeTags.Add(GetUserSettingsUpgradeTag());
+    end;
 }
-#endif

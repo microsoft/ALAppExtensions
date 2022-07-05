@@ -302,6 +302,34 @@ codeunit 18273 "Jnl Bank Charges Tests"
         VerifyGLEntryCount(GenJournalLine."Document Type"::Payment, DocumentNo, 4);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatesPage')]
+    procedure PostFromBankPaymentVoucherWitheDeferralBankChargesAvailment()
+    var
+        BankAccount: Record "Bank Account";
+        GenJournalLine: Record "Gen. Journal Line";
+        DocumentNo: Code[20];
+        VoucherType: Enum "Gen. Journal Template Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        DeferralCode: Code[10];
+        GLAccount: Code[20];
+    begin
+        // [SCENARIO] [Check if the system is Posting Bank Payment Voucher with Bank charges with Deferral Code with GST where Input Tax Credit is available]
+        Initialize();
+        // [GIVEN] Created GST Setup, Bank Charges Setup, GL Account and Deferral Template
+        CreateGSTSetup(GSTVendorType::Registered, true, true);
+        CreateBankChargeSetup(BankAccount, VoucherType::"Bank Payment Voucher", false, true);
+        GLAccount := CreateGLAccountWithStraightLineDeferral(DeferralCode);
+
+        // [WHEN] Create and Post Bank Payment Voucher with Bank Charges and Deferral Code
+        CreateGenJournalLineForGLToBank(GenJournalLine, GLAccount, DeferralCode, BankAccount."No.");
+        DocumentNo := CreateJournalBankCharge(GenJournalLine, LibraryRandom.RandDecInRange(1, 500, 0));
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+
+        // [THEN] GST ledger entries are created and Verified
+        VerifyGLEntryCount(GenJournalLine."Document Type"::Payment, DocumentNo, 34);
+    end;
+
     local procedure Initialize()
     var
     begin
@@ -656,6 +684,48 @@ codeunit 18273 "Jnl Bank Charges Tests"
         LibraryStorage.Set(BankChargeLbl, BankCharge.Code);
         if ForeignExchange then
             CreateBankDeemedValueSetup();
+    end;
+
+    procedure CreateGLAccountWithStraightLineDeferral(var DeferralCode: Code[10]): Code[20]
+    var
+        GLAccount: Record "G/L Account";
+        DeferralTemplate: Record "Deferral Template";
+    begin
+        DeferralCode := CreateDeferralTemplate(
+            DeferralTemplate."Calc. Method"::"Straight-Line",
+            DeferralTemplate."Start Date"::"Posting Date", 12, LibraryUtility.GenerateGUID(), 100);
+
+        GLAccount.Get(LibraryERM.CreateGLAccountWithPurchSetup());
+        GLAccount.Validate("Default Deferral Template Code", DeferralCode);
+        GLAccount.Modify(true);
+        exit(GLAccount."No.");
+    end;
+
+    procedure CreateDeferralTemplate(CalcMethod: Enum "Deferral Calculation Method"; StartDate: Enum "Deferral Calculation Start Date"; NumOfPeriods: Integer; PeriodDescription: Text[50]; DeferralPct: Decimal): Code[10]
+    var
+        DeferralTemplate: Record "Deferral Template";
+    begin
+        LibraryERM.CreateDeferralTemplate(DeferralTemplate, CalcMethod, StartDate, NumOfPeriods);
+        DeferralTemplate.Validate("Period Description", PeriodDescription);
+        DeferralTemplate.Validate("Deferral %", DeferralPct);
+        DeferralTemplate.Modify(true);
+        exit(DeferralTemplate."Deferral Code");
+    end;
+
+    local procedure CreateGenJournalLineForGLToBank(var GenJournalLine: Record "Gen. Journal Line"; GLAccount: Code[20]; DeferralCode: Code[10]; BankAccNo: code[20])
+    begin
+        LibraryJournals.CreateGenJournalLine(GenJournalLine,
+            CopyStr(LibraryStorage.Get(TemplateNameLbl), 1, 10), CopyStr(LibraryStorage.Get(BatchNameLbl), 1, 10),
+            GenJournalLine."Document Type"::Payment,
+            GenJournalLine."Account Type"::"G/L Account", GLAccount,
+            GenJournalLine."Bal. Account Type"::"Bank Account", BankAccNo,
+            LibraryRandom.RandDecInRange(1000, 10000, 0));
+        GenJournalLine.Validate("Location Code", CopyStr(LibraryStorage.Get(LocationCodeLbl), 1, 10));
+        GenJournalLine.Validate("Deferral Code", DeferralCode);
+        GenJournalLine.Validate("GST Group Code", LibraryStorage.Get(GSTGroupCodeLbl));
+        GenJournalLine.Validate("HSN/SAC Code", LibraryStorage.Get(HSNSACCodeLbl));
+        GenJournalLine.Validate("GST Credit", GenJournalLine."GST Credit"::Availment);
+        GenJournalLine.Modify(true);
     end;
 
     local procedure VerifyGLEntryCount(

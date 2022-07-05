@@ -1,5 +1,7 @@
 enum 18033 "GST Reason Type"
 {
+    Extensible = true;
+
     value(0; " ")
     {
         Caption = ' ';

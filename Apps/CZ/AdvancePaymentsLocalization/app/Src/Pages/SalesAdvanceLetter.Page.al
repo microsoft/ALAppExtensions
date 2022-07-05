@@ -243,6 +243,22 @@ page 31171 "Sales Advance Letter CZZ"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the code for Shortcut Dimension 2, which is one of two global dimension codes that you set up in the General Ledger Setup window.';
                 }
+                field("VAT Registration No. CZL"; Rec."VAT Registration No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+                }
+                field("Registration No. CZL"; Rec."Registration No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the registration number of customer.';
+                }
+                field("Tax Registration No. CZL"; Rec."Tax Registration No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the secondary VAT registration number for the customer.';
+                    Importance = Additional;
+                }
             }
             group(Payments)
             {
@@ -618,6 +634,71 @@ page 31171 "Sales Advance Letter CZZ"
                     end;
                 }
             }
+            group(IncomingDocument)
+            {
+                Caption = 'Incoming Document';
+                Image = Documents;
+                action(IncomingDocCard)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'View Incoming Document';
+                    Enabled = HasIncomingDocument;
+                    Image = ViewOrder;
+                    ToolTip = 'View any incoming document records and file attachments that exist for the entry or document.';
+
+                    trigger OnAction()
+                    var
+                        IncomingDocument: Record "Incoming Document";
+                    begin
+                        IncomingDocument.ShowCardFromEntryNo(Rec."Incoming Document Entry No.");
+                    end;
+                }
+                action(SelectIncomingDoc)
+                {
+                    AccessByPermission = tabledata "Incoming Document" = R;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Select Incoming Document';
+                    Image = SelectLineToApply;
+                    ToolTip = 'Select an incoming document record and file attachment that you want to link to the entry or document.';
+
+                    trigger OnAction()
+                    var
+                        IncomingDocument: Record "Incoming Document";
+                    begin
+                        Rec.Validate("Incoming Document Entry No.", IncomingDocument.SelectIncomingDocument(Rec."Incoming Document Entry No.", Rec.RecordId));
+                    end;
+                }
+                action(IncomingDocAttachFile)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Create Incoming Document from File';
+                    Ellipsis = true;
+                    Enabled = not HasIncomingDocument;
+                    Image = Attach;
+                    ToolTip = 'Create an incoming document record by selecting a file to attach, and then link the incoming document record to the entry or document.';
+
+                    trigger OnAction()
+                    var
+                        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+                    begin
+                        IncomingDocumentAttachment.NewAttachmentFromDocument(Rec."Incoming Document Entry No.",
+                          Database::"Sales Adv. Letter Header CZZ", 0, Rec."No.");
+                    end;
+                }
+                action(RemoveIncomingDoc)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Remove Incoming Document';
+                    Enabled = HasIncomingDocument;
+                    Image = RemoveLine;
+                    ToolTip = 'Remove an external document that has been recorded, manually or automatically, and attached as a file to a document or ledger entry.';
+
+                    trigger OnAction()
+                    begin
+                        Rec."Incoming Document Entry No." := 0;
+                    end;
+                }
+            }
         }
         area(Reporting)
         {
@@ -710,6 +791,7 @@ page 31171 "Sales Advance Letter CZZ"
         DynamicEditable: Boolean;
         OpenApprovalEntriesExistForCurrUser: Boolean;
         OpenApprovalEntriesExist: Boolean;
+        HasIncomingDocument: Boolean;
 
     local procedure SetDocNoVisible()
     var
@@ -730,6 +812,7 @@ page 31171 "Sales Advance Letter CZZ"
     var
         ApprovalsMgmt: Codeunit "Approvals Mgmt.";
     begin
+        HasIncomingDocument := Rec."Incoming Document Entry No." <> 0;
         OpenApprovalEntriesExistForCurrUser := ApprovalsMgmt.HasOpenApprovalEntriesForCurrentUser(Rec.RecordId);
         OpenApprovalEntriesExist := ApprovalsMgmt.HasOpenApprovalEntries(Rec.RecordId);
     end;

@@ -127,6 +127,7 @@ codeunit 31330 "Install Application CZB"
     var
         BankAccReconciliation: Record "Bank Acc. Reconciliation";
     begin
+        BankAccReconciliation.SetLoadFields("Created From Iss. Bank Stat.");
         if BankAccReconciliation.FindSet() then
             repeat
                 BankAccReconciliation."Created From Bank Stat. CZB" := BankAccReconciliation."Created From Iss. Bank Stat.";
@@ -454,6 +455,7 @@ codeunit 31330 "Install Application CZB"
     var
         UserSetup: Record "User Setup";
     begin
+        UserSetup.SetLoadFields("Check Payment Orders", "Check Bank Statements", "Bank Amount Approval Limit", "Unlimited Bank Approval");
         if UserSetup.FindSet(true) then
             repeat
                 UserSetup."Check Payment Orders CZB" := UserSetup."Check Payment Orders";
@@ -468,6 +470,7 @@ codeunit 31330 "Install Application CZB"
     var
         BankExportImportSetup: Record "Bank Export/Import Setup";
     begin
+        BankExportImportSetup.SetLoadFields("Processing Report ID", "Default File Type");
         if BankExportImportSetup.FindSet(true) then
             repeat
                 BankExportImportSetup."Processing Report ID CZB" := BankExportImportSetup."Processing Report ID";
@@ -480,6 +483,7 @@ codeunit 31330 "Install Application CZB"
     var
         PaymentExportData: Record "Payment Export Data";
     begin
+        PaymentExportData.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol");
         if PaymentExportData.FindSet(true) then
             repeat
                 PaymentExportData."Specific Symbol CZB" := PaymentExportData."Specific Symbol";

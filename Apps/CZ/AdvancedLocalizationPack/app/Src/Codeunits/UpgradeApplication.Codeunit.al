@@ -98,6 +98,7 @@ codeunit 31251 "Upgrade Application CZA"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerCompanyUpgradeTag()) then
             exit;
 
+        GLEntry.SetLoadFields(Closed, "Closed at Date", "Applied Amount");
         if GLEntry.FindSet(true) then
             repeat
                 GLEntry."Closed CZA" := GLEntry.Closed;
@@ -114,6 +115,7 @@ codeunit 31251 "Upgrade Application CZA"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerCompanyUpgradeTag()) then
             exit;
 
+        DefaultDimension.SetLoadFields("Automatic Create", "Dimension Description Field ID", "Dimension Description Format", "Dimension Description Update", "Automatic Cr. Value Posting");
         if DefaultDimension.FindSet(true) then
             repeat
                 if DefaultDimension."Automatic Create" then begin
@@ -174,6 +176,7 @@ codeunit 31251 "Upgrade Application CZA"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerCompanyUpgradeTag()) then
             exit;
 
+        TransferShipmentLine.SetLoadFields(Correction, "Transfer Order Line No.");
         if TransferShipmentLine.FindSet(true) then
             repeat
                 TransferShipmentLine."Correction CZA" := TransferShipmentLine.Correction;
@@ -189,6 +192,7 @@ codeunit 31251 "Upgrade Application CZA"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerCompanyUpgradeTag()) then
             exit;
 
+        ItemEntryRelation.SetLoadFields(Undo);
         if ItemEntryRelation.FindSet(true) then
             repeat
                 ItemEntryRelation."Undo CZA" := ItemEntryRelation.Undo;

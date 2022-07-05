@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "This extension will take you through the process to configure your Cloud Migration environment.",
     "description":  "This extension will take you through the process to configure your Cloud Migration environment.  Once your Cloud Migration environment is configured, you will be able to replicate data from your Dynamics 365 Business Central on-premises solution to your Dynamics 365 Business Central cloud tenant.  This will enable you to take full advantage of what the cloud has to offer your business such as, enhanced insights into your business, artificial intelligence, multiple device access, and anytime, anywhere access.",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2009036",
@@ -24,7 +24,7 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "target":  "OnPrem",
-    "application":  "20.2.0.0",
+    "application":  "20.3.0.0",
     "internalsVisibleTo":  [
                                {
                                    "id":  "cf07faa6-4d21-428b-bfcf-8078c5b0e582",

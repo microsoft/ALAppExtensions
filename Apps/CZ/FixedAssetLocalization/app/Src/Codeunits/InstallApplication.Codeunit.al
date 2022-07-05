@@ -137,10 +137,11 @@ codeunit 31240 "Install Application CZF"
     var
         FixedAsset: Record "Fixed Asset";
     begin
+        FixedAsset.SetLoadFields("Tax Depreciation Group Code", "Clasification Code");
         if FixedAsset.FindSet(true) then
             repeat
                 FixedAsset."Tax Deprec. Group Code CZF" := FixedAsset."Tax Depreciation Group Code";
-                FixedAsset."Classification Code CZF" := FixedAsset."Classification Code CZF";
+                FixedAsset."Classification Code CZF" := FixedAsset."Clasification Code";
                 FixedAsset.Modify(false);
             until FixedAsset.Next() = 0;
     end;
@@ -149,6 +150,7 @@ codeunit 31240 "Install Application CZF"
     var
         DepreciationBook: Record "Depreciation Book";
     begin
+        DepreciationBook.SetLoadFields("Acqui.,Appr.before Depr. Check", "All Acquil. in same Year", "Check Deprication on Disposal", "Deprication from 1st Year Day", "Deprication from 1st Month Day");
         if DepreciationBook.FindSet(true) then
             repeat
                 DepreciationBook."Check Acq. Appr. bef. Dep. CZF" := DepreciationBook."Acqui.,Appr.before Depr. Check";
@@ -164,6 +166,7 @@ codeunit 31240 "Install Application CZF"
     var
         FADepreciationBook: Record "FA Depreciation Book";
     begin
+        FADepreciationBook.SetLoadFields("Depreciation Interupt up to", "Depreciation Group Code", "Keep Depr. Ending Date", "Summarize Depr. Entries From", Prorated);
         if FADepreciationBook.FindSet(true) then
             repeat
                 FADepreciationBook."Deprec. Interrupted up to CZF" := FADepreciationBook."Depreciation Interupt up to";
@@ -179,6 +182,7 @@ codeunit 31240 "Install Application CZF"
     var
         FAPostingGroup: Record "FA Posting Group";
     begin
+        FAPostingGroup.SetLoadFields("Acq. Cost Bal. Acc. on Disp.", "Book Value Bal. Acc. on Disp.");
         if FAPostingGroup.FindSet(true) then
             repeat
                 FAPostingGroup."Acq. Cost Bal. Acc. Disp. CZF" := FAPostingGroup."Acq. Cost Bal. Acc. on Disp.";
@@ -216,6 +220,7 @@ codeunit 31240 "Install Application CZF"
     var
         FAAllocation: Record "FA Allocation";
     begin
+        FAAllocation.SetLoadFields("Reason/Maintenance Code");
         if FAAllocation.FindSet(true) then
             repeat
                 FAAllocation."Reason/Maintenance Code CZF" := FAAllocation."Reason/Maintenance Code";

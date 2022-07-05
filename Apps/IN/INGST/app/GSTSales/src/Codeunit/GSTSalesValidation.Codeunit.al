@@ -587,6 +587,22 @@ codeunit 18143 "GST Sales Validation"
             SalesLine."Line Discount %" := 0;
 
         IsHandled := true;
+    end;   
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnUpdateAmountsOnAfterCalcLineAmount', '', false, false)]
+    local procedure OnUpdateAmountsOnAfterCalcLineAmount(var SalesLine: Record "Sales Line"; var LineAmount: Decimal)
+    var
+        Currency: Record Currency;
+    begin
+        if not SalesLine."Price Inclusive of Tax" then
+            exit;
+
+        GetCurrency(SalesLine, Currency);
+        
+        SalesLine."Line Discount Amount" := Round(Round(SalesLine.Quantity * SalesLine."Unit Price Incl. of Tax", Currency."Amount Rounding Precision") *
+            SalesLine."Line Discount %" / 100, Currency."Amount Rounding Precision");
+
+        LineAmount := Round(SalesLine.Quantity * SalesLine."Unit Price Incl. of Tax", Currency."Amount Rounding Precision") - SalesLine."Line Discount Amount";
     end;
 
     local procedure CalcTotalUPITAmount(var Rec: Record "Sales Line")

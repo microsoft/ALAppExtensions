@@ -32,7 +32,6 @@ codeunit 10540 "MTD Upgrade"
         with VATReportSetup do
             if Get() then begin
                 IsModify := MTDInstall.InitProductionMode(VATReportSetup);
-                IsModify := IsModify or MTDInstall.InitPeriodReminderCalculation(VATReportSetup);
 #if not CLEAN19
                 IsModify := IsModify or UpgradeFPSavedHeaders(VATReportSetup);
 #endif

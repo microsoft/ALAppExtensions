@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the _Exclude_AnonymizedDataSharing_ extension.",
     "description":  "Tests for the _Exclude_AnonymizedDataSharing_ extension.",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "help":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
@@ -16,13 +16,13 @@
                              "id":  "063B3AC9-C464-4899-96E0-70D5425854E4",
                              "name":  "_Exclude_AnonymizedDataSharing_",
                              "publisher":  "Microsoft",
-                             "version":  "20.2.0.0"
+                             "version":  "20.3.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "20.2.0.0"
+                             "version":  "20.3.0.0"
                          }
                      ],
     "screenshots":  [
@@ -45,5 +45,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "20.2.0.0"
+    "application":  "20.3.0.0"
 }

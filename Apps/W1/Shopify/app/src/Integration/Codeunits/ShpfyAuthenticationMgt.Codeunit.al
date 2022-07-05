@@ -18,6 +18,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
 
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     local procedure GetApiKey(): Text
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
@@ -30,6 +31,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     local procedure GetApiSecret(): Text
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
@@ -42,6 +44,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure InstallShopifyApp(InstalllToStore: Text)
     var
         OAuth2: Codeunit "OAuth2";
@@ -69,6 +72,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     local procedure GetToken(Store: Text; AuthorizationCode: Text)
     var
         JHelper: Codeunit "Shpfy Json Helper";
@@ -105,6 +109,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
 
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     local procedure SaveStoreInfo(Store: Text; ActualScope: Text; AccessToken: Text)
     var
         RegisteredStore: Record "Shpfy Registered Store";
@@ -122,6 +127,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure GetAccessToken(Store: Text): Text
     var
         RegisteredStore: Record "Shpfy Registered Store";
@@ -142,6 +148,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure AccessTokenExist(Store: Text): Boolean
     var
         RegisteredStore: Record "Shpfy Registered Store";

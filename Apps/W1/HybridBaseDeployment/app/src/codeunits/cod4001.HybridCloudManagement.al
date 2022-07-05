@@ -19,10 +19,9 @@ codeunit 4001 "Hybrid Cloud Management"
         CreatingIntegrationRuntimeMsg: Label 'Creating Integration Runtime for Product ID: %1', Comment = '%1 - The source product id', Locked = true;
         CreatedIntegrationRuntimeMsg: Label 'Created Integration Runtime, IRName" %1', Comment = '%1 - Name of Integration Runtime', Locked = true;
         ReplicationCompletedServiceTypeTxt: Label 'ReplicationCompleted', Locked = true;
-        CloudMigrationDisabledMsg: Label 'Cloud migration was stopped because the target environment was upgraded. Before you set up the cloud migration again, see the article Migrate On-Premises Data to Business Central Online in the Business Central administration content.';
+        CloudMigrationDisabledDueToUpgradeMsg: Label 'Cloud migration was stopped because the target environment was upgraded. Before you set up the cloud migration again, see the article Migrate On-Premises Data to Business Central Online in the Business Central administration content.';
         CannotStartReplicationCompanyUpgradeFailedErr: Label 'You cannot start the replication because there are companies in which data upgrade has failed. After investigating the failure you must delete these companies and start the migration again.';
         CannotTriggerUpgradeErr: Label 'Upgrade cannot be started until all companies are successfully replicated.';
-        NoCompaniesAreSelectedForReplicationErr: Label 'No companies have been enabled for replication.';
         CannotStartUpgradeNotAllComapniesAreMigratedErr: Label 'Cannot start upgrade because following companies are not ready to be migrated:%1', Comment = '%1 - Comma separated list of companies pending cloud migration';
         ScheduledFixingDataTelemetryMsg: Label 'Scheduled fixing data after cloud migration.';
         MarkedCompanyAsUpgradePendingTelemetryMsg: Label 'Marked Company as Upgrade Pending. Comany name: %1', Locked = true;
@@ -93,11 +92,11 @@ codeunit 4001 "Hybrid Cloud Management"
         if not CanCreateCompanies then
             exit;
 
+        ClearCompanyCreationStatus();
+        Commit();
+
         IntelligentCloudSetup.LockTable();
         IntelligentCloudSetup.Get();
-        Clear(IntelligentCloudSetup."Company Creation Session ID");
-        Clear(IntelligentCloudSetup."Company Creation Task ID");
-        Clear(IntelligentCloudSetup."Company Creation Task Error");
         IntelligentCloudSetup."Company Creation Task Status" := IntelligentCloudSetup."Company Creation Task Status"::InProgress;
         BackupDataPerDatabase(IntelligentCloudSetup);
 
@@ -114,6 +113,19 @@ codeunit 4001 "Hybrid Cloud Management"
         end;
 
         Commit();
+    end;
+
+    procedure ClearCompanyCreationStatus()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if not IntelligentCloudSetup.Get() then
+            exit;
+
+        Clear(IntelligentCloudSetup."Company Creation Session ID");
+        Clear(IntelligentCloudSetup."Company Creation Task ID");
+        Clear(IntelligentCloudSetup."Company Creation Task Error");
+        IntelligentCloudSetup.Modify();
     end;
 
     procedure IsCompanyUnderUpgrade(NewCompanyName: Code[50]): Boolean
@@ -247,6 +259,28 @@ codeunit 4001 "Hybrid Cloud Management"
         Commit(); // Manual commit in case subscriber to the call below crashes
 
         OnAfterDisableMigration(SourceProduct);
+    end;
+
+    local procedure DisableMigrationOnly(Reason: Text)
+    var
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
+        IntelligentCloud: Record "Intelligent Cloud";
+    begin
+        IntelligentCloud.Get();
+        IntelligentCloud.Enabled := false;
+        IntelligentCloud.Modify();
+        Session.LogMessage('SmbMig-001', StrSubstNo(MigrationDisabledTelemetryTxt, '', Reason), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+
+        HybridReplicationSummary.Init();
+        HybridReplicationSummary."Run ID" := CreateGuid();
+        HybridReplicationSummary."Start Time" := CurrentDateTime();
+        HybridReplicationSummary."End Time" := CurrentDateTime();
+        HybridReplicationSummary.Status := HybridReplicationSummary.Status::Completed;
+        HybridReplicationSummary."Trigger Type" := HybridReplicationSummary."Trigger Type"::Manual;
+        HybridReplicationSummary.SetDetails(Reason);
+        HybridReplicationSummary.Insert();
+
+        Commit(); // Manual commit in case subscriber to the call below crashes
     end;
 
     [Scope('OnPrem')]
@@ -442,6 +476,7 @@ codeunit 4001 "Hybrid Cloud Management"
             exit;
 
         EnableReplication(HybridProductType, SqlConnectionString, SqlServerType, IRName);
+        ClearCompanyCreationStatus();
     end;
 
     internal procedure EnableReplication(var HybridProductType: Record "Hybrid Product Type"; SqlConnectionString: Text; SqlServerType: Text; IRName: Text)
@@ -1058,7 +1093,7 @@ codeunit 4001 "Hybrid Cloud Management"
 
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnCanStartUpgrade', '', false, false)]
-    local procedure CanStartUpgrade(CompanyName: Text)
+    local procedure DisableCloudMigrationUnderUpgrade(CompanyName: Text)
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         Handled: Boolean;
@@ -1070,8 +1105,10 @@ codeunit 4001 "Hybrid Cloud Management"
         if not IsIntelligentCloudEnabled() then
             exit;
 
-        IntelligentCloudSetup.Get();
-        DisableMigration(IntelligentCloudSetup."Product ID", CloudMigrationDisabledMsg, false);
+        if IntelligentCloudSetup.Get() then
+            DisableMigration(IntelligentCloudSetup."Product ID", CloudMigrationDisabledDueToUpgradeMsg, false)
+        else
+            DisableMigrationOnly(CloudMigrationDisabledDueToUpgradeMsg);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnBeforeEnableReplication', '', false, false)]
@@ -1239,16 +1276,16 @@ codeunit 4001 "Hybrid Cloud Management"
             Error(CannotStartReplicationCompanyUpgradeFailedErr);
 
         HybridCompany.SetRange(Replicate, true);
-        if not HybridCompany.FindSet() then
-            Error(NoCompaniesAreSelectedForReplicationErr);
+        if not HybridCompany.IsEmpty() then begin
+            HybridCompany.FindSet();
+            repeat
+                if not IsCompanyReadyForUpgrade(HybridCompany) then
+                    CompaniesNotReadyForUpgrade += ', ' + HybridCompany.Name;
+            until HybridCompany.Next() = 0;
 
-        repeat
-            if not IsCompanyReadyForUpgrade(HybridCompany) then
-                CompaniesNotReadyForUpgrade += ', ' + HybridCompany.Name;
-        until HybridCompany.Next() = 0;
-
-        if CompaniesNotReadyForUpgrade <> '' then
-            Error(CannotStartUpgradeNotAllComapniesAreMigratedErr, CompaniesNotReadyForUpgrade.TrimStart(','));
+            if CompaniesNotReadyForUpgrade <> '' then
+                Error(CannotStartUpgradeNotAllComapniesAreMigratedErr, CompaniesNotReadyForUpgrade.TrimStart(','));
+        end;
 
         if not (HybridReplicationSummary.Status = HybridReplicationSummary.Status::UpgradePending) then
             Error(CannotTriggerUpgradeErr);

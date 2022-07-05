@@ -2,7 +2,7 @@
     "id":  "e6ba5021-9152-4929-8953-e0007e72db61",
     "name":  "OnPrem Permissions (FR)",
     "publisher":  "Microsoft",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "brief":  "This extension includes permission set for on premise systems.",
     "description":  "This extension includes permission set for on premise systems.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -24,5 +24,5 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "target":  "OnPrem",
-    "application":  "20.2.0.0"
+    "application":  "20.3.0.0"
 }

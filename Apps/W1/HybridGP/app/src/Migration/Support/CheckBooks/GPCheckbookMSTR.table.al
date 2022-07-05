@@ -179,11 +179,13 @@ table 40099 "GP Checkbook MSTR"
         }
     }
 
-    [Obsolete('This method is obsolete. Code has been moved to GP Checkbook Migrator codeunit.')]
+#if not CLEAN21
+    [Obsolete('This method is obsolete. Code has been moved to GP Checkbook Migrator codeunit.', '21.0')]
     procedure MoveStagingData()
     var
         GPCheckbookMigrator: codeunit "GP Checkbook Migrator";
     begin
         GPCheckbookMigrator.MoveCheckbookStagingData();
     end;
+#endif
 }

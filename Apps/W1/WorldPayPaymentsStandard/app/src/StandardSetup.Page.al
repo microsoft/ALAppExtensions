@@ -36,7 +36,6 @@ page 1360 "MS - WorldPay Standard Setup"
                         trigger OnValidate()
                         begin
                             VALIDATE("Account ID", DELCHR("Account ID", '<>'));
-                            FeatureTelemetry.LogUptake('0000H7W', 'WorldPay Payments Standard', Enum::"Feature Uptake Status"::"Set up");
                         end;
                     }
                     field(Enabled; Enabled)
@@ -46,6 +45,7 @@ page 1360 "MS - WorldPay Standard Setup"
 
                         trigger OnValidate()
                         begin
+                            FeatureTelemetry.LogUptake('0000H7W', 'WorldPay Payments Standard', Enum::"Feature Uptake Status"::"Set up");
                             // If we transition from disabled to enabled state
                             // show 3rd party notice message
                             IF NOT xRec.Enabled AND Enabled THEN

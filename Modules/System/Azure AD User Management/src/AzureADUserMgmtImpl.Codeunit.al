@@ -76,11 +76,10 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         if AzureADPlan.DoesUserHavePlans(ForUserSecurityId) then
             exit;
 
-        if AzureADGraphUser.GetUserAuthenticationObjectId(ForUserSecurityId) = '' then
-            if AzureADGraphUser.IsUserDelegatedAdmin() then begin
-                AzureADPlan.AssignDelegatedAdminPlanAndUserGroups();
-                exit;
-            end;
+        if AzureADGraphUser.IsUserDelegatedAdmin() then begin
+            AzureADPlan.AssignDelegatedAdminPlanAndUserGroups();
+            exit;
+        end;
 
         AzureADPlan.RefreshUserPlanAssignments(ForUserSecurityId);
     end;

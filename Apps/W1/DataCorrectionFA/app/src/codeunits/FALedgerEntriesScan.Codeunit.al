@@ -13,6 +13,8 @@ codeunit 6090 "FA Ledger Entries Scan"
         Currency: Record Currency;
         EntryFound: Boolean;
     begin
+        if not FASetup.WritePermission then
+            exit;
         FASetup.LockTable();
         if not FASetup.get() then
             exit;
