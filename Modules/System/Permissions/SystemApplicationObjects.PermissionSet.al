@@ -84,5 +84,6 @@ PermissionSet 219 "System Application - Objects"
                              "Web Service Management - Obj.",
                              "Word Templates - Objects",
                              "XML Validation - Objects",
-                             "XmlWriter - Objects";
+                             "XmlWriter - Objects",
+                             "SharePoint API - Objects";
 }
