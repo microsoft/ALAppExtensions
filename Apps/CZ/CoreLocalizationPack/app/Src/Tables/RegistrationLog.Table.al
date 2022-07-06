@@ -200,17 +200,17 @@ table 11756 "Registration Log CZL"
             repeat
                 case RegistrationLogDetail."Field Name" of
                     RegistrationLogDetail."Field Name"::Name:
-                        ValidateField(RecordRef, DummyCustomer.FieldName(Name), RegistrationLogDetail.Response);
+                        ValidateField(RecordRef, DummyCustomer.FieldName(Name), RegistrationLogDetail.Response, true);
                     RegistrationLogDetail."Field Name"::Address:
-                        ValidateField(RecordRef, DummyCustomer.FieldName(Address), RegistrationLogDetail.Response);
+                        ValidateField(RecordRef, DummyCustomer.FieldName(Address), RegistrationLogDetail.Response, true);
                     RegistrationLogDetail."Field Name"::City:
-                        ValidateField(RecordRef, DummyCustomer.FieldName(City), RegistrationLogDetail.Response);
+                        ValidateField(RecordRef, DummyCustomer.FieldName(City), RegistrationLogDetail.Response, false);
                     RegistrationLogDetail."Field Name"::"Post Code":
-                        ValidateField(RecordRef, DummyCustomer.FieldName("Post Code"), RegistrationLogDetail.Response);
+                        ValidateField(RecordRef, DummyCustomer.FieldName("Post Code"), RegistrationLogDetail.Response, false);
                     RegistrationLogDetail."Field Name"::"VAT Registration No.":
                         begin
                             BindSubscription(VATRegLogSuppression);
-                            ValidateField(RecordRef, DummyCustomer.FieldName("VAT Registration No."), RegistrationLogDetail.Response);
+                            ValidateField(RecordRef, DummyCustomer.FieldName("VAT Registration No."), RegistrationLogDetail.Response, true);
                             UnbindSubscription(VATRegLogSuppression)
                         end;
                 end;
@@ -220,14 +220,17 @@ table 11756 "Registration Log CZL"
         end;
     end;
 
-    local procedure ValidateField(var RecordRef: RecordRef; FieldName: Text; Value: Text)
+    local procedure ValidateField(var RecordRef: RecordRef; FieldName: Text; Value: Text; Validate: Boolean)
     var
         ConfigValidateManagement: Codeunit "Config. Validate Management";
         DataTypeManagement: Codeunit "Data Type Management";
         FieldRef: FieldRef;
     begin
         if DataTypeManagement.FindFieldByName(RecordRef, FieldRef, FieldName) then
-            ConfigValidateManagement.EvaluateValueWithValidate(FieldRef, CopyStr(Value, 1, FieldRef.Length()), false);
+            if Validate then
+                ConfigValidateManagement.EvaluateValueWithValidate(FieldRef, CopyStr(Value, 1, FieldRef.Length()), false)
+            else
+                ConfigValidateManagement.EvaluateValue(FieldRef, CopyStr(Value, 1, FieldRef.Length()), false)
     end;
 
     local procedure ShowDetailUpdatedMessage(TableID: Integer);

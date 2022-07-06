@@ -34,7 +34,7 @@ codeunit 40025 "GP Checkbook Migrator"
         until GPCheckbookMSTR.Next() = 0;
     end;
 
-    local procedure MoveTransactionsData(BankAccountNo: Code[20]; BankAccPostingGroupCode: Code[20]; CheckbookID: Text[15])
+    procedure MoveTransactionsData(BankAccountNo: Code[20]; BankAccPostingGroupCode: Code[20]; CheckbookID: Text[15])
     var
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
         PostingAccountNumber: Code[20];
@@ -197,7 +197,7 @@ codeunit 40025 "GP Checkbook Migrator"
         HelperFunctions: Codeunit "Helper Functions";
     begin
         if not BankAccountPostingGroup.Get(BankAccPostingGroup) then begin
-            Session.LogMessage('', StrSubstNo(BankWarningTxt, BankAccPostingGroup), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
+            Session.LogMessage('0000HRD', StrSubstNo(BankWarningTxt, BankAccPostingGroup), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
             exit(false);
         end;
 

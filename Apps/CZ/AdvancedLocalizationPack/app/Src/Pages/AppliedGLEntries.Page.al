@@ -64,12 +64,13 @@ page 31286 "Applied G/L Entries CZA"
             action(Navigate)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Find entries...';
+                Caption = 'Find Entries';
                 Image = Navigate;
+                Ellipsis = true;
                 Promoted = true;
                 PromotedOnly = true;
                 PromotedCategory = Process;
-                ShortCutKey = 'Shift+Ctrl+I';
+                ShortCutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
                 trigger OnAction()

@@ -359,7 +359,7 @@ codeunit 148130 "Bank Stmt File Wizard Tests"
         LibraryVariableStorage.Enqueue(FileName);
     end;
 
-    local procedure GenerateCsvFileName(FileName: Text) CsvFileName: Text
+    local procedure GenerateCsvFileName(FileName: Text): Text
     begin
         exit(StrSubstNo('%1.csv', FileName));
     end;

@@ -475,7 +475,7 @@ codeunit 8901 "Email"
     /// <param name="MessageId">The ID of the email in the queue.</param>
     /// <param name="Status">True if the message was successfully sent.</param>
     [IntegrationEvent(false, false)]
-    [Obsolete('This event has been replaced with OnAfterEmailSend which is isolated.', '20.1')]
+    [Obsolete('This event has been replaced with OnAfterEmailSend and OnAfterEmailSendFailed which are isolated.', '20.1')]
     internal procedure OnAfterSendEmail(MessageId: Guid; Status: Boolean)
     begin
     end;

@@ -21,6 +21,13 @@ page 20101 "AMC Banking Setup"
                     Caption = 'Enabled';
                     ToolTip = 'Specifies whether the AMC Banking 365 Fundamentals feature is enabled.';
                     ApplicationArea = Basic, Suite;
+
+                    trigger OnValidate()
+                    var
+                        FeatureTelemetry: Codeunit "Feature Telemetry";
+                    begin
+                        FeatureTelemetry.LogUptake('0000H4M', 'AMC Banking 365 Fundamentals', Enum::"Feature Uptake Status"::"Set up");
+                    end;
                 }
                 group(User)
                 {
@@ -219,10 +226,7 @@ page 20101 "AMC Banking Setup"
     end;
 
     trigger OnOpenPage()
-    var
-        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        FeatureTelemetry.LogUptake('0000H4M', 'AMC Banking 365 Fundamentals', Enum::"Feature Uptake Status"::"Set up");
         CheckedEncryption := false;
         if not Get() then begin
             Init();

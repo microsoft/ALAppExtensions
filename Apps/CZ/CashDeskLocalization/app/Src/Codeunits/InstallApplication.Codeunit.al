@@ -487,6 +487,7 @@ codeunit 31054 "Install Application CZP"
     var
         PaymentMethod: Record "Payment Method";
     begin
+        PaymentMethod.SetLoadFields("Cash Desk Code", "Cash Document Status");
         if PaymentMethod.FindSet(true) then
             repeat
                 PaymentMethod."Cash Desk Code CZP" := PaymentMethod."Cash Desk Code";
@@ -501,6 +502,7 @@ codeunit 31054 "Install Application CZP"
     var
         SalesHeader: Record "Sales Header";
     begin
+        SalesHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
         if SalesHeader.FindSet(true) then
             repeat
                 SalesHeader."Cash Desk Code CZP" := SalesHeader."Cash Desk Code";
@@ -513,6 +515,7 @@ codeunit 31054 "Install Application CZP"
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
     begin
+        SalesInvoiceHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
         if SalesInvoiceHeader.FindSet(true) then
             repeat
                 SalesInvoiceHeader."Cash Desk Code CZP" := SalesInvoiceHeader."Cash Desk Code";
@@ -525,6 +528,7 @@ codeunit 31054 "Install Application CZP"
     var
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
     begin
+        SalesCrMemoHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
         if SalesCrMemoHeader.FindSet(true) then
             repeat
                 SalesCrMemoHeader."Cash Desk Code CZP" := SalesCrMemoHeader."Cash Desk Code";
@@ -537,6 +541,7 @@ codeunit 31054 "Install Application CZP"
     var
         PurchaseHeader: Record "Purchase Header";
     begin
+        PurchaseHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
         if PurchaseHeader.FindSet(true) then
             repeat
                 PurchaseHeader."Cash Desk Code CZP" := PurchaseHeader."Cash Desk Code";
@@ -549,6 +554,7 @@ codeunit 31054 "Install Application CZP"
     var
         PurchInvHeader: Record "Purch. Inv. Header";
     begin
+        PurchInvHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
         if PurchInvHeader.FindSet(true) then
             repeat
                 PurchInvHeader."Cash Desk Code CZP" := PurchInvHeader."Cash Desk Code";
@@ -561,6 +567,7 @@ codeunit 31054 "Install Application CZP"
     var
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
     begin
+        PurchCrMemoHdr.SetLoadFields("Cash Desk Code", "Cash Document Status");
         if PurchCrMemoHdr.FindSet(true) then
             repeat
                 PurchCrMemoHdr."Cash Desk Code CZP" := PurchCrMemoHdr."Cash Desk Code";
@@ -573,6 +580,7 @@ codeunit 31054 "Install Application CZP"
     var
         ServiceHeader: Record "Service Header";
     begin
+        ServiceHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
         if ServiceHeader.FindSet(true) then
             repeat
                 ServiceHeader."Cash Desk Code CZP" := ServiceHeader."Cash Desk Code";
@@ -585,6 +593,7 @@ codeunit 31054 "Install Application CZP"
     var
         ServiceInvoiceHeader: Record "Service Invoice Header";
     begin
+        ServiceInvoiceHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
         if ServiceInvoiceHeader.FindSet(true) then
             repeat
                 ServiceInvoiceHeader."Cash Desk Code CZP" := ServiceInvoiceHeader."Cash Desk Code";
@@ -597,6 +606,7 @@ codeunit 31054 "Install Application CZP"
     var
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
     begin
+        ServiceCrMemoHeader.SetLoadFields("Cash Desk Code", "Cash Document Status");
         if ServiceCrMemoHeader.FindSet(true) then
             repeat
                 ServiceCrMemoHeader."Cash Desk Code CZP" := ServiceCrMemoHeader."Cash Desk Code";
@@ -609,6 +619,7 @@ codeunit 31054 "Install Application CZP"
     var
         SourceCodeSetup: Record "Source Code Setup";
     begin
+        SourceCodeSetup.SetLoadFields("Cash Desk");
         if SourceCodeSetup.Get() then begin
             SourceCodeSetup."Cash Desk CZP" := SourceCodeSetup."Cash Desk";
             SourceCodeSetup.Modify(false);
@@ -619,6 +630,7 @@ codeunit 31054 "Install Application CZP"
     var
         UserSetup: Record "User Setup";
     begin
+        UserSetup.SetLoadFields("Cash Resp. Ctr. Filter", "Cash Desk Amt. Approval Limit", "Unlimited Cash Desk Approval");
         if UserSetup.FindSet(true) then
             repeat
                 UserSetup."Cash Resp. Ctr. Filter CZP" := UserSetup."Cash Resp. Ctr. Filter";
@@ -632,6 +644,7 @@ codeunit 31054 "Install Application CZP"
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
     begin
+        GeneralLedgerSetup.SetLoadFields("Cash Desk Nos.", "Cash Payment Limit (LCY)");
         if GeneralLedgerSetup.Get() then begin
             GeneralLedgerSetup."Cash Desk Nos. CZP" := GeneralLedgerSetup."Cash Desk Nos.";
             GeneralLedgerSetup."Cash Payment Limit (LCY) CZP" := GeneralLedgerSetup."Cash Payment Limit (LCY)";

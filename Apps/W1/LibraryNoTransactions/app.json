@@ -4,7 +4,7 @@
     "brief":  "Used for testing that no transactions are invoked",
     "description":  "This app is used for testing that the transactions are not executed. If any transaction is detected with this extension published we will throw an error.",
     "publisher":  "Microsoft",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "platform":  "20.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",

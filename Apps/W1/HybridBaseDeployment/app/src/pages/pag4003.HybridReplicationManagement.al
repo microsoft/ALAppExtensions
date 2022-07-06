@@ -32,6 +32,7 @@ page 4003 "Intelligent Cloud Management"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the trigger type of the migration.';
+                    Visible = false;
                 }
                 field("Replication Type"; ReplicationType)
                 {
@@ -322,7 +323,7 @@ page 4003 "Intelligent Cloud Management"
 
             action(MapUsers)
             {
-                Enabled = IsSuper and IsMigratedCompany;
+                Enabled = IsSuper;
                 Visible = not IsOnPrem and MapUsersEnabled;
                 ApplicationArea = Basic, Suite;
                 Caption = 'Define User Mappings';

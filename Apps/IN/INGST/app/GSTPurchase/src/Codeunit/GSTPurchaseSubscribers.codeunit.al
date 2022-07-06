@@ -5,7 +5,7 @@ codeunit 18080 "GST Purchase Subscribers"
         GSTARNErr: Label 'Either GST Registration No. or ARN No. should have a value.';
         POSasVendorErr: Label 'POS as Vendor State is only applicable for Registered vendor, current vendor is %1.', Comment = '%1 = GST Vendor Type';
         ReferenceNoErr: Label 'Selected Document No does not exit for Reference Invoice No.';
-        SelfInvoiceTypeErr: Label 'GST Vendor Type must be Unregistered or Registered Reverse Charge for Invoice Type : Self-Invoice.';
+        SelfInvoiceTypeErr: Label 'GST Vendor Type must be Unregistered, Registered Reverse Charge or Imports for Invoice Type : Self-Invoice.';
         InvoiceTypRegVendErr: Label 'You can select Invoice Type for Registered Vendor in Reverse Charge Transactions only.';
         NonGSTInvTypeErr: Label 'You canNot enter Non-GST Invoice Type for any GST document.';
         LocationErr: Label 'Bill To-Location and Location code must not be same.';
@@ -283,7 +283,8 @@ codeunit 18080 "GST Purchase Subscribers"
     begin
         GetPurcasehHeader(PurchaseHeader, Rec);
         if (xRec."GST Reverse Charge") and not (Rec."GST Reverse Charge") then
-            PurchaseHeader.TestField("Invoice Type", PurchaseHeader."Invoice Type"::" ");
+            if (PurchaseHeader."GST Vendor Type" = PurchaseHeader."GST Vendor Type"::Import) and (PurchaseHeader."Invoice Type" <> PurchaseHeader."Invoice Type"::"Self Invoice") then
+                PurchaseHeader.TestField("Invoice Type", PurchaseHeader."Invoice Type"::" ");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterValidateEvent', 'Supplementary', false, false)]
@@ -586,7 +587,11 @@ codeunit 18080 "GST Purchase Subscribers"
                 Error(NonGSTInvTypeErr);
 
         if PurchaseHeader."Invoice Type" = PurchaseHeader."Invoice Type"::"Self Invoice" then
-            if not (PurchaseHeader."GST Vendor Type" = "GST Vendor Type"::Unregistered) and not CheckReverseChargeGSTRegistered(PurchaseHeader) then
+            if not (PurchaseHeader."GST Vendor Type" In [
+                PurchaseHeader."GST Vendor Type"::Unregistered,
+                PurchaseHeader."GST Vendor Type"::Import]) and
+                not (CheckReverseChargeGSTRegistered(PurchaseHeader))
+            then
                 Error(SelfInvoiceTypeErr);
 
         CheckReverseChargeGSTRegistered(PurchaseHeader);
@@ -618,7 +623,8 @@ codeunit 18080 "GST Purchase Subscribers"
         end;
     end;
 
-    local procedure SetSupplementaryInLine(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20]; Supplementary: Boolean)
+    local procedure SetSupplementaryInLine(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20];
+                                                             Supplementary: Boolean)
     var
         PurchaseLine: Record "Purchase Line";
     begin
@@ -657,7 +663,8 @@ codeunit 18080 "GST Purchase Subscribers"
         PurchaseHeader."POS Out Of India" := false;
     end;
 
-    local procedure CheckReferenceInvoiceNo(DocType: Enum "Document Type Enum"; DocNo: Code[20]; BuyFromVendNo: Code[20])
+    local procedure CheckReferenceInvoiceNo(DocType: Enum "Document Type Enum"; DocNo: Code[20];
+                                                         BuyFromVendNo: Code[20])
     var
         ReferenceInvoiceNo: Record "Reference Invoice No.";
     begin
@@ -998,10 +1005,10 @@ codeunit 18080 "GST Purchase Subscribers"
 
     local procedure UpdatePurchLineForGST(
         GSTCredit: Enum "GST Credit";
-        GSTGrpCode: Code[20];
-        GSTGrpType: Enum "GST Group Type";
-        HSNSACCode: Code[10];
-        GSTExempted: Boolean;
+                       GSTGrpCode: Code[20];
+                       GSTGrpType: Enum "GST Group Type";
+                       HSNSACCode: Code[10];
+                       GSTExempted: Boolean;
         var PurchaseLine: Record "Purchase Line")
     var
         PurchaseHeader: Record "Purchase Header";

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Allows to send remittance advice to vendors by email",
     "description":  "Allows to send remittance advice to vendors by email from payment journal and from vendor ledger entries",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2093433",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
@@ -24,5 +24,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "20.2.0.0"
+    "application":  "20.3.0.0"
 }

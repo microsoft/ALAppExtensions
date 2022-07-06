@@ -86,6 +86,7 @@ codeunit 31278 "Release Compens. Document CZC"
         CurrencyFactor: Decimal;
         SuggestedAmountToApplyQst: Label '%1 Ledger Entry No. %2 is suggested to application on other documents in the system.\Do you want to use it for this Compensation?', Comment = '%1 = Source Type, %2 = Source Entry No.';
         CurrencyFactorErr: Label 'All lines with currency %1 must have the same currency factor.', Comment = '%1 = Currency Code';
+        RelatedToAdvanceLetterErr: Label '%1 %2 is related to Advance Letter.', Comment = '%1 = Ledger Entry TableCaption, %2 = Ledger Entry No.';
     begin
         CompensationLineCZC.SetRange(CompensationLineCZC."Compensation No.", CompensationHeaderCZC."No.");
         if CompensationLineCZC.FindSet() then
@@ -96,6 +97,8 @@ codeunit 31278 "Release Compens. Document CZC"
                         if CompensationLineCZC."Source Entry No." <> 0 then begin
                             CustLedgerEntry.Get(CompensationLineCZC."Source Entry No.");
                             CustLedgerEntry.TestField(Prepayment, false);
+                            if CustLedgerEntry.RelatedToAdvanceLetterCZL() then
+                                Error(RelatedToAdvanceLetterErr, CustLedgerEntry.TableCaption(), CustLedgerEntry."Entry No.");
 #if not CLEAN19
 #pragma warning disable AL0432
                             CustLedgerEntry.TestField("Prepayment Type", CustLedgerEntry."Prepayment Type"::" ");
@@ -106,6 +109,8 @@ codeunit 31278 "Release Compens. Document CZC"
                         if CompensationLineCZC."Source Entry No." <> 0 then begin
                             VendorLedgerEntry.Get(CompensationLineCZC."Source Entry No.");
                             VendorLedgerEntry.TestField(Prepayment, false);
+                            if VendorLedgerEntry.RelatedToAdvanceLetterCZL() then
+                                Error(RelatedToAdvanceLetterErr, VendorLedgerEntry.TableCaption(), VendorLedgerEntry."Entry No.");
 #if not CLEAN19
 #pragma warning disable AL0432
                             VendorLedgerEntry.TestField("Prepayment Type", VendorLedgerEntry."Prepayment Type"::" ");

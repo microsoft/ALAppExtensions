@@ -235,8 +235,7 @@ codeunit 8905 "Email Message Impl."
         TempBlob.CreateOutStream(AttachmentOutstream);
         Base64Convert.FromBase64(AttachmentBase64, AttachmentOutstream);
         TempBlob.CreateInStream(AttachmentInStream);
-        EmailMessageAttachment.Data.ImportStream(AttachmentInStream, AttachmentName, EmailMessageAttachment."Content Type");
-        EmailMessageAttachment.Insert();
+        InsertAttachment(EmailMessageAttachment, AttachmentInStream, AttachmentName);
     end;
 
     procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentInStream: InStream)
@@ -247,17 +246,22 @@ codeunit 8905 "Email Message Impl."
     procedure AddAttachmentInternal(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentInStream: InStream) Size: Integer
     var
         EmailMessageAttachment: Record "Email Message Attachment";
-        NullGuid, MediaID : Guid;
+        NullGuid: Guid;
     begin
         AddAttachment(AttachmentName, ContentType, false, NullGuid, EmailMessageAttachment);
+        InsertAttachment(EmailMessageAttachment, AttachmentInStream, '');
+        exit(EmailMessageAttachment.Length);
+    end;
 
-        MediaID := EmailMessageAttachment.Data.ImportStream(AttachmentInStream, '', EmailMessageAttachment."Content Type");
+    local procedure InsertAttachment(var EmailMessageAttachment: Record "Email Message Attachment"; AttachmentInStream: InStream; AttachmentName: Text)
+    var
+        MediaID: Guid;
+    begin
+        MediaID := EmailMessageAttachment.Data.ImportStream(AttachmentInStream, AttachmentName, EmailMessageAttachment."Content Type");
         TenantMedia.Get(MediaID);
         TenantMedia.CalcFields(Content);
         EmailMessageAttachment.Length := TenantMedia.Content.Length;
-
         EmailMessageAttachment.Insert();
-        exit(EmailMessageAttachment.Length);
     end;
 
     local procedure ReplaceRgbaColorsWithRgb(var Body: Text)

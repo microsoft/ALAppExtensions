@@ -1,4 +1,4 @@
-codeunit 1450 "MS - Yodlee Service Mgt."
+﻿codeunit 1450 "MS - Yodlee Service Mgt."
 {
     var
         ResponseTempBlob: Codeunit "Temp Blob";
@@ -132,7 +132,9 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         StartingToRegisterUserTxt: Label 'Starting to register user %1 with currency code %2 on Yodlee.', Locked = true;
         FastlinkDataJsonTok: Label '{"app":"%1","rsession":"%2","token":"%3","redirectReq":"%4","extraParams":"%5"}', Locked = true;
         FastlinkLinkingExtraParamsTok: Label 'keyword=%1', Locked = true;
+        Fastlink4ExtraParamsTok: Label 'configName=DefaultFL4', Locked = true;
         FastlinkMfaRefreshExtraParamsTok: Label 'siteAccountId=%1&flow=refresh&callback=%2', Locked = true;
+        Fastlink4MfaRefreshExtraParamsTok: Label 'providerAccountId=%1&flow=refresh&callback=%2&configName=DefaultFL4', Locked = true;
         FastlinkAccessConsentExtraParamsTok: Label 'siteAccountId=%1&flow=manageConsent&callback=%2', Locked = true;
         FastlinkEditAccountExtraParamsTok: Label 'providerAccountId=%1&flow=edit&callback=%2', Locked = true;
         BankAccountNameDisplayLbl: Label '%1 - %2', Locked = true;
@@ -366,7 +368,10 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         // strip '&' as Yodlee seems to discard any text after this
         BankName := DELCHR(BankName, '=', '&');
 
-        ExtraParams := STRSUBSTNO(FastlinkLinkingExtraParamsTok, TypeHelper.UrlEncode(BankName)); // prepopulate search with bank name
+        if UsingFastlink4() then
+            ExtraParams := Fastlink4ExtraParamsTok
+        else
+            ExtraParams := STRSUBSTNO(FastlinkLinkingExtraParamsTok, TypeHelper.UrlEncode(BankName)); // prepopulate search with bank name
 
         Data := GetFastlinkData(ExtraParams, ErrorText);
         EXIT(ErrorText = '');
@@ -377,9 +382,10 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         TypeHelper: Codeunit "Type Helper";
         ExtraParams: Text;
     begin
-        ExtraParams :=
-          STRSUBSTNO(
-            FastlinkMfaRefreshExtraParamsTok, TypeHelper.UrlEncode(BankStatementServiceId), TypeHelper.UrlEncode(CallbackUrl));
+        if UsingFastlink4() then
+            ExtraParams := StrSubstNo(Fastlink4MfaRefreshExtraParamsTok, TypeHelper.UrlEncode(BankStatementServiceId), TypeHelper.UrlEncode(CallbackUrl))
+        else
+            ExtraParams := StrSubstNo(FastlinkMfaRefreshExtraParamsTok, TypeHelper.UrlEncode(BankStatementServiceId), TypeHelper.UrlEncode(CallbackUrl));
 
         Data := GetFastlinkData(ExtraParams, ErrorText);
         EXIT(ErrorText = '');
@@ -390,9 +396,10 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         TypeHelper: Codeunit "Type Helper";
         ExtraParams: Text;
     begin
-        ExtraParams :=
-          STRSUBSTNO(
-            FastlinkAccessConsentExtraParamsTok, TypeHelper.UrlEncode(OnlineBankAccountId), TypeHelper.UrlEncode(CallbackUrl));
+        ExtraParams := StrSubstNo(FastlinkAccessConsentExtraParamsTok, TypeHelper.UrlEncode(OnlineBankAccountId), TypeHelper.UrlEncode(CallbackUrl));
+
+        if UsingFastlink4() then
+            ExtraParams += ('&' + Fastlink4ExtraParamsTok);
 
         Data := GetFastlinkData(ExtraParams, ErrorText);
         EXIT(ErrorText = '');
@@ -403,9 +410,10 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         TypeHelper: Codeunit "Type Helper";
         ExtraParams: Text;
     begin
-        ExtraParams :=
-          STRSUBSTNO(
-            FastlinkEditAccountExtraParamsTok, TypeHelper.UrlEncode(OnlineBankAccountId), TypeHelper.UrlEncode(CallbackUrl));
+        ExtraParams := StrSubstNo(FastlinkEditAccountExtraParamsTok, TypeHelper.UrlEncode(OnlineBankAccountId), TypeHelper.UrlEncode(CallbackUrl));
+
+        if UsingFastlink4() then
+            ExtraParams += ('&' + Fastlink4ExtraParamsTok);
 
         Data := GetFastlinkData(ExtraParams, ErrorText);
         EXIT(ErrorText = '');
@@ -1752,6 +1760,11 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         MSYodleeBankServiceSetup.GET();
         MSYodleeBankServiceSetup.TESTFIELD("Bank Acc. Linking URL");
         EXIT(MSYodleeBankServiceSetup."Bank Acc. Linking URL");
+    end;
+
+    internal procedure UsingFastlink4(): Boolean;
+    begin
+        Exit(GetYodleeFastlinkUrl().Contains('fl4'));
     end;
 
     [Scope('OnPrem')]

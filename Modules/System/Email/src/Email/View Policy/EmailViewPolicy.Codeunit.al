@@ -17,15 +17,16 @@ codeunit 8930 "Email View Policy"
     procedure CheckForDefaultEntry(EmailViewPolicy: Enum "Email View Policy")
     var
         EmailViewPolicyRecord: Record "Email View Policy";
+        NullGuid: Guid;
     begin
-        EmailViewPolicyRecord.SetRange("User ID", GetDefaultUserId());
+        EmailViewPolicyRecord.SetRange("User Security ID", NullGuid);
         If EmailViewPolicyRecord.IsEmpty() then
             InsertDefault(EmailViewPolicy)
     end;
 
     procedure CheckIfCanDeleteRecord(EmailViewPolicyRecord: Record "Email View Policy"): Boolean
     begin
-        if EmailViewPolicyRecord."User ID" <> GetDefaultUserId() then
+        if not IsNullGuid(EmailViewPolicyRecord."User Security ID") then
             exit(true);
 
         Message(DefaultRecordCannotDeleteMsg);

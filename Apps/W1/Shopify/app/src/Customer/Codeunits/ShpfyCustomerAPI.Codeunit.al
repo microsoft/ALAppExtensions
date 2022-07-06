@@ -352,7 +352,6 @@ codeunit 30114 "Shpfy Customer API"
     internal procedure UpdateShopifyCustomerFields(var ShopifyCustomer: Record "Shpfy Customer"; JCustomer: JsonObject) Result: Boolean
     var
         ShopifyAddress: Record "Shpfy Customer Address";
-        TempTag: Record "Shpfy Tag" temporary;
         NodeId: BigInteger;
         UpdatedAt: DateTime;
         JAddresses: JsonArray;
@@ -396,14 +395,10 @@ codeunit 30114 "Shpfy Customer API"
         ShopifyCustomer."Created At" := JHelper.GetValueAsDateTime(JCustomer, 'createdAt');
         ShopifyCustomer.Modify(false);
 
+
         if JHelper.GetJsonArray(JCustomer, JTags, 'tags') then
-            foreach JItem in JTags do begin
-                Clear(TempTag);
-                TempTag."Parent Table No." := Database::"Shpfy Customer";
-                TempTag."Parent Id" := ShopifyCustomer.Id;
-                TempTag.Tag := CopyStr(JItem.AsValue().AsText(), 1, MaxStrLen(TempTag.Tag));
-                if TempTag.Insert(false) then;
-            end;
+            ShopifyCustomer.UpdateTags(JHelper.GetArrayAsText(JTags));
+
         if JHelper.GetJsonArray(JCustomer, JAddresses, 'addresses') then begin
             Clear(Ids);
             foreach JItem in JAddresses do begin

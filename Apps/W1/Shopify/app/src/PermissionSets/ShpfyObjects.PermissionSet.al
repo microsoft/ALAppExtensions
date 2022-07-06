@@ -130,6 +130,7 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy Shipping Charges" = X,
         codeunit "Shpfy Shipping Events" = X,
         codeunit "Shpfy Shipping Methods" = X,
+        codeunit "Shpfy Shop Mgt." = X,
         codeunit "Shpfy Sync Countries" = X,
         codeunit "Shpfy Sync Customers" = X,
         codeunit "Shpfy Sync Inventory" = X,

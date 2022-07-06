@@ -2,7 +2,6 @@ table 40105 "GP Company Additional Settings"
 {
     ReplicateData = false;
     DataPerCompany = false;
-    Extensible = false;
 
     fields
     {
@@ -17,7 +16,17 @@ table 40105 "GP Company Additional Settings"
             InitValue = true;
             DataClassification = SystemMetadata;
         }
-        field(11; "Oldest GL Year to Migrate"; Integer)
+        field(11; "Migrate Vendor Classes"; Boolean)
+        {
+            InitValue = false;
+            DataClassification = SystemMetadata;
+        }
+        field(12; "Migrate Customer Classes"; Boolean)
+        {
+            InitValue = false;
+            DataClassification = SystemMetadata;
+        }
+        field(13; "Oldest GL Year to Migrate"; Integer)
         {
             DataClassification = SystemMetadata;
         }
@@ -42,11 +51,31 @@ table 40105 "GP Company Additional Settings"
         exit(MigrateInactiveCheckbooks);
     end;
 
+    procedure GetMigrateVendorClasses(): Boolean
+    var
+        MigrateVendorClasses: Boolean;
+    begin
+        if Rec.Get(CompanyName()) then
+            MigrateVendorClasses := Rec."Migrate Vendor Classes";
+
+        exit(MigrateVendorClasses);
+    end;
+
+    procedure GetMigrateCustomerClasses(): Boolean
+    var
+        MigrateCustomerClasses: Boolean;
+    begin
+        if Rec.Get(CompanyName()) then
+            MigrateCustomerClasses := Rec."Migrate Customer Classes";
+
+        exit(MigrateCustomerClasses);
+    end;
+
     procedure GetInitialYear(): Integer
     begin
         if Rec.Get(CompanyName()) then
             exit(Rec."Oldest GL Year to Migrate");
 
         exit(0);
-    end;
+    end;   
 }

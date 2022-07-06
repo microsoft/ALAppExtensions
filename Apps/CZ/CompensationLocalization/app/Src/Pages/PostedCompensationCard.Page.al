@@ -197,6 +197,7 @@ page 31277 "Posted Compensation Card CZC"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
+                ShortcutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
                 trigger OnAction()

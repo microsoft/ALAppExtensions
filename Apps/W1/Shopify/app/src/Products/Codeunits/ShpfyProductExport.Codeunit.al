@@ -80,7 +80,6 @@ codeunit 30178 "Shpfy Product Export"
                             if ExtendedTextLine.FindSet() then begin
                                 Result.Append('  ');
                                 repeat
-
                                     Result.Append(ExtendedTextLine.Text);
                                     if strlen(ExtendedTextLine.Text) > 0 then
                                         case ExtendedTextLine.Text[StrLen(ExtendedTextLine.Text)] of
@@ -288,8 +287,14 @@ codeunit 30178 "Shpfy Product Export"
                     ShopifyVariant.SKU := ShopifyVariant.Barcode;
                 Shop."SKU Mapping"::"Item No.":
                     ShopifyVariant.SKU := Item."No.";
+                Shop."SKU Mapping"::"Variant Code":
+                    if ItemVariant.Code <> '' then
+                        ShopifyVariant.SKU := ItemVariant.Code;
                 Shop."SKU Mapping"::"Item No. + Variant Code":
-                    ShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code;
+                    if ItemVariant.Code <> '' then
+                        ShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
+                    else
+                        ShopifyVariant.SKU := Item."No.";
                 Shop."SKU Mapping"::"Vendor Item No.":
                     ShopifyVariant.SKU := Item."Vendor Item No.";
             end;
@@ -327,8 +332,14 @@ codeunit 30178 "Shpfy Product Export"
                     ShopifyVariant.SKU := ShopifyVariant.Barcode;
                 Shop."SKU Mapping"::"Item No.":
                     ShopifyVariant.SKU := Item."No.";
+                Shop."SKU Mapping"::"Variant Code":
+                    if ItemVariant.Code <> '' then
+                        ShopifyVariant.SKU := ItemVariant.Code;
                 Shop."SKU Mapping"::"Item No. + Variant Code":
-                    ShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code;
+                    if ItemVariant.Code <> '' then
+                        ShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
+                    else
+                        ShopifyVariant.SKU := Item."No.";
                 Shop."SKU Mapping"::"Vendor Item No.":
                     ShopifyVariant.SKU := Item."Vendor Item No.";
             end;
