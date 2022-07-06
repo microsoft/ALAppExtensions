@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Get insights about potential sales and a clear overview of expected stock-outs.",
     "description":  "Inventory management is a trade-off between customer service and managing cost. On one hand, low inventory levels require less working capital. On the other hand, stock-outs can lead to missed sales. The Sales and Inventory Forecast extension uses historical data to predict potential sales so you know when to expect stock-outs. Based on the forecast, the extension saves you time by helping to create replenishment requests to your vendors.",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "http://go.microsoft.com/fwlink/?LinkId=808039",
@@ -24,5 +24,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "20.2.0.0"
+    "application":  "20.3.0.0"
 }

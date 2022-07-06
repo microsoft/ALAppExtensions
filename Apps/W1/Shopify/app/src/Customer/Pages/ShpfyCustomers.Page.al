@@ -89,7 +89,7 @@ page 30107 "Shpfy Customers"
             part(CustomerTags; "Shpfy Tag Factbox")
             {
                 ApplicationArea = All;
-                SubPageLink = "Parent Table No." = const(70007604), "Parent Id" = field(Id);
+                SubPageLink = "Parent Table No." = const(30105), "Parent Id" = field(Id);
             }
         }
     }

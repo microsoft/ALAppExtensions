@@ -22,7 +22,7 @@ query 18009 GSTR1B2BQuery
             {
                 ColumnFilter = Transaction_Type = const(Sales);
             }
-            filter(Posting_Date; "Posting Date")
+            column(Posting_Date; "Posting Date")
             {
             }
             filter(GST_Component_Code; "GST Component Code")
@@ -99,15 +99,6 @@ query 18009 GSTR1B2BQuery
                     column(Description; Description)
                     {
 
-                    }
-                    dataitem(Customer; Customer)
-                    {
-                        SqlJoinType = InnerJoin;
-                        DataItemLink = "No." = Detailed_GST_Ledger_Entry."Source No.";
-                        column(Name; Name)
-                        {
-
-                        }
                     }
                 }
             }

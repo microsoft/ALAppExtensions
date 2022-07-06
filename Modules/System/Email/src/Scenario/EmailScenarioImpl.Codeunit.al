@@ -209,6 +209,7 @@ codeunit 8892 "Email Scenario Impl."
     procedure GetAvailableScenariosForAccount(EmailAccount: Record "Email Account Scenario"; var EmailScenarios: Record "Email Account Scenario")
     var
         Scenario: Record "Email Scenario";
+        EmailScenario: Codeunit "Email Scenario";
         CurrentScenario, i : Integer;
         IsAvailable: Boolean;
     begin
@@ -224,6 +225,10 @@ codeunit 8892 "Email Scenario Impl."
 
             // If the scenario isn't already connected to the email account, then it's available. Natually, we skip the default scenario
             IsAvailable := Scenario.IsEmpty() and (not (CurrentScenario = Enum::"Email Scenario"::Default.AsInteger()));
+
+            // If the scenario is available, allow partner to determine if it should be shown
+            if IsAvailable then
+                EmailScenario.OnBeforeInsertAvailableEmailScenario(CurrentScenario, IsAvailable);
 
             if IsAvailable then begin
                 EmailScenarios."Account Id" := EmailAccount."Account Id";

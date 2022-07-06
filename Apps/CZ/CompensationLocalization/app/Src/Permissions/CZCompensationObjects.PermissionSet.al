@@ -21,6 +21,7 @@ permissionset 11772 "CZ Compensation - Objects CZC"
                   Codeunit "Gen. Journal Line Handler CZC" = X,
                   Codeunit "G/L Acc.Where-Used Handler CZC" = X,
                   Codeunit "Guided Experience Handler CZC" = X,
+                  Codeunit "Incoming Document Handler CZC" = X,
                   Codeunit "Install Application CZC" = X,
                   Codeunit "Navigate Handler CZC" = X,
                   Codeunit "Notification Handler CZC" = X,

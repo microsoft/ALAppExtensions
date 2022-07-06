@@ -16,8 +16,8 @@ codeunit 11726 "Cash Document-ReleasePrint CZP"
     local procedure Code()
     begin
         Codeunit.Run(Codeunit::"Cash Document-Release CZP", CashDocumentHeaderCZP);
-        GetReport(CashDocumentHeaderCZP);
         Commit();
+        GetReport(CashDocumentHeaderCZP);
     end;
 
     procedure PerformManualRelease(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
@@ -36,6 +36,6 @@ codeunit 11726 "Cash Document-ReleasePrint CZP"
     begin
         CashDocumentHeaderCZP.Reset();
         CashDocumentHeaderCZP.SetRecFilter();
-        CashDocumentHeaderCZP.PrintRecords(false);
+        CashDocumentHeaderCZP.PrintRecords(true);
     end;
 }

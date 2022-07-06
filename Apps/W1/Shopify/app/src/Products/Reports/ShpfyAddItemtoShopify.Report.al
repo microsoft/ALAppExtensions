@@ -4,7 +4,7 @@
 report 30106 "Shpfy Add Item to Shopify"
 {
     ApplicationArea = All;
-    Caption = 'Shopify Add Item to Shopify';
+    Caption = 'Add Item to Shopify';
     ProcessingOnly = true;
     UsageCategory = Administration;
     dataset

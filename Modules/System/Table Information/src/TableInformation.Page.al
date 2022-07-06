@@ -52,8 +52,10 @@ page 8700 "Table Information"
                     ToolTip = 'The number of records in the table';
 
                     trigger OnDrillDown()
+                    var
+                        TableInformationCacheImpl: Codeunit "Table Information Cache Impl.";
                     begin
-                        Hyperlink(GetTableUrl(Rec));
+                        Hyperlink(TableInformationCacheImpl.GetTableUrl(Rec."Company Name", Rec."Table No."));
                     end;
                 }
 
@@ -100,7 +102,7 @@ page 8700 "Table Information"
             Rec.SetRange("Company Name")
         else
             Rec.SetFilter("Company Name", '%1|%2', '', CompanyName);
-        FilterGroup(0);
+        Rec.FilterGroup(0);
     end;
 
     local procedure GetTableUrl(TableInformation: Record "Table Information"): Text

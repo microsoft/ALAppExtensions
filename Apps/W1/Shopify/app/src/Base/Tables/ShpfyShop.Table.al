@@ -21,6 +21,13 @@ table 30102 "Shpfy Shop"
             Caption = 'Shopify URL';
             DataClassification = SystemMetadata;
             ExtendedDatatype = URL;
+
+            trigger OnValidate()
+            begin
+                if ("Shopify URL" <> '') then
+                    if not "Shopify URL".ToLower().StartsWith('https://') then
+                        "Shopify URL" := CopyStr('https://' + "Shopify URL", 1, MaxStrLen("Shopify URL"));
+            end;
         }
         field(3; Enabled; Boolean)
         {
@@ -364,6 +371,7 @@ table 30102 "Shpfy Shop"
 
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure GetAccessToken() Result: Text
     var
         ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
@@ -376,6 +384,7 @@ table 30102 "Shpfy Shop"
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure RequestAccessToken()
     var
         ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
@@ -387,6 +396,7 @@ table 30102 "Shpfy Shop"
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure HasAccessToken(): Boolean
     var
         AuthorizationMgt: Codeunit "Shpfy Authentication Mgt.";

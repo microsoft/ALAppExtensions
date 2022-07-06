@@ -358,6 +358,8 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 GetSetup();
                 if PurchasesPayablesSetup."Default VAT Date CZL" = PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date" then
                     Validate("VAT Date", "Posting Date");
+                if PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" = PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date" then
+                    Validate("Original Document VAT Date", "Posting Date");
 
                 if "Currency Code" <> '' then begin
                     UpdateCurrencyFactor();
@@ -383,6 +385,8 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 GetSetup();
                 if PurchasesPayablesSetup."Default VAT Date CZL" = PurchasesPayablesSetup."Default VAT Date CZL"::"Document Date" then
                     Validate("VAT Date", "Document Date");
+                if PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" = PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Document Date" then
+                    Validate("Original Document VAT Date", "Document Date");
             end;
         }
         field(36; "VAT Date"; Date)
@@ -396,6 +400,9 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 if not GeneralLedgerSetup."Use VAT Date CZL" then
                     TestField("VAT Date", "Posting Date");
                 CheckCurrencyExchangeRate("VAT Date");
+                GetSetup();
+                if PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" = PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date" then
+                    Validate("Original Document VAT Date", "VAT Date");
             end;
         }
         field(38; "Posting Description"; Text[100])
@@ -709,12 +716,35 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 DimensionManagement.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
             end;
         }
+        field(500; "Incoming Document Entry No."; Integer)
+        {
+            Caption = 'Incoming Document Entry No.';
+            TableRelation = "Incoming Document";
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                IncomingDocument: Record "Incoming Document";
+            begin
+                if "Incoming Document Entry No." = xRec."Incoming Document Entry No." then
+                    exit;
+                if "Incoming Document Entry No." = 0 then
+                    IncomingDocument.RemoveReferenceToWorkingDocument(xRec."Incoming Document Entry No.")
+                else
+                    IncomingDocument.SetPurchaseAdvanceCZZ(Rec);
+            end;
+        }
         field(31040; "Amount on Iss. Payment Order"; Decimal)
         {
             Caption = 'Amount on Issued Payment Order';
             FieldClass = FlowField;
             CalcFormula = sum("Iss. Payment Order Line CZB".Amount where("Purch. Advance Letter No. CZZ" = field("No.")));
             Editable = false;
+        }
+        field(31112; "Original Document VAT Date"; Date)
+        {
+            Caption = 'Original Document VAT Date';
+            DataClassification = CustomerContent;
         }
     }
 
@@ -790,6 +820,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         if not DocumentAttachment.IsEmpty() then
             DocumentAttachment.DeleteAll();
 
+        Validate("Incoming Document Entry No.", 0);
         DeleteRecordInApprovalRequest();
     end;
 
@@ -843,6 +874,16 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 "VAT Date" := "Document Date";
             PurchasesPayablesSetup."Default VAT Date CZL"::Blank:
                 "VAT Date" := 0D;
+        end;
+        case PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" of
+            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::Blank:
+                "Original Document VAT Date" := 0D;
+            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date":
+                "Original Document VAT Date" := "Posting Date";
+            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date":
+                "Original Document VAT Date" := "VAT Date";
+            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Document Date":
+                "Original Document VAT Date" := "Document Date";
         end;
 
         "Posting Description" := AdvanceLbl + ' ' + "No.";

@@ -358,6 +358,9 @@ codeunit 11748 "Install Application CZL"
         CompanyInformation: Record "Company Information";
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
     begin
+        CompanyInformation.SetLoadFields("Default Bank Account Code", "Bank Account Format Check", "Tax Registration No.", "Primary Business Activity",
+                                         "Court Authority No.", "Tax Authority No.", "Registration Date", "Equity Capital", "Paid Equity Capital",
+                                         "General Manager No.", "Accounting Manager No.", "Finance Manager No.");
         if CompanyInformation.Get() then begin
             CompanyInformation."Default Bank Account Code CZL" := CompanyInformation."Default Bank Account Code";
             CompanyInformation."Bank Account Format Check CZL" := CompanyInformation."Bank Account Format Check";
@@ -385,6 +388,7 @@ codeunit 11748 "Install Application CZL"
     var
         ResponsibilityCenter: Record "Responsibility Center";
     begin
+        ResponsibilityCenter.SetLoadFields("Bank Account Code");
         if ResponsibilityCenter.FindSet(true) then
             repeat
                 ResponsibilityCenter."Default Bank Account Code CZL" := ResponsibilityCenter."Bank Account Code";
@@ -396,6 +400,7 @@ codeunit 11748 "Install Application CZL"
     var
         Customer: Record Customer;
     begin
+        Customer.SetLoadFields("Registration No.", "Tax Registration No.", "Transaction Type", "Transaction Specification", "Transport Method");
         if Customer.FindSet() then
             repeat
                 Customer."Registration No. CZL" := Customer."Registration No.";
@@ -411,6 +416,7 @@ codeunit 11748 "Install Application CZL"
     var
         Vendor: Record Vendor;
     begin
+        Vendor.SetLoadFields("Registration No.", "Tax Registration No.", "Disable Uncertainty Check", "Transaction Type", "Transaction Specification", "Transport Method");
         if Vendor.FindSet() then
             repeat
                 Vendor."Registration No. CZL" := Vendor."Registration No.";
@@ -427,6 +433,7 @@ codeunit 11748 "Install Application CZL"
     var
         VendorBankAccount: Record "Vendor Bank Account";
     begin
+        VendorBankAccount.SetLoadFields("Third Party Bank Account");
         if VendorBankAccount.FindSet() then
             repeat
                 VendorBankAccount."Third Party Bank Account CZL" := VendorBankAccount."Third Party Bank Account";
@@ -438,6 +445,7 @@ codeunit 11748 "Install Application CZL"
     var
         Contact: Record Contact;
     begin
+        Contact.SetLoadFields("Registration No.", "Tax Registration No.");
         if Contact.FindSet() then
             repeat
                 Contact."Registration No. CZL" := Contact."Registration No.";
@@ -526,6 +534,8 @@ codeunit 11748 "Install Application CZL"
     var
         ItemJournalLine: Record "Item Journal Line";
     begin
+        ItemJournalLine.SetLoadFields("Tariff No.", "Physical Transfer", "Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value", "Net Weight",
+                                      "Country/Region of Origin Code", "Statistic Indication", "Intrastat Transaction", "Whse. Net Change Template", "G/L Correction");
         if ItemJournalLine.FindSet() then
             repeat
                 ItemJournalLine."Tariff No. CZL" := ItemJournalLine."Tariff No.";
@@ -546,6 +556,8 @@ codeunit 11748 "Install Application CZL"
     var
         JobJournalLine: Record "Job Journal Line";
     begin
+        JobJournalLine.SetLoadFields("Whse. Net Change Template", Correction, "Tariff No.", "Net Weight", "Country/Region of Origin Code",
+                                     "Statistic Indication", "Intrastat Transaction");
         if JobJournalLine.FindSet() then
             repeat
                 JobJournalLine."Invt. Movement Template CZL" := JobJournalLine."Whse. Net Change Template";
@@ -563,6 +575,7 @@ codeunit 11748 "Install Application CZL"
     var
         PhysInvtOrderLine: Record "Phys. Invt. Order Line";
     begin
+        PhysInvtOrderLine.SetLoadFields("Whse. Net Change Template");
         if PhysInvtOrderLine.FindSet() then
             repeat
                 PhysInvtOrderLine."Invt. Movement Template CZL" := PhysInvtOrderLine."Whse. Net Change Template";
@@ -574,6 +587,7 @@ codeunit 11748 "Install Application CZL"
     var
         InventorySetup: Record "Inventory Setup";
     begin
+        InventorySetup.SetLoadFields("Date Order Inventory Change", "Def.Template for Phys.Pos.Adj", "Def.Template for Phys.Neg.Adj", "Post Exp. Cost Conv. as Corr.", "Post Neg. Transfers as Corr.");
         if InventorySetup.Get() then begin
             InventorySetup."Date Order Invt. Change CZL" := InventorySetup."Date Order Inventory Change";
             InventorySetup."Def.Tmpl. for Phys.Pos.Adj CZL" := InventorySetup."Def.Template for Phys.Pos.Adj";
@@ -615,6 +629,7 @@ codeunit 11748 "Install Application CZL"
     var
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
     begin
+        SalesReceivablesSetup.SetLoadFields("Default VAT Date", "Allow Alter Posting Groups");
         if SalesReceivablesSetup.Get() then begin
             SalesReceivablesSetup."Default VAT Date CZL" := SalesReceivablesSetup."Default VAT Date";
 #if not CLEAN20
@@ -630,6 +645,7 @@ codeunit 11748 "Install Application CZL"
     var
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
     begin
+        PurchasesPayablesSetup.SetLoadFields("Default VAT Date", "Allow Alter Posting Groups", "Default Orig. Doc. VAT Date");
         if PurchasesPayablesSetup.Get() then begin
             PurchasesPayablesSetup."Default VAT Date CZL" := PurchasesPayablesSetup."Default VAT Date";
 #if not CLEAN20
@@ -646,6 +662,7 @@ codeunit 11748 "Install Application CZL"
     var
         ServiceMgtSetup: Record "Service Mgt. Setup";
     begin
+        ServiceMgtSetup.SetLoadFields("Default VAT Date", "Allow Alter Cust. Post. Groups");
         if ServiceMgtSetup.Get() then begin
             ServiceMgtSetup."Default VAT Date CZL" := ServiceMgtSetup."Default VAT Date";
 #if not CLEAN20
@@ -661,6 +678,9 @@ codeunit 11748 "Install Application CZL"
     var
         UserSetup: Record "User Setup";
     begin
+        UserSetup.SetLoadFields("Allow VAT Posting From", "Allow VAT Posting To", "Check Document Date(work date)", "Check Document Date(sys. date)", "Check Posting Date (work date)", "Check Posting Date (sys. date)",
+                                "Check Bank Accounts", "Check Journal Templates", "Check Dimension Values", "Allow Posting to Closed Period", "Allow Complete Job", "Employee No.", "User Name", "Allow Item Unapply",
+                                "Check Location Code", "Check Release Location Code", "Check Whse. Net Change Temp.");
         if UserSetup.FindSet(true) then
             repeat
                 UserSetup."Allow VAT Posting From CZL" := UserSetup."Allow VAT Posting From";
@@ -708,6 +728,7 @@ codeunit 11748 "Install Application CZL"
     var
         GLEntry: Record "G/L Entry";
     begin
+        GLEntry.SetLoadFields("VAT Date");
         GLEntry.SetFilter(GLEntry."VAT Date", '<>0D');
         if GLEntry.FindSet(true) then
             repeat
@@ -721,6 +742,8 @@ codeunit 11748 "Install Application CZL"
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
     begin
+        CustLedgerEntry.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.",
+                                      IBAN, "SWIFT Code", "VAT Date");
         if CustLedgerEntry.FindSet(true) then
             repeat
                 CustLedgerEntry."Specific Symbol CZL" := CustLedgerEntry."Specific Symbol";
@@ -752,7 +775,7 @@ codeunit 11748 "Install Application CZL"
             while ApplAcrCustPostGroupsCZL.Read() do
                 ApplAcrossPostGrpEntryNo.Add(ApplAcrCustPostGroupsCZL.Entry_No_);
 #endif
-
+        DetailedCustLedgEntry.SetLoadFields("Entry No.", "Customer Posting Group", "Entry Type", "Transaction No.");
         if DetailedCustLedgEntry.FindSet(true) then
             repeat
                 DetailedCustLedgEntry."Customer Posting Group CZL" := DetailedCustLedgEntry."Customer Posting Group";
@@ -794,6 +817,7 @@ codeunit 11748 "Install Application CZL"
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin
+        VendorLedgerEntry.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code", "VAT Date");
         if VendorLedgerEntry.FindSet(true) then
             repeat
                 VendorLedgerEntry."Specific Symbol CZL" := VendorLedgerEntry."Specific Symbol";
@@ -825,7 +849,7 @@ codeunit 11748 "Install Application CZL"
             while ApplAcrVendPostGroupsCZL.Read() do
                 ApplAcrossPostGrpEntryNo.Add(ApplAcrVendPostGroupsCZL.Entry_No_);
 #endif
-
+        DetailedVendorLedgEntry.SetLoadFields("Entry No.", "Vendor Posting Group", "Entry Type", "Transaction No.");
         if DetailedVendorLedgEntry.FindSet(true) then
             repeat
                 DetailedVendorLedgEntry."Vendor Posting Group CZL" := DetailedVendorLedgEntry."Vendor Posting Group";
@@ -849,6 +873,7 @@ codeunit 11748 "Install Application CZL"
     begin
         if not ApplTransactionDictionary.Get(TransactionNo, ApplAcrossPostGroups) then begin
             FirstVendorPostingGroup := '';
+            DetailedVendorLedgEtnry.SetLoadFields("Vendor Posting Group");
             DetailedVendorLedgEntry.SetCurrentKey("Transaction No.", "Vendor No.", "Entry Type");
             DetailedVendorLedgEntry.SetRange("Transaction No.", TransactionNo);
             DetailedVendorLedgEntry.SetRange("Entry Type", DetailedVendorLedgEntry."Entry Type"::Application);
@@ -867,6 +892,7 @@ codeunit 11748 "Install Application CZL"
     var
         VATEntry: Record "VAT Entry";
     begin
+        VATEntry.SetLoadFields("VAT Date", "Registration No.", "VAT Settlement No.", "Original Document VAT Date", "EU 3-Party Intermediate Role", "VAT Delay", "VAT Identifier");
         if VATEntry.FindSet(true) then
             repeat
                 VATEntry."VAT Date CZL" := VATEntry."VAT Date";
@@ -884,6 +910,9 @@ codeunit 11748 "Install Application CZL"
     var
         GenJournalLine: Record "Gen. Journal Line";
     begin
+        GenJournalLine.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code",
+                                     "VAT Date", "Registration No.", "Tax Registration No.", "EU 3-Party Intermediate Role", "Original Document VAT Date", "Original Document Partner Type",
+                                     "Original Document Partner No.", "Currency Factor VAT", "Currency Code VAT", "VAT Delay");
         if GenJournalLine.FindSet(true) then
             repeat
                 GenJournalLine."Specific Symbol CZL" := GenJournalLine."Specific Symbol";
@@ -912,6 +941,9 @@ codeunit 11748 "Install Application CZL"
     var
         SalesHeader: Record "Sales Header";
     begin
+        SalesHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                  "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Credit Memo Type",
+                                  "Physical Transfer", "Intrastat Exclude", "EU 3-Party Intermediate Role", "Original Document VAT Date", "VAT Currency Factor", "Currency Code");
         if SalesHeader.FindSet(true) then
             repeat
                 SalesHeader."Specific Symbol CZL" := SalesHeader."Specific Symbol";
@@ -942,6 +974,7 @@ codeunit 11748 "Install Application CZL"
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
     begin
+        SalesShipmentHeader.SetLoadFields("Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude", "EU 3-Party Intermediate Role");
         if SalesShipmentHeader.FindSet(true) then
             repeat
                 SalesShipmentHeader."Registration No. CZL" := SalesShipmentHeader."Registration No.";
@@ -957,6 +990,9 @@ codeunit 11748 "Install Application CZL"
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
     begin
+        SalesInvoiceHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                         "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
+                                         "Intrastat Exclude", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
         if SalesInvoiceHeader.FindSet(true) then
             repeat
                 SalesInvoiceHeader."Specific Symbol CZL" := SalesInvoiceHeader."Specific Symbol";
@@ -985,6 +1021,9 @@ codeunit 11748 "Install Application CZL"
     var
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
     begin
+        SalesCrMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                        "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
+                                        "Credit Memo Type", "Intrastat Exclude", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
         if SalesCrMemoHeader.FindSet(true) then
             repeat
                 SalesCrMemoHeader."Specific Symbol CZL" := SalesCrMemoHeader."Specific Symbol";
@@ -1014,6 +1053,7 @@ codeunit 11748 "Install Application CZL"
     var
         ReturnReceiptHeader: Record "Return Receipt Header";
     begin
+        ReturnReceiptHeader.SetLoadFields("Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude");
         if ReturnReceiptHeader.FindSet(true) then
             repeat
                 ReturnReceiptHeader."Registration No. CZL" := ReturnReceiptHeader."Registration No.";
@@ -1028,6 +1068,9 @@ codeunit 11748 "Install Application CZL"
     var
         SalesHeaderArchive: Record "Sales Header Archive";
     begin
+        SalesHeaderArchive.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.",
+                                         "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
+                                         "Intrastat Exclude", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
         if SalesHeaderArchive.FindSet(true) then
             repeat
                 SalesHeaderArchive."Specific Symbol CZL" := SalesHeaderArchive."Specific Symbol";
@@ -1054,6 +1097,9 @@ codeunit 11748 "Install Application CZL"
     var
         PurchaseHeader: Record "Purchase Header";
     begin
+        PurchaseHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                     "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
+                                     "Intrastat Exclude", "EU 3-Party Intermediate Role", "EU 3-Party Trade", "Original Document VAT Date", "VAT Currency Factor", "Currency Code");
         if PurchaseHeader.FindSet(true) then
             repeat
                 PurchaseHeader."Specific Symbol CZL" := PurchaseHeader."Specific Symbol";
@@ -1084,6 +1130,7 @@ codeunit 11748 "Install Application CZL"
     var
         PurchRcptHeader: Record "Purch. Rcpt. Header";
     begin
+        PurchRcptHeader.SetLoadFields("Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude", "EU 3-Party Intermediate Role", "EU 3-Party Trade");
         if PurchRcptHeader.FindSet(true) then
             repeat
                 PurchRcptHeader."Registration No. CZL" := PurchRcptHeader."Registration No.";
@@ -1100,6 +1147,9 @@ codeunit 11748 "Install Application CZL"
     var
         PurchInvHeader: Record "Purch. Inv. Header";
     begin
+        PurchInvHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.",
+                                     IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude",
+                                     "EU 3-Party Intermediate Role", "EU 3-Party Trade", "Original Document VAT Date", "VAT Currency Factor", "Currency Code");
         if PurchInvHeader.FindSet(true) then
             repeat
                 PurchInvHeader."Specific Symbol CZL" := PurchInvHeader."Specific Symbol";
@@ -1128,6 +1178,9 @@ codeunit 11748 "Install Application CZL"
     var
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
     begin
+        PurchCrMemoHdr.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.",
+                                     IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude",
+                                     "EU 3-Party Intermediate Role", "EU 3-Party Trade", "Original Document VAT Date", "VAT Currency Factor", "Currency Code");
         if PurchCrMemoHdr.FindSet(true) then
             repeat
                 PurchCrMemoHdr."Specific Symbol CZL" := PurchCrMemoHdr."Specific Symbol";
@@ -1156,6 +1209,7 @@ codeunit 11748 "Install Application CZL"
     var
         ReturnShipmentHeader: Record "Return Shipment Header";
     begin
+        ReturnShipmentHeader.SetLoadFields("Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude", "EU 3-Party Trade");
         if ReturnShipmentHeader.FindSet(true) then
             repeat
                 ReturnShipmentHeader."Registration No. CZL" := ReturnShipmentHeader."Registration No.";
@@ -1171,6 +1225,9 @@ codeunit 11748 "Install Application CZL"
     var
         PurchaseHeaderArchive: Record "Purchase Header Archive";
     begin
+        PurchaseHeaderArchive.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.",
+                                            "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
+                                            "Intrastat Exclude", "EU 3-Party Trade", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
         if PurchaseHeaderArchive.FindSet(true) then
             repeat
                 PurchaseHeaderArchive."Specific Symbol CZL" := PurchaseHeaderArchive."Specific Symbol";
@@ -1196,6 +1253,9 @@ codeunit 11748 "Install Application CZL"
     var
         ServiceHeader: Record "Service Header";
     begin
+        ServiceHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                    "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
+                                    "Intrastat Exclude", "Credit Memo Type", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
         if ServiceHeader.FindSet(true) then
             repeat
                 ServiceHeader."Specific Symbol CZL" := ServiceHeader."Specific Symbol";
@@ -1225,6 +1285,7 @@ codeunit 11748 "Install Application CZL"
     var
         ServiceShipmentHeader: Record "Service Shipment Header";
     begin
+        ServiceShipmentHeader.SetLoadFields("Registration No.", "Tax Registration No.", "Physical Transfer", "Intrastat Exclude", "EU 3-Party Intermediate Role");
         if ServiceShipmentHeader.FindSet(true) then
             repeat
                 ServiceShipmentHeader."Registration No. CZL" := ServiceShipmentHeader."Registration No.";
@@ -1240,6 +1301,9 @@ codeunit 11748 "Install Application CZL"
     var
         ServiceInvoiceHeader: Record "Service Invoice Header";
     begin
+        ServiceInvoiceHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                           "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
+                                           "Intrastat Exclude", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
         if ServiceInvoiceHeader.FindSet(true) then
             repeat
                 ServiceInvoiceHeader."Specific Symbol CZL" := ServiceInvoiceHeader."Specific Symbol";
@@ -1268,6 +1332,9 @@ codeunit 11748 "Install Application CZL"
     var
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
     begin
+        ServiceCrMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Bank Branch No.",
+                                          "Bank Name", "Transit No.", IBAN, "SWIFT Code", "VAT Date", "Registration No.", "Tax Registration No.", "Physical Transfer",
+                                          "Intrastat Exclude", "Credit Memo Type", "EU 3-Party Intermediate Role", "VAT Currency Factor", "Currency Code");
         if ServiceCrMemoHeader.FindSet(true) then
             repeat
                 ServiceCrMemoHeader."Specific Symbol CZL" := ServiceCrMemoHeader."Specific Symbol";
@@ -1297,6 +1364,8 @@ codeunit 11748 "Install Application CZL"
     var
         ReminderHeader: Record "Reminder Header";
     begin
+        ReminderHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
+                                     "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Registration No.", "Tax Registration No.");
         if ReminderHeader.FindSet(true) then
             repeat
                 ReminderHeader."Specific Symbol CZL" := ReminderHeader."Specific Symbol";
@@ -1319,6 +1388,8 @@ codeunit 11748 "Install Application CZL"
     var
         IssuedReminderHeader: Record "Issued Reminder Header";
     begin
+        IssuedReminderHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
+                                           "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Registration No.", "Tax Registration No.");
         if IssuedReminderHeader.FindSet(true) then
             repeat
                 IssuedReminderHeader."Specific Symbol CZL" := IssuedReminderHeader."Specific Symbol";
@@ -1341,6 +1412,8 @@ codeunit 11748 "Install Application CZL"
     var
         FinanceChargeMemoHeader: Record "Finance Charge Memo Header";
     begin
+        FinanceChargeMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
+                                              "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Registration No.", "Tax Registration No.");
         if FinanceChargeMemoHeader.FindSet(true) then
             repeat
                 FinanceChargeMemoHeader."Specific Symbol CZL" := FinanceChargeMemoHeader."Specific Symbol";
@@ -1363,6 +1436,8 @@ codeunit 11748 "Install Application CZL"
     var
         IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header";
     begin
+        IssuedFinChargeMemoHeader.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank No.", "Bank Account No.", "Bank Branch No.",
+                                                "Bank Name", "Transit No.", IBAN, "SWIFT Code", "Registration No.", "Tax Registration No.");
         if IssuedFinChargeMemoHeader.FindSet(true) then
             repeat
                 IssuedFinChargeMemoHeader."Specific Symbol CZL" := IssuedFinChargeMemoHeader."Specific Symbol";
@@ -1570,6 +1645,8 @@ codeunit 11748 "Install Application CZL"
     var
         VATPostingSetup: Record "VAT Posting Setup";
     begin
+        VATPostingSetup.SetLoadFields("VAT Rate", "Supplies Mode Code", "Ratio Coefficient", "Corrections for Bad Receivable", "Reverse Charge Check", "Sales VAT Delay Account",
+                                      "Purchase VAT Delay Account", "VIES Purchases", "VIES Sales", "Intrastat Service");
         if VATPostingSetup.FindSet() then
             repeat
                 VATPostingSetup."VAT Rate CZL" := VATPostingSetup."VAT Rate";
@@ -1590,6 +1667,7 @@ codeunit 11748 "Install Application CZL"
     var
         VATStatementTemplate: Record "VAT Statement Template";
     begin
+        VATStatementTemplate.SetLoadFields("Allow Comments/Attachments");
         if VATStatementTemplate.FindSet() then
             repeat
                 VATStatementTemplate."Allow Comments/Attachments CZL" := VATStatementTemplate."Allow Comments/Attachments";
@@ -1602,6 +1680,8 @@ codeunit 11748 "Install Application CZL"
     var
         VATStatementLine: Record "VAT Statement Line";
     begin
+        VATStatementLine.SetLoadFields("Attribute Code", "G/L Amount Type", "Gen. Bus. Posting Group", "Gen. Prod. Posting Group", Show, "EU 3-Party Intermediate Role",
+                                       "EU-3 Party Trade", "VAT Control Rep. Section Code", "Ignore Simpl. Tax Doc. Limit", Type);
         if VATStatementLine.FindSet() then
             repeat
                 VATStatementLine."Attribute Code CZL" := VATStatementLine."Attribute Code";
@@ -1771,6 +1851,7 @@ codeunit 11748 "Install Application CZL"
     var
         GLAccount: Record "G/L Account";
     begin
+        GLAccount.SetLoadFields("G/L Account Group");
         if GLAccount.FindSet() then
             repeat
                 GLAccount."G/L Account Group CZL" := GLAccount."G/L Account Group";
@@ -1847,6 +1928,7 @@ codeunit 11748 "Install Application CZL"
     var
         AccScheduleName: Record "Acc. Schedule Name";
     begin
+        AccScheduleName.SetLoadFields("Acc. Schedule Type");
         if AccScheduleName.FindSet() then
             repeat
                 AccScheduleName."Acc. Schedule Type CZL" := AccScheduleName."Acc. Schedule Type";
@@ -1858,6 +1940,7 @@ codeunit 11748 "Install Application CZL"
     var
         AccScheduleLine: Record "Acc. Schedule Line";
     begin
+        AccScheduleLine.SetLoadFields(Calc, "Row Correction", "Assets/Liabilities Type", "Source Table", "Totaling Type");
         if AccScheduleLine.FindSet() then
             repeat
                 AccScheduleLine."Calc CZL" := AccScheduleLine.Calc;
@@ -1942,6 +2025,7 @@ codeunit 11748 "Install Application CZL"
     var
         PurchaseLine: Record "Purchase Line";
     begin
+        PurchaseLine.SetLoadFields(Negative, "Ext. Amount (LCY)", "Ext.Amount Including VAT (LCY)", "Physical Transfer", "Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
         if PurchaseLine.FindSet() then
             repeat
                 PurchaseLine."Negative CZL" := PurchaseLine.Negative;
@@ -1959,6 +2043,7 @@ codeunit 11748 "Install Application CZL"
     var
         PurchCrMemoLine: Record "Purch. Cr. Memo Line";
     begin
+        PurchCrMemoLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
         if PurchCrMemoLine.FindSet() then
             repeat
                 PurchCrMemoLine."Tariff No. CZL" := PurchCrMemoLine."Tariff No.";
@@ -1972,6 +2057,7 @@ codeunit 11748 "Install Application CZL"
     var
         PurchInvLine: Record "Purch. Inv. Line";
     begin
+        PurchInvLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
         if PurchInvLine.FindSet() then
             repeat
                 PurchInvLine."Tariff No. CZL" := PurchInvLine."Tariff No.";
@@ -1985,6 +2071,7 @@ codeunit 11748 "Install Application CZL"
     var
         PurchRcptLine: Record "Purch. Rcpt. Line";
     begin
+        PurchRcptLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
         if PurchRcptLine.FindSet() then
             repeat
                 PurchRcptLine."Tariff No. CZL" := PurchRcptLine."Tariff No.";
@@ -1998,6 +2085,7 @@ codeunit 11748 "Install Application CZL"
     var
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
     begin
+        SalesCrMemoLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
         if SalesCrMemoLine.FindSet() then
             repeat
                 SalesCrMemoLine."Tariff No. CZL" := SalesCrMemoLine."Tariff No.";
@@ -2011,6 +2099,7 @@ codeunit 11748 "Install Application CZL"
     var
         SalesInvoiceLine: Record "Sales Invoice Line";
     begin
+        SalesInvoiceLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
         if SalesInvoiceLine.FindSet() then
             repeat
                 SalesInvoiceLine."Tariff No. CZL" := SalesInvoiceLine."Tariff No.";
@@ -2024,6 +2113,7 @@ codeunit 11748 "Install Application CZL"
     var
         SalesLine: Record "Sales Line";
     begin
+        SalesLine.SetLoadFields(Negative, "Tariff No.", "Physical Transfer", "Statistic Indication", "Country/Region of Origin Code");
         if SalesLine.FindSet() then
             repeat
                 SalesLine."Negative CZL" := SalesLine.Negative;
@@ -2039,6 +2129,7 @@ codeunit 11748 "Install Application CZL"
     var
         SalesShipmentLine: Record "Sales Shipment Line";
     begin
+        SalesShipmentLine.SetLoadFields("Tariff No.", "Statistic Indication");
         if SalesShipmentLine.FindSet() then
             repeat
                 SalesShipmentLine."Tariff No. CZL" := SalesShipmentLine."Tariff No.";
@@ -2054,6 +2145,8 @@ codeunit 11748 "Install Application CZL"
 #endif
         TariffNumber: Record "Tariff Number";
     begin
+        TariffNumber.SetLoadFields("Statement Code", "Statement Limit Code", "VAT Stat. Unit of Measure Code", "Allow Empty Unit of Meas.Code", "Full Name ENG", "Description EN CZL",
+                                   "Supplem. Unit of Measure Code", "Supplem. Unit of Measure Code");
         if TariffNumber.FindSet() then
             repeat
                 TariffNumber."Statement Code CZL" := TariffNumber."Statement Code";
@@ -2134,6 +2227,7 @@ codeunit 11748 "Install Application CZL"
     var
         SourceCodeSetup: Record "Source Code Setup";
     begin
+        SourceCodeSetup.SetLoadFields("Sales VAT Delay", "Purchase VAT Delay");
         if SourceCodeSetup.Get() then begin
             SourceCodeSetup."Sales VAT Delay CZL" := SourceCodeSetup."Sales VAT Delay";
             SourceCodeSetup."Purchase VAT Delay CZL" := SourceCodeSetup."Purchase VAT Delay";
@@ -2238,6 +2332,7 @@ codeunit 11748 "Install Application CZL"
     var
         StockkeepingUnit: Record "Stockkeeping Unit";
     begin
+        StockkeepingUnit.SetLoadFields("Gen. Prod. Posting Group");
         if StockkeepingUnit.FindSet() then
             repeat
                 StockkeepingUnit."Gen. Prod. Posting Group CZL" := StockkeepingUnit."Gen. Prod. Posting Group";
@@ -2249,6 +2344,7 @@ codeunit 11748 "Install Application CZL"
     var
         Item: Record Item;
     begin
+        Item.SetLoadFields("Statistic Indication", "Specific Movement");
         if Item.FindSet() then
             repeat
                 Item."Statistic Indication CZL" := Item."Statistic Indication";
@@ -2261,6 +2357,7 @@ codeunit 11748 "Install Application CZL"
     var
         Resource: Record Resource;
     begin
+        Resource.SetLoadFields("Tariff No.");
         if Resource.FindSet() then
             repeat
                 Resource."Tariff No. CZL" := Resource."Tariff No.";
@@ -2272,6 +2369,7 @@ codeunit 11748 "Install Application CZL"
     var
         ServiceLine: Record "Service Line";
     begin
+        ServiceLine.SetLoadFields(Negative, "Physical Transfer", "Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
         if ServiceLine.FindSet() then
             repeat
                 ServiceLine."Negative CZL" := ServiceLine.Negative;
@@ -2287,6 +2385,7 @@ codeunit 11748 "Install Application CZL"
     var
         ServiceInvoiceLine: Record "Service Invoice Line";
     begin
+        ServiceInvoiceLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
         if ServiceInvoiceLine.FindSet() then
             repeat
                 ServiceInvoiceLine."Tariff No. CZL" := ServiceInvoiceLine."Tariff No.";
@@ -2300,6 +2399,7 @@ codeunit 11748 "Install Application CZL"
     var
         ServiceCrMemoLine: Record "Service Cr.Memo Line";
     begin
+        ServiceCrMemoLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
         if ServiceCrMemoLine.FindSet() then
             repeat
                 ServiceCrMemoLine."Tariff No. CZL" := ServiceCrMemoLine."Tariff No.";
@@ -2313,6 +2413,7 @@ codeunit 11748 "Install Application CZL"
     var
         ServiceShipmentLine: Record "Service Shipment Line";
     begin
+        ServiceShipmentLine.SetLoadFields("Tariff No.", "Statistic Indication");
         if ServiceShipmentLine.FindSet() then
             repeat
                 ServiceShipmentLine."Tariff No. CZL" := ServiceShipmentLine."Tariff No.";
@@ -2343,6 +2444,7 @@ codeunit 11748 "Install Application CZL"
     var
         IsolatedCertificate: Record "Isolated Certificate";
     begin
+        IsolatedCertificate.SetLoadFields("Certificate Code");
         if IsolatedCertificate.FindSet() then
             repeat
                 IsolatedCertificate."Certificate Code CZL" := IsolatedCertificate."Certificate Code";
@@ -2494,6 +2596,7 @@ codeunit 11748 "Install Application CZL"
     var
         BankAccount: Record "Bank Account";
     begin
+        BankAccount.SetLoadFields("Exclude from Exch. Rate Adj.");
         if BankAccount.FindSet() then
             repeat
                 BankAccount."Excl. from Exch. Rate Adj. CZL" := BankAccount."Exclude from Exch. Rate Adj.";
@@ -2523,6 +2626,7 @@ codeunit 11748 "Install Application CZL"
     var
         DepreciationBook: Record "Depreciation Book";
     begin
+        DepreciationBook.SetLoadFields("Mark Reclass. as Corrections");
         if DepreciationBook.FindSet() then
             repeat
                 DepreciationBook."Mark Reclass. as Correct. CZL" := DepreciationBook."Mark Reclass. as Corrections";
@@ -2534,6 +2638,7 @@ codeunit 11748 "Install Application CZL"
     var
         ValueEntry: Record "Value Entry";
     begin
+        ValueEntry.SetLoadFields("G/L Correction", "Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
         if ValueEntry.FindSet(true) then
             repeat
                 ValueEntry."G/L Correction CZL" := ValueEntry."G/L Correction";
@@ -2581,6 +2686,7 @@ codeunit 11748 "Install Application CZL"
     var
         ShipmentMethod: Record "Shipment Method";
     begin
+        ShipmentMethod.SetLoadFields("Include Item Charges (Amount)", "Intrastat Delivery Group Code", "Incl. Item Charges (Stat.Val.)", "Adjustment %");
         if ShipmentMethod.FindSet() then
             repeat
                 ShipmentMethod."Incl. Item Charges (Amt.) CZL" := ShipmentMethod."Include Item Charges (Amount)";
@@ -2631,6 +2737,7 @@ codeunit 11748 "Install Application CZL"
     var
         UnitofMeasure: Record "Unit of Measure";
     begin
+        UnitofMeasure.SetLoadFields("Tariff Number UOM Code");
         if UnitofMeasure.FindSet() then
             repeat
                 UnitofMeasure."Tariff Number UOM Code CZL" := CopyStr(UnitofMeasure."Tariff Number UOM Code", 1, 10);
@@ -2642,6 +2749,7 @@ codeunit 11748 "Install Application CZL"
     var
         SalesLineArchive: Record "Sales Line Archive";
     begin
+        SalesLineArchive.SetLoadFields("Physical Transfer");
         if SalesLineArchive.FindSet() then
             repeat
                 SalesLineArchive."Physical Transfer CZL" := SalesLineArchive."Physical Transfer";
@@ -2653,6 +2761,7 @@ codeunit 11748 "Install Application CZL"
     var
         PurchaseLineArchive: Record "Purchase Line Archive";
     begin
+        PurchaseLineArchive.SetLoadFields("Physical Transfer");
         if PurchaseLineArchive.FindSet() then
             repeat
                 PurchaseLineArchive."Physical Transfer CZL" := PurchaseLineArchive."Physical Transfer";
@@ -2664,6 +2773,7 @@ codeunit 11748 "Install Application CZL"
     var
         TransferHeader: Record "Transfer Header";
     begin
+        TransferHeader.SetLoadFields("Intrastat Exclude");
         if TransferHeader.FindSet() then
             repeat
                 TransferHeader."Intrastat Exclude CZL" := TransferHeader."Intrastat Exclude";
@@ -2675,6 +2785,7 @@ codeunit 11748 "Install Application CZL"
     var
         TransferLine: Record "Transfer Line";
     begin
+        TransferLine.SetLoadFields("Tariff No.", "Statistic Indication", "Country/Region of Origin Code");
         if TransferLine.FindSet() then
             repeat
                 TransferLine."Tariff No. CZL" := TransferLine."Tariff No.";
@@ -2688,6 +2799,7 @@ codeunit 11748 "Install Application CZL"
     var
         TransferReceiptHeader: Record "Transfer Receipt Header";
     begin
+        TransferReceiptHeader.SetLoadFields("Intrastat Exclude");
         if TransferReceiptHeader.FindSet() then
             repeat
                 TransferReceiptHeader."Intrastat Exclude CZL" := TransferReceiptHeader."Intrastat Exclude";
@@ -2699,6 +2811,7 @@ codeunit 11748 "Install Application CZL"
     var
         TransferShipmentHeader: Record "Transfer Shipment Header";
     begin
+        TransferShipmentHeader.SetLoadFields("Intrastat Exclude");
         if TransferShipmentHeader.FindSet() then
             repeat
                 TransferShipmentHeader."Intrastat Exclude CZL" := TransferShipmentHeader."Intrastat Exclude";
@@ -2710,6 +2823,7 @@ codeunit 11748 "Install Application CZL"
     var
         ItemLedgerEntry: Record "Item Ledger Entry";
     begin
+        ItemLedgerEntry.SetLoadFields("Tariff No.", "Physical Transfer", "Net Weight", "Country/Region of Origin Code", "Statistic Indication", "Intrastat Transaction");
         if ItemLedgerEntry.FindSet(true) then
             repeat
                 ItemLedgerEntry."Tariff No. CZL" := ItemLedgerEntry."Tariff No.";
@@ -2726,6 +2840,7 @@ codeunit 11748 "Install Application CZL"
     var
         JobLedgerEntry: Record "Job Ledger Entry";
     begin
+        JobLedgerEntry.SetLoadFields("Tariff No.", "Net Weight", "Country/Region of Origin Code", "Statistic Indication", "Intrastat Transaction");
         if JobLedgerEntry.FindSet(true) then
             repeat
                 JobLedgerEntry."Tariff No. CZL" := JobLedgerEntry."Tariff No.";
@@ -2741,6 +2856,7 @@ codeunit 11748 "Install Application CZL"
     var
         ItemCharge: Record "Item Charge";
     begin
+        ItemCharge.SetLoadFields("Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
         if ItemCharge.FindSet(true) then
             repeat
                 ItemCharge."Incl. in Intrastat Amount CZL" := ItemCharge."Incl. in Intrastat Amount";
@@ -2753,6 +2869,7 @@ codeunit 11748 "Install Application CZL"
     var
         ItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)";
     begin
+        ItemChargeAssignmentPurch.SetLoadFields("Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
         if ItemChargeAssignmentPurch.FindSet(true) then
             repeat
                 ItemChargeAssignmentPurch."Incl. in Intrastat Amount CZL" := ItemChargeAssignmentPurch."Incl. in Intrastat Amount";
@@ -2765,6 +2882,7 @@ codeunit 11748 "Install Application CZL"
     var
         ItemChargeAssignmentSales: Record "Item Charge Assignment (Sales)";
     begin
+        ItemChargeAssignmentSales.SetLoadFields("Incl. in Intrastat Amount", "Incl. in Intrastat Stat. Value");
         if ItemChargeAssignmentSales.FindSet(true) then
             repeat
                 ItemChargeAssignmentSales."Incl. in Intrastat Amount CZL" := ItemChargeAssignmentSales."Incl. in Intrastat Amount";
@@ -2777,6 +2895,7 @@ codeunit 11748 "Install Application CZL"
     var
         PostedGenJournalLine: Record "Posted Gen. Journal Line";
     begin
+        PostedGenJournalLine.SetLoadFields("Specific Symbol", "Variable Symbol", "Constant Symbol", "Bank Account Code", "Bank Account No.", "Transit No.", IBAN, "SWIFT Code");
         if PostedGenJournalLine.FindSet(true) then
             repeat
                 PostedGenJournalLine."Specific Symbol CZL" := PostedGenJournalLine."Specific Symbol";
@@ -2795,6 +2914,7 @@ codeunit 11748 "Install Application CZL"
     var
         IntrastatJnlBatch: Record "Intrastat Jnl. Batch";
     begin
+        IntrastatJnlBatch.SetLoadFields("Declaration No.", "Statement Type");
         if IntrastatJnlBatch.FindSet(true) then
             repeat
                 IntrastatJnlBatch."Declaration No. CZL" := IntrastatJnlBatch."Declaration No.";
@@ -2807,6 +2927,8 @@ codeunit 11748 "Install Application CZL"
     var
         IntrastatJnlLine: Record "Intrastat Jnl. Line";
     begin
+        IntrastatJnlLine.SetLoadFields("Additional Costs", "Source Entry Date", "Statistic Indication", "Statistics Period", "Declaration No.", "Statement Type", "Prev. Declaration No.",
+                                       "Prev. Declaration Line No.", "Specific Movement", "Supplem. UoM Code", "Supplem. UoM Quantity", "Supplem. UoM Net Weight", "Base Unit of Measure");
         if IntrastatJnlLine.FindSet(true) then
             repeat
                 IntrastatJnlLine."Additional Costs CZL" := IntrastatJnlLine."Additional Costs";
@@ -2830,6 +2952,7 @@ codeunit 11748 "Install Application CZL"
     var
         InventoryPostingSetup: Record "Inventory Posting Setup";
     begin
+        InventoryPostingSetup.SetLoadFields("Change In Inv.Of Product Acc.", "Change In Inv.Of WIP Acc.", "Consumption Account");
         if InventoryPostingSetup.FindSet() then
             repeat
                 InventoryPostingSetup."Change In Inv.OfProd. Acc. CZL" := InventoryPostingSetup."Change In Inv.Of Product Acc.";
@@ -2843,6 +2966,7 @@ codeunit 11748 "Install Application CZL"
     var
         GeneralPostingSetup: Record "General Posting Setup";
     begin
+        GeneralPostingSetup.SetLoadFields("Invt. Rounding Adj. Account");
         if GeneralPostingSetup.FindSet() then
             repeat
                 GeneralPostingSetup."Invt. Rounding Adj. Acc. CZL" := GeneralPostingSetup."Invt. Rounding Adj. Account";
@@ -3042,6 +3166,7 @@ codeunit 11748 "Install Application CZL"
     var
         GenJournalTemplate: Record "Gen. Journal Template";
     begin
+        GenJournalTemplate.SetLoadFields("Not Check Doc. Type");
         GenJournalTemplate.SetRange("Not Check Doc. Type", true);
         if GenJournalTemplate.FindSet() then
             repeat

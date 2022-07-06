@@ -12,19 +12,19 @@ codeunit 139678 "GP Checkbook Tests"
         GPCheckbookMSTR: Record "GP Checkbook MSTR";
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
         GPCM20600: Record "GP CM20600";
+        GenJournalTemplate: Record "Gen. Journal Template";
         GPCompanyMigrationSettings: Record "GP Company Migration Settings";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         BankAccount: Record "Bank Account";
         Assert: Codeunit Assert;
-        GenJournalTemplate: Record "Gen. Journal Template";
         InvalidBankAccountMsg: Label '%1 should not have been created.', Comment = '%1 - bank account no.', Locked = true;
         MissingBankAccountMsg: Label '%1 should have been created.', Comment = '%1 - bank account no.', Locked = true;
         ExtraTransactionMsg: Label 'Invalid transaction with discription "%1" should have been created.', Comment = '%1 - transaction description.', Locked = true;
-        MyBankStr1: Label 'MyBank01', Comment = 'Bank name', Locked = true;
-        MyBankStr2: Label 'MyBank02', Comment = 'Bank name', Locked = true;
-        MyBankStr3: Label 'MyBank03', Comment = 'Bank name', Locked = true;
-        MyBankStr4: Label 'MyBank04', Comment = 'Bank name', Locked = true;
-        MyBankStr5: Label 'MyBank05', Comment = 'Bank name', Locked = true;
+        MyBankStr1Txt: Label 'MyBank01', Comment = 'Bank name', Locked = true;
+        MyBankStr2Txt: Label 'MyBank02', Comment = 'Bank name', Locked = true;
+        MyBankStr3Txt: Label 'MyBank03', Comment = 'Bank name', Locked = true;
+        MyBankStr4Txt: Label 'MyBank04', Comment = 'Bank name', Locked = true;
+        MyBankStr5Txt: Label 'MyBank05', Comment = 'Bank name', Locked = true;
 
     [Test]
     [TransactionModel(TransactionModel::AutoCommit)]
@@ -40,7 +40,7 @@ codeunit 139678 "GP Checkbook Tests"
         ClearTables();
         GenJournalLine.DeleteAll();
         BankAccountLedgerEntry.Reset();
-        BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1, MyBankStr2, MyBankStr3, MyBankStr4, MyBankStr5);
+        BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
         BankAccountLedgerEntry.DeleteAll();
 
         // [GIVEN] Some records are created in the staging table
@@ -65,19 +65,19 @@ codeunit 139678 "GP Checkbook Tests"
         HelperFunctions.PostGLTransactions();
 
         // [THEN] Bank Account Ledger entries are created
-        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr1));
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr1Txt));
         Assert.RecordCount(BankAccountLedgerEntry, 4);
 
-        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr2));
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr2Txt));
         Assert.RecordCount(BankAccountLedgerEntry, 2);
 
-        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr3));
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr3Txt));
         Assert.RecordCount(BankAccountLedgerEntry, 0);
 
-        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr4));
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr4Txt));
         Assert.RecordCount(BankAccountLedgerEntry, 4);
 
-        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr5));
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr5Txt));
         Assert.RecordCount(BankAccountLedgerEntry, 7);
     end;
 
@@ -95,7 +95,7 @@ codeunit 139678 "GP Checkbook Tests"
         ClearTables();
         GenJournalLine.DeleteAll();
         BankAccountLedgerEntry.Reset();
-        BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1, MyBankStr2, MyBankStr3, MyBankStr4, MyBankStr5);
+        BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
         BankAccountLedgerEntry.DeleteAll();
 
         // [GIVEN] Some records are created in the staging table
@@ -111,20 +111,20 @@ codeunit 139678 "GP Checkbook Tests"
         Assert.RecordCount(BankAccount, 3);
 
         // [THEN] Active Bank Accounts are created with correct settings
-        BankAccount.SetRange("No.", MyBankStr1);
-        Assert.IsFalse(BankAccount.FindFirst(), StrSubstNo(InvalidBankAccountMsg, MyBankStr1));
+        BankAccount.SetRange("No.", MyBankStr1Txt);
+        Assert.IsFalse(BankAccount.FindFirst(), StrSubstNo(InvalidBankAccountMsg, MyBankStr1Txt));
 
-        BankAccount.SetRange("No.", MyBankStr2);
-        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr2));
+        BankAccount.SetRange("No.", MyBankStr2Txt);
+        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr2Txt));
 
-        BankAccount.SetRange("No.", MyBankStr3);
-        Assert.IsFalse(BankAccount.FindFirst(), StrSubstNo(InvalidBankAccountMsg, MyBankStr3));
+        BankAccount.SetRange("No.", MyBankStr3Txt);
+        Assert.IsFalse(BankAccount.FindFirst(), StrSubstNo(InvalidBankAccountMsg, MyBankStr3Txt));
 
-        BankAccount.SetRange("No.", MyBankStr4);
-        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr4));
+        BankAccount.SetRange("No.", MyBankStr4Txt);
+        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr4Txt));
 
-        BankAccount.SetRange("No.", MyBankStr5);
-        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr5));
+        BankAccount.SetRange("No.", MyBankStr5Txt);
+        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr5Txt));
 
         // [THEN] General Journal Lines are created
         GenJournalLine.SetFilter("Journal Batch Name", 'GPBANK');
@@ -135,19 +135,19 @@ codeunit 139678 "GP Checkbook Tests"
         HelperFunctions.PostGLTransactions();
 
         // [THEN] Bank Account Ledger entries are created
-        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr1));
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr1Txt));
         Assert.RecordCount(BankAccountLedgerEntry, 0);
 
-        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr2));
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr2Txt));
         Assert.RecordCount(BankAccountLedgerEntry, 2);
 
-        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr3));
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr3Txt));
         Assert.RecordCount(BankAccountLedgerEntry, 0);
 
-        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr4));
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr4Txt));
         Assert.RecordCount(BankAccountLedgerEntry, 4);
 
-        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr5));
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr5Txt));
         Assert.RecordCount(BankAccountLedgerEntry, 7);
     end;
 
@@ -166,7 +166,7 @@ codeunit 139678 "GP Checkbook Tests"
         ClearTables();
         GenJournalLine.DeleteAll();
         BankAccountLedgerEntry.Reset();
-        BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1, MyBankStr2, MyBankStr3, MyBankStr4, MyBankStr5);
+        BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
         BankAccountLedgerEntry.DeleteAll();
 
         // [GIVEN] Some records are created in the staging table
@@ -183,20 +183,20 @@ codeunit 139678 "GP Checkbook Tests"
         Assert.RecordCount(BankAccount, 3);
 
         // [THEN] Active Bank Accounts are created with correct settings
-        BankAccount.SetRange("No.", MyBankStr1);
-        Assert.IsFalse(BankAccount.FindFirst(), StrSubstNo(InvalidBankAccountMsg, MyBankStr1));
+        BankAccount.SetRange("No.", MyBankStr1Txt);
+        Assert.IsFalse(BankAccount.FindFirst(), StrSubstNo(InvalidBankAccountMsg, MyBankStr1Txt));
 
-        BankAccount.SetRange("No.", MyBankStr2);
-        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr2));
+        BankAccount.SetRange("No.", MyBankStr2Txt);
+        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr2Txt));
 
-        BankAccount.SetRange("No.", MyBankStr3);
-        Assert.IsFalse(BankAccount.FindFirst(), StrSubstNo(InvalidBankAccountMsg, MyBankStr3));
+        BankAccount.SetRange("No.", MyBankStr3Txt);
+        Assert.IsFalse(BankAccount.FindFirst(), StrSubstNo(InvalidBankAccountMsg, MyBankStr3Txt));
 
-        BankAccount.SetRange("No.", MyBankStr4);
-        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr4));
+        BankAccount.SetRange("No.", MyBankStr4Txt);
+        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr4Txt));
 
-        BankAccount.SetRange("No.", MyBankStr5);
-        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr5));
+        BankAccount.SetRange("No.", MyBankStr5Txt);
+        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr5Txt));
 
         // [THEN] General Journal Lines are created
         GenJournalLine.SetFilter("Journal Batch Name", 'GPBANK');
@@ -208,7 +208,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         // [THEN] Bank Account Ledger only unreconciled transactions are created.
         BankAccountLedgerEntry.Reset();
-        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr2));
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr2Txt));
         Assert.RecordCount(BankAccountLedgerEntry, 2);
 
         repeat
@@ -233,7 +233,7 @@ codeunit 139678 "GP Checkbook Tests"
         ClearTables();
         GenJournalLine.DeleteAll();
         BankAccountLedger.Reset();
-        BankAccountLedger.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1, MyBankStr2, MyBankStr3, MyBankStr4, MyBankStr5);
+        BankAccountLedger.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
         BankAccountLedger.DeleteAll();
 
         // [GIVEN] Some records are created in the staging table
@@ -249,20 +249,20 @@ codeunit 139678 "GP Checkbook Tests"
         Assert.RecordCount(BankAccount, 3);
 
         // [THEN] Active Bank Accounts are created with correct settings
-        BankAccount.SetRange("No.", MyBankStr1);
-        Assert.IsFalse(BankAccount.FindFirst(), StrSubstNo(InvalidBankAccountMsg, MyBankStr1));
+        BankAccount.SetRange("No.", MyBankStr1Txt);
+        Assert.IsFalse(BankAccount.FindFirst(), StrSubstNo(InvalidBankAccountMsg, MyBankStr1Txt));
 
-        BankAccount.SetRange("No.", MyBankStr2);
-        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr2));
+        BankAccount.SetRange("No.", MyBankStr2Txt);
+        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr2Txt));
 
-        BankAccount.SetRange("No.", MyBankStr3);
-        Assert.IsFalse(BankAccount.FindFirst(), StrSubstNo(InvalidBankAccountMsg, MyBankStr3));
+        BankAccount.SetRange("No.", MyBankStr3Txt);
+        Assert.IsFalse(BankAccount.FindFirst(), StrSubstNo(InvalidBankAccountMsg, MyBankStr3Txt));
 
-        BankAccount.SetRange("No.", MyBankStr4);
-        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr4));
+        BankAccount.SetRange("No.", MyBankStr4Txt);
+        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr4Txt));
 
-        BankAccount.SetRange("No.", MyBankStr5);
-        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr5));
+        BankAccount.SetRange("No.", MyBankStr5Txt);
+        Assert.IsTrue(BankAccount.FindFirst(), StrSubstNo(MissingBankAccountMsg, MyBankStr5Txt));
 
         // [THEN] General Journal Lines are created
         GenJournalLine.SetFilter("Journal Batch Name", 'GPBANK');
@@ -273,16 +273,16 @@ codeunit 139678 "GP Checkbook Tests"
         HelperFunctions.PostGLTransactions();
 
         // [THEN] Bank Account Ledger entries are created
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr1));
+        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr1Txt));
         Assert.RecordCount(BankAccountLedger, 0);
 
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr2));
+        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr2Txt));
         Assert.RecordCount(BankAccountLedger, 2);
 
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr3));
+        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr3Txt));
         Assert.RecordCount(BankAccountLedger, 0);
 
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr4));
+        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr4Txt));
         Assert.RecordCount(BankAccountLedger, 4);
 
         BankAccountLedger.SetRange("Document No.", Format(525));
@@ -290,7 +290,7 @@ codeunit 139678 "GP Checkbook Tests"
         Assert.AreEqual(100.00, BankAccountLedger.Amount, 'Transfer amount is wrong for Trx 520, MyBank4');
 
         BankAccountLedger.Reset();
-        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr5));
+        BankAccountLedger.SetRange("Bank Account No.", UpperCase(MyBankStr5Txt));
         Assert.RecordCount(BankAccountLedger, 7);
 
         BankAccountLedger.SetRange("Document No.", Format(520));
@@ -340,7 +340,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 600.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr2;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr2Txt;
         GPCheckbookTransactions.CMTrxType := 3;
         GPCheckbookTransactions.TRXDATE := 20210807D;
         GPCheckbookTransactions.TRXAMNT := 700.00;
@@ -351,7 +351,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 610.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr2;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr2Txt;
         GPCheckbookTransactions.CMTrxType := 3;
         GPCheckbookTransactions.TRXDATE := 20210808D;
         GPCheckbookTransactions.TRXAMNT := 1400.00;
@@ -362,7 +362,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 620.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr2;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr2Txt;
         GPCheckbookTransactions.CMTrxType := 3;
         GPCheckbookTransactions.TRXDATE := 20210809D;
         GPCheckbookTransactions.TRXAMNT := 750.00;
@@ -373,7 +373,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 630.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr2;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr2Txt;
         GPCheckbookTransactions.CMTrxType := 3;
         GPCheckbookTransactions.TRXDATE := 20210810D;
         GPCheckbookTransactions.TRXAMNT := 750.00;
@@ -384,7 +384,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 640.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr2;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr2Txt;
         GPCheckbookTransactions.CMTrxType := 3;
         GPCheckbookTransactions.TRXDATE := 20210811D;
         GPCheckbookTransactions.TRXAMNT := 750.00;
@@ -400,40 +400,40 @@ codeunit 139678 "GP Checkbook Tests"
         CreateAccounts();
 
         GPCheckbookMSTR.Init();
-        GPCheckbookMSTR.CHEKBKID := MyBankStr1;
-        GPCheckbookMSTR.BNKACTNM := MyBankStr1;
+        GPCheckbookMSTR.CHEKBKID := MyBankStr1Txt;
+        GPCheckbookMSTR.BNKACTNM := MyBankStr1Txt;
         GPCheckbookMSTR.INACTIVE := true;
         GPCheckbookMSTR.ACTINDX := 0;
         GPCheckbookMSTR.Insert(true);
 
         GPCheckbookMSTR.Reset();
         GPCheckbookMSTR.Init();
-        GPCheckbookMSTR.CHEKBKID := MyBankStr2;
-        GPCheckbookMSTR.BNKACTNM := MyBankStr2;
+        GPCheckbookMSTR.CHEKBKID := MyBankStr2Txt;
+        GPCheckbookMSTR.BNKACTNM := MyBankStr2Txt;
         GPCheckbookMSTR.INACTIVE := false;
         GPCheckbookMSTR.ACTINDX := 1;
         GPCheckbookMSTR.Insert(true);
 
         GPCheckbookMSTR.Reset();
         GPCheckbookMSTR.Init();
-        GPCheckbookMSTR.CHEKBKID := MyBankStr3;
-        GPCheckbookMSTR.BNKACTNM := MyBankStr3;
+        GPCheckbookMSTR.CHEKBKID := MyBankStr3Txt;
+        GPCheckbookMSTR.BNKACTNM := MyBankStr3Txt;
         GPCheckbookMSTR.INACTIVE := true;
         GPCheckbookMSTR.ACTINDX := 2;
         GPCheckbookMSTR.Insert(true);
 
         GPCheckbookMSTR.Reset();
         GPCheckbookMSTR.Init();
-        GPCheckbookMSTR.CHEKBKID := MyBankStr4;
-        GPCheckbookMSTR.BNKACTNM := MyBankStr4;
+        GPCheckbookMSTR.CHEKBKID := MyBankStr4Txt;
+        GPCheckbookMSTR.BNKACTNM := MyBankStr4Txt;
         GPCheckbookMSTR.INACTIVE := false;
         GPCheckbookMSTR.ACTINDX := 3;
         GPCheckbookMSTR.Insert(true);
 
         GPCheckbookMSTR.Reset();
         GPCheckbookMSTR.Init();
-        GPCheckbookMSTR.CHEKBKID := MyBankStr5;
-        GPCheckbookMSTR.BNKACTNM := MyBankStr5;
+        GPCheckbookMSTR.CHEKBKID := MyBankStr5Txt;
+        GPCheckbookMSTR.BNKACTNM := MyBankStr5Txt;
         GPCheckbookMSTR.INACTIVE := false;
         GPCheckbookMSTR.ACTINDX := 4;
         GPCheckbookMSTR.Insert(true);
@@ -445,7 +445,7 @@ codeunit 139678 "GP Checkbook Tests"
         /// 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 100.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr1;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr1Txt;
         GPCheckbookTransactions.CMTrxType := 3;
         GPCheckbookTransactions.TRXDATE := 20210801D;
         GPCheckbookTransactions.TRXAMNT := 395.59;
@@ -455,7 +455,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 120.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr1;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr1Txt;
         GPCheckbookTransactions.CMTrxType := 1;
         GPCheckbookTransactions.TRXDATE := 20210802D;
         GPCheckbookTransactions.TRXAMNT := 500.00;
@@ -465,7 +465,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 125.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr1;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr1Txt;
         GPCheckbookTransactions.CMTrxType := 2;
         GPCheckbookTransactions.TRXDATE := 20210902D;
         GPCheckbookTransactions.TRXAMNT := 250.00;
@@ -475,7 +475,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 130.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr1;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr1Txt;
         GPCheckbookTransactions.CMTrxType := 3;
         GPCheckbookTransactions.TRXDATE := 20210801D;
         GPCheckbookTransactions.TRXAMNT := 650.00;
@@ -485,7 +485,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 200.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr2;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr2Txt;
         GPCheckbookTransactions.CMTrxType := 3;
         GPCheckbookTransactions.TRXDATE := 20210801D;
         GPCheckbookTransactions.TRXAMNT := 450.36;
@@ -495,7 +495,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 210.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr2;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr2Txt;
         GPCheckbookTransactions.CMTrxType := 3;
         GPCheckbookTransactions.TRXDATE := 20210801D;
         GPCheckbookTransactions.TRXAMNT := 450.36;
@@ -505,7 +505,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 400.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr4;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr4Txt;
         GPCheckbookTransactions.CMTrxType := 3;
         GPCheckbookTransactions.TRXDATE := 20210801D;
         GPCheckbookTransactions.TRXAMNT := 200.00;
@@ -515,7 +515,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 410.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr4;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr4Txt;
         GPCheckbookTransactions.CMTrxType := 4;
         GPCheckbookTransactions.TRXDATE := 20210801D;
         GPCheckbookTransactions.TRXAMNT := 200.00;
@@ -525,7 +525,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 500.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr5;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr5Txt;
         GPCheckbookTransactions.CMTrxType := 2;
         GPCheckbookTransactions.TRXDATE := 20210801D;
         GPCheckbookTransactions.TRXAMNT := 200.00;
@@ -535,7 +535,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 505.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr5;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr5Txt;
         GPCheckbookTransactions.CMTrxType := 5;
         GPCheckbookTransactions.TRXDATE := 20210801D;
         GPCheckbookTransactions.TRXAMNT := 200.00;
@@ -545,7 +545,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 510.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr5;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr5Txt;
         GPCheckbookTransactions.CMTrxType := 6;
         GPCheckbookTransactions.TRXDATE := 20210801D;
         GPCheckbookTransactions.TRXAMNT := 200.00;
@@ -555,7 +555,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 520.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr5;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr5Txt;
         GPCheckbookTransactions.CMTrxType := 7;
         GPCheckbookTransactions.TRXDATE := 20210801D;
         GPCheckbookTransactions.TRXAMNT := 100.00;
@@ -566,7 +566,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 525.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr4;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr4Txt;
         GPCheckbookTransactions.CMTrxType := 7;
         GPCheckbookTransactions.TRXDATE := 20210801D;
         GPCheckbookTransactions.TRXAMNT := 100.00;
@@ -577,7 +577,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 530.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr4;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr4Txt;
         GPCheckbookTransactions.CMTrxType := 7;
         GPCheckbookTransactions.TRXDATE := 20210802D;
         GPCheckbookTransactions.TRXAMNT := 200.00;
@@ -588,7 +588,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 535.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr5;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr5Txt;
         GPCheckbookTransactions.CMTrxType := 7;
         GPCheckbookTransactions.TRXDATE := 20210802D;
         GPCheckbookTransactions.TRXAMNT := 200.00;
@@ -599,7 +599,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 540.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr5;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr5Txt;
         GPCheckbookTransactions.CMTrxType := 7;
         GPCheckbookTransactions.TRXDATE := 20210803D;
         GPCheckbookTransactions.TRXAMNT := 300.00;
@@ -610,7 +610,7 @@ codeunit 139678 "GP Checkbook Tests"
 
         GPCheckbookTransactions.Init();
         GPCheckbookTransactions.CMRECNUM := 545.00;
-        GPCheckbookTransactions.CHEKBKID := MyBankStr5;
+        GPCheckbookTransactions.CHEKBKID := MyBankStr5Txt;
         GPCheckbookTransactions.CMTrxType := 7;
         GPCheckbookTransactions.TRXDATE := 20210803D;
         GPCheckbookTransactions.TRXAMNT := 300.00;
@@ -624,8 +624,8 @@ codeunit 139678 "GP Checkbook Tests"
         GPCM20600.CMXFRNUM := 'XFR000000001';
         GPCM20600.CMFRMRECNUM := 520;
         GPCM20600.CMTORECNUM := 525;
-        GPCM20600.CMFRMCHKBKID := MyBankStr5;
-        GPCM20600.CMCHKBKID := MyBankStr4;
+        GPCM20600.CMFRMCHKBKID := MyBankStr5Txt;
+        GPCM20600.CMCHKBKID := MyBankStr4Txt;
         GPCM20600.Insert(true);
 
         GPCM20600.Init();
@@ -633,8 +633,8 @@ codeunit 139678 "GP Checkbook Tests"
         GPCM20600.CMXFRNUM := 'XFR000000002';
         GPCM20600.CMFRMRECNUM := 530;
         GPCM20600.CMTORECNUM := 535;
-        GPCM20600.CMFRMCHKBKID := MyBankStr4;
-        GPCM20600.CMCHKBKID := MyBankStr5;
+        GPCM20600.CMFRMCHKBKID := MyBankStr4Txt;
+        GPCM20600.CMCHKBKID := MyBankStr5Txt;
         GPCM20600.Insert(true);
 
         GPCM20600.Init();
@@ -642,8 +642,8 @@ codeunit 139678 "GP Checkbook Tests"
         GPCM20600.CMXFRNUM := 'XFR000000003';
         GPCM20600.CMFRMRECNUM := 540;
         GPCM20600.CMTORECNUM := 545;
-        GPCM20600.CMFRMCHKBKID := MyBankStr5;
-        GPCM20600.CMCHKBKID := MyBankStr5;
+        GPCM20600.CMFRMCHKBKID := MyBankStr5Txt;
+        GPCM20600.CMCHKBKID := MyBankStr5Txt;
         GPCM20600.Insert(true);
     end;
 
@@ -721,7 +721,7 @@ codeunit 139678 "GP Checkbook Tests"
     begin
         GenJournalTemplate.Reset();
         GenJournalTemplate.SetRange(Name, 'GENERAL');
-        if not GenJournalTemplate.FindFirst then begin
+        if not GenJournalTemplate.FindFirst() then begin
             GenJournalTemplate.Init();
             GenJournalTemplate.Validate(Name, 'GENERAL');
             GenJournalTemplate.Validate(Description, 'General');

@@ -413,6 +413,8 @@ page 10674 "SAF-T Setup Wizard"
         MediaRepositoryStandard: Record "Media Repository";
         MediaResourcesFinished: Record "Media Resources";
         MediaResourcesStd: Record "Media Resources";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        NOValueAddedTaxTok: Label 'NO Set Up Value-added Tax', Locked = true;
         Step: Option Start,MappingType,MappingSourceLoaded,MappingAccount,MappingVAT,DimensionExport,Contact,Finish;
         BackActionEnabled: Boolean;
         FinishActionEnabled: Boolean;
@@ -470,6 +472,7 @@ page 10674 "SAF-T Setup Wizard"
     var
         AssistedSetup: Codeunit "Assisted Setup";
     begin
+        FeatureTelemetry.LogUptake('1000HT6', NOValueAddedTaxTok, Enum::"Feature Uptake Status"::"Set up");
         AssistedSetup.Complete(PAGE::"SAF-T Setup Wizard");
         CurrPage.Close();
     end;

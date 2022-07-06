@@ -30,7 +30,7 @@ codeunit 30175 "Shpfy Item Reference Mgt."
         if VariantCode <> '' then begin
             ItemReference.SetRange("Item No.", ItemNo);
             ItemReference.SetRange("Variant Code", '');
-            ItemReference.SetRAnge("Unit of Measure", UnitOfMeasure);
+            ItemReference.SetRange("Unit of Measure", UnitOfMeasure);
             ItemReference.SetRange("Reference Type", ReferenceType);
             ItemReference.SetRange("Reference Type No.", ReferenceTypeNo);
             ItemReference.SetRange("Reference No.", ReferenceNo);
@@ -75,7 +75,7 @@ codeunit 30175 "Shpfy Item Reference Mgt."
         ItemReference: Record "Item Reference";
     begin
         if UnitOfMeasure = '' then
-            if Item.Get(ITemNo) then
+            if Item.Get(ItemNo) then
                 UnitOfMeasure := Item."Sales Unit of Measure";
         ItemReference.SetRange("Item No.", ItemNo);
         ItemReference.SetRange("Reference Type", ReferenceType);

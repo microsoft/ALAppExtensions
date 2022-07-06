@@ -98,11 +98,20 @@ codeunit 31023 "Workflow Handler CZZ"
     local procedure AddWorkflowTableRelationsToLibrary()
     var
         ApprovalEntry: Record "Approval Entry";
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ";
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
     begin
         WorkflowSetup.InsertTableRelation(Database::"Sales Adv. Letter Header CZZ", 0,
           Database::"Approval Entry", ApprovalEntry.FieldNo("Record ID to Approve"));
+        WorkflowSetup.InsertTableRelation(Database::"Sales Adv. Letter Header CZZ", SalesAdvLetterHeaderCZZ.FieldNo("No."),
+          Database::"Sales Adv. Letter Line CZZ", SalesAdvLetterLineCZZ.FieldNo("Document No."));
+
         WorkflowSetup.InsertTableRelation(Database::"Purch. Adv. Letter Header CZZ", 0,
           Database::"Approval Entry", ApprovalEntry.FieldNo("Record ID to Approve"));
+        WorkflowSetup.InsertTableRelation(Database::"Purch. Adv. Letter Header CZZ", PurchAdvLetterHeaderCZZ.FieldNo("No."),
+          Database::"Purch. Adv. Letter Line CZZ", PurchAdvLetterLineCZZ.FieldNo("Document No."));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Response Handling", 'OnAddWorkflowResponsePredecessorsToLibrary', '', false, false)]

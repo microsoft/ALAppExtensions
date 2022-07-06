@@ -17,12 +17,17 @@ codeunit 30174 "Shpfy Create Product"
         ProductExport: Codeunit "Shpfy Product Export";
         ProductPriceCalc: Codeunit "Shpfy Product Price Calc.";
         VariantApi: Codeunit "Shpfy Variant API";
-
+        Getlocations: Boolean;
 
     trigger OnRun()
     var
         ShopifyProduct: Record "Shpfy Product";
     begin
+        if Getlocations then begin
+            Codeunit.Run(Codeunit::"Shpfy Sync Shop Locations", Shop);
+            Commit();
+            Getlocations := false;
+        end;
         ShopifyProduct.SetRange("Shop Code", Shop.Code);
         ShopifyProduct.SetRange("Item SystemId", Rec.SystemId);
         if ShopifyProduct.IsEmpty then
@@ -35,10 +40,18 @@ codeunit 30174 "Shpfy Create Product"
     /// <param name="Item">Parameter of type Record Item.</param>
     local procedure CreateProduct(Item: Record Item)
     var
-        ItemUoM: Record "Item Unit of Measure";
-        ItemVariant: Record "Item Variant";
         TempShopifyProduct: Record "Shpfy Product" temporary;
         TempShopifyVariant: Record "Shpfy Variant" temporary;
+    begin
+        CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant);
+        if not VariantApi.FindShopifyProductVariant(TempShopifyProduct, TempShopifyVariant) then
+            ProductApi.CreateProduct(TempShopifyProduct, TempShopifyVariant);
+    end;
+
+    internal procedure CreateTempProduct(Item: Record Item; var TempShopifyProduct: Record "Shpfy Product" temporary; var TempShopifyVariant: Record "Shpfy Variant" temporary)
+    var
+        ItemUoM: Record "Item Unit of Measure";
+        ItemVariant: Record "Item Variant";
         Id: Integer;
         ICreateProductStatus: Interface "Shpfy ICreateProductStatusValue";
     begin
@@ -69,6 +82,9 @@ codeunit 30174 "Shpfy Create Product"
                                     TempShopifyVariant.SKU := TempShopifyVariant.Barcode;
                                 Shop."SKU Mapping"::"Item No.":
                                     TempShopifyVariant.SKU := Item."No.";
+                                Shop."SKU Mapping"::"Variant Code":
+                                    if ItemVariant.Code <> '' then
+                                        TempShopifyVariant.SKU := ItemVariant.Code;
                                 Shop."SKU Mapping"::"Item No. + Variant Code":
                                     if ItemVariant.Code <> '' then
                                         TempShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
@@ -104,13 +120,16 @@ codeunit 30174 "Shpfy Create Product"
                             TempShopifyVariant.SKU := TempShopifyVariant.Barcode;
                         Shop."SKU Mapping"::"Item No.":
                             TempShopifyVariant.SKU := Item."No.";
+                        Shop."SKU Mapping"::"Variant Code":
+                            if ItemVariant.Code <> '' then
+                                TempShopifyVariant.SKU := ItemVariant.Code;
                         Shop."SKU Mapping"::"Item No. + Variant Code":
                             if ItemVariant.Code <> '' then
                                 TempShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
                             else
                                 TempShopifyVariant.SKU := Item."No.";
                         Shop."SKU Mapping"::"Vendor Item No.":
-                            TempShopifyVariant.SKU := CopyStr(GetVendorItemNo(Item."No.", TempShopifyVariant."Variant Code", Item."Sales Unit of Measure"), 1, MaxStrLen(TempShopifyVariant.SKU));
+                            TempShopifyVariant.SKU := CopyStr(GetVendorItemNo(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"), 1, MaxStrLen(TempShopifyVariant.SKU));
                     end;
                     TempShopifyVariant."Tax Code" := Item."Tax Group Code";
                     TempShopifyVariant.Taxable := true;
@@ -139,7 +158,11 @@ codeunit 30174 "Shpfy Create Product"
                         case Shop."SKU Mapping" of
                             Shop."SKU Mapping"::"Bar Code":
                                 TempShopifyVariant.SKU := TempShopifyVariant.Barcode;
-                            Shop."SKU Mapping"::"Item No.",
+                            Shop."SKU Mapping"::"Item No.":
+                                TempShopifyVariant.SKU := Item."No.";
+                            Shop."SKU Mapping"::"Variant Code":
+                                if ItemVariant.Code <> '' then
+                                    TempShopifyVariant.SKU := ItemVariant.Code;
                             SHop."SKU Mapping"::"Item No. + Variant Code":
                                 if ItemVariant.Code <> '' then
                                     TempShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
@@ -168,7 +191,11 @@ codeunit 30174 "Shpfy Create Product"
                 case Shop."SKU Mapping" of
                     Shop."SKU Mapping"::"Bar Code":
                         TempShopifyVariant.SKU := TempShopifyVariant.Barcode;
-                    Shop."SKU Mapping"::"Item No.",
+                    Shop."SKU Mapping"::"Item No.":
+                        TempShopifyVariant.SKU := Item."No.";
+                    Shop."SKU Mapping"::"Variant Code":
+                        if ItemVariant.Code <> '' then
+                            TempShopifyVariant.SKU := ItemVariant.Code;
                     SHop."SKU Mapping"::"Item No. + Variant Code":
                         if ItemVariant.Code <> '' then
                             TempShopifyVariant.SKU := Item."No." + Shop."SKU Field Separator" + ItemVariant.Code
@@ -185,8 +212,6 @@ codeunit 30174 "Shpfy Create Product"
                 TempShopifyVariant.Insert(false);
             end;
         TempShopifyProduct.Insert(false);
-        if not VariantApi.FindShopifyProductVariant(TempShopifyProduct, TempShopifyVariant) then
-            ProductApi.CreateProduct(TempShopifyProduct, TempShopifyVariant);
     end;
 
     /// <summary> 
@@ -232,8 +257,7 @@ codeunit 30174 "Shpfy Create Product"
             VariantApi.SetShop(Shop);
             ProductPriceCalc.SetShop(Shop);
             ProductExport.SetShop(Shop);
-            Codeunit.Run(Codeunit::"Shpfy Sync Shop Locations", Shop);
-            Commit();
+            Getlocations := true;
         end;
     end;
 
