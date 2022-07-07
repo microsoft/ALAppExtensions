@@ -1,4 +1,4 @@
-codeunit 135603 "Shpfy Test Shopify"
+codeunit 135602 "Shpfy Test Shopify"
 {
     Subtype = Test;
     TestPermissions = NonRestrictive;
