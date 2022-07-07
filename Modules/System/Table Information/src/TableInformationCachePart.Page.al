@@ -54,8 +54,10 @@ page 8701 "Table Information Cache Part"
                     ToolTip = 'The number of records in the table.';
 
                     trigger OnDrillDown()
+                    var
+                        TableInformationCacheImpl: Codeunit "Table Information Cache Impl.";
                     begin
-                        Hyperlink(GetUrl(CLIENTTYPE::Web, CompanyName, ObjectType::Table, "Table No."));
+                        Hyperlink(TableInformationCacheImpl.GetTableUrl(Rec."Company Name", Rec."Table No."));
                     end;
                 }
 

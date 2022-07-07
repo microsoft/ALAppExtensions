@@ -8,6 +8,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         CurrencyGlob: Record Currency;
         DocumentNoOrDatesEmptyErr: Label 'Document No. and Dates cannot be empty.';
         ExternalDocumentNoEmptyErr: Label 'External Document No. cannot be empty.';
+        OriginalDocVATDateMustBeLessOrVATDateErr: Label 'Original Document VAT Date (%1) must be less or equal to VAT Date (%2).', Comment = '%1 = OriginalDocVATDate, %2 = VATDate';
         NothingToPostErr: Label 'Nothing to Post.';
         VATDocumentExistsErr: Label 'VAT Document already exists.';
 
@@ -357,15 +358,19 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         AdvanceLetterTemplateCZZ.TestField("Advance Letter Invoice Nos.");
 
         InitVATAmountLine(TempInvoicePostBuffer, PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.", PurchAdvLetterEntryCZZ.Amount, PurchAdvLetterEntryCZZ."Currency Factor");
-        VATDocumentCZZ.InitDocument(AdvanceLetterTemplateCZZ."Advance Letter Invoice Nos.", '', PostingDate, 0D, 0D, PurchAdvLetterHeaderCZZ."Currency Code", PurchAdvLetterEntryCZZ."Currency Factor", '', TempInvoicePostBuffer);
+        VATDocumentCZZ.InitDocument(AdvanceLetterTemplateCZZ."Advance Letter Invoice Nos.", '', PurchAdvLetterHeaderCZZ."Document Date",
+          PostingDate, PurchAdvLetterEntryCZZ."VAT Date", PurchAdvLetterHeaderCZZ."Original Document VAT Date",
+          PurchAdvLetterHeaderCZZ."Currency Code", PurchAdvLetterEntryCZZ."Currency Factor", '', TempInvoicePostBuffer);
         if VATDocumentCZZ.RunModal() <> Action::OK then
             exit;
 
         VATDocumentCZZ.SaveNoSeries();
         VATDocumentCZZ.GetDocument(DocumentNo, PostingDate, DocumentDate, VATDate, OriginalDocumentVATDate, ExternalDocumentNo, TempInvoicePostBuffer);
-        if (DocumentNo = '') or (PostingDate = 0D) or (VATDate = 0D) then
+        if (DocumentNo = '') or (PostingDate = 0D) or (VATDate = 0D) or (OriginalDocumentVATDate = 0D) then
             Error(DocumentNoOrDatesEmptyErr);
 
+        if OriginalDocumentVATDate > VATDate then
+            Error(OriginalDocVATDateMustBeLessOrVATDateErr, OriginalDocumentVATDate, VATDate);
         PurchasesPayablesSetup.Get();
         if PurchasesPayablesSetup."Ext. Doc. No. Mandatory" and (ExternalDocumentNo = '') then
             Error(ExternalDocumentNoEmptyErr);
@@ -418,6 +423,8 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
             GenJournalLine."Bill-to/Pay-to No." := PurchAdvLetterHeaderCZZ."Pay-to Vendor No.";
             GenJournalLine."Country/Region Code" := PurchAdvLetterHeaderCZZ."Pay-to Country/Region Code";
             GenJournalLine."VAT Registration No." := PurchAdvLetterHeaderCZZ."VAT Registration No.";
+            GenJournalLine."Registration No. CZL" := PurchAdvLetterHeaderCZZ."Registration No.";
+            GenJournalLine."Tax Registration No. CZL" := PurchAdvLetterHeaderCZZ."Tax Registration No.";
 
             BindSubscription(VATPostingSetupHandlerCZZ);
             GenJnlPostLine.RunWithCheck(GenJournalLine);
@@ -975,9 +982,11 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                 exit;
 
             VATDocumentCZZ.GetDocument(DocumentNo, PostingDate, DocumentDate, VATDate, OriginalDocumentVATDate, ExternalDocumentNo, TempInvoicePostBuffer1);
-            if (DocumentNo = '') or (PostingDate = 0D) or (VATDate = 0D) then
+            if (DocumentNo = '') or (PostingDate = 0D) or (VATDate = 0D) or (OriginalDocumentVATDate = 0D) then
                 Error(DocumentNoOrDatesEmptyErr);
 
+            if OriginalDocumentVATDate > VATDate then
+                Error(OriginalDocVATDateMustBeLessOrVATDateErr, OriginalDocumentVATDate, VATDate);
             PurchasesPayablesSetup.Get();
             if PurchasesPayablesSetup."Ext. Doc. No. Mandatory" and (ExternalDocumentNo = '') then
                 Error(ExternalDocumentNoEmptyErr);
@@ -1435,6 +1444,8 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         GenJournalLine."Country/Region Code" := PurchAdvLetterHeaderCZZ."Pay-to Country/Region Code";
         GenJournalLine."Source Code" := SourceCode;
         GenJournalLine."VAT Registration No." := PurchAdvLetterHeaderCZZ."VAT Registration No.";
+        GenJournalLine."Registration No. CZL" := PurchAdvLetterHeaderCZZ."Registration No.";
+        GenJournalLine."Tax Registration No. CZL" := PurchAdvLetterHeaderCZZ."Tax Registration No.";
         GenJournalLine."Shortcut Dimension 1 Code" := PurchAdvLetterEntryCZZ."Global Dimension 1 Code";
         GenJournalLine."Shortcut Dimension 2 Code" := PurchAdvLetterEntryCZZ."Global Dimension 2 Code";
         GenJournalLine."Dimension Set ID" := PurchAdvLetterEntryCZZ."Dimension Set ID";
@@ -1703,13 +1714,15 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
             end;
         until PurchAdvLetterEntryCZZ2.Next() = 0;
 
-        VATDocumentCZZ.InitDocument(AdvanceLetterTemplateCZZ."Advance Letter Cr. Memo Nos.", '', PurchAdvLetterEntryCZZ."Posting Date", PurchAdvLetterEntryCZZ."VAT Date", PurchAdvLetterEntryCZZ."Original Document VAT Date", PurchAdvLetterHeaderCZZ."Currency Code", PurchAdvLetterEntryCZZ."Currency Factor", PurchAdvLetterEntryCZZ."External Document No.", TempInvoicePostBuffer1);
+        VATDocumentCZZ.InitDocument(AdvanceLetterTemplateCZZ."Advance Letter Cr. Memo Nos.", '', PurchAdvLetterEntryCZZ."Posting Date",
+          PurchAdvLetterEntryCZZ."Posting Date", PurchAdvLetterEntryCZZ."VAT Date", PurchAdvLetterEntryCZZ."Original Document VAT Date",
+          PurchAdvLetterHeaderCZZ."Currency Code", PurchAdvLetterEntryCZZ."Currency Factor", PurchAdvLetterEntryCZZ."External Document No.", TempInvoicePostBuffer1);
         if VATDocumentCZZ.RunModal() <> Action::OK then
             exit;
 
         VATDocumentCZZ.SaveNoSeries();
         VATDocumentCZZ.GetDocument(DocumentNo, PostingDate, DocumentDate, VATDate, OriginalDocumentVATDate, ExternalDocumentNo, TempInvoicePostBuffer1);
-        if (DocumentNo = '') or (PostingDate = 0D) or (VATDate = 0D) then
+        if (DocumentNo = '') or (PostingDate = 0D) or (VATDate = 0D) or (OriginalDocumentVATDate = 0D) then
             Error(DocumentNoOrDatesEmptyErr);
 
         TempInvoicePostBuffer1.SetFilter(Amount, '<>0');

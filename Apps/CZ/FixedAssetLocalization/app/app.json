@@ -2,7 +2,7 @@
     "id":  "ef5dfe8c-ba1c-4271-8a86-95d5abdc6fe9",
     "name":  "Fixed Asset Localization for Czech",
     "publisher":  "Microsoft",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "brief":  "Fixed Asset local functionality of Business Central for the Czech Republic",
     "description":  "Fixed Asset features for your Business Central in the Czech Republic.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -16,7 +16,7 @@
                              "id":  "267b59d3-7302-44c5-ba77-c87000380514",
                              "name":  "Core Localization Pack for Czech",
                              "publisher":  "Microsoft",
-                             "version":  "20.2.0.0"
+                             "version":  "20.3.0.0"
                          }
                      ],
     "screenshots":  [
@@ -29,5 +29,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "20.2.0.0"
+    "application":  "20.3.0.0"
 }

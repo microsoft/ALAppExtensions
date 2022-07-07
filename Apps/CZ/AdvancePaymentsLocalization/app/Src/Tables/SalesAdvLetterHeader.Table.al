@@ -725,6 +725,24 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 DimensionManagement.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
             end;
         }
+        field(500; "Incoming Document Entry No."; Integer)
+        {
+            Caption = 'Incoming Document Entry No.';
+            TableRelation = "Incoming Document";
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                IncomingDocument: Record "Incoming Document";
+            begin
+                if "Incoming Document Entry No." = xRec."Incoming Document Entry No." then
+                    exit;
+                if "Incoming Document Entry No." = 0 then
+                    IncomingDocument.RemoveReferenceToWorkingDocument(xRec."Incoming Document Entry No.")
+                else
+                    IncomingDocument.SetSalesAdvanceCZZ(Rec);
+            end;
+        }
     }
     keys
     {
@@ -773,6 +791,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         if not DocumentAttachment.IsEmpty() then
             DocumentAttachment.DeleteAll();
 
+        Validate("Incoming Document Entry No.", 0);
         DeleteRecordInApprovalRequest();
     end;
 

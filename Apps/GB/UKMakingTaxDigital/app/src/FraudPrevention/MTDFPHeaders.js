@@ -1,3 +1,13 @@
+var spinner = document.createElement("img");
+spinner.className = "spinner-image";
+spinner.src = Microsoft.Dynamics.NAV.GetImageResource("images/spinner.gif");
+
+var container = document.createElement("div");
+container.className = "spinner-container";
+container.appendChild(spinner);
+
+document.getElementById("controlAddIn").appendChild(container);
+
 Microsoft.Dynamics.NAV.InvokeExtensibilityMethod('Ready', []);
 
 function Run(publicIPServiceURL) {
@@ -21,7 +31,7 @@ function Run(publicIPServiceURL) {
             setTimeout(resolve.bind(null, val), t);
         });
     }
-    
+
     Promise.raceAll = function(promises, timeoutTime, timeoutVal) {
         return Promise.all(promises.map(p => {
             return Promise.race([p, Promise.delay(timeoutTime, timeoutVal)])

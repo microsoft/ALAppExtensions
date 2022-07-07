@@ -49,7 +49,8 @@ Codeunit 6091 "FA Card Notifications"
     begin
         if not TaskScheduler.CanCreateTask() then
             exit;
-
+        if not FASetup.WritePermission then
+            exit;
         FASetup.Get();
         if FASetup."Last time scanned" > (CurrentDateTime + GetCacheRefreshInterval()) then
             exit;

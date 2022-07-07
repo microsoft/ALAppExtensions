@@ -2,7 +2,7 @@
     "id":  "10cb69d9-bc8a-4d27-970a-9e110e9db2a5",
     "name":  "_Exclude_APIV2_",
     "publisher":  "Microsoft",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "brief":  "_Exclude_APIV2_",
     "description":  "_Exclude_APIV2_",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -24,5 +24,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "20.2.0.0"
+    "application":  "20.3.0.0"
 }

@@ -55,15 +55,19 @@ codeunit 9059 "Custom User Group In Plan"
         CustomUserGroupInPlan: Record "Custom User Group In Plan";
         PlanConfiguration: Codeunit "Plan Configuration";
         PermissionManager: Codeunit "Permission Manager";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         // If no custom assignments, add system default user groups
         if not PlanConfiguration.IsCustomized(PlanID) then
             exit(false); // nothing to add
 
+        FeatureTelemetry.LogUptake('0000HSP', PlanConfigurationFeatureNameTxt, Enum::"Feature Uptake Status"::Used);
+
         // Add custom assignments
         CustomUserGroupInPlan.SetRange("Plan ID", PlanID);
         if CustomUserGroupInPlan.FindSet() then
             repeat
+                FeatureTelemetry.LogUsage('0000HSQ', PlanConfigurationFeatureNameTxt, CustomUserGroupAssignedLbl, GetTelemetryDimensions(CustomUserGroupInPlan, true));
                 PermissionManager.AddUserToUserGroup(UserSecurityID, CustomUserGroupInPlan."User Group Code", CustomUserGroupInPlan."Company Name");
             until CustomUserGroupInPlan.Next() = 0;
 
@@ -234,4 +238,5 @@ codeunit 9059 "Custom User Group In Plan"
         CustomUserGroupInPlanAddedLbl: Label 'Custom User Group In Plan was added with user group %1, company %2 and plan %3.', Locked = true;
         CustomUserGroupInPlanRemovedLbl: Label 'Custom User Group In Plan was removed with user group %1, company %2 and plan %3', Locked = true;
         CustomUserGroupInPlanModifiedLbl: Label 'Custom User Group In Plan was modified from user group %1, company %2 and plan %3 to user group %4, company %5 and plan %6.', Locked = true;
+        CustomUserGroupAssignedLbl: Label 'Custom User Group was assigned to user', Locked = true;
 }

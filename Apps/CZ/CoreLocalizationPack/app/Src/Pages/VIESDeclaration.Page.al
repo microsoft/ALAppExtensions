@@ -36,7 +36,7 @@ page 31138 "VIES Declaration CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Importance = Promoted;
-                    ToolTip = 'Specifies type of VIES Declaration (Normal, Corrective, Corrective-Supplementary).';
+                    ToolTip = 'Specifies type of VIES Declaration (Normal, Corrective).';
 
                     trigger OnValidate()
                     begin
@@ -464,7 +464,7 @@ page 31138 "VIES Declaration CZL"
     var
         Corrective: Boolean;
     begin
-        Corrective := Rec."Declaration Type" in [Rec."Declaration Type"::Corrective, Rec."Declaration Type"::"Corrective-Supplementary"];
+        Corrective := Rec."Declaration Type" = Rec."Declaration Type"::Corrective;
         CorrectedDeclarationNoEditable := Corrective;
         PeriodNoEditable := not Corrective;
         YearEditable := not Corrective;

@@ -85,21 +85,15 @@ codeunit 11737 "Purchase Handler CZP"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostPurchaseDoc', '', false, false)]
-    local procedure CreateCashDocumentOnAfterPostPurchaseDoc(var PurchaseHeader: Record "Purchase Header"; PurchInvHdrNo: Code[20]; PurchCrMemoHdrNo: Code[20])
-    var
-        PurchInvHeader: Record "Purch. Inv. Header";
-        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterFinalizePostingOnBeforeCommit', '', false, false)]
+    local procedure CreateCashDocumentOnAfterFinalizePostingOnBeforeCommit(var PurchHeader: Record "Purchase Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.")
     begin
-        if (PurchaseHeader."Cash Desk Code CZP" = '') or not PurchaseHeader.Invoice then
+        if (PurchHeader."Cash Desk Code CZP" = '') or not PurchHeader.Invoice then
             exit;
 
-        if PurchaseHeader."Document Type" in [PurchaseHeader."Document Type"::Order, PurchaseHeader."Document Type"::Invoice] then begin
-            PurchInvHeader.Get(PurchInvHdrNo);
-            CashDeskManagementCZP.CreateCashDocumentFromPurchaseInvoice(PurchInvHeader);
-        end else begin
-            PurchCrMemoHdr.Get(PurchCrMemoHdrNo);
+        if PurchHeader."Document Type" in [PurchHeader."Document Type"::Order, PurchHeader."Document Type"::Invoice] then
+            CashDeskManagementCZP.CreateCashDocumentFromPurchaseInvoice(PurchInvHeader)
+        else
             CashDeskManagementCZP.CreateCashDocumentFromPurchaseCrMemo(PurchCrMemoHdr);
-        end;
     end;
 }

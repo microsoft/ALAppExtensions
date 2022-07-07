@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the _Exclude_Email Logging Using Graph API extension.",
     "description":  "Tests for the _Exclude_Email Logging Using Graph API extension.",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
     "help":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
@@ -16,13 +16,13 @@
                              "id":  "114e4e19-182b-42e2-b5a9-91d8b8ee8ce1",
                              "name":  "_Exclude_Email Logging using Graph API",
                              "publisher":  "Microsoft",
-                             "version":  "20.2.0.0"
+                             "version":  "20.3.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "20.2.0.0"
+                             "version":  "20.3.0.0"
                          }
                      ],
     "screenshots":  [
@@ -35,5 +35,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "20.2.0.0"
+    "application":  "20.3.0.0"
 }

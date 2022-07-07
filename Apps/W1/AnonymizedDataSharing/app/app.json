@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Share data with Microsoft for machine learning",
     "description":  "Users share tenant data with Microsoft so that the data can be analyzed to find patterns that can be used to improve their user experience.",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "help":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
@@ -24,5 +24,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "20.2.0.0"
+    "application":  "20.3.0.0"
 }

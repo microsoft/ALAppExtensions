@@ -29,6 +29,7 @@ permissionset 11752 "CZ Advance Payments - Obj. CZZ"
                   Codeunit "Gen.Jnl-Post Batch Handler CZZ" = X,
                   Codeunit "Gen.Jnl.-Post Line Handler CZZ" = X,
                   Codeunit "Guided Experience Handler CZZ" = X,
+                  Codeunit "Incoming Document Handler CZZ" = X,
                   Codeunit "Install Application CZZ" = X,
                   Codeunit "Match Bank Payment Handler CZZ" = X,
                   Codeunit "Navigate Handler CZZ" = X,

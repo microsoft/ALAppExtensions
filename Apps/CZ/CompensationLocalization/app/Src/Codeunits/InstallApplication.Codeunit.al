@@ -13,7 +13,8 @@ codeunit 31270 "Install Application CZC"
                   tabledata "Cust. Ledger Entry" = m,
                   tabledata "Vendor Ledger Entry" = m,
                   tabledata "Gen. Journal Line" = m,
-                  tabledata "Posted Gen. Journal Line" = m;
+                  tabledata "Posted Gen. Journal Line" = m,
+                  tabledata "Incoming Document" = m;
 
     var
         InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
@@ -75,12 +76,14 @@ codeunit 31270 "Install Application CZC"
         CopyPostedCreditHeader();
         CopyPostedCreditLine();
         CopyPostedGenJournalLine();
+        MoveIncomingDocument();
     end;
 
     local procedure CopySourceCodeSetup();
     var
         SourceCodeSetup: Record "Source Code Setup";
     begin
+        SourceCodeSetup.SetLoadFields(Credit);
         if SourceCodeSetup.Get() then begin
             SourceCodeSetup."Compensation CZC" := SourceCodeSetup.Credit;
             SourceCodeSetup.Modify(false);
@@ -112,6 +115,7 @@ codeunit 31270 "Install Application CZC"
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
     begin
+        CustLedgerEntry.SetLoadFields(Compensation);
         if CustLedgerEntry.FindSet(true) then
             repeat
                 CustLedgerEntry."Compensation CZC" := CustLedgerEntry.Compensation;
@@ -123,6 +127,7 @@ codeunit 31270 "Install Application CZC"
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin
+        VendorLedgerEntry.SetLoadFields(Compensation);
         if VendorLedgerEntry.FindSet(true) then
             repeat
                 VendorLedgerEntry."Compensation CZC" := VendorLedgerEntry.Compensation;
@@ -134,6 +139,7 @@ codeunit 31270 "Install Application CZC"
     var
         GenJournalLine: Record "Gen. Journal Line";
     begin
+        GenJournalLine.SetLoadFields(Compensation);
         if GenJournalLine.FindSet(true) then
             repeat
                 GenJournalLine."Compensation CZC" := GenJournalLine.Compensation;
@@ -302,11 +308,20 @@ codeunit 31270 "Install Application CZC"
     var
         PostedGenJournalLine: Record "Posted Gen. Journal Line";
     begin
+        PostedGenJournalLine.SetLoadFields(Compensation);
         if PostedGenJournalLine.FindSet(true) then
             repeat
                 PostedGenJournalLine."Compensation CZC" := PostedGenJournalLine.Compensation;
                 PostedGenJournalLine.Modify(false);
             until PostedGenJournalLine.Next() = 0;
+    end;
+
+    local procedure MoveIncomingDocument()
+    var
+        IncomingDocument: Record "Incoming Document";
+    begin
+        IncomingDocument.SetRange("Document Type", 8);
+        IncomingDocument.ModifyAll("Document Type", IncomingDocument."Document Type"::"Compensation CZC");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

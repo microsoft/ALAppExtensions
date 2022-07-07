@@ -794,10 +794,10 @@ page 4000 "Hybrid Cloud Setup Wizard"
     end;
 
     local procedure ShowDelegatedAdminStep(): Boolean;
-    var
-        DelegatedAdminStepVisible: Boolean;
     begin
         DelegatedAdminStepVisible := HybridCloudManagement.CheckNeedsApprovalToRunCloudMigration();
+        if not DelegatedAdminStepVisible then
+            exit(false);
 
         ResetWizardControls();
         exit(DelegatedAdminStepVisible);

@@ -2,7 +2,7 @@
     "id":  "1150dd8d-51da-485a-bd4a-1ee98d78c21a",
     "name":  "Fixed Asset Depreciation for India",
     "publisher":  "Microsoft",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "brief":  "Contains features for Fixed Asset Depreciation",
     "description":  "Fixed Asset Depreciation lets you calculate depreciation for Fixed Asset for different India depreciation methods.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -21,7 +21,7 @@
 
                     ],
     "platform":  "20.0.0.0",
-    "application":  "20.2.0.0",
+    "application":  "20.3.0.0",
     "idRanges":  [
                      {
                          "from":  18631,

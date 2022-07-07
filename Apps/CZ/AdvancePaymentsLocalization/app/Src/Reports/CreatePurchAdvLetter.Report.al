@@ -82,7 +82,7 @@ report 31029 "Create Purch. Adv. Letter CZZ"
         SuggestByLine: Boolean;
         AdvLetterCodeEmptyErr: Label 'Advance Letter Code cannot be empty.';
         NothingToSuggestErr: Label 'Nothing to sugget.';
-        AmountCannotBeGreaterErr: Label 'Amount cannot be greater then %1.', Comment = '%1 = Amount Including VAT';
+        AmountCannotBeGreaterErr: Label 'Amount cannot be greater than %1.', Comment = '%1 = Amount Including VAT';
         AmountExceedeErr: Label 'Sum of Advance letters exceeded.';
 
     trigger OnPreReport()
