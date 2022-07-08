@@ -10,14 +10,13 @@ codeunit 9110 "SharePoint Uri Builder"
         UriAppendTxt: Label '/%1', Comment = '%1 - URI part to append', Locked = true;
         SetMethodTxt: Label '/%1(''%2'')', Comment = '%1 - method name, %2 - method parameter', Locked = true;
         SetMethodRawTxt: Label '/%1(%2)', Comment = '%1 - method name, %2 - method parameter', Locked = true;
-
-
+        SetMethodGuidTxt: Label '/%1(guid''%2'')', Comment = '%1 - method name, %2 - method parameter', Locked = true;
 
     procedure GetHost(): Text
     var
         NewUri: Codeunit Uri;
     begin
-        NewUri.Init(ServerName);
+        NewUri.Init(GetUri());
         exit(NewUri.GetHost());
     end;
 
@@ -54,7 +53,7 @@ codeunit 9110 "SharePoint Uri Builder"
 
     procedure SetMethod(Method: Text; ParameterValue: Guid)
     begin
-        Uri += StrSubstNo(SetMethodRawTxt, Method, ParameterValue);
+        Uri += StrSubstNo(SetMethodGuidTxt, Method, Format(ParameterValue).TrimStart('{').TrimEnd('}'));
     end;
 
     procedure SetMethod(Method: Text; ParameterName: Text; ParameterValue: Text)
@@ -64,7 +63,6 @@ codeunit 9110 "SharePoint Uri Builder"
         Parameters.Add(ParameterName, ParameterValue);
         SetMethod(Method, Parameters);
     end;
-
 
     procedure SetMethod(Method: Text; Parameters: Dictionary of [Text, Text])
     var
@@ -97,18 +95,25 @@ codeunit 9110 "SharePoint Uri Builder"
         len := str1.IndexOf(')');
         str2 := str1.Substring(1, len);
         exit(str2.TrimStart('(').TrimStart('''').TrimEnd(')').TrimEnd(''''));
-
     end;
 
     procedure GetUri(): Text
+    var
+        FullUri: Text;
     begin
-        Uri := UriLbl + Uri + '/';
-        exit(uri.Replace('{server_name}', ServerName.TrimStart('/').TrimEnd('/')).Replace('{namespace}', Namespace.TrimStart('/').TrimEnd('/')));
+        FullUri := UriLbl + Uri + '/';
+        FullUri := FullUri.Replace('{server_name}', ServerName.TrimStart('/').TrimEnd('/')).Replace('{namespace}', Namespace.TrimStart('/').TrimEnd('/'));
+        exit(FullUri);
     end;
 
     procedure ResetPath()
     begin
         Uri := '';
+    end;
+
+    procedure SetPath(NewPath: Text)
+    begin
+        Uri := NewPath;
     end;
 
     procedure ResetPath(Id: Text)

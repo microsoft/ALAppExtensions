@@ -89,6 +89,23 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointListItemParser.Parse(Result, SharePointListItem);
     end;
 
+    procedure GetListItems(ListId: Guid; var SharePointListItem: Record "SharePoint List Item")
+    var
+        SharePointListItemParser: Codeunit "SharePoint List Item";
+        SharePointOperationResponse: Codeunit "SharePoint Operation Response";
+        Result: Text;
+    begin
+        //GET https://{site_url}/_api/web/lists(guid'{list_guid}')/items
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('Lists', ListId);
+        SharePointUriBuilder.SetObject('items');
+
+        SharePointRequestManager.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestManager.Get(SharePointUriBuilder);
+        SharePointOperationResponse.GetResultAsText(Result);
+        SharePointListItemParser.Parse(Result, SharePointListItem);
+    end;
+
     procedure GetListItemAttachments(ListTitle: Text; ListItemId: Integer; var SharePointListItemAtch: Record "SharePoint List Item Atch")
     var
         SharePointListItemAtchParser: Codeunit "SharePoint List Item Atch.";
@@ -108,6 +125,24 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointListItemAtchParser.Parse(Result, SharePointListItemAtch);
     end;
 
+    procedure GetListItemAttachments(ListId: Guid; ListItemId: Integer; var SharePointListItemAtch: Record "SharePoint List Item Atch")
+    var
+        SharePointListItemAtchParser: Codeunit "SharePoint List Item Atch.";
+        SharePointOperationResponse: Codeunit "SharePoint Operation Response";
+        Result: Text;
+    begin
+        //GET https://{site_url}/_api/web/lists(guid'{list_guid}')/items({item+id})/AttachmentFiles/
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('Lists', ListId);
+        SharePointUriBuilder.SetMethod('Items', ListItemId);
+        SharePointUriBuilder.SetObject('AttachmentFiles');
+
+        SharePointRequestManager.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestManager.Get(SharePointUriBuilder);
+        SharePointOperationResponse.GetResultAsText(Result);
+        SharePointListItemAtchParser.Parse(Result, SharePointListItemAtch);
+    end;
+
     procedure GetListItemAttachmentContent(ListTitle: Text; ListItemId: Integer; FileName: Text)
     var
         SharePointOperationResponse: Codeunit "SharePoint Operation Response";
@@ -117,6 +152,24 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.ResetPath();
         SharePointUriBuilder.SetObject('lists');
         SharePointUriBuilder.SetMethod('GetByTitle', ListTitle);
+        SharePointUriBuilder.SetMethod('Items', ListItemId);
+        SharePointUriBuilder.SetMethod('AttachmentFiles', FileName);
+        SharePointUriBuilder.SetObject('$value');
+
+        SharePointRequestManager.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestManager.Get(SharePointUriBuilder);
+        SharePointOperationResponse.GetResultAsStream(FileInStream);
+        DownloadFromStream(FileInStream, '', '', '', FileName);
+    end;
+
+    procedure GetListItemAttachmentContent(ListId: Guid; ListItemId: Integer; FileName: Text)
+    var
+        SharePointOperationResponse: Codeunit "SharePoint Operation Response";
+        FileInStream: InStream;
+    begin
+        //GET https://{site_url}/_api/web/lists(guid'{list_guid}')/items({item_id})/AttachmentFiles('{file_name}')/$value
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('Lists', ListId);
         SharePointUriBuilder.SetMethod('Items', ListItemId);
         SharePointUriBuilder.SetMethod('AttachmentFiles', FileName);
         SharePointUriBuilder.SetObject('$value');
@@ -172,6 +225,33 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointListItemAtchParser.ParseSingle(Result, SharePointListItemAtch);
     end;
 
+
+    procedure CreateListItemAttachment(ListId: Guid; ListItemId: Integer; var SharePointListItemAtch: Record "SharePoint List Item Atch")
+    var
+        SharePointOperationResponse: Codeunit "SharePoint Operation Response";
+        SharePointHttpContent: Codeunit "SharePoint Http Content";
+        SharePointListItemAtchParser: Codeunit "SharePoint List Item Atch.";
+        FileName: Text;
+        FileInStream: InStream;
+        Result: Text;
+    begin
+        if not UploadIntoStream('', '', '', FileName, FileInStream) then
+            exit;
+
+        //GET https://{site_url}/_api/web/lists(guid'{list_guid}')/items({item_id})/AttachmentFiles('{file_name}')/$value
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('Lists', ListId);
+        SharePointUriBuilder.SetMethod('Items', ListItemId);
+        SharePointUriBuilder.SetObject('AttachmentFiles');
+        SharePointUriBuilder.SetMethod('add', 'FileName', '''' + FileName + '''');
+
+        SharePointHttpContent.FromFileInStream(FileInStream);
+        SharePointRequestManager.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
+        SharePointOperationResponse.GetResultAsText(Result);
+        SharePointListItemAtchParser.ParseSingle(Result, SharePointListItemAtch);
+    end;
+
     procedure CreateListItemAttachment(ListTitle: Text; ListItemId: Integer; FileName: Text; var FileInStream: InStream; var SharePointListItemAtch: Record "SharePoint List Item Atch")
     var
         SharePointOperationResponse: Codeunit "SharePoint Operation Response";
@@ -183,6 +263,27 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.ResetPath();
         SharePointUriBuilder.SetObject('lists');
         SharePointUriBuilder.SetMethod('GetByTitle', ListTitle);
+        SharePointUriBuilder.SetMethod('Items', ListItemId);
+        SharePointUriBuilder.SetObject('AttachmentFiles');
+        SharePointUriBuilder.SetMethod('add', 'FileName', '''' + FileName + '''');
+
+        SharePointHttpContent.FromFileInStream(FileInStream);
+        SharePointRequestManager.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
+        SharePointOperationResponse.GetResultAsText(Result);
+        SharePointListItemAtchParser.ParseSingle(Result, SharePointListItemAtch);
+    end;
+
+    procedure CreateListItemAttachment(ListId: Guid; ListItemId: Integer; FileName: Text; var FileInStream: InStream; var SharePointListItemAtch: Record "SharePoint List Item Atch")
+    var
+        SharePointOperationResponse: Codeunit "SharePoint Operation Response";
+        SharePointHttpContent: Codeunit "SharePoint Http Content";
+        SharePointListItemAtchParser: Codeunit "SharePoint List Item Atch.";
+        Result: Text;
+    begin
+        //GET https://{site_url}/_api/web/lists(guid'{list_guid}')/items({item_id})/AttachmentFiles('{file_name}')/$value
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('Lists', ListId);
         SharePointUriBuilder.SetMethod('Items', ListItemId);
         SharePointUriBuilder.SetObject('AttachmentFiles');
         SharePointUriBuilder.SetMethod('add', 'FileName', '''' + FileName + '''');
@@ -218,6 +319,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointRequestManager.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
         SharePointOperationResponse.GetResultAsText(Result);
+        Message(Result);
     end;
 
     procedure CreateListItem(ListTitle: Text; ListItemEntityTypeFullName: Text; ListItemTitle: Text)
@@ -230,6 +332,29 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.ResetPath();
         SharePointUriBuilder.SetObject('lists');
         SharePointUriBuilder.SetMethod('GetByTitle', ListTitle);
+        SharePointUriBuilder.SetObject('items');
+
+        Metadata.Add('type', ListItemEntityTypeFullName);
+        Request.Add('__metadata', Metadata);
+        Request.Add('Title', ListItemTitle);
+
+        SharePointHttpContent.FromJson(Request);
+        SharePointHttpContent.SetRequestDigest(GetRequestDigest(SharePointUriBuilder.GetHost()));
+
+        SharePointRequestManager.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
+        SharePointOperationResponse.GetResultAsText(Result);
+    end;
+
+    procedure CreateListItem(ListId: Guid; ListItemEntityTypeFullName: Text; ListItemTitle: Text)
+    var
+        SharePointHttpContent: Codeunit "SharePoint Http Content";
+        SharePointOperationResponse: Codeunit "SharePoint Operation Response";
+        Request, Metadata : JsonObject;
+        Result: Text;
+    begin
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('Lists', ListId);
         SharePointUriBuilder.SetObject('items');
 
         Metadata.Add('type', ListItemEntityTypeFullName);

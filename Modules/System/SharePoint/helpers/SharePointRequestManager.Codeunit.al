@@ -47,7 +47,6 @@ codeunit 9109 "SharePoint Request Manager"
         RequestMessage.GetHeaders(Headers);
         Headers.Add('Authorization', GetAuthenticationHeaderValue());
         Headers.Add('Accept', 'application/json');
-
     end;
 
 

@@ -9,49 +9,43 @@ table 9104 "SharePoint List Item Atch"
     {
 
 
-        field(1; "Unique Id"; Guid)
-        {
-            DataClassification = SystemMetadata;
-            Caption = 'Unique Id';
-        }
-
-        field(2; OdataId; Text[2048])
+        field(1; OdataId; Text[2048])
         {
             DataClassification = SystemMetadata;
             Caption = 'Odata.Id';
         }
 
-        field(3; OdataEditLink; Text[2048])
+        field(2; OdataEditLink; Text[2048])
         {
             DataClassification = SystemMetadata;
             Caption = 'Odata.editLink';
         }
 
-        field(4; "File Name"; Text[2048])
+        field(3; "File Name"; Text[2048])
         {
             DataClassification = SystemMetadata;
             Caption = 'File Name';
         }
 
-        field(5; "Server Relative Url"; Text[2048])
+        field(4; "Server Relative Url"; Text[2048])
         {
             DataClassification = SystemMetadata;
             Caption = 'Server Relative Url';
         }
 
-        field(6; "List Title"; Text[250])
+        field(5; "List Id"; Guid)
         {
             DataClassification = SystemMetadata;
-            Caption = 'List Title';
+            Caption = 'List Id';
         }
 
-        field(7; "List Item Id"; Integer)
+        field(6; "List Item Id"; Integer)
         {
             DataClassification = SystemMetadata;
             Caption = 'List Item Id';
         }
 
-        field(8; OdataType; Text[2048])
+        field(7; OdataType; Text[2048])
         {
             DataClassification = SystemMetadata;
             Caption = 'Odata.Type';
@@ -64,7 +58,7 @@ table 9104 "SharePoint List Item Atch"
 
     keys
     {
-        key(PK; "Unique Id")
+        key(PK; "OdataId")
         {
             Clustered = true;
         }

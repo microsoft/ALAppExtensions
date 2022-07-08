@@ -23,6 +23,7 @@ codeunit 9103 "SharePoint List Item"
 
     local procedure ParseSingle(Payload: JsonObject) SharePointListItem: Record "SharePoint List Item" temporary
     var
+        SharePointUriBuilder: Codeunit "SharePoint Uri Builder";
         JToken: JsonToken;
     begin
         SharePointListItem.Init();
@@ -48,6 +49,14 @@ codeunit 9103 "SharePoint List Item"
 
         if Payload.Get('FileSystemObjectType', JToken) then
             SharePointListItem."File System Object Type" := JToken.AsValue().AsInteger();
+
+        if Payload.Get('odata.editLink', JToken) then
+            SharePointListItem.OdataEditLink := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointListItem.OdataEditLink));
+
+        if SharePointListItem.OdataEditLink <> '' then begin
+            SharePointUriBuilder.SetPath(SharePointListItem.OdataEditLink);
+            SharePointListItem."List Id" := SharePointUriBuilder.GetMethodParameter('Lists').Substring(6, 36);
+        end;
 
     end;
 }

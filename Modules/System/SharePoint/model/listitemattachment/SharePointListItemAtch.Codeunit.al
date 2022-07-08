@@ -30,12 +30,10 @@ codeunit 9102 "SharePoint List Item Atch."
 
     local procedure ParseSingle(Payload: JsonObject) ListItemAttachment: Record "SharePoint List Item Atch" temporary
     var
+        SharePointUriBuilder: Codeunit "SharePoint Uri Builder";
         JToken: JsonToken;
     begin
         ListItemAttachment.Init();
-
-        if Payload.Get('UniqueId', JToken) then
-            ListItemAttachment."Unique Id" := JToken.AsValue().AsText();
 
         if Payload.Get('odata.id', JToken) then
             ListItemAttachment.OdataId := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItemAttachment.OdataId));
@@ -51,6 +49,12 @@ codeunit 9102 "SharePoint List Item Atch."
 
         if Payload.Get('odata.type', JToken) then
             ListItemAttachment.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItemAttachment.OdataType));
+
+        if ListItemAttachment.OdataEditLink <> '' then begin
+            SharePointUriBuilder.SetPath(ListItemAttachment.OdataEditLink);
+            ListItemAttachment."List Id" := SharePointUriBuilder.GetMethodParameter('Lists').Substring(6, 36);
+            Evaluate(ListItemAttachment."List Item Id", SharePointUriBuilder.GetMethodParameter('Items'));
+        end;
 
     end;
 }

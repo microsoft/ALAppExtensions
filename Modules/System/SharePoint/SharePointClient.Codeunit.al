@@ -49,6 +49,16 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
+    /// Get all list items for the given list.
+    /// </summary>
+    /// <param name="ListId">The GUID of the list/</param>
+    /// <param name="SharePointListItem">Collection of the result (temporary record).</param>
+    procedure GetListItems(ListId: Guid; var SharePointListItem: Record "SharePoint List Item")
+    begin
+        SharePointClientImpl.GetListItems(ListId, SharePointListItem);
+    end;
+
+    /// <summary>
     /// Get all attachments for the given list item.
     /// </summary>
     /// <param name="ListTitle">The title of the list</param>
@@ -60,6 +70,17 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
+    /// Get all attachments for the given list item.
+    /// </summary>
+    /// <param name="ListId">The GUID of the list</param>
+    /// <param name="ListItemId">Unique id of the item within the list. </param>
+    /// <param name="SharePointListItemAtch">Collection of the result (temporary record).</param>
+    procedure GetListItemAttachments(ListId: Guid; ListItemId: Integer; var SharePointListItemAtch: Record "SharePoint List Item Atch")
+    begin
+        SharePointClientImpl.GetListItemAttachments(ListId, ListItemId, SharePointListItemAtch);
+    end;
+
+    /// <summary>
     /// Downloads the specified attachment file to the client.
     /// </summary>
     /// <param name="ListTitle">The title of the list</param>
@@ -68,6 +89,17 @@ codeunit 9100 "SharePoint Client"
     procedure GetListItemAttachmentContent(ListTitle: Text; ListItemId: Integer; FileName: Text)
     begin
         SharePointClientImpl.GetListItemAttachmentContent(ListTitle, ListItemId, FileName);
+    end;
+
+    /// <summary>
+    /// Downloads the specified attachment file to the client.
+    /// </summary>
+    /// <param name="ListId">The GUID of the list</param>
+    /// <param name="ListItemId">Unique id of the item within the list. </param>
+    /// <param name="FileName">Name to be given to the file on the client side. Does not need to match the server side name.</param>
+    procedure GetListItemAttachmentContent(ListId: Guid; ListItemId: Integer; FileName: Text)
+    begin
+        SharePointClientImpl.GetListItemAttachmentContent(ListId, ListItemId, FileName);
     end;
 
     /// <summary>
@@ -93,6 +125,18 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
+    /// Creates the list item attachment for given item.
+    /// </summary>
+    /// <remarks>Requires UI interaction to pick a file.</remarks>
+    /// <param name="ListID">The GUID of the list.</param>
+    /// <param name="ListItemId">Unique id of the item within the list. </param>
+    /// <param name="SharePointListItemAtch">Collection of the result (temporary record). Always one element.</param>
+    procedure CreateListItemAttachment(ListID: Guid; ListItemId: Integer; var SharePointListItemAtch: Record "SharePoint List Item Atch")
+    begin
+        SharePointClientImpl.CreateListItemAttachment(ListID, ListItemId, SharePointListItemAtch);
+    end;
+
+    /// <summary>
     /// Creates a list item attachment for specific list item.
     /// </summary>
     /// <remarks>Does not require UI interaction.</remarks>
@@ -104,6 +148,20 @@ codeunit 9100 "SharePoint Client"
     procedure CreateListItemAttachment(ListTitle: Text; ListItemId: Integer; FileName: Text; var FileInStream: InStream; var SharePointListItemAtch: Record "SharePoint List Item Atch")
     begin
         SharePointClientImpl.CreateListItemAttachment(ListTitle, ListItemId, FileName, FileInStream, SharePointListItemAtch);
+    end;
+
+    /// <summary>
+    /// Creates a list item attachment for specific list item.
+    /// </summary>
+    /// <remarks>Does not require UI interaction.</remarks>
+    /// <param name="ListID">The GUID of the list.</param>
+    /// <param name="ListItemId">Unique id of the item within the list. </param>    
+    /// <param name="FileName">File name to use on SharePoint.</param>
+    /// <param name="FileInStream">File stream to upload.</param>
+    /// <param name="SharePointListItemAtch">Collection of the result (temporary record). Always one element.</param>
+    procedure CreateListItemAttachment(ListID: Guid; ListItemId: Integer; FileName: Text; var FileInStream: InStream; var SharePointListItemAtch: Record "SharePoint List Item Atch")
+    begin
+        SharePointClientImpl.CreateListItemAttachment(ListID, ListItemId, FileName, FileInStream, SharePointListItemAtch);
     end;
 
     /// <summary>
@@ -125,6 +183,17 @@ codeunit 9100 "SharePoint Client"
     procedure CreateListItem(ListTitle: Text; ListItemEntityTypeFullName: Text; ListItemTitle: Text)
     begin
         SharePointClientImpl.CreateListItem(ListTitle, ListItemEntityTypeFullName, ListItemTitle);
+    end;
+
+    /// <summary>
+    /// Creates a new list item in specific list.
+    /// </summary>
+    /// <param name="ListId">The GUID of the list.</param>
+    /// <param name="ListItemEntityTypeFullName">The Entity Type for the list. Parameter can be found on a list object (ListItemEntityType).</param>
+    /// <param name="ListItemTitle">The title of the new list item.</param>
+    procedure CreateListItem(ListId: Guid; ListItemEntityTypeFullName: Text; ListItemTitle: Text)
+    begin
+        SharePointClientImpl.CreateListItem(ListId, ListItemEntityTypeFullName, ListItemTitle);
     end;
 
     #endregion

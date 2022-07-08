@@ -50,10 +50,16 @@ table 9103 "SharePoint List Item"
             Caption = 'Id';
         }
 
-        field(8; "List Title"; Text[250])
+        field(8; "List Id"; Guid)
         {
             DataClassification = SystemMetadata;
-            Caption = 'List Title';
+            Caption = 'List Id';
+        }
+
+        field(9; OdataEditLink; Text[2048])
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Odata.editLink';
         }
     }
 
