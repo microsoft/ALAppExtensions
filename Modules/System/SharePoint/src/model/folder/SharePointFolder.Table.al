@@ -1,19 +1,18 @@
-table 9103 "SharePoint List Item"
+table 9106 "SharePoint Folder"
 {
     DataClassification = SystemMetadata;
-    Caption = 'SharePoint List Item';
+    Caption = 'SharePoint Folder';
     TableType = Temporary;
-
 
     fields
     {
-        field(1; Guid; Guid)
+        field(1; "Unique Id"; Guid)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Id';
+            Caption = 'Unique Id';
         }
 
-        field(2; Title; Text[250])
+        field(2; Name; Text[250])
         {
             DataClassification = SystemMetadata;
             Caption = 'Title';
@@ -25,52 +24,48 @@ table 9103 "SharePoint List Item"
             Caption = 'Created';
         }
 
-        field(4; Attachments; Boolean)
+        field(4; "Item Count"; Integer)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Attachments';
+            Caption = 'Item Count';
         }
 
-        field(5; "File System Object Type"; Integer)
+        field(5; "Exists"; Boolean)
         {
             DataClassification = SystemMetadata;
-            Caption = 'File System Object Type';
+            Caption = 'Exists';
         }
 
-
-        field(6; "Content Type Id"; Text[250])
+        field(6; "Server Relative Url"; Text[2024])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Content Type Id';
+            Caption = 'Server Relative Url';
         }
 
-        field(7; Id; Integer)
+        field(101; OdataId; Text[2048])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Id';
+            Caption = 'Odata.Id';
         }
 
-        field(8; "List Id"; Guid)
+        field(102; OdataType; Text[2048])
         {
             DataClassification = SystemMetadata;
-            Caption = 'List Id';
+            Caption = 'Odata.Type';
         }
 
-        field(9; OdataEditLink; Text[2048])
+        field(103; OdataEditLink; Text[2048])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Odata.editLink';
+            Caption = 'Odata.EditLink';
         }
     }
 
     keys
     {
-        key(PK; Guid)
+        key(PK; "Unique Id")
         {
             Clustered = true;
         }
     }
-
-
-
 }

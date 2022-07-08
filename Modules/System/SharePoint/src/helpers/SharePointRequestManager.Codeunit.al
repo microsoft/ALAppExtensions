@@ -4,13 +4,13 @@ codeunit 9109 "SharePoint Request Manager"
 
     var
         HttpClient: HttpClient;
-        Authorization: Interface "I SharePoint Authorization";
+        Authorization: Interface "SharePoint Authorization";
         HttpResponseInfoErr: Label '%1.\\Response Code: %2 %3', Comment = '%1 = Default Error Message ; %2 = Status Code; %3 = Reason Phrase';
 
         OperationNotSuccessfulErr: Label 'An error has occurred';
         BearerTxt: Label 'Bearer %1', Comment = '%1 - Bearer token', Locked = true;
 
-    procedure SetAuthorization(Auth: Interface "I SharePoint Authorization")
+    procedure SetAuthorization(Auth: Interface "SharePoint Authorization")
     begin
         Authorization := Auth;
     end;
@@ -20,7 +20,6 @@ codeunit 9109 "SharePoint Request Manager"
     begin
         OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::GET, SharePointUriBuilder));
     end;
-
 
     procedure Post(SharePointUriBuilder: Codeunit "SharePoint Uri Builder") OperationResponse: Codeunit "SharePoint Operation Response"
     var
@@ -48,7 +47,6 @@ codeunit 9109 "SharePoint Request Manager"
         Headers.Add('Authorization', GetAuthenticationHeaderValue());
         Headers.Add('Accept', 'application/json');
     end;
-
 
     [NonDebuggable]
     local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; SharePointUriBuilder: Codeunit "SharePoint Uri Builder"; SharePointHttpContent: Codeunit "SharePoint Http Content") RequestMessage: HttpRequestMessage
@@ -83,8 +81,6 @@ codeunit 9109 "SharePoint Request Manager"
 
     end;
 
-
-
     [NonDebuggable]
     local procedure SendRequest(HttpRequestMessage: HttpRequestMessage) OperationResponse: Codeunit "SharePoint Operation Response"
     var
@@ -106,6 +102,5 @@ codeunit 9109 "SharePoint Request Manager"
 
         Value := StrSubstNo(BearerTxt, Authorization.GetToken());
     end;
-
 
 }

@@ -5,11 +5,11 @@ codeunit 9101 "SharePoint Client Impl."
     var
         SharePointUriBuilder: Codeunit "SharePoint Uri Builder";
         SharePointRequestManager: Codeunit "SharePoint Request Manager";
-        Authorization: Interface "I SharePoint Authorization";
+        Authorization: Interface "SharePoint Authorization";
         ReadResponseFailedErr: Label 'Could not read response.';
         IncorrectResponseErr: Label 'Incorrect response.';
 
-    procedure Initialize(BaseUrl: Text; Auth: Interface "I SharePoint Authorization")
+    procedure Initialize(BaseUrl: Text; Auth: Interface "SharePoint Authorization")
     var
         DefaultSharePointRequestManager: Codeunit "SharePoint Request Manager";
     begin
@@ -19,7 +19,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointRequestManager := DefaultSharePointRequestManager;
     end;
 
-    procedure Initialize(BaseUrl: Text; Namespace: Text; Auth: Interface "I SharePoint Authorization")
+    procedure Initialize(BaseUrl: Text; Namespace: Text; Auth: Interface "SharePoint Authorization")
     begin
         SharePointUriBuilder.Initialize(BaseUrl, Namespace);
         SharePointUriBuilder.ResetPath();
@@ -143,7 +143,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointListItemAtchParser.Parse(Result, SharePointListItemAtch);
     end;
 
-    procedure GetListItemAttachmentContent(ListTitle: Text; ListItemId: Integer; FileName: Text)
+    procedure DownloadListItemAttachmentContent(ListTitle: Text; ListItemId: Integer; FileName: Text)
     var
         SharePointOperationResponse: Codeunit "SharePoint Operation Response";
         FileInStream: InStream;
@@ -162,7 +162,7 @@ codeunit 9101 "SharePoint Client Impl."
         DownloadFromStream(FileInStream, '', '', '', FileName);
     end;
 
-    procedure GetListItemAttachmentContent(ListId: Guid; ListItemId: Integer; FileName: Text)
+    procedure DownloadListItemAttachmentContent(ListId: Guid; ListItemId: Integer; FileName: Text)
     var
         SharePointOperationResponse: Codeunit "SharePoint Operation Response";
         FileInStream: InStream;
@@ -180,7 +180,7 @@ codeunit 9101 "SharePoint Client Impl."
         DownloadFromStream(FileInStream, '', '', '', FileName);
     end;
 
-    procedure GetListItemAttachmentContent(OdataId: Text)
+    procedure DownloadListItemAttachmentContent(OdataId: Text)
     var
         SharePointOperationResponse: Codeunit "SharePoint Operation Response";
         FileInStream: InStream;
@@ -405,7 +405,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointFileParser.Parse(Result, SharePointFile);
     end;
 
-    procedure GetFileContent(OdataId: Text; FileName: Text)
+    procedure DownloadFileContent(OdataId: Text; FileName: Text)
     var
         SharePointOperationResponse: Codeunit "SharePoint Operation Response";
         FileInStream: InStream;

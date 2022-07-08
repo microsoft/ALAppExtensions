@@ -4,10 +4,8 @@ table 9104 "SharePoint List Item Atch"
     Caption = 'SharePoint List Item Attachment';
     TableType = Temporary;
 
-
     fields
     {
-
 
         field(1; OdataId; Text[2048])
         {
@@ -51,10 +49,7 @@ table 9104 "SharePoint List Item Atch"
             Caption = 'Odata.Type';
         }
 
-
     }
-
-
 
     keys
     {
@@ -63,7 +58,4 @@ table 9104 "SharePoint List Item Atch"
             Clustered = true;
         }
     }
-
-
-
 }

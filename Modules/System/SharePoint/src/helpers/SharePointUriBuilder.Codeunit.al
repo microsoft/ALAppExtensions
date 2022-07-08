@@ -123,5 +123,4 @@ codeunit 9110 "SharePoint Uri Builder"
         Uri := Id.Replace(Uri, '');
     end;
 
-
 }

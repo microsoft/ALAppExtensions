@@ -1,19 +1,18 @@
-table 9105 "SharePoint List"
+table 9100 "SharePoint File"
 {
     DataClassification = SystemMetadata;
-    Caption = 'SharePoint List';
+    Caption = 'SharePoint File';
     TableType = Temporary;
-
 
     fields
     {
-        field(1; Id; Guid)
+        field(1; "Unique Id"; Guid)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Id';
+            Caption = 'Unique Id';
         }
 
-        field(2; Title; Text[250])
+        field(2; Name; Text[250])
         {
             DataClassification = SystemMetadata;
             Caption = 'Title';
@@ -25,34 +24,28 @@ table 9105 "SharePoint List"
             Caption = 'Created';
         }
 
-        field(4; Description; Text[250])
+        field(4; Length; Integer)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Description';
+            Caption = 'Length';
         }
 
-        field(5; "Base Template"; Text[250])
+        field(5; Exists; Boolean)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Base Template';
+            Caption = 'Exists';
         }
 
-        field(6; "Base Type"; Text[250])
+        field(6; "Server Relative Url"; Text[2024])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Base Type';
+            Caption = 'Server Relative Url';
         }
 
-        field(7; "Is Catalog"; Boolean)
+        field(7; Title; Text[250])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Is Catalog';
-        }
-
-        field(8; "List Item Entity Type"; Text[250])
-        {
-            DataClassification = SystemMetadata;
-            Caption = 'List Item Entity Type Full Name';
+            Caption = 'Title';
         }
 
         field(101; OdataId; Text[2048])
@@ -60,7 +53,6 @@ table 9105 "SharePoint List"
             DataClassification = SystemMetadata;
             Caption = 'Odata.Id';
         }
-
 
         field(102; OdataType; Text[2048])
         {
@@ -73,17 +65,14 @@ table 9105 "SharePoint List"
             DataClassification = SystemMetadata;
             Caption = 'Odata.EditLink';
         }
-
     }
 
     keys
     {
-        key(PK; Id)
+        key(PK; "Unique Id")
         {
             Clustered = true;
         }
     }
-
-
 
 }

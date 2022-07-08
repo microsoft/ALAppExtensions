@@ -1,19 +1,18 @@
-table 9106 "SharePoint Folder"
+table 9105 "SharePoint List"
 {
     DataClassification = SystemMetadata;
-    Caption = 'SharePoint Folder';
+    Caption = 'SharePoint List';
     TableType = Temporary;
-
 
     fields
     {
-        field(1; "Unique Id"; Guid)
+        field(1; Id; Guid)
         {
             DataClassification = SystemMetadata;
-            Caption = 'Unique Id';
+            Caption = 'Id';
         }
 
-        field(2; Name; Text[250])
+        field(2; Title; Text[250])
         {
             DataClassification = SystemMetadata;
             Caption = 'Title';
@@ -25,32 +24,41 @@ table 9106 "SharePoint Folder"
             Caption = 'Created';
         }
 
-
-        field(4; "Item Count"; Integer)
+        field(4; Description; Text[250])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Item Count';
+            Caption = 'Description';
         }
 
-        field(5; "Exists"; Boolean)
+        field(5; "Base Template"; Text[250])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Exists';
+            Caption = 'Base Template';
         }
 
-        field(6; "Server Relative Url"; Text[2024])
+        field(6; "Base Type"; Text[250])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Server Relative Url';
+            Caption = 'Base Type';
         }
 
+        field(7; "Is Catalog"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Is Catalog';
+        }
+
+        field(8; "List Item Entity Type"; Text[250])
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'List Item Entity Type Full Name';
+        }
 
         field(101; OdataId; Text[2048])
         {
             DataClassification = SystemMetadata;
             Caption = 'Odata.Id';
         }
-
 
         field(102; OdataType; Text[2048])
         {
@@ -67,12 +75,10 @@ table 9106 "SharePoint Folder"
 
     keys
     {
-        key(PK; "Unique Id")
+        key(PK; Id)
         {
             Clustered = true;
         }
     }
-
-
 
 }

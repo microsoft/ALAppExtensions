@@ -40,7 +40,6 @@ codeunit 9107 "SharePoint Http Content"
         exit(ContentType);
     end;
 
-
     procedure SetRequestDigest(RequestDigestValue: Text)
     begin
         RequestDigest := RequestDigestValue;

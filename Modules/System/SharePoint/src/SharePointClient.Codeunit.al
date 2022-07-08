@@ -11,7 +11,7 @@ codeunit 9100 "SharePoint Client"
     /// </summary>
     /// <param name="BaseUrl">SharePoint URL to use.</param>
     /// <param name="Authorization">The authorization to use.</param>
-    procedure Initialize(BaseUrl: Text; Authorization: Interface "I SharePoint Authorization")
+    procedure Initialize(BaseUrl: Text; Authorization: Interface "SharePoint Authorization")
     begin
         SharePointClientImpl.Initialize(BaseUrl, Authorization);
     end;
@@ -22,7 +22,7 @@ codeunit 9100 "SharePoint Client"
     /// <param name="BaseUrl">SharePoint URL to use.</param>    
     /// <param name="Namespace">Namespace to use.</param>
     /// <param name="Authorization">The authorization to use.</param>
-    procedure Initialize(BaseUrl: Text; Namespace: Text; Authorization: Interface "I SharePoint Authorization")
+    procedure Initialize(BaseUrl: Text; Namespace: Text; Authorization: Interface "SharePoint Authorization")
     begin
         SharePointClientImpl.Initialize(BaseUrl, Namespace, Authorization);
     end;
@@ -86,9 +86,9 @@ codeunit 9100 "SharePoint Client"
     /// <param name="ListTitle">The title of the list</param>
     /// <param name="ListItemId">Unique id of the item within the list. </param>
     /// <param name="FileName">Name to be given to the file on the client side. Does not need to match the server side name.</param>
-    procedure GetListItemAttachmentContent(ListTitle: Text; ListItemId: Integer; FileName: Text)
+    procedure DownloadListItemAttachmentContent(ListTitle: Text; ListItemId: Integer; FileName: Text)
     begin
-        SharePointClientImpl.GetListItemAttachmentContent(ListTitle, ListItemId, FileName);
+        SharePointClientImpl.DownloadListItemAttachmentContent(ListTitle, ListItemId, FileName);
     end;
 
     /// <summary>
@@ -97,9 +97,9 @@ codeunit 9100 "SharePoint Client"
     /// <param name="ListId">The GUID of the list</param>
     /// <param name="ListItemId">Unique id of the item within the list. </param>
     /// <param name="FileName">Name to be given to the file on the client side. Does not need to match the server side name.</param>
-    procedure GetListItemAttachmentContent(ListId: Guid; ListItemId: Integer; FileName: Text)
+    procedure DownloadListItemAttachmentContent(ListId: Guid; ListItemId: Integer; FileName: Text)
     begin
-        SharePointClientImpl.GetListItemAttachmentContent(ListId, ListItemId, FileName);
+        SharePointClientImpl.DownloadListItemAttachmentContent(ListId, ListItemId, FileName);
     end;
 
     /// <summary>
@@ -107,9 +107,9 @@ codeunit 9100 "SharePoint Client"
     /// </summary>
     /// <remarks>The server side file name will be used.</remarks>
     /// <param name="OdataId">The odata.id parameter of the attachment entity.</param>
-    procedure GetListItemAttachmentContent(OdataId: Text)
+    procedure DownloadListItemAttachmentContent(OdataId: Text)
     begin
-        SharePointClientImpl.GetListItemAttachmentContent(OdataId);
+        SharePointClientImpl.DownloadListItemAttachmentContent(OdataId);
     end;
 
     /// <summary>
@@ -226,9 +226,9 @@ codeunit 9100 "SharePoint Client"
     /// </summary>
     /// <param name="OdataId">The odata.id parameter of the file entity.</param>
     /// <param name="FileName">Name to be given to the file on the client side. Does not need to match the server side name.</param>
-    procedure GetFileContent(OdataId: Text; FileName: Text)
+    procedure DownloadFileContent(OdataId: Text; FileName: Text)
     begin
-        SharePointClientImpl.GetFileContent(OdataId, FileName);
+        SharePointClientImpl.DownloadFileContent(OdataId, FileName);
     end;
 
     /// <summary>
