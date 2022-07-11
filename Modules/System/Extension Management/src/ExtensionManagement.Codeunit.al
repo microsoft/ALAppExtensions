@@ -351,6 +351,6 @@ codeunit 2504 "Extension Management"
     /// <returns></returns>
     procedure GetDeploymentDetailedStatusMessageAsStream(OperationId: Guid; OutStream: OutStream)
     begin
-        exit(ExtensionOperationImpl.GetDeploymentDetailedStatusMessageAsStream(OperationId, OutStream));
+        ExtensionOperationImpl.GetDeploymentDetailedStatusMessageAsStream(OperationId, OutStream);
     end;
 }
