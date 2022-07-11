@@ -1,8 +1,18 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// Holds information about folder entity.
+/// </summary>
 table 9106 "SharePoint Folder"
 {
+    Access = Public;
     DataClassification = SystemMetadata;
     Caption = 'SharePoint Folder';
     TableType = Temporary;
+    Extensible = false;
 
     fields
     {

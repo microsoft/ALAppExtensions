@@ -1,8 +1,18 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+/// <summary>
+/// Holds information about list item entity.
+/// </summary>
 table 9103 "SharePoint List Item"
 {
+    Access = Public;
     DataClassification = SystemMetadata;
     Caption = 'SharePoint List Item';
     TableType = Temporary;
+    Extensible = false;
 
     fields
     {

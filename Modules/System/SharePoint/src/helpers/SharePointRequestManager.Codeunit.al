@@ -6,9 +6,7 @@ codeunit 9109 "SharePoint Request Manager"
         HttpClient: HttpClient;
         Authorization: Interface "SharePoint Authorization";
         HttpResponseInfoErr: Label '%1.\\Response Code: %2 %3', Comment = '%1 = Default Error Message ; %2 = Status Code; %3 = Reason Phrase';
-
         OperationNotSuccessfulErr: Label 'An error has occurred';
-        BearerTxt: Label 'Bearer %1', Comment = '%1 - Bearer token', Locked = true;
 
     procedure SetAuthorization(Auth: Interface "SharePoint Authorization")
     begin
@@ -16,7 +14,6 @@ codeunit 9109 "SharePoint Request Manager"
     end;
 
     procedure Get(SharePointUriBuilder: Codeunit "SharePoint Uri Builder") OperationResponse: Codeunit "SharePoint Operation Response"
-    var
     begin
         OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::GET, SharePointUriBuilder));
     end;
@@ -24,16 +21,14 @@ codeunit 9109 "SharePoint Request Manager"
     procedure Post(SharePointUriBuilder: Codeunit "SharePoint Uri Builder") OperationResponse: Codeunit "SharePoint Operation Response"
     var
         SharePointHttpContent: Codeunit "SharePoint Http Content";
+
     begin
         OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::POST, SharePointUriBuilder, SharePointHttpContent));
     end;
 
     procedure Post(SharePointUriBuilder: Codeunit "SharePoint Uri Builder"; SharePointHttpContent: Codeunit "SharePoint Http Content") OperationResponse: Codeunit "SharePoint Operation Response"
-    var
-        HttpRequestMessage: HttpRequestMessage;
     begin
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, SharePointUriBuilder, SharePointHttpContent);
-        OperationResponse := SendRequest(HttpRequestMessage);
+        OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::POST, SharePointUriBuilder, SharePointHttpContent));
     end;
 
     [NonDebuggable]
@@ -44,7 +39,6 @@ codeunit 9109 "SharePoint Request Manager"
         RequestMessage.Method(Format(HttpRequestType));
         RequestMessage.SetRequestUri(SharePointUriBuilder.GetUri());
         RequestMessage.GetHeaders(Headers);
-        Headers.Add('Authorization', GetAuthenticationHeaderValue());
         Headers.Add('Accept', 'application/json');
     end;
 
@@ -58,7 +52,6 @@ codeunit 9109 "SharePoint Request Manager"
         RequestMessage.SetRequestUri(SharePointUriBuilder.GetUri());
 
         RequestMessage.GetHeaders(Headers);
-        Headers.Add('Authorization', GetAuthenticationHeaderValue());
         Headers.Add('Accept', 'application/json;odata=verbose');
 
         if SharePointHttpContent.GetContentLength() > 0 then begin
@@ -86,6 +79,8 @@ codeunit 9109 "SharePoint Request Manager"
     var
         HttpResponseMessage: HttpResponseMessage;
     begin
+        Authorization.Authorize(HttpRequestMessage);
+
         if not HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
             Error(OperationNotSuccessfulErr);
 
@@ -94,13 +89,6 @@ codeunit 9109 "SharePoint Request Manager"
 
         OperationResponse.SetHttpResponse(HttpResponseMessage);
 
-    end;
-
-    [NonDebuggable]
-    local procedure GetAuthenticationHeaderValue() Value: Text;
-    begin
-
-        Value := StrSubstNo(BearerTxt, Authorization.GetToken());
     end;
 
 }

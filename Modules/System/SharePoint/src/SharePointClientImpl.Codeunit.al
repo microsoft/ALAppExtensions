@@ -225,7 +225,6 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointListItemAtchParser.ParseSingle(Result, SharePointListItemAtch);
     end;
 
-
     procedure CreateListItemAttachment(ListId: Guid; ListItemId: Integer; var SharePointListItemAtch: Record "SharePoint List Item Atch")
     var
         SharePointOperationResponse: Codeunit "SharePoint Operation Response";

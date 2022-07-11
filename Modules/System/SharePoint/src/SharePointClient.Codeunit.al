@@ -3,6 +3,8 @@
 /// </summary>
 codeunit 9100 "SharePoint Client"
 {
+    Access = Public;
+
     var
         SharePointClientImpl: Codeunit "SharePoint Client Impl.";
 
