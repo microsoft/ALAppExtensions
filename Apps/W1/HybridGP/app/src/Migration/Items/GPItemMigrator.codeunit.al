@@ -66,25 +66,16 @@ codeunit 4019 "GP Item Migrator"
         CurrentCompanyName: Text[30];
         ItemClassId: Text[11];
         ConfiguredToMigrateItemClasses: Boolean;
-        ShouldUseMigratedItemClass: Boolean;
     begin
         ConfiguredToMigrateItemClasses := GPCompanyAdditionalSettings.GetMigrateItemClasses();
         MigrateItemClassesIfNeeded(GPItem, Sender);
 
         if GPItem.ItemType = 0 then begin
-            if ConfiguredToMigrateItemClasses then begin
-                ShouldUseMigratedItemClass := true;
-
-                if GPIV00101.Get(GPItem.No) then begin
+            if ConfiguredToMigrateItemClasses then
+                if GPIV00101.Get(GPItem.No) then
                     ItemClassId := GPIV00101.ITMCLSCD.Trim();
 
-                    if ItemClassId = '' then
-                        ShouldUseMigratedItemClass := false;
-                end else
-                    ShouldUseMigratedItemClass := false
-            end;
-
-            if (ShouldUseMigratedItemClass) then
+            if (ItemClassId <> '') then
                 Sender.SetInventoryPostingGroup(ItemClassId)
             else begin
                 Sender.SetInventoryPostingGroup(CopyStr(DefaultPostingGroupCodeTxt, 1, 20));
@@ -396,58 +387,83 @@ codeunit 4019 "GP Item Migrator"
         end;
     end;
 
-    procedure MigrateItemClassesIfNeeded(GPItem: Record "GP Item"; ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
+    procedure MigrateItemClassesIfNeeded(var GPItem: Record "GP Item"; var ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
     var
         GPItemLocation: Record "GP Item Location";
         InventoryPostingGroup: Record "Inventory Posting Group";
-        GPIV00101: Record "GP IV00101";
-        GPIV40400: Record "GP IV40400";
+        InventoryPostingSetup: Record "Inventory Posting Setup";
         HelperFunctions: Codeunit "Helper Functions";
         PostingGroupCode: Code[20];
-        AccountNumber: Code[20];
     begin
         if DefaultAccountNumber = '' then
             DefaultAccountNumber := HelperFunctions.GetPostingAccountNumber(InventoryAccountName);
 
-        AccountNumber := DefaultAccountNumber;
+        MigrateDefaultPostingGroupIfNeeded(ItemDataMigrationFacade);
+        MigrateGPPostingGroupIfNeeded(GPItem, ItemDataMigrationFacade);
+    end;
 
-        // Default Posting Group (GP)
-        PostingGroupCode := CopyStr(DefaultPostingGroupCodeTxt, 1, 20);
+    local procedure MigrateDefaultPostingGroupIfNeeded(var ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
+    var
+        InventoryPostingGroup: Record "Inventory Posting Group";
+        InventoryPostingSetup: Record "Inventory Posting Setup";
+        GPItemLocation: Record "GP Item Location";
+        PostingGroupCode: Code[20];
+    begin
+        PostingGroupCode := CopyStr(DefaultPostingGroupCodeTxt, 1, MaxStrLen(PostingGroupCode));
         if not InventoryPostingGroup.Get(PostingGroupCode) then begin
-            ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(PostingGroupCode, CopyStr(DefaultPostingGroupDescriptionTxt, 1, 50), '');
+            ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(PostingGroupCode, CopyStr(DefaultPostingGroupDescriptionTxt, 1, MaxStrLen(InventoryPostingGroup.Description)), '');
             ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(PostingGroupCode, '', DefaultAccountNumber);
 
             if GPItemLocation.FindSet() then
                 repeat
-                    ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(PostingGroupCode, CopyStr(DefaultPostingGroupDescriptionTxt, 1, 50), CopyStr(GPItemLocation.LOCNCODE, 1, 10));
-                    ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(PostingGroupCode, CopyStr(GPItemLocation.LOCNCODE, 1, 10), DefaultAccountNumber);
+                    ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(PostingGroupCode, CopyStr(DefaultPostingGroupDescriptionTxt, 1, MaxStrLen(InventoryPostingGroup.Description)), CopyStr(GPItemLocation.LOCNCODE, 1, MaxStrLen(InventoryPostingSetup."Location Code")));
+                    ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(PostingGroupCode, CopyStr(GPItemLocation.LOCNCODE, 1, MaxStrLen(InventoryPostingSetup."Location Code")), DefaultAccountNumber);
                 until GPItemLocation.Next() = 0;
         end;
+    end;
 
-        // Migrated Posting Groups
+    local procedure MigrateGPPostingGroupIfNeeded(var GPItem: Record "GP Item"; var ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
+    var
+        InventoryPostingGroup: Record "Inventory Posting Group";
+        InventoryPostingSetup: Record "Inventory Posting Setup";
+        GPIV00101: Record "GP IV00101";
+        GPIV40400: Record "GP IV40400";
+        GPItemLocation: Record "GP Item Location";
+        HelperFunctions: Codeunit "Helper Functions";
+        PostingGroupCode: Code[20];
+        AccountNumber: Code[20];
+    begin
         if not GPCompanyAdditionalSettings."Migrate Item Classes" then
             exit;
 
         if not GPIV40400.FindSet() then
             exit;
 
-        if GPIV00101.Get(GPItem.No) then begin
-            PostingGroupCode := GPIV00101.ITMCLSCD.Trim();
-            if PostingGroupCode <> '' then
-                if not InventoryPostingGroup.Get(PostingGroupCode) then
-                    if GPIV40400.Get(PostingGroupCode) then begin
-                        if GPIV40400.IVIVINDX > 0 then
-                            AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPIV40400.IVIVINDX);
+        if not GPIV00101.Get(GPItem.No) then
+            exit;
 
-                        ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(PostingGroupCode, GPIV40400.ITMCLSDC, '');
-                        ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(PostingGroupCode, '', AccountNumber);
+        PostingGroupCode := GPIV00101.ITMCLSCD.Trim();
+        if PostingGroupCode = '' then
+            exit;
 
-                        if GPItemLocation.FindSet() then
-                            repeat
-                                ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(PostingGroupCode, GPIV40400.ITMCLSDC, CopyStr(GPItemLocation.LOCNCODE, 1, 10));
-                                ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(PostingGroupCode, CopyStr(GPItemLocation.LOCNCODE, 1, 10), AccountNumber);
-                            until GPItemLocation.Next() = 0;
-                    end;
-        end;
+        if InventoryPostingGroup.Get(PostingGroupCode) then
+            exit;
+
+        if not GPIV40400.Get(PostingGroupCode) then
+            exit;
+
+        AccountNumber := DefaultAccountNumber;
+
+        if GPIV40400.IVIVINDX > 0 then
+            AccountNumber := HelperFunctions.GetGPAccountNumberByIndex(GPIV40400.IVIVINDX);
+
+        ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(PostingGroupCode, GPIV40400.ITMCLSDC, '');
+        ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(PostingGroupCode, '', AccountNumber);
+
+        if GPItemLocation.FindSet() then
+            repeat
+                ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(PostingGroupCode, GPIV40400.ITMCLSDC, CopyStr(GPItemLocation.LOCNCODE, 1, MaxStrLen(InventoryPostingSetup."Location Code")));
+                ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(PostingGroupCode, CopyStr(GPItemLocation.LOCNCODE, 1, MaxStrLen(InventoryPostingSetup."Location Code")), AccountNumber);
+            until GPItemLocation.Next() = 0;
     end;
 }

@@ -21,11 +21,9 @@ codeunit 139662 "GP Item Tests"
     begin
         CompanyNameText := CompanyName();
 
-        GPCompanyMigrationSettings.Init();
         GPCompanyMigrationSettings.Name := CompanyNameText;
         GPCompanyMigrationSettings.Insert(true);
 
-        GPCompanyAdditionalSettings.Init();
         GPCompanyAdditionalSettings.Name := CompanyNameText;
         GPCompanyAdditionalSettings."Migrate Item Classes" := MigrateItemClasses;
         GPCompanyAdditionalSettings.Insert(true);
