@@ -332,5 +332,25 @@ codeunit 2504 "Extension Management"
     begin
         exit(ExtensionOperationImpl.GetAppName(AppId))
     end;
-}
 
+    /// <summary>
+    /// Returns the detailed message from a deployment operation
+    /// </summary>
+    /// <param name="OperationId">The Id of the operation to get the detailed message from.</param>
+    /// <returns>The detailed message as text</returns>
+    procedure GetDeploymentDetailedStatusMessage(OperationId: Guid): Text
+    begin
+        exit(ExtensionOperationImpl.GetDeploymentDetailedStatusMessage(OperationId));
+    end;
+
+    /// <summary>
+    /// Writes the detailed message from a deployment operation to a stream
+    /// </summary>
+    /// <param name="OperationId">The Id of the operation to get the detailed message from.</param>
+    /// <param name="OutStream">An OutStream to write the message to.</param>
+    /// <returns></returns>
+    procedure GetDeploymentDetailedStatusMessageAsStream(OperationId: Guid; OutStream: OutStream)
+    begin
+        ExtensionOperationImpl.GetDeploymentDetailedStatusMessageAsStream(OperationId, OutStream);
+    end;
+}
