@@ -317,26 +317,38 @@ table 30102 "Shpfy Shop"
             Caption = 'Collection Last Export Version';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.3';
         }
         field(101; "Collection Last Import Version"; BigInteger)
         {
             Caption = 'Collection Last Import Version';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.3';
         }
         field(102; "Product Last Export Version"; BigInteger)
         {
             Caption = 'Product Last Export Version';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.3';
         }
         field(103; "Product Last Import Version"; BigInteger)
         {
             Caption = 'Product Last Import Version';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.3';
         }
-        field(104; "SKU Mapping"; Enum "Shpfy SKU Mapping")
+        field(104; "SKU Mapping"; Enum "Shpfy SKU Mappging")
         {
             Caption = 'SKU Mapping';
             DataClassification = SystemMetadata;
@@ -371,6 +383,7 @@ table 30102 "Shpfy Shop"
 
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure GetAccessToken() Result: Text
     var
         ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
@@ -383,6 +396,7 @@ table 30102 "Shpfy Shop"
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure RequestAccessToken()
     var
         ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
@@ -394,6 +408,7 @@ table 30102 "Shpfy Shop"
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure HasAccessToken(): Boolean
     var
         AuthorizationMgt: Codeunit "Shpfy Authentication Mgt.";

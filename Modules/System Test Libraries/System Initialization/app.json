@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Test objetcs for the System Initialization module.",
     "description":  "Test objetcs for the System Initialization module.",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,7 +15,7 @@
                              "id":  "2955a828-6c0a-4d51-a1b8-a4cf2a040b9a",
                              "name":  "System Initialization",
                              "publisher":  "Microsoft",
-                             "version":  "20.2.0.0"
+                             "version":  "20.3.0.0"
                          }
                      ],
     "screenshots":  [

@@ -2,7 +2,7 @@
     "id":  "7961e9dc-a8e5-49b1-839b-3a78803a4cb8",
     "name":  "Troubleshoot FA Ledger Entries",
     "publisher":  "Microsoft",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "brief":  "Troubleshoot – Find FA Ledger Entries with potential rounding issues.",
     "description":  "Troubleshoot – Find and correct FA Ledger Entries with potential rounding issues.",
     "dependencies":  [
@@ -17,7 +17,7 @@
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "ExtensionLogo.png",
     "platform":  "20.0.0.0",
-    "application":  "20.2.0.0",
+    "application":  "20.3.0.0",
     "idRanges":  [
                      {
                          "from":  6090,

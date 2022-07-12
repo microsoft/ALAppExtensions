@@ -285,7 +285,7 @@ report 18050 "GSTR_2 File Format"
         pDate: Date;
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(GSTR2B2BQuery.Location__Reg__No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn(GSTR2B2BQuery.Buyer_Seller_Reg__No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(GSTR2B2BQuery.Document_No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
 
         GetPostingDateImps(pDate, GSTR2B2BQuery.Document_No_);
@@ -1045,7 +1045,7 @@ report 18050 "GSTR_2 File Format"
 
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(GSTR2CDNRQuery.Location__Reg__No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn(GSTR2CDNRQuery.Buyer_Seller_Reg__No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(GSTR2CDNRQuery.Document_No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn(GSTR2CDNRQuery.Posting_Date, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
 

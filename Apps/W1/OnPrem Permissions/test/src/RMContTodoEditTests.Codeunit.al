@@ -1,4 +1,4 @@
-codeunit 139870 "RM Cont/Todo, Edit Tests"
+codeunit 139870 "RM Cont/Todo - Edit Tests"
 {
     Subtype = Test;
     TestPermissions = Restrictive;

@@ -252,19 +252,19 @@ report 18049 "GSTR-1 File Format"
     procedure MakeExcelHeaderB2B()
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(GSTINUINTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(ReceiverTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(InvoiceNoTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(InvoiceDateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(InvoiceValueTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(PlaceofSupplyTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(ReverseChargeTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(InvoiceTypeTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(ECommGSTINTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(RateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxableValueTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(CESSAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(GSTINUINTxt);
+        AddTextColumn(ReceiverTxt);
+        AddTextColumn(InvoiceNoTxt);
+        AddTextColumn(InvoiceDateTxt);
+        AddTextColumn(InvoiceValueTxt);
+        AddTextColumn(PlaceofSupplyTxt);
+        AddTextColumn(ReverseChargeTxt);
+        AddTextColumn(TaxTxt);
+        AddTextColumn(InvoiceTypeTxt);
+        AddTextColumn(ECommGSTINTxt);
+        AddTextColumn(RateTxt);
+        AddTextColumn(TaxableValueTxt);
+        AddTextColumn(CESSAmountTxt);
     end;
 
     local procedure MakeExcelBodyB2B()
@@ -274,7 +274,7 @@ report 18049 "GSTR-1 File Format"
         MakeExcelHeaderB2B();
         GSTR1B2BQuery.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1B2BQuery.SetRange(Posting_Date, StartDate, EndDate);
-        GSTR1B2BQuery.SetFilter(GSTR1B2BQuery.GST_Customer_Type, '%1|%2|%3|%4', "GST Customer Type"::"Deemed Export", "GST Customer Type"::"SEZ Unit", "GST Customer Type"::"SEZ Development", "GST Customer Type"::Registered);
+        GSTR1B2BQuery.SetFilter(GST_Customer_Type, '%1|%2|%3|%4', "GST Customer Type"::"Deemed Export", "GST Customer Type"::"SEZ Unit", "GST Customer Type"::"SEZ Development", "GST Customer Type"::Registered);
         GSTR1B2BQuery.Open();
         while GSTR1B2BQuery.Read() do
             FillExcelBufferB2B(GSTR1B2BQuery);
@@ -282,66 +282,67 @@ report 18049 "GSTR-1 File Format"
 
     local procedure FillExcelBufferB2B(GSTR1B2BQuery: Query GSTR1B2BQuery)
     var
-        GSTR1B2BGSTPer: Query GSTR1B2BGSTPer;
+        Customer: Record Customer;
         GSTR1B2BCessAmt: Query GSTR1B2BCessAmt;
+        LocationRegNo: Variant;
     begin
         TempExcelBuffer.NewRow();
-        if GSTR1B2BQuery.Reverse_Charge then
-            TempExcelBuffer.AddColumn(GSTR1B2BQuery.Location__Reg__No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+        if GSTR1B2BQuery.Reverse_Charge then begin
+            LocationRegNo := GSTR1B2BQuery.Location__Reg__No_;
+            AddTextColumn(LocationRegNo);
+        end
         else
-            TempExcelBuffer.AddColumn(GSTR1B2BQuery.Buyer_Seller_Reg__No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn(GSTR1B2BQuery.Buyer_Seller_Reg__No_);
 
-        if GSTR1B2BQuery.Source_No_ <> '' then
-            TempExcelBuffer.AddColumn(GSTR1B2BQuery.Name, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+        if GSTR1B2BQuery.Source_No_ <> '' then begin
+            Customer.SetRange("No.", GSTR1B2BQuery.Source_No_);
+            if Customer.FindFirst() then
+                AddTextColumn(Customer.Name);
+        end
         else
-            TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn('');
 
-        TempExcelBuffer.AddColumn(GSTR1B2BQuery.Document_No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(GSTR1B2BQuery.Document_No_);
+
         if GSTR1B2BQuery.Original_Doc__Type = GSTR1B2BQuery.Original_Doc__Type::"Transfer Shipment" then begin
-            TempExcelBuffer.AddColumn(GSTR1B2BQuery.Posting_Date, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
-            TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
-        end else begin
-            TempExcelBuffer.AddColumn(GetDocumentDate(GSTR1B2BQuery.Document_No_, "GST Document Type"::Invoice), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
+            AddDateColumn(GSTR1B2BQuery.Posting_Date);
+            FillInvoiceValue(GSTR1B2BQuery);
+        end
+        else begin
+            AddDateColumn(GetDocumentDate(GSTR1B2BQuery.Document_No_, "GST Document Type"::Invoice));
             if GSTR1B2BQuery.Finance_Charge_Memo then
-                TempExcelBuffer.AddColumn(GetInvoiceValueFinCharge(GSTR1B2BQuery.Document_No_), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+                AddNumberColumn(GetInvoiceValueFinCharge(GSTR1B2BQuery.Document_No_))
             else
-                TempExcelBuffer.AddColumn(GetInvoiceValue(GSTR1B2BQuery.Document_No_, "GST Document Type"::Invoice), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+                AddNumberColumn(GetInvoiceValue(GSTR1B2BQuery.Document_No_, "GST Document Type"::Invoice));
         end;
 
         if GSTR1B2BQuery.Buyer_Seller_State_Code <> '' then
-            TempExcelBuffer.AddColumn(GSTR1B2BQuery.State_Code__GST_Reg__No__ + '-' + GSTR1B2BQuery.Description, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(GSTR1B2BQuery.State_Code__GST_Reg__No__ + '-' + GSTR1B2BQuery.Description)
         else
-            TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn('');
 
         if GSTR1B2BQuery.Reverse_Charge then
-            TempExcelBuffer.AddColumn(YLbl, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(YLbl)
         else
-            TempExcelBuffer.AddColumn(NLbl, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn(NLbl);
 
-        TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(GetInvoiceType(GSTR1B2BQuery), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn('');
+        AddTextColumn(GetInvoiceType(GSTR1B2BQuery));
 
         if GSTR1B2BQuery.e_Comm__Operator_GST_Reg__No_ <> '' then
-            TempExcelBuffer.AddColumn(GSTR1B2BQuery.e_Comm__Operator_GST_Reg__No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(GSTR1B2BQuery.e_Comm__Operator_GST_Reg__No_)
         else
-            TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-
-        GSTR1B2BGSTPer.TopNumberOfRows(1);
-        GSTR1B2BGSTPer.SetRange(Location__Reg__No_, LocationGSTIN);
-        GSTR1B2BGSTPer.SetRange(Posting_Date, StartDate, EndDate);
-        GSTR1B2BGSTPer.SetRange(Document_No_, GSTR1B2BQuery.Document_No_);
-        GSTR1B2BGSTPer.SetRange(GST_Customer_Type, GSTR1B2BQuery.GST_Customer_Type);
-        GSTR1B2BGSTPer.Open();
-        while GSTR1B2BGSTPer.Read() do
-            if GSTR1B2BGSTPer.GST_Jurisdiction_Type = GSTR1B2BGSTPer.GST_Jurisdiction_Type::Intrastate then
-                TempExcelBuffer.AddColumn(2 * GSTR1B2BGSTPer.GST__, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number)
-            else
-                TempExcelBuffer.AddColumn(GSTR1B2BGSTPer.GST__, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+            AddTextColumn('');
 
         if GSTR1B2BQuery.GST_Jurisdiction_Type = GSTR1B2BQuery.GST_Jurisdiction_Type::Intrastate then
-            TempExcelBuffer.AddColumn(Abs(GSTR1B2BQuery.GST_Base_Amount / 2), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+            AddNumberColumn(2 * GSTR1B2BQuery.GST__)
         else
-            TempExcelBuffer.AddColumn(Abs(GSTR1B2BQuery.GST_Base_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(GSTR1B2BQuery.GST__);
+
+        if GSTR1B2BQuery.GST_Jurisdiction_Type = GSTR1B2BQuery.GST_Jurisdiction_Type::Intrastate then
+            AddNumberColumn(Abs(GSTR1B2BQuery.GST_Base_Amount / 2))
+        else
+            AddNumberColumn(Abs(GSTR1B2BQuery.GST_Base_Amount));
 
         GSTR1B2BCessAmt.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1B2BCessAmt.SetRange(Posting_Date, StartDate, EndDate);
@@ -349,23 +350,41 @@ report 18049 "GSTR-1 File Format"
         GSTR1B2BCessAmt.SetRange(GSTR1B2BCessAmt.GST_Customer_Type, GSTR1B2BQuery.GST_Customer_Type);
         GSTR1B2BCessAmt.Open();
         if GSTR1B2BCessAmt.Read() then
-            TempExcelBuffer.AddColumn(Abs(GSTR1B2BCessAmt.GST_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+            AddNumberColumn(Abs(GSTR1B2BCessAmt.GST_Amount))
         else
-            TempExcelBuffer.AddColumn(0.00, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(0.00);
+    end;
+
+    local procedure FillInvoiceValue(GSTR1B2BQuery: Query GSTR1B2BQuery)
+    var
+        GSTR1B2BTranship: Query GSTR1B2BSalesTranship;
+        InvoiceValue: Decimal;
+    begin
+        GSTR1B2BTranship.SetRange(Location__Reg__No_, LocationGSTIN);
+        GSTR1B2BTranship.SetRange(Posting_Date, StartDate, EndDate);
+        GSTR1B2BTranship.SetRange(Document_No_, GSTR1B2BQuery.Document_No_);
+        GSTR1B2BTranship.Open();
+        while GSTR1B2BTranship.Read() do
+            if GSTR1B2BQuery.GST_Jurisdiction_Type = GSTR1B2BQuery.GST_Jurisdiction_Type::Intrastate then
+                InvoiceValue += ((Abs(GSTR1B2BTranship.GST_Base_Amount) + (Abs(GSTR1B2BTranship.GST_Amount) * 2)) / 2)
+            else
+                InvoiceValue += Abs(GSTR1B2BTranship.GST_Base_Amount) + Abs(GSTR1B2BTranship.GST_Amount);
+
+        AddNumberColumn(InvoiceValue);
     end;
 
     local procedure MakeExcelHeaderB2CL()
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(InvoiceNoTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(InvoiceDateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(InvoiceValueTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(PlaceofSupplyTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(RateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxableValueTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(CESSAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(ECommGSTINTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(InvoiceNoTxt);
+        AddTextColumn(InvoiceDateTxt);
+        AddTextColumn(InvoiceValueTxt);
+        AddTextColumn(PlaceofSupplyTxt);
+        AddTextColumn(TaxTxt);
+        AddTextColumn(RateTxt);
+        AddTextColumn(TaxableValueTxt);
+        AddTextColumn(CESSAmountTxt);
+        AddTextColumn(ECommGSTINTxt);
     end;
 
     local procedure MakeExcelBodyB2CL()
@@ -388,16 +407,16 @@ report 18049 "GSTR-1 File Format"
         GSTR1B2CLCessAmt: Query GSTR1B2CLCessAmt;
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(GSTR1B2CLQuery.Document_No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(GSTR1B2CLQuery.Posting_Date, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
-        TempExcelBuffer.AddColumn(GetInvoiceValue(GSTR1B2CLQuery.Document_No_, "GST Document Type"::Invoice), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+        AddTextColumn(GSTR1B2CLQuery.Document_No_);
+        AddDateColumn(GSTR1B2CLQuery.Posting_Date);
+        AddNumberColumn(GetInvoiceValue(GSTR1B2CLQuery.Document_No_, "GST Document Type"::Invoice));
 
         if GSTR1B2CLQuery.Buyer_Seller_State_Code <> '' then
-            TempExcelBuffer.AddColumn(GSTR1B2CLQuery.State_Code__GST_Reg__No__ + '-' + GSTR1B2CLQuery.Description, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(GSTR1B2CLQuery.State_Code__GST_Reg__No__ + '-' + GSTR1B2CLQuery.Description)
         else
-            TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn('');
 
-        TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn('');
 
         GSTR1B2CLPer.TopNumberOfRows(1);
         GSTR1B2CLPer.SetRange(Location__Reg__No_, LocationGSTIN);
@@ -406,9 +425,9 @@ report 18049 "GSTR-1 File Format"
         GSTR1B2CLPer.SetRange(GSTR1B2CLPer.GST_Jurisdiction_Type, "GST Jurisdiction Type"::Interstate);
         GSTR1B2CLPer.Open();
         while GSTR1B2CLPer.Read() do
-            TempExcelBuffer.AddColumn(GSTR1B2CLPer.GST__, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(GSTR1B2CLPer.GST__);
 
-        TempExcelBuffer.AddColumn(Abs(GSTR1B2CLQuery.GST_Base_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+        AddNumberColumn(Abs(GSTR1B2CLQuery.GST_Base_Amount));
 
         GSTR1B2CLCessAmt.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1B2CLCessAmt.SetRange(Posting_Date, StartDate, EndDate);
@@ -416,26 +435,26 @@ report 18049 "GSTR-1 File Format"
         GSTR1B2CLCessAmt.SetRange(GSTR1B2CLCessAmt.GST_Jurisdiction_Type, "GST Jurisdiction Type"::Interstate);
         GSTR1B2CLCessAmt.Open();
         if GSTR1B2CLCessAmt.Read() then
-            TempExcelBuffer.AddColumn(Abs(GSTR1B2CLCessAmt.GST_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+            AddNumberColumn(Abs(GSTR1B2CLCessAmt.GST_Amount))
         else
-            TempExcelBuffer.AddColumn(0.00, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(0.00);
 
         if GSTR1B2CLQuery.e_Comm__Operator_GST_Reg__No_ <> '' then
-            TempExcelBuffer.AddColumn(GSTR1B2CLQuery.e_Comm__Operator_GST_Reg__No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(GSTR1B2CLQuery.e_Comm__Operator_GST_Reg__No_)
         else
-            TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn('');
     end;
 
     local procedure MakeExcelHeaderB2CS()
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(TypeTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(PlaceOfSupplyTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(RateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxableValueTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(CESSAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(ECommGSTINTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(TypeTxt);
+        AddTextColumn(PlaceOfSupplyTxt);
+        AddTextColumn(TaxTxt);
+        AddTextColumn(RateTxt);
+        AddTextColumn(TaxableValueTxt);
+        AddTextColumn(CESSAmountTxt);
+        AddTextColumn(ECommGSTINTxt);
     end;
 
     local procedure MakeExcelBodyB2CS()
@@ -468,16 +487,16 @@ report 18049 "GSTR-1 File Format"
     begin
         TempExcelBuffer.NewRow();
         if GSTR1B2CSQuery.e_Comm__Operator_GST_Reg__No_ <> '' then
-            TempExcelBuffer.AddColumn(ELbl, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(ELbl)
         else
-            TempExcelBuffer.AddColumn(UpperCase(OtherECommTxt), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn(UpperCase(OtherECommTxt));
 
         if State.Get(GSTR1B2CSQuery.Buyer_Seller_State_Code) then
-            TempExcelBuffer.AddColumn(State."State Code (GST Reg. No.)" + '-' + State.Description, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(State."State Code (GST Reg. No.)" + '-' + State.Description)
         else
-            TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn('');
 
-        TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn('');
 
         GSTR1B2CSPer.TopNumberOfRows(1);
         GSTR1B2CSPer.SetRange(Location__Reg__No_, LocationGSTIN);
@@ -487,9 +506,9 @@ report 18049 "GSTR-1 File Format"
         GSTR1B2CSPer.Open();
         while GSTR1B2CSPer.Read() do
             if GSTR1B2CSPer.GST_Jurisdiction_Type = GSTR1B2CSPer.GST_Jurisdiction_Type::Intrastate then
-                TempExcelBuffer.AddColumn(2 * GSTR1B2CSPer.GST__, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number)
+                AddNumberColumn(2 * GSTR1B2CSPer.GST__)
             else
-                TempExcelBuffer.AddColumn(GSTR1B2CSPer.GST__, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                AddNumberColumn(GSTR1B2CSPer.GST__);
 
         GSTR1B2CSIntraAmt.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1B2CSIntraAmt.SetRange(Posting_Date, StartDate, EndDate);
@@ -511,7 +530,7 @@ report 18049 "GSTR-1 File Format"
         while GSTR1B2CSInter.Read() do
             GSTR1B2CSInterBaseAmt := GSTR1B2CSInter.GST_Base_Amount;
 
-        TempExcelBuffer.AddColumn(Abs(GSTR1B2CSInterBaseAmt + GSTRB2CSIntraAmount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+        AddNumberColumn(Abs(GSTR1B2CSInterBaseAmt + GSTRB2CSIntraAmount));
 
         GSTR1B2CSCessAmt.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1B2CSCessAmt.SetRange(Posting_Date, StartDate, EndDate);
@@ -540,22 +559,22 @@ report 18049 "GSTR-1 File Format"
                 GSTR1InterCess := GSTR1B2CInterCess.GST_Amount;
         end;
 
-        TempExcelBuffer.AddColumn(Abs(GSTR1IntraCess + GSTR1InterCess), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+        AddNumberColumn(Abs(GSTR1IntraCess + GSTR1InterCess));
 
         if GSTR1B2CSQuery.e_Comm__Operator_GST_Reg__No_ <> '' then
-            TempExcelBuffer.AddColumn(GSTR1B2CSQuery.e_Comm__Operator_GST_Reg__No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(GSTR1B2CSQuery.e_Comm__Operator_GST_Reg__No_)
         else
-            TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn('');
     end;
 
     local procedure MakeExcelHeaderAT()
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(PlaceOfSupplyTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(RateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(GrossAdvanceRcvdTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(CESSAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(PlaceOfSupplyTxt);
+        AddTextColumn(TaxTxt);
+        AddTextColumn(RateTxt);
+        AddTextColumn(GrossAdvanceRcvdTxt);
+        AddTextColumn(CESSAmountTxt);
     end;
 
     local procedure MakeExcelBodyAT()
@@ -575,16 +594,16 @@ report 18049 "GSTR-1 File Format"
     local procedure MakeExcelHeaderHSN()
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(HSNSACofSupplyTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(DescTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(UpperCase(UQCTxt), false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TotalQtyTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TotalValTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxableValueTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(IGSTAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(CGSTAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(SGSTAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(CESSAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(HSNSACofSupplyTxt);
+        AddTextColumn(DescTxt);
+        AddTextColumn(UpperCase(UQCTxt));
+        AddTextColumn(TotalQtyTxt);
+        AddTextColumn(TotalValTxt);
+        AddTextColumn(TaxableValueTxt);
+        AddTextColumn(IGSTAmountTxt);
+        AddTextColumn(CGSTAmountTxt);
+        AddTextColumn(SGSTAmountTxt);
+        AddTextColumn(CESSAmountTxt);
     end;
 
     local procedure MakeExcelBodyHSN()
@@ -650,37 +669,36 @@ report 18049 "GSTR-1 File Format"
             end;
 
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(GSTR1HSNQuery.HSN_SAC_Code, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-
+        AddTextColumn(GSTR1HSNQuery.HSN_SAC_Code);
         if GSTR1HSNQuery.HSN_SAC_Code <> '' then
-            TempExcelBuffer.AddColumn(GSTR1HSNQuery.Description, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(GSTR1HSNQuery.Description)
         else
-            TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn('');
 
-        TempExcelBuffer.AddColumn(GSTR1HSNQuery.UOM, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(-(HSNQty), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(-(HSNGSTBaseAmt + HSNIGSTAmt + HSNCGSTAmt + HSNSGSTAmt + HSNCessAmt), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(-(HSNGSTBaseAmt), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(-HSNIGSTAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(-HSNCGSTAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(-HSNSGSTAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(-HSNCessAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+        AddTextColumn(GSTR1HSNQuery.UOM);
+        AddNumberColumn(-(HSNQty));
+        AddNumberColumn(-(HSNGSTBaseAmt + HSNIGSTAmt + HSNCGSTAmt + HSNSGSTAmt + HSNCessAmt));
+        AddNumberColumn(-(HSNGSTBaseAmt));
+        AddNumberColumn(-HSNIGSTAmt);
+        AddNumberColumn(-HSNCGSTAmt);
+        AddNumberColumn(-HSNSGSTAmt);
+        AddNumberColumn(-HSNCessAmt);
     end;
 
     local procedure MakeExcelHeaderEXP()
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(ExportTypeTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(InvoiceNoTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(InvoiceDateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(InvoiceValueTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(PortCodeTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(ShipBillNoTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(ShipBillDateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(RateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxableValueTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(CESSAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(ExportTypeTxt);
+        AddTextColumn(InvoiceNoTxt);
+        AddTextColumn(InvoiceDateTxt);
+        AddTextColumn(InvoiceValueTxt);
+        AddTextColumn(PortCodeTxt);
+        AddTextColumn(ShipBillNoTxt);
+        AddTextColumn(ShipBillDateTxt);
+        AddTextColumn(TaxTxt);
+        AddTextColumn(RateTxt);
+        AddTextColumn(TaxableValueTxt);
+        AddTextColumn(CESSAmountTxt);
     end;
 
     local procedure MakeExcelBodyEXP()
@@ -702,22 +720,22 @@ report 18049 "GSTR-1 File Format"
     begin
         TempExcelBuffer.NewRow();
         if GSTR1ExpQuery.GST_Without_Payment_of_Duty then
-            TempExcelBuffer.AddColumn(UpperCase(WOPAYTxt), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(UpperCase(WOPAYTxt))
         else
-            TempExcelBuffer.AddColumn(UpperCase(WPAYTxt), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn(UpperCase(WPAYTxt));
 
-        TempExcelBuffer.AddColumn(GSTR1ExpQuery.Document_No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(GSTR1ExpQuery.Posting_Date, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
+        AddTextColumn(GSTR1ExpQuery.Document_No_);
+        AddDateColumn(GSTR1ExpQuery.Posting_Date);
 
         if GSTR1ExpQuery.Finance_Charge_Memo then
-            TempExcelBuffer.AddColumn(GetInvoiceValueFinCharge(GSTR1ExpQuery.Document_No_), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+            AddNumberColumn(GetInvoiceValueFinCharge(GSTR1ExpQuery.Document_No_))
         else
-            TempExcelBuffer.AddColumn(GetInvoiceValue(GSTR1ExpQuery.Document_No_, "GST Document Type"::Invoice), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(GetInvoiceValue(GSTR1ExpQuery.Document_No_, "GST Document Type"::Invoice));
 
-        TempExcelBuffer.AddColumn(GetExitPoint(GSTR1ExpQuery.Document_No_), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(GSTR1ExpQuery.Bill_Of_Export_No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(GSTR1ExpQuery.Bill_Of_Export_Date, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
-        TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(GetExitPoint(GSTR1ExpQuery.Document_No_));
+        AddTextColumn(GSTR1ExpQuery.Bill_Of_Export_No_);
+        AddDateColumn(GSTR1ExpQuery.Bill_Of_Export_Date);
+        AddTextColumn('');
 
         GSTR1ExpPerQuery.TopNumberOfRows(1);
         GSTR1ExpPerQuery.SetRange(Location__Reg__No_, LocationGSTIN);
@@ -725,21 +743,21 @@ report 18049 "GSTR-1 File Format"
         GSTR1ExpPerQuery.SetRange(Document_No_, GSTR1ExpQuery.Document_No_);
         GSTR1ExpPerQuery.Open();
         while GSTR1ExpPerQuery.Read() do
-            TempExcelBuffer.AddColumn(Abs(GSTR1ExpPerQuery.GST__), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(Abs(GSTR1ExpPerQuery.GST__));
 
         if GSTR1ExpQuery.GST_Jurisdiction_Type = GSTR1ExpQuery.GST_Jurisdiction_Type::Intrastate then
-            TempExcelBuffer.AddColumn(Abs(GSTR1ExpQuery.GST_Base_Amount / 2), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+            AddNumberColumn(Abs(GSTR1ExpQuery.GST_Base_Amount / 2))
         else
-            TempExcelBuffer.AddColumn(Abs(GSTR1ExpQuery.GST_Base_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(Abs(GSTR1ExpQuery.GST_Base_Amount));
 
         GSTR1ExpCessAmt.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1ExpCessAmt.SetRange(Posting_Date, StartDate, EndDate);
         GSTR1ExpCessAmt.SetRange(Document_No_, GSTR1ExpQuery.Document_No_);
         GSTR1ExpCessAmt.Open();
         if GSTR1ExpCessAmt.Read() then
-            TempExcelBuffer.AddColumn(Abs(GSTR1ExpCessAmt.GST_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+            AddNumberColumn(Abs(GSTR1ExpCessAmt.GST_Amount))
         else
-            TempExcelBuffer.AddColumn(0.00, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(0.00);
     end;
 
     local procedure GetExitPoint(DocumentNo: Code[20]): Code[10]
@@ -753,11 +771,11 @@ report 18049 "GSTR-1 File Format"
     local procedure MakeExcelHeaderATADJ()
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(PlaceOfSupplyTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(RateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(GrossAdvanceRcvdTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(CESSAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(PlaceOfSupplyTxt);
+        AddTextColumn(TaxTxt);
+        AddTextColumn(RateTxt);
+        AddTextColumn(GrossAdvanceRcvdTxt);
+        AddTextColumn(CESSAmountTxt);
     end;
 
     local procedure MakeExcelBodyATADJ()
@@ -782,10 +800,11 @@ report 18049 "GSTR-1 File Format"
     begin
         TempExcelBuffer.NewRow();
         if State.Get(GSTR1ATADJQuery.Buyer_Seller_State_Code) then
-            TempExcelBuffer.AddColumn(GSTR1ATADJQuery.State_Code__GST_Reg__No__ + '-' + GSTR1ATADJQuery.Description, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(GSTR1ATADJQuery.State_Code__GST_Reg__No__ + '-' + GSTR1ATADJQuery.Description)
         else
-            TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn('');
+
+        AddTextColumn('');
 
         GSTR1ATADJGSTPer.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1ATADJGSTPer.SetRange(Posting_Date, StartDate, EndDate);
@@ -794,14 +813,14 @@ report 18049 "GSTR-1 File Format"
         GSTR1ATADJGSTPer.Open();
         if GSTR1ATADJGSTPer.Read() then
             if GSTR1ATADJGSTPer.GST_Jurisdiction_Type = GSTR1ATADJGSTPer.GST_Jurisdiction_Type::Intrastate then
-                TempExcelBuffer.AddColumn(2 * GSTR1ATADJGSTPer.GST__, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number)
+                AddNumberColumn(2 * GSTR1ATADJGSTPer.GST__)
             else
-                TempExcelBuffer.AddColumn(GSTR1ATADJGSTPer.GST__, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                AddNumberColumn(GSTR1ATADJGSTPer.GST__);
 
         if GSTR1ATADJQuery.GST_Jurisdiction_Type = GSTR1ATADJQuery.GST_Jurisdiction_Type::Intrastate then
-            TempExcelBuffer.AddColumn(Abs(GSTR1ATADJQuery.GST_Base_Amount / 2), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+            AddNumberColumn(Abs(GSTR1ATADJQuery.GST_Base_Amount / 2))
         else
-            TempExcelBuffer.AddColumn(Abs(GSTR1ATADJQuery.GST_Base_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(Abs(GSTR1ATADJQuery.GST_Base_Amount));
 
         GSTR1ATADJCessAmt.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1ATADJCessAmt.SetRange(Posting_Date, StartDate, EndDate);
@@ -809,9 +828,9 @@ report 18049 "GSTR-1 File Format"
         GSTR1ATADJCessAmt.SetRange(Reversed, false);
         GSTR1ATADJCessAmt.Open();
         if GSTR1ATADJCessAmt.Read() then
-            TempExcelBuffer.AddColumn(Abs(GSTR1ATADJCessAmt.GST_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+            AddNumberColumn(Abs(GSTR1ATADJCessAmt.GST_Amount))
         else
-            TempExcelBuffer.AddColumn(0.00, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(0.00);
     end;
 
     local procedure FillExcelBufferForAT(GSTR1ATQuery: Query GSTR1ATQuery)
@@ -822,10 +841,11 @@ report 18049 "GSTR-1 File Format"
     begin
         TempExcelBuffer.NewRow();
         if State.Get(GSTR1ATQuery.Buyer_Seller_State_Code) then
-            TempExcelBuffer.AddColumn(GSTR1ATQuery.State_Code__GST_Reg__No__ + '-' + GSTR1ATQuery.Description, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(GSTR1ATQuery.State_Code__GST_Reg__No__ + '-' + GSTR1ATQuery.Description)
         else
-            TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn('');
+
+        AddTextColumn('');
 
         GSTR1ATPer.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1ATPer.SetRange(Posting_Date, StartDate, EndDate);
@@ -835,14 +855,14 @@ report 18049 "GSTR-1 File Format"
         GSTR1ATPer.Open();
         while GSTR1ATPer.Read() do
             if GSTR1ATPer.GST_Jurisdiction_Type = GSTR1ATPer.GST_Jurisdiction_Type::Intrastate then
-                TempExcelBuffer.AddColumn(2 * GSTR1ATPer.GST__, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number)
+                AddNumberColumn(2 * GSTR1ATPer.GST__)
             else
-                TempExcelBuffer.AddColumn(GSTR1ATPer.GST__, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                AddNumberColumn(GSTR1ATPer.GST__);
 
         if GSTR1ATQuery.GST_Jurisdiction_Type = GSTR1ATQuery.GST_Jurisdiction_Type::Intrastate then
-            TempExcelBuffer.AddColumn(Abs(GSTR1ATQuery.GST_Base_Amount / 2), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+            AddNumberColumn(Abs(GSTR1ATQuery.GST_Base_Amount / 2))
         else
-            TempExcelBuffer.AddColumn(Abs(GSTR1ATQuery.GST_Base_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(Abs(GSTR1ATQuery.GST_Base_Amount));
 
         GSTR1ATCessAmt.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1ATCessAmt.SetRange(Posting_Date, StartDate, EndDate);
@@ -851,28 +871,28 @@ report 18049 "GSTR-1 File Format"
         GSTR1ATCessAmt.SetRange(Reversed, false);
         GSTR1ATCessAmt.Open();
         if GSTR1ATCessAmt.Read() then
-            TempExcelBuffer.AddColumn(Abs(GSTR1ATCessAmt.GST_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+            AddNumberColumn(Abs(GSTR1ATCessAmt.GST_Amount))
         else
-            TempExcelBuffer.AddColumn(0.00, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(0.00);
     end;
 
     local procedure MakeExcelHeaderCDNR()
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(GSTINUINTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(ReceiverTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(OriginalInvNoTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(OriginalInvDateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(DebitNoteNoTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(DebitNoteDateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(DocumentTypeTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(PlaceOfSupplyTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(RefundVoucherValueTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(RateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxableValueTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(CESSAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(PreGSTTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(GSTINUINTxt);
+        AddTextColumn(ReceiverTxt);
+        AddTextColumn(OriginalInvNoTxt);
+        AddTextColumn(OriginalInvDateTxt);
+        AddTextColumn(DebitNoteNoTxt);
+        AddTextColumn(DebitNoteDateTxt);
+        AddTextColumn(DocumentTypeTxt);
+        AddTextColumn(PlaceOfSupplyTxt);
+        AddTextColumn(RefundVoucherValueTxt);
+        AddTextColumn(TaxTxt);
+        AddTextColumn(RateTxt);
+        AddTextColumn(TaxableValueTxt);
+        AddTextColumn(CESSAmountTxt);
+        AddTextColumn(PreGSTTxt);
     end;
 
     local procedure MakeExcelBodyCDNR()
@@ -928,12 +948,12 @@ report 18049 "GSTR-1 File Format"
         GSTR1CDNRCess: Query GSTR1CDNRCess;
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(GSTR1CDNRQuery.Buyer_Seller_Reg__No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(GSTR1CDNRQuery.Buyer_Seller_Reg__No_);
 
         if GSTR1CDNRQuery.Source_No_ <> '' then
-            TempExcelBuffer.AddColumn(GSTR1CDNRQuery.Name, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(GSTR1CDNRQuery.Name)
         else
-            TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn('');
 
         if (GSTR1CDNRQuery.Document_Type in [GSTR1CDNRQuery.Document_Type::"Credit Memo", GSTR1CDNRQuery.Document_Type::Invoice]) then begin
             ReferenceInvoiceNo.Reset();
@@ -941,32 +961,33 @@ report 18049 "GSTR-1 File Format"
             ReferenceInvoiceNo.SetRange("Document Type", GSTDocumentType2DocumentTypeEnum(GSTR1CDNRQuery.Document_Type));
             ReferenceInvoiceNo.SetRange("Source No.", GSTR1CDNRQuery.Source_No_);
             if ReferenceInvoiceNo.FindFirst() then begin
-                TempExcelBuffer.AddColumn(ReferenceInvoiceNo."Reference Invoice Nos.", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-                TempExcelBuffer.AddColumn(GetPostingDate(ReferenceInvoiceNo), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
+                AddTextColumn(ReferenceInvoiceNo."Reference Invoice Nos.");
+                AddDateColumn(GetPostingDate(ReferenceInvoiceNo));
             end else begin
-                TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-                TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
+                AddTextColumn('');
+                AddTextColumn('');
             end;
         end;
 
-        TempExcelBuffer.AddColumn(GSTR1CDNRQuery.Document_No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(GSTR1CDNRQuery.Posting_Date, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
+        AddTextColumn(GSTR1CDNRQuery.Document_No_);
+        AddDateColumn(GSTR1CDNRQuery.Posting_Date);
 
-        TempExcelBuffer.AddColumn(GetDocumentTypeTxt(GSTR1CDNRQuery.Document_Type), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(GetDocumentTypeTxt(GSTR1CDNRQuery.Document_Type));
 
         if GSTR1CDNRQuery.Buyer_Seller_State_Code <> '' then
-            TempExcelBuffer.AddColumn(GSTR1CDNRQuery.State_Code__GST_Reg__No__ + '-' + GSTR1CDNRQuery.Description, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(GSTR1CDNRQuery.State_Code__GST_Reg__No__ + '-' + GSTR1CDNRQuery.Description)
         else
-            TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn('');
 
         if GSTR1CDNRQuery.Document_Type in [GSTR1CDNRQuery.Document_Type::Invoice, GSTR1CDNRQuery.Document_Type::"Credit Memo"] then
             if GSTR1CDNRQuery.Finance_Charge_Memo then
-                TempExcelBuffer.AddColumn(GetInvoiceValueFinCharge(GSTR1CDNRQuery.Document_No_), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+                AddNumberColumn(GetInvoiceValueFinCharge(GSTR1CDNRQuery.Document_No_))
             else
-                TempExcelBuffer.AddColumn(GetInvoiceValue(GSTR1CDNRQuery.Document_No_, GSTR1CDNRQuery.Document_Type), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+                AddNumberColumn(GetInvoiceValue(GSTR1CDNRQuery.Document_No_, GSTR1CDNRQuery.Document_Type))
         else
-            TempExcelBuffer.AddColumn(Abs(GSTR1CDNRQuery.GST_Base_Amount) + Abs(GSTR1CDNRCess.GST_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddNumberColumn(Abs(GSTR1CDNRQuery.GST_Base_Amount) + Abs(GSTR1CDNRCess.GST_Amount));
+
+        AddTextColumn('');
 
         GSTR1CDNRPerQuery.TopNumberOfRows(1);
         GSTR1CDNRPerQuery.SetRange(Location__Reg__No_, LocationGSTIN);
@@ -976,14 +997,14 @@ report 18049 "GSTR-1 File Format"
         GSTR1CDNRPerQuery.Open();
         while GSTR1CDNRPerQuery.Read() do
             if GSTR1CDNRPerQuery.GST_Jurisdiction_Type = GSTR1CDNRPerQuery.GST_Jurisdiction_Type::Intrastate then
-                TempExcelBuffer.AddColumn(2 * GSTR1CDNRPerQuery.GST__, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number)
+                AddNumberColumn(2 * GSTR1CDNRPerQuery.GST__)
             else
-                TempExcelBuffer.AddColumn(GSTR1CDNRPerQuery.GST__, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                AddNumberColumn(GSTR1CDNRPerQuery.GST__);
 
         if GSTR1CDNRQuery.GST_Jurisdiction_Type = GSTR1CDNRQuery.GST_Jurisdiction_Type::Intrastate then
-            TempExcelBuffer.AddColumn(Abs(GSTR1CDNRQuery.GST_Base_Amount / 2), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+            AddNumberColumn(Abs(GSTR1CDNRQuery.GST_Base_Amount / 2))
         else
-            TempExcelBuffer.AddColumn(Abs(GSTR1CDNRQuery.GST_Base_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(Abs(GSTR1CDNRQuery.GST_Base_Amount));
 
         GSTR1CDNRCess.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1CDNRCess.SetRange(Posting_Date, StartDate, EndDate);
@@ -992,14 +1013,14 @@ report 18049 "GSTR-1 File Format"
         GSTR1CDNRCess.SetRange(Document_Type, GSTR1CDNRQuery.Document_Type);
         GSTR1CDNRCess.Open();
         if GSTR1CDNRCess.Read() then
-            TempExcelBuffer.AddColumn(Abs(GSTR1CDNRCess.GST_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+            AddNumberColumn(Abs(GSTR1CDNRCess.GST_Amount))
         else
-            TempExcelBuffer.AddColumn(0.00, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(0.00);
 
         if CheckPreGSTForCDNR(GSTR1CDNRQuery) then
-            TempExcelBuffer.AddColumn(YLbl, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(YLbl)
         else
-            TempExcelBuffer.AddColumn(NLbl, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn(NLbl);
     end;
 
     local procedure GetPostingDate(var ReferenceInvoiceNo: Record "Reference Invoice No."): Date
@@ -1032,19 +1053,19 @@ report 18049 "GSTR-1 File Format"
     local procedure MakeExcelHeaderCDNUR()
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(URTypeTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(DebitNoteNoTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(DebitNoteDateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(DocumentTypeTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(OriginalInvNoTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(OriginalInvDateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(PlaceOfSupplyTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(RefundVoucherValueTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(RateTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(TaxableValueTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(CESSAmountTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(PreGSTTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(URTypeTxt);
+        AddTextColumn(DebitNoteNoTxt);
+        AddTextColumn(DebitNoteDateTxt);
+        AddTextColumn(DocumentTypeTxt);
+        AddTextColumn(OriginalInvNoTxt);
+        AddTextColumn(OriginalInvDateTxt);
+        AddTextColumn(PlaceOfSupplyTxt);
+        AddTextColumn(RefundVoucherValueTxt);
+        AddTextColumn(TaxTxt);
+        AddTextColumn(RateTxt);
+        AddTextColumn(TaxableValueTxt);
+        AddTextColumn(CESSAmountTxt);
+        AddTextColumn(PreGSTTxt);
     end;
 
     local procedure MakeExcelBodyCDNUR()
@@ -1074,10 +1095,10 @@ report 18049 "GSTR-1 File Format"
         GSTR1CDNURCessAmt: Query GSTR1CDNURCessAmt;
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(GetURType(GSTR1CDNURQuery), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(GSTR1CDNURQuery.Document_No_, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(GSTR1CDNURQuery.Posting_Date, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
-        TempExcelBuffer.AddColumn(GetDocumentTypeTxt(GSTR1CDNURQuery.Document_Type), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(GetURType(GSTR1CDNURQuery));
+        AddTextColumn(GSTR1CDNURQuery.Document_No_);
+        AddDateColumn(GSTR1CDNURQuery.Posting_Date);
+        AddTextColumn(GetDocumentTypeTxt(GSTR1CDNURQuery.Document_Type));
 
         if (GSTR1CDNURQuery.Document_Type in [GSTR1CDNURQuery.Document_Type::"Credit Memo", GSTR1CDNURQuery.Document_Type::Invoice]) then begin
             ReferenceInvoiceNo.Reset();
@@ -1085,27 +1106,28 @@ report 18049 "GSTR-1 File Format"
             ReferenceInvoiceNo.SetRange("Document Type", GSTDocumentType2DocumentTypeEnum(GSTR1CDNURQuery.Document_Type));
             ReferenceInvoiceNo.SetRange("Source No.", GSTR1CDNURQuery.Source_No_);
             if ReferenceInvoiceNo.FindFirst() then begin
-                TempExcelBuffer.AddColumn(ReferenceInvoiceNo."Reference Invoice Nos.", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-                TempExcelBuffer.AddColumn(GetPostingDate(ReferenceInvoiceNo), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
+                AddTextColumn(ReferenceInvoiceNo."Reference Invoice Nos.");
+                AddDateColumn(GetPostingDate(ReferenceInvoiceNo));
             end else begin
-                TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-                TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
+                AddTextColumn('');
+                AddTextColumn('');
             end;
         end;
 
         if GSTR1CDNURQuery.Buyer_Seller_State_Code <> '' then
-            TempExcelBuffer.AddColumn(GetStateCodeGSTRegForCDNUR(GSTR1CDNURQuery) + '-' + GetStateDesForCDNUR(GSTR1CDNURQuery), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(GetStateCodeGSTRegForCDNUR(GSTR1CDNURQuery) + '-' + GetStateDesForCDNUR(GSTR1CDNURQuery))
         else
-            TempExcelBuffer.AddColumn(GetLocStateCodeRegForCDNUR(GSTR1CDNURQuery) + '-' + GetLocStateDesForCDNUR(GSTR1CDNURQuery), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn(GetLocStateCodeRegForCDNUR(GSTR1CDNURQuery) + '-' + GetLocStateDesForCDNUR(GSTR1CDNURQuery));
 
         if GSTR1CDNURQuery.Document_Type in [GSTR1CDNURQuery.Document_Type::"Credit Memo", GSTR1CDNURQuery.Document_Type::Invoice] then
             if GSTR1CDNURQuery.Finance_Charge_Memo then
-                TempExcelBuffer.AddColumn(GetInvoiceValueFinCharge(GSTR1CDNURQuery.Document_No_), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+                AddNumberColumn(GetInvoiceValueFinCharge(GSTR1CDNURQuery.Document_No_))
             else
-                TempExcelBuffer.AddColumn(GetInvoiceValue(GSTR1CDNURQuery.Document_No_, GSTR1CDNURQuery.Document_Type), false, '0.00', false, false, false, '', TempExcelBuffer."Cell Type"::Number)
+                AddNumberColumn(GetInvoiceValue(GSTR1CDNURQuery.Document_No_, GSTR1CDNURQuery.Document_Type))
         else
-            TempExcelBuffer.AddColumn(Abs(GSTR1CDNURQuery.GST_Base_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn('', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddNumberColumn(Abs(GSTR1CDNURQuery.GST_Base_Amount));
+
+        AddTextColumn('');
 
         GSTR1CDNURGSTPer.TopNumberOfRows(1);
         GSTR1CDNURGSTPer.SetRange(Location__Reg__No_, LocationGSTIN);
@@ -1116,11 +1138,11 @@ report 18049 "GSTR-1 File Format"
         GSTR1CDNURGSTPer.Open();
         while GSTR1CDNURGSTPer.Read() do
             if GSTR1CDNURGSTPer.GST_Jurisdiction_Type = GSTR1CDNURGSTPer.GST_Jurisdiction_Type::Intrastate then
-                TempExcelBuffer.AddColumn(2 * GSTR1CDNURGSTPer.GST__, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number)
+                AddNumberColumn(2 * GSTR1CDNURGSTPer.GST__)
             else
-                TempExcelBuffer.AddColumn(GSTR1CDNURGSTPer.GST__, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                AddNumberColumn(GSTR1CDNURGSTPer.GST__);
 
-        TempExcelBuffer.AddColumn(Abs(GSTR1CDNURQuery.GST_Base_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+        AddNumberColumn(Abs(GSTR1CDNURQuery.GST_Base_Amount));
 
         GSTR1CDNURCessAmt.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1CDNURCessAmt.SetRange(Posting_Date, StartDate, EndDate);
@@ -1129,14 +1151,14 @@ report 18049 "GSTR-1 File Format"
         GSTR1CDNURCessAmt.SetRange(GST_Customer_Type, GSTR1CDNURQuery.GST_Customer_Type);
         GSTR1CDNURCessAmt.Open();
         if GSTR1CDNURCessAmt.Read() then
-            TempExcelBuffer.AddColumn(Abs(GSTR1CDNURCessAmt.GST_Amount), false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number)
+            AddNumberColumn(Abs(GSTR1CDNURCessAmt.GST_Amount))
         else
-            TempExcelBuffer.AddColumn(0.00, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+            AddNumberColumn(0.00);
 
         if CheckPreGSTForCDNUR(GSTR1CDNURQuery) then
-            TempExcelBuffer.AddColumn(YLbl, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
+            AddTextColumn(YLbl)
         else
-            TempExcelBuffer.AddColumn(NLbl, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            AddTextColumn(NLbl);
     end;
 
     local procedure FilterDGLEForCDNUR(GSTR1CDNURQuery: Query GSTR1CDNURQuery): Boolean
@@ -1240,10 +1262,10 @@ report 18049 "GSTR-1 File Format"
     local procedure MakeExcelHeaderEXEMP()
     begin
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(DespTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(NilTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(ExmpTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(NonGSTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        AddTextColumn(DespTxt);
+        AddTextColumn(NilTxt);
+        AddTextColumn(ExmpTxt);
+        AddTextColumn(NonGSTxt);
     end;
 
     local procedure MakeExcelBodyEXEMP()
@@ -1257,28 +1279,28 @@ report 18049 "GSTR-1 File Format"
         GetExmpNonGSTInterUnRegAmt();
 
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(InterRegTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(ExpExempInterRegAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(ExempInterRegAmount, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(ExempNonGSTInterRegAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+        AddTextColumn(InterRegTxt);
+        AddNumberColumn(ExpExempInterRegAmt);
+        AddNumberColumn(ExempInterRegAmount);
+        AddNumberColumn(ExempNonGSTInterRegAmt);
 
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(IntraRegTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(ExpExempIntraRegAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(ExempIntraRegAmount, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(EXempNonGSTIntraRegAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+        AddTextColumn(IntraRegTxt);
+        AddNumberColumn(ExpExempIntraRegAmt);
+        AddNumberColumn(ExempIntraRegAmount);
+        AddNumberColumn(EXempNonGSTIntraRegAmt);
 
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(InterUnRegTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(ExpExempInterUnRegAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(ExempCustInterUnRegAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(ExempNonGSTInterUnRegAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+        AddTextColumn(InterUnRegTxt);
+        AddNumberColumn(ExpExempInterUnRegAmt);
+        AddNumberColumn(ExempCustInterUnRegAmt);
+        AddNumberColumn(ExempNonGSTInterUnRegAmt);
 
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn(IntraUnRegTxt, false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn(ExpExempIntraUnRegAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(ExempCustIntraUnRegAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
-        TempExcelBuffer.AddColumn(ExempNonGSTIntraUnRegAmt, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+        AddTextColumn(IntraUnRegTxt);
+        AddNumberColumn(ExpExempIntraUnRegAmt);
+        AddNumberColumn(ExempCustIntraUnRegAmt);
+        AddNumberColumn(ExempNonGSTIntraUnRegAmt);
     end;
 
     local procedure CheckPreGSTForCDNR(GSTR1CDNRQuery: Query GSTR1CDNRQuery): Boolean
@@ -1469,6 +1491,22 @@ report 18049 "GSTR-1 File Format"
             ExempCustInterUnRegAmt += Abs(GSTR1EXEMPQuery.GST_Base_Amount);
     end;
 
+    local procedure GetInvoiceTypeforTransferShip(GSTR1B2BSalesTranship: Query GSTR1B2BSalesTranship): Text[50]
+    begin
+        case GSTR1B2BSalesTranship.GST_Customer_Type of
+            GSTR1B2BSalesTranship.GST_Customer_Type::Registered:
+                exit(RegularTxt);
+            GSTR1B2BSalesTranship.GST_Customer_Type::"SEZ Development", GSTR1B2BSalesTranship.GST_Customer_Type::"SEZ Unit":
+                begin
+                    if GSTR1B2BSalesTranship.GST_Without_Payment_of_Duty then
+                        exit(SEZWOPayTxt);
+                    exit(SEZWPayTxt);
+                end;
+            GSTR1B2BSalesTranship.GST_Customer_Type::"Deemed Export":
+                exit(DeemedExportTxt);
+        end;
+    end;
+
     local procedure GetInvoiceType(GSTR1B2BQuery: Query GSTR1B2BQuery): Text[50]
     begin
         case GSTR1B2BQuery.GST_Customer_Type of
@@ -1540,5 +1578,21 @@ report 18049 "GSTR-1 File Format"
         TempExcelBuffer.CloseBook();
         TempExcelBuffer.OpenExcel();
     end;
+
+    local procedure AddTextColumn(Value: Text)
+    begin
+        TempExcelBuffer.AddColumn(Value, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+    end;
+
+    local procedure AddDateColumn(Value: Date)
+    begin
+        TempExcelBuffer.AddColumn(Value, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
+    end;
+
+    local procedure AddNumberColumn(Value: Decimal)
+    begin
+        TempExcelBuffer.AddColumn(Value, false, '', false, false, false, '0.00', TempExcelBuffer."Cell Type"::Number);
+    end;
+
 }
 

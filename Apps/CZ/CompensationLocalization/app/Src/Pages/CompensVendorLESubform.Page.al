@@ -237,6 +237,13 @@ page 31281 "Compens. Vendor LE Subform CZC"
                     ToolTip = 'Specifies the number used by the bank for the bank account.';
                     Visible = false;
                 }
+                field(RelatedToAdvanceLetterCZL; Rec.RelatedToAdvanceLetterCZL())
+                {
+                    Caption = 'Related to Advance Letter';
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the entry is related to advance letter.';
+                }
                 field("Entry No."; Rec."Entry No.")
                 {
                     ApplicationArea = Basic, Suite;
@@ -263,13 +270,18 @@ page 31281 "Compens. Vendor LE Subform CZC"
                 var
                     VendLedgEntry: Record "Vendor Ledger Entry";
                     VendLedgEntry2: Record "Vendor Ledger Entry";
+                    RelatedToAdvanceLetterMsg: Label '%1 %2 was not marked because is related to Advance Letter.', Comment = '%1 = Ledger Entry TableCaption, %2 = Ledger Entry No.';
                 begin
                     VendLedgEntry2 := Rec;
                     CurrPage.SetSelectionFilter(VendLedgEntry);
                     if VendLedgEntry.FindSet() then
                         repeat
                             Rec := VendLedgEntry;
-                            Rec.Mark := not Rec.Mark();
+                            if not Rec.RelatedToAdvanceLetterCZL() then
+                                Rec.Mark := not Rec.Mark()
+                            else
+                                if not Rec.Mark() then
+                                    Message(RelatedToAdvanceLetterMsg, Rec.TableCaption(), Rec."Entry No.");
                         until VendLedgEntry.Next() = 0;
                     Rec := VendLedgEntry2;
                 end;
@@ -292,7 +304,7 @@ page 31281 "Compens. Vendor LE Subform CZC"
                 Caption = 'Find Entries';
                 Ellipsis = true;
                 Image = Navigate;
-                ShortcutKey = 'Shift+Ctrl+I';
+                ShortcutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry.';
 
                 trigger OnAction()

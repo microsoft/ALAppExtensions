@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "This extension will allow you to set up data migration from your Dynamics GP companies to your Dynamics 365 Business Central tenant through a wizard.",
     "description":  "This extension will take you through the process to migrate data from your Dynamics GP on-premises solution to your Dynamics 365 Business Central cloud tenant.  This will enable you to take advantage of what the cloud has to offer your business such as, enhanced insights into your business, artificial intelligence, multiple device access, and anytime, anywhere access.",
-    "version":  "20.2.0.0",
+    "version":  "20.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2009037",
@@ -16,13 +16,13 @@
                              "id":  "58623bfa-0559-4bc2-ae1c-0979c29fd9e0",
                              "name":  "Intelligent Cloud Base",
                              "publisher":  "Microsoft",
-                             "version":  "20.2.0.0"
+                             "version":  "20.3.0.0"
                          },
                          {
                              "id":  "c526b3e9-b8ca-4683-81ba-fcd5f6b1472a",
                              "name":  "Sales and Inventory Forecast",
                              "publisher":  "Microsoft",
-                             "version":  "20.2.0.0"
+                             "version":  "20.3.0.0"
                          }
                      ],
     "screenshots":  [
@@ -42,5 +42,5 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "target":  "Cloud",
-    "application":  "20.2.0.0"
+    "application":  "20.3.0.0"
 }

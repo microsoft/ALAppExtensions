@@ -1,5 +1,22 @@
 pageextension 11767 "Customer List CZL" extends "Customer List"
 {
+    layout
+    {
+        addafter(Contact)
+        {
+            field("VAT Registration No."; Rec."VAT Registration No.")
+            {
+                ApplicationArea = VAT;
+                ToolTip = 'Specifies the customer''s VAT registration number for customers in EU countries/regions.';
+            }
+            field("Registration No. CZL"; Rec."Registration No. CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the registration number of customer.';
+            }
+        }
+    }
+
     actions
     {
         addafter(ReportCustomerPaymentReceipt)

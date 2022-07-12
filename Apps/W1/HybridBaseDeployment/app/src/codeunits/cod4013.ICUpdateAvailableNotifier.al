@@ -58,8 +58,8 @@ codeunit 4013 "Intelligent Cloud Notifier"
         MyNotifications.InsertDefault(GetICNotificationGuid(), ICNotificationNameTxt, ICNotificationDescTxt, true);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Role Center Notification Mgt.", 'OnBeforeShowNotifications', '', false, false)]
-    local procedure OnBeforeShowRoleCenterNotifications()
+    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'OnOpenPageEvent', '', false, false)]
+    local procedure OnBeforeShowRoleCenterNotifications(var Rec: Record "Hybrid Replication Summary")
     begin
         ShowICUpdateNotification();
     end;

@@ -16,12 +16,26 @@ codeunit 1266 "Cryptography Management"
     var
         CryptographyManagementImpl: Codeunit "Cryptography Management Impl.";
 
+#if not CLEAN21
+    /// <summary>
+    /// Returns plain text as an encrypted value.
+    /// </summary>
+    /// <param name="InputString">The value to encrypt.</param>
+    /// <remarks>InputString can not exceed a length of 215 characters.</remarks>
+    /// <returns>Encrypted value.</returns>
+    [Obsolete('Replaced by EncryptText', '21.0')]
+    procedure Encrypt(InputString: Text): Text
+    begin
+        exit(CryptographyManagementImpl.Encrypt(CopyStr(InputString,1,215)));
+    end;
+#endif
+
     /// <summary>
     /// Returns plain text as an encrypted value.
     /// </summary>
     /// <param name="InputString">The value to encrypt.</param>
     /// <returns>Encrypted value.</returns>
-    procedure Encrypt(InputString: Text): Text
+    procedure EncryptText(InputString: Text[215]): Text
     begin
         exit(CryptographyManagementImpl.Encrypt(InputString));
     end;

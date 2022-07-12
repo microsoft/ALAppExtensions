@@ -157,6 +157,7 @@ page 31265 "Iss. Payment Orders CZB"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
+                ShortCutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
                 trigger OnAction()
