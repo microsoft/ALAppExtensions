@@ -317,24 +317,36 @@ table 30102 "Shpfy Shop"
             Caption = 'Collection Last Export Version';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.3';
         }
         field(101; "Collection Last Import Version"; BigInteger)
         {
             Caption = 'Collection Last Import Version';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.3';
         }
         field(102; "Product Last Export Version"; BigInteger)
         {
             Caption = 'Product Last Export Version';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.3';
         }
         field(103; "Product Last Import Version"; BigInteger)
         {
             Caption = 'Product Last Import Version';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.3';
         }
         field(104; "SKU Mapping"; Enum "Shpfy SKU Mappging")
         {

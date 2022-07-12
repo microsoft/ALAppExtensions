@@ -90,6 +90,9 @@ table 30106 "Shpfy Customer Address"
         {
             Caption = 'Ship-To Address SystemId';
             DataClassification = SystemMetadata;
+            ObsoleteReason = 'Not used.';
+            ObsoleteState = Pending;
+            ObsoleteTag = '20.3';
         }
         field(102; CustomerSystemId; Guid)
         {
