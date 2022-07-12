@@ -115,6 +115,27 @@ page 4021 "GP Migration Settings List"
                         end;
                     end;
                 }
+                field("Oldest GL Year to Migrate"; InitialYear)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Initial Hist Year';
+                    ToolTip = 'Specifies which history year to start with.';
+                    Width = 8;
+
+                    trigger OnValidate()
+                    var
+                        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+                    begin
+                        if not GPCompanyAdditionalSettings.Get(Rec.Name) then begin
+                            GPCompanyAdditionalSettings.Name := Rec.Name;
+                            GPCompanyAdditionalSettings."Oldest GL Year to Migrate" := InitialYear;
+                            GPCompanyAdditionalSettings.Insert();
+                        end else begin
+                            GPCompanyAdditionalSettings."Oldest GL Year to Migrate" := InitialYear;
+                            GPCompanyAdditionalSettings.Modify();
+                        end;
+                    end;
+                }
             }
         }
     }
@@ -142,6 +163,7 @@ page 4021 "GP Migration Settings List"
             MigrateInactiveCheckbooks := GPCompanyAdditionalSettings."Migrate Inactive Checkbooks";
             MigrateVendorClasses := GPCompanyAdditionalSettings."Migrate Vendor Classes";
             MigrateCustomerClasses := GPCompanyAdditionalSettings."Migrate Customer Classes";
+            InitialYear := GPCompanyAdditionalSettings."Oldest GL Year to Migrate";
         end;
     end;
 
@@ -149,4 +171,5 @@ page 4021 "GP Migration Settings List"
         MigrateInactiveCheckbooks: Boolean;
         MigrateVendorClasses: Boolean;
         MigrateCustomerClasses: Boolean;
+        InitialYear: Integer;
 }

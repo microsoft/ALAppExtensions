@@ -1,4 +1,4 @@
-table 40112 "GP GL10111"
+table 40116 "GP GL10111"
 {
     DataClassification = CustomerContent;
     Description = 'Historical Year Summary Master';
