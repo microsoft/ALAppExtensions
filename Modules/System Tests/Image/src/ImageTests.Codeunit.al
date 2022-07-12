@@ -378,4 +378,132 @@ codeunit 135135 "Image Tests"
         Image.Save(ImageOutStream);
         Assert.IsFalse(TempBlob.HasValue(), 'Image should be empty');
     end;
+
+    [Test]
+    procedure CheckRotateFlipTypeForNoneRotatedImage()
+    var
+        Image: Codeunit Image;
+        ImageAsBase64Txt: Label '/9j/4AAQSkZJRgABAQEA3ADcAAD/4QAiRXhpZgAASUkqAAgAAAABABIBAwABAAAAAQAAAAAAAAD/4gJgSUNDX1BST0ZJTEUAAQEAAAJQbGNtcwQwAABtbnRyUkdCIFhZWiAH3wAFAAsADAATACZhY3NwQVBQTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWxjbXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAtkZXNjAAABCAAAADhjcHJ0AAABQAAAAE53dHB0AAABkAAAABRjaGFkAAABpAAAACxyWFlaAAAB0AAAABRiWFlaAAAB5AAAABRnWFlaAAAB+AAAABRyVFJDAAACDAAAACBnVFJDAAACDAAAACBiVFJDAAACDAAAACBjaHJtAAACLAAAACRtbHVjAAAAAAAAAAEAAAAMZW5VUwAAABwAAAAcAHMAUgBHAEIAIABiAHUAaQBsAHQALQBpAG4AAG1sdWMAAAAAAAAAAQAAAAxlblVTAAAAMgAAABwATgBvACAAYwBvAHAAeQByAGkAZwBoAHQALAAgAHUAcwBlACAAZgByAGUAZQBsAHkAAAAAWFlaIAAAAAAAAPbWAAEAAAAA0y1zZjMyAAAAAAABDEoAAAXj///zKgAAB5sAAP2H///7ov///aMAAAPYAADAlFhZWiAAAAAAAABvlAAAOO4AAAOQWFlaIAAAAAAAACSdAAAPgwAAtr5YWVogAAAAAAAAYqUAALeQAAAY3nBhcmEAAAAAAAMAAAACZmYAAPKnAAANWQAAE9AAAApbY2hybQAAAAAAAwAAAACj1wAAVHsAAEzNAACZmgAAJmYAAA9c/9sAQwAGBAUGBQQGBgUGBwcGCAoQCgoJCQoUDg8MEBcUGBgXFBYWGh0lHxobIxwWFiAsICMmJykqKRkfLTAtKDAlKCko/8AACwgAUAAwAQERAP/EABYAAQEBAAAAAAAAAAAAAAAAAAAJCP/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AyoAAAAKqAJViqgCVYCqglWAqoJViqgCVYqoAlWKqAJViqgD/2Q==', Locked = true;
+    //image taken from https://magnushoff.com/articles/jpeg-orientation/
+    begin
+        // [Scenario] Check Rotate Flip Type for none rotated image
+
+        // [Given] base64 encoded data, create image
+        Image.FromBase64(ImageAsBase64Txt);
+
+        // [Then] verify image rotate flip type
+        Assert.AreEqual("Rotate Flip Type"::RotateNoneFlipNone, Image.GetRotateFlipType(), 'Getting Rotation Type failed');
+    end;
+
+    [Test]
+    procedure CheckRotateFlipTypeFor90DegreesRotatedImage()
+    var
+        Image: Codeunit Image;
+        Rotated90AsBase64Txt: Label '/9j/4AAQSkZJRgABAQEA3ADcAAD/4QAiRXhpZgAASUkqAAgAAAABABIBAwABAAAABgAAAAAAAAD/2wBDAAYFBAQFBgYFBgYKCAYHBwoJCQoKEBQXEAwPDhQdGhYWFBcYGBYcIxsaHyUmIyAsIBYZKSopJy0wLR8lMCgpKCj/wAALCAAwAFABAREA/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oACAEBAAA/APlSiv1Uooooooor8q6K/VSiiiiiiivyror9VKK/Kuiv1Uooor8q6K/VSivyror9VKKKK/Kuiiiiiiiiiiiiiiiiiiiv/9k=', Locked = true;
+    //image taken from https://magnushoff.com/articles/jpeg-orientation/
+    begin
+        // [Scenario] Check Rotate Flip Type for 90 degrees rotated image
+
+        // [Given] base64 encoded data rotated 90 degrees, create image
+        Image.FromBase64(Rotated90AsBase64Txt);
+
+        // [Then] verify image rotate flip type
+        Assert.AreEqual("Rotate Flip Type"::Rotate90FlipNone, Image.GetRotateFlipType(), 'Getting Rotation Type failed');
+    end;
+
+    [Test]
+    procedure CheckRotateFlipTypeFor180DegreesRotatedImage()
+    var
+        Image: Codeunit Image;
+        Rotated180AsBase64Txt: Label '/9j/4AAQSkZJRgABAQEA3ADcAAD/4QAiRXhpZgAASUkqAAgAAAABABIBAwABAAAAAwAAAAAAAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/wAALCABQADABAREA/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oACAEBAAA/APqmiiivyror9VKKKK/Kuiv1Uooor8q6K/VSiiivyror9VKK/Kuiiiv1Uor8q6KKK/VSiiivyror9VKKKK/Kuiiiiiiiiiiiiiv/2Q==', Locked = true;
+    //image taken from https://magnushoff.com/articles/jpeg-orientation/
+    begin
+        // [Scenario] Check Rotate Flip Type for 180 degrees rotated image
+
+        // [Given] base64 encoded data rotated 180 degrees, create image
+        Image.FromBase64(Rotated180AsBase64Txt);
+
+        // [Then] verify image rotate flip type
+        Assert.AreEqual("Rotate Flip Type"::Rotate180FlipNone, Image.GetRotateFlipType(), 'Getting Rotation Type failed');
+    end;
+
+    [Test]
+    procedure CheckRotateFlipTypeFor270DegreesRotatedImage()
+    var
+        Image: Codeunit Image;
+        Rotated270AsBase64Txt: Label '/9j/4AAQSkZJRgABAQEA3ADcAAD/4QAiRXhpZgAASUkqAAgAAAABABIBAwABAAAACAAAAAAAAAD/2wBDAAYFBAQFBgYFBgYKCAYHBwoJCQoKEBQXEAwPDhQdGhYWFBcYGBYcIxsaHyUmIyAsIBYZKSopJy0wLR8lMCgpKCj/wAALCAAwAFABAREA/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oACAEBAAA/APlSiiiiiiiiiiiiiiiiiiiv1Uooor8q6K/VSivyror9VKKKK/Kuiv1Uor8q6K/VSiiiiiiivyror9VKKKKKKKK/Kuiv/9k=', Locked = true;
+    //image taken from https://magnushoff.com/articles/jpeg-orientation/
+    begin
+        // [Scenario] Check Rotate Flip Type for 270 degrees rotated image
+
+        // [Given] base64 encoded data rotated 270 degrees, create image
+        Image.FromBase64(Rotated270AsBase64Txt);
+
+        // [Then] verify image rotate flip type
+        Assert.AreEqual("Rotate Flip Type"::Rotate270FlipNone, Image.GetRotateFlipType(), 'Getting Rotation Type failed');
+    end;
+
+    [Test]
+    procedure CheckRotateFlipTypeForHorizontalFlippedImage()
+    var
+        Image: Codeunit Image;
+        FlippedAsBase64Txt: Label '/9j/4AAQSkZJRgABAQEA3ADcAAD/4QAiRXhpZgAASUkqAAgAAAABABIBAwABAAAAAgAAAAAAAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/wAALCABQADABAREA/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oACAEBAAA/APlSiiiiiiiiiiiv1Uooor8q6K/VSiiivyror9VKK/Kuiiiv1Uor8q6KKK/VSiiivyror9VKKKK/Kuiv1Uooor8q6K/VSiiivyror//Z', Locked = true;
+    //image taken from https://magnushoff.com/articles/jpeg-orientation/
+    begin
+        // [Scenario] Check Rotate Flip Type for horizontal flipped image
+
+        // [Given] base64 encoded data flipped, create image
+        Image.FromBase64(FlippedAsBase64Txt);
+
+        // [Then] verify image rotate flip type
+        Assert.AreEqual("Rotate Flip Type"::RotateNoneFlipX, Image.GetRotateFlipType(), 'Getting Rotation Type failed');
+    end;
+
+    [Test]
+    procedure CheckRotateFlipTypeForHorizontalFlippedAnd90DegreesRotatedImage()
+    var
+        Image: Codeunit Image;
+        FlippedAndRotated90AsBase64Txt: Label '/9j/4AAQSkZJRgABAQEA3ADcAAD/4QAiRXhpZgAASUkqAAgAAAABABIBAwABAAAABQAAAAAAAAD/2wBDAAYFBAQFBgYFBgYKCAYHBwoJCQoKEBQXEAwPDhQdGhYWFBcYGBYcIxsaHyUmIyAsIBYZKSopJy0wLR8lMCgpKCj/wAALCAAwAFABAREA/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oACAEBAAA/APlSiiiiiiiiiiiiiiiiiiiiiv1Uor8q6K/VSiiivyror9VKK/Kuiv1Uooor8q6K/VSiiiiiiivyror9VKKKKKKKK//Z', Locked = true;
+    //image taken from https://magnushoff.com/articles/jpeg-orientation/
+    begin
+        // [Scenario] Check Rotate Flip Type for horizontal flipped and 90 degrees rotated image
+
+        // [Given] base64 encoded data flipped and rotated 90 degrees, create image
+        Image.FromBase64(FlippedAndRotated90AsBase64Txt);
+
+        // [Then] verify image rotate flip type
+        Assert.AreEqual("Rotate Flip Type"::Rotate90FlipX, Image.GetRotateFlipType(), 'Getting Rotation Type failed');
+    end;
+
+    [Test]
+    procedure CheckRotateFlipTypeForHorizontalFlippedAnd180DegreesRotatedImage()
+    var
+        Image: Codeunit Image;
+        FlippedAndRotated180AsBase64Txt: Label '/9j/4AAQSkZJRgABAQEA3ADcAAD/4QAiRXhpZgAASUkqAAgAAAABABIBAwABAAAABAAAAAAAAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/wAALCABQADABAREA/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oACAEBAAA/APlSiv1Uooor8q6K/VSiiivyror9VKKKK/Kuiv1Uooor8q6KKK/VSivyrooor9VKK/Kuiv1Uooor8q6K/VSiiivyrooooooooooor//Z', Locked = true;
+    //image taken from https://magnushoff.com/articles/jpeg-orientation/
+    begin
+        // [Scenario] Check Rotate Flip Type for horizontal flipped and 180 degrees rotated image
+
+        // [Given] base64 encoded data flipped and rotated 180 degrees, create image
+        Image.FromBase64(FlippedAndRotated180AsBase64Txt);
+
+        // [Then] verify image rotate flip type
+        Assert.AreEqual("Rotate Flip Type"::Rotate180FlipX, Image.GetRotateFlipType(), 'Getting Rotation Type failed');
+    end;
+
+    [Test]
+    procedure CheckRotateFlipTypeForHorizontalFlippedAnd270DegreesRotatedImage()
+    var
+        Image: Codeunit Image;
+        FlippedAndRotated270AsBase64Txt: Label '/9j/4AAQSkZJRgABAQEA3ADcAAD/4QAiRXhpZgAASUkqAAgAAAABABIBAwABAAAABwAAAAAAAAD/2wBDAAYFBAQFBgYFBgYKCAYHBwoJCQoKEBQXEAwPDhQdGhYWFBcYGBYcIxsaHyUmIyAsIBYZKSopJy0wLR8lMCgpKCj/wAALCAAwAFABAREA/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oACAEBAAA/APqmiiiiiiivyror9VKKKKKKKK/Kuiv1Uooor8q6K/VSivyror9VKKKK/Kuiv1Uor8q6KKKKKKKKKKKKKKKKKKKKK//Z', Locked = true;
+    //image taken from https://magnushoff.com/articles/jpeg-orientation/
+    begin
+        // [Scenario] Check Rotate Flip Type for horizontal flipped and 270 degrees rotated image
+
+        // [Given] base64 encoded data flipped and rotated 270 degrees, create image
+        Image.FromBase64(FlippedAndRotated270AsBase64Txt);
+
+        // [Then] verify image rotate flip type
+        Assert.AreEqual("Rotate Flip Type"::Rotate270FlipX, Image.GetRotateFlipType(), 'Getting Rotation Type failed');
+    end;
 }
