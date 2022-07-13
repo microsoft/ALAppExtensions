@@ -1,0 +1,30 @@
+{
+  "id": "f6a53b92-7c63-4dc7-afbb-9477cbeaf6f5",
+  "name": "DataTable",
+  "publisher": "Microsoft",
+  "version": "20.0.0.0",
+  "brief": "Provides access to the .NET datatable expression engine",
+  "description": "Provides access to the .NET datatable expression engine",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
+  "EULA": "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+  "help": "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/",
+  "platform": "20.0.0.0",
+  "dependencies": [
+      {
+        "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
+        "name":  "DotNet Aliases",
+        "publisher":  "Microsoft",
+        "version":  "20.0.0.0"
+      }
+  ],
+  "target": "OnPrem",
+  "idRanges": [
+    {
+      "from": 50000,
+      "to": 50010
+    }
+  ],
+  "features": ["NoImplicitWith"]
+}

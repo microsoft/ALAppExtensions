@@ -1,0 +1,37 @@
+{
+  "id": "b5d71324-f5e8-4ca1-aa1e-f6c247a95ee1",
+  "name": "DataTable Test",
+  "publisher": "Microsoft",
+  "version": "20.0.0.0",
+  "brief": "",
+  "description": "Tests for the DataTable module",
+  "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help":  "",
+  "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "",
+  "dependencies": [
+    {
+      "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "name":  "Library Assert",
+      "publisher":  "Microsoft",
+      "version":  "20.2.0.0"
+    },
+    {
+      "id": "f6a53b92-7c63-4dc7-afbb-9477cbeaf6f5",
+      "name": "DataTable",
+      "publisher": "Microsoft",
+      "version": "20.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "20.0.0.0",
+  "idRanges": [
+    {
+      "from": 50100,
+      "to": 50149
+    }
+  ],
+  "runtime": "9.0",
+  "target": "OnPrem"
+}
