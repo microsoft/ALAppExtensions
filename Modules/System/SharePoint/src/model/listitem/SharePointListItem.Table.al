@@ -42,6 +42,11 @@ table 9103 "SharePoint List Item"
 
         field(5; "File System Object Type"; Integer)
         {
+            //Enum with negative values
+            // Invalid -	Enumeration whose values specify whether the object is invalid. The value = -1.
+            // File	- Enumeration whose values specify whether the object is a file. The value = 0.
+            // Folder	- Enumeration whose values specify whether the object is a folder. The value = 1.
+            // Web - Enumeration whose values specify whether the object is a site. The values = 2.
             DataClassification = SystemMetadata;
             Caption = 'File System Object Type';
         }
