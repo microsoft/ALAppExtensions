@@ -18,7 +18,7 @@ codeunit 50000 DataTable
     /// In case of an error condition a value of 0 is returned.
     /// </summary>
     /// <param name="Expression">The text expression to evaluate.</param>
-    /// <returns>The calcultated value as a variant. The variant can contain a boolean, byte, integer, biginteger or decimal.</returns>
+    /// <returns>The calcultated value as a variant. The variant can contain a boolean, integer, biginteger or decimal.</returns>
     procedure Calculate(Expression: Text) Result: Variant
     begin
         Result := DataTableImpl.Calculate(Expression);
@@ -29,7 +29,7 @@ codeunit 50000 DataTable
     /// In case of an error condition a value of 0 is returned.
     /// </summary>
     /// <param name="Expression">The text expression to evaluate.</param>
-    /// <param name="Result">The calcultated value as a variant. The variant can contain a boolean, byte, integer, biginteger or decimal.</param>
+    /// <param name="Result">The calcultated value as a variant. The variant can contain a boolean, integer, biginteger or decimal.</param>
     /// <returns>A boolean indicating a succesful operation.</returns>
     [TryFunction]
     procedure Calculate(Expression: Text; var Result: Variant)
