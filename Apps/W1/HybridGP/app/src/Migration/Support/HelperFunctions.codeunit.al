@@ -1055,6 +1055,8 @@ Codeunit 4037 "Helper Functions"
         GPPM00200: Record "GP PM00200";
         GPRM00101: Record "GP RM00101";
         GPRM00201: Record "GP RM00201";
+        GPIV00101: Record "GP IV00101";
+        GPIV40400: Record "GP IV40400";
     begin
         GPAccount.DeleteAll();
         GPGLTransactions.DeleteAll();
@@ -1091,6 +1093,9 @@ Codeunit 4037 "Helper Functions"
 
         GPRM00101.DeleteAll();
         GPRM00201.DeleteAll();
+        
+        GPIV00101.DeleteAll();
+        GPIV40400.DeleteAll();
 
         Session.LogMessage('00007GH', 'Cleaned up staging tables.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
     end;

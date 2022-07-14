@@ -26,7 +26,12 @@ table 40105 "GP Company Additional Settings"
             InitValue = false;
             DataClassification = SystemMetadata;
         }
-        field(13; "Oldest GL Year to Migrate"; Integer)
+        field(13; "Migrate Item Classes"; Boolean)
+        {
+            InitValue = false;
+            DataClassification = SystemMetadata;
+        }
+        field(14; "Oldest GL Year to Migrate"; Integer)
         {
             DataClassification = SystemMetadata;
         }
@@ -71,11 +76,21 @@ table 40105 "GP Company Additional Settings"
         exit(MigrateCustomerClasses);
     end;
 
+    procedure GetMigrateItemClasses(): Boolean
+    var
+        MigrateItemClasses: Boolean;
+    begin
+        if Rec.Get(CompanyName()) then
+            MigrateItemClasses := Rec."Migrate Item Classes";
+
+        exit(MigrateItemClasses);
+    end;
+
     procedure GetInitialYear(): Integer
     begin
         if Rec.Get(CompanyName()) then
             exit(Rec."Oldest GL Year to Migrate");
 
         exit(0);
-    end;   
+    end;
 }
