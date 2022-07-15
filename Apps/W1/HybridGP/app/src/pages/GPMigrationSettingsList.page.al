@@ -136,11 +136,11 @@ page 4021 "GP Migration Settings List"
                         end;
                     end;
                 }
-                field("Oldest GL Year to Migrate"; InitialYear)
+                field("Oldest GL Historical Year to Migrate"; InitialYear)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Initial Hist Year';
-                    ToolTip = 'Specifies which history year to start with.';
+                    Caption = 'Initial Historical Year';
+                    ToolTip = 'Specifies which Historical year to start with.';
                     Width = 8;
 
                     trigger OnValidate()
