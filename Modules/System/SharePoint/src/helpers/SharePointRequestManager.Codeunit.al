@@ -40,6 +40,7 @@ codeunit 9109 "SharePoint Request Manager"
         RequestMessage.SetRequestUri(SharePointUriBuilder.GetUri());
         RequestMessage.GetHeaders(Headers);
         Headers.Add('Accept', 'application/json');
+        Headers.Add('User-Agent', GetUserAgentString());
     end;
 
     [NonDebuggable]
@@ -53,6 +54,7 @@ codeunit 9109 "SharePoint Request Manager"
 
         RequestMessage.GetHeaders(Headers);
         Headers.Add('Accept', 'application/json;odata=verbose');
+        Headers.Add('User-Agent', GetUserAgentString());
 
         if SharePointHttpContent.GetContentLength() > 0 then begin
             HttpContent := SharePointHttpContent.GetContent();
@@ -93,8 +95,16 @@ codeunit 9109 "SharePoint Request Manager"
         HttpResponseMessage.Content().ReadAs(Content);
     end;
 
+    local procedure GetUserAgentString() UserAgentString: Text
+    var
+        ModuleInfo: ModuleInfo;
+    begin
+        if NavApp.GetCurrentModuleInfo(ModuleInfo) then
+            UserAgentString := StrSubstNo('NONISV|%1|Dynamics 365 Business Central - %2/%3', ModuleInfo.Publisher(), ModuleInfo.Name(), ModuleInfo.AppVersion());
+    end;
+
     [InternalEvent(false, true)]
-    local procedure OnBeforeSendRequest(HttpRequestMessage: HttpRequestMessage; var SHarePointOperationResponse: Codeunit "SharePoint Operation Response"; var IsHandled: Boolean; Method: Text)
+    local procedure OnBeforeSendRequest(HttpRequestMessage: HttpRequestMessage; var SharePointOperationResponse: Codeunit "SharePoint Operation Response"; var IsHandled: Boolean; Method: Text)
     begin
 
     end;
