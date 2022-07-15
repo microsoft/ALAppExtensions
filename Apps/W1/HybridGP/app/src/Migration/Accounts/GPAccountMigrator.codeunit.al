@@ -100,28 +100,21 @@ codeunit 4017 "GP Account Migrator"
         BeginningBalance: Decimal;
         PostingGroupCode: Text;
         InitialYear: Integer;
-        FirstYear: Integer;
     begin
+        InitialYear := GPCompanyAdditionalSettings.GetInitialYear();
+        if InitialYear = 0 then
+            exit;
+
         GPGL10111.SetRange(ACTINDX, GPAccount.AcctIndex);
         GPGL10111.SetRange(PERIODID, 0);
-        if not GPGL10111.FindSet() then
+        GPGL10111.SetRange(YEAR1, InitialYear);
+        if not GPGL10111.Get() then
             exit;
 
-        InitialYear := GPCompanyAdditionalSettings.GetInitialYear();
-        FirstYear := 0;
-        GPGL10111.SetFilter(YEAR1, '>= %1', InitialYear);
-        GPGL10111.SetCurrentKey(YEAR1);
-        GPGL10111.SetAscending(YEAR1, true);
-        if GPGL10111.FindFirst() then begin
-            FirstYear := GPGL10111.YEAR1;
-            BeginningBalance := GPGL10111.PERDBLNC;
-        end;
+        BeginningBalance := GPGL10111.PERDBLNC;
 
-        if FirstYear = 0 then
-            exit;
-
-        PostingGroupCode := PostingGroupCodeTxt + format(FirstYear) + 'BB';
-        GPFiscalPeriods.SetRange(YEAR1, FirstYear);
+        PostingGroupCode := PostingGroupCodeTxt + format(InitialYear) + 'BB';
+        GPFiscalPeriods.SetRange(YEAR1, InitialYear);
         if GPFiscalPeriods.FindFirst() then begin
             DataMigrationFacadeHelper.CreateGeneralJournalBatchIfNeeded(CopyStr(PostingGroupCode, 1, 10), '', '');
             DataMigrationFacadeHelper.CreateGeneralJournalLine(
