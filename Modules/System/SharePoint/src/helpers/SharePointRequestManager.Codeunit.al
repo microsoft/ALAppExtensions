@@ -58,10 +58,6 @@ codeunit 9109 "SharePoint Request Manager"
             HttpContent := SharePointHttpContent.GetContent();
             HttpContent.GetHeaders(Headers);
 
-            if Headers.Contains('Content-Length') then
-                Headers.Remove('Content-Length');
-            Headers.Add('Content-Length', Format(SharePointHttpContent.GetContentLength()));
-
             if Headers.Contains('Content-Type') then
                 Headers.Remove('Content-Type');
 
