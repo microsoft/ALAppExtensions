@@ -78,16 +78,28 @@ codeunit 9109 "SharePoint Request Manager"
     local procedure SendRequest(HttpRequestMessage: HttpRequestMessage) OperationResponse: Codeunit "SharePoint Operation Response"
     var
         HttpResponseMessage: HttpResponseMessage;
+        IsHandled: Boolean;
+        Content: Text;
     begin
-        Authorization.Authorize(HttpRequestMessage);
+        OnBeforeSendRequest(HttpRequestMessage, OperationResponse, IsHandled, HttpRequestMessage.Method());
 
+        if IsHandled then
+            exit(OperationResponse);
+
+        Authorization.Authorize(HttpRequestMessage);
         if not HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
             Error(OperationNotSuccessfulErr);
-
         if not HttpResponseMessage.IsSuccessStatusCode() then
             OperationResponse.SetError(StrSubstNo(HttpResponseInfoErr, OperationNotSuccessfulErr, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase));
 
         OperationResponse.SetHttpResponse(HttpResponseMessage);
+
+        HttpResponseMessage.Content().ReadAs(Content);
+    end;
+
+    [InternalEvent(false, true)]
+    local procedure OnBeforeSendRequest(HttpRequestMessage: HttpRequestMessage; var SHarePointOperationResponse: Codeunit "SharePoint Operation Response"; var IsHandled: Boolean; Method: Text)
+    begin
 
     end;
 

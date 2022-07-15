@@ -222,7 +222,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointRequestManager.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
         SharePointOperationResponse.GetResultAsText(Result);
-        SharePointListItemAtchParser.ParseSingle(Result, SharePointListItemAtch);
+        SharePointListItemAtchParser.ParseSingleReturnValue(Result, SharePointListItemAtch);
     end;
 
     procedure CreateListItemAttachment(ListId: Guid; ListItemId: Integer; var SharePointListItemAtch: Record "SharePoint List Item Atch")
@@ -248,7 +248,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointRequestManager.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
         SharePointOperationResponse.GetResultAsText(Result);
-        SharePointListItemAtchParser.ParseSingle(Result, SharePointListItemAtch);
+        SharePointListItemAtchParser.ParseSingleReturnValue(Result, SharePointListItemAtch);
     end;
 
     procedure CreateListItemAttachment(ListTitle: Text; ListItemId: Integer; FileName: Text; var FileInStream: InStream; var SharePointListItemAtch: Record "SharePoint List Item Atch")
@@ -270,7 +270,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointRequestManager.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
         SharePointOperationResponse.GetResultAsText(Result);
-        SharePointListItemAtchParser.ParseSingle(Result, SharePointListItemAtch);
+        SharePointListItemAtchParser.ParseSingleReturnValue(Result, SharePointListItemAtch);
     end;
 
     procedure CreateListItemAttachment(ListId: Guid; ListItemId: Integer; FileName: Text; var FileInStream: InStream; var SharePointListItemAtch: Record "SharePoint List Item Atch")
@@ -291,13 +291,14 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointRequestManager.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
         SharePointOperationResponse.GetResultAsText(Result);
-        SharePointListItemAtchParser.ParseSingle(Result, SharePointListItemAtch);
+        SharePointListItemAtchParser.ParseSingleReturnValue(Result, SharePointListItemAtch);
     end;
 
-    procedure CreateList(ListTitle: Text; ListDescription: Text)
+    procedure CreateList(ListTitle: Text; ListDescription: Text; var SharePointList: Record "SharePoint List")
     var
         SharePointHttpContent: Codeunit "SharePoint Http Content";
         SharePointOperationResponse: Codeunit "SharePoint Operation Response";
+        SharePointListParser: Codeunit "SharePoint List";
         Request, Metadata : JsonObject;
         Result: Text;
     begin
@@ -318,13 +319,14 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointRequestManager.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
         SharePointOperationResponse.GetResultAsText(Result);
-        Message(Result);
+        SharePointListParser.ParseSingleReturnValue(Result, SharePointList);
     end;
 
-    procedure CreateListItem(ListTitle: Text; ListItemEntityTypeFullName: Text; ListItemTitle: Text)
+    procedure CreateListItem(ListTitle: Text; ListItemEntityTypeFullName: Text; ListItemTitle: Text; var SharePointListItem: Record "SharePoint List Item")
     var
         SharePointHttpContent: Codeunit "SharePoint Http Content";
         SharePointOperationResponse: Codeunit "SharePoint Operation Response";
+        SharePointListItemParser: Codeunit "SharePoint List Item";
         Request, Metadata : JsonObject;
         Result: Text;
     begin
@@ -343,12 +345,14 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointRequestManager.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
         SharePointOperationResponse.GetResultAsText(Result);
+        SharePointListItemParser.ParseSingleReturnValue(Result, SharePointListItem);
     end;
 
-    procedure CreateListItem(ListId: Guid; ListItemEntityTypeFullName: Text; ListItemTitle: Text)
+    procedure CreateListItem(ListId: Guid; ListItemEntityTypeFullName: Text; ListItemTitle: Text; var SharePointListItem: Record "SharePoint List Item")
     var
         SharePointHttpContent: Codeunit "SharePoint Http Content";
         SharePointOperationResponse: Codeunit "SharePoint Operation Response";
+        SharePointListItemParser: Codeunit "SharePoint List Item";
         Request, Metadata : JsonObject;
         Result: Text;
     begin
@@ -366,6 +370,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointRequestManager.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
         SharePointOperationResponse.GetResultAsText(Result);
+        SharePointListItemParser.ParseSingleReturnValue(Result, SharePointListItem);
     end;
 
     #endregion
@@ -435,10 +440,11 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointFolderParser.ParseSingle(Result, SharePointFolder);
     end;
 
-    procedure CreateFolder(ServerRelativeUrl: Text)
+    procedure CreateFolder(ServerRelativeUrl: Text; var SharePointFolder: Record "SharePoint Folder")
     var
         SharePointHttpContent: Codeunit "SharePoint Http Content";
         SharePointOperationResponse: Codeunit "SharePoint Operation Response";
+        SharePointFolderParser: Codeunit "SharePoint Folder";
         Request, Metadata : JsonObject;
         Result: Text;
     begin
@@ -455,10 +461,12 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointRequestManager.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
         SharePointOperationResponse.GetResultAsText(Result);
+        SharePointFolderParser.ParseSingleReturnValue(Result, SharePointFolder);
     end;
 
-    procedure AddFileToFolder(ServerRelativeUrl: Text)
+    procedure AddFileToFolder(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary)
     var
+        SharePointFileParser: Codeunit "SharePoint File";
         SharePointOperationResponse: Codeunit "SharePoint Operation Response";
         SharePointHttpContent: Codeunit "SharePoint Http Content";
         FileName: Text;
@@ -478,6 +486,27 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointRequestManager.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
         SharePointOperationResponse.GetResultAsText(Result);
+        SharePointFileParser.ParseSingleReturnValue(Result, SharePointFile);
+    end;
+
+    procedure AddFileToFolder(ServerRelativeUrl: Text; FileName: Text; var FileInStream: InStream; var SharePointFile: Record "SharePoint File" temporary)
+    var
+        SharePointFileParser: Codeunit "SharePoint File";
+        SharePointOperationResponse: Codeunit "SharePoint Operation Response";
+        SharePointHttpContent: Codeunit "SharePoint Http Content";
+        Result: Text;
+    begin
+        //GET https://{site_url}/_api/web/lists/getbytitle('{list_title}')/items({item_id})/AttachmentFiles('{file_name}')/$value
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
+        SharePointUriBuilder.SetObject('Files');
+        SharePointUriBuilder.SetMethod('add', 'url', '''' + FileName + '''');
+
+        SharePointHttpContent.FromFileInStream(FileInStream);
+        SharePointRequestManager.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestManager.Post(SharePointUriBuilder, SharePointHttpContent);
+        SharePointOperationResponse.GetResultAsText(Result);
+        SharePointFileParser.ParseSingleReturnValue(Result, SharePointFile);
     end;
     #endregion
 

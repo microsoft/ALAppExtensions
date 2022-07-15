@@ -25,7 +25,7 @@ table 9100 "SharePoint File"
         field(2; Name; Text[250])
         {
             DataClassification = SystemMetadata;
-            Caption = 'Title';
+            Caption = 'Name';
         }
 
         field(3; Created; DateTime)

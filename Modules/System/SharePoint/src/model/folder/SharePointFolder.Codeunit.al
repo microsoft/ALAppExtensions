@@ -20,12 +20,26 @@ codeunit 9105 "SharePoint Folder"
             end;
     end;
 
+    procedure ParseSingleReturnValue(Payload: Text; var SharePointFolder: Record "SharePoint Folder" temporary)
+    var
+        JObject: JsonObject;
+        JToken: JsonToken;
+    begin
+        if JObject.ReadFrom(Payload) then
+            if JObject.Get('d', JToken) then begin
+                SharePointFolder := ParseSingle(JToken.AsObject());
+                SharePointFolder.Insert();
+            end;
+    end;
+
     procedure ParseSingle(Payload: Text; var SharePointFolder: Record "SharePoint Folder" temporary)
     var
         JObject: JsonObject;
     begin
-        if JObject.ReadFrom(Payload) then
+        if JObject.ReadFrom(Payload) then begin
             SharePointFolder := ParseSingle(JObject);
+            SharePointFolder.Insert();
+        end;
     end;
 
     local procedure ParseSingle(Payload: JsonObject) SharePointFolder: Record "SharePoint Folder" temporary
@@ -59,5 +73,18 @@ codeunit 9105 "SharePoint Folder"
 
         if Payload.Get('odata.editLink', JToken) then
             SharePointFolder.OdataEditLink := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFolder.OdataEditLink));
+
+        if Payload.Get('__metadata', JToken) then begin
+            Payload := JToken.AsObject();
+
+            if Payload.Get('id', JToken) then
+                SharePointFolder.OdataId := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFolder.OdataId));
+
+            if Payload.Get('uri', JToken) then
+                SharePointFolder.OdataEditLink := CopyStr(JToken.AsValue().AsText(), JToken.AsValue().AsText().IndexOf('/_api/Web/') + 6, MaxStrLen(SharePointFolder.OdataEditLink));
+
+            if Payload.Get('type', JToken) then
+                SharePointFolder.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFolder.OdataType));
+        end;
     end;
 }

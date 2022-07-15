@@ -9,6 +9,18 @@ codeunit 9106 "SharePoint File"
             Parse(JObject, SharePointFile);
     end;
 
+    procedure ParseSingleReturnValue(Payload: Text; var SharePointFile: Record "SharePoint File" temporary)
+    var
+        JObject: JsonObject;
+        JToken: JsonToken;
+    begin
+        if JObject.ReadFrom(Payload) then
+            if JObject.Get('d', JToken) then begin
+                SharePointFile := ParseSingle(JToken.AsObject());
+                SharePointFile.Insert();
+            end;
+    end;
+
     procedure ParseSingle(Payload: Text; var SharePointFile: Record "SharePoint File" temporary)
     var
         JObject: JsonObject;
@@ -28,40 +40,53 @@ codeunit 9106 "SharePoint File"
             end;
     end;
 
-    local procedure ParseSingle(Payload: JsonObject) File: Record "SharePoint File" temporary
+    local procedure ParseSingle(Payload: JsonObject) SharePointFile: Record "SharePoint File" temporary
     var
         JToken: JsonToken;
     begin
-        File.Init();
+        SharePointFile.Init();
         if Payload.Get('UniqueId', JToken) then
-            File."Unique Id" := JToken.AsValue().AsText();
+            SharePointFile."Unique Id" := JToken.AsValue().AsText();
 
         if Payload.Get('Name', JToken) then
-            File.Name := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(File.Name));
+            SharePointFile.Name := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFile.Name));
 
         if Payload.Get('Title', JToken) then
             if not JToken.AsValue().IsNull() then
-                File.Title := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(File.Title));
+                SharePointFile.Title := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFile.Title));
 
         if Payload.Get('TimeCreated', JToken) then
-            File.Created := JToken.AsValue().AsDateTime();
+            SharePointFile.Created := JToken.AsValue().AsDateTime();
 
         if Payload.Get('Exists', JToken) then
-            File.Exists := JToken.AsValue().AsBoolean();
+            SharePointFile.Exists := JToken.AsValue().AsBoolean();
 
         if Payload.Get('Length', JToken) then
-            File."Length" := JToken.AsValue().AsInteger();
+            SharePointFile."Length" := JToken.AsValue().AsInteger();
 
         if Payload.Get('ServerRelativeUrl', JToken) then
-            File."Server Relative Url" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(File."Server Relative Url"));
+            SharePointFile."Server Relative Url" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFile."Server Relative Url"));
 
         if Payload.Get('odata.id', JToken) then
-            File.OdataId := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(File.OdataId));
+            SharePointFile.OdataId := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFile.OdataId));
 
         if Payload.Get('odata.type', JToken) then
-            File.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(File.OdataType));
+            SharePointFile.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFile.OdataType));
 
         if Payload.Get('odata.editLink', JToken) then
-            File.OdataEditLink := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(File.OdataEditLink));
+            SharePointFile.OdataEditLink := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFile.OdataEditLink));
+
+        if Payload.Get('__metadata', JToken) then begin
+            Payload := JToken.AsObject();
+
+            if Payload.Get('id', JToken) then
+                SharePointFile.OdataId := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFile.OdataId));
+
+            if Payload.Get('uri', JToken) then
+                SharePointFile.OdataEditLink := CopyStr(JToken.AsValue().AsText(), JToken.AsValue().AsText().IndexOf('/_api/Web/') + 6, MaxStrLen(SharePointFile.OdataEditLink));
+
+            if Payload.Get('type', JToken) then
+                SharePointFile.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointFile.OdataType));
+        end;
     end;
 }

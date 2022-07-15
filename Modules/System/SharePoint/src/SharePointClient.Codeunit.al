@@ -171,9 +171,10 @@ codeunit 9100 "SharePoint Client"
     /// </summary>
     /// <param name="ListTitle">Title for the new list.</param>
     /// <param name="ListDescription">Description for the new list.</param>
-    procedure CreateList(ListTitle: Text; ListDescription: Text)
+    /// <param name="SharePointList">Collection of the result (temporary record). Always one element.</param>
+    procedure CreateList(ListTitle: Text; ListDescription: Text; var SharePointList: Record "SharePoint List")
     begin
-        SharePointClientImpl.CreateList(ListTitle, ListDescription);
+        SharePointClientImpl.CreateList(ListTitle, ListDescription, SharePointList);
     end;
 
     /// <summary>
@@ -182,9 +183,10 @@ codeunit 9100 "SharePoint Client"
     /// <param name="ListTitle">The title of the list.</param>
     /// <param name="ListItemEntityTypeFullName">The Entity Type for the list. Parameter can be found on a list object (ListItemEntityType).</param>
     /// <param name="ListItemTitle">The title of the new list item.</param>
-    procedure CreateListItem(ListTitle: Text; ListItemEntityTypeFullName: Text; ListItemTitle: Text)
+    /// <param name="SharePointListItem">Collection of the result (temporary record).</param>
+    procedure CreateListItem(ListTitle: Text; ListItemEntityTypeFullName: Text; ListItemTitle: Text; var SharePointListItem: Record "SharePoint List Item")
     begin
-        SharePointClientImpl.CreateListItem(ListTitle, ListItemEntityTypeFullName, ListItemTitle);
+        SharePointClientImpl.CreateListItem(ListTitle, ListItemEntityTypeFullName, ListItemTitle, SharePointListItem);
     end;
 
     /// <summary>
@@ -193,9 +195,10 @@ codeunit 9100 "SharePoint Client"
     /// <param name="ListId">The GUID of the list.</param>
     /// <param name="ListItemEntityTypeFullName">The Entity Type for the list. Parameter can be found on a list object (ListItemEntityType).</param>
     /// <param name="ListItemTitle">The title of the new list item.</param>
-    procedure CreateListItem(ListId: Guid; ListItemEntityTypeFullName: Text; ListItemTitle: Text)
+    /// <param name="SharePointListItem">Collection of the result (temporary record).</param>
+    procedure CreateListItem(ListId: Guid; ListItemEntityTypeFullName: Text; ListItemTitle: Text; var SharePointListItem: Record "SharePoint List Item")
     begin
-        SharePointClientImpl.CreateListItem(ListId, ListItemEntityTypeFullName, ListItemTitle);
+        SharePointClientImpl.CreateListItem(ListId, ListItemEntityTypeFullName, ListItemTitle, SharePointListItem);
     end;
 
     #endregion
@@ -249,9 +252,10 @@ codeunit 9100 "SharePoint Client"
     /// </summary>
     /// <remarks>Create subfolders by manipulating URL.</remarks>
     /// <param name="ServerRelativeUrl">URL of the new folder.</param>
-    procedure CreateFolder(ServerRelativeUrl: Text)
+    /// <param name="SharePointFolder">Collection of the result (temporary record). Always one element.</param>
+    procedure CreateFolder(ServerRelativeUrl: Text; var SharePointFolder: Record "SharePoint Folder")
     begin
-        SharePointClientImpl.CreateFolder(ServerRelativeUrl);
+        SharePointClientImpl.CreateFolder(ServerRelativeUrl, SharePointFolder);
     end;
 
     /// <summary>
@@ -259,9 +263,23 @@ codeunit 9100 "SharePoint Client"
     /// </summary>
     /// <remarks>Requires UI interaction to pick a file.</remarks>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
-    procedure AddFileToFolder(ServerRelativeUrl: Text)
+    /// <param name="SharePointFile">Collection of the result (temporary record). Always one element.</param>
+    procedure AddFileToFolder(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary)
     begin
-        SharePointClientImpl.AddFileToFolder(ServerRelativeUrl);
+        SharePointClientImpl.AddFileToFolder(ServerRelativeUrl, SharePointFile);
+    end;
+
+    /// <summary>
+    /// Add a file to specific folder.
+    /// </summary>
+    /// <remarks>Does not require UI interaction.</remarks>
+    /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
+    /// <param name="FileName">File name to use on SharePoint.</param>
+    /// <param name="FileInStream">File stream to upload.</param>
+    /// <param name="SharePointFile">Collection of the result (temporary record). Always one element.</param>
+    procedure AddFileToFolder(ServerRelativeUrl: Text; FileName: Text; var FileInStream: InStream; var SharePointFile: Record "SharePoint File" temporary)
+    begin
+        SharePointClientImpl.AddFileToFolder(ServerRelativeUrl, FileName, FileInStream, SharePointFile);
     end;
 
     #endregion

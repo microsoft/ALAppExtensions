@@ -20,6 +20,18 @@ codeunit 9102 "SharePoint List Item Atch."
             end;
     end;
 
+    procedure ParseSingleReturnValue(Payload: Text; var SharePointListItemAtch: Record "SharePoint List Item Atch" temporary)
+    var
+        JObject: JsonObject;
+        JToken: JsonToken;
+    begin
+        if JObject.ReadFrom(Payload) then
+            if JObject.Get('d', JToken) then begin
+                SharePointListItemAtch := ParseSingle(JToken.AsObject());
+                SharePointListItemAtch.Insert();
+            end;
+    end;
+
     procedure ParseSingle(Payload: Text; var SharePointListItemAtch: Record "SharePoint List Item Atch" temporary)
     var
         JObject: JsonObject;
@@ -28,32 +40,45 @@ codeunit 9102 "SharePoint List Item Atch."
             SharePointListItemAtch := ParseSingle(JObject);
     end;
 
-    local procedure ParseSingle(Payload: JsonObject) ListItemAttachment: Record "SharePoint List Item Atch" temporary
+    local procedure ParseSingle(Payload: JsonObject) SharePointListItemAttachment: Record "SharePoint List Item Atch" temporary
     var
         SharePointUriBuilder: Codeunit "SharePoint Uri Builder";
         JToken: JsonToken;
     begin
-        ListItemAttachment.Init();
+        SharePointListItemAttachment.Init();
 
         if Payload.Get('odata.id', JToken) then
-            ListItemAttachment.OdataId := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItemAttachment.OdataId));
+            SharePointListItemAttachment.OdataId := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointListItemAttachment.OdataId));
 
         if Payload.Get('odata.editLink', JToken) then
-            ListItemAttachment.OdataEditLink := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItemAttachment.OdataEditLink));
+            SharePointListItemAttachment.OdataEditLink := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointListItemAttachment.OdataEditLink));
 
         if Payload.Get('FileName', JToken) then
-            ListItemAttachment."File Name" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItemAttachment."File Name"));
+            SharePointListItemAttachment."File Name" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointListItemAttachment."File Name"));
 
         if Payload.Get('ServerRelativeUrl', JToken) then
-            ListItemAttachment."Server Relative Url" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItemAttachment."Server Relative Url"));
+            SharePointListItemAttachment."Server Relative Url" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointListItemAttachment."Server Relative Url"));
 
         if Payload.Get('odata.type', JToken) then
-            ListItemAttachment.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItemAttachment.OdataType));
+            SharePointListItemAttachment.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointListItemAttachment.OdataType));
 
-        if ListItemAttachment.OdataEditLink <> '' then begin
-            SharePointUriBuilder.SetPath(ListItemAttachment.OdataEditLink);
-            ListItemAttachment."List Id" := SharePointUriBuilder.GetMethodParameter('Lists').Substring(6, 36);
-            Evaluate(ListItemAttachment."List Item Id", SharePointUriBuilder.GetMethodParameter('Items'));
+        if Payload.Get('__metadata', JToken) then begin
+            Payload := JToken.AsObject();
+
+            if Payload.Get('id', JToken) then
+                SharePointListItemAttachment.OdataId := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointListItemAttachment.OdataId));
+
+            if Payload.Get('uri', JToken) then
+                SharePointListItemAttachment.OdataEditLink := CopyStr(JToken.AsValue().AsText(), JToken.AsValue().AsText().IndexOf('Web/Lists'), MaxStrLen(SharePointListItemAttachment.OdataEditLink));
+
+            if Payload.Get('type', JToken) then
+                SharePointListItemAttachment.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointListItemAttachment.OdataType));
+        end;
+
+        if SharePointListItemAttachment.OdataEditLink <> '' then begin
+            SharePointUriBuilder.SetPath(SharePointListItemAttachment.OdataEditLink);
+            SharePointListItemAttachment."List Id" := SharePointUriBuilder.GetMethodParameter('Lists').Substring(6, 36);
+            Evaluate(SharePointListItemAttachment."List Item Id", SharePointUriBuilder.GetMethodParameter('Items'));
         end;
 
     end;

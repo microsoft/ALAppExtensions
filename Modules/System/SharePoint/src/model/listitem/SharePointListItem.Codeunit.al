@@ -21,6 +21,18 @@ codeunit 9103 "SharePoint List Item"
             end;
     end;
 
+    procedure ParseSingleReturnValue(Payload: Text; var SharePointListItem: Record "SharePoint List Item" temporary)
+    var
+        JObject: JsonObject;
+        JToken: JsonToken;
+    begin
+        if JObject.ReadFrom(Payload) then
+            if JObject.Get('d', JToken) then begin
+                SharePointListItem := ParseSingle(JToken.AsObject());
+                SharePointListItem.Insert();
+            end;
+    end;
+
     local procedure ParseSingle(Payload: JsonObject) SharePointListItem: Record "SharePoint List Item" temporary
     var
         SharePointUriBuilder: Codeunit "SharePoint Uri Builder";
@@ -52,6 +64,13 @@ codeunit 9103 "SharePoint List Item"
 
         if Payload.Get('odata.editLink', JToken) then
             SharePointListItem.OdataEditLink := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointListItem.OdataEditLink));
+
+        if Payload.Get('__metadata', JToken) then begin
+            Payload := JToken.AsObject();
+
+            if Payload.Get('uri', JToken) then
+                SharePointListItem.OdataEditLink := CopyStr(JToken.AsValue().AsText(), JToken.AsValue().AsText().IndexOf('Web/Lists'), MaxStrLen(SharePointListItem.OdataEditLink));
+        end;
 
         if SharePointListItem.OdataEditLink <> '' then begin
             SharePointUriBuilder.SetPath(SharePointListItem.OdataEditLink);

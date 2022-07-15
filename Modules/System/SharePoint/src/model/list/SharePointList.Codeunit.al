@@ -20,43 +20,68 @@ codeunit 9104 "SharePoint List"
             end;
     end;
 
-    local procedure ParseSingle(Payload: JsonObject) ListItem: Record "SharePoint List" temporary
+    procedure ParseSingleReturnValue(Payload: Text; var SharePointList: Record "SharePoint List" temporary)
+    var
+        JObject: JsonObject;
+        JToken: JsonToken;
+    begin
+        if JObject.ReadFrom(Payload) then
+            if JObject.Get('d', JToken) then begin
+                SharePointList := ParseSingle(JToken.AsObject());
+                SharePointList.Insert();
+            end;
+    end;
+
+    local procedure ParseSingle(Payload: JsonObject) SharePointList: Record "SharePoint List" temporary
     var
         JToken: JsonToken;
     begin
-        ListItem.Init();
+        SharePointList.Init();
         if Payload.Get('Id', JToken) then
-            ListItem.Id := JToken.AsValue().AsText();
+            SharePointList.Id := JToken.AsValue().AsText();
 
         if Payload.Get('Title', JToken) then
-            ListItem.Title := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItem.Title));
+            SharePointList.Title := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointList.Title));
 
         if Payload.Get('Created', JToken) then
-            ListItem.Created := JToken.AsValue().AsDateTime();
+            SharePointList.Created := JToken.AsValue().AsDateTime();
 
         if Payload.Get('Description', JToken) then
-            ListItem.Description := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItem.Description));
+            SharePointList.Description := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointList.Description));
 
         if Payload.Get('BaseTemplate', JToken) then
-            ListItem."Base Template" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItem."Base Template"));
+            SharePointList."Base Template" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointList."Base Template"));
 
         if Payload.Get('BaseType', JToken) then
-            ListItem."Base Type" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItem."Base Type"));
+            SharePointList."Base Type" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointList."Base Type"));
 
         if Payload.Get('IsCatalog', JToken) then
-            ListItem."Is Catalog" := JToken.AsValue().AsBoolean();
+            SharePointList."Is Catalog" := JToken.AsValue().AsBoolean();
 
         if Payload.Get('ListItemEntityTypeFullName', JToken) then
             if not JToken.AsValue().IsNull() then
-                ListItem."List Item Entity Type" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItem."List Item Entity Type"));
+                SharePointList."List Item Entity Type" := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointList."List Item Entity Type"));
 
         if Payload.Get('odata.id', JToken) then
-            ListItem.OdataId := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItem.OdataId));
+            SharePointList.OdataId := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointList.OdataId));
 
         if Payload.Get('odata.type', JToken) then
-            ListItem.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItem.OdataType));
+            SharePointList.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointList.OdataType));
 
         if Payload.Get('odata.editLink', JToken) then
-            ListItem.OdataEditLink := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(ListItem.OdataEditLink));
+            SharePointList.OdataEditLink := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointList.OdataEditLink));
+
+        if Payload.Get('__metadata', JToken) then begin
+            Payload := JToken.AsObject();
+
+            if Payload.Get('id', JToken) then
+                SharePointList.OdataId := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointList.OdataId));
+
+            if Payload.Get('uri', JToken) then
+                SharePointList.OdataEditLink := CopyStr(JToken.AsValue().AsText(), JToken.AsValue().AsText().IndexOf('Web/Lists'), MaxStrLen(SharePointList.OdataEditLink));
+
+            if Payload.Get('type', JToken) then
+                SharePointList.OdataType := CopyStr(JToken.AsValue().AsText(), 1, MaxStrLen(SharePointList.OdataType));
+        end;
     end;
 }

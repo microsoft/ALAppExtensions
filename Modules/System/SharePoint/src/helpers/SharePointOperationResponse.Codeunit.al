@@ -2,11 +2,6 @@ Codeunit 9108 "SharePoint Operation Response"
 {
     Access = Internal;
 
-    procedure IsSuccessful(): Boolean
-    begin
-        exit(HttpResponseMessage.IsSuccessStatusCode);
-    end;
-
     procedure GetError(): Text
     begin
         exit(ResponseError);
@@ -20,37 +15,75 @@ Codeunit 9108 "SharePoint Operation Response"
     [NonDebuggable]
     [TryFunction]
     internal procedure GetResultAsText(var Result: Text);
+    var
+        ResultInStream: InStream;
     begin
-        HttpResponseMessage.Content.ReadAs(Result);
+        TempBlobContent.CreateInStream(ResultInStream);
+        ResultInStream.ReadText(Result);
     end;
 
     [NonDebuggable]
     [TryFunction]
     internal procedure GetResultAsStream(var ResultInStream: InStream)
     begin
-        HttpResponseMessage.Content.ReadAs(ResultInStream);
+        TempBlobContent.CreateInStream(ResultInStream);
     end;
 
     [NonDebuggable]
-    internal procedure SetHttpResponse(NewHttpResponseMessage: HttpResponseMessage)
+    internal procedure SetHttpResponse(HttpResponseMessage: HttpResponseMessage)
+    var
+        ContentOutStream: OutStream;
+        ContentInStream: InStream;
     begin
-        HttpResponseMessage := NewHttpResponseMessage;
+        TempBlobContent.CreateOutStream(ContentOutStream);
+        HttpResponseMessage.Content().ReadAs(ContentInStream);
+        CopyStream(ContentOutStream, ContentInStream);
+        HttpHeaders := HttpResponseMessage.Headers();
+        HttpStatusCode := HttpResponseMessage.HttpStatusCode;
+        Success := HttpResponseMessage.IsSuccessStatusCode;
+        ReasonPhrase := HttpResponseMessage.ReasonPhrase;
+    end;
+
+    [NonDebuggable]
+    internal procedure SetHttpResponse(ResponseContent: Text; ResponseHttpHeaders: HttpHeaders; ResponseHttpStatusCode: Integer; IsSuccessStatusCode: Boolean; ResponseReasonPhrase: Text)
+    var
+        ContentOutStream: OutStream;
+    begin
+        TempBlobContent.CreateOutStream(ContentOutStream);
+        ContentOutStream.WriteText(ResponseContent);
+        HttpHeaders := ResponseHttpHeaders;
+        HttpStatusCode := ResponseHttpStatusCode;
+        Success := IsSuccessStatusCode;
+        ReasonPhrase := ResponseReasonPhrase;
     end;
 
     [NonDebuggable]
     internal procedure GetHeaderValueFromResponseHeaders(HeaderName: Text): Text
     var
-        Headers: HttpHeaders;
         Values: array[100] of Text;
     begin
-        Headers := HttpResponseMessage.Headers;
-        if not Headers.GetValues(HeaderName, Values) then
+        if not HttpHeaders.GetValues(HeaderName, Values) then
             exit('');
         exit(Values[1]);
     end;
 
+    [NonDebuggable]
+    internal procedure GetIsSuccessStatusCode(): Boolean
+    begin
+        exit(Success);
+    end;
+
+    [NonDebuggable]
+    internal procedure GetHttpStatusCode(): Integer
+    begin
+        exit(HttpStatusCode);
+    end;
+
     var
-        [NonDebuggable]
-        HttpResponseMessage: HttpResponseMessage;
-        ResponseError: Text;
+        TempBlobContent: Codeunit "Temp Blob";
+        ResponseError, ReasonPhrase : Text;
+        HttpHeaders: HttpHeaders;
+        HttpStatusCode: Integer;
+        Success: Boolean;
+
 }
