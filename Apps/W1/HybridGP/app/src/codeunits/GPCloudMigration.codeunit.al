@@ -56,7 +56,7 @@ codeunit 4025 "GP Cloud Migration"
     local procedure InitiateGPMigration()
     var
         DataMigrationEntity: Record "Data Migration Entity";
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPAccount: Record "GP Account";
         GPCustomer: Record "GP Customer";
         GPVendor: Record "GP Vendor";
@@ -106,10 +106,10 @@ codeunit 4025 "GP Cloud Migration"
         end;
 
         Commit();
-        if GPCompanyMigrationSettings.Get(CompanyName()) then begin
-            HelperFunctions.SetGlobalDimensions(CopyStr(GPCompanyMigrationSettings."Global Dimension 1", 1, 20), CopyStr(GPCompanyMigrationSettings."Global Dimension 2", 1, 20));
-            HelperFunctions.UpdateGlobalDimensionNo();
-        end;
+
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        HelperFunctions.SetGlobalDimensions(CopyStr(GPCompanyAdditionalSettings."Global Dimension 1", 1, 20), CopyStr(GPCompanyAdditionalSettings."Global Dimension 2", 1, 20));
+        HelperFunctions.UpdateGlobalDimensionNo();
 
         CreateDataMigrationStatusRecords(Database::"G/L Account", GPAccount.Count(), 4090, 4017);
         CreateDataMigrationStatusRecords(Database::"Customer", GPCustomer.Count(), 4093, 4018);

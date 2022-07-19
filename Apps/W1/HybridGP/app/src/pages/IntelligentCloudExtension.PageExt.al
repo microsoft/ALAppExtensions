@@ -14,6 +14,23 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
         }
     }
 
+    actions
+    {
+        addbefore(RunReplicationNow)
+        {
+            action(ConfigureGPMigration)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Configure GP Migration';
+                ToolTip = 'Configure migration settings for GP.';
+                Promoted = true;
+                PromotedCategory = Process;
+                RunObject = page "GP Migration Configuration";
+                Image = Setup;
+            }
+        }
+    }
+
     trigger OnOpenPage()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
