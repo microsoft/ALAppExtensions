@@ -188,7 +188,10 @@ table 40105 "GP Company Additional Settings"
         CurrentCompanyName: Text[30];
     begin
         CurrentCompanyName := CompanyName();
-        Reset();
+
+        if Name = CurrentCompanyName then
+            exit;
+
         if not Get(CurrentCompanyName) then begin
             Name := CurrentCompanyName;
             Insert();

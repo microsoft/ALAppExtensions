@@ -296,7 +296,63 @@ codeunit 139678 "GP Checkbook Tests"
         BankAccountLedger.SetRange("Document No.", Format(520));
         BankAccountLedger.FindFirst();
         Assert.AreEqual(-100.00, BankAccountLedger.Amount, 'Transfer amount is wrong for Trx 520, MyBank5');
+    end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoCommit)]
+    procedure TestBankModuleDisabled()
+    var
+        BankAccount: Record "Bank Account";
+        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
+        GenJournalLine: Record "Gen. Journal Line";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] Bank module is disabled
+        // [GIVEN] There are no records in the BankAcount table
+        ClearTables();
+        GenJournalLine.DeleteAll();
+        BankAccountLedgerEntry.Reset();
+        BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
+        BankAccountLedgerEntry.DeleteAll();
+
+        // [GIVEN] Some records are created in the staging table
+        CreateCheckbookData();
+
+        // [GIVEN] Inactive checkbooks are NOT to be migrated
+        ConfigureMigrationSettings(false);
+        GPCompanyAdditionalSettings.Get(CompanyName());
+        GPCompanyAdditionalSettings.Validate("Migrate Bank Module", false);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [WHEN] Checkbook migration code is called
+        Migrate();
+
+        // [THEN] Bank Accounts are not created
+        Assert.RecordCount(BankAccount, 0);
+
+        // [THEN] General Journal Lines are not created
+        GenJournalLine.SetFilter("Journal Batch Name", 'GPBANK');
+        GenJournalLine.SetFilter("Journal Template Name", 'GENERAL');
+        Assert.RecordCount(GenJournalLine, 0);
+
+        // [WHEN] Batch posting is called.
+        HelperFunctions.PostGLTransactions();
+
+        // [THEN] Bank Account Ledger entries are not created
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr1Txt));
+        Assert.RecordCount(BankAccountLedgerEntry, 0);
+
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr2Txt));
+        Assert.RecordCount(BankAccountLedgerEntry, 0);
+
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr3Txt));
+        Assert.RecordCount(BankAccountLedgerEntry, 0);
+
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr4Txt));
+        Assert.RecordCount(BankAccountLedgerEntry, 0);
+
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr5Txt));
+        Assert.RecordCount(BankAccountLedgerEntry, 0);
     end;
 
     local procedure ClearTables()

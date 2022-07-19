@@ -11,6 +11,9 @@ codeunit 40025 "GP Checkbook Migrator"
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         MigrateInactiveCheckbooks: Boolean;
     begin
+        if not GPCompanyAdditionalSettings.GetBankModuleEnabled() then
+            exit;
+
         MigrateInactiveCheckbooks := GPCompanyAdditionalSettings.GetMigrateInactiveCheckbooks();
 
         if not GPCheckbookMSTR.FindSet() then
@@ -36,10 +39,14 @@ codeunit 40025 "GP Checkbook Migrator"
 
     procedure MoveTransactionsData(BankAccountNo: Code[20]; BankAccPostingGroupCode: Code[20]; CheckbookID: Text[15])
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
         PostingAccountNumber: Code[20];
         Amount: Decimal;
     begin
+        if not GPCompanyAdditionalSettings.GetBankModuleEnabled() then
+            exit;
+
         GPCheckbookTransactions.SetRange(CHEKBKID, CheckbookID);
         GPCheckbookTransactions.SetRange(Recond, false);
         if not GPCheckbookTransactions.FindSet() then
