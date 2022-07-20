@@ -18,6 +18,7 @@ codeunit 4022 "GP Vendor Migrator"
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Vendor" then
             exit;
+
         GPVendor.Get(RecordIdToMigrate);
         MigrateVendorDetails(GPVendor, Sender);
         MigrateVendorAddresses(GPVendor);
@@ -142,6 +143,7 @@ codeunit 4022 "GP Vendor Migrator"
 
     local procedure MigrateVendorDetails(GPVendor: Record "GP Vendor"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         CompanyInformation: Record "Company Information";
         GPVendorAddress: Record "GP Vendor Address";
         HelperFunctions: Codeunit "Helper Functions";
@@ -150,6 +152,9 @@ codeunit 4022 "GP Vendor Migrator"
         ContactName: Text[50];
         Country: Code[10];
     begin
+        if not GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
+            exit;
+
         // If the Remit To address is found, make that the main address
         GPVendorAddress.SetRange(VENDORID, GPVendor.VENDORID);
         GPVendorAddress.SetRange(ADRSCODE, 'REMIT TO');
@@ -221,8 +226,12 @@ codeunit 4022 "GP Vendor Migrator"
 
     local procedure MigrateVendorAddresses(GPVendor: Record "GP Vendor")
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPVendorAddress: Record "GP Vendor Address";
     begin
+        if not GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
+            exit;
+
         GPVendorAddress.SetRange(VENDORID, GPVendor.VENDORID);
         if GPVendorAddress.FindSet() then
             repeat
@@ -245,6 +254,7 @@ codeunit 4022 "GP Vendor Migrator"
 
     local procedure GetVendorsFromJson(JArray: JsonArray)
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPVendor: Record "GP Vendor";
         HelperFunctions: Codeunit "Helper Functions";
         RecordVariant: Variant;
@@ -252,6 +262,9 @@ codeunit 4022 "GP Vendor Migrator"
         EntityId: Text[75];
         i: Integer;
     begin
+        if not GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
+            exit;
+
         i := 0;
         GPVendor.Reset();
         GPVendor.DeleteAll();
@@ -361,6 +374,7 @@ codeunit 4022 "GP Vendor Migrator"
 
     procedure MigrateVendorEFTBankAccounts()
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPSY06000: Record "GP SY06000";
         Vendor: Record Vendor;
         VendorBankAccount: Record "Vendor Bank Account";
@@ -368,6 +382,9 @@ codeunit 4022 "GP Vendor Migrator"
         VendorBankAccountExists: Boolean;
         CurrencyCode: Code[10];
     begin
+        if not GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
+            exit;
+
         GPSY06000.SetRange("INACTIVE", false);
         if not GPSY06000.FindSet() then
             exit;
@@ -468,11 +485,14 @@ codeunit 4022 "GP Vendor Migrator"
         AccountNumber: Code[20];
         MigrateVendorClasses: Boolean;
     begin
-        if not GPPM00200.FindSet() then
+        if not GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
             exit;
 
         MigrateVendorClasses := GPCompanyAdditionalSettings.GetMigrateVendorClasses();
         if not MigrateVendorClasses then
+            exit;
+
+        if not GPPM00200.FindSet() then
             exit;
 
         repeat

@@ -59,8 +59,8 @@ codeunit 139664 "GP Data Migration Tests"
             GPCompanyAdditionalSettings.Insert(true);
         end;
 
-        GPCompanyAdditionalSettings."Migrate Vendor Classes" := MigrateVendorClasses;
-        GPCompanyAdditionalSettings."Migrate Customer Classes" := MigrateCustomerClasses;
+        GPCompanyAdditionalSettings.Validate("Migrate Vendor Classes", MigrateVendorClasses);
+        GPCompanyAdditionalSettings.Validate("Migrate Customer Classes", MigrateCustomerClasses);
         GPCompanyAdditionalSettings.Modify();
     end;
 
@@ -168,6 +168,12 @@ codeunit 139664 "GP Data Migration Tests"
         // [SCENARIO] All Vendor are queried from GP
         // [GIVEN] GP data
         Initialize();
+
+        ConfigureMigrationSettings(false, false);
+
+        // Enable Payables Module setting
+        GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
+        GPCompanyAdditionalSettings.Modify();
 
         // [WHEN] Data is imported
         CreateVendorData();
@@ -293,6 +299,43 @@ codeunit 139664 "GP Data Migration Tests"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestPayablesDisabled()
+    var
+        Vendor: Record Vendor;
+        CompanyInformation: Record "Company Information";
+        OrderAddress: Record "Order Address";
+        Country: Code[10];
+        VendorCount: Integer;
+    begin
+        // [SCENARIO] All Vendor are queried from GP, but the Payables Module is disabled
+        // [GIVEN] GP data
+        Initialize();
+
+        ConfigureMigrationSettings(false, false);
+
+        // Disable Payables Module setting
+        GPCompanyAdditionalSettings.Validate("Migrate Payables Module", false);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [WHEN] Data is imported
+        CreateVendorData();
+
+        // When adding Vendors, update the expected count here
+        VendorCount := 54;
+
+        // [then] Then the correct number of GPVendors are imported
+        Assert.AreEqual(VendorCount, GPVendor.Count(), 'Wrong number of GPVendors found.');
+
+        // [WHEN] data is migrated
+        Vendor.DeleteAll();
+        GPVendor.Reset();
+        MigrateVendors(GPVendor);
+
+        Assert.RecordCount(Vendor, 0);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGPPaymentTerms()
     var
         PaymentTerms: Record "Payment Terms";
@@ -304,6 +347,13 @@ codeunit 139664 "GP Data Migration Tests"
         // [SCENARIO] GP Payment Terms migrate successfully. Created due to bug 362674.
         // [GIVEN] GP Payment Terms staging table records
         Initialize();
+
+        ConfigureMigrationSettings(false, false);
+
+        // Enable Payables Module setting
+        GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
+        GPCompanyAdditionalSettings.Modify();
+
         CreateGPPaymentTermsRecords();
 
         // [WHEN] The Payment Terms migration code is run.
@@ -513,6 +563,12 @@ codeunit 139664 "GP Data Migration Tests"
         // [GIVEN] GP data
         Initialize();
 
+        ConfigureMigrationSettings(false, false);
+
+        // Enable Payables Module setting
+        GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
+        GPCompanyAdditionalSettings.Modify();
+
         // [WHEN] Data is imported
         CreateGPVendorBankInformation();
 
@@ -616,6 +672,10 @@ codeunit 139664 "GP Data Migration Tests"
         CreateVendorClassData();
         ConfigureMigrationSettings(false, false);
 
+        // Enable Payables Module setting
+        GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
+        GPCompanyAdditionalSettings.Modify();
+
         GPVendor.Reset();
         GPVendor.SetFilter("VENDORID", '%1|%2|%3', 'ACME', 'ADEMCO', 'AIRCARG');
         MigrateVendors(GPVendor);
@@ -642,6 +702,10 @@ codeunit 139664 "GP Data Migration Tests"
         CreateVendorData();
         CreateVendorClassData();
         ConfigureMigrationSettings(true, false);
+
+        // Enable Payables Module setting
+        GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
+        GPCompanyAdditionalSettings.Modify();
 
         GPVendor.Reset();
         GPVendor.SetFilter("VENDORID", '%1|%2|%3', 'ACME', 'ADEMCO', 'AIRCARG');
@@ -781,6 +845,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // Disable Migrate Open POs setting
         GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Open POs", false);
         GPCompanyAdditionalSettings.Modify();
 
