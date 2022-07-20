@@ -789,6 +789,7 @@ table 40102 "GP POPPOHeader"
 
     procedure MoveStagingData()
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         CompanyInformation: Record "Company Information";
         PurchaseHeader: Record "Purchase Header";
@@ -797,6 +798,9 @@ table 40102 "GP POPPOHeader"
         PurchaseDocumentStatus: Enum "Purchase Document Status";
         CountryCode: Code[10];
     begin
+        if not GPCompanyAdditionalSettings.GetMigrateOpenPOs() then
+            exit;
+
         if FindSet() then begin
             CountryCode := CompanyInformation."Country/Region Code";
             repeat

@@ -20,6 +20,8 @@ codeunit 139664 "GP Data Migration Tests"
         GPPM00200: Record "GP PM00200";
         GPRM00101: Record "GP RM00101";
         GPRM00201: Record "GP RM00201";
+        GPPOPPOHeader: Record "GP POPPOHeader";
+        GPPOPPOLine: Record "GP POPPOLine";
         CustomerFacade: Codeunit "Customer Data Migration Facade";
         CustomerMigrator: Codeunit "GP Customer Migrator";
         VendorMigrator: Codeunit "GP Vendor Migrator";
@@ -38,18 +40,28 @@ codeunit 139664 "GP Data Migration Tests"
         AddressCodeOtherTxt: Label 'OTHER', Comment = 'Dummy GP ADRSCODE', Locked = true;
         AddressCodeOther2Txt: Label 'OTHER2', Comment = 'Dummy GP ADRSCODE', Locked = true;
         CurrencyCodeUSTxt: Label 'Z-US$', Comment = 'GP US Currency Code', Locked = true;
+        PONumber: Label 'PO001', Comment = 'PO number for Migrate Open POs setting tests', Locked = true;
+        PostingGroupCode: Label 'GP', Locked = true;
 
     local procedure ConfigureMigrationSettings(MigrateVendorClasses: Boolean; MigrateCustomerClasses: Boolean)
+    var
+        CompanyNameText: Text[30];
     begin
-        GPCompanyMigrationSettings.Init();
-        GPCompanyMigrationSettings.Name := CompanyName();
-        GPCompanyMigrationSettings.Insert(true);
+        CompanyNameText := CompanyName();
 
-        GPCompanyAdditionalSettings.Init();
-        GPCompanyAdditionalSettings.Name := GPCompanyMigrationSettings.Name;
+        if not GPCompanyMigrationSettings.Get(CompanyNameText) then begin
+            GPCompanyMigrationSettings.Name := CompanyNameText;
+            GPCompanyMigrationSettings.Insert(true);
+        end;
+
+        if not GPCompanyAdditionalSettings.Get(CompanyNameText) then begin
+            GPCompanyAdditionalSettings.Name := CompanyNameText;
+            GPCompanyAdditionalSettings.Insert(true);
+        end;
+
         GPCompanyAdditionalSettings."Migrate Vendor Classes" := MigrateVendorClasses;
         GPCompanyAdditionalSettings."Migrate Customer Classes" := MigrateCustomerClasses;
-        GPCompanyAdditionalSettings.Insert(true);
+        GPCompanyAdditionalSettings.Modify();
     end;
 
     [Test]
@@ -750,14 +762,81 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('USA-TEST-2', Customer."Customer Posting Group", 'Customer Posting Group of migrated Customer should be set.');
     end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestOpenPOSettingDisabled()
+    var
+        VendorPostingGroup: Record "Vendor Posting Group";
+        PurchaseHeader: Record "Purchase Header";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] Vendors and their PO information are queried from GP
+        // [GIVEN] GP data
+        Initialize();
+
+        // [WHEN] Data is imported and migrated, but configured to NOT import open POs
+        CreateVendorData();
+        CreateOpenPOData();
+        ConfigureMigrationSettings(false, false);
+
+        // Disable Migrate Open POs setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Open POs", false);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPVendor.Reset();
+        MigrateVendors(GPVendor);
+        HelperFunctions.CreatePostMigrationData();
+
+        // [then] Then the POs will NOT be migrated
+        PurchaseHeader.SetRange("No.", PONumber);
+        Assert.IsFalse(PurchaseHeader.FindSet(), 'POs should not have been created.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestOpenPOSettingEnabled()
+    var
+        VendorPostingGroup: Record "Vendor Posting Group";
+        PurchaseHeader: Record "Purchase Header";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] Vendors and their PO information are queried from GP
+        // [GIVEN] GP data
+        Initialize();
+
+        // [WHEN] Data is imported and migrated
+        CreateVendorData();
+        CreateOpenPOData();
+        ConfigureMigrationSettings(false, false);
+
+        // Enable Migrate Open POs setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Open POs", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPVendor.Reset();
+        MigrateVendors(GPVendor);
+        HelperFunctions.CreatePostMigrationData();
+
+        // [then] Then the POs will be migrated
+        PurchaseHeader.SetRange("No.", PONumber);
+        Assert.IsTrue(PurchaseHeader.FindSet(), 'POs should have been created.');
+    end;
+
     [Normal]
     local procedure Initialize()
     var
         GenBusPostingGroup: Record "Gen. Business Posting Group";
+        VendorPostingGroup: Record "Vendor Posting Group";
+        GPConfiguration: Record "GP Configuration";
     begin
         if not BindSubscription(GPDataMigrationTests) then
             exit;
 
+        GPConfiguration.DeleteAll();
+        GPCompanyMigrationSettings.DeleteAll();
+        GPCompanyAdditionalSettings.DeleteAll();
         GPCustomer.DeleteAll();
         GPVendorAddress.DeleteAll();
         GPVendor.DeleteAll();
@@ -766,10 +845,17 @@ codeunit 139664 "GP Data Migration Tests"
         GPPM00200.DeleteAll();
         GPRM00101.DeleteAll();
         GPRM00201.DeleteAll();
+        GPPOPPOLine.DeleteAll();
+        GPPOPPOHeader.DeleteAll();
 
-        if not GenBusPostingGroup.Get('GP') then begin
-            GenBusPostingGroup.Validate(GenBusPostingGroup.Code, 'GP');
+        if not GenBusPostingGroup.Get(PostingGroupCode) then begin
+            GenBusPostingGroup.Validate("Code", PostingGroupCode);
             GenBusPostingGroup.Insert(true);
+        end;
+
+        if not VendorPostingGroup.Get(PostingGroupCode) then begin
+            VendorPostingGroup.Validate("Code", PostingGroupCode);
+            VendorPostingGroup.Insert(true);
         end;
 
         if UnbindSubscription(GPDataMigrationTests) then
@@ -2847,5 +2933,16 @@ codeunit 139664 "GP Data Migration Tests"
         GPPM00200.VENDNAME := 'American Airlines Cargo';
         GPPM00200.VNDCLSID := 'USA-US-M';
         GPPM00200.Insert();
+    end;
+
+    local procedure CreateOpenPOData()
+    begin
+        GPPOPPOHeader.PONUMBER := PONumber;
+        GPPOPPOHeader.VENDORID := 'DUFFY';
+        GPPOPPOHeader.DOCDATE := Today();
+        GPPOPPOHeader.PRMDATE := Today();
+        GPPOPPOHeader.PYMTRMID := '2% EOM/Net 15th';
+        GPPOPPOHeader.SHIPMTHD := 'Space Ship';
+        GPPOPPOHeader.Insert();
     end;
 }
