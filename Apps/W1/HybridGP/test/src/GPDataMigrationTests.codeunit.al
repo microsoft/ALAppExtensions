@@ -77,6 +77,12 @@ codeunit 139664 "GP Data Migration Tests"
         // [GIVEN] GP data
         Initialize();
 
+        ConfigureMigrationSettings(false, false);
+
+        // Enable Receivables Module setting
+        GPCompanyAdditionalSettings.Validate("Migrate Receivables Module", true);
+        GPCompanyAdditionalSettings.Modify();
+
         // When adding Customers, update the expected count here
         CustomerCount := 3;
 
@@ -109,7 +115,6 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('OH', GPCustomer.STATE, 'WebAdSTATEdr of Customer is wrong');
         Assert.AreEqual('S-N-NO-%S', GPCustomer.TAXSCHID, 'TAXSCHID of Customer is wrong');
         Assert.AreEqual('O4', GPCustomer.UPSZONE, 'UPSZONE of Customer is wrong');
-
 
         // [WHEN] data is migrated
         Customer.DeleteAll();
@@ -157,6 +162,41 @@ codeunit 139664 "GP Data Migration Tests"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestReceivablesDisabled()
+    var
+        Customer: Record "Customer";
+        CustomerCount: Integer;
+    begin
+        // [SCENARIO] All Customers are queried from GP, but the Receivables Module is disabled
+
+        // [GIVEN] GP data
+        Initialize();
+
+        ConfigureMigrationSettings(false, false);
+
+        // Disable Receivables Module setting
+        GPCompanyAdditionalSettings.Validate("Migrate Receivables Module", false);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [WHEN] adding Customers, update the expected count here
+        CustomerCount := 3;
+
+        // [WHEN] Data is imported
+        CreateCustomerData();
+
+        // [THEN] Then the correct number of Customers are imported
+        Assert.AreEqual(CustomerCount, GPCustomer.Count(), 'Wrong number of GPCustomers found.');
+
+        // [WHEN] data is migrated
+        Customer.DeleteAll();
+        GPCustomer.Reset();
+        MigrateCustomers(GPCustomer);
+
+        Assert.RecordCount(Customer, 0);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGPVendorImport()
     var
         Vendor: Record Vendor;
@@ -178,10 +218,10 @@ codeunit 139664 "GP Data Migration Tests"
         // [WHEN] Data is imported
         CreateVendorData();
 
-        // When adding Vendors, update the expected count here
+        // [WHEN] adding Vendors, update the expected count here
         VendorCount := 54;
 
-        // [then] Then the correct number of Vendors are imported
+        // [THEN] Then the correct number of Vendors are imported
         Assert.AreEqual(VendorCount, GPVendor.Count(), 'Wrong number of Vendor read');
 
         // [then] Then fields for Vendor 1 are correctly imported to temporary table
@@ -207,7 +247,6 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('P-N-TXB-%P*6', GPVendor.TAXSCHID, 'TAXSCHID of Vendor is wrong');
         Assert.AreEqual('T3', GPVendor.UPSZONE, 'UPSZONE of Vendor is wrong');
         Assert.AreEqual('45-0029728', GPVendor.TXIDNMBR, 'TXIDNMBR of Vendor is wrong');
-
 
         // [WHEN] data is migrated
         Vendor.DeleteAll();

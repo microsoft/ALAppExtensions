@@ -12,10 +12,15 @@ codeunit 4018 "GP Customer Migrator"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomer', '', true, true)]
     procedure OnMigrateCustomer(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPCustomer: Record "GP Customer";
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Customer" then
             exit;
+
+        if not GPCompanyAdditionalSettings.GetReceivablesModuleEnabled() then
+            exit;
+
         GPCustomer.Get(RecordIdToMigrate);
         MigrateCustomerDetails(GPCustomer, Sender);
         MigrateCustomerAddresses(GPCustomer);
@@ -24,12 +29,16 @@ codeunit 4018 "GP Customer Migrator"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerPostingGroups', '', true, true)]
     procedure OnMigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HelperFunctions: Codeunit "Helper Functions";
     begin
         if not ChartOfAccountsMigrated then
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Customer" then
+            exit;
+
+        if not GPCompanyAdditionalSettings.GetReceivablesModuleEnabled() then
             exit;
 
         Sender.CreatePostingSetupIfNeeded(
@@ -45,6 +54,7 @@ codeunit 4018 "GP Customer Migrator"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerTransactions', '', true, true)]
     procedure OnMigrateCustomerTransactions(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         MigrationGPCustomer: Record "GP Customer";
         MigrationGPCustTrans: Record "GP Customer Transactions";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
@@ -55,6 +65,9 @@ codeunit 4018 "GP Customer Migrator"
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Customer" then
+            exit;
+
+        if not GPCompanyAdditionalSettings.GetReceivablesModuleEnabled() then
             exit;
 
         MigrationGPCustomer.Get(RecordIdToMigrate);
@@ -385,16 +398,17 @@ codeunit 4018 "GP Customer Migrator"
         HelperFunctions: Codeunit "Helper Functions";
         ClassId: Text[20];
         AccountNumber: Code[20];
-        MigrateCustomerClasses: Boolean;
     begin
+        if not GPCompanyAdditionalSettings.GetReceivablesModuleEnabled() then
+            exit;
+
+        if not GPCompanyAdditionalSettings.GetMigrateCustomerClasses() then
+            exit;
+
         if not GPRM00101.FindSet() then
             exit;
 
         if not GPRM00201.FindSet() then
-            exit;
-
-        MigrateCustomerClasses := GPCompanyAdditionalSettings.GetMigrateCustomerClasses();
-        if not MigrateCustomerClasses then
             exit;
 
         // Create the Customer Posting Groups
