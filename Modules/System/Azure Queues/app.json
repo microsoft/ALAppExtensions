@@ -1,0 +1,25 @@
+{
+  "id": "0458548e-98b7-4166-8c4c-3a75b56711fe",
+  "name": "Azure Queue Module",
+  "publisher": "Microsoft",
+  "version": "20.0.0.0",
+  "brief": "Provides functions to interact with Azure Storage Queues.",
+  "description": "Provides functions to interact with Azure Storage Queue service.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
+  "EULA": "https://docs.microsoft.com/en-us/dynamics365/business-central",
+  "help": "https://docs.microsoft.com/en-us/dynamics365/business-central",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "20.0.0.0",
+  "application": "20.0.0.0",
+  "idRanges": [
+    {
+      "from": 50100,
+      "to": 50149
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://docs.microsoft.com/dynamics365/business-central/",
+  "runtime": "9.0"
+}
