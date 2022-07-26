@@ -24,6 +24,11 @@ page 30109 "Shpfy Tax Areas"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the tax area applicable to the state.';
                 }
+                field("Tax Liable"; Rec."Tax Liable")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Tax Liable field.';
+                }
                 field(VATBusPostingGroup; Rec."VAT Bus. Posting Group")
                 {
                     ApplicationArea = All;
