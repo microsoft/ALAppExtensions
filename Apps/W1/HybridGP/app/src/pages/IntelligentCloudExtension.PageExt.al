@@ -16,7 +16,7 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
 
     actions
     {
-        addbefore(RunReplicationNow)
+        addafter(RunReplicationNow)
         {
             action(ConfigureGPMigration)
             {

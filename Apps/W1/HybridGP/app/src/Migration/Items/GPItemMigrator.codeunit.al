@@ -60,7 +60,7 @@ codeunit 4019 "GP Item Migrator"
             MigrateItemInventoryPostingGroup(GPItem, Sender);
     end;
 
-    procedure MigrateItemInventoryPostingGroup(GPItem: Record "GP Item"; var Sender: Codeunit "Item Data Migration Facade")
+    procedure MigrateItemInventoryPostingGroup(var GPItem: Record "GP Item"; var Sender: Codeunit "Item Data Migration Facade")
     var
         GPIV00101: Record "GP IV00101";
         CurrentCompanyName: Text[30];
@@ -433,7 +433,7 @@ codeunit 4019 "GP Item Migrator"
         PostingGroupCode: Code[20];
         AccountNumber: Code[20];
     begin
-        if not GPCompanyAdditionalSettings."Migrate Item Classes" then
+        if not GPCompanyAdditionalSettings.GetMigrateItemClasses() then
             exit;
 
         if not GPIV40400.FindSet() then

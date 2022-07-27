@@ -9,7 +9,6 @@ codeunit 139664 "GP Data Migration Tests"
     TestPermissions = Disabled;
 
     var
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPCustomer: Record "GP Customer";
         GPVendor: Record "GP Vendor";
@@ -22,6 +21,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPRM00201: Record "GP RM00201";
         GPPOPPOHeader: Record "GP POPPOHeader";
         GPPOPPOLine: Record "GP POPPOLine";
+        GPTestHelperFunctions: Codeunit "GP Test Helper Functions";
         CustomerFacade: Codeunit "Customer Data Migration Facade";
         CustomerMigrator: Codeunit "GP Customer Migrator";
         VendorMigrator: Codeunit "GP Vendor Migrator";
@@ -43,27 +43,6 @@ codeunit 139664 "GP Data Migration Tests"
         PONumber: Label 'PO001', Comment = 'PO number for Migrate Open POs setting tests', Locked = true;
         PostingGroupCode: Label 'GP', Locked = true;
 
-    local procedure ConfigureMigrationSettings(MigrateVendorClasses: Boolean; MigrateCustomerClasses: Boolean)
-    var
-        CompanyNameText: Text[30];
-    begin
-        CompanyNameText := CompanyName();
-
-        if not GPCompanyMigrationSettings.Get(CompanyNameText) then begin
-            GPCompanyMigrationSettings.Name := CompanyNameText;
-            GPCompanyMigrationSettings.Insert(true);
-        end;
-
-        if not GPCompanyAdditionalSettings.Get(CompanyNameText) then begin
-            GPCompanyAdditionalSettings.Name := CompanyNameText;
-            GPCompanyAdditionalSettings.Insert(true);
-        end;
-
-        GPCompanyAdditionalSettings.Validate("Migrate Vendor Classes", MigrateVendorClasses);
-        GPCompanyAdditionalSettings.Validate("Migrate Customer Classes", MigrateCustomerClasses);
-        GPCompanyAdditionalSettings.Modify();
-    end;
-
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGPCustomerImport()
@@ -77,9 +56,10 @@ codeunit 139664 "GP Data Migration Tests"
         // [GIVEN] GP data
         Initialize();
 
-        ConfigureMigrationSettings(false, false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
 
         // Enable Receivables Module setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Receivables Module", true);
         GPCompanyAdditionalSettings.Modify();
 
@@ -88,6 +68,8 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [WHEN] Data is imported
         CreateCustomerData();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [then] Then the correct number of Customers are imported
         Assert.AreEqual(CustomerCount, GPCustomer.Count(), 'Wrong number of Customers read');
@@ -172,9 +154,10 @@ codeunit 139664 "GP Data Migration Tests"
         // [GIVEN] GP data
         Initialize();
 
-        ConfigureMigrationSettings(false, false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
 
         // Disable Receivables Module setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Receivables Module", false);
         GPCompanyAdditionalSettings.Modify();
 
@@ -183,6 +166,8 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [WHEN] Data is imported
         CreateCustomerData();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [THEN] Then the correct number of Customers are imported
         Assert.AreEqual(CustomerCount, GPCustomer.Count(), 'Wrong number of GPCustomers found.');
@@ -209,14 +194,17 @@ codeunit 139664 "GP Data Migration Tests"
         // [GIVEN] GP data
         Initialize();
 
-        ConfigureMigrationSettings(false, false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
 
         // Enable Payables Module setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
         GPCompanyAdditionalSettings.Modify();
 
         // [WHEN] Data is imported
         CreateVendorData();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] adding Vendors, update the expected count here
         VendorCount := 54;
@@ -350,14 +338,17 @@ codeunit 139664 "GP Data Migration Tests"
         // [GIVEN] GP data
         Initialize();
 
-        ConfigureMigrationSettings(false, false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
 
         // Disable Payables Module setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Payables Module", false);
         GPCompanyAdditionalSettings.Modify();
 
         // [WHEN] Data is imported
         CreateVendorData();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // When adding Vendors, update the expected count here
         VendorCount := 54;
@@ -387,9 +378,10 @@ codeunit 139664 "GP Data Migration Tests"
         // [GIVEN] GP Payment Terms staging table records
         Initialize();
 
-        ConfigureMigrationSettings(false, false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
 
         // Enable Payables Module setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
         GPCompanyAdditionalSettings.Modify();
 
@@ -398,6 +390,8 @@ codeunit 139664 "GP Data Migration Tests"
         // [WHEN] The Payment Terms migration code is run.
         PaymentTerms.DeleteAll();
         HelperFunctions.CreatePaymentTerms();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [THEN] payment terms get created in BC.
         PaymentTerms.FindFirst();
@@ -602,14 +596,17 @@ codeunit 139664 "GP Data Migration Tests"
         // [GIVEN] GP data
         Initialize();
 
-        ConfigureMigrationSettings(false, false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
 
         // Enable Payables Module setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
         GPCompanyAdditionalSettings.Modify();
 
         // [WHEN] Data is imported
         CreateGPVendorBankInformation();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [then] Then the correct number of GPSY06000 are imported
         Assert.AreEqual(VendorBankAccountCount, GPSY06000.Count(), 'Wrong number of GPSY06000 read.');
@@ -709,11 +706,14 @@ codeunit 139664 "GP Data Migration Tests"
         // [WHEN] Data is imported and migrated, but configured to NOT import Vendor Classes
         CreateVendorData();
         CreateVendorClassData();
-        ConfigureMigrationSettings(false, false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
 
         // Enable Payables Module setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
         GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         GPVendor.Reset();
         GPVendor.SetFilter("VENDORID", '%1|%2|%3', 'ACME', 'ADEMCO', 'AIRCARG');
@@ -740,11 +740,15 @@ codeunit 139664 "GP Data Migration Tests"
         // [WHEN] Data is imported and migrated
         CreateVendorData();
         CreateVendorClassData();
-        ConfigureMigrationSettings(true, false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
 
         // Enable Payables Module setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Vendor Classes", true);
         GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         GPVendor.Reset();
         GPVendor.SetFilter("VENDORID", '%1|%2|%3', 'ACME', 'ADEMCO', 'AIRCARG');
@@ -796,7 +800,9 @@ codeunit 139664 "GP Data Migration Tests"
         // [WHEN] Data is imported and migrated, but configured to NOT import Customer Classes
         CreateCustomerData();
         CreateCustomerClassData();
-        ConfigureMigrationSettings(false, false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         GPCustomer.Reset();
         MigrateCustomers(GPCustomer);
@@ -823,7 +829,12 @@ codeunit 139664 "GP Data Migration Tests"
         // [WHEN] Data is imported, and data is migrated
         CreateCustomerData();
         CreateCustomerClassData();
-        ConfigureMigrationSettings(false, true);
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Customer Classes", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         GPCustomer.Reset();
         MigrateCustomers(GPCustomer);
@@ -880,13 +891,15 @@ codeunit 139664 "GP Data Migration Tests"
         // [WHEN] Data is imported and migrated, but configured to NOT import open POs
         CreateVendorData();
         CreateOpenPOData();
-        ConfigureMigrationSettings(false, false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
 
         // Disable Migrate Open POs setting
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Open POs", false);
         GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         GPVendor.Reset();
         MigrateVendors(GPVendor);
@@ -912,12 +925,14 @@ codeunit 139664 "GP Data Migration Tests"
         // [WHEN] Data is imported and migrated
         CreateVendorData();
         CreateOpenPOData();
-        ConfigureMigrationSettings(false, false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
 
         // Enable Migrate Open POs setting
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Open POs", true);
         GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         GPVendor.Reset();
         MigrateVendors(GPVendor);
@@ -931,6 +946,7 @@ codeunit 139664 "GP Data Migration Tests"
     [Normal]
     local procedure Initialize()
     var
+        DataMigrationEntity: Record "Data Migration Entity";
         GenBusPostingGroup: Record "Gen. Business Posting Group";
         VendorPostingGroup: Record "Vendor Posting Group";
         GPConfiguration: Record "GP Configuration";
@@ -938,9 +954,9 @@ codeunit 139664 "GP Data Migration Tests"
         if not BindSubscription(GPDataMigrationTests) then
             exit;
 
+        DataMigrationEntity.DeleteAll();
         GPConfiguration.DeleteAll();
-        GPCompanyMigrationSettings.DeleteAll();
-        GPCompanyAdditionalSettings.DeleteAll();
+        GPTestHelperFunctions.DeleteAllSettings();
         GPCustomer.DeleteAll();
         GPVendorAddress.DeleteAll();
         GPVendor.DeleteAll();
@@ -968,6 +984,9 @@ codeunit 139664 "GP Data Migration Tests"
 
     local procedure MigrateCustomers(Customers: Record "GP Customer")
     begin
+        if not GPTestHelperFunctions.MigrationConfiguredForTable(Database::Customer) then
+            exit;
+
         if Customers.FindSet() then
             repeat
                 CustomerMigrator.OnMigrateCustomer(CustomerFacade, Customers.RecordId());
@@ -976,6 +995,9 @@ codeunit 139664 "GP Data Migration Tests"
 
     local procedure MigrateVendors(Vendors: Record "GP Vendor")
     begin
+        if not GPTestHelperFunctions.MigrationConfiguredForTable(Database::Vendor) then
+            exit;
+
         if Vendors.FindSet() then
             repeat
                 VendorMigrator.OnMigrateVendor(VendorFacade, Vendors.RecordId());

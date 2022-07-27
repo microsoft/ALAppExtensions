@@ -44,9 +44,6 @@ codeunit 40025 "GP Checkbook Migrator"
         PostingAccountNumber: Code[20];
         Amount: Decimal;
     begin
-        if not GPCompanyAdditionalSettings.GetBankModuleEnabled() then
-            exit;
-
         GPCheckbookTransactions.SetRange(CHEKBKID, CheckbookID);
         GPCheckbookTransactions.SetRange(Recond, false);
         if not GPCheckbookTransactions.FindSet() then

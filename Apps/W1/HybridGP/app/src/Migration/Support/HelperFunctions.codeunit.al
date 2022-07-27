@@ -1093,7 +1093,7 @@ Codeunit 4037 "Helper Functions"
 
         GPRM00101.DeleteAll();
         GPRM00201.DeleteAll();
-        
+
         GPIV00101.DeleteAll();
         GPIV40400.DeleteAll();
 
@@ -1934,6 +1934,8 @@ Codeunit 4037 "Helper Functions"
     end;
 
     procedure CreatePreMigrationData(): Boolean
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         CreateDimensions();
         if not DimensionsCreated() then
@@ -1943,37 +1945,41 @@ Codeunit 4037 "Helper Functions"
         if not PaymentTermsCreated() then
             exit(false);
 
-        CreateItemTrackingCodes();
-        if not ItemTrackingCodesCreated() then
-            exit(false);
+        if GPCompanyAdditionalSettings.GetInventoryModuleEnabled() then begin
+            CreateItemTrackingCodes();
+            if not ItemTrackingCodesCreated() then
+                exit(false);
 
-        CreateLocations();
-        if not LocationsCreated() then
-            exit(false);
+            CreateLocations();
+            if not LocationsCreated() then
+                exit(false);
+        end;
 
         exit(true)
     end;
 
     procedure CreatePostMigrationData(): Boolean
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         // this procedure might run multiple times depending upon migration errors.
 
         if not FiscalPeriodsCreated() then
             CreateFiscalPeriods();
 
-        if not CheckBooksCreated() then
+        if GPCompanyAdditionalSettings.GetBankModuleEnabled() and not CheckBooksCreated() then
             CreateCheckbooks();
 
-        if not OpenPurchaseOrdersCreated() then
+        if GPCompanyAdditionalSettings.GetMigrateOpenPOs() and not OpenPurchaseOrdersCreated() then
             CreateOpenPOs();
 
-        if not VendorEFTBankAccountsCreated() then
+        if GPCompanyAdditionalSettings.GetPayablesModuleEnabled() and not VendorEFTBankAccountsCreated() then
             CreateVendorEFTBankAccounts();
 
-        if not VendorClassesCreated() then
+        if GPCompanyAdditionalSettings.GetMigrateVendorClasses() and not VendorClassesCreated() then
             CreateVendorClasses();
 
-        if not CustomerClassesCreated() then
+        if GPCompanyAdditionalSettings.GetMigrateCustomerClasses() and not CustomerClassesCreated() then
             CreateCustomerClasses();
 
         exit(GPConfiguration.IsAllPostMigrationDataCreated());

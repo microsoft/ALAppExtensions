@@ -270,57 +270,43 @@ page 4050 "GP Migration Configuration"
             Rec.Insert();
 
         CurrPage.SetRecord(Rec);
-        EnsureSettingsForAllCompanies(false);
+        EnsureSettingsForAllCompanies();
     end;
 
-    local procedure EnsureSettingsForAllCompanies(ForceUpdate: Boolean)
+    local procedure EnsureSettingsForAllCompanies()
     var
         GPCompanyAdditionalSettingsEachCompany: Record "GP Company Additional Settings";
-        Company: Record Company;
+        HybridCompany: Record "Hybrid Company";
         ShouldUpdate: Boolean;
     begin
-        if Company.FindSet() then begin
+        if HybridCompany.FindSet() then begin
             repeat
-                ShouldUpdate := ForceUpdate;
-                if not GPCompanyAdditionalSettingsEachCompany.Get(Company.Name) then begin
-                    ShouldUpdate := false;
-                    GPCompanyAdditionalSettingsEachCompany.Validate(Name, Company.Name);
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Customers", Rec."Migrate Inactive Customers");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Vendors", Rec."Migrate Inactive Vendors");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Checkbooks", Rec."Migrate Inactive Checkbooks");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Vendor Classes", Rec."Migrate Vendor Classes");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Customer Classes", Rec."Migrate Customer Classes");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Item Classes", Rec."Migrate Item Classes");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Bank Module", Rec."Migrate Bank Module");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Payables Module", Rec."Migrate Payables Module");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Receivables Module", Rec."Migrate Receivables Module");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Open POs", Rec."Migrate Open POs");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inventory Module", Rec."Migrate Inventory Module");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Global Dimension 1", Rec."Global Dimension 1");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Global Dimension 2", Rec."Global Dimension 2");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Oldest GL Year To Migrate", Rec."Oldest GL Year To Migrate");
+                if not GPCompanyAdditionalSettingsEachCompany.Get(HybridCompany.Name) then begin
+                    GPCompanyAdditionalSettingsEachCompany.Validate(Name, HybridCompany.Name);
                     GPCompanyAdditionalSettingsEachCompany.Insert();
                 end;
 
-                if ShouldUpdate then begin
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Customers", Rec."Migrate Inactive Customers");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Vendors", Rec."Migrate Inactive Vendors");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Checkbooks", Rec."Migrate Inactive Checkbooks");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Vendor Classes", Rec."Migrate Vendor Classes");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Customer Classes", Rec."Migrate Customer Classes");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Item Classes", Rec."Migrate Item Classes");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Bank Module", Rec."Migrate Bank Module");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Payables Module", Rec."Migrate Payables Module");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Receivables Module", Rec."Migrate Receivables Module");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Open POs", Rec."Migrate Open POs");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inventory Module", Rec."Migrate Inventory Module");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Global Dimension 1", Rec."Global Dimension 1");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Global Dimension 2", Rec."Global Dimension 2");
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Oldest GL Year To Migrate", Rec."Oldest GL Year To Migrate");
+                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Customers", Rec."Migrate Inactive Customers");
+                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Vendors", Rec."Migrate Inactive Vendors");
+                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Checkbooks", Rec."Migrate Inactive Checkbooks");
+                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Vendor Classes", Rec."Migrate Vendor Classes");
+                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Customer Classes", Rec."Migrate Customer Classes");
+                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Item Classes", Rec."Migrate Item Classes");
+                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Bank Module", Rec."Migrate Bank Module");
+                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Payables Module", Rec."Migrate Payables Module");
+                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Receivables Module", Rec."Migrate Receivables Module");
+                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Open POs", Rec."Migrate Open POs");
+                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inventory Module", Rec."Migrate Inventory Module");
+                GPCompanyAdditionalSettingsEachCompany.Validate("Oldest GL Year To Migrate", Rec."Oldest GL Year To Migrate");
 
-                    GPCompanyAdditionalSettingsEachCompany.Modify(true);
-                end;
-            until Company.Next() = 0;
+                if (Rec."Global Dimension 1" <> '') then
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Global Dimension 1", Rec."Global Dimension 1");
+
+                if (Rec."Global Dimension 2" <> '') then
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Global Dimension 2", Rec."Global Dimension 2");
+
+                GPCompanyAdditionalSettingsEachCompany.Modify(true);
+            until HybridCompany.Next() = 0;
         end;
     end;
 
@@ -351,12 +337,9 @@ page 4050 "GP Migration Configuration"
         Rec.Validate("Migrate Receivables Module", GPCompanyAdditionalSettingsInit."Migrate Receivables Module");
         Rec.Validate("Migrate Open POs", GPCompanyAdditionalSettingsInit."Migrate Open POs");
         Rec.Validate("Migrate Inventory Module", GPCompanyAdditionalSettingsInit."Migrate Inventory Module");
-        Rec.Validate("Global Dimension 1", GPCompanyAdditionalSettingsInit."Global Dimension 1");
-        Rec.Validate("Global Dimension 2", GPCompanyAdditionalSettingsInit."Global Dimension 2");
-        Rec.Validate("Oldest GL Year To Migrate", GPCompanyAdditionalSettingsInit."Oldest GL Year To Migrate");
         CurrPage.Update(true);
 
-        EnsureSettingsForAllCompanies(true);
+        EnsureSettingsForAllCompanies();
         AfterFieldUpdate();
     end;
 

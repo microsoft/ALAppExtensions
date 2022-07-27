@@ -13,7 +13,7 @@ table 40105 "GP Company Additional Settings"
         }
         field(7; "Migrate Inactive Customers"; Boolean)
         {
-            InitValue = true;
+            InitValue = false;
             DataClassification = SystemMetadata;
 
             trigger OnValidate()
@@ -26,7 +26,7 @@ table 40105 "GP Company Additional Settings"
         }
         field(8; "Migrate Inactive Vendors"; Boolean)
         {
-            InitValue = true;
+            InitValue = false;
             DataClassification = SystemMetadata;
 
             trigger OnValidate()
@@ -39,7 +39,7 @@ table 40105 "GP Company Additional Settings"
         }
         field(10; "Migrate Inactive Checkbooks"; Boolean)
         {
-            InitValue = true;
+            InitValue = false;
             DataClassification = SystemMetadata;
 
             trigger OnValidate()
@@ -148,11 +148,43 @@ table 40105 "GP Company Additional Settings"
         }
         field(18; "Global Dimension 1"; Text[30])
         {
+            Description = 'Global Dimension 1 for the company';
+            TableRelation = "GP Segment Name" where("Company Name" = field("Name"));
+            ValidateTableRelation = true;
             DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            var
+                GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+            begin
+                if (not GPCompanyMigrationSettings.Get(Name)) then begin
+                    GPCompanyMigrationSettings.Name := Name;
+                    GPCompanyMigrationSettings.Insert();
+                end;
+
+                GPCompanyMigrationSettings.Validate("Global Dimension 1", Rec."Global Dimension 1");
+                GPCompanyMigrationSettings.Modify();
+            end;
         }
         field(19; "Global Dimension 2"; Text[30])
         {
+            Description = 'Global Dimension 2 for the company';
+            TableRelation = "GP Segment Name" where("Company Name" = field("Name"));
+            ValidateTableRelation = true;
             DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            var
+                GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+            begin
+                if (not GPCompanyMigrationSettings.Get(Name)) then begin
+                    GPCompanyMigrationSettings.Name := Name;
+                    GPCompanyMigrationSettings.Insert();
+                end;
+
+                GPCompanyMigrationSettings.Validate("Global Dimension 2", Rec."Global Dimension 2");
+                GPCompanyMigrationSettings.Modify();
+            end;
         }
         field(20; "Oldest GL Year To Migrate"; Integer)
         {

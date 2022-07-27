@@ -13,10 +13,10 @@ codeunit 139678 "GP Checkbook Tests"
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
         GPCM20600: Record "GP CM20600";
         GenJournalTemplate: Record "Gen. Journal Template";
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         BankAccount: Record "Bank Account";
         Assert: Codeunit Assert;
+        GPTestHelperFunctions: Codeunit "GP Test Helper Functions";
         InvalidBankAccountMsg: Label '%1 should not have been created.', Comment = '%1 - bank account no.', Locked = true;
         MissingBankAccountMsg: Label '%1 should have been created.', Comment = '%1 - bank account no.', Locked = true;
         ExtraTransactionMsg: Label 'Invalid transaction with discription "%1" should have been created.', Comment = '%1 - transaction description.', Locked = true;
@@ -47,7 +47,12 @@ codeunit 139678 "GP Checkbook Tests"
         CreateCheckbookData();
 
         // [GIVEN] Inactive checkbooks are to be migrated
-        ConfigureMigrationSettings(true);
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] Checkbook migration code is called
         Migrate();
@@ -102,7 +107,12 @@ codeunit 139678 "GP Checkbook Tests"
         CreateCheckbookData();
 
         // [GIVEN] Inactive checkbooks are NOT to be migrated
-        ConfigureMigrationSettings(false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", false);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] Checkbook migration code is called
         Migrate();
@@ -174,7 +184,12 @@ codeunit 139678 "GP Checkbook Tests"
         CreateMoreCheckBookData();
 
         // [GIVEN] Inactive checkbooks are NOT to be migrated
-        ConfigureMigrationSettings(false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", false);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] Checkbook migration code is called
         Migrate();
@@ -240,7 +255,12 @@ codeunit 139678 "GP Checkbook Tests"
         CreateCheckbookData();
 
         // [GIVEN] Inactive checkbooks are NOT to be migrated
-        ConfigureMigrationSettings(false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", false);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] Checkbook migration code is called
         Migrate();
@@ -318,11 +338,13 @@ codeunit 139678 "GP Checkbook Tests"
         // [GIVEN] Some records are created in the staging table
         CreateCheckbookData();
 
-        // [GIVEN] Inactive checkbooks are NOT to be migrated
-        ConfigureMigrationSettings(false);
-        GPCompanyAdditionalSettings.Get(CompanyName());
+        // [GIVEN] Bank module is disabled
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Bank Module", false);
         GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] Checkbook migration code is called
         Migrate();
@@ -359,8 +381,7 @@ codeunit 139678 "GP Checkbook Tests"
     begin
         BankAccount.DeleteAll();
         GPCheckbookMSTR.DeleteAll();
-        GPCompanyMigrationSettings.DeleteAll();
-        GPCompanyAdditionalSettings.DeleteAll();
+        GPTestHelperFunctions.DeleteAllSettings();
         GPAccount.DeleteAll();
         GPCheckbookMSTR.DeleteAll();
         GPCheckbookTransactions.DeleteAll();
@@ -376,18 +397,6 @@ codeunit 139678 "GP Checkbook Tests"
             MigrateGL(GPAccount);
         until GPAccount.Next() = 0;
         GPCheckbookMigrator.MoveCheckbookStagingData();
-    end;
-
-    local procedure ConfigureMigrationSettings(MigrateInactive: Boolean)
-    begin
-        GPCompanyMigrationSettings.Init();
-        GPCompanyMigrationSettings.Name := CompanyName();
-        GPCompanyMigrationSettings.Insert(true);
-
-        GPCompanyAdditionalSettings.Init();
-        GPCompanyAdditionalSettings.Name := GPCompanyMigrationSettings.Name;
-        GPCompanyAdditionalSettings."Migrate Inactive Checkbooks" := MigrateInactive;
-        GPCompanyAdditionalSettings.Insert(true);
     end;
 
     local procedure CreateMoreCheckBookData()

@@ -14,13 +14,9 @@ codeunit 4022 "GP Vendor Migrator"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
     procedure OnMigrateVendor(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPVendor: Record "GP Vendor";
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Vendor" then
-            exit;
-
-        if not GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
             exit;
 
         GPVendor.Get(RecordIdToMigrate);
@@ -31,16 +27,12 @@ codeunit 4022 "GP Vendor Migrator"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
     procedure OnMigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HelperFunctions: Codeunit "Helper Functions";
     begin
         if not ChartOfAccountsMigrated then
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Vendor" then
-            exit;
-
-        if not GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
             exit;
 
         Sender.CreatePostingSetupIfNeeded(
@@ -56,7 +48,6 @@ codeunit 4022 "GP Vendor Migrator"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorTransactions', '', true, true)]
     procedure OnMigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPVendor: Record "GP Vendor";
         GPVendorTransactions: Record "GP Vendor Transactions";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
@@ -67,9 +58,6 @@ codeunit 4022 "GP Vendor Migrator"
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Vendor" then
-            exit;
-
-        if not GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
             exit;
 
         GPVendor.Get(RecordIdToMigrate);
@@ -374,7 +362,6 @@ codeunit 4022 "GP Vendor Migrator"
 
     procedure MigrateVendorEFTBankAccounts()
     var
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPSY06000: Record "GP SY06000";
         Vendor: Record Vendor;
         VendorBankAccount: Record "Vendor Bank Account";
@@ -382,9 +369,6 @@ codeunit 4022 "GP Vendor Migrator"
         VendorBankAccountExists: Boolean;
         CurrencyCode: Code[10];
     begin
-        if not GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
-            exit;
-
         GPSY06000.SetRange("INACTIVE", false);
         if not GPSY06000.FindSet() then
             exit;
@@ -485,9 +469,6 @@ codeunit 4022 "GP Vendor Migrator"
         AccountNumber: Code[20];
         MigrateVendorClasses: Boolean;
     begin
-        if not GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
-            exit;
-
         MigrateVendorClasses := GPCompanyAdditionalSettings.GetMigrateVendorClasses();
         if not MigrateVendorClasses then
             exit;

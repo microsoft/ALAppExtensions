@@ -8,6 +8,7 @@ codeunit 139679 "GP Settings Tests"
 
     var
         Assert: Codeunit Assert;
+        GPTestHelperFunctions: Codeunit "GP Test Helper Functions";
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -25,9 +26,9 @@ codeunit 139679 "GP Settings Tests"
         GPCompanyAdditionalSettings.Get('Company 1');
 
         Assert.AreEqual('Company 1', GPCompanyAdditionalSettings.Name, 'Incorrect company settings found');
-        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inactive Customers", 'Migrate Inactive Customers - Incorrect value');
-        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inactive Vendors", 'Migrate Inactive Vendors - Incorrect value');
-        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inactive Checkbooks", 'Migrate Inactive Checkbooks - Incorrect value');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Inactive Customers", 'Migrate Inactive Customers - Incorrect value');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Inactive Vendors", 'Migrate Inactive Vendors - Incorrect value');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Inactive Checkbooks", 'Migrate Inactive Checkbooks - Incorrect value');
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Vendor Classes", 'Migrate Vendor Classes - Incorrect value');
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Customer Classes", 'Migrate Customer Classes - Incorrect value');
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Item Classes", 'Migrate Item Classes - Incorrect value');
@@ -419,11 +420,7 @@ codeunit 139679 "GP Settings Tests"
 
         // [THEN] The record will have the correct values
         Assert.AreEqual('Company 2', GPCompanyAdditionalSettings.Name, 'Incorrect company settings found');
-        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Inactive Customers", 'Migrate Inactive Customers - Incorrect value 3');
-        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Inactive Vendors", 'Migrate Inactive Vendors - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inactive Checkbooks", 'Migrate Inactive Checkbooks - Incorrect value');
-        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Vendor Classes", 'Migrate Vendor Classes - Incorrect value');
-        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Customer Classes", 'Migrate Customer Classes - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Bank Module", 'Migrate Bank Module - Incorrect value');
         Assert.AreEqual('', GPCompanyAdditionalSettings."Global Dimension 1", 'Global Dimension 1 - Incorrect value');
         Assert.AreEqual('', GPCompanyAdditionalSettings."Global Dimension 2", 'Global Dimension 2 - Incorrect value');
@@ -435,6 +432,60 @@ codeunit 139679 "GP Settings Tests"
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Receivables Module", 'Migrate Receivables Module - Incorrect value');
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Item Classes", 'Migrate Item Classes - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Open POs", 'Migrate Open POs - Incorrect value');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Inactive Customers", 'Migrate Inactive Customers - Incorrect value 3');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Inactive Vendors", 'Migrate Inactive Vendors - Incorrect value');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Vendor Classes", 'Migrate Vendor Classes - Incorrect value');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Customer Classes", 'Migrate Customer Classes - Incorrect value');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestPostMigrationChecks()
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPConfiguration: Record "GP Configuration";
+    begin
+        // [SCENARIO] Settings are created
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPConfiguration.GetSingleInstance();
+
+        // [WHEN] Fiscal Periods haven't been created yet, and all modules are turned off
+        GPCompanyAdditionalSettings.Validate("Migrate Bank Module", false);
+        GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", false);
+        GPCompanyAdditionalSettings.Validate("Migrate Payables Module", false);
+        GPCompanyAdditionalSettings.Validate("Migrate Receivables Module", false);
+        GPConfiguration.Validate("Fiscal Periods Created", false);
+
+        // [THEN] IsAllPostMigrationDataCreated will be false
+        Assert.IsFalse(GPConfiguration.IsAllPostMigrationDataCreated(), 'Should return false');
+
+        // [WHEN] Configured to migrate, and the entries have not yet been created
+        GPCompanyAdditionalSettings.Validate("Migrate Bank Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Open POs", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Vendor Classes", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Customer Classes", true);
+        GPConfiguration.Validate("Fiscal Periods Created", true);
+
+        // [THEN] IsAllPostMigrationDataCreated will be false
+        Assert.IsFalse(GPConfiguration.IsAllPostMigrationDataCreated(), 'Should return false because the entries have not yet been created.');
+
+        // [WHEN] Configured to migrate, and the entries have not yet been created
+        GPCompanyAdditionalSettings.Validate("Migrate Bank Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Open POs", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Vendor Classes", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Customer Classes", true);
+        GPConfiguration.Validate("Fiscal Periods Created", true);
+        GPConfiguration.Validate("CheckBooks Created", true);
+        GPConfiguration.Validate("Open Purchase Orders Created", true);
+        GPConfiguration.Validate("Vendor EFT Bank Acc. Created", true);
+        GPConfiguration.Validate("Vendor Classes Created", true);
+        GPConfiguration.Validate("Customer Classes Created", true);
+
+        // [THEN] IsAllPostMigrationDataCreated will be true
+        Assert.IsTrue(GPConfiguration.IsAllPostMigrationDataCreated(), 'Should return true because all of the entries should be created.');
     end;
 
     local procedure CreateSettingsTableEntries()
