@@ -5,8 +5,8 @@ codeunit 9109 "SharePoint Request Manager"
     var
         HttpClient: HttpClient;
         Authorization: Interface "SharePoint Authorization";
-        HttpResponseInfoErr: Label '%1.\\Response Code: %2 %3', Comment = '%1 = Default Error Message ; %2 = Status Code; %3 = Reason Phrase';
         OperationNotSuccessfulErr: Label 'An error has occurred';
+        UserAgentLbl: Label 'NONISV|%1|Dynamics 365 Business Central - %2/%3', Locked = true, Comment = '%1 = App Publisher; %2 = App Name; %3 = App Version';
 
     procedure SetAuthorization(Auth: Interface "SharePoint Authorization")
     begin
@@ -69,10 +69,9 @@ codeunit 9109 "SharePoint Request Manager"
             Headers.Add('X-RequestDigest', SharePointHttpContent.GetRequestDigest());
             RequestMessage.Content(HttpContent);
         end;
-
     end;
 
-    [NonDebuggable]
+    //[NonDebuggable]
     local procedure SendRequest(HttpRequestMessage: HttpRequestMessage) OperationResponse: Codeunit "SharePoint Operation Response"
     var
         HttpResponseMessage: HttpResponseMessage;
@@ -81,18 +80,15 @@ codeunit 9109 "SharePoint Request Manager"
     begin
         OnBeforeSendRequest(HttpRequestMessage, OperationResponse, IsHandled, HttpRequestMessage.Method());
 
-        if IsHandled then
-            exit(OperationResponse);
+        if not IsHandled then begin
+            Authorization.Authorize(HttpRequestMessage);
+            if not HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
+                Error(OperationNotSuccessfulErr);
 
-        Authorization.Authorize(HttpRequestMessage);
-        if not HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
-            Error(OperationNotSuccessfulErr);
-        if not HttpResponseMessage.IsSuccessStatusCode() then
-            OperationResponse.SetError(StrSubstNo(HttpResponseInfoErr, OperationNotSuccessfulErr, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase));
+            HttpResponseMessage.Content.ReadAs(Content);
 
-        OperationResponse.SetHttpResponse(HttpResponseMessage);
-
-        HttpResponseMessage.Content().ReadAs(Content);
+            OperationResponse.SetHttpResponse(HttpResponseMessage);
+        end;
     end;
 
     local procedure GetUserAgentString() UserAgentString: Text
@@ -100,7 +96,7 @@ codeunit 9109 "SharePoint Request Manager"
         ModuleInfo: ModuleInfo;
     begin
         if NavApp.GetCurrentModuleInfo(ModuleInfo) then
-            UserAgentString := StrSubstNo('NONISV|%1|Dynamics 365 Business Central - %2/%3', ModuleInfo.Publisher(), ModuleInfo.Name(), ModuleInfo.AppVersion());
+            UserAgentString := StrSubstNo(UserAgentLbl, ModuleInfo.Publisher(), ModuleInfo.Name(), ModuleInfo.AppVersion());
     end;
 
     [InternalEvent(false, true)]

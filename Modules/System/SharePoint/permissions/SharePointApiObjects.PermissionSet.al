@@ -21,6 +21,7 @@ permissionset 9100 "SharePoint API - Objects"
                   Codeunit "SharePoint Operation Response" = X,
                   Codeunit "SharePoint Request Manager" = X,
                   Codeunit "SharePoint Uri Builder" = X,
+                  Codeunit "SharePoint Diagnostics" = X,
                   Table "SharePoint File" = X,
                   Table "SharePoint Folder" = X,
                   Table "SharePoint List" = X,

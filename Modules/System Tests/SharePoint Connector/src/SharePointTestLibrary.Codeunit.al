@@ -36,6 +36,16 @@ Codeunit 132971 "SharePoint Test Library"
             end
         end;
 
+        if Uri.EndsWith('/_api/Web/Lists(guid''55CD6695-941D-49A6-801C-79CA67BD513D'')/items/') then begin
+            GetTooManyRequestsResponse(SharePointOperationResponse, BaseUrl, ParentUrl);
+            exit;
+        end;
+
+        if Uri.EndsWith('/_api/Web/Lists(guid''549F3387-C984-4969-95DE-4F405CCB4EA9'')/items/') then begin
+            GetDetailedErrorResponse(SharePointOperationResponse, BaseUrl, ParentUrl);
+            exit;
+        end;
+
         if Uri.EndsWith('/_api/Web/Lists(guid''854D7F21-1C6A-43AB-A081-20404894B449'')/items/') or Uri.EndsWith('/_api/Web/lists/GetByTitle(''Test%20Documents'')/items/') then begin
             if Method = 'GET' then begin
                 GetListItemsTestResponse(SharePointOperationResponse, BaseUrl, ParentUrl);
@@ -944,6 +954,28 @@ Codeunit 132971 "SharePoint Test Library"
 
         ResponseContent := ResponseContent.Replace('{baseUrl}', BaseUrl).Replace('{parentUrl}', ParentUrl);
         SharePointOperationResponse.SetHttpResponse(ResponseContent, HttpHeaders, 200, true, 'OK');
+    end;
+
+
+    local procedure GetDetailedErrorResponse(var SharePointOperationResponse: Codeunit "SharePoint Operation Response"; BaseUrl: Text; ParentUrl: Text)
+    var
+        HttpHeaders: HttpHeaders;
+        ResponseContent: Text;
+    begin
+        ResponseContent := '{';
+        ResponseContent += '"error_description":"Invalid JWT token. The token is expired."';
+        ResponseContent += '}';
+        SharePointOperationResponse.SetHttpResponse(ResponseContent, HttpHeaders, 401, false, 'Unauthorized');
+    end;
+
+    local procedure GetTooManyRequestsResponse(var SharePointOperationResponse: Codeunit "SharePoint Operation Response"; BaseUrl: Text; ParentUrl: Text)
+    var
+        HttpHeaders: HttpHeaders;
+        ResponseContent: Text;
+    begin
+        ResponseContent := '429 TOO MANY REQUESTS';
+        HttpHeaders.Add('Retry-after', '5');
+        SharePointOperationResponse.SetHttpResponse(ResponseContent, HttpHeaders, 429, false, 'TooManyRequests');
     end;
 
 }

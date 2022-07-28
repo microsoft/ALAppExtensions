@@ -15,11 +15,13 @@ codeunit 132970 "SharePoint Client Test"
     procedure TestGetLists()
     var
         TempSharePointList: Record "SharePoint List" temporary;
+        IsSuccess: Boolean;
     begin
         // [Scenario] GetLists operation succeds and records are returned
         Initialize();
 
-        SharePointClient.GetLists(TempSharePointList);
+        IsSuccess := SharePointClient.GetLists(TempSharePointList);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(2, TempSharePointList.Count(), 'Expected 2 records');
         TempSharePointList.FindFirst();
@@ -42,12 +44,14 @@ codeunit 132970 "SharePoint Client Test"
     var
         TempSharePointListItem: Record "SharePoint List Item" temporary;
         Guid: Guid;
+        IsSuccess: Boolean;
     begin
         // [Scenario] GetListItems by list Id operation succeds and records are returned
         Initialize();
 
         Evaluate(Guid, '{854D7F21-1C6A-43AB-A081-20404894B449}');
-        SharePointClient.GetListItems(Guid, TempSharePointListItem);
+        IsSuccess := SharePointClient.GetListItems(Guid, TempSharePointListItem);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(2, TempSharePointListItem.Count(), 'Expected 2 records');
         TempSharePointListItem.FindFirst();
@@ -68,11 +72,13 @@ codeunit 132970 "SharePoint Client Test"
     procedure TestGetListItemByListTitle()
     var
         TempSharePointListItem: Record "SharePoint List Item" temporary;
+        IsSuccess: Boolean;
     begin
         // [Scenario] GetListItems by list title operation succeds and records are returned
         Initialize();
 
-        SharePointClient.GetListItems('Test Documents', TempSharePointListItem);
+        IsSuccess := SharePointClient.GetListItems('Test Documents', TempSharePointListItem);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(2, TempSharePointListItem.Count(), 'Expected 2 records');
         TempSharePointListItem.FindFirst();
@@ -93,12 +99,14 @@ codeunit 132970 "SharePoint Client Test"
     var
         TempSharePointListItemAtch: Record "SharePoint List Item Atch" temporary;
         Guid: Guid;
+        IsSuccess: Boolean;
     begin
         // [Scenario] GetListItemAttachment by list id operation succeds and records are returned
         Initialize();
         Evaluate(Guid, '{854D7F21-1C6A-43AB-A081-20404894B449}');
 
-        SharePointClient.GetListItemAttachments(Guid, 1, TempSharePointListItemAtch);
+        IsSuccess := SharePointClient.GetListItemAttachments(Guid, 1, TempSharePointListItemAtch);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(2, TempSharePointListItemAtch.Count(), 'Expected 2 records');
         TempSharePointListItemAtch.FindFirst();
@@ -116,11 +124,13 @@ codeunit 132970 "SharePoint Client Test"
     procedure TestGetListItemAttachmentsByListTitle()
     var
         TempSharePointListItemAtch: Record "SharePoint List Item Atch" temporary;
+        IsSuccess: Boolean;
     begin
         // [Scenario] GetListItemAttachments by list title operation succeds and records are returned
         Initialize();
 
-        SharePointClient.GetListItemAttachments('Test Documents', 1, TempSharePointListItemAtch);
+        IsSuccess := SharePointClient.GetListItemAttachments('Test Documents', 1, TempSharePointListItemAtch);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(2, TempSharePointListItemAtch.Count(), 'Expected 2 records');
         TempSharePointListItemAtch.FindFirst();
@@ -140,13 +150,15 @@ codeunit 132970 "SharePoint Client Test"
         TempSharePointListItemAtch: Record "SharePoint List Item Atch" temporary;
         Guid: Guid;
         FileInStream: InStream;
+        IsSuccess: Boolean;
     begin
         // [Scenario] CreateListItemAttachment by list id operation succeds and records are returned
         Initialize();
         Evaluate(Guid, '{854D7F21-1C6A-43AB-A081-20404894B449}');
         InitDummyFile(FileInStream);
 
-        SharePointClient.CreateListItemAttachment(Guid, 1, 'Sample_file.txt', FileInStream, TempSharePointListItemAtch);
+        IsSuccess := SharePointClient.CreateListItemAttachment(Guid, 1, 'Sample_file.txt', FileInStream, TempSharePointListItemAtch);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(1, TempSharePointListItemAtch.Count(), 'Expected 1 record');
         TempSharePointListItemAtch.FindFirst();
@@ -165,12 +177,14 @@ codeunit 132970 "SharePoint Client Test"
     var
         TempSharePointListItemAtch: Record "SharePoint List Item Atch" temporary;
         FileInStream: InStream;
+        IsSuccess: Boolean;
     begin
         // [Scenario] CreateListItemAttachment by list title operation succeds and records are returned
         Initialize();
         InitDummyFile(FileInStream);
 
-        SharePointClient.CreateListItemAttachment('Test Documents', 1, 'Sample_file.txt', FileInStream, TempSharePointListItemAtch);
+        IsSuccess := SharePointClient.CreateListItemAttachment('Test Documents', 1, 'Sample_file.txt', FileInStream, TempSharePointListItemAtch);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(1, TempSharePointListItemAtch.Count(), 'Expected 1 record');
         TempSharePointListItemAtch.FindFirst();
@@ -189,12 +203,14 @@ codeunit 132970 "SharePoint Client Test"
     var
         TempSharePointListItem: Record "SharePoint List Item" temporary;
         Guid: Guid;
+        IsSuccess: Boolean;
     begin
         // [Scenario] CreateListItem by list Id operation succeds and records are returned
         Initialize();
 
         Evaluate(Guid, '{854D7F21-1C6A-43AB-A081-20404894B449}');
-        SharePointClient.CreateListItem(Guid, 'SP.Data.My_x0020_Test_x0020_DocumentsListItem', 'Test List Item', TempSharePointListItem);
+        IsSuccess := SharePointClient.CreateListItem(Guid, 'SP.Data.My_x0020_Test_x0020_DocumentsListItem', 'Test List Item', TempSharePointListItem);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(1, TempSharePointListItem.Count(), 'Expected 1 rezord');
         TempSharePointListItem.FindFirst();
@@ -214,11 +230,13 @@ codeunit 132970 "SharePoint Client Test"
     procedure TestCreateListItemByListTitle()
     var
         TempSharePointListItem: Record "SharePoint List Item" temporary;
+        IsSuccess: Boolean;
     begin
         // [Scenario] CreateListItem by list title operation succeds and records are returned
         Initialize();
 
-        SharePointClient.CreateListItem('Test Documents', 'SP.Data.My_x0020_Test_x0020_DocumentsListItem', 'Test List Item', TempSharePointListItem);
+        IsSuccess := SharePointClient.CreateListItem('Test Documents', 'SP.Data.My_x0020_Test_x0020_DocumentsListItem', 'Test List Item', TempSharePointListItem);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(1, TempSharePointListItem.Count(), 'Expected 1 rezord');
         TempSharePointListItem.FindFirst();
@@ -238,11 +256,13 @@ codeunit 132970 "SharePoint Client Test"
     procedure TestCreateList()
     var
         TempSharePointList: Record "SharePoint List" temporary;
+        IsSuccess: Boolean;
     begin
         // [Scenario] CreateListItem by list title operation succeds and records are returned
         Initialize();
 
-        SharePointClient.CreateList('Test Sample List Title', 'Test Sample List Description', TempSharePointList);
+        IsSuccess := SharePointClient.CreateList('Test Sample List Title', 'Test Sample List Description', TempSharePointList);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(1, TempSharePointList.Count(), 'Expected 1 record');
         TempSharePointList.FindFirst();
@@ -265,12 +285,14 @@ codeunit 132970 "SharePoint Client Test"
     var
         TempSharePointFolder: Record "SharePoint Folder" temporary;
         ParentUrl: Text;
+        IsSuccess: Boolean;
     begin
         // [Scenario] GetDocumentLibraryRootFolder operation succeds and records are returned
         Initialize();
 
         ParentUrl := BaseUrl.Substring(StrPos(BaseUrl, '/')).TrimEnd('/');
-        SharePointClient.GetDocumentLibraryRootFolder('https://' + BaseUrl + '/_api/Web/Lists(guid''854d7f21-1c6a-43ab-a081-20404894b449'')', TempSharePointFolder);
+        IsSuccess := SharePointClient.GetDocumentLibraryRootFolder('https://' + BaseUrl + '/_api/Web/Lists(guid''854d7f21-1c6a-43ab-a081-20404894b449'')', TempSharePointFolder);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(1, TempSharePointFolder.Count(), 'Expected 1 record');
         TempSharePointFolder.FindFirst();
@@ -290,12 +312,14 @@ codeunit 132970 "SharePoint Client Test"
     var
         TempSharePointFolder: Record "SharePoint Folder" temporary;
         ParentUrl: Text;
+        IsSuccess: Boolean;
     begin
         // [Scenario] GetSubFoldersByServerRelativeUrl operation succeds and records are returned
         Initialize();
 
         ParentUrl := BaseUrl.Substring(StrPos(BaseUrl, '/')).TrimEnd('/');
-        SharePointClient.GetSubFoldersByServerRelativeUrl(ParentUrl + '/Lists/Test%20Documents', TempSharePointFolder);
+        IsSuccess := SharePointClient.GetSubFoldersByServerRelativeUrl(ParentUrl + '/Lists/Test%20Documents', TempSharePointFolder);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(1, TempSharePointFolder.Count(), 'Expected 1 record');
         TempSharePointFolder.FindFirst();
@@ -315,12 +339,14 @@ codeunit 132970 "SharePoint Client Test"
     var
         TempSharePointFile: Record "SharePoint File" temporary;
         ParentUrl: Text;
+        IsSuccess: Boolean;
     begin
         // [Scenario] GetFolderFilesByServerRelativeUrl operation succeds and records are returned
         Initialize();
 
         ParentUrl := BaseUrl.Substring(StrPos(BaseUrl, '/')).TrimEnd('/');
-        SharePointClient.GetFolderFilesByServerRelativeUrl(ParentUrl + '/Lists/Test%20Documents/Attachments/1', TempSharePointFile);
+        IsSuccess := SharePointClient.GetFolderFilesByServerRelativeUrl(ParentUrl + '/Lists/Test%20Documents/Attachments/1', TempSharePointFile);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(2, TempSharePointFile.Count(), 'Expected 2 record');
         TempSharePointFile.FindFirst();
@@ -340,12 +366,14 @@ codeunit 132970 "SharePoint Client Test"
     var
         TempSharePointFolder: Record "SharePoint Folder" temporary;
         ParentUrl: Text;
+        IsSuccess: Boolean;
     begin
         // [Scenario] CreateFolder operation succeds and records are returned
         Initialize();
 
         ParentUrl := BaseUrl.Substring(StrPos(BaseUrl, '/')).TrimEnd('/');
-        SharePointClient.CreateFolder(ParentUrl + '/folders', TempSharePointFolder);
+        IsSuccess := SharePointClient.CreateFolder(ParentUrl + '/folders', TempSharePointFolder);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(1, TempSharePointFolder.Count(), 'Expected 1 record');
         TempSharePointFolder.FindFirst();
@@ -366,13 +394,15 @@ codeunit 132970 "SharePoint Client Test"
         TempSharePointFile: Record "SharePoint File" temporary;
         FileInStream: InStream;
         ParentUrl: Text;
+        IsSuccess: Boolean;
     begin
         // [Scenario] AddFileToFolder operation succeds and records are returned
         Initialize();
         InitDummyFile(FileInStream);
 
         ParentUrl := BaseUrl.Substring(StrPos(BaseUrl, '/')).TrimEnd('/');
-        SharePointClient.AddFileToFolder(ParentUrl + '/Lists/Test%20Documents/Attachments', 'SampleTestFile.jpg', FileInStream, TempSharePointFile);
+        IsSuccess := SharePointClient.AddFileToFolder(ParentUrl + '/Lists/Test%20Documents/Attachments', 'SampleTestFile.jpg', FileInStream, TempSharePointFile);
+        Assert.AreEqual(true, IsSuccess, 'Successfull operation expected');
 
         Assert.AreEqual(1, TempSharePointFile.Count(), 'Expected 1 record');
         TempSharePointFile.FindFirst();
@@ -385,6 +415,50 @@ codeunit 132970 "SharePoint Client Test"
         Assert.AreEqual('SP.File', TempSharePointFile.OdataType, StrSubstNo('Different %1 value expected', TempSharePointFile.FieldCaption("OdataType")));
         Assert.IsTrue(TempSharePointFile."Server Relative Url".EndsWith('/Lists/Test Documents/Attachments/SampleTestFile.jpg'), StrSubstNo('Different %1 value expected', TempSharePointFile.FieldCaption("Server Relative Url")));
         Assert.AreEqual(44087, TempSharePointFile.Length, StrSubstNo('Different %1 value expected', TempSharePointFile.FieldCaption(Length)));
+    end;
+
+    [Test]
+    procedure TestTooManyRequestsErrorResponse()
+    var
+        TempSharePointListItem: Record "SharePoint List Item" temporary;
+        SharepointDiagnostics: Codeunit "SharePoint Diagnostics";
+        Guid: Guid;
+        IsSuccess: Boolean;
+    begin
+        // [Scenario] GetListItems by list Id operation fails with 429 code
+        Initialize();
+
+        Evaluate(Guid, '{55CD6695-941D-49A6-801C-79CA67BD513D}');
+        IsSuccess := SharePointClient.GetListItems(Guid, TempSharePointListItem);
+        Assert.AreEqual(false, IsSuccess, 'Unsuccessfull operation expected');
+        Assert.AreEqual(0, TempSharePointListItem.Count(), 'Expected 0 records');
+
+        SharepointDiagnostics := SharePointClient.GetDiagnostics();
+        Assert.AreEqual(429, SharepointDiagnostics.GetHttpStatusCode(), 'Different status expected');
+        Assert.AreEqual(5, SharepointDiagnostics.GetHttpRetryAfter(), 'Different retry after interval expected');
+        Assert.AreEqual('TooManyRequests', SharepointDiagnostics.GetResponseReasonPhrase(), 'Different reason phrase expected');
+    end;
+
+    [Test]
+    procedure TestGenericErrorResponse()
+    var
+        TempSharePointListItem: Record "SharePoint List Item" temporary;
+        SharepointDiagnostics: Codeunit "SharePoint Diagnostics";
+        Guid: Guid;
+        IsSuccess: Boolean;
+    begin
+        // [Scenario] GetListItems by list Id operation fails with 429 code
+        Initialize();
+
+        Evaluate(Guid, '{549F3387-C984-4969-95DE-4F405CCB4EA9}');
+        IsSuccess := SharePointClient.GetListItems(Guid, TempSharePointListItem);
+        Assert.AreEqual(false, IsSuccess, 'Unsuccessfull operation expected');
+        Assert.AreEqual(0, TempSharePointListItem.Count(), 'Expected 0 records');
+
+        SharepointDiagnostics := SharePointClient.GetDiagnostics();
+        Assert.AreEqual(401, SharepointDiagnostics.GetHttpStatusCode(), 'Different status expected');
+        Assert.AreEqual('Unauthorized', SharepointDiagnostics.GetResponseReasonPhrase(), 'Different reason phrase expected');
+        Assert.AreEqual('Invalid JWT token. The token is expired.', SharepointDiagnostics.GetErrorMessage(), 'Different error description expected');
     end;
 
     local procedure Initialize()

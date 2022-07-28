@@ -2,16 +2,6 @@ Codeunit 9108 "SharePoint Operation Response"
 {
     Access = Internal;
 
-    procedure GetError(): Text
-    begin
-        exit(ResponseError);
-    end;
-
-    internal procedure SetError(Error: Text)
-    begin
-        ResponseError := Error;
-    end;
-
     [NonDebuggable]
     [TryFunction]
     internal procedure GetResultAsText(var Result: Text);
@@ -39,22 +29,18 @@ Codeunit 9108 "SharePoint Operation Response"
         HttpResponseMessage.Content().ReadAs(ContentInStream);
         CopyStream(ContentOutStream, ContentInStream);
         HttpHeaders := HttpResponseMessage.Headers();
-        HttpStatusCode := HttpResponseMessage.HttpStatusCode;
-        Success := HttpResponseMessage.IsSuccessStatusCode;
-        ReasonPhrase := HttpResponseMessage.ReasonPhrase;
+        SharepointDiagnostics.SetParameters(HttpResponseMessage.IsSuccessStatusCode, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase, GetRetryAfterHeaderValue(), GetErrorDescription());
     end;
 
     [NonDebuggable]
-    internal procedure SetHttpResponse(ResponseContent: Text; ResponseHttpHeaders: HttpHeaders; ResponseHttpStatusCode: Integer; IsSuccessStatusCode: Boolean; ResponseReasonPhrase: Text)
+    internal procedure SetHttpResponse(ResponseContent: Text; ResponseHttpHeaders: HttpHeaders; ResponseHttpStatusCode: Integer; ResponseIsSuccessStatusCode: Boolean; ResponseReasonPhrase: Text)
     var
         ContentOutStream: OutStream;
     begin
         TempBlobContent.CreateOutStream(ContentOutStream);
         ContentOutStream.WriteText(ResponseContent);
         HttpHeaders := ResponseHttpHeaders;
-        HttpStatusCode := ResponseHttpStatusCode;
-        Success := IsSuccessStatusCode;
-        ReasonPhrase := ResponseReasonPhrase;
+        SharepointDiagnostics.SetParameters(ResponseIsSuccessStatusCode, ResponseHttpStatusCode, ResponseReasonPhrase, GetRetryAfterHeaderValue(), GetErrorDescription());
     end;
 
     [NonDebuggable]
@@ -68,22 +54,39 @@ Codeunit 9108 "SharePoint Operation Response"
     end;
 
     [NonDebuggable]
-    internal procedure GetIsSuccessStatusCode(): Boolean
+    internal procedure GetRetryAfterHeaderValue() RetryAfter: Integer;
+    var
+        HeaderValue: Text;
     begin
-        exit(Success);
+        HeaderValue := GetHeaderValueFromResponseHeaders('Retry-After');
+        if HeaderValue = '' then
+            exit(0);
+        if not Evaluate(RetryAfter, HeaderValue) then
+            exit(0);
     end;
 
     [NonDebuggable]
-    internal procedure GetHttpStatusCode(): Integer
+    local procedure GetErrorDescription(): Text
+    var
+        Result: Text;
+        JObject: JsonObject;
+        JToken: JsonToken;
     begin
-        exit(HttpStatusCode);
+        GetResultAsText(Result);
+        if Result <> '' then
+            if JObject.ReadFrom(Result) then
+                if JObject.Get('error_description', JToken) then
+                    exit(JToken.AsValue().AsText());
+    end;
+
+    [NonDebuggable]
+    internal procedure GetDiagnostics(): Codeunit "SharePoint Diagnostics"
+    begin
+        exit(SharepointDiagnostics);
     end;
 
     var
         TempBlobContent: Codeunit "Temp Blob";
-        ResponseError, ReasonPhrase : Text;
+        SharepointDiagnostics: Codeunit "SharePoint Diagnostics";
         HttpHeaders: HttpHeaders;
-        HttpStatusCode: Integer;
-        Success: Boolean;
-
 }
