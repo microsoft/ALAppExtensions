@@ -3,6 +3,7 @@ codeunit 40025 "GP Checkbook Migrator"
     var
         BatchNameTxt: Label 'GPBANK', Locked = true;
         BankWarningTxt: Label 'Unable to get %1 posting account.', Comment = '%1 = Posting Group', Locked = true;
+        DescriptionTxt: Label 'Last Reconciled Balance Amount';
 
     procedure MoveCheckbookStagingData()
     var
@@ -29,12 +30,26 @@ codeunit 40025 "GP Checkbook Migrator"
                     UpdateBankInfo(DelChr(GPCheckbookMSTR.BANKID, '>', ' '), BankAccount);
                     BankAccount.Insert(true);
 
-                    MoveTransactionsData(BankAccount."No.", BankAccount."Bank Acc. Posting Group", GPCheckbookMSTR.CHEKBKID);
+                    CreateTransactions(BankAccount."No.", BankAccount."Bank Acc. Posting Group", GPCheckbookMSTR.CHEKBKID,
+                                            GPCheckbookMSTR.Last_Reconciled_Date, GPCheckbookMSTR.Last_Reconciled_Balance);
                 end;
         until GPCheckbookMSTR.Next() = 0;
     end;
 
-    procedure MoveTransactionsData(BankAccountNo: Code[20]; BankAccPostingGroupCode: Code[20]; CheckbookID: Text[15])
+    local procedure CreateTransactions(BankAccountNo: Code[20]; BankAccPostingGroupCode: Code[20]; CheckbookID: Text[15]; TrxDate: Date; Amount: Decimal)
+    var
+        PostingAccountNumber: Code[20];
+    begin
+        if not GetBankAccPostingAccountNumber(PostingAccountNumber, BankAccPostingGroupCode) then
+            exit;
+
+        if Amount <> 0.00 then
+            CreateGeneralJournalLine('BBF', DescriptionTxt, TrxDate, PostingAccountNumber, Amount, BankAccountNo);
+
+        MoveTransactionsData(BankAccountNo, BankAccPostingGroupCode, CheckbookID);
+    end;
+
+    local procedure MoveTransactionsData(BankAccountNo: Code[20]; BankAccPostingGroupCode: Code[20]; CheckbookID: Text[15])
     var
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
         PostingAccountNumber: Code[20];
