@@ -11,7 +11,7 @@ codeunit 139700 "GP Test Helper Functions"
         DataMigrationStatus.DeleteAll();
         GPCloudMigration.CreateDataMigrationEntites(DataMigrationEntity);
         HelperFunctions.CreateSetupRecordsIfNeeded();
-        GPCloudMigration.CreateAllDataMigrationStatusRecords(DataMigrationEntity);
+        GPCloudMigration.CreateConfiguredDataMigrationStatusRecords(DataMigrationEntity);
     end;
 
     procedure MigrationConfiguredForTable(TableNo: Integer): Boolean

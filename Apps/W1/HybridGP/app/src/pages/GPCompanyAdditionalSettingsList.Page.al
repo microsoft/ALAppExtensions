@@ -17,7 +17,7 @@ page 4051 "GP Company Add. Settings List"
                 field(Name; Rec.Name)
                 {
                     Caption = 'Company';
-                    ToolTip = 'Specifies the value of the Name field.';
+                    ToolTip = 'Specifies the name of the Company.';
                     ApplicationArea = All;
                     Editable = false;
                 }

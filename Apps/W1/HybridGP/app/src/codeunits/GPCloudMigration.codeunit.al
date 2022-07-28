@@ -107,7 +107,7 @@ codeunit 4025 "GP Cloud Migration"
             HelperFunctions.UpdateGlobalDimensionNo();
         end;
 
-        CreateAllDataMigrationStatusRecords(DataMigrationEntity);
+        CreateConfiguredDataMigrationStatusRecords(DataMigrationEntity);
 
         Session.LogMessage('0000BBI', StartMigrationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
         DataMigrationFacade.StartMigration(HelperFunctions.GetMigrationTypeTxt(), FALSE);
@@ -147,7 +147,7 @@ codeunit 4025 "GP Cloud Migration"
         exit(true);
     end;
 
-    procedure CreateAllDataMigrationStatusRecords(var DataMigrationEntity: Record "Data Migration Entity")
+    procedure CreateConfiguredDataMigrationStatusRecords(var DataMigrationEntity: Record "Data Migration Entity")
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPAccount: Record "GP Account";

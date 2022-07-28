@@ -109,6 +109,7 @@ codeunit 139678 "GP Checkbook Tests"
         // [GIVEN] Inactive checkbooks are NOT to be migrated
         GPTestHelperFunctions.CreateConfigurationSettings();
         GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Bank Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", false);
         GPCompanyAdditionalSettings.Modify();
 
@@ -186,6 +187,7 @@ codeunit 139678 "GP Checkbook Tests"
         // [GIVEN] Inactive checkbooks are NOT to be migrated
         GPTestHelperFunctions.CreateConfigurationSettings();
         GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Bank Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", false);
         GPCompanyAdditionalSettings.Modify();
 
@@ -257,6 +259,7 @@ codeunit 139678 "GP Checkbook Tests"
         // [GIVEN] Inactive checkbooks are NOT to be migrated
         GPTestHelperFunctions.CreateConfigurationSettings();
         GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Bank Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", false);
         GPCompanyAdditionalSettings.Modify();
 
@@ -378,6 +381,8 @@ codeunit 139678 "GP Checkbook Tests"
     end;
 
     local procedure ClearTables()
+    var
+        GPConfiguration: Record "GP Configuration";
     begin
         BankAccount.DeleteAll();
         GPCheckbookMSTR.DeleteAll();
@@ -386,17 +391,22 @@ codeunit 139678 "GP Checkbook Tests"
         GPCheckbookMSTR.DeleteAll();
         GPCheckbookTransactions.DeleteAll();
         GPCM20600.DeleteAll();
+
+        GPConfiguration.GetSingleInstance();
+        GPConfiguration."CheckBooks Created" := false;
+        GPConfiguration.Modify();
     end;
 
     local procedure Migrate()
     var
         GPCheckbookMigrator: Codeunit "GP Checkbook Migrator";
+        HelperFunctions: Codeunit "Helper Functions";
     begin
         GPAccount.FindSet();
         repeat
             MigrateGL(GPAccount);
         until GPAccount.Next() = 0;
-        GPCheckbookMigrator.MoveCheckbookStagingData();
+        HelperFunctions.CreatePostMigrationData();
     end;
 
     local procedure CreateMoreCheckBookData()
