@@ -1,9 +1,9 @@
 {
     "id":  "977e6b76-d7c1-41fa-b38b-21399cd140a7",
-    "name":  "SharePoint Connector Test",
+    "name":  "SharePoint Test",
     "publisher":  "Microsoft",
     "version":  "20.2.0.0",
-    "brief":  "Reproduces the SharePoint REST API",
+    "brief":  "Tests for the SharePoint module",
     "description":  "Provides a set of AL functionality and Helper libraries to make use of SharePoint REST API",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
@@ -13,7 +13,7 @@
     "dependencies":  [
                          {
                              "id":  "1a7bfa64-c856-49ed-86b0-bb05eb5b2de4",
-                             "name":  "SharePoint Connector",
+                             "name":  "SharePoint",
                              "publisher":  "Microsoft",
                              "version":  "20.2.0.0"
                          },
@@ -28,20 +28,19 @@
                              "publisher":  "Microsoft",
                              "name":  "Any",
                              "version":  "20.1.0.0"
-                         },
-                         {
-                            "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
-                            "name":  "DotNet Aliases",
-                            "publisher":  "Microsoft",
-                            "version":  "20.2.0.0"
-                         },
+                         }, 
                          {                            
                             "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                             "name":  "BLOB Storage",
                             "publisher":  "Microsoft",
-                            "version":  "20.3.0.0"
+                            "version":  "20.2.0.0"
+                         },
+                         {
+                            "id": "ff0caa38-65a2-49c5-a7e2-6a0475cfc60e",
+                            "name":  "SharePoint Test Library",
+                            "publisher":  "Microsoft",
+                            "version":  "20.2.0.0"
                          }
-
                      ],
     "screenshots":  [
 
@@ -53,7 +52,7 @@
     "idRanges":  [
                      {
                          "from":  132970,
-                         "to":  132975
+                         "to":  132971
                      }
                  ],
     "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/",

@@ -362,7 +362,7 @@ codeunit 132970 "SharePoint Client Test"
     end;
 
     [Test]
-    procedure CreateFolder()
+    procedure TestCreateFolder()
     var
         TempSharePointFolder: Record "SharePoint Folder" temporary;
         ParentUrl: Text;
@@ -389,7 +389,7 @@ codeunit 132970 "SharePoint Client Test"
     end;
 
     [Test]
-    procedure AddFileToFolder()
+    procedure TestAddFileToFolder()
     var
         TempSharePointFile: Record "SharePoint File" temporary;
         FileInStream: InStream;
