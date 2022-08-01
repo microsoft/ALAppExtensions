@@ -3,7 +3,7 @@ codeunit 40025 "GP Checkbook Migrator"
     var
         BatchNameTxt: Label 'GPBANK', Locked = true;
         BankWarningTxt: Label 'Unable to get %1 posting account.', Comment = '%1 = Posting Group', Locked = true;
-        DescriptionTxt: Label 'Last Reconciled Balance Amount';
+        DescriptionTxt: Label 'Last GP Reconciled Balance Amount';
 
     procedure MoveCheckbookStagingData()
     var
