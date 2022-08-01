@@ -19,20 +19,6 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
                         UpdatePropagation = Both;
                     }
                 }
-                group("GPMigrationSettings.2.0")
-                {
-                    ShowCaption = false;
-                    group("GPMigrationSettings.2.1")
-                    {
-                        ShowCaption = false;
-                        InstructionalText = 'Select the two segments from Dynamics GP you would like as the global dimensions. The remaining segments will automatically be set up as shortcut dimensions.';
-                    }
-                    group("GPMigrationSettings.2.2")
-                    {
-                        ShowCaption = false;
-                        InstructionalText = 'Choose whether to migrate inactive customers, vendors and checkbooks, or uncheck the boxes to only migrate those that are active.';
-                    }
-                }
             }
         }
     }

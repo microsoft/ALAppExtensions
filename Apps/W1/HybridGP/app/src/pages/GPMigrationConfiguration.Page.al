@@ -277,7 +277,6 @@ page 4050 "GP Migration Configuration"
     var
         GPCompanyAdditionalSettingsEachCompany: Record "GP Company Additional Settings";
         HybridCompany: Record "Hybrid Company";
-        ShouldUpdate: Boolean;
     begin
         if HybridCompany.FindSet() then begin
             repeat
