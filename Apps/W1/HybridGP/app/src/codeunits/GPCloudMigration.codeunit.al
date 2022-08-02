@@ -113,7 +113,7 @@ codeunit 4025 "GP Cloud Migration"
         DataMigrationFacade.StartMigration(HelperFunctions.GetMigrationTypeTxt(), FALSE);
     end;
 
-    procedure CreateDataMigrationStatusRecords(DestinationTableID: Integer; NumberOfRecords: Integer; StagingTableID: Integer; CodeunitToRun: Integer)
+    local procedure CreateDataMigrationStatusRecords(DestinationTableID: Integer; NumberOfRecords: Integer; StagingTableID: Integer; CodeunitToRun: Integer)
     var
         DataMigrationStatus: Record "Data Migration Status";
         HelperFunctions: Codeunit "Helper Functions";
@@ -128,7 +128,7 @@ codeunit 4025 "GP Cloud Migration"
         DataMigrationStatus.Insert()
     end;
 
-    procedure CreateDataMigrationEntites(var DataMigrationEntity: Record "Data Migration Entity"): Boolean
+    local procedure CreateDataMigrationEntites(var DataMigrationEntity: Record "Data Migration Entity"): Boolean
     var
         HelperFunctions: Codeunit "Helper Functions";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
@@ -147,7 +147,7 @@ codeunit 4025 "GP Cloud Migration"
         exit(true);
     end;
 
-    procedure CreateConfiguredDataMigrationStatusRecords(var DataMigrationEntity: Record "Data Migration Entity")
+    local procedure CreateConfiguredDataMigrationStatusRecords(var DataMigrationEntity: Record "Data Migration Entity")
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPAccount: Record "GP Account";
@@ -196,5 +196,19 @@ codeunit 4025 "GP Cloud Migration"
         MigrationTableMapping.Validate("Table ID", TableID);
         MigrationTableMapping."Source Table Name" := SourceTableName;
         MigrationTableMapping.Insert();
+    end;
+
+    procedure InitializeForTesting()
+    var
+        DataMigrationEntity: Record "Data Migration Entity";
+        DataMigrationStatus: Record "Data Migration Status";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        DataMigrationEntity.DeleteAll();
+        DataMigrationStatus.DeleteAll();
+
+        CreateDataMigrationEntites(DataMigrationEntity);
+        HelperFunctions.CreateSetupRecordsIfNeeded();
+        CreateConfiguredDataMigrationStatusRecords(DataMigrationEntity);
     end;
 }
