@@ -321,10 +321,25 @@ page 4050 "GP Migration Configuration"
         CurrPage.Update(false);
     end;
 
+    local procedure DeleteCurrentSettings()
+    var
+        GPCompanyAdditionalSettingsInit: Record "GP Company Additional Settings";
+    begin
+        GPCompanyAdditionalSettingsInit.FindSet(true);
+        GPCompanyAdditionalSettingsInit.DeleteAll();
+
+        Rec.Init();
+        Rec.Insert();
+
+        CurrPage.SetRecord(Rec);
+    end;
+
     local procedure ResetAll()
     var
         GPCompanyAdditionalSettingsInit: Record "GP Company Additional Settings";
     begin
+        DeleteCurrentSettings();
+
         Rec.Validate("Migrate Inactive Customers", GPCompanyAdditionalSettingsInit."Migrate Inactive Customers");
         Rec.Validate("Migrate Inactive Vendors", GPCompanyAdditionalSettingsInit."Migrate Inactive Vendors");
         Rec.Validate("Migrate Inactive Checkbooks", GPCompanyAdditionalSettingsInit."Migrate Inactive Checkbooks");
