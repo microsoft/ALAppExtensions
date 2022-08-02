@@ -34,13 +34,13 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 begin
                     // Cloud Migration Setup wizard has to be ran first
                     if (HybridCompany.Count() = 0) then begin
-                        Message(CloudMigrationSetupNotRanMsg);
+                        Error(CloudMigrationSetupNotRanMsg);
                         exit;
                     end;
 
                     // Staging data must be loaded
                     if (GPSegmentName.Count() = 0) then begin
-                        Message(StagingDataNotLoadedMsg);
+                        Error(StagingDataNotLoadedMsg);
                         exit;
                     end;
 
