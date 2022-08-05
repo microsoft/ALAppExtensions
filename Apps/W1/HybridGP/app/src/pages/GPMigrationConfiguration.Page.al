@@ -39,6 +39,7 @@ page 4050 "GP Migration Configuration"
 
                         repeat
                             GPCompanyAdditionalSettings.Validate("Migrate Bank Module", Rec."Migrate Bank Module");
+                            GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
 
                         AfterFieldUpdate();
@@ -56,6 +57,7 @@ page 4050 "GP Migration Configuration"
 
                         repeat
                             GPCompanyAdditionalSettings.Validate("Migrate Payables Module", Rec."Migrate Payables Module");
+                            GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
 
                         AfterFieldUpdate();
@@ -73,6 +75,7 @@ page 4050 "GP Migration Configuration"
 
                         repeat
                             GPCompanyAdditionalSettings.Validate("Migrate Receivables Module", Rec."Migrate Receivables Module");
+                            GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
 
                         AfterFieldUpdate();
@@ -90,6 +93,7 @@ page 4050 "GP Migration Configuration"
 
                         repeat
                             GPCompanyAdditionalSettings.Validate("Migrate Open POs", Rec."Migrate Open POs");
+                            GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
 
                         AfterFieldUpdate();
@@ -107,6 +111,7 @@ page 4050 "GP Migration Configuration"
 
                         repeat
                             GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", Rec."Migrate Inventory Module");
+                            GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
 
                         AfterFieldUpdate();
@@ -131,6 +136,7 @@ page 4050 "GP Migration Configuration"
 
                         repeat
                             GPCompanyAdditionalSettings.Validate("Migrate Inactive Customers", Rec."Migrate Inactive Customers");
+                            GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
 
                         AfterFieldUpdate();
@@ -148,6 +154,7 @@ page 4050 "GP Migration Configuration"
 
                         repeat
                             GPCompanyAdditionalSettings.Validate("Migrate Inactive Vendors", Rec."Migrate Inactive Vendors");
+                            GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
 
                         AfterFieldUpdate();
@@ -165,6 +172,7 @@ page 4050 "GP Migration Configuration"
 
                         repeat
                             GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", Rec."Migrate Inactive Checkbooks");
+                            GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
 
                         AfterFieldUpdate();
@@ -189,6 +197,7 @@ page 4050 "GP Migration Configuration"
 
                         repeat
                             GPCompanyAdditionalSettings.Validate("Migrate Customer Classes", Rec."Migrate Customer Classes");
+                            GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
 
                         AfterFieldUpdate();
@@ -206,6 +215,7 @@ page 4050 "GP Migration Configuration"
 
                         repeat
                             GPCompanyAdditionalSettings.Validate("Migrate Vendor Classes", Rec."Migrate Vendor Classes");
+                            GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
 
                         AfterFieldUpdate();
@@ -223,6 +233,7 @@ page 4050 "GP Migration Configuration"
 
                         repeat
                             GPCompanyAdditionalSettings.Validate("Migrate Item Classes", Rec."Migrate Item Classes");
+                            GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
 
                         AfterFieldUpdate();
@@ -233,6 +244,7 @@ page 4050 "GP Migration Configuration"
             group(SettingsList)
             {
                 Caption = 'Per Company';
+
                 part("GP Company Additional Settings List"; "GP Company Add. Settings List")
                 {
                     Caption = 'Configure individual company settings';
@@ -255,6 +267,7 @@ page 4050 "GP Migration Configuration"
                 Promoted = true;
                 PromotedCategory = Process;
                 Image = Setup;
+
                 trigger OnAction()
                 begin
                     if Confirm('Are you sure? This will reset all company migration settings to their default values.') then
@@ -282,43 +295,39 @@ page 4050 "GP Migration Configuration"
             repeat
                 if not GPCompanyAdditionalSettingsEachCompany.Get(HybridCompany.Name) then begin
                     GPCompanyAdditionalSettingsEachCompany.Validate(Name, HybridCompany.Name);
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Customers", Rec."Migrate Inactive Customers");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Vendors", Rec."Migrate Inactive Vendors");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Checkbooks", Rec."Migrate Inactive Checkbooks");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Vendor Classes", Rec."Migrate Vendor Classes");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Customer Classes", Rec."Migrate Customer Classes");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Item Classes", Rec."Migrate Item Classes");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Bank Module", Rec."Migrate Bank Module");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Payables Module", Rec."Migrate Payables Module");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Receivables Module", Rec."Migrate Receivables Module");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Open POs", Rec."Migrate Open POs");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inventory Module", Rec."Migrate Inventory Module");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Oldest GL Year To Migrate", Rec."Oldest GL Year To Migrate");
                     GPCompanyAdditionalSettingsEachCompany.Insert();
                 end;
-
-                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Customers", Rec."Migrate Inactive Customers");
-                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Vendors", Rec."Migrate Inactive Vendors");
-                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Checkbooks", Rec."Migrate Inactive Checkbooks");
-                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Vendor Classes", Rec."Migrate Vendor Classes");
-                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Customer Classes", Rec."Migrate Customer Classes");
-                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Item Classes", Rec."Migrate Item Classes");
-                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Bank Module", Rec."Migrate Bank Module");
-                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Payables Module", Rec."Migrate Payables Module");
-                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Receivables Module", Rec."Migrate Receivables Module");
-                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Open POs", Rec."Migrate Open POs");
-                GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inventory Module", Rec."Migrate Inventory Module");
-                GPCompanyAdditionalSettingsEachCompany.Validate("Oldest GL Year To Migrate", Rec."Oldest GL Year To Migrate");
-
-                if (Rec."Global Dimension 1" <> '') then
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Global Dimension 1", Rec."Global Dimension 1");
-
-                if (Rec."Global Dimension 2" <> '') then
-                    GPCompanyAdditionalSettingsEachCompany.Validate("Global Dimension 2", Rec."Global Dimension 2");
-
-                GPCompanyAdditionalSettingsEachCompany.Modify(true);
             until HybridCompany.Next() = 0;
         end;
+
+        CurrPage.Update();
     end;
 
     local procedure PrepSettingsForFieldUpdate()
     begin
-        GPCompanyAdditionalSettings.Reset();
-        GPCompanyAdditionalSettings.SetFilter("Name", '<>%1', '');
-        GPCompanyAdditionalSettings.FindSet(true);
+        if not CompanySettingsLoaded then begin
+            GPCompanyAdditionalSettings.SetFilter("Name", '<>%1', '');
+            GPCompanyAdditionalSettings.FindSet();
+
+            CompanySettingsLoaded := true;
+        end;
     end;
 
     local procedure AfterFieldUpdate()
     begin
-        CurrPage.Update(false);
+        CurrPage.Update();
     end;
 
     local procedure DeleteCurrentSettings()
@@ -357,6 +366,16 @@ page 4050 "GP Migration Configuration"
         AfterFieldUpdate();
     end;
 
+    trigger OnQueryClosePage(CloseAction: Action): Boolean
+    begin
+        if (Confirm(IntelligentCloudManagementPageQst)) then
+            Page.Run(Page::"Intelligent Cloud Management");
+
+        exit(true);
+    end;
+
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        IntelligentCloudManagementPageQst: Label 'Would you like to open the Cloud Migration Management page?', Locked = true;
+        CompanySettingsLoaded: Boolean;
 }

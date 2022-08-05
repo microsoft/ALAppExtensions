@@ -20,7 +20,6 @@ table 40105 "GP Company Additional Settings"
             begin
                 if Rec."Migrate Inactive Customers" then begin
                     Rec.Validate("Migrate Receivables Module", true);
-                    Rec.Modify();
                 end;
             end;
         }
@@ -33,7 +32,6 @@ table 40105 "GP Company Additional Settings"
             begin
                 if Rec."Migrate Inactive Vendors" then begin
                     Rec.Validate("Migrate Payables Module", true);
-                    Rec.Modify();
                 end;
             end;
         }
@@ -46,7 +44,6 @@ table 40105 "GP Company Additional Settings"
             begin
                 if Rec."Migrate Inactive Checkbooks" then begin
                     Rec.Validate("Migrate Bank Module", true);
-                    Rec.Modify();
                 end;
             end;
         }
@@ -59,7 +56,6 @@ table 40105 "GP Company Additional Settings"
             begin
                 if Rec."Migrate Vendor Classes" then begin
                     Rec.Validate("Migrate Payables Module", true);
-                    Rec.Modify();
                 end;
             end;
         }
@@ -72,7 +68,6 @@ table 40105 "GP Company Additional Settings"
             begin
                 if Rec."Migrate Customer Classes" then begin
                     Rec.Validate("Migrate Receivables Module", true);
-                    Rec.Modify();
                 end;
             end;
         }
@@ -85,7 +80,6 @@ table 40105 "GP Company Additional Settings"
             begin
                 if Rec."Migrate Item Classes" then begin
                     Rec.Validate("Migrate Inventory Module", true);
-                    Rec.Modify();
                 end;
             end;
         }
@@ -98,7 +92,6 @@ table 40105 "GP Company Additional Settings"
             begin
                 if not Rec."Migrate Bank Module" then begin
                     Rec.Validate("Migrate Inactive Checkbooks", false);
-                    Rec.Modify();
                 end;
             end;
         }
@@ -113,7 +106,6 @@ table 40105 "GP Company Additional Settings"
                     Rec.Validate("Migrate Inactive Vendors", false);
                     Rec.Validate("Migrate Open POs", false);
                     Rec.Validate("Migrate Vendor Classes", false);
-                    Rec.Modify();
                 end;
             end;
         }
@@ -128,7 +120,6 @@ table 40105 "GP Company Additional Settings"
                     Rec.Validate("Migrate Inactive Customers", false);
                     Rec.Validate("Migrate Open POs", false);
                     Rec.Validate("Migrate Customer Classes", false);
-                    Rec.Modify();
                 end;
             end;
         }
@@ -142,7 +133,6 @@ table 40105 "GP Company Additional Settings"
                 if not Rec."Migrate Inventory Module" then begin
                     Rec.Validate("Migrate Item Classes", false);
                     Rec.Validate("Migrate Open POs", false);
-                    Rec.Modify();
                 end;
             end;
         }
@@ -201,7 +191,6 @@ table 40105 "GP Company Additional Settings"
                     Rec.Validate("Migrate Inventory Module", true);
                     Rec.Validate("Migrate Payables Module", true);
                     Rec.Validate("Migrate Receivables Module", true);
-                    Rec.Modify();
                 end;
             end;
         }

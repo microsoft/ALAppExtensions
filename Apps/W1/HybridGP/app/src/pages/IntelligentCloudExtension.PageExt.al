@@ -82,10 +82,11 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 FactBoxesVisible := false;
     end;
 
+    
+
     var
         FactBoxesVisible: Boolean;
         CloudMigrationSetupNotRanMsg: Label 'No companies selected for migration. You must first run the "Cloud Migration Setup" wizard.', Locked = true;
         StagingDataNotLoadedMsg: Label 'Staging data not present. Please click "Run Migration Now" to load staging data.', Locked = true;
         CompanyNotConfiguredMsg: Label 'Not all companies are configured. Run "Configure GP Migration", and make sure all companies have dimensions configured.', Locked = true;
-
 }
