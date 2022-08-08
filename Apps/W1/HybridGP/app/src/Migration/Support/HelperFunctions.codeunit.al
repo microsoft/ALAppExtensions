@@ -69,6 +69,12 @@ Codeunit 4037 "Helper Functions"
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
         GeneralTemplateNameTxt: Label 'GENERAL', Locked = true;
 
+    [EventSubscriber(ObjectType::Codeunit, CodeUnit::"Hybrid Cloud Management", 'OnBeforeShowProductSpecificSettingsPageStep', '', true, true)]
+    procedure OnBeforeShowProductSpecificSettingsPageStep(var HybridProductType: Record "Hybrid Product Type"; var ShowSettingsStep: Boolean)
+    begin
+        ShowSettingsStep := false;
+    end;
+
 #if not CLEAN21
     [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetEntities(EntityName: Text; var JArray: JsonArray): Boolean
