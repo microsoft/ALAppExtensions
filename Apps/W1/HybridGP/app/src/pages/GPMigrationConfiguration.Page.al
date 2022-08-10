@@ -382,7 +382,12 @@ page 4050 "GP Migration Configuration"
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
+
     begin
+        if SettingsHasCompanyMissingDimension() then
+            if (not Confirm(CompanyMissingDimensionExitQst)) then
+                exit(false);
+
         if not ShowConfigMgmtPrompt then
             exit(true);
 
@@ -392,10 +397,30 @@ page 4050 "GP Migration Configuration"
         exit(true);
     end;
 
+    local procedure SettingsHasCompanyMissingDimension(): Boolean
+    var
+        GPCompanyAdditionalSettingsCompanies: Record "GP Company Additional Settings";
+    begin
+        GPCompanyAdditionalSettingsCompanies.SetFilter("Name", '<>%1', '');
+        GPCompanyAdditionalSettingsCompanies.FindSet();
+
+        repeat
+            if (GPCompanyAdditionalSettingsCompanies."Global Dimension 1" = '') then
+                exit(true);
+
+            if (GPCompanyAdditionalSettingsCompanies."Global Dimension 2" = '') then
+                exit(true);
+
+        until GPCompanyAdditionalSettingsCompanies.Next() = 0;
+
+        exit(false);
+    end;
+
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         ShowConfigMgmtPrompt: Boolean;
         ShowIntroductionNotification: Boolean;
         IntelligentCloudManagementPageQst: Label 'Would you like to open the Cloud Migration Management page?', Locked = true;
         IntroNotificationMsg: Label 'Use this configuration page to specify what information will be migrated from GP to Business Central.', Locked = true;
+        CompanyMissingDimensionExitQst: Label 'A Company is missing a Dimension. Are you sure you want to exit?', Locked = true;
 }
