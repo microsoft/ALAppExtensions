@@ -17,10 +17,20 @@ table 40105 "GP Company Additional Settings"
             DataClassification = SystemMetadata;
 
             trigger OnValidate()
+            var
+                GPCompanyMigrationSettings: Record "GP Company Migration Settings";
             begin
                 if Rec."Migrate Inactive Customers" then begin
                     Rec.Validate("Migrate Receivables Module", true);
                 end;
+
+                if (not GPCompanyMigrationSettings.Get(Name)) then begin
+                    GPCompanyMigrationSettings.Name := Name;
+                    GPCompanyMigrationSettings.Insert();
+                end;
+
+                GPCompanyMigrationSettings.Validate("Migrate Inactive Customers", Rec."Migrate Inactive Customers");
+                GPCompanyMigrationSettings.Modify();
             end;
         }
         field(8; "Migrate Inactive Vendors"; Boolean)
@@ -29,10 +39,20 @@ table 40105 "GP Company Additional Settings"
             DataClassification = SystemMetadata;
 
             trigger OnValidate()
+            var
+                GPCompanyMigrationSettings: Record "GP Company Migration Settings";
             begin
                 if Rec."Migrate Inactive Vendors" then begin
                     Rec.Validate("Migrate Payables Module", true);
                 end;
+
+                if (not GPCompanyMigrationSettings.Get(Name)) then begin
+                    GPCompanyMigrationSettings.Name := Name;
+                    GPCompanyMigrationSettings.Insert();
+                end;
+
+                GPCompanyMigrationSettings.Validate("Migrate Inactive Vendors", Rec."Migrate Inactive Vendors");
+                GPCompanyMigrationSettings.Modify();
             end;
         }
         field(10; "Migrate Inactive Checkbooks"; Boolean)
@@ -118,7 +138,6 @@ table 40105 "GP Company Additional Settings"
             begin
                 if not Rec."Migrate Receivables Module" then begin
                     Rec.Validate("Migrate Inactive Customers", false);
-                    Rec.Validate("Migrate Open POs", false);
                     Rec.Validate("Migrate Customer Classes", false);
                 end;
             end;
@@ -190,7 +209,6 @@ table 40105 "GP Company Additional Settings"
                 if Rec."Migrate Open POs" then begin
                     Rec.Validate("Migrate Inventory Module", true);
                     Rec.Validate("Migrate Payables Module", true);
-                    Rec.Validate("Migrate Receivables Module", true);
                 end;
             end;
         }

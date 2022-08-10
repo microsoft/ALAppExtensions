@@ -82,7 +82,7 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 FactBoxesVisible := false;
     end;
 
-    
+
 
     var
         FactBoxesVisible: Boolean;

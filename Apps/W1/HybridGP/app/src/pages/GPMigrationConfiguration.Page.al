@@ -8,6 +8,7 @@ page 4050 "GP Migration Configuration"
     InsertAllowed = false;
     DeleteAllowed = false;
     ModifyAllowed = true;
+    SourceTableView = where("Name" = filter(= ''));
 
     layout
     {
@@ -250,6 +251,7 @@ page 4050 "GP Migration Configuration"
                     Caption = 'Configure individual company settings';
                     ShowFilter = true;
                     ApplicationArea = All;
+                    UpdatePropagation = Both;
                 }
             }
         }
@@ -277,8 +279,25 @@ page 4050 "GP Migration Configuration"
         }
     }
 
-    trigger OnOpenPage()
+    procedure ShouldShowConfigMgmtPrompt(shouldShow: Boolean)
     begin
+        ShowConfigMgmtPrompt := shouldShow;
+    end;
+
+    procedure ShouldShowIntroductionNotification(shouldShow: Boolean)
+    begin
+        ShowIntroductionNotification := shouldShow;
+    end;
+
+    trigger OnOpenPage()
+    var
+        IntroNotification: Notification;
+    begin
+        if ShowIntroductionNotification then begin
+            IntroNotification.Message(IntroNotificationMsg);
+            IntroNotification.Send();
+        end;
+
         if not Rec.Get() then
             Rec.Insert();
 
@@ -291,6 +310,7 @@ page 4050 "GP Migration Configuration"
         GPCompanyAdditionalSettingsEachCompany: Record "GP Company Additional Settings";
         HybridCompany: Record "Hybrid Company";
     begin
+        HybridCompany.SetRange(Replicate, true);
         if HybridCompany.FindSet() then begin
             repeat
                 if not GPCompanyAdditionalSettingsEachCompany.Get(HybridCompany.Name) then begin
@@ -317,12 +337,8 @@ page 4050 "GP Migration Configuration"
 
     local procedure PrepSettingsForFieldUpdate()
     begin
-        if not CompanySettingsLoaded then begin
-            GPCompanyAdditionalSettings.SetFilter("Name", '<>%1', '');
-            GPCompanyAdditionalSettings.FindSet();
-
-            CompanySettingsLoaded := true;
-        end;
+        GPCompanyAdditionalSettings.SetFilter("Name", '<>%1', '');
+        GPCompanyAdditionalSettings.FindSet();
     end;
 
     local procedure AfterFieldUpdate()
@@ -334,7 +350,6 @@ page 4050 "GP Migration Configuration"
     var
         GPCompanyAdditionalSettingsInit: Record "GP Company Additional Settings";
     begin
-        GPCompanyAdditionalSettingsInit.FindSet(true);
         GPCompanyAdditionalSettingsInit.DeleteAll();
 
         Rec.Init();
@@ -368,6 +383,9 @@ page 4050 "GP Migration Configuration"
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     begin
+        if not ShowConfigMgmtPrompt then
+            exit(true);
+
         if (Confirm(IntelligentCloudManagementPageQst)) then
             Page.Run(Page::"Intelligent Cloud Management");
 
@@ -376,6 +394,8 @@ page 4050 "GP Migration Configuration"
 
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        ShowConfigMgmtPrompt: Boolean;
+        ShowIntroductionNotification: Boolean;
         IntelligentCloudManagementPageQst: Label 'Would you like to open the Cloud Migration Management page?', Locked = true;
-        CompanySettingsLoaded: Boolean;
+        IntroNotificationMsg: Label 'Use this configuration page to specify what information will be migrated from GP to Business Central.', Locked = true;
 }

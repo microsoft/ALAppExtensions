@@ -4,6 +4,7 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
     var
         EnvironmentInformation: Codeunit "Environment Information";
         GuidedExperience: Codeunit "Guided Experience";
+        GPMigrationConfiguration: Page "GP Migration Configuration";
     begin
         if not (CloseAction = Action::OK) then
             exit(true);
@@ -15,8 +16,9 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
             exit;
 
         if GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, PAGE::"Hybrid Cloud Setup Wizard") then begin
-            Message(ContinueToConfigurationMsg);
-            Page.Run(Page::"GP Migration Configuration");
+            GPMigrationConfiguration.ShouldShowIntroductionNotification(true);
+            GPMigrationConfiguration.ShouldShowConfigMgmtPrompt(true);
+            GPMigrationConfiguration.Run();
             exit(true);
         end else
             if not Confirm(HybridNotSetupQst, false) then
@@ -24,6 +26,5 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
     end;
 
     var
-        ContinueToConfigurationMsg: Label 'Click OK to continue configuring the GP Migration.', Locked = true;
         HybridNotSetupQst: Label 'Your Cloud Migration environment has not been set up.\\Are you sure that you want to exit?', Locked = true;
 }
