@@ -49,6 +49,7 @@ codeunit 139664 "GP Data Migration Tests"
     var
         Customer: Record "Customer";
         GenBusPostingGroup: Record "Gen. Business Posting Group";
+        GenJournalLine: Record "Gen. Journal Line";
         CustomerCount: Integer;
     begin
         // [SCENARIO] All Customers are queried from GP
@@ -68,6 +69,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [WHEN] Data is imported
         CreateCustomerData();
+        CreateCustomerTrx();
 
         GPTestHelperFunctions.InitializeMigration();
 
@@ -140,6 +142,114 @@ codeunit 139664 "GP Data Migration Tests"
         // [then] The phone and/or fax values will be set to the migrated value
         Assert.AreEqual('31847240170000', Customer."Phone No.", 'Phone No. of Migrated Customer is wrong');
         Assert.AreEqual('31847240200000', Customer."Fax No.", 'Fax No. of Migrated Customer is wrong');
+
+        // [THEN] Transactions will be created
+        Assert.RecordCount(GenJournalLine, 1);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestReceivablesMasterDataOnly()
+    var
+        Customer: Record "Customer";
+        GenBusPostingGroup: Record "Gen. Business Posting Group";
+        GenJournalLine: Record "Gen. Journal Line";
+        CustomerCount: Integer;
+    begin
+        // [SCENARIO] All Customers are queried from GP
+
+        // [GIVEN] GP data
+        Initialize();
+
+        GPTestHelperFunctions.CreateConfigurationSettings();
+
+        // Enable Receivables Module setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Receivables Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Only Rec. Master", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        // When adding Customers, update the expected count here
+        CustomerCount := 3;
+
+        // [WHEN] Data is imported
+        CreateCustomerData();
+        CreateCustomerTrx();
+
+        GPTestHelperFunctions.InitializeMigration();
+
+        // [then] Then the correct number of Customers are imported
+        Assert.AreEqual(CustomerCount, GPCustomer.Count(), 'Wrong number of Customers read');
+
+        // [then] Then fields for Customer 1 are correctly imported to temporary table
+        GPCustomer.SetRange(CUSTNMBR, '!WOW!');
+        GPCustomer.FindFirst();
+        Assert.AreEqual('Oh! What a feeling!', GPCustomer.CUSTNAME, 'CUSTNAME of Customer is wrong');
+        Assert.AreEqual('Oh! What a feeling!', GPCustomer.STMTNAME, 'STMTNAME of Customer is wrong');
+        Assert.AreEqual('', GPCustomer.ADDRESS1, 'ADDRESS1 of Customer is wrong');
+        Assert.AreEqual('Toyota Land', GPCustomer.ADDRESS2, 'ADDRESS2 of Customer is wrong');
+        Assert.AreEqual('!What a city!', GPCustomer.CITY, 'CITY of Customer is wrong');
+        Assert.AreEqual('Todd Scott', GPCustomer.CNTCPRSN, 'CNTCPRSN of Customer is wrong');
+        Assert.AreEqual('00000000000000', GPCustomer.PHONE1, 'PHONE1 Phone of Customer is wrong');
+        Assert.AreEqual('MIDWEST', GPCustomer.SALSTERR, 'SALSTERR of Customer is wrong');
+        Assert.AreEqual(1000, GPCustomer.CRLMTAMT, 'CRLMTAMT of Customer is wrong');
+        Assert.AreEqual('2% EOM/Net 15th', GPCustomer.PYMTRMID, 'PYMTRMID of Customer is wrong');
+        Assert.AreEqual('KNOBL-CHUCK-001', GPCustomer.SLPRSNID, 'SLPRSNID of Customer is wrong');
+        Assert.AreEqual('MAIL', GPCustomer.SHIPMTHD, 'SHIPMTHD of Customer is wrong');
+        Assert.AreEqual('USA', GPCustomer.COUNTRY, 'COUNTRY of Customer is wrong');
+        Assert.AreEqual(3970.61, GPCustomer.AMOUNT, 'AMOUNT of Customer is wrong');
+        Assert.IsTrue(GPCustomer.STMTCYCL, 'STMTCYCL of Customer is wrong');
+        Assert.AreEqual('00000000000000', GPCustomer.FAX, 'FAX of Customer is wrong');
+        Assert.AreEqual('84953', GPCustomer.ZIPCODE, 'ZIPCODE of Customer is wrong');
+        Assert.AreEqual('OH', GPCustomer.STATE, 'WebAdSTATEdr of Customer is wrong');
+        Assert.AreEqual('S-N-NO-%S', GPCustomer.TAXSCHID, 'TAXSCHID of Customer is wrong');
+        Assert.AreEqual('O4', GPCustomer.UPSZONE, 'UPSZONE of Customer is wrong');
+
+        // [WHEN] data is migrated
+        Customer.DeleteAll();
+        GPCustomer.Reset();
+        MigrateCustomers(GPCustomer);
+
+        // [then] Then the correct number of Customers are applied
+        Assert.AreEqual(CustomerCount, Customer.Count(), 'Wrong number of Migrated Customers read');
+
+        // [then] Then fields for Customer 1 are correctly applied
+        Customer.SetRange("No.", '!WOW!');
+        Customer.FindFirst();
+        Assert.AreEqual('Oh! What a feeling!', Customer.Name, 'Name of Migrated Customer is wrong');
+        Assert.AreEqual('Oh! What a feeling!', Customer."Name 2", 'Name2 of Migrated Customer is wrong');
+        Assert.AreEqual('Todd Scott', Customer.Contact, 'Contact Name of Migrated Customer is wrong');
+        Assert.AreEqual('OH! WHAT A FEELING!', Customer."Search Name", 'Search Name of Migrated Customer is wrong');
+        Assert.AreEqual('', Customer.Address, 'Address of Migrated Customer is wrong');
+        Assert.AreEqual('Toyota Land', Customer."Address 2", 'Address2 of Migrated Customer is wrong');
+        Assert.AreEqual('!What a city!', Customer.City, 'City of Migrated Customer is wrong');
+        Assert.AreEqual('84953', Customer."Post Code", 'Post Code of Migrated Customer is wrong');
+        Assert.AreEqual('USA', Customer."Country/Region Code", 'Country/Region of Migrated Customer is wrong');
+        Assert.AreEqual('KNOBL-CHUCK-001', Customer."Salesperson Code", 'Salesperson Code of Migrated Customer is wrong');
+        Assert.AreEqual('MAIL', Customer."Shipment Method Code", 'Shipment Method Code of Migrated Customer is wrong');
+        Assert.AreEqual(true, Customer."Print Statements", 'Print Statements of Migrated Customer is wrong');
+        Assert.AreEqual('MIDWEST', Customer."Territory Code", 'Territory Code of Migrated Customer is wrong');
+        Assert.AreEqual(1000, Customer."Credit Limit (LCY)", 'Credit Limit (LCY) of Migrated Customer is wrong');
+        Assert.AreEqual('2% EOM/NET', Customer."Payment Terms Code", 'Payment Terms Code of Migrated Customer is wrong');
+        Assert.AreEqual('S-N-NO-%S', Customer."Tax Area Code", 'Tax Area Code of Migrated Customer is wrong');
+        Assert.AreEqual(true, Customer."Tax Liable", 'Tax Liable of Migrated Customer is wrong');
+
+        // [WHEN] the Customer phone and/or fax were default (00000000000000)
+        // [then] The phone and/or fax values are empty 
+        Assert.AreEqual('', Customer."Phone No.", 'Phone No. of Migrated Customer should be empty');
+        Assert.AreEqual('', Customer."Fax No.", 'Fax No. of Migrated Customer should be empty');
+
+        // [WHEN] the Customer phone and/or fax were not default (00000000000000)
+        Customer.Reset();
+        Customer.SetRange("No.", '"AMERICAN"');
+        Customer.FindFirst();
+
+        // [then] The phone and/or fax values will be set to the migrated value
+        Assert.AreEqual('31847240170000', Customer."Phone No.", 'Phone No. of Migrated Customer is wrong');
+        Assert.AreEqual('31847240200000', Customer."Fax No.", 'Fax No. of Migrated Customer is wrong');
+
+        // [THEN] Transactions will NOT be created
+        Assert.RecordCount(GenJournalLine, 0);
     end;
 
     [Test]
@@ -187,6 +297,7 @@ codeunit 139664 "GP Data Migration Tests"
         Vendor: Record Vendor;
         CompanyInformation: Record "Company Information";
         OrderAddress: Record "Order Address";
+        GenJournalLine: Record "Gen. Journal Line";
         Country: Code[10];
         VendorCount: Integer;
     begin
@@ -203,6 +314,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [WHEN] Data is imported
         CreateVendorData();
+        CreateVendorTrx();
 
         GPTestHelperFunctions.InitializeMigration();
 
@@ -322,6 +434,56 @@ codeunit 139664 "GP Data Migration Tests"
         // [then] The phone and/or fax values will be set to the migrated value
         Assert.AreEqual('61855501040000', OrderAddress."Phone No.", 'Phone No. of Migrated Vendor Address should be empty');
         Assert.AreEqual('61855501040000', OrderAddress."Fax No.", 'Fax No. of Migrated Vendor Address should be empty');
+
+        // [THEN] Vendor transactions will be created
+        Assert.RecordCount(GenJournalLine, 1);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestPayablesMasterDataOnly()
+    var
+        Vendor: Record Vendor;
+        CompanyInformation: Record "Company Information";
+        OrderAddress: Record "Order Address";
+        GenJournalLine: Record "Gen. Journal Line";
+        Country: Code[10];
+        VendorCount: Integer;
+    begin
+        // [SCENARIO] All Vendor are queried from GP
+        // [GIVEN] GP data
+        Initialize();
+
+        GPTestHelperFunctions.CreateConfigurationSettings();
+
+        // Enable Payables Module setting
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Only Payables Master", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [WHEN] Data is imported
+        CreateVendorData();
+        CreateVendorTrx();
+
+        GPTestHelperFunctions.InitializeMigration();
+
+        // [WHEN] adding Vendors, update the expected count here
+        VendorCount := 54;
+
+        // [THEN] Then the correct number of Vendors are imported
+        Assert.AreEqual(VendorCount, GPVendor.Count(), 'Wrong number of Vendor read');
+
+        // [WHEN] data is migrated
+        Vendor.DeleteAll();
+        GPVendor.Reset();
+        MigrateVendors(GPVendor);
+
+        // [THEN] Then the correct number of Vendors are applied
+        Assert.AreEqual(VendorCount, Vendor.Count(), 'Wrong number of Migrated Vendors read');
+
+        // [THEN] Vendor transactions will NOT be created
+        Assert.RecordCount(GenJournalLine, 0);
     end;
 
     [Test]
@@ -828,6 +990,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [WHEN] Data is imported, and data is migrated
         CreateCustomerData();
+        CreateCustomerTrx();
         CreateCustomerClassData();
         GPTestHelperFunctions.CreateConfigurationSettings();
         GPCompanyAdditionalSettings.GetSingleInstance();
@@ -950,6 +1113,7 @@ codeunit 139664 "GP Data Migration Tests"
         GenBusPostingGroup: Record "Gen. Business Posting Group";
         VendorPostingGroup: Record "Vendor Posting Group";
         GPConfiguration: Record "GP Configuration";
+        GenJournalLine: Record "Gen. Journal Line";
     begin
         if not BindSubscription(GPDataMigrationTests) then
             exit;
@@ -967,6 +1131,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPRM00201.DeleteAll();
         GPPOPPOLine.DeleteAll();
         GPPOPPOHeader.DeleteAll();
+        GenJournalLine.DeleteAll();
 
         if not GenBusPostingGroup.Get(PostingGroupCode) then begin
             GenBusPostingGroup.Validate("Code", PostingGroupCode);
@@ -990,6 +1155,7 @@ codeunit 139664 "GP Data Migration Tests"
         if Customers.FindSet() then
             repeat
                 CustomerMigrator.OnMigrateCustomer(CustomerFacade, Customers.RecordId());
+                CustomerMigrator.OnMigrateCustomerTransactions(CustomerFacade, Customers.RecordId(), true);
             until Customers.Next() = 0;
     end;
 
@@ -1001,6 +1167,7 @@ codeunit 139664 "GP Data Migration Tests"
         if Vendors.FindSet() then
             repeat
                 VendorMigrator.OnMigrateVendor(VendorFacade, Vendors.RecordId());
+                VendorMigrator.OnMigrateVendorTransactions(VendorFacade, Vendors.RecordId(), true);
             until Vendors.Next() = 0;
     end;
 
@@ -1096,6 +1263,21 @@ codeunit 139664 "GP Data Migration Tests"
         GPCustomer.UPSZONE := 'P3';
         GPCustomer.TAXEXMT1 := '';
         GPCustomer.Insert();
+    end;
+
+    local procedure CreateCustomerTrx()
+    var
+        GPCustomerTransactions: Record "GP Customer Transactions";
+    begin
+        GPCustomerTransactions.Id := '1';
+        GPCustomerTransactions.CUSTNMBR := '#1';
+        GPCustomerTransactions.DOCNUMBR := '1';
+        GPCustomerTransactions.GLDocNo := '1';
+        GPCustomerTransactions.DOCDATE := DMY2Date(11, 8, 2022);
+        GPCustomerTransactions.CURTRXAM := 1;
+        GPCustomerTransactions.TransType := GPCustomerTransactions.TransType::Invoice;
+        GPCustomerTransactions.PYMTRMID := '2.5% EOM/EOM';
+        GPCustomerTransactions.Insert();
     end;
 
     local procedure CreateCustomerClassData()
@@ -2592,6 +2774,21 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendorAddress.PHNUMBR1 := '41327348230000';
         GPVendorAddress.FAXNUMBR := '41327348300000';
         GPVendorAddress.Insert();
+    end;
+
+    local procedure CreateVendorTrx()
+    var
+        GPVendorTransactions: Record "GP Vendor Transactions";
+    begin
+        GPVendorTransactions.Id := '1';
+        GPVendorTransactions.VENDORID := 'V3130';
+        GPVendorTransactions.DOCNUMBR := '1';
+        GPVendorTransactions.GLDocNo := '1';
+        GPVendorTransactions.DOCDATE := DMY2Date(11, 8, 2022);
+        GPVendorTransactions.CURTRXAM := 1;
+        GPVendorTransactions.TransType := GPVendorTransactions.TransType::Invoice;
+        GPVendorTransactions.PYMTRMID := '3% 15th/Net 30';
+        GPVendorTransactions.Insert();
     end;
 
     local procedure CreateGPVendorBankInformation()

@@ -112,6 +112,7 @@ table 40105 "GP Company Additional Settings"
             begin
                 if not Rec."Migrate Bank Module" then begin
                     Rec.Validate("Migrate Inactive Checkbooks", false);
+                    Rec.Validate("Migrate Only Bank Master", false);
                 end;
             end;
         }
@@ -126,6 +127,7 @@ table 40105 "GP Company Additional Settings"
                     Rec.Validate("Migrate Inactive Vendors", false);
                     Rec.Validate("Migrate Open POs", false);
                     Rec.Validate("Migrate Vendor Classes", false);
+                    Rec.Validate("Migrate Only Payables Master", false);
                 end;
             end;
         }
@@ -139,6 +141,7 @@ table 40105 "GP Company Additional Settings"
                 if not Rec."Migrate Receivables Module" then begin
                     Rec.Validate("Migrate Inactive Customers", false);
                     Rec.Validate("Migrate Customer Classes", false);
+                    Rec.Validate("Migrate Only Rec. Master", false);
                 end;
             end;
         }
@@ -152,6 +155,7 @@ table 40105 "GP Company Additional Settings"
                 if not Rec."Migrate Inventory Module" then begin
                     Rec.Validate("Migrate Item Classes", false);
                     Rec.Validate("Migrate Open POs", false);
+                    Rec.Validate("Migrate Only Inventory Master", false);
                 end;
             end;
         }
@@ -209,6 +213,59 @@ table 40105 "GP Company Additional Settings"
                 if Rec."Migrate Open POs" then begin
                     Rec.Validate("Migrate Inventory Module", true);
                     Rec.Validate("Migrate Payables Module", true);
+                end;
+            end;
+        }
+        field(22; "Migrate Only GL Master"; Boolean)
+        {
+            InitValue = false;
+            DataClassification = SystemMetadata;
+        }
+        field(23; "Migrate Only Bank Master"; Boolean)
+        {
+            InitValue = false;
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if Rec."Migrate Only Bank Master" then begin
+                    Rec.Validate("Migrate Bank Module", true);
+                end;
+            end;
+        }
+        field(24; "Migrate Only Payables Master"; Boolean)
+        {
+            InitValue = false;
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if Rec."Migrate Only Payables Master" then begin
+                    Rec.Validate("Migrate Payables Module", true);
+                end;
+            end;
+        }
+        field(25; "Migrate Only Rec. Master"; Boolean)
+        {
+            InitValue = false;
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if Rec."Migrate Only Rec. Master" then begin
+                    Rec.Validate("Migrate Receivables Module", true);
+                end;
+            end;
+        }
+        field(26; "Migrate Only Inventory Master"; Boolean)
+        {
+            InitValue = false;
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if Rec."Migrate Only Inventory Master" then begin
+                    Rec.Validate("Migrate Inventory Module", true);
                 end;
             end;
         }
@@ -298,6 +355,37 @@ table 40105 "GP Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Migrate Item Classes");
+    end;
+
+    // Master data
+    procedure GetMigrateOnlyGLMaster(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Only GL Master");
+    end;
+
+    procedure GetMigrateOnlyBankMaster(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Only Bank Master");
+    end;
+
+    procedure GetMigrateOnlyPayablesMaster(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Only Payables Master");
+    end;
+
+    procedure GetMigrateOnlyReceivablesMaster(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Only Rec. Master");
+    end;
+
+    procedure GetMigrateOnlyInventoryMaster(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Only Inventory Master");
     end;
 
     // Other

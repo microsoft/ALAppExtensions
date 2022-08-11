@@ -50,6 +50,7 @@ codeunit 4022 "GP Vendor Migrator"
     var
         GPVendor: Record "GP Vendor";
         GPVendorTransactions: Record "GP Vendor Transactions";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
         HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
@@ -58,6 +59,9 @@ codeunit 4022 "GP Vendor Migrator"
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Vendor" then
+            exit;
+
+        if GPCompanyAdditionalSettings.GetMigrateOnlyPayablesMaster() then
             exit;
 
         GPVendor.Get(RecordIdToMigrate);

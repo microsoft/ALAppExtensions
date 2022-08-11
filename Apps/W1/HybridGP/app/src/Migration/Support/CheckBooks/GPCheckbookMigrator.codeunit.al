@@ -37,9 +37,13 @@ codeunit 40025 "GP Checkbook Migrator"
     procedure MoveTransactionsData(BankAccountNo: Code[20]; BankAccPostingGroupCode: Code[20]; CheckbookID: Text[15])
     var
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         PostingAccountNumber: Code[20];
         Amount: Decimal;
     begin
+        if GPCompanyAdditionalSettings.GetMigrateOnlyBankMaster() then
+            exit;
+
         GPCheckbookTransactions.SetRange(CHEKBKID, CheckbookID);
         GPCheckbookTransactions.SetRange(Recond, false);
         if not GPCheckbookTransactions.FindSet() then

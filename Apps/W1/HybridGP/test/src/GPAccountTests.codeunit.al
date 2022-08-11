@@ -7,9 +7,11 @@ codeunit 139661 "GP Account Tests"
     TestPermissions = Disabled;
 
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         Assert: Codeunit Assert;
         GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade";
         MSGPAccountMigrationTests: Codeunit "GP Account Tests";
+        GPTestHelperFunctions: Codeunit "GP Test Helper Functions";
         InvalidAccountNoMsg: Label 'Account No. was expected to be %1 but it was %2 instead', Comment = '%1 - expected value; %2 - actual value', Locked = true;
         InvalidAccountTypeMsg: Label 'Account Type was expected to be %1 but it was %2 instead', Comment = '%1 - expected value; %2 - actual value', Locked = true;
         InvalidAccountCategoryMsg: Label 'Account Category was expected to be %1 but it was %2 instead', Comment = '%1 - expected value; %2 - actual value', Locked = true;
@@ -24,6 +26,7 @@ codeunit 139661 "GP Account Tests"
         GLAccount: Record "G/L Account";
         GPSegements: Record "GP Segments";
         GPCodes: Record "GP Codes";
+        GenJournalLine: Record "Gen. Journal Line";
         GPFiscalPeriods: Record "GP Fiscal Periods";
         HelperFunctions: Codeunit "Helper Functions";
     begin
@@ -50,6 +53,7 @@ codeunit 139661 "GP Account Tests"
         Assert.RecordCount(GLAccount, 7);
         Assert.RecordCount(GPGLTransactions, 3);
         Assert.RecordCount(DimensionSetEntry, 6);
+        Assert.RecordCount(GenJournalLine, 3);
 
         // [THEN] Accounts are created with correct settings
         GPAccount.FindSet();
@@ -70,6 +74,50 @@ codeunit 139661 "GP Account Tests"
                 'Debit/Credit not set correctly.');
             GPAccount.Next();
         until GLAccount.Next() = 0;
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGLMasterDataOnly()
+    var
+        GPGLTransactions: Record "GP GLTransactions";
+        DimensionSetEntry: Record "Dimension Set Entry";
+        GPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
+        GPSegements: Record "GP Segments";
+        GPCodes: Record "GP Codes";
+        GPFiscalPeriods: Record "GP Fiscal Periods";
+        GenJournalLine: Record "Gen. Journal Line";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] G/L Accounts are migrated from GP
+        // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
+        if not BindSubscription(MSGPAccountMigrationTests) then
+            exit;
+        ClearTables();
+
+        // [GIVEN] GL Master Data Only is enabled
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Only GL Master", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [GIVEN] Some records are created in the staging tables
+        CreateAccountData(GPAccount);
+        CreateDimensionData(GPSegements, GPCodes);
+        HelperFunctions.CreateDimensions();
+        CreateFiscalPeriods(GPFiscalPeriods);
+        CreateTrxData(GPGLTransactions);
+
+        // [WHEN] MigrationAccounts is called
+        GPAccount.FindSet();
+        repeat
+            Migrate(GPAccount);
+        until GPAccount.Next() = 0;
+
+        // [THEN] Accounts are created, but with no transactions
+        Assert.RecordCount(GLAccount, 7);
+        Assert.RecordCount(GenJournalLine, 0);
     end;
 
     [Test]

@@ -92,6 +92,7 @@ codeunit 4019 "GP Item Migrator"
         ItemJnlLine: Record "Item Journal Line";
         GPItem: Record "GP Item";
         GPItemTransaction: Record "GP Item Transactions";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         AdjustItemInventory: Codeunit "Adjust Item Inventory";
         GPItemTransactionAverageQuery: Query "GP Item Transaction Average";
         GPItemTransactionStandardQuery: Query "GP Item Transaction Standard";
@@ -102,6 +103,9 @@ codeunit 4019 "GP Item Migrator"
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
+            exit;
+
+        if GPCompanyAdditionalSettings.GetMigrateOnlyInventoryMaster() then
             exit;
 
         if GPItem.Get(RecordIdToMigrate) then begin
