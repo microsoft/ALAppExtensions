@@ -116,18 +116,23 @@ codeunit 30103 "Shpfy Communication Mgt."
     var
         ShpfyGraphQLRateLimit: Codeunit "Shpfy GraphQL Rate Limit";
         ShpfyJsonHelper: Codeunit "Shpfy Json Helper";
+        ReceivedData: Text;
         ErrorOnShopifyErr: Label 'Error(s) on Shopify:\ \%1', Comment = '%1 = Errors from json structure.';
+        NoJsonErr: Label 'The response from Shopify contains no JSON. \Requested: %1 \Response: %2', Comment = '%2 = Receibve data';
     begin
         ShpfyGraphQLRateLimit.WaitForRequestAvailable(ExpectedCost);
-        if JResponse.ReadFrom(ExecuteWebRequest(CreateWebRequestURL('graphql.json'), 'POST', GraphQLQuery, ResponseHeaders, 0)) then
+        ReceivedData := ExecuteWebRequest(CreateWebRequestURL('graphql.json'), 'POST', GraphQLQuery, ResponseHeaders, 0);
+        if JResponse.ReadFrom(ReceivedData) then begin
             ShpfyGraphQLRateLimit.SetQueryCost(ShpfyJsonHelper.GetJsonToken(JResponse, 'extensions.cost.throttleStatus'));
-        while JResponse.AsObject().Contains('errors') and Format(JResponse).Contains('THROTTLED') do begin
-            ShpfyGraphQLRateLimit.WaitForRequestAvailable(ExpectedCost);
-            if JResponse.ReadFrom(ExecuteWebRequest(CreateWebRequestURL('graphql.json'), 'POST', GraphQLQuery, ResponseHeaders, 0)) then
-                ShpfyGraphQLRateLimit.SetQueryCost(ShpfyJsonHelper.GetJsonToken(JResponse, 'extensions.cost.throttleStatus'));
-        end;
-        if JResponse.AsObject().Contains('errors') then
-            Error(ErrorOnShopifyErr, Format(ShpfyJsonHelper.GetJsonToken(JResponse, 'errors')));
+            while JResponse.AsObject().Contains('errors') and Format(JResponse).Contains('THROTTLED') do begin
+                ShpfyGraphQLRateLimit.WaitForRequestAvailable(ExpectedCost);
+                if JResponse.ReadFrom(ExecuteWebRequest(CreateWebRequestURL('graphql.json'), 'POST', GraphQLQuery, ResponseHeaders, 0)) then
+                    ShpfyGraphQLRateLimit.SetQueryCost(ShpfyJsonHelper.GetJsonToken(JResponse, 'extensions.cost.throttleStatus'));
+            end;
+            if JResponse.AsObject().Contains('errors') then
+                Error(ErrorOnShopifyErr, Format(ShpfyJsonHelper.GetJsonToken(JResponse, 'errors')));
+        end else
+            Error(NoJsonErr, ReceivedData);
     end;
 
     /// <summary> 
