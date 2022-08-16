@@ -118,7 +118,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         ShpfyJsonHelper: Codeunit "Shpfy Json Helper";
         ReceivedData: Text;
         ErrorOnShopifyErr: Label 'Error(s) on Shopify:\ \%1', Comment = '%1 = Errors from json structure.';
-        NoJsonErr: Label 'The response from Shopify contains no JSON. \Requested: %1 \Response: %2', Comment = '%2 = Receibve data';
+        NoJsonErr: Label 'The response from Shopify contains no JSON. \Requested: %1 \Response: %2', Comment = '%1 = The request = %2 = Receibve data';
     begin
         ShpfyGraphQLRateLimit.WaitForRequestAvailable(ExpectedCost);
         ReceivedData := ExecuteWebRequest(CreateWebRequestURL('graphql.json'), 'POST', GraphQLQuery, ResponseHeaders, 0);
@@ -132,7 +132,7 @@ codeunit 30103 "Shpfy Communication Mgt."
             if JResponse.AsObject().Contains('errors') then
                 Error(ErrorOnShopifyErr, Format(ShpfyJsonHelper.GetJsonToken(JResponse, 'errors')));
         end else
-            Error(NoJsonErr, ReceivedData);
+            Error(NoJsonErr, GraphQLQuery, ReceivedData);
     end;
 
     /// <summary> 
