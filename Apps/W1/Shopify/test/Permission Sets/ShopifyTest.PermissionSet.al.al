@@ -33,6 +33,7 @@ permissionset 135600 "Shopify Test"
         codeunit "Shpfy Product Init Test" = X,
         codeunit "Shpfy Product Mapping Test" = X,
         codeunit "Shpfy Product Price Calc. Test" = X,
+        codeunit "Shpfy Shipping Test" = X,
         codeunit "Shpfy Test Locations" = X,
         codeunit "Shpfy Test Shopify" = X;
 }
