@@ -25,7 +25,6 @@ codeunit 40025 "GP Checkbook Migrator"
                     BankAccount.Name := DelChr(GPCheckbookMSTR.DSCRIPTN, '>', ' ');
                     BankAccount."Bank Account No." := DelChr(GPCheckbookMSTR.BNKACTNM, '>', ' ');
                     BankAccount."Last Check No." := GetLastCheckNumber(GPCheckbookMSTR.NXTCHNUM);
-                    BankAccount."Balance Last Statement" := GPCheckbookMSTR.Last_Reconciled_Balance;
                     BankAccount."Bank Acc. Posting Group" := GetOrCreateBankAccPostingGroup(GPCheckbookMSTR.ACTINDX);
                     UpdateBankInfo(DelChr(GPCheckbookMSTR.BANKID, '>', ' '), BankAccount);
                     BankAccount.Insert(true);
