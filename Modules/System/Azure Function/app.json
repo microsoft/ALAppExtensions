@@ -3,7 +3,7 @@
     "name":  "Connect to Azure Functions",
     "publisher":  "Microsoft",
     "brief":  "Simplify using Azure Functions",
-    "description":  "Support for writing AL code and connect to Azure Functions",
+    "description":  "Support for writing AL code and connecting to Azure Functions",
     "version":  "21.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
