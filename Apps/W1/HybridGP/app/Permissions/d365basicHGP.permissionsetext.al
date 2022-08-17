@@ -70,5 +70,6 @@ permissionsetextension 4025 "D365 BASIC - HGP" extends "D365 BASIC"
                   tabledata "GP RM00101" = RIMD,
                   tabledata "GP RM00201" = RIMD,
                   tabledata "GP IV00101" = RIMD,
-                  tabledata "GP IV40400" = RIMD;
+                  tabledata "GP IV40400" = RIMD,
+                  tabledata "GP GL10111" = RIMD;
 }

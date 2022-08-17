@@ -52,6 +52,7 @@ codeunit 4025 "GP Cloud Migration"
         GPRM00201Lbl: Label 'RM00201', Locked = true;
         GPIV00101Lbl: Label 'IV00101', Locked = true;
         GPIV40400Lbl: Label 'IV40400', Locked = true;
+        GPGL10111Lbl: Label 'GL10111', Locked = true;
 
     local procedure InitiateGPMigration()
     var
@@ -160,6 +161,7 @@ codeunit 4025 "GP Cloud Migration"
         UpdateOrInsertRecord(Database::"GP RM00201", GPRM00201Lbl);
         UpdateOrInsertRecord(Database::"GP IV00101", GPIV00101Lbl);
         UpdateOrInsertRecord(Database::"GP IV40400", GPIV40400Lbl);
+        UpdateOrInsertRecord(Database::"GP GL10111", GPGL10111Lbl);
     end;
 
     local procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128])
