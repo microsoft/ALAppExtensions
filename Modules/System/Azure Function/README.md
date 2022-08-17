@@ -3,7 +3,7 @@ This module provides functionality for connecting to [Azure Functions](https://d
 > This module does not store credentials for Azure Functions.  
 > Use caution when you store and pass credentials. 
 
-#### Examle: send a POST request
+#### Examle: Send a POST request
 
 ```
     procedure SendPostRequest_Example()
@@ -41,7 +41,7 @@ This module provides functionality for connecting to [Azure Functions](https://d
     end;
 ```
 
-#### Examle 2: send a GET request
+#### Examle 2: Send a GET request
 
 ```
     procedure SendGetRequest_Example()
