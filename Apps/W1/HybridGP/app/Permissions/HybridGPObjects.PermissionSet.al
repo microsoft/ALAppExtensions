@@ -102,5 +102,6 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP RM00101" = X,
                     table "GP RM00201" = X,
                     table "GP IV00101" = X,
-                    table "GP IV40400" = X;
+                    table "GP IV40400" = X,
+                    table "GP GL10111" = X;
 }
