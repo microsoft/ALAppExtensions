@@ -1,6 +1,7 @@
 codeunit 9106 "SharePoint File"
 {
     Access = Internal;
+
     procedure Parse(Payload: Text; var SharePointFile: Record "SharePoint File" temporary)
     var
         JObject: JsonObject;

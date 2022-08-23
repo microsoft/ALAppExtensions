@@ -74,6 +74,7 @@ codeunit 9103 "SharePoint List Item"
 
         if SharePointListItem.OdataEditLink <> '' then begin
             SharePointUriBuilder.SetPath(SharePointListItem.OdataEditLink);
+            //guid'854d7f21-1c6a-43ab-a081-20404894b449' -> 854d7f21-1c6a-43ab-a081-20404894b449
             SharePointListItem."List Id" := SharePointUriBuilder.GetMethodParameter('Lists').Substring(6, 36);
         end;
 

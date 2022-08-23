@@ -3,9 +3,10 @@ Codeunit 132973 "SharePoint Test Library"
 
     EventSubscriberInstance = Manual;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"SharePoint Request Manager", 'OnBeforeSendRequest', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"SharePoint Request Helper", 'OnBeforeSendRequest', '', false, false)]
     local procedure RunOnBeforeSendRequest(HttpRequestMessage: HttpRequestMessage; var SharePointOperationResponse: Codeunit "SharePoint Operation Response"; var IsHandled: Boolean; Method: Text)
     var
+        LocalUri: Codeunit Uri;
         Uri: Text;
         BaseUrl, ParentUrl : Text;
     begin
@@ -19,6 +20,8 @@ Codeunit 132973 "SharePoint Test Library"
         ParentUrl := ParentUrl.Substring(StrPos(ParentUrl, '/')).TrimEnd('/');
 
         IsHandled := true;
+
+        Uri := LocalUri.UnescapeDataString(Uri);
 
         if Uri.EndsWith('/_api/contextinfo/') then begin
             GetContextDigestTestResponse(SharePointOperationResponse, BaseUrl, ParentUrl);
@@ -46,7 +49,7 @@ Codeunit 132973 "SharePoint Test Library"
             exit;
         end;
 
-        if Uri.EndsWith('/_api/Web/Lists(guid''854D7F21-1C6A-43AB-A081-20404894B449'')/items/') or Uri.EndsWith('/_api/Web/lists/GetByTitle(''Test%20Documents'')/items/') then begin
+        if Uri.EndsWith('/_api/Web/Lists(guid''854D7F21-1C6A-43AB-A081-20404894B449'')/items/') or Uri.EndsWith('/_api/Web/lists/GetByTitle(''Test Documents'')/items/') then begin
             if Method = 'GET' then begin
                 GetListItemsTestResponse(SharePointOperationResponse, BaseUrl, ParentUrl);
                 exit;
@@ -57,12 +60,12 @@ Codeunit 132973 "SharePoint Test Library"
             end;
         end;
 
-        if Uri.EndsWith('_api/Web/Lists(guid''854D7F21-1C6A-43AB-A081-20404894B449'')/Items(1)/AttachmentFiles/') or Uri.EndsWith('/_api/Web/lists/GetByTitle(''Test%20Documents'')/Items(1)/AttachmentFiles/') then begin
+        if Uri.EndsWith('_api/Web/Lists(guid''854D7F21-1C6A-43AB-A081-20404894B449'')/Items(1)/AttachmentFiles/') or Uri.EndsWith('/_api/Web/lists/GetByTitle(''Test Documents'')/Items(1)/AttachmentFiles/') then begin
             GetListItemAttachmentsTestResponse(SharePointOperationResponse, BaseUrl, ParentUrl);
             exit;
         end;
 
-        if Uri.EndsWith('_api/Web/Lists(guid''854D7F21-1C6A-43AB-A081-20404894B449'')/Items(1)/AttachmentFiles/add(FileName=''Sample_file.txt'')/') or Uri.EndsWith('/_api/Web/lists/GetByTitle(''Test%20Documents'')/Items(1)/AttachmentFiles/add(FileName=''Sample_file.txt'')/') then begin
+        if Uri.EndsWith('_api/Web/Lists(guid''854D7F21-1C6A-43AB-A081-20404894B449'')/Items(1)/AttachmentFiles/add(FileName=''Sample_file.txt'')/') or Uri.EndsWith('/_api/Web/lists/GetByTitle(''Test Documents'')/Items(1)/AttachmentFiles/add(FileName=''Sample_file.txt'')/') then begin
             CreateListItemAttachmentTestResponse(SharePointOperationResponse, BaseUrl, ParentUrl);
             exit;
         end;
@@ -965,7 +968,6 @@ Codeunit 132973 "SharePoint Test Library"
         ResponseContent.Replace('{parentUrl}', ParentUrl);
         SharePointOperationResponse.SetHttpResponse(ResponseContent.ToText(), HttpHeaders, 200, true, 'OK');
     end;
-
 
     local procedure GetDetailedErrorResponse(var SharePointOperationResponse: Codeunit "SharePoint Operation Response")
     var

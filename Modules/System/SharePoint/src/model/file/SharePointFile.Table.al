@@ -46,7 +46,7 @@ table 9100 "SharePoint File"
             Caption = 'Exists';
         }
 
-        field(6; "Server Relative Url"; Text[2024])
+        field(6; "Server Relative Url"; Text[2048])
         {
             DataClassification = SystemMetadata;
             Caption = 'Server Relative Url';

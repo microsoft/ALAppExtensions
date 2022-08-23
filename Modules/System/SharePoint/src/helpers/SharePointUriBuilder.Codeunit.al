@@ -33,27 +33,27 @@ codeunit 9110 "SharePoint Uri Builder"
 
     procedure SetObject(Object: Text)
     begin
-        Uri += StrSubstNo(UriAppendTxt, Object);
+        Uri += StrSubstNo(UriAppendTxt, EscapeDataString(Object));
     end;
 
     procedure SetMethod(Method: Text; ParameterValue: Text)
     begin
-        Uri += StrSubstNo(SetMethodTxt, Method, ParameterValue);
+        Uri += StrSubstNo(SetMethodTxt, EscapeDataString(Method), EscapeDataString(ParameterValue));
     end;
 
     procedure SetMethod(Method: Text; ParameterValue: Integer)
     begin
-        Uri += StrSubstNo(SetMethodRawTxt, Method, ParameterValue);
+        Uri += StrSubstNo(SetMethodRawTxt, EscapeDataString(Method), ParameterValue);
     end;
 
     procedure SetMethod(Method: Text; ParameterValue: Boolean)
     begin
-        Uri += StrSubstNo(SetMethodRawTxt, Method, ParameterValue);
+        Uri += StrSubstNo(SetMethodRawTxt, EscapeDataString(Method), ParameterValue);
     end;
 
     procedure SetMethod(Method: Text; ParameterValue: Guid)
     begin
-        Uri += StrSubstNo(SetMethodGuidTxt, Method, Format(ParameterValue).TrimStart('{').TrimEnd('}'));
+        Uri += StrSubstNo(SetMethodGuidTxt, EscapeDataString(Method), EscapeDataString(Format(ParameterValue).TrimStart('{').TrimEnd('}')));
     end;
 
     procedure SetMethod(Method: Text; ParameterName: Text; ParameterValue: Text)
@@ -75,7 +75,7 @@ codeunit 9110 "SharePoint Uri Builder"
             foreach ParameterName in Parameters.Keys() do begin
                 i += 1;
                 Parameters.Get(ParameterName, ParameterValue);
-                Uri += ParameterName + '=' + ParameterValue;
+                Uri += EscapeDataString(ParameterName) + '=' + EscapeDataString(ParameterValue);
 
                 if i < Parameters.Count() then
                     Uri += ','
@@ -121,6 +121,13 @@ codeunit 9110 "SharePoint Uri Builder"
         Uri := UriLbl;
         Uri := Uri.Replace('{server_name}', ServerName.TrimStart('/').TrimEnd('/')).Replace('{namespace}', Namespace.TrimStart('/').TrimEnd('/'));
         Uri := Id.Replace(Uri, '');
+    end;
+
+    local procedure EscapeDataString(TextToEscape: Text): Text
+    var
+        LocalUri: Codeunit Uri;
+    begin
+        exit(LocalUri.EscapeDataString(TextToEscape));
     end;
 
 }

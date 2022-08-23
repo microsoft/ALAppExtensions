@@ -1,6 +1,7 @@
 codeunit 9104 "SharePoint List"
 {
     Access = Internal;
+
     procedure Parse(Payload: Text; var SharePointList: Record "SharePoint List" temporary)
     var
         JObject: JsonObject;

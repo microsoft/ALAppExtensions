@@ -10,7 +10,13 @@
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
     "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
     "logo":  "",
-    "dependencies":  [                         
+    "dependencies":  [   
+                        {
+                            "id": "6936a6a5-43a6-4904-855c-8dc268cd49dd",
+                            "name": "SharePoint Authorization",
+                            "publisher": "Microsoft",
+                            "version": "20.3.0.0"
+                        },                      
                         {
                             "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                             "name":  "DotNet Aliases",
@@ -46,7 +52,7 @@
     "idRanges":  [
                      {
                          "from":   9100,
-                         "to":   9150 
+                         "to":   9140 
                      }
                  ],
     "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/",
@@ -59,5 +65,6 @@
                                 "name":  "SharePoint Test Library",
                                 "publisher":  "Microsoft"        
                             }
+
                         ]
 }

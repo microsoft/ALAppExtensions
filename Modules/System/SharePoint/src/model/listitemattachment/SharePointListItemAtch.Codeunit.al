@@ -1,6 +1,7 @@
 codeunit 9102 "SharePoint List Item Atch."
 {
     Access = Internal;
+
     procedure Parse(Payload: Text; var SharePointListItemAtch: Record "SharePoint List Item Atch" temporary)
     var
         JObject: JsonObject;
@@ -77,6 +78,7 @@ codeunit 9102 "SharePoint List Item Atch."
 
         if SharePointListItemAttachment.OdataEditLink <> '' then begin
             SharePointUriBuilder.SetPath(SharePointListItemAttachment.OdataEditLink);
+            //guid'854d7f21-1c6a-43ab-a081-20404894b449' -> 854d7f21-1c6a-43ab-a081-20404894b449
             SharePointListItemAttachment."List Id" := SharePointUriBuilder.GetMethodParameter('Lists').Substring(6, 36);
             Evaluate(SharePointListItemAttachment."List Item Id", SharePointUriBuilder.GetMethodParameter('Items'));
         end;

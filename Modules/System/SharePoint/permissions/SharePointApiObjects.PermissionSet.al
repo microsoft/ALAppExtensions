@@ -8,7 +8,8 @@ permissionset 9100 "SharePoint API - Objects"
     Access = Internal;
     Assignable = false;
 
-    IncludedPermissionSets = "URI - Objects";
+    IncludedPermissionSets = "URI - Objects",
+                             "SharePoint Auth. - Objects";
 
     Permissions = Codeunit "SharePoint Client" = X,
                   Codeunit "SharePoint Client Impl." = X,
@@ -19,7 +20,7 @@ permissionset 9100 "SharePoint API - Objects"
                   Codeunit "SharePoint List Item" = X,
                   Codeunit "SharePoint List Item Atch." = X,
                   Codeunit "SharePoint Operation Response" = X,
-                  Codeunit "SharePoint Request Manager" = X,
+                  Codeunit "SharePoint Request Helper" = X,
                   Codeunit "SharePoint Uri Builder" = X,
                   Codeunit "SharePoint Diagnostics" = X,
                   Table "SharePoint File" = X,

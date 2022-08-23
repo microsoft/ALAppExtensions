@@ -1,4 +1,4 @@
-codeunit 9109 "SharePoint Request Manager"
+codeunit 9109 "SharePoint Request Helper"
 {
     Access = Internal;
 
@@ -71,7 +71,7 @@ codeunit 9109 "SharePoint Request Manager"
         end;
     end;
 
-    //[NonDebuggable]
+    [NonDebuggable]
     local procedure SendRequest(HttpRequestMessage: HttpRequestMessage) OperationResponse: Codeunit "SharePoint Operation Response"
     var
         HttpResponseMessage: HttpResponseMessage;
