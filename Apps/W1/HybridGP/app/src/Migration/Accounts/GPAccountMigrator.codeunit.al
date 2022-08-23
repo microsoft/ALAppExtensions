@@ -108,7 +108,7 @@ codeunit 4017 "GP Account Migrator"
         GPGL10111.SetRange(ACTINDX, GPAccount.AcctIndex);
         GPGL10111.SetRange(PERIODID, 0);
         GPGL10111.SetRange(YEAR1, InitialYear);
-        if not GPGL10111.Get() then
+        if not GPGL10111.FindFirst() then
             exit;
 
         BeginningBalance := GPGL10111.PERDBLNC;
