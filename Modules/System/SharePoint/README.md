@@ -1,9 +1,11 @@
 Provides functions to interact with SharePoint REST API
 
 Use this module to do the following:
-> Navigate Lists and Folders
-> Upload and Download files
-> Create folders and list items
+> Navigate Lists and Folders.
+
+> Upload and Download files.
+
+> Create folders and list items.
 
 
 # Authorization
@@ -24,8 +26,9 @@ Use "SharePoint Authorization module".
 
 ## Initialize client
 Prepare client.
-> provide SharePoint site/subsite address i.e. '<myaddres>.sharepoint.com/sites/Test/'
-> Authorization Codeunit
+> provide SharePoint site/subsite address i.e. '<myaddres>.sharepoint.com/sites/Test/'.
+
+> Authorization Codeunit.
 
 ## Example
 ```
@@ -218,11 +221,15 @@ Downloads specified file to the client.
 
 ### Retrieve diagnostic information
 Diagnostics Codeunit contains details on last api call including:
-> IsSuccessStatusCode
-> HttpStatusCode
-> Retry-After header value in case request has been throttled
-> ErrorMessage
-> ResponseReasonPhrase
+> IsSuccessStatusCode.
+
+> HttpStatusCode.
+
+> Retry-After header value in case request has been throttled.
+
+> ErrorMessage.
+
+> ResponseReasonPhrase.
 
 ```
     var
