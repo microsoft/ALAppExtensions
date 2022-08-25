@@ -15,15 +15,21 @@ codeunit 9054 "ABS Container Content Helper"
         OuterXml: Text;
         ChildNodes: XmlNodeList;
         PropertiesNode: XmlNode;
+        ResourceTypeNode: XmlNode;
+        IsDirectory: Boolean;
     begin
         NameFromXml := ABSHelperLibrary.GetValueFromNode(Node, XPathName);
         Node.WriteTo(OuterXml);
         Node.SelectSingleNode('.//Properties', PropertiesNode);
         ChildNodes := PropertiesNode.AsXmlElement().GetChildNodes();
+
+        if Node.SelectSingleNode('.//ResourceType', ResourceTypeNode) then
+            IsDirectory := ResourceTypeNode.AsXmlElement().InnerText = 'directory';
+
         if ChildNodes.Count = 0 then
             AddNewEntry(ABSContainerContent, NameFromXml, OuterXml)
         else
-            AddNewEntry(ABSContainerContent, NameFromXml, OuterXml, ChildNodes);
+            AddNewEntry(ABSContainerContent, NameFromXml, OuterXml, ChildNodes, IsDirectory);
     end;
 
     [NonDebuggable]
@@ -31,18 +37,15 @@ codeunit 9054 "ABS Container Content Helper"
     var
         ChildNodes: XmlNodeList;
     begin
-        AddNewEntry(ABSContainerContent, NameFromXml, OuterXml, ChildNodes);
+        AddNewEntry(ABSContainerContent, NameFromXml, OuterXml, ChildNodes, false);
     end;
 
     [NonDebuggable]
-    procedure AddNewEntry(var ABSContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList)
+    procedure AddNewEntry(var ABSContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList; IsDirectory: Boolean)
     var
         NextEntryNo: Integer;
         OutStream: OutStream;
     begin
-        if NameFromXml.Contains('/') then
-            AddParentEntry(ABSContainerContent, NameFromXml);
-
         NextEntryNo := GetNextEntryNo(ABSContainerContent);
 
         ABSContainerContent.Init();
@@ -56,6 +59,8 @@ codeunit 9054 "ABS Container Content Helper"
         ABSContainerContent."XML Value".CreateOutStream(OutStream);
         OutStream.Write(OuterXml);
 
+        if IsDirectory then
+            ABSContainerContent."Content Type" := 'directory';
         ABSContainerContent.Insert(true);
     end;
 
