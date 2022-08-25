@@ -6,7 +6,6 @@ codeunit 4017 "GP Account Migrator"
         PostingGroupCodeTxt: Label 'GP', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
         DescriptionTrxTxt: Label 'Migrated transaction', Locked = true;
-        BeginningBalanceTrxTxt: Label 'Beginning Balance', Locked = true;
         GlDocNoTxt: Label 'G00001', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
@@ -75,6 +74,7 @@ codeunit 4017 "GP Account Migrator"
         Sender.ModifyGLAccount(true);
     end;
 
+<<<<<<< HEAD
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnCreateOpeningBalanceTrx', '', true, true)]
     procedure OnCreateOpeningBalanceTrx(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -134,6 +134,8 @@ codeunit 4017 "GP Account Migrator"
         end;
     end;
 
+=======
+>>>>>>> 44afd413 (Update to 20.4)
     local procedure MigrateAccountDetails(GPAccount: Record "GP Account"; GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade")
     var
         HelperFunctions: Codeunit "Helper Functions";
@@ -158,28 +160,20 @@ codeunit 4017 "GP Account Migrator"
         GPGLTransactions: Record "GP GLTransactions";
         GenJournalLine: Record "Gen. Journal Line";
         GPFiscalPeriods: Record "GP Fiscal Periods";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
+        Sender: Codeunit "Data Migration Facade Helper";
         PostingGroupCode: Text;
         DimSetID: Integer;
-        InitialYear: Integer;
     begin
-        InitialYear := GPCompanyAdditionalSettings.GetInitialYear();
-
         GPGLTransactions.Reset();
         GPGLTransactions.SetCurrentKey(YEAR1, PERIODID, ACTINDX);
         GPGLTransactions.SetFilter(ACTINDX, '= %1', GPAccount.AcctIndex);
-
-        if InitialYear > 0 then
-            GPGLTransactions.SetFilter(YEAR1, '>= %1', InitialYear);
-
         if GPGLTransactions.FindSet() then
             repeat
                 PostingGroupCode := PostingGroupCodeTxt + format(GPGLTransactions.YEAR1) + '-' + format(GPGLTransactions.PERIODID);
 
                 if GPFiscalPeriods.Get(GPGLTransactions.PERIODID, GPGLTransactions.YEAR1) then begin
-                    DataMigrationFacadeHelper.CreateGeneralJournalBatchIfNeeded(CopyStr(PostingGroupCode, 1, 10), '', '');
-                    DataMigrationFacadeHelper.CreateGeneralJournalLine(
+                    Sender.CreateGeneralJournalBatchIfNeeded(CopyStr(PostingGroupCode, 1, 10), '', '');
+                    Sender.CreateGeneralJournalLine(
                         GenJournalLine,
                         CopyStr(PostingGroupCode, 1, 10),
                         CopyStr(GlDocNoTxt, 1, 20),
@@ -202,25 +196,25 @@ codeunit 4017 "GP Account Migrator"
 
     local procedure CreateDimSet(GPGLTransactions: Record "GP GLTransactions"): Integer
     var
-        TempDimensionSetEntry: Record "Dimension Set Entry" temporary;
-        DimensionValue: Record "Dimension Value";
+        TempDimSetEntry: Record "Dimension Set Entry" temporary;
+        DimVal: Record "Dimension Value";
         GPSegments: Record "GP Segments";
         HelperFunctions: Codeunit "Helper Functions";
-        DimensionManagement: Codeunit DimensionManagement;
+        DimMgt: Codeunit DimensionManagement;
         NewDimSetID: Integer;
     begin
         if GPSegments.FindSet() then
             repeat
-                DimensionValue.Get(HelperFunctions.CheckDimensionName(GPSegments.Id), GetSegmentValue(GPGLTransactions, GPSegments.SegmentNumber));      //'0000'); GPGLTransactions ACTNUMBR_1 - 9
-                TempDimensionSetEntry.Init();
-                TempDimensionSetEntry.Validate("Dimension Code", DimensionValue."Dimension Code");
-                TempDimensionSetEntry.Validate("Dimension Value Code", DimensionValue.Code);
-                TempDimensionSetEntry.Validate("Dimension Value ID", DimensionValue."Dimension Value ID");
-                TempDimensionSetEntry.Insert(true);
+                DimVal.Get(HelperFunctions.CheckDimensionName(GPSegments.Id), GetSegmentValue(GPGLTransactions, GPSegments.SegmentNumber));      //'0000'); GPGLTransactions ACTNUMBR_1 - 9
+                TempDimSetEntry.Init();
+                TempDimSetEntry.Validate("Dimension Code", DimVal."Dimension Code");
+                TempDimSetEntry.Validate("Dimension Value Code", DimVal.Code);
+                TempDimSetEntry.Validate("Dimension Value ID", DimVal."Dimension Value ID");
+                TempDimSetEntry.Insert(true);
             until GPSegments.Next() = 0;
 
-        NewDimSetID := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
-        TempDimensionSetEntry.DeleteAll();
+        NewDimSetID := DimMgt.GetDimensionSetID(TempDimSetEntry);
+        TempDimSetEntry.DeleteAll();
         exit(NewDimSetID);
     end;
 

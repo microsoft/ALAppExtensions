@@ -193,6 +193,7 @@ report 31029 "Create Purch. Adv. Letter CZZ"
         PurchAdvLetterHeaderCZZ."Currency Factor" := PurchaseHeader."Currency Factor";
         PurchAdvLetterHeaderCZZ."VAT Country/Region Code" := PurchaseHeader."VAT Country/Region Code";
         PurchAdvLetterHeaderCZZ."Automatic Post VAT Usage" := AdvanceLetterTemplateCZZ."Automatic Post VAT Document";
+        OnCreateAdvanceLetterHeaderOnBeforeModifyPurchAdvLetterHeaderCZZ(PurchaseHeader, AdvanceLetterTemplateCZZ, PurchAdvLetterHeaderCZZ);
         PurchAdvLetterHeaderCZZ.Modify(true);
     end;
 
@@ -245,5 +246,10 @@ report 31029 "Create Purch. Adv. Letter CZZ"
             Currency.Get(PurchaseHeader."Currency Code");
             Currency.TestField("Amount Rounding Precision");
         end;
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnCreateAdvanceLetterHeaderOnBeforeModifyPurchAdvLetterHeaderCZZ(PurchaseHeader: Record "Purchase Header"; AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
     end;
 }

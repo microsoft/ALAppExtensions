@@ -104,16 +104,4 @@ page 8700 "Table Information"
             Rec.SetFilter("Company Name", '%1|%2', '', CompanyName);
         Rec.FilterGroup(0);
     end;
-
-    local procedure GetTableUrl(TableInformation: Record "Table Information"): Text
-    var
-        Company: Text;
-    begin
-        Company := TableInformation."Company Name";
-
-        if Company = '' then
-            Company := CompanyName(); // use the current company for the URL for the cases when table is not per company
-
-        exit(GetUrl(ClientType::Web, Company, ObjectType::Table, TableInformation."Table No."));
-    end;
 }

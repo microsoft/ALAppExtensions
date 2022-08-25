@@ -61,6 +61,7 @@ codeunit 20233 "Tax Setup Matrix Mgmt."
         Clear(AttributeValue);
         for i := 1 to CaptionCount do begin
             TaxRateValue.Reset();
+            TaxRateValue.SetCurrentKey("Config ID", "Column ID");
             TaxRateValue.SetRange("Config ID", ConfigID);
             TaxRateValue.SetRange("Column ID", AttributeID[i]);
             if TaxRateValue.FindFirst() then begin

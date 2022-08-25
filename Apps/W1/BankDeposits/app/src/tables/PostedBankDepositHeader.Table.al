@@ -3,7 +3,8 @@ table 1691 "Posted Bank Deposit Header"
     Caption = 'Posted Bank Deposit Header';
     DataCaptionFields = "No.";
     LookupPageID = "Posted Bank Deposit List";
-    Permissions = tabledata "Bank Acc. Comment Line" = rd;
+    Permissions = tabledata "Bank Acc. Comment Line" = rd,
+                  tabledata "Posted Bank Deposit Line" = r;
 
     fields
     {

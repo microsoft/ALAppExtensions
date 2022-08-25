@@ -7,6 +7,7 @@ codeunit 18930 "Validation Events"
         BalAccountTypeShouldNotBeBankAccountErr: Label 'Bal. Account Type should not be Bank Account for Document No. %1.', Comment = '%1 = Document No.';
         AccountTypeShouldNotBeBankAccountErr: Label 'Account Type should not be Bank Account for Document No. %1.', Comment = '%1 = Document No.';
         ShouldBeGLOrBankAccountErr: Label 'Account Type or Bal. Account Type can only be G/L Account or Bank Account for Sub Voucher Type %1 and Document No. %2.', Comment = '%1 = Sub Voucher Type, %2 = Document No.';
+        TransactionDirectionErr: Label 'For Contra Voucher %1 is not allowed', Comment = '%1 = Transaction Direction';
 
     procedure DeleteCrAccounts(LocationCode: Code[20]; Type: Enum "Gen. Journal Template Type")
     var
@@ -142,11 +143,17 @@ codeunit 18930 "Validation Events"
             Rec."Location Code" := CopyStr((GenJnBatch."Location Code"), 1, 10);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnModifyOnBeforeTestCheckPrinted', '', false, false)]
-    local procedure OnGenJnlLineOnAfterGetRecordOnAfterBalancingTypeVendorCase(var GenJournalLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    [EventSubscriber(ObjectType::Table, Database::"Journal Voucher Posting Setup", 'OnAfterValidateEvent', 'Transaction Direction', false, false)]
+    local procedure OnAfterValidateTransactionDirectionForContraVoucher(var Rec: Record "Journal Voucher Posting Setup")
     begin
-        if GenJournalLine."Check Printed" = true then
-            IsHandled := true;
+        ValidateTransactionDirectionForContraVoucher(Rec);
+    end;
+
+    local procedure ValidateTransactionDirectionForContraVoucher(VoucherPostingSetup: Record "Journal Voucher Posting Setup")
+    begin
+        if VoucherPostingSetup.Type = VoucherPostingSetup.Type::"Contra Voucher" then
+            if VoucherPostingSetup."Transaction Direction" <> VoucherPostingSetup."Transaction Direction"::Both then
+                Error(TransactionDirectionErr, VoucherPostingSetup."Transaction Direction");
     end;
 
     local procedure ValidateVoucherAccount(

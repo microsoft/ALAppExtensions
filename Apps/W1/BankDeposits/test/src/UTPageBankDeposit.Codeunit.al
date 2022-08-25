@@ -25,11 +25,11 @@ codeunit 139768 "UT Page Bank Deposit"
 
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
-    [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
     procedure OnActionTestReportDeposits()
     var
         GenJournalLine: Record "Gen. Journal Line";
+        GLAccount: Record "G/L Account";
         BankDepositHeader: Record "Bank Deposit Header";
         BankDeposits: TestPage "Bank Deposits";
     begin
@@ -39,6 +39,7 @@ codeunit 139768 "UT Page Bank Deposit"
         EnableBankDepositsFeature();
         CreateBankDepositHeader(BankDepositHeader, '');
         CreateGenJournalLine(GenJournalLine, BankDepositHeader, GenJournalLine."Account Type"::"G/L Account", CreateGLAccount());
+        Commit();
         LibraryVariableStorage.Enqueue(BankDepositHeader."No.");  // Enqueue value for use in DepositTestReportRequestPageHandler.
 
         // Exercise & Verify: Verify the Deposit Test Report after calling action Test Report on Deposits page through DepositTestReportRequestPageHandler.
@@ -46,11 +47,16 @@ codeunit 139768 "UT Page Bank Deposit"
         BankDeposits.GotoRecord(BankDepositHeader);
         BankDeposits.TestReport.Invoke();  // Invokes DepositTestReportRequestPageHandler.
         BankDeposits.Close();
+
+        GLAccount.Get(GenJournalLine."Account No.");
+        GLAccount.Delete();
+        GenJournalLine.Delete();
+        BankDepositHeader.Delete();
+        DisableBankDepositsFeature();
     end;
 
     [Test]
     [HandlerFunctions('DimensionSetEntriesPageHandler')]
-    [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
     procedure OnActionDimensionsPostedBankDepositList()
     var
@@ -71,6 +77,8 @@ codeunit 139768 "UT Page Bank Deposit"
         PostedBankDepositList.GotoRecord(PostedBankDepositHeader);
         PostedBankDepositList.Dimensions.Invoke();  // Invokes DimensionSetEntriesPageHandler.
         PostedBankDepositList.Close();
+
+        DisableBankDepositsFeature();
     end;
 
     [Test]
@@ -636,6 +644,20 @@ codeunit 139768 "UT Page Bank Deposit"
             exit;
         GetBankDepositsFeature(FeatureDataUpdateStatus, ID);
         FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Enabled;
+        FeatureDataUpdateStatus.Modify(true);
+    end;
+
+    local procedure DisableBankDepositsFeature()
+    var
+        FeatureDataUpdateStatus: Record "Feature Data Update Status";
+        FeatureManagementFacade: Codeunit "Feature Management Facade";
+        ID: Text[50];
+    begin
+        ID := FeatureKeyIdTok;
+        if FeatureManagementFacade.IsEnabled(ID) then
+            exit;
+        GetBankDepositsFeature(FeatureDataUpdateStatus, ID);
+        FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Disabled;
         FeatureDataUpdateStatus.Modify(true);
     end;
 

@@ -1431,6 +1431,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         GenJournalLine.Validate("VAT Date CZL", VendorLedgerEntry."VAT Date CZL");
         GenJournalLine.Validate("Original Doc. VAT Date CZL", VendorLedgerEntry."VAT Date CZL");
         GenJournalLine."System-Created Entry" := true;
+        OnAfterInitGenJnlLineFromVendLedgEntry(VendorLedgerEntry, GenJournalLine);
     end;
 
     local procedure InitGenJnlLineFromAdvance(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; DocumentNo: Code[20]; ExternalDocumentNo: Code[35]; SourceCode: Code[10]; PostDescription: Text[100]; var GenJournalLine: Record "Gen. Journal Line")
@@ -1450,6 +1451,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         GenJournalLine."Shortcut Dimension 2 Code" := PurchAdvLetterEntryCZZ."Global Dimension 2 Code";
         GenJournalLine."Dimension Set ID" := PurchAdvLetterEntryCZZ."Dimension Set ID";
         GenJournalLine."Adv. Letter No. (Entry) CZZ" := PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.";
+        OnAfterInitGenJnlLineFromAdvance(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, GenJournalLine);
     end;
 
     procedure GetRemAmtPurchAdvPayment(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; BalanceAtDate: Date): Decimal
@@ -2212,6 +2214,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                 GenJournalLine."Posting Group" := VendorLedgerEntry."Vendor Posting Group";
                 GenJournalLine."Source Currency Code" := DetailedVendorLedgEntry1."Currency Code";
                 GenJournalLine."System-Created Entry" := true;
+                OnUnapplyVendLedgEntryOnBeforePostUnapplyVendLedgEntry(VendorLedgerEntry, DetailedVendorLedgEntry1, GenJournalLine);
                 GenJnlPostLine.UnapplyVendLedgEntry(GenJournalLine, DetailedVendorLedgEntry1);
             end else
                 Succes := true;
@@ -2244,6 +2247,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         VendorLedgerEntry.SetRange(Open, true);
         VendorLedgerEntry.FindLast();
         VendorLedgerEntry.CalcFields("Remaining Amount");
+        OnApplyAdvanceLetterOnBeforeTestAmount(AdvanceLetterApplication, VendorLedgerEntry);
         if AdvanceLetterApplication.Amount > -VendorLedgerEntry."Remaining Amount" then
             Error(CannotApplyErr, -VendorLedgerEntry."Remaining Amount");
 
@@ -2543,6 +2547,26 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterPostClosePayment(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnApplyAdvanceLetterOnBeforeTestAmount(var AdvanceLetterApplication: Record "Advance Letter Application CZZ"; VendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnUnapplyVendLedgEntryOnBeforePostUnapplyVendLedgEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterInitGenJnlLineFromVendLedgEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterInitGenJnlLineFromAdvance(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 }

@@ -36,4 +36,36 @@ codeunit 11740 "Copy Document Mgt. Handler CZL"
             ToSalesHeader.UpdateBankInfoCZL('', '', '', '', '', '', '');
         end;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterCopySalesHeaderArchive', '', false, false)]
+    local procedure UpdatePostingDateOnAfterCopySalesHeaderArchive(var ToSalesHeader: Record "Sales Header"; OldSalesHeader: Record "Sales Header"; FromSalesHeaderArchive: Record "Sales Header Archive")
+    begin
+        if FromSalesHeaderArchive."Document Type" = FromSalesHeaderArchive."Document Type"::Quote then
+            if OldSalesHeader."Posting Date" = 0D then
+                ToSalesHeader."Posting Date" := WorkDate()
+            else
+                ToSalesHeader."Posting Date" := OldSalesHeader."Posting Date";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterCopyPurchHeaderArchive', '', false, false)]
+    local procedure UpdatePostingDateOnAfterCopyPurchHeaderArchive(var ToPurchaseHeader: Record "Purchase Header"; OldPurchaseHeader: Record "Purchase Header"; FromPurchaseHeaderArchive: Record "Purchase Header Archive")
+    begin
+        if FromPurchaseHeaderArchive."Document Type" = FromPurchaseHeaderArchive."Document Type"::Quote then
+            if OldPurchaseHeader."Posting Date" = 0D then
+                ToPurchaseHeader."Posting Date" := WorkDate()
+            else
+                ToPurchaseHeader."Posting Date" := OldPurchaseHeader."Posting Date";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterUpdatePurchLine', '', false, false)]
+    local procedure UpdatePurchLineOnAfterUpdatePurchLine(var ToPurchHeader: Record "Purchase Header"; var ToPurchLine: Record "Purchase Line")
+    begin
+        ToPurchLine."Physical Transfer CZL" := ToPurchHeader."Physical Transfer CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterUpdateSalesLine', '', false, false)]
+    local procedure UpdateSalesLineOnAfterUpdateSalesLine(var ToSalesHeader: Record "Sales Header"; var ToSalesLine: Record "Sales Line")
+    begin
+        ToSalesLine."Physical Transfer CZL" := ToSalesHeader."Physical Transfer CZL";
+    end;
 }

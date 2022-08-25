@@ -89,16 +89,15 @@ codeunit 11744 "Purchase Header Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'Currency Factor', false, false)]
-    local procedure UpdateVATCurrencyfactorCZLOnBeforeCurrencyFactorValidate(var Rec: Record "Purchase Header"; var xRec: Record "Purchase Header")
+    local procedure UpdateVATCurrencyfactorCZLOnBeforeCurrencyFactorValidate(var Rec: Record "Purchase Header")
     begin
-        if Rec."Currency Factor" <> xRec."Currency Factor" then
-            Rec.UpdateVATCurrencyFactorCZL();
+        Rec.UpdateVATCurrencyFactorCZLByCurrencyFactorCZL();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterUpdateCurrencyFactor', '', false, false)]
     local procedure OnAfterUpdateCurrencyFactor(var PurchaseHeader: Record "Purchase Header")
     begin
-        PurchaseHeader.UpdateVATCurrencyFactorCZL()
+        PurchaseHeader.UpdateVATCurrencyFactorCZLByCurrencyFactorCZL()
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeValidateEvent', 'Vendor Posting Group', false, false)]

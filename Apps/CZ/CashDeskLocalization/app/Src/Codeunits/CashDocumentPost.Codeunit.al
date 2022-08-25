@@ -38,6 +38,8 @@ codeunit 11729 "Cash Document-Post CZP"
                 CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Amount Including VAT"),
                 CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Released Amount"));
 
+        CashDeskManagementCZP.CheckUserRights(CashDeskCZP."No.", Enum::"Cash Document Action CZP"::Post, CashDocumentHeaderCZP.IsEETTransaction());
+
         SourceCodeSetup.Get();
         SourceCodeSetup.TestField("Cash Desk CZP");
         OnRunOnBeforeCheckCashDocument(CashDocumentHeaderCZP, NoCheckCashDocument);
@@ -81,6 +83,7 @@ codeunit 11729 "Cash Document-Post CZP"
         PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
         SourceCodeSetup: Record "Source Code Setup";
         GLEntry: Record "G/L Entry";
+        CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
         GenJnlCheckLine: Codeunit "Gen. Jnl.-Check Line";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         DimensionManagement: Codeunit DimensionManagement;

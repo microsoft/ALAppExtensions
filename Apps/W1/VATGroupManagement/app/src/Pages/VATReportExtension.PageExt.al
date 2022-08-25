@@ -227,8 +227,10 @@ pageextension 4701 "VAT Report Extension" extends "VAT Report"
                 NewerSubmissions.Send();
             end;
 
-        if Rec."VAT Group Return" and (Rec.Status = Rec.Status::Open) then
+        if Rec."VAT Group Return" and (Rec.Status = Rec.Status::Open) then begin
             VATGroupRetrievefromSubmission.Run(Rec);
+            Commit();
+        end;
 
         CurrPage.VATReportLines.Page.SetColumnVisible(Rec."VAT Group Return");
     end;

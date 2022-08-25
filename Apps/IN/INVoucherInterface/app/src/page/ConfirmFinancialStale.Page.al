@@ -9,6 +9,7 @@ page 18936 "Confirm Financial Stale"
         {
             label("")
             {
+                ApplicationArea = Basic, Suite;
                 Editable = false;
             }
             field(VoidDate; VoidDate)

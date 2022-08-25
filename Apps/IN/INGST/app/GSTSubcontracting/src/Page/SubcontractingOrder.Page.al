@@ -658,8 +658,12 @@ page 18491 "Subcontracting Order"
                     PromotedCategory = Process;
                     PromotedIsBig = true;
                     ApplicationArea = Basic, Suite;
-                    RunObject = Codeunit "Purch.-Post (Yes/No)";
                     ShortCutKey = 'F9';
+
+                    trigger OnAction()
+                    begin
+                        PostDocument(CODEUNIT::"Purch.-Post (Yes/No)");
+                    end;
                 }
                 action("Post and &Print")
                 {
@@ -745,6 +749,15 @@ page 18491 "Subcontracting Order"
     local procedure ShortcutDimension2CodeOnAfterV()
     begin
         CurrPage.PurchLines.Page.UpdateForm(true);
+    end;
+
+    local procedure PostDocument(PostingCodeunitID: Integer)
+    var
+        LinesInstructionMgt: Codeunit "Lines Instruction Mgt.";
+    begin
+        LinesInstructionMgt.PurchaseCheckAllLinesHaveQuantityAssigned(Rec);
+        Rec.SendToPosting(PostingCodeunitID);
+        CurrPage.Update(false);
     end;
 
     var

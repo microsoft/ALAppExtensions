@@ -64,6 +64,7 @@ table 18479 "Sub Order Component List"
         field(11; "Quantity To Send"; Decimal)
         {
             Caption = 'Quantity To Send';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
 
             trigger OnValidate()
@@ -76,11 +77,13 @@ table 18479 "Sub Order Component List"
         field(12; "Quantity (Base)"; Decimal)
         {
             Caption = 'Quantity (Base)';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(13; "Quantity To Send (Base)"; Decimal)
         {
             Caption = 'Quantity To Send (Base)';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(14; Description; Text[100])
@@ -159,12 +162,14 @@ table 18479 "Sub Order Component List"
                 where("Location Code" = field("Vendor Location"),
                 "Item No." = field("Item No.")));
             Caption = 'Total Qty at Vendor Location';
+            DecimalPlaces = 0 : 3;
             Editable = false;
             FieldClass = FlowField;
         }
         field(53; "Total Scrap Quantity"; Decimal)
         {
             Caption = 'Total Scrap Quantity';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
 
             trigger OnValidate()
@@ -187,12 +192,14 @@ table 18479 "Sub Order Component List"
                 "Order Line No." = field("Production Order Line No."),
                 "Prod. Order Comp. Line No." = field("Line No.")));
             Caption = 'Qty. at Vendor Location';
+            DecimalPlaces = 0 : 3;
             Editable = false;
             FieldClass = FlowField;
         }
         field(55; "Qty. for Rework"; Decimal)
         {
             Caption = 'Qty. for Rework';
+            DecimalPlaces = 0 : 3;
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
         }

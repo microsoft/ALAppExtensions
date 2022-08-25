@@ -64,22 +64,26 @@ table 18472 "Posted Applied DeliveryChallan"
         field(10; "Qty. to Receive"; Decimal)
         {
             Caption = 'Qty. to Receive';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(11; "Qty. to Consume"; Decimal)
         {
             Caption = 'Qty. to Consume';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(12; "Qty. to Return (C.E.)"; Decimal)
         {
             Caption = 'Qty. to Return (C.E.)';
+            DecimalPlaces = 0 : 3;
             Editable = true;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(13; "Qty. To Return (V.E.)"; Decimal)
         {
             Caption = 'Qty. To Return (V.E.)';
+            DecimalPlaces = 0 : 3;
             Editable = true;
             DataClassification = EndUserIdentifiableInformation;
         }

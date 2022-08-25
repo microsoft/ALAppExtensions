@@ -104,16 +104,15 @@ codeunit 11743 "Sales Header Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Currency Factor', false, false)]
-    local procedure UpdateVATCurrencyfactorCZLOnBeforeCurrencyFactorValidate(var Rec: Record "Sales Header"; var xRec: Record "Sales Header")
+    local procedure UpdateVATCurrencyfactorCZLOnBeforeCurrencyFactorValidate(var Rec: Record "Sales Header")
     begin
-        if Rec."Currency Factor" <> xRec."Currency Factor" then
-            Rec.UpdateVATCurrencyFactorCZL();
+        Rec.UpdateVATCurrencyFactorCZLByCurrencyFactorCZL();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterUpdateCurrencyFactor', '', false, false)]
     local procedure OnAfterUpdateCurrencyFactor(var SalesHeader: Record "Sales Header")
     begin
-        SalesHeader.UpdateVATCurrencyFactorCZL()
+        SalesHeader.UpdateVATCurrencyFactorCZLByCurrencyFactorCZL()
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeValidateEvent', 'Customer Posting Group', false, false)]

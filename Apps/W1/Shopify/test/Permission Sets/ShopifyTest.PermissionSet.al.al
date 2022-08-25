@@ -7,5 +7,6 @@ permissionset 135600 "Shopify Test"
     Caption = 'Shopify Test', MaxLength = 30;
     Permissions =
         codeunit "Shpfy Initialize Test" = X,
-        codeunit "Shpfy Test Shopify" = X;
+        codeunit "Shpfy Test Shopify" = X,
+        codeunit "Shpfy Checklist Init. Test" = X;
 }

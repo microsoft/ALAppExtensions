@@ -15,6 +15,7 @@ permissionset 30104 "Shpfy - Objects"
         table "Shpfy Customer Template" = X,
         table "Shpfy Data Capture" = X,
         table "Shpfy Gift Card" = X,
+        table "Shpfy Initial Import Line" = X,
         table "Shpfy Inventory Item" = X,
         table "Shpfy Log Entry" = X,
         table "Shpfy Metafield" = X,
