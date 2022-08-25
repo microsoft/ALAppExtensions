@@ -67,7 +67,7 @@ codeunit 130017 "User Permissions Library"
 
         User."User Security ID" := CreateGuid();
         User."User Name" := UserName;
-        if not EnvironmentInformation.IsSaaS() then
+        if not EnvironmentInformation.IsSaaSInfrastructure() then
             User."Windows Security ID" := CopyStr(SID(), 1, MaxStrLen(User."Windows Security ID"));
         User.Insert(true);
     end;

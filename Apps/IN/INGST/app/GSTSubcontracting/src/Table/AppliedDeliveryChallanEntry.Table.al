@@ -72,6 +72,7 @@ table 18467 "Applied Delivery Challan Entry"
         field(11; Quantity; Decimal)
         {
             Caption = 'Quantity';
+            DecimalPlaces = 0 : 3;
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
         }

@@ -1770,7 +1770,7 @@ Codeunit 4037 "Helper Functions"
         GPVendorMigrator: CodeUnit "GP Vendor Migrator";
     begin
         GPVendorMigrator.MigrateVendorClasses();
-        Session.LogMessage('', 'Created Vendor Classes', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        Session.LogMessage('0000HWD', 'Created Vendor Classes', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetVendorClassesCreated();
     end;
 
@@ -1779,7 +1779,7 @@ Codeunit 4037 "Helper Functions"
         GPCustomerMigrator: CodeUnit "GP Customer Migrator";
     begin
         GPCustomerMigrator.MigrateCustomerClasses();
-        Session.LogMessage('', 'Created Customer Classes', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        Session.LogMessage('0000HWE', 'Created Customer Classes', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetCustomerClassesCreated();
     end;
 
@@ -2060,12 +2060,11 @@ Codeunit 4037 "Helper Functions"
     var
         GLAccount: Record "G/L Account";
     begin
-        if GLAccount.Get(AccountNumber) then begin
+        if GLAccount.Get(AccountNumber) then
             // Ensure the GLAccount has a Gen. Prod. Posting Group.
             if GLAccount."Gen. Prod. Posting Group" = '' then begin
                 GLAccount."Gen. Prod. Posting Group" := PostingGroupCodeTxt;
                 GLAccount.Modify(true);
             end;
-        end;
     end;
 }

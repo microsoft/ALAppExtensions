@@ -2617,7 +2617,11 @@ codeunit 18318 "GST Settlement"
                             GSTPaymentBuffer."Account Type"::"G/L Account",
                             GetPayableAccount(GSTPostingSetup),
                             GSTPaymentBuffer."Payment Amount - Rev. Chrg.",
-                            StrSubstNo(GSTPaymentTypeTxt, GSTPaymentBuffer."GST Component Code", ReverseChargePaymentTxt));
+                            StrSubstNo(
+                                GSTPaymentTypeTxt,
+                                GSTPaymentBuffer."GST Component Code",
+                                ReverseChargePaymentTxt),
+                            GSTPaymentBuffer."Dimension Set ID");
                     end;
 
                     if GSTPaymentBuffer."Net Payment Liability" > 0 then
@@ -2625,7 +2629,11 @@ codeunit 18318 "GST Settlement"
                             GSTPaymentBuffer."Account Type"::"G/L Account",
                             GetPayableAccount(GSTPostingSetup),
                             GSTPaymentBuffer."Net Payment Liability",
-                            StrSubstNo(GSTPaymentTypeTxt, GSTPaymentBuffer."GST Component Code", NetPaymentLibTxt));
+                            StrSubstNo(
+                                GSTPaymentTypeTxt,
+                                GSTPaymentBuffer."GST Component Code",
+                                NetPaymentLibTxt),
+                            GSTPaymentBuffer."Dimension Set ID");
 
                     if GSTPaymentBuffer."GST TDS Credit Utilized" > 0 then
                         CreateAndPostGenJournalLine(
@@ -2635,7 +2643,8 @@ codeunit 18318 "GST Settlement"
                             StrSubstNo(
                                 GSTPaymentTypeTxt,
                                 GSTPaymentBuffer."GST Component Code",
-                                GSTPaymentBuffer.FieldCaption("GST TDS Credit Utilized")));
+                                GSTPaymentBuffer.FieldCaption("GST TDS Credit Utilized")),
+                            GSTPaymentBuffer."Dimension Set ID");
 
                     if GSTPaymentBuffer."GST TCS Credit Utilized" > 0 then
                         CreateAndPostGenJournalLine(
@@ -2645,17 +2654,19 @@ codeunit 18318 "GST Settlement"
                             StrSubstNo(
                                 GSTPaymentTypeTxt,
                                 GSTPaymentBuffer."GST Component Code",
-                                GSTPaymentBuffer.FieldCaption("GST TCS Credit Utilized")));
+                                GSTPaymentBuffer.FieldCaption("GST TCS Credit Utilized")),
+                            GSTPaymentBuffer."Dimension Set ID");
 
                     if GSTPaymentBuffer."GST TCS Liability" > 0 then
                         CreateAndPostGenJournalLine(
-                          GSTPaymentBuffer."Account Type"::"G/L Account",
-                          GetGSTTCSPayableAccount(GSTPostingSetup),
-                          GSTPaymentBuffer."GST TCS Liability",
-                          StrSubstNo(
-                              GSTPaymentTypeTxt,
-                              GSTPaymentBuffer."GST Component Code",
-                              GSTPaymentBuffer.FieldCaption("GST TCS Liability")));
+                            GSTPaymentBuffer."Account Type"::"G/L Account",
+                            GetGSTTCSPayableAccount(GSTPostingSetup),
+                            GSTPaymentBuffer."GST TCS Liability",
+                            StrSubstNo(
+                                GSTPaymentTypeTxt,
+                                GSTPaymentBuffer."GST Component Code",
+                                GSTPaymentBuffer.FieldCaption("GST TCS Liability")),
+                            GSTPaymentBuffer."Dimension Set ID");
 
                     if GSTPaymentBuffer.Interest > 0 then
                         CreateAndPostGenJournalLine(
@@ -2665,7 +2676,8 @@ codeunit 18318 "GST Settlement"
                             StrSubstNo(
                                 GSTPaymentTypeTxt,
                                 GSTPaymentBuffer."GST Component Code",
-                                GSTPaymentBuffer.FieldCaption(Interest)));
+                                GSTPaymentBuffer.FieldCaption(Interest)),
+                            GSTPaymentBuffer."Dimension Set ID");
 
                     if GSTPaymentBuffer.Penalty > 0 then
                         CreateAndPostGenJournalLine(
@@ -2675,7 +2687,8 @@ codeunit 18318 "GST Settlement"
                             StrSubstNo(
                                 GSTPaymentTypeTxt,
                                 GSTPaymentBuffer."GST Component Code",
-                                GSTPaymentBuffer.FieldCaption(Penalty)));
+                                GSTPaymentBuffer.FieldCaption(Penalty)),
+                            GSTPaymentBuffer."Dimension Set ID");
 
                     if GSTPaymentBuffer.Fees > 0 then
                         CreateAndPostGenJournalLine(
@@ -2685,7 +2698,8 @@ codeunit 18318 "GST Settlement"
                             StrSubstNo(
                                 GSTPaymentTypeTxt,
                                 GSTPaymentBuffer."GST Component Code",
-                                GSTPaymentBuffer.FieldCaption(Fees)));
+                                GSTPaymentBuffer.FieldCaption(Fees)),
+                            GSTPaymentBuffer."Dimension Set ID");
 
                     if GSTPaymentBuffer.Others > 0 then
                         CreateAndPostGenJournalLine(
@@ -2695,7 +2709,8 @@ codeunit 18318 "GST Settlement"
                             StrSubstNo(
                                 GSTPaymentTypeTxt,
                                 GSTPaymentBuffer."GST Component Code",
-                                GSTPaymentBuffer.FieldCaption(Others)));
+                                GSTPaymentBuffer.FieldCaption(Others)),
+                            GSTPaymentBuffer."Dimension Set ID");
 
                     if (GSTPaymentBuffer."Surplus Cr. Utilized" <> 0) then begin
                         ReceivableAmount := GSTPaymentBuffer."Surplus Cr. Utilized";
@@ -2705,7 +2720,11 @@ codeunit 18318 "GST Settlement"
                                 GSTPaymentBuffer."Account Type"::"G/L Account",
                                 GetRecAccount(GSTPostingSetup),
                                 ReceivableAmount * Sign,
-                                StrSubstNo(GSTPaymentTypeTxt, GSTPaymentBuffer."GST Component Code", CreditUtilizedTxt));
+                                StrSubstNo(
+                                    GSTPaymentTypeTxt,
+                                    GSTPaymentBuffer."GST Component Code",
+                                    CreditUtilizedTxt),
+                                GSTPaymentBuffer."Dimension Set ID");
                     end;
 
                     if GSTPaymentBuffer."UnAdjutsed Credit" < 0 then begin
@@ -2716,7 +2735,8 @@ codeunit 18318 "GST Settlement"
                             StrSubstNo(
                                 GSTPaymentTypeTxt,
                                 GSTPaymentBuffer."GST Component Code",
-                                UnadjustedCreditTxt));
+                                UnadjustedCreditTxt),
+                            GSTPaymentBuffer."Dimension Set ID");
 
                         CreateAndPostGenJournalLine(
                             GSTPaymentBuffer."Account Type"::"G/L Account",
@@ -2725,7 +2745,8 @@ codeunit 18318 "GST Settlement"
                             StrSubstNo(
                                 GSTPaymentTypeTxt,
                                 GSTPaymentBuffer."GST Component Code",
-                                UnadjustedCreditTxt));
+                                UnadjustedCreditTxt),
+                            GSTPaymentBuffer."Dimension Set ID");
                     end;
                 end;
 
@@ -2744,7 +2765,11 @@ codeunit 18318 "GST Settlement"
                     AccountType,
                     AccountNo,
                     TotalPaymentAmount * Sign,
-                    StrSubstNo(GSTPaymentTypeTxt, GstTxt, TotalPaymentTxt));
+                    StrSubstNo(
+                        GSTPaymentTypeTxt,
+                        GstTxt,
+                        TotalPaymentTxt),
+                    GSTPaymentBuffer."Dimension Set ID");
         end;
 
         Window.Close();
@@ -2754,7 +2779,8 @@ codeunit 18318 "GST Settlement"
                         AccountType: Enum "Gen. Journal Account Type";
                                          AccountNo: Code[20];
                                          PaymentAmount: Decimal;
-                                         AmountType: Text[100])
+                                         AmountType: Text[100];
+                                         DimensionSetID: Integer)
     var
         GenJournalLine2: Record "Gen. Journal Line";
         AmountType2: Text[50];
@@ -2773,7 +2799,7 @@ codeunit 18318 "GST Settlement"
         GenJournalLine2."System-Created Entry" := true;
         GenJournalLine2."Document No." := PostedDocumentNo;
         GenJournalLine2."Posting Date" := PostingDate;
-        GenJournalLine2."Dimension Set ID" := TempGSTPostingBuffer[1]."Dimension Set ID";
+        GenJournalLine2."Dimension Set ID" := DimensionSetID;
         GenJournalLine2.Description := AmountType2;
 
         DimensionManagement.UpdateGlobalDimFromDimSetID(

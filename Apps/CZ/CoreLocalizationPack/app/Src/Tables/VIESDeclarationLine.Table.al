@@ -251,8 +251,7 @@ table 31076 "VIES Declaration Line CZL"
     trigger OnModify()
     begin
         TestStatusOpen();
-        if ("Line Type" = "Line Type"::Cancellation) and (CurrFieldNo <> FieldNo("Line Type")) then
-            Error(CancelModifyErr);
+        CheckLineType();
     end;
 
     var
@@ -303,7 +302,11 @@ table 31076 "VIES Declaration Line CZL"
     local procedure FormatVATRegNo(VATRegNo: Code[20]): Code[20]
     var
         CountryRegion: Record "Country/Region";
+        IsHandled: Boolean;
     begin
+        OnBeforeFormatVATRegNo(Rec, VATRegNo, IsHandled);
+        if IsHandled then
+            exit(VATRegNo);
         if "Country/Region Code" = '' then
             exit(VATRegNo);
 
@@ -370,7 +373,14 @@ table 31076 "VIES Declaration Line CZL"
     end;
 
     procedure CheckLineType()
+    var
+        IsHandled: Boolean;
     begin
+        OnBeforeCheckLineType(Rec, IsHandled);
+        if IsHandled then
+            exit;
+        if CurrFieldNo = FieldNo("Line Type") then
+            exit;
         if "Line Type" = "Line Type"::Cancellation then
             Error(CancelModifyErr);
     end;
@@ -394,6 +404,16 @@ table 31076 "VIES Declaration Line CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeIsVATEntryIncludedToDrillDown(VATEntry: Record "VAT Entry"; VIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL"; var IsIncluded: Boolean; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckLineType(VIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeFormatVATRegNo(VIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; var VATRegNo: Code[20]; var IsHandled: Boolean)
     begin
     end;
 }

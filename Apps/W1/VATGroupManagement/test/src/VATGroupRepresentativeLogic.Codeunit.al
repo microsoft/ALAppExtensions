@@ -65,6 +65,34 @@ codeunit 139521 "VAT Group Representative Logic"
     end;
 
     [Test]
+    [HandlerFunctions('VATReportRequestPage')]
+    procedure TestSuggestLinesOnVATReport()
+    var
+        VATReportHeader: Record "VAT Report Header";
+        VATReport: TestPage "VAT Report";
+    begin
+        // [SCENARIO] Suggest lines action after vat return was including does not throw transaction error
+        Initialize();
+
+        // [GIVEN] Current Role is Group Representative
+        // [GIVEN] We have a VAT Return with statement lines and included VAT return
+        LibraryVATGroup.MockVATReportHeaderWithStatmentLines(VATReportHeader, DMY2Date(1, 1, 2020), DMY2Date(31, 1, 2020));
+
+        VATReportHeader."VAT Group Return" := true;
+        VATReportHeader.Modify(false);
+
+        CreateVATReturnWith3Lines(VATReportHeader);
+        Commit();
+
+        // [WHEN] open VAT Return
+        VATReport.OpenEdit();
+        VATReport.GoToRecord(VATReportHeader);
+
+        // [THEN] We can invoke suggest lines with no errors
+        VATReport.SuggestLines.Invoke();
+    end;
+
+    [Test]
     procedure TestVATReturnGroupFlag()
     var
         VATReportHeader: Record "VAT Report Header";
@@ -773,5 +801,12 @@ codeunit 139521 "VAT Group Representative Logic"
     procedure SuccessMessageHandler(Message: Text[1024])
     begin
         LibraryVariableStorage.Enqueue(Message);
+    end;
+
+    [RequestPageHandler]
+    [Scope('OnPrem')]
+    procedure VATReportRequestPage(var VATReportRequestPage: TestRequestPage "VAT Report Request Page");
+    begin
+        VATReportRequestPage.OK().Invoke();
     end;
 }

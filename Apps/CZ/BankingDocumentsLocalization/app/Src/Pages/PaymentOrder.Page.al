@@ -46,6 +46,11 @@ page 31262 "Payment Order CZB"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the foreign or domestic payment order.';
+
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Lines.Page.SetPaymentOrderHeader(Rec);
+                    end;
                 }
                 field("Document Date"; Rec."Document Date")
                 {
@@ -512,6 +517,7 @@ page 31262 "Payment Order CZB"
             if Rec."Bank Account No." <> '' then
                 Rec.SetRange("Bank Account No.", Rec."Bank Account No.");
         Rec.FilterGroup := 0;
+        CurrPage.Lines.Page.SetPaymentOrderHeader(Rec);
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)

@@ -201,5 +201,10 @@ tableextension 18081 "GST Purchase Header Ext" extends "Purchase Header"
             Caption = 'SubConPostLine';
             DataClassification = CustomerContent;
         }
+        field(18117; "Subcon. Multiple Receipt"; Boolean)
+        {
+            Caption = 'Subcon. Multiple Receipt';
+            DataClassification = EndUserIdentifiableInformation;
+        }
     }
 }

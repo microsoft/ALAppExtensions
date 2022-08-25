@@ -262,6 +262,18 @@ codeunit 18929 "Narration Posting Events"
             GenJournalLine."Location Code",
             GenJournalTemplate.Type::"Cash Payment Voucher",
             GenJournalLine."Bal. Account Type"::"G/L Account",
+            GenJournalLine."Bal. Account No.")
+            or
+            VoucherPostingDebitAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Contra Voucher",
+            GenJournalLine."Bal. Account Type"::"G/L Account",
+            GenJournalLine."Bal. Account No.")
+            or
+            VoucherPostingCreditAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Contra Voucher",
+            GenJournalLine."Bal. Account Type"::"G/L Account",
             GenJournalLine."Bal. Account No."))
         then
             Error(ContraCashAccountErr, GenJournalLine."Bal. Account No.", GenJournalTemplate.Type::"Contra Voucher", GenJournalLine."Document No.");
@@ -290,6 +302,18 @@ codeunit 18929 "Narration Posting Events"
             VoucherPostingDebitAccount.Get(
             GenJournalLine."Location Code",
             GenJournalTemplate.Type::"Cash Payment Voucher",
+            GenJournalLine."Account Type"::"G/L Account",
+            GenJournalLine."Account No.")
+            or
+            VoucherPostingCreditAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Contra Voucher",
+            GenJournalLine."Account Type"::"G/L Account",
+            GenJournalLine."Account No.")
+            or
+            VoucherPostingDebitAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Contra Voucher",
             GenJournalLine."Account Type"::"G/L Account",
             GenJournalLine."Account No."))
         then
@@ -328,6 +352,18 @@ codeunit 18929 "Narration Posting Events"
             GenJournalLine."Location Code",
             GenJournalTemplate.Type::"Bank Payment Voucher",
             GenJournalLine."Bal. Account Type"::"Bank Account",
+            GenJournalLine."Bal. Account No.")
+            or
+            VoucherPostingCreditAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Contra Voucher",
+            GenJournalLine."Bal. Account Type"::"Bank Account",
+            GenJournalLine."Bal. Account No.")
+            or
+            VoucherPostingDebitAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Contra Voucher",
+            GenJournalLine."Bal. Account Type"::"Bank Account",
             GenJournalLine."Bal. Account No."))
         then
             Error(ContraBankAccountErr, GenJournalLine."Bal. Account No.", GenJournalTemplate.Type::"Contra Voucher", GenJournalLine."Document No.");
@@ -353,9 +389,22 @@ codeunit 18929 "Narration Posting Events"
             VoucherPostingDebitAccount.Get(GenJournalLine."Location Code",
             GenJournalTemplate.Type::"Bank Payment Voucher",
             GenJournalLine."Account Type"::"Bank Account",
+            GenJournalLine."Account No.")
+            or
+            VoucherPostingDebitAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Contra Voucher",
+            GenJournalLine."Account Type"::"Bank Account",
+            GenJournalLine."Account No.")
+            or
+            VoucherPostingCreditAccount.Get(
+            GenJournalLine."Location Code",
+            GenJournalTemplate.Type::"Contra Voucher",
+            GenJournalLine."Bal. Account Type"::"Bank Account",
             GenJournalLine."Account No."))
         then
             Error(ContraBankAccountErr, GenJournalLine."Account No.", GenJournalTemplate.Type::"Contra Voucher", GenJournalLine."Document No.");
+
     end;
 
     local procedure CheckAccountNoValidationForVoucherSubType(

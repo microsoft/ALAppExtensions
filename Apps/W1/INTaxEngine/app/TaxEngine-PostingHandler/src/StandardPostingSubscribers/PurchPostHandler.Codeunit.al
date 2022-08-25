@@ -105,7 +105,11 @@ codeunit 20335 "Purch.-Post Handler"
     begin
         TaxPostingHandler.GetCurrency(PurchHeader."Currency Code", Currency);
         Currency.TestField("Invoice Rounding Precision");
-        TotalAmount := TotalAmountIncludingVAT + TaxPostingBufferMgmt.GetTotalTaxAmount();
+
+        if PurchHeader."Document Type" in ["Purchase Document Type"::"Credit Memo", "Purchase Document Type"::"Return Order"] then
+            TotalAmount := TotalAmountIncludingVAT - TaxPostingBufferMgmt.GetTotalTaxAmount()
+        else
+            TotalAmount := TotalAmountIncludingVAT + TaxPostingBufferMgmt.GetTotalTaxAmount();
 
         InvoiceRoundingAmount :=
           -Round(
@@ -133,5 +137,5 @@ codeunit 20335 "Purch.-Post Handler"
         TaxPostingBufferMgmt: Codeunit "Tax Posting Buffer Mgmt.";
     begin
         GenJnlLine."Tax ID" := TaxPostingBufferMgmt.GetTaxID();
-    end;   
+    end;
 }

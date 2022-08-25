@@ -42,6 +42,7 @@ permissionset 66 "System Tables - Basic"
                   tabledata Session = Rimd,
                   tabledata "Server Instance" = Rimd,
                   tabledata "SID - Account ID" = Rimd,
+                  tabledata "Signup Context" = R,
                   tabledata "Style Sheet" = RIMD,
                   tabledata "System Object" = Rimd,
                   tabledata "Tenant Profile Page Metadata" = Rimd,

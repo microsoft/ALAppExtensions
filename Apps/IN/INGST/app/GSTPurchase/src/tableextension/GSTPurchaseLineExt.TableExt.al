@@ -142,11 +142,13 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         field(18118; "Qty. to Reject (Rework)"; Decimal)
         {
             Caption = 'Qty. to Reject (Rework)';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
         }
         field(18119; "Qty. Rejected (Rework)"; Decimal)
         {
             Caption = 'Qty. Rejected (Rework)';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
             Editable = false;
         }
@@ -158,7 +160,9 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         field(18121; "Qty. to Reject (C.E.)"; Decimal)
         {
             Caption = 'Qty. to Reject (C.E.)';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
+
             trigger OnValidate()
             begin
                 UpdateSubConOrderLines();
@@ -168,7 +172,9 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         field(18122; "Qty. to Reject (V.E.)"; Decimal)
         {
             Caption = 'Qty. to Reject (V.E.)';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
+
             trigger OnValidate()
             begin
                 UpdateSubConOrderLines();
@@ -178,8 +184,10 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         field(18123; "Qty. Rejected (C.E.)"; Decimal)
         {
             Caption = 'Qty. Rejected (C.E.)';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
             Editable = false;
+
             trigger OnValidate()
             begin
                 UpdateSubConOrderLines();
@@ -189,6 +197,7 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         field(18124; "Qty. Rejected (V.E.)"; Decimal)
         {
             Caption = 'Qty. Rejected (V.E.)';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
             Editable = false;
         }
@@ -196,6 +205,8 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         {
             Caption = 'Deliver Comp. For';
             DataClassification = CustomerContent;
+            DecimalPlaces = 0 : 3;
+
             trigger OnValidate()
             var
                 SubOrderComponents: Record "Sub Order Component List";
@@ -255,6 +266,11 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         field(18134; "Delivery Challan Date"; Date)
         {
             Caption = 'Delivery Challan Date';
+            DataClassification = CustomerContent;
+        }
+        field(18135; "Subcon. Receiving"; Boolean)
+        {
+            Caption = 'Subcon. Receiving';
             DataClassification = CustomerContent;
         }
     }

@@ -63,6 +63,12 @@ codeunit 18544 "Tax Base Subscribers"
         GetTaxComponentValuesFromRecID(RecID, TaxTypeCode, ComponentID, ComponentRate, ComponentAmount);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'Applies-to ID', false, false)]
+    local procedure OnAfterValidateEventAppliesToID(var Rec: Record "Purchase Header")
+    begin
+        CallTaxEngineForPurchaseLines(Rec);
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'Applies-to Doc. No.', false, false)]
     local procedure OnAfterValidateEventAppliesToDocNo(var Rec: Record "Purchase Header")
     begin
@@ -183,6 +189,14 @@ codeunit 18544 "Tax Base Subscribers"
         if FinanceChargeMemoHeader.Get(FinanceChargeMemoLine."Finance Charge Memo No.") then
             if not VATPostingSetup.Get(FinanceChargeMemoHeader."VAT Bus. Posting Group", FinanceChargeMemoLine."VAT Prod. Posting Group") then
                 IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterInitDefaultDimensionSources', '', false, false)]
+    local procedure OnAfterInitDefaultDimensionSources(var GenJournalLine: Record "Gen. Journal Line"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FromFieldNo: Integer)
+    var
+        DimMgt: Codeunit DimensionManagement;
+    begin
+        DimMgt.AddDimSource(DefaultDimSource, Database::Location, GenJournalLine."Location Code", FromFieldNo = GenJournalLine.FieldNo("Location Code"));
     end;
 
     local procedure CallTaxEngineForPurchaseLines(var PurchaseHeader: Record "Purchase Header")

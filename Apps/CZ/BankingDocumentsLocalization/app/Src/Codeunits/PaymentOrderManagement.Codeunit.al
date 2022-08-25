@@ -64,6 +64,7 @@ codeunit 31356 "Payment Order Management CZB"
 
     procedure CheckPaymentOrderLineFormat(PaymentOrderLineCZB: Record "Payment Order Line CZB"; ShowErrorMessages: Boolean): Boolean
     var
+        PaymentOrderHeaderCZB: Record "Payment Order Header CZB";
         TempErrorMessage2: Record "Error Message" temporary;
         IsHandled: Boolean;
         MustBeSpecifiedErr: Label '%1 or %2 in %3 must be specified.', Comment = '%1 = Account No. FieldCaption; %2 = IBAN FieldCaption; %3 = RecordId';
@@ -79,8 +80,10 @@ codeunit 31356 "Payment Order Management CZB"
                 PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo(PaymentOrderLineCZB.Amount), TempErrorMessage2."Message Type"::Error, 0);
             TempErrorMessage2.LogIfEmpty(
                 PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo(PaymentOrderLineCZB."Due Date"), TempErrorMessage2."Message Type"::Error);
-            TempErrorMessage2.LogIfEmpty(
-                PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo(PaymentOrderLineCZB."Variable Symbol"), TempErrorMessage2."Message Type"::Error);
+            PaymentOrderHeaderCZB.Get(PaymentOrderLineCZB."Payment Order No.");
+            if not PaymentOrderHeaderCZB."Foreign Payment Order" then
+                TempErrorMessage2.LogIfEmpty(
+                    PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo(PaymentOrderLineCZB."Variable Symbol"), TempErrorMessage2."Message Type"::Error);
             TempErrorMessage2.LogIfInvalidCharacters(
                 PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo(PaymentOrderLineCZB."Variable Symbol"), TempErrorMessage2."Message Type"::Error,
                 BankOperationsFunctionsCZB.GetValidCharactersForVariableSymbol());

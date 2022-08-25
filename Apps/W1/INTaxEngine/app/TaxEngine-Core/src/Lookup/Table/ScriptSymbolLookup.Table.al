@@ -91,6 +91,9 @@ table 20144 "Script Symbol Lookup"
     begin
         ScriptSymbolStore.OnBeforeValidateIfUpdateIsAllowed("Case ID");
 
+        if not IsNullGuid("Table Sorting ID") then
+            EntityMgmt.DeleteTableSorting("Case ID", "Script ID", "Table Sorting ID");
+
         if not IsNullGuid("Table Filter ID") then
             EntityMgmt.DeleteTableFilters("Case ID", "Script ID", "Table Filter ID");
     end;

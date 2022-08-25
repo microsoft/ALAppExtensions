@@ -193,6 +193,7 @@ report 31012 "Create Sales Adv. Letter CZZ"
         SalesAdvLetterHeaderCZZ."Currency Factor" := SalesHeader."Currency Factor";
         SalesAdvLetterHeaderCZZ."VAT Country/Region Code" := SalesHeader."VAT Country/Region Code";
         SalesAdvLetterHeaderCZZ."Automatic Post VAT Document" := AdvanceLetterTemplateCZZ."Automatic Post VAT Document";
+        OnCreateAdvanceLetterHeaderOnBeforeModifySalesAdvLetterHeaderCZZ(SalesHeader, AdvanceLetterTemplateCZZ, SalesAdvLetterHeaderCZZ);
         SalesAdvLetterHeaderCZZ.Modify(true);
     end;
 
@@ -245,5 +246,10 @@ report 31012 "Create Sales Adv. Letter CZZ"
             Currency.Get(SalesHeader."Currency Code");
             Currency.TestField("Amount Rounding Precision");
         end;
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnCreateAdvanceLetterHeaderOnBeforeModifySalesAdvLetterHeaderCZZ(SalesHeader: Record "Sales Header"; AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ"; var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    begin
     end;
 }

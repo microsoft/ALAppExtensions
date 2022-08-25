@@ -54,7 +54,7 @@ codeunit 8888 "Email Dispatcher"
             Success := SendEmail.Run(EmailMessage);
 
             if Success then begin
-                FeatureTelemetry.LogUsage('0000CTQ', EmailFeatureNameLbl, 'Email sent', Dimensions);
+                FeatureTelemetry.LogUsage('0000CTV', EmailFeatureNameLbl, 'Email sent', Dimensions);
 
                 InsertToSentEmail(Rec, SentEmail);
 

@@ -105,4 +105,14 @@ codeunit 18142 "GST Sales Posting No. Series"
         PostingNoSeries.GetPostingNoSeriesCode(Record);
         Rec := Record;
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Shortcut Dimension 1 Code', false, false)]
+    local procedure DepartmentCode(var Rec: Record "Sales Header")
+    var
+        Record: Variant;
+    begin
+        Record := Rec;
+        PostingNoSeries.GetPostingNoSeriesCode(Record);
+        Rec := Record;
+    end;
 }
