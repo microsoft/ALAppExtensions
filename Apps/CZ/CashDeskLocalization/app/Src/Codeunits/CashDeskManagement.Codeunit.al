@@ -413,11 +413,16 @@ codeunit 11724 "Cash Desk Management CZP"
 
     [TryFunction]
     procedure CheckUserRights(CashDeskNo: Code[20]; ActionType: Enum "Cash Document Action CZP")
+    begin
+        CheckUserRights(CashDeskNo, ActionType, true);
+    end;
+
+    [TryFunction]
+    procedure CheckUserRights(CashDeskNo: Code[20]; ActionType: Enum "Cash Document Action CZP"; EETTransaction: Boolean)
     var
         CashDeskUserCZP: Record "Cash Desk User CZP";
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         CashDeskCZP: Record "Cash Desk CZP";
-        EETManagementCZL: Codeunit "EET Management CZL";
         IsHandled: boolean;
     begin
         OnBeforeCheckUserRights(CashDeskNo, ActionType, IsHandled);
@@ -446,8 +451,8 @@ codeunit 11724 "Cash Desk Management CZP"
             ActionType::Post, ActionType::"Post and Print":
                 begin
                     CashDeskUserCZP.SetRange(Post, true);
-                    if EETManagementCZL.IsEETEnabled() then
-                        if CashDeskCZP.IsEETCashRegister() and CashDeskUserCZP.IsEmpty() then begin
+                    if EETTransaction then
+                        if CashDeskUserCZP.IsEmpty() then begin
                             CashDeskUserCZP.SetRange(Post);
                             CashDeskUserCZP.SetRange("Post EET Only", true);
                         end;

@@ -1,6 +1,6 @@
-codeunit 148105 "Company Init UT Handler CZL"
+codeunit 148105 "Library - Rep.Sel. Handler CZL"
 {
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company Init Unit Test", 'OnAfterGetReportId', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Library - Report Selection", 'OnAfterGetReportId', '', false, false)]
     local procedure ConvertStandardReportsToCZLReportsOnAfterGetReportId(RecUsage: Enum "Report Selection Usage"; var ReportId: Integer)
     begin
         case RecUsage of

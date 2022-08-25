@@ -296,7 +296,7 @@ codeunit 30176 "Shpfy Product API"
     /// Retrieve Shopify Product Ids.
     /// </summary>
     /// <param name="ProductIds">Parameter of type Dictionary of [BigInteger, DateTime].</param>
-    internal procedure RetrieveShopifyProductIds(var ProductIds: Dictionary of [BigInteger, DateTime])
+    internal procedure RetrieveShopifyProductIds(var ProductIds: Dictionary of [BigInteger, DateTime]; NumberOfRecords: Integer)
     var
         Math: Codeunit "Shpfy Math";
         Id: BigInteger;
@@ -330,6 +330,9 @@ codeunit 30176 "Shpfy Product API"
                         else
                             ProductIds.Set(Id, Math.Max(ProductIds.Get(Id), UpdatedAt));
                     end;
+                    if NumberOfRecords <> 0 then
+                        if ProductIds.Count >= NumberOfRecords then
+                            exit;
                 end;
                 GraphQLType := GraphQLType::GetNextProductIds;
                 if Parameters.ContainsKey('After') then

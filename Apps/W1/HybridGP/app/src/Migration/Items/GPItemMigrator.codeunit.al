@@ -6,7 +6,7 @@ codeunit 4019 "GP Item Migrator"
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DefaultPostingGroupCodeTxt: Label 'GP', Locked = true;
         DefaultPostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
-        InventoryAccountName: Label 'InventoryAccount', Locked = true;
+        InventoryAccountTok: Label 'InventoryAccount', Locked = true;
         DefaultAccountNumber: Text[20];
         ItemTypeOption: Option Inventory,Service;
         CostingMethodOption: Option FIFO,LIFO,Specific,Average,Standard;
@@ -63,7 +63,6 @@ codeunit 4019 "GP Item Migrator"
     procedure MigrateItemInventoryPostingGroup(GPItem: Record "GP Item"; var Sender: Codeunit "Item Data Migration Facade")
     var
         GPIV00101: Record "GP IV00101";
-        CurrentCompanyName: Text[30];
         ItemClassId: Text[11];
         ConfiguredToMigrateItemClasses: Boolean;
     begin
@@ -77,9 +76,8 @@ codeunit 4019 "GP Item Migrator"
 
             if (ItemClassId <> '') then
                 Sender.SetInventoryPostingGroup(ItemClassId)
-            else begin
+            else
                 Sender.SetInventoryPostingGroup(CopyStr(DefaultPostingGroupCodeTxt, 1, 20));
-            end;
 
             Sender.ModifyItem(true);
         end;
@@ -161,23 +159,23 @@ codeunit 4019 "GP Item Migrator"
                                         until GPItemTransaction.Next() = 0;
                                 end;
                             else begin
-                                    GPItemTransactionQuery.SetRange(No, GPItem.No);
-                                    GPItemTransactionQuery.Open();
-                                    while GPItemTransactionQuery.Read() do begin
-                                        // 1 transaction for each grouping using Unit Cost
-                                        GPItemTransaction.SetRange(No, GPItemTransactionQuery.No);
-                                        GPItemTransaction.SetRange(Location, GPItemTransactionQuery.Location);
-                                        GPItemTransaction.SetRange(ReceiptNumber, GPItemTransactionQuery.ReceiptNumber);
-                                        GPItemTransaction.SetRange(UnitCost, GPItemTransactionQuery.UnitCost);
-                                        if GPItemTransaction.FindSet() then begin
-                                            CreateItemJnlLine(ItemJnlLine, GPItem, GPItemTransaction, GPItemTransactionQuery.Quantity, GPItemTransaction.DateReceived);
-                                            repeat
-                                                CreateNewItemTrackingLinesIfNecessary(GPItemTransaction, GPItem, ItemJnlLine);
-                                            until GPItemTransaction.Next() = 0;
-                                            AdjustItemInventory.PostItemJnlLines(ItemJnlLine);
-                                        end;
+                                GPItemTransactionQuery.SetRange(No, GPItem.No);
+                                GPItemTransactionQuery.Open();
+                                while GPItemTransactionQuery.Read() do begin
+                                    // 1 transaction for each grouping using Unit Cost
+                                    GPItemTransaction.SetRange(No, GPItemTransactionQuery.No);
+                                    GPItemTransaction.SetRange(Location, GPItemTransactionQuery.Location);
+                                    GPItemTransaction.SetRange(ReceiptNumber, GPItemTransactionQuery.ReceiptNumber);
+                                    GPItemTransaction.SetRange(UnitCost, GPItemTransactionQuery.UnitCost);
+                                    if GPItemTransaction.FindSet() then begin
+                                        CreateItemJnlLine(ItemJnlLine, GPItem, GPItemTransaction, GPItemTransactionQuery.Quantity, GPItemTransaction.DateReceived);
+                                        repeat
+                                            CreateNewItemTrackingLinesIfNecessary(GPItemTransaction, GPItem, ItemJnlLine);
+                                        until GPItemTransaction.Next() = 0;
+                                        AdjustItemInventory.PostItemJnlLines(ItemJnlLine);
                                     end;
                                 end;
+                            end;
                         end;
                 end;
 
@@ -389,14 +387,10 @@ codeunit 4019 "GP Item Migrator"
 
     procedure MigrateItemClassesIfNeeded(var GPItem: Record "GP Item"; var ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
     var
-        GPItemLocation: Record "GP Item Location";
-        InventoryPostingGroup: Record "Inventory Posting Group";
-        InventoryPostingSetup: Record "Inventory Posting Setup";
         HelperFunctions: Codeunit "Helper Functions";
-        PostingGroupCode: Code[20];
     begin
         if DefaultAccountNumber = '' then
-            DefaultAccountNumber := HelperFunctions.GetPostingAccountNumber(InventoryAccountName);
+            DefaultAccountNumber := HelperFunctions.GetPostingAccountNumber(InventoryAccountTok);
 
         MigrateDefaultPostingGroupIfNeeded(ItemDataMigrationFacade);
         MigrateGPPostingGroupIfNeeded(GPItem, ItemDataMigrationFacade);

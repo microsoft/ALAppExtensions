@@ -6,6 +6,11 @@ tableextension 18545 "GeneralJournalLineExt" extends "Gen. Journal Line"
         {
             TableRelation = Location;
             DataClassification = EndUserIdentifiableInformation;
+
+            trigger OnValidate()
+            begin
+                CreateDimFromDefaultDim(Rec.FieldNo("Location Code"));
+            end;
         }
         field(18544; "TDS Section Code"; Code[10])
         {

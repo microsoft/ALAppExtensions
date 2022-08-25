@@ -57,7 +57,6 @@ codeunit 139664 "GP Data Migration Tests"
     procedure TestGPCustomerImport()
     var
         Customer: Record "Customer";
-        GenBusPostingGroup: Record "Gen. Business Posting Group";
         CustomerCount: Integer;
     begin
         // [SCENARIO] All Customers are queried from GP
@@ -644,10 +643,10 @@ codeunit 139664 "GP Data Migration Tests"
         VendorPostingGroup.Get('USA-US-C');
         Assert.AreEqual('USA-US-C', VendorPostingGroup.Code, 'Code of VendorPostingGroup is incorrect.');
         Assert.AreEqual('U.S. Vendors-Contract Services', VendorPostingGroup.Description, 'Description of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('2100', VendorPostingGroup."Payables Account", 'Payables Account of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('8010', VendorPostingGroup."Service Charge Acc.", 'Service Charge Acc. of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('4600', VendorPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('2105', VendorPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('1', VendorPostingGroup."Payables Account", 'Payables Account of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('4', VendorPostingGroup."Service Charge Acc.", 'Service Charge Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('3', VendorPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('2', VendorPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of VendorPostingGroup is incorrect.');
         Assert.AreEqual('', VendorPostingGroup."Payment Tolerance Debit Acc.", 'Payment Tolerance Debit Acc. of VendorPostingGroup is incorrect.');
         Assert.AreEqual('', VendorPostingGroup."Payment Tolerance Credit Acc.", 'Payment Tolerance Credit Acc. of VendorPostingGroup is incorrect.');
 
@@ -2722,7 +2721,7 @@ codeunit 139664 "GP Data Migration Tests"
         GLAccount: Record "G/L Account";
     begin
         GPAccount.Init();
-        GPAccount.AcctNum := '2100';
+        GPAccount.AcctNum := '1';
         GPAccount.AcctIndex := 35;
         GPAccount.Name := 'Accounts Payable';
         GPAccount.Active := true;
@@ -2735,7 +2734,7 @@ codeunit 139664 "GP Data Migration Tests"
         GLAccount.Insert();
 
         GPAccount.Init();
-        GPAccount.AcctNum := '2105';
+        GPAccount.AcctNum := '2';
         GPAccount.AcctIndex := 36;
         GPAccount.Name := 'Purchases Discounts Available';
         GPAccount.Active := true;
@@ -2748,7 +2747,7 @@ codeunit 139664 "GP Data Migration Tests"
         GLAccount.Insert();
 
         GPAccount.Init();
-        GPAccount.AcctNum := '4600';
+        GPAccount.AcctNum := '3';
         GPAccount.AcctIndex := 139;
         GPAccount.Name := 'Purchases Discounts Taken';
         GPAccount.Active := true;
@@ -2761,7 +2760,7 @@ codeunit 139664 "GP Data Migration Tests"
         GLAccount.Insert();
 
         GPAccount.Init();
-        GPAccount.AcctNum := '8010';
+        GPAccount.AcctNum := '4';
         GPAccount.AcctIndex := 190;
         GPAccount.Name := 'Finance Charge Expense';
         GPAccount.Active := true;

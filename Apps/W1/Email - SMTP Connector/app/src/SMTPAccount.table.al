@@ -74,6 +74,20 @@ table 4511 "SMTP Account"
             DataClassification = SystemMetadata;
         }
 
+        field(9; "Sender Type"; Enum "SMTP Connector Sender Type")
+        {
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if Rec."Sender Type" = Rec."Sender Type"::"Specific User" then
+                    exit;
+
+                Rec."Email Address" := '';
+                Rec."Sender Name" := '';
+            end;
+        }
+
         field(10; "Email Address"; Text[250])
         {
             DataClassification = CustomerContent;

@@ -287,6 +287,7 @@ table 18552 "Posting No. Series"
         Clear(TempRecRef);
         TempRecRef.Open(DuplicateRecRef.Number(), true);
         Field.SetRange(TableNo, DuplicateRecRef.Number());
+        Field.SetRange(ObsoleteState, Field.ObsoleteState::No);
         if Field.FindSet() then
             repeat
                 FieldRef := DuplicateRecRef.Field(Field."No.");

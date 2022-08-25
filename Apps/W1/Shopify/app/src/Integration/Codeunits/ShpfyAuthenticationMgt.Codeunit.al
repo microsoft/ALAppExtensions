@@ -11,10 +11,8 @@ codeunit 30199 "Shpfy Authentication Mgt."
         ShopifyAPIKeyAKVSecretNameLbl: Label 'ShopifyApiKey', Locked = true;
         ShopifyAPISecretAKVSecretNameLbl: Label 'ShopifyApiSecret', Locked = true;
         MissingAPIKeyTelemetryTxt: Label 'The api key has not been initialized.', Locked = true;
-
         MissingAPISecretTelemetryTxt: Label 'The api secret has not been initialized.', Locked = true;
         CategoryTok: Label 'Shopify Integration', Locked = true;
-
 
 
     [NonDebuggable]
@@ -156,5 +154,21 @@ codeunit 30199 "Shpfy Authentication Mgt."
         if RegisteredStore.Get(Store) then
             if RegisteredStore."Requested Scope" = ScopeTxt then
                 exit(RegisteredStore.GetAccessToken() <> '');
+    end;
+
+    procedure IsValidShopUrl(ShopUrl: Text): Boolean
+    var
+        Regex: Codeunit Regex;
+        PatternLbl: Label '^(https)\:\/\/[a-zA-Z0-9][a-zA-Z0-9\-]*\.myshopify\.com[\/]*$', Locked = true;
+    begin
+        exit(Regex.IsMatch(ShopUrl, PatternLbl))
+    end;
+
+    procedure IsValidHostName(Hostname: Text): Boolean
+    var
+        Regex: Codeunit Regex;
+        PatternLbl: Label '^[a-zA-Z0-9][a-zA-Z0-9\-]*\.myshopify\.com$', Locked = true;
+    begin
+        exit(Regex.IsMatch(Hostname, PatternLbl))
     end;
 }

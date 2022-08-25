@@ -7,18 +7,17 @@ codeunit 8712 "Telemetry Impl."
 {
     Access = Internal;
 
+    Permissions = tabledata "User Personalization" = r,
+                  tabledata Company = r;
+
     var
         CustomDimensionsNameClashErr: Label 'Multiple custom dimensions with the same dimension name provided.', Locked = true;
         FirstPartyPublisherTxt: Label 'Microsoft', Locked = true;
 
     procedure LogMessage(EventId: Text; Message: Text; Verbosity: Verbosity; DataClassification: DataClassification; TelemetryScope: TelemetryScope; CallerCustomDimensions: Dictionary of [Text, Text]; CallerModuleInfo: ModuleInfo)
     var
-        EnvironmentInformation: Codeunit "Environment Information";
         CommonCustomDimensions: Dictionary of [Text, Text];
     begin
-        if not EnvironmentInformation.IsSaaS() then
-            exit;
-
         AddCommonCustomDimensions(CommonCustomDimensions, CallerModuleInfo);
         LogMessageInternal(EventId, Message, Verbosity, DataClassification, TelemetryScope, CommonCustomDimensions, CallerCustomDimensions, CallerModuleInfo.Publisher);
     end;

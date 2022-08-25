@@ -34,6 +34,7 @@ codeunit 18020 "GST Data Senstivity Mgmt."
         SetTableFieldsToNormal(Database::"G/L Account");
         SetTableFieldsToNormal(Database::"Inventory Setup");
         SetTableFieldsToNormal(Database::"Item Charge");
+        SetTableFieldsToNormal(Database::"Item Templ.");
         SetTableFieldsToNormal(Database::Item);
         SetTableFieldsToNormal(Database::Location);
         SetTableFieldsToNormal(Database::"Sales & Receivables Setup");

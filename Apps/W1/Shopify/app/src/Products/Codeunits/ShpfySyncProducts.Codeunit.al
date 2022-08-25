@@ -33,6 +33,7 @@ codeunit 30185 "Shpfy Sync Products"
         ProductExport: Codeunit "Shpfy Product Export";
         ProductImport: Codeunit "Shpfy Product Import";
         OnlySyncPrice: Boolean;
+        NumberOfRecords: Integer;
         ErrMsg: Text;
 
     /// <summary> 
@@ -61,7 +62,7 @@ codeunit 30185 "Shpfy Sync Products"
         ToImport: Integer;
         Msg: Label 'To Import:#1#######\Skipped:#2#######\Imported:#3#######', Comment = '#1 Number of to import, #2 = Number of skipped, #3 = Number of imported';
     begin
-        ProductApi.RetrieveShopifyProductIds(ProductIds);
+        ProductApi.RetrieveShopifyProductIds(ProductIds, NumberOfRecords);
         if GuiAllowed then begin
             ToImport := ProductIds.Count;
             Window.Open(Msg, ToImport, Skipped, Imported);
@@ -105,6 +106,11 @@ codeunit 30185 "Shpfy Sync Products"
     internal procedure SetOnlySyncPriceOn()
     begin
         OnlySyncPrice := true;
+    end;
+
+    internal procedure SetNumberOfRecords(NumberOfRecordsParam: Integer)
+    begin
+        NumberOfRecords := NumberOfRecordsParam;
     end;
 
     /// <summary> 

@@ -429,6 +429,7 @@ codeunit 1991 "Guided Experience Impl."
     local procedure InsertGuidedExperienceItemsInTempVar(var GuidedExperienceItem: Record "Guided Experience Item"; var GuidedExperienceItemTemp: Record "Guided Experience Item" temporary)
     var
         PrevGuidedExperienceItem: Record "Guided Experience Item";
+        InsertItem: Boolean;
     begin
         repeat
             if (GuidedExperienceItem."Object Type to Run" <> PrevGuidedExperienceItem."Object Type to Run")
@@ -437,6 +438,19 @@ codeunit 1991 "Guided Experience Impl."
                 or (GuidedExperienceItem."Guided Experience Type" <> PrevGuidedExperienceItem."Guided Experience Type")
                 or (GuidedExperienceItem."Spotlight Tour Type" <> PrevGuidedExperienceItem."Spotlight Tour Type")
             then
+                InsertItem := true;
+
+            if (GuidedExperienceItem."Guided Experience Type" = Enum::"Guided Experience Type"::Video) and 
+                (GuidedExperienceItem."Guided Experience Type" = PrevGuidedExperienceItem."Guided Experience Type")
+            then
+                if (GuidedExperienceItem."Title" <> PrevGuidedExperienceItem."Title")
+                or (GuidedExperienceItem.Description <> PrevGuidedExperienceItem.Description)
+                or (GuidedExperienceItem."Video Url" <> PrevGuidedExperienceItem."Video Url")
+                or (GuidedExperienceItem."Video Category" <> PrevGuidedExperienceItem."Video Category")
+            then
+                InsertItem := true;
+
+            if InsertItem then
                 InsertGuidedExperienceItemIfValid(GuidedExperienceItemTemp, GuidedExperienceItem);
 
             PrevGuidedExperienceItem := GuidedExperienceItem;

@@ -377,6 +377,8 @@ page 13 "Email Editor"
         end;
 
         EmailEditor.PopulateRelatedRecordCache(Rec."Message Id");
+
+        DefaultExitOption := 1;
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -404,7 +406,7 @@ page 13 "Email Editor"
         SelectedCloseOption: Integer;
     begin
         CloseOptions := OptionsOnClosePageNewEmailLbl;
-        SelectedCloseOption := Dialog.StrMenu(CloseOptions, 1, CloseThePageQst);
+        SelectedCloseOption := Dialog.StrMenu(CloseOptions, DefaultExitOption, CloseThePageQst);
 
         case SelectedCloseOption of
             1:
@@ -445,7 +447,6 @@ page 13 "Email Editor"
         EmailMessageImpl: Codeunit "Email Message Impl.";
         EmailEditor: Codeunit "Email Editor";
         EmailImpl: Codeunit "Email Impl";
-
         EmailAction: Enum "Email Action";
         FromDisplayName: Text;
         EmailScheduled: Boolean;
@@ -461,4 +462,5 @@ page 13 "Email Editor"
 
     protected var
         ToRecipient, CcRecipient, BccRecipient : Text;
+        DefaultExitOption: Integer;
 }

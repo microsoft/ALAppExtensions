@@ -7,8 +7,6 @@ codeunit 139662 "GP Item Tests"
     TestPermissions = Disabled;
 
     var
-        GPIV00101: Record "GP IV00101";
-        GPIV40400: Record "GP IV40400";
         Assert: Codeunit Assert;
         ItemDataMigrationFacade: Codeunit "Item Data Migration Facade";
         GPItemMigrator: Codeunit "GP Item Migrator";
@@ -79,7 +77,6 @@ codeunit 139662 "GP Item Tests"
     var
         GPItem: Record "GP Item";
         InventoryPostingGroup: Record "Inventory Posting Group";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] Items and their class information are queried from GP
         // [GIVEN] GP data
@@ -111,8 +108,6 @@ codeunit 139662 "GP Item Tests"
         GPIV40400: Record "GP IV40400";
         InventoryPostingGroup: Record "Inventory Posting Group";
         InventoryPostingSetup: Record "Inventory Posting Setup";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] Items and their class information are queried from GP
         // [GIVEN] GP data

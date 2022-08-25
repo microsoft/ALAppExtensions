@@ -599,7 +599,6 @@ table 11732 "Cash Document Header CZP"
     trigger OnInsert()
     var
         CashDeskUserCZP: Record "Cash Desk User CZP";
-        CashDocumentActionCZP: Enum "Cash Document Action CZP";
     begin
         TestField("Cash Desk No.");
         TestField("Document Type");
@@ -610,7 +609,7 @@ table 11732 "Cash Document Header CZP"
             if CashDeskCZP."Responsibility ID (Release)" <> UserId then
                 Error(RespCreateErr, TableCaption, CashDeskCZP.TableCaption, "Cash Desk No.");
 
-        CashDeskManagementCZP.CheckUserRights("Cash Desk No.", CashDocumentActionCZP::Create);
+        CashDeskManagementCZP.CheckUserRights("Cash Desk No.", Enum::"Cash Document Action CZP"::Create);
 
         if CashDeskCZP."Confirm Inserting of Document" then
             if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(CreateQst, "Document Type", "Cash Desk No."), true) then
@@ -641,12 +640,13 @@ table 11732 "Cash Document Header CZP"
         "Reason Code" := CashDeskCZP."Reason Code";
         Validate("Currency Code", CashDeskCZP."Currency Code");
 
-        case "Document Type" of
-            "Document Type"::Receipt:
-                "Received By" := CashDeskUserCZP."User Full Name";
-            "Document Type"::Withdrawal:
-                "Paid By" := CashDeskUserCZP."User Full Name";
-        end;
+        if CashDeskUserCZP.Get("Cash Desk No.", UserId()) then
+            case "Document Type" of
+                "Document Type"::Receipt:
+                    "Received By" := CashDeskUserCZP."User Full Name";
+                "Document Type"::Withdrawal:
+                    "Paid By" := CashDeskUserCZP."User Full Name";
+            end;
 
         CreateDim(
           Database::"Responsibility Center", "Responsibility Center",

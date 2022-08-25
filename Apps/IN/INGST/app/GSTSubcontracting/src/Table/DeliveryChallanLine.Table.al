@@ -50,16 +50,19 @@ table 18469 "Delivery Challan Line"
         field(11; "Quantity To Send"; Decimal)
         {
             Caption = 'Quantity To Send';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
         }
         field(12; "Quantity (Base)"; Decimal)
         {
             Caption = 'Quantity (Base)';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
         }
         field(13; "Quantity To Send (Base)"; Decimal)
         {
             Caption = 'Quantity To Send (Base)';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
         }
         field(14; Description; Text[100])
@@ -236,11 +239,13 @@ table 18469 "Delivery Challan Line"
                 where("Item No." = field("Item No."),
                 "Location Code" = field("Vendor Location")));
             Caption = 'Quantity at Vendor Location';
+            DecimalPlaces = 0 : 3;
             FieldClass = FlowField;
         }
         field(53; "Total Scrap Quantity"; Decimal)
         {
             Caption = 'Total Scrap Quantity';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -261,6 +266,7 @@ table 18469 "Delivery Challan Line"
         field(56; Quantity; Decimal)
         {
             Caption = 'Quantity';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
         }
         field(57; "Remaining Quantity"; Decimal)
@@ -274,10 +280,12 @@ table 18469 "Delivery Challan Line"
                 "Item No." = field("Item No."),
                 "Subcon Order No." = field("Document No.")));
             Caption = 'Remaining Quantity';
+            DecimalPlaces = 0 : 3;
         }
         field(58; "Components in Rework Qty."; Decimal)
         {
             Caption = 'Components in Rework Qty.';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
         }
         field(59; "Posting Date"; Date)
