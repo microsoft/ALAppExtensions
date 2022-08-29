@@ -15,8 +15,11 @@ codeunit 18479 "GST Subcontracting"
         LibraryItemTracking: Codeunit "Library - Item Tracking";
         LibraryAssert: Codeunit "Library Assert";
         LibraryGST: Codeunit "Library GST";
+        Assert: Codeunit Assert;
         ComponentPerArray: array[20] of Decimal;
         Storage: Dictionary of [Text, Text];
+        StorageBoolean: Dictionary of [Text, Boolean];
+        WithDimensionLbl: Label 'WithDimensionLbl', Locked = true;
         XLocPANNoTok: Label 'LocPANNo', Locked = true;
         XCompanyLocationStateCodeTok: Label 'CompanyLocationStateCode', Locked = true;
         XCompanyLocationCodeTok: Label 'CompanyLocationCode', Locked = true;
@@ -33,6 +36,7 @@ codeunit 18479 "GST Subcontracting"
         FieldVerifyErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = Field Caption and Table Caption';
         SuccessMsg: Label 'Items sent against Delivery Challan No. = %1.', Comment = '%1 = Delivery Challan No.';
         NotPostedErr: Label 'Items not sent.', locked = true;
+        ValueMismatchErr: Label '%1 in the Production Order does not match the Item Ledger Entry applied to.', Comment = '%1 = Field Caption';
 
     [Test]
     [HandlerFunctions('TaxRatePageHandler,DeliveryChallanSentMsgHandler')]
@@ -240,6 +244,43 @@ codeunit 18479 "GST Subcontracting"
         VerifyItemLedgerEntryComponentConsumption(PurchaseLine);
         VerifyItemLedgerEntryItemOutput(PurchaseLine, OutputQty);
         LibraryGST.VerifyGLEntries(PurchaseHeader."Document Type"::Invoice, DocumentNo, 4);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,DeliveryChallanSentMessageHandler,PostConfirmation')]
+    procedure SubconOrderToRegVendIntraStateReceiveItemWithDimension()
+    var
+        ProductionOrder: Record "Production Order";
+        PurchaseLine: Record "Purchase Line";
+        PurchaseHeader: Record "Purchase Header";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        OutputQty: Decimal;
+        DocumentNo: Code[20];
+    begin
+        // [SCENARIO] [383122] Check if the system on subcontracting order for Registered Vendor with Dimensions and after Send and Receipt from Vendor and Change Status of Released Production order and Post Subcon order.
+        // [GIVEN] Setups created
+        CreateGSTSubconSetups(GSTVendorType::Registered, GSTGroupType::Goods, true);
+        Initialize();
+
+        // [WHEN] Create Subcontracting Order with Dimension from Released Purchase Order, Send Subcon Components, Receive Item, Post Purchase Order
+        CreateSubcontractingOrderFromReleasedProdOrder(ProductionOrder, PurchaseLine);
+        DeliverSubconComponents(PurchaseLine, 0);
+        OutputQty := ReceiptSubconItem(PurchaseLine, false, false, false, WorkDate());
+        PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
+        PurchaseHeader.Validate("Vendor Invoice No.", PurchaseHeader."No.");
+        PurchaseHeader.Modify(true);
+        DocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, false, true);
+        ChangeStatusReleasedProdOrder(ProductionOrder);
+
+        // [THEN] Verify Delivery Challan Lines, Item ledger entries for transfer, consumption and output and G/L Entries and finally dispose variables
+        VerifyDeliveryChallanLine(PurchaseLine);
+        VerifyItemLedgerEntryComponentTransfer(PurchaseLine);
+        VerifyItemLedgerEntryComponentConsumption(PurchaseLine);
+        VerifyItemLedgerEntryItemOutput(PurchaseLine, OutputQty);
+        VerifyDimensionsOnItemLedgerEntry(ProductionOrder);
+        LibraryGST.VerifyGLEntries(PurchaseHeader."Document Type"::Invoice, DocumentNo, 4);
+        Dispose();
     end;
 
     [Test]
@@ -707,8 +748,8 @@ codeunit 18479 "GST Subcontracting"
 
     local procedure CreateGSTSubconSetups(
         GSTVendorType: Enum "GST Vendor Type";
-        GSTGroupType: Enum "GST Group Type";
-        IntraState: Boolean)
+                           GSTGroupType: Enum "GST Group Type";
+                           IntraState: Boolean)
     var
     begin
         // Source Codes
@@ -884,9 +925,9 @@ codeunit 18479 "GST Subcontracting"
     local procedure UpdateSubconVendorSetupWithGST(
         VendorNo: Code[20];
         GSTVendorType: Enum "GST Vendor Type";
-        AssociateEnterprise: Boolean;
-        StateCode: Code[10];
-        PANNo: Code[20])
+                           AssociateEnterprise: Boolean;
+                           StateCode: Code[10];
+                           PANNo: Code[20])
     var
         Vendor: Record Vendor;
         State: Record State;
@@ -1117,7 +1158,10 @@ codeunit 18479 "GST Subcontracting"
     begin
         MainItemNo := (Storage.Get(XMainItemNoTok));
         CompanyLocationCode := (Storage.Get(XCompanyLocationCodeTok));
-        CreateAndRefreshProductionOrder(ProductionOrder, ProdOrderStatus::Released, ProdOrderSourceType::Item, MainItemNo, 10, CompanyLocationCode);
+        if StorageBoolean.Get(WithDimensionLbl) then
+            CreateAndRefreshProductionOrderWithDimension(ProductionOrder, ProdOrderStatus::Released, ProdOrderSourceType::Item, MainItemNo, 10, CompanyLocationCode)
+        else
+            CreateAndRefreshProductionOrder(ProductionOrder, ProdOrderStatus::Released, ProdOrderSourceType::Item, MainItemNo, 10, CompanyLocationCode);
 
         ProdOrderLine.Reset();
         ProdOrderLine.SetRange(Status, ProdOrderStatus::Released);
@@ -1172,6 +1216,29 @@ codeunit 18479 "GST Subcontracting"
     begin
         LibraryMfg.CreateProductionOrder(ProductionOrder, ProdOrderStatus, SourceType, SourceNo, Quantity);
         ProductionOrder.Validate("Location Code", CompanyLocationCode);
+        ProductionOrder.Modify();
+        LibraryMfg.RefreshProdOrder(ProductionOrder, false, true, true, true, false);
+    end;
+
+    procedure CreateAndRefreshProductionOrderWithDimension(
+        var ProductionOrder: Record "Production Order";
+        ProdOrderStatus: Enum "Production Order Status";
+        SourceType: Enum "Prod. Order Source Type";
+        SourceNo: Code[20];
+        Quantity: Decimal;
+        CompanyLocationCode: Code[10])
+    var
+        DimensionValue: Record "Dimension Value";
+    begin
+        LibraryMfg.CreateProductionOrder(ProductionOrder, ProdOrderStatus, SourceType, SourceNo, Quantity);
+        ProductionOrder.Validate("Location Code", CompanyLocationCode);
+        DimensionValue.SetRange("Global Dimension No.", 1);
+        if DimensionValue.FindFirst() then
+            ProductionOrder.Validate("Shortcut Dimension 1 Code", DimensionValue.Code);
+
+        DimensionValue.SetRange("Global Dimension No.", 2);
+        if DimensionValue.FindFirst() then
+            ProductionOrder.Validate("Shortcut Dimension 2 Code", DimensionValue.Code);
         ProductionOrder.Modify();
         LibraryMfg.RefreshProdOrder(ProductionOrder, false, true, true, true, false);
     end;
@@ -1559,6 +1626,42 @@ codeunit 18479 "GST Subcontracting"
         LibraryAssert.AreEqual(OutputQty, ExpectedOutputQty, StrSubstNo(FieldVerifyErr, ItemLedgerEntry.FieldCaption(Quantity), ItemLedgerEntry.TableCaption));
     end;
 
+    local procedure VerifyDimensionsOnItemLedgerEntry(var ProductionOrder: Record "Production Order")
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+    begin
+        FindItemLedgerEntry(ItemLedgerEntry, ProductionOrder."No.");
+        ItemLedgerEntry.FindSet();
+        repeat
+            Assert.AreEqual(
+                ItemLedgerEntry."Dimension Set ID",
+                ProductionOrder."Dimension Set ID",
+                StrSubstNo(
+                    ValueMismatchErr,
+                    ProductionOrder.FieldCaption("Dimension Set ID")));
+
+            Assert.AreEqual(
+                ItemLedgerEntry."Global Dimension 1 Code",
+                ProductionOrder."Shortcut Dimension 1 Code",
+                StrSubstNo(
+                    ValueMismatchErr,
+                    ProductionOrder.FieldCaption("Shortcut Dimension 1 Code")));
+
+            Assert.AreEqual(
+                ItemLedgerEntry."Global Dimension 2 Code",
+                ProductionOrder."Shortcut Dimension 2 Code",
+                StrSubstNo(
+                    ValueMismatchErr,
+                    ProductionOrder.FieldCaption("Shortcut Dimension 2 Code")));
+        until ItemLedgerEntry.Next() = 0;
+    end;
+
+    local procedure FindItemLedgerEntry(var ItemLedgerEntry: Record "Item Ledger Entry"; OrderNo: Code[20])
+    begin
+        ItemLedgerEntry.SetRange("Order No.", OrderNo);
+        ItemLedgerEntry.FindFirst();
+    end;
+
     local procedure VerifyDebitNote(PurchaseLine: Record "Purchase Line")
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1568,6 +1671,16 @@ codeunit 18479 "GST Subcontracting"
         PurchaseHeader.SetRange("Subcon. Order Line No.", PurchaseLine."Line No.");
         PurchaseHeader.FindFirst();
         PurchaseHeader.TestField("Buy-from Vendor No.", PurchaseLine."Buy-from Vendor No.");
+    end;
+
+    local procedure Initialize()
+    begin
+        StorageBoolean.Set(WithDimensionLbl, true);
+    end;
+
+    local procedure Dispose()
+    begin
+        StorageBoolean.Set(WithDimensionLbl, false);
     end;
 
     [PageHandler]
@@ -1599,6 +1712,13 @@ codeunit 18479 "GST Subcontracting"
     procedure DeliveryChallanSentMsgHandler(MsgTxt: Text[1024])
     begin
         if MsgTxt <> StrSubstNo(SuccessMsg, Storage.Get(DeliveryChallanNoLbl)) then
+            Error(NotPostedErr);
+    end;
+
+    [MessageHandler]
+    procedure DeliveryChallanSentMessageHandler(MsgTxt: Text[1024])
+    begin
+        if not StorageBoolean.Get(WithDimensionLbl) then
             Error(NotPostedErr);
     end;
 

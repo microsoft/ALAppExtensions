@@ -23,10 +23,16 @@ table 30102 "Shpfy Shop"
             ExtendedDatatype = URL;
 
             trigger OnValidate()
+            var
+                ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
             begin
-                if ("Shopify URL" <> '') then
+                if ("Shopify URL" <> '') then begin
                     if not "Shopify URL".ToLower().StartsWith('https://') then
                         "Shopify URL" := CopyStr('https://' + "Shopify URL", 1, MaxStrLen("Shopify URL"));
+
+                    if not ShpfyAuthenticationMgt.IsValidShopUrl("Shopify URL") then
+                        Error(InvalidShopUrlErr);
+                end;
             end;
         }
         field(3; Enabled; Boolean)
@@ -354,6 +360,12 @@ table 30102 "Shpfy Shop"
             DataClassification = CustomerContent;
             Description = 'Choose in which order the system try to find the county for the tax area.';
         }
+        field(107; "Allow Outgoing Requests"; Boolean)
+        {
+            Caption = 'Allow Outgoing Requests';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;
@@ -368,6 +380,9 @@ table 30102 "Shpfy Shop"
         }
         key(Idx1; "Shop Id") { }
     }
+
+    var
+        InvalidShopUrlErr: Label 'The URL must refer to the internal shop location at myshopify.com. It must not be the public URL that customers use, such as myshop.com.';
 
 
     [NonDebuggable]
@@ -399,12 +414,12 @@ table 30102 "Shpfy Shop"
     [Scope('OnPrem')]
     internal procedure HasAccessToken(): Boolean
     var
-        AuthorizationMgt: Codeunit "Shpfy Authentication Mgt.";
+        ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
         Store: Text;
     begin
         Store := GetStoreName();
         if Store <> '' then
-            exit(AuthorizationMgt.AccessTokenExist(Store));
+            exit(ShpfyAuthenticationMgt.AccessTokenExist(Store));
     end;
 
     local procedure GetStoreName() Store: Text

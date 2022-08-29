@@ -58,7 +58,6 @@ table 11745 "Cash Desk User CZP"
         {
             Caption = 'User Full Name';
             DataClassification = CustomerContent;
-            Editable = false;
         }
     }
 

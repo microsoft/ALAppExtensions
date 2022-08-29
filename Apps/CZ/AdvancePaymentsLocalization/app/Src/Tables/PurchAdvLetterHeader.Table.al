@@ -79,6 +79,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 Validate("Bank Account Code", Vendor."Preferred Bank Account Code");
                 "Registration No." := Vendor."Registration No. CZL";
                 "Tax Registration No." := Vendor."Tax Registration No. CZL";
+                "Responsibility Center" := UserSetupManagement.GetRespCenter(1, Vendor."Responsibility Center");
 
                 CreateDim(
                   Database::Vendor, "Pay-to Vendor No.",
@@ -781,6 +782,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         NoSeriesManagement: Codeunit NoSeriesManagement;
         DimensionManagement: Codeunit DimensionManagement;
+        UserSetupManagement: Codeunit "User Setup Management";
         HasPurchSetup: Boolean;
         HideValidationDialog: Boolean;
         SkipPayToContact: Boolean;
@@ -853,7 +855,6 @@ table 31008 "Purch. Adv. Letter Header CZZ"
 
     local procedure InitRecord()
     var
-        UserSetupManagement: Codeunit "User Setup Management";
         AdvanceLbl: Label 'Advance Letter';
     begin
         GetSetup();
@@ -961,7 +962,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         exit((not HasPayToAddress()) and PayToVendor.HasAddress());
     end;
 
-    local procedure CreateDim(Type1: Integer; No1: Code[20]; Type2: Integer; No2: Code[20]; Type3: Integer; No3: Code[20])
+    procedure CreateDim(Type1: Integer; No1: Code[20]; Type2: Integer; No2: Code[20]; Type3: Integer; No3: Code[20])
     var
         SourceCodeSetup: Record "Source Code Setup";
         TableID: array[10] of Integer;

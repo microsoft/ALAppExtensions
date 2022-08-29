@@ -53,6 +53,17 @@ codeunit 9701 "Cues And KPIs"
     end;
 
     /// <summary>
+    /// Checks if a personalized Cue Setup record exists for the current user.
+    /// <param name="TableID">The ID of the table containing the field for which the style is wanted.</param>
+    /// <param name="FieldID">The ID of the field for which the style is wanted.</param>
+    /// </summary>
+    /// <returns>If a personalized Cue Setup record exists for the current user.</returns>
+    procedure PersonalizedCueSetupExistsForCurrentUser(TableID: Integer; FieldID: Integer): Boolean
+    begin
+        exit(CuesAndKPIsImpl.PersonalizedCueSetupExistsForCurrentUser(TableID, FieldID));
+    end;
+
+    /// <summary>
     /// Converts a Cues And KPIs Style enum to a style text.
     /// Enum values 0,7,8,9,10 are defined by default, if custom values are needed take a look at OnConvertStyleToStyleText event.
     /// </summary>

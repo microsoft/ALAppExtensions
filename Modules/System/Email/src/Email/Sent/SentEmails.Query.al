@@ -250,8 +250,13 @@ query 8889 "Sent Emails"
 
     internal procedure CopyFiltersFrom(var SentEmail: Record "Sent Email" temporary)
     begin
+        // In certain localizations, the filters do not work with filter tokens.
+        // Fx. MX localization. GetFilter() output is "17/07/22 04:01:25.251 p. m...17/07/22 04:01:25.251 p. m."
+        // Which will fail with filter tokens as it will split into "17/07/22 04:01:25.251 p. m" and "".17/07/22 04:01:25.251 p. m."". The second is an invalid datetime.
+        if SentEmail.GetFilter("Date Time Sent") <> '' then
+            SetRange(Date_Time_Sent, SentEmail.GetRangeMin("Date Time Sent"), SentEmail.GetRangeMax("Date Time Sent"));
+
         SetFilter(Account_Id, SentEmail.GetFilter("Account Id"));
-        SetFilter(Date_Time_Sent, SentEmail.GetFilter("Date Time Sent"));
         SetFilter(User_Security_Id, SentEmail.GetFilter("User Security Id"));
     end;
 }

@@ -97,4 +97,13 @@ codeunit 457 "Environment Information"
     begin
         exit(EnvironmentInformationImpl.VersionInstalled(AppID));
     end;
+
+    /// <summary>
+    /// Checks if a new session can be started via the Session.StartSession call.
+    /// </summary>
+    /// <returns>True, if a new session can be created, false otherwise.</returns>
+    procedure CanStartSession(): Boolean
+    begin
+        exit(EnvironmentInformationImpl.CanStartSession());
+    end;
 }

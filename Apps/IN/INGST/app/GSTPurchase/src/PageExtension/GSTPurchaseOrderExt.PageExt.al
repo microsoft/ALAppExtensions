@@ -2,6 +2,17 @@
 {
     layout
     {
+        modify(ShippingOptionWithLocation)
+        {
+            trigger OnAfterValidate()
+            begin
+                GstPurchaseSubscriber.SetLocationCodeVisibleConditionally(IsLocationVisible, ShipToOptions);
+            end;
+        }
+        modify(Control98)
+        {
+            Visible = IsLocationVisible;
+        }
         modify("Posting Date")
         {
             trigger OnAfterValidate()
@@ -14,6 +25,7 @@
         }
         modify("Location Code")
         {
+            ShowMandatory = ShipToOptions = ShipToOptions::"Custom Address";
             trigger OnAfterValidate()
             var
                 GSTBaseValidation: Codeunit "GST Base Validation";
@@ -300,11 +312,16 @@
     trigger OnAfterGetRecord()
     begin
         SetLocGSTRegNoEditable();
+        GstPurchaseSubscriber.SetLocationCodeVisibleConditionally(IsLocationVisible, ShipToOptions);
     end;
 
     var
+        GstPurchaseSubscriber: Codeunit "GST Purchase Subscribers";
         GSTLocRegNo: Boolean;
+        [InDataSet]
         IsRateChangeEnabled: Boolean;
+        [InDataSet]
+        IsLocationVisible: Boolean;
 
     local procedure SetLocGSTRegNoEditable()
     begin

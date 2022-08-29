@@ -53,7 +53,7 @@ page 31263 "Payment Order Subform CZB"
                 field("Variable Symbol"; Rec."Variable Symbol")
                 {
                     ApplicationArea = Basic, Suite;
-                    ShowMandatory = true;
+                    ShowMandatory = not IsForeignPaymentOrder;
                     ToolTip = 'Specifies the detail information for payment.';
                 }
                 field("Constant Symbol"; Rec."Constant Symbol")
@@ -374,15 +374,22 @@ page 31263 "Payment Order Subform CZB"
 
     var
         TotalPaymentOrderHeaderCZB: Record "Payment Order Header CZB";
+        GlobalPaymentOrderHeaderCZB: Record "Payment Order Header CZB";
         IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
         BankingDocumentTotalsCZB: Codeunit "Banking Document Totals CZB";
         BankAccountNo: Code[20];
         IBANMissing: Boolean;
         AccountNoMissing: Boolean;
+        IsForeignPaymentOrder: Boolean;
 
     procedure SetParameters(NewBankAccountNo: Code[20])
     begin
         BankAccountNo := NewBankAccountNo;
+    end;
+
+    procedure SetPaymentOrderHeader(PaymentOrderHeaderCZB: Record "Payment Order Header CZB")
+    begin
+        GlobalPaymentOrderHeaderCZB := PaymentOrderHeaderCZB;
     end;
 
     local procedure OnActivateForm()
@@ -401,6 +408,7 @@ page 31263 "Payment Order Subform CZB"
     begin
         IBANMissing := Rec.IBAN = '';
         AccountNoMissing := Rec."Account No." = '';
+        IsForeignPaymentOrder := GlobalPaymentOrderHeaderCZB."Foreign Payment Order";
     end;
 
     local procedure CalcAmountsOnIssPaymentOrder()

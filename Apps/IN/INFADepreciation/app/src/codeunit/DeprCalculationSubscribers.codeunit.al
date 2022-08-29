@@ -13,7 +13,6 @@ codeunit 18632 "Depr Calculation Subscribers"
         FirstUserDefinedDeprDateLbl: Label 'FirstUserDefinedDeprDate', Locked = true;
         AcquisitionDateLbl: Label 'AcquisitionDate', Locked = true;
         DisposalDateLbl: Label 'DisposalDate', Locked = true;
-        DaysInPeriodLbl: Label 'DaysInPeriod', Locked = true;
         DaysInFiscalYearLbl: Label 'DaysInFiscalYear', Locked = true;
         BookValueLbl: Label 'BookValue', Locked = true;
         MinusBookValueLbl: Label 'MinusBookValue', Locked = true;
@@ -500,7 +499,7 @@ codeunit 18632 "Depr Calculation Subscribers"
         FixedAssetShiftLine.Reset();
         FixedAssetShiftLine.SetRange("FA No.", FixedAsset."No.");
         FixedAssetShiftLine.SetRange("Calculate FA Depreciation", true);
-        if (FixedAssetShiftLine.IsEmpty()) and (IntergerStore.Get(DaysInPeriodLbl) = 0) then
+        if (FixedAssetShiftLine.IsEmpty()) then
             exit;
 
         IsHandled := true;

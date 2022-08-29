@@ -465,11 +465,8 @@ table 18689 "TDS Entry"
     begin
         VendorLedgerEntry.SetRange("Transaction No.", Rec."Transaction No.");
         if VendorLedgerEntry.FindFirst() then begin
-            if VendorLedgerEntry."Document Type" = VendorLedgerEntry."Document Type"::Invoice then
-                VendorLedgerEntry."Total TDS Including SHE CESS" += -Rec."Total TDS Including SHE CESS"
-            else
-                if VendorLedgerEntry."Document Type" = VendorLedgerEntry."Document Type"::Payment then
-                    VendorLedgerEntry."Total TDS Including SHE CESS" += Rec."Total TDS Including SHE CESS";
+            if VendorLedgerEntry."Document Type" in [VendorLedgerEntry."Document Type"::Invoice, VendorLedgerEntry."Document Type"::Payment] then
+                VendorLedgerEntry."Total TDS Including SHE CESS" += Rec."Total TDS Including SHE CESS";
 
             if VendorLedgerEntry."TDS Section Code" = '' then
                 VendorLedgerEntry."TDS Section Code" := Rec.Section;

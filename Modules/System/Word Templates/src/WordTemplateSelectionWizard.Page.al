@@ -249,15 +249,15 @@ page 9996 "Word Template Selection Wizard"
                 var
                     RecordRef: RecordRef;
                     FieldRef: FieldRef;
-                    SystemId: Guid;
+                    SystemIdFilter: Text;
                 begin
                     if Step = Step::Template then begin
                         if not DataIntialized then
                             if WithBusinessContactRelation then begin
-                                DictOfRecords.Get(Rec."Table ID", SystemId);
+                                DictOfRecords.Get(Rec."Table ID", SystemIdFilter);
                                 RecordRef.Open(Rec."Table ID");
-                                FieldRef := RecordRef.Field(RecordRef.SystemIdNo);
-                                FieldRef.SetRange(SystemId);
+                                FieldRef := RecordRef.Field(RecordRef.SystemIdNo());
+                                FieldRef.SetFilter(SystemIdFilter);
                                 DataVariant := RecordRef;
                                 DataIntialized := true;
                             end else begin
@@ -397,8 +397,8 @@ page 9996 "Word Template Selection Wizard"
     /// <summary>
     /// Set the entities that user can select to create the word template
     /// </summary>
-    /// <param name="Dict">Dictionary of TableId to SystemId entries</param>
-    internal procedure SetData(Dict: Dictionary of [Integer, Guid])
+    /// <param name="Dict">Dictionary of TableId to SystemId filters.</param>
+    internal procedure SetData(Dict: Dictionary of [Integer, Text])
     var
         I: Integer;
         FilterBuilder: TextBuilder;
@@ -463,7 +463,7 @@ page 9996 "Word Template Selection Wizard"
         DocumentDataTempBlob: Codeunit "Temp Blob";
         DocumentOutStream: OutStream;
         DataVariant: Variant;
-        DictOfRecords: Dictionary of [Integer, Guid];
+        DictOfRecords: Dictionary of [Integer, Text];
         DataIntialized, FiltersSet, SingleRecordSelected : Boolean;
         WordTemplatesExist: Boolean;
         TableId: Integer;

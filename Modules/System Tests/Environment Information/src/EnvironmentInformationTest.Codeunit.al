@@ -15,6 +15,16 @@ codeunit 135091 "Environment Information Test"
 
     [Test]
     [Scope('OnPrem')]
+    procedure TestCanStartSessionWithTestIsolationEnabled()
+    begin
+        // [Scenario] When running the tests with the test isolation enabled (the default), CanStartSession returns false.
+        // [Given] The test codeunit is executed by a test runner with enabled test isolation
+        // [Then] CanStartSession returns false
+        Assert.IsFalse(EnvironmentInformation.CanStartSession(), 'CanStartSession() should return false if test isolation is enabled.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     procedure TestIsSandboxIsTrueWhenTestabilitySandboxIsSet()
     begin
         // [Scenario] Set the testability to true. IsSandBox returns correct values.

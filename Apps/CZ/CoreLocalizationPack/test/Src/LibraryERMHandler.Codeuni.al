@@ -1,6 +1,6 @@
-codeunit 148062 "O365 Simp. UI Sales Inv. Sub."
+codeunit 148062 "Library - ERM Handler CZL"
 {
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"O365 Simplify UI Sales Invoice", 'OnAfterFillSalesHeaderExcludedFieldList', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Library - ERM", 'OnAfterFillSalesHeaderExcludedFieldList', '', false, false)]
     local procedure OnAfterFillSalesHeaderExcludedFieldListAddVatDateCZ(var FieldListToExclude: List of [Text])
     var
         SalesHeader: Record "Sales Header";

@@ -1842,6 +1842,10 @@ dotnet
         {
         }
 
+        type("System.Drawing.Imaging.PropertyItem"; "PropertyItem") 
+        {
+        }
+
         type("System.Drawing.Printing.PrinterSettings"; "PrinterSettings")
         {
         }

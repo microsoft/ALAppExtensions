@@ -39,21 +39,17 @@ codeunit 8704 "Feature Telemetry Impl."
     procedure LogUptake(EventId: Text; FeatureName: Text; FeatureUptakeStatus: Enum "Feature Uptake Status"; IsPerUser: Boolean; CallerCustomDimensions: Dictionary of [Text, Text]; CallerModuleInfo: ModuleInfo)
     var
         FeatureUptakeStatusImpl: Codeunit "Feature Uptake Status Impl.";
+        EnvironmentInformation: Codeunit "Environment Information";
         Language: Codeunit Language;
-        UserAccountHelper: DotNet NavUserAccountHelper;
         UptakeCustomDimensions: Dictionary of [Text, Text];
         FeatureUptakeStatusText: Text;
         EventName: Text;
         CurrentLanguage: Integer;
         IsExpectedUpdate: Boolean;
     begin
-        if not UserAccountHelper.IsAzure() then
-            exit;
-
         CurrentLanguage := GlobalLanguage();
         GlobalLanguage(Language.GetDefaultApplicationLanguageId());
 
-        IsExpectedUpdate := FeatureUptakeStatusImpl.UpdateFeatureUptakeStatus(FeatureName, FeatureUptakeStatus, IsPerUser, true, CallerModuleInfo.Publisher);
         FeatureUptakeStatusText := Format(FeatureUptakeStatus);
         EventName := StrSubstNo(UptakeLbl, FeatureName, FeatureUptakeStatusText);
 
@@ -63,7 +59,11 @@ codeunit 8704 "Feature Telemetry Impl."
         UptakeCustomDimensions.Add('EventName', EventName);
         UptakeCustomDimensions.Add('FeatureUptakeStatus', FeatureUptakeStatusText);
         UptakeCustomDimensions.Add('IsPerUser', Format(IsPerUser));
-        UptakeCustomDimensions.Add('IsExpectedUpdate', Format(IsExpectedUpdate));
+
+        if EnvironmentInformation.CanStartSession() then begin
+            IsExpectedUpdate := FeatureUptakeStatusImpl.UpdateFeatureUptakeStatus(FeatureName, FeatureUptakeStatus, IsPerUser, true, CallerModuleInfo.Publisher);
+            UptakeCustomDimensions.Add('IsExpectedUpdate', Format(IsExpectedUpdate));
+        end;
 
         GlobalLanguage(CurrentLanguage);
 

@@ -277,7 +277,7 @@ page 30126 "Shpfy Products"
                 PromotedOnly = true;
                 ToolTip = 'Select which items you want to create as products in Shopify.';
                 AboutTitle = 'Define shop products';
-                AboutText = 'Here you select which items in Business Central you wish to push to become products in Shopify. When you selsect **Add Items** you will get an option to filter and select the items which are then brought into this list and can be synchronized to Shopify.';
+                AboutText = 'Here you select which items in Business Central you wish to push to become products in Shopify. When you select **Add Items** you will get an option to filter and select the items which are then brought into this list and can be synchronized to Shopify.';
 
                 trigger OnAction()
                 var
@@ -315,7 +315,7 @@ page 30126 "Shpfy Products"
                 action(SyncProducts)
                 {
                     ApplicationArea = All;
-                    Caption = 'Sync Products';
+                    Caption = 'Products';
                     Image = ImportExport;
                     Promoted = true;
                     PromotedCategory = Category4;
@@ -333,7 +333,7 @@ page 30126 "Shpfy Products"
                 action(SyncProductPrices)
                 {
                     ApplicationArea = All;
-                    Caption = 'Sync Prices to Shopify';
+                    Caption = 'Prices to Shopify';
                     Image = ImportExport;
                     Promoted = true;
                     PromotedCategory = Category4;
@@ -351,7 +351,7 @@ page 30126 "Shpfy Products"
                 action(SyncImages)
                 {
                     ApplicationArea = All;
-                    Caption = 'Sync Product Images';
+                    Caption = 'Product Images';
                     Image = ImportExport;
                     Promoted = true;
                     PromotedCategory = Category4;
@@ -368,7 +368,7 @@ page 30126 "Shpfy Products"
                 action(SyncInventory)
                 {
                     ApplicationArea = All;
-                    Caption = 'Sync Inventory';
+                    Caption = 'Inventory';
                     Image = ImportExport;
                     Promoted = true;
                     PromotedCategory = Category4;

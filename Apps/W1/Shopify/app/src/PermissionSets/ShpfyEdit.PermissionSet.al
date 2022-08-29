@@ -18,6 +18,7 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Customer Template" = IMD,
         tabledata "Shpfy Data Capture" = IMD,
         tabledata "Shpfy Gift Card" = IMD,
+        tabledata "Shpfy Initial Import Line" = imd,
         tabledata "Shpfy Inventory Item" = IMD,
         tabledata "Shpfy Log Entry" = IMD,
         tabledata "Shpfy Metafield" = IMD,

@@ -136,27 +136,6 @@ page 4021 "GP Migration Settings List"
                         end;
                     end;
                 }
-                field("Oldest GL Historical Year to Migrate"; InitialYear)
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Initial Historical Year';
-                    ToolTip = 'Specifies which Historical year to start with.';
-                    Width = 8;
-
-                    trigger OnValidate()
-                    var
-                        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-                    begin
-                        if not GPCompanyAdditionalSettings.Get(Rec.Name) then begin
-                            GPCompanyAdditionalSettings.Name := Rec.Name;
-                            GPCompanyAdditionalSettings."Oldest GL Year to Migrate" := InitialYear;
-                            GPCompanyAdditionalSettings.Insert();
-                        end else begin
-                            GPCompanyAdditionalSettings."Oldest GL Year to Migrate" := InitialYear;
-                            GPCompanyAdditionalSettings.Modify();
-                        end;
-                    end;
-                }
             }
         }
     }
@@ -185,7 +164,6 @@ page 4021 "GP Migration Settings List"
             MigrateVendorClasses := GPCompanyAdditionalSettings."Migrate Vendor Classes";
             MigrateCustomerClasses := GPCompanyAdditionalSettings."Migrate Customer Classes";
             MigrateItemClasses := GPCompanyAdditionalSettings."Migrate Item Classes";
-            InitialYear := GPCompanyAdditionalSettings."Oldest GL Year to Migrate";
         end;
     end;
 
@@ -194,5 +172,4 @@ page 4021 "GP Migration Settings List"
         MigrateVendorClasses: Boolean;
         MigrateCustomerClasses: Boolean;
         MigrateItemClasses: Boolean;
-        InitialYear: Integer;
 }

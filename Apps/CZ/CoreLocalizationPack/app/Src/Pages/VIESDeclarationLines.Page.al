@@ -58,59 +58,97 @@ page 31141 "VIES Declaration Lines CZL"
 
     var
         VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL";
-        FirstVIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
-        SecondVIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
+        VIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
         LastLineNo: Integer;
 
     procedure SetToDeclaration(NewVIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL")
     begin
         VIESDeclarationHeaderCZL := NewVIESDeclarationHeaderCZL;
-        FirstVIESDeclarationLineCZL.SetRange("VIES Declaration No.", VIESDeclarationHeaderCZL."No.");
-        if FirstVIESDeclarationLineCZL.FindLast() then
-            LastLineNo := FirstVIESDeclarationLineCZL."Line No."
+        VIESDeclarationLineCZL.SetRange("VIES Declaration No.", VIESDeclarationHeaderCZL."No.");
+        if VIESDeclarationLineCZL.FindLast() then
+            LastLineNo := VIESDeclarationLineCZL."Line No."
         else
             LastLineNo := 0;
     end;
 
     procedure CopyLineToDeclaration()
     begin
-        CurrPage.SetSelectionFilter(FirstVIESDeclarationLineCZL);
-        if FirstVIESDeclarationLineCZL.FindSet() then
+        CurrPage.SetSelectionFilter(VIESDeclarationLineCZL);
+        if VIESDeclarationLineCZL.FindSet() then
             repeat
-                SecondVIESDeclarationLineCZL.Init();
-                SecondVIESDeclarationLineCZL."VIES Declaration No." := VIESDeclarationHeaderCZL."No.";
-                LastLineNo += 10000;
-                SecondVIESDeclarationLineCZL."Line No." := LastLineNo;
-                SecondVIESDeclarationLineCZL."Trade Type" := FirstVIESDeclarationLineCZL."Trade Type";
-                SecondVIESDeclarationLineCZL."Line Type" := FirstVIESDeclarationLineCZL."Line Type"::Cancellation;
-                SecondVIESDeclarationLineCZL."Related Line No." := FirstVIESDeclarationLineCZL."Line No.";
-                SecondVIESDeclarationLineCZL."Country/Region Code" := FirstVIESDeclarationLineCZL."Country/Region Code";
-                SecondVIESDeclarationLineCZL."VAT Registration No." := FirstVIESDeclarationLineCZL."VAT Registration No.";
-                SecondVIESDeclarationLineCZL."Amount (LCY)" := FirstVIESDeclarationLineCZL."Amount (LCY)";
-                SecondVIESDeclarationLineCZL."EU 3-Party Trade" := FirstVIESDeclarationLineCZL."EU 3-Party Trade";
-                SecondVIESDeclarationLineCZL."EU Service" := FirstVIESDeclarationLineCZL."EU Service";
-                SecondVIESDeclarationLineCZL."EU 3-Party Intermediate Role" := FirstVIESDeclarationLineCZL."EU 3-Party Intermediate Role";
-                SecondVIESDeclarationLineCZL."Trade Role Type" := FirstVIESDeclarationLineCZL."Trade Role Type";
-                SecondVIESDeclarationLineCZL."Number of Supplies" := FirstVIESDeclarationLineCZL."Number of Supplies";
-                SecondVIESDeclarationLineCZL."System-Created" := true;
-                SecondVIESDeclarationLineCZL.Insert();
-                SecondVIESDeclarationLineCZL."Line No." := LastLineNo + 10000;
-                LastLineNo += 10000;
-                SecondVIESDeclarationLineCZL."Line Type" := FirstVIESDeclarationLineCZL."Line Type"::Correction;
-                SecondVIESDeclarationLineCZL."System-Created" := false;
-                OnBeforeVIESDeclarationLineInsert(FirstVIESDeclarationLineCZL, SecondVIESDeclarationLineCZL);
-                SecondVIESDeclarationLineCZL.Insert();
-                OnAfterVIESDeclarationLineInsert(SecondVIESDeclarationLineCZL, LastLineNo);
-            until FirstVIESDeclarationLineCZL.Next() = 0;
+                    CreateLine(VIESDeclarationLineCZL."Line Type"::Cancellation);
+                CreateLine(VIESDeclarationLineCZL."Line Type"::Correction);
+            until VIESDeclarationLineCZL.Next() = 0;
     end;
 
+    local procedure CreateLine(LineType: Option)
+    var
+        NewVIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
+        IsHandled: Boolean;
+    begin
+        OnBeforeCreateLine(VIESDeclarationLineCZL, LineType, LastLineNo, IsHandled);
+        if IsHandled then
+            exit;
+
+        LastLineNo += 10000;
+        NewVIESDeclarationLineCZL.Init();
+        NewVIESDeclarationLineCZL."VIES Declaration No." := VIESDeclarationHeaderCZL."No.";
+        NewVIESDeclarationLineCZL."Line No." := LastLineNo;
+        NewVIESDeclarationLineCZL."Line Type" := LineType;
+        NewVIESDeclarationLineCZL."Trade Type" := VIESDeclarationLineCZL."Trade Type";
+        NewVIESDeclarationLineCZL."Related Line No." := VIESDeclarationLineCZL."Line No.";
+        NewVIESDeclarationLineCZL."Country/Region Code" := VIESDeclarationLineCZL."Country/Region Code";
+        NewVIESDeclarationLineCZL."VAT Registration No." := VIESDeclarationLineCZL."VAT Registration No.";
+        NewVIESDeclarationLineCZL."Amount (LCY)" := VIESDeclarationLineCZL."Amount (LCY)";
+        NewVIESDeclarationLineCZL."EU 3-Party Trade" := VIESDeclarationLineCZL."EU 3-Party Trade";
+        NewVIESDeclarationLineCZL."EU Service" := VIESDeclarationLineCZL."EU Service";
+        NewVIESDeclarationLineCZL."EU 3-Party Intermediate Role" := VIESDeclarationLineCZL."EU 3-Party Intermediate Role";
+        NewVIESDeclarationLineCZL."Trade Role Type" := VIESDeclarationLineCZL."Trade Role Type";
+        NewVIESDeclarationLineCZL."Number of Supplies" := VIESDeclarationLineCZL."Number of Supplies";
+        NewVIESDeclarationLineCZL."System-Created" :=
+            NewVIESDeclarationLineCZL."Line Type" = NewVIESDeclarationLineCZL."Line Type"::Cancellation;
+#if not CLEAN21
+#pragma warning disable AL0432
+        if NewVIESDeclarationLineCZL."Line Type" = NewVIESDeclarationLineCZL."Line Type"::Correction then
+            OnBeforeVIESDeclarationLineInsert(VIESDeclarationLineCZL, NewVIESDeclarationLineCZL);
+#pragma warning restore AL0432
+#endif
+        OnBeforeInsertVIESDeclarationLine(VIESDeclarationLineCZL, NewVIESDeclarationLineCZL);
+        NewVIESDeclarationLineCZL.Insert();
+#if not CLEAN21
+#pragma warning disable AL0432
+        if NewVIESDeclarationLineCZL."Line Type" = NewVIESDeclarationLineCZL."Line Type"::Correction then
+            OnAfterVIESDeclarationLineInsert(NewVIESDeclarationLineCZL, LastLineNo);
+#pragma warning restore AL0432
+#endif
+        OnAfterCreateLine(NewVIESDeclarationLineCZL, LastLineNo);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCreateLine(VIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; LineType: Option; var LastLineNo: Integer; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertVIESDeclarationLine(VIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; var NewVIESDeclarationLineCZL: Record "VIES Declaration Line CZL")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateLine(NewVIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; var LastLineNo: Integer)
+    begin
+    end;
+#if not CLEAN21
+    [Obsolete('Replaced by OnBeforeInsertVIESDeclarationLine function.', '21.0')]
     [IntegrationEvent(false, false)]
     local procedure OnBeforeVIESDeclarationLineInsert(FirstVIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; var SecondVIESDeclarationLineCZL: Record "VIES Declaration Line CZL")
     begin
     end;
 
+    [Obsolete('Replaced by OnAfterCreateLine function.', '21.0')]
     [IntegrationEvent(false, false)]
     local procedure OnAfterVIESDeclarationLineInsert(SecondVIESDeclarationLineCZL: Record "VIES Declaration Line CZL"; var LastLineNo: Integer)
     begin
     end;
+#endif
 }

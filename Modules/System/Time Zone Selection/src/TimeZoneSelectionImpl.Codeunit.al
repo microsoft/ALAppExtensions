@@ -6,8 +6,7 @@
 codeunit 9199 "Time Zone Selection Impl."
 {
     Access = Internal;
-    Permissions = tabledata "Page Data Personalization" = r,
-                  tabledata "Time Zone" = r;
+    Permissions = tabledata "Time Zone" = r;
 
     procedure LookupTimeZone(var TimeZoneText: Text[180]): Boolean
     var

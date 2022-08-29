@@ -28,7 +28,7 @@ codeunit 132586 "Assisted Setup Test"
         Initialize();
 
         // [GIVEN] Subscribers are registered
-        if BindSubscription(AssistedSetupTest) then;
+        BindSubscription(AssistedSetupTest);
 
         // [WHEN] The subscribers are run by opening the assisted setup page
         AssistedSetup.OpenView();
@@ -93,6 +93,8 @@ codeunit 132586 "Assisted Setup Test"
         AssistedSetup."Start Setup".Invoke();
 
         // [THEN] As subscriber sets Handled = true, nothing happens
+
+        UnbindSubscription(AssistedSetupTest);
     end;
 
     [Test]
@@ -103,9 +105,6 @@ codeunit 132586 "Assisted Setup Test"
     begin
         PermissionsMock.Set('Guided Exp Edit');
         Initialize();
-
-        // [GIVEN] Subscribers are not registered
-        UnbindSubscription(AssistedSetupTest);
 
         // [WHEN] system action OpenRoleBasedSetupExperience is triggered
         AssistedSetup.Trap();
@@ -123,12 +122,14 @@ codeunit 132586 "Assisted Setup Test"
         Initialize();
 
         // [GIVEN] Subscribers are registered
-        if BindSubscription(AssistedSetupTest) then;
+        BindSubscription(AssistedSetupTest);
 
         // [WHEN] system action OpenRoleBasedSetupExperience is triggered
         SystemActionTriggers.OpenRoleBasedSetupExperience();
 
         // [THEN] Assisted setup is not opened
+
+        UnbindSubscription(AssistedSetupTest);
     end;
 
     [Test]
@@ -143,7 +144,7 @@ codeunit 132586 "Assisted Setup Test"
         Initialize();
 
         // [GIVEN] Subscribers are registered
-        if BindSubscription(AssistedSetupTest) then;
+        BindSubscription(AssistedSetupTest);
 
         // [WHEN] The page is opened with filtered view
         GuidedExperience.OpenAssistedSetup(AssistedSetupGroup::WithoutLinks);
@@ -158,6 +159,8 @@ codeunit 132586 "Assisted Setup Test"
 
         // [THEN] Status is incomplete
         LibraryAssert.IsFalse(GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, Page::"Other Assisted Setup Test Page"), 'Complete!');
+
+        UnbindSubscription(AssistedSetupTest);
     end;
 
     [Test]
@@ -172,13 +175,15 @@ codeunit 132586 "Assisted Setup Test"
         Initialize();
 
         // [GIVEN] Subscribers are registered
-        if BindSubscription(AssistedSetupTest) then;
+        BindSubscription(AssistedSetupTest);
 
         // [WHEN] The page is opened with filtered view
         GuidedExperience.OpenAssistedSetup(AssistedSetupGroup::ZZ);
 
         // [THEN] The assisted setup should be been deleted
         LibraryAssert.IsFalse(GuidedExperience.Exists(GuidedExperienceType::"Assisted Setup", ObjectType::Page, NonExistingPageID), 'Assisted Setup exists!');
+    
+        UnbindSubscription(AssistedSetupTest);
     end;
 
     local procedure Initialize();
