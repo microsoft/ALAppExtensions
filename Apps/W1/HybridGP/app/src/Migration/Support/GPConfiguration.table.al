@@ -107,13 +107,29 @@ table 4024 "GP Configuration"
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
-        exit(
-                "Fiscal Periods Created" and
-                (not GPCompanyAdditionalSettings.GetBankModuleEnabled() or "CheckBooks Created") and
-                (not GPCompanyAdditionalSettings.GetMigrateOpenPOs() or "Open Purchase Orders Created") and
-                (not GPCompanyAdditionalSettings.GetPayablesModuleEnabled() or "Vendor EFT Bank Acc. Created") and
-                (not GPCompanyAdditionalSettings.GetMigrateVendorClasses() or "Vendor Classes Created") and
-                (not GPCompanyAdditionalSettings.GetMigrateCustomerClasses() or "Customer Classes Created")
-            );
+        if not "Fiscal Periods Created" then
+            exit(false);
+
+        if not "CheckBooks Created" then
+            if GPCompanyAdditionalSettings.GetBankModuleEnabled() then
+                exit(false);
+
+        if not "Open Purchase Orders Created" then
+            if GPCompanyAdditionalSettings.GetMigrateOpenPOs() then
+                exit(false);
+
+        if not "Vendor EFT Bank Acc. Created" then
+            if GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
+                exit(false);
+
+        if not "Vendor Classes Created" then
+            if GPCompanyAdditionalSettings.GetMigrateVendorClasses() then
+                exit(false);
+
+        if not "Customer Classes Created" then
+            if GPCompanyAdditionalSettings.GetMigrateCustomerClasses() then
+                exit(false);
+
+        exit(true);
     end;
 }

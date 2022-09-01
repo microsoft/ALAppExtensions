@@ -135,8 +135,9 @@ codeunit 4015 "Hybrid GP Wizard"
         GPCompanyMigrationSettings.Reset();
         if GPCompanyMigrationSettings.FindSet() then
             GPCompanyMigrationSettings.ModifyAll(ProcessesAreRunning, false);
-            
-		GPCompanyAdditionalSettings.DeleteAll();
+
+        if not GPCompanyAdditionalSettings.IsEmpty() then
+            GPCompanyAdditionalSettings.DeleteAll();
     end;
 
     local procedure ProcessesAreRunning(): Boolean

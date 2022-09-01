@@ -64,8 +64,6 @@ page 4050 "GP Migration Configuration"
                             GPCompanyAdditionalSettings.Validate("Migrate Bank Module", Rec."Migrate Bank Module");
                             GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
-
-                        AfterFieldUpdate();
                     end;
                 }
                 field("Migrate Payables Module"; Rec."Migrate Payables Module")
@@ -82,8 +80,6 @@ page 4050 "GP Migration Configuration"
                             GPCompanyAdditionalSettings.Validate("Migrate Payables Module", Rec."Migrate Payables Module");
                             GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
-
-                        AfterFieldUpdate();
                     end;
                 }
                 field("Migrate Receivables Module"; Rec."Migrate Receivables Module")
@@ -100,8 +96,6 @@ page 4050 "GP Migration Configuration"
                             GPCompanyAdditionalSettings.Validate("Migrate Receivables Module", Rec."Migrate Receivables Module");
                             GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
-
-                        AfterFieldUpdate();
                     end;
                 }
                 field("Migrate Open POs"; Rec."Migrate Open POs")
@@ -118,8 +112,6 @@ page 4050 "GP Migration Configuration"
                             GPCompanyAdditionalSettings.Validate("Migrate Open POs", Rec."Migrate Open POs");
                             GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
-
-                        AfterFieldUpdate();
                     end;
                 }
                 field("Migrate Inventory Module"; Rec."Migrate Inventory Module")
@@ -136,8 +128,6 @@ page 4050 "GP Migration Configuration"
                             GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", Rec."Migrate Inventory Module");
                             GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
-
-                        AfterFieldUpdate();
                     end;
                 }
             }
@@ -161,8 +151,6 @@ page 4050 "GP Migration Configuration"
                             GPCompanyAdditionalSettings.Validate("Migrate Inactive Customers", Rec."Migrate Inactive Customers");
                             GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
-
-                        AfterFieldUpdate();
                     end;
                 }
                 field("Migrate Inactive Vendors"; Rec."Migrate Inactive Vendors")
@@ -179,8 +167,6 @@ page 4050 "GP Migration Configuration"
                             GPCompanyAdditionalSettings.Validate("Migrate Inactive Vendors", Rec."Migrate Inactive Vendors");
                             GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
-
-                        AfterFieldUpdate();
                     end;
                 }
                 field("Migrate Inactive Checkbooks"; Rec."Migrate Inactive Checkbooks")
@@ -197,8 +183,6 @@ page 4050 "GP Migration Configuration"
                             GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", Rec."Migrate Inactive Checkbooks");
                             GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
-
-                        AfterFieldUpdate();
                     end;
                 }
             }
@@ -222,8 +206,6 @@ page 4050 "GP Migration Configuration"
                             GPCompanyAdditionalSettings.Validate("Migrate Customer Classes", Rec."Migrate Customer Classes");
                             GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
-
-                        AfterFieldUpdate();
                     end;
                 }
                 field("Migrate Vendor Classes"; Rec."Migrate Vendor Classes")
@@ -240,8 +222,6 @@ page 4050 "GP Migration Configuration"
                             GPCompanyAdditionalSettings.Validate("Migrate Vendor Classes", Rec."Migrate Vendor Classes");
                             GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
-
-                        AfterFieldUpdate();
                     end;
                 }
                 field("Migrate Item Classes"; Rec."Migrate Item Classes")
@@ -258,8 +238,6 @@ page 4050 "GP Migration Configuration"
                             GPCompanyAdditionalSettings.Validate("Migrate Item Classes", Rec."Migrate Item Classes");
                             GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
-
-                        AfterFieldUpdate();
                     end;
                 }
             }
@@ -294,7 +272,7 @@ page 4050 "GP Migration Configuration"
 
                 trigger OnAction()
                 begin
-                    if Confirm('Are you sure? This will reset all company migration settings to their default values.') then
+                    if Confirm(ResetAllQst) then
                         ResetAll();
                 end;
             }
@@ -332,11 +310,6 @@ page 4050 "GP Migration Configuration"
         }
     }
 
-    procedure ShouldShowIntroductionNotification(shouldShow: Boolean)
-    begin
-        ShowIntroductionNotification := shouldShow;
-    end;
-
     procedure ShouldShowManagementPromptOnClose(shouldShow: Boolean)
     begin
         ShowManagementPromptOnClose := shouldShow;
@@ -344,7 +317,6 @@ page 4050 "GP Migration Configuration"
 
     trigger OnInit()
     begin
-        ShowIntroductionNotification := true;
         ShowManagementPromptOnClose := true;
     end;
 
@@ -352,11 +324,6 @@ page 4050 "GP Migration Configuration"
     var
         IntroNotification: Notification;
     begin
-        if ShowIntroductionNotification then begin
-            IntroNotification.Message(IntroNotificationMsg);
-            IntroNotification.Send();
-        end;
-
         if not Rec.Get() then
             Rec.Insert();
 
@@ -400,11 +367,6 @@ page 4050 "GP Migration Configuration"
         GPCompanyAdditionalSettings.FindSet();
     end;
 
-    local procedure AfterFieldUpdate()
-    begin
-        CurrPage.Update();
-    end;
-
     local procedure DeleteCurrentSettings()
     var
         GPCompanyAdditionalSettingsInit: Record "GP Company Additional Settings";
@@ -437,7 +399,6 @@ page 4050 "GP Migration Configuration"
         CurrPage.Update(true);
 
         EnsureSettingsForAllCompanies();
-        AfterFieldUpdate();
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -504,9 +465,9 @@ page 4050 "GP Migration Configuration"
 
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        ShowIntroductionNotification: Boolean;
         ShowManagementPromptOnClose: Boolean;
-        IntroNotificationMsg: Label 'Use this configuration page to specify what information will be migrated from GP to Business Central.', Locked = true;
-        CompanyMissingDimensionExitQst: Label 'A Company is missing a Dimension. Are you sure you want to exit?', Locked = true;
-        OpenCloudMigrationPageQst: Label 'Would you like to open the Cloud Migration Management page to manage your data migrations?', Locked = true;
+        IntroNotificationMsg: Label 'Use this configuration page to specify what information will be migrated from GP to Business Central.';
+        CompanyMissingDimensionExitQst: Label 'A Company is missing a Dimension. Are you sure you want to exit?';
+        OpenCloudMigrationPageQst: Label 'Would you like to open the Cloud Migration Management page to manage your data migrations?';
+        ResetAllQst: Label 'Are you sure? This will reset all company migration settings to their default values.';
 }
