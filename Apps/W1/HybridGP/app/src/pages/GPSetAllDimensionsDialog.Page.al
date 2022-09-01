@@ -111,13 +111,12 @@ page 4052 "GP Set All Dimensions Dialog"
         if GPSegmentName.FindSet() then begin
             repeat
                 if not GPSegmentNameUnique.Get(GPSegmentName."Segment Name", '') then begin
-                    if MigratingCompanyList.IndexOf(GPSegmentName."Company Name") = 0 then
-                        break;
-
-                    GPSegmentNameUnique."Company Name" := '';
-                    GPSegmentNameUnique."Segment Name" := GPSegmentName."Segment Name";
-                    GPSegmentNameUnique."Segment Number" := GPSegmentName."Segment Number";
-                    GPSegmentNameUnique.Insert();
+                    if MigratingCompanyList.IndexOf(GPSegmentName."Company Name") > 0 then begin
+                        GPSegmentNameUnique."Company Name" := '';
+                        GPSegmentNameUnique."Segment Name" := GPSegmentName."Segment Name";
+                        GPSegmentNameUnique."Segment Number" := GPSegmentName."Segment Number";
+                        GPSegmentNameUnique.Insert();
+                    end;
                 end;
             until GPSegmentName.Next() = 0;
         end;

@@ -135,7 +135,7 @@ codeunit 4025 "GP Cloud Migration"
         DataMigrationStatus.Validate(Status, DataMigrationStatus.Status::Pending);
         DataMigrationStatus.Validate("Source Staging Table ID", StagingTableID);
         DataMigrationStatus.Validate("Migration Codeunit To Run", CodeunitToRun);
-        DataMigrationStatus.Insert()
+        DataMigrationStatus.Insert();
     end;
 
     local procedure CreateDataMigrationEntites(var DataMigrationEntity: Record "Data Migration Entity"): Boolean
