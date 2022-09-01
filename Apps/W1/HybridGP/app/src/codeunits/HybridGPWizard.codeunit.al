@@ -130,10 +130,13 @@ codeunit 4015 "Hybrid GP Wizard"
     local procedure OnResetAllCloudData()
     var
         GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         GPCompanyMigrationSettings.Reset();
         if GPCompanyMigrationSettings.FindSet() then
             GPCompanyMigrationSettings.ModifyAll(ProcessesAreRunning, false);
+            
+		GPCompanyAdditionalSettings.DeleteAll();
     end;
 
     local procedure ProcessesAreRunning(): Boolean
