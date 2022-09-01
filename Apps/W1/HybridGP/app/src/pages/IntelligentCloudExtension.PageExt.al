@@ -30,7 +30,6 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 var
                     GPMigrationConfiguration: Page "GP Migration Configuration";
                 begin
-                    GPMigrationConfiguration.ShouldShowIntroductionNotification(false);
                     GPMigrationConfiguration.ShouldShowManagementPromptOnClose(false);
                     GPMigrationConfiguration.Run();
                 end;

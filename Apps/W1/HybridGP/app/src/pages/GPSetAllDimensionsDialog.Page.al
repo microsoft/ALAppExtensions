@@ -149,7 +149,7 @@ page 4052 "GP Set All Dimensions Dialog"
         Dimension2: Text[30];
         BlanksClearValue: Boolean;
         ConfirmedYes: Boolean;
-        GlobalDimensionsCannotBeTheSameErr: Label 'Dimension 1 and Dimension 2 cannot be the same.', Locked = true;
-        BothDimensionsBlankConfirmMsg: Label 'Both dimensions are empty. Do you want to clear both dimensions for all companies?', Locked = true;
-        OneDimensionBlankConfirmMsg: Label 'You don''t have a value for Dimension %1. Do you want to clear Dimension %1 for all companies?', Locked = true;
+        GlobalDimensionsCannotBeTheSameErr: Label 'Dimension 1 and Dimension 2 cannot be the same.';
+        BothDimensionsBlankConfirmMsg: Label 'Both dimensions are empty. Do you want to clear both dimensions for all companies?';
+        OneDimensionBlankConfirmMsg: Label 'You don''t have a value for Dimension %1. Do you want to clear Dimension %1 for all companies?';
 }

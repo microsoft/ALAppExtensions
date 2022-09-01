@@ -165,16 +165,16 @@ codeunit 4025 "GP Cloud Migration"
         GPVendor: Record "GP Vendor";
         GPItem: Record "GP Item";
     begin
-        CreateDataMigrationStatusRecords(Database::"G/L Account", AccountsToMigrateCount, 4090, 4017);
+        CreateDataMigrationStatusRecords(Database::"G/L Account", AccountsToMigrateCount, Database::"GP Account", Codeunit::"GP Account Migrator");
 
         if GPCompanyAdditionalSettings.GetReceivablesModuleEnabled() then
-            CreateDataMigrationStatusRecords(Database::"Customer", CustomersToMigrateCount, 4093, 4018);
+            CreateDataMigrationStatusRecords(Database::"Customer", CustomersToMigrateCount, Database::"GP Customer", Codeunit::"GP Customer Migrator");
 
         if GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
-            CreateDataMigrationStatusRecords(Database::"Vendor", VendorsToMigrateCount, 4096, 4022);
+            CreateDataMigrationStatusRecords(Database::"Vendor", VendorsToMigrateCount, Database::"GP Vendor", Codeunit::"GP Vendor Migrator");
 
         if GPCompanyAdditionalSettings.GetInventoryModuleEnabled() then
-            CreateDataMigrationStatusRecords(Database::"Item", ItemsToMigrateCount, 4095, 4019);
+            CreateDataMigrationStatusRecords(Database::"Item", ItemsToMigrateCount, Database::"GP Item", Codeunit::"GP Item Migrator");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInsertDefaultTableMappings', '', false, false)]
@@ -206,19 +206,5 @@ codeunit 4025 "GP Cloud Migration"
         MigrationTableMapping.Validate("Table ID", TableID);
         MigrationTableMapping."Source Table Name" := SourceTableName;
         MigrationTableMapping.Insert();
-    end;
-
-    procedure InitializeForTesting()
-    var
-        DataMigrationEntity: Record "Data Migration Entity";
-        DataMigrationStatus: Record "Data Migration Status";
-        HelperFunctions: Codeunit "Helper Functions";
-    begin
-        DataMigrationEntity.DeleteAll();
-        DataMigrationStatus.DeleteAll();
-
-        CreateDataMigrationEntites(DataMigrationEntity);
-        HelperFunctions.CreateSetupRecordsIfNeeded();
-        CreateConfiguredDataMigrationStatusRecords(DataMigrationEntity);
     end;
 }
