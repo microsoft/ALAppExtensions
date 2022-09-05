@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Common interface for different authentication options.
+/// </summary>
 interface "Azure Functions Authentication"
 {
     /// <summary>

@@ -20,17 +20,17 @@ codeunit 7802 "Azure Functions OAuth2" implements "Azure Functions Authenticatio
     var
         Uri: Codeunit Uri;
         OAuth2: Codeunit OAuth2;
-        UriBuider: Codeunit "Uri Builder";
+        UriBuilder: Codeunit "Uri Builder";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         Headers: HttpHeaders;
         Dimensions: Dictionary of [Text, Text];
     begin
-        UriBuider.Init(EndpointGlobal);
+        UriBuilder.Init(EndpointGlobal);
 
         OAuth2.AcquireTokenWithClientCredentials(ClientIdGlobal, ClientSecretGlobal, OAuthAuthorityUrlGlobal, RedirectURLGlobal, ResourceURLGlobal, AccessToken);
 
         if AccessToken = '' then begin
-            UriBuider.GetUri(Uri);
+            UriBuilder.GetUri(Uri);
             Dimensions.Add('FunctionHost', Format(Uri.GetHost()));
             FeatureTelemetry.LogError('0000I75', AzureFunctionCategoryLbl, 'Acquiring token', StrSubstNo(FailedToGetTokenErr, Uri.GetHost()), '', Dimensions);
             exit(false);
@@ -42,9 +42,9 @@ codeunit 7802 "Azure Functions OAuth2" implements "Azure Functions Authenticatio
 
 
         if AuthenticationCodeGlobal <> '' then
-            UriBuider.AddQueryParameter('Code', AuthenticationCodeGlobal);
+            UriBuilder.AddQueryParameter('Code', AuthenticationCodeGlobal);
 
-        UriBuider.GetUri(Uri);
+        UriBuilder.GetUri(Uri);
         RequestMessage.SetRequestUri(Uri.GetAbsoluteUri());
         exit(true);
     end;

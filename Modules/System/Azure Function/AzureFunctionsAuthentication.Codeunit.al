@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Provides functionality for setting authentication parameters to Azure function.
+/// </summary>
 codeunit 7800 "Azure Functions Authentication"
 {
     Access = Public;
