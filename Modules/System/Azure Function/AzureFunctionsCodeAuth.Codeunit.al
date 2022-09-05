@@ -22,12 +22,12 @@ codeunit 7801 "Azure Functions Code Auth" implements "Azure Functions Authentica
     procedure Authenticate(var RequestMessage: HttpRequestMessage): Boolean
     var
         Uri: Codeunit Uri;
-        UriBuider: Codeunit "Uri Builder";
+        UriBuilder: Codeunit "Uri Builder";
     begin
-        UriBuider.Init(EndpointGlobal);
-        UriBuider.AddQueryParameter('Code', AuthenticationCodeGlobal);
+        UriBuilder.Init(EndpointGlobal);
+        UriBuilder.AddQueryParameter('Code', AuthenticationCodeGlobal);
 
-        UriBuider.GetUri(Uri);
+        UriBuilder.GetUri(Uri);
         RequestMessage.SetRequestUri(Uri.GetAbsoluteUri());
         exit(true);
     end;

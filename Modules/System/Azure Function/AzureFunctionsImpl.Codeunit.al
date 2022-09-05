@@ -33,7 +33,7 @@ codeunit 7803 "Azure Functions Impl"
     procedure Send(AzureFunctionAuthentication: Interface "Azure Functions Authentication"; RequestType: enum "Http Request Type"; QueryDict: Dictionary of [Text, Text]; Body: Text; ContentTypeHeader: text): Codeunit "Azure Functions Response"
     var
         Uri: Codeunit Uri;
-        UriBuider: Codeunit "Uri Builder";
+        UriBuilder: Codeunit "Uri Builder";
         AzureFunctionResponse: Codeunit "Azure Functions Response";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         Client: HttpClient;
@@ -45,13 +45,13 @@ codeunit 7803 "Azure Functions Impl"
     begin
         if AzureFunctionAuthentication.Authenticate(RequestMessage) then begin
             RequestMessage.Method(Format(RequestType));
-            UriBuider.Init(RequestMessage.GetRequestUri());
+            UriBuilder.Init(RequestMessage.GetRequestUri());
 
             if QueryDict.Count > 0 then begin
                 foreach KeyText in QueryDict.Keys do
-                    UriBuider.AddQueryParameter(KeyText, QueryDict.Get(KeyText));
+                    UriBuilder.AddQueryParameter(KeyText, QueryDict.Get(KeyText));
 
-                UriBuider.GetUri(Uri);
+                UriBuilder.GetUri(Uri);
                 RequestMessage.SetRequestUri(Uri.GetAbsoluteUri());
             end;
 
@@ -65,7 +65,7 @@ codeunit 7803 "Azure Functions Impl"
             if not Client.Send(RequestMessage, ResponseMessage) then
                 AzureFunctionResponse.SetError(StrSubstNo(HttpResponseErr, SendRequstErr, ResponseMessage.HttpStatusCode, ResponseMessage.ReasonPhrase));
 
-            UriBuider.GetUri(Uri);
+            UriBuilder.GetUri(Uri);
             Dimensions.Add('StatusCode', Format(ResponseMessage.HttpStatusCode));
             Dimensions.Add('FunctionHost', Format(Uri.GetHost()));
 

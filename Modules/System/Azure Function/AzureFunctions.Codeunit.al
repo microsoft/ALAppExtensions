@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+/// <summary>
+/// Provides functionality for connecting to Azure functions.
+/// </summary>
 codeunit 7804 "Azure Functions"
 {
     Access = Public;

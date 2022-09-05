@@ -2,8 +2,10 @@ This module provides functionality for connecting to [Azure Functions](https://d
 
 > This module does not store credentials for Azure Functions.  
 > Use caution when you store and pass credentials. 
+> We recommend that you use OAuth 2.0 authorization. [Secure an HTTP endpoint in production] (https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger?tabs=in-process%2Cfunctionsv2&pivots=programming-language-csharp#secure-an-http-endpoint-in-production)
+> **NOTE:** Azure Function Integration telemetry gathers data about the success or failure of calls from Business Central to Azure Functions. For more information, see [Analyzing Azure Function Integration Telemetry](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/telemetry-azure-function-integration-trace?branch=kepontop-azure-function-telemetry).
 
-#### Examle: Send a POST request
+#### Examle: send a POST request
 
 ```
     procedure SendPostRequest_Example()
@@ -41,7 +43,7 @@ This module provides functionality for connecting to [Azure Functions](https://d
     end;
 ```
 
-#### Examle 2: Send a GET request
+#### Examle 2: send a GET request
 
 ```
     procedure SendGetRequest_Example()
