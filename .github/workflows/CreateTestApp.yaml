@@ -1,0 +1,83 @@
+﻿name: Create a new test app
+
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: Project name if the repository is setup for multiple projects
+        required: false
+        default: '.'
+      name:
+        description: Name
+        required: true
+        default: '<YourAppName>.Test'         
+      publisher:
+        description: Publisher
+        required: true
+      idrange:
+        description: ID range
+        required: true
+        default: '50000..99999'  
+      sampleCode:
+        description: Include Sample code (Y/N)
+        required: false
+        default: 'Y'
+      directCommit:
+        description: Direct COMMIT (Y/N)
+        required: false
+        default: 'N'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+defaults:
+  run:
+    shell: PowerShell
+
+jobs:
+  Initialization:
+    runs-on: [ bc-build ]
+    outputs:
+      telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Initialize the workflow
+        id: init
+        uses: freddydk/AL-Go-Actions/WorkflowInitialize@main
+        with:
+          eventId: "DO0095"
+
+  Update:
+    runs-on: [ bc-build ]
+    needs: [ Initialization ]
+
+    steps:
+      - name: Creating a new test app
+        uses: freddydk/AL-Go-Actions/CreateApp@main
+        with:
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          project: ${{ github.event.inputs.project }}
+          type: 'Test App'
+          publisher: ${{ github.event.inputs.publisher }}
+          name: ${{ github.event.inputs.name }}
+          idrange: ${{ github.event.inputs.idrange }}
+          sampleCode: ${{ github.event.inputs.sampleCode }}
+          directCommit: ${{ github.event.inputs.directCommit }}
+
+  PostProcess:
+    if: always()
+    runs-on: [ bc-build ]
+    needs: [ Initialization, Update ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Finalize the workflow
+        id: PostProcess
+        uses: freddydk/AL-Go-Actions/WorkflowPostProcess@main
+        with:
+          eventId: "DO0095"
+          telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
