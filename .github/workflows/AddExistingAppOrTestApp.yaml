@@ -1,0 +1,66 @@
+﻿name: Add existing app or test app
+
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: Project name if the repository is setup for multiple projects
+        required: false
+        default: '.'
+      url:
+        description: Direct Download Url of .app or .zip file
+        required: true
+      directCommit:
+        description: Direct COMMIT (Y/N)
+        required: false
+        default: 'N'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+defaults:
+  run:
+    shell: PowerShell
+
+jobs:
+  Initialization:
+    runs-on: [ bc-build ]
+    outputs:
+      telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Initialize the workflow
+        id: init
+        uses: freddydk/AL-Go-Actions/WorkflowInitialize@main
+        with:
+          eventId: "DO0090"
+
+  Update:
+    runs-on: [ bc-build ]
+    needs: [ Initialization ]
+    steps:
+      - name: Add existing app
+        uses: freddydk/AL-Go-Actions/AddExistingApp@main
+        with:
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          project: ${{ github.event.inputs.project }}
+          url: ${{ github.event.inputs.url }}
+          directCommit: ${{ github.event.inputs.directCommit }}
+
+  PostProcess:
+    if: always()
+    runs-on: [ bc-build ]
+    needs: [ Initialization, Update ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Finalize the workflow
+        id: PostProcess
+        uses: freddydk/AL-Go-Actions/WorkflowPostProcess@main
+        with:
+          eventId: "DO0090"
+          telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}

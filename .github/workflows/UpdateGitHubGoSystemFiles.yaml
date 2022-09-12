@@ -1,0 +1,100 @@
+﻿name: Update AL-Go System Files
+
+on:
+  workflow_dispatch:
+    inputs:
+      templateUrl:
+        description: Template Repository URL (current is https://github.com/freddydk/AL-Go-PTE@main)
+        required: false
+        default: ''
+      directCommit:
+        description: Direct COMMIT (Y/N)
+        required: false
+        default: 'N'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: PowerShell
+
+jobs:
+  Initialization:
+    runs-on: [ windows-latest ]
+    outputs:
+      telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Initialize the workflow
+        id: init
+        uses: freddydk/AL-Go-Actions/WorkflowInitialize@main
+        with:
+          eventId: "DO0098"
+
+  Update:
+    runs-on: [ windows-latest ]
+    needs: [ Initialization ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Read settings
+        uses: freddydk/AL-Go-Actions/ReadSettings@main
+        with:
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          get: KeyVaultName,GhTokenWorkflowSecretName,TemplateUrl
+
+      - name: Read secrets
+        uses: freddydk/AL-Go-Actions/ReadSecrets@main
+        env:
+          secrets: ${{ toJson(secrets) }}
+        with:
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          settingsJson: ${{ env.Settings }}
+          secrets: 'ghTokenWorkflow=${{ env.GHTOKENWORKFLOWSECRETNAME }}'
+
+      - name: Override TemplateUrl
+        run: |
+          $templateUrl = '${{ github.event.inputs.templateUrl }}'
+          if ($templateUrl) {
+            Write-Host "Using Template Url: $templateUrl"
+            Add-Content -Path $env:GITHUB_ENV -Value "TemplateUrl=$templateUrl"
+          }
+
+      - name: Calculate DirectCommit
+        run: |
+          $directCommit = '${{ github.event.inputs.directCommit }}'
+          Write-Host '${{ github.event_name }}'
+          if ('${{ github.event_name }}' -eq 'schedule') {
+            Write-Host "Running Update AL-Go System Files on a schedule. Setting DirectCommit = Y"
+            $directCommit = 'Y'
+          }
+          Add-Content -Path $env:GITHUB_ENV -Value "DirectCommit=$directCommit"
+
+      - name: Update AL-Go system files
+        uses: freddydk/AL-Go-Actions/CheckForUpdates@main
+        with:
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          token: ${{ env.ghTokenWorkflow }}
+          Update: Y
+          templateUrl: ${{ env.TemplateUrl }}
+          directCommit: ${{ env.directCommit }}
+
+  PostProcess:
+    if: always()
+    runs-on: [ windows-latest ]
+    needs: [ Initialization, Update ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Finalize the workflow
+        id: PostProcess
+        uses: freddydk/AL-Go-Actions/WorkflowPostProcess@main
+        with:
+          eventId: "DO0098"
+          telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
