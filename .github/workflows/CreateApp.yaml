@@ -44,7 +44,7 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: freddydk/AL-Go-Actions/WorkflowInitialize@main
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@main
         with:
           eventId: "DO0092"
 
@@ -56,13 +56,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Read settings
-        uses: freddydk/AL-Go-Actions/ReadSettings@main
+        uses: microsoft/AL-Go-Actions/ReadSettings@main
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           get: type
 
       - name: Creating a new app
-        uses: freddydk/AL-Go-Actions/CreateApp@main
+        uses: microsoft/AL-Go-Actions/CreateApp@main
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ github.event.inputs.project }}
@@ -83,7 +83,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: freddydk/AL-Go-Actions/WorkflowPostProcess@main
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@main
         with:
           eventId: "DO0092"
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}

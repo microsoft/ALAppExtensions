@@ -34,7 +34,7 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: freddydk/AL-Go-Actions/WorkflowInitialize@main
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@main
         with:
           eventId: "DO0090"
 
@@ -43,7 +43,7 @@ jobs:
     needs: [ Initialization ]
     steps:
       - name: Add existing app
-        uses: freddydk/AL-Go-Actions/AddExistingApp@main
+        uses: microsoft/AL-Go-Actions/AddExistingApp@main
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ github.event.inputs.project }}
@@ -60,7 +60,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: freddydk/AL-Go-Actions/WorkflowPostProcess@main
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@main
         with:
           eventId: "DO0090"
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}

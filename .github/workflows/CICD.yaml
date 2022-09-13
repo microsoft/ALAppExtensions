@@ -40,20 +40,20 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: freddydk/AL-Go-Actions/WorkflowInitialize@main
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@main
         with:
           eventId: "DO0091"
 
       - name: Read settings
         id: ReadSettings
-        uses: freddydk/AL-Go-Actions/ReadSettings@main
+        uses: microsoft/AL-Go-Actions/ReadSettings@main
         with:
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           getProjects: 'Y'
           getEnvironments: '*'
 
       - name: Read secrets
-        uses: freddydk/AL-Go-Actions/ReadSecrets@main
+        uses: microsoft/AL-Go-Actions/ReadSecrets@main
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -88,13 +88,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Read settings
-        uses: freddydk/AL-Go-Actions/ReadSettings@main
+        uses: microsoft/AL-Go-Actions/ReadSettings@main
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           get: TemplateUrl
 
       - name: Check for updates to AL-Go system files
-        uses: freddydk/AL-Go-Actions/CheckForUpdates@main
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@main
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           templateUrl: ${{ env.TemplateUrl }}
@@ -121,13 +121,13 @@ jobs:
           lfs: true
 
       - name: Read settings
-        uses: freddydk/AL-Go-Actions/ReadSettings@main
+        uses: microsoft/AL-Go-Actions/ReadSettings@main
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
 
       - name: Read secrets (PR)
-        uses: freddydk/AL-Go-Actions/ReadSecrets@main
+        uses: microsoft/AL-Go-Actions/ReadSecrets@main
         if: github.event_name == 'pull_request'
         env:
           secrets: ${{ toJson(secrets) }}
@@ -137,7 +137,7 @@ jobs:
           secrets: 'licenseFileUrl,insiderSasToken,KeyVaultCertificateUrl,KeyVaultCertificatePassword,KeyVaultClientId'
 
       - name: Read secrets
-        uses: freddydk/AL-Go-Actions/ReadSecrets@main
+        uses: microsoft/AL-Go-Actions/ReadSecrets@main
         if: github.event_name != 'pull_request'
         env:
           secrets: ${{ toJson(secrets) }}
@@ -147,7 +147,7 @@ jobs:
           secrets: 'licenseFileUrl,insiderSasToken,CodeSignCertificateUrl,CodeSignCertificatePassword,KeyVaultCertificateUrl,KeyVaultCertificatePassword,KeyVaultClientId,StorageContext'
 
       - name: Run pipeline
-        uses: freddydk/AL-Go-Actions/RunPipeline@main
+        uses: microsoft/AL-Go-Actions/RunPipeline@main
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           Project: ${{ matrix.project }}
@@ -218,7 +218,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        uses: freddydk/AL-Go-Actions/PipelineCleanup@main
+        uses: microsoft/AL-Go-Actions/PipelineCleanup@main
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           Project: ${{ matrix.project }}
@@ -247,10 +247,10 @@ jobs:
           Write-Host "::set-output name=envName::$envName"
 
       - name: Read settings
-        uses: freddydk/AL-Go-Actions/ReadSettings@main
+        uses: microsoft/AL-Go-Actions/ReadSettings@main
 
       - name: Read secrets
-        uses: freddydk/AL-Go-Actions/ReadSecrets@main
+        uses: microsoft/AL-Go-Actions/ReadSecrets@main
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -304,7 +304,7 @@ jobs:
           Write-Host "set-output name=projects::$projects"
 
       - name: Deploy
-        uses: freddydk/AL-Go-Actions/Deploy@main
+        uses: microsoft/AL-Go-Actions/Deploy@main
         env:
           authContext: '${{ steps.authContext.outputs.authContext }}'
         with:
@@ -332,10 +332,10 @@ jobs:
           path: '${{ github.workspace }}\artifacts'
 
       - name: Read settings
-        uses: freddydk/AL-Go-Actions/ReadSettings@main
+        uses: microsoft/AL-Go-Actions/ReadSettings@main
 
       - name: Read secrets
-        uses: freddydk/AL-Go-Actions/ReadSecrets@main
+        uses: microsoft/AL-Go-Actions/ReadSecrets@main
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -351,7 +351,7 @@ jobs:
           Write-Host "set-output name=deliveryContext::$deliveryContext"
 
       - name: Deliver
-        uses: freddydk/AL-Go-Actions/Deliver@main
+        uses: microsoft/AL-Go-Actions/Deliver@main
         env:
           deliveryContext: '${{ steps.deliveryContext.outputs.deliveryContext }}'
         with:
@@ -370,7 +370,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: freddydk/AL-Go-Actions/WorkflowPostProcess@main
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@main
         with:
           eventId: "DO0091"
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
