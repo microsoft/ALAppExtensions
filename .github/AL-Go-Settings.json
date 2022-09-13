@@ -1,6 +1,6 @@
 ﻿{
     "type":  "PTE",
-    "templateUrl":  "https://github.com/freddydk/AL-Go-PTE@main",
+    "templateUrl":  "https://github.com/microsoft/AL-Go-PTE@main",
     "bcContainerHelperVersion":  "dev",
     "runs-on":  "bc-build",
     "cacheImageName":  "",
