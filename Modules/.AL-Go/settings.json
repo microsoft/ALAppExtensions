@@ -1,0 +1,18 @@
+﻿{
+    "country":  "us",
+    "appFolders":  [
+                       "System"
+                   ],
+    "testFolders":  [
+                        "DevTools\\TestFramework\\TestLibraries\\Any",
+                        "DevTools\\TestFramework\\TestLibraries\\Assert",
+                        "DevTools\\TestFramework\\TestLibraries\\Permissions Mock",
+                        "DevTools\\TestFramework\\TestLibraries\\Variable Storage",
+                        "DevTools\\TestFramework\\TestRunner",
+                        "System Test Libraries",
+                        "System Tests"
+                    ],
+    "artifact":  "//20.1/base/first",
+    "enablePerTenantExtensionCop":  false,
+    "repoVersion":  "20.1"
+}
