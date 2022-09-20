@@ -46,6 +46,7 @@ table 18476 "Subcon. Delivery Challan Line"
         field(6; "Quantity To Send"; Decimal)
         {
             Caption = 'Quantity To Send';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
 
             trigger OnValidate()
@@ -56,11 +57,13 @@ table 18476 "Subcon. Delivery Challan Line"
         field(7; "Quantity (Base)"; Decimal)
         {
             Caption = 'Quantity (Base)';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(8; "Quantity To Send (Base)"; Decimal)
         {
             Caption = 'Quantity To Send (Base)';
+            DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(9; Description; Text[100])
@@ -109,6 +112,7 @@ table 18476 "Subcon. Delivery Challan Line"
         field(16; "Qty. per Unit of Measure"; Decimal)
         {
             Caption = 'Qty. per Unit of Measure';
+            DecimalPlaces = 0 : 3;
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
         }

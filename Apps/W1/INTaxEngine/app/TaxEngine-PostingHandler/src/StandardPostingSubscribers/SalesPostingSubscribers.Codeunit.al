@@ -98,14 +98,17 @@ codeunit 20336 "Sales Posting Subscribers"
     begin
         TaxPostingHandler.GetCurrency(SalesHeader."Currency Code", Currency);
         Currency.TestField("Invoice Rounding Precision");
-        TotalAmount := TotalAmountIncludingVAT + TaxPostingBufferMgmt.GetTotalTaxAmount();
+        if SalesHeader."Document Type" in ["Sales Document Type"::"Credit Memo", "Sales Document Type"::"Return Order"] then
+            TotalAmount := TotalAmountIncludingVAT + TaxPostingBufferMgmt.GetTotalTaxAmount()
+        else
+            TotalAmount := TotalAmountIncludingVAT - TaxPostingBufferMgmt.GetTotalTaxAmount();
 
         InvoiceRoundingAmount :=
-          -Round(
-            TotalAmount -
-            Round(
-              TotalAmount, Currency."Invoice Rounding Precision", Currency.InvoiceRoundingDirection()),
-            Currency."Amount Rounding Precision");
+            -Round(
+                TotalAmount -
+                Round(
+                    TotalAmount, Currency."Invoice Rounding Precision", Currency.InvoiceRoundingDirection()),
+                    Currency."Amount Rounding Precision");
     end;
 
 #if not CLEAN20

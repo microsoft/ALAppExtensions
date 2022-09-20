@@ -1366,6 +1366,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine."Posting Group" := CustLedgerEntry."Customer Posting Group";
         GenJournalLine.Validate("VAT Date CZL", CustLedgerEntry."VAT Date CZL");
         GenJournalLine."System-Created Entry" := true;
+        OnAfterInitGenJnlLineFromCustLedgEntry(CustLedgerEntry, GenJournalLine);
     end;
 
     local procedure InitGenJnlLineFromAdvance(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; DocumentNo: Code[20]; SourceCode: Code[10]; PostDescription: Text[100]; var GenJournalLine: Record "Gen. Journal Line")
@@ -1384,6 +1385,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine."Shortcut Dimension 2 Code" := SalesAdvLetterEntryCZZ."Global Dimension 2 Code";
         GenJournalLine."Dimension Set ID" := SalesAdvLetterEntryCZZ."Dimension Set ID";
         GenJournalLine."Adv. Letter No. (Entry) CZZ" := SalesAdvLetterEntryCZZ."Sales Adv. Letter No.";
+        OnAfterInitGenJnlLineFromAdvance(SalesAdvLetterHeaderCZZ, SalesAdvLetterEntryCZZ, GenJournalLine);
     end;
 
     procedure GetRemAmtSalAdvPayment(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; BalanceAtDate: Date): Decimal
@@ -1976,6 +1978,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 GenJournalLine."Posting Group" := CustLedgerEntry."Customer Posting Group";
                 GenJournalLine."Source Currency Code" := DetailedCustLedgEntry1."Currency Code";
                 GenJournalLine."System-Created Entry" := true;
+                OnUnapplyCustLedgEntryOnBeforePostUnapplyCustLedgEntry(CustLedgerEntry, DetailedCustLedgEntry1, GenJournalLine);
                 GenJnlPostLine.UnapplyCustLedgEntry(GenJournalLine, DetailedCustLedgEntry1);
             end else
                 Succes := true;
@@ -2319,6 +2322,21 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
     [IntegrationEvent(true, false)]
     local procedure OnApplyAdvanceLetterOnBeforeTestAmount(var AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ"; CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnUnapplyCustLedgEntryOnBeforePostUnapplyCustLedgEntry(var CustLedgerEntry: Record "Cust. Ledger Entry"; var DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterInitGenJnlLineFromAdvance(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterInitGenJnlLineFromCustLedgEntry(var CustLedgerEntry: Record "Cust. Ledger Entry"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 }

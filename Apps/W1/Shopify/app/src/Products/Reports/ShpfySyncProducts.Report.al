@@ -20,6 +20,8 @@ report 30108 "Shpfy Sync Products"
             begin
                 if OnlySyncPrices then
                     Sync.SetOnlySyncPriceOn();
+                if NumberOfRecords <> -1 then
+                    Sync.SetNumberOfRecords(NumberOfRecords);
                 Sync.Run(Shop);
             end;
         }
@@ -36,10 +38,18 @@ report 30108 "Shpfy Sync Products"
                     Tooltip = 'Only sync prices from D365BC to Shopify';
                     ApplicationArea = All;
                 }
+                field(NumberOfRecords; NumberOfRecords)
+                {
+                    Caption = 'Number of Records';
+                    Tooltip = 'Number of records to synchronize';
+                    ApplicationArea = All;
+                    Visible = false;
+                }
             }
         }
     }
 
     var
         OnlySyncPrices: Boolean;
+        NumberOfRecords: Integer;
 }

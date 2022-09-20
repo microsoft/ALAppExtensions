@@ -43,6 +43,7 @@ codeunit 18466 "Subcontracting Post"
     begin
         CompanyInformation.Get();
         SubconOrderNo := Rec."Document No.";
+        Rec.SubConSend := true;
         InitSubconPosting(Rec);
     end;
 
@@ -84,7 +85,6 @@ codeunit 18466 "Subcontracting Post"
     local procedure FillSendCompItemJnlLineAndPost(SubOrderCompList: Record "Sub Order Component List")
     var
         Item: Record Item;
-        PurchaseLine: Record "Purchase Line";
         ItemTrackingCode: Record "Item Tracking Code";
         ItemTrackingSetup: Record "Item Tracking Setup";
         ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
@@ -127,13 +127,7 @@ codeunit 18466 "Subcontracting Post"
         ItemJnlLine."Quantity (Base)" := SubOrderCompList."Quantity To Send (Base)";
         ItemJnlLine."Invoiced Qty. (Base)" := SubOrderCompList."Quantity To Send (Base)";
 
-        PurchaseLine.SetRange("Document No.", SubOrderCompList."Document No.");
-        PurchaseLine.SetRange("Line No.", SubOrderCompList."Document Line No.");
-        PurchaseLine.SetRange("No.", SubOrderCompList."Parent Item No.");
-        if PurchaseLine.FindFirst() then begin
-            ItemJnlLine."New Dimension Set ID" := PurchaseLine."Dimension Set ID";
-            ItemJnlLine."Dimension Set ID" := PurchaseLine."Dimension Set ID";
-        end;
+        GetDimensionsFromPurchaseLine(ItemJnlLine, SubOrderCompList);
 
         if SubOrderCompList."Applies-to Entry (Sending)" <> 0 then
             ItemJnlLine."Applies-to Entry" := SubOrderCompList."Applies-to Entry (Sending)";
@@ -299,13 +293,26 @@ codeunit 18466 "Subcontracting Post"
     var
         PurchaseLine: Record "Purchase Line";
     begin
+        PurchaseLine.SetRange("Document Type", PurchaseLine."Document Type"::Order);
         PurchaseLine.SetRange("Document No.", AppliedDeliveryChallan."Document No.");
         PurchaseLine.SetRange("Line No.", AppliedDeliveryChallan."Document Line No.");
         PurchaseLine.SetRange("No.", AppliedDeliveryChallan."Parent Item No.");
         if PurchaseLine.FindFirst() then begin
-            ItemJournalLine."New Dimension Set ID" := PurchaseLine."Dimension Set ID";
-            ItemJournalLine."Dimension Set ID" := PurchaseLine."Dimension Set ID";
+            ItemJournalLine.Validate("Dimension Set ID", PurchaseLine."Dimension Set ID");
+            if ItemJournalLine."Entry Type" = ItemJournalLine."Entry Type"::Transfer then begin
+                ItemJournalLine."New Dimension Set ID" := ItemJournalLine."Dimension Set ID";
+                ItemJournalLine."New Shortcut Dimension 1 Code" := ItemJournalLine."Shortcut Dimension 1 Code";
+                ItemJournalLine."New Shortcut Dimension 2 Code" := ItemJournalLine."Shortcut Dimension 2 Code";
+            end
         end;
+    end;
+
+    local procedure CheckSubcontractingOrder(DocType: Enum "Purchase Document Type"; DocumentNo: Code[20]; LineNo: Integer): Boolean
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        if PurchaseLine.Get(DocType, DocumentNo, LineNo) then
+            exit(PurchaseLine.Subcontracting);
     end;
 
     local procedure CheckGSTSubcon(
@@ -604,10 +611,17 @@ codeunit 18466 "Subcontracting Post"
                                 ItemJnlLine.Validate("Prod. Order Comp. Line No.", ProdOrderComp."Line No.");
                                 ItemJnlLine.Validate("Item No.", ProdOrderComp."Item No.");
                                 ItemJnlLine.Validate("Unit of Measure Code", ProdOrderComp."Unit of Measure Code");
+                                OnAfterValidateUnitofMeasureCodeSubcontract(ItemJnlLine, ProdOrderComp);
                                 ItemJnlLine."Qty. per Unit of Measure" := ProdOrderComp."Qty. per Unit of Measure";
                                 ItemJnlLine.Description := ProdOrderComp.Description;
                                 GetDimensionsFromAppliedDeliveryChallan(ItemJnlLine, AppliedDeliveryChallan);
+
                                 Item.Get(ItemJnlLine."Item No.");
+                                if (Item."Item Tracking Code" = '') then begin
+                                    ItemJnlLine.Subcontracting := Purchaseline.Subcontracting;
+                                    ItemJnlLine."Work Center No." := Purchaseline."Work Center No.";
+                                end;
+
                                 OldReservEntry.CalcSums("Qty. to Invoice (Base)");
                                 if ItemLedgerEntry."Remaining Quantity" <> 0 then
                                     if (Abs(OldReservEntry."Qty. to Invoice (Base)") <> Abs(ItemLedgerEntry."Remaining Quantity")) and
@@ -780,13 +794,7 @@ codeunit 18466 "Subcontracting Post"
             ItemJnlLine.Validate("Unit of Measure Code", SubOrderComponentList."Unit of Measure Code");
             ItemJnlLine.Description := SubOrderComponentList.Description;
 
-            Purchline2.SetRange("Document No.", SubOrderComponentList."Document No.");
-            Purchline2.SetRange("Line No.", SubOrderComponentList."Document Line No.");
-            Purchline2.SetRange("No.", SubOrderComponentList."Parent Item No.");
-            if Purchline2.FindFirst() then begin
-                ItemJnlLine."New Dimension Set ID" := Purchline2."Dimension Set ID";
-                ItemJnlLine."Dimension Set ID" := Purchline2."Dimension Set ID";
-            end;
+            GetDimensionsFromPurchaseLine(ItemJnlLine, SubOrderComponentList);
 
             if ItemLedgerEntry."Remaining Quantity" <> 0 then begin
                 if RemQtytoPost > ItemLedgerEntry."Remaining Quantity" then begin
@@ -892,6 +900,9 @@ codeunit 18466 "Subcontracting Post"
                                     Error(ReceiptDateErr, ItemJnlLine."Posting Date", ItemLedgerEntry."Posting Date");
 
                                 Item.Get(ItemJnlLine."Item No.");
+                                if (Item."Item Tracking Code" = '') then
+                                    ItemJnlLine.Subcontracting := Purchaseline.Subcontracting;
+
                                 OldReservEntry.CalcSums("Qty. to Invoice (Base)");
 
                                 if ItemLedgerEntry."Remaining Quantity" <> 0 then begin
@@ -1030,13 +1041,7 @@ codeunit 18466 "Subcontracting Post"
                 ItemJnlLine.Validate("Unit of Measure Code", SubOrderComponentList."Unit of Measure Code");
                 ItemJnlLine.Description := SubOrderComponentList.Description;
 
-                Purchline2.SetRange("Document No.", SubOrderComponentList."Document No.");
-                Purchline2.SetRange("Line No.", SubOrderComponentList."Document Line No.");
-                Purchline2.SetRange("No.", SubOrderComponentList."Parent Item No.");
-                if Purchline2.FindFirst() then begin
-                    ItemJnlLine."New Dimension Set ID" := Purchline2."Dimension Set ID";
-                    ItemJnlLine."Dimension Set ID" := Purchline2."Dimension Set ID";
-                end;
+                GetDimensionsFromPurchaseLine(ItemJnlLine, SubOrderComponentList);
 
                 if ItemLedgerEntry."Remaining Quantity" <> 0 then begin
                     if RemQtytoPost > ItemLedgerEntry."Remaining Quantity" then begin
@@ -1181,6 +1186,9 @@ codeunit 18466 "Subcontracting Post"
                                     Error(ReceiptDateErr, ItemJnlLine."Posting Date", ItemLedgerEntry."Posting Date");
 
                                 Item.Get(ItemJnlLine."Item No.");
+                                if (Item."Item Tracking Code" = '') then
+                                    ItemJnlLine.Subcontracting := CheckSubcontractingOrder(Purchline2."Document Type"::Order, SubOrderCompListVendLocal."Document No.", SubOrderCompListVendLocal."Document Line No.");
+
                                 OldReservEntry.CalcSums("Qty. to Invoice (Base)");
                                 if ItemLedgerEntry."Remaining Quantity" <> 0 then begin
                                     if (Abs(OldReservEntry."Qty. to Invoice (Base)") <> Abs(ItemLedgerEntry."Remaining Quantity")) and
@@ -1352,6 +1360,9 @@ codeunit 18466 "Subcontracting Post"
                                     Error(ReceiptDateErr, ItemJnlLine."Posting Date", ItemLedgerEntry."Posting Date");
 
                                 Item.Get(ItemJnlLine."Item No.");
+                                if (Item."Item Tracking Code" = '') then
+                                    ItemJnlLine.Subcontracting := CheckSubcontractingOrder(Purchline."Document Type"::Order, Purchline."Document No.", Purchline."Line No.");
+
                                 OldReservEntry.CalcSums("Qty. to Invoice (Base)");
 
                                 if ItemLedgerEntry."Remaining Quantity" <> 0 then
@@ -2298,6 +2309,23 @@ codeunit 18466 "Subcontracting Post"
         end;
     end;
 
+    procedure GetDimensionsFromPurchaseLine(
+        var ItemJournalLine: Record "Item Journal Line";
+        SubOrderCompList: Record "Sub Order Component List")
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        if not PurchaseLine.Get(PurchaseLine."Document Type"::Order, SubOrderCompList."Document No.", SubOrderCompList."Document Line No.") then
+            exit;
+
+        ItemJournalLine.Validate("Dimension Set ID", PurchaseLine."Dimension Set ID");
+        if ItemJournalLine."Entry Type" = ItemJournalLine."Entry Type"::Transfer then begin
+            ItemJournalLine."New Dimension Set ID" := ItemJournalLine."Dimension Set ID";
+            ItemJournalLine."New Shortcut Dimension 1 Code" := ItemJournalLine."Shortcut Dimension 1 Code";
+            ItemJournalLine."New Shortcut Dimension 2 Code" := ItemJournalLine."Shortcut Dimension 2 Code";
+        end
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeSubcontractComponentSendPost(
         var ItemJrnlLine: Record "Item Journal Line";
@@ -2374,6 +2402,13 @@ codeunit 18466 "Subcontracting Post"
         ProdOrderComponent: Record "Prod. Order Component";
         ProdOrderLine: Record "Prod. Order Line";
         ItemLedgerEntry: Record "Item Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterValidateUnitofMeasureCodeSubcontract(
+        var ItemJournalLine: Record "Item Journal Line";
+        ProdOrderComponent: Record "Prod. Order Component")
     begin
     end;
 

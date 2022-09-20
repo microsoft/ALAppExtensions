@@ -232,5 +232,6 @@ codeunit 133100 "Extension Management Test"
         Assert.IsTrue(PublishedApplication.FindFirst(), PackageIdExistsErr);
         Assert.AreEqual(PublishedApplication."Version Major", 1, PackageIdExtensionVersionErr);
     end;
+
 }
 

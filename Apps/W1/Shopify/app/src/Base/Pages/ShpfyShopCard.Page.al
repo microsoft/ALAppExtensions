@@ -49,10 +49,13 @@ page 30101 "Shpfy Shop Card"
                     AboutText = 'We just need the shop name and URL to connect it to Shopify. When you have checked all shop settings, enable the connection here.';
 
                     trigger OnValidate()
+                    var
+                        FeatureTelemetry: Codeunit "Feature Telemetry";
                     begin
                         if Not Enabled then
                             exit;
                         Rec.RequestAccessToken();
+                        FeatureTelemetry.LogUptake('0000HUT', 'Shopify', Enum::"Feature Uptake Status"::"Set up");
                     end;
                 }
                 field(HasAccessKey; Rec.HasAccessToken())
@@ -86,6 +89,13 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     Importance = Additional;
                     ToolTip = 'Specifies whether background syncs are allowed.';
+                }
+                field("Allow Outgoing Requests"; Rec."Allow Outgoing Requests")
+                {
+                    ApplicationArea = All;
+                    Importance = Additional;
+                    Caption = 'Allow Data Sync to Shopify';
+                    ToolTip = 'Specifices whether syncing data to Shopify is enabled.';
                 }
             }
             group(ItemSync)
@@ -296,6 +306,7 @@ page 30101 "Shpfy Shop Card"
                 }
                 field(AutoCreateOrders; Rec."Auto Create Orders")
                 {
+                    Caption = 'Auto-create Sales Orders';
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether orders may be created automatically.';
                 }
@@ -420,8 +431,6 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     Image = EncryptionKeys;
                     Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedOnly = true;
                     Caption = 'Request Access';
                     ToolTip = 'Request Access to your Shopify store.';
 
@@ -585,6 +594,13 @@ page 30101 "Shpfy Shop Card"
             }
         }
     }
+
+    trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        FeatureTelemetry.LogUptake('0000HUU', 'Shopify', Enum::"Feature Uptake Status"::Discovered);
+    end;
 
     local procedure GetResetSyncTo(InitDateTime: DateTime): DateTime
     var

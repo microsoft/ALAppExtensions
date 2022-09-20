@@ -15,4 +15,9 @@ codeunit 30200 "Shpfy Communication Events"
     begin
     end;
 
+    [InternalEvent(false)]
+    internal procedure OnGetContent(HttpResponseMsg: HttpResponseMessage; var Response: Text)
+    begin
+    end;
+
 }

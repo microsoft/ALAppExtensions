@@ -1,7 +1,7 @@
 /// <summary>
-/// Unknown ShpfyShpfyShpfyShopify Test (ID 30500).
+/// Unknown Shpf Test (ID 30500).
 /// </summary>
-permissionset 135600 "Shopify Test"
+permissionset 135600 "Shpfy Test"
 {
     Assignable = true;
     Caption = 'Shopify Test', MaxLength = 30;
@@ -9,6 +9,8 @@ permissionset 135600 "Shopify Test"
         table "Shpfy Test Fields" = X,
         tabledata "Shpfy Test Fields" = RMID,
         codeunit "Shpfy Base64 Test" = X,
+        codeunit "Shpfy Checklist Init. Test" = X,
+        codeunit "Shpfy Connector Guide Test" = X,
         codeunit "Shpfy CountySource Test" = X,
         codeunit "Shpfy Create Customer Test" = X,
         codeunit "Shpfy Create Item Test" = X,
@@ -28,7 +30,9 @@ permissionset 135600 "Shopify Test"
         codeunit "Shpfy Json Helper Test" = X,
         codeunit "Shpfy Location Subcriber" = X,
         codeunit "Shpfy Order Fulfillments Test" = X,
+        codeunit "Shpfy Order Handeling Helper" = X,
         codeunit "Shpfy Order Risks Test" = X,
+        codeunit "Shpfy Orders API Test" = X,
         codeunit "Shpfy Payments Test" = X,
         codeunit "Shpfy Product Init Test" = X,
         codeunit "Shpfy Product Mapping Test" = X,

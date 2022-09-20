@@ -255,6 +255,12 @@ codeunit 18003 "GST Preview Handler"
         PreviewPosting := false;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustEntry-Apply Posted Entries", 'OnBeforeCustPostApplyCustLedgEntry', '', false, false)]
+    local procedure OnBeforeCustPostApplyCustLedgEntry()
+    begin
+        ClearBuffers();
+    end;
+
     procedure ClearBuffers()
     begin
         TempGSTLedgerEntry.Reset();

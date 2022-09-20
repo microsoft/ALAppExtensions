@@ -26,17 +26,41 @@ codeunit 1698 "Feature Bank Deposits" implements "Feature Data Update"
     end;
 
 #if not CLEAN21
-    [EventSubscriber(ObjectType::Table, Database::"Feature Data Update Status", 'OnAfterModifyEvent', '', false, false)]
-    local procedure OnAfterFeatureDataUpdateStatusModify(var Rec: Record "Feature Data Update Status")
+    [Obsolete('Bank Deposits feature will be enabled by default', '21.0')]
+    local procedure SyncFeatureStatusState(FeatureDataUpdateStatus: Record "Feature Data Update Status")
     var
         BankDepositFeatureMgt: Codeunit "Bank Deposit Feature Mgt.";
     begin
-        if Rec."Feature Key" <> BankDepositFeatureMgt.GetFeatureKeyId() then
+        if FeatureDataUpdateStatus."Feature Key" <> BankDepositFeatureMgt.GetFeatureKeyId() then
             exit;
-        if Rec."Feature Status" = Rec."Feature Status"::Disabled then
+        if FeatureDataUpdateStatus."Feature Status" = FeatureDataUpdateStatus."Feature Status"::Disabled then
             DisableFeature()
         else
             EnableFeature();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Bank Deposit Feature Mgt.", 'OnPreviousNADepositStateDetected', '', false, false)]
+    local procedure OnPreviousNADepositStateDetected()
+    var
+        FeatureDataUpdateStatus: Record "Feature Data Update Status";
+        BankDepositFeatureMgt: Codeunit "Bank Deposit Feature Mgt.";
+    begin
+        if not FeatureDataUpdateStatus.Get(BankDepositFeatureMgt.GetFeatureKeyId(), CompanyName()) then
+            exit;
+        SyncFeatureStatusState(FeatureDataUpdateStatus);
+    end;
+
+
+    [EventSubscriber(ObjectType::Table, Database::"Feature Data Update Status", 'OnAfterModifyEvent', '', false, false)]
+    local procedure OnAfterFeatureDataUpdateStatusModify(var Rec: Record "Feature Data Update Status")
+    begin
+        SyncFeatureStatusState(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Feature Data Update Status", 'OnAfterInsertEvent', '', false, false)]
+    local procedure OnAfterFeatureDataUpdateStatusInsert(var Rec: Record "Feature Data Update Status")
+    begin
+        SyncFeatureStatusState(Rec);
     end;
 
     [Obsolete('Bank Deposits feature will be enabled by default', '21.0')]

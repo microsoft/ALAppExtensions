@@ -46,6 +46,7 @@ codeunit 11725 "Cash Document-Release CZP"
         GenJournalLine: Record "Gen. Journal Line";
         CashDeskCZP: Record "Cash Desk CZP";
         ConfirmManagement: Codeunit "Confirm Management";
+        CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
         CashDocumentPostCZP: Codeunit "Cash Document-Post CZP";
         LinesNotExistsErr: Label 'There are no Cash Document Lines to release.';
         AmountExceededLimitErr: Label 'Cash Document Amount exceeded maximal limit (%1).', Comment = '%1 = maximal limit';
@@ -106,6 +107,8 @@ codeunit 11725 "Cash Document-Release CZP"
         GetCashDesk(CashDocumentHeaderCZP."Cash Desk No.");
         CashDeskCZP.TestField("Bank Acc. Posting Group");
         CashDeskCZP.TestField(Blocked, false);
+        if CashDocumentHeaderCZP.Status <> CashDocumentHeaderCZP.Status::Released then
+            CashDeskManagementCZP.CheckUserRights(CashDeskCZP."No.", Enum::"Cash Document Action CZP"::Release);
     end;
 
     local procedure CheckCashDocumentAmount(CashDocumentHeaderCZP: Record "Cash Document Header CZP")

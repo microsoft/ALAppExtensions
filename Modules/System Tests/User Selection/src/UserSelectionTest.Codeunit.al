@@ -192,7 +192,7 @@ codeunit 135035 "User Selection Test"
             User."User Security ID" := CreateGuid();
             User."User Name" := CopyStr(UserId(), 1, MaxStrLen(User."User Name"));
             User."Full Name" := User."User Name";
-            if not EnvironmentInformation.IsSaaS() then
+            if not EnvironmentInformation.IsSaaSInfrastructure() then
                 User."Windows Security ID" := CopyStr(Sid(User."User Name"), 1, MaxStrLen(User."Windows Security ID"));
             User.Insert();
         end;

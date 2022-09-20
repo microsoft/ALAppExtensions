@@ -147,18 +147,9 @@ page 1690 "Bank Deposit"
                     ToolTip = 'View or edit dimensions, such as area, project, or department, that you can assign to sales and purchase documents to distribute costs and analyze transaction history.';
 
                     trigger OnAction()
-                    var
-                        OriginalDimensionSetId: Integer;
-                        NewDimensionSetID: Integer;
                     begin
-                        OriginalDimensionSetId := Rec."Dimension Set ID";
-                        Rec.ShowDocDim();
+                        ShowDocDim();
                         CurrPage.SaveRecord();
-                        Rec.Find();
-                        NewDimensionSetID := Rec."Dimension Set ID";
-                        if (NewDimensionSetID = OriginalDimensionSetId) then
-                            exit;
-                        PropagateDimensionsToLines();
                     end;
                 }
                 separator(LineSeparator)

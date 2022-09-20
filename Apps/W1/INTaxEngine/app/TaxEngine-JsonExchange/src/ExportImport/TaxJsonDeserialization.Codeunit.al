@@ -2427,7 +2427,7 @@ codeunit 20361 "Tax Json Deserialization"
     var
         Variables: Record "Script Variable";
     begin
-        Variables.SetRange("Script ID", CaseID);
+        Variables.SetRange("Case ID", CaseID);
         Variables.SetRange("Script ID", ScriptID);
         if Variables.FindLast() then
             exit(Variables.ID + 10000);
@@ -2439,7 +2439,7 @@ codeunit 20361 "Tax Json Deserialization"
     var
         LookupFieldSorting: Record "Lookup Field Sorting";
     begin
-        LookupFieldSorting.SetRange("Script ID", CaseID);
+        LookupFieldSorting.SetRange("Case ID", CaseID);
         LookupFieldSorting.SetRange("Script ID", ScriptID);
         if LookupFieldSorting.FindLast() then
             exit(LookupFieldSorting."Line No." + 10000);

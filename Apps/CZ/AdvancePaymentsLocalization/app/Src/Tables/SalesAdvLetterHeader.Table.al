@@ -804,6 +804,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         NoSeriesManagement: Codeunit NoSeriesManagement;
         DimensionManagement: Codeunit DimensionManagement;
+        UserSetupManagement: Codeunit "User Setup Management";
         HideValidationDialog: Boolean;
         SkipBillToContact: Boolean;
         HasSalesSetup: Boolean;
@@ -839,7 +840,6 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
     local procedure InitRecord()
     var
-        UserSetupManagement: Codeunit "User Setup Management";
         AdvanceLbl: Label 'Advance Letter';
     begin
         GetSetup();
@@ -1045,6 +1045,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         SetSalespersonCode(BillToCustomer."Salesperson Code", "Salesperson Code");
         "Registration No." := BillToCustomer."Registration No. CZL";
         "Tax Registration No." := BillToCustomer."Tax Registration No. CZL";
+        "Responsibility Center" := UserSetupManagement.GetRespCenter(0, BillToCustomer."Responsibility Center");
 
         OnAfterSetFieldsBilltoCustomer(Rec, BillToCustomer);
     end;
@@ -1326,7 +1327,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
             Error(RecreateSalesLinesCancelErr, ChangedFieldName);
     end;
 
-    local procedure CreateDim(Type1: Integer; No1: Code[20]; Type2: Integer; No2: Code[20]; Type3: Integer; No3: Code[20])
+    procedure CreateDim(Type1: Integer; No1: Code[20]; Type2: Integer; No2: Code[20]; Type3: Integer; No3: Code[20])
     var
         SourceCodeSetup: Record "Source Code Setup";
         TableID: array[10] of Integer;

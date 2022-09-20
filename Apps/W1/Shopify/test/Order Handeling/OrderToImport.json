@@ -1,0 +1,133 @@
+{
+    "data": {
+        "orders": {
+            "pageInfo": {
+                "hasNextPage": false
+            },
+            "edges": [
+                {
+                    "cursor": "eyJsYXN0X2lkIjo0NTczODUwNDY4NDI0LCJsYXN0X3ZhbHVlIjoiMjAyMi0wNS0yNSAxMzo0Njo0OC4wMDAwMDAifQ==",
+                    "node": {
+                        "legacyResourceId": "4573850468424",
+                        "name": "WEB1346",
+                        "createdAt": "2022-05-25T13:46:50Z",
+                        "updatedAt": "2022-05-25T13:47:47Z",
+                        "test": false,
+                        "fullyPaid": false,
+                        "unpaid": false,
+                        "riskLevel": "LOW",
+                        "displayFinancialStatus": "PENDING",
+                        "displayFulfillmentStatus": "UNFULFILLED",
+                        "subtotalLineItemsQuantity": 1,
+                        "totalPriceSet": {
+                            "shopMoney": {
+                                "amount": "704.99",
+                                "currencyCode": "EUR"
+                            }
+                        },
+                        "customAttributes": [
+                            {
+                                "key": "BC Doc. No.",
+                                "value": "S-ORD101009"
+                            }
+                        ],
+                        "tags": []
+                    }
+                },
+                {
+                    "cursor": "eyJsYXN0X2lkIjo0NTg5Njc5NDQ0MDQwLCJsYXN0X3ZhbHVlIjoiMjAyMi0wNi0wMiAwNzoyNjoxMS4wMDAwMDAifQ==",
+                    "node": {
+                        "legacyResourceId": "4589679444040",
+                        "name": "WEB1347",
+                        "createdAt": "2022-06-02T07:26:12Z",
+                        "updatedAt": "2022-06-02T07:29:06Z",
+                        "test": false,
+                        "fullyPaid": false,
+                        "unpaid": false,
+                        "riskLevel": "LOW",
+                        "displayFinancialStatus": "PENDING",
+                        "displayFulfillmentStatus": "UNFULFILLED",
+                        "subtotalLineItemsQuantity": 1,
+                        "totalPriceSet": {
+                            "shopMoney": {
+                                "amount": "704.99",
+                                "currencyCode": "EUR"
+                            }
+                        },
+                        "customAttributes": [
+                            {
+                                "key": "BC Doc. No.",
+                                "value": "S-ORD101010"
+                            }
+                        ],
+                        "tags": []
+                    }
+                },
+                {
+                    "cursor": "eyJsYXN0X2lkIjo0NjA1ODYyMDE5MTQ0LCJsYXN0X3ZhbHVlIjoiMjAyMi0wNi0xMCAwODozOTozMi4wMDAwMDAifQ==",
+                    "node": {
+                        "legacyResourceId": "4605862019144",
+                        "name": "WEB1348",
+                        "createdAt": "2022-06-10T08:39:34Z",
+                        "updatedAt": "2022-06-10T08:45:05Z",
+                        "test": true,
+                        "fullyPaid": true,
+                        "unpaid": false,
+                        "riskLevel": "LOW",
+                        "displayFinancialStatus": "PAID",
+                        "displayFulfillmentStatus": "UNFULFILLED",
+                        "subtotalLineItemsQuantity": 2,
+                        "totalPriceSet": {
+                            "shopMoney": {
+                                "amount": "697.29",
+                                "currencyCode": "EUR"
+                            }
+                        },
+                        "customAttributes": [
+                            {
+                                "key": "BC Doc. No.",
+                                "value": "1001"
+                            }
+                        ],
+                        "tags": []
+                    }
+                },
+                {
+                    "cursor": "eyJsYXN0X2lkIjo0NjcwMjY5ODE2OTA0LCJsYXN0X3ZhbHVlIjoiMjAyMi0wNy0xMiAwODowMTozNy4wMDAwMDAifQ==",
+                    "node": {
+                        "legacyResourceId": "4670269816904",
+                        "name": "WEB1349",
+                        "createdAt": "2022-07-12T08:01:39Z",
+                        "updatedAt": "2022-07-12T08:01:40Z",
+                        "test": true,
+                        "fullyPaid": true,
+                        "unpaid": false,
+                        "riskLevel": "LOW",
+                        "displayFinancialStatus": "PAID",
+                        "displayFulfillmentStatus": "UNFULFILLED",
+                        "subtotalLineItemsQuantity": 1,
+                        "totalPriceSet": {
+                            "shopMoney": {
+                                "amount": "60.19",
+                                "currencyCode": "EUR"
+                            }
+                        },
+                        "customAttributes": [],
+                        "tags": []
+                    }
+                }
+            ]
+        }
+    },
+    "extensions": {
+        "cost": {
+            "requestedQueryCost": 752,
+            "actualQueryCost": 14,
+            "throttleStatus": {
+                "maximumAvailable": 1000.0,
+                "currentlyAvailable": 986,
+                "restoreRate": 50.0
+            }
+        }
+    }
+}

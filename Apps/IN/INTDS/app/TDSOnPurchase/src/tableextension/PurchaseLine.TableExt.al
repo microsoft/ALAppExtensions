@@ -15,7 +15,9 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
                     if not TDSSection.Get("TDS Section Code") then
                         Error(SectionErr, TDSSection, TDSSection.TableCaption());
 
-                if ("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = '')) then
+                if (("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = ''))) and
+                    (IsFieldValueModified(Rec.FieldNo("TDS Section Code")))
+                then
                     UpdateTaxAmountOnCurrentDocument();
             end;
         }
@@ -36,7 +38,9 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
             trigger OnAfterValidate()
             var
             begin
-                if ("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = '')) then
+                if (("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = ''))) and
+                    (IsFieldValueModified(Rec.FieldNo("Direct Unit Cost")))
+                then
                     UpdateTaxAmountOnCurrentDocument();
             end;
         }
@@ -45,7 +49,9 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
             trigger OnAfterValidate()
             var
             begin
-                if ("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = '')) then
+                if (("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = ''))) and
+                    (IsFieldValueModified(Rec.FieldNo("Line Discount %")))
+                then
                     UpdateTaxAmountOnCurrentDocument();
             end;
         }
@@ -54,7 +60,9 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
             trigger OnAfterValidate()
             var
             begin
-                if ("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = '')) then
+                if (("TDS Section Code" <> '') or ((xRec."TDS Section Code" <> '') and ("TDS Section Code" = ''))) and
+                    (IsFieldValueModified(Rec.FieldNo("Inv. Discount Amount")))
+                then
                     UpdateTaxAmountOnCurrentDocument();
             end;
         }
@@ -143,6 +151,11 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
             repeat
                 CalculateTax.CallTaxEngineOnPurchaseLine(PurchaseLine, PurchaseLine);
             until PurchaseLine.Next() = 0;
+    end;
+
+    local procedure IsFieldValueModified(FieldNo: Integer): Boolean
+    begin
+        exit(CurrFieldNo = fieldNo);
     end;
 
     var

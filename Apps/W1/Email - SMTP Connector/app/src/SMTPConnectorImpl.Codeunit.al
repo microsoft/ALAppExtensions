@@ -24,12 +24,14 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         ConnectionFailureErr: Label 'Cannot connect to server %1.', Comment = '%1 = The SMTP server address';
         AuthenticationFailureErr: Label 'Cannot authenticate the credentials on server %1.', Comment = '%1 = The SMTP server address';
         SendingFailureErr: Label 'Cannot send the email.';
+        SendAsDeniedErr: Label 'Can''t send the email. The %1 account does not have Send As permissions on your mail server for the %2 account.', Comment = '%1 = the email account sending the email, e.g. sales@cronus.com; %2 = the email account used for authentication, e.g. email@cronus.com';
 
         SmtpSendTelemetryMsg: Label 'Email sent.';
         TestEmailBodyTxt: Label '<p style="font-family:Verdana,Arial;font-size:10pt"><b>The user %1 sent this message to test their email settings. You do not need to reply to this message.</b></p><p style="font-family:Verdana,Arial;font-size:9pt"><b>Sent through SMTP Server:</b> %2<BR><b>SMTP Port:</b> %3<BR><b>Authentication:</b> %4<BR><b>Using Secure Connection:</b> %5<br/></p>', Comment = '%1 is an email address, such as user@domain.com; %2 is the name of a mail server, such as mail.live.com; %3 is the TCP port number, such as 25; %4 is the authentication method, such as Basic Authentication; %5 is a boolean value, such as True;', Locked = true;
         NotRegisteredAccountErr: Label 'We could not find the account. Typically, this is because the account has been deleted.';
         SMTPConnectorBase64LogoTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAExSURBVHgB7ZiBbYMwEEXPKANkg2IWaztBu0HTDdoN6GT2CNmAfrc5yaAEmtiuY+k/CVkgc/xnyzIgQgghhDSMsdZO0jCdNE7zArvFuZ+m6eC9/5I7o+/7fdd1r8j3gtO9Xr+0Bu5G5FJwZWsRVxPZCq7M1gA6P6PxcR1jzAhJh4KP8g+E4MMwHPBchzxvMg9/DAMa95/NgHPOnIo8oUC4uV/ULzYjGyMegn+g/cSzj3HmswJR0eIi1wTXi38WkIIitwS/WUAyiqQETxaQBJEcwbMJyBUiOYNnF1DWROQ3dJbgSnYBZUVESQquxJmzvswh1IhBsGc2xJ8NCIdFn/eU8Et2UoAggmYMM4L2QRJHfI0iAspJpCj8oKkNBWpDgdpQoDbNC/DXYm2aFyCEEEKa5htkbSOpWa7j1QAAAABJRU5ErkJggg==', Locked = true;
         ObfuscateLbl: Label '%1*%2@%3', Comment = '%1 = First character of username , %2 = Last character of username, %3 = Host', Locked = true;
+        UserHasNoContactEmailErr: Label 'The user specified for SMTP emailing does not have a contact email set. Please update the user''s contact email to use Current User type for SMTP.';
 
     /// <summary>
     /// Gets the registered accounts for the SMTP connector.
@@ -42,7 +44,7 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         if Account.FindSet() then
             repeat
                 Accounts."Account Id" := Account.Id;
-                Accounts."Email Address" := Account."Email Address";
+                Accounts."Email Address" := GetEmailAddress(Account);
                 Accounts.Name := Account.Name;
                 Accounts.Connector := Enum::"Email Connector"::SMTP;
 
@@ -107,7 +109,7 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         Account: Record "SMTP Account";
         SMTPAuthentication: Codeunit "SMTP Authentication";
         Result: Boolean;
-        SMTPErrorCode: Text;
+        SMTPErrorCode, SMTPSendError : Text;
     begin
         if not Account.Get(AccountId) then
             Error(NotRegisteredAccountErr);
@@ -172,7 +174,9 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
             SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
             Session.LogMessage('00009UZ', StrSubstNo(SmtpSendTelemetryErrorMsg, SMTPAccount."Authentication Type", SMTPErrorCode), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
-            Error(SendingFailureErr);
+            SMTPSendError := GetSendError(SMTPErrorCode, SMTPAccount);
+
+            Error(SMTPSendError);
         end;
 
         Session.LogMessage('00009UX', SmtpSendTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
@@ -180,11 +184,13 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
 
     local procedure BuildSMTPMessage(EmailMessage: Codeunit "Email Message"; SMTPAccount: Record "SMTP Account"; var SMTPMessage: Codeunit "SMTP Message")
     var
+        FromName, FromAddress : Text;
         Recipients: List of [Text];
         AttachmentInStream: InStream;
     begin
         // From name/email address
-        SMTPMessage.AddFrom(SMTPAccount."Sender Name", SMTPAccount."Email Address");
+        GetFrom(SMTPAccount, FromName, FromAddress);
+        SMTPMessage.AddFrom(FromName, FromAddress);
 
         // To, Cc and Bcc Recipients
         EmailMessage.GetRecipients("Email Recipient Type"::"To", Recipients);
@@ -206,6 +212,40 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
                 EmailMessage.Attachments_GetContent(AttachmentInStream);
                 SMTPMessage.AddAttachment(AttachmentInStream, EmailMessage.Attachments_GetName());
             until EmailMessage.Attachments_Next() = 0;
+    end;
+
+    local procedure GetFrom(SMTPAccount: Record "SMTP Account"; var FromName: Text; var FromAddress: Text)
+    var
+        User: Record User;
+    begin
+        case SMTPAccount."Sender Type" of
+            SMTPAccount."Sender Type"::"Specific User":
+                begin
+                    FromName := SMTPAccount."Sender Name";
+                    FromAddress := SMTPAccount."Email Address";
+                end;
+
+            SMTPAccount."Sender Type"::"Current User":
+                begin
+                    User.Get(UserSecurityId());
+                    if User."Contact Email" = '' then
+                        Error(UserHasNoContactEmailErr);
+
+                    FromName := User."Full Name";
+                    FromAddress := User."Contact Email";
+                end;
+        end;
+    end;
+
+    local procedure GetEmailAddress(Account: Record "SMTP Account"): Text[250]
+    var
+        User: Record User;
+    begin
+        if Account."Sender Type" = Account."Sender Type"::"Specific User" then
+            exit(Account."Email Address");
+
+        if User.Get(UserSecurityId()) then
+            exit(User."Contact Email");
     end;
 
     /// <summary>
@@ -269,8 +309,8 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         if SMTPAccount.Name = '' then
             exit(false);
 
-        // Email Address is a mandatory field
-        if SMTPAccount."Email Address" = '' then
+        // Email Address is a mandatory field if a specific account is used
+        if (SMTPAccount."Sender Type" = SMTPAccount."Sender Type"::"Specific User") and (SMTPAccount."Email Address" = '') then
             exit(false);
 
         // Server is a mandatory field
@@ -357,5 +397,17 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
 
             ObfuscatedEmail += '* (Not a valid email)';
         end;
+    end;
+
+    local procedure GetSendError(ErrorCode: Text; SMTPAccount: Record "SMTP Account"): Text
+    var
+        FromName, FromAddress : Text;
+    begin
+        if ErrorCode = '5.2.252' then begin
+            GetFrom(SMTPAccount, FromName, FromAddress);
+            exit(StrSubstNo(SendAsDeniedErr, FromAddress, SMTPAccount."User Name"));
+        end;
+
+        exit(SendingFailureErr);
     end;
 }

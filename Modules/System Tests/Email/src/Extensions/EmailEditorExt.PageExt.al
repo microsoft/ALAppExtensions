@@ -3,10 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-dotnet
+pageextension 134696 "Email Editor Ext" extends "Email Editor"
 {
-    assembly("System.Drawing")
-    {
-        type("System.Drawing.Imaging.PropertyItem"; "PropertyItem") { }
-    }
+    trigger OnOpenPage()
+    var
+        EmailEditorValues: Codeunit "Email Editor Values";
+    begin
+        DefaultExitOption := EmailEditorValues.GetDefaultExitOption();
+    end;
 }

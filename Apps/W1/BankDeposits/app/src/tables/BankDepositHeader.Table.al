@@ -273,6 +273,7 @@ table 1690 "Bank Deposit Header"
         PostingDescriptionTxt: Label 'Deposit %1 %2', Comment = '%1 - the caption of field No.; %2 - the value of field No.';
         OnlyOneAllowedErr: Label 'Only one %1 is allowed for each %2. Choose Change Batch action if you want to create a new bank deposit.', Comment = '%1 - bank deposit; %2 - general journal batch name';
         CannotRenameErr: Label 'You cannot rename a %1.', Comment = '%1 - bank deposit';
+        UpdateDimensionsOnExistingLinesQst: Label 'Do you want to add the bank deposit dimensions to all bank deposit lines?';
 
     local procedure InitInsert()
     var
@@ -440,11 +441,51 @@ table 1690 "Bank Deposit Header"
 
     [Scope('OnPrem')]
     procedure ShowDocDim()
+    var
+        IsHandled: Boolean;
+        OldDimensionSetId: Integer;
     begin
+        IsHandled := false;
+        OnBeforeShowDocDim(Rec, xRec, IsHandled);
+        if IsHandled then
+            exit;
+
+        OldDimensionSetId := Rec."Dimension Set ID";
+
         "Dimension Set ID" :=
           DimensionManagement.EditDimensionSet("Dimension Set ID", "Bank Account No." + ' ' + "No.", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
 
+        if OldDimensionSetId <> Rec."Dimension Set ID" then begin
+            Rec.Modify();
+            PropagateDimensionsToLines();
+        end;
+
         OnAferShowDocDim(Rec);
+    end;
+
+    local procedure PropagateDimensionsToLines()
+    var
+        LocalGenJournalLine: Record "Gen. Journal Line";
+        BankDepositPost: Codeunit "Bank Deposit-Post";
+        CanUpdateLineDimension: Boolean;
+    begin
+        LocalGenJournalLine.Reset();
+        LocalGenJournalLine.SetRange("Journal Template Name", Rec."Journal Template Name");
+        LocalGenJournalLine.SetRange("Journal Batch Name", Rec."Journal Batch Name");
+        if LocalGenJournalLine.FindSet() then begin
+            if GuiAllowed() then
+                CanUpdateLineDimension := Confirm(UpdateDimensionsOnExistingLinesQst)
+            else
+                CanUpdateLineDimension := true;
+
+            if not CanUpdateLineDimension then
+                exit;
+
+            repeat
+                LocalGenJournalLine.Validate("Dimension Set ID", BankDepositPost.CombineDimensionSetsHeaderPriority(Rec, LocalGenJournalLine));
+                LocalGenJournalLine.Modify(true);
+            until LocalGenJournalLine.Next() = 0;
+        end;
     end;
 
     [IntegrationEvent(false, false)]
@@ -484,6 +525,14 @@ table 1690 "Bank Deposit Header"
 
     [IntegrationEvent(false, false)]
     local procedure OnAferShowDocDim(var BankDepositHeader: Record "Bank Deposit Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeShowDocDim(
+        var BankDepositHeader: Record "Bank Deposit Header";
+        xBankDepositHeader: Record "Bank Deposit Header";
+        var IsHandled: Boolean)
     begin
     end;
 }

@@ -1,0 +1,419 @@
+{
+    "order": {
+        "id": 4670269816904,
+        "admin_graphql_api_id": "gid:\/\/shopify\/Order\/4670269816904",
+        "app_id": 580111,
+        "browser_ip": "194.78.182.82",
+        "buyer_accepts_marketing": false,
+        "cancel_reason": null,
+        "cancelled_at": null,
+        "cart_token": "79f7eded738a639a790d5608f710b78e",
+        "checkout_id": 27011485433928,
+        "checkout_token": "8afaeeabdd57babaec31792bea825e69",
+        "client_details": {
+            "accept_language": "en-US,en;q=0.9",
+            "browser_height": 1449,
+            "browser_ip": "194.78.182.82",
+            "browser_width": 3823,
+            "session_hash": null,
+            "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/103.0.5060.114 Safari\/537.36 Edg\/103.0.1264.49"
+        },
+        "closed_at": null,
+        "confirmed": true,
+        "contact_email": "Test@tester.com",
+        "created_at": "2022-07-12T10:01:39+02:00",
+        "currency": "EUR",
+        "current_subtotal_price": "55.20",
+        "current_subtotal_price_set": {
+            "shop_money": {
+                "amount": "55.20",
+                "currency_code": "EUR"
+            },
+            "presentment_money": {
+                "amount": "55.20",
+                "currency_code": "EUR"
+            }
+        },
+        "current_total_discounts": "0.00",
+        "current_total_discounts_set": {
+            "shop_money": {
+                "amount": "0.00",
+                "currency_code": "EUR"
+            },
+            "presentment_money": {
+                "amount": "0.00",
+                "currency_code": "EUR"
+            }
+        },
+        "current_total_duties_set": null,
+        "current_total_price": "60.19",
+        "current_total_price_set": {
+            "shop_money": {
+                "amount": "60.19",
+                "currency_code": "EUR"
+            },
+            "presentment_money": {
+                "amount": "60.19",
+                "currency_code": "EUR"
+            }
+        },
+        "current_total_tax": "10.45",
+        "current_total_tax_set": {
+            "shop_money": {
+                "amount": "10.45",
+                "currency_code": "EUR"
+            },
+            "presentment_money": {
+                "amount": "10.45",
+                "currency_code": "EUR"
+            }
+        },
+        "customer_locale": "en-BE",
+        "device_id": null,
+        "discount_codes": [],
+        "email": "Test@tester.com",
+        "estimated_taxes": false,
+        "financial_status": "paid",
+        "fulfillment_status": null,
+        "gateway": "bogus",
+        "landing_site": "\/",
+        "landing_site_ref": null,
+        "location_id": null,
+        "name": "WEB1349",
+        "note": null,
+        "note_attributes": [
+            {
+                "name": "BC Doc. No.",
+                "value": "101006"
+            }
+        ],
+        "number": 349,
+        "order_number": 1349,
+        "order_status_url": "https:\/\/scaptapoc.myshopify.com\/10828228\/orders\/4caf8915bd0488ba9b088a32b897210b\/authenticate?key=ae292500d074cffbe25aebc6aa7542e6",
+        "original_total_duties_set": null,
+        "payment_gateway_names": [
+            "bogus"
+        ],
+        "phone": null,
+        "presentment_currency": "EUR",
+        "processed_at": "2022-07-12T10:01:37+02:00",
+        "processing_method": "direct",
+        "reference": null,
+        "referring_site": "",
+        "source_identifier": null,
+        "source_name": "web",
+        "source_url": null,
+        "subtotal_price": "55.20",
+        "subtotal_price_set": {
+            "shop_money": {
+                "amount": "55.20",
+                "currency_code": "EUR"
+            },
+            "presentment_money": {
+                "amount": "55.20",
+                "currency_code": "EUR"
+            }
+        },
+        "tags": "",
+        "tax_lines": [
+            {
+                "price": "10.45",
+                "rate": 0.21,
+                "title": "BE TVA",
+                "price_set": {
+                    "shop_money": {
+                        "amount": "10.45",
+                        "currency_code": "EUR"
+                    },
+                    "presentment_money": {
+                        "amount": "10.45",
+                        "currency_code": "EUR"
+                    }
+                },
+                "channel_liable": false
+            }
+        ],
+        "taxes_included": true,
+        "test": true,
+        "token": "4caf8915bd0488ba9b088a32b897210b",
+        "total_discounts": "0.00",
+        "total_discounts_set": {
+            "shop_money": {
+                "amount": "0.00",
+                "currency_code": "EUR"
+            },
+            "presentment_money": {
+                "amount": "0.00",
+                "currency_code": "EUR"
+            }
+        },
+        "total_line_items_price": "55.20",
+        "total_line_items_price_set": {
+            "shop_money": {
+                "amount": "55.20",
+                "currency_code": "EUR"
+            },
+            "presentment_money": {
+                "amount": "55.20",
+                "currency_code": "EUR"
+            }
+        },
+        "total_outstanding": "0.00",
+        "total_price": "60.19",
+        "total_price_set": {
+            "shop_money": {
+                "amount": "60.19",
+                "currency_code": "EUR"
+            },
+            "presentment_money": {
+                "amount": "60.19",
+                "currency_code": "EUR"
+            }
+        },
+        "total_price_usd": "61.19",
+        "total_shipping_price_set": {
+            "shop_money": {
+                "amount": "4.99",
+                "currency_code": "EUR"
+            },
+            "presentment_money": {
+                "amount": "4.99",
+                "currency_code": "EUR"
+            }
+        },
+        "total_tax": "10.45",
+        "total_tax_set": {
+            "shop_money": {
+                "amount": "10.45",
+                "currency_code": "EUR"
+            },
+            "presentment_money": {
+                "amount": "10.45",
+                "currency_code": "EUR"
+            }
+        },
+        "total_tip_received": "0.00",
+        "total_weight": 4030,
+        "updated_at": "2022-08-08T09:20:40+02:00",
+        "user_id": null,
+        "billing_address": {
+            "first_name": "Test",
+            "address1": "Testing",
+            "phone": "",
+            "city": "TestTown",
+            "zip": "1000",
+            "province": null,
+            "country": "Belgium",
+            "last_name": "Tester",
+            "address2": "",
+            "company": "",
+            "latitude": null,
+            "longitude": null,
+            "name": "Test Tester",
+            "country_code": "BE",
+            "province_code": null
+        },
+        "customer": {
+            "id": 5861808898120,
+            "email": "test@tester.com",
+            "accepts_marketing": false,
+            "created_at": "2022-06-10T10:38:10+02:00",
+            "updated_at": "2022-07-12T10:01:40+02:00",
+            "first_name": "Test",
+            "last_name": "Tester",
+            "orders_count": 0,
+            "state": "disabled",
+            "total_spent": "0.00",
+            "last_order_id": null,
+            "note": null,
+            "verified_email": true,
+            "multipass_identifier": null,
+            "tax_exempt": false,
+            "tags": "",
+            "last_order_name": null,
+            "currency": "EUR",
+            "phone": null,
+            "accepts_marketing_updated_at": "2022-06-10T10:38:11+02:00",
+            "marketing_opt_in_level": null,
+            "tax_exemptions": [],
+            "sms_marketing_consent": null,
+            "admin_graphql_api_id": "gid:\/\/shopify\/Customer\/5861808898120",
+            "default_address": {
+                "id": 7388045770824,
+                "customer_id": 5861808898120,
+                "first_name": "Test",
+                "last_name": "Tester",
+                "company": "",
+                "address1": "Testing",
+                "address2": "",
+                "city": "TestTown",
+                "province": null,
+                "country": "Belgium",
+                "zip": "1000",
+                "phone": "",
+                "name": "Test Tester",
+                "province_code": null,
+                "country_code": "BE",
+                "country_name": "Belgium",
+                "default": true
+            }
+        },
+        "discount_applications": [],
+        "fulfillments": [],
+        "line_items": [
+            {
+                "id": 11883238293576,
+                "admin_graphql_api_id": "gid:\/\/shopify\/LineItem\/11883238293576",
+                "fulfillable_quantity": 1,
+                "fulfillment_service": "manual",
+                "fulfillment_status": null,
+                "gift_card": false,
+                "grams": 4030,
+                "name": "AMSTERDAM Lamp",
+                "origin_location": {
+                    "id": 676494663,
+                    "country_code": "BE",
+                    "province_code": "",
+                    "name": "Scapta",
+                    "address1": "Kempische Steenweg 311\/01.2",
+                    "address2": "",
+                    "city": "Hasselt",
+                    "zip": "3500"
+                },
+                "price": "55.20",
+                "price_set": {
+                    "shop_money": {
+                        "amount": "55.20",
+                        "currency_code": "EUR"
+                    },
+                    "presentment_money": {
+                        "amount": "55.20",
+                        "currency_code": "EUR"
+                    }
+                },
+                "product_exists": true,
+                "product_id": 6622547771464,
+                "properties": [],
+                "quantity": 1,
+                "requires_shipping": true,
+                "sku": "1928-S",
+                "taxable": true,
+                "title": "AMSTERDAM Lamp",
+                "total_discount": "0.00",
+                "total_discount_set": {
+                    "shop_money": {
+                        "amount": "0.00",
+                        "currency_code": "EUR"
+                    },
+                    "presentment_money": {
+                        "amount": "0.00",
+                        "currency_code": "EUR"
+                    }
+                },
+                "variant_id": 39470162018376,
+                "variant_inventory_management": "shopify",
+                "variant_title": "",
+                "vendor": "Fabrikam, Inc.",
+                "tax_lines": [
+                    {
+                        "channel_liable": false,
+                        "price": "9.58",
+                        "price_set": {
+                            "shop_money": {
+                                "amount": "9.58",
+                                "currency_code": "EUR"
+                            },
+                            "presentment_money": {
+                                "amount": "9.58",
+                                "currency_code": "EUR"
+                            }
+                        },
+                        "rate": 0.21,
+                        "title": "BE TVA"
+                    }
+                ],
+                "duties": [],
+                "discount_allocations": []
+            }
+        ],
+        "payment_details": {
+            "credit_card_bin": "1",
+            "avs_result_code": null,
+            "cvv_result_code": null,
+            "credit_card_number": "���� ���� ���� 1",
+            "credit_card_company": "Bogus"
+        },
+        "payment_terms": null,
+        "refunds": [],
+        "shipping_address": {
+            "first_name": "Test",
+            "address1": "Testing",
+            "phone": "",
+            "city": "TestTown",
+            "zip": "1000",
+            "province": null,
+            "country": "Belgium",
+            "last_name": "Tester",
+            "address2": "",
+            "company": "",
+            "latitude": null,
+            "longitude": null,
+            "name": "Test Tester",
+            "country_code": "BE",
+            "province_code": null
+        },
+        "shipping_lines": [
+            {
+                "id": 4058238582856,
+                "carrier_identifier": null,
+                "code": "DHL",
+                "delivery_category": null,
+                "discounted_price": "4.99",
+                "discounted_price_set": {
+                    "shop_money": {
+                        "amount": "4.99",
+                        "currency_code": "EUR"
+                    },
+                    "presentment_money": {
+                        "amount": "4.99",
+                        "currency_code": "EUR"
+                    }
+                },
+                "phone": null,
+                "price": "4.99",
+                "price_set": {
+                    "shop_money": {
+                        "amount": "4.99",
+                        "currency_code": "EUR"
+                    },
+                    "presentment_money": {
+                        "amount": "4.99",
+                        "currency_code": "EUR"
+                    }
+                },
+                "requested_fulfillment_service_id": null,
+                "source": "shopify",
+                "title": "DHL",
+                "tax_lines": [
+                    {
+                        "channel_liable": false,
+                        "price": "0.87",
+                        "price_set": {
+                            "shop_money": {
+                                "amount": "0.87",
+                                "currency_code": "EUR"
+                            },
+                            "presentment_money": {
+                                "amount": "0.87",
+                                "currency_code": "EUR"
+                            }
+                        },
+                        "rate": 0.21,
+                        "title": "BE TVA"
+                    }
+                ],
+                "discount_allocations": []
+            }
+        ]
+    }
+}

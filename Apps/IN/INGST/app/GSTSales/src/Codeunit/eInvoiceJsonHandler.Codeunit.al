@@ -203,9 +203,7 @@ codeunit 18147 "e-Invoice Json Handler"
 
     local procedure WriteJsonFileHeader()
     begin
-        JObject.Add('TaxSch', 'GST');
         JObject.Add('Version', '1.1');
-        JObject.Add('Irn', '');
         JsonArrayData.Add(JObject);
     end;
 
@@ -221,19 +219,32 @@ codeunit 18147 "e-Invoice Json Handler"
     local procedure ReadCreditMemoTransactionDetails(GSTCustType: Enum "GST Customer Type"; ShipToCode: Code[12])
     var
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
-        NatureOfSupply: Text[3];
+        NatureOfSupply: Text[7];
         SupplyType: Text[3];
+        IgstOnIntra: Text[3];
     begin
         if IsInvoice then
             exit;
 
-        if GSTCustType in [
-            SalesCrMemoHeader."GST Customer Type"::Registered,
-            SalesCrMemoHeader."GST Customer Type"::Exempted]
-        then
-            NatureOfSupply := 'B2B'
-        else
-            NatureOfSupply := 'EXP';
+        case GSTCustType of
+            SalesInvoiceHeader."GST Customer Type"::Registered, SalesInvoiceHeader."GST Customer Type"::Exempted:
+                NatureOfSupply := 'B2B';
+
+            SalesInvoiceHeader."GST Customer Type"::Export:
+                if SalesInvoiceHeader."GST Without Payment of Duty" then
+                    NatureOfSupply := 'EXPWOP'
+                else
+                    NatureOfSupply := 'EXPWP';
+
+            SalesInvoiceHeader."GST Customer Type"::"Deemed Export":
+                NatureOfSupply := 'DEXP';
+
+            SalesInvoiceHeader."GST Customer Type"::"SEZ Development", SalesInvoiceHeader."GST Customer Type"::"SEZ Unit":
+                if SalesInvoiceHeader."GST Without Payment of Duty" then
+                    NatureOfSupply := 'SEZWOP'
+                else
+                    NatureOfSupply := 'SEZWP';
+        end;
 
         if ShipToCode <> '' then begin
             SalesCrMemoLine.SetRange("Document No.", DocumentNo);
@@ -247,25 +258,43 @@ codeunit 18147 "e-Invoice Json Handler"
         end else
             SupplyType := 'REG';
 
-        WriteTransactionDetails(NatureOfSupply, 'RG', SupplyType, 'false', 'Y', '');
+        if SalesCrMemoHeader."POS Out Of India" then
+            IgstOnIntra := 'Y'
+        else
+            IgstOnIntra := 'N';
+
+        WriteTransactionDetails(NatureOfSupply, 'N', '', IgstOnIntra);
     end;
 
     local procedure ReadInvoiceTransactionDetails(GSTCustType: Enum "GST Customer Type"; ShipToCode: Code[12])
     var
         SalesInvoiceLine: Record "Sales Invoice Line";
-        NatureOfSupplyCategory: Text[3];
+        NatureOfSupplyCategory: Text[7];
         SupplyType: Text[3];
+        IgstOnIntra: Text[3];
     begin
         if not IsInvoice then
             exit;
 
-        if GSTCustType in [
-            SalesInvoiceHeader."GST Customer Type"::Registered,
-            SalesInvoiceHeader."GST Customer Type"::Exempted]
-        then
-            NatureOfSupplyCategory := 'B2B'
-        else
-            NatureOfSupplyCategory := 'EXP';
+        case GSTCustType of
+            SalesInvoiceHeader."GST Customer Type"::Registered, SalesInvoiceHeader."GST Customer Type"::Exempted:
+                NatureOfSupplyCategory := 'B2B';
+
+            SalesInvoiceHeader."GST Customer Type"::Export:
+                if SalesInvoiceHeader."GST Without Payment of Duty" then
+                    NatureOfSupplyCategory := 'EXPWOP'
+                else
+                    NatureOfSupplyCategory := 'EXPWP';
+
+            SalesInvoiceHeader."GST Customer Type"::"Deemed Export":
+                NatureOfSupplyCategory := 'DEXP';
+
+            SalesInvoiceHeader."GST Customer Type"::"SEZ Development", SalesInvoiceHeader."GST Customer Type"::"SEZ Unit":
+                IF SalesInvoiceHeader."GST Without Payment of Duty" THEN
+                    NatureOfSupplyCategory := 'SEZWOP'
+                ELSE
+                    NatureOfSupplyCategory := 'SEZWP';
+        end;
 
         if ShipToCode <> '' then begin
             SalesInvoiceLine.SetRange("Document No.", DocumentNo);
@@ -279,28 +308,32 @@ codeunit 18147 "e-Invoice Json Handler"
         end else
             SupplyType := 'REG';
 
-        WriteTransactionDetails(NatureOfSupplyCategory, 'RG', SupplyType, 'false', 'Y', '');
+        if SalesInvoiceHeader."POS Out Of India" then
+            IgstOnIntra := 'Y'
+        else
+            IgstOnIntra := 'N';
+
+        WriteTransactionDetails(NatureOfSupplyCategory, 'N', '', IgstOnIntra);
     end;
 
     local procedure WriteTransactionDetails(
-        SupplyCategory: Text[3];
+        SupplyCategory: Text[7];
         RegRev: Text[2];
-        SupplyType: Text[3];
-        EcmTrnSel: Text[5];
-        EcmTrn: Text[1];
-        EcmGstin: Text[15])
+        EcmGstin: Text[15];
+        IgstOnIntra: Text[3])
     var
         JTranDetails: JsonObject;
     begin
-        JTranDetails.Add('Catg', SupplyCategory);
+        JTranDetails.Add('TaxSch', 'GST');
+        JTranDetails.Add('SupTyp', SupplyCategory);
         JTranDetails.Add('RegRev', RegRev);
-        JTranDetails.Add('Typ', SupplyType);
-        JTranDetails.Add('EcmTrnSel', EcmTrnSel);
-        JTranDetails.Add('EcmTrn', EcmTrn);
-        JTranDetails.Add('EcmGstin', EcmGstin);
 
-        JsonArrayData.Add(JTranDetails);
-        JObject.Add('TranDtls', JsonArrayData);
+        if EcmGstin <> '' then
+            JTranDetails.Add('EcmGstin', EcmGstin);
+
+        JTranDetails.Add('IgstOnIntra', IgstOnIntra);
+
+        JObject.Add('TranDtls', JTranDetails);
     end;
 
     local procedure ReadDocumentHeaderDetails()
@@ -317,10 +350,10 @@ codeunit 18147 "e-Invoice Json Handler"
                 InvoiceType := 'DBN'
             else
                 InvoiceType := 'INV';
-            PostingDate := Format(SalesInvoiceHeader."Posting Date", 0, '<Year4>-<Month,2>-<Day,2>');
+            PostingDate := Format(SalesInvoiceHeader."Posting Date", 0, '<Day,2>/<Month,2>/<Year4>');
         end else begin
             InvoiceType := 'CRN';
-            PostingDate := Format(SalesCrMemoHeader."Posting Date", 0, '<Year4>-<Month,2>-<Day,2>');
+            PostingDate := Format(SalesCrMemoHeader."Posting Date", 0, '<Day,2>/<Month,2>/<Year4>');
         end;
 
         OriginalInvoiceNo := CopyStr(GetReferenceInvoiceNo(DocumentNo), 1, 16);
@@ -336,8 +369,7 @@ codeunit 18147 "e-Invoice Json Handler"
         JDocumentHeaderDetails.Add('Dt', PostingDate);
         JDocumentHeaderDetails.Add('OrgInvNo', OriginalInvoiceNo);
 
-        JsonArrayData.Add(JDocumentHeaderDetails);
-        JObject.Add('DocDtls', JsonArrayData);
+        JObject.Add('DocDtls', JDocumentHeaderDetails);
     end;
 
     local procedure ReadExportDetails()
@@ -389,7 +421,7 @@ codeunit 18147 "e-Invoice Json Handler"
             WithPayOfDuty := 'Y';
 
         ShipmentBillNo := CopyStr(SalesCrMemoHeader."Bill Of Export No.", 1, 16);
-        ShipmentBillDate := Format(SalesCrMemoHeader."Bill Of Export Date", 0, '<Year4>-<Month,2>-<Day,2>');
+        ShipmentBillDate := Format(SalesCrMemoHeader."Bill Of Export Date", 0, '<Day,2>/<Month,2>/<Year4>');
         ExitPort := SalesCrMemoHeader."Exit Point";
 
         SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
@@ -401,7 +433,7 @@ codeunit 18147 "e-Invoice Json Handler"
         CurrencyCode := CopyStr(SalesCrMemoHeader."Currency Code", 1, 3);
         CountryCode := CopyStr(SalesCrMemoHeader."Bill-to Country/Region Code", 1, 2);
 
-        WriteExportDetails(ExportCategory, WithPayOfDuty, ShipmentBillNo, ShipmentBillDate, ExitPort, DocumentAmount, CurrencyCode, CountryCode);
+        WriteExportDetails(WithPayOfDuty, ShipmentBillNo, ShipmentBillDate, ExitPort, CurrencyCode, CountryCode);
     end;
 
     local procedure ReadInvoiceExportDetails()
@@ -444,7 +476,7 @@ codeunit 18147 "e-Invoice Json Handler"
             WithPayOfDuty := 'Y';
 
         ShipmentBillNo := CopyStr(SalesInvoiceHeader."Bill Of Export No.", 1, 16);
-        ShipmentBillDate := Format(SalesInvoiceHeader."Bill Of Export Date", 0, '<Year4>-<Month,2>-<Day,2>');
+        ShipmentBillDate := Format(SalesInvoiceHeader."Bill Of Export Date", 0, '<Day,2>/<Month,2>/<Year4>');
         ExitPort := SalesInvoiceHeader."Exit Point";
 
         SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
@@ -456,32 +488,27 @@ codeunit 18147 "e-Invoice Json Handler"
         CurrencyCode := CopyStr(SalesInvoiceHeader."Currency Code", 1, 3);
         CountryCode := CopyStr(SalesInvoiceHeader."Bill-to Country/Region Code", 1, 2);
 
-        WriteExportDetails(ExportCategory, WithPayOfDuty, ShipmentBillNo, ShipmentBillDate, ExitPort, DocumentAmount, CurrencyCode, CountryCode);
+        WriteExportDetails(WithPayOfDuty, ShipmentBillNo, ShipmentBillDate, ExitPort, CurrencyCode, CountryCode);
     end;
 
     local procedure WriteExportDetails(
-        ExportCategory: Text[3];
         WithPayOfDuty: Text[1];
         ShipmentBillNo: Text[16];
         ShipmentBillDate: Text[10];
         ExitPort: Text[10];
-        DocumentAmount: Decimal;
         CurrencyCode: Text[3];
         CountryCode: Text[2])
     var
         JExpDetails: JsonObject;
     begin
-        JExpDetails.Add('ExpCat', ExportCategory);
-        JExpDetails.Add('WithPay', WithPayOfDuty);
         JExpDetails.Add('ShipBNo', ShipmentBillNo);
         JExpDetails.Add('ShipBDt', ShipmentBillDate);
         JExpDetails.Add('Port', ExitPort);
-        JExpDetails.Add('InvForCur', DocumentAmount);
+        JExpDetails.Add('RefClm', WithPayOfDuty);
         JExpDetails.Add('ForCur', CurrencyCode);
         JExpDetails.Add('CntCode', CountryCode);
 
-        JsonArrayData.Add(JExpDetails);
-        JObject.Add('ExpDtls', JsonArrayData);
+        JObject.Add('ExpDtls', JExpDetails);
     end;
 
     local procedure ReadDocumentSellerDetails()
@@ -496,10 +523,11 @@ codeunit 18147 "e-Invoice Json Handler"
         Flno: Text[60];
         Loc: Text[60];
         City: Text[60];
-        PostCode: Text[6];
         StateCode: Text[10];
         PhoneNumber: Text[10];
         Email: Text[50];
+        Pin: Integer;
+        PhoneNoValidation: Text[30];
     begin
         Clear(JsonArrayData);
         if IsInvoice then begin
@@ -517,13 +545,27 @@ codeunit 18147 "e-Invoice Json Handler"
         Flno := '';
         Loc := '';
         City := LocationBuff.City;
-        PostCode := CopyStr(LocationBuff."Post Code", 1, 6);
+        if LocationBuff."Post Code" <> '' then
+            Evaluate(Pin, (CopyStr(LocationBuff."Post Code", 1, 6)))
+        else
+            Pin := 000000;
+
         StateBuff.Get(LocationBuff."State Code");
         StateCode := StateBuff."State Code (GST Reg. No.)";
-        PhoneNumber := CopyStr(LocationBuff."Phone No.", 1, 10);
-        Email := CopyStr(LocationBuff."E-Mail", 1, 50);
 
-        WriteSellerDetails(GSTRegistrationNo, CompanyName, Address, Address2, Flno, Loc, City, PostCode, StateCode, PhoneNumber, Email);
+        if LocationBuff."Phone No." <> '' then
+            PhoneNumber := CopyStr(LocationBuff."Phone No.", 1, 10)
+        else
+            PhoneNumber := '000000';
+
+        if LocationBuff."E-Mail" <> '' then
+            Email := CopyStr(LocationBuff."E-Mail", 1, 50)
+        else
+            Email := '0000@00';
+
+        PhoneNoValidation := '!@*()+=-[]\\\;,./{}|\":<>?';
+        PhoneNumber := DelChr(PhoneNumber, '=', PhoneNoValidation);
+        WriteSellerDetails(GSTRegistrationNo, CompanyName, Address, Address2, City, Pin, StateCode, PhoneNumber, Email);
     end;
 
     local procedure WriteSellerDetails(
@@ -531,10 +573,8 @@ codeunit 18147 "e-Invoice Json Handler"
         CompanyName: Text[100];
         Address: Text[100];
         Address2: Text[100];
-        Flno: Text[60];
-        Loc: Text[60];
         City: Text[60];
-        PostCode: Text[6];
+        PostCode: Integer;
         StateCode: Text[10];
         PhoneNumber: Text[10];
         Email: Text[50])
@@ -542,19 +582,27 @@ codeunit 18147 "e-Invoice Json Handler"
         JSellerDetails: JsonObject;
     begin
         JSellerDetails.Add('Gstin', GSTRegistrationNo);
-        JSellerDetails.Add('TrdNm', CompanyName);
-        JSellerDetails.Add('Bno', Address);
-        JSellerDetails.Add('Bnm', Address2);
-        JSellerDetails.Add('Flno', Flno);
-        JSellerDetails.Add('Loc', Loc);
-        JSellerDetails.Add('Dst', City);
+        JSellerDetails.Add('LglNm', CompanyName);
+        JSellerDetails.Add('Addr1', Address);
+
+        if Address2 <> '' then
+            JSellerDetails.Add('Addr2', Address2);
+
+        JSellerDetails.Add('Loc', City);
         JSellerDetails.Add('Pin', PostCode);
         JSellerDetails.Add('Stcd', StateCode);
-        JSellerDetails.Add('Ph', PhoneNumber);
-        JSellerDetails.Add('Em', Email);
 
-        JsonArrayData.Add(JSellerDetails);
-        JObject.Add('SellerDtls', JsonArrayData);
+        if PhoneNumber <> '' then
+            JSellerDetails.Add('Ph', PhoneNumber)
+        else
+            JSellerDetails.Add('Ph', '000000');
+
+        if Email <> '' then
+            JSellerDetails.Add('Em', Email)
+        else
+            JSellerDetails.Add('Em', '0000@00');
+
+        JObject.Add('SellerDtls', JSellerDetails);
     end;
 
     local procedure ReadDocumentBuyerDetails()
@@ -579,19 +627,28 @@ codeunit 18147 "e-Invoice Json Handler"
         Floor: Text[60];
         AddressLocation: Text[60];
         City: Text[60];
-        PostCode: Text[6];
         StateCode: Text[10];
         PhoneNumber: Text[10];
         Email: Text[50];
+        Pin: Integer;
+        PhoneNoValidation: Text[30];
     begin
-        GSTRegistrationNumber := SalesInvoiceHeader."Customer GST Reg. No.";
+        if SalesInvoiceHeader."Customer GST Reg. No." <> '' then
+            GSTRegistrationNumber := SalesInvoiceHeader."Customer GST Reg. No."
+        else
+            GSTRegistrationNumber := 'URP';
+
         CompanyName := SalesInvoiceHeader."Bill-to Name";
         Address := SalesInvoiceHeader."Bill-to Address";
         Address2 := SalesInvoiceHeader."Bill-to Address 2";
         Floor := '';
         AddressLocation := '';
         City := SalesInvoiceHeader."Bill-to City";
-        PostCode := CopyStr(SalesInvoiceHeader."Bill-to Post Code", 1, 6);
+
+        if SalesInvoiceHeader."Bill-to Post Code" <> '' then
+            Evaluate(Pin, (CopyStr(SalesInvoiceHeader."Bill-to Post Code", 1, 6)))
+        else
+            Pin := 000000;
 
         SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
         if SalesInvoiceLine.FindFirst() then
@@ -600,7 +657,7 @@ codeunit 18147 "e-Invoice Json Handler"
                     begin
                         if not (SalesInvoiceHeader."GST Customer Type" = SalesInvoiceHeader."GST Customer Type"::Export) then begin
                             StateBuff.Get(SalesInvoiceHeader."GST Bill-to State Code");
-                            StateCode := StateBuff."State Code for eTDS/TCS";
+                            StateCode := StateBuff."State Code (GST Reg. No.)";
                         end else
                             StateCode := '';
 
@@ -617,7 +674,7 @@ codeunit 18147 "e-Invoice Json Handler"
                     begin
                         if not (SalesInvoiceHeader."GST Customer Type" = SalesInvoiceHeader."GST Customer Type"::Export) then begin
                             StateBuff.Get(SalesInvoiceHeader."GST Ship-to State Code");
-                            StateCode := StateBuff."State Code for eTDS/TCS";
+                            StateCode := StateBuff."State Code (GST Reg. No.)";
                         end else
                             StateCode := '';
 
@@ -630,12 +687,15 @@ codeunit 18147 "e-Invoice Json Handler"
                         end;
                     end;
                 else begin
-                        StateCode := '';
-                        PhoneNumber := '';
-                        Email := '';
-                    end;
+                    StateCode := '';
+                    PhoneNumber := '';
+                    Email := '';
+                end;
             end;
-        WriteBuyerDetails(GSTRegistrationNumber, CompanyName, Address, Address2, Floor, AddressLocation, City, PostCode, StateCode, PhoneNumber, Email);
+
+        PhoneNoValidation := '!@*()+=-[]\\\;,./{}|\":<>?';
+        PhoneNumber := DelChr(PhoneNumber, '=', PhoneNoValidation);
+        WriteBuyerDetails(GSTRegistrationNumber, CompanyName, Address, Address2, City, Pin, StateCode, PhoneNumber, Email);
     end;
 
     local procedure ReadCrMemoBuyerDetails()
@@ -651,19 +711,27 @@ codeunit 18147 "e-Invoice Json Handler"
         Floor: Text[60];
         AddressLocation: Text[60];
         City: Text[60];
-        PostCode: Text[6];
+        Pin: Integer;
         StateCode: Text[10];
         PhoneNumber: Text[10];
         Email: Text[50];
+        PhoneNoValidation: Text[30];
     begin
-        GSTRegistrationNumber := SalesCrMemoHeader."Customer GST Reg. No.";
+        if SalesCrMemoHeader."Customer GST Reg. No." <> '' then
+            GSTRegistrationNumber := SalesCrMemoHeader."Customer GST Reg. No."
+        else
+            GSTRegistrationNumber := 'URP';
         CompanyName := SalesCrMemoHeader."Bill-to Name";
         Address := SalesCrMemoHeader."Bill-to Address";
         Address2 := SalesCrMemoHeader."Bill-to Address 2";
         Floor := '';
         AddressLocation := '';
         City := SalesCrMemoHeader."Bill-to City";
-        PostCode := CopyStr(SalesCrMemoHeader."Bill-to Post Code", 1, 6);
+        if SalesCrMemoHeader."Bill-to Post Code" <> '' then
+            Evaluate(Pin, (CopyStr(SalesCrMemoHeader."Bill-to Post Code", 1, 6)))
+        else
+            Pin := 000000;
+
         StateCode := '';
         PhoneNumber := '';
         Email := '';
@@ -676,7 +744,7 @@ codeunit 18147 "e-Invoice Json Handler"
                     begin
                         if not (SalesCrMemoHeader."GST Customer Type" = SalesCrMemoHeader."GST Customer Type"::Export) then begin
                             StateBuff.Get(SalesCrMemoHeader."GST Bill-to State Code");
-                            StateCode := StateBuff."State Code for eTDS/TCS";
+                            StateCode := StateBuff."State Code (GST Reg. No.)";
                         end;
 
                         if Contact.Get(SalesCrMemoHeader."Bill-to Contact No.") then begin
@@ -689,7 +757,7 @@ codeunit 18147 "e-Invoice Json Handler"
                     begin
                         if not (SalesCrMemoHeader."GST Customer Type" = SalesCrMemoHeader."GST Customer Type"::Export) then begin
                             StateBuff.Get(SalesCrMemoHeader."GST Ship-to State Code");
-                            StateCode := StateBuff."State Code for eTDS/TCS";
+                            StateCode := StateBuff."State Code (GST Reg. No.)";
                         end;
 
                         if ShiptoAddress.Get(SalesCrMemoHeader."Sell-to Customer No.", SalesCrMemoHeader."Ship-to Code") then begin
@@ -699,7 +767,9 @@ codeunit 18147 "e-Invoice Json Handler"
                     end;
             end;
 
-        WriteBuyerDetails(GSTRegistrationNumber, CompanyName, Address, Address2, Floor, AddressLocation, City, PostCode, StateCode, PhoneNumber, Email);
+        PhoneNoValidation := '!@*()+=-[]\\\;,./{}|\":<>?';
+        PhoneNumber := DelChr(PhoneNumber, '=', PhoneNoValidation);
+        WriteBuyerDetails(GSTRegistrationNumber, CompanyName, Address, Address2, City, Pin, StateCode, PhoneNumber, Email);
     end;
 
     local procedure WriteBuyerDetails(
@@ -707,10 +777,8 @@ codeunit 18147 "e-Invoice Json Handler"
         CompanyName: Text[100];
         Address: Text[100];
         Address2: Text[100];
-        Floor: Text[60];
-        AddressLocation: Text[60];
         City: Text[60];
-        PostCode: Text[6];
+        Pin: Integer;
         StateCode: Text[10];
         PhoneNumber: Text[10];
         EmailID: Text[50])
@@ -718,19 +786,33 @@ codeunit 18147 "e-Invoice Json Handler"
         JBuyerDetails: JsonObject;
     begin
         JBuyerDetails.Add('Gstin', GSTRegistrationNumber);
-        JBuyerDetails.Add('TrdNm', CompanyName);
-        JBuyerDetails.Add('Bno', Address);
-        JBuyerDetails.Add('Bnm', Address2);
-        JBuyerDetails.Add('Flno', Floor);
-        JBuyerDetails.Add('Loc', AddressLocation);
-        JBuyerDetails.Add('Dst', City);
-        JBuyerDetails.Add('Pin', PostCode);
-        JBuyerDetails.Add('Stcd', StateCode);
-        JBuyerDetails.Add('Ph', PhoneNumber);
-        JBuyerDetails.Add('Em', EmailID);
+        JBuyerDetails.Add('LglNm', CompanyName);
 
-        JsonArrayData.Add(JBuyerDetails);
-        JObject.Add('BuyerDtls', JsonArrayData);
+        if StateCode <> '' then
+            JBuyerDetails.Add('POS', StateCode)
+        else
+            JBuyerDetails.Add('POS', '96');
+
+        JBuyerDetails.Add('Addr1', Address);
+
+        if Address2 <> '' then
+            JBuyerDetails.Add('Addr2', Address2);
+
+        JBuyerDetails.Add('Loc', City);
+        JBuyerDetails.Add('Stcd', StateCode);
+        JBuyerDetails.Add('Pin', Pin);
+
+        if PhoneNumber <> '' then
+            JBuyerDetails.Add('Ph', PhoneNumber)
+        else
+            JBuyerDetails.Add('Ph', '000000');
+
+        if EmailID <> '' then
+            JBuyerDetails.Add('Em', EmailID)
+        else
+            JBuyerDetails.Add('Em', '0000@00');
+
+        JObject.Add('BuyerDtls', JBuyerDetails);
     end;
 
     local procedure ReadDocumentShippingDetails()
@@ -768,14 +850,16 @@ codeunit 18147 "e-Invoice Json Handler"
                 City := SalesCrMemoHeader."Ship-to City";
                 PostCode := CopyStr(SalesCrMemoHeader."Ship-to Post Code", 1, 6);
             end;
-
-        GSTRegistrationNumber := ShiptoAddress."GST Registration No.";
+        if ShiptoAddress."GST Registration No." <> '' then
+            GSTRegistrationNumber := ShiptoAddress."GST Registration No."
+        else
+            GSTRegistrationNumber := SalesInvoiceHeader."Location GST Reg. No.";
         Floor := '';
         AddressLocation := '';
         StateCode := StateBuff."State Code for eTDS/TCS";
         PhoneNumber := CopyStr(ShiptoAddress."Phone No.", 1, 10);
         EmailID := CopyStr(ShiptoAddress."E-Mail", 1, 50);
-        WriteShippingDetails(GSTRegistrationNumber, CompanyName, Address, Address2, Floor, AddressLocation, City, PostCode, StateCode, PhoneNumber, EmailID);
+        WriteShippingDetails(GSTRegistrationNumber, CompanyName, Address, Address2, AddressLocation, PostCode, StateCode);
     end;
 
     local procedure WriteShippingDetails(
@@ -783,30 +867,33 @@ codeunit 18147 "e-Invoice Json Handler"
         CompanyName: Text[100];
         Address: Text[100];
         Address2: Text[100];
-        Floor: Text[60];
         AddressLocation: Text[60];
-        City: Text[60];
         PostCode: Text[6];
-        StateCode: Text[10];
-        PhoneNumber: Text[10];
-        EmailID: Text[50])
+        StateCode: Text[10])
     var
+        Pin: Integer;
         JShippingDetails: JsonObject;
     begin
+        Pin := 000000;
         JShippingDetails.Add('Gstin', GSTRegistrationNumber);
+        JShippingDetails.Add('LglNm', CompanyName);
         JShippingDetails.Add('TrdNm', CompanyName);
-        JShippingDetails.Add('Bno', Address);
-        JShippingDetails.Add('Bnm', Address2);
-        JShippingDetails.Add('Flno', Floor);
-        JShippingDetails.Add('Loc', AddressLocation);
-        JShippingDetails.Add('Dst', City);
-        JShippingDetails.Add('Pin', PostCode);
-        JShippingDetails.Add('Stcd', StateCode);
-        JShippingDetails.Add('Ph', PhoneNumber);
-        JShippingDetails.Add('Em', EmailID);
+        JShippingDetails.Add('Addr1', Address);
 
-        JsonArrayData.Add(JShippingDetails);
-        JObject.Add('ShipDtls', JsonArrayData);
+        if Address2 <> '' then
+            JShippingDetails.Add('Addr2', Address2);
+
+        JShippingDetails.Add('Loc', AddressLocation);
+
+        if PostCode <> '' then
+            JShippingDetails.Add('Pin', PostCode)
+        else
+            JShippingDetails.Add('Pin', Pin);
+
+        JShippingDetails.Add('Stcd', StateCode);
+
+        if CompanyName <> '' then
+            JObject.Add('ShipDtls', JShippingDetails);
     end;
 
     local procedure ReadDocumentTotalDetails()
@@ -852,8 +939,7 @@ codeunit 18147 "e-Invoice Json Handler"
         JDocTotalDetails.Add('OthChrg', OtherCharges);
         JDocTotalDetails.Add('TotInvVal', TotalInvoiceAmount);
 
-        JsonArrayData.Add(JDocTotalDetails);
-        JObject.Add('ValDtls', JsonArrayData);
+        JObject.Add('ValDtls', JDocTotalDetails);
     end;
 
     local procedure ReadDocumentItemList()
@@ -861,17 +947,20 @@ codeunit 18147 "e-Invoice Json Handler"
         SalesInvoiceLine: Record "Sales Invoice Line";
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
         AssessableAmount: Decimal;
+        GstRate: Integer;
         CGSTRate: Decimal;
         SGSTRate: Decimal;
         IGSTRate: Decimal;
         CessRate: Decimal;
         CesNonAdval: Decimal;
         StateCess: Decimal;
-        FreeQuantity: Decimal;
         CGSTValue: Decimal;
         SGSTValue: Decimal;
         IGSTValue: Decimal;
+        IsServc: Text[1];
+        Count: Integer;
     begin
+        Count := 1;
         Clear(JsonArrayData);
         if IsInvoice then begin
             SalesInvoiceLine.SetRange("Document No.", DocumentNo);
@@ -884,7 +973,11 @@ codeunit 18147 "e-Invoice Json Handler"
                     else
                         AssessableAmount := SalesInvoiceLine.Amount;
 
-                    FreeQuantity := 0;
+                    if SalesInvoiceLine."GST Group Type" = SalesInvoiceLine."GST Group Type"::Goods then
+                        IsServc := 'N'
+                    else
+                        IsServc := 'Y';
+
                     GetGSTComponentRate(
                         SalesInvoiceLine."Document No.",
                         SalesInvoiceLine."Line No.",
@@ -895,17 +988,25 @@ codeunit 18147 "e-Invoice Json Handler"
                         CesNonAdval,
                         StateCess);
 
+                    if SalesInvoiceLine."GST Jurisdiction Type" = SalesInvoiceLine."GST Jurisdiction Type"::Intrastate then
+                        GstRate := CGSTRate + SGSTRate
+                    else
+                        GstRate := IGSTRate;
+
                     GetGSTValueForLine(SalesInvoiceLine."Line No.", CGSTValue, SGSTValue, IGSTValue);
                     WriteItem(
-                      SalesInvoiceLine.Description + SalesInvoiceLine."Description 2", '',
-                      SalesInvoiceLine."HSN/SAC Code", '',
-                      SalesInvoiceLine.Quantity, FreeQuantity,
+                      Format(Count),
+                      SalesInvoiceLine.Description + SalesInvoiceLine."Description 2",
+                      SalesInvoiceLine."HSN/SAC Code",
+                      GstRate, SalesInvoiceLine.Quantity,
                       CopyStr(SalesInvoiceLine."Unit of Measure Code", 1, 3),
                       SalesInvoiceLine."Unit Price",
                       SalesInvoiceLine."Line Amount" + SalesInvoiceLine."Line Discount Amount",
                       SalesInvoiceLine."Line Discount Amount", 0,
-                      AssessableAmount, CGSTRate, SGSTRate, IGSTRate, CessRate, CesNonAdval, StateCess,
-                      AssessableAmount + CGSTValue + SGSTValue + IGSTValue);
+                      AssessableAmount, CGSTValue, SGSTValue, IGSTValue, CessRate, CesNonAdval, StateCess,
+                      AssessableAmount + CGSTValue + SGSTValue + IGSTValue,
+                      IsServc);
+                    Count += 1;
                 until SalesInvoiceLine.Next() = 0;
             end;
 
@@ -922,7 +1023,11 @@ codeunit 18147 "e-Invoice Json Handler"
                     else
                         AssessableAmount := SalesCrMemoLine.Amount;
 
-                    FreeQuantity := 0;
+                    if SalesCrMemoLine."GST Group Type" = SalesCrMemoLine."GST Group Type"::Goods then
+                        IsServc := 'N'
+                    else
+                        IsServc := 'Y';
+
                     GetGSTComponentRate(
                         SalesCrMemoLine."Document No.",
                         SalesCrMemoLine."Line No.",
@@ -933,17 +1038,26 @@ codeunit 18147 "e-Invoice Json Handler"
                         CesNonAdval,
                         StateCess);
 
+                    if SalesCrMemoLine."GST Jurisdiction Type" = SalesCrMemoLine."GST Jurisdiction Type"::Intrastate then
+                        GstRate := CGSTRate + SGSTRate
+                    else
+                        GstRate := IGSTRate;
+
                     GetGSTValueForLine(SalesCrMemoLine."Line No.", CGSTValue, SGSTValue, IGSTValue);
                     WriteItem(
-                      SalesCrMemoLine.Description + SalesCrMemoLine."Description 2", '',
-                      SalesCrMemoLine."HSN/SAC Code", '',
-                      SalesCrMemoLine.Quantity, FreeQuantity,
+                      Format(Count),
+                      SalesCrMemoLine.Description + SalesCrMemoLine."Description 2",
+                      SalesCrMemoLine."HSN/SAC Code", GstRate,
+                      SalesCrMemoLine.Quantity,
                       CopyStr(SalesCrMemoLine."Unit of Measure Code", 1, 3),
                       SalesCrMemoLine."Unit Price",
                       SalesCrMemoLine."Line Amount" + SalesCrMemoLine."Line Discount Amount",
                       SalesCrMemoLine."Line Discount Amount", 0,
-                      AssessableAmount, CGSTRate, SGSTRate, IGSTRate, CessRate, CesNonAdval, StateCess,
-                      AssessableAmount + CGSTValue + SGSTValue + IGSTValue);
+                      AssessableAmount, CGSTValue, SGSTValue, IGSTValue, CessRate, CesNonAdval, StateCess,
+                      AssessableAmount + CGSTValue + SGSTValue + IGSTValue,
+                      IsServc);
+
+                    Count += 1;
                 until SalesCrMemoLine.Next() = 0;
             end;
 
@@ -952,12 +1066,11 @@ codeunit 18147 "e-Invoice Json Handler"
     end;
 
     local procedure WriteItem(
+        SlNo: Text[1];
         ProductName: Text;
-        ProductDescription: Text;
         HSNCode: Text[10];
-        BarCode: Text[30];
+        GstRate: Integer;
         Quantity: Decimal;
-        FreeQuantity: Decimal;
         Unit: Text[3];
         UnitPrice: Decimal;
         TotAmount: Decimal;
@@ -970,26 +1083,29 @@ codeunit 18147 "e-Invoice Json Handler"
         CESSRate: Decimal;
         CessNonAdvanceAmount: Decimal;
         StateCess: Decimal;
-        TotalItemValue: Decimal)
+        TotalItemValue: Decimal;
+        IsServc: Text[1])
     var
         JItem: JsonObject;
     begin
-        JItem.Add('PrdNm', ProductName);
-        JItem.Add('PrdDesc', ProductDescription);
+        JItem.Add('SlNo', SlNo);
+        JItem.Add('PrdDesc', ProductName);
+        JItem.Add('IsServc', IsServc);
         JItem.Add('HsnCd', HSNCode);
-        JItem.Add('Barcde', BarCode);
         JItem.Add('Qty', Quantity);
-        JItem.Add('FreeQty', FreeQuantity);
         JItem.Add('Unit', Unit);
         JItem.Add('UnitPrice', UnitPrice);
         JItem.Add('TotAmt', TotAmount);
         JItem.Add('Discount', Discount);
         JItem.Add('OthChrg', OtherCharges);
         JItem.Add('AssAmt', AssessableAmount);
-        JItem.Add('CgstRt', CGSTRate);
-        JItem.Add('SgstRt', SGSTRate);
-        JItem.Add('IgstRt', IGSTRate);
+        JItem.Add('GstRt', GstRate);
+        JItem.Add('CgstAmt', CGSTRate);
+        JItem.Add('SgstAmt', SGSTRate);
+        JItem.Add('IgstAmt', IGSTRate);
         JItem.Add('CesRt', CESSRate);
+        JItem.Add('CesAmt', 0);
+
         JItem.Add('CesNonAdval', CessNonAdvanceAmount);
         JItem.Add('StateCes', StateCess);
         JItem.Add('TotItemVal', TotalItemValue);
@@ -1004,7 +1120,8 @@ codeunit 18147 "e-Invoice Json Handler"
         InStream: InStream;
         OutStream: OutStream;
     begin
-        JObject.WriteTo(JsonText);
+        JsonArrayData.Add(JObject);
+        JsonArrayData.WriteTo(JsonText);
         TempBlob.CreateOutStream(OutStream);
         OutStream.WriteText(JsonText);
         ToFile := FileName + '.json';

@@ -28,6 +28,7 @@ codeunit 18143 "GST Sales Validation"
         ExemptedLinesErr: Label 'All lines in the document are GST Exempted, the preferred Invoice type should be Bill of Supply.';
         NonExemptedLinesErr: Label 'All lines in the document are not GST Exempted, the preferred Invoice type should be according to GST Customer Type.';
         GSTDependencyTypeErr: Label 'GST dependency type must be Bill to Address or Ship to Address';
+        GSTGroupCodeEqualErr: Label 'GST Group Code must be same in Sales Document Lines for the Document Type %1 and Document No. %2.', Comment = '%1 = Document Type ; %2 = Document No.';
 
     procedure GetPostInvoiceNoSeries(var SalesHeader: Record "Sales Header")
     var
@@ -587,7 +588,7 @@ codeunit 18143 "GST Sales Validation"
             SalesLine."Line Discount %" := 0;
 
         IsHandled := true;
-    end;   
+    end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnUpdateAmountsOnAfterCalcLineAmount', '', false, false)]
     local procedure OnUpdateAmountsOnAfterCalcLineAmount(var SalesLine: Record "Sales Line"; var LineAmount: Decimal)
@@ -598,11 +599,33 @@ codeunit 18143 "GST Sales Validation"
             exit;
 
         GetCurrency(SalesLine, Currency);
-        
+
         SalesLine."Line Discount Amount" := Round(Round(SalesLine.Quantity * SalesLine."Unit Price Incl. of Tax", Currency."Amount Rounding Precision") *
             SalesLine."Line Discount %" / 100, Currency."Amount Rounding Precision");
 
         LineAmount := Round(SalesLine.Quantity * SalesLine."Unit Price Incl. of Tax", Currency."Amount Rounding Precision") - SalesLine."Line Discount Amount";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterAppliesToDocNoOnLookup', '', false, false)]
+    local procedure OnAfterAppliesToDocNoOnLookup(var SalesHeader: Record "Sales Header"; CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+        ValidateGSTGroupCodeonSalesLines(SalesHeader, CustLedgerEntry);
+    end;
+
+    local procedure ValidateGSTGroupCodeonSalesLines(var SalesHeader: Record "Sales Header"; CustLedgerEntry: Record "Cust. Ledger Entry")
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        if not CustLedgerEntry."GST on Advance Payment" then
+            exit;
+
+        SalesLine.SetCurrentKey("Document Type", "Document No.", "No.", "GST Group Code");
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetFilter("No.", '<>%1', '');
+        SalesLine.SetFilter("GST Group Code", '<>%1', CustLedgerEntry."GST Group Code");
+        if not SalesLine.IsEmpty() then
+            Error(GSTGroupCodeEqualErr, SalesHeader."Document Type", SalesHeader."No.");
     end;
 
     local procedure CalcTotalUPITAmount(var Rec: Record "Sales Line")
