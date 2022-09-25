@@ -13,10 +13,10 @@ codeunit 139678 "GP Checkbook Tests"
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
         GPCM20600: Record "GP CM20600";
         GenJournalTemplate: Record "Gen. Journal Template";
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         BankAccount: Record "Bank Account";
         Assert: Codeunit Assert;
+        GPTestHelperFunctions: Codeunit "GP Test Helper Functions";
         InvalidBankAccountMsg: Label '%1 should not have been created.', Comment = '%1 - bank account no.', Locked = true;
         MissingBankAccountMsg: Label '%1 should have been created.', Comment = '%1 - bank account no.', Locked = true;
         ExtraTransactionMsg: Label 'Invalid transaction with discription "%1" should have been created.', Comment = '%1 - transaction description.', Locked = true;
@@ -47,7 +47,12 @@ codeunit 139678 "GP Checkbook Tests"
         CreateCheckbookData();
 
         // [GIVEN] Inactive checkbooks are to be migrated
-        ConfigureMigrationSettings(true);
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] Checkbook migration code is called
         Migrate();
@@ -102,7 +107,13 @@ codeunit 139678 "GP Checkbook Tests"
         CreateCheckbookData();
 
         // [GIVEN] Inactive checkbooks are NOT to be migrated
-        ConfigureMigrationSettings(false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Bank Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", false);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] Checkbook migration code is called
         Migrate();
@@ -174,7 +185,13 @@ codeunit 139678 "GP Checkbook Tests"
         CreateMoreCheckBookData();
 
         // [GIVEN] Inactive checkbooks are NOT to be migrated
-        ConfigureMigrationSettings(false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Bank Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", false);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] Checkbook migration code is called
         Migrate();
@@ -240,7 +257,13 @@ codeunit 139678 "GP Checkbook Tests"
         CreateCheckbookData();
 
         // [GIVEN] Inactive checkbooks are NOT to be migrated
-        ConfigureMigrationSettings(false);
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Bank Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", false);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] Checkbook migration code is called
         Migrate();
@@ -296,42 +319,94 @@ codeunit 139678 "GP Checkbook Tests"
         BankAccountLedger.SetRange("Document No.", Format(520));
         BankAccountLedger.FindFirst();
         Assert.AreEqual(-100.00, BankAccountLedger.Amount, 'Transfer amount is wrong for Trx 520, MyBank5');
+    end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoCommit)]
+    procedure TestBankModuleDisabled()
+    var
+        BankAccount: Record "Bank Account";
+        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
+        GenJournalLine: Record "Gen. Journal Line";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] Bank module is disabled
+        // [GIVEN] There are no records in the BankAcount table
+        ClearTables();
+        GenJournalLine.DeleteAll();
+        BankAccountLedgerEntry.Reset();
+        BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
+        BankAccountLedgerEntry.DeleteAll();
+
+        // [GIVEN] Some records are created in the staging table
+        CreateCheckbookData();
+
+        // [GIVEN] Bank module is disabled
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Bank Module", false);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
+
+        // [WHEN] Checkbook migration code is called
+        Migrate();
+
+        // [THEN] Bank Accounts are not created
+        Assert.RecordCount(BankAccount, 0);
+
+        // [THEN] General Journal Lines are not created
+        GenJournalLine.SetFilter("Journal Batch Name", 'GPBANK');
+        GenJournalLine.SetFilter("Journal Template Name", 'GENERAL');
+        Assert.RecordCount(GenJournalLine, 0);
+
+        // [WHEN] Batch posting is called.
+        HelperFunctions.PostGLTransactions();
+
+        // [THEN] Bank Account Ledger entries are not created
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr1Txt));
+        Assert.RecordCount(BankAccountLedgerEntry, 0);
+
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr2Txt));
+        Assert.RecordCount(BankAccountLedgerEntry, 0);
+
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr3Txt));
+        Assert.RecordCount(BankAccountLedgerEntry, 0);
+
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr4Txt));
+        Assert.RecordCount(BankAccountLedgerEntry, 0);
+
+        BankAccountLedgerEntry.SetRange("Bank Account No.", UpperCase(MyBankStr5Txt));
+        Assert.RecordCount(BankAccountLedgerEntry, 0);
     end;
 
     local procedure ClearTables()
+    var
+        GPConfiguration: Record "GP Configuration";
     begin
         BankAccount.DeleteAll();
         GPCheckbookMSTR.DeleteAll();
-        GPCompanyMigrationSettings.DeleteAll();
-        GPCompanyAdditionalSettings.DeleteAll();
+        GPTestHelperFunctions.DeleteAllSettings();
         GPAccount.DeleteAll();
         GPCheckbookMSTR.DeleteAll();
         GPCheckbookTransactions.DeleteAll();
         GPCM20600.DeleteAll();
+
+        GPConfiguration.GetSingleInstance();
+        GPConfiguration."CheckBooks Created" := false;
+        GPConfiguration.Modify();
     end;
 
     local procedure Migrate()
     var
         GPCheckbookMigrator: Codeunit "GP Checkbook Migrator";
+        HelperFunctions: Codeunit "Helper Functions";
     begin
         GPAccount.FindSet();
         repeat
             MigrateGL(GPAccount);
         until GPAccount.Next() = 0;
-        GPCheckbookMigrator.MoveCheckbookStagingData();
-    end;
-
-    local procedure ConfigureMigrationSettings(MigrateInactive: Boolean)
-    begin
-        GPCompanyMigrationSettings.Init();
-        GPCompanyMigrationSettings.Name := CompanyName();
-        GPCompanyMigrationSettings.Insert(true);
-
-        GPCompanyAdditionalSettings.Init();
-        GPCompanyAdditionalSettings.Name := GPCompanyMigrationSettings.Name;
-        GPCompanyAdditionalSettings."Migrate Inactive Checkbooks" := MigrateInactive;
-        GPCompanyAdditionalSettings.Insert(true);
+        HelperFunctions.CreatePostMigrationData();
     end;
 
     local procedure CreateMoreCheckBookData()
