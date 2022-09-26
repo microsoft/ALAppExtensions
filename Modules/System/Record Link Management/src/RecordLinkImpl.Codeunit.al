@@ -31,10 +31,14 @@ codeunit 4470 "Record Link Impl."
     procedure CopyLinks(FromRecordVariant: Variant; ToRecordVariant: Variant)
     var
         RecordRefTo: RecordRef;
+        IsHandled: Boolean;
     begin
         RecordRefTo.GetTable(ToRecordVariant);
         RecordRefTo.CopyLinks(FromRecordVariant);
-        ResetNotifyOnLinks(RecordRefTo);
+        IsHandled := false;
+        RecordLinkManagement.OnCopyLinksOnBeforeResetNotifyOnLinks(FromRecordVariant, ToRecordVariant, IsHandled);
+        if not IsHandled then
+            ResetNotifyOnLinks(RecordRefTo);
         RecordLinkManagement.OnAfterCopyLinks(FromRecordVariant, ToRecordVariant);
     end;
 

@@ -62,5 +62,16 @@ codeunit 447 "Record Link Management"
     internal procedure OnAfterCopyLinks(FromRecord: Variant; ToRecord: Variant)
     begin
     end;
+
+    /// <summary>
+    /// Integration event for before resetting notify field.
+    /// </summary>
+    /// <param name="FromRecord">The source record from which links are copied.</param>
+    /// <param name="ToRecord">The destination record to which links are copied.</param>
+    /// <param name="IsHandled">Out parameter to set if the event was handled.</param>
+    [IntegrationEvent(false, false)]
+    local procedure OnCopyLinksOnBeforeResetNotifyOnLinks(FromRecord: Variant; ToRecord: Variant; var IsHandled: Boolean)
+    begin
+    end;
 }
 
