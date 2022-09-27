@@ -1,4 +1,4 @@
-﻿## preview
+﻿## v2.0
 
 Note that when using the preview version of AL-Go for GitHub, you need to Update your AL-Go system files, as soon as possible when told to do so.
 
@@ -9,11 +9,20 @@ Note that when using the preview version of AL-Go for GitHub, you need to Update
 - Issue #155 Initial Add existing app fails with "Cannot find path"
 - Issue #152 Error when loading dependencies from releases
 - Issue #168 Regression in preview fixed
+- Issue #189 Warnings: Resource not accessible by integration
+- Issue #190 PublishToEnvironment is not working with AL-Go-PTE@preview
+- Issue #186 AL-GO build fails for multi-project repository when there's nothing to build
+- When you have GitHub pages enabled, AL-Go for GitHub would try to publish to github_pages environment
+- Special characters wasn't supported in parameters to GitHub actions (Create New App etc.)
+
+### Continuous Delivery
+- Added new GitHub Action "Deliver" to deliver build output to Storage or AppSource
+- Refactor CI/CD and Release workflows to use new deliver action
+- Custom delivery supported by creating scripts with the naming convention DeliverTo*.ps1 in the .github folder
 
 ### AppSource Apps
 - New workflow: Publish to AppSource
-- Added new GitHub Action "Deliver" to deliver build output to Storage or AppSource
-- Refactor CI/CD and Release workflows to use new deliver action
+- Continuous Delivery to AppSource validation supported
 
 ### Settings
 - New Repo setting: CICDPushBranches can be specified as an array of branches, which triggers a CI/CD workflow on commit. Default is main', release/\*, feature/\*
@@ -30,6 +39,7 @@ Note that when using the preview version of AL-Go for GitHub, you need to Update
 - Better error messages for if an error occurs within an action
 - Special characters are now supported in secrets
 - Initial support for agents running inside containers on a host
+- Optimized workflows to have fewer jobs
 
 ### Update AL-Go System Files Workflow
 - workflow now displays the currently used template URL when selecting the Run Workflow action
@@ -40,9 +50,11 @@ Note that when using the preview version of AL-Go for GitHub, you need to Update
 - appDependencyProbingPaths with release=latestBuild only considered the last 30 artifacts
 - Use mutex around ReadSecrets to ensure that multiple agents on the same host doesn't clash
 - Add lfs when checking out files for CI/CD to support checking in dependencies
+- Continue on error with Deploy and Deliver
 
 ### CI/CD and Publish To New Environment
 - Base functionality for selecting a specific GitHub runner for an environment
+- Include dependencies artifacts when deploying (if generateDependencyArtifacts is true)
 
 ### localDevEnv.ps1 and cloudDevEnv.ps1
 - Display clear error message if something goes wrong
@@ -73,6 +85,7 @@ Note that when using the preview version of AL-Go for GitHub, you need to Update
 ### Environments
 - Add suport for EnvironmentName redirection by adding an Environment Secret under the environment or a repo secret called \<environmentName\>_EnvironmentName with the actual environment name.
 - No default environment name on Publish To Environment
+- For multi-project repositories, you can specify an environment secret called Projects or a repo setting called \<environment\>_Projects, containing the projects you want to deploy to this environment.
 
 ### Settings
 - New setting: **runs-on** to allow modifying runs-on for all jobs (requires Update AL-Go System files after changing the setting)

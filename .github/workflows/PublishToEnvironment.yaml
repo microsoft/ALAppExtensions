@@ -1,0 +1,150 @@
+﻿name: Publish To Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      appVersion:
+        description: App version to deploy to environment(s) (current, prerelease, draft, latest or version number)
+        required: false
+        default: 'current'
+      environmentName:
+        description: Environment mask to receive the new version (* for all, PROD* for all environments starting with PROD)
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+defaults:
+  run:
+    shell: PowerShell
+
+jobs:
+  Initialization:
+    runs-on: [ self-hosted,1ES.Pool=ALAppExtensions ]
+    outputs:
+      telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+      settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
+      environments: ${{ steps.ReadSettings.outputs.EnvironmentsJson }}
+      environmentCount: ${{ steps.ReadSettings.outputs.EnvironmentCount }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Initialize the workflow
+        id: init
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.0
+        with:
+          eventId: "DO0097"
+
+      - name: Read settings
+        id: ReadSettings
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.0
+        with:
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+          getEnvironments: ${{ github.event.inputs.environmentName }}
+          includeProduction: 'Y'
+
+  Deploy:
+    needs: [ Initialization ]
+    if: ${{ needs.Initialization.outputs.environmentCount > 0 }}
+    strategy: ${{ fromJson(needs.Initialization.outputs.environments) }}
+    runs-on: ${{ fromJson(matrix.os) }}
+    name: Deploy to ${{ matrix.environment }}
+    environment:
+      name: ${{ matrix.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: EnvName
+        id: envName
+        run: |
+          $envName = '${{ matrix.environment }}'.split(' ')[0]
+          Write-Host "::set-output name=envName::$envName"
+
+      - name: Read settings
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.0
+
+      - name: Read secrets
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.0
+        env:
+          secrets: ${{ toJson(secrets) }}
+        with:
+          settingsJson: ${{ env.Settings }}
+          secrets: '${{ steps.envName.outputs.envName }}-AuthContext,${{ steps.envName.outputs.envName }}_AuthContext,AuthContext,${{ steps.envName.outputs.envName }}-EnvironmentName,${{ steps.envName.outputs.envName }}_EnvironmentName,EnvironmentName,Projects'
+
+      - name: AuthContext
+        id: authContext
+        run: |
+          $envName = '${{ steps.envName.outputs.envName }}'
+          $authContext = $null
+          "$($envName)-AuthContext", "$($envName)_AuthContext", "AuthContext" | ForEach-Object {
+            if (!($authContext)) {
+              $authContext = [System.Environment]::GetEnvironmentVariable($_)
+              if ($authContext) {
+                Write-Host "Using $_ secret"
+              }
+            }            
+          }
+          if (!($authContext)) {
+            Write-Host "::Error::No AuthContext provided"
+            exit 1
+          }
+          $environmentName = $null
+          "$($envName)-EnvironmentName", "$($envName)_EnvironmentName", "EnvironmentName" | ForEach-Object {
+            if (!($EnvironmentName)) {
+              $EnvironmentName = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable($_)))
+              if ($EnvironmentName) {
+                Write-Host "Using $_ secret"
+              }
+            }            
+          }
+          if (!($environmentName)) {
+            $environmentName = '${{ steps.envName.outputs.envName }}'
+          }
+          $environmentName = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($environmentName + '${{ matrix.environment }}'.SubString($envName.Length)).ToUpperInvariant()))
+
+          $projects = [System.Environment]::GetEnvironmentVariable("$($envName)-Projects")
+          if (-not $projects) {
+            $projects = [System.Environment]::GetEnvironmentVariable("$($envName)_Projects")
+            if (-not $projects) {
+              $projects = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable('projects')))
+            }
+          }
+          if ($projects -eq '') {
+            $projects = '*'
+          }
+
+          Write-Host "::set-output name=authContext::$authContext"
+          Write-Host "set-output name=authContext::$authContext"
+          Write-Host "::set-output name=environmentName::$environmentName"
+          Write-Host "set-output name=environmentName::$environmentName"
+          Write-Host "::set-output name=projects::$projects"
+          Write-Host "set-output name=projects::$projects"
+
+      - name: Deploy
+        uses: microsoft/AL-Go-Actions/Deploy@v2.0
+        env:
+          authContext: ${{ steps.authContext.outputs.authContext }}
+        with:
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          type: 'Publish'
+          projects: ${{ steps.authContext.outputs.projects }}
+          environmentName: ${{ steps.authContext.outputs.environmentName }}
+          artifacts: ${{ github.event.inputs.appVersion }}
+
+  PostProcess:
+    if: always()
+    runs-on: [ self-hosted,1ES.Pool=ALAppExtensions ]
+    needs: [ Initialization, Deploy ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Finalize the workflow
+        id: PostProcess
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.0
+        with:
+          eventId: "DO0097"
+          telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
