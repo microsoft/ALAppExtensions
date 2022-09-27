@@ -12,6 +12,7 @@ codeunit 135091 "Environment Information Test"
         Assert: Codeunit "Library Assert";
         EnvironmentInformation: Codeunit "Environment Information";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
+        LicenseInformation: Codeunit "License Information";
 
     [Test]
     [Scope('OnPrem')]
@@ -77,6 +78,40 @@ codeunit 135091 "Environment Information Test"
         // [When] Poll for IsSaaS
         // [Then] Should return false
         Assert.IsFalse(EnvironmentInformation.IsSaaS(), 'Testability should have dictacted a non- SaaS environment');
+    end;
+
+    [Test]
+    procedure TestGetLicenseErrorWhenTestabilitySaaSIsSet()
+    var
+        LicenseDetails: text;
+    begin
+        // [SCENARIO] Set the SaaS testability to true. GetLicenseDetails returns error, only for OnPrem.
+
+        // [Given] Environment is SaaS
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [When] Get license details
+        asserterror LicenseDetails := LicenseInformation.GetLicenseDetails();
+
+        // [Then] Expected Error
+        Assert.ExpectedError('Only for OnPrem environments. In SaaS environments use Entitlements.');
+    end;
+
+    [Test]
+    procedure TestGetLicenseDetails()
+    var
+        LicenseDetails: text;
+    begin
+        // [SCENARIO] Set the SaaS testability to false. GetLicense returns the license details.
+
+        // [Given] Environment is OnPrem
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
+
+        // [When] Get license details
+        LicenseDetails := LicenseInformation.GetLicenseDetails();
+
+        // [Then] Should return true
+        Assert.IsTrue(LicenseDetails <> '', 'License details should not be empty.');
     end;
 }
 
