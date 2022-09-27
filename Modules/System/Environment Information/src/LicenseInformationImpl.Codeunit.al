@@ -21,7 +21,7 @@ codeunit 50001 "License Information Impl."
 
         LicenseInformation.FindSet();
         repeat
-            LicenseDetailsBuilder.Append(LicenseInformation.Text);
+            LicenseDetailsBuilder.AppendLine(LicenseInformation.Text);
         until LicenseInformation.Next() = 0;
 
         exit(LicenseDetailsBuilder.ToText());
