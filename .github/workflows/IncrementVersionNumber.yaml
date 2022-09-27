@@ -1,14 +1,14 @@
-﻿name: Add existing app or test app
+﻿name: Increment Version Number
 
 on:
   workflow_dispatch:
     inputs:
       project:
-        description: Project name if the repository is setup for multiple projects
+        description: Project name if the repository is setup for multiple projects (* for all projects)
         required: false
-        default: '.'
-      url:
-        description: Direct Download Url of .app or .zip file
+        default: '*'
+      versionNumber:
+        description: Updated Version Number. Use Major.Minor for absolute change, use +Major.Minor for incremental change.
         required: true
       directCommit:
         description: Direct COMMIT (Y/N)
@@ -24,7 +24,7 @@ defaults:
     shell: PowerShell
 
 jobs:
-  AddExistingAppOrTestApp:
+  IncrementVersionNumber:
     runs-on: [ self-hosted,1ES.Pool=ALAppExtensions ]
     steps:
       - name: Checkout
@@ -34,19 +34,19 @@ jobs:
         id: init
         uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.0
         with:
-          eventId: "DO0090"
+          eventId: "DO0096"
 
-      - name: Add existing app
-        uses: microsoft/AL-Go-Actions/AddExistingApp@v2.0
+      - name: Increment Version Number
+        uses: microsoft/AL-Go-Actions/IncrementVersionNumber@v2.0
         with:
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           project: ${{ github.event.inputs.project }}
-          url: ${{ github.event.inputs.url }}
+          versionNumber: ${{ github.event.inputs.versionNumber }}
           directCommit: ${{ github.event.inputs.directCommit }}
-
+  
       - name: Finalize the workflow
         if: always()
         uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.0
         with:
-          eventId: "DO0090"
+          eventId: "DO0096"
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}

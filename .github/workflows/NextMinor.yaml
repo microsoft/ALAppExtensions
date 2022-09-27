@@ -1,4 +1,4 @@
-﻿name: Test Current
+﻿name: Test Next Minor
 
 on:
   workflow_dispatch:
@@ -27,7 +27,7 @@ jobs:
         id: init
         uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.0
         with:
-          eventId: "DO0101"
+          eventId: "DO0100"
 
       - name: Read settings
         id: ReadSettings
@@ -85,7 +85,7 @@ jobs:
           if ($project -eq ".") { $project = $settings.RepoName }
           'TestResults','BcptTestResults','BuildOutput' | ForEach-Object {
             $name = "$($_)ArtifactsName"
-            $value = "$($project.Replace('\','_'))-$_-Current-$([DateTime]::UtcNow.ToString('yyyyMMdd'))"
+            $value = "$($project.Replace('\','_'))-$_-NextMinor-$([DateTime]::UtcNow.ToString('yyyyMMdd'))"
             Write-Host "::set-output name=$name::$value"
             Add-Content -Path $env:GITHUB_ENV -Value "$name=$value"
           }
@@ -133,5 +133,5 @@ jobs:
         id: PostProcess
         uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.0
         with:
-          eventId: "DO0101"
+          eventId: "DO0100"
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}

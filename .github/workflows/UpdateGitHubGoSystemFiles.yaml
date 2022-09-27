@@ -20,10 +20,8 @@ defaults:
     shell: PowerShell
 
 jobs:
-  Initialization:
+  UpdateALGoSystemFiles:
     runs-on: [ windows-latest ]
-    outputs:
-      telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -34,18 +32,10 @@ jobs:
         with:
           eventId: "DO0098"
 
-  Update:
-    runs-on: [ windows-latest ]
-    needs: [ Initialization ]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
       - name: Read settings
         uses: microsoft/AL-Go-Actions/ReadSettings@v2.0
         with:
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           get: KeyVaultName,GhTokenWorkflowSecretName,TemplateUrl
 
       - name: Read secrets
@@ -53,23 +43,28 @@ jobs:
         env:
           secrets: ${{ toJson(secrets) }}
         with:
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           settingsJson: ${{ env.Settings }}
           secrets: 'ghTokenWorkflow=${{ env.GHTOKENWORKFLOWSECRETNAME }}'
 
       - name: Override TemplateUrl
+        env:
+          templateUrl: ${{ github.event.inputs.templateUrl }}
         run: |
-          $templateUrl = '${{ github.event.inputs.templateUrl }}'
+          $templateUrl = $ENV:templateUrl
           if ($templateUrl) {
             Write-Host "Using Template Url: $templateUrl"
             Add-Content -Path $env:GITHUB_ENV -Value "TemplateUrl=$templateUrl"
           }
 
       - name: Calculate DirectCommit
+        env:
+          directCommit: ${{ github.event.inputs.directCommit }}
+          eventName: ${{ github.event_name }}
         run: |
-          $directCommit = '${{ github.event.inputs.directCommit }}'
-          Write-Host '${{ github.event_name }}'
-          if ('${{ github.event_name }}' -eq 'schedule') {
+          $directCommit = $ENV:directCommit
+          Write-Host $ENV:eventName
+          if ($ENV:eventName -eq 'schedule') {
             Write-Host "Running Update AL-Go System Files on a schedule. Setting DirectCommit = Y"
             $directCommit = 'Y'
           }
@@ -78,23 +73,15 @@ jobs:
       - name: Update AL-Go system files
         uses: microsoft/AL-Go-Actions/CheckForUpdates@v2.0
         with:
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           token: ${{ env.ghTokenWorkflow }}
           Update: Y
           templateUrl: ${{ env.TemplateUrl }}
           directCommit: ${{ env.directCommit }}
 
-  PostProcess:
-    if: always()
-    runs-on: [ windows-latest ]
-    needs: [ Initialization, Update ]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
       - name: Finalize the workflow
-        id: PostProcess
+        if: always()
         uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.0
         with:
           eventId: "DO0098"
-          telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}

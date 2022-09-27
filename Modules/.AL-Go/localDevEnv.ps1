@@ -17,6 +17,12 @@ Set-StrictMode -Version 2.0
 
 $pshost = Get-Host
 if ($pshost.Name -eq "Visual Studio Code Host") {
+    $executionPolicy = Get-ExecutionPolicy -Scope CurrentUser
+    Write-Host "Execution Policy is $executionPolicy"
+    if ($executionPolicy -eq "Restricted") {
+        Write-Host "Changing Execution Policy to RemoteSigned"
+        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+    }
     if ($MyInvocation.InvocationName -eq '.' -or $MyInvocation.Line -eq '') {
         $scriptName = Join-Path $PSScriptRoot $MyInvocation.MyCommand
     }
@@ -44,10 +50,10 @@ $webClient.CachePolicy = New-Object System.Net.Cache.RequestCachePolicy -argumen
 $webClient.Encoding = [System.Text.Encoding]::UTF8
 Write-Host "Downloading GitHub Helper module"
 $GitHubHelperPath = "$([System.IO.Path]::GetTempFileName()).psm1"
-$webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/main/Github-Helper.psm1', $GitHubHelperPath)
+$webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/v2.0/Github-Helper.psm1', $GitHubHelperPath)
 Write-Host "Downloading AL-Go Helper script"
 $ALGoHelperPath = "$([System.IO.Path]::GetTempFileName()).ps1"
-$webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/main/AL-Go-Helper.ps1', $ALGoHelperPath)
+$webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/v2.0/AL-Go-Helper.ps1', $ALGoHelperPath)
 
 Import-Module $GitHubHelperPath
 . $ALGoHelperPath -local
@@ -79,14 +85,13 @@ The script will also modify launch.json to have a Local Sandbox configuration po
 $settings = ReadSettings -baseFolder $baseFolder -userName $env:USERNAME
 
 Write-Host "Checking System Requirements"
-$dockerService = Get-Service docker -ErrorAction SilentlyContinue
-if (-not $dockerService -or $dockerService.Status -ne "Running") {
-    throw "Creating a local development enviroment requires you to have Docker installed and running."
+$dockerProcess = (Get-Process "dockerd" -ErrorAction Ignore)
+if (!($dockerProcess)) {
+    Write-Host -ForegroundColor Red "Dockerd process not found. Docker might not be started, not installed or not running Windows Containers."
 }
-
 if ($settings.keyVaultName) {
     if (-not (Get-Module -ListAvailable -Name 'Az.KeyVault')) {
-        throw "A keyvault name is defined in Settings, you need to have the Az.KeyVault PowerShell module installed (use Install-Module az) or you can set the keyVaultName to an empty string in the user settings file ($($ENV:UserName).Settings.json)."
+        Write-Host -ForegroundColor Red "A keyvault name is defined in Settings, you need to have the Az.KeyVault PowerShell module installed (use Install-Module az) or you can set the keyVaultName to an empty string in the user settings file ($($ENV:UserName).Settings.json)."
     }
 }
 
