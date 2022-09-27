@@ -41,7 +41,7 @@ defaults:
 
 jobs:
   Initialization:
-    runs-on: [ bc-build ]
+    runs-on: [ self-hosted, 1ES.Pool=ALAppExtensions ]
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
@@ -55,7 +55,7 @@ jobs:
           eventId: "DO0102"
 
   Update:
-    runs-on: [ bc-build ]
+    runs-on: [ self-hosted, 1ES.Pool=ALAppExtensions ]
     needs: [ Initialization ]
 
     steps:
@@ -74,7 +74,7 @@ jobs:
 
   PostProcess:
     if: always()
-    runs-on: [ bc-build ]
+    runs-on: [ self-hosted, 1ES.Pool=ALAppExtensions ]
     needs: [ Initialization, Update ]
     steps:
       - name: Checkout
