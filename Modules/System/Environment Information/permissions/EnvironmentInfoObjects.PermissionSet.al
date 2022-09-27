@@ -12,5 +12,7 @@ permissionset 417 "Environment Info. - Objects"
     Permissions = Codeunit "Environment Information Impl." = X,
                   Codeunit "Environment Information" = X,
                   Codeunit "Tenant Information Impl." = X,
-                  Codeunit "Tenant Information" = X;
+                  Codeunit "Tenant Information" = X,
+                  codeunit "License Information Impl." = X,
+                  codeunit "License Information" = X;
 }
