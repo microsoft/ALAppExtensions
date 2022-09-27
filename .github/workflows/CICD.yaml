@@ -23,7 +23,7 @@ defaults:
 
 jobs:
   Initialization:
-    runs-on: [ bc-build ]
+    runs-on: [ self-hosted, 1ES.Pool=ALAppExtensions ]
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
       settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
@@ -81,7 +81,7 @@ jobs:
           Add-Content -Path $env:GITHUB_ENV -Value "DeliveryTargets=$deliveryTargetsJson"
 
   CheckForUpdates:
-    runs-on: [ bc-build ]
+    runs-on: [ self-hosted, 1ES.Pool=ALAppExtensions ]
     needs: [ Initialization ]
     steps:
       - name: Checkout
@@ -320,7 +320,7 @@ jobs:
       matrix:
         deliveryTarget: ${{ fromJson(needs.Initialization.outputs.deliveryTargets) }}
       fail-fast: false
-    runs-on: [ bc-build ]
+    runs-on: [ self-hosted, 1ES.Pool=ALAppExtensions ]
     name: Deliver to ${{ matrix.deliveryTarget }}
     steps:
       - name: Checkout
@@ -362,7 +362,7 @@ jobs:
 
   PostProcess:
     if: always()
-    runs-on: [ bc-build ]
+    runs-on: [ self-hosted, 1ES.Pool=ALAppExtensions ]
     needs: [ Initialization, Build, Deploy, Deliver ]
     steps:
       - name: Checkout
