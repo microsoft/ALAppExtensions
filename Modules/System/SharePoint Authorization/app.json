@@ -35,5 +35,10 @@
             "name":  "SharePoint Authorization Test",
             "publisher":  "Microsoft"
         }
-    ]
+    ],
+    "resourceExposurePolicy":  {
+        "allowDebugging":  false,
+        "allowDownloadingSource":  true,
+        "includeSourceInSymbolFile":  true
+    }
 }

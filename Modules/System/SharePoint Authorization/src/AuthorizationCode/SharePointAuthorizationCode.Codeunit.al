@@ -1,41 +1,35 @@
-codeunit 9141 "SharePoint User Credentials" implements "SharePoint Authorization"
+codeunit 9144 "SharePoint Authorization Code" implements "SharePoint Authorization"
 {
-    Access = Internal;
-
     var
         [NonDebuggable]
         ClientId: Text;
         [NonDebuggable]
-        AadTenantId: Text;
-        [NonDebuggable]
-        Login: Text;
-        [NonDebuggable]
-        Password: Text;
+        ClientSecret: Text;
         [NonDebuggable]
         AccessToken: Text;
         [NonDebuggable]
-        IdToken: Text;
+        AuthCodeErr: Text;
         [NonDebuggable]
-        ExpiryDate: DateTime;
+        AadTenantId: Text;
         [NonDebuggable]
         Scopes: List of [Text];
-        AuthorityTxt: Label 'https://login.microsoftonline.com/{AadTenantId}/oauth2/v2.0/token', Locked = true;
-        BearerTxt: Label 'Bearer %1', Locked = true;
+        [NonDebuggable]
+        ExpiryDate: DateTime;
+        AuthorityTxt: Label 'https://login.microsoftonline.com/{AadTenantId}/oauth2/v2.0/authorize', Locked = true;
+        BearerTxt: Label 'Bearer %1', Comment = '%1 - Token', Locked = true;
 
     [NonDebuggable]
-    procedure SetParameters(NewAadTenantId: Text; NewClientId: Text; NewLogin: Text; NewPassword: Text; NewScopes: List of [Text])
+    procedure SetParameters(NewAadTenantId: Text; NewClientId: Text; NewClientSecret: Text; NewScopes: List of [Text])
     begin
         NewAadTenantId := AadTenantId;
         ClientId := NewClientId;
-        Login := NewLogin;
-        Password := NewPassword;
+        ClientSecret := NewClientSecret;
         Scopes := NewScopes;
         AccessToken := '';
         ExpiryDate := 0DT;
     end;
 
-    [NonDebuggable]
-    procedure Authorize(var HttpRequestMessage: HttpRequestMessage)
+    procedure Authorize(var HttpRequestMessage: HttpRequestMessage);
     var
         Headers: HttpHeaders;
     begin
@@ -53,7 +47,6 @@ codeunit 9141 "SharePoint User Credentials" implements "SharePoint Authorization
                 Error(ErrorText)
             else
                 ExpiryDate := CurrentDateTime() + (3599 * 1000);
-
         exit(AccessToken);
     end;
 
@@ -65,11 +58,13 @@ codeunit 9141 "SharePoint User Credentials" implements "SharePoint Authorization
     begin
         OnBeforeGetToken(IsHandled, IsSuccess, ErrorText, AccessToken);
         if not IsHandled then begin
-            IsSuccess := OAuth2.AcquireTokensWithUserCredentials(GetAuthorityUrl(AadTenantId), ClientId, Scopes, Login, Password, AccessToken, IdToken);
+            OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, GetAuthorityUrl(AadTenantId), '', Scopes, "Prompt Interaction"::Login, AccessToken, AuthCodeErr);
             if not IsSuccess then
-                ErrorText := OAuth2.GetLastErrorMessage();
+                if AuthCodeErr <> '' then
+                    ErrorText := AuthCodeErr
+                else
+                    ErrorText := GetLastErrorText();
         end;
-
         exit(IsSuccess);
     end;
 

@@ -9,7 +9,7 @@
 table 9104 "SharePoint List Item Atch"
 {
     Access = Public;
-    DataClassification = SystemMetadata;
+    DataClassification = CustomerContent;
     Caption = 'SharePoint List Item Attachment';
     TableType = Temporary;
     Extensible = false;
@@ -19,46 +19,45 @@ table 9104 "SharePoint List Item Atch"
 
         field(1; OdataId; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Odata.Id';
         }
 
         field(2; OdataEditLink; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Odata.editLink';
         }
 
         field(3; "File Name"; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'File Name';
         }
 
         field(4; "Server Relative Url"; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Server Relative Url';
         }
 
         field(5; "List Id"; Guid)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'List Id';
         }
 
         field(6; "List Item Id"; Integer)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'List Item Id';
         }
 
         field(7; OdataType; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Odata.Type';
         }
-
     }
 
     keys

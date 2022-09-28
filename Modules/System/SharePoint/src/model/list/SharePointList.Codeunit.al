@@ -26,6 +26,7 @@ codeunit 9104 "SharePoint List"
         JObject: JsonObject;
         JToken: JsonToken;
     begin
+        //extract newly created list data from the post response that created it.
         if JObject.ReadFrom(Payload) then
             if JObject.Get('d', JToken) then begin
                 SharePointList := ParseSingle(JToken.AsObject());

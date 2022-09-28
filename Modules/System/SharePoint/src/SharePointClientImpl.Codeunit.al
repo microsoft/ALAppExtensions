@@ -9,6 +9,8 @@ codeunit 9101 "SharePoint Client Impl."
         Authorization: Interface "SharePoint Authorization";
         ReadResponseFailedErr: Label 'Could not read response.';
         IncorrectResponseErr: Label 'Incorrect response.';
+        IncorrectResponseLogErr: Label 'Incorrect request digest response: %1.';
+        SharePointCategoryLbl: Label 'AL SharePoint';
 
     procedure Initialize(BaseUrl: Text; Auth: Interface "SharePoint Authorization")
     begin
@@ -43,14 +45,21 @@ codeunit 9101 "SharePoint Client Impl."
 
             Context.ReadFrom(Result);
 
-            if not Context.AsObject().Get('d', Context) then
+            if not Context.AsObject().Get('d', Context) then begin
+                Session.LogMessage('00001SPC', StrSubstNo(IncorrectResponseLogErr, Result), Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', SharePointCategoryLbl);
                 Error(IncorrectResponseErr);
+            end;
 
-            if not Context.AsObject().Get('GetContextWebInformation', Context) then
+            if not Context.AsObject().Get('GetContextWebInformation', Context) then begin
+                Session.LogMessage('00002SPC', StrSubstNo(IncorrectResponseLogErr, Result), Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', SharePointCategoryLbl);
                 Error(IncorrectResponseErr);
+            end;
 
-            if not Context.AsObject().Get('FormDigestValue', Context) then
+            if not Context.AsObject().Get('FormDigestValue', Context) then begin
+                Session.LogMessage('00003SPC', StrSubstNo(IncorrectResponseLogErr, Result), Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', SharePointCategoryLbl);
                 Error(IncorrectResponseErr);
+            end;
+
 
             exit(Context.AsValue().AsText());
 

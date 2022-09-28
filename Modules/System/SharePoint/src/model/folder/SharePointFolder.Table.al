@@ -9,7 +9,7 @@
 table 9106 "SharePoint Folder"
 {
     Access = Public;
-    DataClassification = SystemMetadata;
+    DataClassification = CustomerContent;
     Caption = 'SharePoint Folder';
     TableType = Temporary;
     Extensible = false;
@@ -18,55 +18,55 @@ table 9106 "SharePoint Folder"
     {
         field(1; "Unique Id"; Guid)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Unique Id';
         }
 
         field(2; Name; Text[250])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Title';
         }
 
         field(3; Created; DateTime)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Created';
         }
 
         field(4; "Item Count"; Integer)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Item Count';
         }
 
         field(5; "Exists"; Boolean)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Exists';
         }
 
         field(6; "Server Relative Url"; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Server Relative Url';
         }
 
-        field(101; OdataId; Text[2048])
+        field(7; OdataId; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Odata.Id';
         }
 
-        field(102; OdataType; Text[2048])
+        field(8; OdataType; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Odata.Type';
         }
 
-        field(103; OdataEditLink; Text[2048])
+        field(9; OdataEditLink; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Odata.EditLink';
         }
     }

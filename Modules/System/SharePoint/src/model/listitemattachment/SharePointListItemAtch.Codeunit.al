@@ -26,6 +26,7 @@ codeunit 9102 "SharePoint List Item Atch."
         JObject: JsonObject;
         JToken: JsonToken;
     begin
+        //extract newly created attachment data from the post response that created it.
         if JObject.ReadFrom(Payload) then
             if JObject.Get('d', JToken) then begin
                 SharePointListItemAtch := ParseSingle(JToken.AsObject());

@@ -7,9 +7,7 @@ codeunit 9111 "SharePoint Diagnostics"
 
     var
         ErrorMessage, ResponseReasonPhrase : Text;
-
         HttpStatusCode, RetryAfter : Integer;
-
         IsSuccessStatusCode: Boolean;
 
     /// <summary>

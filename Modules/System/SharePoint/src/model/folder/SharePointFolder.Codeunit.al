@@ -26,6 +26,7 @@ codeunit 9105 "SharePoint Folder"
         JObject: JsonObject;
         JToken: JsonToken;
     begin
+        //extract newly created folder data from the post response that created it.
         if JObject.ReadFrom(Payload) then
             if JObject.Get('d', JToken) then begin
                 SharePointFolder := ParseSingle(JToken.AsObject());

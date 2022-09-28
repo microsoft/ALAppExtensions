@@ -10,4 +10,13 @@ codeunit 9143 "SharePoint Auth. - Impl."
         SharePointUserCredentials.SetParameters(AadTenantId, ClientId, Login, Password, Scopes);
         exit(SharePointUserCredentials);
     end;
+
+    [NonDebuggable]
+    procedure CreateAuthorizationCode(AadTenantId: Text; ClientId: Text; ClientSecret: Text; Scopes: List of [Text]): Interface "SharePoint Authorization";
+    var
+        SharePointAuthorizationCode: Codeunit "SharePoint Authorization Code";
+    begin
+        SharePointAuthorizationCode.SetParameters(AadTenantId, ClientId, ClientSecret, Scopes);
+        exit(SharePointAuthorizationCode);
+    end;
 }

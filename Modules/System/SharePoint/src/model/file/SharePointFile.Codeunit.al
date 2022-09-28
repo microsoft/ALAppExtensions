@@ -15,6 +15,7 @@ codeunit 9106 "SharePoint File"
         JObject: JsonObject;
         JToken: JsonToken;
     begin
+        //extract newly created file data from the post response that created it.
         if JObject.ReadFrom(Payload) then
             if JObject.Get('d', JToken) then begin
                 SharePointFile := ParseSingle(JToken.AsObject());

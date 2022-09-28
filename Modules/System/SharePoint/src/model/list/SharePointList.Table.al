@@ -9,7 +9,7 @@
 table 9105 "SharePoint List"
 {
     Access = Public;
-    DataClassification = SystemMetadata;
+    DataClassification = CustomerContent;
     Caption = 'SharePoint List';
     TableType = Temporary;
     Extensible = false;
@@ -18,67 +18,67 @@ table 9105 "SharePoint List"
     {
         field(1; Id; Guid)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Id';
         }
 
         field(2; Title; Text[250])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Title';
         }
 
         field(3; Created; DateTime)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Created';
         }
 
         field(4; Description; Text[250])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Description';
         }
 
         field(5; "Base Template"; Text[250])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Base Template';
         }
 
         field(6; "Base Type"; Text[250])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Base Type';
         }
 
         field(7; "Is Catalog"; Boolean)
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Is Catalog';
         }
 
         field(8; "List Item Entity Type"; Text[250])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'List Item Entity Type Full Name';
         }
 
-        field(101; OdataId; Text[2048])
+        field(9; OdataId; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Odata.Id';
         }
 
-        field(102; OdataType; Text[2048])
+        field(10; OdataType; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Odata.Type';
         }
 
-        field(103; OdataEditLink; Text[2048])
+        field(11; OdataEditLink; Text[2048])
         {
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
             Caption = 'Odata.EditLink';
         }
     }

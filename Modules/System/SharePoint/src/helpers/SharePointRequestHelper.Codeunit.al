@@ -21,7 +21,6 @@ codeunit 9109 "SharePoint Request Helper"
     procedure Post(SharePointUriBuilder: Codeunit "SharePoint Uri Builder") OperationResponse: Codeunit "SharePoint Operation Response"
     var
         SharePointHttpContent: Codeunit "SharePoint Http Content";
-
     begin
         OperationResponse := SendRequest(PrepareRequestMsg("Http Request Type"::POST, SharePointUriBuilder, SharePointHttpContent));
     end;
