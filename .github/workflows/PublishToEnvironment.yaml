@@ -21,7 +21,7 @@ defaults:
 
 jobs:
   Initialization:
-    runs-on: [ self-hosted,1ES.Pool=ALAppExtensions ]
+    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
       settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
@@ -136,7 +136,7 @@ jobs:
 
   PostProcess:
     if: always()
-    runs-on: [ self-hosted,1ES.Pool=ALAppExtensions ]
+    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
     needs: [ Initialization, Deploy ]
     steps:
       - name: Checkout
