@@ -1,5 +1,5 @@
 ﻿{
-    "country":  "us",
+    "country":  "base",
     "appFolders":  [
                        "System"
                    ],
@@ -12,7 +12,7 @@
                         "System Test Libraries",
                         "System Tests"
                     ],
-    "artifact":  "//20.1/base/first",
+    "artifact":  "//20.4/base/first",
     "enablePerTenantExtensionCop":  false,
-    "repoVersion":  "20.1"
+    "repoVersion":  "20.4"
 }
