@@ -33,9 +33,21 @@
                              "id":  "29a123a2-ce97-426c-881f-d1d5b914b5ca",
                              "name":  "Blob Storage Test Library",
                              "publisher":  "Microsoft",
+<<<<<<< HEAD
                              "version":  "21.2.0.0"
                          }
                      ],
+=======
+                             "version":  "20.4.0.0"
+                         },
+                         {
+                            "id": "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+                            "publisher": "Microsoft",
+                            "name": "Any",
+                            "version": "20.4.0.0"
+                          }
+                    ],
+>>>>>>> 0de87a79 (Remove a range of values from BLOB list)
     "screenshots":  [
 
                     ],
