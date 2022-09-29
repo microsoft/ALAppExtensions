@@ -11,6 +11,7 @@ codeunit 135032 "Temp Blob List Test"
     var
         Assert: Codeunit "Library Assert";
         PermissionsMock: Codeunit "Permissions Mock";
+        Any: Codeunit Any;
         ElementNotAddedErr: Label 'The element was not added.';
         ElementNotRemovedErr: Label 'The element was not removed.';
         ElementDoesNotExistErr: Label 'An element with the given index does not exist.';
@@ -361,6 +362,84 @@ codeunit 135032 "Temp Blob List Test"
         Assert.AreEqual(ReadDataFromBlob(TempBlob3), ReadDataFromBlob(TempBlobOut3), UnexpectedDataErr);
     end;
 
+    [Test]
+    procedure RemoveRange()
+    var
+        TempBlobList: Codeunit "Temp Blob List";
+        BlobListData: List of [Text];
+    begin
+        // [SCENARIO] Remove a range of elements from a blob list
+
+        PermissionsMock.Set('Blob Storage Exec');
+
+        // [GIVEN] A BLOB list with 7 elements
+        BlobListData := InitializeTempBlobListWithRandomData(TempBlobList, 7);
+
+        // [WHEN] Remove range from the temp blob list. Removing 4 elements starting from index 3.
+        TempBlobList.RemoveRange(3, 4);
+
+        // [THEN] The BLOB list contains 3 elements. Elements 1, 2, and 7 are in the list.
+        Assert.AreEqual(3, TempBlobList.Count(), IncorrectCountErr);
+        Assert.AreEqual(BlobListData.Get(1), GetBlobListElementContent(TempBlobList, 1), UnexpectedDataErr);
+        Assert.AreEqual(BlobListData.Get(2), GetBlobListElementContent(TempBlobList, 2), UnexpectedDataErr);
+        Assert.AreEqual(BlobListData.Get(7), GetBlobListElementContent(TempBlobList, 3), UnexpectedDataErr);
+    end;
+
+    [Test]
+    procedure RemoveRangeElementCountOutOfRange()
+    var
+        TempBlobList: Codeunit "Temp Blob List";
+        BlobListData: List of [Text];
+    begin
+        // [SCENARIO] Remove a range of elements from a blob list when the number to be deleted is outside of the list boundaries
+        PermissionsMock.Set('Blob Storage Exec');
+
+        // [GIVEN] A BLOB list with 5 elements
+        BlobListData := InitializeTempBlobListWithRandomData(TempBlobList, 5);
+
+        // [WHEN] Delete 8 list elements starting from index 3
+        TempBlobList.RemoveRange(3, 8);
+
+        // [THEN] Operation is successful, the list contains two elements: 1 and 2
+        Assert.AreEqual(2, TempBlobList.Count(), IncorrectCountErr);
+        Assert.AreEqual(BlobListData.Get(1), GetBlobListElementContent(TempBlobList, 1), UnexpectedDataErr);
+        Assert.AreEqual(BlobListData.Get(2), GetBlobListElementContent(TempBlobList, 2), UnexpectedDataErr);
+    end;
+
+    [Test]
+    procedure RemoveAllElementsFromBlobList()
+    var
+        TempBlobList: Codeunit "Temp Blob List";
+    begin
+        // [SCENARIO] Clear the list by removing all elements starting from index 1
+
+        PermissionsMock.Set('Blob Storage Exec');
+
+        // [GIVEN] A BLOB list with 8 elements
+        InitializeTempBlobListWithRandomData(TempBlobList, Any.IntegerInRange(5, 8));
+
+        // [WHEN] Remove 8 elements starting from 1
+        TempBlobList.RemoveRange(1, TempBlobList.Count());
+
+        // [THEN] The list contains 0 elements
+        Assert.AreEqual(0, TempBlobList.Count(), IncorrectCountErr);
+    end;
+
+    local procedure InitializeTempBlobListWithRandomData(var TempBlobList: Codeunit "Temp Blob List"; Length: Integer): List of [Text]
+    var
+        TempBlob: Codeunit "Temp Blob";
+        BlobListData: List of [Text];
+        I: Integer;
+    begin
+        for I := 1 to Length do begin
+            BlobListData.Add(Any.AlphabeticText(100));
+            WriteDataToBlob(BlobListData.Get(I), TempBlob);
+            TempBlobList.Add(TempBlob);
+        end;
+
+        exit(BlobListData);
+    end;
+
     local procedure WriteDataToBlob(Data: Text; var TempBlob: Codeunit "Temp Blob")
     var
         OutStream: OutStream;
@@ -375,6 +454,14 @@ codeunit 135032 "Temp Blob List Test"
     begin
         TempBlob.CreateInStream(InStream);
         InStream.Read(Data);
+    end;
+
+    local procedure GetBlobListElementContent(TempBlobList: Codeunit "Temp Blob List"; Index: Integer): Text
+    var
+        TempBlob: Codeunit "Temp Blob";
+    begin
+        TempBlobList.Get(Index, TempBlob);
+        exit(ReadDataFromBlob(TempBlob));
     end;
 }
 
