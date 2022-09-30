@@ -6,7 +6,6 @@ codeunit 4017 "GP Account Migrator"
         PostingGroupCodeTxt: Label 'GP', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
         DescriptionTrxTxt: Label 'Migrated transaction', Locked = true;
-        GlDocNoTxt: Label 'G00001', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
     procedure OnMigrateGlAccount(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
@@ -97,7 +96,7 @@ codeunit 4017 "GP Account Migrator"
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
         BeginningBalance: Decimal;
-        PostingGroupCode: Text;
+        PostingGroupCode: Code[10];
         InitialYear: Integer;
     begin
         InitialYear := GPCompanyAdditionalSettings.GetInitialYear();
@@ -118,8 +117,8 @@ codeunit 4017 "GP Account Migrator"
             DataMigrationFacadeHelper.CreateGeneralJournalBatchIfNeeded(CopyStr(PostingGroupCode, 1, 10), '', '');
             DataMigrationFacadeHelper.CreateGeneralJournalLine(
                 GenJournalLine,
-                CopyStr(PostingGroupCode, 1, 10),
-                CopyStr(GlDocNoTxt, 1, 20),
+                PostingGroupCode,
+                PostingGroupCode,
                 BeginningBalanceTrxTxt,
                 GenJournalLine."Account Type"::"G/L Account",
                 CopyStr(GPAccount.AcctNum, 1, 20),
@@ -159,7 +158,7 @@ codeunit 4017 "GP Account Migrator"
         GPFiscalPeriods: Record "GP Fiscal Periods";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
-        PostingGroupCode: Text;
+        PostingGroupCode: Code[10];
         DimSetID: Integer;
         InitialYear: Integer;
     begin
@@ -180,8 +179,8 @@ codeunit 4017 "GP Account Migrator"
                     DataMigrationFacadeHelper.CreateGeneralJournalBatchIfNeeded(CopyStr(PostingGroupCode, 1, 10), '', '');
                     DataMigrationFacadeHelper.CreateGeneralJournalLine(
                         GenJournalLine,
-                        CopyStr(PostingGroupCode, 1, 10),
-                        CopyStr(GlDocNoTxt, 1, 20),
+                        PostingGroupCode,
+                        PostingGroupCode,
                         CopyStr(DescriptionTrxTxt, 1, 50),
                         GenJournalLine."Account Type"::"G/L Account",
                         CopyStr(GPAccount.AcctNum, 1, 20),

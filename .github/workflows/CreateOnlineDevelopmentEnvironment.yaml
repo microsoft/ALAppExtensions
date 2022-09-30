@@ -24,39 +24,29 @@ defaults:
     shell: PowerShell
 
 jobs:
-  Initialization:
-    runs-on: [ bc-build ]
-    outputs:
-      telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+  CreateOnlineDevelopmentEnvironment:
+    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@main
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.0
         with:
           eventId: "DO0093"
 
-  CreateEnvironment:
-    runs-on: [ bc-build ]
-    needs: [ Initialization ]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@main
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.0
         with:
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@main
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.0
         env:
           secrets: ${{ toJson(secrets) }}
         with:
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           settingsJson: ${{ env.Settings }}
           secrets: 'adminCenterApiCredentials'
 
@@ -70,7 +60,7 @@ jobs:
             Write-Host "AdminCenterApiCredentials not provided, initiating Device Code flow"
             $ALGoHelperPath = "$([System.IO.Path]::GetTempFileName()).ps1"
             $webClient = New-Object System.Net.WebClient
-            $webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/main/AL-Go-Helper.ps1', $ALGoHelperPath)
+            $webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/v2.0/AL-Go-Helper.ps1', $ALGoHelperPath)
             . $ALGoHelperPath
             $BcContainerHelperPath = DownloadAndImportBcContainerHelper -baseFolder $ENV:GITHUB_WORKSPACE
             $authContext = New-BcAuthContext -includeDeviceLogin -deviceLoginTimeout ([TimeSpan]::FromSeconds(0))
@@ -80,25 +70,17 @@ jobs:
           }
 
       - name: Create Development Environment
-        uses: microsoft/AL-Go-Actions/CreateDevelopmentEnvironment@main
+        uses: microsoft/AL-Go-Actions/CreateDevelopmentEnvironment@v2.0
         with:
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          environmentName: ${{ github.event.inputs.environmentName }} 
-          reUseExistingEnvironment: ${{ github.event.inputs.reUseExistingEnvironment }} 
-          directCommit: ${{ github.event.inputs.directCommit }} 
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+          environmentName: ${{ github.event.inputs.environmentName }}
+          reUseExistingEnvironment: ${{ github.event.inputs.reUseExistingEnvironment }}
+          directCommit: ${{ github.event.inputs.directCommit }}
           adminCenterApiCredentials: ${{ env.adminCenterApiCredentials }} 
 
-  PostProcess:
-    if: always()
-    runs-on: [ bc-build ]
-    needs: [ Initialization,  CreateEnvironment ]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
       - name: Finalize the workflow
-        id: PostProcess
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@main
+        if: always()
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.0
         with:
           eventId: "DO0093"
-          telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
