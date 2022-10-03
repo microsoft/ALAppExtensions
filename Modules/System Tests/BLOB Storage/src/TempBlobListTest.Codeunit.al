@@ -433,6 +433,27 @@ codeunit 135032 "Temp Blob List Test"
     end;
 
     [Test]
+    procedure RemoveElementsFromHead()
+    var
+        TempBlobList: Codeunit "Temp Blob List";
+        BlobListData: List of [Text];
+    begin
+        // [SCENARIO] Remove a range of elements from the head of the list
+        PermissionsMock.Set('Blob Storage Exec');
+
+        // [GIVEN] A BLOB list with 5 elements
+        BlobListData := InitializeTempBlobListWithRandomData(TempBlobList, 5);
+
+        // [WHEN] Delete 3 list elements starting from index 1
+        TempBlobList.RemoveRange(1, 3);
+
+        // [THEN] Operation is successful, the list contains two elements: 4 and 5
+        Assert.AreEqual(2, TempBlobList.Count(), IncorrectCountErr);
+        Assert.AreEqual(BlobListData.Get(4), GetBlobListElementContent(TempBlobList, 1), UnexpectedDataErr);
+        Assert.AreEqual(BlobListData.Get(5), GetBlobListElementContent(TempBlobList, 2), UnexpectedDataErr);
+    end;
+
+    [Test]
     procedure RemoveAllElementsFromBlobList()
     var
         TempBlobList: Codeunit "Temp Blob List";
