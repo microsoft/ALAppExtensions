@@ -13,6 +13,7 @@ codeunit 4109 "Temp Blob List Impl."
 #pragma warning restore AA0073
         ObjectDoesNotExistErr: Label 'Object with index %1 does not exist.', Comment = '%1=Index of the object';
         InvalidNoObjectsRequestedErr: Label 'There are not enough objects available to fulfill the request.';
+        ElementCountMustBePositiveErr: Label 'Element count must be positive.';
 
     procedure Exists(Index: Integer): Boolean
     begin
@@ -55,8 +56,11 @@ codeunit 4109 "Temp Blob List Impl."
         if not TempBlobRec.Get(Index) then
             Error(ObjectDoesNotExistErr, Index);
 
+        if ElementCount < 1 then
+            Error(ElementCountMustBePositiveErr);
+
         if TempBlobRec.Get(Index + ElementCount) then
-            GetRange(Index + ElementCount, Count() - Index - ElementCount, TempBlobList);
+            GetRange(Index + ElementCount, Count() - Index - ElementCount + 1, TempBlobList);
 
         TempBlobRec.SetFilter("Primary Key", '>=%1', Index);
         TempBlobRec.DeleteAll();
