@@ -1,4 +1,9 @@
-Codeunit 9108 "SharePoint Operation Response"
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+codeunit 9108 "SharePoint Operation Response"
 {
     Access = Internal;
 

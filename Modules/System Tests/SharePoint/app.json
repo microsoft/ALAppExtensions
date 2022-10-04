@@ -21,13 +21,13 @@
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "publisher":  "Microsoft",
                              "name":  "Library Assert",
-                             "version":  "20.1.0.0"
+                             "version":  "20.2.0.0"
                          },
                          {
                              "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
                              "publisher":  "Microsoft",
                              "name":  "Any",
-                             "version":  "20.1.0.0"
+                             "version":  "20.2.0.0"
                          }, 
                          {
                             "id": "ff0caa38-65a2-49c5-a7e2-6a0475cfc60e",
