@@ -25,7 +25,10 @@ page 2502 "Extension Marketplace"
                 var
                     MarketplaceUrl: Text;
                 BEGIN
-                    MarketplaceUrl := ExtensionMarketplace.GetMarketplaceEmbeddedUrl();
+                    if AppsourceUrl <> '' then
+                        MarketplaceUrl := AppsourceUrl
+                    else
+                        MarketplaceUrl := ExtensionMarketplace.GetMarketplaceEmbeddedUrl();
                     CurrPage.Marketplace.SubscribeToEvent('message', MarketplaceUrl);
                     CurrPage.Marketplace.Navigate(MarketplaceUrl);
                 END;
@@ -62,8 +65,7 @@ page 2502 "Extension Marketplace"
             if ActionOption = ActionOption::acquireApp then begin
                 TelemetryUrl := ExtensionMarketplace.GetTelementryUrlFromData(JObject);
                 applicationId := ExtensionMarketplace.GetApplicationIdFromData(JObject);
-                if NOT ExtensionMarketplace.InstallAppsourceExtension(applicationId, TelemetryUrl) then
-                    MESSAGE(GETLASTERRORTEXT);
+                ExtensionMarketplace.InstallAppsourceExtensionWithRefreshSession(applicationId, TelemetryUrl);
             end;
     end;
 
@@ -74,10 +76,16 @@ page 2502 "Extension Marketplace"
         MessageType := ExtensionMarketplace.GetMessageType(JObject);
     end;
 
+    internal procedure SetAppsourceUrl(Url: Text)
+    begin
+        AppsourceUrl := Url;
+    end;
+
     var
         ExtensionMarketplace: Codeunit "Extension Marketplace";
         JObject: DotNet JObject;
         MessageType: Text;
         TelemetryUrl: Text;
+        AppsourceUrl: Text;
 }
 

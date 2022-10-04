@@ -2,7 +2,22 @@ pageextension 31115 "Posted Return Receipt CZL" extends "Posted Return Receipt"
 {
     layout
     {
+#if not CLEAN20
+#pragma warning disable AL0432
         movelast(General; "Posting Description")
+#pragma warning restore AL0432
+#else
+        addlast(General)
+        {
+            field("Posting Description CZL"; Rec."Posting Description")
+            {
+                ApplicationArea = SalesReturnOrder;
+                Editable = false;
+                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
+                Visible = false;
+            }
+        }
+#endif
         addbefore("Location Code")
         {
             field("Reason Code CZL"; Rec."Reason Code")

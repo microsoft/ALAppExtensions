@@ -52,24 +52,12 @@ codeunit 1596 "Email Installer"
 
     local procedure GetDefaultEmailViewPolicyUpgradeTag(): Code[250]
     begin
-        exit('MS-434130-DefaultEmailViewPolicyChanged-20220905');
+        exit('MS-445654-DefaultEmailViewPolicyChanged-20221908');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterInitialization', '', false, false)]
     local procedure AddAllowedTablesOnAfterSystemInitialization()
     begin
         AddRetentionPolicyAllowedTables();
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
-    local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
-    var
-        UpgradeTag: Codeunit "Upgrade Tag";
-    begin
-        if not UpgradeTag.HasUpgradeTag(GetEmailTablesAddedToAllowedListUpgradeTag()) then
-            PerCompanyUpgradeTags.Add(GetEmailTablesAddedToAllowedListUpgradeTag());
-
-        if not UpgradeTag.HasUpgradeTag(GetDefaultEmailViewPolicyUpgradeTag()) then
-            PerCompanyUpgradeTags.Add(GetDefaultEmailViewPolicyUpgradeTag());
     end;
 }

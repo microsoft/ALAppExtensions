@@ -215,7 +215,6 @@ codeunit 31037 "Bank Operations Functions CZL"
         exit(OutputSum mod 11);
     end;
 #if not CLEAN19
-#if CLEAN18
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Bank Operations Functions", 'OnBeforeCheckBankAccountNo', '', false, false)]
     local procedure CheckErrorsOnBeforeCheckBankAccountNo(BankAccountNo: Text[30]; ShowErrorMessages: Boolean; var HasErrors: Boolean)
@@ -223,6 +222,5 @@ codeunit 31037 "Bank Operations Functions CZL"
         HasErrors := CheckBankAccountNo(BankAccountNo, ShowErrorMessages);
     end;
 #pragma warning restore AL0432
-#endif
 #endif
 }

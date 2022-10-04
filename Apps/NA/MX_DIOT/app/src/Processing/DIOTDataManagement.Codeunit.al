@@ -27,7 +27,7 @@ codeunit 27021 "DIOT Data Management"
         LeaseAndRentNonMXErr: Label 'Operations with non-mx Vendor cannot have Lease And Rent Type of operation.';
         MissingRFCNoErr: Label 'MX vendors must have RFC Number filled in.';
         CountryCodeNotValidErr: Label 'Vendor''s Country Code is not among valid DIOT Country Codes.';
-        NegativeAmountErr: Label 'The amount for Concept No. %1 for Vendor with No. = %2 is negative, which is not valid.';
+        NegativeAmountErr: Label 'The amount for Concept No. %1 for Vendor with No. = %2 is negative, which is not valid.', Comment = '%1 = DIOT Concept No. Field Value; %2 = Vendor No. Field Value';
         NoDataMsg: Label 'There are no VAT Entries for configured concepts in the specified date range.';
 
     procedure GetTypeOfOperationCode(TypeOfOperation: Option): code[2]
@@ -290,9 +290,10 @@ codeunit 27021 "DIOT Data Management"
     var
         DIOTLine: Text;
         i: Integer;
+        DIOTLineTxt: Label '%1|%2|%3|%4|%5|%6|%7|', Locked = true;
     begin
         with DIOTReportVendorBuffer do begin
-            DIOTLine := StrSubstNo('%1|%2|%3|%4|%5|%6|%7|', "Type of Vendor Text", "Type of Operation Text", "RFC Number", "TAX Registration ID", "Vendor Name", "Country/Region Code", Nationality);
+            DIOTLine := StrSubstNo(DIOTLineTxt, "Type of Vendor Text", "Type of Operation Text", "RFC Number", "TAX Registration ID", "Vendor Name", "Country/Region Code", Nationality);
             for i := 1 to ArrayLen(ColumnAmounts) do begin
                 if ColumnAmounts[i] > 0 then
                     DIOTLine += Format(ROUND(ColumnAmounts[i], 1), 0, 9);

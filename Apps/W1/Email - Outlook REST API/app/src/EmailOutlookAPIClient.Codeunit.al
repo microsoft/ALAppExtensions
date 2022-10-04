@@ -57,10 +57,10 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
     end;
 
     /// <summary>
-    /// Send email using Outlook API. If the message json parameter is <= 4 mb and wrapped in a message object it is sent in a single request, otherwise it is sent it in multiple requests
+    /// Send email using Outlook API. If the message json parameter &lt;= 4 mb and wrapped in a message object it is sent in a single request, otherwise it is sent it in multiple requests
     /// </summary>
     /// <param name="AccessToken">Access token of the account.</param>
-    /// <param name="MessageJson">The JSON representing the email message.</param>///
+    /// <param name="MessageJson">The JSON representing the email message.</param>
     [NonDebuggable]
     procedure SendEmail(AccessToken: Text; MessageJson: JsonObject)
     var

@@ -3,6 +3,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
     var
         StartPositionTxt: Label ' STARTPOSITION %1', Locked = true;
         QueryCountTxt: Label ' MAXRESULTS %1', Locked = true;
+        TableCountQueryTxt: label 'select count(*) from %1', comment = '%1 = Table name';
         AnArrayExpectedErr: Label 'An array was expected.';
         MigrationTypeTxt: Label 'QuickBooks';
         QBORequestErr: Label 'Error from QBO request: %1', Locked = true;
@@ -10,6 +11,9 @@ Codeunit 1917 "MigrationQB Helper Functions"
         ImportedEntityTxt: Label 'Imported %1 data file.', Locked = true;
         PulledEntityTxt: Label 'Pulled %1 from source.', Locked = true;
         AuthHeaderErr: Label 'Unable to get Authorization header. ', Locked = true;
+        QBRequest1Txt: Label '/v3/company/%1/query?query=%2&minorversion=4', comment = '%1 = Realm ID, %2 = Encoded SQL query';
+        QBRequest2Txt: Label '/v3/company/%1/query?query=%2', comment = '%1 = Realm ID, %2 = Encoded SQL query';
+
 
     procedure GetEntities(EntityName: Text; var JArray: JsonArray): Boolean
     var
@@ -50,7 +54,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
 
         repeat
             QueryEncoded := QBQuery + StrSubstNo(StartPositionTxt, StartPosition) + StrSubstNo(QueryCountTxt, PageSize);
-            Request := StrSubstNo('/v3/company/%1/query?query=%2&minorversion=4', RealmId, QueryEncoded);
+            Request := StrSubstNo(QBRequest1Txt, RealmId, QueryEncoded);
             if not InvokeQuickBooksRESTRequest(Request, EntityName, JToken) then
                 exit(false);
 
@@ -125,12 +129,12 @@ Codeunit 1917 "MigrationQB Helper Functions"
             exit(false);
 
         foreach RecordType in MasterRecords do begin
-            QueryEncoded := StrSubstNo('select count(*) from %1', RecordType) + StrSubstNo(StartPositionTxt, 1) + StrSubstNo(QueryCountTxt, 1);
+            QueryEncoded := StrSubstNo(TableCountQueryTxt, RecordType) + StrSubstNo(StartPositionTxt, 1) + StrSubstNo(QueryCountTxt, 1);
 
-            Request := StrSubstNo('/v3/company/%1/query?query=%2', RealmId, QueryEncoded);
+            Request := StrSubstNo(QBRequest2Txt, RealmId, QueryEncoded);
             InvokeQuickBooksRESTRequest(Request, 'totalCount', JToken);
 
-            if JToken.IsValue() then begin
+            if JToken.IsValue() then
                 case RecordType of
                     'Account':
                         MigrationQBConfig.UpdateTotalAccounts(JToken.AsValue().AsInteger());
@@ -141,8 +145,6 @@ Codeunit 1917 "MigrationQB Helper Functions"
                     'Vendor':
                         MigrationQBConfig.UpdateTotalVendors(JToken.AsValue().AsInteger());
                 end;
-                MigrationQBConfig.Modify();
-            end
         end;
         exit(true);
     end;
@@ -166,7 +168,6 @@ Codeunit 1917 "MigrationQB Helper Functions"
         DateTimeVar: DateTime;
         IntegerVar: Integer;
         DecimalVar: Decimal;
-        DummyDateVar: Date;
     begin
         TextToWrite := TrimStringQuotes(TextToWrite);
         case Format(DestinationFieldRef.Type()) of
@@ -196,7 +197,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
                 begin
                     if TextToWrite.Contains('T') then
                         TextToWrite := FixDateFormat(TextToWrite);
-                    MyVariant := DummyDateVar;
+                    MyVariant := 0D;
                     TypeHelper.Evaluate(MyVariant, TextToWrite, 'yyyy-MM-dd', 'en-US');
                     DestinationFieldRef.Value := MyVariant;
                 end;
@@ -227,7 +228,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
         NameValueBuffer: Record "Name/Value Buffer";
     begin
         NameValueBuffer.SetFilter(Value, '= %1', EntityName);
-        if NameValueBuffer.Find('-') then
+        if NameValueBuffer.FindFirst() then
             exit(NameValueBuffer.Name);
 
         exit('');

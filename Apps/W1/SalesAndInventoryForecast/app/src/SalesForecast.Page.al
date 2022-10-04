@@ -231,6 +231,7 @@ page 1850 "Sales Forecast"
         StatusLbl: Label 'Status';
         IsStatusTextEnabled: Boolean;
         PrevRecNo: Code[20];
+        LastUpdatedTxt: Label 'Updated %1', Comment = '%1 = Last updated date';
 
     local procedure UpdatePage()
     begin
@@ -354,12 +355,12 @@ page 1850 "Sales Forecast"
     begin
         if ForecastType = ForecastType::Sales then begin
             BusinessChartBuffer.AddMeasure(SalesForecastTxt, 1,
-            BusinessChartBuffer."Data Type"::Decimal, BusinessChartBuffer."Chart Type"::Column);
+            BusinessChartBuffer."Data Type"::Decimal, BusinessChartBuffer."Chart Type"::Column.AsInteger());
             BusinessChartBuffer.SetXAxis('Period' + Format(MSSalesForecast."Forecast Data"::Result),
             BusinessChartBuffer."Data Type"::String);
         end else begin
             BusinessChartBuffer.AddMeasure(InventoryForecastTxt, 1,
-            BusinessChartBuffer."Data Type"::Decimal, BusinessChartBuffer."Chart Type"::Column);
+            BusinessChartBuffer."Data Type"::Decimal, BusinessChartBuffer."Chart Type"::Column.AsInteger());
             BusinessChartBuffer.SetXAxis('Period' + Format(MSSalesForecast."Forecast Data"::Result),
             BusinessChartBuffer."Data Type"::String);
         end;
@@ -461,7 +462,6 @@ page 1850 "Sales Forecast"
         LastValidDate: Date;
         NumberOfPeriodsToPredict: Integer;
         VariancePercSetup: Decimal;
-        NumberOfPeriodsWithHistory: Integer;
         NumberOfPeriodsWithHistoryLoc: Integer;
         HasMinimumHistory: Boolean;
         HasMinimumHistoryLoc: Boolean;
@@ -481,8 +481,6 @@ page 1850 "Sales Forecast"
             WorkDate());
         OnAfterHasMinimumSIHistData("No.", HasMinimumHistoryLoc, NumberOfPeriodsWithHistoryLoc, MSSalesForecastSetup."Period Type", WorkDate(), StatusType);
         HasMinimumHistory := (HasMinimumHistory OR HasMinimumHistoryLoc);
-        if NumberOfPeriodsWithHistoryLoc > NumberOfPeriodsWithHistory then
-            NumberOfPeriodsWithHistory := NumberOfPeriodsWithHistoryLoc; // Otherwise, NumberOfPeriodsWithHistory is already the bigger number
         if not HasMinimumHistory then begin
             SetStatusText(StatusType::"Not enough historical data");
             exit;
@@ -495,7 +493,7 @@ page 1850 "Sales Forecast"
                 exit;
             end;
 
-        LastUpdatedText := StrSubstNo('Updated %1', Format(DT2Date(MSSalesForecastParameter."Last Updated")));
+        LastUpdatedText := StrSubstNo(LastUpdatedTxt, Format(DT2Date(MSSalesForecastParameter."Last Updated")));
 
         // forecast exists, check if forecast expired
         if MSSalesForecastParameter."Last Updated" <> 0DT then begin

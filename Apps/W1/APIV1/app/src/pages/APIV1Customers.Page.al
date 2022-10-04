@@ -50,7 +50,9 @@ page 20009 "APIV1 - Customers"
                 field(address; PostalAddressJSON)
                 {
                     Caption = 'address', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the address for the customer.';
 
                     trigger OnValidate()
@@ -280,7 +282,7 @@ page 20009 "APIV1 - Customers"
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
         Customer: Record Customer;
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
         IF Name = '' THEN
             ERROR(NotProvidedCustomerNameErr);
@@ -293,9 +295,9 @@ page 20009 "APIV1 - Customers"
 
         ProcessPostalAddress();
 
-        RecRef.GETTABLE(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CURRENTDATETIME());
-        RecRef.SETTABLE(Rec);
+        RecordRef.GETTABLE(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecordRef, TempFieldSet, CURRENTDATETIME());
+        RecordRef.SETTABLE(Rec);
 
         MODIFY(TRUE);
         SetCalculatedFields();

@@ -30,16 +30,18 @@ codeunit 153 "User Permissions Impl."
         exit(not AccessControl.IsEmpty());
     end;
 
-    procedure RemoveSuperPermissions(UserSecurityId: Guid)
+    procedure RemoveSuperPermissions(UserSecurityId: Guid): Boolean
     var
         AccessControl: Record "Access Control";
     begin
         if not IsAnyoneElseSuper(UserSecurityId) then
-            exit;
+            exit(false);
 
         SetSuperFilters(AccessControl);
         AccessControl.SetRange("User Security ID", UserSecurityId);
         AccessControl.DeleteAll(true);
+
+        exit(true);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Access Control", 'OnBeforeRenameEvent', '', false, false)]
@@ -127,15 +129,15 @@ codeunit 153 "User Permissions Impl."
         Error(SUPERPermissionErr);
     end;
 
-    local procedure SetSuperFilters(var Rec: Record "Access Control")
+    local procedure SetSuperFilters(var AccessControlRec: Record "Access Control")
     begin
-        Rec.SetRange("Role ID", SUPERTok);
-        Rec.SetFilter("Company Name", '='''''); // Company Name value is an empty string
+        AccessControlRec.SetRange("Role ID", SUPERTok);
+        AccessControlRec.SetFilter("Company Name", '='''''); // Company Name value is an empty string
     end;
 
-    local procedure IsSuper(var Rec: Record "Access Control"): Boolean
+    local procedure IsSuper(var AccessControlRec: Record "Access Control"): Boolean
     begin
-        exit((Rec."Role ID" = SUPERTok) and (Rec."Company Name" = ''));
+        exit((AccessControlRec."Role ID" = SUPERTok) and (AccessControlRec."Company Name" = ''));
     end;
 
     local procedure IsAnyoneElseSuper(UserSecurityId: Guid): Boolean

@@ -15,6 +15,8 @@ page 9142 "GetAddress.io Config"
             field("API Key"; APIKeyText)
             {
                 ApplicationArea = Basic, Suite;
+                ToolTip = 'API Key for GetAddress.io';
+                ShowCaption = false;
 
                 trigger OnValidate()
                 begin
@@ -27,6 +29,7 @@ page 9142 "GetAddress.io Config"
             field("Endpoint URL"; Rec.EndpointURL)
             {
                 ApplicationArea = Basic, Suite;
+                ToolTip = 'Endpoint URL for GetAddress.io';
             }
             field(TermsAndConditions; TermsAndCondsLbl)
             {

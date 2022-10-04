@@ -213,7 +213,7 @@ codeunit 31277 "Workflow Handler CZC"
         RecordRestrictionMgt.UpdateRestriction(Rec, xRec);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Setup", 'OnInsertWorkflowTemplates', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Setup", 'OnAfterInitWorkflowTemplates', '', false, false)]
     local procedure InsertWorkflowTemplates()
     begin
         if IsTestingEnvironment() then
@@ -233,6 +233,8 @@ codeunit 31277 "Workflow Handler CZC"
     var
         Workflow: Record Workflow;
     begin
+        if Workflow.Get(WorkflowSetup.GetWorkflowTemplateCode(CompensationApprWorkflowCodeTxt)) then
+            exit;
         WorkflowSetup.InsertWorkflowTemplate(Workflow, CompensationApprWorkflowCodeTxt, CompensationApprWorkflowDescTxt, FinCategoryTxt);
         InsertCompensationApprovalWorkflowDetails(Workflow);
         WorkflowSetup.MarkWorkflowAsTemplate(Workflow);

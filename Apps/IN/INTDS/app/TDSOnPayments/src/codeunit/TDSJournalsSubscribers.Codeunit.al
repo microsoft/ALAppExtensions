@@ -11,7 +11,8 @@ codeunit 18767 "TDS Journals Subscribers"
         AllowedSections: Record "Allowed Sections";
     begin
         if (Rec."Document Type" in [Rec."Document Type"::Invoice, Rec."Document Type"::Payment]) and
-            (Rec."Account Type" = Rec."Account Type"::Vendor)
+            (Rec."Account Type" = Rec."Account Type"::Vendor) and
+            (Rec."Recurring Method" = Rec."Recurring Method"::" ")
         then begin
             AllowedSections.Reset();
             AllowedSections.SetRange("Vendor No", Rec."Account No.");

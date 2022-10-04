@@ -10,6 +10,13 @@ pageextension 11770 "Posted Service Shipment CZL" extends "Posted Service Shipme
                 Editable = false;
                 ToolTip = 'Specifies the customer''s market type to link business transakcions to.';
             }
+            field("Posting Description CZL"; Rec."Posting Description")
+            {
+                ApplicationArea = Basic, Suite;
+                Editable = false;
+                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
+                Visible = false;
+            }
         }
         addafter("EU 3-Party Trade")
         {

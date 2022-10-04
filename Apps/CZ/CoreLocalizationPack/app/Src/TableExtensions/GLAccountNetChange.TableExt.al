@@ -1,6 +1,3 @@
-#if not CLEAN18
-#pragma warning disable AL0432
-#endif
 tableextension 31047 "G/L Account Net Change CZL" extends "G/L Account Net Change"
 {
     fields

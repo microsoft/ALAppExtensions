@@ -4463,6 +4463,18 @@ End Function</Code>
         <Field Name="VATLbl">
           <DataField>VATLbl</DataField>
         </Field>
+        <Field Name="GreetingLbl">
+          <DataField>GreetingLbl</DataField>
+        </Field>
+        <Field Name="BodyLbl">
+          <DataField>BodyLbl</DataField>
+        </Field>
+        <Field Name="ClosingLbl">
+          <DataField>ClosingLbl</DataField>
+        </Field>
+        <Field Name="DocumentNoLbl">
+          <DataField>DocumentNoLbl</DataField>
+        </Field>
         <Field Name="No_PurchaseHeader">
           <DataField>No_PurchaseHeader</DataField>
         </Field>
@@ -4507,6 +4519,12 @@ End Function</Code>
         </Field>
         <Field Name="ExpectedReceiptDate_PurchaseHeader">
           <DataField>ExpectedReceiptDate_PurchaseHeader</DataField>
+        </Field>
+        <Field Name="OrderDate_PurchaseHeaderCaption">
+          <DataField>OrderDate_PurchaseHeaderCaption</DataField>
+        </Field>
+        <Field Name="OrderDate_PurchaseHeader">
+          <DataField>OrderDate_PurchaseHeader</DataField>
         </Field>
         <Field Name="PaymentTerms">
           <DataField>PaymentTerms</DataField>

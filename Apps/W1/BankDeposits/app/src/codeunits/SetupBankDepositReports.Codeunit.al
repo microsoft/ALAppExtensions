@@ -149,7 +149,7 @@ codeunit 1697 "Setup Bank Deposit Reports"
     end;
 
     var
-        BankDepositNoSeriesCodeTxt: Label 'BNKDEPOSIT', Locked = true;
+        BankDepositNoSeriesCodeTxt: Label 'BNKDEPOSIT';
         BankDepositJournalTemplateDescriptionTxt: Label 'Bank Deposit Journals';
         BankDepositJournalBatchDescriptionTxt: Label 'Bank Deposit Journal';
         BankDepositNoSeriesDescriptionTxt: Label 'Bank Deposit';

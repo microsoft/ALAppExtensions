@@ -10,7 +10,6 @@ PermissionSet 1991 "Guided Experience - Read"
 
     IncludedPermissionSets = "Guided Experience - Objects",
                              "Translation - Read",
-                             "Extension Management - Read",
                              "Upgrade Tags - Read",
                              "User Login Times - Read";
 
@@ -32,8 +31,11 @@ PermissionSet 1991 "Guided Experience - Read"
                   tabledata "Checklist Setup" = R,
                   tabledata Company = r,
                   tabledata "Guided Experience Item" = R,
+                  tabledata "Primary Guided Experience Item" = r,
                   tabledata User = r,
                   tabledata "User Checklist Status" = R,
                   tabledata "User Personalization" = r,
+                  tabledata "Media" = R,
+                  tabledata "Published Application" = R,
                   tabledata "Spotlight Tour Text" = r;
 }

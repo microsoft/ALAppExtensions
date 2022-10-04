@@ -25,30 +25,6 @@ codeunit 4016 "Hybrid GP Management"
         HandleInitializationofGPSynchronization(RunId, SubscriptionId, NotificationText);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, CodeUnit::"Hybrid Cloud Management", 'OnBeforeShowProductSpecificSettingsPageStep', '', true, true)]
-    local procedure OnBeforeShowProductSpecificSettingsPageStep(var HybridProductType: Record "Hybrid Product Type"; var ShowSettingsStep: Boolean)
-    var
-        HybridGPWizard: Codeunit "Hybrid GP Wizard";
-    begin
-        if not (HybridGPWizard.GetGPMigrationEnabled()) then
-            exit;
-
-        ShowSettingsStep := false;
-    end;
-
-
-    [EventSubscriber(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard", 'OnHandleCloseWizard', '', false, false)]
-    local procedure OnHandleCloseWizard(var Handled: Boolean; var CloseWizard: Boolean)
-    var
-        HybridGPWizard: Codeunit "Hybrid GP Wizard";
-    begin
-        if not (HybridGPWizard.GetGPMigrationEnabled()) then
-            exit;
-
-        Handled := true;
-        CloseWizard := true;
-    end;
-
     local procedure UpdateStatusOnHybridReplicationCompleted(RunId: Text[50]; NotificationText: Text)
     var
         HybridReplicationDetail: Record "Hybrid Replication Detail";
@@ -210,7 +186,12 @@ codeunit 4016 "Hybrid GP Management"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnHandleFixDataOnReplicationCompleted', '', false, false)]
     local procedure SkipDataRepair(var Handled: Boolean; var FixData: Boolean)
+    var
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
     begin
+        if not HybridGPWizard.GetGPMigrationEnabled() then
+            exit;
+
         Handled := true;
         FixData := false;
     end;

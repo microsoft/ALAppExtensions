@@ -5,7 +5,7 @@
 
 controladdin SatisfactionSurveyAsync
 {
-    Scripts = 'js\SATAsync.js';
+    Scripts = 'ControlAddIns\js\SATAsync.js';
     RequestedWidth = 0;
     RequestedHeight = 0;
     HorizontalStretch = false;

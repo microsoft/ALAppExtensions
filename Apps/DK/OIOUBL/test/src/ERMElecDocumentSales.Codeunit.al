@@ -25,7 +25,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         OIOUBLNewFileMock: Codeunit "OIOUBL-File Events Mock";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
-        AmountErr: Label '%1 must be %2 in %3.', Comment = '"%1:FieldCaption';
+        AmountErr: Label '%1 must be %2 in %3.', Comment = '%1 = Amount Field Caption; %2 = Amount Value; %3 = GL Entry Table Caption';
         GLNNoTxt: Label '3974567891234';
         IDTxt: Label 'cbc:ID';
         AccountingCostCodeTxt: Label 'cbc:AccountingCostCode';
@@ -37,7 +37,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         PEPPOLFormatNameTxt: Label 'PEPPOL 2.1';
         WrongInvoiceLineCountErr: Label 'Wrong count of "InvoiceLine".';
         BaseQuantityTxt: Label 'cbc:BaseQuantity';
-        NonExistingDocumentFormatErr: Label 'The electronic document format OIOUBL does not exist for the document type %1.';
+        NonExistingDocumentFormatErr: Label 'The electronic document format OIOUBL does not exist for the document type %1.', Comment = '%1 = Sales Invoice';
         WrongFileNameErr: Label 'File name should be: %1', Comment = '%1 - Client File Name';
         isInitialized: Boolean;
 

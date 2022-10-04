@@ -67,6 +67,14 @@ pageextension 11729 "Sales Credit Memo CZL" extends "Sales Credit Memo"
                 Importance = Additional;
             }
         }
+        addafter("Transport Method")
+        {
+            field("Shipment Method Code CZL"; Rec."Shipment Method Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies how items on the sales document are shipped to the customer.';
+            }
+        }
         addafter("Currency Code")
         {
             field("VAT Currency Code CZL"; Rec."VAT Currency Code CZL")

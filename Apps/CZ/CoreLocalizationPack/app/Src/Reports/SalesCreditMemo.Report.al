@@ -4,6 +4,7 @@ report 31190 "Sales Credit Memo CZL"
     RDLCLayout = './Src/Reports/SalesCreditMemo.rdl';
     Caption = 'Sales Credit Memo';
     PreviewMode = PrintLayout;
+    WordMergeDataItem = "Sales Cr.Memo Header";
 
     dataset
     {
@@ -130,6 +131,18 @@ report 31190 "Sales Credit Memo CZL"
             column(Type3Text; Type3TextLbl)
             {
             }
+            column(GreetingLbl; GreetingLbl)
+            {
+            }
+            column(BodyLbl; BodyLbl)
+            {
+            }
+            column(ClosingLbl; ClosingLbl)
+            {
+            }
+            column(DocumentNoLbl; DocumentNoLbl)
+            {
+            }
             column(No_SalesCrMemoHeader; "No.")
             {
             }
@@ -181,7 +194,7 @@ report 31190 "Sales Credit Memo CZL"
             column(DueDate_SalesCrMemoHeaderCaption; FieldCaption("Due Date"))
             {
             }
-            column(DueDate_SalesCrMemoHeader; "Due Date")
+            column(DueDate_SalesCrMemoHeader; FormatDate("Due Date"))
             {
             }
             column(DocumentDate_SalesCrMemoHeaderCaption; FieldCaption("Document Date"))
@@ -417,18 +430,16 @@ report 31190 "Sales Credit Memo CZL"
                     column(VATClauseIdentifier; TempVATAmountLine."VAT Identifier")
                     {
                     }
-                    column(VATClauseDescription; VATClause.Description)
+                    column(VATClauseDescription; VATClauseText)
                     {
                     }
-                    column(VATClauseDescription2; VATClause."Description 2")
-                    {
-                    }
+
                     trigger OnAfterGetRecord()
                     begin
                         TempVATAmountLine.GetLine(Number);
                         if not VATClause.Get(TempVATAmountLine."VAT Clause Code") then
                             CurrReport.Skip();
-                        VATClause.GetDescription("Sales Cr.Memo Header");
+                        VATClauseText := VATClause.GetDescriptionText("Sales Cr.Memo Header");
                     end;
 
                     trigger OnPreDataItem()
@@ -491,11 +502,11 @@ report 31190 "Sales Credit Memo CZL"
                     "Credit Memo Type CZL"::"Insolvency Tax Document":
                         DocumentLbl := InsolvencyTaxDocumentLbl;
                     else begin
-                            IsHandled := false;
-                            OnSelectDocumentLabelCase("Sales Cr.Memo Header", DocumentLbl, IsHandled);
-                            if not IsHandled then
-                                DocumentLbl := CorrectiveTaxDocumentLbl;
-                        end;
+                        IsHandled := false;
+                        OnSelectDocumentLabelCase("Sales Cr.Memo Header", DocumentLbl, IsHandled);
+                        if not IsHandled then
+                            DocumentLbl := CorrectiveTaxDocumentLbl;
+                    end;
                 end;
 
                 if "Currency Code" = '' then
@@ -589,6 +600,7 @@ report 31190 "Sales Credit Memo CZL"
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
         ExchRateText: Text[50];
+        VATClauseText: Text;
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];
@@ -628,6 +640,10 @@ report 31190 "Sales Credit Memo CZL"
         VATLbl: Label 'VAT';
         UnitPriceExclVATLbl: Label 'Unit Price Excl. VAT';
         Type3TextLbl: Label 'Correction of tax base in case of bad debt';
+        GreetingLbl: Label 'Hello';
+        ClosingLbl: Label 'Sincerely';
+        BodyLbl: Label 'Thank you for your business. Your credit memo is attached to this message.';
+        DocumentNoLbl: Label 'No.';
         [InDataSet]
         LogInteractionEnable: Boolean;
 
@@ -657,6 +673,11 @@ report 31190 "Sales Credit Memo CZL"
     begin
         FormatAddress.SalesCrMemoBillTo(CustAddr, SalesCrMemoHeader);
         FormatAddress.SalesCrMemoShipTo(ShipToAddr, CustAddr, SalesCrMemoHeader);
+    end;
+
+    local procedure FormatDate(DateValue: Date): Text
+    begin
+        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

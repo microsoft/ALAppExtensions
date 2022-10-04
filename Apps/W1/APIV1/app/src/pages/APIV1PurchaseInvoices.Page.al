@@ -186,7 +186,9 @@ page 20042 "APIV1 - Purchase Invoices"
                 field(buyFromAddress; BuyFromPostalAddressJSONText)
                 {
                     Caption = 'buyFromAddress', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the buy-from address of the Purchase Invoice.';
 
                     trigger OnValidate()
@@ -197,7 +199,9 @@ page 20042 "APIV1 - Purchase Invoices"
                 field(payToAddress; PayToPostalAddressJSONText)
                 {
                     Caption = 'payToAddress', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the pay-to address of the Purchase Invoice.';
                     Editable = false;
 
@@ -209,7 +213,9 @@ page 20042 "APIV1 - Purchase Invoices"
                 field(shipToAddress; ShipToPostalAddressJSONText)
                 {
                     Caption = 'shipToAddress', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the ship-to address of the Purchase Invoice.';
 
                     trigger OnValidate()

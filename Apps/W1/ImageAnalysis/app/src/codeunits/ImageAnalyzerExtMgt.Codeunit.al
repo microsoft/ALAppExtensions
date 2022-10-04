@@ -29,6 +29,9 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         CategoryAssignedLbl: Label 'Category was assigned.', Locked = true;
         AttributeAssignedLbl: Label 'Attribute was assigned.', Locked = true;
         OpenSetupTxt: Label 'Open setup';
+        ImageAnalysisWizardTitleTxt: Label 'Set up the Image Analyzer';
+        ImageAnalysisWizardShortTitleTxt: Label 'Image Analyzer';
+        ImageAnalysisWizardDescriptionTxt: Label 'The Image Analyzer extension uses powerful image analytics to detect attributes in the images that you add to items and contact persons, so you can easily review and assign them. Set it up now.';
 
     [EventSubscriber(ObjectType::Page, Page::"Item Card", 'OnAfterGetCurrRecordEvent', '', false, false)]
     local procedure OnOpenItemCard(var Rec: Record Item)
@@ -292,6 +295,23 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         ImageAnalysisSetupPage.Caption(),
         ImageAnalysisSetup."Api Uri",
         Page::"Image Analysis Setup");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', true, true)]
+    local procedure InsertIntoAssistedSetup()
+    var
+        GuidedExperience: Codeunit "Guided Experience";
+        Language: Codeunit Language;
+        CurrentGlobalLanguage: Integer;
+    begin
+        GuidedExperience.InsertAssistedSetup(ImageAnalysisWizardTitleTxt, CopyStr(ImageAnalysisWizardShortTitleTxt, 1, 50), ImageAnalysisWizardDescriptionTxt, 2, ObjectType::Page, Page::"Image Analyzer Wizard", "Assisted Setup Group"::DoMoreWithBC,
+                                            '', "Video Category"::DoMoreWithBC, '', true);
+
+        CurrentGlobalLanguage := GlobalLanguage();
+        GlobalLanguage(Language.GetDefaultApplicationLanguageId());
+        GuidedExperience.AddTranslationForSetupObjectTitle("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Image Analyzer Wizard", Language.GetDefaultApplicationLanguageId(), ImageAnalysisWizardTitleTxt);
+        GuidedExperience.AddTranslationForSetupObjectDescription("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Image Analyzer Wizard", Language.GetDefaultApplicationLanguageId(), ImageAnalysisWizardDescriptionTxt);
+        GlobalLanguage(CurrentGlobalLanguage);
     end;
 
     procedure DoNothing(Notification: Notification)

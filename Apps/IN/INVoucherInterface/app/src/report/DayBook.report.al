@@ -259,7 +259,7 @@ report 18929 "Day Book"
                 begin
                     FALedgerEntry.Reset();
                     FALedgerEntry.SetRange("G/L Entry No.", "Entry No.");
-                    if FALedgerEntry.FindFirst() then begin
+                    if not FALedgerEntry.IsEmpty() then begin
                         FixedAsset.Get("Source No.");
                         AccName := CopyStr(FixedAsset.Description, 1, MaxStrLen(AccName));
                     end else begin

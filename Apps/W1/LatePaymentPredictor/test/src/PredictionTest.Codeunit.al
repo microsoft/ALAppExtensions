@@ -15,7 +15,7 @@ codeunit 139575 "LP Prediction Test"
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         EnableNotificationMsg: Label 'Want to know if a sales document will be paid on time? The Late Payment Prediction extension can predict that.';
         PredictionResultWillBeLateTxt: Label 'The payment is predicted to be late, with Low confidence in the prediction.';
-        LearnMoreNotificationTxt: Label 'To predict a late payment, choose the %1 action. Want to learn more about the late payment predictions?';
+        LearnMoreNotificationTxt: Label 'To predict a late payment, choose the %1 action. Want to learn more about the late payment predictions?', Comment = '%1 = Predict action caption label';
         PredictActionCaptionTxt: Label 'Predict Payment';
         TestCheckInvoiceFromPageWhenNotEnabledState: Integer;
         DummyModel: Text;

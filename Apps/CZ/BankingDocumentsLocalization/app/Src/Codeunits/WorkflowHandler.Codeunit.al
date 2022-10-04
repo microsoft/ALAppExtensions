@@ -176,7 +176,7 @@ codeunit 31350 "Workflow Handler CZB"
         RecordRestrictionMgt.UpdateRestriction(Rec, xRec);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Setup", 'OnInsertWorkflowTemplates', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Setup", 'OnAfterInitWorkflowTemplates', '', false, false)]
     local procedure InsertWorkflowTemplates()
     begin
         if IsTestingEnvironment() then
@@ -196,6 +196,8 @@ codeunit 31350 "Workflow Handler CZB"
     var
         Workflow: Record Workflow;
     begin
+        if Workflow.Get(WorkflowSetup.GetWorkflowTemplateCode(PaymentOrderApprWorkflowCodeTxt)) then
+            exit;
         WorkflowSetup.InsertWorkflowTemplate(Workflow, PaymentOrderApprWorkflowCodeTxt, PaymentOrderApprWorkflowDescTxt, FinCategoryTxt);
         InsertPaymentOrderApprovalWorkflowDetails(Workflow);
         WorkflowSetup.MarkWorkflowAsTemplate(Workflow);

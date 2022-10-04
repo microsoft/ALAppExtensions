@@ -119,7 +119,9 @@ page 20008 "APIV1 - Items"
                 field(baseUnitOfMeasure; BaseUnitOfMeasureJSONText)
                 {
                     Caption = 'baseUnitOfMeasure', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'ITEM-UOM';
+#pragma warning restore
                     ToolTip = 'Specifies the Base Unit of Measure.';
 
                     trigger OnValidate()
@@ -279,7 +281,9 @@ page 20008 "APIV1 - Items"
         IF TempFieldSet.GET(DATABASE::Item, FIELDNO(Inventory)) THEN
             Error(InventoryCannotBeChangedInAPostRequestErr);
 
+#pragma warning disable AL0432
         GraphCollectionMgtItem.InsertItem(Rec, TempFieldSet, BaseUnitOfMeasureJSONText);
+#pragma warning restore
 
         SetCalculatedFields();
         EXIT(FALSE);
@@ -377,26 +381,26 @@ page 20008 "APIV1 - Items"
 
     local procedure UpdateInventory()
     var
-        ItemJnlLine: Record "Item Journal Line";
+        ItemJournalLine: Record "Item Journal Line";
         ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
     begin
         calcfields(Inventory);
         IF Inventory = InventoryValue THEN
             EXIT;
-        ItemJnlLine.Init();
-        ItemJnlLine.VALIDATE("Posting Date", Today());
-        ItemJnlLine."Document No." := "No.";
+        ItemJournalLine.Init();
+        ItemJournalLine.VALIDATE("Posting Date", Today());
+        ItemJournalLine."Document No." := "No.";
 
         IF Inventory < InventoryValue THEN
-            ItemJnlLine.VALIDATE("Entry Type", ItemJnlLine."Entry Type"::"Positive Adjmt.")
+            ItemJournalLine.VALIDATE("Entry Type", ItemJournalLine."Entry Type"::"Positive Adjmt.")
         ELSE
-            ItemJnlLine.VALIDATE("Entry Type", ItemJnlLine."Entry Type"::"Negative Adjmt.");
+            ItemJournalLine.VALIDATE("Entry Type", ItemJournalLine."Entry Type"::"Negative Adjmt.");
 
-        ItemJnlLine.VALIDATE("Item No.", "No.");
-        ItemJnlLine.VALIDATE(Description, Description);
-        ItemJnlLine.VALIDATE(Quantity, ABS(InventoryValue - Inventory));
+        ItemJournalLine.VALIDATE("Item No.", "No.");
+        ItemJournalLine.VALIDATE(Description, Description);
+        ItemJournalLine.VALIDATE(Quantity, ABS(InventoryValue - Inventory));
 
-        ItemJnlPostLine.RunWithCheck(ItemJnlLine);
+        ItemJnlPostLine.RunWithCheck(ItemJournalLine);
         Get("No.");
     end;
 

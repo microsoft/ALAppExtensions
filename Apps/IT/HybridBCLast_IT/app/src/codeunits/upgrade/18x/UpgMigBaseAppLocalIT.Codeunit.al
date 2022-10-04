@@ -1,5 +1,9 @@
 codeunit 12106 "Upg Mig BaseApp Local IT"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '21.0';
+
     trigger OnRun()
     begin
     end;

@@ -76,9 +76,9 @@ codeunit 4772 "Create Mfg Prod. Routing"
         ProductionRoutningNo := 'SP-SCM1004';
         InsertDataHeader(ProductionRoutningNo, '', XAutoDripTok, 0, 19020101D);
 
-        InsertDataLine(ProductionRoutningNo, '', '10', '20', CapacityType::"Work Center", '100', XBodyAssemblyTok, 20, 15, 0, 0, 0, 0, 0, 1, 0, '', 0);
+        InsertDataLine(ProductionRoutningNo, '', '10', '20', CapacityType::"Machine Center", '130', XBodyAssemblyTok, 20, 15, 0, 0, 0, 0, 0, 1, 0, '', 0);
         InsertDataLine(ProductionRoutningNo, '', '20', '30', CapacityType::"Machine Center", '110', XElectricalWiringTok, 20, 18, 0, 0, 0, 0, 0, 1, 0, '100', 0);
-        InsertDataLine(ProductionRoutningNo, '', '30', '', CapacityType::"Machine Center", '210', XPackingTok, 10, 8, 0, 0, 0, 0, 0, 1, 0, '', 0);
+        InsertDataLine(ProductionRoutningNo, '', '30', '', CapacityType::"Machine Center", '230', XPackingTok, 10, 8, 0, 0, 0, 0, 0, 1, 0, '', 0);
 
         CertifyRouting(ProductionRoutningNo, '');
         UpdateItems('SP-SCM1004', ProductionRoutningNo);

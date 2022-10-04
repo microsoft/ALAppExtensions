@@ -102,9 +102,9 @@ codeunit 30101 "Shpfy Background Syncs"
         Notify: Notification;
         SyncStartMsg: Label 'Job Queue started for: %1', Comment = '%1 = Synchronization Description';
         ShowLogMsg: Label 'Show log info';
-        NotificationNameTok: Label 'Shopify Job Queue notification';
-        DescriptionTok: Label 'Shopify Job Queue information';
-        DontShowAgainTok: Label 'Don''t show me again';
+        NotificationNameTok: Label 'Shopify Background Sync Notification';
+        DescriptionTok: Label 'Show notification when user starts synchronization jobs in background';
+        DontShowAgainTok: Label 'Don''t show again';
     begin
         if XmlParameters = '' then
             exit;
@@ -214,7 +214,6 @@ codeunit 30101 "Shpfy Background Syncs"
         StartDataItemShopTxt: Label '<DataItem name="Shop">', Locked = true;
         EndDataItemShopTxt: Label '</DataItem><DataItem name="OrdersToImport">', Locked = true;
         ShopView: Text;
-
     begin
         Parameters := Report.RunRequestPage(Report::"Shpfy Sync Orders from Shopify", StrSubstNo(OrderParametersTxt, ShpfyShop.GetView()));
         if Parameters = '' then
@@ -230,23 +229,6 @@ codeunit 30101 "Shpfy Background Syncs"
         ShpfyShop.SetRange("Allow Background Syncs", false);
         if not ShpfyShop.IsEmpty then
             EnqueueJobEntry(Report::"Shpfy Sync Orders from Shopify", StrSubstNo(Parameters, ShpfyShop.GetView()), StrSubstNo(SyncDescriptionTxt, SyncTypeTxt, ShpfyShop.GetFilter(Code)), false, true);
-    end;
-
-    internal procedure OrderBackgroundSync(ShopCode: Code[20]): Guid
-    var
-        ShpfyShop: Record "Shpfy Shop";
-        SyncTypeTxt: Label 'Orders';
-        Parameters: Text;
-        OrderParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Sync Orders from Shopify" id="30104"><DataItems><DataItem name="Shop">%1</DataItem><DataItem name="OrdersToImport">VERSION(1) SORTING(Field1)</DataItem></DataItems></ReportParameters>', Comment = '%1 = Shop Record View', Locked = true;
-        JobQueueId: Guid;
-    begin
-        if ShpfyShop.Get(ShopCode) then
-            if ShpfyShop."Allow Background Syncs" then begin
-                Parameters := StrSubstNo(OrderParametersTxt, ShpfyShop.GetView());
-                JobQueueId := EnqueueJobEntry(Report::"Shpfy Sync Orders from Shopify", Parameters, StrSubstNo(SyncDescriptionTxt, SyncTypeTxt, ShpfyShop.GetFilter(Code)), true, false);
-            end;
-
-        exit(JobQueueId);
     end;
 
     internal procedure PayoutsSync(ShopCode: Code[20])
@@ -272,7 +254,7 @@ codeunit 30101 "Shpfy Background Syncs"
         ShpfyShop.SetRange("Allow Background Syncs", true);
         if not ShpfyShop.IsEmpty then begin
             Parameters := StrSubstNo(PaymentParametersTxt, ShpfyShop.GetView());
-            EnqueueJobEntry(Report::"Shpfy Sync Payments", Parameters, StrSubstNo(SyncDescriptionTxt, SyncTypeTxt, ShpfyShop.Getfilter(Code)), true, true);
+            EnqueueJobEntry(Report::"Shpfy Sync Payments", Parameters, StrSubstNo(SyncDescriptionTxt, SyncTypeTxt, ShpfyShop.GetFilter(Code)), true, true);
         end;
         ShpfyShop.SetRange("Allow Background Syncs", false);
         if not ShpfyShop.IsEmpty then begin

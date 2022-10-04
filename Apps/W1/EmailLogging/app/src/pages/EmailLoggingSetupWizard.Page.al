@@ -278,6 +278,10 @@ page 1681 "Email Logging Setup Wizard"
                         end;
                         ValidateMailboxLinkVisited := true;
                         NextEnabled := IsMailboxValid;
+                        if not IsMailboxValid then
+                            ErrorText := GetLastErrorText()
+                        else
+                            ErrorText := '';
                     end;
                 }
                 group(ValidMailboxGroup)
@@ -306,6 +310,14 @@ page 1681 "Email Logging Setup Wizard"
                         Editable = false;
                         ShowCaption = false;
                         Style = Unfavorable;
+                    }
+                    field(ErrorText; ErrorText)
+                    {
+                        ApplicationArea = RelationshipMgmt;
+                        Caption = ' ';
+                        ToolTip = 'Specifies the error occurred.';
+                        Editable = false;
+                        ShowCaption = false;
                     }
                 }
                 group(AdvancedSection)
@@ -503,6 +515,7 @@ page 1681 "Email Logging Setup Wizard"
         ApplicationType: Enum "Email Logging App Type";
         ClientSecretLocal: Text;
     begin
+        Session.LogMessage('0000HAF', StrSubstNo(ContextCompanyTxt, CompanyName()), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
         LoadTopBanners();
         FeatureEnabled := EmailLoggingManagement.IsEmailLoggingUsingGraphApiFeatureEnabled();
         EmailBatchSize := EmailLoggingSetup.GetDefaultEmailBatchSize();
@@ -587,6 +600,7 @@ page 1681 "Email Logging Setup Wizard"
         ValidateMailboxLinkVisited: Boolean;
         IsMailboxValid: Boolean;
         ValidInteractionTemplateSetup: Boolean;
+        ErrorText: Text;
         CategoryTok: Label 'Email Logging', Locked = true;
         OpenFeatureManagementTxt: Label 'Open Feature Management';
         NotSetUpQst: Label 'Email logging is not set up. \\Are you sure that you want to exit?';
@@ -609,6 +623,7 @@ page 1681 "Email Logging Setup Wizard"
         EmailLoggingSetupCompletedTxt: Label 'Email Logging Setup completed.', Locked = true;
         CreateEmailLoggingJobTxt: Label 'Create email logging job', Locked = true;
         SkipCreatingEmailLoggingJobTxt: Label 'Skip creating email logging job', Locked = true;
+        ContextCompanyTxt: Label 'Open Email Logging assisted setup. Company: %1', Locked = true;
 
     local procedure NextStep(Backwards: Boolean)
     begin

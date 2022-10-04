@@ -36,6 +36,7 @@ codeunit 31093 "Data Class. Eval. Handler CZZ"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Advance Letter Application CZZ");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Advance Letter Link Buffer CZZ");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Advance Letter Template CZZ");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Advance Posting Buffer CZZ");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Purch. Adv. Letter Header CZZ");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Purch. Adv. Letter Line CZZ");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Purch. Adv. Letter Entry CZZ");

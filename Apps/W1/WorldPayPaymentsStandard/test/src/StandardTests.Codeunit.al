@@ -20,7 +20,6 @@ codeunit 139505 "MS - WorldPay Standard Tests"
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         ActiveDirectoryMockEvents: Codeunit "Active Directory Mock Events";
         MSWorldPayStdMockEvents: Codeunit "MS - WorldPay Std Mock Events";
-        DatasetFileName: Text;
         Initialized: Boolean;
         UpdateOpenInvoicesManuallyTxt: Label 'A link for the WorldPay payment service will be included for new sales documents. To add it to existing sales documents, you must manually select it in the Payment Service field on the sales document.';
         ServiceNotSetupErr: Label 'You must specify an account ID for this payment service.';
@@ -34,7 +33,7 @@ codeunit 139505 "MS - WorldPay Standard Tests"
 
     local procedure Initialize()
     var
-        CompanyInfo: Record "Company Information";
+        CompanyInformation: Record "Company Information";
         MSWorldPayStandardAccount: Record "MS - WorldPay Standard Account";
         MSWorldPayTransaction: Record "MS - WorldPay Transaction";
         DummySalesHeader: Record "Sales Header";
@@ -42,9 +41,9 @@ codeunit 139505 "MS - WorldPay Standard Tests"
     begin
         BindActiveDirectoryMockEvents();
 
-        CompanyInfo.GET();
-        CompanyInfo."Allow Blank Payment Info." := TRUE;
-        CompanyInfo.MODIFY();
+        CompanyInformation.GET();
+        CompanyInformation."Allow Blank Payment Info." := TRUE;
+        CompanyInformation.MODIFY();
         CLEAR(LibraryVariableStorage);
 
         MSWorldPayStandardAccount.DELETEALL();
@@ -482,12 +481,14 @@ codeunit 139505 "MS - WorldPay Standard Tests"
 
         // Verify this is the one
         LibraryVariableStorage.Enqueue(UpdateOpenInvoicesManuallyTxt);
+#pragma warning disable AA0210
         MSWorldPayStandardAccount.SETRANGE("Always Include on Documents", TRUE);
+#pragma warning restore
         MSWorldPayStandardAccount.FINDFIRST();
         Assert.AreEqual(1, MSWorldPayStandardAccount.COUNT(), '');
 
-        MSWorldPayStandardAccount2.FIND();
-        MSWorldPayStandardAccount1.FIND();
+        if MSWorldPayStandardAccount2.Get(MSWorldPayStandardAccount2."Primary Key") then;
+        if MSWorldPayStandardAccount1.Get(MSWorldPayStandardAccount1."Primary Key") then;
         Assert.IsFalse(MSWorldPayStandardAccount2."Always Include on Documents", 'First Verify');
         Assert.IsTrue(MSWorldPayStandardAccount1."Always Include on Documents", 'First Verify');
 
@@ -500,8 +501,8 @@ codeunit 139505 "MS - WorldPay Standard Tests"
         MSWorldPayStandardAccount.FINDFIRST();
         Assert.AreEqual(1, MSWorldPayStandardAccount.COUNT(), '');
 
-        MSWorldPayStandardAccount1.FIND();
-        MSWorldPayStandardAccount2.FIND();
+        if MSWorldPayStandardAccount2.Get(MSWorldPayStandardAccount2."Primary Key") then;
+        if MSWorldPayStandardAccount1.Get(MSWorldPayStandardAccount1."Primary Key") then;
         Assert.IsTrue(MSWorldPayStandardAccount2."Always Include on Documents", 'Final Verify');
         Assert.IsFalse(MSWorldPayStandardAccount1."Always Include on Documents", 'Final Verify');
     end;
@@ -533,7 +534,7 @@ codeunit 139505 "MS - WorldPay Standard Tests"
         TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument, SalesInvoiceHeader);
 
         TempPaymentReportingArgument.SetRange("Payment Service ID", TempPaymentReportingArgument.GetWorldPayServiceID());
-        TempPaymentReportingArgument.FindFirst();
+        Assert.RecordIsNotEmpty(TempPaymentReportingArgument);
 
         PostedSalesInvoice.OPENEDIT();
         PostedSalesInvoice.GOTORECORD(SalesInvoiceHeader);
@@ -544,7 +545,6 @@ codeunit 139505 "MS - WorldPay Standard Tests"
         PostedSalesInvoice.Email.INVOKE();
 
         // Verify
-        TempPaymentReportingArgument.FINDFIRST();
         VerifyBodyText(MSWorldPayStandardAccount, SalesInvoiceHeader);
     end;
 
@@ -950,47 +950,6 @@ codeunit 139505 "MS - WorldPay Standard Tests"
               'Status was not set correctly on Service Connections page');
     end;
 
-    local procedure VerifyPaymentServiceIsInReportDataset(var PaymentReportingArgument: Record "Payment Reporting Argument")
-    var
-        XMLBuffer: Record "XML Buffer";
-        ValueFound: Boolean;
-    begin
-        ValueFound := FALSE;
-        XMLBuffer.Load(DatasetFileName);
-        XMLBuffer.SETRANGE(Name, 'PaymentServiceURL');
-        XMLBuffer.SetRange(Value, PaymentReportingArgument.GetTargetURL());
-
-        ValueFound := XMLBuffer.FindFirst();
-
-        Assert.IsTrue(ValueFound, 'Cound not find target URL');
-        XMLBuffer.SETRANGE("Parent Entry No.", XMLBuffer."Parent Entry No.");
-        XMLBuffer.SetRange(Name, 'PaymentServiceURLText');
-        XMLBuffer.SetRange(Value);
-        XMLBuffer.FindFirst();
-        Assert.AreEqual(PaymentReportingArgument."URL Caption", XMLBuffer.Value, '');
-    end;
-
-    local procedure VerifyWorldPayURL(var PaymentReportingArgument: Record "Payment Reporting Argument"; MSWorldPayStandardAccount: Record "MS - WorldPay Standard Account"; SalesInvoiceHeader: Record "Sales Invoice Header")
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-        TargetURL: Text;
-        BaseURL: Text;
-    begin
-        TargetURL := PaymentReportingArgument.GetTargetURL();
-        BaseURL := MSWorldPayStandardAccount.GetTargetURL();
-
-        SalesInvoiceHeader.CALCFIELDS("Amount Including VAT");
-        Assert.IsTrue(STRPOS(TargetURL, BaseURL) > 0, 'Base url was not set correctly');
-        Assert.IsTrue(STRPOS(TargetURL, SalesInvoiceHeader."No.") > 0, 'Document No. was not set correctly');
-        Assert.IsTrue(STRPOS(TargetURL, MSWorldPayStandardAccount."Account ID") > 0, 'Account ID was not set correctly');
-        Assert.IsTrue(STRPOS(TargetURL, FORMAT(SalesInvoiceHeader."Amount Including VAT", 0, 9)) > 0, 'Total amount was not set correctly');
-
-        GeneralLedgerSetup.GET();
-        Assert.IsTrue(
-          STRPOS(TargetURL, GeneralLedgerSetup.GetCurrencyCode(SalesInvoiceHeader."Currency Code")) > 0,
-          'Currency Code was not set correctly');
-    end;
-
     local procedure VerifyBodyText(MSWorldPayStandardAccount: Record "MS - WorldPay Standard Account"; SalesInvoiceHeader: Record "Sales Invoice Header")
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
@@ -1013,7 +972,7 @@ codeunit 139505 "MS - WorldPay Standard Tests"
     end;
 
     [ModalPageHandler]
-    procedure AccountSetupPageModalPageHandler(var WorldPayStandardSetup: TestPage "MS - WorldPay Standard Setup")
+    procedure AccountSetupPageModalPageHandler(var MSWorldPayStandardSetup: TestPage "MS - WorldPay Standard Setup")
     var
         NewName: Text;
         NewDescription: Text;
@@ -1035,13 +994,13 @@ codeunit 139505 "MS - WorldPay Standard Tests"
         AccountID := LibraryVariableStorage.DequeueText();
         TargetURL := LibraryVariableStorage.DequeueText();
 
-        WorldPayStandardSetup.Name.SETVALUE(NewName);
-        WorldPayStandardSetup.Description.SETVALUE(NewDescription);
-        WorldPayStandardSetup."Account ID".SETVALUE(AccountID);
-        WorldPayStandardSetup."Always Include on Documents".SETVALUE(AlwaysIncludeOnDocument);
-        WorldPayStandardSetup.Enabled.SETVALUE(Enabled);
-        WorldPayStandardSetup.TargetURL.SETVALUE(TargetURL);
-        WorldPayStandardSetup.OK().INVOKE();
+        MSWorldPayStandardSetup.Name.SETVALUE(NewName);
+        MSWorldPayStandardSetup.Description.SETVALUE(NewDescription);
+        MSWorldPayStandardSetup."Account ID".SETVALUE(AccountID);
+        MSWorldPayStandardSetup."Always Include on Documents".SETVALUE(AlwaysIncludeOnDocument);
+        MSWorldPayStandardSetup.Enabled.SETVALUE(Enabled);
+        MSWorldPayStandardSetup.TargetURL.SETVALUE(TargetURL);
+        MSWorldPayStandardSetup.OK().INVOKE();
     end;
 
     [ModalPageHandler]

@@ -144,8 +144,8 @@ report 31251 "Fixed Asset History CZF"
                                 SerialNo := FixedAsset3."Serial No.";
                             end;
 
-                            if FANo <> "FA No." then begin
-                                FANo := "FA No.";
+                            if FixedAssetNo <> "FA No." then begin
+                                FixedAssetNo := "FA No.";
                                 FAHistoryEntryCZF.Reset();
                                 FAHistoryEntryCZF.CopyFilters(FAHistory);
                                 if FAHistory.GetFilter("Posting Date") = '' then
@@ -187,7 +187,7 @@ report 31251 "Fixed Asset History CZF"
                             FAHistory.CopyFilter("FA No.", "No.");
 
                         CountPerGroup := 0;
-                        FANo := '';
+                        FixedAssetNo := '';
                     end;
                 }
 
@@ -296,8 +296,8 @@ report 31251 "Fixed Asset History CZF"
                                 SerialNo := FixedAsset3."Serial No.";
                             end;
 
-                            if FANo <> "FA No." then begin
-                                FANo := "FA No.";
+                            if FixedAssetNo <> "FA No." then begin
+                                FixedAssetNo := "FA No.";
                                 FAHistoryEntryCZF.Reset();
                                 FAHistoryEntryCZF.CopyFilters(FAHistory);
                                 if FAHistory.GetFilter("Posting Date") = '' then
@@ -346,7 +346,7 @@ report 31251 "Fixed Asset History CZF"
                             FAHistory.CopyFilter("FA No.", "No.");
 
                         CountPerGroup := 0;
-                        FANo := '';
+                        FixedAssetNo := '';
                     end;
                 }
 
@@ -453,7 +453,7 @@ report 31251 "Fixed Asset History CZF"
         OldEmployee: Record Employee;
         GroupBy: Enum "FA History Type CZF";
         EndDate: Date;
-        FANo: Code[20];
+        FixedAssetNo: Code[20];
         Description, SerialNo : Text;
         NewPagePerGroup, FirstTime, ShowFirstHead, CheckCancel : Boolean;
         GroupCount, CountPerGroup : Integer;

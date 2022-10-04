@@ -166,10 +166,10 @@ codeunit 148004 "C5 VendTable Migrator Tst"
     var
         C5VendTableMigrator: Codeunit "C5 VendTable Migrator";
     begin
-        C5VendTableMigrator.OnMigrateVendor(VendorDataMigrationFacade, C5VendTable.RecordId());
-        C5VendTableMigrator.OnMigrateVendorDimensions(VendorDataMigrationFacade, C5VendTable.RecordId());
-        C5VendTableMigrator.OnMigrateVendorPostingGroups(VendorDataMigrationFacade, C5VendTable.RecordId(), ChartOfAccountsMigrated);
-        C5VendTableMigrator.OnMigrateVendorTransactions(VendorDataMigrationFacade, C5VendTable.RecordId(), ChartOfAccountsMigrated);
+        C5VendTableMigrator.MigrateVendor(VendorDataMigrationFacade, C5VendTable.RecordId());
+        C5VendTableMigrator.MigrateVendorDimensions(VendorDataMigrationFacade, C5VendTable.RecordId());
+        C5VendTableMigrator.MigrateVendorPostingGroups(VendorDataMigrationFacade, C5VendTable.RecordId(), ChartOfAccountsMigrated);
+        C5VendTableMigrator.MigrateVendorTransactions(VendorDataMigrationFacade, C5VendTable.RecordId(), ChartOfAccountsMigrated);
     end;
 
     local procedure CheckRelatedTablesMigration(C5VendTable1: Record "C5 VendTable"; C5VendTable2: Record "C5 VendTable")

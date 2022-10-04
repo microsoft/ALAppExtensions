@@ -1,6 +1,6 @@
 table 4079 "GPSOPUserDefinedWorkHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

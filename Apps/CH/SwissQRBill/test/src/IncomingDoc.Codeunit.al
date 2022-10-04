@@ -1,6 +1,7 @@
 codeunit 148095 "Swiss QR-Bill Test IncomingDoc"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     trigger OnRun()
     begin

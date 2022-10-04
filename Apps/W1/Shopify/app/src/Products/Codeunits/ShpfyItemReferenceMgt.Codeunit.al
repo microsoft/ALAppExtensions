@@ -50,7 +50,8 @@ codeunit 30175 "Shpfy Item Reference Mgt."
     begin
         ItemReference.SetRange("Reference Type", ReferenceType);
         ItemReference.SetRange("Reference No.", ReferenceNo);
-        ItemReference.SetFilter("Unit of Measure", '%1|%2', UnitOfMeasure, '');
+        if UnitOfMeasure <> '' then
+            ItemReference.SetFilter("Unit of Measure", '%1|%2', UnitOfMeasure, '');
         if ItemReference.FindLast() then begin
             ItemNo := ItemReference."Item No.";
             VariantCode := ItemReference."Variant Code";

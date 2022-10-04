@@ -6,7 +6,8 @@
 table 1994 "User Checklist Status"
 {
     Access = Internal;
-
+    ReplicateData = false;
+    
     fields
     {
         field(1; "User ID"; Code[50])

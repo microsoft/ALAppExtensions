@@ -6,7 +6,6 @@ codeunit 148106 "SAF-T Performance Tests"
     trigger OnRun()
     begin
         // [FEATURE] [SAF-T] [Performance Profiler]
-        TestsBuffer := 5;
         // LibraryPerformanceProfiler.SetProfilerIdentification('299785 - SAF-T Financial');
     end;
 
@@ -20,7 +19,6 @@ codeunit 148106 "SAF-T Performance Tests"
         SAFTMappingType: Enum "SAF-T Mapping Type";
         IsInitialized: Boolean;
         // TraceDumpFilePath: Text;
-        TestsBuffer: Integer;
         GenerateSAFTFileImmediatelyQst: Label 'Since you did not schedule the SAF-T file generation, it will be generated immediately which can take a while. Do you want to continue?';
 
     [Test]

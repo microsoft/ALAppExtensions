@@ -38,6 +38,7 @@ page 633 "Data Archive - New Archive"
                 Caption = 'Start Logging';
                 Image = Start;
                 Promoted = true;
+                PromotedOnly = true;
                 ToolTip = 'Start logging deletions. All deletions will be added to the new archive.';
                 trigger OnAction()
                 begin

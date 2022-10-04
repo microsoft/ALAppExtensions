@@ -9,7 +9,8 @@ PermissionSet 1992 "Guided Experience - View"
     Assignable = false;
 
     IncludedPermissionSets = "Guided Experience - Read",
-                             "Upgrade Tags - View";
+                             "Upgrade Tags - View",
+                             "Translation - Edit";
 
     Permissions = tabledata AllObj = r,
 #if not CLEAN18
@@ -23,6 +24,7 @@ PermissionSet 1992 "Guided Experience - View"
                   tabledata "Checklist Item User" = imd,
                   tabledata "Checklist Setup" = im,
                   tabledata "Guided Experience Item" = imd,
+                  tabledata "Primary Guided Experience Item" = imd,
                   tabledata "User Checklist Status" = im,
                   tabledata "Spotlight Tour Text" = imd;
 }

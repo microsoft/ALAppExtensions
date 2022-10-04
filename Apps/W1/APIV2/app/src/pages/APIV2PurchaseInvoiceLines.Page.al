@@ -225,10 +225,12 @@ page 30047 "APIV2 - Purchase Invoice Lines"
                 field(taxPercent; "VAT %")
                 {
                     Caption = 'Tax Percent';
+                    Editable = false;
                 }
                 field(totalTaxAmount; "Line Tax Amount")
                 {
                     Caption = 'Total Tax Amount';
+                    Editable = false;
                 }
                 field(amountIncludingTax; "Line Amount Including Tax")
                 {

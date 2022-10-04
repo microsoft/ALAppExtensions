@@ -145,7 +145,7 @@ report 18716 "TDS 194Q Opening"
         TDSEntry."Entry No." := 0;
         TDSEntry."Vendor No." := VendorNo;
         TDSEntry."T.A.N. No." := CompanyInformation."T.A.N. No.";
-        TDSEntry."User ID" := UserId();
+        TDSEntry."User ID" := CopyStr(UserId(), 1, 50);
         TDSEntry."Source Code" := SourceCodeSetup."TDS Above Threshold Opening";
         TDSEntry.Section := TDSSectionCode;
         TDSEntry."Assessee Code" := AssesseeCode;
@@ -283,6 +283,7 @@ report 18716 "TDS 194Q Opening"
         ColumnScore: Integer;
         ColumnRank: Text;
     begin
+        ColumnScore := 0;
         TaxRateColumnSetup.SetCurrentKey(Sequence);
         TaxRateColumnSetup.SetRange("Tax Type", TaxRate."Tax Type");
         if TaxRateColumnSetup.FindSet() then

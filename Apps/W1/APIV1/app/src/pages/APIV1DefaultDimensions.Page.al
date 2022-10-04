@@ -17,33 +17,39 @@ page 20056 "APIV1 - Default Dimensions"
                 {
                     ApplicationArea = All;
                     Caption = 'parentId';
+                    ToolTip = 'Specifies the parent id.';
                 }
                 field(dimensionId; DimensionId)
                 {
                     ApplicationArea = All;
                     Caption = 'dimensionId';
+                    ToolTip = 'Specifies the dimension id.';
                 }
                 field(dimensionCode; "Dimension Code")
                 {
                     ApplicationArea = All;
                     Caption = 'dimensionCode';
+                    ToolTip = 'Specifies the dimension code.';
                     Editable = false;
                 }
                 field(dimensionValueId; DimensionValueId)
                 {
                     ApplicationArea = All;
                     Caption = 'dimensionValueId';
+                    ToolTip = 'Specifies the dimension value id.';
                 }
                 field(dimensionValueCode; "Dimension Value Code")
                 {
                     ApplicationArea = All;
                     Caption = 'dimensionValueCode';
+                    ToolTip = 'Specifies the dimension value code.';
                     Editable = false;
                 }
                 field(postingValidation; "Value Posting")
                 {
                     ApplicationArea = All;
                     Caption = 'postingValidation';
+                    ToolTip = 'Specifies the posting validation.';
                 }
             }
         }
@@ -70,14 +76,13 @@ page 20056 "APIV1 - Default Dimensions"
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
-        TypeHelper: Codeunit "Type Helper";
         FilterView: Text;
         ParentIdFilter: Text;
     begin
         if IsNullGuid(ParentId) then begin
             FilterView := GetView();
             ParentIdFilter := GetFilter(ParentId);
-            Validate(ParentId, TypeHelper.GetGuidAsString(ParentIdFilter));
+            Validate(ParentId, ParentIdFilter);
             SetView(FilterView);
         end;
         exit(true);
@@ -86,9 +91,9 @@ page 20056 "APIV1 - Default Dimensions"
     trigger OnModifyRecord(): Boolean
     begin
         if xRec.DimensionId <> DimensionId then
-            Error(StrSubstNo(CannotModifyKeyFieldErr, 'dimensionId'));
+            Error(CannotModifyKeyFieldErr, 'dimensionId');
         if xRec.ParentId <> ParentId then
-            Error(StrSubstNo(CannotModifyKeyFieldErr, 'parentId'));
+            Error(CannotModifyKeyFieldErr, 'parentId');
     end;
 
     var

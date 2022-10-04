@@ -209,7 +209,7 @@ codeunit 1993 "Checklist Implementation"
         Dimensions: Dictionary of [Text, Text];
     begin
         GuidedExperienceImpl.AddCompanyNameDimension(Dimensions);
-        Session.LogMessage('0000E9U', ChecklistInitializedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
+        Session.LogMessage('0000E9U', ChecklistInitializedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, Dimensions);
 
         if ChecklistSetup.FindFirst() then begin
             if ChecklistSetup."Is Setup Done" then
@@ -256,8 +256,12 @@ codeunit 1993 "Checklist Implementation"
     end;
 
     procedure SetChecklistVisibility(UserName: Text; Visible: Boolean)
+    var
+        Dimensions: Dictionary of [Text, Text];
     begin
+
         SetChecklistVisibility(UserName, Visible, false);
+        Session.LogMessage('0000EIS', UserResurfacedBannerLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, Dimensions);
     end;
 
     procedure SetChecklistVisibility(UserName: Text; Visible: Boolean; SessionUpdateRequired: Boolean)
@@ -276,9 +280,8 @@ codeunit 1993 "Checklist Implementation"
 
             If SessionUpdateRequired then begin
                 SessionSettings.RequestSessionUpdate(false);
-                Session.LogMessage('0000EIU', UserResurfacedBannerNewSessionLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
-            end else
-                Session.LogMessage('0000EIS', UserResurfacedBannerLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
+                Session.LogMessage('0000EIU', UserResurfacedBannerNewSessionLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, Dimensions);
+            end;
         end;
     end;
 

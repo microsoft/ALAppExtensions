@@ -83,14 +83,6 @@ codeunit 1956 "LPP Scheduler"
         exit(not JobQueueEntry.IsEmpty());
     end;
 
-    local procedure GetDatabase(): Text[250]
-    var
-        ActiveSession: Record "Active Session";
-    begin
-        ActiveSession.Get(ServiceInstanceId(), SessionId());
-        exit(ActiveSession."Database Name");
-    end;
-
     local procedure CreateSetupNotification()
     var
         SetupNotification: Notification;

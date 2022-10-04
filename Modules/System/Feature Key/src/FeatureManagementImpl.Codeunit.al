@@ -235,14 +235,14 @@ codeunit 2610 "Feature Management Impl."
     /// <summary>
     /// Runs the interface's data update method and updates the feature status.
     /// </summary>
-    procedure UpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; FeatureDataUpdate: Interface "Feature Data Update")
+    procedure UpdateData(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; FeatureDataUpdateInterface: Interface "Feature Data Update")
     begin
         SendTraceTagOnStart(FeatureDataUpdateStatus);
         SetSessionInProgress(FeatureDataUpdateStatus);
-        FeatureDataUpdate.UpdateData(FeatureDataUpdateStatus);
+        FeatureDataUpdateInterface.UpdateData(FeatureDataUpdateStatus);
         FeatureDataUpdateStatus."Feature Status" := "Feature Status"::Complete;
         FeatureDataUpdateStatus.Modify();
-        FeatureDataUpdate.AfterUpdate(FeatureDataUpdateStatus);
+        FeatureDataUpdateInterface.AfterUpdate(FeatureDataUpdateStatus);
         SendTraceTagOnFinish(FeatureDataUpdateStatus);
     end;
 

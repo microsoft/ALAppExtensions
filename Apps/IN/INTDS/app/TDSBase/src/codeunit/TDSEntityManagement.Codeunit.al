@@ -147,6 +147,7 @@ codeunit 18685 "TDS Entity Management"
         ParentSectionCode: Code[10];
         PresentationOrder: Integer;
     begin
+        ParentSectionCode := '';
         ReAssignPresentationOrder(ParentSectionCode, PresentationOrder);
     end;
 
@@ -165,6 +166,7 @@ codeunit 18685 "TDS Entity Management"
     begin
         TDSEntryUpdateMgt.SetSuggetVendorPayment();
     end;
+
     local procedure ReAssignPresentationOrder(ParentSectionCode: Code[10]; var PresentationOrder: Integer)
     var
         TDSSection: Record "TDS Section";

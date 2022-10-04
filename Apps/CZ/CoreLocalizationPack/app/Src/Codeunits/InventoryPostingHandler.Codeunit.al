@@ -242,6 +242,33 @@ codeunit 31073 "Inventory Posting Handler CZL"
         GenJournalLine."From Adjustment CZL" := true;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnAfterInitTempInvtPostBuf', '', false, false)]
+    local procedure SetGLCorrectionOnAfterInitTempInvtPostBuf(var TempInvtPostBuf: array[20] of Record "Invt. Posting Buffer"; ValueEntry: Record "Value Entry"; PostBufDimNo: Integer)
+    begin
+        if ValueEntry."Expected Cost" then
+            exit;
+
+        if (ValueEntry."Item Ledger Entry Type" in [ValueEntry."Item Ledger Entry Type"::Sale, ValueEntry."Item Ledger Entry Type"::Purchase, ValueEntry."Item Ledger Entry Type"::Output]) and
+           (ValueEntry."Entry Type" in [ValueEntry."Entry Type"::"Direct Cost", ValueEntry."Entry Type"::Revaluation])
+        then begin
+            InventorySetup.Get();
+            TempInvtPostBuf[PostBufDimNo].Negative := TempInvtPostBuf[PostBufDimNo].Negative xor InventorySetup."Post Exp.Cost Conv.As Corr.CZL"; // set "G/L Correction"
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnPostInvtPostBufProcessGlobalInvtPostBufOnAfterSetDesc', '', false, false)]
+    local procedure GetCorrectionOnPostInvtPostBufProcessGlobalInvtPostBufOnAfterSetDesc(var GenJournalLine: Record "Gen. Journal Line"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer")
+    begin
+        GenJournalLine.Correction := (GenJournalLine.Amount < 0) xor GlobalInvtPostBuf.Negative; // get "G/L Correction"
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnAfterBufferGLItemLedgRelation', '', false, false)]
+    local procedure DeleteRelationOnAfterBufferGLItemLedgRelation(var TempGLItemLedgRelation: Record "G/L - Item Ledger Relation" temporary; GlobalInvtPostBufEntryNo: Integer)
+    begin
+        if TempGLItemLedgRelation."G/L Entry No." <> GlobalInvtPostBufEntryNo then
+            TempGLItemLedgRelation.Delete();
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Invt. Posting Buffer", 'OnUseInvtPostSetup', '', false, false)]
     local procedure AccountTypesOnUseInvtPostSetup(var InvtPostingBuffer: Record "Invt. Posting Buffer"; var UseInventoryPostingSetup: Boolean)
     begin

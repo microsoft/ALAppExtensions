@@ -830,17 +830,12 @@ report 11971 "Calc. and Post VAT Settl. CZL"
     local procedure PostGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
     var
         DimensionManagement: Codeunit DimensionManagement;
-        TableID: array[10] of Integer;
-        No: array[10] of Code[20];
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
     begin
-        TableID[1] := Database::"G/L Account";
-        TableID[2] := Database::"G/L Account";
-        No[1] := GenJournalLine."Account No.";
-        No[2] := GenJournalLine."Bal. Account No.";
-        GenJournalLine."Dimension Set ID" :=
-          DimensionManagement.GetRecDefaultDimID(
-            GenJournalLine, 0, TableID, No, GenJournalLine."Source Code",
-            GenJournalLine."Shortcut Dimension 1 Code", GenJournalLine."Shortcut Dimension 2 Code", 0, 0);
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"G/L Account", GenJournalLine."Account No.");
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"G/L Account", GenJournalLine."Bal. Account No.");
+        GenJournalLine."Dimension Set ID" := DimensionManagement.GetRecDefaultDimID(GenJournalLine, 0, DefaultDimSource, GenJournalLine."Source Code",
+                                               GenJournalLine."Shortcut Dimension 1 Code", GenJournalLine."Shortcut Dimension 2 Code", 0, 0);
         GenJnlPostLine.Run(GenJournalLine);
     end;
 

@@ -297,6 +297,15 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
+    /// Gets number of modifies on the message.
+    /// </summary>
+    /// <returns>The number of modifies.</returns>
+    internal procedure GetNoOfModifies(): Integer
+    begin
+        exit(EmailMessageImpl.GetNoOfModifies());
+    end;
+
+    /// <summary>
     /// Integration event to provide the stream of data for a given MediaID. If attachment content has been deleted, this event makes it possible to provide 
     /// the data from elsewhere.
     /// </summary>

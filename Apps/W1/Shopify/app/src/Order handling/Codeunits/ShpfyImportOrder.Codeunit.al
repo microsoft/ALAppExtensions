@@ -26,21 +26,8 @@ codeunit 30161 "Shpfy Import Order"
     var
         DataCapture: Record "Shpfy Data Capture";
         OrderHeader: Record "Shpfy Order Header";
-        xOrderHeader: Record "Shpfy Order Header";
-        FulFillments: Codeunit "Shpfy Order Fulfillments";
-        Risks: Codeunit "Shpfy Order Risks";
-        ShippingCosts: Codeunit "Shpfy Shipping Charges";
-        Transactions: Codeunit "Shpfy Transactions";
-        RecRef: RecordRef;
-        ImportAction: enum "Shpfy Import Action";
-        JArray: JsonArray;
-        JAddress: JsonObject;
         JOrder: JsonObject;
         JToken: JsonToken;
-        CompanyName: Text;
-        FirstName: Text;
-        LastName: Text;
-        PhoneNo: Text;
         Response: Text;
         Url: Text;
     begin
@@ -51,248 +38,13 @@ codeunit 30161 "Shpfy Import Order"
             Response := CommunicationMgt.ExecuteWebRequest(CommunicationMgt.CreateWebRequestURL(Url), 'GET', '');
             if JToken.ReadFrom(Response) then
                 if JHelper.GetJsonObject(JToken, JOrder, 'order') then begin
-                    Clear(OrderHeader);
-                    ImportAction := OrdersToImport."Import Action";
-                    Case ImportAction of
-                        ImportAction::New:
-                            begin
-                                RecRef.GetTable(OrderHeader);
-                                JHelper.GetValueIntoField(JOrder, 'id', RecRef, OrderHeader.FieldNo("Shopify Order Id"));
-                                JHelper.GetValueIntoField(JOrder, 'created_at', RecRef, OrderHeader.FieldNo("Created At"));
-                                RecRef.Field(OrderHeader.FieldNo("Document Date")).Value := DT2Date(RecRef.Field(OrderHeader.FieldNo("Created At")).Value);
-                                //JHelper.GetValueIntoField(JOrder, 'browser_ip', RecRef, OrderHeader.FieldNo("Browser IP"));
-                                JHelper.GetValueIntoField(JOrder, 'checkout_id', RecRef, OrderHeader.FieldNo("Checkout Id"));
-                                JHelper.GetValueIntoField(JOrder, 'source_name', RecRef, OrderHeader.FieldNo("Source Name"));
-                                JHelper.GetValueIntoField(JOrder, 'contact_email', RecRef, OrderHeader.FieldNo("Contact Email"));
-                                JHelper.GetValueIntoField(JOrder, 'order_status_url', RecRef, OrderHeader.FieldNo("Order Status URL"));
-                                PhoneNo := JHelper.GetValueAsText(JOrder, 'phone');
-                                PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
-                                if JHelper.GetJsonObject(Jorder, JAddress, 'billing_address') then begin
-                                    FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
-                                    LastName := JHelper.GetValueAsText(JAddress, 'last_name');
-                                    CompanyName := JHelper.GetValueAsText(JAddress, 'company');
-                                    RecRef.Field(OrderHeader.FieldNo("Bill-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Bill-to First Name"));
-                                    RecRef.Field(OrderHeader.FieldNo("Bill-to Lastname")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Bill-to Lastname"));
-                                    RecRef.Field(OrderHeader.FieldNo("Bill-to Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Bill-to Name"));
-                                    RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Bill-to Name 2"));
-                                    if RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name")).Value = RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value then
-                                        RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := ''
-                                    else
-                                        if Format(RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name")).Value) = '' then begin
-                                            RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name")).Value := RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value;
-                                            RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := '';
-                                        end;
-                                    JHelper.GetValueIntoField(JAddress, 'address1', RecRef, OrderHeader.FieldNo("Bill-to Address"));
-                                    JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Bill-to Address 2"));
-                                    JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Bill-to Post Code"));
-                                    JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Bill-to City"));
-                                    JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Bill-to Country/Region Code"));
-                                    JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Bill-to Country/Region Name"));
-                                    JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Bill-to County"));
-                                    if PhoneNo = '' then begin
-                                        PhoneNo := JHelper.GetValueAsText(JAddress, 'phone');
-                                        PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
-                                    end;
-                                end else
-                                    if JHelper.GetJsonObject(Jorder, JAddress, 'customer.default_address') then begin
-                                        FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
-                                        LastName := JHelper.GetValueAsText(JAddress, 'last_name');
-                                        CompanyName := JHelper.GetValueAsText(JAddress, 'company');
-                                        RecRef.Field(OrderHeader.FieldNo("Bill-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Bill-to First Name"));
-                                        RecRef.Field(OrderHeader.FieldNo("Bill-to Lastname")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Bill-to Lastname"));
-                                        RecRef.Field(OrderHeader.FieldNo("Bill-to Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Bill-to Name"));
-                                        RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Bill-to Name 2"));
-                                        if RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name")).Value = RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value then
-                                            RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := ''
-                                        else
-                                            if Format(RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name")).Value) = '' then begin
-                                                RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name")).Value := RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value;
-                                                RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := '';
-                                            end;
-                                        JHelper.GetValueIntoField(JAddress, 'address1', RecRef, OrderHeader.FieldNo("Bill-to Address"));
-                                        JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Bill-to Address 2"));
-                                        JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Bill-to Post Code"));
-                                        JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Bill-to City"));
-                                        JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Bill-to Country/Region Code"));
-                                        JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Bill-to Country/Region Name"));
-                                        JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Bill-to County"));
-                                        if PhoneNo = '' then begin
-                                            PhoneNo := JHelper.GetValueAsText(JAddress, 'phone');
-                                            PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
-                                        end;
-                                    end;
-                                if JHelper.GetJsonObject(Jorder, JAddress, 'shipping_address') then begin
-                                    FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
-                                    LastName := JHelper.GetValueAsText(JAddress, 'last_name');
-                                    CompanyName := JHelper.GetValueAsText(JAddress, 'company');
-                                    RecRef.Field(OrderHeader.FieldNo("Ship-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Ship-to First Name"));
-                                    RecRef.Field(OrderHeader.FieldNo("Ship-to Last Name")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Ship-to Last Name"));
-                                    RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Ship-to Name"));
-                                    RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Ship-to Name 2"));
-                                    if RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name")).Value = RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name 2")).Value then
-                                        RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name 2")).Value := ''
-                                    else
-                                        if Format(RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name")).Value) = '' then begin
-                                            RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name")).Value := RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name 2")).Value;
-                                            RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name 2")).Value := '';
-                                        end;
-                                    JHelper.GetValueIntoField(JAddress, 'address1', RecRef, OrderHeader.FieldNo("Ship-to Address"));
-                                    JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Ship-to Address 2"));
-                                    JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Ship-to Post Code"));
-                                    JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Ship-to City"));
-                                    JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Ship-to Country/Region Code"));
-                                    JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Ship-to Country/Region Name"));
-                                    JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Ship-to County"));
-                                    JHelper.GetValueIntoField(JAddress, 'latitude', RecRef, OrderHeader.FieldNo("Ship-to Latitude"));
-                                    JHelper.GetValueIntoField(JAddress, 'longitude', RecRef, OrderHeader.FieldNo("Ship-to Longitude"));
-                                    if PhoneNo = '' then begin
-                                        PhoneNo := JHelper.GetValueAsText(JAddress, 'phone');
-                                        PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
-                                    end;
-                                end;
-                                //JHelper.GetValueIntoField(JOrder, 'client_details.browser_ip', RecRef, OrderHeader.FieldNo("Browser IP"));
-                                JHelper.GetValueIntoField(JOrder, 'client_details.session_hash', RecRef, OrderHeader.FieldNo("Session Hash"));
-                                JHelper.GetValueIntoField(JOrder, 'customer.id', RecRef, OrderHeader.FieldNo("Customer Id"));
-                                JHelper.GetValueIntoField(JOrder, 'contact_email', RecRef, OrderHeader.FieldNo("Contact Email"));
-                                if JHelper.GetJsonObject(JOrder, JAddress, 'billing_address') then begin
-                                    FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
-                                    LastName := JHelper.GetValueAsText(JAddress, 'last_name');
-                                    CompanyName := JHelper.GetValueAsText(JAddress, 'company');
-                                    RecRef.Field(OrderHeader.FieldNo("Sell-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Sell-to First Name"));
-                                    RecRef.Field(OrderHeader.FieldNo("Sell-to Last Name")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Sell-to Last Name"));
-                                    RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Sell-to Customer Name"));
-                                    RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Sell-to Customer Name 2"));
-                                    if RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value = RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value then
-                                        RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := ''
-                                    else
-                                        if Format(RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value) = '' then begin
-                                            RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value := RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value;
-                                            RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := '';
-                                        end;
-                                    JHelper.GetValueIntoField(JAddress, 'address1', RecRef, OrderHeader.FieldNo("Sell-to Address"));
-                                    JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Sell-to Address 2"));
-                                    JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Sell-to Post Code"));
-                                    JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Sell-to City"));
-                                    JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Sell-to Country/Region Code"));
-                                    JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Sell-to Country/Region Name"));
-                                    JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Sell-to County"));
-                                end else begin
-                                    FirstName := JHelper.GetValueAsText(JAddress, 'customer.first_name');
-                                    LastName := JHelper.GetValueAsText(JAddress, 'customer.last_name');
-                                    if JHelper.GetJsonObject(Jorder, JAddress, 'customer.default_address') then begin
-                                        FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
-                                        LastName := JHelper.GetValueAsText(JAddress, 'last_name');
-                                        CompanyName := JHelper.GetValueAsText(JAddress, 'company');
-                                        RecRef.Field(OrderHeader.FieldNo("Sell-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Sell-to First Name"));
-                                        RecRef.Field(OrderHeader.FieldNo("Sell-to Last Name")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Sell-to Last Name"));
-                                        RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Sell-to Customer Name"));
-                                        RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Sell-to Customer Name 2"));
-                                        if RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value = RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value then
-                                            RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := ''
-                                        else
-                                            if Format(RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value) = '' then begin
-                                                RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value := RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value;
-                                                RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := '';
-                                            end;
-                                        JHelper.GetValueIntoField(JAddress, 'address1', RecRef, OrderHeader.FieldNo("Sell-to Address"));
-                                        JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Sell-to Address 2"));
-                                        JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Sell-to Post Code"));
-                                        JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Sell-to City"));
-                                        JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Sell-to Country/Region Code"));
-                                        JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Sell-to Country/Region Name"));
-                                        JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Sell-to County"));
-                                    end;
-                                end;
-                                if JHelper.GetJsonArray(JOrder, JArray, 'line_items') then
-                                    AddLineItems(OrdersToImport.Id, JArray);
+                    ImportOrder(OrdersToImport, OrderHeader, JOrder);
 
-                            end;
-                        ImportAction::Update:
-                            if OrderHeader.Get(OrdersToImport.Id) then begin
-                                RecRef.GetTable(OrderHeader);
-                                xOrderHeader := OrderHeader;
-                            end else
-                                exit;
-                    end;
-                    JHelper.GetValueIntoField(JOrder, 'email', RecRef, OrderHeader.FieldNo(Email));
-                    JHelper.GetValueIntoField(JOrder, 'closed_at', RecRef, OrderHeader.FieldNo("Closed At"));
-                    JHelper.GetValueIntoField(JOrder, 'updated_at', RecRef, OrderHeader.FieldNo("Updated At"));
-                    JHelper.GetValueIntoField(JOrder, 'token', RecRef, OrderHeader.FieldNo(Token));
-                    JHelper.GetValueIntoField(JOrder, 'gateway', RecRef, OrderHeader.FieldNo(Gateway));
-                    JHelper.GetValueIntoField(JOrder, 'test', RecRef, OrderHeader.FieldNo(Test));
-                    JHelper.GetValueIntoField(JOrder, 'total_price', RecRef, OrderHeader.FieldNo("Total Amount"));
-                    JHelper.GetValueIntoField(JOrder, 'subtotal_price', RecRef, OrderHeader.FieldNo("Subtotal Amount"));
-                    JHelper.GetValueIntoField(JOrder, 'total_weight', RecRef, OrderHeader.FieldNo("Total Weight"));
-                    JHelper.GetValueIntoField(JOrder, 'currency', RecRef, OrderHeader.FieldNo(Currency));
-                    JHelper.GetValueIntoField(JOrder, 'confirmed', RecRef, OrderHeader.FieldNo(Confirmed));
-                    JHelper.GetValueIntoField(JOrder, 'total_discounts', RecRef, OrderHeader.FieldNo("Discount Amount"));
-                    JHelper.GetValueIntoField(JOrder, 'total_line_items_price', RecRef, OrderHeader.FieldNo("Total Items Amount"));
-                    JHelper.GetValueIntoField(JOrder, 'cart_token', RecRef, OrderHeader.FieldNo("Cart Token"));
-                    JHelper.GetValueIntoField(JOrder, 'name', RecRef, OrderHeader.FieldNo("Shopify Order No."));
-                    JHelper.GetValueIntoField(JOrder, 'cancelled_at', RecRef, OrderHeader.FieldNo("Cancelled At"));
-                    JHelper.GetValueIntoField(JOrder, 'checkout_token', RecRef, OrderHeader.FieldNo("Checkout Token"));
-                    JHelper.GetValueIntoField(JOrder, 'reference', RecRef, OrderHeader.FieldNo(Reference));
-                    JHelper.GetValueIntoField(JOrder, 'processed_at', RecRef, OrderHeader.FieldNo("Processed At"));
-                    JHelper.GetValueIntoField(JOrder, 'total_line_items_price_set.shop_money.amount', RecRef, OrderHeader.FieldNo("Total Items Amount"));
-                    JHelper.GetValueIntoField(JOrder, 'total_discounts_set.shop_money.amount', RecRef, OrderHeader.FieldNo("Discount Amount"));
-                    JHelper.GetValueIntoField(JOrder, 'total_shipping_price_set.shop_money.amount', RecRef, OrderHeader.FieldNo("Shipping Charges Amount"));
-                    JHelper.GetValueIntoField(JOrder, 'subtotal_price_set.shop_money.amount', RecRef, OrderHeader.FieldNo("subtotal Amount"));
-                    JHelper.GetValueIntoField(JOrder, 'total_price_set.shop_money.amount', RecRef, OrderHeader.FieldNo("Total Amount"));
-                    JHelper.GetValueIntoField(JOrder, 'total_tax_set.shop_money.amount', RecRef, OrderHeader.FieldNo("VAT Amount"));
-                    JHelper.GetValueIntoField(JOrder, 'total_tip_received', RecRef, OrderHeader.FieldNo("Total Tip Received"));
-                    JHelper.GetValueIntoField(JOrder, 'taxes_included', RecRef, OrderHeader.FieldNo("VAT Included"));
-                    RecRef.SetTable(OrderHeader);
-                    OrderHeader."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(OrderHeader."Phone No."));
-                    OrderHeader."Financial Status" := ConvertToFinancieleStatus(JHelper.GetValueAsText(JOrder, 'financial_status'));
-                    OrderHeader."Cancel Reason" := ConvertToCancelReason(JHelper.GetValueAsText(JOrder, 'cancel_reason'));
-                    OrderHeader."Processing Method" := ConvertToProcessingMethod(JHelper.GetValueAsText(JOrder, 'processing_method'));
-
-                    OrderHeader."Fulfillment Status" := OrdersToImport."Fulfillment Status";
-                    OrderHeader."Shop Code" := OrdersToImport."Shop Code";
-                    OrderHeader."Risk Level" := OrdersToImport."Risk Level";
-                    OrderHeader."Fully Paid" := OrdersToImport."Fully Paid";
-                    OrderHeader."Shop Code" := Shop.Code;
-                    case ImportAction of
-                        ImportAction::New:
-                            begin
-                                if JHelper.GetJsonArray(JOrder, JArray, 'fulfillments') then
-                                    GetLocationIds(OrderHeader, JArray)
-                                else begin
-                                    Clear(JArray);
-                                    GetLocationIds(OrderHeader, JArray);
-                                end;
-                                OrderHeader.Insert();
-                                OrderEvents.OnAfterNewShopifyOrder(OrderHeader);
-                            end;
-                        ImportAction::Update:
-                            begin
-                                OrderHeader.Modify();
-                                OrderEvents.OnAfterModifyShopifyOrder(OrderHeader, xOrderHeader);
-                            end;
-                    end;
-                    OrderHeader.SetWorkDescription(JHelper.GetValueAsText(JOrder, 'note'));
-                    RecRef.Close();
-
-                    OrderHeader.UpdateTags(JHelper.GetValueAsText(JOrder, 'tags'));
-                    if JHelper.GetJsonArray(JOrder, JArray, 'discount_applications') then
-                        AddDiscountApplications(OrderHeader."Shopify Order Id", JArray);
-                    if JHelper.GetJsonArray(JOrder, JArray, 'payment_gateway_names') then
-                        AddPaymentGatewayNames(OrderHeader."Shopify Order Id", JArray);
-                    if JHelper.GetJsonArray(JOrder, JArray, 'tax_lines') then
-                        AddTaxLines(OrderHeader."Shopify Order Id", JArray);
-                    if JHelper.GetJsonArray(JOrder, JArray, 'fulfillments') then
-                        FulFillments.GetFulfillmentInfos(OrderHeader."Shopify Order Id", JArray);
-                    if JHelper.GetJsonArray(JOrder, JArray, 'shipping_lines') then
-                        ShippingCosts.UpdateShippingCostInfos(OrderHeader, JArray);
-                    Transactions.UpdateTransactionInfos(OrderHeader);
-                    Risks.UpdateOrderRisks(OrderHeader);
-
-                    OrderHeader.CalcFields("Total Quantity of Items", "Number of Lines");
+                    DataCapture.Add(Database::"Shpfy Order Header", OrderHeader.SystemId, Response);
 
                     if CheckToCloseOrder(OrderHeader) then
                         CloseOrder(OrderHeader);
 
-                    DataCapture.Add(Database::"Shpfy Order Header", OrderHeader.SystemId, Response);
                     exit;
                 end;
 
@@ -643,5 +395,269 @@ codeunit 30161 "Shpfy Import Order"
             exit(Enum::"Shpfy Target Type".FromInteger(Enum::"Shpfy Target Type".Ordinals().Get(Enum::"Shpfy Target Type".Names().IndexOf(Value))))
         else
             exit(Enum::"Shpfy Target Type"::Unknown);
+    end;
+
+    local procedure ImportNewOrder(var OrderHeader: Record "Shpfy Order Header"; var RecRef: RecordRef; var JOrder: JsonObject; var PhoneNo: Text)
+    var
+        JAddress: JsonObject;
+        CompanyName: Text;
+        FirstName: Text;
+        LastName: Text;
+        JArray: JsonArray;
+    begin
+        RecRef.GetTable(OrderHeader);
+        JHelper.GetValueIntoField(JOrder, 'id', RecRef, OrderHeader.FieldNo("Shopify Order Id"));
+        JHelper.GetValueIntoField(JOrder, 'created_at', RecRef, OrderHeader.FieldNo("Created At"));
+        RecRef.Field(OrderHeader.FieldNo("Document Date")).Value := DT2Date(RecRef.Field(OrderHeader.FieldNo("Created At")).Value);
+        //JHelper.GetValueIntoField(JOrder, 'browser_ip', RecRef, OrderHeader.FieldNo("Browser IP"));
+        JHelper.GetValueIntoField(JOrder, 'checkout_id', RecRef, OrderHeader.FieldNo("Checkout Id"));
+        JHelper.GetValueIntoField(JOrder, 'source_name', RecRef, OrderHeader.FieldNo("Source Name"));
+        JHelper.GetValueIntoField(JOrder, 'contact_email', RecRef, OrderHeader.FieldNo("Contact Email"));
+        JHelper.GetValueIntoField(JOrder, 'order_status_url', RecRef, OrderHeader.FieldNo("Order Status URL"));
+        PhoneNo := JHelper.GetValueAsText(JOrder, 'phone');
+        PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
+        if JHelper.GetJsonObject(Jorder, JAddress, 'billing_address') then begin
+            FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
+            LastName := JHelper.GetValueAsText(JAddress, 'last_name');
+            CompanyName := JHelper.GetValueAsText(JAddress, 'company');
+            RecRef.Field(OrderHeader.FieldNo("Bill-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Bill-to First Name"));
+            RecRef.Field(OrderHeader.FieldNo("Bill-to Lastname")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Bill-to Lastname"));
+            RecRef.Field(OrderHeader.FieldNo("Bill-to Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Bill-to Name"));
+            RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Bill-to Name 2"));
+            if RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name")).Value = RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value then
+                RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := ''
+            else
+                if Format(RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name")).Value) = '' then begin
+                    RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name")).Value := RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value;
+                    RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := '';
+                end;
+            JHelper.GetValueIntoField(JAddress, 'address1', RecRef, OrderHeader.FieldNo("Bill-to Address"));
+            JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Bill-to Address 2"));
+            JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Bill-to Post Code"));
+            JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Bill-to City"));
+            JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Bill-to Country/Region Code"));
+            JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Bill-to Country/Region Name"));
+            JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Bill-to County"));
+            if PhoneNo = '' then begin
+                PhoneNo := JHelper.GetValueAsText(JAddress, 'phone');
+                PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
+            end;
+        end else
+            if JHelper.GetJsonObject(Jorder, JAddress, 'customer.default_address') then begin
+                FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
+                LastName := JHelper.GetValueAsText(JAddress, 'last_name');
+                CompanyName := JHelper.GetValueAsText(JAddress, 'company');
+                RecRef.Field(OrderHeader.FieldNo("Bill-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Bill-to First Name"));
+                RecRef.Field(OrderHeader.FieldNo("Bill-to Lastname")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Bill-to Lastname"));
+                RecRef.Field(OrderHeader.FieldNo("Bill-to Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Bill-to Name"));
+                RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Bill-to Name 2"));
+                if RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name")).Value = RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value then
+                    RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := ''
+                else
+                    if Format(RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name")).Value) = '' then begin
+                        RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name")).Value := RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value;
+                        RecRef.Field(OrderHeader.FieldNo(OrderHeader."Bill-to Name 2")).Value := '';
+                    end;
+                JHelper.GetValueIntoField(JAddress, 'address1', RecRef, OrderHeader.FieldNo("Bill-to Address"));
+                JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Bill-to Address 2"));
+                JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Bill-to Post Code"));
+                JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Bill-to City"));
+                JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Bill-to Country/Region Code"));
+                JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Bill-to Country/Region Name"));
+                JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Bill-to County"));
+                if PhoneNo = '' then begin
+                    PhoneNo := JHelper.GetValueAsText(JAddress, 'phone');
+                    PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
+                end;
+            end;
+        if JHelper.GetJsonObject(Jorder, JAddress, 'shipping_address') then begin
+            FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
+            LastName := JHelper.GetValueAsText(JAddress, 'last_name');
+            CompanyName := JHelper.GetValueAsText(JAddress, 'company');
+            RecRef.Field(OrderHeader.FieldNo("Ship-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Ship-to First Name"));
+            RecRef.Field(OrderHeader.FieldNo("Ship-to Last Name")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Ship-to Last Name"));
+            RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Ship-to Name"));
+            RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Ship-to Name 2"));
+            if RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name")).Value = RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name 2")).Value then
+                RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name 2")).Value := ''
+            else
+                if Format(RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name")).Value) = '' then begin
+                    RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name")).Value := RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name 2")).Value;
+                    RecRef.Field(OrderHeader.FieldNo(OrderHeader."Ship-to Name 2")).Value := '';
+                end;
+            JHelper.GetValueIntoField(JAddress, 'address1', RecRef, OrderHeader.FieldNo("Ship-to Address"));
+            JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Ship-to Address 2"));
+            JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Ship-to Post Code"));
+            JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Ship-to City"));
+            JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Ship-to Country/Region Code"));
+            JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Ship-to Country/Region Name"));
+            JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Ship-to County"));
+            JHelper.GetValueIntoField(JAddress, 'latitude', RecRef, OrderHeader.FieldNo("Ship-to Latitude"));
+            JHelper.GetValueIntoField(JAddress, 'longitude', RecRef, OrderHeader.FieldNo("Ship-to Longitude"));
+            if PhoneNo = '' then begin
+                PhoneNo := JHelper.GetValueAsText(JAddress, 'phone');
+                PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
+            end;
+        end;
+        //JHelper.GetValueIntoField(JOrder, 'client_details.browser_ip', RecRef, OrderHeader.FieldNo("Browser IP"));
+        JHelper.GetValueIntoField(JOrder, 'client_details.session_hash', RecRef, OrderHeader.FieldNo("Session Hash"));
+        JHelper.GetValueIntoField(JOrder, 'customer.id', RecRef, OrderHeader.FieldNo("Customer Id"));
+        JHelper.GetValueIntoField(JOrder, 'contact_email', RecRef, OrderHeader.FieldNo("Contact Email"));
+        if JHelper.GetJsonObject(JOrder, JAddress, 'billing_address') then begin
+            FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
+            LastName := JHelper.GetValueAsText(JAddress, 'last_name');
+            CompanyName := JHelper.GetValueAsText(JAddress, 'company');
+            RecRef.Field(OrderHeader.FieldNo("Sell-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Sell-to First Name"));
+            RecRef.Field(OrderHeader.FieldNo("Sell-to Last Name")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Sell-to Last Name"));
+            RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Sell-to Customer Name"));
+            RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Sell-to Customer Name 2"));
+            if RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value = RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value then
+                RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := ''
+            else
+                if Format(RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value) = '' then begin
+                    RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value := RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value;
+                    RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := '';
+                end;
+            JHelper.GetValueIntoField(JAddress, 'address1', RecRef, OrderHeader.FieldNo("Sell-to Address"));
+            JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Sell-to Address 2"));
+            JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Sell-to Post Code"));
+            JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Sell-to City"));
+            JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Sell-to Country/Region Code"));
+            JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Sell-to Country/Region Name"));
+            JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Sell-to County"));
+        end else begin
+            FirstName := JHelper.GetValueAsText(JAddress, 'customer.first_name');
+            LastName := JHelper.GetValueAsText(JAddress, 'customer.last_name');
+            if JHelper.GetJsonObject(Jorder, JAddress, 'customer.default_address') then begin
+                FirstName := JHelper.GetValueAsText(JAddress, 'first_name');
+                LastName := JHelper.GetValueAsText(JAddress, 'last_name');
+                CompanyName := JHelper.GetValueAsText(JAddress, 'company');
+                RecRef.Field(OrderHeader.FieldNo("Sell-to First Name")).Value := CopyStr(FirstName, MaxStrLen(OrderHeader."Sell-to First Name"));
+                RecRef.Field(OrderHeader.FieldNo("Sell-to Last Name")).Value := CopyStr(LastName, MaxStrLen(OrderHeader."Sell-to Last Name"));
+                RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Sell-to Customer Name"));
+                RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := CopyStr(GetName2(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Sell-to Customer Name 2"));
+                if RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value = RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value then
+                    RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := ''
+                else
+                    if Format(RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value) = '' then begin
+                        RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name")).Value := RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value;
+                        RecRef.Field(OrderHeader.FieldNo(OrderHeader."Sell-to Customer Name 2")).Value := '';
+                    end;
+                JHelper.GetValueIntoField(JAddress, 'address1', RecRef, OrderHeader.FieldNo("Sell-to Address"));
+                JHelper.GetValueIntoField(JAddress, 'address2', RecRef, OrderHeader.FieldNo("Sell-to Address 2"));
+                JHelper.GetValueIntoField(JAddress, 'zip', RecRef, OrderHeader.FieldNo("Sell-to Post Code"));
+                JHelper.GetValueIntoField(JAddress, 'city', RecRef, OrderHeader.FieldNo("Sell-to City"));
+                JHelper.GetValueIntoField(JAddress, 'country_code', RecRef, OrderHeader.FieldNo("Sell-to Country/Region Code"));
+                JHelper.GetValueIntoField(JAddress, 'country', RecRef, OrderHeader.FieldNo("Sell-to Country/Region Name"));
+                JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Sell-to County"));
+            end;
+        end;
+        RecRef.SetTable(OrderHeader);
+        if JHelper.GetJsonArray(JOrder, JArray, 'line_items') then
+            AddLineItems(OrderHeader."Shopify Order Id", JArray);
+    end;
+
+    local procedure UpdateOrder(var OrderHeader: Record "Shpfy Order Header"; var OrderHeaderRecordRef: RecordRef; var JOrder: JsonObject; var PhoneNo: Text)
+    begin
+        JHelper.GetValueIntoField(JOrder, 'email', OrderHeaderRecordRef, OrderHeader.FieldNo(Email));
+        JHelper.GetValueIntoField(JOrder, 'closed_at', OrderHeaderRecordRef, OrderHeader.FieldNo("Closed At"));
+        JHelper.GetValueIntoField(JOrder, 'updated_at', OrderHeaderRecordRef, OrderHeader.FieldNo("Updated At"));
+        JHelper.GetValueIntoField(JOrder, 'token', OrderHeaderRecordRef, OrderHeader.FieldNo(Token));
+        JHelper.GetValueIntoField(JOrder, 'gateway', OrderHeaderRecordRef, OrderHeader.FieldNo(Gateway));
+        JHelper.GetValueIntoField(JOrder, 'test', OrderHeaderRecordRef, OrderHeader.FieldNo(Test));
+        JHelper.GetValueIntoField(JOrder, 'total_price', OrderHeaderRecordRef, OrderHeader.FieldNo("Total Amount"));
+        JHelper.GetValueIntoField(JOrder, 'subtotal_price', OrderHeaderRecordRef, OrderHeader.FieldNo("Subtotal Amount"));
+        JHelper.GetValueIntoField(JOrder, 'total_weight', OrderHeaderRecordRef, OrderHeader.FieldNo("Total Weight"));
+        JHelper.GetValueIntoField(JOrder, 'currency', OrderHeaderRecordRef, OrderHeader.FieldNo(Currency));
+        JHelper.GetValueIntoField(JOrder, 'confirmed', OrderHeaderRecordRef, OrderHeader.FieldNo(Confirmed));
+        JHelper.GetValueIntoField(JOrder, 'total_discounts', OrderHeaderRecordRef, OrderHeader.FieldNo("Discount Amount"));
+        JHelper.GetValueIntoField(JOrder, 'total_line_items_price', OrderHeaderRecordRef, OrderHeader.FieldNo("Total Items Amount"));
+        JHelper.GetValueIntoField(JOrder, 'cart_token', OrderHeaderRecordRef, OrderHeader.FieldNo("Cart Token"));
+        JHelper.GetValueIntoField(JOrder, 'name', OrderHeaderRecordRef, OrderHeader.FieldNo("Shopify Order No."));
+        JHelper.GetValueIntoField(JOrder, 'cancelled_at', OrderHeaderRecordRef, OrderHeader.FieldNo("Cancelled At"));
+        JHelper.GetValueIntoField(JOrder, 'checkout_token', OrderHeaderRecordRef, OrderHeader.FieldNo("Checkout Token"));
+        JHelper.GetValueIntoField(JOrder, 'reference', OrderHeaderRecordRef, OrderHeader.FieldNo(Reference));
+        JHelper.GetValueIntoField(JOrder, 'processed_at', OrderHeaderRecordRef, OrderHeader.FieldNo("Processed At"));
+        JHelper.GetValueIntoField(JOrder, 'total_line_items_price_set.shop_money.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Total Items Amount"));
+        JHelper.GetValueIntoField(JOrder, 'total_discounts_set.shop_money.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Discount Amount"));
+        JHelper.GetValueIntoField(JOrder, 'total_shipping_price_set.shop_money.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Shipping Charges Amount"));
+        JHelper.GetValueIntoField(JOrder, 'subtotal_price_set.shop_money.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("subtotal Amount"));
+        JHelper.GetValueIntoField(JOrder, 'total_price_set.shop_money.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Total Amount"));
+        JHelper.GetValueIntoField(JOrder, 'total_tax_set.shop_money.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("VAT Amount"));
+        JHelper.GetValueIntoField(JOrder, 'total_tip_received', OrderHeaderRecordRef, OrderHeader.FieldNo("Total Tip Received"));
+        JHelper.GetValueIntoField(JOrder, 'taxes_included', OrderHeaderRecordRef, OrderHeader.FieldNo("VAT Included"));
+        OrderHeaderRecordRef.SetTable(OrderHeader);
+        OrderHeader."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(OrderHeader."Phone No."));
+        OrderHeader."Financial Status" := ConvertToFinancieleStatus(JHelper.GetValueAsText(JOrder, 'financial_status'));
+        OrderHeader."Cancel Reason" := ConvertToCancelReason(JHelper.GetValueAsText(JOrder, 'cancel_reason'));
+        OrderHeader."Processing Method" := ConvertToProcessingMethod(JHelper.GetValueAsText(JOrder, 'processing_method'));
+    end;
+
+    local procedure ImportOrder(var OrdersToImport: Record "Shpfy Orders to Import"; var OrderHeader: Record "Shpfy Order Header"; var JOrder: JsonObject)
+    var
+        xOrderHeader: Record "Shpfy Order Header";
+        FulFillments: Codeunit "Shpfy Order Fulfillments";
+        Risks: Codeunit "Shpfy Order Risks";
+        ShippingCosts: Codeunit "Shpfy Shipping Charges";
+        Transactions: Codeunit "Shpfy Transactions";
+        RecRef: RecordRef;
+        ImportAction: enum "Shpfy Import Action";
+        JArray: JsonArray;
+        PhoneNo: Text;
+    begin
+        Clear(OrderHeader);
+        ImportAction := OrdersToImport."Import Action";
+        Case ImportAction of
+            ImportAction::New:
+                ImportNewOrder(OrderHeader, RecRef, JOrder, PhoneNo);
+            ImportAction::Update:
+                if OrderHeader.Get(OrdersToImport.Id) then begin
+                    RecRef.GetTable(OrderHeader);
+                    xOrderHeader := OrderHeader;
+                end else
+                    exit;
+        end;
+        UpdateOrder(OrderHeader, RecRef, JOrder, PhoneNo);
+
+        OrderHeader."Fulfillment Status" := OrdersToImport."Fulfillment Status";
+        OrderHeader."Shop Code" := OrdersToImport."Shop Code";
+        OrderHeader."Risk Level" := OrdersToImport."Risk Level";
+        OrderHeader."Fully Paid" := OrdersToImport."Fully Paid";
+        OrderHeader."Shop Code" := Shop.Code;
+
+        case ImportAction of
+            ImportAction::New:
+                begin
+                    if JHelper.GetJsonArray(JOrder, JArray, 'fulfillments') then
+                        GetLocationIds(OrderHeader, JArray)
+                    else begin
+                        Clear(JArray);
+                        GetLocationIds(OrderHeader, JArray);
+                    end;
+                    OrderHeader.Insert();
+                    OrderEvents.OnAfterNewShopifyOrder(OrderHeader);
+                end;
+            ImportAction::Update:
+                begin
+                    OrderHeader.Modify();
+                    OrderEvents.OnAfterModifyShopifyOrder(OrderHeader, xOrderHeader);
+                end;
+        end;
+        OrderHeader.SetWorkDescription(JHelper.GetValueAsText(JOrder, 'note'));
+        RecRef.Close();
+
+        OrderHeader.UpdateTags(JHelper.GetValueAsText(JOrder, 'tags'));
+        if JHelper.GetJsonArray(JOrder, JArray, 'discount_applications') then
+            AddDiscountApplications(OrderHeader."Shopify Order Id", JArray);
+        if JHelper.GetJsonArray(JOrder, JArray, 'payment_gateway_names') then
+            AddPaymentGatewayNames(OrderHeader."Shopify Order Id", JArray);
+        if JHelper.GetJsonArray(JOrder, JArray, 'tax_lines') then
+            AddTaxLines(OrderHeader."Shopify Order Id", JArray);
+        if JHelper.GetJsonArray(JOrder, JArray, 'fulfillments') then
+            FulFillments.GetFulfillmentInfos(OrderHeader."Shopify Order Id", JArray);
+        if JHelper.GetJsonArray(JOrder, JArray, 'shipping_lines') then
+            ShippingCosts.UpdateShippingCostInfos(OrderHeader, JArray);
+        Transactions.UpdateTransactionInfos(OrderHeader);
+        Risks.UpdateOrderRisks(OrderHeader);
     end;
 }

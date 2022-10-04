@@ -88,13 +88,9 @@ page 30038 "APIV2 - Sales Credit Memos"
                     Caption = 'Customer Id';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if not SellToCustomer.GetBySystemId("Customer Id") then
                             Error(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Sell-to Customer No." := SellToCustomer."No.";
                         RegisterFieldSet(FieldNo("Customer Id"));
@@ -106,8 +102,6 @@ page 30038 "APIV2 - Sales Credit Memos"
                     Caption = 'Customer No.';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if SellToCustomer."No." <> '' then begin
                             if SellToCustomer."No." <> "Sell-to Customer No." then
@@ -117,8 +111,6 @@ page 30038 "APIV2 - Sales Credit Memos"
 
                         if not SellToCustomer.Get("Sell-to Customer No.") then
                             Error(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Customer Id" := SellToCustomer.SystemId;
                         RegisterFieldSet(FieldNo("Customer Id"));
@@ -140,13 +132,9 @@ page 30038 "APIV2 - Sales Credit Memos"
                     Caption = 'Bill-To Customer Id';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if not BillToCustomer.GetBySystemId("Bill-to Customer Id") then
                             Error(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer No." := BillToCustomer."No.";
                         RegisterFieldSet(FieldNo("Bill-to Customer Id"));
@@ -158,8 +146,6 @@ page 30038 "APIV2 - Sales Credit Memos"
                     Caption = 'Bill-To Customer No.';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if BillToCustomer."No." <> '' then begin
                             if BillToCustomer."No." <> "Bill-to Customer No." then
@@ -169,8 +155,6 @@ page 30038 "APIV2 - Sales Credit Memos"
 
                         if not BillToCustomer.Get("Bill-to Customer No.") then
                             Error(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer Id" := BillToCustomer.SystemId;
                         RegisterFieldSet(FieldNo("Bill-to Customer Id"));
@@ -667,9 +651,9 @@ page 30038 "APIV2 - Sales Credit Memos"
         PostedCreditMemoActionErr: Label 'The action can be applied to a posted credit memo only.';
         DraftCreditMemoActionErr: Label 'The action can be applied to a draft credit memo only.';
         CannotFindCreditMemoErr: Label 'The credit memo cannot be found.';
-        CancelingCreditMemoFailedInvoiceCreatedAndPostedErr: Label 'Canceling the credit memo failed because of the following error: \\%1\\An invoice is posted.';
-        CancelingCreditMemoFailedInvoiceCreatedButNotPostedErr: Label 'Canceling the credit memo failed because of the following error: \\%1\\An invoice is created but not posted.';
-        CancelingCreditMemoFailedNothingCreatedErr: Label 'Canceling the credit memo failed because of the following error: \\%1.';
+        CancelingCreditMemoFailedInvoiceCreatedAndPostedErr: Label 'Canceling the credit memo failed because of the following error: \\%1\\An invoice is posted.', Comment = '%1 - arbitrary text (an error message)';
+        CancelingCreditMemoFailedInvoiceCreatedButNotPostedErr: Label 'Canceling the credit memo failed because of the following error: \\%1\\An invoice is created but not posted.', Comment = '%1 - arbitrary text (an error message)';
+        CancelingCreditMemoFailedNothingCreatedErr: Label 'Canceling the credit memo failed because of the following error: \\%1.', Comment = '%1 - arbitrary text (an error message)';
         AlreadyCancelledErr: Label 'The credit memo cannot be cancelled because it has already been canceled.';
         NoLineErr: Label 'Please add at least one line item to the credit memo.';
         ReasonCodeIdDoesNotMatchAReasonCodeErr: Label 'The "customerReturnReasonId" does not match to a Reason Code.', Comment = 'customerReturnReasonCodeId is a field name and should not be translated.';
@@ -684,6 +668,7 @@ page 30038 "APIV2 - Sales Credit Memos"
 
     local procedure SetCalculatedFields()
     begin
+        Rec.LoadFields("Applies-to Doc. Type", "Currency Code");
         SetInvoiceId();
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
     end;
@@ -869,11 +854,11 @@ page 30038 "APIV2 - Sales Credit Memos"
         end;
     end;
 
-    local procedure SetActionResponse(var ActionContext: WebServiceActionContext; InvoiceId: Guid)
+    local procedure SetActionResponse(var ActionContext: WebServiceActionContext; ParamInvoiceId: Guid)
     begin
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(Page::"APIV2 - Sales Credit Memos");
-        ActionContext.AddEntityKey(FieldNo(Id), InvoiceId);
+        ActionContext.AddEntityKey(FieldNo(Id), ParamInvoiceId);
         ActionContext.SetResultCode(WebServiceActionResultCode::Deleted);
     end;
 

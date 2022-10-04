@@ -37,7 +37,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         CustomerReferenceCapTxt: Label 'cbc:CustomerReference';
         DescriptionTxt: Label 'Test line with text value more than 50 characters.';
         GLNNoTok: Label 'GLN No.';
-        GLNNoErr: Label 'The GLN %1 is not valid.';
+        GLNNoErr: Label 'The GLN %1 is not valid.', Comment = '%1 = GLN No.';
         GLNNoTxt: Label '5790000510146';
         EndpointIDCapTxt: Label 'cbc:EndpointID';
         FinChrgMemoPathTxt: Label 'OIOUBL Fin. Chrg. Memo Path';
@@ -47,11 +47,11 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         LCYCodeLenghtErr: Label 'LCY Code should be 3 characters long in General Ledger Setup Primary Key=''''.';
         OIOUBLCodeTxt: Label 'OIOUBL Code';
         PaymentChannelCodeCapTxt: Label 'cbc:PaymentChannelCode';
-        PaymentChannelCodeTxt: Label '%1:BANK';
+        PaymentChannelCodeTxt: Label '%1:BANK', Comment = '%1 = Country or Region Code';
         PaymentMeansCodeCapTxt: Label 'cbc:PaymentMeansCode';
         ReminderPathTxt: Label 'OIOUBL Reminder Path';
         SalesOrderIDCapTxt: Label 'cbc:SalesOrderID';
-        ValidationErr: Label '%1 must be %2';
+        ValidationErr: Label '%1 must be %2', Comment = '%1 = Field Caption; %2 = Expected Value';
 
     [Test]
     procedure ContactDetailsForSalesQuote();

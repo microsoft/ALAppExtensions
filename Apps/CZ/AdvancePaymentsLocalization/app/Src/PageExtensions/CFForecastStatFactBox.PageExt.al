@@ -6,11 +6,11 @@ pageextension 31196 "CF Forecast Stat. FactBox CZZ" extends "CF Forecast Statist
 #pragma warning disable AL0432
         modify(SalesAdvances)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify(PurchaseAdvances)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -21,9 +21,6 @@ pageextension 31196 "CF Forecast Stat. FactBox CZZ" extends "CF Forecast Statist
                 Caption = 'Sales Advances';
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies an amount of sales advances.';
-#if not CLEAN19
-                Visible = AdvancePaymentsEnabledCZZ;
-#endif
 
                 trigger OnDrillDown()
                 begin
@@ -35,9 +32,6 @@ pageextension 31196 "CF Forecast Stat. FactBox CZZ" extends "CF Forecast Statist
                 Caption = 'Purchase Advances';
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies an amount of purchase advances.';
-#if not CLEAN19
-                Visible = AdvancePaymentsEnabledCZZ;
-#endif
 
                 trigger OnDrillDown()
                 begin
@@ -46,14 +40,4 @@ pageextension 31196 "CF Forecast Stat. FactBox CZZ" extends "CF Forecast Statist
             }
         }
     }
-#if not CLEAN19
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
-#endif
 }

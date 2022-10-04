@@ -19,6 +19,7 @@ permissionset 11731 "CZ Core Pack - Edit CZL"
                   tabledata "Acc. Schedule Result Hist. CZL" = IMD,
                   tabledata "Acc. Schedule Result Line CZL" = IMD,
                   tabledata "Acc. Schedule Result Value CZL" = IMD,
+                  tabledata "Adj. Exchange Rate Buffer CZL" = IMD,
                   tabledata "Bank Acc. Adjust. Buffer CZL" = IMD,
                   tabledata "Certificate Code CZL" = IMD,
                   tabledata "Commodity CZL" = IMD,

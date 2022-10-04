@@ -6,7 +6,7 @@ pageextension 31064 "Posted Purchase Invoice CZZ" extends "Posted Purchase Invoi
 #pragma warning disable AL0432
         modify("Unpost Link Advance")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -23,7 +23,6 @@ pageextension 31064 "Posted Purchase Invoice CZZ" extends "Posted Purchase Invoi
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Unaply advance letters.';
                     Image = UnApply;
-                    Visible = AdvancePaymentsEnabledCZZ;
 
                     trigger OnAction()
                     var
@@ -38,7 +37,6 @@ pageextension 31064 "Posted Purchase Invoice CZZ" extends "Posted Purchase Invoi
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Apply advance letters.';
                     Image = Apply;
-                    Visible = AdvancePaymentsEnabledCZZ;
 
                     trigger OnAction()
                     var
@@ -62,7 +60,6 @@ pageextension 31064 "Posted Purchase Invoice CZZ" extends "Posted Purchase Invoi
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Show linked advance letters.';
                     Image = EntriesList;
-                    Visible = AdvancePaymentsEnabledCZZ;
 
                     trigger OnAction()
                     var
@@ -78,13 +75,4 @@ pageextension 31064 "Posted Purchase Invoice CZZ" extends "Posted Purchase Invoi
             }
         }
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

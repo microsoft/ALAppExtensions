@@ -5,43 +5,31 @@
 
 codeunit 138458 "Azure AD Licensing Test"
 {
-    EventSubscriberInstance = Manual;
-    SingleInstance = true;
     Subtype = Test;
 
-    trigger OnRun()
-    begin
-    end;
-
     var
-        AzureADLicensingTest: Codeunit "Azure AD Licensing Test";
         AzureADLicensing: Codeunit "Azure AD Licensing";
         PermissionsMock: Codeunit "Permissions Mock";
         Assert: Codeunit "Library Assert";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
-        MockGraphQuery: DotNet MockGraphQuery;
+        AzureADGraphTestLibrary: Codeunit "Azure AD Graph Test Library";
+        MockGraphQueryTestLibrary: Codeunit "MockGraphQuery Test Library";
         ServicePlanOneIdTxt: Text;
         ServicePlanTwoIdTxt: Text;
         ServicePlanThreeIdTxt: Text;
         SubscribedSkuOneIdTxt: Text;
         SubscribedSkuTwoIdTxt: Text;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Graph", 'OnInitialize', '', false, false)]
-    local procedure SetMockGraphQuery(var GraphQuery: DotNet GraphQuery)
-    begin
-        GraphQuery := GraphQuery.GraphQuery(MockGraphQuery);
-    end;
-
     local procedure InitializeTest()
     begin
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService := true;
 
         Clear(AzureADLicensing);
-        AzureADLicensing.SetTestInProgress(true);
+        Clear(AzureADGraphTestLibrary);
+        Clear(MockGraphQueryTestLibrary);
 
-        Clear(AzureADLicensingTest);
-
-        MockGraphQuery := MockGraphQuery.MockGraphQuery();
+        MockGraphQueryTestLibrary.SetupMockGraphQuery();
+        AzureADGraphTestLibrary.SetMockGraphQuery(MockGraphQueryTestLibrary);
     end;
 
     local procedure InitializeTestAndData()
@@ -96,8 +84,8 @@ codeunit 138458 "Azure AD Licensing Test"
         SubscribedSkuTwo.ServicePlans().Add(ServicePlanInfoThree);
 
         //Add the subscribed SKUs to the Graph Query
-        MockGraphQuery.AddDirectorySubscribedSku(SubscribedSkuOne);
-        MockGraphQuery.AddDirectorySubscribedSku(SubscribedSkuTwo);
+        MockGraphQueryTestLibrary.AddDirectorySubscribedSku(SubscribedSkuOne);
+        MockGraphQueryTestLibrary.AddDirectorySubscribedSku(SubscribedSkuTwo);
     end;
 
     local procedure CreateServicePlanInfo(var ServicePlanInfo: DotNet ServicePlanInfo; Guid: Guid; CapabilityStatus: Text; Name: Text)
@@ -143,10 +131,10 @@ codeunit 138458 "Azure AD Licensing Test"
 
         // [Given] A mock graph without SKU data
         InitializeTest();
-        BindSubscription(AzureADLicensingTest);
+        BindSubscription(AzureADGraphTestLibrary);
 
         // [When] Retrieving the directory subscribed Skus
-        DirectorySubscribedSkus := MockGraphQuery.GetDirectorySubscribedSkus();
+        MockGraphQueryTestLibrary.GetDirectorySubscribedSkus(DirectorySubscribedSkus);
 
         // [Then] The list is empty
         Assert.AreEqual(0, DirectorySubscribedSkus.Count(),
@@ -154,7 +142,7 @@ codeunit 138458 "Azure AD Licensing Test"
 
         // [When] Resetting the Skus and retrieving the list of SKUs again
         ResetResult := AzureADLicensing.ResetSubscribedSKU();
-        DirectorySubscribedSkus := MockGraphQuery.GetDirectorySubscribedSkus();
+        MockGraphQueryTestLibrary.GetDirectorySubscribedSkus(DirectorySubscribedSkus);
 
         // [THEN] ResetResult is true
         Assert.IsTrue(ResetResult, 'The result of reseting the list of subscribed SKUs should be successful');
@@ -163,7 +151,7 @@ codeunit 138458 "Azure AD Licensing Test"
         Assert.AreEqual(0, DirectorySubscribedSkus.Count(),
             'There should not be any directory subscribed SKUs');
 
-        UnBindSubscription(AzureADLicensingTest);
+        UnBindSubscription(AzureADGraphTestLibrary);
     end;
 
     [Test]
@@ -187,23 +175,28 @@ codeunit 138458 "Azure AD Licensing Test"
 
         // [Given] A mock graph with SKU data
         InitializeTestAndData();
-        BindSubscription(AzureADLicensingTest);
+        BindSubscription(AzureADGraphTestLibrary);
 
         // [Given] The initial list of SKUs
-        DirectorySubscribedSkus1 := MockGraphQuery.GetDirectorySubscribedSkus();
+        MockGraphQueryTestLibrary.GetDirectorySubscribedSkus(DirectorySubscribedSkus1);
+        // [Then] The list contains 2 subscribed SKUs (added during InitializeTestAndData)
+        Assert.AreEqual(2, DirectorySubscribedSkus1.Count, 'The list should contain 2 subscibed SKU');
 
-        // [Given] A new SKU is added
+        // [When] A new SKU is added
         ServicePlanThreeId := CREATEGUID();
         SubscribedSkuThreeId := CREATEGUID();
         CreateLicenseUnitsDetail(LicenseUnitsDetailThree, 1, 1, 1);
         ServicePlanThreeIdTxt := COPYSTR(FORMAT(ServicePlanThreeId), 2, STRLEN(FORMAT(ServicePlanThreeId)) - 2);
         CreateSubscribedSKU(SubscribedSkuThree, LicenseUnitsDetailThree, SubscribedSkuThreeId,
         'SKU Object Id Three', 'SKU Capability Status Three', 'SKU Part number Three', 3);
-        MockGraphQuery.AddDirectorySubscribedSku(SubscribedSkuThree);
+        MockGraphQueryTestLibrary.AddDirectorySubscribedSku(SubscribedSkuThree);
+
+        // [Then] The list contains one SKU
+        Assert.AreEqual(3, DirectorySubscribedSkus1.Count, 'The list should contain 3 subscibed SKU');
 
         // [When] Resetting the subscribed SKUs and retrieving the list of SKUs again
         ResetResult := AzureADLicensing.ResetSubscribedSKU();
-        DirectorySubscribedSkus2 := MockGraphQuery.GetDirectorySubscribedSkus();
+        MockGraphQueryTestLibrary.GetDirectorySubscribedSkus(DirectorySubscribedSkus2);
 
         // [THEN] ResetResult is true
         Assert.IsTrue(ResetResult, 'The result of reseting the list of subscribed SKUs should be successful');
@@ -224,7 +217,7 @@ codeunit 138458 "Azure AD Licensing Test"
         NextSubscribedSKU := AzureADLicensing.NextSubscribedSKU();
         Assert.IsFalse(NextSubscribedSKU, 'The reset list should not contain a third SKU');
 
-        UnBindSubscription(AzureADLicensingTest);
+        UnBindSubscription(AzureADGraphTestLibrary);
     end;
 
     [Test]
@@ -240,7 +233,7 @@ codeunit 138458 "Azure AD Licensing Test"
         InitializeTestAndData();
 
         // [Given] A mock SKU data
-        BindSubscription(AzureADLicensingTest);
+        BindSubscription(AzureADGraphTestLibrary);
         AzureADLicensing.ResetSubscribedSKU();
         AzureADLicensing.SetIncludeUnknownPlans(TRUE);
 
@@ -264,7 +257,7 @@ codeunit 138458 "Azure AD Licensing Test"
         Assert.AreEqual(FALSE, AzureADLicensing.NextSubscribedSKU(), 'Next subscribed SKU is not as expected.');
         Assert.AreEqual('SKU Capability Status Two', AzureADLicensing.SubscribedSKUCapabilityStatus(), 'Wrong SKU capability status!');
 
-        UnBindSubscription(AzureADLicensingTest);
+        UnBindSubscription(AzureADGraphTestLibrary);
     end;
 
     [Test]
@@ -278,7 +271,7 @@ codeunit 138458 "Azure AD Licensing Test"
         PermissionsMock.Set('AAD Licensing Exec');
 
         // [Given] A mock SKU data
-        BindSubscription(AzureADLicensingTest);
+        BindSubscription(AzureADGraphTestLibrary);
         AzureADLicensing.ResetSubscribedSKU();
         AzureADLicensing.SetIncludeUnknownPlans(TRUE);
 
@@ -302,7 +295,7 @@ codeunit 138458 "Azure AD Licensing Test"
         Assert.AreEqual(FALSE, AzureADLicensing.NextSubscribedSKU(), 'Next subscribed SKU is not as expected.');
         Assert.AreEqual(2, AzureADLicensing.SubscribedSKUConsumedUnits(), 'Wrong subscribed SKU consumed units!');
 
-        UnBindSubscription(AzureADLicensingTest);
+        UnBindSubscription(AzureADGraphTestLibrary);
     end;
 
     [Test]
@@ -316,7 +309,7 @@ codeunit 138458 "Azure AD Licensing Test"
         PermissionsMock.Set('AAD Licensing Exec');
 
         // [Given] A mock SKU data
-        BindSubscription(AzureADLicensingTest);
+        BindSubscription(AzureADGraphTestLibrary);
         AzureADLicensing.ResetSubscribedSKU();
         AzureADLicensing.SetIncludeUnknownPlans(TRUE);
 
@@ -340,7 +333,7 @@ codeunit 138458 "Azure AD Licensing Test"
         Assert.AreEqual(FALSE, AzureADLicensing.NextSubscribedSKU(), 'Next subscribed SKU is not as expected.');
         Assert.AreEqual('SKU Object Id Two', AzureADLicensing.SubscribedSKUObjectId(), 'Wrong subscribed SKU Object ID!');
 
-        UnBindSubscription(AzureADLicensingTest);
+        UnBindSubscription(AzureADGraphTestLibrary);
     end;
 
     [Test]
@@ -354,7 +347,7 @@ codeunit 138458 "Azure AD Licensing Test"
         PermissionsMock.Set('AAD Licensing Exec');
 
         // [Given] A mock SKU data
-        BindSubscription(AzureADLicensingTest);
+        BindSubscription(AzureADGraphTestLibrary);
         AzureADLicensing.ResetSubscribedSKU();
         AzureADLicensing.SetIncludeUnknownPlans(TRUE);
 
@@ -378,7 +371,7 @@ codeunit 138458 "Azure AD Licensing Test"
         Assert.AreEqual(FALSE, AzureADLicensing.NextSubscribedSKU(), 'Next subscribed SKU is not as expected.');
         Assert.AreEqual(2, AzureADLicensing.SubscribedSKUPrepaidUnitsInEnabledState(), 'Wrong nr of units in enabled state!');
 
-        UnBindSubscription(AzureADLicensingTest);
+        UnBindSubscription(AzureADGraphTestLibrary);
     end;
 
     [Test]
@@ -392,7 +385,7 @@ codeunit 138458 "Azure AD Licensing Test"
         PermissionsMock.Set('AAD Licensing Exec');
 
         // [Given] A mock SKU data
-        BindSubscription(AzureADLicensingTest);
+        BindSubscription(AzureADGraphTestLibrary);
         AzureADLicensing.ResetSubscribedSKU();
         AzureADLicensing.SetIncludeUnknownPlans(TRUE);
 
@@ -416,7 +409,7 @@ codeunit 138458 "Azure AD Licensing Test"
         Assert.AreEqual(FALSE, AzureADLicensing.NextSubscribedSKU(), 'Next subscribed SKU is not as expected.');
         Assert.AreEqual(2, AzureADLicensing.SubscribedSKUPrepaidUnitsInSuspendedState(), 'Wrong nr of units in suspended state!');
 
-        UnBindSubscription(AzureADLicensingTest);
+        UnBindSubscription(AzureADGraphTestLibrary);
     end;
 
     [Test]
@@ -430,7 +423,7 @@ codeunit 138458 "Azure AD Licensing Test"
         PermissionsMock.Set('AAD Licensing Exec');
 
         // [Given] A mock SKU data
-        BindSubscription(AzureADLicensingTest);
+        BindSubscription(AzureADGraphTestLibrary);
         AzureADLicensing.ResetSubscribedSKU();
         AzureADLicensing.SetIncludeUnknownPlans(TRUE);
 
@@ -454,7 +447,7 @@ codeunit 138458 "Azure AD Licensing Test"
         Assert.AreEqual(FALSE, AzureADLicensing.NextSubscribedSKU(), 'Next subscribed SKU is not as expected.');
         Assert.AreEqual(2, AzureADLicensing.SubscribedSKUPrepaidUnitsInWarningState(), 'Wrong nr of units in warning state!');
 
-        UnBindSubscription(AzureADLicensingTest);
+        UnBindSubscription(AzureADGraphTestLibrary);
     end;
 
     [Test]
@@ -468,7 +461,7 @@ codeunit 138458 "Azure AD Licensing Test"
         PermissionsMock.Set('AAD Licensing Exec');
 
         // [Given] A mock SKU data
-        BindSubscription(AzureADLicensingTest);
+        BindSubscription(AzureADGraphTestLibrary);
         AzureADLicensing.ResetSubscribedSKU();
         AzureADLicensing.SetIncludeUnknownPlans(TRUE);
 
@@ -492,7 +485,7 @@ codeunit 138458 "Azure AD Licensing Test"
         Assert.AreEqual(FALSE, AzureADLicensing.NextSubscribedSKU(), 'Next subscribed SKU is not as expected.');
         Assert.AreEqual(SubscribedSkuTwoIdTxt, AzureADLicensing.SubscribedSKUId(), 'Wrong id retrieved!');
 
-        UnBindSubscription(AzureADLicensingTest);
+        UnBindSubscription(AzureADGraphTestLibrary);
     end;
 
     [Test]
@@ -506,7 +499,7 @@ codeunit 138458 "Azure AD Licensing Test"
         PermissionsMock.Set('AAD Licensing Exec');
 
         // [Given] A mock SKU data
-        BindSubscription(AzureADLicensingTest);
+        BindSubscription(AzureADGraphTestLibrary);
         AzureADLicensing.ResetSubscribedSKU();
         AzureADLicensing.SetIncludeUnknownPlans(TRUE);
 
@@ -530,7 +523,7 @@ codeunit 138458 "Azure AD Licensing Test"
         Assert.AreEqual(FALSE, AzureADLicensing.NextSubscribedSKU(), 'Next subscribed SKU is not as expected.');
         Assert.AreEqual('SKU Part number Two', AzureADLicensing.SubscribedSKUPartNumber(), 'Wrong part number!');
 
-        UnBindSubscription(AzureADLicensingTest);
+        UnBindSubscription(AzureADGraphTestLibrary);
     end;
 
     [Test]
@@ -544,7 +537,7 @@ codeunit 138458 "Azure AD Licensing Test"
         PermissionsMock.Set('AAD Licensing Exec');
 
         // [Given] A mock SKU data
-        BindSubscription(AzureADLicensingTest);
+        BindSubscription(AzureADGraphTestLibrary);
         AzureADLicensing.ResetSubscribedSKU();
         AzureADLicensing.ResetServicePlans();
         AzureADLicensing.SetIncludeUnknownPlans(TRUE);
@@ -584,7 +577,7 @@ codeunit 138458 "Azure AD Licensing Test"
         // [THEN] The capability status of the last service plan queried is returned
         Assert.AreEqual('Plan Capability Status Three', AzureADLicensing.ServicePlanCapabilityStatus(), 'Wrong capability status the second subscribed SKU!');
 
-        UnBindSubscription(AzureADLicensingTest);
+        UnBindSubscription(AzureADGraphTestLibrary);
     end;
 
     [Test]
@@ -598,7 +591,7 @@ codeunit 138458 "Azure AD Licensing Test"
         PermissionsMock.Set('AAD Licensing Exec');
 
         // [Given] A mock SKU data
-        BindSubscription(AzureADLicensingTest);
+        BindSubscription(AzureADGraphTestLibrary);
         AzureADLicensing.ResetSubscribedSKU();
         AzureADLicensing.ResetServicePlans();
         AzureADLicensing.SetIncludeUnknownPlans(TRUE);
@@ -638,7 +631,7 @@ codeunit 138458 "Azure AD Licensing Test"
         // [THEN] The plan id of the last service plan returned is retrieved
         Assert.AreEqual(ServicePlanThreeIdTxt, AzureADLicensing.ServicePlanId(), 'Wrong capability status the second subscribed SKU!');
 
-        UnBindSubscription(AzureADLicensingTest);
+        UnBindSubscription(AzureADGraphTestLibrary);
     end;
 
     [Test]
@@ -652,7 +645,7 @@ codeunit 138458 "Azure AD Licensing Test"
         PermissionsMock.Set('AAD Licensing Exec');
 
         // [Given] A mock SKU data
-        BindSubscription(AzureADLicensingTest);
+        BindSubscription(AzureADGraphTestLibrary);
         AzureADLicensing.ResetSubscribedSKU();
         AzureADLicensing.ResetServicePlans();
         AzureADLicensing.SetIncludeUnknownPlans(TRUE);
@@ -692,7 +685,7 @@ codeunit 138458 "Azure AD Licensing Test"
         // [THEN] The service plan name of the last service plan queried is returned
         Assert.AreEqual('Plan name Three', AzureADLicensing.ServicePlanName(), 'Wrong service plan name!');
 
-        UnBindSubscription(AzureADLicensingTest);
+        UnBindSubscription(AzureADGraphTestLibrary);
     end;
 }
 
