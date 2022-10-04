@@ -7,7 +7,7 @@ codeunit 132976 "SharePoint Auth. Subscriptions"
         ShouldFail: Boolean;
         ExpectedError: Text;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"SharePoint User Credentials", 'OnBeforeGetToken', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"SharePoint Authorization Code", 'OnBeforeGetToken', '', false, false)]
     local procedure OnBeforeGetToken(var IsHandled: Boolean; var IsSuccess: Boolean; var ErrorText: Text; var AccessToken: Text)
     begin
         IsHandled := true;
