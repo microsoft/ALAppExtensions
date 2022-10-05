@@ -44,6 +44,10 @@
         "CodeunitName":  "ABS Container Client Test"
     },
     {
+        "Method":  "ListBlobsTest",
+        "CodeunitName":  "ABS Container Client Test"
+    },
+    {
         "Method":  "LeaseContainerTest",
         "CodeunitName":  "ABS Container Client Test"
     },
@@ -66,6 +70,10 @@
     {
         "Method":  "TestDateConversion",
         "CodeunitName":  "ABS Helper Functionality Test"
+    },
+    {
+        "Method":  "TestNotAllChangesAreApplied",
+        "CodeunitName":  "Azure AD User Sync Test"
     },
     {
         "Method":  "InstallUninstallExtension",
@@ -93,6 +101,10 @@
     },
     {
         "Method":  "GetSpecificVersionPackageIdByAppId",
+        "CodeunitName":  "Extension Management Test"
+    },
+    {
+        "Method":  "MessageShownOnInvokingSetupThisAppWhenNoSetupDefinedForExtension",
         "CodeunitName":  "Extension Management Test"
     },
     {
@@ -902,5 +914,25 @@
     {
         "Method":  "SelectUserCancelTest",
         "CodeunitName":  "User Selection Test"
+    },
+    {
+        "Method":  "ExternalUsersAreNotVisibleTest",
+        "CodeunitName":  "User Selection Test"
+    },
+    {
+        "Method":  "T003_CannotDisableOneWayFeatureOnPage",
+        "CodeunitName":  "Feature Key Test",
+    },
+    {
+        "Method":  "T004_CannotEnableOneWayFeatureAsNotImplemented",
+        "CodeunitName":  "Feature Key Test",
+    },
+    {
+        "Method":  "T005_EnableOneWayFeatureReviewData",
+        "CodeunitName":  "Feature Key Test",
+    },
+    {
+        "Method":  "T006_EnableOneWayFeatureRunUpdateData ",
+        "CodeunitName":  "Feature Key Test",
     }
 ]
