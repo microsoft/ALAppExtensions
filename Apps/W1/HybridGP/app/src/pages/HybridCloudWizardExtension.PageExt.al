@@ -2,16 +2,23 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
 {
     layout
     {
+#if not CLEAN22
         addafter(Step5)
         {
             group(GPSpecificSettingsStep)
             {
                 ShowCaption = false;
-                Visible = ProductSpecificSettingsVisible and ("Product ID" = 'DynamicsGP');
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Replaced by page GP Migration Configuration';
 
                 group("GPMigrationSettings.1.0")
                 {
                     ShowCaption = false;
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by page GP Migration Configuration';
+
                     part(pageGPMigrationSettings; "GP Migration Settings List")
                     {
                         ApplicationArea = Basic, Suite;
@@ -22,6 +29,10 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
                 group("GPMigrationSettings.2.0")
                 {
                     ShowCaption = false;
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by page GP Migration Configuration';
+
                     group("GPMigrationSettings.2.1")
                     {
                         ShowCaption = false;
@@ -34,6 +45,34 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
                     }
                 }
             }
+        }
+#endif
+
+        modify(AllDone)
+        {
+            Visible = Rec."Product ID" <> 'DynamicsGP';
+        }
+
+        addafter(AllDone)
+        {
+            group(GPSpecificDoneMessage)
+            {
+                Visible = Rec."Product ID" = 'DynamicsGP';
+                Caption = 'Continue to company configuration';
+                InstructionalText = 'Click Finish to continue to the company configuration for the GP migration.';
+            }
+        }
+    }
+
+    actions
+    {
+        modify(ActionFinish)
+        {
+            trigger OnAfterAction()
+            begin
+                if Rec."Product ID" = 'DynamicsGP' then
+                    Page.Run(Page::"GP Migration Configuration");
+            end;
         }
     }
 }
