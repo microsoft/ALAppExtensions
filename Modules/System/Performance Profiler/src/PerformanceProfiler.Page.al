@@ -191,6 +191,7 @@ page 24 "Performance Profiler"
                 PromotedCategory = Process;
                 Image = Share;
                 Enabled = IsDownloadEnabled;
+                Visible = IsShareVisible;
                 Caption = 'Share';
                 ToolTip = 'Copy the profile file to your Business Central folder in OneDrive and share the file. You can also see who it''s already shared with.', Comment = 'OneDrive should not be translated';
                 AboutTitle = 'Sharing the results';
@@ -231,8 +232,11 @@ page 24 "Performance Profiler"
     }
 
     trigger OnOpenPage()
+    var
+        DocumentSharing: Codeunit "Document Sharing";
     begin
         FeatureTelemetry.LogUptake('0000GMP', PerformanceProfilingFeatureTxt, Enum::"Feature Uptake Status"::Discovered);
+        IsShareVisible := DocumentSharing.ShareEnabled();
         UpdateControlProperties();
     end;
 
@@ -283,6 +287,7 @@ page 24 "Performance Profiler"
         IsClearEnabled: Boolean;
         IsUploadEnabled: Boolean;
         IsDownloadEnabled: Boolean;
+        IsShareVisible: Boolean;
         UploadProfileLbl: Label 'Upload a previously recorded performance profile';
         ProfileFileTypeTxt: Label 'CPU profile |*.alcpuprofile';
         ProfileFileNameTxt: Label 'PerformanceProfile_Session%1', Locked = true;

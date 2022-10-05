@@ -436,7 +436,7 @@ codeunit 135039 "Cues And KPIs Test"
         // [WHEN] ConvertStyleToStyleText is called
         // [THEN] The custom style defined in the event subscriber is returned
         BindSubscription(CuesAndKPIsTest);
-        Assert.AreEqual('CustomValue', CuesAndKPIs.ConvertStyleToStyleText(4), 'Custom style conversion different than expected');
+        Assert.AreEqual('CustomValue', CuesAndKPIs.ConvertStyleToStyleText(Enum::"Cues And KPIs Style".FromInteger(4)), 'Custom style conversion different than expected');
         UnbindSubscription(CuesAndKPIsTest);
     end;
 
@@ -561,9 +561,9 @@ codeunit 135039 "Cues And KPIs Test"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cues And KPIs", 'OnConvertStyleToStyleText', '', true, true)]
     [Normal]
-    procedure OnConvertStyleToStyleText(CueStyle: Enum "Cues And KPIs Style"; VAR Result: Text; VAR Resolved: Boolean)
+    local procedure OnConvertStyleToStyleText(CueStyle: Enum "Cues And KPIs Style"; VAR Result: Text; VAR Resolved: Boolean)
     begin
-        if CueStyle = 4 then begin
+        if CueStyle.AsInteger() = 4 then begin
             Result := 'CustomValue';
             Resolved := true;
         end;

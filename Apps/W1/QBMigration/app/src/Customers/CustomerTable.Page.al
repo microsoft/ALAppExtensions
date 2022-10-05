@@ -52,8 +52,9 @@ page 1912 "MigrationQB CustomerTable"
                     PromotedOnly = true;
                     Image = EntriesList;
                     RunObject = Page "MigrationQB CustomerTrans";
-                    RunPageLink = CustomerRef = field (ListId);
+                    RunPageLink = CustomerRef = field(ListId);
                     RunPageMode = Edit;
+                    ToolTip = 'View QuickBooks customer transactions.';
                 }
             }
         }

@@ -34,9 +34,9 @@ codeunit 9988 "Word Template Impl."
         Session.LogMessage('0000ECN', StrSubstNo(DownloadedTemplateTxt, WordTemplate.SystemId, WordTemplate."Table ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WordTemplatesCategoryTxt);
     end;
 
-    internal procedure DownloadTemplate(WordTemplate: Record "Word Template")
+    internal procedure DownloadTemplate(WordTemplateRec: Record "Word Template")
     begin
-        Load(WordTemplate.Code);
+        Load(WordTemplateRec.Code);
         DownloadTemplate();
     end;
 
@@ -126,21 +126,21 @@ codeunit 9988 "Word Template Impl."
         DownloadFromStream(InStream, DownloadResultFileDialogTitleLbl, '', '', FileText);
     end;
 
-    internal procedure Upload(var WordTemplate: Record "Word Template"; var UploadedFileName: Text): Boolean
+    internal procedure Upload(var TemplateRecToUpdate: Record "Word Template"; var UploadedFileName: Text): Boolean
     var
-        FileContentInstream: Instream;
+        FileContentInStream: InStream;
     begin
-        if not UploadIntoStream(UploadDialogTitleLbl, '', '', UploadedFileName, FileContentInstream) then
+        if not UploadIntoStream(UploadDialogTitleLbl, '', '', UploadedFileName, FileContentInStream) then
             exit(false);
 
-        SaveTemplate(FileContentInstream, WordTemplate);
+        SaveTemplate(FileContentInStream, TemplateRecToUpdate);
 
-        Session.LogMessage('0000ECO', StrSubstNo(UploadedTemplateTxt, WordTemplate.SystemId, WordTemplate."Table ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WordTemplatesCategoryTxt);
+        Session.LogMessage('0000ECO', StrSubstNo(UploadedTemplateTxt, TemplateRecToUpdate.SystemId, TemplateRecToUpdate."Table ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', WordTemplatesCategoryTxt);
 
         exit(true);
     end;
 
-    internal procedure Upload(var WordTemplate: Record "Word Template")
+    internal procedure Upload(var TemplateRecToUpdate: Record "Word Template")
     var
         TempWordTemplate: Record "Word Template" temporary;
         NewTemplateInStream: InStream;
@@ -153,26 +153,26 @@ codeunit 9988 "Word Template Impl."
             exit;
 
         GetTemplate(NewTemplateInStream);
-        Clear(WordTemplate.Template);
-        WordTemplate.Template.ImportStream(NewTemplateInStream, 'Template');
+        Clear(TemplateRecToUpdate.Template);
+        TemplateRecToUpdate.Template.ImportStream(NewTemplateInStream, 'Template');
 
-        WordTemplate.Modify();
+        TemplateRecToUpdate.Modify();
     end;
 
-    local procedure SaveTemplate(TemplateInStream: Instream; var WordTemplate: Record "Word Template")
+    local procedure SaveTemplate(TemplateToSave: InStream; var TemplateRecToUpdate: Record "Word Template")
     begin
-        Load(TemplateInStream);
+        Load(TemplateToSave);
 
         if not VerifyMailMergeFieldNameLengths() then
             Error(TableNotAllowedMergeFieldsTruncatedErr);
 
-        WordTemplate.Template.ImportStream(TemplateInStream, DefaultTemplateLbl);
+        TemplateRecToUpdate.Template.ImportStream(TemplateToSave, DefaultTemplateLbl);
 
-        if WordTemplate.Name = '' then
-            if WordTemplate."Table ID" <> 0 then
-                WordTemplate.Name := CopyStr(StrSubstNo(DefaultTemplateNameWithCaptionLbl, WordTemplate."Table Caption"), 1, MaxStrLen(WordTemplate.Name))
+        if TemplateRecToUpdate.Name = '' then
+            if TemplateRecToUpdate."Table ID" <> 0 then
+                TemplateRecToUpdate.Name := CopyStr(StrSubstNo(DefaultTemplateNameWithCaptionLbl, TemplateRecToUpdate."Table Caption"), 1, MaxStrLen(TemplateRecToUpdate.Name))
             else
-                WordTemplate.Name := DefaultTemplateNameLbl;
+                TemplateRecToUpdate.Name := DefaultTemplateNameLbl;
     end;
 
     procedure GetTemplate(var TemplateInStream: InStream)
@@ -551,18 +551,18 @@ codeunit 9988 "Word Template Impl."
             Objects.GetRecord(AllObjWithCaption);
     end;
 
-    internal procedure AddRelatedEntity(TableId: Integer; RelatedCode: Code[30]; var WordTemplateRelatedTable: Record "Word Templates Related Table"; FilterExpression: Text): Boolean
+    internal procedure AddRelatedEntity(TableId: Integer; RelatedCode: Code[30]; var WordTemplatesRelatedTable: Record "Word Templates Related Table"; FilterExpression: Text): Boolean
     var
-        WordTemplateRelatedCard: Page "Word Templates Related Card";
+        WordTemplatesRelatedCard: Page "Word Templates Related Card";
     begin
-        WordTemplateRelatedCard.SetRelatedTable(WordTemplateRelatedTable);
-        WordTemplateRelatedCard.SetTableNo(TableId);
-        WordTemplateRelatedCard.SetFilterExpression(FilterExpression);
-        WordTemplateRelatedCard.LookupMode(true);
+        WordTemplatesRelatedCard.SetRelatedTable(WordTemplatesRelatedTable);
+        WordTemplatesRelatedCard.SetTableNo(TableId);
+        WordTemplatesRelatedCard.SetFilterExpression(FilterExpression);
+        WordTemplatesRelatedCard.LookupMode(true);
 
-        if WordTemplateRelatedCard.RunModal() = Action::LookupOK then begin
-            WordTemplateRelatedCard.GetRelatedTable(WordTemplateRelatedTable);
-            WordTemplateRelatedTable.Code := RelatedCode;
+        if WordTemplatesRelatedCard.RunModal() = Action::LookupOK then begin
+            WordTemplatesRelatedCard.GetRelatedTable(WordTemplatesRelatedTable);
+            WordTemplatesRelatedTable.Code := RelatedCode;
             exit(true);
         end;
 
@@ -572,7 +572,7 @@ codeunit 9988 "Word Template Impl."
     internal procedure GetField(Caption: Text; TableId: Integer; FilterExpression: Text): Integer
     var
         Field: Record Field;
-        Fields: Page "Fields Lookup";
+        FieldsLookup: Page "Fields Lookup";
     begin
         Field.SetRange(TableNo, TableId);
 
@@ -587,12 +587,12 @@ codeunit 9988 "Word Template Impl."
                             Field.Type::GUID,
                             Field.Type::RecordID);
 
-        Fields.SetTableView(Field);
-        Fields.Caption(Caption);
-        Fields.LookupMode(true);
+        FieldsLookup.SetTableView(Field);
+        FieldsLookup.Caption(Caption);
+        FieldsLookup.LookupMode(true);
 
-        if Fields.RunModal() = Action::LookupOK then begin
-            Fields.GetRecord(Field);
+        if FieldsLookup.RunModal() = Action::LookupOK then begin
+            FieldsLookup.GetRecord(Field);
             exit(Field."No.");
         end;
 
@@ -664,32 +664,32 @@ codeunit 9988 "Word Template Impl."
     /// <summary>
     /// Attempts to a add a related table. If the related table code or related table id already exists, the table is not added and a message is shown.
     /// </summary>
-    /// <param name="WordTemplateRelatedTable">The related table to insert the record into.</param>
-    /// <param name="TempWordTemplateRelatedTable">The temporary related table that holds the values used for inserting.</param>
+    /// <param name="WordTemplatesRelatedTable">The related table to insert the record into.</param>
+    /// <param name="TempWordTemplatesRelatedTable">The temporary related table that holds the values used for inserting.</param>
     /// <returns>True if the related table was added, false otherwise.</returns>
-    internal procedure AddRelatedTable(var WordTemplateRelatedTable: Record "Word Templates Related Table"; TempWordTemplateRelatedTable: Record "Word Templates Related Table" temporary) Added: Boolean
+    internal procedure AddRelatedTable(var WordTemplatesRelatedTable: Record "Word Templates Related Table"; TempWordTemplatesRelatedTable: Record "Word Templates Related Table" temporary) Added: Boolean
     begin
-        WordTemplateRelatedTable.SetRange(Code, TempWordTemplateRelatedTable.Code);
-        WordTemplateRelatedTable.SetRange("Related Table Code", TempWordTemplateRelatedTable."Related Table Code");
+        WordTemplatesRelatedTable.SetRange(Code, TempWordTemplatesRelatedTable.Code);
+        WordTemplatesRelatedTable.SetRange("Related Table Code", TempWordTemplatesRelatedTable."Related Table Code");
 
-        if not WordTemplateRelatedTable.IsEmpty() then begin
+        if not WordTemplatesRelatedTable.IsEmpty() then begin
             Message(RelatedTableCodeAlreadyUsedMsg);
             exit(false);
         end;
 
-        WordTemplateRelatedTable.Reset();
-        WordTemplateRelatedTable.SetRange(Code, TempWordTemplateRelatedTable.Code);
-        WordTemplateRelatedTable.SetRange("Related Table ID", TempWordTemplateRelatedTable."Related Table ID");
+        WordTemplatesRelatedTable.Reset();
+        WordTemplatesRelatedTable.SetRange(Code, TempWordTemplatesRelatedTable.Code);
+        WordTemplatesRelatedTable.SetRange("Related Table ID", TempWordTemplatesRelatedTable."Related Table ID");
 
-        if not WordTemplateRelatedTable.IsEmpty() then begin
+        if not WordTemplatesRelatedTable.IsEmpty() then begin
             Message(RelatedTableIdAlreadyUsedMsg);
             exit(false);
         end;
 
-        WordTemplateRelatedTable.Init();
-        WordTemplateRelatedTable.Copy(TempWordTemplateRelatedTable);
-        Added := WordTemplateRelatedTable.Insert();
-        WordTemplateRelatedTable.SetRange(Code, WordTemplateRelatedTable.Code);
+        WordTemplatesRelatedTable.Init();
+        WordTemplatesRelatedTable.Copy(TempWordTemplatesRelatedTable);
+        Added := WordTemplatesRelatedTable.Insert();
+        WordTemplatesRelatedTable.SetRange(Code, WordTemplatesRelatedTable.Code);
     end;
 
     internal procedure RemoveRelatedTable(WordTemplateCode: Code[30]; RelatedTableId: Integer): Boolean
@@ -734,9 +734,9 @@ codeunit 9988 "Word Template Impl."
         MailMerge.LoadDocument(Instream);
     end;
 
-    internal procedure InsertWordTemplate(var WordTemplate: Record "Word Template")
+    internal procedure InsertWordTemplate(var WordTemplateRec: Record "Word Template")
     begin
-        WordTemplate.Insert();
+        WordTemplateRec.Insert();
     end;
 
     local procedure GetMergeFieldsForDocument()

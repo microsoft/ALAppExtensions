@@ -199,6 +199,53 @@ codeunit 18544 "Tax Base Subscribers"
         DimMgt.AddDimSource(DefaultDimSource, Database::Location, GenJournalLine."Location Code", FromFieldNo = GenJournalLine.FieldNo("Location Code"));
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Purch. Rcpt. Line", 'OnInsertInvLineFromRcptLineOnBeforeValidateQuantity', '', false, false)]
+    local procedure OnInsertInvLineFromRcptLineOnBeforeValidateQuantity(PurchRcptLine: Record "Purch. Rcpt. Line"; var PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean; var PurchInvHeader: Record "Purchase Header")
+    begin
+        DisablePurchaseLineTaxEngineCall(PurchRcptLine, PurchaseLine);
+    end;
+
+    local procedure DisablePurchaseLineTaxEngineCall(var PurchRcptLine: Record "Purch. Rcpt. Line"; var PurchLine: Record "Purchase Line")
+    var
+        IsHandled: Boolean;
+    begin
+        OnBeforeSkipCallingTaxEngineForPurchLine(PurchLine, IsHandled);
+        if IsHandled then
+            exit;
+
+        if PurchRcptLine."Document No." <> PurchLine."Receipt No." then
+            exit;
+
+        PurchLine.SetSkipTaxCalulation(true);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purch. Rcpt. Line", 'OnAfterInsertInvLineFromRcptLine', '', false, false)]
+    local procedure OnAfterInsertInvLineFromRcptLine(var PurchLine: Record "Purchase Line"; PurchOrderLine: Record "Purchase Line"; NextLineNo: Integer; PurchRcptLine: Record "Purch. Rcpt. Line")
+    begin
+        EnablePurchaseLineTaxEngineCall(PurchLine, PurchRcptLine);
+    end;
+
+    local procedure EnablePurchaseLineTaxEngineCall(var PurchLine: Record "Purchase Line"; PurchRcptLine: Record "Purch. Rcpt. Line")
+    var
+        IsHandled: Boolean;
+    begin
+        OnBeforeEnableCallingTaxEngineForPurchLine(PurchLine, IsHandled);
+        if IsHandled then
+            exit;
+
+        if PurchRcptLine."Document No." <> PurchLine."Receipt No." then
+            exit;
+
+        if PurchLine.CanCalculateTax() then
+            PurchLine.SetSkipTaxCalulation(false);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Get Receipt", 'OnAfterInsertLines', '', false, false)]
+    local procedure OnAfterInsertReceiptLines(var PurchHeader: Record "Purchase Header")
+    begin
+        CallTaxEngineForPurchaseLines(PurchHeader);
+    end;
+
     local procedure CallTaxEngineForPurchaseLines(var PurchaseHeader: Record "Purchase Header")
     var
         PurchaseLine: Record "Purchase Line";
@@ -233,6 +280,20 @@ codeunit 18544 "Tax Base Subscribers"
     local procedure OnBeforeCallingTaxEngineFromPurchLine(
         var PurchaseHeader: Record "Purchase Header";
         var PurchaseLine: Record "Purchase Line")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeSkipCallingTaxEngineForPurchLine(
+        var PurchLine: Record "Purchase Line";
+        var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeEnableCallingTaxEngineForPurchLine(
+        var PurchLine: Record "Purchase Line";
+        var IsHandled: Boolean)
     begin
     end;
 

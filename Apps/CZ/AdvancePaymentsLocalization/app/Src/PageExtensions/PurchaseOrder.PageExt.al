@@ -4,33 +4,33 @@ pageextension 31037 "Purchase Order CZZ" extends "Purchase Order"
     {
         modify("Prepayment %")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Compress Prepayment")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Prepmt. Payment Terms Code")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Prepayment Due Date")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Prepmt. Payment Discount %")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Prepmt. Pmt. Discount Date")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #if not CLEAN19
 #pragma warning disable AL0432
         modify("Prepayment Type")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -50,7 +50,6 @@ pageextension 31037 "Purchase Order CZZ" extends "Purchase Order"
                 ApplicationArea = Basic, Suite;
                 Provider = PurchLines;
                 SubPageLink = "Document Type" = field("Document Type"), "Document No." = field("Document No."), "Line No." = field("Line No.");
-                Visible = AdvancePaymentsEnabledCZZ;
             }
         }
     }
@@ -59,51 +58,51 @@ pageextension 31037 "Purchase Order CZZ" extends "Purchase Order"
     {
         modify(PostedPrepaymentInvoices)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify(PostedPrepaymentCrMemos)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #if not CLEAN19
 #pragma warning disable AL0432
         modify(Prepayment)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Assignment Ad&vance Letters")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Assigned Adv. Letters - detail")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify(Action1220036)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Create Advance Letter")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Link Advance Letter")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Cancel All Adv. Payment Relations")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Adjust VAT by Adv. Payment Deduction")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
         modify("Prepa&yment")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         addbefore("P&osting")
         {
@@ -119,7 +118,6 @@ pageextension 31037 "Purchase Order CZZ" extends "Purchase Order"
                     ToolTip = 'The function create advance letter.';
                     Image = CreateDocument;
                     Ellipsis = true;
-                    Visible = AdvancePaymentsEnabledCZZ;
 
                     trigger OnAction()
                     var
@@ -136,7 +134,6 @@ pageextension 31037 "Purchase Order CZZ" extends "Purchase Order"
                     ToolTip = 'The function allows to link advance letters.';
                     Image = LinkWithExisting;
                     Ellipsis = true;
-                    Visible = AdvancePaymentsEnabledCZZ;
 
                     trigger OnAction()
                     var
@@ -155,7 +152,6 @@ pageextension 31037 "Purchase Order CZZ" extends "Purchase Order"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Shows summarized VAT Entries, include advance VAT Entries, based on posting preview.';
                 Image = VATEntries;
-                Visible = AdvancePaymentsEnabledCZZ;
 
                 trigger OnAction()
                 var
@@ -168,13 +164,4 @@ pageextension 31037 "Purchase Order CZZ" extends "Purchase Order"
             }
         }
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

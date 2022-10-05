@@ -39,7 +39,7 @@ report 30106 "Shpfy Add Item to Shopify"
             {
                 group(ShopFilter)
                 {
-                    Caption = 'Shop Filter';
+                    Caption = 'Options';
                     field(Shop; ShopCode)
                     {
                         ApplicationArea = All;
@@ -48,15 +48,86 @@ report 30106 "Shpfy Add Item to Shopify"
                         LookupPageId = "Shpfy Shops";
                         TableRelation = "Shpfy Shop";
                         ToolTip = 'Specifies the Shopify Shop.';
+                        ShowMandatory = true;
+
+                        trigger OnValidate()
+                        var
+                            ShpfyShop: Record "Shpfy Shop";
+                            ShpfyLocation: Record "Shpfy Shop Location";
+                        begin
+                            if ShpfyShop.Get(ShopCode) then begin
+                                SyncImagesVisible := ShpfyShop."Sync Item Images" = ShpfyShop."Sync Item Images"::"To Shopify";
+                                SyncImages := SyncImagesVisible;
+                                ShpfyLocation.SetRange("Shop Code", ShpfyShop.Code);
+                                ShpfyLocation.SetRange(Disabled, false);
+                                SyncInventoryVisible := not ShpfyLocation.IsEmpty();
+                                SyncInventory := SyncInventoryVisible;
+                            end else begin
+                                SyncImages := false;
+                                SyncImagesVisible := false;
+                                SyncInventory := false;
+                                SyncInventoryVisible := false;
+                            end;
+                        end;
+                    }
+                    field(ImageSync; SyncImages)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Sync Images';
+                        ToolTip = 'Specifies if item images are synced.';
+                        Editable = SyncImagesVisible;
+                    }
+                    field(InventorySync; SyncInventory)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Sync Inventory';
+                        ToolTip = 'Specifies if inventory is synced.';
+                        Editable = SyncInventoryVisible;
                     }
                 }
             }
         }
+
+        trigger OnOpenPage()
+        var
+            ShpfyShop: Record "Shpfy Shop";
+            ShpfyLocation: Record "Shpfy Shop Location";
+        begin
+            if ShpfyShop.Get(ShopCode) then begin
+                SyncImagesVisible := ShpfyShop."Sync Item Images" = ShpfyShop."Sync Item Images"::"To Shopify";
+                SyncImages := SyncImagesVisible;
+                ShpfyLocation.SetRange("Shop Code", ShpfyShop.Code);
+                ShpfyLocation.SetRange(Disabled, false);
+                SyncInventoryVisible := not ShpfyLocation.IsEmpty();
+                SyncInventory := SyncInventoryVisible;
+            end else begin
+                SyncImages := false;
+                SyncImagesVisible := false;
+                SyncInventory := false;
+                SyncInventoryVisible := false;
+            end;
+        end;
     }
+
+    trigger OnPostReport()
+    var
+        BackgroundSyncs: Codeunit "Shpfy Background Syncs";
+    begin
+        if SyncImages then
+            BackgroundSyncs.ProductImagesSync(ShopCode);
+        if SyncInventory then
+            BackgroundSyncs.InventorySync(ShopCode);
+    end;
 
     var
         ShopifyCreateProduct: Codeunit "Shpfy Create Product";
         ShopCode: Code[20];
+        SyncImages: Boolean;
+        SyncInventory: Boolean;
+        SyncInventoryVisible: Boolean;
+        SyncImagesVisible: Boolean;
+
+
 
     /// <summary> 
     /// Set Shop.

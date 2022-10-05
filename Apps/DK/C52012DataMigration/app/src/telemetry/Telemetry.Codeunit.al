@@ -71,28 +71,33 @@ codeunit 1872 "C5 Telemetry"
     var
         C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
         EntitiesToMigrateMessage: Text;
+        VendorEntityMsg: Label 'vendor: %1; ', Locked = true;
+        CustomerEntityMsg: Label 'customer: %1; ', Locked = true;
+        GLAccountEntityMsg: Label 'gl_acc: %1; ', Locked = true;
+        ItemEntityMsg: Label 'item: %1; ', Locked = true;
+        C5LedgerMsg: Label 'C5_ledger_entries: %1; ', Locked = true;
     begin
         DataMigrationEntity.SetRange(Selected, true);
         DataMigrationEntity.SetRange("Table ID", Database::Vendor);
 
         if DataMigrationEntity.FindFirst() then
-            EntitiesToMigrateMessage += StrSubstNo('vendor: %1; ', DataMigrationEntity."No. of Records");
+            EntitiesToMigrateMessage += StrSubstNo(VendorEntityMsg, DataMigrationEntity."No. of Records");
 
         DataMigrationEntity.SetRange("Table ID", Database::Customer);
         if DataMigrationEntity.FindFirst() then
-            EntitiesToMigrateMessage += StrSubstNo('customer: %1; ', DataMigrationEntity."No. of Records");
+            EntitiesToMigrateMessage += StrSubstNo(CustomerEntityMsg, DataMigrationEntity."No. of Records");
 
         DataMigrationEntity.SetRange("Table ID", Database::"G/L Account");
         if DataMigrationEntity.FindFirst() then
-            EntitiesToMigrateMessage += StrSubstNo('gl_acc: %1; ', DataMigrationEntity."No. of Records");
+            EntitiesToMigrateMessage += StrSubstNo(GLAccountEntityMsg, DataMigrationEntity."No. of Records");
 
         DataMigrationEntity.SetRange("Table ID", Database::Item);
         if DataMigrationEntity.FindFirst() then
-            EntitiesToMigrateMessage += StrSubstNo('item: %1; ', DataMigrationEntity."No. of Records");
+            EntitiesToMigrateMessage += StrSubstNo(ItemEntityMsg, DataMigrationEntity."No. of Records");
 
         DataMigrationEntity.SetRange("Table ID", Database::"C5 LedTrans");
         if DataMigrationEntity.FindFirst() then
-            EntitiesToMigrateMessage += StrSubstNo('C5_ledger_entries: %1; ', DataMigrationEntity."No. of Records");
+            EntitiesToMigrateMessage += StrSubstNo(C5LedgerMsg, DataMigrationEntity."No. of Records");
 
         Session.LogMessage('00001I1', EntitiesToMigrateMessage, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', C5MigrationDashboardMgt.GetC5MigrationTypeTxt());
     end;

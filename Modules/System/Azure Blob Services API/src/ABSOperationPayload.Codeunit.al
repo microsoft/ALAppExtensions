@@ -124,13 +124,13 @@ codeunit 9042 "ABS Operation Payload"
     end;
 
     [NonDebuggable]
-    procedure Initialize(StorageAccount: Text; Container: Text; BlobName: Text; StorageServiceAuthorization: Interface "Storage Service Authorization"; StorageServiceAPIVersion: Enum "Storage Service API Version")
+    procedure Initialize(StorageAccount: Text; Container: Text; BlobNameText: Text; StorageServiceAuthorization: Interface "Storage Service Authorization"; StorageServiceAPIVersion: Enum "Storage Service API Version")
     begin
         StorageAccountName := StorageAccount;
         ApiVersion := StorageServiceAPIVersion;
         Authorization := StorageServiceAuthorization;
         ContainerName := Container;
-        BlobName := BlobName;
+        BlobName := BlobNameText;
 
         Clear(StorageBaseUrl);
         Clear(UriParameters);

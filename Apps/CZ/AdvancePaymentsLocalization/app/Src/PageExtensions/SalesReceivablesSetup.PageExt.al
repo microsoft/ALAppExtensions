@@ -16,17 +16,7 @@ pageextension 31107 "Sales & Receivables Setup CZZ" extends "Sales & Receivables
                 PromotedCategory = Category6;
                 RunObject = Page "Advance Letter Templates CZZ";
                 RunPageView = where("Sales/Purchase" = const(Sales));
-                Visible = AdvancePaymentsEnabledCZZ;
             }
         }
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

@@ -17,6 +17,9 @@ codeunit 135034 "Filter Tokens Test"
         FilterTokens: Codeunit "Filter Tokens";
         Assert: Codeunit "Library Assert";
         FilterTokensTest: Codeunit "Filter Tokens Test";
+        FilterTextErr: Label '"%1" was not evaluated correctly.', Locked = true;
+        DateRangeLbl: Label '%1..%2', Locked = true;
+        DateFilterLbl: Label '%1|%2', Locked = true;
 
     [Test]
     [Scope('OnPrem')]
@@ -54,6 +57,7 @@ codeunit 135034 "Filter Tokens Test"
 
         ExpectedFilterText := STRSUBSTNO(ExpectedText, CURRENTDATETIME());
 
+        NoOfAttempts := 0;
         WHILE (NoOfAttempts < 10) AND (FilterText <> ExpectedFilterText) DO BEGIN // retry because time (seconds) may have shifted between the two calls to CURRENTDATETIME
 
             NoOfAttempts += 1;
@@ -63,7 +67,7 @@ codeunit 135034 "Filter Tokens Test"
         END;
 
         // [THEN] A date and time in a valid format is extracted in the variable passed as VAR.
-        Assert.AreEqual(ExpectedFilterText, FilterText, STRSUBSTNO('"%1" was not evaluated correctly.', OrgFilterText));
+        Assert.AreEqual(ExpectedFilterText, FilterText, STRSUBSTNO(FilterTextErr, OrgFilterText));
     end;
 
     [Test]
@@ -98,6 +102,7 @@ codeunit 135034 "Filter Tokens Test"
 
         ExpectedFilterText := STRSUBSTNO(ExpectedText, TIME());
 
+        NoOfAttempts := 0;
         WHILE (NoOfAttempts < 10) AND (FilterText <> ExpectedFilterText) DO BEGIN // retry because time may have shifted between the two calls to TIME
             NoOfAttempts += 1;
             FilterText := OrgFilterText;
@@ -106,7 +111,7 @@ codeunit 135034 "Filter Tokens Test"
         END;
 
         // [THEN] The time in a valid format is extracted in the variable passed as VAR.
-        Assert.AreEqual(ExpectedFilterText, FilterText, STRSUBSTNO('"%1" was not evaluated correctly.', OrgFilterText));
+        Assert.AreEqual(ExpectedFilterText, FilterText, STRSUBSTNO(FilterTextErr, OrgFilterText));
     end;
 
     [Test]
@@ -120,15 +125,15 @@ codeunit 135034 "Filter Tokens Test"
         // [GIVEN] A text which contains a date in different formats.
         // [WHEN] MakeDateFilter is called.
         // [THEN] Verify that date in a valid format is extracted in the variable passed as VAR.
-        VerifyDateFilter('SUMMER', STRSUBSTNO('%1..%2', FORMAT(DMY2DATE(21, 6, 2012)), FORMAT(DMY2DATE(23, 9, 2012))));
+        VerifyDateFilter('SUMMER', STRSUBSTNO(DateRangeLbl, FORMAT(DMY2DATE(21, 6, 2012)), FORMAT(DMY2DATE(23, 9, 2012))));
         VerifyDateFilter(' 01-01-2012 ', FORMAT(DMY2DATE(1, 1, 2012)));
-        VerifyDateFilter(' 01-01-2012 .. 11-11-12', STRSUBSTNO('%1..%2', FORMAT(DMY2DATE(1, 1, 2012)), FORMAT(DMY2DATE(11, 11, 2012))));
+        VerifyDateFilter(' 01-01-2012 .. 11-11-12', STRSUBSTNO(DateRangeLbl, FORMAT(DMY2DATE(1, 1, 2012)), FORMAT(DMY2DATE(11, 11, 2012))));
         VerifyDateFilter('TODAY', FORMAT(TODAY()));
         VerifyDateFilter('YESTERDAY', FORMAT(TODAY() - 1));
         VerifyDateFilter('WORKDATE', FORMAT(WORKDATE()));
         VerifyDateFilter('TOMORROW', FORMAT(TODAY() + 1));
         VerifyDateFilter('WEEK', FORMAT(CALCDATE('<CW-6D>', TODAY())) + '..' + FORMAT(CALCDATE('<CW>', TODAY())));
-        VerifyDateFilter('QUARTER', STRSUBSTNO('%1..%2', FORMAT(CALCDATE('<-CQ>')), FORMAT(CALCDATE('<CQ>'))));
+        VerifyDateFilter('QUARTER', STRSUBSTNO(DateRangeLbl, FORMAT(CALCDATE('<-CQ>')), FORMAT(CALCDATE('<CQ>'))));
         VerifyDateFilter('WEEK - 7D', FORMAT(CALCDATE('<CW-13D>', TODAY())) + '..' + FORMAT(CALCDATE('<CW-7D>', TODAY())));
         VerifyDateFilter('+15D', FORMAT(CALCDATE('<+15D>', TODAY())));
         VerifyDateFilter('15D', FORMAT(CALCDATE('<+15D>', TODAY())));
@@ -159,7 +164,7 @@ codeunit 135034 "Filter Tokens Test"
         END;
 
         // [THEN] Verify that date in a valid format is extracted in the variable passed as VAR.
-        Assert.AreEqual(ExpectedText, FilterText, STRSUBSTNO('"%1" was not evaluated correctly.', OrgFilterText));
+        Assert.AreEqual(ExpectedText, FilterText, STRSUBSTNO(FilterTextErr, OrgFilterText));
     end;
 
     [Test]
@@ -190,7 +195,7 @@ codeunit 135034 "Filter Tokens Test"
         FilterTokens.MakeTextFilter(FilterText);
 
         // [THEN] Verify that text filter in a valid format is extracted in the variable passed as VAR.
-        Assert.AreEqual(ExpectedText, FilterText, STRSUBSTNO('"%1" was not evaluated correctly.', OrgFilterText));
+        Assert.AreEqual(ExpectedText, FilterText, STRSUBSTNO(FilterTextErr, OrgFilterText));
     end;
 
     [Test]
@@ -205,7 +210,7 @@ codeunit 135034 "Filter Tokens Test"
 
         BINDSUBSCRIPTION(FilterTokensTest);
 
-        VerifyDateFilter('SUMMER|' + FORMAT(DMY2DATE(2, 12, 2019)), GetExpectedDateFilterExpression(STRSUBSTNO('%1..%2', FORMAT(DMY2DATE(21, 6, 2012)), FORMAT(DMY2DATE(23, 9, 2012))), FORMAT(DMY2DATE(2, 12, 2019))));
+        VerifyDateFilter('SUMMER|' + FORMAT(DMY2DATE(2, 12, 2019)), GetExpectedDateFilterExpression(STRSUBSTNO(DateRangeLbl, FORMAT(DMY2DATE(21, 6, 2012)), FORMAT(DMY2DATE(23, 9, 2012))), FORMAT(DMY2DATE(2, 12, 2019))));
         VerifyDateFilter('CQ - 34D|WORKDATE + CQ - 34D', GetExpectedDateFilterExpression(FORMAT(CALCDATE('<CQ-34D>', TODAY())), FORMAT(CALCDATE('<CQ-34D>', WORKDATE()))));
 
         UNBINDSUBSCRIPTION(FilterTokensTest);
@@ -213,7 +218,7 @@ codeunit 135034 "Filter Tokens Test"
 
     local procedure GetExpectedDateFilterExpression(Date1: Text; Date2: Text): Text
     begin
-        EXIT(STRSUBSTNO('%1|%2', Date1, Date2));
+        EXIT(STRSUBSTNO(DateFilterLbl, Date1, Date2));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Filter Tokens", 'OnResolveDateTokenFromDateTimeFilter', '', false, false)]

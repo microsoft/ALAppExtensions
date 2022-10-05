@@ -27,16 +27,6 @@ permissionset 11772 "CZ Compensation - Objects CZC"
                   Codeunit "Notification Handler CZC" = X,
                   Codeunit "Posting Group Mgt. Handler CZC" = X,
                   Codeunit "Release Compens. Document CZC" = X,
-#if not CLEAN18
-                  Codeunit "Sync.Dep.Fld-CompensSetup CZC" = X,
-                  Codeunit "Sync.Dep.Fld-CustLedgEntry CZC" = X,
-                  Codeunit "Sync.Dep.Fld-GenJnlLine CZC" = X,
-                  Codeunit "Sync.Dep.Fld-PostCompensHd CZC" = X,
-                  Codeunit "Sync.Dep.Fld-PostCompensLn CZC" = X,
-                  Codeunit "Sync.Dep.Fld-PostGenJnlLn CZC" = X,
-                  Codeunit "Sync.Dep.Fld-SrcCodeSetup CZC" = X,
-                  Codeunit "Sync.Dep.Fld-VendLedgEntry CZC" = X,
-#endif
                   Codeunit "Upgrade Application CZC" = X,
                   Codeunit "Upgrade Tag Definitions CZC" = X,
                   Codeunit "Vendor Handler CZC" = X,

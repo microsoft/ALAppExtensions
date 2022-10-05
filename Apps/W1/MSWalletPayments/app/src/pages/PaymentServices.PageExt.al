@@ -1,6 +1,10 @@
-#if not CLEAN20
+#if not CLEAN21
 pageextension 1088 "MS - Wallet Payment Services" extends "BC O365 Payment Services"
 {
+    ObsoleteReason = 'Microsoft Invoicing has been discontinued.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '21.0';
+
     layout
     {
         addafter(Control85)

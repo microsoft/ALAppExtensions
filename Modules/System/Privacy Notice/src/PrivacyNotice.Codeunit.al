@@ -23,7 +23,7 @@ codeunit 1563 "Privacy Notice"
     begin
         exit(PrivacyNoticeImpl.CreatePrivacyNotice(Id, IntegrationName, Link));
     end;
-    
+
     /// <summary>
     /// Creates a privacy notice.
     /// </summary>
@@ -37,7 +37,18 @@ codeunit 1563 "Privacy Notice"
     begin
         exit(PrivacyNoticeImpl.CreatePrivacyNotice(Id, IntegrationName));
     end;
-    
+
+    /// <summary>
+    ///  Gets the default text for the privacy notice.
+    /// </summary>
+    /// <returns>The default text for the privacy notice.</returns>
+    procedure GetDefaultPrivacyAgreementTxt(): Text
+    var
+        PrivacyNoticeImpl: Codeunit "Privacy Notice Impl.";
+    begin
+        exit(PrivacyNoticeImpl.GetDefaultPrivacyAgreementTxt());
+    end;
+
     /// <summary>
     /// After this the step-through depends on whether the user is admin or normal user (admin means they have the Priv. Notice - Admin permission set):
     /// Admin:
@@ -134,7 +145,7 @@ codeunit 1563 "Privacy Notice"
     /// This function basically returns whether the user has the permissions of the Priv. Notice - Admin.
     /// </summary>
     /// <returns>Whether the current user can approve for the entire organization.</returns>
-    procedure CanCurrentUserApproveForOrganization() : Boolean
+    procedure CanCurrentUserApproveForOrganization(): Boolean
     var
         PrivacyNoticeImpl: Codeunit "Privacy Notice Impl.";
     begin

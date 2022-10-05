@@ -37,6 +37,12 @@ table 8900 "Email Message"
             DataClassification = SystemMetadata;
             InitValue = True;
         }
+        field(6; "No. of Modifies"; Integer)
+        {
+            Access = Internal;
+            InitValue = 0;
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

@@ -5,7 +5,7 @@
 
 controladdin OAuthControlAddIn
 {
-    Scripts = 'js\OAuthIntegration.js';
+    Scripts = 'ControlAddIns\js\OAuthIntegration.js';
     RequestedWidth = 0;
     RequestedHeight = 0;
     HorizontalStretch = false;

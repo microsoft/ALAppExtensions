@@ -198,9 +198,9 @@ codeunit 31356 "Payment Order Management CZB"
                     if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(SuggestedAmountToApplyQst, PaymentOrderLineCZB.Type, PaymentOrderLineCZB."Applies-to C/V/E Entry No."), false) then
                         Error('');
 
-        CheckPaymentOrderLineApplyToOtherEntries(PaymentOrderLineCZB, ShowErrorMessages);
+        CheckPaymentOrderLineApplyToOtherEntries(PaymentOrderLineCZB, false);
 #if not CLEAN19
-        CheckPaymentOrderLineApplyToAdvanceLetter(PaymentOrderLineCZB, ShowErrorMessages);
+        CheckPaymentOrderLineApplyToAdvanceLetter(PaymentOrderLineCZB, false);
 #endif
 
         ErrorMessageLogSuspended := TempErrorMessageLogSuspended;

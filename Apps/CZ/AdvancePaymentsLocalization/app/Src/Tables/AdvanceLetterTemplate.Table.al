@@ -116,9 +116,9 @@ table 31003 "Advance Letter Template CZZ"
             ObsoleteState = Pending;
             ObsoleteTag = '20.0';
             ObsoleteReason = 'Replaced by standard report selection.';
-        }
 #pragma warning restore AL0432
 #endif
+        }
         field(18; "Invoice/Cr. Memo Report ID"; Integer)
         {
             Caption = 'Invoice/Cr. Memo Report ID (Obsolete)';
@@ -146,9 +146,9 @@ table 31003 "Advance Letter Template CZZ"
             ObsoleteState = Pending;
             ObsoleteTag = '20.0';
             ObsoleteReason = 'Replaced by standard report selection.';
-        }
 #pragma warning restore AL0432
 #endif
+        }
         field(25; "Automatic Post VAT Document"; Boolean)
         {
             Caption = 'Automatic Post VAT Document';

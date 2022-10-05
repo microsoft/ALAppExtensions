@@ -77,6 +77,9 @@ table 1360 "MS - WorldPay Standard Account"
         key(Key1; "Primary Key")
         {
         }
+        key(Key2; "Always Include on Documents")
+        {
+        }
     }
 
     fieldgroups

@@ -25,11 +25,6 @@ codeunit 30169 "Shpfy Payments"
     /// </summary>
     local procedure ImportPaymentTransactions()
     var
-        DataCapture: Record "Shpfy Data Capture";
-        Transaction: Record "Shpfy Payment Transaction";
-        Math: Codeunit "Shpfy Math";
-        RecRef: RecordRef;
-        Id: BigInteger;
         SinceId: BigInteger;
         JTransactions: JsonArray;
         JItem: JsonToken;
@@ -37,46 +32,15 @@ codeunit 30169 "Shpfy Payments"
         Url: Text;
         UrlTxt: Label 'shopify_payments/balance/transactions.json?since_id=%1', Comment = '%1 = Last sync Date and Time.', Locked = true;
     begin
-        Transaction.SetRange("Shop Code", Shop.Code);
-        if Transaction.FindLast() then
-            SinceId := Transaction.Id;
+        SinceId := GetLastTransactionPayoutId(Shop.Code);
+
         Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(UrlTxt, SinceId));
         Clear(SinceId);
         repeat
             JResponse := CommunicationMgt.ExecuteWebRequest(Url, 'GET', JResponse, Url);
             if JHelper.GetJsonArray(JResponse, JTransactions, 'transactions') then
-                foreach JItem in JTransactions do begin
-                    Id := JHelper.GetValueAsBigInteger(JItem, 'id');
-                    Clear(Transaction);
-                    Transaction.SetRange(Id, Id);
-                    if Transaction.IsEmpty then begin
-                        RecRef.Open(Database::"Shpfy Payment Transaction");
-                        RecRef.Init();
-                        JHelper.GetValueIntoField(JItem, 'test', RecRef, Transaction.FieldNo(Test));
-                        JHelper.GetValueIntoField(JItem, 'payout_id', RecRef, Transaction.FieldNo("Payout Id"));
-                        JHelper.GetValueIntoField(JItem, 'currency', RecRef, Transaction.FieldNo(Currency));
-                        JHelper.GetValueIntoField(JItem, 'amount', RecRef, Transaction.FieldNo(Amount));
-                        JHelper.GetValueIntoField(JItem, 'fee', RecRef, Transaction.FieldNo(Fee));
-                        JHelper.GetValueIntoField(JItem, 'net', RecRef, Transaction.FieldNo("Net Amount"));
-                        JHelper.GetValueIntoField(JItem, 'source_id', RecRef, Transaction.FieldNo("Source Id"));
-                        JHelper.GetValueIntoField(JItem, 'source_order_id', RecRef, Transaction.FieldNo("Source Order Id"));
-                        JHelper.GetValueIntoField(JItem, 'source_order_transaction_id', RecRef, Transaction.FieldNo("Source Order Transaction Id"));
-                        JHelper.GetValueIntoField(JItem, 'processed_at', RecRef, Transaction.FieldNo("Processed At"));
-                        RecRef.SetTable(Transaction);
-                        RecRef.Close();
-                        Transaction.Id := Id;
-                        Transaction."Shop Code" := Shop.Code;
-                        Transaction.Type := ConvertToPaymentTranscationType(JHelper.GetValueAsText(JItem, 'type'));
-                        Transaction."Source Type" := ConvertToPaymentTranscationType(JHelper.GetValueAsText(JItem, 'type'));
-                        Transaction.Insert();
-                        DataCapture.Add(Database::"Shpfy Payment Transaction", Transaction.SystemId, JItem);
-                        if SinceId = 0 then
-                            SinceId := Transaction."Payout Id"
-                        else
-                            if Transaction."Payout Id" > 0 then
-                                SinceId := Math.Min(SinceId, Transaction."Payout Id");
-                    end;
-                end;
+                foreach JItem in JTransactions do
+                    ImportPaymentTransaction(JItem, SinceId);
         until Url = '';
 
         if SinceId > 0 then
@@ -177,5 +141,54 @@ codeunit 30169 "Shpfy Payments"
     begin
         Shop := ShopifyShop;
         CommunicationMgt.SetShop(Shop);
+    end;
+
+    local procedure GetLastTransactionPayoutId(ShopCode: Code[20]): BigInteger
+    var
+        Transaction: Record "Shpfy Payment Transaction";
+    begin
+        Transaction.SetRange("Shop Code", ShopCode);
+        if Transaction.FindLast() then
+            Exit(Transaction."Payout Id");
+    end;
+
+    internal procedure ImportPaymentTransaction(JTransaction: JsonToken; var SinceId: BigInteger)
+    var
+        DataCapture: Record "Shpfy Data Capture";
+        Transaction: Record "Shpfy Payment Transaction";
+        Math: Codeunit "Shpfy Math";
+        RecRef: RecordRef;
+        Id: BigInteger;
+    begin
+        Id := JHelper.GetValueAsBigInteger(JTransaction, 'id');
+        Clear(Transaction);
+        Transaction.SetRange(Id, Id);
+        if Transaction.IsEmpty then begin
+            RecRef.Open(Database::"Shpfy Payment Transaction");
+            RecRef.Init();
+            JHelper.GetValueIntoField(JTransaction, 'test', RecRef, Transaction.FieldNo(Test));
+            JHelper.GetValueIntoField(JTransaction, 'payout_id', RecRef, Transaction.FieldNo("Payout Id"));
+            JHelper.GetValueIntoField(JTransaction, 'currency', RecRef, Transaction.FieldNo(Currency));
+            JHelper.GetValueIntoField(JTransaction, 'amount', RecRef, Transaction.FieldNo(Amount));
+            JHelper.GetValueIntoField(JTransaction, 'fee', RecRef, Transaction.FieldNo(Fee));
+            JHelper.GetValueIntoField(JTransaction, 'net', RecRef, Transaction.FieldNo("Net Amount"));
+            JHelper.GetValueIntoField(JTransaction, 'source_id', RecRef, Transaction.FieldNo("Source Id"));
+            JHelper.GetValueIntoField(JTransaction, 'source_order_id', RecRef, Transaction.FieldNo("Source Order Id"));
+            JHelper.GetValueIntoField(JTransaction, 'source_order_transaction_id', RecRef, Transaction.FieldNo("Source Order Transaction Id"));
+            JHelper.GetValueIntoField(JTransaction, 'processed_at', RecRef, Transaction.FieldNo("Processed At"));
+            RecRef.SetTable(Transaction);
+            RecRef.Close();
+            Transaction.Id := Id;
+            Transaction."Shop Code" := Shop.Code;
+            Transaction.Type := ConvertToPaymentTranscationType(JHelper.GetValueAsText(JTransaction, 'type'));
+            Transaction."Source Type" := ConvertToPaymentTranscationType(JHelper.GetValueAsText(JTransaction, 'type'));
+            Transaction.Insert();
+            DataCapture.Add(Database::"Shpfy Payment Transaction", Transaction.SystemId, JTransaction);
+            if SinceId = 0 then
+                SinceId := Transaction."Payout Id"
+            else
+                if Transaction."Payout Id" > 0 then
+                    SinceId := Math.Min(SinceId, Transaction."Payout Id");
+        end;
     end;
 }

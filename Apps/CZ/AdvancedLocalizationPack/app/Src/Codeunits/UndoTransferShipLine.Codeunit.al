@@ -286,7 +286,7 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
             until TransferShipmentLine2.Next() = 0;
     end;
 
-    local procedure InsertTempWhseJnlLine(ItemJournalLine: Record "Item Journal Line"; SourceType: Integer; SourceSubType: Integer; SourceNo: Code[20]; SourceLineNo: Integer; RefDoc: Integer; var TempWarehouseJournalLine: Record "Warehouse Journal Line" temporary; var NextLineNo: Integer)
+    local procedure InsertTempWhseJnlLine(ItemJournalLine: Record "Item Journal Line"; SourceType: Integer; SourceSubType: Integer; SourceNo: Code[20]; SourceLineNo: Integer; RefDoc: Enum "Whse. Reference Document Type"; var TempWarehouseJournalLine: Record "Warehouse Journal Line" temporary; var NextLineNo: Integer)
     var
         WarehouseEntry: Record "Warehouse Entry";
         WhseManagement: Codeunit "Whse. Management";
@@ -390,8 +390,8 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
                     false, DummyEntriesExist);
 #pragma warning restore AL0432
 #else
-                ItemTrackingSetup."Serial No." := ItemJnlLine."Serial No.";
-                ItemTrackingSetup."Lot No." := ItemJnlLine."Lot No.";
+                ItemTrackingSetup."Serial No." := ItemJournalLine."Serial No.";
+                ItemTrackingSetup."Lot No." := ItemJournalLine."Lot No.";
                 ExpDate := ItemTrackingManagement.ExistingExpirationDate(
                     ItemJournalLine."Item No.",
                     ItemJournalLine."Variant Code",
@@ -413,7 +413,7 @@ codeunit 31425 "Undo Transfer Ship. Line CZA"
             ItemJournalLine."Invoiced Quantity" := ItemJournalLine.Quantity;
             ItemJournalLine."Invoiced Qty. (Base)" := ItemJournalLine."Quantity (Base)";
 
-            ItemJnlPostLine2.xSetExtLotSN(true);
+            ItemJournalLine."Invoice No." := 'xSetExtLotSN';
             ItemJnlPostLine2.RunWithCheck(ItemJournalLine);
 
             ItemJnlPostLine2.CollectItemEntryRelation(TempItemEntryRelation);

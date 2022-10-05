@@ -7,8 +7,7 @@ pageextension 11761 "Service Quote CZL" extends "Service Quote"
             field("Posting Description CZL"; Rec."Posting Description")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies a description of the purchase receipt. The posting description also appers on vendor and G/L entries.';
-                Visible = false;
+                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
             }
         }
         addlast(Details)

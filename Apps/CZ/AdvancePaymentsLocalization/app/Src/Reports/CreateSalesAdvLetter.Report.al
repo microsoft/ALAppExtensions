@@ -68,9 +68,7 @@ report 31012 "Create Sales Adv. Letter CZZ"
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
         AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
         SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ";
-#pragma warning disable AL0432
-        TempInvoicePostBuffer: Record "Invoice Post. Buffer" temporary;
-#pragma warning restore AL0432
+        TempAdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ" temporary;
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
         SalesPost: Codeunit "Sales-Post";
         AdvanceLetterCode: Code[20];
@@ -107,6 +105,9 @@ report 31012 "Create Sales Adv. Letter CZZ"
     end;
 
     trigger OnPostReport()
+    var
+        ConfirmManagement: Codeunit "Confirm Management";
+        OpenAdvanceLetterQst: Label 'Do you want to open created Advance Letter?';
     begin
         CreateAdvanceLetterHeader();
 
@@ -120,28 +121,29 @@ report 31012 "Create Sales Adv. Letter CZZ"
         end else begin
             if TempSalesLine.FindSet() then
                 repeat
-                    TempInvoicePostBuffer.Init();
-                    TempInvoicePostBuffer."VAT Bus. Posting Group" := TempSalesLine."VAT Bus. Posting Group";
-                    TempInvoicePostBuffer."VAT Prod. Posting Group" := TempSalesLine."VAT Prod. Posting Group";
-                    if TempInvoicePostBuffer.Find() then begin
-                        TempInvoicePostBuffer.Amount += TempSalesLine."Amount Including VAT";
-                        TempInvoicePostBuffer.Modify();
+                    TempAdvancePostingBufferCZZ.Init();
+                    TempAdvancePostingBufferCZZ."VAT Bus. Posting Group" := TempSalesLine."VAT Bus. Posting Group";
+                    TempAdvancePostingBufferCZZ."VAT Prod. Posting Group" := TempSalesLine."VAT Prod. Posting Group";
+                    if TempAdvancePostingBufferCZZ.Find() then begin
+                        TempAdvancePostingBufferCZZ.Amount += TempSalesLine."Amount Including VAT";
+                        TempAdvancePostingBufferCZZ.Modify();
                     end else begin
-                        TempInvoicePostBuffer.Amount := TempSalesLine."Amount Including VAT";
-                        TempInvoicePostBuffer.Insert();
+                        TempAdvancePostingBufferCZZ.Amount := TempSalesLine."Amount Including VAT";
+                        TempAdvancePostingBufferCZZ.Insert();
                     end;
                 until TempSalesLine.Next() = 0;
 
-            if TempInvoicePostBuffer.FindSet() then
+            if TempAdvancePostingBufferCZZ.FindSet() then
                 repeat
-                    CreateAdvanceLetterLine('', TempInvoicePostBuffer."VAT Bus. Posting Group", TempInvoicePostBuffer."VAT Prod. Posting Group", TempInvoicePostBuffer.Amount);
-                until TempInvoicePostBuffer.Next() = 0;
+                    CreateAdvanceLetterLine('', TempAdvancePostingBufferCZZ."VAT Bus. Posting Group", TempAdvancePostingBufferCZZ."VAT Prod. Posting Group", TempAdvancePostingBufferCZZ.Amount);
+                until TempAdvancePostingBufferCZZ.Next() = 0;
         end;
 
         CreateAdvanceLetterApplication();
 
-        if GuiAllowed() then
-            Page.Run(Page::"Sales Advance Letter CZZ", SalesAdvLetterHeaderCZZ);
+        if ConfirmManagement.GetResponseOrDefault(OpenAdvanceLetterQst, false) then
+            if GuiAllowed() then
+                Page.Run(Page::"Sales Advance Letter CZZ", SalesAdvLetterHeaderCZZ);
     end;
 
     local procedure CreateAdvanceLetterHeader()

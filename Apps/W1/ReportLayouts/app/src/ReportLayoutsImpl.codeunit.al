@@ -30,16 +30,18 @@ codeunit 9660 "Report Layouts Impl."
     end;
 
     internal procedure RunCustomReport(SelectedReportLayoutList: Record "Report Layout List")
+    var
+        DesignTimeReportSelection: codeunit "Design-time Report Selection";
     begin
         if SelectedReportLayoutList."Report ID" = 0 then
             exit;
 
-        AddLayoutSelection(SelectedReportLayoutList, UserSecurityId());
-        Commit(); // End current transaction to allow running the report modally.
+        DesignTimeReportSelection.SetSelectedLayout(SelectedReportLayoutList.Name, SelectedReportLayoutList."Application ID");
+        Commit(); // Since we run the report modally, we cannot have any active transactions.
         if TryRunCustomReport(SelectedReportLayoutList) then
-            RemoveLayoutSelection(SelectedReportLayoutList)
+            DesignTimeReportSelection.ClearLayoutSelection()
         else begin
-            RemoveLayoutSelection(SelectedReportLayoutList);
+            DesignTimeReportSelection.ClearLayoutSelection();
             Error(GetLastErrorText());
         end;
     end;
@@ -61,12 +63,6 @@ codeunit 9660 "Report Layouts Impl."
 
         if not TenantReportLayoutSelection.Insert(true) then
             TenantReportLayoutSelection.Modify(true);
-    end;
-
-    local procedure RemoveLayoutSelection(SelectedReportLayoutList: Record "Report Layout List")
-    begin
-        if TenantReportLayoutSelection.Get(SelectedReportLayoutList."Report ID", SelectedCompany, UserSecurityId()) then
-            TenantReportLayoutSelection.Delete(true);
     end;
 
     internal procedure CreateNewReportLayout(SelectedReportLayoutList: Record "Report Layout List"; var ReturnReportID: Integer; var ReturnLayoutName: Text)
@@ -383,6 +379,13 @@ codeunit 9660 "Report Layouts Impl."
 
     [EventSubscriber(ObjectType::Page, Page::"Report Layout Selection", 'OnSelectReportLayout', '', false, false)]
     local procedure SelectReportLayout(var ReportLayoutList: Record "Report Layout List"; var Handled: Boolean)
+    begin
+        if Page.RunModal(Page::"Report Layouts", ReportLayoutList) = ACTION::LookupOK then
+            Handled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::ReportManagement, 'OnSelectReportLayout', '', false, false)]
+    local procedure SelectReportLayoutUI(var ReportLayoutList: Record "Report Layout List"; var Handled: Boolean)
     begin
         if Page.RunModal(Page::"Report Layouts", ReportLayoutList) = ACTION::LookupOK then
             Handled := true;

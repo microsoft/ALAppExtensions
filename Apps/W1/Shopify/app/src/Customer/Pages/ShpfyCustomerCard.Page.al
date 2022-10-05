@@ -10,6 +10,7 @@ page 30106 "Shpfy Customer Card"
     UsageCategory = None;
     AboutTitle = 'About Shopify customers';
     AboutText = 'View or edit information about your customers in Shopify. If you aren''t auto-synchronizing customers, you can do that manually here. For even more details, open the [Customer Card](?page=21 "Opens the Customer Card").';
+    PromotedActionCategories = 'New,Process,Related,Customer';
 
     layout
     {
@@ -155,6 +156,7 @@ page 30106 "Shpfy Customer Card"
                 Image = Customer;
                 Promoted = true;
                 PromotedOnly = true;
+                PromotedCategory = Category4;
                 ToolTip = 'View or edit detailed information about the customer.';
 
                 trigger OnAction()
@@ -175,6 +177,7 @@ page 30106 "Shpfy Customer Card"
                 Image = OrderList;
                 Promoted = true;
                 PromotedOnly = true;
+                PromotedCategory = Category4;
                 RunObject = Page "Shpfy Orders";
                 RunPageLink = "Customer Id" = Field(Id);
                 ToolTip = 'View a list of Shopify orders for the customer.';

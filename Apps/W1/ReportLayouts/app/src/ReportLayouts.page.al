@@ -279,7 +279,7 @@ page 9660 "Report Layouts"
         EmptyGuid: Guid;
         LayoutIsSelected: Boolean;
         ModifyNonUserLayoutErr: Label 'Only user-defined layouts can be modified or removed.';
-        EditInfoExtensionLayoutTxt: Label 'Extension layouts info cannot be modified. Do you want to edit a copy of the layout instead ?';
+        EditInfoExtensionLayoutTxt: Label 'It is not possible to modify the layout info for this layout because it is provided by an extension. Do you want to edit a copy of the layout instead ?';
         ReplaceConfirmationTxt: Label 'This action will replace the layout file of the currently selected layout "%1". Do you want to continue ?', Comment = '%1 = LayoutName';
 
     local procedure SetFocusedRecord(ReportID: Integer; LayoutName: Text)

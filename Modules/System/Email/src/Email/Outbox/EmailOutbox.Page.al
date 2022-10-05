@@ -261,9 +261,9 @@ page 8882 "Email Outbox"
         EmailConnector.ShowAccountInformation(Rec."Account Id");
     end;
 
-    internal procedure SetEmailStatus(Status: Enum "Email Status")
+    internal procedure SetEmailStatus(NewEmailStatus: Enum "Email Status")
     begin
-        EmailStatus := Status;
+        EmailStatus := NewEmailStatus;
     end;
 
     internal procedure SetEmailAccountId(AccountId: Guid)

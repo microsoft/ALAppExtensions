@@ -4,6 +4,7 @@ codeunit 20236 "Transaction Value Helper"
     var
         TaxTransactionValue: Record "Tax Transaction Value";
     begin
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Type", TaxType);
         TaxTransactionValue.SetRange("Tax Record ID", SourceRecordRef.RecordId());
         TaxTransactionValue.SetFilter("Case ID", '<>%1', CaseID);

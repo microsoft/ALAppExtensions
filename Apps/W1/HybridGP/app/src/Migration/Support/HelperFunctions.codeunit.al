@@ -1248,33 +1248,21 @@ Codeunit 4037 "Helper Functions"
     procedure GetNumberOfItems(): Integer;
     var
         GPItem: Record "GP Item";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
-        if not GPCompanyAdditionalSettings.GetInventoryModuleEnabled() then
-            exit(0);
-
         exit(GPItem.Count());
     end;
 
     procedure GetNumberOfCustomers(): Integer;
     var
         GPCustomer: Record "GP Customer";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
-        if not GPCompanyAdditionalSettings.GetReceivablesModuleEnabled() then
-            exit(0);
-
         exit(GPCustomer.Count());
     end;
 
     procedure GetNumberOfVendors(): Integer;
     var
         GPVendor: Record "GP Vendor";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
-        if not GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
-            exit(0);
-
         exit(GPVendor.Count());
     end;
 
@@ -1946,8 +1934,6 @@ Codeunit 4037 "Helper Functions"
     end;
 
     procedure CreatePreMigrationData(): Boolean
-    var
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         CreateDimensions();
         if not DimensionsCreated() then
@@ -1957,41 +1943,37 @@ Codeunit 4037 "Helper Functions"
         if not PaymentTermsCreated() then
             exit(false);
 
-        if GPCompanyAdditionalSettings.GetInventoryModuleEnabled() then begin
-            CreateItemTrackingCodes();
-            if not ItemTrackingCodesCreated() then
-                exit(false);
+        CreateItemTrackingCodes();
+        if not ItemTrackingCodesCreated() then
+            exit(false);
 
-            CreateLocations();
-            if not LocationsCreated() then
-                exit(false);
-        end;
+        CreateLocations();
+        if not LocationsCreated() then
+            exit(false);
 
         exit(true)
     end;
 
     procedure CreatePostMigrationData(): Boolean
-    var
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         // this procedure might run multiple times depending upon migration errors.
 
         if not FiscalPeriodsCreated() then
             CreateFiscalPeriods();
 
-        if GPCompanyAdditionalSettings.GetBankModuleEnabled() and not CheckBooksCreated() then
+        if not CheckBooksCreated() then
             CreateCheckbooks();
 
-        if GPCompanyAdditionalSettings.GetMigrateOpenPOs() and not OpenPurchaseOrdersCreated() then
+        if not OpenPurchaseOrdersCreated() then
             CreateOpenPOs();
 
-        if GPCompanyAdditionalSettings.GetPayablesModuleEnabled() and not VendorEFTBankAccountsCreated() then
+        if not VendorEFTBankAccountsCreated() then
             CreateVendorEFTBankAccounts();
 
-        if GPCompanyAdditionalSettings.GetMigrateVendorClasses() and not VendorClassesCreated() then
+        if not VendorClassesCreated() then
             CreateVendorClasses();
 
-        if GPCompanyAdditionalSettings.GetMigrateCustomerClasses() and not CustomerClassesCreated() then
+        if not CustomerClassesCreated() then
             CreateCustomerClasses();
 
         exit(GPConfiguration.IsAllPostMigrationDataCreated());

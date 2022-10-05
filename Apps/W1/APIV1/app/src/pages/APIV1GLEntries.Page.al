@@ -59,7 +59,9 @@ page 20018 "APIV1 - G/L Entries"
                 field(dimensions; DimensionsJSON)
                 {
                     Caption = 'dimensions', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'Collection(DIMENSION)';
+#pragma warning restore
                     ToolTip = 'Specifies Journal Line Dimensions.';
                 }
                 field(lastModifiedDateTime; "Last Modified DateTime")

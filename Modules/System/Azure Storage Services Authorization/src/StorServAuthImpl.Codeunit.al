@@ -38,11 +38,11 @@ codeunit 9063 "Stor. Serv. Auth. Impl."
     end;
 
     [NonDebuggable]
-    procedure SharedKey(SharedKey: Text; ApiVersion: Enum "Storage Service API Version"): Interface "Storage Service Authorization"
+    procedure SharedKey(SharedKeyToUse: Text; ApiVersion: Enum "Storage Service API Version"): Interface "Storage Service Authorization"
     var
         StorServAuthSharedKey: Codeunit "Stor. Serv. Auth. Shared Key";
     begin
-        StorServAuthSharedKey.SetSharedKey(SharedKey);
+        StorServAuthSharedKey.SetSharedKey(SharedKeyToUse);
         StorServAuthSharedKey.SetApiVersion(ApiVersion);
 
         exit(StorServAuthSharedKey);

@@ -8,6 +8,7 @@ pageextension 1700 SalesReceivablesSetupExt extends "Sales & Receivables Setup"
         {
             group("Bank Deposits")
             {
+                Caption = 'Bank Deposits';
                 field("Bank Deposit Nos."; "Bank Deposit Nos.")
                 {
                     ApplicationArea = Basic, Suite;

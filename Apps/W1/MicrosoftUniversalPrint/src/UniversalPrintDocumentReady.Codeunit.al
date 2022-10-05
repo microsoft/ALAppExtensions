@@ -17,8 +17,7 @@ codeunit 2751 "Universal Print Document Ready"
         PrinterName: Text[250];
         FileName: Text;
         DocumentType: Text;
-        DocumentTypeParts: List of [Text];
-        FileExtension: Text;
+        FileNameWithExtension: Text;
     begin
         // exit if handled already
         if Success then
@@ -34,24 +33,18 @@ codeunit 2751 "Universal Print Document Ready"
         if not UniversalPrinterSettings.Get(PrinterName) then
             exit;
 
-        FeatureTelemetry.LogUptake('0000GFX', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
-
         if ObjectPayload.Get('objectname', PropertyBag) then
             FileName := PropertyBag.AsValue().AsText();
-        if FileName = '' then
-            exit;
 
         if ObjectPayload.Get('documenttype', PropertyBag) then
             DocumentType := PropertyBag.AsValue().AsText();
-        if DocumentType = '' then
-            exit;
 
-        DocumentTypeParts := DocumentType.Split('/');
-        FileExtension := DocumentTypeParts.Get(DocumentTypeParts.Count());
-        Success := SendPrintJob(UniversalPrinterSettings, DocumentStream, FileName, FileExtension, DocumentType);
+        FileNameWithExtension := GetFileNameWithExtension(FileName, DocumentType);
+
+        Success := SendPrintJob(UniversalPrinterSettings, DocumentStream, FileNameWithExtension, DocumentType);
     end;
 
-    internal procedure SendPrintJob(UniversalPrinterSettings: Record "Universal Printer Settings"; DocumentInStream: InStream; FileName: Text; FileExtension: Text; DocumentType: Text): Boolean
+    procedure SendPrintJob(UniversalPrinterSettings: Record "Universal Printer Settings"; DocumentInStream: InStream; FileNameWithExtension: Text; DocumentType: Text): Boolean
     var
         UniversalPrinterSetup: Codeunit "Universal Printer Setup";
         TempBlob: Codeunit "Temp Blob";
@@ -62,8 +55,17 @@ codeunit 2751 "Universal Print Document Ready"
         ErrorMessage: Text;
         UploadUrl: Text;
         JobStateDescription: Text;
-        FileNameWithExtension: Text;
     begin
+        if UniversalPrinterSettings.IsEmpty() then
+            exit(false);
+
+        if DocumentType = '' then
+            exit(false);
+
+        if FileNameWithExtension = '' then
+            exit(false);
+
+        FeatureTelemetry.LogUptake('0000GFX', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
 
         // check if the printer is shared to user
         if not UniversalPrinterSetup.PrintShareExists(UniversalPrinterSettings."Print Share ID") then begin
@@ -95,7 +97,6 @@ codeunit 2751 "Universal Print Document Ready"
             exit(false);
         end;
 
-        FileNameWithExtension := FileName + '.' + FileExtension;
         // create an upload session
         if not UniversalPrintGraphHelper.CreateUploadSessionRequest(UniversalPrinterSettings."Print Share ID", FileNameWithExtension, DocumentType, Size, JobID, DocumentID, UploadUrl, ErrorMessage) then begin
             if GuiAllowed() then
@@ -128,6 +129,26 @@ codeunit 2751 "Universal Print Document Ready"
     local procedure MaximumRequestSizeInBytes(): Integer
     begin
         exit(10485760); // 10 MB
+    end;
+
+    local procedure GetFileNameWithExtension(FileName: Text; DocumentType: Text): Text
+    var
+        DocumentTypeParts: List of [Text];
+        FileExtension: Text;
+    begin
+        if FileName = '' then
+            exit;
+
+        if DocumentType = '' then
+            exit;
+
+        DocumentTypeParts := DocumentType.Split('/');
+        FileExtension := DocumentTypeParts.Get(DocumentTypeParts.Count());
+
+        if FileExtension = '' then
+            exit;
+
+        exit(FileName + '.' + FileExtension);
     end;
 
     var

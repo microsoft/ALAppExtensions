@@ -1,6 +1,7 @@
 {
     "id":  "16319982-4995-4fb1-8fb2-2b1e13773e3b",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "platform":  "21.0.0.0",
     "application":  "21.0.0.0",
     "version":  "21.1.0.0",
@@ -9,6 +10,11 @@
     "application":  "20.4.0.0",
     "version":  "20.4.0.0",
 >>>>>>> 44afd413 (Update to 20.4)
+=======
+    "platform":  "21.0.0.0",
+    "application":  "21.0.0.0",
+    "version":  "21.0.0.0",
+>>>>>>> 3f7fb5c3 (Update to 21.0 (#20524))
     "help":  "https://go.microsoft.com/fwlink/?linkid=2101583",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  false,

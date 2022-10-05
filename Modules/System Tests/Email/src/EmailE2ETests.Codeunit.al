@@ -228,7 +228,7 @@ codeunit 134692 "Email E2E Tests"
     var
         TempAccount: Record "Email Account" temporary;
         Outbox: Record "Email Outbox";
-        OutboxForUser: Record "Email Outbox" temporary;
+        TempOutboxForUser: Record "Email Outbox" temporary;
         ConnectorMock: Codeunit "Connector Mock";
         Message: Codeunit "Email Message";
         Editor: TestPage "Email Editor";
@@ -263,8 +263,8 @@ codeunit 134692 "Email E2E Tests"
         // [GIVEN] The draft email was opened from outbox and subject is changed
         Editor.Trap();
         OutboxPage.OpenView();
-        OutboxForUser.Transferfields(Outbox);
-        OutboxPage.GoToRecord(OutboxForUser);
+        TempOutboxForUser.Transferfields(Outbox);
+        OutboxPage.GoToRecord(TempOutboxForUser);
         OutboxPage.Desc.Drilldown();
         Editor.SubjectField.SetValue('Test Subject Changed');
 
@@ -390,7 +390,7 @@ codeunit 134692 "Email E2E Tests"
         TempAccount: Record "Email Account" temporary;
         SentEmail: Record "Sent Email";
         Outbox: Record "Email Outbox";
-        OutboxForUser: Record "Email Outbox" temporary;
+        TempOutboxForUser: Record "Email Outbox" temporary;
         ConnectorMock: Codeunit "Connector Mock";
         EmailMessage: Codeunit "Email Message";
         Editor: TestPage "Email Editor";
@@ -436,8 +436,8 @@ codeunit 134692 "Email E2E Tests"
         ConnectorMock.FailOnSend(false);
         Editor.Trap();
         OutboxPage.OpenView();
-        OutboxForUser.Transferfields(Outbox);
-        OutboxPage.GoToRecord(OutboxForUser);
+        TempOutboxForUser.Transferfields(Outbox);
+        OutboxPage.GoToRecord(TempOutboxForUser);
         OutboxPage.Desc.Drilldown();
 
         // [WHEN] The email is sent again
@@ -750,33 +750,41 @@ codeunit 134692 "Email E2E Tests"
     var
         TempAccount: Record "Email Account" temporary;
         SentEmail: Record "Sent Email";
+        RelatedRecord: Record "Email Related Record Test";
         Any: Codeunit Any;
         EmailMessage: Codeunit "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
         SentEmails: TestPage "Sent Emails";
         Recipient, Subject, Body : Text;
-        SourceTable: Integer;
-        SourceSystemID, EmailMessageWithSource, EmailMessageWithoutSource : Guid;
+        EmailMessageWithSource, EmailMessageWithoutSource : Guid;
     begin
         // [Scenario] Show sent emails page for emails related to a record
         // Initialize
+        PermissionsMock.Stop();
+
+        RelatedRecord.DeleteAll();
+        RemoveViewPolicies();
+        GiveUserViewAllPolicy();
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
 
-        PermissionsMock.Set('Email Edit');
-
-        // [Given] An email with a related record
+        // [Given] An email
         Recipient := Any.Email();
         Subject := Any.UnicodeText(50);
         Body := Any.UnicodeText(1024);
 
+        PermissionsMock.Start();
+        PermissionsMock.Set('Email Related Record');
+
         EmailMessage.Create(Recipient, Subject, Body, true);
-
-        SourceTable := 18;
-        SourceSystemID := CreateGuid();
-        Email.AddRelation(EmailMessage, SourceTable, SourceSystemID, Enum::"Email Relation Type"::"Related Entity", Enum::"Email Relation Origin"::"Compose Context");
-
         EmailMessageWithSource := EmailMessage.GetId();
+
+        // [Given] A related record for that email
+
+        RelatedRecord."No." := 1;
+        RelatedRecord.Insert();
+
+        Email.AddRelation(EmailMessage, Database::"Email Related Record Test", RelatedRecord.SystemId, Enum::"Email Relation Type"::"Related Entity", Enum::"Email Relation Origin"::"Compose Context");
 
         // [When] Sending the email with a related record
         Email.Send(EmailMessage, TempAccount."Account Id", TempAccount.Connector);
@@ -791,15 +799,19 @@ codeunit 134692 "Email E2E Tests"
         Assert.IsTrue(SentEmail.FindFirst(), 'A sent email record should have been created');
 
         SentEmails.Trap();
-        Email.OpenSentEmails(SourceTable, SourceSystemID);
+        Email.OpenSentEmails(Database::"Email Related Record Test", RelatedRecord.SystemId);
 
         // [Then] The email with source should appear on the sent emails page
+        SentEmails.Expand(true);
         Assert.IsTrue(SentEmails.GoToRecord(SentEmail), 'The sent email record should be present on the Sent Emails page');
 
         // [And] The email without source should not 
         SentEmail.SetRange("Message Id", EmailMessageWithoutSource);
         Assert.IsTrue(SentEmail.FindFirst(), 'A sent email record should have been created');
         Assert.IsFalse(SentEmails.GoToRecord(SentEmail), 'The sent email without email relation should not be listed');
+
+        SentEmail.DeleteAll();
+        PermissionsMock.Stop();
     end;
 
     [Test]
@@ -807,6 +819,7 @@ codeunit 134692 "Email E2E Tests"
     var
         TempAccount: Record "Email Account" temporary;
         SentEmail: Record "Sent Email";
+        RelatedRecord: Record "Email Related Record Test";
         Any: Codeunit Any;
         EmailMessage: Codeunit "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
@@ -817,28 +830,32 @@ codeunit 134692 "Email E2E Tests"
     begin
         // [Scenario] Show sent emails page for emails related to a record
         // Initialize
+        PermissionsMock.Stop();
+
+        RelatedRecord.DeleteAll();
+        RemoveViewPolicies();
+        GiveUserViewAllPolicy();
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
 
-        PermissionsMock.Set('Email Edit');
-
-        // [Given] An email with a related record
+        // [Given] An email
         Recipient := Any.Email();
         Subject := Any.UnicodeText(50);
         Body := Any.UnicodeText(1024);
 
+        PermissionsMock.Start();
+        PermissionsMock.Set('Email Related Record');
+
         EmailMessage.Create(Recipient, Subject, Body, true);
         EmailMessageWithSource := EmailMessage.GetId();
 
-        SentEmail.Id := 10000;
-        SentEmail."Message Id" := CreateGuid();
-        SentEmail."Account Id" := CreateGuid();
-        SentEmail."Date Time Sent" := CurrentDateTime();
-        SentEmail.Description := 'Test';
-        SentEmail.Insert();
-        RecordVariant := SentEmail;
+        // [Given] A related record for that email
 
-        Email.AddRelation(EmailMessage, Database::"Sent Email", SentEmail.SystemId, Enum::"Email Relation Type"::"Related Entity", Enum::"Email Relation Origin"::"Compose Context");
+        RelatedRecord."No." := 1;
+        RelatedRecord.Insert();
+        RecordVariant := RelatedRecord;
+
+        Email.AddRelation(EmailMessage, Database::"Email Related Record Test", RelatedRecord.SystemId, Enum::"Email Relation Type"::"Related Entity", Enum::"Email Relation Origin"::"Compose Context");
 
         // [When] Sending the email with a related record
         Email.Send(EmailMessage, TempAccount."Account Id", TempAccount.Connector);
@@ -856,6 +873,7 @@ codeunit 134692 "Email E2E Tests"
         Email.OpenSentEmails(RecordVariant);
 
         // [Then] The email with source should appear on the sent emails page
+        SentEmails.Expand(true);
         Assert.IsTrue(SentEmails.GoToRecord(SentEmail), 'The sent email record should be present on the Sent Emails page');
 
         // [And] The email without source should not 
@@ -864,6 +882,7 @@ codeunit 134692 "Email E2E Tests"
         Assert.IsFalse(SentEmails.GoToRecord(SentEmail), 'The sent email without email relation should not be listed');
 
         SentEmail.DeleteAll();
+        PermissionsMock.Stop();
     end;
 
     local procedure GiveUserViewAllPolicy()

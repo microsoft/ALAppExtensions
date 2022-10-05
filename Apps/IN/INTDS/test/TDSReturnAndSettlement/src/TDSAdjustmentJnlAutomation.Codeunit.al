@@ -433,6 +433,7 @@ codeunit 18797 "TDS Adjustment Jnl Automation"
         TransactionDirection: Option " ",Debit,Credit,Both;
         AccountNo: Code[20];
     begin
+        AccountNo := '';
         LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
         GenJournalTemplate.Validate(Type, VoucherType);
         GenJournalTemplate.Modify(true);

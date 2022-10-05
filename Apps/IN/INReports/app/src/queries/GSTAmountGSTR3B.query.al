@@ -83,6 +83,9 @@ query 18040 "GST Amount GSTR3B"
                 filter(Component_Calc__Type; "Component Calc. Type")
                 {
                 }
+                filter(e_Comm__Merchant_Id; "e-Comm. Merchant Id")
+                {
+                }
             }
         }
     }

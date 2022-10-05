@@ -104,32 +104,14 @@ table 4024 "GP Configuration"
     end;
 
     procedure IsAllPostMigrationDataCreated(): Boolean
-    var
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
-        if not "Fiscal Periods Created" then
-            exit(false);
-
-        if not "CheckBooks Created" then
-            if GPCompanyAdditionalSettings.GetBankModuleEnabled() then
-                exit(false);
-
-        if not "Open Purchase Orders Created" then
-            if GPCompanyAdditionalSettings.GetMigrateOpenPOs() then
-                exit(false);
-
-        if not "Vendor EFT Bank Acc. Created" then
-            if GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
-                exit(false);
-
-        if not "Vendor Classes Created" then
-            if GPCompanyAdditionalSettings.GetMigrateVendorClasses() then
-                exit(false);
-
-        if not "Customer Classes Created" then
-            if GPCompanyAdditionalSettings.GetMigrateCustomerClasses() then
-                exit(false);
-
-        exit(true);
+        exit(
+                "CheckBooks Created" and
+                "Open Purchase Orders Created" and
+                "Fiscal Periods Created" and
+                "Vendor EFT Bank Acc. Created" and
+                "Vendor Classes Created" and
+                "Customer Classes Created"
+            );
     end;
 }

@@ -40,7 +40,7 @@ codeunit 18143 "GST Sales Validation"
         SalesHeader := VariantRec;
     end;
 
-#if not CLEAN20      
+#if not CLEAN20
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnBeforeUpdateLocationCode', '', false, false)]
     [Obsolete('Not actual after Non Inventoriable Item refactoring', '20.0')]
     local procedure HandledOnBeforeUpdateLocationCode(var SalesLine: Record "Sales Line"; var IsHandled: Boolean)
@@ -610,6 +610,46 @@ codeunit 18143 "GST Sales Validation"
     local procedure OnAfterAppliesToDocNoOnLookup(var SalesHeader: Record "Sales Header"; CustLedgerEntry: Record "Cust. Ledger Entry")
     begin
         ValidateGSTGroupCodeonSalesLines(SalesHeader, CustLedgerEntry);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales line", 'OnAfterValidateEvent', 'Quantity', false, false)]
+    local procedure OnAfterValidateQuantity(var Rec: Record "Sales Line")
+    begin
+        OnQuantityChangeValidation(Rec);
+    end;
+
+    local procedure OnQuantityChangeValidation(var SalesLine: Record "Sales Line")
+    var
+        SalesHeader: Record "Sales Header";
+        ShipToAddress: Record "Ship-to Address";
+    begin
+        if (SalesLine."GST Group Code" = '') or (SalesLine."HSN/SAC Code" = '') then
+            exit;
+
+        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
+        SalesHeader.TestField("POS Out Of India", false);
+
+        if SalesLine."GST Place Of Supply" = SalesLine."GST Place Of Supply"::"Ship-to Address" then begin
+            if (SalesHeader."Ship-to Code" = '') and (SalesHeader."Ship-to Customer" = '') then
+                error(GSTPlaceOfSupplyErr);
+
+            SalesHeader.TestField("POS Out Of India", false);
+            if SalesHeader."Ship-to GST Reg. No." = '' then
+                if ShipToAddress.Get(SalesLine."Sell-to Customer No.", SalesHeader."Ship-to Code") then
+                    if not (SalesHeader."GST Customer Type" in [SalesHeader."GST Customer Type"::Unregistered, SalesHeader."GST Customer Type"::Export]) then
+                        if ShipToAddress."ARN No." = '' then
+                            Error(ShipToGSTARNErr);
+        end;
+
+        if SalesLine."Document Type" In [SalesLine."Document Type"::Invoice,
+            SalesLine."Document Type"::"Credit Memo",
+            SalesLine."Document Type"::Order,
+            SalesLine."Document Type"::"Return Order"]
+        then
+            ReferenceInvoiceNoValidation(SalesHeader);
+
+        UpdateStateCode(SalesHeader, SalesLine);
+        UpdateGSTJurisdictionType(SalesLine);
     end;
 
     local procedure ValidateGSTGroupCodeonSalesLines(var SalesHeader: Record "Sales Header"; CustLedgerEntry: Record "Cust. Ledger Entry")

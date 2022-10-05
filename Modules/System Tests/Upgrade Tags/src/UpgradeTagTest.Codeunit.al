@@ -12,6 +12,7 @@ codeunit 135092 "Upgrade Tag Test"
 
     var
         PermissionsMock: Codeunit "Permissions Mock";
+        ExpectedUpgradeTagErr: Label 'Have not found the expected upgrade tags. Upgrade tag - %1', Locked = true;
 
     [Test]
     [Scope('OnPrem')]
@@ -415,7 +416,7 @@ codeunit 135092 "Upgrade Tag Test"
         CurrentTag: Code[250];
     begin
         foreach CurrentTag in ExpectedUpgradeTags do
-            Assert.IsTrue(UpgradeTag.HasUpgradeTag(CurrentTag), StrSubstNo('Have not found the expected upgrade tags. Upgrade tag - %1', CurrentTag));
+            Assert.IsTrue(UpgradeTag.HasUpgradeTag(CurrentTag), StrSubstNo(ExpectedUpgradeTagErr, CurrentTag));
     end;
 
     local procedure VerifyUpgradeTagsPerDatabaseAreRegistered(ExpectedUpgradeTags: List of [Code[250]])
@@ -425,7 +426,7 @@ codeunit 135092 "Upgrade Tag Test"
         CurrentTag: Code[250];
     begin
         foreach CurrentTag in ExpectedUpgradeTags do
-            Assert.IsTrue(UpgradeTag.HasUpgradeTag(CurrentTag, ''), StrSubstNo('Have not found the expected upgrade tags. Upgrade tag - %1', CurrentTag));
+            Assert.IsTrue(UpgradeTag.HasUpgradeTag(CurrentTag, ''), StrSubstNo(ExpectedUpgradeTagErr, CurrentTag));
     end;
 }
 

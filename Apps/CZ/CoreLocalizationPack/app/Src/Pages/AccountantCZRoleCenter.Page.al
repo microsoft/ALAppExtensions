@@ -63,11 +63,16 @@ page 31210 "Accountant CZ Role Center CZL"
                 AccessByPermission = TableData "Report Inbox" = IMD;
                 ApplicationArea = Basic, Suite;
             }
+#if not CLEAN21
             part("Power BI Report Spinner Part"; "Power BI Report Spinner Part")
             {
                 ApplicationArea = Basic, Suite;
                 Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'This page has been replaced by page 6325 Power BI Embedded Report';
+                ObsoleteTag = '21.0';
             }
+#endif
             systempart(MyNotes; MyNotes)
             {
                 ApplicationArea = Basic, Suite;

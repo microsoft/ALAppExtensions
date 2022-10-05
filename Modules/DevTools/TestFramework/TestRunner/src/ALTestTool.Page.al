@@ -23,30 +23,85 @@ page 130451 "AL Test Tool"
     {
         area(content)
         {
-            field(CurrentSuiteName; CurrentSuiteName)
+            group(Settings)
             {
-                ApplicationArea = All;
-                Caption = 'Suite Name';
-                ToolTip = 'Specifies the currently selected Test Suite';
+                ShowCaption = false;
+                field(CurrentSuiteName; CurrentSuiteName)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Suite Name';
+                    ToolTip = 'Specifies the currently selected Test Suite';
 
-                trigger OnLookup(var Text: Text): Boolean
-                var
-                    ALTestSuite: Record "AL Test Suite";
-                begin
-                    ALTestSuite.Name := CurrentSuiteName;
-                    if PAGE.RunModal(0, ALTestSuite) <> ACTION::LookupOK then
-                        exit(false);
+                    trigger OnLookup(var Text: Text): Boolean
+                    var
+                        ALTestSuite: Record "AL Test Suite";
+                    begin
+                        ALTestSuite.Name := CurrentSuiteName;
+                        if PAGE.RunModal(0, ALTestSuite) <> ACTION::LookupOK then
+                            exit(false);
 
-                    Text := ALTestSuite.Name;
-                    CurrPage.Update(false);
-                    exit(true);
-                end;
+                        Text := ALTestSuite.Name;
+                        CurrPage.Update(false);
+                        exit(true);
+                    end;
 
-                trigger OnValidate()
-                begin
-                    ChangeTestSuite();
-                end;
+                    trigger OnValidate()
+                    begin
+                        ChangeTestSuite();
+                    end;
+                }
+
+                field(TestRunner; TestRunnerDisplayName)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Test Runner Codeunit';
+                    Editable = false;
+                    ToolTip = 'Specifies currently selected test runner';
+
+                    trigger OnDrillDown()
+                    begin
+                        // Used to fix the rendering - don't show as a box
+                        Error('');
+                    end;
+
+                    trigger OnAssistEdit()
+                    var
+                        TestSuiteMgt: Codeunit "Test Suite Mgt.";
+                    begin
+                        TestSuiteMgt.LookupTestRunner(GlobalALTestSuite);
+                        TestRunnerDisplayName := TestSuiteMgt.GetTestRunnerDisplayName(GlobalALTestSuite);
+                    end;
+                }
+
+                field(CodeCoverageTrackingType; GlobalALTestSuite."CC Tracking Type")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Code Coverage Tracking';
+                    ToolTip = 'Specifies how the code coverage should be tracked';
+
+                    trigger OnValidate()
+                    var
+                        TestSuiteMgt: Codeunit "Test Suite Mgt.";
+                    begin
+                        TestSuiteMgt.UpdateCodeCoverageTrackingType(GlobalALTestSuite);
+                    end;
+                }
+
+                field(CodeCoverageTrackAllSesssions; GlobalALTestSuite."CC Track All Sessions")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Code Coverage Track All Sessions';
+                    ToolTip = 'Specifies should all seesions be tracked';
+
+                    trigger OnValidate()
+                    var
+                        TestSuiteMgt: Codeunit "Test Suite Mgt.";
+                    begin
+                        TestSuiteMgt.UpdateCodeCoverageTrackAllSesssions(GlobalALTestSuite);
+                    end;
+                }
             }
+
             repeater(Control1)
             {
                 IndentationColumn = NameIndent;
@@ -161,24 +216,17 @@ page 130451 "AL Test Tool"
                     ToolTip = 'Specifies the number of Tests Not Executed';
                 }
             }
+
+#if not CLEAN21
             group(Control13)
             {
                 ShowCaption = false;
-                field(TestRunner; TestRunnerDisplayName)
-                {
-                    ApplicationArea = All;
-                    Caption = 'Test Runner Codeunit';
-                    Editable = false;
-                    Enabled = false;
-                    ToolTip = 'Specifies currently selected test runner';
-
-                    trigger OnDrillDown()
-                    begin
-                        // Used to fix the rendering - don't show as a box
-                        Error('');
-                    end;
-                }
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Group will be deleted, control was moved to the top of the page.';
+                ObsoleteTag = '21.0';
             }
+#endif
         }
     }
 
@@ -333,6 +381,19 @@ page 130451 "AL Test Tool"
                         InvertRunSelection();
                     end;
                 }
+
+                action(CodeCoverage)
+                {
+                    ApplicationArea = All;
+                    Caption = '&Code Coverage';
+                    Image = CheckRulesSyntax;
+                    Promoted = true;
+                    PromotedCategory = Process;
+                    PromotedIsBig = true;
+                    PromotedOnly = true;
+                    RunObject = Page "AL Code Coverage";
+                    ToolTip = 'Specifies the action for invoking Code Coverage page';
+                }
             }
             group("Test Suite")
             {
@@ -342,6 +403,7 @@ page 130451 "AL Test Tool"
                     ApplicationArea = All;
                     Caption = 'Select Test R&unner';
                     Image = SetupList;
+                    Visible = false;
                     Promoted = true;
                     PromotedCategory = Process;
                     PromotedIsBig = true;

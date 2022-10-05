@@ -22,6 +22,7 @@ page 2027 "Image Analysis Blacklist"
                     ApplicationArea = Basic, Suite;
                     Editable = false;
                     Enabled = false;
+                    ToolTip = 'Specifies the item code.';
                 }
             }
         }

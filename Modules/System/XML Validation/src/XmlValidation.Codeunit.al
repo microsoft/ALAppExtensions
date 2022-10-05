@@ -42,12 +42,84 @@ codeunit 6240 "Xml Validation"
     /// <summary>
     /// Performs validation of a XmlDocument against a schema in a stream.
     /// </summary>
-    /// <param name="XmlDocStream">InStream holding the xml document to validate.</param>
-    /// <param name="XmlSchemaStream">InStream holding the schema to validate against.</param>
+    /// <param name="XmlDocInStream">InStream holding the xml document to validate.</param>
+    /// <param name="XmlSchemaInStream">InStream holding the schema to validate against.</param>
     /// <param name="Namespace">Namespace of the xml schema.</param>
     [TryFunction]
-    procedure TryValidateAgainstSchema(XmlDocStream: InStream; XmlSchemaStream: InStream; Namespace: Text)
+    procedure TryValidateAgainstSchema(XmlDocInStream: InStream; XmlSchemaInStream: InStream; Namespace: Text)
     begin
-        XmlValidationImpl.ValidateAgainstSchema(XmlDocStream, XmlSchemaStream, Namespace);
+        XmlValidationImpl.ValidateAgainstSchema(XmlDocInStream, XmlSchemaInStream, Namespace);
+    end;
+
+    /// <summary>
+    /// Sets validated document from a string.
+    /// </summary>
+    /// <param name="Xml">Xml string to validate.</param>
+    [TryFunction]
+    procedure TrySetValidatedDocument(Xml: Text)
+    begin
+        XmlValidationImpl.SetValidatedDocument(Xml);
+    end;
+
+    /// <summary>
+    /// Sets validated document in a XmlDocument.
+    /// </summary>
+    /// <param name="XmlDoc">Xml document to validate.</param>
+    [TryFunction]
+    procedure TrySetValidatedDocument(XmlDoc: XmlDocument)
+    begin
+        XmlValidationImpl.SetValidatedDocument(XmlDoc);
+    end;
+
+    /// <summary>
+    /// Sets validated document from a stream.
+    /// </summary>
+    /// <param name="XmlDocInStream">InStream holding the XML document to validate.</param>
+    [TryFunction]
+    procedure TrySetValidatedDocument(XmlDocInStream: InStream)
+    begin
+        XmlValidationImpl.SetValidatedDocument(XmlDocInStream);
+    end;
+
+    /// <summary>
+    /// Adds validation schema to validated document from a string.
+    /// </summary>
+    /// <param name="XmlSchema">Xml schema string to validate against.</param>
+    /// <param name="Namespace">Namespace of the XML schema.</param>
+    [TryFunction]
+    procedure TryAddValidationSchema(Xml: Text; Namespace: Text)
+    begin
+        XmlValidationImpl.AddValidationSchema(Xml, NameSpace);
+    end;
+
+    /// <summary>
+    /// Adds validation schema to validated document in a XmlDocument.
+    /// </summary>
+    /// <param name="XmlSchemaDoc">Xml document with the schema to validate against.</param>
+    /// <param name="Namespace">Namespace of the XML schema.</param>
+    [TryFunction]
+    procedure TryAddValidationSchema(XmlSchemaDoc: XmlDocument; Namespace: Text)
+    begin
+        XmlValidationImpl.AddValidationSchema(XmlSchemaDoc, NameSpace);
+    end;
+
+    /// <summary>
+    /// Adds validation schema to validated document from a stream.
+    /// </summary>
+    /// <param name="XmlSchemaInStream">InStream holding the XSD schema to validate against.</param>
+    /// <param name="Namespace">Namespace of the XML schema.</param>
+    [TryFunction]
+    procedure TryAddValidationSchema(XmlSchemaInStream: InStream; Namespace: Text)
+    begin
+        XmlValidationImpl.AddValidationSchema(XmlSchemaInStream, NameSpace);
+    end;
+
+    /// <summary>
+    /// Performs validation of a XML document against one or multiple XSD schemas.
+    /// </summary>
+    [TryFunction]
+    procedure TryValidateAgainstSchema()
+    begin
+        XmlValidationImpl.ValidateAgainstSchema();
     end;
 }

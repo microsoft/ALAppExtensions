@@ -85,7 +85,7 @@ codeunit 139540 "Sales Forecast Tests"
 
         // [Given] Purchase invoice page is opened with the purchase header
         PurchaseInvoice.Trap();
-        DocumentTypeInt := PurchaseHeader."Document Type";
+        DocumentTypeInt := PurchaseHeader."Document Type".AsInteger();
         PurchaseHeaderDocumentType := Format(DocumentTypeInt);
         PurchaseHeaderNum := PurchaseHeader."No.";
 
@@ -881,7 +881,7 @@ codeunit 139540 "Sales Forecast Tests"
 
         // [Given] Purchase invoice page is opened with the purchase header
         PurchaseInvoice.Trap();
-        DocumentTypeInt := PurchaseHeader."Document Type";
+        DocumentTypeInt := PurchaseHeader."Document Type".AsInteger();
         PurchaseHeaderDocumentType := Format(DocumentTypeInt);
         PurchaseHeaderNum := PurchaseHeader."No.";
 
@@ -919,10 +919,10 @@ codeunit 139540 "Sales Forecast Tests"
         JobQueueEntry.DeleteAll();
     end;
 
-    local procedure CreateItemForVendor(VendorNo: Code[20]; var Item: Record Item);
+    local procedure CreateItemForVendor(RelatedVendorNo: Code[20]; var Item: Record Item);
     begin
         LibraryInventory.CreateItem(Item);
-        Item.Validate("Vendor No.", VendorNo);
+        Item.Validate("Vendor No.", RelatedVendorNo);
         Item.Modify(true);
     end;
 

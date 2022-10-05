@@ -12,13 +12,13 @@ pageextension 1854 ItemCardForecastExtension extends "Item Card"
             part(ItemForecast; "Sales Forecast")
             {
                 ApplicationArea = Basic, Suite;
-                SubPageLink = "No." = Field ("No.");
+                SubPageLink = "No." = Field("No.");
                 Visible = "Has Sales Forecast";
             }
             part(ItemForecastNoChart; "Sales Forecast No Chart")
             {
                 ApplicationArea = Basic, Suite;
-                SubPageLink = "No." = Field ("No.");
+                SubPageLink = "No." = Field("No.");
                 Visible = not "Has Sales Forecast";
             }
         }
@@ -35,6 +35,7 @@ pageextension 1854 ItemCardForecastExtension extends "Item Card"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Update Sales Forecast';
                     Image = Campaign;
+                    ToolTip = 'Specifies to update the sales forecast.';
 
                     trigger OnAction();
                     var

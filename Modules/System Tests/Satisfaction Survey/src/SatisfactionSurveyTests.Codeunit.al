@@ -609,14 +609,6 @@ codeunit 138074 "Satisfaction Survey Tests"
         VerifySurveyActivated(Result);
     end;
 
-    local procedure DeactivateSurvey()
-    var
-        Result: Boolean;
-    begin
-        Result := SatisfactionSurveyMgt.DeactivateSurvey();
-        VerifySurveyDeactivated(Result);
-    end;
-
     local procedure ResetState()
     var
         Result: Boolean;

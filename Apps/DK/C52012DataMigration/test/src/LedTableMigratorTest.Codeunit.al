@@ -68,13 +68,13 @@ codeunit 148002 "C5 LedTable Migrator Test"
                 C5LedTable.AccountType::"Balance a/c",
                 C5LedTable.AccountType::"P/L a/c",
                 C5LedTable.AccountType::Empty:
-                    ExpectedAccountType := GLAccount."Account Type"::Posting;
+                    ExpectedAccountType := GLAccount."Account Type"::Posting.AsInteger();
                 C5LedTable.AccountType::"Counter total",
                 C5LedTable.AccountType::"Heading total":
-                    ExpectedAccountType := GLAccount."Account Type"::Total;
+                    ExpectedAccountType := GLAccount."Account Type"::Total.AsInteger();
                 C5LedTable.AccountType::Heading,
                 C5LedTable.AccountType::"New page":
-                    ExpectedAccountType := GLAccount."Account Type"::Heading;
+                    ExpectedAccountType := GLAccount."Account Type"::Heading.AsInteger();
             end;
             Assert.AreEqual(ExpectedAccountType, GLAccount."Account Type",
                 StrSubstNo('Account Type was different than expected'));
@@ -157,8 +157,8 @@ codeunit 148002 "C5 LedTable Migrator Test"
     var
         C5LedTableMigrator: Codeunit "C5 LedTable Migrator";
     begin
-        C5LedTableMigrator.OnMigrateGlAccount(GLAccDataMigrationFacade, C5LedTable.RecordId());
-        C5LedTableMigrator.OnMigrateGlAccountDimensions(GLAccDataMigrationFacade, C5LedTable.RecordId());
+        C5LedTableMigrator.MigrateGlAccount(GLAccDataMigrationFacade, C5LedTable.RecordId());
+        C5LedTableMigrator.MigrateGlAccountDimensions(GLAccDataMigrationFacade, C5LedTable.RecordId());
     end;
 
     local procedure CreateLedTableEntries(var C5LedTable: Record "C5 LedTable")

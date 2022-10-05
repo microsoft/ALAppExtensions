@@ -285,16 +285,17 @@ table 11021 "Sales VAT Advance Notif."
         NoSeriesMgt: Codeunit NoSeriesManagement;
         FeatureTelemetry: Codeunit "Feature Telemetry";
         ElecVATAdvanceNotTok: Label 'DE Elec. VAT Advance Notifications', Locked = true;
-        WrongPlaceErr: Label 'Places of %1 in area %2 must be %3.';
+        WrongPlaceErr: Label 'Places of %1 in area %2 must be %3.', Comment = '%1 = Registration No. Field Caption; %2 = Tax Office Area; %3 = VAT No.';
         MustSpecStartingDateErr: Label 'You must specify a beginning of a month as starting date of the statement period.';
         StartingDateErr: Label 'The starting date is not the first date of a quarter.';
-        DeleteXMLFileQst: Label 'Do you want to delete the XML-File for the %1?';
+        DeleteXMLFileQst: Label 'Do you want to delete the XML-File for the %1?', Comment = '%1 = Sales VAT Advance Notif. Table Caption';
         CreateXMLBeforeShowErr: Label 'You must create the XML-File before it can be shown.';
-        CannotChangeXMLFileErr: Label 'You cannot change the value of this field anymore after the XML-File for the %1 has been created.';
+        CannotChangeXMLFileErr: Label 'You cannot change the value of this field anymore after the XML-File for the %1 has been created.', Comment = '%1 = Sales VAT Advance Notif. Table Caption';
         XmlFilterTxt: Label 'XML File(*.xml)|*.xml', Locked = true;
         ElsterTok: Label 'ElsterTelemetryCategoryTok', Locked = true;
         DeleteXMLFileMsg: Label 'Deleting XML file', Locked = true;
         DeleteXMLFileSuccessMsg: Label 'XML file deleted successfully', Locked = true;
+        XMLFileNameTxt: Label '%1_%2.xml', Locked = true;
         TotalAmount: Decimal;
         TotalBase: Decimal;
         TotalUnrealizedAmount: Decimal;
@@ -369,7 +370,7 @@ table 11021 "Sales VAT Advance Notif."
     begin
         ElecVATDeclSetup.Get();
 
-        FileName := StrSubstNo('%1_%2.xml', ElecVATDeclSetup."XML File Default Name", Description);
+        FileName := StrSubstNo(XMLFileNameTxt, ElecVATDeclSetup."XML File Default Name", Description);
 
         Download(SourceFile, '', ElecVATDeclSetup."Sales VAT Adv. Notif. Path", XmlFilterTxt, FileName);
     end;

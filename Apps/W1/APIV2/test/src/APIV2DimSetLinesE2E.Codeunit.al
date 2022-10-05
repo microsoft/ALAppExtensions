@@ -1621,7 +1621,9 @@ codeunit 139825 "APIV2 - Dim. Set Lines E2E"
         SalesInvoiceLine: Record "Sales Invoice Line";
     begin
         SalesInvoiceLine.SetRange("Document No.", DocumentNo);
+#pragma warning disable AA0210
         SalesInvoiceLine.SetRange("No.", SalesLine."No.");
+#pragma warning restore
         SalesInvoiceLine.FindFirst();
 
         GLEntry.SetRange("Document No.", DocumentNo);

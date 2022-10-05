@@ -5097,7 +5097,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!VATClauseDescription.Value &amp; " " &amp; Fields!VATClauseDescription2.Value</Value>
+                                                    <Value>=Fields!VATClauseDescription.Value</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                     </Style>
@@ -6144,7 +6144,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                               <Top>22.02103cm</Top>
                               <Left>0.00003cm</Left>
                               <Height>0.42333cm</Height>
-                              <Width>17.80793cm</Width>
+                              <Width>17.80794cm</Width>
                               <ZIndex>6</ZIndex>
                               <Style>
                                 <Border>
@@ -6684,6 +6684,18 @@ End Function</Code>
         <Field Name="DisplayAdditionalFeeNote">
           <DataField>DisplayAdditionalFeeNote</DataField>
         </Field>
+        <Field Name="GreetingLbl">
+          <DataField>GreetingLbl</DataField>
+        </Field>
+        <Field Name="BodyLbl">
+          <DataField>BodyLbl</DataField>
+        </Field>
+        <Field Name="ClosingLbl">
+          <DataField>ClosingLbl</DataField>
+        </Field>
+        <Field Name="DocumentNoLbl">
+          <DataField>DocumentNoLbl</DataField>
+        </Field>
         <Field Name="No_SalesInvoiceHeader">
           <DataField>No_SalesInvoiceHeader</DataField>
         </Field>
@@ -6998,9 +7010,6 @@ End Function</Code>
         </Field>
         <Field Name="VATClauseDescription">
           <DataField>VATClauseDescription</DataField>
-        </Field>
-        <Field Name="VATClauseDescription2">
-          <DataField>VATClauseDescription2</DataField>
         </Field>
         <Field Name="LineFeeCaptionLbl">
           <DataField>LineFeeCaptionLbl</DataField>

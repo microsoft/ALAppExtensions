@@ -3,8 +3,8 @@ report 31027 "Purch. Adv. Letters Recap. CZZ"
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = Basic, Suite;
     Caption = 'Purch. Advance Letters Recapitulation';
-    RDLCLayout = './Src/Reports/PurchAdvLettersRecap.rdl';
     DefaultLayout = RDLC;
+    RDLCLayout = './Src/Reports/PurchAdvLettersRecap.rdl';
 
     dataset
     {

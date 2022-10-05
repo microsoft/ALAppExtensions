@@ -11,6 +11,7 @@ page 30107 "Shpfy Customers"
     PageType = List;
     SourceTable = "Shpfy Customer";
     UsageCategory = Lists;
+    PromotedActionCategories = 'New,Process,Related,Customer';
 
     layout
     {
@@ -105,6 +106,7 @@ page 30107 "Shpfy Customers"
                 Image = Customer;
                 Promoted = true;
                 PromotedOnly = true;
+                PromotedCategory = Category4;
                 ToolTip = 'View or edit detailed information about the customer.';
 
                 trigger OnAction()
@@ -125,6 +127,7 @@ page 30107 "Shpfy Customers"
                 Image = OrderList;
                 Promoted = true;
                 PromotedOnly = true;
+                PromotedCategory = Category4;
                 RunObject = Page "Shpfy Orders";
                 RunPageLink = "Customer Id" = Field(Id);
                 ToolTip = 'View a list of Shopify orders for the customer.';
@@ -140,7 +143,8 @@ page 30107 "Shpfy Customers"
                 Image = ImportExport;
                 Promoted = true;
                 PromotedOnly = true;
-                ToolTip = 'Synchronize the customers from Shopify. The way customers are imported depends on the settings in the Shopify Shop Card.';
+                PromotedCategory = Process;
+                ToolTip = 'Synchronize the customers with Shopify. The way customers are imported depends on the settings in the Shopify Shop Card.';
 
                 trigger OnAction()
                 var

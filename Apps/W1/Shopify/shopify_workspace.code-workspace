@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"name": "System",
+			"path": "..\\..\\..\\Modules\\System"
+		},
+		{
+			"name": "BaseApp",
+			"path": "..\\..\\..\\Layers\\W1\\BaseApp"
+		},
+		{
+			"name": "Application",
+			"path": "..\\..\\..\\Layers\\W1\\Application"
+		},
+		{
+			"name": "app",
+			"path": "app"
+		},
+		{
+			"name": "test",
+			"path": "test"
+		}
+	]
+}

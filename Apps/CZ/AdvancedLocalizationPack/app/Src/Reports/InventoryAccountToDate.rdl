@@ -11,112 +11,6 @@
       <rd:DataSourceID>c396a512-e01c-4416-83e6-146281d0d75b</rd:DataSourceID>
     </DataSource>
   </DataSources>
-  <DataSets>
-    <DataSet Name="DataSet_Result">
-      <Query>
-        <DataSourceName>DataSource</DataSourceName>
-        <CommandText />
-      </Query>
-      <Fields>
-        <Field Name="PeriodGLDtFilter">
-          <DataField>PeriodGLDtFilter</DataField>
-        </Field>
-        <Field Name="CompanyName">
-          <DataField>CompanyName</DataField>
-        </Field>
-        <Field Name="PageGroupNo">
-          <DataField>PageGroupNo</DataField>
-        </Field>
-        <Field Name="GLAccTableCaption">
-          <DataField>GLAccTableCaption</DataField>
-        </Field>
-        <Field Name="GLFilter">
-          <DataField>GLFilter</DataField>
-        </Field>
-        <Field Name="No_GLAcc">
-          <DataField>No_GLAcc</DataField>
-        </Field>
-        <Field Name="Dim1Caption">
-          <DataField>Dim1Caption</DataField>
-        </Field>
-        <Field Name="Dim2Caption">
-          <DataField>Dim2Caption</DataField>
-        </Field>
-        <Field Name="Name_GLAcc">
-          <DataField>Name_GLAcc</DataField>
-        </Field>
-        <Field Name="Amount_GLE">
-          <DataField>Amount_GLE</DataField>
-        </Field>
-        <Field Name="Amount_GLEFormat">
-          <DataField>Amount_GLEFormat</DataField>
-        </Field>
-        <Field Name="RemainingAmount_GLE">
-          <DataField>RemainingAmount_GLE</DataField>
-        </Field>
-        <Field Name="RemainingAmount_GLEFormat">
-          <DataField>RemainingAmount_GLEFormat</DataField>
-        </Field>
-        <Field Name="AppliedAmount_GLE">
-          <DataField>AppliedAmount_GLE</DataField>
-        </Field>
-        <Field Name="AppliedAmount_GLEFormat">
-          <DataField>AppliedAmount_GLEFormat</DataField>
-        </Field>
-        <Field Name="PostingDate_GLE">
-          <DataField>PostingDate_GLE</DataField>
-        </Field>
-        <Field Name="DocumentType_GLE">
-          <DataField>DocumentType_GLE</DataField>
-        </Field>
-        <Field Name="DocumentNo_GLE">
-          <DataField>DocumentNo_GLE</DataField>
-        </Field>
-        <Field Name="Description_GLE">
-          <DataField>Description_GLE</DataField>
-        </Field>
-        <Field Name="Glob1Dim_GLE">
-          <DataField>Glob1Dim_GLE</DataField>
-        </Field>
-        <Field Name="Glob2Dim_GLE">
-          <DataField>Glob2Dim_GLE</DataField>
-        </Field>
-        <Field Name="EntryNo_AGLE">
-          <DataField>EntryNo_AGLE</DataField>
-        </Field>
-        <Field Name="AppliedAmount_AGLE">
-          <DataField>AppliedAmount_AGLE</DataField>
-        </Field>
-        <Field Name="AppliedAmount_AGLEFormat">
-          <DataField>AppliedAmount_AGLEFormat</DataField>
-        </Field>
-        <Field Name="PostingDate_AGLE">
-          <DataField>PostingDate_AGLE</DataField>
-        </Field>
-        <Field Name="DocumentType_AGLE">
-          <DataField>DocumentType_AGLE</DataField>
-        </Field>
-        <Field Name="DocumentNo_AGLE">
-          <DataField>DocumentNo_AGLE</DataField>
-        </Field>
-        <Field Name="Description_AGLE">
-          <DataField>Description_AGLE</DataField>
-        </Field>
-        <Field Name="Glob1Dim_AGLE">
-          <DataField>Glob1Dim_AGLE</DataField>
-        </Field>
-        <Field Name="Glob2Dim_AGLE">
-          <DataField>Glob2Dim_AGLE</DataField>
-        </Field>
-        <Field Name="RepCount_AGLE">
-          <DataField>RepCount_AGLE</DataField>
-        </Field>
-        <Field Name="Name1_GLEntry">
-          <DataField>Name1_GLEntry</DataField>
-        </Field>
-      </Fields>
-    </DataSet>
-  </DataSets>
   <ReportSections>
     <ReportSection>
       <Body>
@@ -1725,4 +1619,110 @@ End Function
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Cm</rd:ReportUnitType>
   <rd:ReportID>62e8f68c-8a67-4807-9608-4433fc5e1619</rd:ReportID>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="PeriodGLDtFilter">
+          <DataField>PeriodGLDtFilter</DataField>
+        </Field>
+        <Field Name="CompanyName">
+          <DataField>CompanyName</DataField>
+        </Field>
+        <Field Name="PageGroupNo">
+          <DataField>PageGroupNo</DataField>
+        </Field>
+        <Field Name="GLAccTableCaption">
+          <DataField>GLAccTableCaption</DataField>
+        </Field>
+        <Field Name="GLFilter">
+          <DataField>GLFilter</DataField>
+        </Field>
+        <Field Name="No_GLAcc">
+          <DataField>No_GLAcc</DataField>
+        </Field>
+        <Field Name="Dim1Caption">
+          <DataField>Dim1Caption</DataField>
+        </Field>
+        <Field Name="Dim2Caption">
+          <DataField>Dim2Caption</DataField>
+        </Field>
+        <Field Name="Name_GLAcc">
+          <DataField>Name_GLAcc</DataField>
+        </Field>
+        <Field Name="Amount_GLE">
+          <DataField>Amount_GLE</DataField>
+        </Field>
+        <Field Name="Amount_GLEFormat">
+          <DataField>Amount_GLEFormat</DataField>
+        </Field>
+        <Field Name="RemainingAmount_GLE">
+          <DataField>RemainingAmount_GLE</DataField>
+        </Field>
+        <Field Name="RemainingAmount_GLEFormat">
+          <DataField>RemainingAmount_GLEFormat</DataField>
+        </Field>
+        <Field Name="AppliedAmount_GLE">
+          <DataField>AppliedAmount_GLE</DataField>
+        </Field>
+        <Field Name="AppliedAmount_GLEFormat">
+          <DataField>AppliedAmount_GLEFormat</DataField>
+        </Field>
+        <Field Name="PostingDate_GLE">
+          <DataField>PostingDate_GLE</DataField>
+        </Field>
+        <Field Name="DocumentType_GLE">
+          <DataField>DocumentType_GLE</DataField>
+        </Field>
+        <Field Name="DocumentNo_GLE">
+          <DataField>DocumentNo_GLE</DataField>
+        </Field>
+        <Field Name="Description_GLE">
+          <DataField>Description_GLE</DataField>
+        </Field>
+        <Field Name="Glob1Dim_GLE">
+          <DataField>Glob1Dim_GLE</DataField>
+        </Field>
+        <Field Name="Glob2Dim_GLE">
+          <DataField>Glob2Dim_GLE</DataField>
+        </Field>
+        <Field Name="EntryNo_AGLE">
+          <DataField>EntryNo_AGLE</DataField>
+        </Field>
+        <Field Name="AppliedAmount_AGLE">
+          <DataField>AppliedAmount_AGLE</DataField>
+        </Field>
+        <Field Name="AppliedAmount_AGLEFormat">
+          <DataField>AppliedAmount_AGLEFormat</DataField>
+        </Field>
+        <Field Name="PostingDate_AGLE">
+          <DataField>PostingDate_AGLE</DataField>
+        </Field>
+        <Field Name="DocumentType_AGLE">
+          <DataField>DocumentType_AGLE</DataField>
+        </Field>
+        <Field Name="DocumentNo_AGLE">
+          <DataField>DocumentNo_AGLE</DataField>
+        </Field>
+        <Field Name="Description_AGLE">
+          <DataField>Description_AGLE</DataField>
+        </Field>
+        <Field Name="Glob1Dim_AGLE">
+          <DataField>Glob1Dim_AGLE</DataField>
+        </Field>
+        <Field Name="Glob2Dim_AGLE">
+          <DataField>Glob2Dim_AGLE</DataField>
+        </Field>
+        <Field Name="RepCount_AGLE">
+          <DataField>RepCount_AGLE</DataField>
+        </Field>
+        <Field Name="Name1_GLEntry">
+          <DataField>Name1_GLEntry</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
 </Report>

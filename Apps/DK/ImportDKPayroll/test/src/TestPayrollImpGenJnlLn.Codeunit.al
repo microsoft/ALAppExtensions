@@ -11,7 +11,7 @@ codeunit 148045 "Test Payroll Imp. Gen. Jnl. Ln"
     var
         Assert: Codeunit Assert;
         LibraryERM: Codeunit "Library - ERM";
-        AssertMsg: Label '%1 Field: "%2" different from expected.';
+        AssertMsg: Label '%1 Field: "%2" different from expected.', Comment = '%1 = Assertion Message; %2 = Expected Field Name';
         IsInitialized: Boolean;
 
     trigger OnRun();

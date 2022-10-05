@@ -24,6 +24,12 @@ page 18929 "Voucher Posting Debit Accounts"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the number of the general ledger or bank account that the balancing entry is posted to, such as a cash account.';
                 }
+                field("For UPI Payments"; "For UPI Payments")
+                {
+                    Caption = 'For UPI Payments';
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the UPI ID should have a value in bank account.';
+                }
             }
         }
     }
@@ -32,6 +38,7 @@ page 18929 "Voucher Posting Debit Accounts"
     begin
         if ("Type" = "Type"::"Cash Receipt Voucher") or ("Type" = "Type"::"Cash Payment Voucher") then
             "Account Type" := "Account Type"::"G/L Account";
+
         if ("Type" = "Type"::"Bank Receipt Voucher") or ("Type" = "Type"::"Bank Payment Voucher") then
             "Account Type" := "Account Type"::"Bank Account";
     end;

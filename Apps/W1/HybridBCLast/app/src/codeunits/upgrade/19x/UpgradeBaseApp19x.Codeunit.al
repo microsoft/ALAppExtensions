@@ -207,6 +207,7 @@ codeunit 4058 "Upgrade BaseApp 19x"
                 Opportunity.SetFilter(Status, '%1|%2', Opportunity.Status::"Not Started", Opportunity.Status::"In Progress");
                 NewTableFilter := CRMSetupDefaults.GetTableFilterFromView(Database::Opportunity, Opportunity.TableCaption(), Opportunity.GetView());
                 IntegrationTableMapping.SetTableFilter(NewTableFilter);
+#pragma warning disable AA0214
                 IntegrationTableMapping.Modify();
             end;
         end;
@@ -351,52 +352,6 @@ codeunit 4058 "Upgrade BaseApp 19x"
         APIDataUpgrade.UpgradeSalesCrMemoShortcutDimension(true);
     end;
 
-    local procedure UpdateSalesDocumentShortcutDimensionFields(var SourceRecordRef: RecordRef; var TargetRecordRef: RecordRef)
-    var
-        SalesHeader: Record "Sales Header";
-        ShortcutDim1SourceFieldRef: FieldRef;
-        ShortcutDim2SourceFieldRef: FieldRef;
-        ShortcutDimension1: Code[20];
-        ShortcutDimension2: Code[20];
-        Modified: Boolean;
-    begin
-        ShortcutDim1SourceFieldRef := SourceRecordRef.Field(SalesHeader.FieldNo("Shortcut Dimension 1 Code"));
-        ShortcutDim2SourceFieldRef := SourceRecordRef.Field(SalesHeader.FieldNo("Shortcut Dimension 2 Code"));
-        ShortcutDimension1 := ShortcutDim1SourceFieldRef.Value();
-        ShortcutDimension2 := ShortcutDim2SourceFieldRef.Value();
-        if ShortcutDimension1 <> '' then
-            if CopyFieldValue(SourceRecordRef, TargetRecordRef, SalesHeader.FieldNo("Shortcut Dimension 1 Code")) then
-                Modified := true;
-        if ShortcutDimension2 <> '' then
-            if CopyFieldValue(SourceRecordRef, TargetRecordRef, SalesHeader.FieldNo("Shortcut Dimension 2 Code")) then
-                Modified := true;
-        if Modified then
-            TargetRecordRef.Modify();
-    end;
-
-    local procedure UpdatePurchaseDocumentShortcutDimensionFields(var SourceRecordRef: RecordRef; var TargetRecordRef: RecordRef)
-    var
-        PurchaseHeader: Record "Purchase Header";
-        ShortcutDim1SourceFieldRef: FieldRef;
-        ShortcutDim2SourceFieldRef: FieldRef;
-        ShortcutDimension1: Code[20];
-        ShortcutDimension2: Code[20];
-        Modified: Boolean;
-    begin
-        ShortcutDim1SourceFieldRef := SourceRecordRef.Field(PurchaseHeader.FieldNo("Shortcut Dimension 1 Code"));
-        ShortcutDim2SourceFieldRef := SourceRecordRef.Field(PurchaseHeader.FieldNo("Shortcut Dimension 2 Code"));
-        ShortcutDimension1 := ShortcutDim1SourceFieldRef.Value();
-        ShortcutDimension2 := ShortcutDim2SourceFieldRef.Value();
-        if ShortcutDimension1 <> '' then
-            if CopyFieldValue(SourceRecordRef, TargetRecordRef, PurchaseHeader.FieldNo("Shortcut Dimension 1 Code")) then
-                Modified := true;
-        if ShortcutDimension2 <> '' then
-            if CopyFieldValue(SourceRecordRef, TargetRecordRef, PurchaseHeader.FieldNo("Shortcut Dimension 2 Code")) then
-                Modified := true;
-        if Modified then
-            TargetRecordRef.Modify();
-    end;
-
     local procedure UpgradeRemoveSmartListGuidedExperience()
     var
         GuidedExperience: Codeunit "Guided Experience";
@@ -411,20 +366,6 @@ codeunit 4058 "Upgrade BaseApp 19x"
             GuidedExperience.Remove(Enum::"Guided Experience Type"::"Manual Setup", ObjectType::Page, 889);
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetRemoveSmartListManualSetupEntryUpgradeTag());
-    end;
-
-    local procedure CopyFieldValue(var SourceRecordRef: RecordRef; var TargetRecordRef: RecordRef; FieldNo: Integer): Boolean
-    var
-        SourceFieldRef: FieldRef;
-        TargetFieldRef: FieldRef;
-    begin
-        SourceFieldRef := SourceRecordRef.FIELD(FieldNo);
-        TargetFieldRef := TargetRecordRef.FIELD(FieldNo);
-        IF TargetFieldRef.VALUE <> SourceFieldRef.VALUE THEN BEGIN
-            TargetFieldRef.VALUE := SourceFieldRef.VALUE;
-            exit(true);
-        END;
-        exit(false);
     end;
 
     local procedure GetSafeRecordCountForSaaSUpgrade(): Integer

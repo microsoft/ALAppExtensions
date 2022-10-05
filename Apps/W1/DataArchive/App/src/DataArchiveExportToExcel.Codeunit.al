@@ -24,9 +24,7 @@ codeunit 608 "Data Archive Export To Excel"
     local procedure ExportToExcel(var DataArchiveTable: Record "Data Archive Table")
     var
         TempExcelBuffer: Record "Excel Buffer" temporary;
-        FileMgt: Codeunit "File Management";
         Window: Dialog;
-        ServerFileName: Text;
         CurrentRecNo: Integer;
         NoOfTablesWithNoReadAccess: Integer;
         T0: Time;
@@ -40,8 +38,7 @@ codeunit 608 "Data Archive Export To Excel"
 
         Window.Open(GeneratingFileMsg);
         T0 := Time;
-        ServerFileName := FileMgt.ServerTempFileName('xlsx');
-        TempExcelBuffer.CreateBook(ServerFileName, DataArchiveTable."Table Name" + '-' + format(DataArchiveTable."Entry No."));
+        TempExcelBuffer.CreateNewBook(DataArchiveTable."Table Name" + '-' + format(DataArchiveTable."Entry No."));
         Window.Update(1, 0);
         repeat
             if DataArchiveTable.HasReadPermission() then begin

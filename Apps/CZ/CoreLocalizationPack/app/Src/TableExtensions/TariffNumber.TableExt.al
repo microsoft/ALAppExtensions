@@ -35,7 +35,6 @@ tableextension 11753 "Tariff Number CZL" extends "Tariff Number"
             Caption = 'Supplementary Unit of Measure Code';
             TableRelation = "Unit of Measure";
             DataClassification = CustomerContent;
-#if CLEAN18
 
             trigger OnValidate()
             var
@@ -46,15 +45,12 @@ tableextension 11753 "Tariff Number CZL" extends "Tariff Number"
                 else
                     "Supplementary Units" := UnitofMeasure.Get("Suppl. Unit of Meas. Code CZL");
             end;
-#endif            
         }
     }
-#if CLEAN18
     keys
     {
         key(Key11700; "Suppl. Unit of Meas. Code CZL")
         {
         }
     }
-#endif
 }

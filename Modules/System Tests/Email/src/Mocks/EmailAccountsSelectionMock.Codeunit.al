@@ -11,6 +11,9 @@ codeunit 134697 "Email Accounts Selection Mock"
     Access = Internal;
     EventSubscriberInstance = Manual;
 
+    var
+        SelectionFilterLbl: Label '%1|%2', Locked = true;
+
     internal procedure SelectAccount(AccountId: Guid)
     begin
         SelectedAccounts.Add(AccountId);
@@ -25,7 +28,7 @@ codeunit 134697 "Email Accounts Selection Mock"
         EmailAccount.Reset();
 
         foreach AccountId in SelectedAccounts do
-            SelectionFilter := StrSubstNo('%1|%2', SelectionFilter, AccountId);
+            SelectionFilter := StrSubstNo(SelectionFilterLbl, SelectionFilter, AccountId);
 
         SelectionFilter := DelChr(SelectionFilter, '<>', '|'); // remove trailing and leading pipes
 

@@ -2,6 +2,15 @@ pageextension 18101 "GST Purchase Order Stats." extends "Purchase Order Statisti
 {
     layout
     {
+        modify(InvDiscountAmount_General)
+        {
+            trigger OnAfterValidate()
+            var
+                GSTPurchaseSubscribers: Codeunit "GST Purchase Subscribers";
+            begin
+                GSTPurchaseSubscribers.ReCalculateGST(Rec."Document Type", Rec."No.");
+            end;
+        }
         addlast(General)
         {
             field("GST Amount"; GSTAmount)

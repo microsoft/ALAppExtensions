@@ -787,7 +787,9 @@ codeunit 139833 "APIV2 - Attachments E2E"
 
         // [THEN] The Attachment exists and is correctly linked to the posted invoice.
         IncomingDocumentAttachment.GetBySystemId(AttachmentId);
+#pragma warning disable AA0210
         SalesInvoiceHeader.SetRange("Draft Invoice SystemId", DocumentId);
+#pragma warning restore
         SalesInvoiceHeader.FindFirst();
         DocumentRecordRef.GetTable(SalesInvoiceHeader);
         FindIncomingDocument(DocumentRecordRef, IncomingDocument);
@@ -825,7 +827,9 @@ codeunit 139833 "APIV2 - Attachments E2E"
 
         // [THEN] The Attachment exists and is correctly linked to the posted invoice.
         IncomingDocumentAttachment.GetBySystemId(AttachmentId);
+#pragma warning disable AA0210
         PurchInvHeader.SetRange("Draft Invoice SystemId", DocumentId);
+#pragma warning restore
         PurchInvHeader.FindFirst();
         DocumentRecordRef.GetTable(PurchInvHeader);
         FindIncomingDocument(DocumentRecordRef, IncomingDocument);

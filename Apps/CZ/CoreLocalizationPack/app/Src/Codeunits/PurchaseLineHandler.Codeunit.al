@@ -84,7 +84,6 @@ codeunit 11784 "Purchase Line Handler CZL"
                 PurchaseLine2.Modify();
             until PurchaseLine2.Next() = 0;
     end;
-#if CLEAN18
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterValidateEvent', 'Prod. Order No.', false, false)]
     local procedure ProdOrderNoOnAfterValidate(var Rec: Record "Purchase Line"; var xRec: Record "Purchase Line"; CurrFieldNo: Integer)
@@ -101,5 +100,4 @@ codeunit 11784 "Purchase Line Handler CZL"
 
         AddOnIntegrManagement.ValidateProdOrderOnPurchLine(Rec);
     end;
-#endif
 }

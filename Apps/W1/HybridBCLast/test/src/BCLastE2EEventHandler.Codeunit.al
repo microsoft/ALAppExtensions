@@ -12,4 +12,10 @@ codeunit 139674 "BC Last E2E Event Handler"
     begin
         CreateSession := false;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Management", 'OnUseLegacyUpgrade', '', false, false)]
+    local procedure HandleOnInvokeLegacyUpgrade(var UseLegacyUpgrade: Boolean)
+    begin
+        UseLegacyUpgrade := true;
+    end;
 }

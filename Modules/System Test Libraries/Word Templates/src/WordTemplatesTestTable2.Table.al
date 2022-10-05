@@ -7,6 +7,7 @@ table 130444 "Word Templates Test Table 2"
 {
     DataClassification = SystemMetadata;
     Caption = 'Word Templates Test Table 2';
+    ReplicateData = false;
 
     fields
     {

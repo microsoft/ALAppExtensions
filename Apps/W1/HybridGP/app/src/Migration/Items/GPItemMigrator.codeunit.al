@@ -64,19 +64,20 @@ codeunit 4019 "GP Item Migrator"
     var
         GPIV00101: Record "GP IV00101";
         ItemClassId: Text[11];
+        ConfiguredToMigrateItemClasses: Boolean;
     begin
+        ConfiguredToMigrateItemClasses := GPCompanyAdditionalSettings.GetMigrateItemClasses();
         MigrateItemClassesIfNeeded(GPItem, Sender);
 
         if GPItem.ItemType = 0 then begin
-            if GPCompanyAdditionalSettings.GetMigrateItemClasses() then
+            if ConfiguredToMigrateItemClasses then
                 if GPIV00101.Get(GPItem.No) then
                     ItemClassId := GPIV00101.ITMCLSCD.Trim();
 
             if (ItemClassId <> '') then
                 Sender.SetInventoryPostingGroup(ItemClassId)
-            else begin
+            else
                 Sender.SetInventoryPostingGroup(CopyStr(DefaultPostingGroupCodeTxt, 1, 20));
-            end;
 
             Sender.ModifyItem(true);
         end;
@@ -426,7 +427,7 @@ codeunit 4019 "GP Item Migrator"
         PostingGroupCode: Code[20];
         AccountNumber: Code[20];
     begin
-        if not GPCompanyAdditionalSettings.GetMigrateItemClasses() then
+        if not GPCompanyAdditionalSettings."Migrate Item Classes" then
             exit;
 
         if not GPIV40400.FindSet() then

@@ -694,6 +694,7 @@ codeunit 1865 "C5 Helper Functions"
         CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade";
         ZipCityTemp: Text[50];
         FirstBlankIdx: Integer;
+        PostCodeTxt: Label '%1-%2', Locked = true;
     begin
         D365PostCode := '';
         D365City := '';
@@ -710,7 +711,7 @@ codeunit 1865 "C5 Helper Functions"
                 CompanyInformation.Get();
                 if (D365CountryRegionCode <> '') and (D365CountryRegionCode <> CompanyInformation."Country/Region Code") then begin
                     if Strpos(D365PostCode, '-') <> 3 then // already formatted like DK-2800, do not make it like DK-DK-2800
-                        D365PostCode := CopyStr(StrSubstNo('%1-%2', D365CountryRegionCode, D365PostCode), 1, 20);
+                        D365PostCode := CopyStr(StrSubstNo(PostCodeTxt, D365CountryRegionCode, D365PostCode), 1, 20);
                     if not CustomerDataMigrationFacade.DoesPostCodeExist(D365PostCode, D365City) then
                         CustomerDataMigrationFacade.CreatePostCodeIfNeeded(D365PostCode, D365City, '', D365CountryRegionCode);
                     exit;
