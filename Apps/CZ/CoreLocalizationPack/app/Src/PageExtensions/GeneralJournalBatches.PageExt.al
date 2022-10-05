@@ -1,5 +1,16 @@
 pageextension 11777 "General Journal Batches CZL" extends "General Journal Batches"
 {
+    layout
+    {
+        addlast(Control1)
+        {
+            field("Allow Hybrid Document CZL"; Rec."Allow Hybrid Document CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies whether disabling balance check by Correction field.';
+            }
+        }
+    }
     actions
     {
         addafter(Action10)

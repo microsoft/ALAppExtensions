@@ -207,15 +207,9 @@ codeunit 460 "Azure AD Licensing Impl."
     end;
 
     [NonDebuggable]
-    procedure SetIncludeUnknownPlans(IncludeUnknownPlans: Boolean)
+    procedure SetIncludeUnknownPlans(NewIncludeUnknownPlans: Boolean)
     begin
-        DoIncludeUnknownPlans := IncludeUnknownPlans;
-    end;
-
-    [NonDebuggable]
-    procedure SetTestInProgress(TestInProgress: Boolean)
-    begin
-        AzureADGraph.SetTestInProgress(TestInProgress);
+        DoIncludeUnknownPlans := NewIncludeUnknownPlans;
     end;
 }
 

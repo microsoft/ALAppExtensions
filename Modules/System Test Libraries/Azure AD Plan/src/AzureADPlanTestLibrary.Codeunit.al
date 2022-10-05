@@ -5,8 +5,9 @@
 
 codeunit 132916 "Azure AD Plan Test Library"
 {
+    EventSubscriberInstance = Manual;
     Permissions = TableData Plan = rimd,
-                   TableData "User Plan" = rimd;
+                  TableData "User Plan" = rimd;
 
     /// <summary>
     /// Assigns a plan to a user. 
@@ -17,7 +18,7 @@ codeunit 132916 "Azure AD Plan Test Library"
     begin
         AssignUserToPlan(UserID, PlanID, false);
     end;
-    
+
     /// <summary>
     /// Assigns a plan to a user.
     /// </summary>
@@ -65,12 +66,12 @@ codeunit 132916 "Azure AD Plan Test Library"
         Plan.SetRange(Name, PlanName);
         if Plan.FindFirst() then
             exit(Plan."Plan ID");
-        
+
         PlanID := CreateGuid();
         Plan."Plan ID" := PlanID;
         Plan.Name := PlanName;
         Plan."Role Center ID" := 22; // the value doesn't really matter as long as it's not zero
-        
+
         Plan.Insert(true);
     end;
 
@@ -155,5 +156,18 @@ codeunit 132916 "Azure AD Plan Test Library"
     begin
         if UserPlan.Get(PlanID, UserID) then
             UserPlan.Delete(true);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Plan Impl.", 'OnBeforeIsBcServicePlan', '', false, false)]
+    local procedure OnBeforeIsBcServicePlan(var Skip: Boolean)
+    begin
+        Skip := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Plan Impl.", 'OnInitializeRoleCenter', '', false, false)]
+    local procedure OnInitializeRoleCenter(var RoleCenterId: Integer; var Handled: Boolean)
+    begin
+        RoleCenterId := 9022;
+        Handled := true;
     end;
 }

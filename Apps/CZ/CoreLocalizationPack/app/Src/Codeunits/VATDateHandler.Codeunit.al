@@ -25,6 +25,7 @@ codeunit 11742 "VAT Date Handler CZL"
         GLEntry."VAT Date CZL" := GenJournalLine."VAT Date CZL";
     end;
 
+#if not CLEAN20
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferPrepareSales', '', false, false)]
     local procedure UpdateVatDateInvoicePostBufferFromSalesHeader(var InvoicePostBuffer: Record "Invoice Post. Buffer"; var SalesLine: Record "Sales Line")
@@ -54,7 +55,40 @@ codeunit 11742 "VAT Date Handler CZL"
         ServiceHeader.Get(ServiceLine."Document Type", ServiceLine."Document No.");
         InvoicePostBuffer."VAT Date CZL" := ServiceHeader."VAT Date CZL";
     end;
+
 #pragma warning restore AL0432
+#endif
+    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPrepareSales', '', false, false)]
+    local procedure UpdateInvoicePostingBufferOnAfterPrepareSales(var InvoicePostingBuffer: Record "Invoice Posting Buffer"; var SalesLine: Record "Sales Line")
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
+        InvoicePostingBuffer."VAT Date CZL" := SalesHeader."VAT Date CZL";
+        InvoicePostingBuffer."Original Doc. VAT Date CZL" := SalesHeader."Original Doc. VAT Date CZL";
+        InvoicePostingBuffer."Correction CZL" := SalesHeader.Correction xor SalesLine."Negative CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPreparePurchase', '', false, false)]
+    local procedure UpdateInvoicePostingBufferOnAfterPreparePurchase(var InvoicePostingBuffer: Record "Invoice Posting Buffer"; var PurchaseLine: Record "Purchase Line")
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
+        InvoicePostingBuffer."VAT Date CZL" := PurchaseHeader."VAT Date CZL";
+        InvoicePostingBuffer."Original Doc. VAT Date CZL" := PurchaseHeader."Original Doc. VAT Date CZL";
+        InvoicePostingBuffer."Correction CZL" := PurchaseHeader.Correction xor PurchaseLine."Negative CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPrepareService', '', false, false)]
+    local procedure UpdateInvoicePostingBufferOnAfterPrepareService(var InvoicePostingBuffer: Record "Invoice Posting Buffer"; var ServiceLine: Record "Service Line")
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        ServiceHeader.Get(ServiceLine."Document Type", ServiceLine."Document No.");
+        InvoicePostingBuffer."VAT Date CZL" := ServiceHeader."VAT Date CZL";
+        InvoicePostingBuffer."Correction CZL" := ServiceHeader.Correction xor ServiceLine."Negative CZL";
+    end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnPostInvtPostBufOnBeforeSetAmt', '', false, false)]
     local procedure ClearVatDateOnPostInvtPostBufOnBeforeSetAmt(var GenJournalLine: Record "Gen. Journal Line")

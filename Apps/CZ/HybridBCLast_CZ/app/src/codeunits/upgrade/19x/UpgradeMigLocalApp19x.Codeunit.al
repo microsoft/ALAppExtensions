@@ -20,24 +20,19 @@ codeunit 11802 "Upgrade Mig Local App 19x"
         if TargetVersion <> 19.0 then
             exit;
 
-#if CLEAN17
         UpdateCashDeskWorkflowTemplate();
-#endif
-#if CLEAN18
         UpdateCreditWorkflowTemplate();
-#endif
 #if CLEAN19
         UpdatePaymentOrderWorkflowTemplate();
         UpdateAdvanceLetterWorkflowTemplate();
 #endif
     end;
 
-#if CLEAN17
     local procedure UpdateCashDeskWorkflowTemplate()
     var
-        CashDocApprWorkflowCodeTxt: Label 'MS-CDAPW', Locked = true;
         UpgradeTag: Codeunit "Upgrade Tag";
         LocalUpgradeTagDefinitions: Codeunit "Local Upgrade Tag Definitions";
+        CashDocApprWorkflowCodeTxt: Label 'MS-CDAPW', Locked = true;
     begin
         if UpgradeTag.HasUpgradeTag(LocalUpgradeTagDefinitions.GetCashDeskWorkflowTemplatesCodeUpgradeTag()) then
             exit;
@@ -47,13 +42,11 @@ codeunit 11802 "Upgrade Mig Local App 19x"
         UpgradeTag.SetUpgradeTag(LocalUpgradeTagDefinitions.GetCashDeskWorkflowTemplatesCodeUpgradeTag());
     end;
 
-#endif
-#if CLEAN18
     local procedure UpdateCreditWorkflowTemplate()
     var
-        CreditDocApprWorkflowCodeTxt: Label 'MS-CRAPW', Locked = true;
         UpgradeTag: Codeunit "Upgrade Tag";
         LocalUpgradeTagDefinitions: Codeunit "Local Upgrade Tag Definitions";
+        CreditDocApprWorkflowCodeTxt: Label 'MS-CRAPW', Locked = true;
     begin
         if UpgradeTag.HasUpgradeTag(LocalUpgradeTagDefinitions.GetCreditWorkflowTemplatesCodeUpgradeTag()) then
             exit;
@@ -63,13 +56,12 @@ codeunit 11802 "Upgrade Mig Local App 19x"
         UpgradeTag.SetUpgradeTag(LocalUpgradeTagDefinitions.GetCreditWorkflowTemplatesCodeUpgradeTag());
     end;
 
-#endif
 #if CLEAN19
     local procedure UpdatePaymentOrderWorkflowTemplate()
     var
-        PaymentOrderApprWorkflowCodeTxt: Label 'MS-PMTORDAPW', Locked = true;
         UpgradeTag: Codeunit "Upgrade Tag";
         LocalUpgradeTagDefinitions: Codeunit "Local Upgrade Tag Definitions";
+        PaymentOrderApprWorkflowCodeTxt: Label 'MS-PMTORDAPW', Locked = true;
     begin
         if UpgradeTag.HasUpgradeTag(LocalUpgradeTagDefinitions.GetPaymentOrderWorkflowTemplatesCodeUpgradeTag()) then
             exit;
@@ -81,10 +73,10 @@ codeunit 11802 "Upgrade Mig Local App 19x"
 
     local procedure UpdateAdvanceLetterWorkflowTemplate()
     var
-        SalesAdvanceLetterApprWorkflowCodeTxt: Label 'MS-SALAPW', Locked = true;
-        PurchAdvanceLetterApprWorkflowCodeTxt: Label 'MS-PALAPW', Locked = true;
         UpgradeTag: Codeunit "Upgrade Tag";
         LocalUpgradeTagDefinitions: Codeunit "Local Upgrade Tag Definitions";
+        SalesAdvanceLetterApprWorkflowCodeTxt: Label 'MS-SALAPW', Locked = true;
+        PurchAdvanceLetterApprWorkflowCodeTxt: Label 'MS-PALAPW', Locked = true;
     begin
         if UpgradeTag.HasUpgradeTag(LocalUpgradeTagDefinitions.GetAdvanceLetterWorkflowTemplatesCodeUpgradeTag()) then
             exit;

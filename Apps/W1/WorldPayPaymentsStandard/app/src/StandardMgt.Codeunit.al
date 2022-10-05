@@ -22,6 +22,7 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
         WorldPayCaptionURLTxt: Label 'Pay with WorldPay';
         DemoLinkCaptionTxt: Label 'Note: You''re in an evaluation company, and this isn''t a real invoice. You can''t actually pay it.', Comment = 'Will be shown next to the Pay with WorldPay link.';
         WorldPayStandardNameTxt: Label 'WorldPay Payments Standard';
+        WorldPayStandardShortNameTxt: Label 'WorldPay Setup';
         WorldPayStandardDescriptionTxt: Label 'Use the WorldPay Payments Standard service';
         WorldPayStandardBusinessSetupDescriptionTxt: Label 'Set up and enable the WorldPay Payments Standard service.';
         YourReferenceTxt: Label 'Your Ref.', Comment = 'Ref. is short for reference from Your Reference field. After Ref there will be a number';
@@ -31,7 +32,6 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
         WorldPayMandatoryParametersTok: Label 'instId=%1&cartId=%2&amount=%3&currency=%4&desc=%5', Locked = true;
         TargetURLCannotBeChangedInDemoCompanyErr: Label 'You cannot change the target URL in the demonstration company.';
         SandboxWorldPayBaseURLTok: Label 'https://secure-test.worldpay.com/wcc/purchase?testMode=100', Locked = true;
-        WorldPayMenuDescriptionTxt: Label 'Add WorldPay link to your invoices.';
         WorldPayHomepageLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=844661', Locked = true;
         WorldPayBusinessSetupKeywordsTxt: Label 'Finance,WorldPay,Payment';
         WorldPayPaymentMethodCodeTok: Label 'WorldPay', Locked = true;
@@ -282,22 +282,20 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
         UNTIL MSWorldPayStandardAccount.NEXT() = 0
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Manual Setup", 'OnRegisterManualSetup', '', false, false)]
-    local procedure RegisterBusinessSetup(var Sender: Codeunit "Manual Setup")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', false, false)]
+    local procedure RegisterBusinessSetup()
     var
         MSWorldPayStandardAccount: Record "MS - WorldPay Standard Account";
         MSWorldPayStdTemplate: Record "MS - WorldPay Std. Template";
-        ManualSetupCategory: Enum "Manual Setup Category";
+        GuidedExperience: Codeunit "Guided Experience";
     begin
-        IF NOT MSWorldPayStandardAccount.FINDFIRST() THEN BEGIN
+        if not MSWorldPayStandardAccount.FindFirst() then begin
             GetTemplate(MSWorldPayStdTemplate);
-            MSWorldPayStandardAccount.TRANSFERFIELDS(MSWorldPayStdTemplate, FALSE);
-            MSWorldPayStandardAccount.INSERT(TRUE);
-        END;
+            MSWorldPayStandardAccount.Transferfields(MSWorldPayStdTemplate, false);
+            MSWorldPayStandardAccount.Insert(true);
+        end;
 
-        Sender.Insert(
-          WorldPayStandardNameTxt, WorldPayStandardBusinessSetupDescriptionTxt, WorldPayBusinessSetupKeywordsTxt,
-          PAGE::"MS - WorldPay Standard Setup", 'bae453ed-0fd8-4416-afdc-4b09db6c12c3', ManualSetupCategory::Service);
+        GuidedExperience.InsertManualSetup(WorldPayStandardNameTxt, CopyStr(WorldPayStandardShortNameTxt, 1, 50), WorldPayStandardBusinessSetupDescriptionTxt, 3, ObjectType::Page, Page::"MS - WorldPay Standard Setup", "Manual Setup Category"::Service, WorldPayBusinessSetupKeywordsTxt, true);
     end;
 
     procedure ValidateChangeTargetURL()
@@ -307,14 +305,6 @@ codeunit 1360 "MS - WorldPay Standard Mgt."
     begin
         IF CompanyInformationMgt.IsDemoCompany() AND EnvironmentInformation.IsSaaS() THEN
             ERROR(TargetURLCannotBeChangedInDemoCompanyErr);
-    end;
-
-    [EventSubscriber(ObjectType::Page, Page::"O365 Tax Payments Settings", 'OnOpenPageEvent', '', false, false)]
-    local procedure AddWorldPayMenuItemOnOpenTaxPaymentsSettingsPageEvent(var Rec: Record 2132)
-    var
-        MSWorldPayStdSettings: Page "MS - WorldPay Std. Settings";
-    begin
-        Rec.InsertPageMenuItem(PAGE::"MS - WorldPay Std. Settings", CopyStr(MSWorldPayStdSettings.CAPTION(), 1, 30), WorldPayMenuDescriptionTxt);
     end;
 
     procedure GetTargetURL(): Text

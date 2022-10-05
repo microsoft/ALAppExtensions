@@ -86,7 +86,7 @@ codeunit 30190 "Shpfy Export Shipments"
     /// </summary>
     /// <param name="SalesShipmentHeader">Parameter of type Record 110.</param>
     /// <returns>Return variable "Request" of type Text.</returns>
-    local procedure CreateFulfillmentRequest(SalesShipmentHeader: Record 110; LocationId: BigInteger; LocationCode: Code[10]) Request: Text;
+    internal procedure CreateFulfillmentRequest(SalesShipmentHeader: Record 110; LocationId: BigInteger; LocationCode: Code[10]) Request: Text;
     var
         SalesShipmentLine: Record "Sales Shipment Line";
         ShopifyOrder: Record "Shpfy Order Header";

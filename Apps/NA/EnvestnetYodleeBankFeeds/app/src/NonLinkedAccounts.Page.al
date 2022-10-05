@@ -155,13 +155,13 @@ page 1453 "MS - Yodlee NonLinked Accounts"
         AccountIsAlreadyLinkedErr: Label '%1 is already linked. Please select another account.', Comment = '%1 is the bank account name';
         NoMoreAccountsMsg: Label 'All non-linked bank accounts have been removed. This page will now close.';
 
-    local procedure UpdateLinkedBankAccountValues(var AccountNo: Code[20]; var BankBranchNo: Text[20]);
+    local procedure UpdateLinkedBankAccountValues(var AccountNo: Code[20]; var BankBranchNum: Text[20]);
     var
         MSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link";
         BankAccount: Record "Bank Account";
     begin
         AccountNo := '';
-        BankBranchNo := '';
+        BankBranchNum := '';
 
         IF "Online Bank Account ID" = '' THEN
             EXIT;
@@ -170,7 +170,7 @@ page 1453 "MS - Yodlee NonLinked Accounts"
         IF MSYodleeBankAccLink.FINDFIRST() THEN BEGIN
             AccountNo := MSYodleeBankAccLink."No.";
             BankAccount.GET(AccountNo);
-            BankBranchNo := BankAccount."Bank Branch No.";
+            BankBranchNum := BankAccount."Bank Branch No.";
         END;
     end;
 

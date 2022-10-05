@@ -7,13 +7,25 @@ codeunit 139662 "GP Item Tests"
     TestPermissions = Disabled;
 
     var
-        GPIV00101: Record "GP IV00101";
-        GPIV40400: Record "GP IV40400";
         Assert: Codeunit Assert;
         ItemDataMigrationFacade: Codeunit "Item Data Migration Facade";
         GPItemMigrator: Codeunit "GP Item Migrator";
+
+    local procedure ConfigureMigrationSettings(MigrateItemClasses: Boolean)
+    var
+        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        GPTestHelperFunctions: Codeunit "GP Test Helper Functions";
+        CompanyNameText: Text[30];
+    begin
+        CompanyNameText := CompanyName();
+
+        GPCompanyMigrationSettings.Name := CompanyNameText;
+        GPCompanyMigrationSettings.Insert(true);
+
+        GPCompanyAdditionalSettings.Name := CompanyNameText;
+        GPCompanyAdditionalSettings."Migrate Item Classes" := MigrateItemClasses;
+        GPCompanyAdditionalSettings.Insert(true);
+    end;
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -21,26 +33,15 @@ codeunit 139662 "GP Item Tests"
     var
         GPItem: Record "GP Item";
         Item: Record "Item";
-        DataMigrationEntity: Record "Data Migration Entity";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] Items are migrated from GP
         // [GIVEN] There are no records in Item staging table
         Initialize();
 
-        GPTestHelperFunctions.CreateConfigurationSettings();
-        GPCompanyAdditionalSettings.GetSingleInstance();
-        GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", true);
-        GPCompanyAdditionalSettings.Modify();
-
         // [GIVEN] Some records are created in the staging table
         CreateStagingTableEntries(GPItem);
 
-        Assert.IsTrue(GPCompanyAdditionalSettings.GetInventoryModuleEnabled(), 'Inventory module should be enabled.');
-
-        GPTestHelperFunctions.InitializeMigration();
-
-        // [WHEN] Migrate is called
+        // [WHEN] MigrationAccounts is called
         GPItem.FindSet();
         repeat
             Migrate(GPItem);
@@ -48,7 +49,9 @@ codeunit 139662 "GP Item Tests"
 
         // [THEN] A Item is created for all staging table entries
         Assert.RecordCount(Item, GPItem.Count());
-        Assert.AreEqual(GPItem.Count(), HelperFunctions.GetNumberOfItems(), 'Wrong number of Items calculated');
+
+        // [WHEN] Transactions are migrated
+        // CreateOpeningBalances();
 
         // [THEN] Items are created with correct settings
         GPItem.FindSet();
@@ -70,47 +73,10 @@ codeunit 139662 "GP Item Tests"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
-    procedure TestInventoryDisabled()
-    var
-        GPItem: Record "GP Item";
-        Item: Record "Item";
-        HelperFunctions: Codeunit "Helper Functions";
-    begin
-        // [SCENARIO] Items are migrated from GP
-        // [GIVEN] There are no records in Item staging table
-        Initialize();
-
-        // Disable the Inventory Module setting
-        GPTestHelperFunctions.CreateConfigurationSettings();
-        GPCompanyAdditionalSettings.GetSingleInstance();
-        GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", false);
-        GPCompanyAdditionalSettings.Modify();
-
-        // [GIVEN] Some records are created in the staging table
-        CreateStagingTableEntries(GPItem);
-
-        GPTestHelperFunctions.InitializeMigration();
-
-        // [THEN] Calculated item count to migrate will be correct
-        Assert.AreEqual(0, HelperFunctions.GetNumberOfItems(), 'Wrong number of Items calculated');
-
-        // [WHEN] Migrate is called
-        GPItem.FindSet();
-        repeat
-            Migrate(GPItem);
-        until GPItem.Next() = 0;
-
-        // [THEN] No items are migrated
-        Assert.RecordCount(Item, 0);
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGPItemClassesConfiguredToNotImport()
     var
         GPItem: Record "GP Item";
         InventoryPostingGroup: Record "Inventory Posting Group";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] Items and their class information are queried from GP
         // [GIVEN] GP data
@@ -119,17 +85,12 @@ codeunit 139662 "GP Item Tests"
         // [WHEN] Data is imported and migrated, but configured to NOT import Item Classes
         CreateStagingTableEntries(GPItem);
         CreateItemClassData();
-
-        GPTestHelperFunctions.CreateConfigurationSettings();
-        GPCompanyAdditionalSettings.GetSingleInstance();
-        GPCompanyAdditionalSettings.Validate("Migrate Item Classes", false);
-        GPCompanyAdditionalSettings.Modify();
-
-        GPTestHelperFunctions.InitializeMigration();
+        ConfigureMigrationSettings(false);
 
         GPItem.FindSet();
         repeat
             Migrate(GPItem);
+            GPItemMigrator.MigrateItemInventoryPostingGroup(GPItem, ItemDataMigrationFacade);
         until GPItem.Next() = 0;
 
         // [then] Then the Inventory Posting Groups will NOT be migrated
@@ -147,8 +108,6 @@ codeunit 139662 "GP Item Tests"
         GPIV40400: Record "GP IV40400";
         InventoryPostingGroup: Record "Inventory Posting Group";
         InventoryPostingSetup: Record "Inventory Posting Setup";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] Items and their class information are queried from GP
         // [GIVEN] GP data
@@ -157,12 +116,7 @@ codeunit 139662 "GP Item Tests"
         // [WHEN] Data is imported and migrated, and configured to import Item Classes
         CreateStagingTableEntries(GPItem);
         CreateItemClassData();
-        GPTestHelperFunctions.CreateConfigurationSettings();
-        GPCompanyAdditionalSettings.GetSingleInstance();
-        GPCompanyAdditionalSettings.Validate("Migrate Item Classes", true);
-        GPCompanyAdditionalSettings.Modify();
-
-        GPTestHelperFunctions.InitializeMigration();
+        ConfigureMigrationSettings(true);
 
         GPIV00101.FindSet();
         Assert.RecordCount(GPIV00101, 3);
@@ -170,35 +124,32 @@ codeunit 139662 "GP Item Tests"
         GPIV40400.FindSet();
         Assert.RecordCount(GPIV40400, 2);
 
-        Assert.IsTrue(GPIV00101.Get('1 1/2\"SASH BRSH'), 'Could not locate item.');
-        Assert.AreEqual('TEST-1', GPIV00101.ITMCLSCD, 'Incorrect class Id');
-        Assert.IsTrue(GPIV40400.Get('TEST-1'), 'Could not class Id.');
-
         GPItem.FindSet();
         repeat
             Migrate(GPItem);
+            GPItemMigrator.MigrateItemInventoryPostingGroup(GPItem, ItemDataMigrationFacade);
         until GPItem.Next() = 0;
 
-        // [THEN] The Inventory Posting Groups will be migrated
+        // [then] Then the Inventory Posting Groups will be migrated
         Item.SetFilter("No.", '%1|%2|%3', '1 1/2\"SASH BRSH', '12345ITEMNUMBER!@#$%', '4'' STEPLADDER');
-        Assert.IsTrue(Item.FindSet(), 'Could not find Items by code.');
+        Assert.AreEqual(true, Item.FindSet(), 'Could not find Items by code.');
 
         InventoryPostingGroup.SetFilter("Code", '%1|%2|%3', 'TEST-1', 'TEST-2', 'GP');
-        Assert.IsTrue(InventoryPostingGroup.FindSet(), 'Could not find Inventory Posting Groups by code.');
+        Assert.AreEqual(true, InventoryPostingGroup.FindSet(), 'Could not find Inventory Posting Groups by code.');
         Assert.RecordCount(InventoryPostingGroup, 3);
 
-        // [THEN] Fields for the first Inventory Posting Setup will be correct
+        // [then] Then fields for the first Inventory Posting Setup will be correct
         InventoryPostingSetup.SetRange("Invt. Posting Group Code", 'TEST-1');
-        Assert.IsTrue(InventoryPostingSetup.FindFirst(), 'Could not find Inventory Posting Setup by code.');
+        Assert.AreEqual(true, InventoryPostingSetup.FindFirst(), 'Could not find Inventory Posting Setup by code.');
         Assert.AreEqual('TEST-1', InventoryPostingSetup."Invt. Posting Group Code", 'Invt. Posting Group Code of InventoryPostingSetup is incorrect.');
         Assert.AreEqual('1', InventoryPostingSetup."Inventory Account", 'Inventory Account of InventoryPostingSetup is incorrect.');
 
         InventoryPostingSetup.SetRange("Invt. Posting Group Code", 'TEST-2');
-        Assert.IsTrue(InventoryPostingSetup.FindFirst(), 'Could not find Inventory Posting Setup by code.');
+        Assert.AreEqual(true, InventoryPostingSetup.FindFirst(), 'Could not find Inventory Posting Setup by code.');
         Assert.AreEqual('TEST-2', InventoryPostingSetup."Invt. Posting Group Code", 'Invt. Posting Group Code of InventoryPostingSetup is incorrect.');
         Assert.AreEqual('', InventoryPostingSetup."Inventory Account", 'Inventory Account of InventoryPostingSetup is incorrect.');
 
-        // [THEN] The correct Inventory Posting Groups are set
+        // [then] The correct Inventory Posting Groups are set
         Item.Get('1 1/2\"SASH BRSH');
         Assert.AreEqual('TEST-1', Item."Inventory Posting Group", 'Inventory Posting Group of migrated Item is incorrect.');
 
@@ -211,7 +162,6 @@ codeunit 139662 "GP Item Tests"
 
     local procedure Initialize()
     var
-        DataMigrationEntity: Record "Data Migration Entity";
         GPItem: Record "GP Item";
         Item: Record Item;
         GenBusPostingGroup: Record "Gen. Business Posting Group";
@@ -225,7 +175,6 @@ codeunit 139662 "GP Item Tests"
         Item.DeleteAll();
         GPIV00101.DeleteAll();
         GPIV40400.DeleteAll();
-        DataMigrationEntity.DeleteAll();
 
         if not GenBusPostingGroup.Get('GP') then begin
             GenBusPostingGroup.Validate(GenBusPostingGroup.Code, 'GP');
@@ -235,11 +184,7 @@ codeunit 139662 "GP Item Tests"
 
     local procedure Migrate(GPItem: Record "GP Item")
     begin
-        if not GPTestHelperFunctions.MigrationConfiguredForTable(Database::Item) then
-            exit;
-
         GPItemMigrator.OnMigrateItem(ItemDataMigrationFacade, GPItem.RecordId());
-        GPItemMigrator.MigrateItemInventoryPostingGroup(GPItem, ItemDataMigrationFacade);
     end;
 
     local procedure CreateStagingTableEntries(var GPItem: Record "GP Item")

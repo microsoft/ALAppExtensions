@@ -112,8 +112,9 @@ page 1861 "C5 VendTable"
                     PromotedOnly = true;
                     Image = SalesPerson;
                     RunObject = Page "C5 Employee";
-                    RunPageLink = Employee = field (Purchaser);
+                    RunPageLink = Employee = field(Purchaser);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Employee page.';
                 }
 
                 action(C5Payment)
@@ -125,8 +126,9 @@ page 1861 "C5 VendTable"
                     PromotedOnly = true;
                     Image = Payment;
                     RunObject = Page "C5 Payment";
-                    RunPageLink = Payment = field (Payment);
+                    RunPageLink = Payment = field(Payment);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Payment page.';
                 }
 
                 action(C5Delivery)
@@ -138,8 +140,9 @@ page 1861 "C5 VendTable"
                     PromotedOnly = true;
                     Image = Delivery;
                     RunObject = Page "C5 Delivery";
-                    RunPageLink = Delivery = field (Delivery);
+                    RunPageLink = Delivery = field(Delivery);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Delivery page.';
                 }
 
                 action(C5DiscGroup)
@@ -151,8 +154,9 @@ page 1861 "C5 VendTable"
                     PromotedOnly = true;
                     Image = Discount;
                     RunObject = Page "C5 VendDiscGroup";
-                    RunPageLink = DiscGroup = field (DiscGroup);
+                    RunPageLink = DiscGroup = field(DiscGroup);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Vendor Discount Groups page.';
                 }
 
                 action(C5VendGroup)
@@ -164,8 +168,9 @@ page 1861 "C5 VendTable"
                     PromotedOnly = true;
                     Image = Group;
                     RunObject = Page "C5 VendGroup";
-                    RunPageLink = Group = field (Group);
+                    RunPageLink = Group = field(Group);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Vendor Groups page.';
                 }
 
                 action(C5VendTrans)
@@ -177,8 +182,9 @@ page 1861 "C5 VendTable"
                     PromotedOnly = true;
                     Image = EntriesList;
                     RunObject = Page "C5 VendTrans";
-                    RunPageLink = Account = field (Account), Open = const (Yes), BudgetCode = const (Actual);
+                    RunPageLink = Account = field(Account), Open = const(Yes), BudgetCode = const(Actual);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Vendor Entries page.';
                 }
 
                 action(C5VendContact)
@@ -190,8 +196,9 @@ page 1861 "C5 VendTable"
                     PromotedOnly = true;
                     Image = ContactPerson;
                     RunObject = Page "C5 VendContact";
-                    RunPageLink = Account = field (Account);
+                    RunPageLink = Account = field(Account);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Vendor Contact Persons page.';
                 }
             }
         }

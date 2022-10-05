@@ -26,7 +26,7 @@ tableextension 11026 "Elster VAT Statement Name" extends "VAT Statement Name"
     end;
 
     var
-        AlreadyExistsErr: Label 'There is already a %1 set up for %2.';
+        AlreadyExistsErr: Label 'There is already a %1 set up for %2.', Comment = '%1 = Elster VAT Statement Name Table Caption; %2 = Sales VAT Adv. Notif. Field Caption';
 
     local procedure CheckSalesVATAdvNotif()
     var

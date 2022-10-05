@@ -69,7 +69,7 @@ codeunit 30114 "Shpfy Customer API"
             AddFieldToGraphQuery(GraphQuery, 'zip', ShopifyCustomerAddress.Zip);
         if ShopifyCustomerAddress.City <> '' then
             AddFieldToGraphQuery(GraphQuery, 'city', ShopifyCustomerAddress.City);
-        if ShopifyCustomerAddress."Province Code" <> '' then
+        if (ShopifyCustomerAddress."Province Code" <> '') and (ShopifyCustomerAddress."Country/Region Code" <> '') then
             AddFieldToGraphQuery(GraphQuery, 'provinceCode', ShopifyCustomerAddress."Province Code");
         if ShopifyCustomerAddress."Country/Region Code" <> '' then
             AddFieldToGraphQuery(GraphQuery, 'countryCode', ShopifyCustomerAddress."Country/Region Code", false);

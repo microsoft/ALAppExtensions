@@ -149,6 +149,41 @@ codeunit 18930 "Validation Events"
         ValidateTransactionDirectionForContraVoucher(Rec);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Library", 'OnGetVoucherAccNo', '', false, false)]
+    local procedure OnGetVoucherAccNo(var LocationCode: Code[20]; var AccountNo: Code[20]; var ForUpiPayment: Boolean)
+    begin
+        GetVoucherAccNoAndUpiId(LocationCode, AccountNo, ForUpiPayment);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Library", 'OnGetBankAccUpiId', '', false, false)]
+    local procedure OnGetBankAccUpiId(BankCode: Code[20]; var UPIID: Text[50])
+    begin
+        GetBankAccUpiId(BankCode, UPIID);
+    end;
+
+    local procedure GetBankAccUpiId(BankCode: Code[20]; var UPIID: Text[50])
+    var
+        BankAccount: Record "Bank Account";
+    begin
+        BankAccount.Get(BankCode);
+        UPIID := BankAccount."UPI ID";
+    end;
+
+    local procedure GetVoucherAccNoAndUpiId(LocationCode: Code[20]; var AccountNo: Code[20]; var ForUpiPayment: Boolean)
+    var
+        VoucherPostingDebitAcc: Record "Voucher Posting Debit Account";
+    begin
+        VoucherPostingDebitAcc.SetCurrentKey("Location code");
+        VoucherPostingDebitAcc.SetRange("Location code", LocationCode);
+        VoucherPostingDebitAcc.SetRange(Type, VoucherPostingDebitAcc.Type::"Bank Receipt Voucher");
+        VoucherPostingDebitAcc.SetRange("Account Type", VoucherPostingDebitAcc."Account Type"::"Bank Account");
+        VoucherPostingDebitAcc.SetRange("For UPI Payments", true);
+        if VoucherPostingDebitAcc.FindFirst() then begin
+            AccountNo := VoucherPostingDebitAcc."Account No.";
+            ForUpiPayment := VoucherPostingDebitAcc."For UPI Payments";
+        end;
+    end;
+
     local procedure ValidateTransactionDirectionForContraVoucher(VoucherPostingSetup: Record "Journal Voucher Posting Setup")
     begin
         if VoucherPostingSetup.Type = VoucherPostingSetup.Type::"Contra Voucher" then

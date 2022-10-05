@@ -20,8 +20,8 @@ codeunit 148000 "Payroll Integration Test"
         AmountInCentsTok: Label 'AMOUNT_IN_CENTS', locked = true;
         BlankDimCodeTok: Label 'BLANK_DIM_CODE', locked = true;
         EvaluateTextToIntegerTok: Label 'EVAL_TXT_TO_INT', locked = true;
-        AssertMsg: Label '%1 Field: "%2" different from expected.';
-        DimCodeDoesNotExistErr: Label 'contains a value (%1) that cannot be found in the related table (Dimension Value)';
+        AssertMsg: Label '%1 Field: "%2" different from expected.', Comment = '%1 = Assertion Message; %2 = Asserted Field Name';
+        DimCodeDoesNotExistErr: Label 'contains a value (%1) that cannot be found in the related table (Dimension Value)', Comment = '%1 = Field Value';
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]

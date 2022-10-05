@@ -9,7 +9,6 @@
 page 2500 "Extension Management"
 {
     Caption = 'Extension Management';
-    Extensible = false;
     AdditionalSearchTerms = 'app,add-in,customize,plug-in,appsource';
     ApplicationArea = All;
     DeleteAllowed = false;
@@ -42,14 +41,6 @@ page 2500 "Extension Management"
                     Caption = 'Logo';
                     ToolTip = 'Specifies the logo of the extension, such as the logo of the service provider.';
                 }
-                field("Is Installed"; IsInstalled)
-                {
-                    ApplicationArea = All;
-                    Caption = 'Is Installed';
-                    Style = Favorable;
-                    StyleExpr = InfoStyle;
-                    ToolTip = 'Specifies whether the extension is installed.';
-                }
                 field(Name; Name)
                 {
                     ApplicationArea = All;
@@ -65,6 +56,14 @@ page 2500 "Extension Management"
                     ApplicationArea = All;
                     Caption = 'Version';
                     ToolTip = 'Specifies the version of the extension.';
+                }
+                field("Is Installed"; IsInstalled)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Is Installed';
+                    Style = Favorable;
+                    StyleExpr = InfoStyle;
+                    ToolTip = 'Specifies whether the extension is installed.';
                 }
                 field("Published As"; "Published As")
                 {
@@ -96,6 +95,21 @@ page 2500 "Extension Management"
             group(ActionGroup13)
             {
                 Caption = 'Process';
+                action(View)
+                {
+                    ApplicationArea = All;
+                    Caption = 'View';
+                    Enabled = ActionsEnabled;
+                    Image = View;
+                    Promoted = true;
+                    PromotedOnly = true;
+                    PromotedCategory = Category5;
+                    ShortCutKey = 'Return';
+                    ToolTip = 'View extension details.';
+                    RunObject = Page "Extension Settings";
+                    RunPageLink = "App ID" = FIELD(ID);
+                    Scope = Repeater;
+                }
                 action(Install)
                 {
                     ApplicationArea = All;
@@ -154,6 +168,7 @@ page 2500 "Extension Management"
                         ExtensionOperationImpl.UnpublishUninstalledPerTenantExtension("Package ID");
                     end;
                 }
+#if not CLEAN21
                 action(Configure)
                 {
                     ApplicationArea = All;
@@ -166,6 +181,35 @@ page 2500 "Extension Management"
                     RunPageLink = "App ID" = FIELD(ID);
                     Scope = Repeater;
                     ToolTip = 'Configure the extension.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '21.0';
+                    ObsoleteReason = 'Removed as it clashes with Set up this app action.';
+                }
+#endif
+                action(SetupApp)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Set up';
+                    Image = SetupList;
+                    Enabled = ActionsEnabled AND IsInstalled;
+                    Promoted = true;
+                    PromotedOnly = true;
+                    PromotedCategory = Category5;
+                    Scope = Repeater;
+                    ToolTip = 'Runs the setup page that has been marked as primary for the selected app.';
+
+                    trigger OnAction()
+                    var
+                        PublishedApplication: Record "Published Application";
+                    begin
+                        CurrPage.SetSelectionFilter(PublishedApplication);
+
+                        if PublishedApplication.Count > 1 then
+                            Error(MultiSelectNotSupportedErr);
+
+                        ExtensionInstallationImpl.RunExtensionSetup(Rec.ID);
+                    end;
                 }
                 action("Download Source")
                 {
@@ -247,8 +291,8 @@ page 2500 "Extension Management"
                 action("Deployment Status")
                 {
                     ApplicationArea = All;
-                    Caption = 'Deployment Status';
-                    Image = View;
+                    Caption = 'Installation Status';
+                    Image = Status;
                     Promoted = true;
                     PromotedOnly = true;
                     PromotedCategory = Category5;
@@ -256,25 +300,6 @@ page 2500 "Extension Management"
                     RunObject = Page "Extension Deployment Status";
                     ToolTip = 'Check status for upload process for extensions.';
                     Visible = IsSaaS;
-                }
-                action(View)
-                {
-                    ApplicationArea = All;
-                    Caption = 'View';
-                    Enabled = ActionsEnabled;
-                    Image = View;
-                    Promoted = true;
-                    PromotedOnly = true;
-                    PromotedCategory = Category4;
-                    ShortCutKey = 'Return';
-                    ToolTip = 'View extension details.';
-                    Visible = NOT IsSaaS;
-
-                    trigger OnAction()
-                    begin
-                        if ExtensionInstallationImpl.RunExtensionInstallation(Rec) then
-                            CurrPage.Update();
-                    end;
                 }
             }
         }
@@ -319,6 +344,7 @@ page 2500 "Extension Management"
         SaaSCaptionTxt: Label 'Installed Extensions', Comment = 'The caption to display when on SaaS';
         IsTenantExtension: Boolean;
         CannotUnpublishIfInstalledMsg: Label 'The extension %1 cannot be unpublished because it is installed.', Comment = '%1 = name of extension';
+        MultiSelectNotSupportedErr: Label 'Multi-select is not supported on this action';
         IsMarketplaceEnabled: Boolean;
         IsOnPremDisplay: Boolean;
         IsInstalled: Boolean;
@@ -338,12 +364,12 @@ page 2500 "Extension Management"
 
     local procedure DetermineEnvironmentConfigurations()
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
         ExtensionMarketplace: Codeunit "Extension Marketplace";
         ServerSetting: Codeunit "Server Setting";
         IsSaaSInstallAllowed: Boolean;
     begin
-        IsSaaS := EnvironmentInfo.IsSaaS();
+        IsSaaS := EnvironmentInformation.IsSaaS();
         IsSaaSInstallAllowed := ServerSetting.GetEnableSaaSExtensionInstallSetting();
 
         IsMarketplaceEnabled := ExtensionMarketplace.IsMarketplaceEnabled();

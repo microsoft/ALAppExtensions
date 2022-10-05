@@ -69,7 +69,9 @@ page 20017 "APIV1 - Employees"
                 field(address; PostalAddressJSON)
                 {
                     Caption = 'address', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the address for the employee.';
                 }
                 field(phoneNumber; "Phone No.")
@@ -170,15 +172,15 @@ page 20017 "APIV1 - Employees"
     var
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
         GraphMgtEmployee: Codeunit "Graph Mgt - Employee";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
         INSERT(TRUE);
 
         GraphMgtEmployee.ProcessComplexTypes(Rec, PostalAddressJSON);
 
-        RecRef.GETTABLE(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CURRENTDATETIME());
-        RecRef.SETTABLE(Rec);
+        RecordRef.GETTABLE(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecordRef, TempFieldSet, CURRENTDATETIME());
+        RecordRef.SETTABLE(Rec);
 
         MODIFY(TRUE);
         SetCalculatedFields();

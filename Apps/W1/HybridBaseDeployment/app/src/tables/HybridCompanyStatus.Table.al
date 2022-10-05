@@ -33,6 +33,16 @@ table 40027 "Hybrid Company Status"
         {
             Description = 'Upgrade Failure Message';
         }
+
+        field(5; "User Mapping Completed"; Boolean)
+        {
+            Description = 'User Mapping Completed';
+        }
+
+        field(6; "Last User Mapping DateTime"; DateTime)
+        {
+            Description = 'Last User Mapping DateTime';
+        }
     }
 
     keys
@@ -40,6 +50,9 @@ table 40027 "Hybrid Company Status"
         key(Key1; Name)
         {
             Clustered = true;
+        }
+        key(Key2; "Upgrade Status")
+        {
         }
     }
 }

@@ -1909,7 +1909,9 @@
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
+#pragma warning disable AA0207
     procedure HandleVANRegisterServiceConnection(var ServiceConnection: Record 1400)
+#pragma warning restore
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         RecRef: RecordRef;

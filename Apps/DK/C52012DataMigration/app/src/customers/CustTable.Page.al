@@ -110,8 +110,9 @@ page 1860 "C5 CustTable"
                     PromotedOnly = true;
                     Image = SalesPerson;
                     RunObject = Page "C5 Employee";
-                    RunPageLink = Employee = field (SalesRep);
+                    RunPageLink = Employee = field(SalesRep);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Employee page.';
                 }
 
                 action(C5Payment)
@@ -123,8 +124,9 @@ page 1860 "C5 CustTable"
                     PromotedOnly = true;
                     Image = Payment;
                     RunObject = Page "C5 Payment";
-                    RunPageLink = Payment = field (Payment);
+                    RunPageLink = Payment = field(Payment);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Payment page.';
                 }
 
                 action(C5Delivery)
@@ -136,8 +138,9 @@ page 1860 "C5 CustTable"
                     PromotedOnly = true;
                     Image = Delivery;
                     RunObject = Page "C5 Delivery";
-                    RunPageLink = Delivery = field (Delivery);
+                    RunPageLink = Delivery = field(Delivery);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Delivery page.';
                 }
 
                 action(C5CustDiscGroup)
@@ -149,8 +152,9 @@ page 1860 "C5 CustTable"
                     PromotedOnly = true;
                     Image = Discount;
                     RunObject = Page "C5 CustDiscGroup";
-                    RunPageLink = DiscGroup = field (DiscGroup);
+                    RunPageLink = DiscGroup = field(DiscGroup);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Customer Discount Groups page.';
                 }
 
                 action(C5PriceGroup)
@@ -162,8 +166,9 @@ page 1860 "C5 CustTable"
                     PromotedOnly = true;
                     Image = Price;
                     RunObject = Page "C5 InvenPriceGroup";
-                    RunPageLink = Group = field (PriceGroup);
+                    RunPageLink = Group = field(PriceGroup);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Inventory Price Groups page.';
                 }
 
                 action(C5PaymentMode)
@@ -175,8 +180,9 @@ page 1860 "C5 CustTable"
                     PromotedOnly = true;
                     Image = SuggestPayment;
                     RunObject = Page "C5 ProcCode";
-                    RunPageLink = Code = field (PaymentMode);
+                    RunPageLink = Code = field(PaymentMode);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Process Codes page.';
                 }
 
                 action(C5CustGroup)
@@ -188,8 +194,9 @@ page 1860 "C5 CustTable"
                     PromotedOnly = true;
                     Image = Group;
                     RunObject = Page "C5 CustGroup";
-                    RunPageLink = Group = field (Group);
+                    RunPageLink = Group = field(Group);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Customer Groups page.';
                 }
 
                 action(C5CustTrans)
@@ -201,8 +208,9 @@ page 1860 "C5 CustTable"
                     PromotedOnly = true;
                     Image = EntriesList;
                     RunObject = Page "C5 CustTrans";
-                    RunPageLink = Account = field (Account), Open = const (Yes), BudgetCode = const (Actual);
+                    RunPageLink = Account = field(Account), Open = const(Yes), BudgetCode = const(Actual);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Customer Entries.';
                 }
 
                 action(C5CustContact)
@@ -214,8 +222,9 @@ page 1860 "C5 CustTable"
                     PromotedOnly = true;
                     Image = ContactPerson;
                     RunObject = Page "C5 CustContact";
-                    RunPageLink = Account = field (Account);
+                    RunPageLink = Account = field(Account);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Customer Contact Persons.';
                 }
             }
         }

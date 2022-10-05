@@ -87,13 +87,9 @@ page 20037 "APIV1 - Sales Quotes"
                     Caption = 'customerId', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF NOT SellToCustomer.GetBySystemId("Customer Id") THEN
                             ERROR(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Sell-to Customer No." := SellToCustomer."No.";
                         RegisterFieldSet(FIELDNO("Customer Id"));
@@ -109,8 +105,6 @@ page 20037 "APIV1 - Sales Quotes"
                     Caption = 'customerNumber', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF SellToCustomer."No." <> '' THEN BEGIN
                             IF SellToCustomer."No." <> "Sell-to Customer No." THEN
@@ -120,8 +114,6 @@ page 20037 "APIV1 - Sales Quotes"
 
                         IF NOT SellToCustomer.GET("Sell-to Customer No.") THEN
                             ERROR(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Customer Id" := SellToCustomer.SystemId;
                         RegisterFieldSet(FIELDNO("Customer Id"));
@@ -143,13 +135,9 @@ page 20037 "APIV1 - Sales Quotes"
                     Caption = 'billToCustomerId', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF NOT BillToCustomer.GetBySystemId("Bill-to Customer Id") THEN
                             ERROR(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer No." := BillToCustomer."No.";
                         RegisterFieldSet(FIELDNO("Bill-to Customer Id"));
@@ -161,8 +149,6 @@ page 20037 "APIV1 - Sales Quotes"
                     Caption = 'billToCustomerNumber', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF BillToCustomer."No." <> '' THEN BEGIN
                             IF BillToCustomer."No." <> "Bill-to Customer No." THEN
@@ -172,8 +158,6 @@ page 20037 "APIV1 - Sales Quotes"
 
                         IF NOT BillToCustomer.GET("Bill-to Customer No.") THEN
                             ERROR(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer Id" := BillToCustomer.SystemId;
                         RegisterFieldSet(FIELDNO("Bill-to Customer Id"));
@@ -209,7 +193,9 @@ page 20037 "APIV1 - Sales Quotes"
                 field(sellingPostalAddress; SellingPostalAddressJSONText)
                 {
                     Caption = 'sellingPostalAddress', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the selling address of the Sales Invoice.';
 
                     trigger OnValidate()
@@ -220,7 +206,9 @@ page 20037 "APIV1 - Sales Quotes"
                 field(billingPostalAddress; BillingPostalAddressJSONText)
                 {
                     Caption = 'billingPostalAddress', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the billing address of the Sales Invoice.';
 
                     trigger OnValidate()
@@ -231,7 +219,9 @@ page 20037 "APIV1 - Sales Quotes"
                 field(shippingPostalAddress; ShippingPostalAddressJSONText)
                 {
                     Caption = 'shippingPostalAddress', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the shipping address of the Sales Invoice.';
 
                     trigger OnValidate()

@@ -70,6 +70,7 @@ permissionset 8906 "Email - Objects"
                   Table "Email Scenario" = X,
                   Table "Email View Policy" = X,
                   Table "Sent Email" = X,
+                  Query "Email Related Record" = X,
                   Query "Sent Emails" = X,
                   Query "Outbox Emails" = X;
 }

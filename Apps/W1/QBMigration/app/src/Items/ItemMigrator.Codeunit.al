@@ -8,6 +8,7 @@ codeunit 1920 "MigrationQB Item Migrator"
         ItemType: Option Inventory,Service;
         CostingMethod: Option FIFO,LIFO,Specific,Average,Standard;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
     procedure OnMigrateItem(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -18,6 +19,7 @@ codeunit 1920 "MigrationQB Item Migrator"
         MigrationQBItem.Get(RecordIdToMigrate);
         MigrateItemDetails(MigrationQBItem, Sender);
     end;
+#pragma warning restore AA0207
 
     procedure MigrateItemDetails(MigrationQBItem: Record "MigrationQB Item"; ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
     begin
@@ -32,6 +34,7 @@ codeunit 1920 "MigrationQB Item Migrator"
         ItemDataMigrationFacade.ModifyItem(true);
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
     procedure OnMigrateItemPostingGroups(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
@@ -53,7 +56,9 @@ codeunit 1920 "MigrationQB Item Migrator"
 
         Sender.ModifyItem(true);
     end;
+#pragma warning restore AA0207
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
     procedure OnMigrateInventoryTransactions(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
@@ -77,6 +82,7 @@ codeunit 1920 "MigrationQB Item Migrator"
         if ErrorText <> '' then
             Error(ErrorText);
     end;
+#pragma warning restore AA0207
 
     local procedure ConvertItemType(MigrationQBItemType: Text): Option
     begin

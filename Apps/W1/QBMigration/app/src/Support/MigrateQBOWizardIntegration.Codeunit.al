@@ -10,6 +10,10 @@ codeunit 1830 "MigrateQBO Wizard Integration"
         ThatsItTxt: Label 'To check the status of the data migration, go to the %1 page.', Comment = '%1=Page Name';
         MigrationNotSupportedErr: Label 'This migration does not support the "Specific" costing method. Verify your costing method in Inventory Setup.';
         QBSelectedTxt: Label 'QBO Migration was selected.';
+        NoVendorsTxt: Label 'vendor: %1; ', comment = '%1 = Number of Vendor records';
+        NoCustomersTxt: Label 'customer: %1; ', comment = '%1 = Number of Customer records';
+        NoGLAccountsTxt: Label 'gl_acc: %1; ', comment = '%1 = Number of G/L Account records';
+        NoItemsTxt: Label 'item: %1; ', comment = '%1 = Number of Item records';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnRegisterDataMigrator', '', true, true)]
     local procedure OnRegisterDataMigratorRegisterQBDataMigrator(var DataMigratorRegistration: Record "Data Migrator Registration")
@@ -35,7 +39,7 @@ codeunit 1830 "MigrateQBO Wizard Integration"
         CRLF[2] := 10;
 
         if InventorySetup.Get() then
-            if InventorySetup."Default Costing Method" = CostingMethod::Specific then
+            if InventorySetup."Default Costing Method".AsInteger() = CostingMethod::Specific then
                 Error(MigrationNotSupportedErr);
 
         Instructions := Instruction1Txt + CRLF + Instruction2Txt + CRLF + Instruction3Txt;
@@ -109,7 +113,7 @@ codeunit 1830 "MigrateQBO Wizard Integration"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Data Migrator Registration", 'OnHideSelected', '', true, true)]
-    local procedure HideSelectedCheckBoxes(var Sender: Record "Data Migrator Registration"; var HideSelectedCheckBoxes: Boolean);
+    local procedure OnHideSelectedCheckBoxes(var Sender: Record "Data Migrator Registration"; var HideSelectedCheckBoxes: Boolean);
     begin
         if Sender."No." <> GetCurrentCodeUnitNumber() then
             exit;
@@ -130,19 +134,19 @@ codeunit 1830 "MigrateQBO Wizard Integration"
         DataMigrationEntity.SetRange(Selected, true);
         DataMigrationEntity.SetRange("Table ID", Database::Vendor);
         if DataMigrationEntity.FindFirst() then
-            EntitiesToMigrateMessage += StrSubstNo('vendor: %1; ', DataMigrationEntity."No. of Records");
+            EntitiesToMigrateMessage += StrSubstNo(NoVendorsTxt, DataMigrationEntity."No. of Records");
 
         DataMigrationEntity.SetRange("Table ID", Database::Customer);
         if DataMigrationEntity.FindFirst() then
-            EntitiesToMigrateMessage += StrSubstNo('customer: %1; ', DataMigrationEntity."No. of Records");
+            EntitiesToMigrateMessage += StrSubstNo(NoCustomersTxt, DataMigrationEntity."No. of Records");
 
         DataMigrationEntity.SetRange("Table ID", Database::"G/L Account");
         if DataMigrationEntity.FindFirst() then
-            EntitiesToMigrateMessage += StrSubstNo('gl_acc: %1; ', DataMigrationEntity."No. of Records");
+            EntitiesToMigrateMessage += StrSubstNo(NoGLAccountsTxt, DataMigrationEntity."No. of Records");
 
         DataMigrationEntity.SetRange("Table ID", Database::Item);
         if DataMigrationEntity.FindFirst() then
-            EntitiesToMigrateMessage += StrSubstNo('item: %1; ', DataMigrationEntity."No. of Records");
+            EntitiesToMigrateMessage += StrSubstNo(NoItemsTxt, DataMigrationEntity."No. of Records");
 
         Session.LogMessage('00001OA', EntitiesToMigrateMessage, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
     end;

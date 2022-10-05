@@ -1,6 +1,6 @@
 table 4060 "GPPOPReceiptApply"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

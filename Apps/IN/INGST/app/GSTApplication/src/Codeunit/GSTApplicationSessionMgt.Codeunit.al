@@ -367,33 +367,4 @@ codeunit 18434 "GST Application Session Mgt."
         if ToPurchHeader."GST Vendor Type" <> ToPurchHeader."GST Vendor Type"::" " then
             IsCopyDocument := false;
     end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Config. Insert With Validation", 'OnBeforeInsertWithValidation', '', false, false)]
-    local procedure OnBeforeInsertWithValidation(var RecRefToInsert: RecordRef; var IsHandled: Boolean)
-    var
-        PurchaseHeader: Record "Purchase Header";
-        PurchaseLine: Record "Purchase Line";
-    begin
-        if IsCopyDocument then
-            exit;
-
-        case RecRefToInsert.Number of
-            database::"Purchase Line":
-                begin
-                    RecRefToInsert.SetTable(PurchaseLine);
-                    if PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.") then
-                        if PurchaseHeader."GST Vendor Type" <> PurchaseHeader."GST Vendor Type"::" " then
-                            IsCopyDocument := true;
-                end;
-        end;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Config. Package Management", 'OnPostProcessPackage', '', false, false)]
-    local procedure OnPostProcessPackage()
-    begin
-        if not IsCopyDocument then
-            exit;
-
-        IsCopyDocument := false;
-    end;
 }

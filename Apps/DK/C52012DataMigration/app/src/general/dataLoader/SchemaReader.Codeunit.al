@@ -15,10 +15,10 @@ codeunit 1863 "C5 Schema Reader"
 
     local procedure ProcessZipFile()
     var
-        NameValueBuffer: Record "Name/Value Buffer" temporary;
+        TempNameValueBuffer: Record "Name/Value Buffer" temporary;
     begin
-        Codeunit.Run(Codeunit::"C5 Unzip", NameValueBuffer);
-        ReadDefinitionFile(NameValueBuffer);
+        Codeunit.Run(Codeunit::"C5 Unzip", TempNameValueBuffer);
+        ReadDefinitionFile(TempNameValueBuffer);
     end;
 
     procedure GetNumberOfAccounts(): Integer

@@ -17,7 +17,6 @@ codeunit 9018 "Azure AD Plan Impl."
         UserLoginTimeTracker: Codeunit "User Login Time Tracker";
         AzureADGraph: Codeunit "Azure AD Graph";
         AzureADGraphUser: Codeunit "Azure AD Graph User";
-        IsTest: Boolean;
         UserSetupCategoryTxt: Label 'User Setup', Locked = true;
         DeviceGroupNameTxt: Label 'Dynamics 365 Business Central Device Users', Locked = true;
         DevicePlanFoundMsg: Label 'Device plan %1 found for user with authentication object ID %2', Locked = true;
@@ -26,6 +25,8 @@ codeunit 9018 "Azure AD Plan Impl."
         MixedPlansAdminErr: Label 'Before you can update user information, go to your Microsoft 365 admin center and make sure that all users are assigned to the same Business Central license, either Basic, Essential, or Premium. For example, we found that users %1 and %2 are assigned to different licenses, but there may be other mismatches.', Comment = '%1 = %2 = Authnetication email.';
         MixedPlansMsg: Label 'One or more users are not assigned to the same Business Central license. For example, we found that users %1 and %2 are assigned to different licenses, but there may be other mismatches. In your Microsoft 365 admin center, make sure that all users are assigned to the same Business Central license, either Basic, Essential, or Premium.  Afterward, update Business Central by opening the Users page and using the ''Update Users from Office 365'' action.', Comment = '%1 = %2 = Authnetication email.';
         UserPlanAssignedMsg: Label 'User with authentication object ID %1 is assigned plan %2', Locked = true;
+        PlanNotEnabledMsg: Label 'Plan is assigned to user but it is not enabled. Plan ID: %1', Locked = true;
+        NotBCPlanAssignedMsg: Label 'Plan is assigned to user but it is not recognized as a BC plan. Plan ID: %1', Locked = true;
         UserHasNoPlansMsg: Label 'User with authentication object ID %1 has no Business Central plans assigned', Locked = true;
         DeviceUserCannotBeFirstUserErr: Label 'The device user cannot be the first user to log into the system.';
         UserGotPlanTxt: Label 'The Graph User with the authentication object ID %1 has a plan with ID %2 named %3.', Comment = '%1 = Authentication email (email); %2 = subscription plan ID (guid); %3 = Plan name (tex1t)', Locked = true;
@@ -44,6 +45,9 @@ codeunit 9018 "Azure AD Plan Impl."
         EssentialsPlanNameTxt: Label 'Dynamics 365 Business Central Essential', Locked = true;
         PremiumPlanNameTxt: Label 'Dynamics 365 Business Central Premium', Locked = true;
         ClearPersonalizationTxt: Label 'Clear company in User Pesonalization', Locked = true;
+        NoDelegatedRoleTxt: Label 'User does not have a delegated role (e.g. Delegated Admin or Delegated Helpdesk)', Locked = true;
+        AssigningPlanForDelegatedRoleTxt: Label 'Assigning plan %1 for a user with a delegated role (e.g. Delegated Admin or Delegated Helpdesk)', Comment = '%1 = the plan ID', Locked = true;
+        RemovedSUPERFromUserTxt: Label 'Removed SUPER from the current user', Locked = true;
 
     [NonDebuggable]
     procedure IsPlanAssigned(PlanGUID: Guid): Boolean
@@ -218,11 +222,16 @@ codeunit 9018 "Azure AD Plan Impl."
     end;
 
     [NonDebuggable]
-    procedure SetTestInProgress(EnableTestability: Boolean)
+    procedure GetAllPlanIds(): List of [Guid]
+    var
+        Plan: Record Plan;
+        PlanIDs: List of [Guid];
     begin
-        IsTest := EnableTestability;
-        AzureADGraph.SetTestInProgress(EnableTestability);
-        AzureADGraphUser.SetTestInProgress(EnableTestability);
+        if Plan.FindSet() then
+            repeat
+                PlanIDs.Add(Plan."Plan ID");
+            until Plan.Next() = 0;
+        exit(PlanIDs);
     end;
 
     [NonDebuggable]
@@ -238,14 +247,14 @@ codeunit 9018 "Azure AD Plan Impl."
     var
         Company: Record Company;
         AzureADPlan: Codeunit "Azure AD Plan";
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
         CanManageUsers: Boolean;
         UserAuthenticationEmailFirst: Text;
         UserAuthenticationEmailSecond: Text;
         FirstConflictingPlanName: Text;
         SecondConflictingPlanName: Text;
     begin
-        if not EnvironmentInfo.IsSaaS() then
+        if not EnvironmentInformation.IsSaaS() then
             exit;
 
         if not GuiAllowed() then
@@ -425,8 +434,8 @@ codeunit 9018 "Azure AD Plan Impl."
                     NavUserPlan.Delete();
                     if RemoveUserGroupsOnDeletePlan then
                         AzureADPlan.OnRemoveUserGroupsForUserAndPlan(NavUserPlan."Plan ID", NavUserPlan."User Security ID");
-                    if not IsTest then
-                        Commit(); // Finalize the transaction. Else any further error can rollback and create elevation of privilege
+
+                    Commit(); // Finalize the transaction. Else any further error can rollback and create elevation of privilege
                 end;
             until TempNavUserPlan.Next() = 0;
     end;
@@ -447,15 +456,19 @@ codeunit 9018 "Azure AD Plan Impl."
 
         // Loop through assigned Azure AD Plans
         if not IsNull(GraphUserInfo.AssignedPlans()) then
-            foreach AssignedPlan in GraphUserInfo.AssignedPlans() do
+            foreach AssignedPlan in GraphUserInfo.AssignedPlans() do begin
+                ServicePlanIdValue := AssignedPlan.ServicePlanId();
+
                 if Format(AssignedPlan.CapabilityStatus()) = 'Enabled' then begin
-                    ServicePlanIdValue := AssignedPlan.ServicePlanId();
-                    if IsBCServicePlan(ServicePlanIdValue) or IsTest then begin
+                    if IsBCServicePlan(ServicePlanIdValue) then begin
                         HaveAssignedPlans := true;
                         AddToTempPlan(ServicePlanIdValue, Format(AssignedPlan.ServicePlanName()), TempPlan);
                         Session.LogMessage('00009KY', StrSubstNo(UserPlanAssignedMsg, Format(GraphUserInfo.ObjectId()), Format(ServicePlanIdValue)), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
-                    end;
-                end;
+                    end else
+                        Session.LogMessage('0000I94', StrSubstNo(NotBCPlanAssignedMsg, Format(ServicePlanIdValue)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                end else
+                    Session.LogMessage('0000I95', StrSubstNo(PlanNotEnabledMsg, Format(ServicePlanIdValue)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+            end;
 
         if not HaveAssignedPlans then
             Session.LogMessage('00009KZ', StrSubstNo(UserHasNoPlansMsg, Format(GraphUserInfo.ObjectId())), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
@@ -535,11 +548,23 @@ codeunit 9018 "Azure AD Plan Impl."
     procedure IsBCServicePlan(ServicePlanId: Guid): Boolean
     var
         Plan: Record "Plan";
+        PlanIds: Codeunit "Plan IDs";
+        Skip: Boolean;
+        IsPlanFound: Boolean;
     begin
+        OnBeforeIsBcServicePlan(Skip);
+        if Skip then
+            exit(true);
+
         if IsNullGuid(ServicePlanId) then
             exit(false);
 
-        exit(Plan.Get(ServicePlanId));
+        IsPlanFound := Plan.Get(ServicePlanId);
+        if (Plan."Plan ID" <> PlanIds.GetMicrosoft365PlanId()) then
+            exit(IsPlanFound);
+
+        // The current plan is M365 Collaboration. Only treat it as a BC plan if the environment switch is on.
+        exit(AzureADGraph.IsM365CollaborationEnabled());
     end;
 
     [NonDebuggable]
@@ -575,7 +600,7 @@ codeunit 9018 "Azure AD Plan Impl."
     end;
 
     [NonDebuggable]
-    procedure AssignDelegatedAdminPlanAndUserGroups()
+    procedure AssignPlanToUserWithDelegatedRole(UserSID: Guid)
     var
         UserPlan: Record "User Plan";
         AzureADPlan: Codeunit "Azure AD Plan";
@@ -583,19 +608,36 @@ codeunit 9018 "Azure AD Plan Impl."
         PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
         UserPermissions: Codeunit "User Permissions";
         UserGroupsAdded, ShouldRemoveSuper : Boolean;
+        PlanId: Guid;
     begin
-        // Have any plans been added to this user in O365, since last time he logged-in to NAV?
-        // For each plan assigned to the user in Office
+        case true of
+            AzureADGraphUser.IsUserDelegatedAdmin():
+                PlanId := PlanIds.GetDelegatedAdminPlanId();
+            AzureADGraphUser.IsUserDelegatedHelpdesk():
+                PlanId := PlanIds.GetHelpDeskPlanId();
+            else begin
+                Session.LogMessage('0000IC3', NoDelegatedRoleTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+                exit;
+            end;
+        end;
+
+        Session.LogMessage('0000IC4', StrSubstNo(AssigningPlanForDelegatedRoleTxt, PlanId), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
+
+        // Assign a plan for the user
         UserPlan.Init();
-        UserPlan."Plan ID" := PlanIds.GetDelegatedAdminPlanId();
-        UserPlan."User Security ID" := UserSecurityID();
+        UserPlan."Plan ID" := PlanId;
+        UserPlan."User Security ID" := UserSID;
         UserPlan.Insert();
+
+        // Assign user groups for the user
         AzureADPlan.OnUpdateUserAccessForSaaS(UserPlan."User Security ID", UserGroupsAdded);
 
-        // Remove SUPER from delegated admin only if the plan permssions have been configured and that configuration does not contain SUPER 
-        ShouldRemoveSuper := PlanConfigurationImpl.IsCustomized(PlanIds.GetDelegatedAdminPlanId()) and (not PlanConfigurationImpl.ConfigurationContainsSuper(PlanIds.GetDelegatedAdminPlanId()));
+        // Users with delegated roles (Delegated Admin or Delegated Helpdesk) has SUPER assigned by default
+        // Remove SUPER from the user only if the plan permssions have been configured and that configuration does not contain SUPER
+        ShouldRemoveSuper := PlanConfigurationImpl.IsCustomized(PlanId) and (not PlanConfigurationImpl.ConfigurationContainsSuper(PlanId));
         if UserGroupsAdded and ShouldRemoveSuper then begin
-            UserPermissions.RemoveSuperPermissions(UserSecurityID());
+            if UserPermissions.RemoveSuperPermissions(UserSID) then
+                Session.LogMessage('0000IC5', RemovedSUPERFromUserTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
             Commit();
         end;
     end;
@@ -618,7 +660,7 @@ codeunit 9018 "Azure AD Plan Impl."
                 UserPlan.LockTable();
                 UserPlan.SetRange("Plan ID", Plan."Plan ID");
                 UserPlan.SetRange("User Security ID", UserSecurityID);
-                
+
                 if UserPlan.IsEmpty() then begin
                     InsertFromTempPlan(Plan);
                     UserPlan.Init();
@@ -652,17 +694,18 @@ codeunit 9018 "Azure AD Plan Impl."
                 ShouldRemoveSuper := not IsUserAdmin(UserSecurityID);
 
             if ShouldRemoveSuper then
-                UserPermissions.RemoveSuperPermissions(UserSecurityID);
+                if UserPermissions.RemoveSuperPermissions(UserSecurityID) then
+                    Session.LogMessage('0000IC6', RemovedSUPERFromUserTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UserSetupCategoryTxt);
         end;
 
-        if not IsTest then
-            Commit(); // Finalize the transaction. Else any further error can rollback and create elevation of privilege
+        Commit(); // Finalize the transaction. Else any further error can rollback and create elevation of privilege
     end;
 
     [NonDebuggable]
     local procedure AddToTempPlan(ServicePlanId: Guid; ServicePlanName: Text; var TempPlan: Record "Plan" temporary)
     var
         Plan: Record "Plan";
+        Handled: Boolean;
     begin
         WITH TempPlan do begin
             if GET(ServicePlanId) then
@@ -673,9 +716,8 @@ codeunit 9018 "Azure AD Plan Impl."
             Init();
             "Plan ID" := ServicePlanId;
             Name := CopyStr(ServicePlanName, 1, MaxStrLen(Name));
-            if IsTest then
-                "Role Center ID" := 9022
-            else
+            OnInitializeRoleCenter("Role Center ID", Handled);
+            if not Handled then
                 "Role Center ID" := Plan."Role Center ID";
             Insert();
         end;
@@ -769,6 +811,16 @@ codeunit 9018 "Azure AD Plan Impl."
                     exit(true);
                 end;
             until TempPlan.Next() = 0;
+    end;
+
+    [InternalEvent(false)]
+    local procedure OnBeforeIsBcServicePlan(var Skip: Boolean)
+    begin
+    end;
+
+    [InternalEvent(false)]
+    local procedure OnInitializeRoleCenter(var RoleCenterId: Integer; var Handled: Boolean)
+    begin
     end;
 
 }

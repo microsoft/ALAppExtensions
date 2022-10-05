@@ -1,0 +1,44 @@
+{
+    "id":  "c0146a0a-d0fe-4eec-8857-8a66551d010d",
+    "name":  "Data Search Tests",
+    "publisher":  "Microsoft",
+    "brief":  "Data Search Tests.",
+    "description":  "Data Search Tests.",
+    "version":  "21.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=847985",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=724011",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/",
+    "logo":  "ExtensionLogo.png",
+    "dependencies":  [
+                         {
+                             "id":  "ac14293f-1eb7-4a7b-9936-b280da31970b",
+                             "name":  "Data Search",
+                             "publisher":  "Microsoft",
+                             "version":  "21.0.0.0"
+                         },
+                         {
+                            "id":  "437dbf0e-84ff-417a-965d-ed2bb9650972",
+                            "name":  "Base Application",
+                            "publisher":  "Microsoft",
+                            "version":  "21.0.0.0"
+                        },
+                        {
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "name":  "Library Assert",
+                             "publisher":  "Microsoft",
+                             "version":  "21.0.0.0"
+                         }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "21.0.0.0",
+    "target":  "OnPrem",
+    "resourceExposurePolicy": {
+        "allowDebugging": false,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    }
+}

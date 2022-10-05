@@ -42,11 +42,10 @@ page 2503 "Extension Installation"
 
         MarketplaceExtnDeployment.SetAppID(Rec.ID);
         MarketplaceExtnDeployment.RunModal();
-        if MarketplaceExtnDeployment.GetInstalledSelected() then begin
+        if MarketplaceExtnDeployment.GetInstalledSelected() then
             if NOT IsNullGuid(ID) then
                 ExtensionMarketplace.InstallMarketplaceExtension(ID, ResponseURL, MarketplaceExtnDeployment.GetLanguageId());
-            CurrPage.Close();
-        end;
+        CurrPage.Close();
     end;
 
     local procedure GetDetailsFromFilters()

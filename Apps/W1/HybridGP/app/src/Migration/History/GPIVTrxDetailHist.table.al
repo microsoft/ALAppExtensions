@@ -1,6 +1,6 @@
 table 4051 "GPIVTrxDetailHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

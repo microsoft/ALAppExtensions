@@ -1,6 +1,6 @@
 table 4062 "GPPOPReceiptLineHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

@@ -79,7 +79,7 @@ codeunit 144741 "BCPT Setup Card Test"
         BCPTLogEntry: Record "BCPT Log Entry";
         BCPTSetupCardTest: Codeunit "BCPT Setup Card Test";
         BCPTSetupCard: TestPage "BCPT Setup Card";
-        UnexpectedNoOfSqlStmtsLbl: Label 'Unexpected value in %1. Expected %2, Actual %3';
+        UnexpectedNoOfSqlStmtsLbl: Label 'Unexpected value in %1. Expected %2, Actual %3', Locked = true;
     begin
         Initialize();
         BCPTSetupCard.OpenNew();
@@ -100,7 +100,7 @@ codeunit 144741 "BCPT Setup Card Test"
         BCPTSetupCard.Start.Invoke();
         UnbindSubscription(BCPTSetupCardTest);
 
-        BCPTHeader.Find();
+        BCPTHeader.Get(BCPTSetupCard.Code.Value);
         BCPTLogEntry.SetRange("BCPT Code", BCPTHeader.Code);
         BCPTLogEntry.SetRange(Version, BCPTHeader.Version);
         Assert.RecordIsNotEmpty(BCPTLogEntry);
@@ -162,7 +162,7 @@ codeunit 144741 "BCPT Setup Card Test"
         BCPTStartTests.StartBCPTSuite(BCPTHeader);
         UnbindSubscription(BCPTSetupCardTest);
 
-        BCPTHeader.Find();
+        BCPTHeader.Get(BCPTHeader.Code);
         BCPTLogEntry.SetRange("BCPT Code", BCPTHeader.Code);
         BCPTLogEntry.SetRange(Version, BCPTHeader.Version);
         Assert.RecordIsNotEmpty(BCPTLogEntry);

@@ -48,7 +48,7 @@ codeunit 40025 "GP Checkbook Migrator"
         MoveTransactionsData(BankAccountNo, BankAccPostingGroupCode, CheckbookID);
     end;
 
-    local procedure MoveTransactionsData(BankAccountNo: Code[20]; BankAccPostingGroupCode: Code[20]; CheckbookID: Text[15])
+    procedure MoveTransactionsData(BankAccountNo: Code[20]; BankAccPostingGroupCode: Code[20]; CheckbookID: Text[15])
     var
         GPCheckbookTransactions: Record "GP Checkbook Transactions";
         PostingAccountNumber: Code[20];

@@ -24,6 +24,10 @@ codeunit 18970 "Check Management Subscriber"
         TDSEntryNo: Integer;
         TDSAccountNo: Code[20];
     begin
+        TotalTDSEncludingSheCess := 0;
+        TDSAccountNo := '';
+        TDSEntryNo := 0;
+
         if CheckLedgerEntry."Stale Cheque" = true then
             Error(CheckMarkedStaleErr);
 
@@ -312,6 +316,10 @@ codeunit 18970 "Check Management Subscriber"
         TDSEntryNo: Integer;
         TDSAccountNo: Code[20];
     begin
+        TotalTDSEncludingSheCess := 0;
+        TDSAccountNo := '';
+        TDSEntryNo := 0;
+
         BankAccount.Get(CheckLedgerEntry."Bank Account No.");
         BankAccountLedgerEntry.Get(CheckLedgerEntry."Bank Account Ledger Entry No.");
         GLEntry.SetCurrentKey("Transaction No.");
@@ -381,6 +389,10 @@ codeunit 18970 "Check Management Subscriber"
         TDSEntryNo: Integer;
         TDSAccountNo: Code[20];
     begin
+        TotalTDSEncludingSheCess := 0;
+        TDSAccountNo := '';
+        TDSEntryNo := 0;
+
         if ConfirmFinancialStale.GetVoidType() = 0 then
             if UnApplyVendInvoices(CheckLedgerEntry, ConfirmFinancialStale.GetVoidDate()) then
                 GenJournalLine."Applies-to ID" := CheckLedgerEntry."Document No.";

@@ -20,8 +20,6 @@ codeunit 148030 "Payment Exp Mgt Unit Test DK"
         IsInitialized: Boolean;
         RollbackChangesErr: Label 'Roll back all the changes.', Locked = true;
         AnyText: Text[20];
-        AnyDecimal: Decimal;
-        AnyDate: Date;
 
     trigger OnRun();
     begin
@@ -141,8 +139,6 @@ codeunit 148030 "Payment Exp Mgt Unit Test DK"
         IsInitialized := TRUE;
 
         AnyText := LibraryUtility.GenerateRandomCode(PaymentExportData.FIELDNO("Short Advice"), DATABASE::"Payment Export Data");
-        AnyDecimal := LibraryRandom.RandDecInRange(-1000000, 1000000, 2);
-        AnyDate := LibraryUtility.GenerateRandomDate(WORKDATE() - 200, WORKDATE() + 200);
     end;
 
     [ConfirmHandler]

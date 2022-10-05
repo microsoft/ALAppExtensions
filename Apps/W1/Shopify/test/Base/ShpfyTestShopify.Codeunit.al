@@ -1,32 +1,28 @@
-codeunit 135603 "Shpfy Test Shopify"
+codeunit 139563 "Shpfy Test Shopify"
 {
     Subtype = Test;
-    TestPermissions = NonRestrictive;
+    TestPermissions = Disabled;
 
     var
-        Assert: Codeunit "Library Assert";
-        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        InitializeTest: Codeunit "Shpfy Initialize Test";
-    // LibrarySetupStorage: Codeunit "Library - Setup Storage";
-    // LibraryTestInitialize: Codeunit "Library - Test Initialize";
-    // LibraryVariableStorage: Codeunit "Library - Variable Storage";
-    // IsInitialized: Boolean;
+        LibraryAssert: Codeunit "Library Assert";
+        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
 
 
     [Test]
     procedure UnitTestConfigureShop()
     var
-        Shop: Record "Shpfy Shop";
+        ShpfyShop: Record "Shpfy Shop";
         ShopMissingUrlErr: Label 'The Shop is missing the Shopify URL.';
     begin
         // [SCENARIO] A random Shop is created and assignd to the codeunit "Shpfy Communication Mgt."
         // [WHEN] The Shop is created.
-        Shop := InitializeTest.CreateShop();
+        ShpfyShop := ShpfyInitializeTest.CreateShop();
         // [THEN] The Shop must have a code.
-        Assert.RecordIsNotEmpty(Shop);
+        LibraryAssert.RecordIsNotEmpty(ShpfyShop);
         // [THEN] The Shop must have a Shopify URL.
-        Assert.IsFalse(Shop."Shopify URL" = '', ShopMissingUrlErr);
+        LibraryAssert.IsFalse(ShpfyShop."Shopify URL" = '', ShopMissingUrlErr);
         // [THEN] The Shop record in the codeunit "Shpfy Communication Mgt." must be equal to the retrieved Shop.
-        Assert.AreEqual(Shop.SystemId, CommunicationMgt.GetShopRecord().SystemId, '');
+        LibraryAssert.AreEqual(ShpfyShop.SystemId, ShpfyCommunicationMgt.GetShopRecord().SystemId, '');
     end;
 }

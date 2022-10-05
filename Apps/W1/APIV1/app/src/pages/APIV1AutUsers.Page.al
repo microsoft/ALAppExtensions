@@ -66,10 +66,10 @@ page 20004 "APIV1 - Aut. Users"
 
     trigger OnOpenPage()
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
         BINDSUBSCRIPTION(AutomationAPIManagement);
-        IF EnvironmentInfo.IsSaaS() THEN
+        IF EnvironmentInformation.IsSaaS() THEN
             SETFILTER("License Type", '<>%1', "License Type"::"External User");
     end;
 

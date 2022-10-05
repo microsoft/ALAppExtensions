@@ -12,19 +12,7 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
     end;
 
     trigger OnUpgradePerCompany();
-    var
-        MSYodleeBankSessionRecordRef: RecordRef;
-        AppInfo: ModuleInfo;
     begin
-        NavApp.GetCurrentModuleInfo(AppInfo);
-        IF AppInfo.DataVersion().Major() = 1 THEN BEGIN
-            NAVAPP.RESTOREARCHIVEDATA(DATABASE::"MS - Yodlee Bank Service Setup");
-            NAVAPP.RESTOREARCHIVEDATA(DATABASE::"MS - Yodlee Bank Acc. Link");
-            IF NAVAPP.GETARCHIVERECORDREF(DATABASE::"MS - Yodlee Bank Session", MSYodleeBankSessionRecordRef) THEN
-                NAVAPP.RESTOREARCHIVEDATA(DATABASE::"MS - Yodlee Bank Session")
-            ELSE
-                NAVAPP.LOADPACKAGEDATA(DATABASE::"MS - Yodlee Bank Session");
-        END;
         CleanupYodleeBankAccountLink();
         UpdateDataExchangeDefinition();
         UpdateYodleeBankSession();

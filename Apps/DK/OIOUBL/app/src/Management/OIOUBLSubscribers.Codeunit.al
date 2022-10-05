@@ -1,5 +1,10 @@
 codeunit 13622 "OIOUBL-Subscribers"
 {
+    var
+        OIOUBLSetupTitleTxt: Label 'Send electronic documents';
+        OIOUBLSetupShortTitleTxt: Label 'Electronic Invoicing';
+        OIOUBLSetupDescriptionTxt: Label 'Get ready for submitting invoices, credit memos, finance charge memos, and reminders for sales and services.';
+
     [Obsolete('Replaced by subscriber ExportCustomerDocumentsOnBeforeSendToDisk.', '15.4')]
     [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnBeforeSend', '', false, false)]
     procedure ExportCustomerDocumentOnBeforeSend(VAR Sender: Record "Document Sending Profile"; ReportUsage: Integer; RecordVariant: Variant; DocNo: Code[20]; ToCust: Code[20]; DocName: Text[150]; CustomerFieldNo: Integer; DocumentNoFieldNo: Integer; VAR IsHandled: Boolean)
@@ -184,6 +189,13 @@ codeunit 13622 "OIOUBL-Subscribers"
             IsHandled := true;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', true, true)]
+    local procedure InsertIntoMAnualSetupOnRegisterManualSetup()
+    var
+        GuidedExperience: Codeunit "Guided Experience";
+    begin
+        GuidedExperience.InsertManualSetup(OIOUBLSetupTitleTxt, OIOUBLSetupShortTitleTxt, OIOUBLSetupDescriptionTxt, 5, ObjectType::Page, Page::"OIOUBL-setup", "Manual Setup Category"::Finance, '', true);
+    end;
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeRunNonStandardCodeunit(ExportCodeunitID: Integer; RecordVariant: Variant; var IsHandled: Boolean)

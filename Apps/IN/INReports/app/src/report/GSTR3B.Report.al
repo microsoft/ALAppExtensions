@@ -31,7 +31,25 @@ report 18042 "GSTR-3B"
             column(LegalNameLbl; LegalNameLbl)
             {
             }
+            column(TradeNameLbl; TradeNameLbl)
+            {
+            }
+            column(ARNLbl; ARNLbl)
+            {
+            }
+            column(DateofArnLbl; DateofArnLbl)
+            {
+            }
             column(OutwardSpplyLbl; OutwardSpplyLbl)
+            {
+            }
+            column(OutwardSpplyProvisioningLbl; OutwardSpplyProvisioningLbl)
+            {
+            }
+            column(OutwardSupplyforelectronicLbl; OutwardSupplyforelectronicLbl)
+            {
+            }
+            column(OutwardSupplyforRegisteredelectronicLbl; OutwardSupplyforRegisteredelectronicLbl)
             {
             }
             column(NatureofSpplyLbl; NatureofSpplyLbl)
@@ -74,6 +92,9 @@ report 18042 "GSTR-3B"
             {
             }
             column(IntegratedTaxLbl; IntegratedTaxLbl)
+            {
+            }
+            column(InCashLbl; InCashLbl)
             {
             }
             column(EligibleITCLbl; EligibleITCLbl)
@@ -121,6 +142,15 @@ report 18042 "GSTR-3B"
             column(ValuesExemptLbl; ValuesExemptLbl)
             {
             }
+            column(ValuesForLateFeeLbl; ValuesForLateFeeLbl)
+            {
+            }
+            column(ComputedInterestLbl; ComputedInterestLbl)
+            {
+            }
+            column(InterestPaidLbl; InterestPaidLbl)
+            {
+            }
             column(InterStateSpplyLbl; InterStateSpplyLbl)
             {
             }
@@ -134,6 +164,12 @@ report 18042 "GSTR-3B"
             {
             }
             column(PaymentLbl; PaymentLbl)
+            {
+            }
+            column(PaymentOtherThanReverseChargeLbl; PaymentOtherThanReverseChargeLbl)
+            {
+            }
+            column(PaymentReverseChargeLbl; PaymentReverseChargeLbl)
             {
             }
             column(DescLbl; DescLbl)
@@ -166,16 +202,7 @@ report 18042 "GSTR-3B"
             column(LateFeeLbl; LateFeeLbl)
             {
             }
-            column(TDSTCSCrLbl; TDSTCSCrLbl)
-            {
-            }
             column(DetailsLbl; DetailsLbl)
-            {
-            }
-            column(TDSLbl; TDSLbl)
-            {
-            }
-            column(TCSLbl; TCSLbl)
             {
             }
             column(VerificationLbl; VerificationLbl)
@@ -292,6 +319,9 @@ report 18042 "GSTR-3B"
             column(OwrdNilTotalAmount; -OwrdNilTotalAmount)
             {
             }
+            column(OwrdExempTotalAmount; -OwrdExempTotalAmount)
+            {
+            }
             column(OwrdNilIGSTAmount; -OwrdNilIGSTAmount)
             {
             }
@@ -356,6 +386,21 @@ report 18042 "GSTR-3B"
             {
             }
             column(InwrdReverseCESSAmount; InwrdReverseCESSAmount)
+            {
+            }
+            column(TaxableECommTotalAmount; -TaxableECommTotalAmount)
+            {
+            }
+            column(TaxableECommCGSTAmount; -TaxableECommCGSTAmount)
+            {
+            }
+            column(TaxableECommSGSTUTGSTAmount; -TaxableECommSGSTUTGSTAmount)
+            {
+            }
+            column(TaxableECommIGSTAmount; -TaxableECommIGSTAmount)
+            {
+            }
+            column(TaxableECommCESSAmount; TaxableECommCESSAmount)
             {
             }
             column(AllOtherITCIGSTAmount; AllOtherITCIGSTAmount)
@@ -559,6 +604,7 @@ report 18042 "GSTR-3B"
                 GSTAmtGSTR3B.SetRange(Document_Line_No_, "Document Line No.");
                 GSTAmtGSTR3B.SetRange(Original_Invoice_No_, "Original Invoice No.");
                 GSTAmtGSTR3B.SetRange(Item_Charge_Assgn__Line_No_, DetailedGSTLedgerEntryInfo."Item Charge Assgn. Line No.");
+                GSTAmtGSTR3B.SetFilter(e_Comm__Merchant_Id, '%1', '');
                 GSTAmtGSTR3B.Open();
                 while GSTAmtGSTR3B.Read() do
                     if Count < 1 then begin
@@ -627,6 +673,7 @@ report 18042 "GSTR-3B"
                 GSTAmtGSTR3B.SetRange(Document_Line_No_, "Document Line No.");
                 GSTAmtGSTR3B.SetRange(Original_Invoice_No_, "Original Invoice No.");
                 GSTAmtGSTR3B.SetRange(Item_Charge_Assgn__Line_No_, DetailedGSTLedgerEntryInfo."Item Charge Assgn. Line No.");
+                GSTAmtGSTR3B.SetFilter(e_Comm__Merchant_Id, '%1', '');
                 GSTAmtGSTR3B.Open();
                 while GSTAmtGSTR3B.Read() do
                     SupplyBaseAmtUIN := (GSTAmtGSTR3B.GST_Base_Amount / 2);
@@ -723,6 +770,11 @@ report 18042 "GSTR-3B"
         SupplyBaseAmtUIN: Decimal;
         SupplyIGSTAmtUIN: Decimal;
         OwrdtaxableTotalAmount: Decimal;
+        TaxableECommTotalAmount: Decimal;
+        TaxableECommIGSTAmount: Decimal;
+        TaxableECommCGSTAmount: Decimal;
+        TaxableECommSGSTUTGSTAmount: Decimal;
+        TaxableECommCESSAmount: Decimal;
         OwrdtaxableIGSTAmount: Decimal;
         OwrdtaxableCGSTAmount: Decimal;
         OwrdtaxableSGSTUTGSTAmount: Decimal;
@@ -733,6 +785,7 @@ report 18042 "GSTR-3B"
         OwrdZeroSGSTUTGSTAmount: Decimal;
         OwrdZeroCESSAmount: Decimal;
         OwrdNilTotalAmount: Decimal;
+        OwrdExempTotalAmount: Decimal;
         OwrdNilIGSTAmount: Decimal;
         OwrdNilCGSTAmount: Decimal;
         OwrdNilSGSTUTGSTAmount: Decimal;
@@ -808,7 +861,13 @@ report 18042 "GSTR-3B"
         MonthLbl: Label 'Month', Locked = true;
         GSTINLbl: Label 'Gstin', Locked = true;
         LegalNameLbl: Label 'Legal name of the registered person', Locked = true;
-        OutwardSpplyLbl: Label 'Details of Outward Supplies and inward supplies liable to reverse charge', Locked = true;
+        TradeNameLbl: Label 'Trade name,if any', Locked = true;
+        ARNLbl: Label 'ARN', Locked = true;
+        DateofArnLbl: Label 'Date of ARN', Locked = true;
+        OutwardSpplyLbl: Label 'Details of Outward Supplies and inward supplies liable to reverse charge (other than those covered by Table 3.1.1)', Locked = true;
+        OutwardSpplyProvisioningLbl: Label 'Details of Supplies notified under section 9(5) of the CGST Act, 2017 and corresponding provisions in IGST/UTGST/SGST Acts', Locked = true;
+        OutwardSupplyforelectronicLbl: Label '(i) Taxable Supplies on which electronic commerce operator pays tax u/s 9(5) [to be furnished by electronic commerce operator]', Locked = true;
+        OutwardSupplyforRegisteredelectronicLbl: Label '(ii) Taxable supplies made by registered person through electronic commerce operator, on which electronic commerce operator is required to pay tax u/s 9(5) [to be furnished by registered person making supplies thorugh electronic commerce operator]', Locked = true;
         NatureofSpplyLbl: Label 'Nature of Supplies', Locked = true;
         TotTaxableLbl: Label 'Total Taxable Value', Locked = true;
         IntegratedLbl: Label 'Integrated Tax', Locked = true;
@@ -819,9 +878,10 @@ report 18042 "GSTR-3B"
         OutwardTaxableSpplyNilLbl: Label '(c) Other outward supplies (Nil rated, exempted)', Locked = true;
         InwardSpplyLbl: Label '(d) Inward supplies (liable to reverse charge)', Locked = true;
         NonGSTOutwardSpplyLbl: Label '(e) Non-GST outward supplies', Locked = true;
-        UnregCompoLbl: Label 'Of the supplies shown in 3.1 (a) above, details of inter-State supplies made to unregistered persons,    composition taxable persons and UIN holders', Locked = true;
+        UnregCompoLbl: Label 'Out of supplies made in 3.1 (a) and 3.1.1 (i), details of interstate supplies made', Locked = true;
         PlaceOfSupplyLbl: Label 'Place of Supply     (State/UT)', Locked = true;
-        IntegratedTaxLbl: Label 'Amount of Integrated Tax', Locked = true;
+        IntegratedTaxLbl: Label 'Integrated Tax', Locked = true;
+        InCashLbl: Label 'in cash', Locked = true;
         EligibleITCLbl: Label 'Eligible ITC', Locked = true;
         NatureOfSuppliesLbl: Label 'Nature of Supplies', Locked = true;
         ITCAvlLbl: Label '(A) ITC Available (whether in full or part)', Locked = true;
@@ -837,25 +897,27 @@ report 18042 "GSTR-3B"
         IneligibleITCLbl: Label '(D) Ineligible ITC', Locked = true;
         SectionLbl: Label '(1) As per section 17(5)', Locked = true;
         ValuesExemptLbl: Label 'Values of exempt, nil-rated and non-GST inward supplies', Locked = true;
+        ValuesForLateFeeLbl: Label 'Interest and Late fee for previous tax period', Locked = true;
+        ComputedInterestLbl: Label 'System computed Interest', Locked = true;
+        InterestPaidLbl: Label 'Interest Paid', Locked = true;
         InterStateSpplyLbl: Label 'Inter-State supplies', Locked = true;
         IntraStateLbl: Label 'Intra-State supplies', Locked = true;
         SupplierCompLbl: Label 'From a supplier under composition scheme, Exempt and Nil    rated supply', Locked = true;
         NonGSTSpplyLbl: Label 'Non GST supply', Locked = true;
         PaymentLbl: Label 'Payment of tax', Locked = true;
+        PaymentOtherThanReverseChargeLbl: Label '(A) Other than reverse charge', Locked = true;
+        PaymentReverseChargeLbl: Label '(B) Reverse charge', Locked = true;
         DescLbl: Label 'Description', Locked = true;
-        TaxLbl: Label 'Tax', Locked = true;
+        TaxLbl: Label 'Total Tax', Locked = true;
         PayableLbl: Label 'payable', Locked = true;
-        PaidITCLbl: Label 'Paid through ITC', Locked = true;
+        PaidITCLbl: Label 'Tax Paid through ITC', Locked = true;
         TaxPaidLbl: Label 'Tax paid ', Locked = true;
         TDSTCSLbl: Label 'TDS / TCS', Locked = true;
         TaxCessLbl: Label 'Tax / Cess', Locked = true;
         CashLbl: Label 'paid in cash', Locked = true;
         InterestLbl: Label 'Interest', Locked = true;
-        LateFeeLbl: Label 'Late Fee', Locked = true;
-        TDSTCSCrLbl: Label 'TDS/TCS Credit', Locked = true;
+        LateFeeLbl: Label 'Late Fee paid', Locked = true;
         DetailsLbl: Label 'Details', Locked = true;
-        TDSLbl: Label 'TDS', Locked = true;
-        TCSLbl: Label 'TCS', Locked = true;
         GSTLbl: Label 'GST', locked = true;
         VerificationLbl: Label 'Verification (by Authorised Signatory)', Locked = true;
         VerifyTxtLbl: Label 'I hereby solemnly affirm and declare that the information given herein above is true and correct to the best of my knowledge and belief and nothing has been concealed there from.', Locked = true;
@@ -966,10 +1028,12 @@ report 18042 "GSTR-3B"
         OutwardTaxableSupplies();
         OutwardTaxableSuppliesZeroRated();
         OutwardSuppliesNilRated();
+        OutwardSuppliesForExempted();
         InwardSuppliesReverseCharge();
         InwardSuppliesReverseChargeforGSTAdjustment();
         NonGSTOutwardSupplies();
         ImportGoodsServiceInwardReverse();
+        TaxableSuppliesWithECommerce();
         AllAndIneligibleITC();
         InputFromComposition();
         InwardFromISD();
@@ -980,6 +1044,7 @@ report 18042 "GSTR-3B"
     local procedure ImportGoodsServiceInwardReverse()
     var
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+        DetailedGstLedEntry: Record "Detailed GST Ledger Entry";
         DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info";
     begin
         // Eligible ITC
@@ -1027,18 +1092,8 @@ report 18042 "GSTR-3B"
         DetailedGSTLedgerEntry.SetRange("GST Group Type", "GST Group Type"::Service);
         if DetailedGSTLedgerEntry.FindSet() then
             repeat
-                if DetailedGSTLedgerEntry."Entry Type" = DetailedGSTLedgerEntry."Entry Type"::Application then
-                    if DetailedGSTLedgerEntry."Reverse Charge" then
-                        if not DetailedGSTLedgerEntry."Associated Enterprises" then begin
-                            DetailedGSTLedgerEntryInfo.SetRange("Entry No.", DetailedGSTLedgerEntry."Entry No.");
-                            if DetailedGSTLedgerEntryInfo."Without Bill Of Entry" = true then begin
-                                Sign := -1;
-                                ImportServiceIGSTAmount += GetSupplyGSTAmountLine(DetailedGSTLedgerEntry, IGSTLbl) * Sign;
-                                ImportServiceCGSTAmount += GetSupplyGSTAmountLine(DetailedGSTLedgerEntry, CGSTLbl) * Sign;
-                                ImportServiceSGSTUTGSTAmount += GetSupplyGSTAmountLine(DetailedGSTLedgerEntry, SGSTLbl) * Sign;
-                                ImportServiceCESSAmount += GetSupplyGSTAmountLine(DetailedGSTLedgerEntry, CESSCompLbl) * Sign;
-                            end;
-                        end;
+                DetailedGstLedEntry.CopyFilters(DetailedGSTLedgerEntry);
+                GetImportofServiceValue(DetailedGstLedEntry);
             until DetailedGSTLedgerEntry.Next() = 0;
 
         Sign := 1;
@@ -1057,6 +1112,26 @@ report 18042 "GSTR-3B"
                 InwrdReverseSGSTUTGSTAmount += GetSupplyGSTAmountLine(DetailedGSTLedgerEntry, SGSTLbl) * Sign;
                 InwrdReverseCESSAmount += GetSupplyGSTAmountLine(DetailedGSTLedgerEntry, CESSCompLbl) * Sign;
             until DetailedGSTLedgerEntry.Next() = 0;
+    end;
+
+    local procedure GetImportofServiceValue(DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry")
+    var
+        DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info";
+    begin
+        DetailedGSTLedgerEntry.SetRange("GST Vendor Type", "GST Vendor Type"::Import, "GST Vendor Type"::SEZ);
+        DetailedGSTLedgerEntry.SetRange("Entry Type", DetailedGSTLedgerEntry."Entry Type"::Application);
+        DetailedGSTLedgerEntry.SetRange("Reverse Charge", true);
+        DetailedGSTLedgerEntry.SetRange("Associated Enterprises", false);
+        if DetailedGSTLedgerEntry.FindFirst() then begin
+            DetailedGSTLedgerEntryInfo.SetRange("Entry No.", DetailedGSTLedgerEntry."Entry No.");
+            if DetailedGSTLedgerEntryInfo."Without Bill Of Entry" = false then begin
+                Sign := -1;
+                ImportServiceIGSTAmount += GetSupplyGSTAmountLine(DetailedGSTLedgerEntry, IGSTLbl) * Sign;
+                ImportServiceCGSTAmount += GetSupplyGSTAmountLine(DetailedGSTLedgerEntry, CGSTLbl) * Sign;
+                ImportServiceSGSTUTGSTAmount += GetSupplyGSTAmountLine(DetailedGSTLedgerEntry, SGSTLbl) * Sign;
+                ImportServiceCESSAmount += GetSupplyGSTAmountLine(DetailedGSTLedgerEntry, CESSCompLbl) * Sign;
+            end;
+        end;
     end;
 
     local procedure AllAndIneligibleITC()
@@ -1296,6 +1371,7 @@ report 18042 "GSTR-3B"
           "Component Calc Type"::General,
           "Component Calc Type"::Threshold,
           "Component Calc Type"::"Cess %");
+        GSTAmountGSTR3B.SetFilter(e_Comm__Merchant_Id, '%1', '');
         GSTAmountGSTR3B.Open();
         while GSTAmountGSTR3B.Read() do
             OwrdtaxableTotalAmount += GetBaseAmount(GSTAmountGSTR3B.Entry_No_);
@@ -1340,6 +1416,7 @@ report 18042 "GSTR-3B"
           "Component Calc Type"::General,
           "Component Calc Type"::Threshold,
           "Component Calc Type"::"Cess %");
+        GSTAmountGSTR3B.SetFilter(e_Comm__Merchant_Id, '%1', '');
         GSTAmountGSTR3B.Open();
         while GSTAmountGSTR3B.Read() do
             OwrdZeroTotalAmount += GetBaseAmount(GSTAmountGSTR3B.Entry_No_);
@@ -1383,6 +1460,7 @@ report 18042 "GSTR-3B"
           "Component Calc Type"::General,
           "Component Calc Type"::Threshold,
           "Component Calc Type"::"Cess %");
+        GSTAmountGSTR3B.SetFilter(e_Comm__Merchant_Id, '%1', '');
         GSTAmountGSTR3B.Open();
         while GSTAmountGSTR3B.Read() do
             OwrdNilTotalAmount += GetBaseAmount(GSTAmountGSTR3B.Entry_No_);
@@ -1409,6 +1487,68 @@ report 18042 "GSTR-3B"
         GSTAmountGSTR3B.Close();
     end;
 
+    local procedure OutwardSuppliesForExempted()
+    var
+        GSTAmountGSTR3B: Query "GST Amount GSTR3B";
+    begin
+        GSTAmountGSTR3B.SetRange(Location__Reg__No_, GSTIN);
+        GSTAmountGSTR3B.SetRange(Posting_Date, StartingDate, EndingDate);
+        GSTAmountGSTR3B.SetRange(GST_Exempted_Goods, true);
+        GSTAmountGSTR3B.SetRange(Transaction_Type, "Detail Ledger Transaction Type"::Sales);
+        GSTAmountGSTR3B.SetFilter(GST_Customer_Type, '%1', "GST Customer Type"::Exempted);
+        GSTAmountGSTR3B.SetFilter(e_Comm__Merchant_Id, '%1', '');
+        GSTAmountGSTR3B.Open();
+        while GSTAmountGSTR3B.Read() do
+            OwrdExempTotalAmount += GetBaseAmount(GSTAmountGSTR3B.Entry_No_);
+        GSTAmountGSTR3B.Close();
+    end;
+
+    local procedure TaxableSuppliesWithECommerce()
+    var
+        GSTAmountGSTR3B: Query "GST Amount GSTR3B";
+    begin
+        GSTAmountGSTR3B.SetRange(Location__Reg__No_, GSTIN);
+        GSTAmountGSTR3B.SetRange(Posting_Date, StartingDate, EndingDate);
+        GSTAmountGSTR3B.SetFilter(GST__, '<>%1', 0);
+        GSTAmountGSTR3B.SetRange(GST_Exempted_Goods, false);
+        GSTAmountGSTR3B.SetRange(Transaction_Type, "Detail Ledger Transaction Type"::Sales);
+        GSTAmountGSTR3B.SetFilter(GST_Customer_Type, '%1|%2|%3',
+          "GST Customer Type"::Registered,
+          "GST Customer Type"::Unregistered,
+          "GST Customer Type"::" ");
+        GSTAmountGSTR3B.SetFilter(Component_Calc__Type, '%1|%2|%3',
+          "Component Calc Type"::General,
+          "Component Calc Type"::Threshold,
+          "Component Calc Type"::"Cess %");
+        GSTAmountGSTR3B.SetFilter(e_Comm__Merchant_Id, '<>%1', '');
+        GSTAmountGSTR3B.Open();
+        while GSTAmountGSTR3B.Read() do
+            TaxableECommTotalAmount += GetBaseAmount(GSTAmountGSTR3B.Entry_No_);
+        GSTAmountGSTR3B.Close();
+
+        GSTAmountGSTR3B.SetRange(GST_Component_Code, IGSTLbl);
+        GSTAmountGSTR3B.Open();
+        while GSTAmountGSTR3B.Read() do
+            TaxableECommIGSTAmount += GSTAmountGSTR3B.GST_Amount;
+        GSTAmountGSTR3B.Close();
+
+        GSTAmountGSTR3B.SetRange(GST_Component_Code, CGSTLbl);
+        GSTAmountGSTR3B.Open();
+        while GSTAmountGSTR3B.Read() do
+            TaxableECommCGSTAmount += GSTAmountGSTR3B.GST_Amount;
+        GSTAmountGSTR3B.Close();
+        GSTAmountGSTR3B.SetRange(GST_Component_Code, SGSTLbl);
+        GSTAmountGSTR3B.Open();
+        while GSTAmountGSTR3B.Read() do
+            TaxableECommSGSTUTGSTAmount += GSTAmountGSTR3B.GST_Amount;
+        GSTAmountGSTR3B.Close();
+        GSTAmountGSTR3B.SetRange(GST_Component_Code, CESSCompLbl);
+        GSTAmountGSTR3B.Open();
+        while GSTAmountGSTR3B.Read() do
+            TaxableECommCESSAmount += GSTAmountGSTR3B.GST_Amount;
+        GSTAmountGSTR3B.Close();
+    end;
+
     local procedure InwardSuppliesReverseCharge()
     var
         GSTAmountGSTR3B: Query "GST Amount GSTR3B";
@@ -1423,6 +1563,7 @@ report 18042 "GSTR-3B"
           "Component Calc Type"::General,
           "Component Calc Type"::Threshold,
           "Component Calc Type"::"Cess %");
+        GSTAmountGSTR3B.SetFilter(e_Comm__Merchant_Id, '%1', '');
         GSTAmountGSTR3B.Open();
         while GSTAmountGSTR3B.Read() do begin
             Sign := 1;

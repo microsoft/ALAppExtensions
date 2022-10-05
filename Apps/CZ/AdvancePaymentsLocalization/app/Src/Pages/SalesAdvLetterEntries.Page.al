@@ -331,13 +331,7 @@ page 31173 "Sales Adv. Letter Entries CZZ"
 
     var
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
         IsClosed: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsMgtCZZ.TestIsEnabled();
-    end;
 
     trigger OnAfterGetRecord()
     begin

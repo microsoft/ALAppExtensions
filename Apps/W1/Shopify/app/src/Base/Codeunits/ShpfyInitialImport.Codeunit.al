@@ -60,7 +60,6 @@ codeunit 30202 "Shpfy Initial Import"
         EntityReportDict.Add('ITEM', Report::"Shpfy Sync Products");
         EntityReportDict.Add('CUSTOMER', Report::"Shpfy Sync Customers");
         EntityReportDict.Add('ITEM IMAGE', Report::"Shpfy Sync Images");
-        EntityReportDict.Add('SALES ORDER', Report::"Shpfy Sync Orders from Shopify");
     end;
 
     local procedure GetEntityPageDict(var EntityPageDict: Dictionary of [Code[20], Integer])
@@ -68,7 +67,6 @@ codeunit 30202 "Shpfy Initial Import"
         EntityPageDict.Add('ITEM', Page::"Item List");
         EntityPageDict.Add('CUSTOMER', Page::"Customer List");
         EntityPageDict.Add('ITEM IMAGE', Page::"Item List");
-        EntityPageDict.Add('SALES ORDER', Page::"Sales Order List");
     end;
 
     local procedure GetEntityDependencyFilterDict(var EntityDependencyFilterDict: Dictionary of [Code[20], Text])
@@ -76,7 +74,6 @@ codeunit 30202 "Shpfy Initial Import"
         EntityDependencyFilterDict.Add('ITEM', '');
         EntityDependencyFilterDict.Add('CUSTOMER', '');
         EntityDependencyFilterDict.Add('ITEM IMAGE', 'ITEM');
-        EntityDependencyFilterDict.Add('SALES ORDER', 'ITEM|CUSTOMER');
     end;
 
     procedure IsActiveSession(SessionId: Integer): Boolean
@@ -114,7 +111,7 @@ codeunit 30202 "Shpfy Initial Import"
     begin
         if FindLinesThatCanBeStarted(TempShpfyInitialImportLine) then
             repeat
-                JobQueueEntryID := EnqueueSyncJob(TempShpfyInitialImportLine.Name, TempShpfyInitialImportLine."Shop Code", TempShpfyInitialImportLine."Demo Import");
+                    JobQueueEntryID := EnqueueSyncJob(TempShpfyInitialImportLine.Name, TempShpfyInitialImportLine."Shop Code", TempShpfyInitialImportLine."Demo Import");
                 ShpfyInitialImportLine.Get(TempShpfyInitialImportLine.Name);
                 ShpfyInitialImportLine.Validate("Job Queue Entry ID", JobQueueEntryID);
                 ShpfyInitialImportLine.Modify(true);
@@ -136,8 +133,6 @@ codeunit 30202 "Shpfy Initial Import"
                 exit(ShpfyBackgroundSyncs.CustomerBackgroundSync(ShopCode));
             'ITEM IMAGE':
                 exit(ShpfyBackgroundSyncs.ProductImagesBackgroundSync(ShopCode));
-            'SALES ORDER':
-                exit(ShpfyBackgroundSyncs.OrderBackgroundSync(ShopCode));
         end;
     end;
 

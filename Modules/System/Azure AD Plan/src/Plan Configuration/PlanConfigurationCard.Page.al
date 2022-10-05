@@ -16,6 +16,7 @@ page 9069 "Plan Configuration Card"
     Extensible = true;
     Permissions = tabledata "Plan Configuration" = rimd;
     ContextSensitiveHelpPage = 'ui-how-users-permissions#licensespermissions';
+    InsertAllowed = false;
 
     layout
     {

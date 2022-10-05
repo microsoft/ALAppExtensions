@@ -12,6 +12,7 @@ codeunit 1685 "Email Logging Invoke"
         InteractionTemplateSetupEmails: Code[10];
         CategoryTok: Label 'Email Logging', Locked = true;
         TextFileExtentionTxt: Label 'TXT', Locked = true;
+        ContextCompanyTxt: Label 'Start Email Logging job. Company: %1', Locked = true;
         EmailLoggingJobStartedTxt: Label 'Email logging job started.', Locked = true;
         EmailLoggingJobFinishedTxt: Label 'Email logging job finished.', Locked = true;
         ContextValidateSetupTxt: Label 'Validate setup';
@@ -57,6 +58,7 @@ codeunit 1685 "Email Logging Invoke"
 
     local procedure RunJob()
     begin
+        Session.LogMessage('0000HAH', StrSubstNo(ContextCompanyTxt, CompanyName()), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
         Session.LogMessage('0000FYE', EmailLoggingJobStartedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
 
         SetErrorContext(ContextValidateSetupTxt);

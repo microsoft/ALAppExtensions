@@ -46,4 +46,12 @@ codeunit 31022 "Purch.-Post Handler CZZ"
     begin
         IsHandled := true;
     end;
+#if CLEAN19
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforeTestStatusRelease', '', false, false)]
+    local procedure DisableCheckOnBeforeTestStatusRelease(var IsHandled: Boolean)
+    begin
+        IsHandled := true;
+    end;
+#endif
 }

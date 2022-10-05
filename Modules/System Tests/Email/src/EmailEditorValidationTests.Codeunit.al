@@ -16,6 +16,7 @@ codeunit 134696 "Email Editor Validation Tests"
         PermissionsMock: Codeunit "Permissions Mock";
         Any: Codeunit Any;
         InvalidEmailAddressErr: Label 'The email address "%1" is not valid.', Locked = true;
+        EmailToRecipientsLbl: Label '%1; %2', Locked = true;
 
     [Test]
     [HandlerFunctions('DiscardEmailEditorHandler')]
@@ -56,7 +57,7 @@ codeunit 134696 "Email Editor Validation Tests"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure SendNewMessageThroughEditorFailsNoToRecipient()
     var
-        TempEmailAccount: Record "Email Account";
+        EmailAccount: Record "Email Account";
         SentEmail: Record "Sent Email";
         Outbox: Record "Email Outbox";
         ConnectorMock: Codeunit "Connector Mock";
@@ -69,7 +70,7 @@ codeunit 134696 "Email Editor Validation Tests"
         Outbox.DeleteAll();
         SentEmail.DeleteAll();
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(TempEmailAccount);
+        ConnectorMock.AddAccount(EmailAccount);
 
         PermissionsMock.Set('Email Admin');
         GiveUserViewAllPolicy();
@@ -97,7 +98,7 @@ codeunit 134696 "Email Editor Validation Tests"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure SendNewMessageThroughEditorFailsInvalidRecipients()
     var
-        TempEmailAccount: Record "Email Account";
+        EmailAccount: Record "Email Account";
         SentEmail: Record "Sent Email";
         Outbox: Record "Email Outbox";
         ConnectorMock: Codeunit "Connector Mock";
@@ -112,7 +113,7 @@ codeunit 134696 "Email Editor Validation Tests"
         Outbox.DeleteAll();
         SentEmail.DeleteAll();
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(TempEmailAccount);
+        ConnectorMock.AddAccount(EmailAccount);
         ValidEmailAddress := Any.Email();
         InvalidEmailAddress := 'invalid email address';
 
@@ -137,7 +138,7 @@ codeunit 134696 "Email Editor Validation Tests"
         Assert.TableIsEmpty(Database::"Sent Email");
 
         // [WHEN] Set a valid and an invalid email address for To recipients
-        Editor.ToField.SetValue(StrSubstNo('%1; %2', ValidEmailAddress, InvalidEmailAddress));
+        Editor.ToField.SetValue(StrSubstNo(EmailToRecipientsLbl, ValidEmailAddress, InvalidEmailAddress));
 
         // [WHEN] The send action is invoked, an error appears
         asserterror Editor.Send.Invoke();
@@ -186,7 +187,7 @@ codeunit 134696 "Email Editor Validation Tests"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure SendNewMessageThroughEditorNoSubjectTest()
     var
-        TempEmailAccount: Record "Email Account";
+        EmailAccount: Record "Email Account";
         SentEmail: Record "Sent Email";
         Outbox: Record "Email Outbox";
         ConnectorMock: Codeunit "Connector Mock";
@@ -200,7 +201,7 @@ codeunit 134696 "Email Editor Validation Tests"
         Outbox.DeleteAll();
         SentEmail.DeleteAll();
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(TempEmailAccount);
+        ConnectorMock.AddAccount(EmailAccount);
         ValidEmailAddress := Any.Email();
 
         PermissionsMock.Set('Email Admin');
@@ -227,7 +228,7 @@ codeunit 134696 "Email Editor Validation Tests"
     [HandlerFunctions('EmailAccountLookUpHandler,SendWithoutSubjectHandler')]
     procedure SendNewMessageThroughEditorNoSubjectSendTest()
     var
-        TempEmailAccount: Record "Email Account";
+        EmailAccount: Record "Email Account";
         SentEmail: Record "Sent Email";
         Outbox: Record "Email Outbox";
         ConnectorMock: Codeunit "Connector Mock";
@@ -242,7 +243,7 @@ codeunit 134696 "Email Editor Validation Tests"
         Outbox.DeleteAll();
         SentEmail.DeleteAll();
         ConnectorMock.Initialize();
-        ConnectorMock.AddAccount(TempEmailAccount);
+        ConnectorMock.AddAccount(EmailAccount);
         ValidEmailAddress := Any.Email();
 
         PermissionsMock.Set('Email Admin');
@@ -263,8 +264,8 @@ codeunit 134696 "Email Editor Validation Tests"
         SentEmail.SetRange("Message Id", Message.GetId());
         Assert.IsTrue(SentEmail.FindFirst(), 'A Sent Email record should have been inserted.');
         Assert.AreEqual('', SentEmail.Description, 'The email subject should be empty');
-        Assert.AreEqual(TempEmailAccount."Account Id", SentEmail."Account Id", 'A different account was expected');
-        Assert.AreEqual(TempEmailAccount."Email Address", SentEmail."Sent From", 'A different sent from was expected');
+        Assert.AreEqual(EmailAccount."Account Id", SentEmail."Account Id", 'A different account was expected');
+        Assert.AreEqual(EmailAccount."Email Address", SentEmail."Sent From", 'A different sent from was expected');
         Assert.AreEqual(Enum::"Email Connector"::"Test Email Connector", SentEmail.Connector, 'A different connector was expected');
 
         RemoveViewPolicies();

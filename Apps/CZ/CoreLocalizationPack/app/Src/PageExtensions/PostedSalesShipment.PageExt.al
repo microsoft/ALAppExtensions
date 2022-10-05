@@ -9,7 +9,7 @@ pageextension 31110 "Posted Sales Shipment CZL" extends "Posted Sales Shipment"
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
-                Visible = true;
+                Visible = false;
             }
         }
         addlast(Shipping)

@@ -142,25 +142,25 @@ codeunit 9822 "Plan Configuration Impl."
         exit(not CustomPermissionSetInPlan.IsEmpty());
     end;
 
-    procedure SelectLicense(var PlanConfiguration: Record "Plan Configuration")
+    procedure AddLicenseEntry()
     var
-        PlanConfigurationRec: Record "Plan Configuration";
+        PlanConfiguration: Record "Plan Configuration";
         Plans: Page Plans;
         SelectedPlanId: Guid;
         SelectedPlanName: Text[50];
     begin
         Plans.LookupMode(true);
-        Plans.SetSelectedPlan(PlanConfiguration."Plan ID");
-
         if Plans.RunModal() = Action::LookupOK then begin
             Plans.GetSelectedPlan(SelectedPlanId, SelectedPlanName);
 
-            PlanConfigurationRec.SetRange("Plan ID", SelectedPlanId);
-            if not PlanConfigurationRec.IsEmpty() then
+            PlanConfiguration.SetRange("Plan ID", SelectedPlanId);
+            if not PlanConfiguration.IsEmpty() then
                 Error(ConfigurationAlreadyExistsErr, SelectedPlanName);
 
+            PlanConfiguration.Init();
             PlanConfiguration."Plan ID" := SelectedPlanId;
             PlanConfiguration."Plan Name" := SelectedPlanName;
+            PlanConfiguration.Insert();
         end;
     end;
 
@@ -356,7 +356,7 @@ codeunit 9822 "Plan Configuration Impl."
         ConfigurationAlreadyExistsErr: Label 'Configration for license %1 already exists. To edit it, select it from the list.', Comment = '%1 = License name, e.g. Dynamics 365 Business Central Essentials';
         MissingSecurityErr: Label 'You do not have permissions to configure licenses. Contact your system administrator.';
         MissingPermissionSetErr: Label 'You don''t have rights to manage the %1 permission set for licenses. The SECURITY permission set only grants you rights to manage those permission sets that are also assigned to your account.', Comment = '%1 = permssion set name, e.g. ''D365 READ''';
-        CustomizePermissionsNotificationTxt: Label 'Customizing permissions below will affect only newly created user who are assigned %1 license. Permissions for existing users who are assigned the license will not be affected.', Comment = '%1 = license name, e.g. e.g. Dynamics 365 Business Central Essentials';
+        CustomizePermissionsNotificationTxt: Label 'Customizing permissions below will affect only newly created users who are assigned %1 license. Permissions for existing users who are assigned the license will not be affected.', Comment = '%1 = license name, e.g. e.g. Dynamics 365 Business Central Essentials';
         DefaultConfigurationNotificationTxt: Label 'One or more of the license configurations use implicit company permissions, which is not recommended.';
         LearnMoreTok: Label 'Learn more';
         DocumentationLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2186490', Locked = true;

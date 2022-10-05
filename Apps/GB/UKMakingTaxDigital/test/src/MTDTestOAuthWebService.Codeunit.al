@@ -281,6 +281,10 @@ codeunit 148081 "MTDTestOAuthWebService"
         NewCount: Integer;
         ModifiedCount: Integer;
     begin
+        TotalCount := 0;
+        NewCount := 0;
+        ModifiedCount := 0;
+
         MTDMgt.RetrievePayments(WorkDate(), WorkDate(), TotalCount, NewCount, ModifiedCount, ShowMessage);
     end;
 

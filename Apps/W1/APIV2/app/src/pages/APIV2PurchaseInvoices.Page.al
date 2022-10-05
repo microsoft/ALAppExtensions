@@ -590,6 +590,7 @@ page 30042 "APIV2 - Purchase Invoices"
 
     local procedure SetCalculatedFields()
     begin
+        Rec.LoadFields("Currency Code");
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
     end;
 

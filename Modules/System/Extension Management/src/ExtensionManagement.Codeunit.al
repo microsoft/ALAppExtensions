@@ -13,9 +13,7 @@ codeunit 2504 "Extension Management"
     var
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
-#if not CLEAN17
         ExtensionMarketplace: Codeunit "Extension Marketplace";
-#endif
 
     /// <summary>
     /// Installs an extension, based on its PackageId and Locale Identifier.
@@ -322,6 +320,15 @@ codeunit 2504 "Extension Management"
         exit(ExtensionMarketplace.MapMarketplaceIdToAppId(ApplicationId));
     end;
 #endif
+
+    /// <summary>
+    /// Installs an extension, based on its extension id.
+    /// </summary>
+    /// <param name="AppId">The ID of the extension package.</param>
+    procedure InstallMarketplaceExtension(AppId: Guid)
+    begin
+        ExtensionMarketplace.InstallAppsourceExtensionWithRefreshSession(AppId, '');
+    end;
 
     /// <summary>
     /// Returns the Name of the app given the App Id.

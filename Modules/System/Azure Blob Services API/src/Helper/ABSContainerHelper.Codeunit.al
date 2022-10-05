@@ -37,13 +37,13 @@ codeunit 9055 "ABS Container Helper"
     [NonDebuggable]
     procedure AddNewEntry(var ABSContainer: Record "ABS Container"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList)
     var
-        Outstr: OutStream;
+        Output: OutStream;
     begin
         ABSContainer.Init();
         ABSContainer.Name := CopyStr(NameFromXml, 1, 250);
         SetPropertyFields(ABSContainer, ChildNodes);
-        ABSContainer."XML Value".CreateOutStream(Outstr);
-        Outstr.Write(OuterXml);
+        ABSContainer."XML Value".CreateOutStream(Output);
+        Output.Write(OuterXml);
         ABSContainer.Insert(true);
     end;
 

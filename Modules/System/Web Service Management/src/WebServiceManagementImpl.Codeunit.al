@@ -296,23 +296,23 @@ codeunit 9751 "Web Service Management Impl."
         AllObj.Get(WebServiceAggregate."Object Type", WebServiceAggregate."Object ID");
     end;
 
-    procedure LoadRecords(var Rec: Record "Web Service Aggregate")
+    procedure LoadRecords(var WebServiceAggregate: Record "Web Service Aggregate")
     var
         WebService: Record "Web Service";
         TenantWebService: Record "Tenant Web Service";
     begin
-        Rec.Reset();
-        Rec.DeleteAll();
+        WebServiceAggregate.Reset();
+        WebServiceAggregate.DeleteAll();
 
         if WebService.FindSet() then
             repeat
-                Rec.Init();
-                Rec.TransferFields(WebService);
-                Rec."All Tenants" := true;
-                Rec.Insert();
+                WebServiceAggregate.Init();
+                WebServiceAggregate.TransferFields(WebService);
+                WebServiceAggregate."All Tenants" := true;
+                WebServiceAggregate.Insert();
             until WebService.Next() = 0;
 
-        Rec."All Tenants" := false;
+        WebServiceAggregate."All Tenants" := false;
         Clear(TenantWebService);
 
         if TenantWebService.FindSet() then
@@ -324,15 +324,15 @@ codeunit 9751 "Web Service Management Impl."
                     WebService.SetRange(Published, false);
 
                     if WebService.IsEmpty() then begin
-                        Rec.Init();
-                        Rec.TransferFields(TenantWebService);
-                        Rec.Insert();
+                        WebServiceAggregate.Init();
+                        WebServiceAggregate.TransferFields(TenantWebService);
+                        WebServiceAggregate.Insert();
                     end
                 end
             until TenantWebService.Next() = 0;
     end;
 
-    procedure LoadRecordsFromTenantWebServiceColumns(var Rec: Record "Tenant Web Service")
+    procedure LoadRecordsFromTenantWebServiceColumns(var TenantWebServiceRec: Record "Tenant Web Service")
     var
         TenantWebService: Record "Tenant Web Service";
         TenantWebServiceColumns: Record "Tenant Web Service Columns";
@@ -341,33 +341,33 @@ codeunit 9751 "Web Service Management Impl."
             repeat
                 TenantWebServiceColumns.SetRange(TenantWebServiceID, TenantWebService.RecordId());
                 if NOT TenantWebServiceColumns.IsEmpty() then begin
-                    Rec := TenantWebService;
-                    Rec.Insert();
+                    TenantWebServiceRec := TenantWebService;
+                    TenantWebServiceRec.Insert();
                 end;
             until TenantWebService.Next() = 0;
     end;
 
-    procedure ModifyWebService(Rec: Record "Web Service Aggregate"; xRec: Record "Web Service Aggregate")
+    procedure ModifyWebService(WebServiceAggregateRec: Record "Web Service Aggregate"; xRec: Record "Web Service Aggregate")
     var
         WebService: Record "Web Service";
         TenantWebService: Record "Tenant Web Service";
     begin
-        if Rec."All Tenants" then
+        if WebServiceAggregateRec."All Tenants" then
             if xRec."All Tenants" then begin
-                if WebService.Get(Rec."Object Type", Rec."Service Name") then begin
-                    WebService."Object ID" := Rec."Object ID";
-                    WebService.Published := Rec.Published;
-                    WebService.ExcludeFieldsOutsideRepeater := Rec.ExcludeFieldsOutsideRepeater;
-                    WebService.ExcludeNonEditableFlowFields := Rec.ExcludeNonEditableFlowFields;
+                if WebService.Get(WebServiceAggregateRec."Object Type", WebServiceAggregateRec."Service Name") then begin
+                    WebService."Object ID" := WebServiceAggregateRec."Object ID";
+                    WebService.Published := WebServiceAggregateRec.Published;
+                    WebService.ExcludeFieldsOutsideRepeater := WebServiceAggregateRec.ExcludeFieldsOutsideRepeater;
+                    WebService.ExcludeNonEditableFlowFields := WebServiceAggregateRec.ExcludeNonEditableFlowFields;
                     WebService.Modify();
                 end else begin
                     Clear(WebService);
-                    WebService.TransferFields(Rec);
+                    WebService.TransferFields(WebServiceAggregateRec);
                     WebService.Insert();
                 end;
             end else begin
                 Clear(WebService);
-                WebService.TransferFields(Rec);
+                WebService.TransferFields(WebServiceAggregateRec);
                 WebService.Insert();
             end
         else
@@ -375,51 +375,51 @@ codeunit 9751 "Web Service Management Impl."
                 if WebService.Get(xRec."Object Type", xRec."Service Name") then
                     WebService.Delete();
 
-                if not TenantWebService.Get(Rec."Object Type", Rec."Service Name") then begin
+                if not TenantWebService.Get(WebServiceAggregateRec."Object Type", WebServiceAggregateRec."Service Name") then begin
                     Clear(TenantWebService);
-                    TenantWebService.TransferFields(Rec);
+                    TenantWebService.TransferFields(WebServiceAggregateRec);
                     TenantWebService.Insert();
                 end;
             end else begin
-                AssertModAllowed(Rec);
+                AssertModAllowed(WebServiceAggregateRec);
 
-                if TenantWebService.Get(Rec."Object Type", Rec."Service Name") then begin
-                    TenantWebService."Object ID" := Rec."Object ID";
-                    TenantWebService.Published := Rec.Published;
-                    TenantWebService.ExcludeFieldsOutsideRepeater := Rec.ExcludeFieldsOutsideRepeater;
-                    TenantWebService.ExcludeNonEditableFlowFields := Rec.ExcludeNonEditableFlowFields;
+                if TenantWebService.Get(WebServiceAggregateRec."Object Type", WebServiceAggregateRec."Service Name") then begin
+                    TenantWebService."Object ID" := WebServiceAggregateRec."Object ID";
+                    TenantWebService.Published := WebServiceAggregateRec.Published;
+                    TenantWebService.ExcludeFieldsOutsideRepeater := WebServiceAggregateRec.ExcludeFieldsOutsideRepeater;
+                    TenantWebService.ExcludeNonEditableFlowFields := WebServiceAggregateRec.ExcludeNonEditableFlowFields;
                     TenantWebService.Modify();
                 end else begin
-                    TenantWebService.TransferFields(Rec);
+                    TenantWebService.TransferFields(WebServiceAggregateRec);
                     TenantWebService.Insert();
                 end;
             end;
     end;
 
-    procedure RenameWebService(Rec: Record "Web Service Aggregate"; xRec: Record "Web Service Aggregate")
+    procedure RenameWebService(WebServiceAggregateRec: Record "Web Service Aggregate"; xRec: Record "Web Service Aggregate")
     var
         WebService: Record "Web Service";
         TenantWebService: Record "Tenant Web Service";
     begin
-        if Rec."All Tenants" then
+        if WebServiceAggregateRec."All Tenants" then
             if xRec."All Tenants" then begin
                 if WebService.Get(xRec."Object Type", xRec."Service Name") then
-                    WebService.Rename(Rec."Object Type", Rec."Service Name");
+                    WebService.Rename(WebServiceAggregateRec."Object Type", WebServiceAggregateRec."Service Name");
 
-                if WebService.Get(Rec."Object Type", Rec."Service Name") then begin
-                    WebService."Object ID" := Rec."Object ID";
-                    WebService.ExcludeFieldsOutsideRepeater := Rec.ExcludeFieldsOutsideRepeater;
-                    WebService.ExcludeNonEditableFlowFields := Rec.ExcludeNonEditableFlowFields;
-                    WebService.Published := Rec.Published;
+                if WebService.Get(WebServiceAggregateRec."Object Type", WebServiceAggregateRec."Service Name") then begin
+                    WebService."Object ID" := WebServiceAggregateRec."Object ID";
+                    WebService.ExcludeFieldsOutsideRepeater := WebServiceAggregateRec.ExcludeFieldsOutsideRepeater;
+                    WebService.ExcludeNonEditableFlowFields := WebServiceAggregateRec.ExcludeNonEditableFlowFields;
+                    WebService.Published := WebServiceAggregateRec.Published;
                     WebService.Modify();
                 end else begin
                     Clear(WebService);
-                    WebService.TransferFields(Rec);
+                    WebService.TransferFields(WebServiceAggregateRec);
                     WebService.Insert();
                 end
             end else begin
                 Clear(WebService);
-                WebService.TransferFields(Rec);
+                WebService.TransferFields(WebServiceAggregateRec);
                 WebService.Insert();
             end
         else
@@ -427,25 +427,25 @@ codeunit 9751 "Web Service Management Impl."
                 if WebService.Get(xRec."Object Type", xRec."Service Name") then
                     WebService.Delete();
 
-                if not TenantWebService.Get(Rec."Object Type", Rec."Service Name") then begin
+                if not TenantWebService.Get(WebServiceAggregateRec."Object Type", WebServiceAggregateRec."Service Name") then begin
                     Clear(TenantWebService);
-                    TenantWebService.TransferFields(Rec);
+                    TenantWebService.TransferFields(WebServiceAggregateRec);
                     TenantWebService.Insert();
                 end
             end else begin
-                AssertModAllowed(Rec);
+                AssertModAllowed(WebServiceAggregateRec);
 
                 if TenantWebService.Get(xRec."Object Type", xRec."Service Name") then
-                    TenantWebService.Rename(Rec."Object Type", Rec."Service Name");
+                    TenantWebService.Rename(WebServiceAggregateRec."Object Type", WebServiceAggregateRec."Service Name");
 
-                if TenantWebService.Get(Rec."Object Type", Rec."Service Name") then begin
-                    TenantWebService."Object ID" := Rec."Object ID";
-                    TenantWebService.ExcludeFieldsOutsideRepeater := Rec.ExcludeFieldsOutsideRepeater;
-                    TenantWebService.ExcludeNonEditableFlowFields := Rec.ExcludeNonEditableFlowFields;
-                    TenantWebService.Published := Rec.Published;
+                if TenantWebService.Get(WebServiceAggregateRec."Object Type", WebServiceAggregateRec."Service Name") then begin
+                    TenantWebService."Object ID" := WebServiceAggregateRec."Object ID";
+                    TenantWebService.ExcludeFieldsOutsideRepeater := WebServiceAggregateRec.ExcludeFieldsOutsideRepeater;
+                    TenantWebService.ExcludeNonEditableFlowFields := WebServiceAggregateRec.ExcludeNonEditableFlowFields;
+                    TenantWebService.Published := WebServiceAggregateRec.Published;
                     TenantWebService.Modify();
                 end else begin
-                    TenantWebService.TransferFields(Rec);
+                    TenantWebService.TransferFields(WebServiceAggregateRec);
                     TenantWebService.Insert();
                 end
             end;
@@ -467,24 +467,24 @@ codeunit 9751 "Web Service Management Impl."
             Error(WebServiceNameNotValidErr);
     end;
 
-    procedure AssertUniquePublishedServiceName(WebServiceAggregate: Record "Web Service Aggregate"; xRec: Record "Web Service Aggregate")
+    procedure AssertUniquePublishedServiceName(WebServiceAggregateRec: Record "Web Service Aggregate"; xRec: Record "Web Service Aggregate")
     var
         WebService: Record "Web Service";
         TenantWebService: Record "Tenant Web Service";
     begin
-        if (((WebServiceAggregate."Service Name" <> xRec."Service Name") or (WebServiceAggregate.Published <> xRec.Published)) and
-            (WebServiceAggregate.Published = true) and (WebServiceAggregate."Object Type" <> WebServiceAggregate."Object Type"::Codeunit))
+        if (((xRec."Service Name" <> xRec."Service Name") or (xRec.Published <> xRec.Published)) and
+            (xRec.Published = true) and (xRec."Object Type" <> xRec."Object Type"::Codeunit))
         then begin
             WebService.SetRange(Published, true);
-            WebService.SetRange("Service Name", WebServiceAggregate."Service Name");
-            WebService.SetRange("Object Type", WebServiceAggregate."Object Type"::Page, WebServiceAggregate."Object Type"::Query);
+            WebService.SetRange("Service Name", xRec."Service Name");
+            WebService.SetRange("Object Type", xRec."Object Type"::Page, xRec."Object Type"::Query);
 
             TenantWebService.SetRange(Published, true);
-            TenantWebService.SetRange("Service Name", WebServiceAggregate."Service Name");
-            TenantWebService.SetRange("Object Type", WebServiceAggregate."Object Type"::Page, WebServiceAggregate."Object Type"::Query);
+            TenantWebService.SetRange("Service Name", xRec."Service Name");
+            TenantWebService.SetRange("Object Type", xRec."Object Type"::Page, xRec."Object Type"::Query);
 
             if (not WebService.IsEmpty()) or (not TenantWebService.IsEmpty()) then
-                Error(WebServiceAlreadyPublishedErr, WebServiceAggregate."Service Name");
+                Error(WebServiceAlreadyPublishedErr, xRec."Service Name");
         end;
     end;
 
@@ -752,7 +752,7 @@ codeunit 9751 "Web Service Management Impl."
         exit(GenerateUrl(ServiceRootUrlParam, ServiceNameParam, ObjectTypeParam, ODataProtocolVersion::V4));
     end;
 
-    local procedure GenerateUrl(ServiceRootUrlParam: Text; ServiceNameParam: Text; ObjectTypeParam: Option ,,,,,,,,"Page","Query"; ODataProtocolVersion: Enum "OData Protocol Version"): Text
+    local procedure GenerateUrl(ServiceRootUrlParam: Text; ServiceNameParam: Text; ObjectTypeParam: Option ,,,,,,,,"Page","Query"; ODataProtocolVer: Enum "OData Protocol Version"): Text
     var
         TenantWebService: Record "Tenant Web Service";
         TenantWebServiceOData: Record "Tenant Web Service OData";
@@ -765,7 +765,7 @@ codeunit 9751 "Web Service Management Impl."
 
             if TenantWebServiceOData.FindFirst() then begin
                 SelectText := GetODataSelectClause(TenantWebServiceOData);
-                if ODataProtocolVersion = ODataProtocolVersion::V3 then
+                if ODataProtocolVer = ODataProtocolVersion::V3 then
                     FilterText := GetODataFilterClause(TenantWebServiceOData)
                 else
                     FilterText := GetODataV4FilterClause(TenantWebServiceOData);

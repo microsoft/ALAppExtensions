@@ -23,7 +23,7 @@ page 1900 "C5 VendTable List"
                 field("Error Message"; MigrationErrorText)
                 {
                     ApplicationArea = All;
-
+                    Caption = 'Error Message';
                     Enabled = false;
                 }
                 field(Account; Account) { ApplicationArea = All; }

@@ -72,7 +72,7 @@ codeunit 31083 "EET Management CZP"
             exit;
 
         CashDocumentLineCZP.TestField("Account Type", CashDocumentLineCZP."Account Type"::Customer);
-#if not CLEAN18
+#if not CLEAN19
 #pragma warning disable AL0432
         if CashDocumentLineCZP."Advance Letter Link Code" = '' then
 #pragma warning restore
@@ -84,7 +84,7 @@ codeunit 31083 "EET Management CZP"
 
     local procedure GetAppliedDocumentAmount(CashDocumentLineCZP: Record "Cash Document Line CZP") AppliedDocumentAmount: Decimal
     var
-#if not CLEAN18
+#if not CLEAN19
 #pragma warning disable AL0432
         SalesAdvanceLetterLine: Record "Sales Advance Letter Line";
 #pragma warning restore AL0432
@@ -96,7 +96,7 @@ codeunit 31083 "EET Management CZP"
         if IsHandled then
             exit(AppliedDocumentAmount);
 
-#if not CLEAN18
+#if not CLEAN19
         if CashDocumentLineCZP.IsAdvancePayment() then begin
             SetFilterSalesAdvanceLetterLine(CashDocumentLineCZP, SalesAdvanceLetterLine);
             SalesAdvanceLetterLine.CalcSums("Amount Including VAT");
@@ -150,7 +150,7 @@ codeunit 31083 "EET Management CZP"
         CashDocumentLineCZP.FindFirst();
 
         EETEntryCZL."Applied Document Type" := GetAppliedDocumentType(CashDocumentLineCZP);
-#if not CLEAN18
+#if not CLEAN19
         EETEntryCZL."Applied Document No." := GetAppliedDocumentNo(CashDocumentLineCZP, PostedCashDocumentHdrCZP);
 #else
         EETEntryCZL."Applied Document No." := GetAppliedDocumentNo(CashDocumentLineCZP);
@@ -178,7 +178,7 @@ codeunit 31083 "EET Management CZP"
 
     local procedure CollectVATEntries(EETEntryCZL: Record "EET Entry CZL"; CashDocumentHeaderCZP: Record "Cash Document Header CZP"; CashDocumentLineCZP: Record "Cash Document Line CZP"; PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP"; var TempVATEntry: Record "VAT Entry" temporary)
     var
-#if not CLEAN18
+#if not CLEAN19
 #pragma warning disable AL0432
         AdvanceLink: Record "Advance Link";
 #pragma warning restore AL0432
@@ -207,7 +207,7 @@ codeunit 31083 "EET Management CZP"
                     AppliedDocumentAmount := CalculateOriginalAmount(CustLedgerEntry, true);
                     SetFilterVATEntry(CustLedgerEntry."Document No.", CustLedgerEntry."Posting Date", VATEntry);
                 end;
-#if not CLEAN18
+#if not CLEAN19
 #pragma warning disable AL0432
             CashDocumentLineCZP.IsAdvancePayment():
                 begin
@@ -254,7 +254,7 @@ codeunit 31083 "EET Management CZP"
                     TempVATEntry := VATEntry;
                     TempVATEntry.Base := TempVATEntry.GetVATBaseCZL() * PartialPaymentFactor;
                     TempVATEntry.Amount := TempVATEntry.GetVATAmountCZL() * PartialPaymentFactor;
-#if not CLEAN18
+#if not CLEAN19
 #pragma warning disable AL0432
                     if TempVATEntry."Prepayment Type" = TempVATEntry."Prepayment Type"::Advance then
                         TempVATEntry.Base := TempVATEntry."Advance Base";
@@ -286,7 +286,7 @@ codeunit 31083 "EET Management CZP"
                 EETAppliedDocumentTypeCZL := EETAppliedDocumentTypeCZL::Invoice;
             CashDocumentLineCZP.IsCreditMemoRefund():
                 EETAppliedDocumentTypeCZL := EETAppliedDocumentTypeCZL::"Credit Memo";
-#if not CLEAN18
+#if not CLEAN19
             CashDocumentLineCZP.IsAdvancePayment(),
             CashDocumentLineCZP.IsAdvanceRefund():
                 EETAppliedDocumentTypeCZL := EETAppliedDocumentTypeCZL::Prepayment;
@@ -296,7 +296,7 @@ codeunit 31083 "EET Management CZP"
         end;
     end;
 
-#if not CLEAN18
+#if not CLEAN19
     local procedure GetAppliedDocumentNo(CashDocumentLineCZP: Record "Cash Document Line CZP"; PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP") AppliedDocumentNo: Code[20]
     var
 #pragma warning disable AL0432
@@ -310,7 +310,7 @@ codeunit 31083 "EET Management CZP"
     begin
         AppliedDocumentNo := CashDocumentLineCZP."Applies-To Doc. No.";
 
-#if not CLEAN18
+#if not CLEAN19
 #pragma warning disable AL0432
         case true of
             CashDocumentLineCZP.IsAdvancePayment():
@@ -354,7 +354,7 @@ codeunit 31083 "EET Management CZP"
         CashDocumentLineCZP.SetFilter(Amount, '<>0');
     end;
 
-#if not CLEAN18
+#if not CLEAN19
 #pragma warning disable AL0432
     local procedure SetFilterSalesAdvanceLetterLine(CashDocumentLineCZP: Record "Cash Document Line CZP"; var SalesAdvanceLetterLine: Record "Sales Advance Letter Line")
     begin

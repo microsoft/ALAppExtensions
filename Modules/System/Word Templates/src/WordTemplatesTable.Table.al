@@ -17,7 +17,9 @@ table 9987 "Word Templates Table"
         {
             DataClassification = SystemMetadata;
         }
+#pragma warning disable AL0685
         field(2; "Table Caption"; Text[80])
+#pragma warning restore AL0685
         {
             FieldClass = FlowField;
             CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Table), "Object ID" = field("Table ID")));

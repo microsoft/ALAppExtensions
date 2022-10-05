@@ -55,6 +55,7 @@ codeunit 18006 "GST Statistics"
         if not GSTSetup.Get() then
             exit;
 
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Value Type", "Tax Type", Percent);
         TaxTransactionValue.SetRange("Tax Record ID", RecID);
         TaxTransactionValue.SetRange("Value Type", TaxTransactionValue."Value Type"::COMPONENT);
         if GSTSetup."Cess Tax Type" <> '' then

@@ -50,7 +50,7 @@ table 149002 "BCPT Log Entry"
         }
         field(9; "Duration (ms)"; integer)
         {
-            Caption = 'Duration (ms)';
+            Caption = 'DurationInMs (ms)';
         }
         field(10; "Status"; Option)
         {
@@ -80,6 +80,11 @@ table 149002 "BCPT Log Entry"
             DataClassification = CustomerContent;
             Caption = 'Tag';
         }
+        field(16; "Error Call Stack"; Text[2048])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Error Call Stack';
+        }
     }
 
     keys
@@ -91,6 +96,10 @@ table 149002 "BCPT Log Entry"
         key(Key2; "BCPT Code", Version, "BCPT Line No.", Operation, "Duration (ms)", "No. of SQL Statements")
         {
             // Instead of a SIFT index. This will make both inserts and calculations faster - and non-blocking
+        }
+        key(Key3; "Duration (ms)")
+        {
+            SumIndexFields = "Duration (ms)";
         }
     }
 

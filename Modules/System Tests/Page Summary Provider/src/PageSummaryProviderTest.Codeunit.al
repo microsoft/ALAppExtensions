@@ -347,6 +347,8 @@ codeunit 132548 "Page Summary Provider Test"
         // [Then] The summary reflects the page and record
         ValidateSummaryHeader(PageSummaryJsonObject, 'Page summary', 'Card', 'Brick');
         LibraryAssert.AreEqual(RecordRef.FieldCount - 1, GetNumberOfFields(PageSummaryJsonObject), 'Incorrect number of fields returned.');
+
+        fieldsSkipped := 0;
         for fieldNo := 1 to RecordRef.FieldCount - 1 do
             if not (RecordRef.Field(fieldNo).Type in [FieldType::Media, FieldType::MediaSet]) then // Ignore Mediaset fields for now since they have value '', not '<empty guid>' which requires a bit more hardcoding for testing
                 if RecordRef.Field(fieldNo).Type <> FieldType::Blob then // Blob fields are not added

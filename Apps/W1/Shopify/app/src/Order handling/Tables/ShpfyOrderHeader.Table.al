@@ -446,6 +446,7 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Sales Order No.';
             DataClassification = SystemMetadata;
+            TableRelation = "Sales Header"."No." where("Document Type" = const(Order));
         }
         field(1002; "Has Error"; Boolean)
         {
@@ -479,6 +480,7 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Sales Invoice No.';
             DataClassification = SystemMetadata;
+            TableRelation = "Sales Header"."No." where("Document Type" = const(Invoice));
         }
         field(1007; "Work Description"; Blob)
         {

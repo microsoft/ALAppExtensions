@@ -14,12 +14,8 @@ codeunit 31011 "VAT Entry Handler CZZ"
 
     [EventSubscriber(ObjectType::Report, Report::"Calc. and Post VAT Settl. CZL", 'OnBeforeGetVATAccountNo', '', false, false)]
     local procedure GetVATAccountNo(VATEntry: Record "VAT Entry"; VATPostingSetup: Record "VAT Posting Setup"; var VATAccountNo: Code[20]; var IsHandled: Boolean)
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
     begin
         if VATEntry."Advance Letter No. CZZ" = '' then
-            exit;
-        if not AdvancePaymentsMgtCZZ.IsEnabled() then
             exit;
 
         case VATEntry.Type of

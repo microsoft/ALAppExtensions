@@ -13,8 +13,8 @@ Codeunit 13650 FIKManagement
         ProgressWindowMsg: Label 'Please wait while the operation is being completed.';
         FIKPrefixTxt: Label 'FIK', Locked = true;
         BankAccountCurrencyNotLCYErr: Label 'You cannot use bank account %1 for importing a FIK statement because the bank account currency is %2. The bank account currency must be DKK.', Comment = '%1: Bank Account No., %2: Currency Code';
-        PmtTypeValidationErr: Label 'The %1 in %2, %3 must be %4 or %5.', Comment = 'The Payment Type Validation in Payment Method, Code must be Domestic or International.';
-        CreditorNumberLengthErr: Label 'The Creditor Number field must not exceed %1 digits.';
+        PmtTypeValidationErr: Label 'The %1 in %2, %3 must be %4 or %5.', Comment = '%1 = Payment Type Validation Field Caption; %2 = Payment Method Table Caption; %3 = Code Field; %4 = Enum Value Domestic; %5 = Enum Value International';
+        CreditorNumberLengthErr: Label 'The Creditor Number field must not exceed %1 digits.', Comment = '%1 = Maximum length for the Creditor Number field';
 
     PROCEDURE CreateFIKCheckSum(String: Text; Weight: Text; VAR Total: Integer; VAR CheckSum: Integer): Integer;
     VAR
@@ -80,10 +80,10 @@ Codeunit 13650 FIKManagement
             PaymentMethod.PaymentTypeValidation::"FIK 01", PaymentMethod.PaymentTypeValidation::"FIK 73":
                 ERROR(PmtReferenceErr, PaymentMethod.PaymentTypeValidation);
             ELSE begin
-                    OnEvaluateFIKCasePaymentTypeValidationElse(PaymentReference, PaymentMethod, Result, IsHandled);
-                    if not IsHandled then
-                        ERROR(FIKPmtErr);
-                end;
+                OnEvaluateFIKCasePaymentTypeValidationElse(PaymentReference, PaymentMethod, Result, IsHandled);
+                if not IsHandled then
+                    ERROR(FIKPmtErr);
+            end;
         END;
         IF NOT Result THEN
             ERROR(WrongCheckCypherErr);
@@ -99,7 +99,6 @@ Codeunit 13650 FIKManagement
         Total: Integer;
         Weight: Text;
         StringText: Text;
-
     BEGIN
         StringLen := 15;
 
@@ -117,7 +116,7 @@ Codeunit 13650 FIKManagement
         Weight := '12121212121212';
         FikManagement.CreateFIKCheckSum(StringText, Weight, Total, CheckSum);
 
-        EXIT('+71<' + StringText + FORMAT(CheckSum) + '+' + CompanyInformation.BankCreditorNo);
+        EXIT('+71<' + StringText + FORMAT(CheckSum) + '+' + CompanyInformation.BankCreditorNo + '<');
     END;
 
     procedure ImportFIKToBankAccRecLine(var BankAccRecon: Record "Bank Acc. Reconciliation"): Boolean;
@@ -135,7 +134,7 @@ Codeunit 13650 FIKManagement
         BankAcc.GET(BankAccRecon."Bank Account No.");
 
         IF NOT BankAcc.IsInLocalCurrency() THEN
-            ERROR(STRSUBSTNO(BankAccountCurrencyNotLCYErr, BankAcc."No.", BankAcc."Currency Code"));
+            ERROR(BankAccountCurrencyNotLCYErr, BankAcc."No.", BankAcc."Currency Code");
 
         GeneralLedgerSetup.Get();
         DataExchDef.Get(GeneralLedgerSetup."FIK Import Format");
@@ -298,7 +297,7 @@ Codeunit 13650 FIKManagement
         IF CreditorNo = '' THEN
             EXIT('');
         IF STRLEN(CreditorNo) > GetCreditorNoLength() THEN
-            ERROR(STRSUBSTNO(CreditorNumberLengthErr, GetCreditorNoLength()));
+            ERROR(CreditorNumberLengthErr, GetCreditorNoLength());
         EXIT(PADSTR('', GetCreditorNoLength() - STRLEN(CreditorNo), '0') + CreditorNo);
     end;
 

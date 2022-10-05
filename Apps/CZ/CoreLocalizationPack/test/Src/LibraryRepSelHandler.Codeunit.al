@@ -9,7 +9,8 @@ codeunit 148105 "Library - Rep.Sel. Handler CZL"
             RecUsage::"S.Order":
                 ReportId := Report::"Sales Order Confirmation CZL";
             RecUsage::"S.Invoice":
-                ReportId := Report::"Sales Invoice CZL";
+                if ReportId = Report::"Standard Sales - Invoice" then
+                    ReportId := Report::"Sales Invoice CZL";
             RecUsage::"S.Return":
                 ReportId := Report::"Sales Return Order Confirm CZL";
             RecUsage::"S.Cr.Memo":

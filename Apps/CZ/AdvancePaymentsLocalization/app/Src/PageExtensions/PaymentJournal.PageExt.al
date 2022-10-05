@@ -6,15 +6,15 @@ pageextension 31049 "Payment Journal CZZ" extends "Payment Journal"
 #pragma warning disable AL0432
         modify(Prepayment)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Prepayment Type")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Advance VAT Base Amount")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -24,37 +24,26 @@ pageextension 31049 "Payment Journal CZZ" extends "Payment Journal"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies advance letter no.';
-                Visible = AdvancePaymentsEnabledCZZ;
             }
         }
     }
-
-    actions
-    {
 #if not CLEAN19
 #pragma warning disable AL0432
+    actions
+    {
         modify("Link Advance Letters")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Link Whole Advance Letter")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("UnLink Linked Advance Letters")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
+    }
 #pragma warning restore AL0432
 #endif
-    }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

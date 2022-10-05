@@ -65,6 +65,9 @@ table 1891 "C5 CustGroup"
         {
             Clustered = true;
         }
+        key(Key1; Group)
+        {
+        }
     }
 }
 

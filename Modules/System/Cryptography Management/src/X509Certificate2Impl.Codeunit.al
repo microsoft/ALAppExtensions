@@ -149,7 +149,7 @@ codeunit 1285 "X509Certificate2 Impl."
     begin
         foreach PropertyInfo in X509Certificate2.GetType().GetProperties() do
             if PropertyInfo.PropertyType().ToString() in ['System.Boolean', 'System.String', 'System.DateTime', 'System.Int32'] then
-                JObject.Add(PropertyInfo.Name(), Format(PropertyInfo.GetValue(X509Certificate2), 0, 9));
+                JObject.Add(PropertyInfo.Name(), Format(PropertyInfo.GetValue(X509Certificate2), 0, 0));
         JObject.WriteTo(CertPropertyJson);
     end;
 }

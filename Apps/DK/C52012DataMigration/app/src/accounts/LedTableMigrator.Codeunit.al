@@ -38,8 +38,15 @@ codeunit 1862 "C5 LedTable Migrator"
         exit(Result);
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
     procedure OnMigrateGlAccount(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateGlAccount(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateGlAccount(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5LedTable: Record "C5 LedTable";
     begin
@@ -49,8 +56,15 @@ codeunit 1862 "C5 LedTable Migrator"
         MigrateLedgerDetails(C5LedTable, Sender);
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccountDimensions', '', true, true)]
     procedure OnMigrateGlAccountDimensions(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateGlAccountDimensions(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateGlAccountDimensions(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5LedTable: Record "C5 LedTable";
         C5HelperFunctions: Codeunit "C5 Helper Functions";
@@ -120,9 +134,10 @@ codeunit 1862 "C5 LedTable Migrator"
         TotalingFilter: Text;
         NumberOfCounterTotals: Integer;
         Index: Integer;
+        FilterTxt: Label '%1..%2', Locked = true;
     begin
         if (CounterTotal = '') or (AccountType = C5LedTable.AccountType::"Heading total") then
-            exit(CopyStr(StrSubstNo('%1..%2', FillWithLeadingZeros(AccountFrom), AccountTo), 1, 250));
+            exit(CopyStr(StrSubstNo(FilterTxt, FillWithLeadingZeros(AccountFrom), AccountTo), 1, 250));
 
         if CounterTotal <> DelChr(CounterTotal, '=', '()-*/>') then
             exit('');
@@ -134,7 +149,7 @@ codeunit 1862 "C5 LedTable Migrator"
             if C5LedTable.FindSet() then
                 repeat
                     if C5LedTable.AccountType = C5LedTable.AccountType::"Heading total" then
-                        TotalingFilter += StrSubstNo('%1..%2',
+                        TotalingFilter += StrSubstNo(FilterTxt,
                           FillWithLeadingZeros(C5LedTable.TotalFromAccount),
                           FillWithLeadingZeros(C5LedTable.Account)) + '|'
                     else

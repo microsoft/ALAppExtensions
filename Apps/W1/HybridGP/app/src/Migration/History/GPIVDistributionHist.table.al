@@ -1,6 +1,6 @@
 table 4036 "GPIVDistributionHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

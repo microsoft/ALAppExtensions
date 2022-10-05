@@ -64,8 +64,9 @@ codeunit 4056 "Upgrade BaseApp 18x"
         Contact.SetRange("Business Relation", '');
         if Contact.FindSet(true, false) then
             repeat
-                Contact.UpdateBusinessRelation();
-                if Contact.Modify() then;
+                if Contact.UpdateBusinessRelation() then
+#pragma warning disable AA0214
+                    Contact.Modify();
             until Contact.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetContactBusinessRelationUpgradeTag());

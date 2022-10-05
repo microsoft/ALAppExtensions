@@ -45,6 +45,12 @@ tableextension 31248 "Fixed Asset CZF" extends "Fixed Asset"
 
     keys
     {
+        key(FALocationCZF; "FA Location Code", "Responsible Employee")
+        {
+        }
+        key(ResponsibleEmployeeCZF; "Responsible Employee", "FA Location Code")
+        {
+        }
         key(TaxDeprecGroupCZF; "Tax Deprec. Group Code CZF")
         {
         }

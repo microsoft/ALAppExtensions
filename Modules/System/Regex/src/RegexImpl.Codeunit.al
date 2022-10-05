@@ -293,22 +293,22 @@ codeunit 3961 "Regex Impl."
         exit(DotNetMatchCollection.Item(MatchIndex).Result(Replacement));
     end;
 
-    procedure Groups(var Matches: Record Matches; var Groups: Record Groups)
+    procedure Groups(var MatchesRec: Record Matches; var GroupsRec: Record Groups)
     var
         MatchIndex: Integer;
     begin
-        MatchIndex := Matches.MatchIndex;
+        MatchIndex := MatchesRec.MatchIndex;
         DotNetGroupCollection := DotNetMatchCollection.Item(MatchIndex).Groups;
-        InsertGroups(Groups);
+        InsertGroups(GroupsRec);
     end;
 
-    procedure Captures(var Groups: Record Groups; var Captures: Record Captures)
+    procedure Captures(var GroupsRec: Record Groups; var CapturesRec: Record Captures)
     var
         GroupIndex: Integer;
     begin
-        GroupIndex := Groups.GroupIndex;
+        GroupIndex := GroupsRec.GroupIndex;
         DotNetCaptureCollection := DotNetGroupCollection.Item(GroupIndex).Captures;
-        InsertCaptures(Captures)
+        InsertCaptures(CapturesRec)
     end;
 
     procedure Regex(Pattern: Text)
@@ -356,43 +356,43 @@ codeunit 3961 "Regex Impl."
         if Matches.FindFirst() then;
     end;
 
-    local procedure InsertGroups(var Groups: Record Groups)
+    local procedure InsertGroups(var GroupsRec: Record Groups)
     var
         DotNetGroup: DotNet Group;
         Index: Integer;
     begin
-        Groups.DeleteAll();
+        GroupsRec.DeleteAll();
         Index := 0;
         foreach DotNetGroup in DotNetGroupCollection do begin
-            Groups.Init();
-            Groups.GroupIndex := Index;
-            Groups.Index := DotNetGroup.Index;
-            Groups.Name := DotNetGroup.Name;
-            Groups.InsertValue(DotNetGroup.Value);
-            Groups.Length := DotNetGroup.Length;
-            Groups.Success := DotNetGroup.Success;
-            Groups.Insert();
+            GroupsRec.Init();
+            GroupsRec.GroupIndex := Index;
+            GroupsRec.Index := DotNetGroup.Index;
+            GroupsRec.Name := DotNetGroup.Name;
+            GroupsRec.InsertValue(DotNetGroup.Value);
+            GroupsRec.Length := DotNetGroup.Length;
+            GroupsRec.Success := DotNetGroup.Success;
+            GroupsRec.Insert();
             Index += 1;
         end;
-        if Groups.FindFirst() then;
+        if GroupsRec.FindFirst() then;
     end;
 
-    local procedure InsertCaptures(var Captures: Record Captures)
+    local procedure InsertCaptures(var CapturesRec: Record Captures)
     var
         DotNetCapture: DotNet Capture;
         Index: Integer;
     begin
-        Captures.DeleteAll();
+        CapturesRec.DeleteAll();
         Index := 0;
         foreach DotNetCapture in DotNetCaptureCollection do begin
-            Captures.Init();
-            Captures.CaptureIndex := Index;
-            Captures.Index := DotNetCapture.Index;
-            Captures.Length := DotNetCapture.Length;
-            Captures.InsertValue(DotNetCapture.Value);
-            Captures.Insert();
+            CapturesRec.Init();
+            CapturesRec.CaptureIndex := Index;
+            CapturesRec.Index := DotNetCapture.Index;
+            CapturesRec.Length := DotNetCapture.Length;
+            CapturesRec.InsertValue(DotNetCapture.Value);
+            CapturesRec.Insert();
             Index += 1;
         end;
-        if Captures.FindFirst() then;
+        if CapturesRec.FindFirst() then;
     end;
 }

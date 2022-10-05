@@ -16,16 +16,19 @@ page 20059 "APIV1 - Aut. User Group Member"
                 {
                     ApplicationArea = All;
                     Caption = 'code', Locked = true;
+                    ToolTip = 'Specifies the user group code';
                 }
                 field(displayName; "User Group Name")
                 {
                     ApplicationArea = All;
                     Caption = 'displayName', Locked = true;
+                    ToolTip = 'Specifies the user group name';
                 }
                 field(companyName; "Company Name")
                 {
                     ApplicationArea = All;
                     Caption = 'companyName', Locked = true;
+                    ToolTip = 'Specifies the company name';
                 }
             }
         }

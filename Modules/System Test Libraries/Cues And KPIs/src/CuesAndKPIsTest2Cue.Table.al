@@ -6,6 +6,7 @@
 table 135040 "Cues And KPIs Test 2 Cue"
 {
     DataClassification = ToBeClassified;
+    ReplicateData = false;
 
     fields
     {

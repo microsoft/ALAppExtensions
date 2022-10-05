@@ -16,9 +16,15 @@ codeunit 1864 "C5 VendTable Migrator"
         PaymentNotFoundErr: Label 'The Payment ''%1'' was not found.', Comment = '%1 = payment';
         GeneralJournalBatchNameTxt: Label 'VENDMIGR', Locked = true;
 
-
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
     procedure OnMigrateVendor(VAR Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateVendor(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateVendor(VAR Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         C5VendTable: Record "C5 VendTable";
     begin
@@ -26,36 +32,6 @@ codeunit 1864 "C5 VendTable Migrator"
             exit;
         C5VendTable.Get(RecordIdToMigrate);
         MigrateVendorDetails(C5VendTable, Sender);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorDimensions', '', true, true)]
-    procedure OnMigrateVendorDimensions(VAR Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
-    var
-        C5VendTable: Record "C5 VendTable";
-        C5HelperFunctions: Codeunit "C5 Helper Functions";
-    begin
-        if RecordIdToMigrate.TableNo() <> Database::"C5 VendTable" then
-            exit;
-
-        C5VendTable.Get(RecordIdToMigrate);
-        if C5VendTable.Department <> '' then
-            Sender.CreateDefaultDimensionAndRequirementsIfNeeded(
-                C5HelperFunctions.GetDepartmentDimensionCodeTxt(),
-                C5HelperFunctions.GetDepartmentDimensionDescTxt(),
-                C5VendTable.Department,
-                C5HelperFunctions.GetDimensionValueName(Database::"C5 Department", C5VendTable.Department));
-        if C5VendTable.Centre <> '' then
-            Sender.CreateDefaultDimensionAndRequirementsIfNeeded(
-                C5HelperFunctions.GetCostCenterDimensionCodeTxt(),
-                C5HelperFunctions.GetCostCenterDimensionDescTxt(),
-                C5VendTable.Centre,
-                C5HelperFunctions.GetDimensionValueName(Database::"C5 Centre", C5VendTable.Centre));
-        if C5VendTable.Purpose <> '' then
-            Sender.CreateDefaultDimensionAndRequirementsIfNeeded(
-                C5HelperFunctions.GetPurposeDimensionCodeTxt(),
-                C5HelperFunctions.GetPurposeDimensionDescTxt(),
-                C5VendTable.Purpose,
-                C5HelperFunctions.GetDimensionValueName(Database::"C5 Purpose", C5VendTable.Purpose));
     end;
 
     local procedure MigrateVendorDetails(C5VendTable: Record "C5 VendTable"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
@@ -91,7 +67,7 @@ codeunit 1864 "C5 VendTable Migrator"
         // reference to another vendor
         // to make sure the pay to vendor exists
         if (C5VendTable.InvoiceAccount <> '') and not VendorDataMigrationFacade.DoesVendorExist(C5VendTable.InvoiceAccount) then
-            Error(StrSubstNo(ReferencedVendorDoesNotExistErr, C5VendTable.Account, C5VendTable.InvoiceAccount));
+            Error(ReferencedVendorDoesNotExistErr, C5VendTable.Account, C5VendTable.InvoiceAccount);
 
         VendorDataMigrationFacade.SetPayToVendorNo(C5VendTable.InvoiceAccount); // foreign key
 
@@ -110,9 +86,52 @@ codeunit 1864 "C5 VendTable Migrator"
         VendorDataMigrationFacade.ModifyVendor(true);
     end;
 
+#pragma warning disable AA0207
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorDimensions', '', true, true)]
+    procedure OnMigrateVendorDimensions(VAR Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigrateVendorDimensions(Sender, RecordIdToMigrate);
+    end;
+#pragma warning restore AA0207
 
+    internal procedure MigrateVendorDimensions(VAR Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
+    var
+        C5VendTable: Record "C5 VendTable";
+        C5HelperFunctions: Codeunit "C5 Helper Functions";
+    begin
+        if RecordIdToMigrate.TableNo() <> Database::"C5 VendTable" then
+            exit;
+
+        C5VendTable.Get(RecordIdToMigrate);
+        if C5VendTable.Department <> '' then
+            Sender.CreateDefaultDimensionAndRequirementsIfNeeded(
+                C5HelperFunctions.GetDepartmentDimensionCodeTxt(),
+                C5HelperFunctions.GetDepartmentDimensionDescTxt(),
+                C5VendTable.Department,
+                C5HelperFunctions.GetDimensionValueName(Database::"C5 Department", C5VendTable.Department));
+        if C5VendTable.Centre <> '' then
+            Sender.CreateDefaultDimensionAndRequirementsIfNeeded(
+                C5HelperFunctions.GetCostCenterDimensionCodeTxt(),
+                C5HelperFunctions.GetCostCenterDimensionDescTxt(),
+                C5VendTable.Centre,
+                C5HelperFunctions.GetDimensionValueName(Database::"C5 Centre", C5VendTable.Centre));
+        if C5VendTable.Purpose <> '' then
+            Sender.CreateDefaultDimensionAndRequirementsIfNeeded(
+                C5HelperFunctions.GetPurposeDimensionCodeTxt(),
+                C5HelperFunctions.GetPurposeDimensionDescTxt(),
+                C5VendTable.Purpose,
+                C5HelperFunctions.GetDimensionValueName(Database::"C5 Purpose", C5VendTable.Purpose));
+    end;
+
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
     procedure OnMigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+    begin
+        MigrateVendorPostingGroups(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         C5VendTable: Record "C5 VendTable";
         C5VendGroup: Record "C5 VendGroup";
@@ -136,14 +155,22 @@ codeunit 1864 "C5 VendTable Migrator"
         Sender.ModifyVendor(true);
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorTransactions', '', true, true)]
     procedure OnMigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+    begin
+        MigrateVendorTransactions(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
+    end;
+#pragma warning restore AA0207
+
+    internal procedure MigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         C5VendTable: Record "C5 VendTable";
         C5VendTrans: Record "C5 VendTrans";
         C5VendGroup: Record "C5 VendGroup";
         C5HelperFunctions: Codeunit "C5 Helper Functions";
         C5LedTableMigrator: Codeunit "C5 LedTable Migrator";
+        DescriptionTxt: Label '%1 %2', Locked = true;
     begin
         if not ChartOfAccountsMigrated then
             exit;
@@ -167,7 +194,7 @@ codeunit 1864 "C5 VendTable Migrator"
                 Sender.CreateGeneralJournalLine(
                     GetHardCodedBatchName(),
                     'C5MIGRATE',
-                    CopyStr(STRSUBSTNO('%1 %2', C5VendTrans.InvoiceNumber, C5VendTrans.Txt), 1, 50),
+                    CopyStr(STRSUBSTNO(DescriptionTxt, C5VendTrans.InvoiceNumber, C5VendTrans.Txt), 1, 50),
                     C5VendTrans.Date_,
                     C5VendTrans.DueDate,
                     C5VendTrans.AmountCur,
@@ -197,6 +224,10 @@ codeunit 1864 "C5 VendTable Migrator"
         C5Payment: Record "C5 Payment";
         DueDateAsDateFormula: DateFormula;
         DueDateCalculation: Text;
+        DueDayTxt: Label '+%1D', Locked = true;
+        DueWeekTxt: Label '+%1W', Locked = true;
+        DueMonthTxt: Label '+%1M', Locked = true;
+        DueDateTxt: Label '<%1>', Locked = true;
     begin
         if C5PaymentTxt = '' then
             exit(C5PaymentTxt);
@@ -220,13 +251,13 @@ codeunit 1864 "C5 VendTable Migrator"
 
         case C5Payment.UnitCode of
             C5Payment.UnitCode::Day:
-                DueDateCalculation += StrSubstNo('+%1D', C5Payment.Qty);
+                DueDateCalculation += StrSubstNo(DueDayTxt, C5Payment.Qty);
             C5Payment.UnitCode::Week:
-                DueDateCalculation += StrSubstNo('+%1W', C5Payment.Qty);
+                DueDateCalculation += StrSubstNo(DueWeekTxt, C5Payment.Qty);
             C5Payment.UnitCode::Month:
-                DueDateCalculation += StrSubstNo('+%1M', C5Payment.Qty);
+                DueDateCalculation += StrSubstNo(DueMonthTxt, C5Payment.Qty);
         end;
-        DueDateCalculation := StrSubstNo('<%1>', DueDateCalculation);
+        DueDateCalculation := StrSubstNo(DueDateTxt, DueDateCalculation);
         Evaluate(DueDateAsDateFormula, DueDateCalculation);
 
         exit(UninitializedVendorDataMigrationFacade.CreatePaymentTermsIfNeeded(C5Payment.Payment,

@@ -11,67 +11,52 @@ codeunit 8932 "View All Emails Policy" implements "Email View Policy"
     Access = Internal;
     Permissions = tabledata "Email Related Record" = r;
 
-    var
-        EmailViewPolicy: Codeunit "Email View Policy";
-
     procedure GetSentEmails(var SentEmails: Record "Sent Email" temporary)
     var
-        SentEmailsQuery: Query "Sent Emails";
+        EmailViewPolicy: Codeunit "Email View Policy";
     begin
-        SentEmailsQuery.GetSentEmails(SentEmails);
+        EmailViewPolicy.GetSentEmails(SentEmails);
     end;
 
     procedure GetOutboxEmails(var EmailOutbox: Record "Email Outbox" temporary)
     var
-        OutboxEmailsQuery: Query "Outbox Emails";
+        EmailViewPolicy: Codeunit "Email View Policy";
     begin
-        OutboxEmailsQuery.GetOutboxEmails(EmailOutbox);
+        EmailViewPolicy.GetOutboxEmails(EmailOutbox);
     end;
 
     procedure GetSentEmails(SourceTableId: Integer; var SentEmails: Record "Sent Email" temporary)
     var
-        TempAccessibleSentEmailsRecord: Record "Sent Email" temporary;
-        EmailRelatedRecord: Record "Email Related Record";
         SentEmailsQuery: Query "Sent Emails";
     begin
-        SentEmailsQuery.GetSentEmails(TempAccessibleSentEmailsRecord);
-        EmailRelatedRecord.SetRange("Table Id", SourceTableId);
-        EmailViewPolicy.GetFilteredSentEmails(EmailRelatedRecord, TempAccessibleSentEmailsRecord, SentEmails);
+        SentEmailsQuery.SetRange(SentEmailsQuery.Table_Id, SourceTableId);
+        SentEmailsQuery.GetSentEmails(SentEmails);
     end;
 
     procedure GetOutboxEmails(SourceTableId: Integer; var EmailOutbox: Record "Email Outbox" temporary)
     var
-        TempAccessibleEmailOutboxRecord: Record "Email Outbox" temporary;
-        EmailRelatedRecord: Record "Email Related Record";
         OutboxEmailsQuery: Query "Outbox Emails";
     begin
-        OutboxEmailsQuery.GetOutboxEmails(TempAccessibleEmailOutboxRecord);
-        EmailRelatedRecord.SetRange("Table Id", SourceTableId);
-        EmailViewPolicy.GetFilteredOutboxEmails(EmailRelatedRecord, TempAccessibleEmailOutboxRecord, EmailOutbox);
+        OutboxEmailsQuery.SetRange(OutboxEmailsQuery.Table_Id, SourceTableId);
+        OutboxEmailsQuery.GetOutboxEmails(EmailOutbox);
     end;
 
     procedure GetSentEmails(SourceTableId: Integer; SourceSystemId: Guid; var SentEmails: Record "Sent Email" temporary)
     var
-        TempAccessibleSentEmailsRecord: Record "Sent Email" temporary;
-        EmailRelatedRecord: Record "Email Related Record";
         SentEmailsQuery: Query "Sent Emails";
     begin
-        SentEmailsQuery.GetSentEmails(TempAccessibleSentEmailsRecord);
-        EmailRelatedRecord.SetRange("Table Id", SourceTableId);
-        EmailRelatedRecord.SetRange("System Id", SourceSystemId);
-        EmailViewPolicy.GetFilteredSentEmails(EmailRelatedRecord, TempAccessibleSentEmailsRecord, SentEmails);
+        SentEmailsQuery.SetRange(SentEmailsQuery.Table_Id, SourceTableId);
+        SentEmailsQuery.SetRange(SentEmailsQuery.System_Id, SourceSystemId);
+        SentEmailsQuery.GetSentEmails(SentEmails);
     end;
 
     procedure GetOutboxEmails(SourceTableId: Integer; SourceSystemId: Guid; var EmailOutbox: Record "Email Outbox" temporary)
     var
-        TempAccessibleEmailOutboxRecord: Record "Email Outbox" temporary;
-        EmailRelatedRecord: Record "Email Related Record";
         OutboxEmailsQuery: Query "Outbox Emails";
     begin
-        OutboxEmailsQuery.GetOutboxEmails(TempAccessibleEmailOutboxRecord);
-        EmailRelatedRecord.SetRange("Table Id", SourceTableId);
-        EmailRelatedRecord.SetRange("System Id", SourceSystemId);
-        EmailViewPolicy.GetFilteredOutboxEmails(EmailRelatedRecord, TempAccessibleEmailOutboxRecord, EmailOutbox);
+        OutboxEmailsQuery.SetRange(OutboxEmailsQuery.Table_Id, SourceTableId);
+        OutboxEmailsQuery.SetRange(OutboxEmailsQuery.System_Id, SourceSystemId);
+        OutboxEmailsQuery.GetOutboxEmails(EmailOutbox);
     end;
 
     procedure HasAccess(SentEmail: Record "Sent Email"): Boolean;
@@ -83,5 +68,4 @@ codeunit 8932 "View All Emails Policy" implements "Email View Policy"
     begin
         exit(true);
     end;
-
 }

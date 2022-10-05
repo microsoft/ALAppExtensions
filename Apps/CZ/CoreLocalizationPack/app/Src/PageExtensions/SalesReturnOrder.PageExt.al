@@ -8,7 +8,20 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
             Editable = IsPostingGroupEditableCZL;
         }
 #endif
+#if not CLEAN20
+#pragma warning disable AL0432
         movelast(General; "Posting Description")
+#pragma warning restore AL0432
+#else
+        addlast(General)
+        {
+            field("Posting Description CZL"; Rec."Posting Description")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
+            }
+        }
+#endif
         addlast(General)
         {
             field("Credit Memo Type CZL"; Rec."Credit Memo Type CZL")
@@ -65,6 +78,14 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the secondary VAT registration number for the customer.';
                 Importance = Additional;
+            }
+        }
+        addafter("Transport Method")
+        {
+            field("Shipment Method Code CZL"; Rec."Shipment Method Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies how items on the sales document are shipped to the customer.';
             }
         }
         addafter("Currency Code")

@@ -9,6 +9,8 @@ page 30110 "Shpfy Gift Cards"
     PageType = List;
     SourceTable = "Shpfy Gift Card";
     UsageCategory = Documents;
+    InsertAllowed = false;
+    ModifyAllowed = false;
 
     layout
     {

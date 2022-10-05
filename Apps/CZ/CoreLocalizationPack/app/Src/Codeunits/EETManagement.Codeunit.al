@@ -151,33 +151,4 @@ codeunit 31118 "EET Management CZL"
     local procedure OnCreateSimpleEETEntryOnBeforeInsertEETEntry(var EETEntryCZL: Record "EET Entry CZL")
     begin
     end;
-#if not CLEAN18
-
-#pragma warning disable AL0432
-    [Obsolete('The temporary subscriber to prevent activation of new and obsolete services at the same time.', '18.0')]
-    [EventSubscriber(ObjectType::Table, Database::"EET Service Setup", 'OnBeforeValidateEvent', 'Enabled', false, false)]
-    local procedure CheckNewEnabledFieldOnAfterValidateObsoleteEnabledField(var Rec: Record "EET Service Setup")
-    var
-        EETServiceSetupCZL: Record "EET Service Setup CZL";
-    begin
-        if Rec.Enabled then begin
-            EETServiceSetupCZL.Get();
-            EETServiceSetupCZL.TestField(Enabled, false);
-        end;
-    end;
-
-    [Obsolete('The temporary subscriber to prevent activation of new and obsolete services at the same time.', '18.0')]
-    [EventSubscriber(ObjectType::Table, Database::"EET Service Setup CZL", 'OnBeforeValidateEvent', 'Enabled', false, false)]
-    local procedure CheckObsoleteEnabledFieldOnAfterValidateNewEnabledField(var Rec: Record "EET Service Setup CZL")
-    var
-        EETServiceSetup: Record "EET Service Setup";
-    begin
-        if Rec.Enabled then begin
-            EETServiceSetup.Get();
-            EETServiceSetup.TestField(Enabled, false);
-        end;
-    end;
-#pragma warning restore AL0432
-#endif
 }
-

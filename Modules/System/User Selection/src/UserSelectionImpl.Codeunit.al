@@ -15,9 +15,6 @@ codeunit 9844 "User Selection Impl."
     var
         EnvironmentInformation: Codeunit "Environment Information";
     begin
-        if not EnvironmentInformation.IsSaaS() then
-            exit;
-
         User.FilterGroup(2);
         if not EnvironmentInformation.IsSaaS() then
             User.SetFilter("License Type", '<>%1', User."License Type"::Application)

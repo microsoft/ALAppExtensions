@@ -1,6 +1,6 @@
 table 4073 "GPSOPProcessHoldWorkHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields
