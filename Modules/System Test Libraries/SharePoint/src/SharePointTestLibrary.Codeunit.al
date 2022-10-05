@@ -5,7 +5,6 @@
 
 codeunit 132973 "SharePoint Test Library"
 {
-
     EventSubscriberInstance = Manual;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"SharePoint Request Helper", 'OnBeforeSendRequest', '', false, false)]

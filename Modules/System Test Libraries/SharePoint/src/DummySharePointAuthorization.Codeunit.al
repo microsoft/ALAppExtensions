@@ -7,6 +7,6 @@ codeunit 132972 "Dummy SharePoint Authorization" implements "SharePoint Authoriz
 {
     procedure Authorize(var HttpRequestMessage: HttpRequestMessage);
     begin
-
+        // Does nothing
     end;
 }

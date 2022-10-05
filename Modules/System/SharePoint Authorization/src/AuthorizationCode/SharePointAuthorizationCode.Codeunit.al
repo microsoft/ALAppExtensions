@@ -91,5 +91,4 @@ codeunit 9144 "SharePoint Authorization Code" implements "SharePoint Authorizati
     local procedure OnBeforeGetToken(var IsHandled: Boolean; var IsSuccess: Boolean; var ErrorText: Text; var AccessToken: Text)
     begin
     end;
-
 }

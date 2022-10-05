@@ -8,7 +8,7 @@ codeunit 132977 "SharePoint Authorization Test"
     Subtype = Test;
 
     var
-        SharePointAuthSubscription: Codeunit "SharePoint Auth. Subscriptions";
+        SharePointAuthSubscription: Codeunit "SharePoint Auth. Subscription";
         Assert: Codeunit "Library Assert";
         Any: Codeunit Any;
         IsInitialized: Boolean;
@@ -61,5 +61,4 @@ codeunit 132977 "SharePoint Authorization Test"
         IsInitialized := true;
         BindSubscription(SharePointAuthSubscription);
     end;
-
 }

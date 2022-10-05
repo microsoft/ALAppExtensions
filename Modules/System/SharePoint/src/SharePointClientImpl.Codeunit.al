@@ -65,7 +65,6 @@ codeunit 9101 "SharePoint Client Impl."
                 Error(IncorrectResponseErr);
             end;
 
-
             exit(Context.AsValue().AsText());
 
         end else
