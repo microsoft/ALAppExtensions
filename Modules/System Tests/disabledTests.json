@@ -1,5 +1,9 @@
 [
     {
+        "Method":  "CustomizePermissionSetAdd",
+        "CodeunitName":  "Default Perm. In Plan Test"
+    },
+    {
         "Method":  "TestLoadDocumentAndExecute",
         "CodeunitName":  "Word Templates Test"
     },
