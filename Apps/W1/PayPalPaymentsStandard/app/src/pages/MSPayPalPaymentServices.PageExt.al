@@ -1,5 +1,9 @@
+#if not CLEAN21
 pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Services"
 {
+    ObsoleteReason = 'Microsoft Invoicing has been discontinued.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '21.0';
     layout
     {
         addfirst(Control75)
@@ -116,3 +120,4 @@ pageextension 1078 "MS - PayPal Payment Services" extends "BC O365 Payment Servi
         exit(false);
     end;
 }
+#endif

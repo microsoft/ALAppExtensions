@@ -21,7 +21,7 @@ page 2509 "Extn Deployment Status Detail"
     SourceTable = "NAV App Tenant Operation";
     SourceTableTemporary = true;
     ContextSensitiveHelpPage = 'ui-extensions';
-    Caption = 'Extension Deployment Status Detail';
+    Caption = 'Extension Installation Status Detail';
 
     layout
     {
@@ -211,14 +211,14 @@ page 2509 "Extn Deployment Status Detail"
         HideName: Boolean;
         IsFinalStatus: Boolean;
 
-    internal procedure SetOperationRecord(NavAppTenantOperationTable: Record "NAV App Tenant Operation")
+    internal procedure SetOperationRecord(NavAppTenantOperationRec: Record "NAV App Tenant Operation")
     var
         DetailsStream: InStream;
     begin
-        Rec.TransferFields(NavAppTenantOperationTable, true);
+        Rec.TransferFields(NavAppTenantOperationRec, true);
 
-        NavAppTenantOperationTable.CalcFields(Details);
-        NavAppTenantOperationTable.Details.CreateInStream(DetailsStream, TEXTENCODING::UTF8);
+        NavAppTenantOperationRec.CalcFields(Details);
+        NavAppTenantOperationRec.Details.CreateInStream(DetailsStream, TEXTENCODING::UTF8);
         DeploymentDetails.Read(DetailsStream);
 
         if not Rec.Insert() then

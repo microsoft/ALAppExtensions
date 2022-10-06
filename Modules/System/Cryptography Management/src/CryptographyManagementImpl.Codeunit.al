@@ -332,15 +332,15 @@ codeunit 1279 "Cryptography Management Impl."
         exit(Convert.ToBase64String(HashBytes));
     end;
 
-    procedure GenerateHash(InStr: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512): Text
+    procedure GenerateHash(DataInStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512): Text
     var
         MemoryStream: DotNet MemoryStream;
         HashBytes: DotNet Array;
     begin
-        if InStr.EOS() then
+        if DataInStream.EOS() then
             exit('');
         MemoryStream := MemoryStream.MemoryStream();
-        CopyStream(MemoryStream, InStr);
+        CopyStream(MemoryStream, DataInStream);
         if not TryGenerateHash(HashBytes, MemoryStream.ToArray(), Format(HashAlgorithmType)) then
             Error(GetLastErrorText());
         exit(ConvertByteHashToString(HashBytes));
@@ -394,7 +394,7 @@ codeunit 1279 "Cryptography Management Impl."
 #endif
 
 #if not CLEAN18
-    procedure SignData(InputString: Text; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
+    procedure SignData(InputString: Text; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureOutStream: OutStream)
     var
         TempBlob: Codeunit "Temp Blob";
         DataOutStream: OutStream;
@@ -405,7 +405,7 @@ codeunit 1279 "Cryptography Management Impl."
         TempBlob.CreateOutStream(DataOutStream, TextEncoding::UTF8);
         TempBlob.CreateInStream(DataInStream, TextEncoding::UTF8);
         DataOutStream.WriteText(InputString);
-        SignData(DataInStream, KeyStream, HashAlgorithmType, SignatureStream);
+        SignData(DataInStream, KeyStream, HashAlgorithmType, SignatureOutStream);
     end;
 #endif
 
@@ -443,16 +443,16 @@ codeunit 1279 "Cryptography Management Impl."
 
 #if not CLEAN18
 #pragma warning disable AL0432
-    procedure SignData(DataStream: InStream; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: OutStream)
+    procedure SignData(DataInStream: InStream; KeyStream: InStream; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureOutStream: OutStream)
     var
         SignatureKey: Record "Signature Key";
     begin
-        if DataStream.EOS() then
+        if DataInStream.EOS() then
             exit;
         SignatureKey."Signature Algorithm" := SignatureKey."Signature Algorithm"::RSA;
         SignatureKey."Key Value Type" := SignatureKey."Key Value Type"::XmlString;
         SignatureKey.WriteKeyValue(KeyStream);
-        SignData(DataStream, SignatureKey, "Hash Algorithm".FromInteger(HashAlgorithmType), SignatureStream);
+        SignData(DataInStream, SignatureKey, "Hash Algorithm".FromInteger(HashAlgorithmType), SignatureOutStream);
     end;
 #pragma warning restore
 #endif
@@ -490,7 +490,7 @@ codeunit 1279 "Cryptography Management Impl."
 #endif
 
 #if not CLEAN18
-    procedure VerifyData(InputString: Text; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+    procedure VerifyData(InputString: Text; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureInStream: InStream): Boolean
     var
         TempBlob: Codeunit "Temp Blob";
         DataOutStream: OutStream;
@@ -501,7 +501,7 @@ codeunit 1279 "Cryptography Management Impl."
         TempBlob.CreateOutStream(DataOutStream, TextEncoding::UTF8);
         TempBlob.CreateInStream(DataInStream, TextEncoding::UTF8);
         DataOutStream.WriteText(InputString);
-        exit(VerifyData(DataInStream, "Key", HashAlgorithmType, SignatureStream));
+        exit(VerifyData(DataInStream, "Key", HashAlgorithmType, SignatureInStream));
     end;
 #endif
 
@@ -534,16 +534,16 @@ codeunit 1279 "Cryptography Management Impl."
 
 #if not CLEAN18
 #pragma warning disable AL0432
-    procedure VerifyData(DataStream: InStream; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureStream: InStream): Boolean
+    procedure VerifyData(DataInStream: InStream; "Key": Text; HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512; SignatureInStream: InStream): Boolean
     var
         SignatureKey: Record "Signature Key";
     begin
-        if DataStream.EOS() then
+        if DataInStream.EOS() then
             exit(false);
         SignatureKey."Signature Algorithm" := SignatureKey."Signature Algorithm"::RSA;
         SignatureKey."Key Value Type" := SignatureKey."Key Value Type"::XmlString;
         SignatureKey.FromXmlString("Key");
-        exit(VerifyData(DataStream, SignatureKey, "Hash Algorithm".FromInteger(HashAlgorithmType), SignatureStream));
+        exit(VerifyData(DataInStream, SignatureKey, "Hash Algorithm".FromInteger(HashAlgorithmType), SignatureInStream));
     end;
 #pragma warning restore
 #endif

@@ -1,6 +1,6 @@
 table 4078 "GPSOPTrxHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

@@ -18,5 +18,7 @@ permissionset 2609 "Feature Key - Objects"
                   Page "Feature Management" = X,
                   Page "Schedule Feature Data Update" = X,
                   Page "Upcoming Changes Factbox" = X,
-                  Table "Feature Data Update Status" = X;
+                  Table "Feature Data Update Status" = X,
+                  Table "Feature Key Buffer" = X,
+                  Table "Feature Dependency" = X;
 }

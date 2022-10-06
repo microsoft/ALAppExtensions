@@ -21,8 +21,8 @@ pageextension 11753 "Posted Serv. Credit Memo CZL" extends "Posted Service Credi
             field("Posting Description CZL"; Rec."Posting Description")
             {
                 ApplicationArea = Basic, Suite;
-                Editable= false;
-                ToolTip = 'Specifies a description of the purchase receipt. The posting description also appers on vendor and G/L entries.';
+                Editable = false;
+                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
                 Visible = false;
             }
             field("Credit Memo Type CZL"; Rec."Credit Memo Type CZL")

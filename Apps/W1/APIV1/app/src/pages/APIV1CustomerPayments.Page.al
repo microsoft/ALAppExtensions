@@ -178,7 +178,9 @@ page 20058 "APIV1 - Customer Payments"
                 {
                     ApplicationArea = All;
                     Caption = 'Dimensions', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'Collection(DIMENSION)';
+#pragma warning restore
                     ToolTip = 'Specifies Journal Line Dimensions.';
 
                     trigger OnValidate()

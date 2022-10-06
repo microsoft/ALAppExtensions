@@ -21,9 +21,21 @@ codeunit 1482 "Edit in Excel Impl."
         EditInExcelHandledTxt: Label 'Edit in excel has been handled.', Locked = true;
         EditInExcelUsageWithCentralizedDeploymentsTxt: Label 'Edit in Excel invoked with "Use Centralized deployments" = %1', Locked = true;
         NoEdmFieldTypeFoundForFieldTypeTxt: Label 'No edm field type could be found for field type %1.', Locked = true;
+        CreatingExcelDocumentWithIdTxt: Label 'Creating excel document with id %1.', Locked = true;
         WebServiceHasBeenDisabledErr: Label 'You can''t edit this page in Excel because it''s not set up for it. To use the Edit in Excel feature, you must publish the web service called ''%1''. Contact your system administrator for help.', Comment = '%1 = Web service name';
         DialogTitleTxt: Label 'Export';
         ExcelFileNameTxt: Text;
+        ChildNodesJsonTok: Label 'childNodes', Locked = true;
+        TypeJsonTok: Label 'type', Locked = true;
+        LeftNodeJsonTok: Label 'leftNode', Locked = true;
+        RightNodeJsonTok: Label 'rightNode', Locked = true;
+        AlNameJsonTok: Label 'alName', Locked = true;
+        NameJsonTok: Label 'name', Locked = true;
+        ValueJsonTok: Label 'value', Locked = true;
+        TypeNotFoundTxt: Label 'The %1 json token was not found.', Locked = true;
+        NodeTypeNotRecognizedTxt: Label 'Node type %1 was not recognized.', Locked = true;
+        FilterContainsMultipleOperatorsTxt: Label 'The page filter contains multiple operators, the latter was removed.', Locked = true;
+        FieldNotOnThePageTxt: Label 'Ignoring filter since it does not exist on the page.', Locked = true;
 
     procedure EditPageInExcel(PageCaption: Text[240]; PageId: Text; Filter: Text; FileName: Text)
     var
@@ -49,15 +61,267 @@ codeunit 1482 "Edit in Excel Impl."
         GenerateExcelWorkBookWithColumns(TenantWebService, TenantWebServiceColumns, SearchFilter, '')
     end;
 
+    #region JSON FILTER SPECIFIC
+
+    procedure GetEndPointAndCreateWorkbookWStructuredFilter(ServiceName: Text[240]; ODataJsonFilter: JsonObject; ODataJsonPayload: JsonObject; SearchFilter: Text)
+    var
+        TenantWebService: Record "Tenant Web Service";
+        DataEntityExportInfo: DotNet DataEntityExportInfo;
+    begin
+        // Ensure web service exist and is published
+        if not TenantWebService.Get(TenantWebService."Object Type"::Page, ServiceName) then
+            exit;
+
+        if not TenantWebService.Published then
+            Error(WebServiceHasBeenDisabledErr, TenantWebService."Service Name");
+
+        Session.LogMessage('0000DB6', StrSubstNo(CreateEndpointForObjectTxt, TenantWebService."Object Type", TenantWebService."Object ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+
+        CreateDataEntityExportInfoStructuredFilter(TenantWebService, DataEntityExportInfo, SearchFilter, ODataJsonFilter, ODataJsonPayload);
+
+        ExportAndDownloadExcelFile(DataEntityExportInfo, TenantWebService);
+    end;
+
+    procedure CreateDataEntityExportInfoStructuredFilter(var TenantWebService: Record "Tenant Web Service"; var DataEntityExportInfo: DotNet DataEntityExportInfo; SearchText: Text; ODataJsonFilter: JsonObject; ODataJsonPayload: JsonObject)
+    var
+        DataEntityInfo: DotNet DataEntityInfo;
+        FieldFilterGroupingOperator: Dictionary of [Text, Text];
+        EntityFilterCollectionNode: DotNet FilterCollectionNode;
+        ServiceName: Text;
+        PageNumber: Integer;
+    begin
+        InitializeDataEntityExportInfo(TenantWebService, DataEntityExportInfo, SearchText);
+
+        // Create DataEntityInfo
+        DataEntityInfo := DataEntityInfo.DataEntityInfo();
+        ServiceName := ExternalizeODataObjectName(TenantWebService."Service Name");
+        DataEntityInfo.Name := ServiceName;
+        DataEntityInfo.PublicName := ServiceName;
+        DataEntityExportInfo.Entities.Add(DataEntityInfo);
+
+        SetupFieldColumnBindings(TenantWebService."Object ID", DataEntityExportInfo, DataEntityInfo);
+        PageNumber := TenantWebService."Object ID";
+
+        EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();  // One filter collection node for entire entity
+        EntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
+        ConvertStructuredFiltersToEntityFilterCollection(ODataJsonFilter, ODataJsonPayload, EntityFilterCollectionNode, FieldFilterGroupingOperator, PageNumber);
+
+        ReduceRedundantFilterCollectionNodes(EntityFilterCollectionNode);
+        DataEntityInfo.Filter(EntityFilterCollectionNode);
+    end;
+
+    procedure ReduceRedundantFilterCollectionNodes(var EntityFilterCollectionNode: DotNet FilterCollectionNode)
+    var
+        Type: DotNet FilterCollectionNode;
+    begin
+        Type := Type.FilterCollectionNode(); // In order to only iterate over CollectionNode and not BinaryNode when reducing the nodes
+        while (EntityFilterCollectionNode.Collection.Count() = 1)
+        do begin
+            if not EntityFilterCollectionNode.Collection.Item(0).GetType().Equals(Type.GetType()) then
+                break;
+            EntityFilterCollectionNode := EntityFilterCollectionNode.Collection.Item(0); // No need to keep collections with just one entry
+        end;
+    end;
+
+    local procedure SetupFieldColumnBindings(PageNo: Integer; var DataEntityExportInfo: DotNet DataEntityExportInfo; var DataEntityInfo: DotNet DataEntityInfo)
+    var
+        FieldsTable: Record "Field";
+        PageControlField: Record "Page Control Field";
+        PageMetadata: record "Page Metadata";
+        DocumentSharing: Codeunit "Document Sharing";
+        RecordRef: RecordRef;
+        VarFieldRef: FieldRef;
+        VarKeyRef: KeyRef;
+        AddedFields: List of [Integer];
+        FieldInfo: DotNet "Office.FieldInfo";
+        BindingInfo: DotNet BindingInfo;
+        KeyFieldNumber: Integer;
+        DocumentSharingSource: Enum "Document Sharing Source";
+    begin
+        BindingInfo := BindingInfo.BindingInfo();
+        BindingInfo.EntityName := DataEntityInfo.Name;
+
+        DataEntityExportInfo.Bindings.Add(BindingInfo);
+
+        // Add all fields on the page backed up by a table field
+        PageControlField.SetRange(PageNo, PageNo);
+        PageControlField.SetCurrentKey(Sequence);
+        PageControlField.SetAscending(Sequence, true);
+        if PageControlField.FindSet() then
+            repeat
+                if FieldsTable.Get(PageControlField.TableNo, PageControlField.FieldNo) then
+                    if not AddedFields.Contains(PageControlField.FieldNo) then begin // Make sure we don't add the same field twice
+                                                                                     // Add field to Excel
+                        FieldInfo := FieldInfo.FieldInfo();
+                        FieldInfo.Name := ExternalizeODataObjectName(PageControlField.ControlName);
+                        FieldInfo.Label := FieldsTable."Field Caption";
+                        BindingInfo.Fields.Add(FieldInfo);
+                        AddedFields.Add(PageControlField.FieldNo);
+                    end;
+            until PageControlField.Next() = 0;
+        PageMetadata.Get(PageNo);
+
+        RecordRef.Open(PageMetadata.SourceTable);
+        VarKeyRef := RecordRef.KeyIndex(1);
+        for KeyFieldNumber := 1 to VarKeyRef.FieldCount do begin
+            VarFieldRef := VarKeyRef.FieldIndex(KeyFieldNumber);
+
+            if not AddedFields.Contains(VarFieldRef.Number) then begin // Make sure we don't add the same field twice
+                FieldInfo := FieldInfo.FieldInfo();
+                FieldInfo.Name := ExternalizeODataObjectName(VarFieldRef.Name);
+                FieldInfo.Label := VarFieldRef.Caption;
+                BindingInfo.Fields.Insert(0, FieldInfo); // Add missing key fields at the beginning
+                AddedFields.Add(VarFieldRef.Number);
+            end;
+        end;
+
+        if DocumentSharing.ShareEnabled(DocumentSharingSource::System) then
+            while BindingInfo.Fields.Count() > GetExcelOnlineColumnLimit() do
+                BindingInfo.Fields.RemoveAt(BindingInfo.Fields.Count() - 1); // If we use excel online, only include supported number of columns
+    end;
+
+    procedure ConvertStructuredFiltersToEntityFilterCollection(StructuredFilterObject: JsonObject; var ODataJsonPayload: JsonObject; var EntityFilterCollectionNode: DotNet FilterCollectionNode; var FieldFilterGroupingOperator: Dictionary of [Text, Text]; PageNumber: Integer)
+    var
+        ChildEntityFilterCollectionNode: DotNet FilterCollectionNode;
+        FilterLeftOperand: DotNet FilterLeftOperand;
+        FilterBinaryNode: DotNet FilterBinaryNode;
+        ChildNodesJsonFilterArray: JsonArray;
+        TypeJsonToken: JsonToken;
+        ChildNodesJsonToken: JsonToken;
+        ExcelFilterNodeType: Enum "Excel Filter Node Type";
+        NodeType: Text;
+        FieldGroupingOperator: Text;
+        RightNodeName: Text;
+    begin
+        if not StructuredFilterObject.Get(TypeJsonTok, TypeJsonToken) then begin
+            Session.LogMessage('0000I3U', StrSubstNo(TypeNotFoundTxt, TypeJsonTok), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+            exit;
+        end;
+
+        NodeType := TypeJsonToken.AsValue().AsText().ToLower();
+        if not Enum::"Excel Filter Node Type".Names().Contains(NodeType) then begin
+            Session.LogMessage('0000I3V', StrSubstNo(NodeTypeNotRecognizedTxt, NodeType), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+            exit;
+        end;
+
+        ExcelFilterNodeType := "Excel Filter Node Type".FromInteger("Excel Filter Node Type".Ordinals().Get("Excel Filter Node Type".Names().IndexOf(NodeType)));
+        case ExcelFilterNodeType of
+            "Excel Filter Node Type"::"and", "Excel Filter Node Type"::"or":
+                begin
+                    if not StructuredFilterObject.Get(ChildNodesJsonTok, ChildNodesJsonToken) then begin
+                        Session.LogMessage('0000I3W', StrSubstNo(TypeNotFoundTxt, ChildNodesJsonTok), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+                        exit;
+                    end;
+
+                    ChildNodesJsonFilterArray := ChildNodesJsonToken.AsArray();
+
+                    ChildEntityFilterCollectionNode := ChildEntityFilterCollectionNode.FilterCollectionNode();  // One filter collection node for entire entity
+                    ChildEntityFilterCollectionNode.Operator := NodeType;
+                    foreach ChildNodesJsonToken in ChildNodesJsonFilterArray do
+                        ConvertStructuredFiltersToEntityFilterCollection(ChildNodesJsonToken.AsObject(), ODataJsonPayload, ChildEntityFilterCollectionNode, FieldFilterGroupingOperator, PageNumber);
+                    if ChildEntityFilterCollectionNode.Collection.Count() > 0 then
+                        EntityFilterCollectionNode.Collection.Add(ChildEntityFilterCollectionNode)
+                end;
+            "Excel Filter Node Type"::lt, "Excel Filter Node Type"::le, "Excel Filter Node Type"::eq, "Excel Filter Node Type"::ge, "Excel Filter Node Type"::gt, "Excel Filter Node Type"::ne:
+                begin
+                    FilterBinaryNode := FilterBinaryNode.FilterBinaryNode();
+                    FilterBinaryNode.Operator := NodeType;
+                    if not GetLeftNodeValue(StructuredFilterObject, ODataJsonPayload, FilterLeftOperand, PageNumber) and GetRightNodeValue(StructuredFilterObject, RightNodeName) then
+                        exit;
+                    FilterBinaryNode.Left := FilterLeftOperand;
+                    FilterBinaryNode.Right := RightNodeName;
+                    //todo check if is in pagecontrol
+
+                    if not FieldFilterGroupingOperator.Get(FilterLeftOperand.Field, FieldGroupingOperator) then
+                        FieldFilterGroupingOperator.Add(FilterLeftOperand.Field, EntityFilterCollectionNode.Operator)
+                    else
+                        if FieldGroupingOperator <> EntityFilterCollectionNode.Operator then begin
+                            Session.LogMessage('0000I3X', FilterContainsMultipleOperatorsTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+                            exit; // OData does not support filtering on a field with both 'and' and 'or' hence if we see both, ignore the second type
+                        end;
+                    EntityFilterCollectionNode.Collection.Add(FilterBinaryNode);
+                end;
+        end;
+    end;
+
+    local procedure GetLeftNodeValue(JsonFilterObject: JsonObject; ODataJsonPayload: JsonObject; var FilterLeftOperand: DotNet FilterLeftOperand; PageNumber: Integer): Boolean
+    var
+        PageControlField: Record "Page Control Field";
+        NodeJsonToken: JsonToken;
+        NameJsonToken: JsonToken;
+        TypeJsonToken: JsonToken;
+        AlNameJsonToken: JsonToken;
+    begin
+        if not JsonFilterObject.Get(LeftNodeJsonTok, NodeJsonToken) then begin
+            Session.LogMessage('0000I3Y', StrSubstNo(TypeNotFoundTxt, LeftNodeJsonTok), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+            exit(false);
+        end;
+
+        if not NodeJsonToken.AsObject().Get(NameJsonTok, NameJsonToken) then begin
+            Session.LogMessage('0000I3Z', StrSubstNo(TypeNotFoundTxt, NameJsonTok), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+            exit(false);
+        end;
+
+        FilterLeftOperand := FilterLeftOperand.FilterLeftOperand();
+        FilterLeftOperand.Field := NameJsonToken.AsValue().AsText();
+
+        if not ODataJsonPayload.SelectToken(StrSubstNo('fieldPayload.%1.edmType', FilterLeftOperand.Field), TypeJsonToken) then begin
+            Session.LogMessage('0000I40', StrSubstNo(TypeNotFoundTxt, LeftNodeJsonTok), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+            exit(false);
+        end;
+        FilterLeftOperand.Type := TypeJsonToken.AsValue().AsText();
+
+        if not ODataJsonPayload.SelectToken(StrSubstNo('fieldPayload.%1.alName', FilterLeftOperand.Field), AlNameJsonToken) then begin
+            Session.LogMessage('0000I5T', StrSubstNo(TypeNotFoundTxt, AlNameJsonTok), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+            exit(false);
+        end;
+
+        PageControlField.SetRange(PageNo, PageNumber);
+        PageControlField.SetRange(ControlName, AlNameJsonToken.AsValue().AsText());
+
+        if PageControlField.IsEmpty() then begin
+            Session.LogMessage('0000I5U', FieldNotOnThePageTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+            exit(false); // Currently only adding fields that are on a page, mitigating problems with some table fields.
+        end;
+
+        exit(true);
+    end;
+
+    local procedure GetRightNodeValue(JsonFilterObject: JsonObject; var RightNodeName: Text): Boolean
+    var
+        NodeJsonToken: JsonToken;
+        NameJsonToken: JsonToken;
+    begin
+        if not JsonFilterObject.Get(RightNodeJsonTok, NodeJsonToken) then begin
+            Session.LogMessage('0000I41', StrSubstNo(TypeNotFoundTxt, RightNodeJsonTok), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+            exit(false);
+        end;
+        if not NodeJsonToken.AsObject().Get(ValueJsonTok, NameJsonToken) then begin
+            Session.LogMessage('0000I42', StrSubstNo(TypeNotFoundTxt, ValueJsonTok), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+            exit(false);
+        end;
+
+        RightNodeName := NameJsonToken.AsValue().AsText();
+        exit(true);
+    end;
+
+    #endregion JSON FILTER SPECIFIC
+
     local procedure GenerateExcelWorkBookWithColumns(TenantWebService: Record "Tenant Web Service"; var TenantWebServiceColumns: Record "Tenant Web Service Columns" temporary; SearchFilter: Text; FilterClause: Text)
     var
         DataEntityExportInfo: DotNet DataEntityExportInfo;
-        DataEntityExportGenerator: DotNet DataEntityExportGenerator;
-        MemoryStream: DotNet MemoryStream;
     begin
         DataEntityExportInfo := DataEntityExportInfo.DataEntityExportInfo();
         CreateDataEntityExportInfo(TenantWebService, DataEntityExportInfo, TenantWebServiceColumns, SearchFilter, FilterClause);
 
+        ExportAndDownloadExcelFile(DataEntityExportInfo, TenantWebService);
+    end;
+
+    local procedure ExportAndDownloadExcelFile(var DataEntityExportInfo: DotNet DataEntityExportInfo; TenantWebService: Record "Tenant Web Service")
+    var
+        DataEntityExportGenerator: DotNet DataEntityExportGenerator;
+        MemoryStream: DotNet MemoryStream;
+    begin
         DataEntityExportGenerator := DataEntityExportGenerator.DataEntityExportGenerator();
         MemoryStream := MemoryStream.MemoryStream();
         DataEntityExportGenerator.GenerateWorkbook(DataEntityExportInfo, MemoryStream);
@@ -91,51 +355,21 @@ codeunit 1482 "Edit in Excel Impl."
 
     internal procedure CreateDataEntityExportInfo(var TenantWebService: Record "Tenant Web Service"; var DataEntityExportInfoParam: DotNet DataEntityExportInfo; var TenantWebServiceColumns: Record "Tenant Web Service Columns"; SearchText: Text; FilterClause: Text)
     var
-        Company: Record Company;
-        AzureADTenant: Codeunit "Azure AD Tenant";
-        ConnectionInfo: DotNet ConnectionInfo;
-        OfficeAppInfo: DotNet OfficeAppInfo;
+        DocumentSharing: Codeunit "Document Sharing";
+        DocumentSharingSource: Enum "Document Sharing Source";
         DataEntityInfo: DotNet DataEntityInfo;
         BindingInfo: DotNet BindingInfo;
         FieldInfo: DotNet "Office.FieldInfo";
         FieldFilterCollectionNode: DotNet FilterCollectionNode;
         FieldFilterCollectionNode2: DotNet FilterCollectionNode;
         EntityFilterCollectionNode: DotNet FilterCollectionNode;
-        AuthenticationOverrides: DotNet AuthenticationOverrides;
-        HostName: Text;
         ServiceName: Text;
         FieldFilterCounter: Integer;
         Inserted: Boolean;
+        DocumentSharingEnabled: Boolean;
     begin
-        CreateOfficeAppInfo(OfficeAppInfo);
+        InitializeDataEntityExportInfo(TenantWebService, DataEntityExportInfoParam, SearchText);
 
-        AuthenticationOverrides := AuthenticationOverrides.AuthenticationOverrides();
-        AuthenticationOverrides.Tenant := AzureADTenant.GetAadTenantId();
-
-        DataEntityExportInfoParam := DataEntityExportInfoParam.DataEntityExportInfo();
-        DataEntityExportInfoParam.AppReference := OfficeAppInfo;
-        DataEntityExportInfoParam.Authentication := AuthenticationOverrides;
-
-        ConnectionInfo := ConnectionInfo.ConnectionInfo();
-        HostName := GetHostName();
-
-        if StrPos(HostName, '?') <> 0 then
-            HostName := CopyStr(HostName, 1, StrPos(HostName, '?') - 1);
-        ConnectionInfo.HostName := HostName;
-
-        DataEntityExportInfoParam.Connection := ConnectionInfo;
-        DataEntityExportInfoParam.Language := LanguageIDToCultureName(WindowsLanguage); // todo get language
-        DataEntityExportInfoParam.EnableDesign := true;
-        DataEntityExportInfoParam.RefreshOnOpen := true;
-        if EnvironmentInformation.IsSaaS() then
-            DataEntityExportInfoParam.Headers.Add('BCEnvironment', EnvironmentInformation.GetEnvironmentName());
-        if Company.Get(TenantWebService.CurrentCompany) then
-            DataEntityExportInfoParam.Headers.Add('Company', Format(Company.Id, 0, 4))
-        else
-            DataEntityExportInfoParam.Headers.Add('Company', TenantWebService.CurrentCompany);
-
-        if SearchText <> '' then
-            DataEntityExportInfoParam.Headers.Add('pageSearchString', DelChr(SearchText, '=', '@*'));
         DataEntityInfo := DataEntityInfo.DataEntityInfo();
         ServiceName := ExternalizeODataObjectName(TenantWebService."Service Name");
         DataEntityInfo.Name := ServiceName;
@@ -151,17 +385,23 @@ codeunit 1482 "Edit in Excel Impl."
         TenantWebServiceColumns.SetRange(TenantWebServiceID, TenantWebService.RecordId);
         TenantWebServiceColumns.SetAutoCalcFields("Field Caption");
 
+        DocumentSharingEnabled := DocumentSharing.ShareEnabled(DocumentSharingSource::System);
+
         EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();  // One filter collection node for entire entity
         if TenantWebServiceColumns.FindSet() then begin
             repeat
-                FieldInfo := FieldInfo.FieldInfo();
-                FieldInfo.Name := TenantWebServiceColumns."Field Name";
-                if TenantWebServiceColumns."Field Caption" <> '' then
-                    FieldInfo.Label := TenantWebServiceColumns."Field Caption"
-                else
-                    FieldInfo.Label := TenantWebServiceColumns."Field Name";
-                BindingInfo.Fields.Add(FieldInfo);
+                // Add field to Excel
+                if (not DocumentSharingEnabled) or (BindingInfo.Fields.Count() < GetExcelOnlineColumnLimit()) then begin // If we use excel online, only include supported number of columns
+                    FieldInfo := FieldInfo.FieldInfo();
+                    FieldInfo.Name := TenantWebServiceColumns."Field Name";
+                    if TenantWebServiceColumns."Field Caption" <> '' then
+                        FieldInfo.Label := TenantWebServiceColumns."Field Caption"
+                    else
+                        FieldInfo.Label := TenantWebServiceColumns."Field Name";
+                    BindingInfo.Fields.Add(FieldInfo);
+                end;
 
+                // Create filter for field
                 Inserted := InsertDataIntoFilterCollectionNode(TenantWebServiceColumns."Field Name", ExternalizeODataObjectName(GetFilterFieldName(TenantWebServiceColumns)), GetFieldType(TenantWebServiceColumns),
                     FilterClause, EntityFilterCollectionNode, FieldFilterCollectionNode, FieldFilterCollectionNode2);
 
@@ -178,6 +418,53 @@ codeunit 1482 "Edit in Excel Impl."
         DataEntityInfo.Filter(EntityFilterCollectionNode);
     end;
 
+    local procedure InitializeDataEntityExportInfo(TenantWebService: Record "Tenant Web Service"; var DataEntityExportInfo: DotNet DataEntityExportInfo; SearchText: Text)
+    var
+        Company: Record Company;
+        AzureADTenant: Codeunit "Azure AD Tenant";
+        AuthenticationOverrides: DotNet AuthenticationOverrides;
+        ConnectionInfo: DotNet ConnectionInfo;
+        OfficeAppInfo: DotNet OfficeAppInfo;
+        HostName: Text;
+        DocumentId: Text;
+    begin
+        CreateOfficeAppInfo(OfficeAppInfo);
+
+        AuthenticationOverrides := AuthenticationOverrides.AuthenticationOverrides();
+        AuthenticationOverrides.Tenant := AzureADTenant.GetAadTenantId();
+
+        DataEntityExportInfo := DataEntityExportInfo.DataEntityExportInfo();
+        DataEntityExportInfo.AppReference := OfficeAppInfo;
+        DataEntityExportInfo.Authentication := AuthenticationOverrides;
+
+        ConnectionInfo := ConnectionInfo.ConnectionInfo();
+        HostName := GetHostName();
+        if StrPos(HostName, '?') <> 0 then
+            HostName := CopyStr(HostName, 1, StrPos(HostName, '?') - 1);
+        ConnectionInfo.HostName := HostName;
+
+        DataEntityExportInfo.Connection := ConnectionInfo;
+        DataEntityExportInfo.Language := LanguageIDToCultureName(WindowsLanguage);
+        DataEntityExportInfo.EnableDesign := true;
+        DataEntityExportInfo.RefreshOnOpen := true;
+        DataEntityExportInfo.DateCreated := CurrentDateTime();
+        DataEntityExportInfo.GenerationActivityId := format(SessionId());
+
+        DocumentId := format(CreateGuid(), 0, 4);
+        DataEntityExportInfo.DocumentId := DocumentId;
+        Session.LogMessage('0000GYB', StrSubstNo(CreatingExcelDocumentWithIdTxt, DocumentId), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+
+        if EnvironmentInformation.IsSaaS() then
+            DataEntityExportInfo.Headers.Add('BCEnvironment', EnvironmentInformation.GetEnvironmentName());
+        if Company.Get(TenantWebService.CurrentCompany) then
+            DataEntityExportInfo.Headers.Add('Company', Format(Company.Id, 0, 4))
+        else
+            DataEntityExportInfo.Headers.Add('Company', TenantWebService.CurrentCompany);
+
+        if SearchText <> '' then
+            DataEntityExportInfo.Headers.Add('pageSearchString', DelChr(SearchText, '=', '@*'));
+    end;
+
     local procedure FindOrCreateWorksheetWebService(PageCaption: Text[240]; PageId: Text): Text[240]
     var
         TenantWebService: Record "Tenant Web Service";
@@ -192,7 +479,7 @@ codeunit 1482 "Edit in Excel Impl."
         // 4. Create a new web service called PageCaption_Excel
 
         Evaluate(ObjectId, CopyStr(PageId, 5));
-        if ServiceNameBeginsWithADigit(PageCaption) then
+        if NameBeginsWithADigit(PageCaption) then
             ServiceName := 'WS' + CopyStr(PageCaption, 1, 232) + '_Excel'
         else
             ServiceName := CopyStr(PageCaption, 1, 234) + '_Excel';
@@ -210,15 +497,24 @@ codeunit 1482 "Edit in Excel Impl."
         exit(ServiceName);
     end;
 
-    local procedure ServiceNameBeginsWithADigit(ServiceName: text[240]): Boolean
+    local procedure NameBeginsWithADigit(Name: text[240]): Boolean
     begin
-        if ServiceName[1] in ['0' .. '9'] then
+        if Name[1] in ['0' .. '9'] then
             exit(true);
         exit(false);
     end;
 
     local procedure DownloadExcelFile(MemoryStream: DotNet MemoryStream; FileName: Text)
+    var
+        DocumentSharing: Codeunit "Document Sharing";
+        DocumentSharingIntent: Enum "Document Sharing Intent";
+        DocumentSharingSource: Enum "Document Sharing Source";
     begin
+        if DocumentSharing.ShareEnabled(DocumentSharingSource::System) then begin
+            DocumentSharing.Share(FileName, '.xlsx', MemoryStream, DocumentSharingIntent::Open, DocumentSharingSource::System);
+            exit;
+        end;
+
         DownloadFromStream(MemoryStream, DialogTitleTxt, '', '*.*', FileName);
     end;
 
@@ -257,12 +553,10 @@ codeunit 1482 "Edit in Excel Impl."
         TenantWebServiceOData: Record "Tenant Web Service OData";
         TempTenantWebServiceColumns: Record "Tenant Web Service Columns" temporary;
         WebServiceManagement: Codeunit "Web Service Management";
-        ColumnDictionary: DotNet GenericDictionary2;
-        SourceTableText: Text;
-        DefaultSelectText: Text;
+        FieldIdToFieldName: DotNet GenericDictionary2;
         TableNo: Integer;
     begin
-        ColumnDictionary := ColumnDictionary.Dictionary();
+        FieldIdToFieldName := FieldIdToFieldName.Dictionary();
 
         if not TenantWebService.Get(TenantWebService."Object Type"::Page, ServiceName) then
             exit;
@@ -272,10 +566,8 @@ codeunit 1482 "Edit in Excel Impl."
 
         Session.LogMessage('0000DB6', StrSubstNo(CreateEndpointForObjectTxt, TenantWebService."Object Type", TenantWebService."Object ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
 
-        // Get the default $select text
-        InitColumnsForPage(TenantWebService, ColumnDictionary, SourceTableText);
-        Evaluate(TableNo, SourceTableText);
-        DefaultSelectText := GetDefaultSelectText(ColumnDictionary);
+        // Find columns to show in Excel
+        InitColumnsForPage(TenantWebService, FieldIdToFieldName, TableNo);
 
         // If we don't have an endpoint - we need a new endpoint
         TenantWebServiceOData.SetRange(TenantWebServiceID, TenantWebService.RecordId);
@@ -285,7 +577,7 @@ codeunit 1482 "Edit in Excel Impl."
         end else
             Session.LogMessage('0000DB4', TenantWebserviceExistTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
 
-        WebServiceManagement.InsertSelectedColumns(TenantWebService, ColumnDictionary, TempTenantWebServiceColumns, TableNo);
+        WebServiceManagement.InsertSelectedColumns(TenantWebService, FieldIdToFieldName, TempTenantWebServiceColumns, TableNo);
         GenerateExcelWorkBookWithColumns(TenantWebService, TempTenantWebServiceColumns, SearchFilter, ODataFilter);
     end;
 
@@ -506,7 +798,7 @@ codeunit 1482 "Edit in Excel Impl."
         end;
     end;
 
-    local procedure InitColumnsForPage(TenantWebService: Record "Tenant Web Service"; ColumnDictionary: DotNet GenericDictionary2; var SourceTableTextParam: Text)
+    local procedure InitColumnsForPage(TenantWebService: Record "Tenant Web Service"; ColumnDictionary: DotNet GenericDictionary2; var SourceTableNo: Integer)
     var
         FieldsTable: Record "Field";
         PageControlField: Record "Page Control Field";
@@ -517,7 +809,7 @@ codeunit 1482 "Edit in Excel Impl."
         PageControlField.SetAscending(Sequence, true);
         if PageControlField.FindSet() then
             repeat
-                SourceTableTextParam := Format(PageControlField.TableNo);
+                SourceTableNo := PageControlField.TableNo;
 
                 if FieldsTable.Get(PageControlField.TableNo, PageControlField.FieldNo) then
                     if not ColumnDictionary.ContainsKey(FieldsTable."No.") then begin
@@ -527,21 +819,18 @@ codeunit 1482 "Edit in Excel Impl."
                     end;
             until PageControlField.Next() = 0;
 
-        EnsureKeysInSelect(SourceTableTextParam, ColumnDictionary);
+        EnsureKeysInSelect(SourceTableNo, ColumnDictionary);
     end;
 
-    local procedure EnsureKeysInSelect(SourceTableTextParam: Text; ColumnDictionary: DotNet GenericDictionary2)
+    local procedure EnsureKeysInSelect(SourceTableNo: Integer; ColumnDictionary: DotNet GenericDictionary2)
     var
         RecordRef: RecordRef;
         VarFieldRef: FieldRef;
         VarKeyRef: KeyRef;
         KeysText: DotNet String;
-        SourceTableId: Integer;
         i: Integer;
     begin
-        Evaluate(SourceTableId, SourceTableTextParam);
-
-        RecordRef.Open(SourceTableId);
+        RecordRef.Open(SourceTableNo);
         VarKeyRef := RecordRef.KeyIndex(1);
         for i := 1 to VarKeyRef.FieldCount do begin
             VarFieldRef := VarKeyRef.FieldIndex(i);
@@ -561,31 +850,19 @@ codeunit 1482 "Edit in Excel Impl."
         TenantWebServiceOData.Insert(true);
     end;
 
-    local procedure GetDefaultSelectText(var ColumnDictionary: DotNet GenericDictionary2): Text
-    var
-        keyValuePair: DotNet GenericKeyValuePair2;
-        FirstColumn: Boolean;
-        SelectTextParam: Text;
-    begin
-        FirstColumn := true;
-        SelectTextParam := '$select=';
-        foreach keyValuePair in ColumnDictionary do begin
-            if not FirstColumn then
-                SelectTextParam += ','
-            else
-                FirstColumn := false;
-
-            SelectTextParam += CopyStr(keyValuePair.Value, 1);
-        end;
-
-        exit(SelectTextParam);
-    end;
-
-    local procedure ExternalizeODataObjectName(Name: Text) ConvertedName: Text
+    procedure ExternalizeODataObjectName(Name: Text) ConvertedName: Text
     var
         CurrentPosition: Integer;
+        Convert: DotNet Convert;
+        ByteValue: DotNet Byte;
     begin
         ConvertedName := Name;
+
+        if NameBeginsWithADigit(ConvertedName[1]) then begin
+            ByteValue := Convert.ToByte(ConvertedName[1]);
+            ConvertedName := CopyStr(ConvertedName, 2);
+            ConvertedName := StrSubstNo('_x00%1_%2', Convert.ToString(ByteValue, 16), ConvertedName);
+        end;
 
         // Mimics the behavior of the compiler when converting a field or web service name to OData.
         CurrentPosition := StrPos(ConvertedName, '%');
@@ -640,6 +917,11 @@ codeunit 1482 "Edit in Excel Impl."
         exit(GetUrl(ClientType::Web));
     end;
 
+    local procedure GetExcelOnlineColumnLimit(): Integer
+    begin
+        exit(99);
+    end;
+
     local procedure LanguageIDToCultureName(LanguageID: Integer): Text
     var
         CultureInfo: DotNet CultureInfo;
@@ -649,6 +931,21 @@ codeunit 1482 "Edit in Excel Impl."
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'OnEditInExcel', '', false, false)]
+    local procedure LegacyOnEditInExcelEvent(ServiceName: Text[240]; ODataFilter: Text)
+    var
+        Handled: Boolean;
+    begin
+        if StrPos(ODataFilter, '$filter=') = 0 then
+#pragma warning disable AA0217
+            ODataFilter := StrSubstNo('%1%2', '$filter=', ODataFilter);
+#pragma warning restore
+        EditinExcel.OnEditInExcel(ServiceName, ODataFilter, '', Handled);
+        if Handled then begin
+            Session.LogMessage('0000F7M', EditInExcelHandledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+            exit;
+        end;
+    end;
+
     local procedure OnEditInExcelEvent(ServiceName: Text[240]; ODataFilter: Text)
     var
         Handled: Boolean;
@@ -680,7 +977,20 @@ codeunit 1482 "Edit in Excel Impl."
             Session.LogMessage('0000F7N', EditInExcelHandledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
             exit;
         end;
+    end;
 
-        GetEndPointAndCreateWorkbook(ServiceName, ODataFilter, SearchString);
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'OnEditInExcelWithStructuredFilter', '', false, false)]
+    local procedure OnEditInExcelWithStructuredFilterEvent(ServiceName: Text[240]; SearchString: Text; Filter: JsonObject; Payload: JsonObject)
+    var
+        Handled: Boolean;
+    begin
+        EditinExcel.OnEditInExcelWithStructuredFilter(ServiceName, Filter, Payload, SearchString, Handled);
+        if Handled then begin
+            Session.LogMessage('0000I43', EditInExcelHandledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EditInExcelTelemetryCategoryTxt);
+            exit;
+        end;
+
+        GetEndPointAndCreateWorkbookWStructuredFilter(ServiceName, Filter, Payload, SearchString);
     end;
 }

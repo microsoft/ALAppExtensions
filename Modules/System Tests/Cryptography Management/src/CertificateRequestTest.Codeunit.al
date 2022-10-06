@@ -15,7 +15,7 @@ codeunit 132611 "CertificateRequestTest"
         BeginCertReqTok: Label '-----BEGIN CERTIFICATE REQUEST-----';
         EndCertReqTok: Label '-----END CERTIFICATE REQUEST-----';
         DepricatedHashAlgorithmsMsg: Label 'In compliance with the Microsoft Secure Hash Algorithm deprecation policy SHA1 and MD5 hash alghoritms have been deprecated.';
-
+        SubjectNameLbl: Label 'CN=www.%1.com, C=US', Locked = true;
 
     [Test]
     procedure InitializeKeys()
@@ -164,6 +164,6 @@ codeunit 132611 "CertificateRequestTest"
 
     local procedure GetSubjectName(): Text
     begin
-        exit(StrSubstNo('CN=www.%1.com, C=US', Any.AlphabeticText(8)));
+        exit(StrSubstNo(SubjectNameLbl, Any.AlphabeticText(8)));
     end;
 }

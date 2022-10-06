@@ -36,7 +36,11 @@ codeunit 31097 "Substitute Report Handler CZL"
                 Report::"Balance Sheet CZL":
                     NewReportId := Report::"Balance Sheet";
                 Report::"Adjust Exchange Rates CZL":
+#if CLEAN20
+                    NewReportId := Report::"Exch. Rate Adjustment";
+#else
                     NewReportId := Report::"Adjust Exchange Rates";
+#endif
                 Report::"Calc. and Post VAT Settl. CZL":
                     NewReportId := Report::"Calc. and Post VAT Settlement";
                 Report::"Cash Flow Date List CZL":
@@ -77,7 +81,11 @@ codeunit 31097 "Substitute Report Handler CZL"
             case ReportId of
                 Report::"Balance Sheet":
                     NewReportId := Report::"Balance Sheet CZL";
+#if CLEAN20
+                Report::"Exch. Rate Adjustment":
+#else
                 Report::"Adjust Exchange Rates":
+#endif
                     NewReportId := Report::"Adjust Exchange Rates CZL";
                 Report::"Calc. and Post VAT Settlement":
                     NewReportId := Report::"Calc. and Post VAT Settl. CZL";
@@ -114,6 +122,7 @@ codeunit 31097 "Substitute Report Handler CZL"
             end;
     end;
 
+#if not CLEAN20
     local procedure IsReplaceMulIntRateEnabled(): Boolean
     var
         FeatureDataUpdateStatus: Record "Feature Data Update Status";
@@ -126,6 +135,7 @@ codeunit 31097 "Substitute Report Handler CZL"
 #pragma warning restore AL0432
     end;
 
+#endif
     local procedure IsTestingEnvironment(): Boolean
     var
         NAVAppInstalledApp: Record "NAV App Installed App";

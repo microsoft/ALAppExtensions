@@ -121,6 +121,7 @@ table 1951 "LP ML Input Data"
         }
         key(CalculateKey; "Bill-to Customer No.", Closed, "Closed Date", "Due Date", "Posting Date", "Is Late", "Base Amount", "Paid Late Days") { }
         key(PostingDateKey; "Posting Date") { }
+        key(UsedAndToBeDeletedKey; "UsedForPredict And ToBeDeleted") { }
     }
 
     procedure InsertFromSalesHeader(SalesHeader: Record "Sales Header")

@@ -83,13 +83,13 @@ page 20002 "APIV1 - Aut. Extensions"
 
     trigger OnOpenPage()
     var
-        EnvironmentInfo: codeunit "Environment Information";
+        EnvironmentInformation: codeunit "Environment Information";
     begin
 
         BINDSUBSCRIPTION(AutomationAPIManagement);
 
         FILTERGROUP(2);
-        IF EnvironmentInfo.IsSaas() THEN
+        IF EnvironmentInformation.IsSaas() THEN
             SETFILTER("PerTenant Or Installed", '%1', TRUE)
         ELSE
             SETFILTER("Tenant Visible", '%1', TRUE);
@@ -131,14 +131,6 @@ page 20002 "APIV1 - Aut. Extensions"
         ActionContext.SetObjectId(Page::"APIV1 - Aut. Extensions");
         ActionContext.AddEntityKey(FieldNo(ID), ID);
         ActionContext.SetResultCode(WebServiceActionResultCode::Updated);
-    end;
-
-    local procedure GetExtensionScope(): Integer
-    begin
-        if (Rec."Published As" = Rec."Published As"::Global) then
-            exit(0)
-        else
-            exit(1);
     end;
 
     var

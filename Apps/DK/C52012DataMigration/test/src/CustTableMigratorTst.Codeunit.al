@@ -217,10 +217,10 @@ codeunit 148003 "C5 CustTable Migrator Tst"
     var
         C5CustTableMigrator: Codeunit "C5 CustTable Migrator";
     begin
-        C5CustTableMigrator.OnMigrateCustomer(CustomerDataMigrationFacade, C5CustTable.RecordId());
-        C5CustTableMigrator.OnMigrateCustomerDimensions(CustomerDataMigrationFacade, C5CustTable.RecordId());
-        C5CustTableMigrator.OnMigrateCustomerPostingGroups(CustomerDataMigrationFacade, C5CustTable.RecordId(), ChartOfAccountsMigrated);
-        C5CustTableMigrator.OnMigrateCustomerTransactions(CustomerDataMigrationFacade, C5CustTable.RecordId(), ChartOfAccountsMigrated);
+        C5CustTableMigrator.MigrateCustomer(CustomerDataMigrationFacade, C5CustTable.RecordId());
+        C5CustTableMigrator.MigrateCustomerDimensions(CustomerDataMigrationFacade, C5CustTable.RecordId());
+        C5CustTableMigrator.MigrateCustomerPostingGroups(CustomerDataMigrationFacade, C5CustTable.RecordId(), ChartOfAccountsMigrated);
+        C5CustTableMigrator.MigrateCustomerTransactions(CustomerDataMigrationFacade, C5CustTable.RecordId(), ChartOfAccountsMigrated);
     end;
 
     local procedure CreateC5CustTableRecord(Acc: Text[10]; InvAccount: Text[10]; var C5CustTable: Record "C5 CustTable")

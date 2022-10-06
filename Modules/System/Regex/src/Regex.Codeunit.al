@@ -534,21 +534,21 @@ codeunit 3960 Regex
     /// <summary>
     /// Get the Groups for one particular Match.
     /// </summary>
-    /// <param name="Matches">The Match record to get Groups for.</param>
-    /// <param name="Groups">Groups Record to write the resulting Groups to.</param>
-    procedure Groups(var Matches: Record Matches; var Groups: Record Groups)
+    /// <param name="MatchesRec">The Match record to get Groups for.</param>
+    /// <param name="GroupsRec">Groups Record to write the resulting Groups to.</param>
+    procedure Groups(var MatchesRec: Record Matches; var GroupsRec: Record Groups)
     begin
-        RegexImpl.Groups(Matches, Groups)
+        RegexImpl.Groups(MatchesRec, GroupsRec)
     end;
 
     /// <summary>
     /// Get the Captures for one particular Group.
     /// </summary>
-    /// <param name="Group">The Group record to get Captures for.</param>
-    /// <param name="Captures">Captures Record to write the resulting Captures to.</param>
-    procedure Captures(var Group: Record Groups; var Captures: Record Captures)
+    /// <param name="GroupsRec">The Group record to get Captures for.</param>
+    /// <param name="CapturesRec">Captures Record to write the resulting Captures to.</param>
+    procedure Captures(var GroupsRec: Record Groups; var CapturesRec: Record Captures)
     begin
-        RegexImpl.Captures(Group, Captures)
+        RegexImpl.Captures(GroupsRec, CapturesRec)
     end;
 
     /// <summary>

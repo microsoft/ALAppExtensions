@@ -56,7 +56,7 @@ page 20025 "APIV1 - Item Categories"
     var
         ItemCategory: Record "Item Category";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
         ItemCategory.SETRANGE(Code, Code);
         IF NOT ItemCategory.ISEMPTY() THEN
@@ -64,9 +64,9 @@ page 20025 "APIV1 - Item Categories"
 
         INSERT(TRUE);
 
-        RecRef.GETTABLE(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CURRENTDATETIME());
-        RecRef.SETTABLE(Rec);
+        RecordRef.GETTABLE(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecordRef, TempFieldSet, CURRENTDATETIME());
+        RecordRef.SETTABLE(Rec);
 
         MODIFY(TRUE);
         EXIT(FALSE);

@@ -900,11 +900,12 @@ report 18017 "Sales - Quote GST"
             begin
                 MarkedOnly := true;
                 Commit();
-                CurrReport.LANGUAGE := GlobalLanguage;
+                CurrReport.LANGUAGE := ReportLanguage;
             end;
 
             trigger OnPreDataItem()
             begin
+                ReportLanguage := CurrReport.Language();
                 Print := Print or not CurrReport.Preview;
             end;
         }
@@ -1075,6 +1076,7 @@ report 18017 "Sales - Quote GST"
         IsGSTApplicable: Boolean;
         GSTCompNo: Integer;
         j: Integer;
+        ReportLanguage: Integer;
         VatAmtLbl: Label 'VAT Amount Specification in ';
         LocalCurrLbl: Label 'Local Currency';
         SalesPersLbl: Label 'Salesperson';

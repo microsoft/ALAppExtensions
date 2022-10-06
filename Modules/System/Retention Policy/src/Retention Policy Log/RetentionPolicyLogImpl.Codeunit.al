@@ -38,7 +38,7 @@ codeunit 3909 "Retention Policy Log Impl."
         CreateTempLogEntry(MessageType::Info, Category, Message);
     end;
 
-    local procedure CreateTempLogEntry(MessageType: Enum "Retention Policy Log Message Type"; Category: Enum "Retention Policy Log Category"; Message: Text[2048])
+    local procedure CreateTempLogEntry(EntryMessageType: Enum "Retention Policy Log Message Type"; Category: Enum "Retention Policy Log Category"; Message: Text[2048])
     var
         TempRetentionPolicyLogEntry: Record "Retention Policy Log Entry" temporary;
         RetenPolicyTelemetryImpl: Codeunit "Reten. Policy Telemetry Impl.";
@@ -46,7 +46,7 @@ codeunit 3909 "Retention Policy Log Impl."
     begin
         Clear(TempRetentionPolicyLogEntry);
         TempRetentionPolicyLogEntry.Category := Category;
-        TempRetentionPolicyLogEntry."Message Type" := MessageType;
+        TempRetentionPolicyLogEntry."Message Type" := EntryMessageType;
         TempRetentionPolicyLogEntry.Message := Message;
         TempRetentionPolicyLogEntry."Session Id" := Database.SessionId();
         TempRetentionPolicyLogEntry.Insert();
@@ -58,7 +58,7 @@ codeunit 3909 "Retention Policy Log Impl."
                 RetenPolicyTelemetryImpl.SendTelemetryOnInsertLogEntryInBackgroundSessionFailed(SystemInitialization.IsInProgress(), Session.GetExecutionContext());
         end else begin
             RetenPolicyTelemetryImpl.SendTelemetryOnInsertLogEntryInForegroundSessionStart(SystemInitialization.IsInProgress(), Session.GetExecutionContext());
-            CreateLogEntry(MessageType, Category, Message, Database.SessionId());
+            CreateLogEntry(EntryMessageType, Category, Message, Database.SessionId());
             RetenPolicyTelemetryImpl.SendTelemetryOnInsertLogEntryInForegroundSessionEnd(SystemInitialization.IsInProgress(), Session.GetExecutionContext());
         end;
     end;
@@ -77,12 +77,12 @@ codeunit 3909 "Retention Policy Log Impl."
         RetenPolicyTelemetryImpl.SendTelemetryOnInsertLogEntryInBackgroundSessionEnd(SystemInitialization.IsInProgress(), Session.GetExecutionContext());
     end;
 
-    local procedure CreateLogEntry(MessageType: Enum "Retention Policy Log Message Type"; Category: Enum "Retention Policy Log Category"; Message: Text[2048]; SessionId: Integer)
+    local procedure CreateLogEntry(EntryMessageType: Enum "Retention Policy Log Message Type"; Category: Enum "Retention Policy Log Category"; Message: Text[2048]; SessionId: Integer)
     var
         RetentionPolicyLogEntry: Record "Retention Policy Log Entry";
     begin
         RetentionPolicyLogEntry.Category := Category;
-        RetentionPolicyLogEntry."Message Type" := MessageType;
+        RetentionPolicyLogEntry."Message Type" := EntryMessageType;
         RetentionPolicyLogEntry.Message := Message;
         RetentionPolicyLogEntry."Session Id" := SessionId;
         RetentionPolicyLogEntry.Insert();

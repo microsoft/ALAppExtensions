@@ -51,12 +51,17 @@ page 40022 "Cloud Mig Table Mapping API"
 
                     trigger OnValidate()
                     begin
-                        Rec.UpdateExtensionName(Rec."Extension Name");
+                        ExtensionNameTemp := CopyStr(Rec."Extension Name", 1, MaxStrLen(Rec."Extension Name"));
+                        Rec.UpdateExtensionName(ExtensionNameTemp);
+                        Rec."Extension Name" := ExtensionNameTemp;
                     end;
                 }
             }
         }
     }
+
+    var
+        ExtensionNameTemp: Text;
 
     [ServiceEnabled]
     [Scope('Cloud')]

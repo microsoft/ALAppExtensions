@@ -481,15 +481,15 @@ report 1690 "Bank Deposit"
         AmountApplied_Control1020060CaptionLbl: Label 'Amount Applied';
         TempAppliedVendorLedgerEntry_OpenCaptionLbl: Label 'Remains Open';
 
-    local procedure GetCurrencyRecord(var Currency: Record Currency; CurrencyCode: Code[10])
+    local procedure GetCurrencyRecord(var LocalVarCurrency: Record Currency; CurrencyCode: Code[10])
     begin
         if CurrencyCode = '' then begin
-            Clear(Currency);
-            Currency.Description := CopyStr(GeneralLedgerSetup."Local Currency Description", 1, MaxStrLen(Currency.Description));
-            Currency."Amount Rounding Precision" := GeneralLedgerSetup."Amount Rounding Precision";
+            Clear(LocalVarCurrency);
+            LocalVarCurrency.Description := CopyStr(GeneralLedgerSetup."Local Currency Description", 1, MaxStrLen(LocalVarCurrency.Description));
+            LocalVarCurrency."Amount Rounding Precision" := GeneralLedgerSetup."Amount Rounding Precision";
         end else
-            if Currency.Code <> CurrencyCode then
-                Currency.Get(CurrencyCode);
+            if LocalVarCurrency.Code <> CurrencyCode then
+                LocalVarCurrency.Get(CurrencyCode);
     end;
 
     local procedure GetCurrencyCaptionCode(CurrencyCode: Code[10]): Text[80]

@@ -35,7 +35,6 @@ codeunit 1084 "MS - Wallet Merchant Mgt"
         DoneWithSignupMsg: Label 'The merchant''s sign-up page has been opened. When you have finished adding your accounts, choose Done.';
         DoneWithSignupActionNameTxt: Label 'Done';
         TermsOfServiceNotAcceptedErr: Label 'You must accept the Microsoft Pay Payments terms of service before you can use the service.';
-        TermsOfServiceNotAcceptedInvErr: Label 'You must accept the Microsoft Pay Payments terms of service before you can continue.';
         EmptyAccessTokenTxt: Label 'Received empty Access Token for resource: %1.', Locked = true;
 
     [Scope('OnPrem')]
@@ -71,26 +70,15 @@ codeunit 1084 "MS - Wallet Merchant Mgt"
     end;
 
     procedure StartMerchantOnboardingExperience(PrimaryKey: Integer; var MSWalletMerchantTemplate: Record 1081);
-    var
-        EnvInfoProxy: Codeunit "Env. Info Proxy";
     begin
         if Page.RunModal(Page::"MS - Wallet Merchant Terms", MSWalletMerchantTemplate) = Action::LookupCancel then
             exit;
         MSWalletMerchantTemplate.Get();
+        if not MSWalletMerchantTemplate."Accept Terms of Service" then
+            Error(TermsOfServiceNotAcceptedErr);
 
-        if EnvInfoProxy.IsInvoicing() then begin
-            if not MSWalletMerchantTemplate."Accept Terms of Service" then
-                Error(TermsOfServiceNotAcceptedInvErr);
-
-            Hyperlink(GetMerchantSignupUrl());
-            ShowDialogAndRetrieveMerchant(PrimaryKey, MSWalletMerchantTemplate)
-        end else begin
-            if not MSWalletMerchantTemplate."Accept Terms of Service" then
-                Error(TermsOfServiceNotAcceptedErr);
-
-            Hyperlink(GetMerchantSignupUrl());
-            SendDoneWithSignupNotification(PrimaryKey, MSWalletMerchantTemplate);
-        end;
+        Hyperlink(GetMerchantSignupUrl());
+        SendDoneWithSignupNotification(PrimaryKey, MSWalletMerchantTemplate);
     end;
 
     procedure SendDoneWithSignupNotification(PrimaryKey: Integer; var MSWalletMerchantTemplate: Record 1081);
@@ -285,7 +273,6 @@ codeunit 1084 "MS - Wallet Merchant Mgt"
     local procedure GetAuthorizationToken(MerchantAPIResource: Text) AccessToken: Text;
     var
         AzureADMgt: Codeunit "Azure AD Mgt.";
-        EnvInfoProxy: Codeunit "Env. Info Proxy";
         ShowAzureAdDialog: Boolean;
     begin
         // OnBehalfOf - Only works for JWT Tokens
@@ -297,8 +284,6 @@ codeunit 1084 "MS - Wallet Merchant Mgt"
         // Fallback to AuthorizationCode based refresh token
         Session.LogMessage('00007AD', OnBehalfFailedTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
         ShowAzureAdDialog := true;
-        if EnvInfoProxy.IsInvoicing() then
-            ShowAzureAdDialog := false;
 
         AccessToken := AzureADMgt.GetAccessToken(MerchantAPIResource, 'Merchant Management', ShowAzureAdDialog);
 

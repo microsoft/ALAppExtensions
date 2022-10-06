@@ -2,15 +2,12 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
 {
     var
         BankAccount: Record "Bank Account";
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
         MatchBankPaymentCZB: Codeunit "Match Bank Payment CZB";
         MinAmount, MaxAmount : Decimal;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Match Bank Payment CZB", 'OnAfterFillMatchBankPaymentBuffer', '', false, false)]
     local procedure MatchAdvancesOnAfterFillMatchBankPaymentBuffer(SearchRuleLineCZB: Record "Search Rule Line CZB"; var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var GenJournalLine: Record "Gen. Journal Line")
     begin
-        if not AdvancePaymentsMgtCZZ.IsEnabled() then
-            exit;
         if SearchRuleLineCZB."Search Scope" <> SearchRuleLineCZB."Search Scope"::"Advance CZZ" then
             exit;
 
@@ -147,8 +144,6 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
     var
         OriginalGenJournalLine: Record "Gen. Journal Line";
     begin
-        if not AdvancePaymentsMgtCZZ.IsEnabled() then
-            exit;
         if SearchRuleLineCZB."Match Related Party Only" then
             exit;
         if TempMatchBankPaymentBufferCZB."Advance Letter No. CZZ" = '' then
@@ -166,8 +161,6 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
         AdvanceSearchRuleLineCZB: Record "Search Rule Line CZB";
         DescriptionTxt: Label 'Both, Advance, %1', Comment = '%1 = Line Description';
     begin
-        if not AdvancePaymentsMgtCZZ.IsEnabled() then
-            exit;
         if SearchRuleLineCZB."Banking Transaction Type" <> SearchRuleLineCZB."Banking Transaction Type"::Both then
             exit;
         if SearchRuleLineCZB."Search Scope" <> SearchRuleLineCZB."Search Scope"::Balance then
@@ -182,22 +175,17 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
         AdvanceSearchRuleLineCZB.Insert(true);
     end;
 #if not CLEAN19
-#pragma warning disable AL0432
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Match Bank Payment CZB", 'OnBeforeFillMatchBankPaymentBufferSalesAdvance', '', false, false)]
     local procedure SkipMatchingSalesAdvanceOnBeforeFillMatchBankPaymentBufferSalesAdvance(var IsHandled: Boolean)
     begin
-        if IsHandled then
-            exit;
-        IsHandled := AdvancePaymentsMgtCZZ.IsEnabled();
+        IsHandled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Match Bank Payment CZB", 'OnBeforeFillMatchBankPaymentBufferPurchaseAdvance', '', false, false)]
     local procedure SkipMatchingPurchAdvanceOnBeforeFillMatchBankPaymentBufferSalesAdvance(var IsHandled: Boolean)
     begin
-        if IsHandled then
-            exit;
-        IsHandled := AdvancePaymentsMgtCZZ.IsEnabled();
+        IsHandled := true;
     end;
-#pragma warning restore AL0432
 #endif
 }

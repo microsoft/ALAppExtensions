@@ -20,7 +20,7 @@ codeunit 1996 "Checklist Banner"
                   tabledata Company = r;
 
     var
-        CompletedStepLbl: Label 'You completed this step';
+        CompletedStepLbl: Label 'This step is completed';
         SkippedStepLbl: Label 'You skipped this step';
         BannerTitleLbl: Label 'Get started', MaxLength = 50, Comment = '*Onboarding Checklist*';
         CollapsedBannerTitleLbl: Label 'Get started:', MaxLength = 50, Comment = '*Onboarding Checklist*';

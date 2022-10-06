@@ -45,7 +45,9 @@ page 4512 "SMTP Account"
             {
                 ApplicationArea = All;
                 Caption = 'Sender Name';
+#pragma warning disable AA0240
                 ToolTip = 'Specifies a name to add in front of the sender email address on emails. The name depends on the Sender Email Address field. For Current User, this is the name from the account you used to sign in. For Specific Account, this can be any name. For example, if you enter Stan, and the address in the Email Address field is stan@cronus.coml, the sender name will appear as Stan stan@cronus.com.';
+#pragma warning restore AA0240
                 Editable = SenderFieldsEditable;
             }
 
@@ -53,7 +55,9 @@ page 4512 "SMTP Account"
             {
                 ApplicationArea = All;
                 Caption = 'Email Address';
+#pragma warning disable AA0240
                 ToolTip = 'Specifies the email address to show as the sender on email messages. This field is available if you choose Specific Account in the Sender Email Account field. For example, this lets all emails appear to come from the same account, such as sales@cronus.com. This account must have the Send As permission on your mail server to the account in the User Name field.';
+#pragma warning restore AA0240
                 Editable = SenderFieldsEditable;
                 ShowMandatory = true;
                 NotBlank = true;

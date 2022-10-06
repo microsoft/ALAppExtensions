@@ -228,22 +228,6 @@ The number of users to return.
 
 The list of users to return.
 
-### SetTestInProgress (Method) <a name="SetTestInProgress"></a> 
-
- Sets a flag that is used to determine whether a test is in progress or not.
- 
-
-#### Syntax
-```
-[Scope('OnPrem')]
-[NonDebuggable]
-procedure SetTestInProgress(TestInProgress: Boolean)
-```
-#### Parameters
-*TestInProgress ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
-
-The value to be set to the flag.
-
 ### OnInitialize (Event) <a name="OnInitialize"></a> 
 
  Publishes an event that is used to initialize the Azure AD Graph.

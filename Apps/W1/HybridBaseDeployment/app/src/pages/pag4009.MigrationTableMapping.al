@@ -40,9 +40,13 @@ page 4009 "Migration Table Mapping"
                         exit(true);
                     end;
 
-                    trigger OnValidate()                    
+                    trigger OnValidate()
+                    var
+                        ExtensionNameTemp: Text;
                     begin
-                        Rec.UpdateExtensionName(ExtensionName);
+                        ExtensionNameTemp := CopyStr(ExtensionName, 1, MaxStrLen(ExtensionName));
+                        Rec.UpdateExtensionName(ExtensionNameTemp);
+                        ExtensionName := ExtensionNameTemp;
                     end;
                 }
                 field("Table Name"; "Table Name")

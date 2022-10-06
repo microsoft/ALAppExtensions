@@ -732,6 +732,7 @@ page 30066 "APIV2 - Purchase Orders"
         PurchaseHeader.Receive := true;
         PurchaseHeader.Invoice := true;
         PurchaseHeader.SendToPosting(Codeunit::"Purch.-Post");
+        Commit(); // Purch.-Post does not always commit latest purchase invoice header
         PurchInvHeader.SetCurrentKey("Order No.");
         PurchInvHeader.SetRange("Order No.", OrderNo);
         PurchInvHeader.SetRange("Order No. Series", OrderNoSeries);

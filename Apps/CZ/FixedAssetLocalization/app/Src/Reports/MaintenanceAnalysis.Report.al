@@ -349,16 +349,16 @@ report 31249 "Maintenance - Analysis CZF"
             Error(StartingDateIsLaterErr);
     end;
 
-    local procedure MakeAmountHeadLine(i: Integer; PostingType: Code[10]; Period: Enum "FA Analysis Period CZF")
+    local procedure MakeAmountHeadLine(j: Integer; PostingType: Code[10]; Period: Enum "FA Analysis Period CZF")
     begin
         if Period = Period::"before Starting Date" then
             if StartingDate < 00020101D then
                 Error(
                   SpecifyStartingDateErr, SelectStr(Period.AsInteger() + 1, PeriodsTxt));
         if PostingType <> '' then
-            HeadLineText[i] := StrSubstNo(TwoPlaceholdersTok, PostingType, SelectStr(Period.AsInteger() + 1, PeriodsTxt))
+            HeadLineText[j] := StrSubstNo(TwoPlaceholdersTok, PostingType, SelectStr(Period.AsInteger() + 1, PeriodsTxt))
         else
-            HeadLineText[i] := SelectStr(Period.AsInteger() + 1, PeriodsTxt);
+            HeadLineText[j] := SelectStr(Period.AsInteger() + 1, PeriodsTxt);
     end;
 
     local procedure MakeGroupHeadLine()

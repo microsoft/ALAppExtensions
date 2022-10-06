@@ -13,8 +13,27 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 
     trigger OnUpgradePerCompany()
     begin
+#if not CLEAN21
+        MoveShpfyRegisteredStore();
+#endif
         SetAllowOutgoingRequests();
     end;
+#if not CLEAN21
+
+    local procedure MoveShpfyRegisteredStore()
+    var
+        ShpfyRegisteredStore: Record "Shpfy Registered Store";
+        ShpfyRegisteredStoreNew: Record "Shpfy Registered Store New";
+    begin
+        if ShpfyRegisteredStoreNew.IsEmpty then
+            if ShpfyRegisteredStore.FindSet() then
+                repeat
+                    ShpfyRegisteredStoreNew.TransferFields(ShpfyRegisteredStore, true);
+                    ShpfyRegisteredStoreNew.SystemId := ShpfyRegisteredStore.SystemId;
+                    ShpfyRegisteredStoreNew.Insert(true, true);
+                until ShpfyRegisteredStore.next() = 0;
+    end;
+#endif
 
     local procedure SetAllowOutgoingRequests()
     var

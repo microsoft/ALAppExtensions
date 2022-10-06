@@ -47,7 +47,7 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
             FactBoxesVisible := IntelligentCloudSetup."Product ID" = HybridGPWizard.ProductId();
 
         HybridCompany.SetRange(Replicate, true);
-        HasCompletedSetupWizard := HybridCompany.FindFirst();
+        HasCompletedSetupWizard := not HybridCompany.IsEmpty();
     end;
 
     var

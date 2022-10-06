@@ -45,7 +45,7 @@ codeunit 139665 "GP Item Transaction Tests"
         CreateGPItemTransactionStagingTableEntries(GPItemTransaction);
         CreateGPPostingAccountsStagingTableEntries(GPPostingAccount);
         CreateGPItemLocationsStagingTableEntries(GPItemLocation);
-        
+
         // [GIVEN] The migration is configured to migrate inventory
         GPTestHelperFunctions.CreateConfigurationSettings();
         GPCompanyAdditionalSettings.GetSingleInstance();
@@ -194,12 +194,11 @@ codeunit 139665 "GP Item Transaction Tests"
 
     local procedure Migrate(GPItem: Record "GP Item")
     var
-        DataMigrationEntity: Record "Data Migration Entity";
         GPItemMigrator: Codeunit "GP Item Migrator";
     begin
         if not GPTestHelperFunctions.MigrationConfiguredForTable(Database::Item) then
             exit;
-            
+
         GPItemMigrator.OnMigrateItem(ItemDataMigrationFacade, GPItem.RecordId());
         GPItemMigrator.OnMigrateItemPostingGroups(ItemDataMigrationFacade, GPItem.RecordId(), true);
         GPItemMigrator.OnMigrateInventoryTransactions(ItemDataMigrationFacade, GPItem.RecordId(), true);
@@ -227,7 +226,7 @@ codeunit 139665 "GP Item Transaction Tests"
         GLAccount.Init();
         GLAccount."No." := '1300';
         GLAccount.Name := 'Inventory - Retail/Parts';
-        GLAccount."Account Type" := 0;
+        GLAccount."Account Type" := "G/L Account Type"::Posting;
         GLAccount.Insert();
     end;
 

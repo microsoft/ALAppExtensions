@@ -25,13 +25,14 @@ codeunit 152 "User Permissions"
     /// <summary>
     /// Removes the SUPER permissions set from a user.
     /// </summary>
-    /// <param name="UserSecurityId">The security ID of the user to modify.</param>  
+    /// <param name="UserSecurityId">The security ID of the user to modify.</param>
+    /// <returns>True if SUPER was removed from the user; otherwise - false.</returns>
     [Scope('OnPrem')]
-    procedure RemoveSuperPermissions(UserSecurityId: Guid)
+    procedure RemoveSuperPermissions(UserSecurityId: Guid): Boolean
     var
         UserPermissionsImpl: Codeunit "User Permissions Impl.";
     begin
-        UserPermissionsImpl.RemoveSuperPermissions(UserSecurityId);
+        exit(UserPermissionsImpl.RemoveSuperPermissions(UserSecurityId));
     end;
 
     /// <summary>

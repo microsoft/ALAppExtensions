@@ -164,7 +164,8 @@ codeunit 18001 "GST Base Validation"
         Rec."GST Base Amount" := Abs(Rec."GST Base Amount") * SignFactor;
         Rec."GST Amount" := Abs(Rec."GST Amount") * SignFactor;
         if GSTPostingManagement.GetPaytoVendorNo() <> '' then
-            Rec."Source No." := GSTPostingManagement.GetPaytoVendorNo();
+            if Rec."Source Type" = Rec."Source Type"::Vendor then
+                Rec."Source No." := GSTPostingManagement.GetPaytoVendorNo();
 
         Rec.Modify();
     end;
@@ -277,8 +278,9 @@ codeunit 18001 "GST Base Validation"
                 Rec."Source Type" := Rec."Source Type"::Customer;
 
         Rec."Executed Use Case ID" := GSTPostingManagement.GetUseCaseID();
-        if GSTPostingManagement.GetPaytoVendorNo() <> '' then
-            Rec."Source No." := GSTPostingManagement.GetPaytoVendorNo();
+        if Rec."Source Type" = Rec."Source Type"::Vendor then
+            if GSTPostingManagement.GetPaytoVendorNo() <> '' then
+                Rec."Source No." := GSTPostingManagement.GetPaytoVendorNo();
 
         if GSTPostingManagement.GetBuyerSellerRegNo() <> '' then
             Rec."Buyer/Seller Reg. No." := GSTPostingManagement.GetBuyerSellerRegNo();
@@ -1116,6 +1118,29 @@ codeunit 18001 "GST Base Validation"
             repeat
                 GSTAmount += DetailedGSTLedgerEntry."GST Amount";
             until DetailedGSTLedgerEntry.Next() = 0;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Subscribers", 'OnBeforeSkipCallingTaxEngineForPurchLine', '', false, false)]
+    local procedure OnBeforeSkipCallingTaxEngineForPurchLine(var PurchLine: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
+        CheckGSTVendorType(PurchLine, IsHandled);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Subscribers", 'OnBeforeEnableCallingTaxEngineForPurchLine', '', false, false)]
+    local procedure OnBeforeEnableCallingTaxEngineForPurchLine(var PurchLine: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
+        CheckGSTVendorType(PurchLine, IsHandled);
+    end;
+
+    local procedure CheckGSTVendorType(PurchLine: Record "Purchase Line"; var IsHandled: Boolean)
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        if not PurchaseHeader.Get(PurchLine."Document Type", PurchLine."Document No.") then
+            exit;
+
+        if PurchaseHeader."GST Vendor Type" = PurchaseHeader."GST Vendor Type"::" " then
+            IsHandled := true;
     end;
 
     local procedure UpdteGSTLedgerEntryAmount(var GSTLedgerEntry: Record "GST Ledger Entry"; var DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info")

@@ -143,6 +143,8 @@ page 2029 "Image Analyzer Wizard"
                         MultiLine = true;
                         Editable = true;
                         Caption = 'I understand and accept these terms';
+                        ToolTip = 'Specifies if the feature is enabled.';
+
                         trigger OnValidate()
                         begin
                             ShowSecondStep();
@@ -214,6 +216,7 @@ page 2029 "Image Analyzer Wizard"
                             ShowCaption = true;
                             Editable = true;
                             Caption = 'Analyze current picture';
+                            ToolTip = 'Start analysis of the current picture.';
                         }
                     }
                 }
@@ -301,8 +304,6 @@ page 2029 "Image Analyzer Wizard"
         [InDataSet]
         FinalStepVisible: Boolean;
         [InDataSet]
-        FinishActionEnabled: Boolean;
-        [InDataSet]
         BackActionEnabled: Boolean;
         [InDataSet]
         NextActionEnabled: Boolean;
@@ -381,7 +382,6 @@ page 2029 "Image Analyzer Wizard"
     begin
         FirstStepVisible := true;
         SecondStepVisible := false;
-        FinishActionEnabled := false;
         BackActionEnabled := false;
     end;
 
@@ -389,7 +389,6 @@ page 2029 "Image Analyzer Wizard"
     begin
         FirstStepVisible := false;
         SecondStepVisible := true;
-        FinishActionEnabled := false;
         BackActionEnabled := true;
         NextActionEnabled := IsFeatureEnabled;
     end;
@@ -403,7 +402,6 @@ page 2029 "Image Analyzer Wizard"
 
     local procedure ResetControls()
     begin
-        FinishActionEnabled := true;
         BackActionEnabled := true;
         NextActionEnabled := true;
 

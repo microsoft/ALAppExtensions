@@ -393,7 +393,7 @@ report 31247 "Fixed Asset - G/L Analysis CZF"
         HeadLineText[2] := DateType2;
     end;
 
-    local procedure MakeAmountHeadLine(i: Integer; PostingType: Text[50]; PostingTypeNo: Integer; var Period: Enum "FA Analysis Disposal CZF")
+    local procedure MakeAmountHeadLine(j: Integer; PostingType: Text[50]; PostingTypeNo: Integer; var Period: Enum "FA Analysis Disposal CZF")
     var
         DisposalTxt: Label ' ,Disposal,Bal. Disposal';
     begin
@@ -420,7 +420,7 @@ report 31247 "Fixed Asset - G/L Analysis CZF"
             FADepreciationBook.FieldNo("Book Value on Disposal"):
                 Period := Period::Disposal;
         end;
-        HeadLineText[i] := StrSubstNo(TwoPlaceholdersTok, PostingType, SelectStr(Period.AsInteger() + 1, DisposalTxt));
+        HeadLineText[j] := StrSubstNo(TwoPlaceholdersTok, PostingType, SelectStr(Period.AsInteger() + 1, DisposalTxt));
     end;
 
     local procedure MakeGroupHeadLine()

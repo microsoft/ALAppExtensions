@@ -533,6 +533,8 @@ codeunit 18999 "Stale Cheque Tests"
         TDSSection: Code[10];
         ChequeNo: Code[10];
     begin
+        TDSSection := '';
+
         // [SCENARIO] Check if the system is reversing TDS transactions if check stale is used in bank ledger entry when bank payment type is “Manual Check”.
         // [GIVEN] Create Voucher Setup For Voucher Type Bank Payment Voucher, Create TDS Setup, TDS Section Assessee Code and Concessional Code
         ActivateChequeNoOnGeneralLedgerSetup();
@@ -563,6 +565,8 @@ codeunit 18999 "Stale Cheque Tests"
         TDSSection: Code[10];
         ChequeNo: Code[10];
     begin
+        TDSSection := '';
+
         // [SCENARIO] [391270] Check if the system is reversing TDS transactions if check stale is used in bank ledger entry when bank payment type is “Computer Check”.
         // [GIVEN] Create Voucher Setup For Voucher Type Bank Payment Voucher, Create TDS Setup, TDS Section Assessee Code and Concessional Code
         ActivateChequeNoOnGeneralLedgerSetup();

@@ -14,6 +14,8 @@ codeunit 20038 "APIV1 - Send Sales Document"
         CancelationEmailSubjectTxt: Label 'Your %1 has been cancelled.', Comment = '%1 - document type';
         CancelationEmailBodyTxt: Label 'Thank you for your business. Your %1 has been cancelled.', Comment = '%1 - document type';
         GreetingTxt: Label 'Hello %1,', Comment = '%1 - customer name';
+        ThereIsNothingToSellInvoiceErr: Label 'Please add at least one line item to the invoice.';
+        ThereIsNothingToSellQuoteErr: Label 'Please add at least one line item to the estimate.';
 
     [Scope('Cloud')]
     procedure SendCreditMemo(var SalesCrMemoHeader: Record "Sales Cr.Memo Header")
@@ -30,6 +32,19 @@ codeunit 20038 "APIV1 - Send Sales Document"
         if SalesHeader."Document Type" <> SalesHeader."Document Type"::Quote then
             exit;
         SendDocument(SalesHeader);
+    end;
+
+    [Scope('Cloud')]
+    procedure CheckDocumentIfNoItemsExists(SalesHeader: Record "Sales Header")
+    begin
+        with SalesHeader do
+            if not SalesLinesExist() then
+                case "Document Type" of
+                    "Document Type"::Invoice:
+                        Error(ThereIsNothingToSellInvoiceErr);
+                    else
+                        Error(ThereIsNothingToSellQuoteErr);
+                end;
     end;
 
     local procedure SendCancelledCreditMemoInBackground(var SalesCrMemoHeader: Record "Sales Cr.Memo Header")
@@ -150,6 +165,8 @@ codeunit 20038 "APIV1 - Send Sales Document"
         TempSalesHeader: Record "Sales Header" temporary;
         ReportSelections: Record "Report Selections";
         DocumentMailing: Codeunit "Document-Mailing";
+        AttachmentInStream: InStream;
+        ReportSelectionUsage: Enum "Report Selection Usage";
         RecordVariant: Variant;
         EmailAddress: Text[250];
         ServerEmailBodyFilePath: Text[250];
@@ -162,9 +179,9 @@ codeunit 20038 "APIV1 - Send Sales Document"
         EmailAddress := GetSendToEmailAddress(SalesCrMemoHeader);
         EmailBodyTxt := GetCreditMemoEmailBody(SalesCrMemoHeader);
         ReportSelections.GetEmailBodyTextForCust(
-            ServerEmailBodyFilePath, 2, RecordVariant, SalesCrMemoHeader."Bill-to Customer No.", EmailAddress, EmailBodyTxt);
+            ServerEmailBodyFilePath, ReportSelectionUsage::"S.Invoice", RecordVariant, SalesCrMemoHeader."Bill-to Customer No.", EmailAddress, EmailBodyTxt);
         DocumentMailing.EmailFileWithSubjectAndReportUsage(
-         '', '', ServerEmailBodyFilePath, StrSubstNo(CancelationEmailSubjectTxt, TempSalesHeader."Document Type"::"Credit Memo"),
+         AttachmentInStream, '', ServerEmailBodyFilePath, StrSubstNo(CancelationEmailSubjectTxt, TempSalesHeader."Document Type"::"Credit Memo"),
          SalesCrMemoHeader."No.", EmailAddress, Format(TempSalesHeader."Document Type"::"Credit Memo"), true, 2);
     end;
 

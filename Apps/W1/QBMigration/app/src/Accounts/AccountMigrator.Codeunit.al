@@ -8,6 +8,7 @@ codeunit 1911 "MigrationQB Account Migrator"
         DescriptionTxt: Label 'Opening Balance', Locked = true;
         GlDocNoTxt: Label 'G00001', Locked = true;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
     procedure OnMigrateGlAccount(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -18,6 +19,7 @@ codeunit 1911 "MigrationQB Account Migrator"
         MigrationQBAccount.Get(RecordIdToMigrate);
         MigrateAccountDetails(MigrationQBAccount, Sender);
     end;
+#pragma warning restore AA0207
 
     procedure MigrateAccountDetails(MigrationQBAccount: Record "MigrationQB Account"; GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade")
     var
@@ -36,6 +38,7 @@ codeunit 1911 "MigrationQB Account Migrator"
         GLAccDataMigrationFacade.ModifyGLAccount(true);
     end;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnCreateOpeningBalanceTrx', '', true, true)]
     procedure OnCreateOpeningBalanceTrx(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -61,7 +64,9 @@ codeunit 1911 "MigrationQB Account Migrator"
             ''
         );
     end;
+#pragma warning restore AA0207
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigratePostingGroups', '', true, true)]
     procedure OnMigratePostingGroups(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -95,6 +100,7 @@ codeunit 1911 "MigrationQB Account Migrator"
         if MigrationQBAccount.AcctNum = HelperFunctions.GetPostingAccountNumber('InventoryAdjmtAccount') then
             Sender.SetGeneralPostingSetupInventoryAdjmtAccount(CopyStr(PostingGroupCodeTxt, 1, 5), HelperFunctions.GetPostingAccountNumber('InventoryAdjmtAccount'));
     end;
+#pragma warning restore AA0207
 
     procedure GetAll(IsOnline: Boolean)
     var

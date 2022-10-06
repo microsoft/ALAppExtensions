@@ -27,6 +27,7 @@ codeunit 18147 "e-Invoice Json Handler"
         DocumentNo: Text[20];
         IsInvoice: Boolean;
         eInvoiceNotApplicableCustErr: Label 'E-Invoicing is not applicable for Unregistered Customer.';
+        eInvoiceNonGSTTransactionErr: Label 'E-Invoicing is not applicable for Non-GST Transactions.';
         DocumentNoBlankErr: Label 'E-Invoicing is not supported if document number is blank in the current document.';
         SalesLinesMaxCountLimitErr: Label 'E-Invoice allowes only 100 lines per Invoice. Current transaction is having %1 lines.', Comment = '%1 = Sales Lines count';
         IRNTxt: Label 'Irn', Locked = true;
@@ -38,6 +39,8 @@ codeunit 18147 "e-Invoice Json Handler"
         SGSTLbl: label 'SGST', Locked = true;
         IGSTLbl: Label 'IGST', Locked = true;
         CESSLbl: Label 'CESS', Locked = true;
+        GenerateQRCodeErr: Label 'Dynamic QR Code generation is allowed for Unregistered customers only.';
+        B2CUPIPaymentErr: Label 'UPI ID must have a value in bank account %1. It cannot be empty', comment = '%1 BankAccount';
 
     procedure SetSalesInvHeader(SalesInvoiceHeaderBuff: Record "Sales Invoice Header")
     begin
@@ -109,6 +112,112 @@ codeunit 18147 "e-Invoice Json Handler"
             Error(IRNHashErr, TempIRNTxt);
     end;
 
+    procedure GenerateQRCodeforB2C(var SalesInvoiceHeader: Record "Sales Invoice Header")
+    var
+        Location: Record Location;
+        TaxBaseLibrary: Codeunit "Tax Base Library";
+        QRGenerator: Codeunit "QR Generator";
+        TempBlob: Codeunit "Temp Blob";
+        RecRef: RecordRef;
+        BankCode: Code[20];
+        BankAcNumber: Text[30];
+        IFSCCode: Text[20];
+        BankAccUpiId: Text[50];
+        QRCodeInput: Text;
+        LocationGstRegNo: Text[20];
+        InvoiceAmount: Decimal;
+        TotalGstAmount: Decimal;
+        CGSTRate: Decimal;
+        SGSTRate: Decimal;
+        IGSTRate: Decimal;
+    begin
+        if (SalesInvoiceHeader."Nature of Supply" <> SalesInvoiceHeader."Nature of Supply"::B2C) and
+            (SalesInvoiceHeader."GST Customer Type" <> SalesInvoiceHeader."GST Customer Type"::Unregistered) then
+            Error(GenerateQRCodeErr);
+
+        DocumentNo := SalesInvoiceHeader."No.";
+        if SalesInvoiceHeader."Location Code" <> '' then begin
+            BankCode := GetLocationBankDetails(SalesInvoiceHeader."Location Code");
+            if Location.Get(SalesInvoiceHeader."Location Code") then
+                LocationGstRegNo := Location."GST Registration No.";
+        end;
+
+        TaxBaseLibrary.GetBankAccUpiId(BankCode, BankAccUpiId);
+        if BankAccUpiId = '' then
+            Error(B2CUPIPaymentErr, BankCode);
+
+        SalesInvoiceHeader.CalcFields(Amount);
+        if SalesInvoiceHeader."Currency Factor" <> 0 then
+            InvoiceAmount := SalesInvoiceHeader.Amount / SalesInvoiceHeader."Currency Factor"
+        else
+            InvoiceAmount := SalesInvoiceHeader.Amount;
+
+        GetBankAcUPIDetails(BankCode, BankAcNumber, IFSCCode);
+        GetSalesInvoiceLineForB2CCustomer(DocumentNo, CGSTRate, SGSTRate, IGSTRate, TotalGstAmount);
+        QRCodeInput := 'upi://pay?pa=' + BankAccUpiId +
+                        '&pn=' + CompanyName +
+                        '&SellerGstin=' + LocationGstRegNo +
+                        '&BankAcNo=' + BankAcNumber +
+                        '&IFSCCode=' + IFSCCode +
+                        '&billno=' + SalesInvoiceHeader."No." +
+                        '&billDate=' + Format(SalesInvoiceHeader."Document Date") +
+                        '&am=' + Format(InvoiceAmount, 0, '<Precision,2:2><Standard Format,2>') +
+                        '&GSTAmount=' + Format(TotalGSTAmount, 0, '<Precision,2:2><Standard Format,2>') +
+                        '&CGST=' + Format(CGSTRate, 0, '<Precision,2:2><Standard Format,2>') +
+                        '&SGST=' + Format(SGSTRate, 0, '<Precision,2:2><Standard Format,2>') +
+                        '&IGST=' + Format(IGSTRate, 0, '<Precision,2:2><Standard Format,2>');
+
+        OnBeforeGenerateQRCodeForB2C(BankCode, QRCodeInput, SalesInvoiceHeader);
+        RecRef.GetTable(SalesInvoiceHeader);
+        QRGenerator.GenerateQRCodeImage(QRCodeInput, TempBlob);
+        TempBlob.ToRecordRef(RecRef, SalesInvoiceHeader.FieldNo("QR Code"));
+        RecRef.Modify();
+    end;
+
+    local procedure GetSalesInvoiceLineForB2CCustomer(DocumentNo: Text[20]; Var CGSTRate: Decimal; Var SGSTRate: Decimal; Var IGSTRate: Decimal; Var TotalGstAmount: Decimal)
+    Var
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        CGSTValue: Decimal;
+        SGSTValue: Decimal;
+        IGSTValue: Decimal;
+    begin
+        SalesInvoiceLine.SetRange("Document No.", DocumentNo);
+        SalesInvoiceLine.LoadFields("Line No.");
+        if SalesInvoiceLine.FindSet() then
+            repeat
+                GetGSTValueForLine(SalesInvoiceLine."Line No.", CGSTValue, SGSTValue, IGSTValue);
+                CGSTRate += CGSTValue;
+                SGSTRate += SGSTValue;
+                IGSTRate += IGSTValue;
+                TotalGstAmount += (CGSTValue + SGSTValue + IGSTValue);
+            Until SalesInvoiceLine.Next() = 0;
+    end;
+
+    local procedure GetBankAcUPIDetails(BankCode: Code[20]; Var BankAccNumber: Text[30]; Var IFSCCode: Text[20])
+    var
+        BankAccount: Record "Bank Account";
+    begin
+        BankAccount.Get(BankCode);
+        BankAccNumber := BankAccount."Bank Account No.";
+        IFSCCode := BankAccount."IFSC Code";
+    end;
+
+    local procedure GetLocationBankDetails(LocCode: Code[20]) BankCode: Code[20]
+    var
+        TaxBaseLibrary: Codeunit "Tax Base Library";
+        AccountNo: Code[20];
+        ForUPIPayments: Boolean;
+    begin
+        TaxBaseLibrary.GetVoucherAccNo(LocCode, AccountNo, ForUPIPayments);
+
+        if ForUPIPayments then
+            BankCode := AccountNo
+        else
+            Error(B2CUPIPaymentErr);
+
+        exit(BankCode);
+    end;
+
     local procedure GetResponseText() ResponseText: Text
     var
         TempBlob: Codeunit "Temp Blob";
@@ -131,10 +240,7 @@ codeunit 18147 "e-Invoice Json Handler"
         JsonArrayData.Add(JObject);
     end;
 
-    local procedure WriteCancellationJSON(
-        IRNHash: Text[64];
-        CancelReason: Enum "e-Invoice Cancel Reason";
-        CancelRemark: Text[100])
+    local procedure WriteCancellationJSON(IRNHash: Text[64]; CancelReason: Enum "e-Invoice Cancel Reason"; CancelRemark: Text[100])
     var
         CancelJsonObject: JsonObject;
     begin
@@ -651,6 +757,7 @@ codeunit 18147 "e-Invoice Json Handler"
             Pin := 000000;
 
         SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
+        SalesInvoiceLine.SetFilter(Type, '<>%1', SalesInvoiceLine.Type::" ");
         if SalesInvoiceLine.FindFirst() then
             case SalesInvoiceLine."GST Place of Supply" of
                 SalesInvoiceLine."GST Place of Supply"::"Bill-to Address":
@@ -911,7 +1018,7 @@ codeunit 18147 "e-Invoice Json Handler"
     begin
         Clear(JsonArrayData);
         GetGSTValue(AssessableAmount, CGSTAmount, SGSTAmount, IGSTAmount, CessAmount, StateCessAmount, CESSNonAvailmentAmount, DiscountAmount, OtherCharges, TotalInvoiceValue);
-        WriteDocumentTotalDetails(AssessableAmount, CGSTAmount, SGSTAmount, IGSTAmount, CessAmount, StateCessAmount, CESSNonAvailmentAmount, DiscountAmount, OtherCharges, TotalInvoiceValue);
+        WriteDocumentTotalDetails(AssessableAmount, CGSTAmount, SGSTAmount, IGSTAmount, CessAmount, CESSNonAvailmentAmount, DiscountAmount, OtherCharges, TotalInvoiceValue);
     end;
 
     local procedure WriteDocumentTotalDetails(
@@ -920,7 +1027,6 @@ codeunit 18147 "e-Invoice Json Handler"
         SGSTAmount: Decimal;
         IGSTAmount: Decimal;
         CessAmount: Decimal;
-        StateCessAmount: Decimal;
         CessNonAdvanceVal: Decimal;
         DiscountAmount: Decimal;
         OtherCharges: Decimal;
@@ -933,7 +1039,6 @@ codeunit 18147 "e-Invoice Json Handler"
         JDocTotalDetails.Add('SgstVAl', SGSTAmount);
         JDocTotalDetails.Add('IgstVal', IGSTAmount);
         JDocTotalDetails.Add('CesVal', CessAmount);
-        JDocTotalDetails.Add('StCesVal', StateCessAmount);
         JDocTotalDetails.Add('CesNonAdVal', CessNonAdvanceVal);
         JDocTotalDetails.Add('Disc', DiscountAmount);
         JDocTotalDetails.Add('OthChrg', OtherCharges);
@@ -964,6 +1069,7 @@ codeunit 18147 "e-Invoice Json Handler"
         Clear(JsonArrayData);
         if IsInvoice then begin
             SalesInvoiceLine.SetRange("Document No.", DocumentNo);
+            SalesInvoiceLine.SetFilter(Type, '<>%1', SalesInvoiceLine.Type::" ");
             if SalesInvoiceLine.FindSet() then begin
                 if SalesInvoiceLine.Count > 100 then
                     Error(SalesLinesMaxCountLimitErr, SalesInvoiceLine.Count);
@@ -1003,7 +1109,7 @@ codeunit 18147 "e-Invoice Json Handler"
                       SalesInvoiceLine."Unit Price",
                       SalesInvoiceLine."Line Amount" + SalesInvoiceLine."Line Discount Amount",
                       SalesInvoiceLine."Line Discount Amount", 0,
-                      AssessableAmount, CGSTValue, SGSTValue, IGSTValue, CessRate, CesNonAdval, StateCess,
+                      AssessableAmount, CGSTValue, SGSTValue, IGSTValue, CessRate, CesNonAdval,
                       AssessableAmount + CGSTValue + SGSTValue + IGSTValue,
                       IsServc);
                     Count += 1;
@@ -1013,6 +1119,7 @@ codeunit 18147 "e-Invoice Json Handler"
             JObject.Add('ItemList', JsonArrayData);
         end else begin
             SalesCrMemoLine.SetRange("Document No.", DocumentNo);
+            SalesCrMemoLine.SetFilter(Type, '<>%1', SalesCrMemoLine.Type::" ");
             if SalesCrMemoLine.FindSet() then begin
                 if SalesCrMemoLine.Count > 100 then
                     Error(SalesLinesMaxCountLimitErr, SalesCrMemoLine.Count);
@@ -1053,7 +1160,7 @@ codeunit 18147 "e-Invoice Json Handler"
                       SalesCrMemoLine."Unit Price",
                       SalesCrMemoLine."Line Amount" + SalesCrMemoLine."Line Discount Amount",
                       SalesCrMemoLine."Line Discount Amount", 0,
-                      AssessableAmount, CGSTValue, SGSTValue, IGSTValue, CessRate, CesNonAdval, StateCess,
+                      AssessableAmount, CGSTValue, SGSTValue, IGSTValue, CessRate, CesNonAdval,
                       AssessableAmount + CGSTValue + SGSTValue + IGSTValue,
                       IsServc);
 
@@ -1082,7 +1189,6 @@ codeunit 18147 "e-Invoice Json Handler"
         IGSTRate: Decimal;
         CESSRate: Decimal;
         CessNonAdvanceAmount: Decimal;
-        StateCess: Decimal;
         TotalItemValue: Decimal;
         IsServc: Text[1])
     var
@@ -1107,7 +1213,6 @@ codeunit 18147 "e-Invoice Json Handler"
         JItem.Add('CesAmt', 0);
 
         JItem.Add('CesNonAdval', CessNonAdvanceAmount);
-        JItem.Add('StateCes', StateCess);
         JItem.Add('TotItemVal', TotalItemValue);
 
         JsonArrayData.Add(JItem);
@@ -1370,5 +1475,24 @@ codeunit 18147 "e-Invoice Json Handler"
         HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512;
     begin
         exit(CryptographyManagement.GenerateHash(input, HashAlgorithmType::SHA256));
+    end;
+
+    procedure GenerateEInvoiceQRCodeForB2CCustomer(DocumentNo: Code[20]; TableID: Integer)
+    var
+        SalesInvHeader: Record "Sales Invoice Header";
+        eInvoiceManagement: Codeunit "e-Invoice Management";
+    begin
+        if not eInvoiceManagement.IsGSTApplicable(DocumentNo, TableID) then
+            Error(eInvoiceNonGSTTransactionErr);
+
+        if SalesInvHeader.Get(DocumentNo) then begin
+            SetSalesInvHeader(SalesInvHeader);
+            GenerateQRCodeforB2C(SalesInvHeader);
+        end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGenerateQRCodeForB2C(BankCode: Code[20]; var QRCodeInput: Text; var SalesInvHeader: Record "Sales Invoice Header")
+    begin
     end;
 }

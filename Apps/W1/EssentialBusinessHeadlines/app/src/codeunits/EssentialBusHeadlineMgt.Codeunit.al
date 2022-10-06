@@ -571,15 +571,15 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         HeadlineDetails: Record "Headline Details Per User";
         TopCustomerHeadlineQuery: Query "Top Customer Headline";
         HeadlineText: Text;
-	    DocumentTypeFilter: Text;
+		DocumentTypeFilter: Text;
     begin
         TopCustomerHeadlineQuery.SetFilter(PostDate, '>=%1&<=%2',
             CalcDate(StrSubstNo('<-%1D>', DaysSearch), WorkDate()),
             WorkDate());
 			
-        DocumentTypeFilter := Customer.GetTopCustomerHeadlineQueryDocumentTypeFilter();
-        if DocumentTypeFilter <> '' then
-            TopCustomerHeadlineQuery.SetFilter(DocumentType, DocumentTypeFilter);
+		DocumentTypeFilter := Customer.GetTopCustomerHeadlineQueryDocumentTypeFilter();
+		if DocumentTypeFilter <> '' then
+			TopCustomerHeadlineQuery.SetFilter(DocumentType, DocumentTypeFilter);
 			
         if not TopCustomerHeadlineQuery.Open() then
             exit;

@@ -20,7 +20,13 @@ page 20006 "APIV1 - Aut. Extension Upload"
         {
             repeater(Group)
             {
+                field(id; Id)
+                {
+                    Caption = 'id', Locked = true;
+                }
+#pragma warning disable AL0273
                 field(content; Content)
+#pragma warning restore
                 {
                     Caption = 'content', Locked = true;
                 }
@@ -49,11 +55,11 @@ page 20006 "APIV1 - Aut. Extension Upload"
     trigger OnModifyRecord(): Boolean
     var
         ExtensionManagement: Codeunit "Extension Management";
-        FileStream: InStream;
+        FileInStream: InStream;
     begin
         IF Content.HasValue() THEN begin
-            Content.CreateInStream(FileStream);
-            ExtensionManagement.UploadExtension(FileStream, GLOBALLANGUAGE());
+            Content.CreateInStream(FileInStream);
+            ExtensionManagement.UploadExtension(FileInStream, GLOBALLANGUAGE());
         end;
     end;
 

@@ -12,20 +12,20 @@ pageextension 1855 ItemListForecastExtension extends "Item List"
             part(ItemForecast; "Sales Forecast")
             {
                 ApplicationArea = Basic, Suite;
-                SubPageLink = "No." = Field ("No.");
+                SubPageLink = "No." = Field("No.");
                 Visible = "Has Sales Forecast";
             }
             part(ItemForecastNoChart; "Sales Forecast No Chart")
             {
                 ApplicationArea = Basic, Suite;
-                SubPageLink = "No." = Field ("No.");
+                SubPageLink = "No." = Field("No.");
                 Visible = not "Has Sales Forecast";
             }
         }
     }
     actions
     {
-        addafter(Display)
+        addafter(ApplyTemplate)
         {
             group(Forecast)
             {
@@ -35,6 +35,7 @@ pageextension 1855 ItemListForecastExtension extends "Item List"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Update Sales Forecast';
                     Image = Campaign;
+                    ToolTip = 'Specifies to update the sales forecast.';
 
                     trigger OnAction();
                     var

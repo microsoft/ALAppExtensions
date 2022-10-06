@@ -8,7 +8,7 @@
 /// </summary>
 table 9222 "Application User Settings"
 {
-    Access = Public;
+    Access = Internal;
     DataPerCompany = false;
     ReplicateData = false;
 

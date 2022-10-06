@@ -14,17 +14,6 @@ codeunit 31035 "C/V Posting Group Handler CZL"
         SubstCustPostingGroupCZL.SetRange("Customer Posting Group", Rec.Code);
         SubstCustPostingGroupCZL.DeleteAll();
     end;
-#if not CLEAN18
-
-    [Obsolete('This procedure will be removed after removing feature from Base Application.', '18.0')]
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Customer Posting Group", 'OnBeforeCheckOpenCustLedgEntries', '', false, false)]
-#pragma warning restore AL0432
-    local procedure DisableCheckOnBeforeCheckOpenCustLedgEntries(var Prepayment1: Boolean; var IsHandled: Boolean);
-    begin
-        IsHandled := true; // Disable BaseApp CheckOpenCustLedgEntries replaced by Core app CheckOpenCustLedgEntriesCZL.
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Customer Posting Group", 'OnAfterValidateEvent', 'Receivables Account', false, false)]
     local procedure CheckOpenCustLedgEntriesOnAfterValidateReceivablesAccount(var Rec: Record "Customer Posting Group")
@@ -61,17 +50,6 @@ codeunit 31035 "C/V Posting Group Handler CZL"
         SubstVendPostingGroupCZL.SetRange("Vendor Posting Group", Rec.Code);
         SubstVendPostingGroupCZL.DeleteAll();
     end;
-#if not CLEAN18
-
-    [Obsolete('This procedure will be removed after removing feature from Base Application.', '18.0')]
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Vendor Posting Group", 'OnBeforeCheckOpenVendLedgEntries', '', false, false)]
-#pragma warning restore AL0432
-    local procedure DisableCheckOnBeforeCheckOpenVendLedgEntries(var Prepayment1: Boolean; var IsHandled: Boolean);
-    begin
-        IsHandled := true; // Disable BaseApp CheckOpenVendLedgEntries replaced by Core app CheckOpenVendLedgEntriesCZL.
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Vendor Posting Group", 'OnAfterValidateEvent', 'Payables Account', false, false)]
     local procedure CheckOpenVendLedgEntriesOnAfterValidatePayablesAccount(var Rec: Record "Vendor Posting Group")
@@ -96,7 +74,6 @@ codeunit 31035 "C/V Posting Group Handler CZL"
         VendorLedgerEntry.Get(DtldCVLedgEntryBuffer."CV Ledger Entry No.");
         DtldVendLedgEntry."Vendor Posting Group CZL" := VendorLedgerEntry."Vendor Posting Group";
     end;
-#if CLEAN18
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Deferral Utilities", 'OnBeforePostedDeferralHeaderInsert', '', false, false)]
     local procedure OnBeforePostedDeferralHeaderInsert(var PostedDeferralHeader: Record "Posted Deferral Header"; GenJournalLine: Record "Gen. Journal Line")
@@ -157,5 +134,4 @@ codeunit 31035 "C/V Posting Group Handler CZL"
                 end;
         end;
     end;
-#endif
 }

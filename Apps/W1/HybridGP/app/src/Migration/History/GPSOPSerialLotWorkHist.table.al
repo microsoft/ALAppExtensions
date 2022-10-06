@@ -1,6 +1,6 @@
 table 4074 "GPSOPSerialLotWorkHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

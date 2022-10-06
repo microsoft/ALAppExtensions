@@ -739,7 +739,7 @@ codeunit 18629 "Test Gate Entry"
     end;
 
     [ModalPageHandler]
-    procedure NoSeriesPageHandler(var NoSeriesList: TestPage "No. Series List")
+    procedure NoSeriesPageHandler(var NoSeriesList: TestPage "No. Series")
     begin
         NoSeriesList.OK().Invoke();
     end;

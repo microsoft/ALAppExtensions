@@ -506,7 +506,6 @@ codeunit 134689 "Email Message Unit Test"
     var
         TempAccount: Record "Email Account" temporary;
         EmailRecipient: Record "Email Recipient";
-        Email: Codeunit Email;
         Message: Codeunit "Email Message";
         ConnectorMock: Codeunit "Connector Mock";
     begin
@@ -931,6 +930,312 @@ codeunit 134689 "Email Message Unit Test"
         Assert.AreEqual('Test subject', EmailMessage.GetSubject(), 'Wrong subject');
         Assert.AreEqual('Test body', EmailMessage.GetBody(), 'Wrong body');
         Assert.AreEqual(true, EmailMessage.IsBodyHTMLFormatted(), 'Body should be HMTL formatted');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [HandlerFunctions('CloseEmailEditorHandler')]
+    procedure TestEmailOnBeforeOpenEditorEventChangeSubject()
+    var
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        EmailEditor: TestPage "Email Editor";
+        LastModifiedNo: Integer;
+    begin
+        // [SCENARIO] Change the subject before the email editor opens and ensure the last modified no. has changed
+
+        // [GIVEN] Email message and subject will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifySubject(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        Assert.AreEqual('Current Subject', EmailMessage.GetSubject(), 'The subjects are not equal.');
+
+        // [WHEN] Open email editor
+        EmailEditor.Trap();
+        Email.OpenInEditor(EmailMessage);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email editor is opened, the subject and last modified no. should be different
+        Assert.AreNotEqual('Current Subject', EmailMessage.GetSubject(), 'The subjects are equal.');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [HandlerFunctions('CloseEmailEditorHandler')]
+    procedure TestEmailOnBeforeOpenEditorEventChangeBody()
+    var
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        EmailEditor: TestPage "Email Editor";
+        LastModifiedNo: Integer;
+    begin
+        // [SCENARIO] Change the body before the email editor opens and ensure the last modified no has changed
+
+        // [GIVEN] Email message and body will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifyBody(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        Assert.AreEqual('Current Body', EmailMessage.GetBody(), 'The bodies are not equal.');
+
+        // [WHEN] Open email editor
+        EmailEditor.Trap();
+        Email.OpenInEditor(EmailMessage);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email editor is opened, the body and last modified no should be different
+        Assert.AreNotEqual('Current Body', EmailMessage.GetBody(), 'The bodies are equal.');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [HandlerFunctions('CloseEmailEditorHandler')]
+    procedure TestEmailOnBeforeOpenEditorEventChangeRecipient()
+    var
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        EmailEditor: TestPage "Email Editor";
+        LastModifiedNo: Integer;
+        Recipients: List of [Text];
+    begin
+        // [SCENARIO] Change the recipient before the email editor opens and ensure the last modified no has changed
+
+        // [GIVEN] Email message and recipient will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifyRecipients(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+        Assert.AreEqual(1, Recipients.Count(), 'Recipient count is not 1.');
+        Assert.AreEqual('test@email.com', Recipients.Get(1), 'The recipient is not the same.');
+
+        // [WHEN] Open email editor
+        EmailEditor.Trap();
+        Email.OpenInEditor(EmailMessage);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email editor is opened, the recipient and last modified no should be different
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+        Assert.AreEqual(2, Recipients.Count(), 'Recipient count is not 2.');
+        Assert.AreEqual('test@newemail.com', Recipients.Get(2), 'The recipient is not the same.');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [HandlerFunctions('CloseEmailEditorHandler')]
+    procedure TestEmailOnBeforeOpenEditorEventChangeAttachment()
+    var
+        TempBlob: Codeunit "Temp Blob";
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: Codeunit "Email Message Events Mock";
+        EmailEditor: TestPage "Email Editor";
+        LastModifiedNo: Integer;
+        OutStream: OutStream;
+        InStream: InStream;
+        Count: Integer;
+        Name: Text;
+    begin
+        // [SCENARIO] Change the attachment before the email editor opens and ensure the last modified no has changed
+
+        // [GIVEN] Email message and attachment that will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifyAttachments(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+
+        TempBlob.CreateOutStream(OutStream);
+        OutStream.WriteText('Attachment');
+        TempBlob.CreateInStream(InStream);
+
+        EmailMessage.AddAttachment('test.txt', 'text/plain', InStream);
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        Assert.IsTrue(EmailMessage.Attachments_First(), 'Does not have an attachment');
+
+        // [WHEN] Open email editor
+        EmailEditor.Trap();
+        Email.OpenInEditor(EmailMessage);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email editor is opened, there should be two attachments and last modified no. should be different
+        EmailMessage.Attachments_First();
+        Count := 0;
+        repeat
+            Count += 1;
+            Name := EmailMessage.Attachments_GetName();
+        until EmailMessage.Attachments_Next() = 0;
+
+        Assert.AreEqual(2, Count, 'Number of attachments is not 2');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestEmailOnBeforeSendEventChangeSubject()
+    var
+        TempAccount: Record "Email Account" temporary;
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        ConnectorMock: Codeunit "Connector Mock";
+        LastModifiedNo: Integer;
+    begin
+        // [SCENARIO] Change the subject before the email is queued and ensure the last modified no has changed
+
+        // [GIVEN] Email message and subject will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifySubject(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        // [GIVEN] A connector is installed and an account is added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        Assert.AreEqual('Current Subject', EmailMessage.GetSubject(), 'The subjects are not equal.');
+
+        // [WHEN] Enqueue the email
+        Email.Enqueue(EmailMessage, TempAccount);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After the email is queued, the subject and last modified date time should be different
+        Assert.AreNotEqual('Current Subject', EmailMessage.GetSubject(), 'The subjects are equal.');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestEmailOnBeforeSendEventChangeBody()
+    var
+        TempAccount: Record "Email Account" temporary;
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        ConnectorMock: Codeunit "Connector Mock";
+        LastModifiedNo: Integer;
+    begin
+        // [SCENARIO] Change the body before the email is queued and ensure the last modified no has changed
+
+        // [GIVEN] Email message and body will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifyBody(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        // [GIVEN] A connector is installed and an account is added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        Assert.AreEqual('Current Body', EmailMessage.GetBody(), 'The bodies are not equal.');
+
+        // [WHEN] Enqueue the email
+        Email.Enqueue(EmailMessage, TempAccount);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email is queued, the body and last modified no should be different
+        Assert.AreNotEqual('Current Body', EmailMessage.GetBody(), 'The bodies are equal.');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestEmailOnBeforeSendEventChangeRecipient()
+    var
+        TempAccount: Record "Email Account" temporary;
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        ConnectorMock: Codeunit "Connector Mock";
+        LastModifiedNo: Integer;
+        Recipients: List of [Text];
+    begin
+        // [SCENARIO] Change the recipient before the email is queued and ensure the last modified no has changed
+
+        // [GIVEN] Email message and recipient will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifyRecipients(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        // [GIVEN] A connector is installed and an account is added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+        Assert.AreEqual(1, Recipients.Count(), 'Recipient count is not 1.');
+        Assert.AreEqual('test@email.com', Recipients.Get(1), 'The recipient is not the same.');
+
+        // [WHEN] Enqueue the email
+        Email.Enqueue(EmailMessage, TempAccount);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email is queued, the recipient and last modified no should be different
+        EmailMessage.GetRecipients(Enum::"Email Recipient Type"::"To", Recipients);
+        Assert.AreEqual(2, Recipients.Count(), 'Recipient count is not 2.');
+        Assert.AreEqual('test@newemail.com', Recipients.Get(2), 'The recipient is not the same.');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestEmailOnBeforeSendEventChangeAttachment()
+    var
+        TempAccount: Record "Email Account" temporary;
+        TempBlob: Codeunit "Temp Blob";
+        EmailMessage: Codeunit "Email Message";
+        EmailMessageEventsMock: codeunit "Email Message Events Mock";
+        ConnectorMock: Codeunit "Connector Mock";
+        LastModifiedNo: Integer;
+        OutStream: OutStream;
+        InStream: InStream;
+        Count: Integer;
+        Name: Text;
+    begin
+        // [SCENARIO] Change the attachment before the email is queued and ensure the last modified no has changed
+
+        // [GIVEN] Email message and attachment that will be modified by event
+        BindSubscription(EmailMessageEventsMock);
+        EmailMessageEventsMock.SetModifyAttachments(true);
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+
+        TempBlob.CreateOutStream(OutStream);
+        OutStream.WriteText('Attachment');
+        TempBlob.CreateInStream(InStream);
+
+        EmailMessage.AddAttachment('test.txt', 'text/plain', InStream);
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        // [GIVEN] A connector is installed and an account is added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        Assert.IsTrue(EmailMessage.Attachments_First(), 'Does not have an attachment');
+
+        // [WHEN] Enqueue the email
+        Email.Enqueue(EmailMessage, TempAccount);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [THEN] After email is queued, there should be two attachments and last modified no should be different
+        EmailMessage.Attachments_First();
+        Count := 0;
+        repeat
+            Count += 1;
+            Name := EmailMessage.Attachments_GetName();
+        until EmailMessage.Attachments_Next() = 0;
+
+        Assert.AreEqual(2, Count, 'Number of attachments is not 2');
+        Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
+        UnbindSubscription(EmailMessageEventsMock);
     end;
 
     [StrMenuHandler]

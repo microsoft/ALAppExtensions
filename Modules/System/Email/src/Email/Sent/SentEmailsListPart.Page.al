@@ -82,9 +82,6 @@ page 8888 "Sent Emails List Part"
                 ToolTip = 'Edit and send the email.';
                 Image = Email;
                 Enabled = not NoSentEmails;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
 
                 trigger OnAction()
                 begin
@@ -98,9 +95,6 @@ page 8888 "Sent Emails List Part"
                 Caption = 'Refresh';
                 ToolTip = 'Refresh';
                 Image = Refresh;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
 
                 trigger OnAction()
                 begin
@@ -112,19 +106,12 @@ page 8888 "Sent Emails List Part"
         }
     }
 
-    trigger OnAfterGetCurrRecord()
-    begin
-        HasSourceRecord := EmailImpl.HasSourceRecord(Rec."Message Id");
-    end;
-
     trigger OnDeleteRecord(): Boolean
     var
         SentEmail: Record "Sent Email";
     begin
         if SentEmail.Get(Rec.Id) then
             SentEmail.Delete(true);
-
-        HasSourceRecord := false;
     end;
 
     local procedure ShowAccountInformation()
@@ -176,7 +163,6 @@ page 8888 "Sent Emails List Part"
     /// <param name="RecordVariant">Source record.</param>
     procedure SetRelatedRecord(RecordVariant: Variant)
     var
-        EmailImpl: Codeunit "Email Impl";
         RecordRef: RecordRef;
     begin
         if EmailImpl.GetRecordRef(RecordVariant, RecordRef) then
@@ -190,7 +176,6 @@ page 8888 "Sent Emails List Part"
         EmailAccountId, SourceSystemID : Guid;
         SourceTableID: Integer;
         [InDataSet]
-        HasSourceRecord: Boolean;
         NoSentEmails: Boolean;
         EmailConnectorHasBeenUninstalledMsg: Label 'The email extension that was used to send this email has been uninstalled. To view information about the email account, you must reinstall the extension.';
 }

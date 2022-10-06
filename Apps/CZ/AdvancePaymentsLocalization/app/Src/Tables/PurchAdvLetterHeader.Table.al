@@ -81,10 +81,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 "Tax Registration No." := Vendor."Tax Registration No. CZL";
                 "Responsibility Center" := UserSetupManagement.GetRespCenter(1, Vendor."Responsibility Center");
 
-                CreateDim(
-                  Database::Vendor, "Pay-to Vendor No.",
-                  Database::"Salesperson/Purchaser", "Purchaser Code",
-                  Database::"Responsibility Center", "Responsibility Center");
+                CreateDimFromDefaultDim(Rec.FieldNo("Pay-to Vendor No."));
 
                 SetPurchaserCode(Vendor."Purchaser Code", "Purchaser Code");
 
@@ -302,10 +299,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
 
             trigger OnValidate()
             begin
-                CreateDim(
-                  Database::"Salesperson/Purchaser", "Purchaser Code",
-                  Database::Customer, "Pay-to Vendor No.",
-                  Database::"Responsibility Center", "Responsibility Center");
+                CreateDimFromDefaultDim(Rec.FieldNo("Purchaser Code"));
             end;
         }
         field(25; "Shortcut Dimension 1 Code"; Code[20])
@@ -587,10 +581,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                       IdentSetUpErr,
                       ResponsibilityCenter.TableCaption, UserSetupManagement.GetSalesFilter());
 
-                CreateDim(
-                  Database::"Responsibility Center", "Responsibility Center",
-                  Database::Vendor, "Pay-to Vendor No.",
-                  Database::"Salesperson/Purchaser", "Purchaser Code");
+                CreateDimFromDefaultDim(Rec.FieldNo("Responsibility Center"));
 
                 if xRec."Responsibility Center" <> "Responsibility Center" then
                     RecreateLines(FieldCaption("Responsibility Center"));
@@ -626,6 +617,12 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             DecimalPlaces = 0 : 15;
             Editable = false;
             MinValue = 0;
+
+            trigger OnValidate()
+            begin
+                if "Currency Factor" <> xRec."Currency Factor" then
+                    UpdateLinesByFieldNo(FieldNo("Currency Factor"));
+            end;
         }
         field(75; "VAT Country/Region Code"; Code[10])
         {
@@ -962,6 +959,9 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         exit((not HasPayToAddress()) and PayToVendor.HasAddress());
     end;
 
+#if not CLEAN21
+#pragma warning disable AL0432
+    [Obsolete('Replaced by CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])', '21.0')]
     procedure CreateDim(Type1: Integer; No1: Code[20]; Type2: Integer; No2: Code[20]; Type3: Integer; No3: Code[20])
     var
         SourceCodeSetup: Record "Source Code Setup";
@@ -990,6 +990,47 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         "Dimension Set ID" :=
           DimensionManagement.GetRecDefaultDimID(
             Rec, CurrFieldNo, TableID, No, SourceCodeSetup.Purchases, "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+
+        if (OldDimSetID <> "Dimension Set ID") and LinesExist() then
+            Modify();
+    end;
+
+#pragma warning restore AL0432
+#endif
+    procedure CreateDimFromDefaultDim(FieldNo: Integer)
+    var
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
+    begin
+        InitDefaultDimensionSources(DefaultDimSource, FieldNo);
+        CreateDim(DefaultDimSource);
+    end;
+
+    local procedure InitDefaultDimensionSources(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
+    begin
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::Vendor, Rec."Pay-to Vendor No.", FieldNo = Rec.FieldNo("Pay-to Vendor No."));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Salesperson/Purchaser", Rec."Purchaser Code", FieldNo = Rec.FieldNo("Purchaser Code"));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Responsibility Center", Rec."Responsibility Center", FieldNo = Rec.FieldNo("Responsibility Center"));
+
+        OnAfterInitDefaultDimensionSources(Rec, DefaultDimSource);
+    end;
+
+    procedure CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        OldDimSetID: Integer;
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCreateDim(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        SourceCodeSetup.Get();
+        OldDimSetID := "Dimension Set ID";
+        "Dimension Set ID" := DimensionManagement.GetRecDefaultDimID(Rec, CurrFieldNo, DefaultDimSource, SourceCodeSetup.Purchases,
+                                "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+
+        OnAfterCreateDim(Rec, xRec, CurrFieldNo, OldDimSetID);
 
         if (OldDimSetID <> "Dimension Set ID") and LinesExist() then
             Modify();
@@ -1182,6 +1223,53 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             TempPurchAdvLetterLineCZZ.DeleteAll();
         end else
             Error(RecreatePurchLinesCancelErr, ChangedFieldName);
+    end;
+
+    procedure UpdateLinesByFieldNo(ChangedFieldNo: Integer)
+    var
+        PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
+        "Field": Record "Field";
+        IsHandled: Boolean;
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        if IsNullGuid(Rec.SystemId) then
+            exit;
+
+        IsHandled := false;
+        OnBeforeUpdateLinesByFieldNo(Rec, ChangedFieldNo, xRec, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not LinesExist() then
+            exit;
+
+        if not Field.Get(Database::"Sales Adv. Letter Header CZZ", ChangedFieldNo) then
+            Field.Get(Database::"Sales Adv. Letter Line CZZ", ChangedFieldNo);
+
+        PurchAdvLetterLineCZZ.LockTable();
+        if not Rec.Modify() then
+            exit;
+
+        PurchAdvLetterLineCZZ.Reset();
+        PurchAdvLetterLineCZZ.SetRange("Document No.", "No.");
+        if PurchAdvLetterLineCZZ.FindSet() then
+            repeat
+                IsHandled := false;
+                OnBeforeLineByChangedFieldNo(Rec, PurchAdvLetterLineCZZ, ChangedFieldNo, xRec, IsHandled);
+                if not IsHandled then
+                    case ChangedFieldNo of
+                        FieldNo("Currency Factor"):
+                            PurchAdvLetterLineCZZ.Validate("Amount Including VAT");
+                        else
+                            OnUpdateLineByChangedFieldName(Rec, PurchAdvLetterLineCZZ, Field.FieldName, ChangedFieldNo);
+                    end;
+                OnUpdateLinesByFieldNoOnBeforeLineModify(PurchAdvLetterLineCZZ, ChangedFieldNo, CurrFieldNo);
+                PurchAdvLetterLineCZZ.Modify(true);
+            until PurchAdvLetterLineCZZ.Next() = 0;
+
+        OnAfterUpdateLinesByFieldNo(Rec, xRec, ChangedFieldNo);
     end;
 
     procedure LinesExist(): Boolean
@@ -1458,10 +1546,17 @@ table 31008 "Purch. Adv. Letter Header CZZ"
     end;
 
     [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateDim(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CurrentFieldNo: Integer; OldDimSetID: Integer)
+    begin
+    end;
+
+#if not CLEAN21
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateDimTableIDs(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CallingFieldNo: Integer; var TableID: array[10] of Integer; var No: array[10] of Code[20])
     begin
     end;
 
+#endif
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdatePayToCont(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; Vendor: Record Vendor; Contact: Record Contact)
     begin
@@ -1537,4 +1632,33 @@ table 31008 "Purch. Adv. Letter Header CZZ"
     begin
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitDefaultDimensionSources(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateLinesByFieldNo(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; ChangedFieldNo: Integer; xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeLineByChangedFieldNo(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; ChangedFieldNo: Integer; xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdateLineByChangedFieldName(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; ChangedFieldName: Text[100]; ChangedFieldNo: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdateLinesByFieldNoOnBeforeLineModify(var PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; ChangedFieldNo: Integer; CurrentFieldNo: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateLinesByFieldNo(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; ChangedFieldNo: Integer)
+    begin
+    end;
 }

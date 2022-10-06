@@ -1,6 +1,6 @@
 table 40103 "GP POPPOLine"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields
@@ -186,13 +186,13 @@ table 40103 "GP POPPOLine"
         field(36; DECPLCUR; Option)
         {
             Caption = 'DECPLCUR';
-            OptionMembers = ,"0","1","2","3","4","5";
+            OptionMembers = ,"0","1","2","3","4","5","9";
             DataClassification = CustomerContent;
         }
         field(37; DECPLQTY; Option)
         {
             Caption = 'DECPLQTY';
-            OptionMembers = ,"0","1","2","3","4","5";
+            OptionMembers = ,"0","1","2","3","4","5","9";
             DataClassification = CustomerContent;
         }
         field(38; ITMTRKOP; Option)
@@ -293,7 +293,7 @@ table 40103 "GP POPPOLine"
         field(56; ODECPLCU; Option)
         {
             Caption = 'ODECPLCU';
-            OptionMembers = ,"0","1","2","3","4","5";
+            OptionMembers = ,"0","1","2","3","4","5","9";
             DataClassification = CustomerContent;
         }
         field(57; Capital_Item; Boolean)

@@ -49,8 +49,6 @@ table 4044 "GP Company Migration Settings"
             DataClassification = SystemMetadata;
 
             trigger OnValidate()
-            var
-                GPSegmentNames: Record "GP Segment Name";
             begin
                 if ("Global Dimension 1" <> '') and ("Global Dimension 1" = "Global Dimension 2") then
                     Error(GlobalDimensionsCannotBeTheSameErr);

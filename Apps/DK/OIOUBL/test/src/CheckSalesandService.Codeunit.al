@@ -20,8 +20,10 @@ codeunit 148050 "OIOUBL-Check Sales and Service"
         LibraryRandom: Codeunit "Library - Random";
         Assert: Codeunit Assert;
         NoSeriesManagement: Codeunit NoSeriesManagement;
+#pragma warning disable AA0470
         NegSalesLineDiscountErr: Label 'Line Discount % cannot be negative in Sales Line Document Type=''%1'',Document No.=''%2'',Line No.=''%3''.';
         NegServiceLineDiscountErr: Label 'Line Discount % cannot be negative in Service Line Document Type=''%1'',Document No.=''%2'',Line No.=''%3''.';
+#pragma warning restore AA0470
         NegativeDiscountAmountErr: Label 'The total Line Discount Amount cannot be negative.';
         NegativeAmountErr: Label 'The total Line Amount cannot be negative.';
         GLEntryVerifyErr: Label 'The GLEntry does not exist.';

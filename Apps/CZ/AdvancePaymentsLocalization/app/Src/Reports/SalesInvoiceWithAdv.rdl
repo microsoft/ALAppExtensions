@@ -5097,7 +5097,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!VATClauseDescription.Value &amp; " " &amp; Fields!VATClauseDescription2.Value</Value>
+                                                    <Value>=Fields!VATClauseDescription.Value</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                     </Style>
@@ -5955,7 +5955,6 @@ Cstr(Fields!PageLbl.Value)</Value>
                                                     <PaddingBottom>2pt</PaddingBottom>
                                                   </Style>
                                                 </Textbox>
-                                                <rd:Selected>true</rd:Selected>
                                               </CellContents>
                                             </TablixHeader>
                                             <TablixMembers>
@@ -6682,6 +6681,18 @@ End Function</Code>
         <Field Name="DisplayAdditionalFeeNote">
           <DataField>DisplayAdditionalFeeNote</DataField>
         </Field>
+        <Field Name="GreetingLbl">
+          <DataField>GreetingLbl</DataField>
+        </Field>
+        <Field Name="BodyLbl">
+          <DataField>BodyLbl</DataField>
+        </Field>
+        <Field Name="ClosingLbl">
+          <DataField>ClosingLbl</DataField>
+        </Field>
+        <Field Name="DocumentNoLbl">
+          <DataField>DocumentNoLbl</DataField>
+        </Field>
         <Field Name="No_SalesInvoiceHeader">
           <DataField>No_SalesInvoiceHeader</DataField>
         </Field>
@@ -6801,6 +6812,12 @@ End Function</Code>
         </Field>
         <Field Name="PrepaymentAmt_SalesInvoiceHeaderFormat">
           <DataField>PrepaymentAmt_SalesInvoiceHeaderFormat</DataField>
+        </Field>
+        <Field Name="TotalAfterPrepayed_SalesInvoiceHeader">
+          <DataField>TotalAfterPrepayed_SalesInvoiceHeader</DataField>
+        </Field>
+        <Field Name="TotalAfterPrepayed_SalesInvoiceHeaderFormat">
+          <DataField>TotalAfterPrepayed_SalesInvoiceHeaderFormat</DataField>
         </Field>
         <Field Name="CalculatedExchRate">
           <DataField>CalculatedExchRate</DataField>
@@ -6996,9 +7013,6 @@ End Function</Code>
         </Field>
         <Field Name="VATClauseDescription">
           <DataField>VATClauseDescription</DataField>
-        </Field>
-        <Field Name="VATClauseDescription2">
-          <DataField>VATClauseDescription2</DataField>
         </Field>
         <Field Name="LineFeeCaptionLbl">
           <DataField>LineFeeCaptionLbl</DataField>

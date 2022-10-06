@@ -36,7 +36,7 @@ table 11733 "Cash Document Line CZP"
 
             trigger OnValidate()
             begin
-#if not CLEAN18
+#if not CLEAN19
                 if "Account Type" <> xRec."Account Type" then
                     TestField("Advance Letter Link Code", '');
 #endif
@@ -76,7 +76,7 @@ table 11733 "Cash Document Line CZP"
                 CashDeskCZP: Record "Bank Account";
                 Employee: Record Employee;
             begin
-#if not CLEAN18
+#if not CLEAN19
                 if "Account No." <> xRec."Account No." then
                     TestField("Advance Letter Link Code", '');
 #endif
@@ -186,11 +186,7 @@ table 11733 "Cash Document Line CZP"
                 if not ("Account Type" in ["Account Type"::" ", "Account Type"::"Fixed Asset"]) then
                     Validate("VAT Prod. Posting Group");
 
-                CreateDim(
-                  TypeToTableID("Account Type".AsInteger()), "Account No.",
-                  Database::"Salesperson/Purchaser", "Salespers./Purch. Code",
-                  Database::"Responsibility Center", "Responsibility Center",
-                  Database::"Cash Desk Event CZP", "Cash Desk Event");
+                CreateDimFromDefaultDim(Rec.FieldNo("Account No."));
             end;
         }
         field(7; "External Document No."; Code[35])
@@ -361,23 +357,12 @@ table 11733 "Cash Document Line CZP"
 
                     case "Account Type" of
                         "Account Type"::Customer:
-                            begin
-                                GenJournalLine.GetAppliedCustLedgerEntry(CustLedgEntry);
-                                CustLedgEntry.CalcFields("Remaining Amount");
-                                GenJournalLine.Validate(Amount, GetAmtToApplyCust(CustLedgEntry, GenJournalLine));
-                            end;
+                            ///GenJournalLine.Validate(Amount, GetAmtToApplyCust(CustLedgEntry, GenJournalLine));
+                            GenJournalLine.Validate(Amount, GetAmtToApplyCust(GenJournalLine));
                         "Account Type"::Vendor:
-                            begin
-                                GenJournalLine.GetAppliedVendLedgerEntry(VendorLedgEntry);
-                                VendorLedgEntry.CalcFields("Remaining Amount");
-                                GenJournalLine.Validate(Amount, GetAmtToApplyVend(VendorLedgEntry, GenJournalLine));
-                            end;
+                            GenJournalLine.Validate(Amount, GetAmtToApplyVend(GenJournalLine));
                         "Account Type"::Employee:
-                            begin
-                                GenJournalLine.GetAppliedEmplLedgerEntry(EmployeeLedgEntry);
-                                EmployeeLedgEntry.CalcFields("Remaining Amount");
-                                GenJournalLine.Validate(Amount, GetAmtToApplyEmpl(EmployeeLedgEntry));
-                            end;
+                            GenJournalLine.Validate(Amount, GetAmtToApplyEmpl(GenJournalLine));
                     end;
                     Validate(Amount, SignAmount() * GenJournalLine.Amount);
                     "Applies-To Doc. Type" := GenJournalLine."Applies-to Doc. Type";
@@ -409,7 +394,7 @@ table 11733 "Cash Document Line CZP"
 
             trigger OnValidate()
             begin
-#if not CLEAN18
+#if not CLEAN19
                 if Amount <> xRec.Amount then
                     TestField("Advance Letter Link Code", '');
 #endif
@@ -499,7 +484,7 @@ table 11733 "Cash Document Line CZP"
 
             trigger OnValidate()
             begin
-#if not CLEAN18
+#if not CLEAN19
                 if "Cash Desk Event" <> xRec."Cash Desk Event" then begin
                     TestField("Advance Letter Link Code", '');
 #else
@@ -536,13 +521,10 @@ table 11733 "Cash Document Line CZP"
                         Validate("Gen. Document Type", CashDeskEventCZP."Gen. Document Type".AsInteger());
                         "Currency Code" := CashDocumentHeaderCZP."Currency Code";
                         Validate("Salespers./Purch. Code", CashDocumentHeaderCZP."Salespers./Purch. Code");
-                        CreateDim(
-                          TypeToTableID("Account Type".AsInteger()), "Account No.",
-                          Database::"Salesperson/Purchaser", "Salespers./Purch. Code",
-                          Database::"Responsibility Center", "Responsibility Center",
-                          Database::"Cash Desk Event CZP", "Cash Desk Event");
+
+                        CreateDimFromDefaultDim(Rec.FieldNo("Cash Desk Event"));
                     end;
-#if not CLEAN18
+#if not CLEAN19
                 end;
 #endif
             end;
@@ -555,11 +537,7 @@ table 11733 "Cash Document Line CZP"
 
             trigger OnValidate()
             begin
-                CreateDim(
-                  TypeToTableID("Account Type".AsInteger()), "Account No.",
-                  Database::"Salesperson/Purchaser", "Salespers./Purch. Code",
-                  Database::"Responsibility Center", "Responsibility Center",
-                  Database::"Cash Desk Event CZP", "Cash Desk Event");
+                CreateDimFromDefaultDim(Rec.FieldNo("Salespers./Purch. Code"));
             end;
         }
         field(43; "Reason Code"; Code[10])
@@ -874,11 +852,7 @@ table 11733 "Cash Document Line CZP"
 
             trigger OnValidate()
             begin
-                CreateDim(
-                  TypeToTableID("Account Type".AsInteger()), "Account No.",
-                  Database::"Salesperson/Purchaser", "Salespers./Purch. Code",
-                  Database::"Responsibility Center", "Responsibility Center",
-                  Database::"Cash Desk Event CZP", "Cash Desk Event");
+                CreateDimFromDefaultDim(Rec.FieldNo("Responsibility Center"));
             end;
         }
         field(101; "EET Transaction"; Boolean)
@@ -908,7 +882,7 @@ table 11733 "Cash Document Line CZP"
         {
             Caption = 'Advance Letter Link Code';
             DataClassification = CustomerContent;
-#if CLEAN18
+#if CLEAN19
             ObsoleteState = Removed;
 #else
             ObsoleteState = Pending;
@@ -952,7 +926,7 @@ table 11733 "Cash Document Line CZP"
         Error(RenameErr, TableCaption);
     end;
 
-#if not CLEAN18
+#if not CLEAN19
     trigger OnDelete()
     var
         PrepaymentLinksManagement: Codeunit "Prepayment Links Management";
@@ -1003,6 +977,8 @@ table 11733 "Cash Document Line CZP"
         DimensionManagement.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
     end;
 
+#if not CLEAN21
+#pragma warning disable AL0432
     procedure CreateDim(Type1: Integer; No1: Code[20]; Type2: Integer; No2: Code[20]; Type3: Integer; No3: Code[20]; Type4: Integer; No4: Code[20])
     var
         SourceCodeSetup: Record "Source Code Setup";
@@ -1027,6 +1003,48 @@ table 11733 "Cash Document Line CZP"
             "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code",
             CashDocumentHeaderCZP."Dimension Set ID", TableID[1]);
         DimensionManagement.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
+    end;
+#pragma warning disable AL0432
+#endif
+
+    procedure CreateDimFromDefaultDim(FieldNo: Integer)
+    var
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
+    begin
+        InitDefaultDimensionSources(DefaultDimSource, FieldNo);
+        CreateDim(DefaultDimSource);
+    end;
+
+    local procedure InitDefaultDimensionSources(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
+    begin
+        DimensionManagement.AddDimSource(DefaultDimSource, TypeToTableID("Account Type".AsInteger()), Rec."Account No.", FieldNo = Rec.FieldNo("Account No."));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Salesperson/Purchaser", Rec."Salespers./Purch. Code", FieldNo = Rec.FieldNo("Salespers./Purch. Code"));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Responsibility Center", Rec."Responsibility Center", FieldNo = Rec.FieldNo("Responsibility Center"));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::"Cash Desk Event CZP", Rec."Cash Desk Event", FieldNo = Rec.FieldNo("Cash Desk Event"));
+
+        OnAfterInitDefaultDimensionSources(Rec, DefaultDimSource);
+    end;
+
+    procedure CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        OldDimSetID: Integer;
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCreateDim(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        SourceCodeSetup.Get();
+        OldDimSetID := "Dimension Set ID";
+        "Dimension Set ID" := DimensionManagement.GetRecDefaultDimID(Rec, CurrFieldNo, DefaultDimSource, SourceCodeSetup."Cash Desk CZP",
+                                "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+
+        OnAfterCreateDim(Rec, xRec, CurrFieldNo, OldDimSetID);
+
+        if (OldDimSetID <> "Dimension Set ID") then
+            Modify();
     end;
 
     procedure ValidateShortcutDimCode(FieldNumber: Integer; var ShortcutDimCode: Code[20])
@@ -1137,6 +1155,28 @@ table 11733 "Cash Document Line CZP"
     var
         PaymentToleranceManagement: Codeunit "Payment Tolerance Management";
     begin
+        CustLedgerEntry.CalcFields("Remaining Amount");
+        if PaymentToleranceManagement.CheckCalcPmtDiscGenJnlCust(GenJournalLine, CustLedgerEntry, 0, false) then
+            if (CustLedgerEntry."Amount to Apply" = 0) or
+               (Abs(CustLedgerEntry."Amount to Apply") >= Abs(CustLedgerEntry."Remaining Amount" - CustLedgerEntry."Remaining Pmt. Disc. Possible"))
+            then
+                exit(-CustLedgerEntry."Remaining Amount" + CustLedgerEntry."Remaining Pmt. Disc. Possible");
+        if CustLedgerEntry."Amount to Apply" = 0 then
+            exit(-CustLedgerEntry."Remaining Amount");
+        exit(-CustLedgerEntry."Amount to Apply");
+    end;
+
+    local procedure GetAmtToApplyCust(GenJournalLine: Record "Gen. Journal Line"): Decimal
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        PaymentToleranceManagement: Codeunit "Payment Tolerance Management";
+    begin
+        CustLedgerEntry.SetRange("Document No.", GenJournalLine."Applies-to Doc. No.");
+        CustLedgerEntry.SetRange(Open, true);
+        if not CustLedgerEntry.FindFirst() then
+            exit(0);
+
+        CustLedgerEntry.CalcFields("Remaining Amount");
         if PaymentToleranceManagement.CheckCalcPmtDiscGenJnlCust(GenJournalLine, CustLedgerEntry, 0, false) then
             if (CustLedgerEntry."Amount to Apply" = 0) or
                (Abs(CustLedgerEntry."Amount to Apply") >= Abs(CustLedgerEntry."Remaining Amount" - CustLedgerEntry."Remaining Pmt. Disc. Possible"))
@@ -1151,6 +1191,28 @@ table 11733 "Cash Document Line CZP"
     var
         PaymentToleranceManagement: Codeunit "Payment Tolerance Management";
     begin
+        VendorLedgerEntry.CalcFields("Remaining Amount");
+        if PaymentToleranceManagement.CheckCalcPmtDiscGenJnlVend(GenJournalLine, VendorLedgerEntry, 0, false) then
+            if (VendorLedgerEntry."Amount to Apply" = 0) or
+               (Abs(VendorLedgerEntry."Amount to Apply") >= Abs(VendorLedgerEntry."Remaining Amount" - VendorLedgerEntry."Remaining Pmt. Disc. Possible"))
+            then
+                exit(-VendorLedgerEntry."Remaining Amount" + VendorLedgerEntry."Remaining Pmt. Disc. Possible");
+        if VendorLedgerEntry."Amount to Apply" = 0 then
+            exit(-VendorLedgerEntry."Remaining Amount");
+        exit(-VendorLedgerEntry."Amount to Apply");
+    end;
+
+    local procedure GetAmtToApplyVend(GenJournalLine: Record "Gen. Journal Line"): Decimal
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        PaymentToleranceManagement: Codeunit "Payment Tolerance Management";
+    begin
+        VendorLedgerEntry.SetRange("Document No.", GenJournalLine."Applies-to Doc. No.");
+        VendorLedgerEntry.SetRange(Open, true);
+        if not VendorLedgerEntry.FindFirst() then
+            exit(0);
+
+        VendorLedgerEntry.CalcFields("Remaining Amount");
         if PaymentToleranceManagement.CheckCalcPmtDiscGenJnlVend(GenJournalLine, VendorLedgerEntry, 0, false) then
             if (VendorLedgerEntry."Amount to Apply" = 0) or
                (Abs(VendorLedgerEntry."Amount to Apply") >= Abs(VendorLedgerEntry."Remaining Amount" - VendorLedgerEntry."Remaining Pmt. Disc. Possible"))
@@ -1163,6 +1225,22 @@ table 11733 "Cash Document Line CZP"
 
     local procedure GetAmtToApplyEmpl(EmployeeLedgerEntry: Record "Employee Ledger Entry"): Decimal
     begin
+        EmployeeLedgerEntry.CalcFields("Remaining Amount");
+        if EmployeeLedgerEntry."Amount to Apply" = 0 then
+            exit(-EmployeeLedgerEntry."Remaining Amount");
+        exit(-EmployeeLedgerEntry."Amount to Apply");
+    end;
+
+    local procedure GetAmtToApplyEmpl(GenJournalLine: Record "Gen. Journal Line"): Decimal
+    var
+        EmployeeLedgerEntry: Record "Employee Ledger Entry";
+    begin
+        EmployeeLedgerEntry.SetRange("Document No.", GenJournalLine."Applies-to Doc. No.");
+        EmployeeLedgerEntry.SetRange(Open, true);
+        if not EmployeeLedgerEntry.FindFirst() then
+            exit(0);
+
+        EmployeeLedgerEntry.CalcFields("Remaining Amount");
         if EmployeeLedgerEntry."Amount to Apply" = 0 then
             exit(-EmployeeLedgerEntry."Remaining Amount");
         exit(-EmployeeLedgerEntry."Amount to Apply");
@@ -1306,10 +1384,8 @@ table 11733 "Cash Document Line CZP"
                     GenJnlApply.CheckAgainstApplnCurrency(
                       GenJournalLine."Currency Code", CustLedgerEntry."Currency Code",
                       GenJournalLine."Account Type"::Customer, true);
-            if Amount = 0 then begin
-                CustLedgerEntry.CalcFields("Remaining Amount");
+            if Amount = 0 then
                 GenJournalLine.Validate(Amount, GetAmtToApplyCust(CustLedgerEntry, GenJournalLine));
-            end;
             if AccNo = '' then
                 GenJournalLine.Validate("Account No.", CustLedgerEntry."Customer No.");
             GenJournalLine."Applies-to Doc. Type" := CustLedgerEntry."Document Type";
@@ -1346,10 +1422,8 @@ table 11733 "Cash Document Line CZP"
                     GenJnlApply.CheckAgainstApplnCurrency(
                       GenJournalLine."Currency Code", VendorLedgerEntry."Currency Code",
                       GenJournalLine."Account Type"::Vendor, true);
-            if Amount = 0 then begin
-                VendorLedgerEntry.CalcFields("Remaining Amount");
+            if Amount = 0 then
                 GenJournalLine.Validate(Amount, GetAmtToApplyVend(VendorLedgerEntry, GenJournalLine));
-            end;
             if AccNo = '' then
                 GenJournalLine.Validate("Account No.", VendorLedgerEntry."Vendor No.");
             GenJournalLine."Applies-to Doc. Type" := VendorLedgerEntry."Document Type";
@@ -1386,10 +1460,8 @@ table 11733 "Cash Document Line CZP"
                     GenJnlApply.CheckAgainstApplnCurrency(
                       GenJournalLine."Currency Code", EmployeeLedgerEntry."Currency Code",
                       GenJournalLine."Account Type"::Employee, true);
-            if Amount = 0 then begin
-                EmployeeLedgerEntry.CalcFields("Remaining Amount");
+            if Amount = 0 then
                 GenJournalLine.Validate(Amount, GetAmtToApplyEmpl(EmployeeLedgerEntry));
-            end;
             if AccNo = '' then
                 GenJournalLine.Validate("Account No.", EmployeeLedgerEntry."Employee No.");
             GenJournalLine."Applies-to Doc. Type" := EmployeeLedgerEntry."Document Type";
@@ -1521,7 +1593,7 @@ table 11733 "Cash Document Line CZP"
             GetCashDeskEventCZP();
             EETTransaction := CashDeskEventCZP."EET Transaction";
         end else
-#if not CLEAN18
+#if not CLEAN19
             EETTransaction := IsInvoicePayment() or IsCreditMemoRefund() or IsAdvancePayment() or IsAdvanceRefund();
 #else
             EETTransaction := IsInvoicePayment() or IsCreditMemoRefund();
@@ -1564,7 +1636,7 @@ table 11733 "Cash Document Line CZP"
             ("Applies-To Doc. No." <> ''));
     end;
 
-#if not CLEAN18
+#if not CLEAN19
     internal procedure IsAdvancePayment(): Boolean
     begin
         exit(
@@ -1794,6 +1866,21 @@ table 11733 "Cash Document Line CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeFindRelatedAmoutToApply(CashDocumentLineCZP: Record "Cash Document Line CZP"; var AppliesToAdvanceLetterNo: Code[20]);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCreateDim(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateDim(var CashDocumentLineCZP: Record "Cash Document Line CZP"; xCashDocumentLineCZP: Record "Cash Document Line CZP"; CurrentFieldNo: Integer; OldDimSetID: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitDefaultDimensionSources(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
     begin
     end;
 }

@@ -38,6 +38,7 @@ Codeunit 148029 TestFIK
         TestFieldPaymentMethodErr: Label '%1 must not be %2 in %3: %4=%5', Locked = true;
         PaddingErr: Label 'Field value is not padded correctly.', Locked = true;
         LengthErr: Label 'Padded value does not have correct length.', Locked = true;
+        BankCreditorNoLbl: Label '12345678';
 
     trigger OnRun();
     begin
@@ -1467,6 +1468,37 @@ Codeunit 148029 TestFIK
         // [THEN] No error and the invoice is posted
         PurchaseInvoice.Get(PurchaseInvoiceNo);
 
+    end;
+
+    [Test]
+    procedure VerifyFIK71CodeValidForOCR()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        CompanyInformation: Record "Company Information";
+        FIKManagement: Codeunit FIKManagement;
+        PostedSalesDocNo: Code[20];
+        FIKCode: Text;
+    begin
+        // [SCENARIO 441195] A < is missing at the end of the FIK-Code printed on the Posted Sales Invoice in the Danish version]
+
+        Initialize();
+
+        // [GIVEN] Update Bank Creditor No in Company Information.
+        CompanyInformation.GET();
+        CompanyInformation.BankCreditorNo := BankCreditorNoLbl;
+        CompanyInformation.MODIFY();
+
+        // [GIVEN] Create Sales Invoice
+        LibrarySales.CreateSalesInvoice(SalesHeader);
+
+        // [THEN] Post the Sales Invoice
+        PostedSalesDocNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [VERIFY] Check the FIK Code will contain '<' at the end of the string
+        SalesInvoiceHeader."No." := PostedSalesDocNo;
+        FIKCode := FIKManagement.GetFIK71String(SalesInvoiceHeader."No.");
+        Assert.AreEqual('<', CopyStr(FIKCode, StrLen(FIKCode), 1), ControlCypherErr);
     end;
 
     LOCAL PROCEDURE Initialize();

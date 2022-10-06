@@ -67,7 +67,7 @@ codeunit 11729 "Cash Document-Post CZP"
 
         PostHeader();
         PostLines();
-#if not CLEAN18
+#if not CLEAN19
         PostAdvances();
 #endif
 
@@ -278,7 +278,7 @@ codeunit 11729 "Cash Document-Post CZP"
         TempGenJournalLine."Dimension Set ID" := InitCashDocumentLineCZP."Dimension Set ID";
         TempGenJournalLine."Source Code" := SourceCodeSetup."Cash Desk CZP";
         TempGenJournalLine."Reason Code" := InitCashDocumentLineCZP."Reason Code";
-#if not CLEAN18
+#if not CLEAN19
         TempGenJournalLine.Validate(Prepayment, InitCashDocumentLineCZP."Advance Letter Link Code" <> '');
         TempGenJournalLine."Advance Letter Link Code" := InitCashDocumentLineCZP."Advance Letter Link Code";
 #endif
@@ -359,7 +359,7 @@ codeunit 11729 "Cash Document-Post CZP"
         GenJnlPostLine := NewGenJnlPostLine;
     end;
 
-#if not CLEAN18
+#if not CLEAN19
     [Obsolete('Remove after Advance Payment Localization for Czech will be implemented.', '18.0')]
     internal procedure PostAdvances();
     var

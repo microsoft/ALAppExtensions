@@ -105,6 +105,7 @@ page 1862 "C5 InvenTable"
                     RunPageLink = DiscGroup = field(DiscGroup);
                     RunPageMode = Edit;
                     Enabled = DiscGroup <> '';
+                    ToolTip = 'Open the C5 Inventory Discount page.';
                 }
 
                 action(C5InvenPrice)
@@ -118,6 +119,7 @@ page 1862 "C5 InvenTable"
                     RunObject = Page "C5 InvenPrice";
                     RunPageLink = ItemNumber = field(ItemNumber);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Inventory Prices page.';
                 }
 
                 action(C5CN8Code)
@@ -132,6 +134,7 @@ page 1862 "C5 InvenTable"
                     RunPageLink = CN8Code = field(TariffNumber);
                     RunPageMode = Edit;
                     Enabled = TariffNumber <> '';
+                    ToolTip = 'Open the C5 Item CN8 Codes page.';
                 }
 
                 action(InvenItemGroup)
@@ -146,6 +149,7 @@ page 1862 "C5 InvenTable"
                     RunPageLink = Group = field(Group);
                     RunPageMode = Edit;
                     Enabled = Group <> '';
+                    ToolTip = 'Open the C5 Item Groups page.';
                 }
 
                 action(InvenTrans)
@@ -159,6 +163,7 @@ page 1862 "C5 InvenTable"
                     RunObject = Page "C5 InvenTrans";
                     RunPageLink = ItemNumber = field(ItemNumber), Open = const(Yes), BudgetCode = const(Actual);
                     RunPageMode = Edit;
+                    ToolTip = 'Open the C5 Inventory Entries page.';
                 }
 
                 action(BOM)
@@ -173,6 +178,7 @@ page 1862 "C5 InvenTable"
                     RunPageLink = BOMItemNumber = field(ItemNumber);
                     RunPageMode = Edit;
                     Enabled = BOMActionEnabled;
+                    ToolTip = 'Open the Bill of Materials page.';
                 }
             }
         }

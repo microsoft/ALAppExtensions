@@ -32,6 +32,27 @@ table 30100 "Shpfy Cue"
             Caption = 'Unprocessed Orders';
             FieldClass = FlowField;
         }
+        field(5; "Unprocessed Shipments"; Integer)
+        {
+            CalcFormula = count("Sales Shipment Header" where("Shpfy Order Id" = filter(<> 0), "Shpfy Fulfillment Id" = filter(0 | -1)));
+            Caption = 'Unprocessed Shipments';
+            FieldClass = FlowField;
+        }
+        field(6; "Synchronization Errors"; Integer)
+        {
+            CalcFormula = count("Job Queue Log Entry" where(Status = const(Error),
+                                                            "Object Type to Run" = const(Report),
+                                                            "Object ID to Run" = filter(Report::"Shpfy Sync Orders from Shopify" |
+                                                                Report::"Shpfy Sync Shipm. to Shopify" |
+                                                                Report::"Shpfy Sync Products" |
+                                                                Report::"Shpfy Sync Stock to Shopify" |
+                                                                Report::"Shpfy Sync Images" |
+                                                                Report::"Shpfy Sync Customers" |
+                                                                Report::"Shpfy Sync Payments")));
+            Caption = 'Synchronization Errors';
+            FieldClass = FlowField;
+        }
+
     }
 
     keys

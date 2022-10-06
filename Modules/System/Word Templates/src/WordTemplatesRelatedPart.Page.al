@@ -66,11 +66,11 @@ page 9987 "Word Templates Related Part"
         Rec."Table ID" := TableId;
     end;
 
-    internal procedure AddRelatedTable(TableId: Integer; FilterRelatedTables: Boolean)
+    internal procedure AddRelatedTable(TableNo: Integer; FilterRelatedTables: Boolean)
     var
         WordTemplateImpl: Codeunit "Word Template Impl.";
     begin
-        WordTemplateImpl.AddRelatedTable(Rec, TableId, FilterRelatedTables);
+        WordTemplateImpl.AddRelatedTable(Rec, TableNo, FilterRelatedTables);
     end;
 
     internal procedure SetTableNo(TableNo: Integer)
@@ -81,10 +81,10 @@ page 9987 "Word Templates Related Part"
         end;
     end;
 
-    internal procedure SetRelatedTable(TableId: Integer; RelatedTableId: Integer; FieldNo: Integer; RelatedCode: Code[5])
+    internal procedure SetRelatedTable(TableNo: Integer; RelatedTableId: Integer; FieldNo: Integer; RelatedCode: Code[5])
     begin
         Rec.Init();
-        Rec."Table ID" := TableId;
+        Rec."Table ID" := TableNo;
         Rec."Related Table ID" := RelatedTableId;
         Rec."Field No." := FieldNo;
         Rec."Related Table Code" := RelatedCode;

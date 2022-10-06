@@ -14,7 +14,8 @@ codeunit 130017 "User Permissions Library"
     /// Creates a user with the provided user name and assigns them SUPER.
     /// </summary>
     /// <param name="UserName">The user name for the user.</param>
-    procedure CreateSuperUser(UserName: Code[50])
+    /// <returns>The user security ID of the created user.</returns>
+    procedure CreateSuperUser(UserName: Code[50]): Guid
     var
         User: Record User;
     begin
@@ -23,6 +24,8 @@ codeunit 130017 "User Permissions Library"
             CreateUser(UserName, User);
 
         AssignPermissionSetToUser(User."User Security ID", 'SUPER');
+
+        exit(User."User Security ID");
     end;
 
     /// <summary>

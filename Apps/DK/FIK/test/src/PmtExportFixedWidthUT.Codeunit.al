@@ -13,8 +13,8 @@ codeunit 148024 "Pmt Export Fixed-Width UT"
         LibraryTextFileValidation: Codeunit "Library - Text File Validation";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryRandom: Codeunit "Library - Random";
-        FileLineCountIsWrongErr: Label 'Number of lines in file %1 is wrong.';
-        FileLineValueIsWrongErr: Label 'Column number %1 has an unexpected value at line number %2.';
+        FileLineCountIsWrongErr: Label 'Number of lines in file %1 is wrong.', Comment = '%1 = File Name';
+        FileLineValueIsWrongErr: Label 'Column number %1 has an unexpected value at line number %2.', Comment = '%1 = Column Number; %2 = Line Number';
         ColumnsNotSequentialErr: Label 'The data to be exported is not structured correctly. The columns in the dataset must be sequential.';
 
     trigger OnRun();

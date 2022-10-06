@@ -27,9 +27,9 @@ page 9214 "User Personalization"
                 Caption = 'General';
                 field("User ID"; Rec."User ID")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = All;
                     Caption = 'User ID';
-                    ToolTip = 'Specifies the user’s unique identifier.';
+                    ToolTip = 'Specifies the user''s unique identifier.';
                     DrillDown = false;
                     Editable = false;
 
@@ -41,17 +41,17 @@ page 9214 "User Personalization"
                 }
                 field("Full Name"; Rec."Full Name")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = All;
                     Caption = 'Full Name';
-                    ToolTip = 'Specifies the user’s full name.';
+                    ToolTip = 'Specifies the user''s full name.';
                     Editable = false;
                     Visible = false;
                 }
                 field(Role; Rec.Role)
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = All;
                     Caption = 'Role';
-                    ToolTip = 'Specifies the user role that defines the user’s default Role Center and role-specific customizations. Unless restricted by permissions, users can change their role on the My Settings page.';
+                    ToolTip = 'Specifies the user role that defines the user''s default Role Center and role-specific customizations. Unless restricted by permissions, users can change their role on the My Settings page.';
 
                     trigger OnAssistEdit()
                     begin
@@ -60,7 +60,7 @@ page 9214 "User Personalization"
                 }
                 field("Language"; Language.GetWindowsLanguageName(Rec."Language ID"))
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = All;
                     Caption = 'Language';
                     ToolTip = 'Specifies the language in which Business Central will display. Users can change this on the My Settings page.';
 
@@ -71,7 +71,7 @@ page 9214 "User Personalization"
                 }
                 field(Region; Language.GetWindowsLanguageName(Rec."Locale ID"))
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = All;
                     Caption = 'Region';
                     ToolTip = 'Specifies the region setting for the user. The region defines display formats, for example, for dates, numbering, symbols, and currency. Users can change this on the My Settings page.';
 
@@ -82,7 +82,7 @@ page 9214 "User Personalization"
                 }
                 field("Time Zone"; TimeZoneSelection.GetTimeZoneDisplayName(Rec."Time Zone"))
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = All;
                     Caption = 'Time Zone';
                     ToolTip = 'Specifies the time zone for the user. Users can change this on the My Settings page.';
 
@@ -93,15 +93,29 @@ page 9214 "User Personalization"
                 }
                 field(Company; Rec.Company)
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = All;
                     Caption = 'Company';
                     ToolTip = 'Specifies the company that the user works in. Unless restricted by permissions, users can change this on the My Settings page.';
+                }
+                field("Teaching Tips"; TeachingTipsEnabled)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Teaching Tips';
+                    ToolTip = 'Specifies whether to display short messages that inform, remind, or teach the user about important fields and actions when they open a page.';
+
+                    trigger OnValidate()
+                    begin
+                        if TeachingTipsEnabled then
+                            UserSettingsImpl.EnableTeachingTips(Rec."User SID")
+                        else
+                            UserSettingsImpl.DisableTeachingTips(Rec."User SID");
+                    end;
                 }
             }
         }
     }
 
-    trigger OnInsertRecord(xRec: Boolean): Boolean
+    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     begin
         Rec.TestField("User SID");
     end;
@@ -115,11 +129,14 @@ page 9214 "User Personalization"
     begin
         UserSettingsImpl.HideExternalUsers(Rec);
         CurrPage.Caption := UserSettingsTok;
+
+        TeachingTipsEnabled := UserSettingsImpl.TeachingTipsEnabled(Rec."User SID");
     end;
 
     var
         UserSettingsImpl: Codeunit "User Settings Impl.";
         Language: Codeunit Language;
         TimeZoneSelection: Codeunit "Time Zone Selection";
+        TeachingTipsEnabled: Boolean;
         UserSettingsTok: Label 'User Settings';
 }

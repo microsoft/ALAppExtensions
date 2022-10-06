@@ -17,13 +17,13 @@ report 27030 "Create DIOT Report"
             {
                 group("Report Dates")
                 {
-                    field(StartingDate; StartingDate)
+                    field(StartingDate; StartingDateVariable)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Starting Date';
                         ToolTip = 'Starting Date for the report';
                     }
-                    field(EndingDate; EndingDate)
+                    field(EndingDate; EndingDateVariable)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Ending Date';
@@ -31,7 +31,7 @@ report 27030 "Create DIOT Report"
 
                         trigger OnValidate()
                         begin
-                            if EndingDate < StartingDate then
+                            if EndingDateVariable < StartingDateVariable then
                                 Error(EndingDateBeforeStartinDateErr);
                         end;
                     }
@@ -46,12 +46,12 @@ report 27030 "Create DIOT Report"
         TempErrorMessage: Record "Error Message" temporary;
         DIOTDataMgmt: Codeunit "DIOT Data Management";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        StartingDate: Date;
-        EndingDate: Date;
-        MXDIOTTok: Label 'MX Setup and Generate DIOT Report', Locked = true;
+        StartingDateVariable: Date;
+        EndingDateVariable: Date;
         BlankStartingDateErr: Label 'Please provide a starting date.';
         BlankEndingDateErr: Label 'Please provide an ending date.';
         EndingDateBeforeStartinDateErr: Label 'Ending date cannot be before starting date.';
+        MXDIOTTok: Label 'MX Setup and Generate DIOT Report', Locked = true;
         RunAssistedSetupMsg: Label 'You must complete Assisted Setup for DIOT before running this report. \\ Do you want to open assisted setup now?';
 
     trigger OnInitReport()
@@ -67,16 +67,16 @@ report 27030 "Create DIOT Report"
 
     trigger OnPreReport()
     begin
-        if StartingDate = 0D then
+        if StartingDateVariable = 0D then
             Error(BlankStartingDateErr);
-        if EndingDate = 0D then
+        if EndingDateVariable = 0D then
             Error(BlankEndingDateErr);
     end;
 
     trigger OnPostReport()
     begin
         FeatureTelemetry.LogUptake('0000HQN', MXDIOTTok, Enum::"Feature Uptake Status"::"Used");
-        DIOTDataMgmt.CollectDIOTDataSet(TempDIOTReportBuffer, TempDIOTReportVendorBuffer, TempErrorMessage, StartingDate, EndingDate);
+        DIOTDataMgmt.CollectDIOTDataSet(TempDIOTReportBuffer, TempDIOTReportVendorBuffer, TempErrorMessage, StartingDateVariable, EndingDateVariable);
         if TempErrorMessage.HasErrors(false) then
             TempErrorMessage.ShowErrors()
         else

@@ -2,7 +2,7 @@ codeunit 139872 "Warehouse Permissions Tests"
 {
     Subtype = Test;
     TestPermissions = Restrictive;
-    
+
     var
         ItemJournalTemplate: Record "Item Journal Template";
         ItemJournalBatch: Record "Item Journal Batch";
@@ -29,7 +29,6 @@ codeunit 139872 "Warehouse Permissions Tests"
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         InvtPickCreatedTxt: Label 'Number of Invt. Pick activities created';
         ItemTrackingMode: Option " ",AssignLotNo,SelectEntries,AssignSerialNo,ApplyFromItemEntry,AssignAutoSerialNo,AssignAutoLotAndSerialNo,AssignManualLotNo,AssignManualTwoLotNo,AssignTwoLotNo,SelectEntriesForMultipleLines,UpdateQty,PartialAssignManualTwoLotNo;
-        ReservationMode: Option " ",ReserveFromCurrentLine,AutoReserve;
         isInitialized: Boolean;
 
     [Test]
@@ -45,6 +44,7 @@ codeunit 139872 "Warehouse Permissions Tests"
         SalesHeader: Record "Sales Header";
         WarehouseActivityLine: Record "Warehouse Activity Line";
         WarehouseActivityHeader: Record "Warehouse Activity Header";
+        ReservationMode: Option " ",ReserveFromCurrentLine,AutoReserve;
     begin
         // [FEATURE] [Inventory Pick]
         // [SCENARIO 263236] A user does not require permissions for warehouse documents to create inventory pick.
@@ -215,13 +215,13 @@ codeunit 139872 "Warehouse Permissions Tests"
         SalesLine.ShowReservation();
     end;
 
-    local procedure FindWarehouseActivityLine(var WarehouseActivityLine: Record "Warehouse Activity Line"; SourceDocument: Enum "Warehouse Activity Source Document"; SourceNo: Code[20]; ActivityType: Option)
+    local procedure FindWarehouseActivityLine(var WarehouseActivityLine: Record "Warehouse Activity Line"; SourceDocument: Enum "Warehouse Activity Source Document"; SourceNo: Code[20]; ActivityType: Enum "Warehouse Activity Type")
     begin
         FilterWarehouseActivityLine(WarehouseActivityLine, SourceDocument, SourceNo, ActivityType);
         WarehouseActivityLine.FindFirst();
     end;
 
-    local procedure FilterWarehouseActivityLine(var WarehouseActivityLine: Record "Warehouse Activity Line"; SourceDocument: Enum "Warehouse Activity Source Document"; SourceNo: Code[20]; ActivityType: Option)
+    local procedure FilterWarehouseActivityLine(var WarehouseActivityLine: Record "Warehouse Activity Line"; SourceDocument: Enum "Warehouse Activity Source Document"; SourceNo: Code[20]; ActivityType: Enum "Warehouse Activity Type")
     begin
         WarehouseActivityLine.SetRange("Source Document", SourceDocument);
         WarehouseActivityLine.SetRange("Source No.", SourceNo);
@@ -272,10 +272,10 @@ codeunit 139872 "Warehouse Permissions Tests"
         ItemJournalTemplate.Modify(true);
 
         LibraryInventory.SelectItemJournalBatchName(ItemJournalBatch, ItemJournalTemplate.Type, ItemJournalTemplate.Name);
-        UpdateNoSeriesOnItemJournalBatch(ItemJournalBatch, LibraryUtility.GetGlobalNoSeriesCode());
+        UpdateNoSeriesOnItemJournalBatch(LibraryUtility.GetGlobalNoSeriesCode());
     end;
 
-    local procedure UpdateNoSeriesOnItemJournalBatch(var ItemJournalBatch: Record "Item Journal Batch"; NoSeries: Code[20])
+    local procedure UpdateNoSeriesOnItemJournalBatch(NoSeries: Code[20])
     begin
         ItemJournalBatch.Validate("No. Series", NoSeries);
         ItemJournalBatch.Modify(true);

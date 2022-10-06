@@ -27,7 +27,7 @@ codeunit 603 "Data Archive Db Subscriber"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Global Triggers", 'OnDatabaseDelete', '', false, false)]
-    local procedure OnDatabaseDelete(RecRef: RecordRef)
+    local procedure SaveRecordOnDatabaseDelete(RecRef: RecordRef)
     begin
         if DataArchiveProviderIsSet then
             if not RecRef.IsTemporary() then

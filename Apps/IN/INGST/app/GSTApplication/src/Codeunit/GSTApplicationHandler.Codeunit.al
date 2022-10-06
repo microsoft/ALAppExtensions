@@ -2082,7 +2082,7 @@ codeunit 18430 "GST Application Handler"
         DetailedGSTLedgerEntryNew.TransferFields(DetailedGSTLedgerEntry);
         DetailedGSTLedgerEntryNew."Entry No." := 0;
         DetailedGSTLedgerEntryNew."Document No." := DetailedGSTLedgerEntryNew."Document No.";
-        DetailedGSTLedgerEntryNew."Transaction No." := TransactionNo;
+        DetailedGSTLedgerEntryNew."Transaction No." := DetailedGSTLedgerEntry."Transaction No.";
         DetailedGSTLedgerEntryNew."Entry Type" := DetailedGSTLedgerEntryNew."Entry Type"::Application;
         DetailedGSTLedgerEntryNew."GST Base Amount" := -DetailedGSTLedgerEntry."GST Base Amount";
         DetailedGSTLedgerEntryNew."GST Amount" := -DetailedGSTLedgerEntry."GST Amount";
@@ -2505,10 +2505,12 @@ codeunit 18430 "GST Application Handler"
         GenJournalLine: Record "Gen. Journal Line";
         var TempIDimPostingBuffer: Record "Dimension Posting Buffer" temporary)
     var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         TransactionType: Enum "Detail Ledger Transaction Type";
     begin
-        UnApplyGSTApplication(GenJournalLine, TransactionType::Sales, DetailedCustLedgEntry."Transaction No.", DetailedCustLedgEntry."Document No.");
+        CustLedgerEntry.Get(DetailedCustLedgEntry."Cust. Ledger Entry No.");
+        UnApplyGSTApplication(GenJournalLine, TransactionType::Sales, CustLedgerEntry."Transaction No.", DetailedCustLedgEntry."Document No.");
         GSTApplSessionMgt.PostApplicationGenJournalLine(GenJnlPostLine);
         GSTApplSessionMgt.ClearAllSessionVariables();
     end;

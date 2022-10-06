@@ -103,17 +103,20 @@ tableextension 18766 "GenJournalLineExt" extends "Gen. Journal Line"
 
                 if ("TDS Section Code" <> '') and ("System-Created Entry" = false) then begin
                     if GenJnlLine.Get("Journal Template Name", "Journal Batch Name", "Line No.") then
-                        Modify();//To Calculate TDS for every line concidering all General journal lines
+                        GenJnlLine.Modify();
 
-                    GenJnlLine.Reset();
-                    GenJnlLine.SetRange("Journal Template Name", "Journal Template Name");
-                    GenJnlLine.SetRange("Journal Batch Name", "Journal Batch Name");
-                    GenJnlLine.SetRange("TDS Section Code", "TDS Section Code");
-                    GenJnlLine.SetFilter("Line No.", '<>%1', "Line No.");
-                    if GenJnlLine.FindSet() then
-                        repeat
-                            CalculateTax.CallTaxEngineOnGenJnlLine(GenJnlLine, GenJnlLine);
-                        until GenJnlLine.Next() = 0;
+                    if IsNullGuid(Rec."Tax ID") then begin
+                        GenJnlLine.Reset();
+                        GenJnlLine.SetCurrentKey("Journal Template Name", "Journal Batch Name", "TDS Section Code", "Line No.");
+                        GenJnlLine.SetRange("Journal Template Name", "Journal Template Name");
+                        GenJnlLine.SetRange("Journal Batch Name", "Journal Batch Name");
+                        GenJnlLine.SetRange("TDS Section Code", "TDS Section Code");
+                        GenJnlLine.SetFilter("Line No.", '<>%1', "Line No.");
+                        if GenJnlLine.FindSet() then
+                            repeat
+                                CalculateTax.CallTaxEngineOnGenJnlLine(GenJnlLine, GenJnlLine);
+                            until GenJnlLine.Next() = 0;
+                    end;
                 end;
             end;
         }

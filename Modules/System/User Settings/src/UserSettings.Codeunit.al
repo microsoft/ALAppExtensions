@@ -24,7 +24,7 @@ codeunit 9176 "User Settings"
     /// </summary>
     /// <param name="UserSecurityID">The user security id of the user.</param>
     /// <param name="UserSettings">The return Record with the settings od the User.</param>
-    procedure GetUserSettings(UserSecurityID: Guid; var UserSettings : Record "User Settings") 
+    procedure GetUserSettings(UserSecurityID: Guid; var UserSettings: Record "User Settings")
     var
         UserSettingsImpl: Codeunit "User Settings Impl.";
     begin
@@ -61,7 +61,7 @@ codeunit 9176 "User Settings"
     procedure OnGetDefaultProfile(var AllProfile: Record "All Profile")
     begin
     end;
-    
+
     /// <summary>
     /// Integration event that allows changing the settings page ID.
     /// </summary>
@@ -154,6 +154,6 @@ codeunit 9176 "User Settings"
     [IntegrationEvent(false, false)]
     procedure OnBeforeWorkdateChange(OldWorkdate: Date; NewWorkdate: Date)
     begin
-    end;    
+    end;
 #endif
 }

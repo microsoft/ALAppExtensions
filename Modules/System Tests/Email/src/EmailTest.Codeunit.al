@@ -27,6 +27,7 @@ codeunit 134685 "Email Test"
         EmailMessageSentCannotDeleteAttachmentErr: Label 'Cannot delete the attachment because the email has already been sent.';
         AccountNameLbl: Label '%1 (%2)', Locked = true;
         NoRelatedAttachmentsErr: Label 'Did not find any attachments related to this email.';
+        OutboxSourceTextLbl: Label '%1: %2', Locked = true;
 
     [Test]
     [Scope('OnPrem')]
@@ -955,7 +956,6 @@ codeunit 134685 "Email Test"
         EmailOutbox: Record "Email Outbox";
         EmailMessage: Codeunit "Email Message";
         EmailTest: Codeunit "Email Test";
-        Email: Codeunit Email;
         EmailEditorPage: TestPage "Email Editor";
         TableId: Integer;
         SystemId: Guid;
@@ -974,7 +974,7 @@ codeunit 134685 "Email Test"
 
         Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
 
-        SourceText := StrSubstNo('%1: %2', EmailOutbox.TableCaption(), Format(EmailOutbox.Id));
+        SourceText := StrSubstNo(OutboxSourceTextLbl, EmailOutbox.TableCaption(), Format(EmailOutbox.Id));
         VariableStorage.Enqueue(SourceText);
 
         // [When] Opening the Email Related Attachments page
@@ -1001,7 +1001,6 @@ codeunit 134685 "Email Test"
         EmailOutbox: Record "Email Outbox";
         EmailMessage: Codeunit "Email Message";
         EmailTest: Codeunit "Email Test";
-        Email: Codeunit Email;
         EmailEditor: Codeunit "Email Editor";
         TableId: Integer;
         SystemId: Guid;
@@ -1020,7 +1019,7 @@ codeunit 134685 "Email Test"
 
         Email.AddRelation(EmailMessage, TableId, SystemId, Enum::"Email Relation Type"::"Primary Source", Enum::"Email Relation Origin"::"Compose Context");
 
-        SourceText := StrSubstNo('%1: %2', EmailOutbox.TableCaption(), Format(EmailOutbox.Id));
+        SourceText := StrSubstNo(OutboxSourceTextLbl, EmailOutbox.TableCaption(), Format(EmailOutbox.Id));
         VariableStorage.Enqueue(SourceText);
 
         EmailEditor.GetRelatedAttachments(EmailMessage.GetId(), EmailRelatedAttachment);
@@ -1036,7 +1035,6 @@ codeunit 134685 "Email Test"
     var
         EmailMessage: Codeunit "Email Message";
         EmailTest: Codeunit "Email Test";
-        Email: Codeunit Email;
         EmailEditorPage: TestPage "Email Editor";
     begin
         BindSubscription(EmailTest);

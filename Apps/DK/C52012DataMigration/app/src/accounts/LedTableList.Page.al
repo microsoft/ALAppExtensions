@@ -23,7 +23,7 @@ page 1903 "C5 LedTable List"
                 field("Error Message"; MigrationErrorText)
                 {
                     ApplicationArea = All;
-
+                    Caption = 'Error Message';
                     Enabled = false;
                 }
                 field(Account; Account) { ApplicationArea = All; }

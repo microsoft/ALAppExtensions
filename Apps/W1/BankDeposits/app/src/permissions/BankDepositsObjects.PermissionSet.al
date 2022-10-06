@@ -16,6 +16,7 @@ permissionset 1690 "Bank Deposits - Objects"
                   codeunit "Entry Application Mgt" = X,
                   codeunit "Posted Bank Deposit-Delete" = X,
                   codeunit "Setup Bank Deposit Reports" = X,
+                  codeunit "Navigate Bank Deposit Ext." = X,
                   page "Bank Acc. Comment List" = X,
                   page "Bank Acc. Comment Sheet" = X,
                   page "Bank Deposit" = X,

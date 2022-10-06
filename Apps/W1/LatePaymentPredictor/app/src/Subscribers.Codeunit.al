@@ -1,5 +1,10 @@
 codeunit 1952 "LP Subscribers"
 {
+    var
+        MachineLearningSetupTitleTxt: Label 'Set up Late Payment Prediction';
+        MachineLearningSetupShortTitleTxt: Label 'Late Payment Prediction';
+        MachineLearningSetupDescriptionTxt: Label 'The Late Payment Prediction extension can help you reduce outstanding receivables by predicting whether sales invoices will be paid on time. Set it up now.';
+
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', true, true)]
     local procedure OnRegisterServiceConnection(var ServiceConnection: Record "Service Connection")
     var
@@ -17,6 +22,14 @@ codeunit 1952 "LP Subscribers"
             LPMachineLearningSetupPage.Caption(),
             '',
             Page::"LP Machine Learning Setup");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', true, true)]
+    local procedure InsertIntoManualSetupOnRegisterManualSetup()
+    var
+        GuidedExperience: Codeunit "Guided Experience";
+    begin
+        GuidedExperience.InsertManualSetup(MachineLearningSetupTitleTxt, MachineLearningSetupShortTitleTxt, MachineLearningSetupDescriptionTxt, 2, ObjectType::Page, Page::"LP Machine Learning Setup", "Manual Setup Category"::Finance, '', true);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Sales Invoice", 'OnOpenPageEvent', '', true, true)]

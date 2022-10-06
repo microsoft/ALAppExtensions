@@ -37,6 +37,9 @@ codeunit 30201 "Shpfy Guided Experience"
         TakeTheNextStepShortTitleTxt: Label 'Take the next step';
         TakeTheNextStepDescriptionTxt: Label 'If you are ready to buy, you can find a Business Central reseller here. If you have already licensed a subscription you can also find help for more setup here.';
         TakeTheNextStepLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2198403', Locked = true;
+        ItemListShortTitleTxt: Label 'View imported products';
+        ItemListTitleTxt: Label 'View imported data from your store';
+        ItemListDescriptionTxt: Label 'Products you import from Shopify are called items in Business Central. You can find them on the Items page. When you''re using a demo company, you can import up to 25 items.';
 
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
@@ -80,16 +83,14 @@ codeunit 30201 "Shpfy Guided Experience"
         TempAllProfileBusinessManagerEval: Record "All Profile" temporary;
         Checklist: Codeunit Checklist;
         TenantLicenseState: Codeunit "Tenant License State";
-        RoleCenterNotificationMgt: Codeunit "Role Center Notification Mgt.";
     begin
         // CRONUS
         GetRolesForEvaluationCompany(TempAllProfileBusinessManagerEval);
         Checklist.Insert("Guided Experience Type"::Video, BusinessCentralLovesShopifyVideoLinkTxt, 1000, TempAllProfileBusinessManagerEval, true);
         Checklist.Insert("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Shpfy Connector Guide", 2000, TempAllProfileBusinessManagerEval, true);
+        Checklist.Insert("Guided Experience Type"::"Application Feature", ObjectType::Codeunit, Codeunit::"Shpfy Checklist Item List", 3000, TempAllProfileBusinessManagerEval, true);
         if not TenantLicenseState.IsPaidMode() then
-            Checklist.Insert("Guided Experience Type"::Learn, ReadyToGoLinkTxt, 3000, TempAllProfileBusinessManagerEval, true);
-        Checklist.Insert("Guided Experience Type"::"Application Feature", ObjectType::Codeunit, Codeunit::"Start Trial", 4000, TempAllProfileBusinessManagerEval, true);
-        RoleCenterNotificationMgt.DisableEvaluationNotification();
+            Checklist.Insert("Guided Experience Type"::Learn, ReadyToGoLinkTxt, 4000, TempAllProfileBusinessManagerEval, true);
     end;
 
     local procedure InitializeChecklistForNonEvaluationCompanies()
@@ -102,7 +103,7 @@ codeunit 30201 "Shpfy Guided Experience"
         GetBussinesManagerRole(TempAllProfileBusinessManager);
         Checklist.Insert("Guided Experience Type"::Tour, ObjectType::Page, Page::"Business Manager Role Center", 1000, TempAllProfileBusinessManager, true);
         Checklist.Insert("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Shpfy Connector Guide", 2000, TempAllProfileBusinessManager, true);
-        Checklist.Insert("Guided Experience Type"::"Assisted Setup", ObjectType::Codeunit, Codeunit::"Company Details Checklist Item", 3000, TempAllProfileBusinessManager, false);
+        Checklist.Insert("Guided Experience Type"::"Application Feature", ObjectType::Codeunit, Codeunit::"Company Details Checklist Item", 3000, TempAllProfileBusinessManager, false);
         Checklist.Insert("Guided Experience Type"::Learn, LearnBusinessCentralLinkTxt, 4000, TempAllProfileBusinessManager, true);
         if not TenantLicenseState.IsPaidMode() then
             Checklist.Insert("Guided Experience Type"::Learn, TakeTheNextStepLinkTxt, 5000, TempAllProfileBusinessManager, true);
@@ -127,14 +128,15 @@ codeunit 30201 "Shpfy Guided Experience"
             BusinessCentralLovesShopifyDescriptionTxt, 2, BusinessCentralLovesShopifyVideoLinkTxt, "Video Category"::GettingStarted);
 
         if Company."Evaluation Company" then begin
-            GuidedExperience.InsertAssistedSetup(ConnectYourShopEvalTitleTxt, ConnectYourShopEvalShortTitleTxt, ConnectYourShopEvalDescriptionTxt, 0, ObjectType::Page, Page::"Shpfy Connector Guide", "Assisted Setup Group"::Connect, '', "Video Category"::Connect, '');
+            GuidedExperience.InsertAssistedSetup(ConnectYourShopEvalTitleTxt, ConnectYourShopEvalShortTitleTxt, ConnectYourShopEvalDescriptionTxt, 0, ObjectType::Page, Page::"Shpfy Connector Guide", "Assisted Setup Group"::Connect, '', "Video Category"::Connect, '', true);
             CurrentGlobalLanguage := GlobalLanguage();
             GlobalLanguage(Language.GetDefaultApplicationLanguageId());
             GuidedExperience.AddTranslationForSetupObjectTitle("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Shpfy Connector Guide", Language.GetDefaultApplicationLanguageId(), ConnectYourShopEvalTitleTxt);
             GuidedExperience.AddTranslationForSetupObjectDescription("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Shpfy Connector Guide", Language.GetDefaultApplicationLanguageId(), ConnectYourShopEvalDescriptionTxt);
             GlobalLanguage(CurrentGlobalLanguage);
+            GuidedExperience.InsertApplicationFeature(ItemListTitleTxt, ItemListShortTitleTxt, ItemListDescriptionTxt, 2, ObjectType::Codeunit, Codeunit::"Shpfy Checklist Item List");
         end else begin
-            GuidedExperience.InsertAssistedSetup(ConnectYourShopTitleTxt, ConnectYourShopShortTitleTxt, ConnectYourShopDescriptionTxt, 0, ObjectType::Page, Page::"Shpfy Connector Guide", "Assisted Setup Group"::Connect, '', "Video Category"::Connect, '');
+            GuidedExperience.InsertAssistedSetup(ConnectYourShopTitleTxt, ConnectYourShopShortTitleTxt, ConnectYourShopDescriptionTxt, 0, ObjectType::Page, Page::"Shpfy Connector Guide", "Assisted Setup Group"::Connect, '', "Video Category"::Connect, '', true);
             CurrentGlobalLanguage := GlobalLanguage();
             GlobalLanguage(Language.GetDefaultApplicationLanguageId());
             GuidedExperience.AddTranslationForSetupObjectTitle("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Shpfy Connector Guide", Language.GetDefaultApplicationLanguageId(), ConnectYourShopTitleTxt);

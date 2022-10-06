@@ -35,6 +35,7 @@ page 4021 "GP Migration Settings List"
                     Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
                 }
                 field("Global Dimension 2"; Rec."Global Dimension 2")
                 {
@@ -45,6 +46,7 @@ page 4021 "GP Migration Settings List"
                     Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
                 }
                 field("Migrate Inactive Customers"; Rec."Migrate Inactive Customers")
                 {
@@ -55,6 +57,7 @@ page 4021 "GP Migration Settings List"
                     Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
                 }
                 field("Migrate Inactive Vendors"; Rec."Migrate Inactive Vendors")
                 {
@@ -65,6 +68,7 @@ page 4021 "GP Migration Settings List"
                     Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
                 }
                 field("Migrate Inactive Checkbooks"; MigrateInactiveCheckbooks)
                 {
@@ -75,6 +79,7 @@ page 4021 "GP Migration Settings List"
                     Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
 
                     trigger OnValidate()
                     var
@@ -99,6 +104,7 @@ page 4021 "GP Migration Settings List"
                     Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
 
                     trigger OnValidate()
                     var
@@ -123,6 +129,7 @@ page 4021 "GP Migration Settings List"
                     Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
 
                     trigger OnValidate()
                     var
@@ -148,6 +155,7 @@ page 4021 "GP Migration Settings List"
                     Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
 
                     trigger OnValidate()
                     var
@@ -163,16 +171,71 @@ page 4021 "GP Migration Settings List"
                         end;
                     end;
                 }
-#endif
+                field("Oldest GL Historical Year to Migrate"; InitialYear)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Initial Historical Year';
+                    ToolTip = 'Specifies which Historical year to start with.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by page GP Migration Configuration';		    
+                    Width = 8;
+                    ObsoleteTag = '22.0';
+
+                    trigger OnValidate()
+                    var
+                        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+                    begin
+                        if not GPCompanyAdditionalSettings.Get(Rec.Name) then begin
+                            GPCompanyAdditionalSettings.Name := Rec.Name;
+                            GPCompanyAdditionalSettings."Oldest GL Year to Migrate" := InitialYear;
+                            GPCompanyAdditionalSettings.Insert();
+                        end else begin
+                            GPCompanyAdditionalSettings."Oldest GL Year to Migrate" := InitialYear;
+                            GPCompanyAdditionalSettings.Modify();
+                        end;
+                    end;
+                }
+		#endif
             }
         }
     }
 
+
 #if not CLEAN22
+    trigger OnAfterGetRecord()
+    var
+        GPSegmentNames: Record "GP Segment Name";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+    begin
+        GPSegmentNames.SetFilter("Company Name", Rec.Name);
+        if Rec."Global Dimension 1" = '' then
+            if GPSegmentNames.FindFirst() then
+                Rec."Global Dimension 1" := GPSegmentNames."Segment Name";
+        if Rec."Global Dimension 2" = '' then begin
+            GPSegmentNames.SetFilter("Segment Name", '<> %1', Rec."Global Dimension 1");
+            if GPSegmentNames.FindFirst() then
+                Rec."Global Dimension 2" := GPSegmentNames."Segment Name";
+        end;
+
+        Rec.Modify();
+
+        MigrateInactiveCheckbooks := true;
+
+        if GPCompanyAdditionalSettings.Get(CompanyName()) then begin
+            MigrateInactiveCheckbooks := GPCompanyAdditionalSettings."Migrate Inactive Checkbooks";
+            MigrateVendorClasses := GPCompanyAdditionalSettings."Migrate Vendor Classes";
+            MigrateCustomerClasses := GPCompanyAdditionalSettings."Migrate Customer Classes";
+            MigrateItemClasses := GPCompanyAdditionalSettings."Migrate Item Classes";
+            InitialYear := GPCompanyAdditionalSettings."Oldest GL Year to Migrate";
+        end;
+    end;
+
     var
         MigrateInactiveCheckbooks: Boolean;
         MigrateVendorClasses: Boolean;
         MigrateCustomerClasses: Boolean;
         MigrateItemClasses: Boolean;
+        InitialYear: Integer;
 #endif
 }

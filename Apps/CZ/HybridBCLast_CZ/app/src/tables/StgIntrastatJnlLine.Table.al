@@ -1,6 +1,15 @@
 table 11716 "Stg Intrastat Jnl. Line"
 {
     Caption = 'Staging Intrastat Jnl. Line';
+#if not CLEAN21
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '21.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
+    ObsoleteTag = '23.0';
+#endif
 
     fields
     {
@@ -234,7 +243,6 @@ table 11716 "Stg Intrastat Jnl. Line"
         field(31070; "Specific Movement"; Code[10])
         {
             Caption = 'Specific Movement';
-            TableRelation = "Specific Movement".Code;
             ObsoleteState = Pending;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
             ObsoleteTag = '18.0';

@@ -3,7 +3,6 @@ codeunit 11421 "Create Elec. Tax Declaration"
     TableNo = "VAT Report Header";
 
     var
-        TempUriNameValueBuffer: Record "Name/Value Buffer" temporary;
         XMLDoc: XmlDocument;
         BdINameSpaceTxt: Label 'http://www.nltaxonomie.nl/nt16/bd/20211208/dictionary/bd-data', Locked = true;
 
@@ -139,17 +138,6 @@ codeunit 11421 "Create Elec. Tax Declaration"
             XmlAttribute.Create('contextRef', 'Msg'),
             XmlAttribute.Create('unitRef', 'EUR'),
             ElementValue));
-    end;
-
-    local procedure GetUri(TargetNamespace: Text): Text
-    begin
-        with TempUriNameValueBuffer do
-            if FindSet() then
-                repeat
-                    if StrPos(Name, ':') <> 0 then
-                        if TargetNamespace = CopyStr(Name, StrPos(Name, ':') + 1, StrLen(Name) - StrPos(Name, ':')) then
-                            exit(Value);
-                until Next() = 0;
     end;
 
     local procedure GetStrippedAppVersion(AppVersion: Text[250]) Res: Text[250]

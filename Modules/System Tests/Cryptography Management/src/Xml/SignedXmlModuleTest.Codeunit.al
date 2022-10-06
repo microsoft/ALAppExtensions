@@ -89,7 +89,7 @@ codeunit 132612 "Signed Xml Module Test"
         SignatureElement := SignatureNode.AsXmlElement();
     end;
 
-    local procedure GetValidSignedXml(var SignedXml: XmlDocument)
+    local procedure GetValidSignedXml(var SignedXmlDocument: XmlDocument)
     var
         XmlReadOptions: XmlReadOptions;
     begin
@@ -128,10 +128,10 @@ codeunit 132612 "Signed Xml Module Test"
             '</Signature>' +
             '</Data>',
             XmlReadOptions,
-            SignedXml);
+            SignedXmlDocument);
     end;
 
-    local procedure GetInvalidSignedXml(var SignedXml: XmlDocument)
+    local procedure GetInvalidSignedXml(var SignedXmlDocument: XmlDocument)
     var
         XmlReadOptions: XmlReadOptions;
     begin
@@ -166,7 +166,7 @@ codeunit 132612 "Signed Xml Module Test"
             '</Signature>' +
             '</Data>',
             XmlReadOptions,
-            SignedXml);
+            SignedXmlDocument);
     end;
 
     local procedure GetSignatureKeyXmlString(var XmlString: Text)
