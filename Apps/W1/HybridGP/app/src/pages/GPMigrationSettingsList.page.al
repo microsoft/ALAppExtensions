@@ -73,6 +73,90 @@ page 4021 "GP Migration Settings List"
                         end;
                     end;
                 }
+                field("Migrate Vendor Classes"; MigrateVendorClasses)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Migrate Vendor Classes';
+                    ToolTip = 'Specifies whether to migrate Vendor Classes.';
+                    Width = 8;
+
+                    trigger OnValidate()
+                    var
+                        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+                    begin
+                        if not GPCompanyAdditionalSettings.Get(Rec.Name) then begin
+                            GPCompanyAdditionalSettings.Name := Rec.Name;
+                            GPCompanyAdditionalSettings."Migrate Vendor Classes" := MigrateVendorClasses;
+                            GPCompanyAdditionalSettings.Insert();
+                        end else begin
+                            GPCompanyAdditionalSettings."Migrate Vendor Classes" := MigrateVendorClasses;
+                            GPCompanyAdditionalSettings.Modify();
+                        end;
+                    end;
+                }
+                field("Migrate Customer Classes"; MigrateCustomerClasses)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Migrate Customer Classes';
+                    ToolTip = 'Specifies whether to migrate Customer Classes.';
+                    Width = 8;
+
+                    trigger OnValidate()
+                    var
+                        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+                    begin
+                        if not GPCompanyAdditionalSettings.Get(Rec.Name) then begin
+                            GPCompanyAdditionalSettings.Name := Rec.Name;
+                            GPCompanyAdditionalSettings."Migrate Customer Classes" := MigrateCustomerClasses;
+                            GPCompanyAdditionalSettings.Insert();
+                        end else begin
+                            GPCompanyAdditionalSettings."Migrate Customer Classes" := MigrateCustomerClasses;
+                            GPCompanyAdditionalSettings.Modify();
+                        end;
+                    end;
+                }
+                field("Migrate Item Classes"; MigrateItemClasses)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Migrate Item Classes';
+                    ToolTip = 'Specifies whether to migrate Item Classes.';
+                    Width = 8;
+
+                    trigger OnValidate()
+                    var
+                        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+                    begin
+                        if not GPCompanyAdditionalSettings.Get(Rec.Name) then begin
+                            GPCompanyAdditionalSettings.Name := Rec.Name;
+                            GPCompanyAdditionalSettings."Migrate Item Classes" := MigrateItemClasses;
+                            GPCompanyAdditionalSettings.Insert();
+                        end else begin
+                            GPCompanyAdditionalSettings."Migrate Item Classes" := MigrateItemClasses;
+                            GPCompanyAdditionalSettings.Modify();
+                        end;
+                    end;
+                }
+                field("Oldest GL Historical Year to Migrate"; InitialYear)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Initial Historical Year';
+                    ToolTip = 'Specifies which Historical year to start with.';
+                    Width = 8;
+
+                    trigger OnValidate()
+                    var
+                        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+                    begin
+                        if not GPCompanyAdditionalSettings.Get(Rec.Name) then begin
+                            GPCompanyAdditionalSettings.Name := Rec.Name;
+                            GPCompanyAdditionalSettings."Oldest GL Year to Migrate" := InitialYear;
+                            GPCompanyAdditionalSettings.Insert();
+                        end else begin
+                            GPCompanyAdditionalSettings."Oldest GL Year to Migrate" := InitialYear;
+                            GPCompanyAdditionalSettings.Modify();
+                        end;
+                    end;
+                }
             }
         }
     }
@@ -94,9 +178,21 @@ page 4021 "GP Migration Settings List"
 
         Rec.Modify();
 
-        MigrateInactiveCheckbooks := GPCompanyAdditionalSettings.GetMigrateInactiveCheckbooks();
+        MigrateInactiveCheckbooks := true;
+
+        if GPCompanyAdditionalSettings.Get(CompanyName()) then begin
+            MigrateInactiveCheckbooks := GPCompanyAdditionalSettings."Migrate Inactive Checkbooks";
+            MigrateVendorClasses := GPCompanyAdditionalSettings."Migrate Vendor Classes";
+            MigrateCustomerClasses := GPCompanyAdditionalSettings."Migrate Customer Classes";
+            MigrateItemClasses := GPCompanyAdditionalSettings."Migrate Item Classes";
+            InitialYear := GPCompanyAdditionalSettings."Oldest GL Year to Migrate";
+        end;
     end;
 
     var
         MigrateInactiveCheckbooks: Boolean;
+        MigrateVendorClasses: Boolean;
+        MigrateCustomerClasses: Boolean;
+        MigrateItemClasses: Boolean;
+        InitialYear: Integer;
 }

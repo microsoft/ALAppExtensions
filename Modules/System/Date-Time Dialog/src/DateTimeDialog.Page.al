@@ -79,10 +79,10 @@ page 684 "Date-Time Dialog"
     /// <summary>
     /// Setter method to initialize the Date on the page.
     /// </summary>
-    /// <param name="Date">The value to set.</param>
-    procedure SetDate(Date: Date)
+    /// <param name="NewDate">The value to set.</param>
+    procedure SetDate(NewDate: Date)
     begin
-        DateValue := Date;
+        DateValue := NewDate;
     end;
 
     /// <summary>

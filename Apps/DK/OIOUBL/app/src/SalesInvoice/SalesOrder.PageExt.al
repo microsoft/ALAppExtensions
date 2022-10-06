@@ -11,7 +11,6 @@ pageextension 13654 "OIOUBL-Sales Order" extends "Sales Order"
         {
             trigger OnAfterValidate();
             begin
-                SellToCustomerUsesOIOUBL := CustomerUsesOIOUBL("Sell-to Customer No.");
                 CurrPage.UPDATE();
             end;
         }
@@ -73,26 +72,4 @@ pageextension 13654 "OIOUBL-Sales Order" extends "Sales Order"
     {
         // Add changes to page actions here
     }
-
-    trigger OnOpenPage();
-    begin
-        SellToCustomerUsesOIOUBL := CustomerUsesOIOUBL("Sell-to Customer No.")
-    end;
-
-    trigger OnAfterGetCurrRecord();
-    begin
-        SellToCustomerUsesOIOUBL := CustomerUsesOIOUBL("Sell-to Customer No.");
-    end;
-
-    local procedure CustomerUsesOIOUBL(CustomerNo: Code[20]): Boolean;
-    var
-        Customer: Record Customer;
-    begin
-        if Customer.Get(CustomerNo) then
-            exit(Customer."OIOUBL-Profile Code" <> '');
-        exit(false);
-    end;
-
-    var
-        SellToCustomerUsesOIOUBL: Boolean;
 }

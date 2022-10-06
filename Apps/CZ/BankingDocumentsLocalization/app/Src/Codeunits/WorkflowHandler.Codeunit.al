@@ -60,9 +60,13 @@ codeunit 31350 "Workflow Handler CZB"
     local procedure AddWorkflowTableRelationsToLibrary()
     var
         ApprovalEntry: Record "Approval Entry";
+        PaymentOrderHeaderCZB: Record "Payment Order Header CZB";
+        PaymentOrderLineCZB: Record "Payment Order Line CZB";
     begin
         WorkflowSetup.InsertTableRelation(Database::"Payment Order Header CZB", 0,
           Database::"Approval Entry", ApprovalEntry.FieldNo("Record ID to Approve"));
+        WorkflowSetup.InsertTableRelation(Database::"Payment Order Header CZB", PaymentOrderHeaderCZB.FieldNo("No."),
+          Database::"Payment Order Line CZB", PaymentOrderLineCZB.FieldNo("Payment Order No."));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Response Handling", 'OnAddWorkflowResponsePredecessorsToLibrary', '', false, false)]
@@ -172,7 +176,7 @@ codeunit 31350 "Workflow Handler CZB"
         RecordRestrictionMgt.UpdateRestriction(Rec, xRec);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Setup", 'OnInsertWorkflowTemplates', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Setup", 'OnAfterInitWorkflowTemplates', '', false, false)]
     local procedure InsertWorkflowTemplates()
     begin
         if IsTestingEnvironment() then
@@ -192,6 +196,8 @@ codeunit 31350 "Workflow Handler CZB"
     var
         Workflow: Record Workflow;
     begin
+        if Workflow.Get(WorkflowSetup.GetWorkflowTemplateCode(PaymentOrderApprWorkflowCodeTxt)) then
+            exit;
         WorkflowSetup.InsertWorkflowTemplate(Workflow, PaymentOrderApprWorkflowCodeTxt, PaymentOrderApprWorkflowDescTxt, FinCategoryTxt);
         InsertPaymentOrderApprovalWorkflowDetails(Workflow);
         WorkflowSetup.MarkWorkflowAsTemplate(Workflow);

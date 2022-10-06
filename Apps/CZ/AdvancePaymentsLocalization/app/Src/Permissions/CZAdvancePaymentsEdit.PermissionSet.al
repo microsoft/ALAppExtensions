@@ -1,8 +1,3 @@
-// ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See License.txt in the project root for license information.
-// ------------------------------------------------------------------------------------------------
-
 permissionset 11751 "CZ Advance Payments - Edit CZZ"
 {
     Access = Internal;
@@ -14,6 +9,7 @@ permissionset 11751 "CZ Advance Payments - Edit CZZ"
     Permissions = tabledata "Advance Letter Application CZZ" = IMD,
                   tabledata "Advance Letter Link Buffer CZZ" = IMD,
                   tabledata "Advance Letter Template CZZ" = IMD,
+                  tabledata "Advance Posting Buffer CZZ" = IMD,
                   tabledata "Purch. Adv. Letter Entry CZZ" = IMD,
                   tabledata "Purch. Adv. Letter Header CZZ" = IMD,
                   tabledata "Purch. Adv. Letter Line CZZ" = IMD,

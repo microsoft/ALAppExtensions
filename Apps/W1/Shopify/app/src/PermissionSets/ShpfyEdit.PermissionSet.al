@@ -18,6 +18,7 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Customer Template" = IMD,
         tabledata "Shpfy Data Capture" = IMD,
         tabledata "Shpfy Gift Card" = IMD,
+        tabledata "Shpfy Initial Import Line" = imd,
         tabledata "Shpfy Inventory Item" = IMD,
         tabledata "Shpfy Log Entry" = IMD,
         tabledata "Shpfy Metafield" = IMD,
@@ -37,7 +38,12 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Payout" = IMD,
         tabledata "Shpfy Product" = IMD,
         tabledata "Shpfy Province" = IMD,
+#if not CLEAN21
+#pragma warning disable AL0432
         tabledata "Shpfy Registered Store" = imd,
+#pragma warning restore AL0432
+#endif
+        tabledata "Shpfy Registered Store New" = imd,
         tabledata "Shpfy Shipment Method Mapping" = IMD,
         tabledata "Shpfy Shop" = IMD,
         tabledata "Shpfy Shop Collection Map" = IMD,

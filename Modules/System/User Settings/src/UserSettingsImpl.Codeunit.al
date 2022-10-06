@@ -380,6 +380,14 @@ codeunit 9175 "User Settings Impl."
             exit(User."Full Name");
     end;
 
+    procedure TeachingTipsEnabled(UserSecurityId: Guid): Boolean
+    var
+        ApplicationUserSettings: Record "Application User Settings";
+    begin
+        GetAppSettings(UserSecurityId, ApplicationUserSettings);
+        exit(ApplicationUserSettings."Teaching Tips");
+    end;
+
     procedure DisableTeachingTips(UserSecurityId: Guid)
     var
         ApplicationUserSettings: Record "Application User Settings";
@@ -430,9 +438,9 @@ codeunit 9175 "User Settings Impl."
 
     procedure HideExternalUsers(var UserPersonalization: Record "User Personalization")
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        if not EnvironmentInfo.IsSaaS() then
+        if not EnvironmentInformation.IsSaaS() then
             exit;
 
         UserPersonalization.FilterGroup(2);

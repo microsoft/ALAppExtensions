@@ -74,10 +74,10 @@ page 1470 "Product Videos"
             Rec.SetRange(Category, CategoryToShowVideosFor);
     end;
 
-    internal procedure SetSpecificCategory(Category: Enum "Video Category")
+    internal procedure SetSpecificCategory(VideoCategory: Enum "Video Category")
     begin
         ShowSpecificCategory := true;
-        CategoryToShowVideosFor := Category;
+        CategoryToShowVideosFor := VideoCategory;
     end;
 
     var

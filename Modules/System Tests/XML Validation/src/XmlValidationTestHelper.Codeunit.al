@@ -97,4 +97,77 @@ codeunit 135052 "Xml Validation Test Helper"
         RootElement.Add(AnotherNode);
         XmlDoc.WriteTo(Xml);
     end;
+
+    procedure GetBooksXml() Xml: Text
+    var
+        StringBuilder: TextBuilder;
+    begin
+        StringBuilder.Append('<?xml version="1.0" encoding="utf-8" ?>');
+        StringBuilder.Append('<Books xmlns="http://www.java2s.com" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.java2s.com Schema.xsd http://www.w3.org/XML/1998/namespace xml.xsd">');
+        StringBuilder.Append('        <Book xml:lang="EN">');
+        StringBuilder.Append('                <Title>title1</Title>');
+        StringBuilder.Append('                <Author>author1</Author>');
+        StringBuilder.Append('                <ISBN>1-11111-111-1</ISBN>');
+        StringBuilder.Append('        </Book>');
+        StringBuilder.Append('        <Book xml:lang="EN">');
+        StringBuilder.Append('                <Title>title2</Title>');
+        StringBuilder.Append('                <Author>author2</Author>');
+        StringBuilder.Append('                <ISBN>2-222-22222-2</ISBN>');
+        StringBuilder.Append('        </Book>');
+        StringBuilder.Append('</Books>');
+
+        Xml := StringBuilder.ToText();
+    end;
+
+    procedure GetBooksSchemaXsd1() Xsd: Text
+    var
+        StringBuilder: TextBuilder;
+    begin
+        StringBuilder.Append('<?xml version="1.0" encoding="utf-8"?>');
+
+        StringBuilder.Append('<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.java2s.com" xmlns="http://www.java2s.com" elementFormDefault="qualified">');
+        StringBuilder.Append('    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>');
+        StringBuilder.Append('    <xsd:element name="Books">');
+        StringBuilder.Append('        <xsd:complexType>');
+        StringBuilder.Append('            <xsd:sequence>');
+        StringBuilder.Append('                <xsd:element name="Book" maxOccurs="unbounded">');
+        StringBuilder.Append('                    <xsd:complexType>');
+        StringBuilder.Append('                        <xsd:sequence>');
+        StringBuilder.Append('                            <xsd:element name="Title" type="xsd:string"/>');
+        StringBuilder.Append('                            <xsd:element name="Author" type="xsd:string"/>');
+        StringBuilder.Append('                            <xsd:element name="ISBN" type="xsd:string"/>');
+        StringBuilder.Append('                        </xsd:sequence>');
+        StringBuilder.Append('                        <xsd:attribute ref="xml:lang"/>');
+        StringBuilder.Append('                    </xsd:complexType>');
+        StringBuilder.Append('                </xsd:element>');
+        StringBuilder.Append('            </xsd:sequence>');
+        StringBuilder.Append('        </xsd:complexType>');
+        StringBuilder.Append('    </xsd:element>');
+        StringBuilder.Append('</xsd:schema>');
+
+        Xsd := StringBuilder.ToText();
+    end;
+
+    procedure GetBooksNamespace1(): Text
+    begin
+        exit('http://www.java2s.com');
+    end;
+
+    procedure GetBooksSchemaXsd2() Xsd: Text
+    var
+        StringBuilder: TextBuilder;
+    begin
+        StringBuilder.Append('<?xml version="1.0" encoding="utf-8"?>');
+        StringBuilder.Append('<xs:schema targetNamespace="http://www.w3.org/XML/1998/namespace" xmlns:xs="http://www.w3.org/2001/XMLSchema" xml:lang="en">');
+        StringBuilder.Append('    <xs:attribute name="lang" type="xs:language">');
+        StringBuilder.Append('    </xs:attribute>');
+        StringBuilder.Append('</xs:schema>');
+
+        Xsd := StringBuilder.ToText();
+    end;
+
+    procedure GetBooksNamespace2(): Text
+    begin
+        exit('http://www.w3.org/XML/1998/namespace');
+    end;
 }

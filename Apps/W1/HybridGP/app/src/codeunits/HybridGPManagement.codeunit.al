@@ -186,7 +186,12 @@ codeunit 4016 "Hybrid GP Management"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnHandleFixDataOnReplicationCompleted', '', false, false)]
     local procedure SkipDataRepair(var Handled: Boolean; var FixData: Boolean)
+    var
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
     begin
+        if not HybridGPWizard.GetGPMigrationEnabled() then
+            exit;
+
         Handled := true;
         FixData := false;
     end;

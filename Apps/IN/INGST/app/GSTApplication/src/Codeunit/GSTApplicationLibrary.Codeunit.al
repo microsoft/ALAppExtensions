@@ -67,6 +67,7 @@ codeunit 18433 "GST Application Library"
 
                 GSTApplicationBufferStage.Init();
                 GSTApplicationBufferStage."Transaction Type" := DetailedGSTLedgerEntry."Transaction Type";
+                GSTApplicationBufferStage."Transaction No." := DetailedGSTLedgerEntry."Transaction No.";
                 GSTApplicationBufferStage."Original Document Type" := GSTApplicationBufferStage."Original Document Type"::Invoice;
                 GSTApplicationBufferStage."Original Document No." := InvoiceDocNo;
                 GSTApplicationBufferStage."Account No." := AccountNo;

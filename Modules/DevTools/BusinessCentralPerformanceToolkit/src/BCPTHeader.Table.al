@@ -122,8 +122,9 @@ table 149000 "BCPT Header"
                     Error(BaseVersionMustBeLessThanVersionErr)
             end;
         }
-
+#pragma warning disable AA0232
         field(17; "Total No. of Sessions"; Integer)
+#pragma warning restore AA0232
         {
             Caption = 'Total No. of Sessions';
             FieldClass = FlowField;

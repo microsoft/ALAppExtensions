@@ -49,12 +49,12 @@ codeunit 31003 "Gen.Jnl.-Post Line Handler CZZ"
             GenJournalLine."Account Type"::Customer:
                 begin
                     CustLedgerEntry.FindLast();
-                    SalesAdvLetterManagementCZZ.PostAdvancePayment(CustLedgerEntry, GenJournalLine."Advance Letter No. CZZ", 0, GenJnlPostLine);
+                    SalesAdvLetterManagementCZZ.PostAdvancePayment(CustLedgerEntry, GenJournalLine, 0, GenJnlPostLine);
                 end;
             GenJournalLine."Account Type"::Vendor:
                 begin
                     VendorLedgerEntry.FindLast();
-                    PurchAdvLetterManagementCZZ.PostAdvancePayment(VendorLedgerEntry, GenJournalLine."Advance Letter No. CZZ", 0, GenJnlPostLine);
+                    PurchAdvLetterManagementCZZ.PostAdvancePayment(VendorLedgerEntry, GenJournalLine, 0, GenJnlPostLine);
                 end;
         end;
     end;

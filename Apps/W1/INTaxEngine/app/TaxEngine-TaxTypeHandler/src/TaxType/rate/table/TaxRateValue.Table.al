@@ -80,5 +80,8 @@ table 20253 "Tax Rate Value"
         {
             Clustered = true;
         }
+        key(K2; "Config ID", "Column ID")
+        {
+        }
     }
 }

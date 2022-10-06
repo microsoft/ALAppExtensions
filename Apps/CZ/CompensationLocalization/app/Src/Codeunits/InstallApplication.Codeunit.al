@@ -3,17 +3,18 @@ codeunit 31270 "Install Application CZC"
 {
     Subtype = Install;
     Permissions = tabledata "Compensations Setup CZC" = im,
-                  tabledata "Compensation Header CZC" = im,
-                  tabledata "Compensation Line CZC" = im,
-                  tabledata "Posted Compensation Header CZC" = im,
-                  tabledata "Posted Compensation Line CZC" = im,
-                  tabledata "Source Code" = i,
-                  tabledata "Compens. Report Selections CZC" = i,
-                  tabledata "Source Code Setup" = m,
-                  tabledata "Cust. Ledger Entry" = m,
-                  tabledata "Vendor Ledger Entry" = m,
-                  tabledata "Gen. Journal Line" = m,
-                  tabledata "Posted Gen. Journal Line" = m;
+                      tabledata "Compensation Header CZC" = im,
+                      tabledata "Compensation Line CZC" = im,
+                      tabledata "Posted Compensation Header CZC" = im,
+                      tabledata "Posted Compensation Line CZC" = im,
+                      tabledata "Source Code" = i,
+                      tabledata "Compens. Report Selections CZC" = i,
+                      tabledata "Source Code Setup" = m,
+                      tabledata "Cust. Ledger Entry" = m,
+                      tabledata "Vendor Ledger Entry" = m,
+                      tabledata "Gen. Journal Line" = m,
+                      tabledata "Posted Gen. Journal Line" = m,
+                      tabledata "Incoming Document" = m;
 
     var
         InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
@@ -75,12 +76,14 @@ codeunit 31270 "Install Application CZC"
         CopyPostedCreditHeader();
         CopyPostedCreditLine();
         CopyPostedGenJournalLine();
+        MoveIncomingDocument();
     end;
 
     local procedure CopySourceCodeSetup();
     var
         SourceCodeSetup: Record "Source Code Setup";
     begin
+        SourceCodeSetup.SetLoadFields(Credit);
         if SourceCodeSetup.Get() then begin
             SourceCodeSetup."Compensation CZC" := SourceCodeSetup.Credit;
             SourceCodeSetup.Modify(false);
@@ -112,6 +115,7 @@ codeunit 31270 "Install Application CZC"
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
     begin
+        CustLedgerEntry.SetLoadFields(Compensation);
         if CustLedgerEntry.FindSet(true) then
             repeat
                 CustLedgerEntry."Compensation CZC" := CustLedgerEntry.Compensation;
@@ -123,6 +127,7 @@ codeunit 31270 "Install Application CZC"
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin
+        VendorLedgerEntry.SetLoadFields(Compensation);
         if VendorLedgerEntry.FindSet(true) then
             repeat
                 VendorLedgerEntry."Compensation CZC" := VendorLedgerEntry.Compensation;
@@ -134,6 +139,7 @@ codeunit 31270 "Install Application CZC"
     var
         GenJournalLine: Record "Gen. Journal Line";
     begin
+        GenJournalLine.SetLoadFields(Compensation);
         if GenJournalLine.FindSet(true) then
             repeat
                 GenJournalLine."Compensation CZC" := GenJournalLine.Compensation;
@@ -173,9 +179,7 @@ codeunit 31270 "Install Application CZC"
                 CompensationHeaderCZC."No. Series" := CreditHeader."No. Series";
                 CompensationHeaderCZC."Company Type" := CreditHeader.Type;
                 CompensationHeaderCZC."Incoming Document Entry No." := CreditHeader."Incoming Document Entry No.";
-                CompensationHeaderCZC."Language Code" :=
-                    UpgradeApplicationCZC.GetLanguageCode(
-                        CompensationHeaderCZC."Company Type", CompensationHeaderCZC."Company No.");
+                CompensationHeaderCZC."Language Code" := UpgradeApplicationCZC.GetLanguageCode(CompensationHeaderCZC."Company Type", CompensationHeaderCZC."Company No.");
                 CompensationHeaderCZC.Modify(false);
             until CreditHeader.Next() = 0;
     end;
@@ -251,9 +255,7 @@ codeunit 31270 "Install Application CZC"
                 PostedCompensationHeaderCZC."Posting Date" := PostedCreditHeader."Posting Date";
                 PostedCompensationHeaderCZC."No. Series" := PostedCreditHeader."No. Series";
                 PostedCompensationHeaderCZC."Company Type" := PostedCreditHeader.Type;
-                PostedCompensationHeaderCZC."Language Code" :=
-                    UpgradeApplicationCZC.GetLanguageCode(
-                        PostedCompensationHeaderCZC."Company Type", PostedCompensationHeaderCZC."Company No.");
+                PostedCompensationHeaderCZC."Language Code" := UpgradeApplicationCZC.GetLanguageCode(PostedCompensationHeaderCZC."Company Type", PostedCompensationHeaderCZC."Company No.");
                 PostedCompensationHeaderCZC.Modify(false);
             until PostedCreditHeader.Next() = 0;
     end;
@@ -302,11 +304,20 @@ codeunit 31270 "Install Application CZC"
     var
         PostedGenJournalLine: Record "Posted Gen. Journal Line";
     begin
+        PostedGenJournalLine.SetLoadFields(Compensation);
         if PostedGenJournalLine.FindSet(true) then
             repeat
                 PostedGenJournalLine."Compensation CZC" := PostedGenJournalLine.Compensation;
                 PostedGenJournalLine.Modify(false);
             until PostedGenJournalLine.Next() = 0;
+    end;
+
+    local procedure MoveIncomingDocument()
+    var
+        IncomingDocument: Record "Incoming Document";
+    begin
+        IncomingDocument.SetRange("Document Type", 8);
+        IncomingDocument.ModifyAll("Document Type", IncomingDocument."Document Type"::"Compensation CZC");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
@@ -318,9 +329,6 @@ codeunit 31270 "Install Application CZC"
         InitCompensationsSetup();
         InitCompensationSourceCode();
         InitCompensationReportSelections();
-#if not CLEAN18
-        RecreateWorkflowEvents();
-#endif
 
         DataClassEvalHandlerCZC.ApplyEvaluationClassificationsForPrivacy();
         UpgradeTag.SetAllUpgradeTags();
@@ -377,7 +385,8 @@ codeunit 31270 "Install Application CZC"
         InsertCompensationReportSelectionsCZC(ReportUsage::"Posted Compensation", '1', Report::"Posted Compensation CZC");
     end;
 
-    local procedure InsertCompensationReportSelectionsCZC(ReportUsage: Enum "Compens. Report Sel. Usage CZC"; ReportSequence: Code[10]; ReportID: Integer)
+    local procedure InsertCompensationReportSelectionsCZC(ReportUsage: Enum "Compens. Report Sel. Usage CZC"; ReportSequence: Code[10];
+                                                                           ReportID: Integer)
     var
         CompensReportSelectionsCZC: Record "Compens. Report Selections CZC";
     begin
@@ -390,18 +399,4 @@ codeunit 31270 "Install Application CZC"
         CompensReportSelectionsCZC.Validate("Report ID", ReportID);
         CompensReportSelectionsCZC.Insert();
     end;
-#if not CLEAN18
-
-    local procedure RecreateWorkflowEvents()
-    var
-        WorkflowEvent: Record "Workflow Event";
-        WorkflowEventHandling: Codeunit "Workflow Event Handling";
-    begin
-        WorkflowEvent.SetRange("Table ID", Database::"Credit Header");
-        if not WorkflowEvent.IsEmpty() then begin
-            WorkflowEvent.DeleteAll();
-            WorkflowEventHandling.CreateEventsLibrary();
-        end;
-    end;
-#endif
 }

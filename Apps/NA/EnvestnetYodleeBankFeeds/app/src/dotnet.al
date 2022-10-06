@@ -1,6 +1,6 @@
 dotnet
 {
-    assembly(mscorlib)
+    assembly("netstandard")
     {
         type("System.Security.Cryptography.RNGCryptoServiceProvider"; "RNGCryptoServiceProvider")
         {

@@ -51,12 +51,4 @@ page 4750 "Recommended Apps List"
             Filters = where("Recommended By" = filter('Your Microsoft Reseller'));
         }
     }
-
-    trigger OnOpenPage()
-    var
-        FeatureTelemetry: Codeunit "Feature Telemetry";
-    begin
-        FeatureTelemetry.LogUptake('0000H7S', 'Recommended Apps', Enum::"Feature Uptake Status"::Discovered);
-    end;
-
 }

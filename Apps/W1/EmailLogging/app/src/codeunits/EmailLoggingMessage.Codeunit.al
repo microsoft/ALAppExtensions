@@ -113,7 +113,8 @@ codeunit 1687 "Email Logging Message"
         JsonValue: JsonValue;
     begin
         if GetProperty(JsonObject, PropertyName, JsonValue) then
-            exit(JsonValue.AsText());
+            if not JsonValue.IsNull() and not JsonValue.IsUndefined() then
+                exit(JsonValue.AsText());
         exit('');
     end;
 

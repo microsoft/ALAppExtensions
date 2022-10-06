@@ -6,6 +6,7 @@ pageextension 8850 "Bank Account Card Extension" extends "Bank Account Card"
 
     trigger OnOpenPage()
     var
+        ConnectivityAppsMgt: Codeunit "Connectivity Apps Mgt.";
         GeneralLedgerSetupRecordRef: RecordRef;
         AutoMatchFieldRef: FieldRef;
     begin
@@ -13,7 +14,8 @@ pageextension 8850 "Bank Account Card Extension" extends "Bank Account Card"
             if not AutoMatchFieldRef.Value() then
                 exit;
 
-        CreateEmptyBankStatementImportNotification();
+        if not ConnectivityAppsMgt.IsBankingAppAvailable() then
+            CreateEmptyBankStatementImportNotification();
     end;
 
     local procedure AutoMatchAvailable(var GeneralLedgerSetupRecordRef: RecordRef; var AutoMatchFieldRef: FieldRef): Boolean

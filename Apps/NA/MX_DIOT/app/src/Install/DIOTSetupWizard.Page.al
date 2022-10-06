@@ -138,6 +138,7 @@ page 27032 "DIOT Setup Wizard"
 
     trigger OnOpenPage()
     begin
+        FeatureTelemetry.LogUptake('1000HR4', MXDIOTTok, Enum::"Feature Uptake Status"::Discovered);
         PurchasesPayablesSetup.Get();
 
         Step := Step::Welcome;
@@ -147,6 +148,7 @@ page 27032 "DIOT Setup Wizard"
     var
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         DIOTDataMgmt: Codeunit "DIOT Data Management";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         DIOTConceptsPage: Page "DIOT Concepts";
         SetupVendorDIOTTypePage: Page "Setup Vendor DIOT Type";
         BackActionEnabled: Boolean;
@@ -158,6 +160,7 @@ page 27032 "DIOT Setup Wizard"
         ThirdStepVisible: Boolean;
         FinishStepVisible: Boolean;
         Step: Option Welcome,First,Second,Third,Finish;
+        MXDIOTTok: Label 'MX Setup and Generate DIOT Report', Locked = true;
         SetupNotCompletedQst: Label 'Setup of DIOT has not been completed.\\Are you sure that you want to exit?';
 
 
@@ -173,6 +176,7 @@ page 27032 "DIOT Setup Wizard"
 
     local procedure FinishAction();
     begin
+        FeatureTelemetry.LogUptake('1000HR5', MXDIOTTok, Enum::"Feature Uptake Status"::"Set up");
         DIOTDataMgmt.SetAssistedSetupComplete();
         CurrPage.Close();
     end;

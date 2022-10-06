@@ -10,7 +10,7 @@ page 1563 "Privacy Notice"
     SourceTable = "Privacy Notice";
     SourceTableTemporary = true;
     Extensible = false;
-    
+
     layout
     {
         area(Content)
@@ -91,7 +91,7 @@ page 1563 "Privacy Notice"
     var
         PrivacyNotice: Codeunit "Privacy Notice";
     begin
-        PrivacyText := StrSubstNo(PrivacyAgreementTxt, Rec."Integration Service Name", ProductName.Marketing());
+        PrivacyText := StrSubstNo(PrivacyNotice.GetDefaultPrivacyAgreementTxt(), Rec."Integration Service Name", ProductName.Marketing());
         UserCanApproveForOrganization := PrivacyNotice.CanCurrentUserApproveForOrganization();
         PrivacyNoticeRecord := Rec;
     end;
@@ -113,7 +113,6 @@ page 1563 "Privacy Notice"
     var
         PrivacyNoticeRecord: Record "Privacy Notice";
         LearnMoreTxt: Label 'Privacy and Cookies';
-        PrivacyAgreementTxt: Label 'By using %1, you consent to your data being shared with Microsoft services that might be outside of your organization''s selected geographic boundaries and might have different compliance and security standards than %2. Your privacy is important to us, and you can choose whether to share data with the service. To learn more, follow the link below.', Comment = '%1 = the integration service name, ex. Microsoft Sharepoint, %2 = the full marketing name, such as Microsoft Dynamics 365 Business Central.';
         PrivacyText: Text;
         UserCanApproveForOrganization: Boolean;
         IsAgreed: Boolean;

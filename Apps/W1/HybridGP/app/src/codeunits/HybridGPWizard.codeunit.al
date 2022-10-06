@@ -89,6 +89,7 @@ codeunit 4015 "Hybrid GP Wizard"
     [EventSubscriber(ObjectType::Codeunit, 4001, 'OnBeforeShowProductSpecificSettingsPageStep', '', false, false)]
     local procedure BeforeShowProductSpecificSettingsPageStep(var HybridProductType: Record "Hybrid Product Type"; var ShowSettingsStep: Boolean)
     var
+        GPPopulateCombinedTables: Codeunit "GP Populate Combined Tables";
         HelperFunctions: Codeunit "Helper Functions";
         CompanyList: List of [Text];
         CompanyName: Text;
@@ -105,6 +106,7 @@ codeunit 4015 "Hybrid GP Wizard"
             Error(TooManySegmentsErr, MessageTxt.TrimStart(','));
         end;
 
+        GPPopulateCombinedTables.PopulateGPCompanySettings();
         ShowSettingsStep := true;
     end;
 

@@ -105,7 +105,7 @@ codeunit 31353 "Issue Payment Order CZB"
             IsHandled := false;
             OnBeforeCheckPaymentOrderLine(PaymentOrderLineCZB, IsHandled);
             if not IsHandled then begin
-                PaymentOrderManagementCZB.CheckPaymentOrderLineApply(PaymentOrderLineCZB, true);
+                PaymentOrderManagementCZB.CheckPaymentOrderLineApply(PaymentOrderLineCZB, false);
                 PaymentOrderManagementCZB.CheckPaymentOrderLineFormat(PaymentOrderLineCZB, false);
                 PaymentOrderManagementCZB.CheckPaymentOrderLineBankAccountNo(PaymentOrderLineCZB, false);
                 PaymentOrderManagementCZB.CheckPaymentOrderLineCustVendBlocked(PaymentOrderLineCZB, false);

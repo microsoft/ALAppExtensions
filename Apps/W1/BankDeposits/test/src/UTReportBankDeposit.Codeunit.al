@@ -656,15 +656,15 @@ codeunit 139767 "UT Report Bank Deposit"
 
     local procedure CreateDetailedCustomerLedgerEntry(CustLedgerEntryNo: Integer; CustomerNo: Code[20])
     var
-        DetailedCustomerLedgEntry: Record "Detailed Cust. Ledg. Entry";
-        DetailedCustomerLedgEntry2: Record "Detailed Cust. Ledg. Entry";
+        DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
+        DetailedCustLedgEntry2: Record "Detailed Cust. Ledg. Entry";
     begin
-        DetailedCustomerLedgEntry2.FindLast();
-        DetailedCustomerLedgEntry."Entry No." := DetailedCustomerLedgEntry2."Entry No." + 1;
-        DetailedCustomerLedgEntry."Cust. Ledger Entry No." := CustLedgerEntryNo;
-        DetailedCustomerLedgEntry."Customer No." := CustomerNo;
-        DetailedCustomerLedgEntry.Amount := LibraryRandom.RandDec(10, 2);
-        DetailedCustomerLedgEntry.Insert(true);
+        DetailedCustLedgEntry2.FindLast();
+        DetailedCustLedgEntry."Entry No." := DetailedCustLedgEntry2."Entry No." + 1;
+        DetailedCustLedgEntry."Cust. Ledger Entry No." := CustLedgerEntryNo;
+        DetailedCustLedgEntry."Customer No." := CustomerNo;
+        DetailedCustLedgEntry.Amount := LibraryRandom.RandDec(10, 2);
+        DetailedCustLedgEntry.Insert(true);
     end;
 
     local procedure CreateVendorLedgerEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; DocumentNo: Code[20]; VendorNo: Code[20])

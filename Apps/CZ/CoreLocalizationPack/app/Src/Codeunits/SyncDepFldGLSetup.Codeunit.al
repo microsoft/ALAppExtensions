@@ -29,11 +29,6 @@ codeunit 31162 "Sync.Dep.Fld-GLSetup CZL"
             PreviousRecordRef.SetTable(PreviousRecord);
 
         SyncDepFldUtilities.SyncFields(Rec."Use VAT Date", Rec."Use VAT Date CZL", PreviousRecord."Use VAT Date", PreviousRecord."Use VAT Date CZL");
-#if not CLEAN18
-        SyncDepFldUtilities.SyncFields(Rec."Rounding Date", Rec."Rounding Date CZL", PreviousRecord."Rounding Date", PreviousRecord."Rounding Date CZL");
-        SyncDepFldUtilities.SyncFields(Rec."Closed Period Entry Pos.Date", Rec."Closed Per. Entry Pos.Date CZL", PreviousRecord."Closed Period Entry Pos.Date", PreviousRecord."Closed Per. Entry Pos.Date CZL");
-        SyncDepFldUtilities.SyncFields(Rec."User Checks Allowed", Rec."User Checks Allowed CZL", PreviousRecord."User Checks Allowed", PreviousRecord."User Checks Allowed CZL");
-#endif
         DepFieldTxt := Rec."Shared Account Schedule";
         NewFieldTxt := Rec."Shared Account Schedule CZL";
         SyncDepFldUtilities.SyncFields(DepFieldTxt, NewFieldTxt, PreviousRecord."Shared Account Schedule", PreviousRecord."Shared Account Schedule CZL");

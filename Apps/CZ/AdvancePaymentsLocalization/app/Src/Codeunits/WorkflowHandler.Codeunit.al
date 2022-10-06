@@ -20,7 +20,7 @@ codeunit 31023 "Workflow Handler CZZ"
         PurchAdvanceLetterReleasedEventDescTxt: Label 'A purchase advance letter is released.';
         PurchAdvanceLetterSendForApprovalEventDescTxt: Label 'Approval of a purchase advance letter is requested.';
         PurchAdvanceLetterApprWorkflowCodeTxt: Label 'PALAPWCZZ', Locked = true;
-        PurchAdvanceLetterApprWorkflowDescTxt: Label 'Pruchase Advance Letter Approval Workflow';
+        PurchAdvanceLetterApprWorkflowDescTxt: Label 'Purchase Advance Letter Approval Workflow';
         PurchAdvanceLetterHeaderTypeCondnTxt: Label '<?xml version="1.0" encoding="utf-8" standalone="yes"?><ReportParameters><DataItems><DataItem name="Purch. Adv. Letter Header CZZ">%1</DataItem><DataItem name="Purch. Adv. Letter Line CZZ">%2</DataItem></DataItems></ReportParameters>', Locked = true;
         PurchDocCategoryTxt: Label 'PURCHDOC', Locked = true;
         SalesAdvanceLetterApprWorkflowCodeTxt: Label 'SALAPWCZZ', Locked = true;
@@ -98,11 +98,20 @@ codeunit 31023 "Workflow Handler CZZ"
     local procedure AddWorkflowTableRelationsToLibrary()
     var
         ApprovalEntry: Record "Approval Entry";
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ";
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
     begin
         WorkflowSetup.InsertTableRelation(Database::"Sales Adv. Letter Header CZZ", 0,
           Database::"Approval Entry", ApprovalEntry.FieldNo("Record ID to Approve"));
+        WorkflowSetup.InsertTableRelation(Database::"Sales Adv. Letter Header CZZ", SalesAdvLetterHeaderCZZ.FieldNo("No."),
+          Database::"Sales Adv. Letter Line CZZ", SalesAdvLetterLineCZZ.FieldNo("Document No."));
+
         WorkflowSetup.InsertTableRelation(Database::"Purch. Adv. Letter Header CZZ", 0,
           Database::"Approval Entry", ApprovalEntry.FieldNo("Record ID to Approve"));
+        WorkflowSetup.InsertTableRelation(Database::"Purch. Adv. Letter Header CZZ", PurchAdvLetterHeaderCZZ.FieldNo("No."),
+          Database::"Purch. Adv. Letter Line CZZ", PurchAdvLetterLineCZZ.FieldNo("Document No."));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Response Handling", 'OnAddWorkflowResponsePredecessorsToLibrary', '', false, false)]
@@ -317,7 +326,7 @@ codeunit 31023 "Workflow Handler CZZ"
         RecordRestrictionMgt.UpdateRestriction(Rec, xRec);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Setup", 'OnInsertWorkflowTemplates', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Setup", 'OnAfterInitWorkflowTemplates', '', false, false)]
     local procedure InsertWorkflowTemplates()
     begin
         if IsTestingEnvironment() then
@@ -338,6 +347,8 @@ codeunit 31023 "Workflow Handler CZZ"
     var
         Workflow: Record Workflow;
     begin
+        if Workflow.Get(WorkflowSetup.GetWorkflowTemplateCode(SalesAdvanceLetterApprWorkflowCodeTxt)) then
+            exit;
         WorkflowSetup.InsertWorkflowTemplate(Workflow, SalesAdvanceLetterApprWorkflowCodeTxt,
           SalesAdvanceLetterApprWorkflowDescTxt, SalesDocCategoryTxt);
         InsertSalesAdvanceLetterApprovalWorkflowDetails(Workflow);
@@ -376,6 +387,8 @@ codeunit 31023 "Workflow Handler CZZ"
     var
         Workflow: Record Workflow;
     begin
+        if Workflow.Get(WorkflowSetup.GetWorkflowTemplateCode(PurchAdvanceLetterApprWorkflowCodeTxt)) then
+            exit;
         WorkflowSetup.InsertWorkflowTemplate(Workflow, PurchAdvanceLetterApprWorkflowCodeTxt,
           PurchAdvanceLetterApprWorkflowDescTxt, PurchDocCategoryTxt);
         InsertPurchaseAdvanceLetterApprovalWorkflowDetails(Workflow);

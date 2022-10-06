@@ -201,7 +201,7 @@ codeunit 20343 "Tax Posting Buffer Mgmt."
             TempTaxPostingBuffer.Amount := -TaxTransactionValue.Amount;
             TempTaxPostingBuffer."Amount (LCY)" := -TaxTransactionValue."Amount (LCY)";
         end;
-        if not TaxComponent."Skip Posting" then
+        if (not TaxComponent."Skip Posting") and (not ReverseCharge) then
             TotalTaxAmount += TempTaxPostingBuffer.Amount;
         TempTaxPostingBuffer.Insert();
         FillGroupedTaxBuffer(TempTaxPostingBuffer, Quantity, InvoiceQty);
@@ -417,7 +417,7 @@ codeunit 20343 "Tax Posting Buffer Mgmt."
 
     procedure GetTotalTaxAmount(): Decimal
     begin
-        exit(Abs(TotalTaxAmount));
+        exit(TotalTaxAmount);
     end;
 
     [IntegrationEvent(true, false)]

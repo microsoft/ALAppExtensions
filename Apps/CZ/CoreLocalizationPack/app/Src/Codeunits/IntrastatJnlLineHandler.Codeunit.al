@@ -59,9 +59,6 @@ codeunit 31025 "Intrastat Jnl.Line Handler CZL"
             exit;
         if Sender."Tariff No." <> '' then begin
             TariffNumber.Get(Sender."Tariff No.");
-#if not CLEAN18
-            TariffNumber.CalcFields("Supplementary Units");
-#endif
             if TariffNumber."Supplementary Units" then begin
                 TariffNumber.TestField("Suppl. Unit of Meas. Code CZL");
                 Sender."Supplem. UoM Code CZL" := TariffNumber."Suppl. Unit of Meas. Code CZL";

@@ -24,7 +24,8 @@ codeunit 31250 "Install Application CZA"
                   tabledata "Detailed G/L Entry CZA" = im,
                   tabledata "G/L Entry" = m,
                   tabledata "Item Entry Relation" = m,
-                  tabledata "Default Dimension" = m;
+                  tabledata "Default Dimension" = m,
+                  tabledata "Standard Item Journal Line" = m;
 
     var
         InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
@@ -88,6 +89,7 @@ codeunit 31250 "Install Application CZA"
         CopyGLEntry();
         CopyItemEntryRelation();
         CopyDefaultDimension();
+        CopyStandardItemJournalLine();
     end;
 
     local procedure CopyInventorySetup();
@@ -127,6 +129,7 @@ codeunit 31250 "Install Application CZA"
     var
         AssemblyHeader: Record "Assembly Header";
     begin
+        AssemblyHeader.SetLoadFields("Gen. Bus. Posting Group");
         if AssemblyHeader.FindSet(true) then
             repeat
                 AssemblyHeader."Gen. Bus. Posting Group CZA" := AssemblyHeader."Gen. Bus. Posting Group";
@@ -138,6 +141,7 @@ codeunit 31250 "Install Application CZA"
     var
         AssemblyLine: Record "Assembly Line";
     begin
+        AssemblyLine.SetLoadFields("Gen. Bus. Posting Group");
         if AssemblyLine.FindSet(true) then
             repeat
                 AssemblyLine."Gen. Bus. Posting Group CZA" := AssemblyLine."Gen. Bus. Posting Group";
@@ -149,6 +153,7 @@ codeunit 31250 "Install Application CZA"
     var
         PostedAssemblyHeader: Record "Posted Assembly Header";
     begin
+        PostedAssemblyHeader.SetLoadFields("Gen. Bus. Posting Group");
         if PostedAssemblyHeader.FindSet(true) then
             repeat
                 PostedAssemblyHeader."Gen. Bus. Posting Group CZA" := PostedAssemblyHeader."Gen. Bus. Posting Group";
@@ -160,6 +165,7 @@ codeunit 31250 "Install Application CZA"
     var
         PostedAssemblyLine: Record "Posted Assembly Line";
     begin
+        PostedAssemblyLine.SetLoadFields("Gen. Bus. Posting Group");
         if PostedAssemblyLine.FindSet(true) then
             repeat
                 PostedAssemblyLine."Gen. Bus. Posting Group CZA" := PostedAssemblyLine."Gen. Bus. Posting Group";
@@ -182,6 +188,7 @@ codeunit 31250 "Install Application CZA"
     var
         ItemLedgerEntry: Record "Item Ledger Entry";
     begin
+        ItemLedgerEntry.SetLoadFields("Source No. 2", "Source No. 3", "Source Code", "Reason Code", "Currency Code", "Currency Factor");
         if ItemLedgerEntry.FindSet(true) then
             repeat
                 ItemLedgerEntry."Invoice-to Source No. CZA" := ItemLedgerEntry."Source No. 2";
@@ -198,6 +205,7 @@ codeunit 31250 "Install Application CZA"
     var
         ValueEntry: Record "Value Entry";
     begin
+        ValueEntry.SetLoadFields("Source No. 2", "Source No. 3", "Currency Code", "Currency Factor");
         if ValueEntry.FindSet(true) then
             repeat
                 ValueEntry."Invoice-to Source No. CZA" := ValueEntry."Source No. 2";
@@ -212,6 +220,7 @@ codeunit 31250 "Install Application CZA"
     var
         CapacityLedgerEntry: Record "Capacity Ledger Entry";
     begin
+        CapacityLedgerEntry.SetLoadFields("User ID");
         if CapacityLedgerEntry.FindSet(true) then
             repeat
                 CapacityLedgerEntry."User ID CZA" := CapacityLedgerEntry."User ID";
@@ -223,6 +232,7 @@ codeunit 31250 "Install Application CZA"
     var
         ItemJournalLine: Record "Item Journal Line";
     begin
+        ItemJournalLine.SetLoadFields("Source No. 3", "Currency Code", "Currency Factor");
         if ItemJournalLine.FindSet(true) then
             repeat
                 ItemJournalLine."Delivery-to Source No. CZA" := ItemJournalLine."Source No. 3";
@@ -236,6 +246,7 @@ codeunit 31250 "Install Application CZA"
     var
         TransferRoute: Record "Transfer Route";
     begin
+        TransferRoute.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive");
         if TransferRoute.FindSet(true) then
             repeat
                 TransferRoute."Gen.Bus.Post.Group Ship CZA" := TransferRoute."Gen. Bus. Post. Group Ship";
@@ -248,6 +259,7 @@ codeunit 31250 "Install Application CZA"
     var
         TransferHeader: Record "Transfer Header";
     begin
+        TransferHeader.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive");
         if TransferHeader.FindSet(true) then
             repeat
                 TransferHeader."Gen.Bus.Post.Group Ship CZA" := TransferHeader."Gen. Bus. Post. Group Ship";
@@ -260,6 +272,7 @@ codeunit 31250 "Install Application CZA"
     var
         TransferLine: Record "Transfer Line";
     begin
+        TransferLine.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive");
         if TransferLine.FindSet(true) then
             repeat
                 TransferLine."Gen.Bus.Post.Group Ship CZA" := TransferLine."Gen. Bus. Post. Group Ship";
@@ -272,6 +285,7 @@ codeunit 31250 "Install Application CZA"
     var
         TransferShipmentHeader: Record "Transfer Shipment Header";
     begin
+        TransferShipmentHeader.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive");
         if TransferShipmentHeader.FindSet(true) then
             repeat
                 TransferShipmentHeader."Gen.Bus.Post.Group Ship CZA" := TransferShipmentHeader."Gen. Bus. Post. Group Ship";
@@ -284,6 +298,7 @@ codeunit 31250 "Install Application CZA"
     var
         TransferShipmentLine: Record "Transfer Shipment Line";
     begin
+        TransferShipmentLine.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive", Correction, "Transfer Order Line No.");
         if TransferShipmentLine.FindSet(true) then
             repeat
                 TransferShipmentLine."Gen.Bus.Post.Group Ship CZA" := TransferShipmentLine."Gen. Bus. Post. Group Ship";
@@ -298,6 +313,7 @@ codeunit 31250 "Install Application CZA"
     var
         TransferReceiptHeader: Record "Transfer Receipt Header";
     begin
+        TransferReceiptHeader.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive");
         if TransferReceiptHeader.FindSet(true) then
             repeat
                 TransferReceiptHeader."Gen.Bus.Post.Group Ship CZA" := TransferReceiptHeader."Gen. Bus. Post. Group Ship";
@@ -310,6 +326,7 @@ codeunit 31250 "Install Application CZA"
     var
         TransferReceiptLine: Record "Transfer Receipt Line";
     begin
+        TransferReceiptLine.SetLoadFields("Gen. Bus. Post. Group Ship", "Gen. Bus. Post. Group Receive");
         if TransferReceiptLine.FindSet(true) then
             repeat
                 TransferReceiptLine."Gen.Bus.Post.Group Ship CZA" := TransferReceiptLine."Gen. Bus. Post. Group Ship";
@@ -349,6 +366,7 @@ codeunit 31250 "Install Application CZA"
     var
         GLEntry: Record "G/L Entry";
     begin
+        GLEntry.SetLoadFields(Closed, "Closed at Date", "Amount to Apply", "Applies-to ID");
         if GLEntry.FindSet(true) then
             repeat
                 GLEntry."Closed CZA" := GLEntry.Closed;
@@ -363,6 +381,7 @@ codeunit 31250 "Install Application CZA"
     var
         ItemEntryRelation: Record "Item Entry Relation";
     begin
+        ItemEntryRelation.SetLoadFields(Undo);
         if ItemEntryRelation.FindSet(true) then
             repeat
                 ItemEntryRelation."Undo CZA" := ItemEntryRelation.Undo;
@@ -374,6 +393,7 @@ codeunit 31250 "Install Application CZA"
     var
         DefaultDimension: Record "Default Dimension";
     begin
+        DefaultDimension.SetLoadFields("Automatic Create", "Dimension Description Field ID", "Dimension Description Format", "Dimension Description Update", "Automatic Cr. Value Posting");
         if DefaultDimension.FindSet(true) then
             repeat
                 if DefaultDimension."Automatic Create" then begin
@@ -399,6 +419,18 @@ codeunit 31250 "Install Application CZA"
                     DefaultDimension.Modify(false);
                 end;
             until DefaultDimension.Next() = 0;
+    end;
+
+    local procedure CopyStandardItemJournalLine();
+    var
+        StandardItemJournalLine: Record "Standard Item Journal Line";
+    begin
+        StandardItemJournalLine.SetLoadFields("New Location Code");
+        if StandardItemJournalLine.FindSet(true) then
+            repeat
+                StandardItemJournalLine."New Location Code CZA" := StandardItemJournalLine."New Location Code";
+                StandardItemJournalLine.Modify(false);
+            until StandardItemJournalLine.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

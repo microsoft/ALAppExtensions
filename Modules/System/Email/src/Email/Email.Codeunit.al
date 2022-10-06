@@ -475,7 +475,7 @@ codeunit 8901 "Email"
     /// <param name="MessageId">The ID of the email in the queue.</param>
     /// <param name="Status">True if the message was successfully sent.</param>
     [IntegrationEvent(false, false)]
-    [Obsolete('This event has been replaced with OnAfterEmailSend which is isolated.', '20.1')]
+    [Obsolete('This event has been replaced with OnAfterEmailSend and OnAfterEmailSendFailed which are isolated.', '20.1')]
     internal procedure OnAfterSendEmail(MessageId: Guid; Status: Boolean)
     begin
     end;
@@ -527,6 +527,25 @@ codeunit 8901 "Email"
     /// <param name="EmailOutbox">The record of the email outbox that failed to send.</param>
     [IntegrationEvent(false, false, true)]
     internal procedure OnAfterEmailSendFailed(EmailOutbox: Record "Email Outbox")
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event that allows updating of the email message before the email editor opens.
+    /// </summary>
+    /// <param name="EmailMessage">Email message codeunit which is linked to the current email.</param>
+    /// <param name="IsNewEmail">True if this is a newly created email.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnBeforeOpenEmailEditor(var EmailMessage: Codeunit "Email Message"; IsNewEmail: Boolean)
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event that allows updating of the email message before the email is queued for sending.
+    /// </summary>
+    /// <param name="EmailMessage">Email message codeunit which is linked to the current email.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnBeforeSendEmail(var EmailMessage: Codeunit "Email Message")
     begin
     end;
 

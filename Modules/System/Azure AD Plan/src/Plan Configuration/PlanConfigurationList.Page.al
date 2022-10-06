@@ -15,6 +15,8 @@ page 9061 "Plan Configuration List"
     UsageCategory = Administration;
     Extensible = false;
     Permissions = tabledata "Plan Configuration" = rimd;
+    InsertAllowed = false;
+    ModifyAllowed = false;
 
     layout
     {
@@ -28,13 +30,6 @@ page 9061 "Plan Configuration List"
                     Caption = 'License';
                     ToolTip = 'Specifies the name of the license.';
                     Editable = Rec."Plan Name" = '';
-
-                    trigger OnLookup(var Text: Text): Boolean
-                    var
-                        PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
-                    begin
-                        PlanConfigurationImpl.SelectLicense(Rec);
-                    end;
 
                     trigger OnDrillDown()
                     begin
@@ -54,6 +49,35 @@ page 9061 "Plan Configuration List"
 
     actions
     {
+        area(Promoted)
+        {
+            actionref(New_Promoted; New)
+            {
+            }
+
+            actionref(Configure_Promoted; Configure)
+            {
+            }
+        }
+
+        area(Creation)
+        {
+            action(New)
+            {
+                ApplicationArea = All;
+                Caption = 'Add License Configuration';
+                Image = Add;
+                ToolTip = 'Add a configuration for a license.';
+
+                trigger OnAction()
+                var
+                    PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
+                begin
+                    PlanConfigurationImpl.AddLicenseEntry();
+                end;
+            }
+        }
+
         area(Processing)
         {
             action(Configure)
@@ -61,10 +85,6 @@ page 9061 "Plan Configuration List"
                 ApplicationArea = All;
                 Caption = 'Configure';
                 Image = Setup;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
                 RunObject = Page "Plan Configuration Card";
                 RunPageLink = "Plan ID" = Field("Plan ID");
                 Scope = Repeater;

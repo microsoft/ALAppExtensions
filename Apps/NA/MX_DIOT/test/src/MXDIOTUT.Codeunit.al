@@ -1,7 +1,7 @@
 codeunit 148041 "MX DIOT UT"
 {
     Subtype = Test;
-    TestPermissions = NonRestrictive;
+    TestPermissions = Disabled;
 
     trigger OnRun()
     begin

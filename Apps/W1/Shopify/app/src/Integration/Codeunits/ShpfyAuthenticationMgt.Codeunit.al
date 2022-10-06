@@ -7,17 +7,16 @@ codeunit 30199 "Shpfy Authentication Mgt."
 
     var
         // https://shopify.dev/api/usage/access-scopes
-        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping', Locked = true;
+        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_fulfillments,write_inventory,read_locations,read_payment_terms,write_products,write_shipping,read_shopify_payments_payouts', Locked = true;
         ShopifyAPIKeyAKVSecretNameLbl: Label 'ShopifyApiKey', Locked = true;
         ShopifyAPISecretAKVSecretNameLbl: Label 'ShopifyApiSecret', Locked = true;
         MissingAPIKeyTelemetryTxt: Label 'The api key has not been initialized.', Locked = true;
-
         MissingAPISecretTelemetryTxt: Label 'The api secret has not been initialized.', Locked = true;
         CategoryTok: Label 'Shopify Integration', Locked = true;
-
-
+        NoCallbackErr: Label 'No callback was received from Shopify. Make sure that you haven''t closed the page that says "Waiting for a response - do not close this page", and then try again.';
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     local procedure GetApiKey(): Text
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
@@ -30,10 +29,11 @@ codeunit 30199 "Shpfy Authentication Mgt."
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     local procedure GetApiSecret(): Text
     var
-        AzureKeyVault: Codeunit "Azure Key Vault";
-        ApiSecret: Text;
+    AzureKeyVault: Codeunit "Azure Key Vault";
+    ApiSecret: Text;
     begin
         if not AzureKeyVault.GetAzureKeyVaultSecret(ShopifyAPISecretAKVSecretNameLbl, ApiSecret) then
             Session.LogMessage('0000HCB', MissingAPISecretTelemetryTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok)
@@ -42,6 +42,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure InstallShopifyApp(InstalllToStore: Text)
     var
         OAuth2: Codeunit "OAuth2";
@@ -52,7 +53,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
         RedirectUrl: Text;
         Store: Text;
         AuthorizationCode: Text;
-        InstallURLTxt: Label 'https://%1/admin/oauth/authorize?client_id=%2&scope=%3&redirect_uri=%4&state=%5&grant_options[]=%6', Comment = '%1 = Store, %2 = ApiKey, %3 = Scope, %3 = RedirectUrl, %4 = State, %6= GrantOptions', Locked = true;
+        InstallURLTxt: Label 'https://%1/admin/oauth/authorize?client_id=%2&scope=%3&redirect_uri=%4&state=%5&grant_options[]=%6', Comment = '%1 = Store, %2 = ApiKey, %3 = Scope, %3 = RedirectUrl, %4 = State, %6 = GrantOptions', Locked = true;
         NotMatchingStateErr: Label 'The state parameter value does not match.';
     begin
         OAuth2.GetDefaultRedirectURL(RedirectUrl);
@@ -61,14 +62,20 @@ codeunit 30199 "Shpfy Authentication Mgt."
         ShopifyAuthentication.SetOAuth2Properties(Url);
         Commit();
         ShopifyAuthentication.RunModal();
-        if State <> ShopifyAuthentication.State() then
-            Error(NotMatchingStateErr);
         Store := ShopifyAuthentication.Store();
         AuthorizationCode := ShopifyAuthentication.GetAuthorizationCode();
+        if AuthorizationCode = '' then
+            if ShopifyAuthentication.GetAuthError() <> '' then
+                Error(ShopifyAuthentication.GetAuthError())
+            else
+                Error(NoCallbackErr);
+        if State <> ShopifyAuthentication.State() then
+            Error(NotMatchingStateErr);
         GetToken(Store, AuthorizationCode);
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     local procedure GetToken(Store: Text; AuthorizationCode: Text)
     var
         JHelper: Codeunit "Shpfy Json Helper";
@@ -105,33 +112,35 @@ codeunit 30199 "Shpfy Authentication Mgt."
 
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     local procedure SaveStoreInfo(Store: Text; ActualScope: Text; AccessToken: Text)
     var
-        RegisteredStore: Record "Shpfy Registered Store";
+        RegisteredStoreNew: Record "Shpfy Registered Store New";
     begin
         Store := Store.ToLower();
-        if not RegisteredStore.Get(Store) then begin
-            RegisteredStore.Init();
-            RegisteredStore.Store := CopyStr(Store, 1, MaxStrLen(RegisteredStore.Store));
-            RegisteredStore.Insert();
+        if not RegisteredStoreNew.Get(Store) then begin
+            RegisteredStoreNew.Init();
+            RegisteredStoreNew.Store := CopyStr(Store, 1, MaxStrLen(RegisteredStoreNew.Store));
+            RegisteredStoreNew.Insert();
         end;
-        RegisteredStore."Requested Scope" := ScopeTxt;
-        RegisteredStore."Actual Scope" := CopyStr(ActualScope, 1, MaxStrLen(RegisteredStore."Actual Scope"));
-        RegisteredStore.Modify();
-        RegisteredStore.SetAccessToken(AccessToken);
+        RegisteredStoreNew."Requested Scope" := ScopeTxt;
+        RegisteredStoreNew."Actual Scope" := CopyStr(ActualScope, 1, MaxStrLen(RegisteredStoreNew."Actual Scope"));
+        RegisteredStoreNew.Modify();
+        RegisteredStoreNew.SetAccessToken(AccessToken);
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure GetAccessToken(Store: Text): Text
     var
-        RegisteredStore: Record "Shpfy Registered Store";
+        ShpfyRegisteredStoreNew: Record "Shpfy Registered Store New";
         AccessToken: Text;
         NoAccessTokenErr: label 'No Access token for the store "%1".\Please request an access token for this store.', Comment = '%1 = Store';
         ChangedScopeErr: Label 'The application scope is changed, please request a new access token for the store "%1".', Comment = '%1 = Store';
     begin
-        if RegisteredStore.Get(Store) then
-            if RegisteredStore."Requested Scope" = ScopeTxt then begin
-                AccessToken := RegisteredStore.GetAccessToken();
+        if ShpfyRegisteredStoreNew.Get(Store) then
+            if ShpfyRegisteredStoreNew."Requested Scope" = ScopeTxt then begin
+                AccessToken := ShpfyRegisteredStoreNew.GetAccessToken();
                 if AccessToken <> '' then
                     exit(AccessToken)
                 else
@@ -142,12 +151,29 @@ codeunit 30199 "Shpfy Authentication Mgt."
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure AccessTokenExist(Store: Text): Boolean
     var
-        RegisteredStore: Record "Shpfy Registered Store";
+        RegisteredStoreNew: Record "Shpfy Registered Store New";
     begin
-        if RegisteredStore.Get(Store) then
-            if RegisteredStore."Requested Scope" = ScopeTxt then
-                exit(RegisteredStore.GetAccessToken() <> '');
+        if RegisteredStoreNew.Get(Store) then
+            if RegisteredStoreNew."Requested Scope" = ScopeTxt then
+                exit(RegisteredStoreNew.GetAccessToken() <> '');
+    end;
+
+    procedure IsValidShopUrl(ShopUrl: Text): Boolean
+    var
+        Regex: Codeunit Regex;
+        PatternLbl: Label '^(https)\:\/\/[a-zA-Z0-9][a-zA-Z0-9\-]*\.myshopify\.com[\/]*$', Locked = true;
+    begin
+        exit(Regex.IsMatch(ShopUrl, PatternLbl))
+    end;
+
+    procedure IsValidHostName(Hostname: Text): Boolean
+    var
+        Regex: Codeunit Regex;
+        PatternLbl: Label '^[a-zA-Z0-9][a-zA-Z0-9\-]*\.myshopify\.com$', Locked = true;
+    begin
+        exit(Regex.IsMatch(Hostname, PatternLbl))
     end;
 }

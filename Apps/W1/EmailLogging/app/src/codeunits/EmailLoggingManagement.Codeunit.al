@@ -430,4 +430,13 @@ codeunit 1681 "Email Logging Management"
             Error(NoPermissionsForJobErr);
         end;
     end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Marketing Setup", 'OnRunEmailLoggingSetup', '', false, false)]
+    local procedure HandleOnRunEmailLoggingSetup()
+    begin
+        if IsEmailLoggingUsingGraphApiFeatureEnabled() then begin
+            Commit();
+            Page.RunModal(Page::"Email Logging Setup");
+        end;
+    end;
 }

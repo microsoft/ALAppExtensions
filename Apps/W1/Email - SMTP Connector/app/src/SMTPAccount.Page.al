@@ -29,18 +29,36 @@ page 4512 "SMTP Account"
                 NotBlank = true;
             }
 
+            field(SenderTypeField; Rec."Sender Type")
+            {
+                ApplicationArea = All;
+                Caption = 'Sender Email Account';
+                ToolTip = 'Specifies whether emails appear to come from the email accounts that people sign in with, or the account you enter in the Email Address field. For Current User, everyone who uses this SMTP account must have the Send As permission on your mail server to the account in the User Name field. For Specific Account, only the account in the Email Address field must have the Send As permission.';
+
+                trigger OnValidate()
+                begin
+                    SetProperties();
+                end;
+            }
+
             field(SenderNameField; Rec."Sender Name")
             {
                 ApplicationArea = All;
                 Caption = 'Sender Name';
-                ToolTip = 'Specifies a name to add in front of the sender email address. For example, if you enter Stan in this field, and the email address is stan@cronus.com, the recipient will see the sender as Stan stan@cronus.com.';
+#pragma warning disable AA0240
+                ToolTip = 'Specifies a name to add in front of the sender email address on emails. The name depends on the Sender Email Address field. For Current User, this is the name from the account you used to sign in. For Specific Account, this can be any name. For example, if you enter Stan, and the address in the Email Address field is stan@cronus.coml, the sender name will appear as Stan stan@cronus.com.';
+#pragma warning restore AA0240
+                Editable = SenderFieldsEditable;
             }
 
             field(EmailAddress; Rec."Email Address")
             {
                 ApplicationArea = All;
                 Caption = 'Email Address';
-                ToolTip = 'Specifies the Email Address specified as the from email address.';
+#pragma warning disable AA0240
+                ToolTip = 'Specifies the email address to show as the sender on email messages. This field is available if you choose Specific Account in the Sender Email Account field. For example, this lets all emails appear to come from the same account, such as sales@cronus.com. This account must have the Send As permission on your mail server to the account in the User Name field.';
+#pragma warning restore AA0240
+                Editable = SenderFieldsEditable;
                 ShowMandatory = true;
                 NotBlank = true;
 
@@ -54,8 +72,8 @@ page 4512 "SMTP Account"
             field(ServerUrl; Rec.Server)
             {
                 ApplicationArea = All;
-                Caption = 'Server Url';
-                ToolTip = 'Specifies the name of the SMTP server.';
+                Caption = 'Server URL';
+                ToolTip = 'Specifies the URL of the SMTP server.';
                 ShowMandatory = true;
                 NotBlank = true;
 
@@ -95,7 +113,7 @@ page 4512 "SMTP Account"
                 ApplicationArea = All;
                 Editable = UserIDEditable;
                 Caption = 'User Name';
-                ToolTip = 'Specifies the username to use when authenticating with the SMTP server.';
+                ToolTip = 'Specifies the user account to use when authenticating to the SMTP server.';
             }
 
             field(Password; Password)
@@ -116,7 +134,7 @@ page 4512 "SMTP Account"
             {
                 ApplicationArea = All;
                 Caption = 'Secure Connection';
-                ToolTip = 'Specifies if your SMTP mail server setup requires a secure connection that uses a cryptography or security protocol, such as secure socket layers (SSL). Clear the check box if you do not want to enable this security setting.';
+                ToolTip = 'Specifies whether your SMTP mail server setup requires a secure connection that uses a cryptography or security protocol, such as secure socket layers (SSL).';
             }
         }
     }
@@ -196,6 +214,8 @@ page 4512 "SMTP Account"
         Password: Text;
         [InDataSet]
         AuthActionsVisible: Boolean;
+        [InDataSet]
+        SenderFieldsEditable: Boolean;
         ConfirmApplyO365Qst: Label 'Do you want to override the current data?';
         EveryUserShouldPressAuthenticateMsg: Label 'Before people can send email they must authenticate their email account. They can do that by choosing the Authenticate action on the SMTP Account page.';
 
@@ -216,5 +236,6 @@ page 4512 "SMTP Account"
         UserIDEditable := (Rec."Authentication Type" = Rec."Authentication Type"::Basic) or (Rec."Authentication Type" = Rec."Authentication Type"::"OAuth 2.0") or (Rec."Authentication Type" = Rec."Authentication Type"::NTLM);
         PasswordEditable := (Rec."Authentication Type" = Rec."Authentication Type"::Basic) or (Rec."Authentication Type" = Rec."Authentication Type"::NTLM);
         AuthActionsVisible := (not EnvironmentInformation.IsSaaSInfrastructure()) and (Rec."Authentication Type" = Rec."Authentication Type"::"OAuth 2.0") and (Rec.Server = SMTPConnectorImpl.GetO365SmtpServer());
+        SenderFieldsEditable := Rec."Sender Type" = Rec."Sender Type"::"Specific User";
     end;
 }

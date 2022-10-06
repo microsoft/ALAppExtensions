@@ -219,53 +219,12 @@ codeunit 148019 "Library - Payment Export DK"
         DataExchDef.FINDFIRST();
     end;
 
-    local procedure SelectCountryAndCurrency(var CountryRegion: Record "Country/Region"; var Currency: Record Currency; European: Boolean);
-    var
-        CompanyInformation: Record "Company Information";
-        GeneralLedgerSetup: Record "General Ledger Setup";
-    begin
-        CompanyInformation.GET();
-        CountryRegion.SETFILTER(Code, '<>%1', CompanyInformation."Country/Region Code");
-        IF European THEN
-            CountryRegion.SETFILTER("EU Country/Region Code", '<>%1', '')
-        ELSE
-            CountryRegion.SETRANGE("EU Country/Region Code", '');
-        LibraryERM.FindCountryRegion(CountryRegion);
-
-        GeneralLedgerSetup.GET();
-        Currency.SETFILTER(Code, '<>%1', GeneralLedgerSetup."LCY Code");
-        LibraryERM.FindCurrency(Currency);
-    end;
-
-    local procedure SetVendorLocaleToForeign(var Vendor: Record Vendor; European: Boolean);
-    var
-        CountryRegion: Record "Country/Region";
-        Currency: Record Currency;
-    begin
-        SelectCountryAndCurrency(CountryRegion, Currency, European);
-        UpdateVendorLocale(Vendor, CountryRegion.Code, Currency.Code);
-    end;
-
-    local procedure UpdateCustomerLocale(var Customer: Record Customer; CountryRegionCode: Code[10]; CurrencyCode: Code[10]);
-    begin
-        Customer.VALIDATE("Country/Region Code", CountryRegionCode);
-        Customer.VALIDATE("Currency Code", CurrencyCode);
-        Customer.MODIFY(TRUE);
-    end;
-
     local procedure UpdateMessageToRecipient(var GenJournalLine: Record "Gen. Journal Line");
     begin
         GenJournalLine.VALIDATE("Message to Recipient",
           LibraryUtility.GenerateRandomCode(GenJournalLine.FIELDNO("Message to Recipient"), DATABASE::"Gen. Journal Line"));
         GenJournalLine."Applies-to Ext. Doc. No." := GenJournalLine."Document No.";
         GenJournalLine.MODIFY(TRUE);
-    end;
-
-    local procedure UpdateVendorLocale(var Vendor: Record Vendor; CountryRegionCode: Code[10]; CurrencyCode: Code[10]);
-    begin
-        Vendor.VALIDATE("Country/Region Code", CountryRegionCode);
-        Vendor.VALIDATE("Currency Code", CurrencyCode);
-        Vendor.MODIFY(TRUE);
     end;
 }
 

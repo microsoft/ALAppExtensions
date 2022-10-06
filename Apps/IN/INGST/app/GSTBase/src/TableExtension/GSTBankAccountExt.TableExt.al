@@ -18,5 +18,10 @@ tableextension 18000 "GST Bank Account Ext" extends "Bank Account"
             Caption = 'GST Registration No.';
             DataClassification = CustomerContent;
         }
+        field(18003; "IFSC Code"; Text[20])
+        {
+            Caption = 'IFSC Code';
+            DataClassification = CustomerContent;
+        }
     }
 }

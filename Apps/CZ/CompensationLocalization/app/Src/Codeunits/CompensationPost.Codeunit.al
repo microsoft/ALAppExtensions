@@ -140,9 +140,6 @@ codeunit 31269 "Compensation - Post CZC"
         Text002Err: Label 'There is nothing to post.';
         Text008Msg: Label 'Posting lines              #2######.', Comment = '%2 = progress bar';
         Text009Msg: Label 'Compensation %1.', Comment = '%1 = Number of Compensations';
-#if not CLEAN18
-        DuplicityFoundErr: Label '%1 %2 was found. Resolve this before issue banking document.', Comment = '%1 = TableCaption, %2 = No.';
-#endif
         PreviewMode: Boolean;
 
     local procedure CheckRoundingAccounts(Balance: Decimal)
@@ -168,27 +165,6 @@ codeunit 31269 "Compensation - Post CZC"
         PreviewMode := NewPreviewMode;
     end;
 
-#if not CLEAN18
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Compensation - Post CZC", 'OnBeforePostCompensationCZC', '', false, false)]
-    local procedure CheckObsoleteOnBeforePostCompensationCZC(var CompensationHeaderCZC: Record "Compensation Header CZC")
-    var
-        DuplicitCreditHeader: Record "Credit Header";
-    begin
-        if DuplicitCreditHeader.Get(CompensationHeaderCZC."No.") then
-            Error(DuplicityFoundErr, DuplicitCreditHeader.TableCaption(), DuplicitCreditHeader."No.");
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Credit - Post", 'OnBeforePostCreditDoc', '', false, false)]
-    local procedure CheckObsoleteOnBeforePostCreditDoc(var CreditHdr: Record "Credit Header")
-    var
-        DuplicitCompensationHeaderCZC: Record "Compensation Header CZC";
-    begin
-        if DuplicitCompensationHeaderCZC.Get(CreditHdr."No.") then
-            Error(DuplicityFoundErr, DuplicitCompensationHeaderCZC.TableCaption(), DuplicitCompensationHeaderCZC."No.");
-    end;
-#pragma warning restore
-#endif
     [IntegrationEvent(false, false)]
     local procedure OnBeforePostCompensationCZC(var CompensationHeaderCZC: Record "Compensation Header CZC")
     begin

@@ -133,10 +133,9 @@ table 4009 "Migration Table Mapping"
     procedure UpdateExtensionName(var ExtensionName: Text)
     var
         PublishedApplication: Record "Published Application";
-        ExtensionNameFilterTxt: Label '@%1*', Comment = '%1 - name of extension', Locked = true;
     begin
         if ExtensionName <> '' then begin
-            PublishedApplication.SetFilter(Name, StrSubstNo(ExtensionNameFilterTxt, ExtensionName));
+            PublishedApplication.SetFilter(Name, '%1', '@' + ExtensionName + '*');
             PublishedApplication.FindFirst();
             ExtensionName := PublishedApplication.Name;
             Validate("App ID", PublishedApplication.ID);

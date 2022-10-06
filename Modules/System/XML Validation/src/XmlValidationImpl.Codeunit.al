@@ -8,6 +8,7 @@ codeunit 6241 "Xml Validation Impl."
     Access = Internal;
 
     var
+        ValidatedXmlDocument: DotNet XmlDocument;
         InvalidXmlErr: Label 'The XML definition is invalid.';
         InvalidSchemaErr: Label 'The schema definition is not valid XML.';
 
@@ -43,17 +44,75 @@ codeunit 6241 "Xml Validation Impl."
     end;
 
     procedure ValidateAgainstSchema(XmlDocStream: InStream; XmlSchemaStream: InStream; Namespace: Text)
+    begin
+        SetValidatedDocument(XmlDocStream);
+        AddValidationSchema(XmlSchemaStream, Namespace);
+        ValidateAgainstSchema();
+    end;
+
+    procedure SetValidatedDocument(Xml: Text)
     var
-        XmlDoc: DotNet XmlDocument;
+        XmlDoc: XmlDocument;
+    begin
+        if not XmlDocument.ReadFrom(Xml, XmlDoc) then
+            Error(InvalidXmlErr);
+
+        SetValidatedDocument(XmlDoc);
+    end;
+
+    procedure SetValidatedDocument(XmlDoc: XmlDocument)
+    var
+        XmlDocTempBlob: Codeunit "Temp Blob";
+        XmlDocOutStream: OutStream;
+        XmlDocInStream: InStream;
+    begin
+        XmlDocTempBlob.CreateOutStream(XmlDocOutStream);
+        XmlDoc.WriteTo(XmlDocOutStream);
+        XmlDocTempBlob.CreateInStream(XmlDocInStream);
+
+        SetValidatedDocument(XmlDocInStream);
+    end;
+
+    procedure SetValidatedDocument(XmlDocInStream: InStream)
+    begin
+        ValidatedXmlDocument := ValidatedXmlDocument.XmlDocument();
+        ValidatedXmlDocument.Load(XmlDocInStream);
+    end;
+
+    procedure AddValidationSchema(XmlSchema: Text; Namespace: Text)
+    var
+        XmlSchemaDoc: XmlDocument;
+    begin
+        if not XmlDocument.ReadFrom(XmlSchema, XmlSchemaDoc) then
+            Error(InvalidSchemaErr);
+
+        AddValidationSchema(XmlSchemaDoc, Namespace);
+    end;
+
+    procedure AddValidationSchema(XmlSchemaDoc: XmlDocument; Namespace: Text)
+    var
+        XmlSchemaTempBlob: Codeunit "Temp Blob";
+        XmlSchemaOutStream: OutStream;
+        XmlSchemaInStream: InStream;
+    begin
+        XmlSchemaTempBlob.CreateOutStream(XmlSchemaOutStream);
+        XmlSchemaDoc.WriteTo(XmlSchemaOutStream);
+        XmlSchemaTempBlob.CreateInStream(XmlSchemaInStream);
+
+        AddValidationSchema(XmlSchemaInStream, Namespace);
+    end;
+
+    procedure AddValidationSchema(XmlSchemaInStream: InStream; Namespace: Text)
+    var
         XmlReader: DotNet XmlReader;
     begin
-        XmlDoc := XmlDoc.XmlDocument();
-        XmlDoc.Load(XmlDocStream);
+        XmlReader := XmlReader.Create(XmlSchemaInStream);
+        ValidatedXmlDocument.Schemas.Add(Namespace, XmlReader);
+    end;
 
-        XmlReader := XmlReader.Create(XmlSchemaStream);
-        XmlDoc.Schemas.Add(Namespace, XmlReader);
-
-        if not TryValidate(XmlDoc) then
+    procedure ValidateAgainstSchema()
+    begin
+        if not TryValidate(ValidatedXmlDocument) then
             HandleValidateException();
     end;
 

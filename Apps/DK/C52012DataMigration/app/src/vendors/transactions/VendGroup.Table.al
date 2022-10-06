@@ -65,6 +65,9 @@ table 1893 "C5 VendGroup"
         {
             Clustered = true;
         }
+        key(Key1; Group)
+        {
+        }
     }
 }
 

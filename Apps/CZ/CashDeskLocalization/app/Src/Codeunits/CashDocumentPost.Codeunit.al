@@ -34,7 +34,11 @@ codeunit 11729 "Cash Document-Post CZP"
         CashDeskCZP.TestField(Blocked, false);
         CashDocumentHeaderCZP.CalcFields(CashDocumentHeaderCZP."Amount Including VAT", CashDocumentHeaderCZP."Amount Including VAT (LCY)");
         if CashDocumentHeaderCZP."Amount Including VAT" <> CashDocumentHeaderCZP."Released Amount" then
-            Error(IsNotEqualErr, CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Amount Including VAT"), CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Released Amount"));
+            Error(NotEqualErr,
+                CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Amount Including VAT"),
+                CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Released Amount"));
+
+        CashDeskManagementCZP.CheckUserRights(CashDeskCZP."No.", Enum::"Cash Document Action CZP"::Post, CashDocumentHeaderCZP.IsEETTransaction());
 
         SourceCodeSetup.Get();
         SourceCodeSetup.TestField("Cash Desk CZP");
@@ -63,7 +67,7 @@ codeunit 11729 "Cash Document-Post CZP"
 
         PostHeader();
         PostLines();
-#if not CLEAN18
+#if not CLEAN19
         PostAdvances();
 #endif
 
@@ -79,6 +83,7 @@ codeunit 11729 "Cash Document-Post CZP"
         PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
         SourceCodeSetup: Record "Source Code Setup";
         GLEntry: Record "G/L Entry";
+        CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
         GenJnlCheckLine: Codeunit "Gen. Jnl.-Check Line";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         DimensionManagement: Codeunit DimensionManagement;
@@ -87,7 +92,7 @@ codeunit 11729 "Cash Document-Post CZP"
         WindowDialog: Dialog;
         DialogMsg: Label 'Posting Document #1#################################\\Posting Lines #2######\', Comment = '%1 = Cash Desk No. & "Cash Document Type & No., %2 = Line Count';
         PostingDateOutRangeErr: Label 'is not within your range of allowed posting dates';
-        IsNotEqualErr: Label '%1 is not equal %2.', Comment = '%1 = Amount Including VAT FieldCaption, %2 = Released Amount FieldCaption)';
+        NotEqualErr: Label '%1 is not equal %2.', Comment = '%1 = Amount Including VAT FieldCaption, %2 = Released Amount FieldCaption';
         CheckDimErr: Label 'A dimension used in %1 %2, %3, %4 has caused an error.\\%5.', Comment = '%1 = TableCaption, %2 = Cash Desk No., %3 = Cash Document No., %4 = Cash Document Line No., %5 = Error Text';
         PreviewMode: Boolean;
 
@@ -273,7 +278,7 @@ codeunit 11729 "Cash Document-Post CZP"
         TempGenJournalLine."Dimension Set ID" := InitCashDocumentLineCZP."Dimension Set ID";
         TempGenJournalLine."Source Code" := SourceCodeSetup."Cash Desk CZP";
         TempGenJournalLine."Reason Code" := InitCashDocumentLineCZP."Reason Code";
-#if not CLEAN18
+#if not CLEAN19
         TempGenJournalLine.Validate(Prepayment, InitCashDocumentLineCZP."Advance Letter Link Code" <> '');
         TempGenJournalLine."Advance Letter Link Code" := InitCashDocumentLineCZP."Advance Letter Link Code";
 #endif
@@ -354,7 +359,7 @@ codeunit 11729 "Cash Document-Post CZP"
         GenJnlPostLine := NewGenJnlPostLine;
     end;
 
-#if not CLEAN18
+#if not CLEAN19
     [Obsolete('Remove after Advance Payment Localization for Czech will be implemented.', '18.0')]
     internal procedure PostAdvances();
     var

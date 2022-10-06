@@ -64,6 +64,7 @@ codeunit 31356 "Payment Order Management CZB"
 
     procedure CheckPaymentOrderLineFormat(PaymentOrderLineCZB: Record "Payment Order Line CZB"; ShowErrorMessages: Boolean): Boolean
     var
+        PaymentOrderHeaderCZB: Record "Payment Order Header CZB";
         TempErrorMessage2: Record "Error Message" temporary;
         IsHandled: Boolean;
         MustBeSpecifiedErr: Label '%1 or %2 in %3 must be specified.', Comment = '%1 = Account No. FieldCaption; %2 = IBAN FieldCaption; %3 = RecordId';
@@ -79,8 +80,10 @@ codeunit 31356 "Payment Order Management CZB"
                 PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo(PaymentOrderLineCZB.Amount), TempErrorMessage2."Message Type"::Error, 0);
             TempErrorMessage2.LogIfEmpty(
                 PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo(PaymentOrderLineCZB."Due Date"), TempErrorMessage2."Message Type"::Error);
-            TempErrorMessage2.LogIfEmpty(
-                PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo(PaymentOrderLineCZB."Variable Symbol"), TempErrorMessage2."Message Type"::Error);
+            PaymentOrderHeaderCZB.Get(PaymentOrderLineCZB."Payment Order No.");
+            if not PaymentOrderHeaderCZB."Foreign Payment Order" then
+                TempErrorMessage2.LogIfEmpty(
+                    PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo(PaymentOrderLineCZB."Variable Symbol"), TempErrorMessage2."Message Type"::Error);
             TempErrorMessage2.LogIfInvalidCharacters(
                 PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo(PaymentOrderLineCZB."Variable Symbol"), TempErrorMessage2."Message Type"::Error,
                 BankOperationsFunctionsCZB.GetValidCharactersForVariableSymbol());
@@ -195,9 +198,9 @@ codeunit 31356 "Payment Order Management CZB"
                     if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(SuggestedAmountToApplyQst, PaymentOrderLineCZB.Type, PaymentOrderLineCZB."Applies-to C/V/E Entry No."), false) then
                         Error('');
 
-        CheckPaymentOrderLineApplyToOtherEntries(PaymentOrderLineCZB, ShowErrorMessages);
+        CheckPaymentOrderLineApplyToOtherEntries(PaymentOrderLineCZB, false);
 #if not CLEAN19
-        CheckPaymentOrderLineApplyToAdvanceLetter(PaymentOrderLineCZB, ShowErrorMessages);
+        CheckPaymentOrderLineApplyToAdvanceLetter(PaymentOrderLineCZB, false);
 #endif
 
         ErrorMessageLogSuspended := TempErrorMessageLogSuspended;
@@ -247,10 +250,18 @@ codeunit 31356 "Payment Order Management CZB"
 
     local procedure IsLedgerEntryApplied(PaymentOrderLineCZB: Record "Payment Order Line CZB"): Boolean
     var
+        IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
         PaymentOrderLineCZB2: Record "Payment Order Line CZB";
     begin
         if PaymentOrderLineCZB."Applies-to C/V/E Entry No." = 0 then
             exit(false);
+
+        IssPaymentOrderLineCZB.SetRange(Type, PaymentOrderLineCZB.Type);
+        IssPaymentOrderLineCZB.SetRange("No.", PaymentOrderLineCZB."No.");
+        IssPaymentOrderLineCZB.SetRange("Applies-to C/V/E Entry No.", PaymentOrderLineCZB."Applies-to C/V/E Entry No.");
+        IssPaymentOrderLineCZB.SetRange(Status, IssPaymentOrderLineCZB.Status::" ");
+        if not IssPaymentOrderLineCZB.IsEmpty() then
+            exit(true);
 
         PaymentOrderLineCZB2.SetRange(Type, PaymentOrderLineCZB.Type);
         PaymentOrderLineCZB2.SetRange("No.", PaymentOrderLineCZB."No.");

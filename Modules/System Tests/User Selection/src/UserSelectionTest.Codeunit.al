@@ -89,7 +89,7 @@ codeunit 135035 "User Selection Test"
     [HandlerFunctions('UserLookupPageOKHandler')]
     procedure SelectUserOKWithTemporaryRecordTest()
     var
-        User: Record User temporary;
+        TempUser: Record User temporary;
         UserSelection: Codeunit "User Selection";
     begin
         // [SCENARIO] A single user can be selected and the selected user can be stored in temporary record.
@@ -99,10 +99,10 @@ codeunit 135035 "User Selection Test"
 
         // [WHEN] User selects a User and Clicks OK
         // [THEN] Open returns True
-        Assert.IsTrue(UserSelection.Open(User), 'It was expected for a user to have been selected.');
+        Assert.IsTrue(UserSelection.Open(TempUser), 'It was expected for a user to have been selected.');
         // [THEN] The Selected User is returned
-        Assert.AreEqual('B', User."User Name", 'User B was expected to be selected.');
-        Assert.AreEqual('Full Name B', User."Full Name", 'User B was expected to be selected.');
+        Assert.AreEqual('B', TempUser."User Name", 'User B was expected to be selected.');
+        Assert.AreEqual('Full Name B', TempUser."Full Name", 'User B was expected to be selected.');
     end;
 
     [Test]
@@ -192,7 +192,7 @@ codeunit 135035 "User Selection Test"
             User."User Security ID" := CreateGuid();
             User."User Name" := CopyStr(UserId(), 1, MaxStrLen(User."User Name"));
             User."Full Name" := User."User Name";
-            if not EnvironmentInformation.IsSaaS() then
+            if not EnvironmentInformation.IsSaaSInfrastructure() then
                 User."Windows Security ID" := CopyStr(Sid(User."User Name"), 1, MaxStrLen(User."Windows Security ID"));
             User.Insert();
         end;

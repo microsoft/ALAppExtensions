@@ -2,9 +2,9 @@
     "id":  "b9663d62-d331-481d-9c06-38b6ebfb586b",
     "name":  "Azure AD Licensing Test Library",
     "publisher":  "Microsoft",
-    "brief":  "Test objetcs for the Azure AD Licensing module.",
-    "description":  "Test objetcs for the Azure AD Licensing module.",
-    "version":  "20.2.0.0",
+    "brief":  "Test objects for the Azure AD Licensing module.",
+    "description":  "Test objects for the Azure AD Licensing module.",
+    "version":  "21.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,7 +15,7 @@
                              "id":  "b70307d1-2c71-40ec-aeea-5deb7d0434c8",
                              "name":  "Azure AD Licensing",
                              "publisher":  "Microsoft",
-                             "version":  "20.2.0.0"
+                             "version":  "21.0.0.0"
                          }
                      ],
     "screenshots":  [
@@ -27,6 +27,6 @@
                          "to":  138458
                      }
                  ],
-    "platform":  "20.0.0.0",
+    "platform":  "21.0.0.0",
     "target":  "OnPrem"
 }

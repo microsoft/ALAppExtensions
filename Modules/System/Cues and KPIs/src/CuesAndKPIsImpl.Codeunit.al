@@ -234,6 +234,16 @@ codeunit 9702 "Cues And KPIs Impl."
         end;
     end;
 
+    procedure PersonalizedCueSetupExistsForCurrentUser(TableID: Integer; FieldID: Integer): Boolean
+    var
+        CueSetup: Record "Cue Setup";
+    begin
+        CueSetup.SetRange("User Name", UserId);
+        CueSetup.SetRange("Table ID", TableID);
+        CueSetup.SetRange("Field No.", FieldID);
+        exit(not CueSetup.IsEmpty);
+    end;
+
     procedure InsertData(TableID: Integer; FieldNo: Integer; LowRangeStyle: Enum "Cues And KPIs Style"; Threshold1: Decimal; MiddleRangeStyle: Enum "Cues And KPIs Style"; Threshold2: Decimal; HighRangeStyle: Enum "Cues And KPIs Style"): Boolean
     var
         CueSetup: Record "Cue Setup";

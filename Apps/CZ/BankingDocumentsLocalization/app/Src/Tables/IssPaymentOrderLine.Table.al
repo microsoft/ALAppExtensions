@@ -185,10 +185,10 @@ table 31259 "Iss. Payment Order Line CZB"
         field(151; "Letter No."; Code[20])
         {
             Caption = 'Letter No.';
-            TableRelation = IF ("Letter Type" = CONST(Purchase)) "Purch. Advance Letter Header";
 #if CLEAN19
             ObsoleteState = Removed;
 #else
+            TableRelation = IF ("Letter Type" = CONST(Purchase)) "Purch. Advance Letter Header";
             ObsoleteState = Pending;
 #endif    
             ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
@@ -197,10 +197,10 @@ table 31259 "Iss. Payment Order Line CZB"
         field(152; "Letter Line No."; Integer)
         {
             Caption = 'Letter Line No.';
-            TableRelation = IF ("Letter Type" = CONST(Purchase)) "Purch. Advance Letter Line"."Line No." WHERE("Letter No." = FIELD("Letter No."));
 #if CLEAN19
             ObsoleteState = Removed;
 #else
+            TableRelation = IF ("Letter Type" = CONST(Purchase)) "Purch. Advance Letter Line"."Line No." WHERE("Letter No." = FIELD("Letter No."));
             ObsoleteState = Pending;
 #endif    
             ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';

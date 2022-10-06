@@ -4661,14 +4661,10 @@ codeunit 18435 "Reference Invoice No. Mgt."
                 exit;
 
             GSTSetup.TestField("GST Tax Type");
-            if not (GenJnlLine."Document Type" in [GenJnlLine."Document Type"::Invoice, GenJnlLine."Document Type"::"Credit Memo"]) then begin
-                GenJnlLine."GST in Journal" := false;
-                GenJnlLine.Modify();
-                exit;
-            end;
-
-            GenJnlLine."GST in Journal" := FilterTaxTransactionValue(GSTSetup."GST Tax Type", GenJnlLine.RecordId);
-            GenJnlLine.Modify();
+            if not (GenJnlLine."Document Type" in [GenJnlLine."Document Type"::Invoice, GenJnlLine."Document Type"::"Credit Memo"]) then
+                GenJnlLine."GST in Journal" := false
+            else
+                GenJnlLine."GST in Journal" := FilterTaxTransactionValue(GSTSetup."GST Tax Type", GenJnlLine.RecordId);
         end;
     end;
 

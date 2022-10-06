@@ -19,7 +19,9 @@ page 132548 "Page Summary Test Card"
                 ApplicationArea = All;
                 ToolTip = 'Test field';
             }
+#pragma warning disable AW0004
             field(TestBlob; Rec.TestBlob)
+#pragma warning restore AW0004
             {
                 ApplicationArea = All;
                 ToolTip = 'Test field';

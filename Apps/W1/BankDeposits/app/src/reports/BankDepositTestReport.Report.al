@@ -1067,15 +1067,15 @@ report 1691 "Bank Deposit Test Report"
         ErrorText[ErrorCounter] := Text;
     end;
 
-    local procedure GetCurrencyRecord(var Currency: Record Currency; CurrencyCode: Code[10])
+    local procedure GetCurrencyRecord(var LocalVarCurrency: Record Currency; CurrencyCode: Code[10])
     begin
         if CurrencyCode = '' then begin
-            Clear(Currency);
-            Currency.Description := CopyStr(GeneralLedgerSetup."Local Currency Description", 1, MaxStrLen(Currency.Description));
-            Currency."Amount Rounding Precision" := GeneralLedgerSetup."Amount Rounding Precision";
+            Clear(LocalVarCurrency);
+            LocalVarCurrency.Description := CopyStr(GeneralLedgerSetup."Local Currency Description", 1, MaxStrLen(LocalVarCurrency.Description));
+            LocalVarCurrency."Amount Rounding Precision" := GeneralLedgerSetup."Amount Rounding Precision";
         end else
-            if Currency.Code <> CurrencyCode then
-                if not Currency.Get(CurrencyCode) then
+            if LocalVarCurrency.Code <> CurrencyCode then
+                if not LocalVarCurrency.Get(CurrencyCode) then
                     AddError(
                       StrSubstNo(AccountNotValidErr, CurrencyCode, "Bank Deposit Header".FieldCaption("Currency Code")));
     end;

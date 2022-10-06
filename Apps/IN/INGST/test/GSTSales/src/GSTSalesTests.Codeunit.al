@@ -41,6 +41,7 @@ codeunit 18196 "GST Sales Tests"
         ReverseDocumentNoLbl: Label 'ReverseDocumentNo';
         PriceInclusiveOfTaxLbl: Label 'WithPIT';
         PANErr: Label 'PAN No. must be entered in Company Information.';
+        QRCodeVerifyErr: Label 'QR Code is not generated';
 
     [Test]
     procedure CompanyInformationPANError()
@@ -3335,6 +3336,150 @@ codeunit 18196 "GST Sales Tests"
 
         // [THEN] Create and post GST Settlement entry
         CreateAndPostAdjustmentJournal();
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromUnRegCustomerGoodsSalesInvoiceInterStateWithEinvoice()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        EInvoiceJsonHandler: Codeunit "e-Invoice Json Handler";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [GIVEN] Created GST Setup
+        CreateGSTSetup(GSTCustomeType::Unregistered, GSTGroupType::Goods, false);
+        InitializeShareStep(false, false);
+        Storage.Set(NoOfLineLbl, '1');
+
+        // [WHEN] Create and Post Sales Inoice with GST and Line Type as Goods and Interstate Juridisction
+        PostedDocumentNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine,
+            LineType::Item,
+            DocumentType::Invoice);
+
+        SalesInvoiceHeader.Get(PostedDocumentNo);
+        EInvoiceJsonHandler.GenerateQRCodeforB2C(SalesInvoiceHeader);
+
+        // [THEN] Posted Sales Invoice QR Code verified
+        Assert.IsTrue(SalesInvoiceHeader."QR Code".HasValue, QRCodeVerifyErr);
+
+        // [THEN] G/L Entries and Detailed GST Ledger Entries verified
+        LibraryGST.VerifyGLEntries(DocumentType::Invoice, PostedDocumentNo, 3);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromUnRegCustomerGoodsSalesInvoiceIntraStateWithEinvoice()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        EInvoiceJsonHandler: Codeunit "e-Invoice Json Handler";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [GIVEN] Created GST Setup
+        CreateGSTSetup(GSTCustomeType::Unregistered, GSTGroupType::Goods, true);
+        InitializeShareStep(false, false);
+        Storage.Set(NoOfLineLbl, '1');
+
+        // [WHEN] Create and Post Sales Order with GST and Line Type as Goods and Interstate Juridisction
+        PostedDocumentNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine,
+            LineType::Item,
+            DocumentType::Invoice);
+
+        SalesInvoiceHeader.Get(PostedDocumentNo);
+        EInvoiceJsonHandler.GenerateQRCodeforB2C(SalesInvoiceHeader);
+
+        // [THEN] Posted Sales Invoice QR Code verified
+        Assert.IsTrue(SalesInvoiceHeader."QR Code".HasValue, QRCodeVerifyErr);
+
+        // [THEN] G/L Entries and Detailed GST Ledger Entries verified
+        LibraryGST.VerifyGLEntries(DocumentType::Invoice, PostedDocumentNo, 4);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromUnRegCustomerGoodsSalesOrderIntraStateWithEinvoice()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        EInvoiceJsonHandler: Codeunit "e-Invoice Json Handler";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [GIVEN] Created GST Setup
+        CreateGSTSetup(GSTCustomeType::Unregistered, GSTGroupType::Goods, true);
+        InitializeShareStep(false, false);
+        Storage.Set(NoOfLineLbl, '1');
+
+        // [WHEN] Create and Post Sales Order with GST and Line Type as Goods and Intra-StateJuridisction
+        PostedDocumentNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine,
+            LineType::Item,
+            DocumentType::Order);
+
+        SalesInvoiceHeader.Get(PostedDocumentNo);
+        EInvoiceJsonHandler.GenerateQRCodeforB2C(SalesInvoiceHeader);
+
+        // [THEN] Posted Sales Invoice QR Code verified
+        Assert.IsTrue(SalesInvoiceHeader."QR Code".HasValue, QRCodeVerifyErr);
+
+        // [THEN] G/L Entries and Detailed GST Ledger Entries verified
+        LibraryGST.VerifyGLEntries(DocumentType::Invoice, PostedDocumentNo, 4)
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromUnRegCustomerGoodsSalesOrdersInterStateWithEinvoice()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        EInvoiceJsonHandler: Codeunit "e-Invoice Json Handler";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [GIVEN] Created GST Setup
+        CreateGSTSetup(GSTCustomeType::Unregistered, GSTGroupType::Goods, false);
+        InitializeShareStep(false, false);
+        Storage.Set(NoOfLineLbl, '1');
+
+        // [WHEN] Create and Make Quote to Sales Order with GST and Line Type as Goods and Inter-State Juridisction
+        PostedDocumentNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine,
+            LineType::Item,
+            DocumentType::Order);
+
+        SalesInvoiceHeader.Get(PostedDocumentNo);
+        EInvoiceJsonHandler.GenerateQRCodeforB2C(SalesInvoiceHeader);
+
+        // [THEN] Posted Sales Invoice QR Code verified
+        Assert.IsTrue(SalesInvoiceHeader."QR Code".HasValue, QRCodeVerifyErr);
+
+        // [THEN] G/L Entries and Detailed GST Ledger Entries verified
+        LibraryGST.VerifyGLEntries(DocumentType::Invoice, PostedDocumentNo, 3);
     end;
 
     local procedure CreateAndPostAdjustmentJournal()

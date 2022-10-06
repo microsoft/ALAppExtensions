@@ -9,7 +9,19 @@ codeunit 18434 "GST Application Session Mgt."
         GSTTransactionType: Enum "Detail Ledger Transaction Type";
         OnlineCustomerLedgerEntryNo: Integer;
         OnlineVendorLedgerEntryNo: Integer;
+        OnlinePostApplicationLastEntryNo: Integer;
+        SubcontractingLastGLEntryNo: Integer;
+        GLRegisterLastEntryNo: Integer;
+        LastUsedItemLedgEntryNo: Integer;
+        LastUsedItemApplnEntryNo: Integer;
+        LastUsedValueEntryNo: Integer;
+        IsSubcontracting: Boolean;
+        SubConReceiving: Boolean;
+        SubConReceivingMultiple: Boolean;
+        IsOnlinePostApplication: Boolean;
+        IsCopyDocument: Boolean;
         TransactionNo: Integer;
+        AppliestoIDReceipt: Code[50];
         VendorNo: Code[20];
         CustomerNo: Code[20];
         AppliedAmount: Decimal;
@@ -105,6 +117,102 @@ codeunit 18434 "GST Application Session Mgt."
     procedure GetOnlineVendLedgerEntry(var OnlineVendLedgerEntry: Record "Vendor Ledger Entry")
     begin
         OnlineVendLedgerEntry := OnlineVendorLedgerEntry;
+    end;
+
+    procedure SetOnlinePostApplication(pIsOnlinePostApplication: Boolean)
+    begin
+        IsOnlinePostApplication := pIsOnlinePostApplication;
+    end;
+
+    procedure GetOnlinePostApplication(): Boolean
+    begin
+        exit(IsOnlinePostApplication);
+    end;
+
+    procedure SetOnlinePostApplicationLastEntryNo(pOnlinePostApplicationLastEntryNo: Integer)
+    begin
+        OnlinePostApplicationLastEntryNo := pOnlinePostApplicationLastEntryNo;
+    end;
+
+    procedure GetOnlinePostApplicationLastEntryNo(): Integer
+    begin
+        exit(OnlinePostApplicationLastEntryNo);
+    end;
+
+    procedure SetOnlinePostApplicationLastEntryNoForGLRegister(pGLRegisterLastEntryNo: Integer)
+    begin
+        GLRegisterLastEntryNo := pGLRegisterLastEntryNo;
+    end;
+
+    procedure GetOnlinePostApplicationLastEntryNoForGLRegister(): Integer
+    begin
+        exit(GLRegisterLastEntryNo);
+    end;
+
+    procedure SetSubcontractingEntryNo(ItemLedgEntryNo: Integer; ItemApplnEntryNo: Integer; ValueEntryNo: Integer)
+    begin
+        LastUsedItemLedgEntryNo := ItemLedgEntryNo;
+        LastUsedItemApplnEntryNo := ItemApplnEntryNo;
+        LastUsedValueEntryNo := ValueEntryNo;
+    end;
+
+    procedure SetSubcontractingItemLedgEntryNo(pItemLedgEntryNo: Integer)
+    begin
+        LastUsedItemLedgEntryNo := pItemLedgEntryNo;
+    end;
+
+    procedure SetSubcontractingItemApplnEntryNo(pItemApplnEntryNo: Integer)
+    begin
+        LastUsedItemApplnEntryNo := pItemApplnEntryNo;
+    end;
+
+    procedure GetSubcontractingEntryNo(var LastItemLedgEntryNo: Integer; var LastItemApplnEntryNo: Integer; var LastValueEntryNo: Integer)
+    begin
+        LastItemLedgEntryNo := LastUsedItemLedgEntryNo;
+        LastItemApplnEntryNo := LastUsedItemApplnEntryNo;
+        LastValueEntryNo := LastUsedValueEntryNo;
+    end;
+
+    procedure SetSubcontractingLastGLEntryNo(SubconLastGLEntryNo: Integer)
+    begin
+        SubcontractingLastGLEntryNo := SubconLastGLEntryNo;
+    end;
+
+    procedure GetSubcontractingLastGLEntryNo(): Integer
+    begin
+        exit(SubcontractingLastGLEntryNo);
+    end;
+
+    procedure SetSubContractingReceiving(SubConReceive: Boolean)
+    begin
+        SubConReceiving := SubConReceive;
+    end;
+
+    procedure GetSubContractingReceiving(): Boolean
+    begin
+        exit(SubConReceiving);
+    end;
+
+    procedure SetSubContractingReceivingMultiple(SubConReceiveMultiple: Boolean; AppliestoID: Code[50])
+    begin
+        SubConReceivingMultiple := SubConReceiveMultiple;
+        AppliestoIDReceipt := AppliestoID;
+    end;
+
+    procedure SetSubcontracting(IsSubcon: Boolean)
+    begin
+        IsSubcontracting := IsSubcon;
+    end;
+
+    procedure GetSubcontracting(): Boolean
+    begin
+        exit(IsSubcontracting);
+    end;
+
+    procedure GetSubContractingReceivingMultiple(var AppliestoID: Code[50]): Boolean
+    begin
+        AppliestoID := AppliestoIDReceipt;
+        exit(SubConReceivingMultiple);
     end;
 
     procedure CreateApplicationGenJournallLine(
@@ -230,5 +338,33 @@ codeunit 18434 "GST Application Session Mgt."
     local procedure OnAfterGetTCSAmount(Amount: Decimal)
     begin
         TotalTCSInclSHECESSAmount += Amount;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnCopyPurchDocPurchLineOnAfterSetFilters', '', false, false)]
+    local procedure OnCopyPurchDocPurchLineOnAfterSetFilters(FromPurchHeader: Record "Purchase Header"; var FromPurchLine: Record "Purchase Line"; var ToPurchHeader: Record "Purchase Header"; var RecalculateLines: Boolean)
+    begin
+        if FromPurchHeader."GST Vendor Type" <> FromPurchHeader."GST Vendor Type"::" " then
+            IsCopyDocument := true
+        else
+            IsCopyDocument := false;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Tax", 'OnBeforeCallTaxEngineForPurchaseLine', '', false, false)]
+    local procedure DisableTaxEngineCallingForPurchaseLine(var PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
+        if not IsCopyDocument then
+            exit;
+
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnCopyPurchDocOnAfterCopyPurchDocLines', '', false, false)]
+    local procedure OnCopyPurchDocOnAfterCopyPurchDocLines(FromDocType: Option; FromDocNo: Code[20]; FromPurchaseHeader: Record "Purchase Header"; IncludeHeader: Boolean; var ToPurchHeader: Record "Purchase Header")
+    begin
+        if not IsCopyDocument then
+            exit;
+
+        if ToPurchHeader."GST Vendor Type" <> ToPurchHeader."GST Vendor Type"::" " then
+            IsCopyDocument := false;
     end;
 }

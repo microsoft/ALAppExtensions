@@ -7,18 +7,13 @@ codeunit 139087 "Azure AD Graph Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
-    EventSubscriberInstance = Manual;
-
-    trigger OnRun()
-    begin
-    end;
 
     var
         LibraryAssert: Codeunit "Library Assert";
-        AzureADGraphTest: Codeunit "Azure AD Graph Test";
+        AzureADGraphTestLibrary: Codeunit "Azure AD Graph Test Library";
+        MockGraphQueryTestLibrary: Codeunit "MockGraphQuery Test Library";
         AzureADGraph: Codeunit "Azure AD Graph";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
-        MockGraphQuery: DotNet MockGraphQuery;
 
     [Test]
     [Scope('OnPrem')]
@@ -43,7 +38,7 @@ codeunit 139087 "Azure AD Graph Test"
            'The user should be null, as no user with this principal name has been inserted yet');
 
         // [GIVEN] A graph user with the given user id and principal name is inserted in the Azure AD Graph
-        AzureADGraphTest.AddGraphUser(UserId, '', '', UserPrincipalName);
+        MockGraphQueryTestLibrary.AddGraphUser(UserId, '', '', UserPrincipalName);
 
         // [WHEN] Getting the user from the Azure AD Graph
         AzureADGraph.GetUser(UserPrincipalName, UserInfo);
@@ -78,7 +73,7 @@ codeunit 139087 "Azure AD Graph Test"
         UserGivenName := 'given name - random';
         UserPrincipalName := 'blah_blah@blah.com';
 
-        AzureADGraphTest.SetCurrentUser(UserGivenName, UserPrincipalName);
+        MockGraphQueryTestLibrary.SetCurrentUser(UserGivenName, UserPrincipalName);
 
         // [WHEN] Getting the current user from the Azure AD Graph
         AzureADGraph.GetCurrentUser(UserInfo);
@@ -113,7 +108,7 @@ codeunit 139087 "Azure AD Graph Test"
         LibraryAssert.IsTrue(IsNull(UserInfo), 'The user should be null');
 
         // [GIVEN] A graph user with the given user id and authorization email is inserted in the Azure AD graph    
-        AzureADGraphTest.AddGraphUser(UserId, '', '', AuthorizationEmail);
+        MockGraphQueryTestLibrary.AddGraphUser(UserId, '', '', AuthorizationEmail);
 
         // [WHEN] Getting the user from the Azure AD Graph
         AzureADGraph.GetUserByAuthorizationEmail(AuthorizationEmail, UserInfo);
@@ -150,7 +145,7 @@ codeunit 139087 "Azure AD Graph Test"
         LibraryAssert.IsTrue(IsNull(UserInfo), 'The user should be null');
 
         // [GIVEN] A graph user with the given user id and authorization email is inserted in the Azure AD graph
-        AzureADGraphTest.AddGraphUser(UserId, UserGivenName, '', UserPrincipalName);
+        MockGraphQueryTestLibrary.AddGraphUser(UserId, UserGivenName, '', UserPrincipalName);
 
         // [WHEN] Getting the user from the Azure AD Graph
         AzureADGraph.GetUserByObjectId(UserId, UserInfo);
@@ -191,7 +186,7 @@ codeunit 139087 "Azure AD Graph Test"
         LibraryAssert.IsFalse(IsUserRetrieved, 'The user should not have been retrieved');
 
         // [GIVEN] A graph user with the given user id and authorization email is inserted in the Azure AD graph
-        AzureADGraphTest.AddGraphUser(UserId, UserGivenName, '', UserPrincipalName);
+        MockGraphQueryTestLibrary.AddGraphUser(UserId, UserGivenName, '', UserPrincipalName);
 
         // [WHEN] Getting the user from the Azure AD Graph
         IsUserRetrieved := AzureADGraph.TryGetUserByObjectId(UserId, UserInfo);
@@ -240,7 +235,7 @@ codeunit 139087 "Azure AD Graph Test"
         // [GIVEN] A user in the Azure AD graph
         UserId := CreateGuid();
         UserPrincipalName := 'meh_blah@blahblah.com';
-        AzureADGraphTest.AddAndReturnGraphUser(UserInfo, UserId, '', '', UserPrincipalName);
+        MockGraphQueryTestLibrary.AddAndReturnGraphUser(UserInfo, UserId, '', '', UserPrincipalName);
 
         // [WHEN] Trying to get the user's assigned plans
         AzureADGraph.GetUserAssignedPlans(UserInfo, UserAssignedPlans);
@@ -252,7 +247,7 @@ codeunit 139087 "Azure AD Graph Test"
         AssignedPlanId := CreateGuid();
         AssignedPlanService := 'service';
         CapabilityStatus := 'status';
-        AzureADGraphTest.AddUserPlan(UserId, AssignedPlanId, AssignedPlanService, CapabilityStatus);
+        MockGraphQueryTestLibrary.AddUserPlan(UserId, AssignedPlanId, AssignedPlanService, CapabilityStatus);
 
         // [WHEN] Getting the user's assigned plans
         AzureADGraph.GetUserAssignedPlans(UserInfo, UserAssignedPlans);
@@ -270,8 +265,8 @@ codeunit 139087 "Azure AD Graph Test"
         end;
 
         // [GIVEN] Two more plans are inserted
-        AzureADGraphTest.AddUserPlan(UserId, CreateGuid(), '', '');
-        AzureADGraphTest.AddUserPlan(UserId, CreateGuid(), '', '');
+        MockGraphQueryTestLibrary.AddUserPlan(UserId, CreateGuid(), '', '');
+        MockGraphQueryTestLibrary.AddUserPlan(UserId, CreateGuid(), '', '');
 
         // [WHEN] Getting the user's assigned plans
         AzureADGraph.GetUserAssignedPlans(UserInfo, UserAssignedPlans);
@@ -315,7 +310,7 @@ codeunit 139087 "Azure AD Graph Test"
         // [GIVEN] A user in the Azure AD graph
         UserId := CreateGuid();
         UserPrincipalName := 'meh_blah@blahblah.com';
-        AzureADGraphTest.AddAndReturnGraphUser(UserInfo, UserId, '', '', UserPrincipalName);
+        MockGraphQueryTestLibrary.AddAndReturnGraphUser(UserInfo, UserId, '', '', UserPrincipalName);
 
         // [WHEN] Trying to get the user's roles
         if not IsNull(UserInfo.Roles()) then begin
@@ -330,7 +325,7 @@ codeunit 139087 "Azure AD Graph Test"
         RoleDescription := 'description';
         RoleDisplayName := 'role name';
         RoleIsSystem := true;
-        AzureADGraphTest.AddUserRole(UserId, RoleTemplateId, RoleDescription, RoleDisplayName, RoleIsSystem);
+        MockGraphQueryTestLibrary.AddUserRole(UserId, RoleTemplateId, RoleDescription, RoleDisplayName, RoleIsSystem);
 
         // [WHEN] Getting the user's roles
         UserRoles := UserInfo.Roles();
@@ -347,8 +342,8 @@ codeunit 139087 "Azure AD Graph Test"
         end;
 
         // [GIVEN] Two more roles are inserted
-        AzureADGraphTest.AddUserRole(UserId, 'template id 2', '', '', true);
-        AzureADGraphTest.AddUserRole(UserId, 'template id 3', '', '', true);
+        MockGraphQueryTestLibrary.AddUserRole(UserId, 'template id 2', '', '', true);
+        MockGraphQueryTestLibrary.AddUserRole(UserId, 'template id 3', '', '', true);
 
         // [WHEN] Getting the user's roles
         UserRoles := UserInfo.Roles();
@@ -383,7 +378,7 @@ codeunit 139087 "Azure AD Graph Test"
         SkuId := CreateGuid();
         PlanId := CreateGuid();
         PlanName := 'plan name';
-        AzureADGraphTest.AddSubscribedSkuWithServicePlan(SkuId, PlanId, PlanName);
+        MockGraphQueryTestLibrary.AddSubscribedSkuWithServicePlan(SkuId, PlanId, PlanName);
 
         // [WHEN] Getting the directory subscribed SKUs
         AzureADGraph.GetDirectorySubscribedSkus(DirectorySubscribedSkus);
@@ -403,8 +398,8 @@ codeunit 139087 "Azure AD Graph Test"
         end;
 
         // [GIVEN] Two more SKUs are inserted
-        AzureADGraphTest.AddSubscribedSkuWithServicePlan(CreateGuid(), CreateGuid(), 'name 1');
-        AzureADGraphTest.AddSubscribedSkuWithServicePlan(CreateGuid(), CreateGuid(), 'name 2');
+        MockGraphQueryTestLibrary.AddSubscribedSkuWithServicePlan(CreateGuid(), CreateGuid(), 'name 1');
+        MockGraphQueryTestLibrary.AddSubscribedSkuWithServicePlan(CreateGuid(), CreateGuid(), 'name 2');
 
         // [WHEN] Getting the directory subscribed SKUs
         AzureADGraph.GetDirectorySubscribedSkus(DirectorySubscribedSkus);
@@ -440,7 +435,7 @@ codeunit 139087 "Azure AD Graph Test"
         RoleDescription := 'description 100';
         RoleDisplayName := 'role name 100';
         RoleIsSystem := true;
-        AzureADGraphTest.AddDirectoryRole(Role, RoleTemplateId, RoleDescription,
+        MockGraphQueryTestLibrary.AddDirectoryRole(Role, RoleTemplateId, RoleDescription,
             RoleDisplayName, RoleIsSystem);
 
         // [WHEN] Getting the directory roles
@@ -458,8 +453,8 @@ codeunit 139087 "Azure AD Graph Test"
         end;
 
         // [GIVEN] Two more roles are inserted
-        AzureADGraphTest.AddDirectoryRole(Role, 'template id 200', 'description 2', 'role name 2', true);
-        AzureADGraphTest.AddDirectoryRole(Role, 'template id 300', 'description 3', 'role name 3', true);
+        MockGraphQueryTestLibrary.AddDirectoryRole(Role, 'template id 200', 'description 2', 'role name 2', true);
+        MockGraphQueryTestLibrary.AddDirectoryRole(Role, 'template id 300', 'description 3', 'role name 3', true);
 
         // [WHEN] Getting the directory roles
         AzureADGraph.GetDirectoryRoles(DirectoryRoles);
@@ -518,7 +513,7 @@ codeunit 139087 "Azure AD Graph Test"
         // [GIVEN] The Azure graph contains a user
         UserId := CreateGuid();
         UserPrincipalName := 'principal@principal.com';
-        AzureADGraphTest.AddGraphUser(UserId, '', '', UserPrincipalName);
+        MockGraphQueryTestLibrary.AddGraphUser(UserId, '', '', UserPrincipalName);
 
         // [WHEN] Retrieving the users page with the first 100 users
         AzureADGraph.GetUsersPage(NumberOfUsers, UserInfoPage);
@@ -535,8 +530,8 @@ codeunit 139087 "Azure AD Graph Test"
         end;
 
         // [GIVEN] Two more users are added to the graph
-        AzureADGraphTest.AddGraphUser(CreateGuid(), '', '', 'name@email.com');
-        AzureADGraphTest.AddGraphUser(CreateGuid(), '', '', 'email@email.com');
+        MockGraphQueryTestLibrary.AddGraphUser(CreateGuid(), '', '', 'name@email.com');
+        MockGraphQueryTestLibrary.AddGraphUser(CreateGuid(), '', '', 'email@email.com');
 
         // [WHEN] Retrieving the users page with the first 100 users
         AzureADGraph.GetUsersPage(NumberOfUsers, UserInfoPage);
@@ -553,127 +548,16 @@ codeunit 139087 "Azure AD Graph Test"
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService := true;
 
         Clear(AzureADGraph);
-        AzureADGraph.SetTestInProgress(true);
-
-        Clear(AzureADGraphTest);
-        AzureADGraphTest.InitializeMockGraphQuery();
-        BindSubscription(AzureADGraphTest);
-    end;
-
-    procedure InitializeMockGraphQuery()
-    begin
-        MockGraphQuery := MockGraphQuery.MockGraphQuery();
+        Clear(AzureADGraphTestLibrary);
+        Clear(MockGraphQueryTestLibrary);
+        MockGraphQueryTestLibrary.SetupMockGraphQuery();
+        AzureADGraphTestLibrary.SetMockGraphQuery(MockGraphQueryTestLibrary);
+        BindSubscription(AzureADGraphTestLibrary);
     end;
 
     local procedure TearDown()
     begin
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService := false;
-        AzureADGraph.SetTestInProgress(false);
-        UnbindSubscription(AzureADGraphTest);
-    end;
-
-    local procedure CreateGraphUser(var GraphUserInfo: DotNet UserInfo; UserId: Text; UserGivenName: Text; UserSurname: Text; UserEmail: Text)
-    begin
-        GraphUserInfo := GraphUserInfo.UserInfo();
-        GraphUserInfo.ObjectId := UserId;
-        GraphUserInfo.UserPrincipalName := UserEmail;
-        GraphUserInfo.Mail := UserEmail;
-        GraphUserInfo.GivenName := UserGivenName;
-        GraphUserInfo.Surname := UserSurname;
-#pragma warning disable AA0217
-        GraphUserInfo.DisplayName := StrSubstNo('%1 %2', UserGivenName, UserSurname);
-#pragma warning restore
-    end;
-
-    procedure SetCurrentUser(UserGivenName: Text; UserEmail: Text)
-    var
-        GraphUserInfo: DotNet UserInfo;
-    begin
-        CreateGraphUser(GraphUserInfo, UserSecurityId(), UserGivenName, '', UserEmail);
-        MockGraphQuery.CurrentUserUserObject := GraphUserInfo;
-    end;
-
-    procedure AddGraphUser(UserId: Text; UserGivenName: Text; UserSurname: Text; UserEmail: Text)
-    var
-        GraphUserInfo: DotNet UserInfo;
-    begin
-        CreateGraphUser(GraphUserInfo, UserId, UserGivenName, UserSurname, UserEmail);
-        MockGraphQuery.AddUser(GraphUserInfo);
-    end;
-
-    procedure AddAndReturnGraphUser(var GraphUserInfo: DotNet UserInfo; UserId: Text; UserGivenName: Text; UserSurname: Text; UserEmail: Text)
-    begin
-        CreateGraphUser(GraphUserInfo, UserId, UserGivenName, UserSurname, UserEmail);
-        MockGraphQuery.AddUser(GraphUserInfo);
-    end;
-
-    procedure AddUserPlan(UserId: Text; AssignedPlanId: Guid; AssignedPlanService: Text; CapabilityStatus: Text)
-    var
-        GraphUserInfo: DotNet UserInfo;
-        AssignedPlan: DotNet ServicePlanInfo;
-        GuidVar: Variant;
-    begin
-        AssignedPlan := AssignedPlan.ServicePlanInfo();
-        GuidVar := AssignedPlanId;
-        AssignedPlan.ServicePlanId := GuidVar;
-        AssignedPlan.ServicePlanName := AssignedPlanService;
-        AssignedPlan.CapabilityStatus := CapabilityStatus;
-
-        GraphUserInfo := MockGraphQuery.GetUserByObjectId(UserId);
-        MockGraphQuery.AddAssignedPlanToUser(GraphUserInfo, AssignedPlan);
-    end;
-
-    local procedure CreateDirectoryRole(var DirectoryRole: DotNet RoleInfo; RoleTemplateId: Text; RoleDescription: Text; RoleDisplayName: Text; RoleIsSystem: Boolean)
-    var
-        BoolVar: Variant;
-    begin
-        DirectoryRole := DirectoryRole.RoleInfo();
-        DirectoryRole.RoleTemplateId := RoleTemplateId;
-        DirectoryRole.DisplayName := RoleDisplayName;
-        DirectoryRole.Description := RoleDescription;
-        BoolVar := RoleIsSystem;
-        DirectoryRole.IsSystem := BoolVar;
-    end;
-
-    procedure AddDirectoryRole(var DirectoryRole: DotNet RoleInfo; RoleTemplateId: Text; RoleDescription: Text; RoleDisplayName: Text; RoleIsSystem: Boolean)
-    begin
-        CreateDirectoryRole(DirectoryRole, RoleTemplateId, RoleDescription, RoleDisplayName, RoleIsSystem);
-        MockGraphQuery.AddDirectoryRole(DirectoryRole);
-    end;
-
-    procedure AddUserRole(UserId: Text; RoleTemplateId: Text; RoleDescription: Text; RoleDisplayName: Text; RoleIsSystem: Boolean)
-    var
-        GraphUserInfo: DotNet UserInfo;
-        DirectoryRole: DotNet RoleInfo;
-    begin
-        CreateDirectoryRole(DirectoryRole, RoleTemplateId, RoleDescription, RoleDisplayName, RoleIsSystem);
-
-        GraphUserInfo := MockGraphQuery.GetUserByObjectId(UserId);
-        MockGraphQuery.AddUserRole(GraphUserInfo, DirectoryRole);
-    end;
-
-    procedure AddSubscribedSkuWithServicePlan(SkuId: Guid; PlanId: Guid; PlanName: Text)
-    var
-        SubscribedSku: DotNet SkuInfo;
-        ServicePlanInfo: DotNet ServicePlanInfo;
-        GuidVar: Variant;
-    begin
-        ServicePlanInfo := ServicePlanInfo.ServicePlanInfo();
-        GuidVar := PlanId;
-        ServicePlanInfo.ServicePlanId := GuidVar;
-        ServicePlanInfo.ServicePlanName := PlanName;
-
-        SubscribedSku := SubscribedSku.SkuInfo();
-        GuidVar := SkuId;
-        SubscribedSku.SkuId := GuidVar;
-        SubscribedSku.ServicePlans().Add(ServicePlanInfo);
-
-        MockGraphQuery.AddDirectorySubscribedSku(SubscribedSku);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Graph", 'OnInitialize', '', false, false)]
-    local procedure OnInitialize(var GraphQuery: DotNet GraphQuery)
-    begin
-        GraphQuery := GraphQuery.GraphQuery(MockGraphQuery);
+        UnbindSubscription(AzureADGraphTestLibrary);
     end;
 }

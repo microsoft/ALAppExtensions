@@ -58,6 +58,17 @@ codeunit 8893 "Email Scenario"
         EmailScenarioImpl.UnassignScenario(Scenario);
     end;
 
+    /// <summary>
+    /// Event for changing whether an email scenario should be added to the list of assignable scenarios.
+    /// If the scenario has already been assigned or is the default scenario, this event won't be published.
+    /// </summary>
+    /// <param name="Scenario">The scenario that is going to be added to the list of assignable scenarios.</param>
+    /// <param name="IsAvailable">The return for whether this scenario should be listed in the assignable scenarios list.</param>
+    [IntegrationEvent(false, false, true)]
+    internal procedure OnBeforeInsertAvailableEmailScenario(Scenario: Enum "Email Scenario"; var IsAvailable: Boolean)
+    begin
+    end;
+
     var
         EmailScenarioImpl: Codeunit "Email Scenario Impl.";
 }

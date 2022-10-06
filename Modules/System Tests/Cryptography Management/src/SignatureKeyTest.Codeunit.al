@@ -8,7 +8,7 @@ codeunit 132601 "Signature Key Test"
     Subtype = Test;
 
     var
-        SignatureKey: Record "Signature Key" temporary;
+        TempSignatureKey: Record "Signature Key" temporary;
         LibraryAssert: Codeunit "Library Assert";
 
     [Test]
@@ -22,7 +22,7 @@ codeunit 132601 "Signature Key Test"
         CertBase64Value := GetCertificateBase64();
 
         // [THEN] Verify that no error is thrown when the record is being initialized
-        SignatureKey.FromBase64String(CertBase64Value, 'Test', true);
+        TempSignatureKey.FromBase64String(CertBase64Value, 'Test', true);
     end;
 
     [Test]
@@ -36,7 +36,7 @@ codeunit 132601 "Signature Key Test"
         CertBase64Value := GetNotValidBase64Certificate();
 
         // [WHEN] Initialize record from Base64 value 
-        asserterror SignatureKey.FromBase64String(CertBase64Value, 'Test', true);
+        asserterror TempSignatureKey.FromBase64String(CertBase64Value, 'Test', true);
 
         // [THEN] Verify that record has not been initialized
         LibraryAssert.ExpectedError('Unable to initialize certificate!');

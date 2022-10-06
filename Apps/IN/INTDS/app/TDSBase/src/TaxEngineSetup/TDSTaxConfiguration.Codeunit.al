@@ -51,13 +51,13 @@ codeunit 18694 "TDS Tax Configuration"
 
     local procedure UpdateTDSUseCases()
     begin
-        UseCases.Add('{DB230097-4AA7-44E2-9373-02A467DC95AC}', 2);
+        UseCases.Add('{DB230097-4AA7-44E2-9373-02A467DC95AC}', 3);
         UseCases.Add('{5D4C69D3-E776-4E9D-B397-09336BFDC884}', 1);
         UseCases.Add('{FED919F2-CBDB-45F9-9383-0E1607897400}', 2);
         UseCases.Add('{B0C259BC-64CC-4818-887A-3337D357CDFF}', 2);
         UseCases.Add('{33BFBE99-9140-4112-A55B-35EC0D9B61B9}', 2);
         UseCases.Add('{271D5BC6-17E8-424E-9E34-3BEE548F938F}', 1);
-        UseCases.Add('{A8E114BF-F8CD-44DB-A2B3-614BC18F4442}', 3);
+        UseCases.Add('{A8E114BF-F8CD-44DB-A2B3-614BC18F4442}', 5);
         UseCases.Add('{6FBA1A5C-41A0-4430-976E-6B54E4884164}', 1);
         UseCases.Add('{FEE5DFFF-0BC1-4246-AD90-6CB3DC44A451}', 1);
         UseCases.Add('{FA0E357D-1AC0-42AA-94DE-6DACA521D38E}', 2);
@@ -69,7 +69,7 @@ codeunit 18694 "TDS Tax Configuration"
         UseCases.Add('{C1C8C9A9-1AE8-48D7-AB60-9EA08AA0AF21}', 3);
         UseCases.Add('{61ED733A-A96B-45ED-BE21-A98A8B65566B}', 1);
         UseCases.Add('{0CDED40A-A359-45E0-AAEC-AFE7BBCFBC96}', 2);
-        UseCases.Add('{B8483E82-4EAB-43DE-B423-B1371AAA9CE0}', 1);
+        UseCases.Add('{B8483E82-4EAB-43DE-B423-B1371AAA9CE0}', 2);
         UseCases.Add('{F39A0864-D2E7-40A5-9633-B6680CD3EC6F}', 2);
         UseCases.Add('{C3B6CECC-CACE-43A4-8F03-BAB6AFE1E15B}', 1);
         UseCases.Add('{98E3D17E-B644-4DBA-836C-CF26A20EDD3F}', 3);
@@ -80,6 +80,8 @@ codeunit 18694 "TDS Tax Configuration"
         UseCases.Add('{25C2D9C3-2A87-41A6-9AB9-DC76E818DF0C}', 1);
         UseCases.Add('{08737F79-35F1-4670-BD1D-E41764E3A9DE}', 1);
         UseCases.Add('{f8bf58d9-7681-458d-9dfc-71ea23a9f853}', 1);
+        UseCases.Add('{1abe2c56-9700-4a30-a14a-5e8ecc2f32dd}', 1);
+        UseCases.Add('{b8a33720-278b-45b4-8465-2d9fa273d813}', 1);
     end;
 
     var

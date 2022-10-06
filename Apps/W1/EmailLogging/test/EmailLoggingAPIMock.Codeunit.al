@@ -125,7 +125,6 @@ codeunit 139766 "Email Logging API Mock" implements "Email Logging API Client"
     var
         JsonText: Text;
     begin
-
         JsonText += '{';
         JsonText += '"id":"' + Id + '",';
         JsonText += '"internetMessageId":"' + InternetMessageId + '",';
@@ -134,7 +133,10 @@ codeunit 139766 "Email Logging API Mock" implements "Email Logging API Client"
             JsonText += '"isDraft":true,'
         else
             JsonText += '"isDraft":false,';
-        JsonText += '"subject":"' + Subject + '",';
+        if Subject = 'null' then
+            JsonText += '"subject":null,'
+        else
+            JsonText += '"subject":"' + Subject + '",';
         JsonText += '"sentDateTime":"' + SentDateTime + '",';
         JsonText += '"receivedDateTime":"' + ReceivedDateTime + '",';
         JsonText += '"sender":' + GetEmailAddressJsonText(Sender) + ',';

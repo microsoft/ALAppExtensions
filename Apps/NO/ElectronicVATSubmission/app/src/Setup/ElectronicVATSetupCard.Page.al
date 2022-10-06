@@ -110,6 +110,8 @@ page 10692 "Electronic VAT Setup Card"
     }
     var
         ElecVATOAuthMgt: Codeunit "Elec. VAT OAuth Mgt.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        NOVATReportTok: Label 'NO VAT Reporting', Locked = true;
         [NonDebuggable]
         ClientID: Text;
         [NonDebuggable]
@@ -117,6 +119,7 @@ page 10692 "Electronic VAT Setup Card"
 
     trigger OnOpenPage()
     begin
+        FeatureTelemetry.LogUptake('0000HTL', NOVATReportTok, Enum::"Feature Uptake Status"::Discovered);
         ClientID := "Client ID";
         ClientSecret := "Client Secret";
     end;

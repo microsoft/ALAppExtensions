@@ -25,7 +25,6 @@ codeunit 4751 "Recommended Apps Impl."
         AId: Text[100];
         PAppId: Text[100];
     begin
-        FeatureTelemetry.LogUptake('0000H7Q', 'Recommended Apps', Enum::"Feature Uptake Status"::Used);
         // read the app information from the URL
         GetAppURLParametersFromAppSourceURL(Id, AppSourceURL, LanguageCode, PubId, AId, PAppId);
 
@@ -172,16 +171,16 @@ codeunit 4751 "Recommended Apps Impl."
         ErrMsg: Text;
     begin
         Regex.Match(AppSourceURL, '(?i)(?<=appsource.microsoft.com\/)(.+)(?=\/product)', 1, Matches);
-        LanguageCode := Matches.ReadValue();
+        LanguageCode := CopyStr(Matches.ReadValue(), 1, 5);
 
         Regex.Match(AppSourceURL, '(?i)(?<=PUBID.)(.+)(?=(%7CAID|\|AID))', 1, Matches);
-        PubId := Matches.ReadValue();
+        PubId := CopyStr(Matches.ReadValue(), 1, 100);
 
         Regex.Match(AppSourceURL, '(?i)(?<=AID.)(.+)(?=(%7CPAPPID|\|PAPPID))', 1, Matches);
-        AId := Matches.ReadValue();
+        AId := CopyStr(Matches.ReadValue(), 1, 100);
 
         Regex.Match(AppSourceURL, '(?i)(?<=PAPPID.)(.+)(?=(\?tab=Overview))|(?<=PAPPID.)(.+)(?=($))', 1, Matches);
-        PAppId := Matches.ReadValue();
+        PAppId := CopyStr(Matches.ReadValue(), 1, 100);
 
         if (LanguageCode = '') or (PubId = '') or (AId = '') or (PAppId = '') then begin
             ErrMsg := StrSubstNo(URLNotWellFormattedErrLbl, Id, AppSourceURL);

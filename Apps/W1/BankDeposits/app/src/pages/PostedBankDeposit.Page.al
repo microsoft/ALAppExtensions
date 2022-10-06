@@ -160,7 +160,6 @@ page 1694 "Posted Bank Deposit"
                     FeatureTelemetry: Codeunit "Feature Telemetry";
                     IsHandled: Boolean;
                 begin
-                    FeatureTelemetry.LogUptake('0000H7Y', 'Bank Deposit', Enum::"Feature Uptake Status"::Used);
                     if PostedBankDepositHeader.Get(Rec."No.") then begin
                         PostedBankDepositHeader.SetRange("No.", Rec."No.");
                         PostedBankDepositHeader.SetRange("Bank Account No.", Rec."Bank Account No.");
@@ -211,11 +210,16 @@ page 1694 "Posted Bank Deposit"
                 PromotedOnly = true;
                 PromotedCategory = Category4;
                 PromotedIsBig = true;
+                ShortcutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all bank account ledger entries that exist for this bank deposit.';
 
                 trigger OnAction()
+                var
+                    Navigate: Page Navigate;
                 begin
-                    Rec.FindEntries();
+                    Navigate.SetDoc(Rec."Posting Date", Rec."No.");
+                    Navigate.SetNavigationFromPostedBankDeposit(true);
+                    Navigate.Run();
                 end;
             }
         }
@@ -241,13 +245,6 @@ page 1694 "Posted Bank Deposit"
             if GLRegister.Reversed then
                 GLRegisterReversed := YesTxt;
         end;
-    end;
-
-    trigger OnOpenPage()
-    var
-        FeatureTelemetry: Codeunit "Feature Telemetry";
-    begin
-        FeatureTelemetry.LogUptake('0000H8A', 'Bank Deposit', Enum::"Feature Uptake Status"::"Set up");
     end;
 
     local procedure GetDifference(): Decimal

@@ -14,7 +14,6 @@ codeunit 31235 "FA Disposal Handler CZF"
     procedure GetAccNo(var FALedgerEntry: Record "FA Ledger Entry"): Code[20]
     var
         FAPostingGroup: Record "FA Posting Group";
-        FAExtendedPostingGroupCZF: Record "FA Extended Posting Group CZF";
         GLAccNo: Code[20];
     begin
         FAPostingGroup.GetPostingGroup(FALedgerEntry."FA Posting Group", FALedgerEntry."Depreciation Book Code");
@@ -34,11 +33,7 @@ codeunit 31235 "FA Disposal Handler CZF"
                 FALedgerEntry."FA Posting Type"::"Custom 2":
                     GLAccNo := FAPostingGroup.GetCustom2Account();
                 FALedgerEntry."FA Posting Type"::"Proceeds on Disposal":
-                    if not FAPostingGroup.UseStandardDisposalCZF() then begin
-                        FAExtendedPostingGroupCZF.Get(FAPostingGroup.Code, FAExtendedPostingGroupCZF."FA Posting Type"::Disposal, FALedgerEntry."Reason Code");
-                        GLAccNo := FAExtendedPostingGroupCZF.GetSalesAccountOnDisposalGain();
-                    end else
-                        GLAccNo := FAPostingGroup.GetSalesAccountOnDisposalGain();
+                    GLAccNo := FAPostingGroup.GetSalesAccountOnDisposalGainCZF(FALedgerEntry."Reason Code");
                 FALedgerEntry."FA Posting Type"::"Gain/Loss":
                     begin
                         if FALedgerEntry."Result on Disposal" = FALedgerEntry."Result on Disposal"::Gain then
@@ -54,7 +49,7 @@ codeunit 31235 "FA Disposal Handler CZF"
                     GLAccNo := FAPostingGroup.GetAcquisitionCostAccountOnDisposal();
                 FALedgerEntry."FA Posting Type"::Depreciation:
                     begin
-                        if FAPostingGroup.UseStandardDisposalCZF() then
+                        if FAPostingGroup.UseStandardDisposalCZF(FALedgerEntry."Reason Code") then
                             FAPostingGroup.TestField("Accum. Depr. Acc. on Disposal");
                         GLAccNo := FAPostingGroup."Accum. Depr. Acc. on Disposal";
                     end;
@@ -69,17 +64,9 @@ codeunit 31235 "FA Disposal Handler CZF"
                 FALedgerEntry."FA Posting Type"::"Book Value on Disposal":
                     begin
                         if FALedgerEntry."Result on Disposal" = FALedgerEntry."Result on Disposal"::Gain then
-                            if not FAPostingGroup.UseStandardDisposalCZF() then begin
-                                FAExtendedPostingGroupCZF.Get(FAPostingGroup.Code, FAExtendedPostingGroupCZF."FA Posting Type"::Disposal, FALedgerEntry."Reason Code");
-                                GLAccNo := FAExtendedPostingGroupCZF.GetBookValueAccountOnDisposalGain();
-                            end else
-                                GLAccNo := FAPostingGroup.GetBookValueAccountOnDisposalGain();
+                            GLAccNo := FAPostingGroup.GetBookValueAccountOnDisposalGainCZF(FALedgerEntry."Reason Code");
                         if FALedgerEntry."Result on Disposal" = FALedgerEntry."Result on Disposal"::Loss then
-                            if not FAPostingGroup.UseStandardDisposalCZF() then begin
-                                FAExtendedPostingGroupCZF.Get(FAPostingGroup.Code, FAExtendedPostingGroupCZF."FA Posting Type"::Disposal, FALedgerEntry."Reason Code");
-                                GLAccNo := FAExtendedPostingGroupCZF.GetBookValueAccountOnDisposalLoss();
-                            end else
-                                GLAccNo := FAPostingGroup.GetBookValueAccountOnDisposalLoss();
+                            GLAccNo := FAPostingGroup.GetBookValueAccountOnDisposalLossCZF(FALedgerEntry."Reason Code");
                         FALedgerEntry."Result on Disposal" := FALedgerEntry."Result on Disposal"::" ";
                     end;
             end;
@@ -107,76 +94,70 @@ codeunit 31235 "FA Disposal Handler CZF"
     procedure GetMaintenanceAccNo(var MaintenanceLedgerEntry: Record "Maintenance Ledger Entry"): Code[20]
     var
         FAPostingGroup: Record "FA Posting Group";
-        FAExtendedPostingGroupCZF: Record "FA Extended Posting Group CZF";
     begin
         FAPostingGroup.GetPostingGroup(MaintenanceLedgerEntry."FA Posting Group", MaintenanceLedgerEntry."Depreciation Book Code");
-
-        if not FAPostingGroup.UseStandardMaintenanceCZF() then begin
-            FAExtendedPostingGroupCZF.Get(FAPostingGroup.Code, FAExtendedPostingGroupCZF."FA Posting Type"::Maintenance, MaintenanceLedgerEntry."Maintenance Code");
-            exit(FAExtendedPostingGroupCZF.GetMaintenanceExpenseAccount());
-        end else
-            exit(FAPostingGroup.GetMaintenanceExpenseAccount());
+        exit(FAPostingGroup.GetMaintenanceExpenseAccountCZF(MaintenanceLedgerEntry."Maintenance Code"));
     end;
 
-    local procedure GetGLAccNoFromFAPostingGroup(FAPostingGroup: Record "FA Posting Group"; FAPostingType: Enum "FA Posting Group Account Type"; ReasonMaintenanceCode: Code[10]) GLAccNo: Code[20]
+    local procedure GetGLAccNoFromFAPostingGroup(FAPostingGroup: Record "FA Posting Group"; FAPostingType2: Enum "FA Posting Group Account Type"; ReasonMaintenanceCode: Code[10]) GLAccNo: Code[20]
     var
         FAExtendedPostingGroupCZF: Record "FA Extended Posting Group CZF";
         FieldErrorText: Text[50];
         NotMoreThan100Err: Label 'must not be more than 100';
     begin
         FieldErrorText := NotMoreThan100Err;
-        case FAPostingType of
-            FAPostingType::"Acquisition Cost":
+        case FAPostingType2 of
+            FAPostingType2::"Acquisition Cost":
                 begin
                     GLAccNo := FAPostingGroup.GetAcquisitionCostBalanceAccount();
                     FAPostingGroup.CalcFields(FAPostingGroup."Allocated Acquisition Cost %");
                     if FAPostingGroup."Allocated Acquisition Cost %" > 100 then
                         FAPostingGroup.FieldError(FAPostingGroup."Allocated Acquisition Cost %", FieldErrorText);
                 end;
-            FAPostingType::Depreciation:
+            FAPostingType2::Depreciation:
                 begin
                     GLAccNo := FAPostingGroup.GetDepreciationExpenseAccount();
                     FAPostingGroup.CalcFields(FAPostingGroup."Allocated Depreciation %");
                     if FAPostingGroup."Allocated Depreciation %" > 100 then
                         FAPostingGroup.FieldError(FAPostingGroup."Allocated Depreciation %", FieldErrorText);
                 end;
-            FAPostingType::"Write-Down":
+            FAPostingType2::"Write-Down":
                 begin
                     GLAccNo := FAPostingGroup.GetWriteDownExpenseAccount();
                     FAPostingGroup.CalcFields(FAPostingGroup."Allocated Write-Down %");
                     if FAPostingGroup."Allocated Write-Down %" > 100 then
                         FAPostingGroup.FieldError(FAPostingGroup."Allocated Write-Down %", FieldErrorText);
                 end;
-            FAPostingType::Appreciation:
+            FAPostingType2::Appreciation:
                 begin
                     GLAccNo := FAPostingGroup.GetAppreciationBalanceAccount();
                     FAPostingGroup.CalcFields(FAPostingGroup."Allocated Appreciation %");
                     if FAPostingGroup."Allocated Appreciation %" > 100 then
                         FAPostingGroup.FieldError(FAPostingGroup."Allocated Appreciation %", FieldErrorText);
                 end;
-            FAPostingType::"Custom 1":
+            FAPostingType2::"Custom 1":
                 begin
                     GLAccNo := FAPostingGroup.GetCustom1ExpenseAccount();
                     FAPostingGroup.CalcFields(FAPostingGroup."Allocated Custom 1 %");
                     if FAPostingGroup."Allocated Custom 1 %" > 100 then
                         FAPostingGroup.FieldError(FAPostingGroup."Allocated Custom 1 %", FieldErrorText);
                 end;
-            FAPostingType::"Custom 2":
+            FAPostingType2::"Custom 2":
                 begin
                     GLAccNo := FAPostingGroup.GetCustom2ExpenseAccount();
                     FAPostingGroup.CalcFields(FAPostingGroup."Allocated Custom 2 %");
                     if FAPostingGroup."Allocated Custom 2 %" > 100 then
                         FAPostingGroup.FieldError(FAPostingGroup."Allocated Custom 2 %", FieldErrorText);
                 end;
-            FAPostingType::"Proceeds on Disposal":
+            FAPostingType2::"Proceeds on Disposal":
                 begin
                     GLAccNo := FAPostingGroup.GetSalesBalanceAccount();
                     FAPostingGroup.CalcFields(FAPostingGroup."Allocated Sales Price %");
                     if FAPostingGroup."Allocated Sales Price %" > 100 then
                         FAPostingGroup.FieldError(FAPostingGroup."Allocated Sales Price %", FieldErrorText);
                 end;
-            FAPostingType::Maintenance:
-                if not FAPostingGroup.UseStandardMaintenanceCZF() then begin
+            FAPostingType2::Maintenance:
+                if not FAPostingGroup.UseStandardMaintenanceCZF(ReasonMaintenanceCode) then begin
                     FAExtendedPostingGroupCZF.Get(FAPostingGroup.Code, FAExtendedPostingGroupCZF."FA Posting Type"::Maintenance, ReasonMaintenanceCode);
                     GLAccNo := FAExtendedPostingGroupCZF.GetExtendedMaintenanceBalanceAccount();
                     FAExtendedPostingGroupCZF.CalcFields("Allocated Maintenance %");
@@ -188,22 +169,22 @@ codeunit 31235 "FA Disposal Handler CZF"
                     if FAPostingGroup."Allocated Maintenance %" > 100 then
                         FAPostingGroup.FieldError(FAPostingGroup."Allocated Maintenance %", FieldErrorText);
                 end;
-            FAPostingType::Gain:
+            FAPostingType2::Gain:
                 begin
                     GLAccNo := FAPostingGroup.GetGainsAccountOnDisposal();
                     FAPostingGroup.CalcFields(FAPostingGroup."Allocated Gain %");
                     if FAPostingGroup."Allocated Gain %" > 100 then
                         FAPostingGroup.FieldError(FAPostingGroup."Allocated Gain %", FieldErrorText);
                 end;
-            FAPostingType::Loss:
+            FAPostingType2::Loss:
                 begin
                     GLAccNo := FAPostingGroup.GetLossesAccountOnDisposal();
                     FAPostingGroup.CalcFields(FAPostingGroup."Allocated Loss %");
                     if FAPostingGroup."Allocated Loss %" > 100 then
                         FAPostingGroup.FieldError(FAPostingGroup."Allocated Loss %", FieldErrorText);
                 end;
-            FAPostingType::"Book Value Gain":
-                if not FAPostingGroup.UseStandardDisposalCZF() then begin
+            FAPostingType2::"Book Value Gain":
+                if not FAPostingGroup.UseStandardDisposalCZF(ReasonMaintenanceCode) then begin
                     FAExtendedPostingGroupCZF.Get(FAPostingGroup.Code, FAExtendedPostingGroupCZF."FA Posting Type"::Disposal, ReasonMaintenanceCode);
                     GLAccNo := FAExtendedPostingGroupCZF.GetBookValueAccountOnDisposalGain();
                     FAExtendedPostingGroupCZF.CalcFields("Allocated Book Value % (Gain)");
@@ -215,8 +196,8 @@ codeunit 31235 "FA Disposal Handler CZF"
                     if FAPostingGroup."Allocated Book Value % (Gain)" > 100 then
                         FAPostingGroup.FieldError(FAPostingGroup."Allocated Book Value % (Gain)", FieldErrorText);
                 end;
-            FAPostingType::"Book Value Loss":
-                if not FAPostingGroup.UseStandardDisposalCZF() then begin
+            FAPostingType2::"Book Value Loss":
+                if not FAPostingGroup.UseStandardDisposalCZF(ReasonMaintenanceCode) then begin
                     FAExtendedPostingGroupCZF.Get(FAPostingGroup.Code, FAExtendedPostingGroupCZF."FA Posting Type"::Disposal, ReasonMaintenanceCode);
                     GLAccNo := FAExtendedPostingGroupCZF.GetBookValueAccountOnDisposalLoss();
                     FAExtendedPostingGroupCZF.CalcFields("Allocated Book Value % (Loss)");
@@ -304,7 +285,7 @@ codeunit 31235 "FA Disposal Handler CZF"
                         SetResultOnDisposal(FALedgEntry);
 
                     if (DeprBook."Disposal Calculation Method" <> DeprBook."Disposal Calculation Method"::Net) and
-                       not FAPostingGroup.UseStandardDisposalCZF()
+                       not FAPostingGroup.UseStandardDisposalCZF(FALedgEntry."Reason Code")
                     then begin
                         if not DeprBook."Corresp. G/L Entries Disp. CZF" then
                             FAInsertLedgEntry.InsertFA(FALedgEntry)
@@ -386,7 +367,7 @@ codeunit 31235 "FA Disposal Handler CZF"
                         FALedgEntry."Result on Disposal" := ResultOnDisposal;
 
                     if (DeprBook."Disposal Calculation Method" <> DeprBook."Disposal Calculation Method"::Net) and
-                       not FAPostingGroup.UseStandardDisposalCZF()
+                       not FAPostingGroup.UseStandardDisposalCZF(FALedgEntry."Reason Code")
                     then begin
                         if not DeprBook."Corresp. G/L Entries Disp. CZF" then
                             FAInsertLedgEntry.InsertFA(FALedgEntry)
@@ -456,7 +437,6 @@ codeunit 31235 "FA Disposal Handler CZF"
     local procedure PostAllocation(var FALedgerEntry: Record "FA Ledger Entry"; var FAInsertLedgerEntry: Codeunit "FA Insert Ledger Entry")
     var
         FAPostingGroup: Record "FA Posting Group";
-        FAExtendedPostingGroupCZF: Record "FA Extended Posting Group CZF";
         DepreciationBook: Record "Depreciation Book";
     begin
         if FALedgerEntry."G/L Entry No." = 0 then
@@ -478,20 +458,10 @@ codeunit 31235 "FA Disposal Handler CZF"
             FALedgerEntry."FA Posting Type"::"Book Value on Disposal":
                 begin
                     FAPostingGroup.Get(FALedgerEntry."FA Posting Group");
-                    if not FAPostingGroup.UseStandardDisposalCZF() then begin
-                        FAExtendedPostingGroupCZF.Get(FALedgerEntry."FA Posting Group", FAExtendedPostingGroupCZF."FA Posting Type"::Disposal, FALedgerEntry."Reason Code");
-                        FAExtendedPostingGroupCZF.CalcFields("Allocated Book Value % (Gain)", "Allocated Book Value % (Loss)");
-                        if FALedgerEntry."Result on Disposal" = FALedgerEntry."Result on Disposal"::Gain then
-                            PostGLBalAcc(FALedgerEntry, FAExtendedPostingGroupCZF."Allocated Book Value % (Gain)", FAInsertLedgerEntry)
-                        else
-                            PostGLBalAcc(FALedgerEntry, FAExtendedPostingGroupCZF."Allocated Book Value % (Loss)", FAInsertLedgerEntry);
-                    end else begin
-                        FAPostingGroup.CalcFields("Allocated Book Value % (Gain)", "Allocated Book Value % (Loss)");
-                        if FALedgerEntry."Result on Disposal" = FALedgerEntry."Result on Disposal"::Gain then
-                            PostGLBalAcc(FALedgerEntry, FAPostingGroup."Allocated Book Value % (Gain)", FAInsertLedgerEntry)
-                        else
-                            PostGLBalAcc(FALedgerEntry, FAPostingGroup."Allocated Book Value % (Loss)", FAInsertLedgerEntry);
-                    end;
+                    if FALedgerEntry."Result on Disposal" = FALedgerEntry."Result on Disposal"::Gain then
+                        PostGLBalAcc(FALedgerEntry, FAPostingGroup.CalcAllocatedBookValueGainCZF(FALedgerEntry."Reason Code"), FAInsertLedgerEntry)
+                    else
+                        PostGLBalAcc(FALedgerEntry, FAPostingGroup.CalcAllocatedBookValueLossCZF(FALedgerEntry."Reason Code"), FAInsertLedgerEntry);
                 end;
         end;
     end;
@@ -520,16 +490,26 @@ codeunit 31235 "FA Disposal Handler CZF"
             FALedgerEntry."Result on Disposal" := FALedgerEntry."Result on Disposal"::Loss;
     end;
 
-    local procedure CalcResultOnDisposal(FANo: Code[20]; DeprBookCode: Code[10]): Integer
+    local procedure CalcResultOnDisposal(FANo: Code[20]; DeprBookCode2: Code[10]): Integer
     var
         ResultOnDisposalFALedgerEntry: Record "FA Ledger Entry";
     begin
         FADepreciationBook."FA No." := FANo;
-        FADepreciationBook."Depreciation Book Code" := DeprBookCode;
+        FADepreciationBook."Depreciation Book Code" := DeprBookCode2;
         FADepreciationBook.CalcFields("Gain/Loss");
         if FADepreciationBook."Gain/Loss" <= 0 then
             exit(ResultOnDisposalFALedgerEntry."Result on Disposal"::Gain);
         exit(ResultOnDisposalFALedgerEntry."Result on Disposal"::Loss);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Insert G/L Account", 'OnInsertMaintenanceAccNoOnBeforeInsertBufferEntry', '', false, false)]
+    local procedure GetMaintenanceExpenseAccountOnInsertMaintenanceAccNoOnBeforeInsertBufferEntry(var FAGLPostBuf: Record "FA G/L Posting Buffer"; var MaintenanceLedgEntry: Record "Maintenance Ledger Entry")
+    var
+        FAPostingGroup: Record "FA Posting Group";
+    begin
+        FAPostingGroup.GetPostingGroup(
+            MaintenanceLedgEntry."FA Posting Group", MaintenanceLedgEntry."Depreciation Book Code");
+        FAGLPostBuf."Account No." := FAPostingGroup.GetMaintenanceExpenseAccountCZF(MaintenanceLedgEntry."Maintenance Code");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Insert G/L Account", 'OnBeforeFAInsertGLAccount', '', false, false)]
@@ -665,87 +645,56 @@ codeunit 31235 "FA Disposal Handler CZF"
                                         GainLossAmount: Decimal; var FAPostingGroup2: Record "FA Posting Group"; var NextEntryNo: Integer;
                                         GLEntryNo: Integer; var OrgGenJnlLine: Boolean; NetDisp: Boolean; var NumberOfEntries: Integer)
     var
-        FAExtendedPostingGroupCZF: Record "FA Extended Posting Group CZF";
         LastDisposal: Boolean;
         GLAmount: Decimal;
-        ReasonMaintenanceCode: Code[10];
+        SalesAccountOnDisposalGain: Code[20];
+        SalesAccountOnDisposalLoss: Code[20];
     begin
         FADepreciationBook.Get(FALedgerEntry."FA No.", FALedgerEntry."Depreciation Book Code");
-        ReasonMaintenanceCode := FALedgerEntry."Reason Code";
-
         TempFAGLPostingBuffer.Get(DisposalEntryNo);
         FADepreciationBook.CalcFields("Gain/Loss");
         LastDisposal := CalcLastDisposal(FADepreciationBook);
+        SalesAccountOnDisposalGain := FAPostingGroup2.GetSalesAccountOnDisposalGainCZF(FALedgerEntry."Reason Code");
+        SalesAccountOnDisposalLoss := FAPostingGroup2.GetSalesAccountOnDisposalLossCZF(FALedgerEntry."Reason Code");
         if LastDisposal then
             GLAmount := GainLossAmount
         else
             GLAmount := FADepreciationBook."Gain/Loss";
-        if not FAPostingGroup2.UseStandardDisposalCZF() then begin
-            FAExtendedPostingGroupCZF.Get(FAPostingGroup2.Code, FAExtendedPostingGroupCZF."FA Posting Type"::Disposal, ReasonMaintenanceCode);
-            if GLAmount <= 0 then
-                TempFAGLPostingBuffer."Account No." := FAExtendedPostingGroupCZF.GetSalesAccountOnDisposalGain()
-            else
-                TempFAGLPostingBuffer."Account No." := FAExtendedPostingGroupCZF.GetSalesAccountOnDisposalLoss();
-        end else
-            if GLAmount <= 0 then
-                TempFAGLPostingBuffer."Account No." := FAPostingGroup2.GetSalesAccountOnDisposalGain()
-            else
-                TempFAGLPostingBuffer."Account No." := FAPostingGroup2.GetSalesAccountOnDisposalLoss();
+        if GLAmount <= 0 then
+            TempFAGLPostingBuffer."Account No." := SalesAccountOnDisposalGain
+        else
+            TempFAGLPostingBuffer."Account No." := SalesAccountOnDisposalLoss;
         TempFAGLPostingBuffer.Modify();
         FAGLPostingBuffer := TempFAGLPostingBuffer;
         if LastDisposal then
             exit;
         if IdenticalSign(FADepreciationBook."Gain/Loss", GainLossAmount, DisposalAmount) then
             exit;
-
-        if not FAPostingGroup2.UseStandardDisposalCZF() then begin
-            if FAExtendedPostingGroupCZF.GetSalesAccountOnDisposalGain() = FAExtendedPostingGroupCZF.GetSalesAccountOnDisposalLoss() then
-                exit;
-        end else
-            if FAPostingGroup2.GetSalesAccountOnDisposalGain() = FAPostingGroup2.GetSalesAccountOnDisposalLoss() then
-                exit;
+        if SalesAccountOnDisposalGain = SalesAccountOnDisposalLoss then
+            exit;
 
         FAGLPostingBuffer."FA Entry No." := 0;
         FAGLPostingBuffer."FA Entry Type" := FAGLPostingBuffer."FA Entry Type"::" ";
         FAGLPostingBuffer."Automatic Entry" := true;
         OrgGenJnlLine := false;
 
-        if not FAPostingGroup2.UseStandardDisposalCZF() then begin
-            if FADepreciationBook."Gain/Loss" <= 0 then begin
-                FAGLPostingBuffer."Account No." := FAExtendedPostingGroupCZF.GetSalesAccountOnDisposalGain();
-                FAGLPostingBuffer.Amount := DisposalAmount;
-                InsertBufferEntry(TempFAGLPostingBuffer, FAGLPostingBuffer, NextEntryNo, GLEntryNo, OrgGenJnlLine, NetDisp, NumberOfEntries);
-                FAGLPostingBuffer."Account No." := FAExtendedPostingGroupCZF."Sales Acc. On Disp. (Loss)";
-                FAGLPostingBuffer.Amount := -DisposalAmount;
-                FAGLPostingBuffer.Correction := not FAGLPostingBuffer.Correction;
-                InsertBufferEntry(TempFAGLPostingBuffer, FAGLPostingBuffer, NextEntryNo, GLEntryNo, OrgGenJnlLine, NetDisp, NumberOfEntries);
-            end else begin
-                FAGLPostingBuffer."Account No." := FAExtendedPostingGroupCZF."Sales Acc. On Disp. (Loss)";
-                FAGLPostingBuffer.Amount := DisposalAmount;
-                InsertBufferEntry(TempFAGLPostingBuffer, FAGLPostingBuffer, NextEntryNo, GLEntryNo, OrgGenJnlLine, NetDisp, NumberOfEntries);
-                FAGLPostingBuffer."Account No." := FAExtendedPostingGroupCZF.GetSalesAccountOnDisposalGain();
-                FAGLPostingBuffer.Amount := -DisposalAmount;
-                FAGLPostingBuffer.Correction := not FAGLPostingBuffer.Correction;
-                InsertBufferEntry(TempFAGLPostingBuffer, FAGLPostingBuffer, NextEntryNo, GLEntryNo, OrgGenJnlLine, NetDisp, NumberOfEntries);
-            end;
-        end else
-            if FADepreciationBook."Gain/Loss" <= 0 then begin
-                FAGLPostingBuffer."Account No." := FAPostingGroup2.GetSalesAccountOnDisposalGain();
-                FAGLPostingBuffer.Amount := DisposalAmount;
-                InsertBufferEntry(TempFAGLPostingBuffer, FAGLPostingBuffer, NextEntryNo, GLEntryNo, OrgGenJnlLine, NetDisp, NumberOfEntries);
-                FAGLPostingBuffer."Account No." := FAPostingGroup2.GetSalesAccountOnDisposalLoss();
-                FAGLPostingBuffer.Amount := -DisposalAmount;
-                FAGLPostingBuffer.Correction := not FAGLPostingBuffer.Correction;
-                InsertBufferEntry(TempFAGLPostingBuffer, FAGLPostingBuffer, NextEntryNo, GLEntryNo, OrgGenJnlLine, NetDisp, NumberOfEntries);
-            end else begin
-                FAGLPostingBuffer."Account No." := FAPostingGroup2.GetSalesAccountOnDisposalLoss();
-                FAGLPostingBuffer.Amount := DisposalAmount;
-                InsertBufferEntry(TempFAGLPostingBuffer, FAGLPostingBuffer, NextEntryNo, GLEntryNo, OrgGenJnlLine, NetDisp, NumberOfEntries);
-                FAGLPostingBuffer."Account No." := FAPostingGroup2.GetSalesAccountOnDisposalGain();
-                FAGLPostingBuffer.Amount := -DisposalAmount;
-                FAGLPostingBuffer.Correction := not FAGLPostingBuffer.Correction;
-                InsertBufferEntry(TempFAGLPostingBuffer, FAGLPostingBuffer, NextEntryNo, GLEntryNo, OrgGenJnlLine, NetDisp, NumberOfEntries);
-            end;
+        if FADepreciationBook."Gain/Loss" <= 0 then begin
+            FAGLPostingBuffer."Account No." := SalesAccountOnDisposalGain;
+            FAGLPostingBuffer.Amount := DisposalAmount;
+            InsertBufferEntry(TempFAGLPostingBuffer, FAGLPostingBuffer, NextEntryNo, GLEntryNo, OrgGenJnlLine, NetDisp, NumberOfEntries);
+            FAGLPostingBuffer."Account No." := SalesAccountOnDisposalLoss;
+            FAGLPostingBuffer.Amount := -DisposalAmount;
+            FAGLPostingBuffer.Correction := not FAGLPostingBuffer.Correction;
+            InsertBufferEntry(TempFAGLPostingBuffer, FAGLPostingBuffer, NextEntryNo, GLEntryNo, OrgGenJnlLine, NetDisp, NumberOfEntries);
+        end else begin
+            FAGLPostingBuffer."Account No." := SalesAccountOnDisposalLoss;
+            FAGLPostingBuffer.Amount := DisposalAmount;
+            InsertBufferEntry(TempFAGLPostingBuffer, FAGLPostingBuffer, NextEntryNo, GLEntryNo, OrgGenJnlLine, NetDisp, NumberOfEntries);
+            FAGLPostingBuffer."Account No." := SalesAccountOnDisposalGain;
+            FAGLPostingBuffer.Amount := -DisposalAmount;
+            FAGLPostingBuffer.Correction := not FAGLPostingBuffer.Correction;
+            InsertBufferEntry(TempFAGLPostingBuffer, FAGLPostingBuffer, NextEntryNo, GLEntryNo, OrgGenJnlLine, NetDisp, NumberOfEntries);
+        end;
     end;
 
     local procedure CorrectBookValueEntry(var FALedgerEntry: Record "FA Ledger Entry"; var TempFAGLPostingBuffer: Record "FA G/L Posting Buffer" temporary;
@@ -851,12 +800,12 @@ codeunit 31235 "FA Disposal Handler CZF"
         exit(((A <= 0) = (B <= 0)) or (C = 0));
     end;
 
-    local procedure CalcLastDisposal(FADepreciationBook: Record "FA Depreciation Book"): Boolean
+    local procedure CalcLastDisposal(FADepreciationBook2: Record "FA Depreciation Book"): Boolean
     var
         ProceedsOnDisposalFALedgerEntry: Record "FA Ledger Entry";
     begin
         DepreciationCalculation.SetFAFilter(
-          ProceedsOnDisposalFALedgerEntry, FADepreciationBook."FA No.", FADepreciationBook."Depreciation Book Code", true);
+          ProceedsOnDisposalFALedgerEntry, FADepreciationBook2."FA No.", FADepreciationBook2."Depreciation Book Code", true);
         ProceedsOnDisposalFALedgerEntry.SetRange("FA Posting Type", ProceedsOnDisposalFALedgerEntry."FA Posting Type"::"Proceeds on Disposal");
         exit(ProceedsOnDisposalFALedgerEntry.IsEmpty());
     end;
@@ -864,7 +813,7 @@ codeunit 31235 "FA Disposal Handler CZF"
     local procedure InsertBufferBalAcc(var FALedgerEntry: Record "FA Ledger Entry"; var TempFAGLPostingBuffer: Record "FA G/L Posting Buffer" temporary;
                                        var FAGLPostingBuffer: Record "FA G/L Posting Buffer"; var NextEntryNo: Integer; GLEntryNo: Integer;
                                        OrgGenJnlLine: Boolean; NetDisp: Boolean; var NumberOfEntries: Integer;
-                                       FAPostingType: Enum "FA Posting Group Account Type"; AllocAmount: Decimal; DeprBookCode: Code[10]; PostingGrCode: Code[20];
+                                       FAPostingType2: Enum "FA Posting Group Account Type"; AllocAmount: Decimal; DeprBookCode2: Code[10]; PostingGrCode: Code[20];
                                        GlobalDim1Code: Code[20]; GlobalDim2Code: Code[20]; DimSetID: Integer; AutomaticEntry: Boolean; Correction: Boolean)
     var
         FAAllocation: Record "FA Allocation";
@@ -872,21 +821,20 @@ codeunit 31235 "FA Disposal Handler CZF"
         SourceCodeSetup: Record "Source Code Setup";
         GLAccNo: Code[20];
         DimensionSetIDArr: array[10] of Integer;
-        TableID: array[10] of Integer;
-        No: array[10] of Code[20];
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
         ReasonMaintenanceCode: Code[10];
         TotalAllocAmount, NewAmount, TotalPercent : Decimal;
     begin
         ReasonMaintenanceCode := FALedgerEntry."Reason Code";
         NumberOfEntries := 0;
         TotalAllocAmount := 0;
-        FAPostingGroup3.GetPostingGroup(PostingGrCode, DeprBookCode);
-        GLAccNo := GetGLAccNoFromFAPostingGroup(FAPostingGroup3, FAPostingType, ReasonMaintenanceCode);
+        FAPostingGroup3.GetPostingGroup(PostingGrCode, DeprBookCode2);
+        GLAccNo := GetGLAccNoFromFAPostingGroup(FAPostingGroup3, FAPostingType2, ReasonMaintenanceCode);
         DimensionSetIDArr[1] := DimSetID;
 
         FAAllocation.SetRange(FAAllocation.Code, PostingGrCode);
-        FAAllocation.SetRange(FAAllocation."Allocation Type", FAPostingType);
-        if not FAPostingGroup3.UseStandardDisposalCZF() then
+        FAAllocation.SetRange(FAAllocation."Allocation Type", FAPostingType2);
+        if not FAPostingGroup3.UseStandardDisposalCZF(ReasonMaintenanceCode) then
             FAAllocation.SetRange(FAAllocation."Reason/Maintenance Code CZF", ReasonMaintenanceCode)
         else
             FAAllocation.SetRange(FAAllocation."Reason/Maintenance Code CZF", '');
@@ -896,7 +844,7 @@ codeunit 31235 "FA Disposal Handler CZF"
                     FAAllocation.TestField(FAAllocation."Account No.");
                 TotalPercent += FAAllocation."Allocation %";
                 NewAmount :=
-                    DepreciationCalculation.CalcRounding(DeprBookCode, AllocAmount * TotalPercent / 100) - TotalAllocAmount;
+                    DepreciationCalculation.CalcRounding(DeprBookCode2, AllocAmount * TotalPercent / 100) - TotalAllocAmount;
                 TotalAllocAmount += NewAmount;
                 if Abs(TotalAllocAmount) > Abs(AllocAmount) then
                     NewAmount := AllocAmount - (TotalAllocAmount - NewAmount);
@@ -928,12 +876,10 @@ codeunit 31235 "FA Disposal Handler CZF"
             FAGLPostingBuffer."Global Dimension 1 Code" := GlobalDim1Code;
             FAGLPostingBuffer."Global Dimension 2 Code" := GlobalDim2Code;
             SourceCodeSetup.Get();
-            TableID[1] := Database::"G/L Account";
-            No[1] := GLAccNo;
-            FAGLPostingBuffer."Dimension Set ID" :=
-              DimensionManagement.GetDefaultDimID(
-                  TableID, No, SourceCodeSetup."Fixed Asset G/L Journal", FAGLPostingBuffer."Global Dimension 1 Code",
-                  FAGLPostingBuffer."Global Dimension 2 Code", DimSetID, Database::"Fixed Asset");
+            DimensionManagement.AddDimSource(DefaultDimSource, Database::"G/L Account", GLAccNo);
+            FAGLPostingBuffer."Dimension Set ID" := DimensionManagement.GetDefaultDimID(
+              DefaultDimSource, SourceCodeSetup."Fixed Asset G/L Journal", FAGLPostingBuffer."Global Dimension 1 Code",
+              FAGLPostingBuffer."Global Dimension 2 Code", DimSetID, Database::"Fixed Asset");
             FAGLPostingBuffer."Automatic Entry" := AutomaticEntry;
             FAGLPostingBuffer.Correction := Correction;
             if NewAmount <> 0 then
@@ -947,24 +893,8 @@ codeunit 31235 "FA Disposal Handler CZF"
         CalcGLAccWhereUsed: Codeunit "Calc. G/L Acc. Where-Used";
     begin
         CalcGLAccWhereUsed.AddTable(TableBuffer, Database::"FA Extended Posting Group CZF");
-#if not CLEAN18
-#pragma warning disable AL0432
-        if TableBuffer.Get(Database::"FA Extended Posting Group") then
-            if not IsTestingEnvironment() then
-                TableBuffer.Delete();
-#pragma warning restore AL0432
-#endif
     end;
 
-#if not CLEAN18
-    local procedure IsTestingEnvironment(): Boolean
-    var
-        NAVAppInstalledApp: Record "NAV App Installed App";
-    begin
-        exit(NAVAppInstalledApp.Get('fa3e2564-a39e-417f-9be6-c0dbe3d94069')); // application "Tests-ERM"
-    end;
-
-#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calc. G/L Acc. Where-Used", 'OnShowExtensionPage', '', false, false)]
     local procedure ShowSetupPageOnGLAccWhereUsed(GLAccountWhereUsed: Record "G/L Account Where-Used")
     var

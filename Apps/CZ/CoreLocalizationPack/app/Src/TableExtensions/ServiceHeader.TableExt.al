@@ -287,8 +287,24 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
         exit(CountryRegion.IsIntrastatCZL("VAT Country/Region Code", false));
     end;
 
+    procedure GetDefaulBankAccountNoCZL() BankAccountNo: Code[20]
+    var
+        BankAccount: Record "Bank Account";
+        IsHandled: Boolean;
+    begin
+        OnBeforeGetDefaulBankAccountNoCZL(Rec, BankAccountNo, IsHandled);
+        if IsHandled then
+            exit(BankAccountNo);
+        exit(BankAccount.GetDefaultBankAccountNoCZL("Responsibility Center", "Currency Code"));
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateBankInfoCZL(var ServiceHeader: Record "Service Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetDefaulBankAccountNoCZL(var ServiceHeader: Record "Service Header"; var BankAccountNo: Code[20]; var IsHandled: Boolean);
     begin
     end;
 }

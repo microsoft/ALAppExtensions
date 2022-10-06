@@ -24,16 +24,16 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         LibraryMarketing: Codeunit "Library - Marketing";
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
         IsInitialized: Boolean;
-        BlankOrderDateErr: Label 'Order Date must have a value in Sales Header: Document Type=Invoice, No.=%1. It cannot be zero or empty.';
+        BlankOrderDateErr: Label 'Order Date must have a value in Sales Header: Document Type=Invoice, No.=%1. It cannot be zero or empty.', Comment = '%1 = Sales Line Document No.';
         CrMemoPathTxt: Label 'OIOUBL Service Cr. Memo Path';
         DescriptionErr: Label 'The %1 %2 contains lines in which the Type and the No. are specified, but the Description is empty.', Comment = '%1 = Field Caption, %2 = Field Value';
         ExternalDocumentNoErr: Label 'You must specify the External Document No.';
         InvoicePathTxt: Label 'OIOUBL Service Invoice Path';
-        SalesInvoiceFieldsErr: Label '%1 must have a value in Sales Header: Document Type=Invoice, No.=%2. It cannot be zero or empty';
-        ServiceFieldsErr: Label '%1 must have a value in Service Header: Document Type=Credit Memo, No.=%2. It cannot be zero or empty.';
+        SalesInvoiceFieldsErr: Label '%1 must have a value in Sales Header: Document Type=Invoice, No.=%2. It cannot be zero or empty', Comment = '%1 = Field Caption; %2 = Sales Header No.';
+        ServiceFieldsErr: Label '%1 must have a value in Service Header: Document Type=Credit Memo, No.=%2. It cannot be zero or empty.', Comment = '%1 = Field Caption; %2 = Service Header No.';
         UOMErr: Label 'The %1 %2 contains lines in which the Unit of Measure field is empty.', Comment = '%1 = Field Caption, %2 = Field Value';
         YourReferenceErr: Label 'Your Reference must have a value in Service Header';
-        MissingOIOUBMInfoErr: Label 'The needed information to support OIOUBL is not provided in %1.';
+        MissingOIOUBMInfoErr: Label 'The needed information to support OIOUBL is not provided in %1.', Comment = '%1 = Company Information Table Caption';
         GLNNoTok: Label '3974567891234';
 
     [Test]

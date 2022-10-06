@@ -46,6 +46,7 @@ codeunit 11725 "Cash Document-Release CZP"
         GenJournalLine: Record "Gen. Journal Line";
         CashDeskCZP: Record "Cash Desk CZP";
         ConfirmManagement: Codeunit "Confirm Management";
+        CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
         CashDocumentPostCZP: Codeunit "Cash Document-Post CZP";
         LinesNotExistsErr: Label 'There are no Cash Document Lines to release.';
         AmountExceededLimitErr: Label 'Cash Document Amount exceeded maximal limit (%1).', Comment = '%1 = maximal limit';
@@ -56,6 +57,7 @@ codeunit 11725 "Cash Document-Release CZP"
         EmptyFieldQst: Label '%1 or %2 is empty.\\Do you want to continue?', Comment = '%1 = fieldcaption, %2 = fieldcaption';
         ApprovalProcessReleaseErr: Label 'This document can only be released when the approval process is complete.';
         ApprovalProcessReopenErr: Label 'The approval process must be cancelled or completed to reopen this document.';
+        NotEqualErr: Label '%1 is not equal %2.', Comment = '%1 = Amount Including VAT FieldCaption, %2 = Released Amount FieldCaption';
         MustBePositiveErr: Label 'must be positive';
         CashPaymentLimitErr: Label 'The maximum daily limit of cash payments of %1 was exceeded for the partner %2.', Comment = '%1 = amount of limit of cash payment; %2 = number of partner';
 
@@ -105,12 +107,20 @@ codeunit 11725 "Cash Document-Release CZP"
         GetCashDesk(CashDocumentHeaderCZP."Cash Desk No.");
         CashDeskCZP.TestField("Bank Acc. Posting Group");
         CashDeskCZP.TestField(Blocked, false);
+        if CashDocumentHeaderCZP.Status <> CashDocumentHeaderCZP.Status::Released then
+            CashDeskManagementCZP.CheckUserRights(CashDeskCZP."No.", Enum::"Cash Document Action CZP"::Release);
     end;
 
     local procedure CheckCashDocumentAmount(CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
         GetCashDesk(CashDocumentHeaderCZP."Cash Desk No.");
         CashDocumentHeaderCZP.CalcFields(CashDocumentHeaderCZP."Amount Including VAT");
+
+        if CashDocumentHeaderCZP."Released Amount" <> 0 then
+            if CashDocumentHeaderCZP."Amount Including VAT" <> CashDocumentHeaderCZP."Released Amount" then
+                Error(NotEqualErr,
+                    CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Amount Including VAT"),
+                    CashDocumentHeaderCZP.FieldCaption(CashDocumentHeaderCZP."Released Amount"));
 
         if CashDocumentHeaderCZP."Amount Including VAT" < 0 then
             CashDocumentHeaderCZP.FieldError(CashDocumentHeaderCZP."Amount Including VAT", MustBePositiveErr);

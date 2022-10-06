@@ -3,6 +3,14 @@
 /// </summary>
 table 30136 "Shpfy Registered Store"
 {
+#if not CLEAN21
+    ObsoleteState = Pending;
+#else
+    ObsoleteState = removed;
+#endif
+    ObsoleteReason = 'Use table 30138 "Shpfy Registered Store New" instead';
+    ObsoleteTag = '21.0';
+
     Access = Internal;
     Caption = 'Shopify Registered Store';
     DataClassification = SystemMetadata;
@@ -34,12 +42,14 @@ table 30136 "Shpfy Registered Store"
     }
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure SetAccessToken(AccessToken: Text)
     begin
         IsolatedStorage.Set('AccessToken(' + Rec.SystemId + ')', AccessToken, DataScope::Module);
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure GetAccessToken() Result: Text
     begin
         if not IsolatedStorage.Get('AccessToken(' + Rec.SystemId + ')', DataScope::Module, Result) then

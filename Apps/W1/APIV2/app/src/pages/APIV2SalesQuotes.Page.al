@@ -88,13 +88,9 @@ page 30037 "APIV2 - Sales Quotes"
                     Caption = 'Customer Id';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if not SellToCustomer.GetBySystemId("Customer Id") then
                             Error(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Sell-to Customer No." := SellToCustomer."No.";
                         RegisterFieldSet(FieldNo("Customer Id"));
@@ -107,8 +103,6 @@ page 30037 "APIV2 - Sales Quotes"
                     Caption = 'Customer No.';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if SellToCustomer."No." <> '' then begin
                             if SellToCustomer."No." <> "Sell-to Customer No." then
@@ -118,8 +112,6 @@ page 30037 "APIV2 - Sales Quotes"
 
                         if not SellToCustomer.Get("Sell-to Customer No.") then
                             Error(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Customer Id" := SellToCustomer.SystemId;
                         RegisterFieldSet(FieldNo("Customer Id"));
@@ -139,15 +131,10 @@ page 30037 "APIV2 - Sales Quotes"
                 field(billToCustomerId; "Bill-to Customer Id")
                 {
                     Caption = 'Bill-To Customer Id';
-
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if not BillToCustomer.GetBySystemId("Bill-to Customer Id") then
                             Error(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer No." := BillToCustomer."No.";
                         RegisterFieldSet(FieldNo("Bill-to Customer Id"));
@@ -159,8 +146,6 @@ page 30037 "APIV2 - Sales Quotes"
                     Caption = 'Bill-To Customer No.';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if BillToCustomer."No." <> '' then begin
                             if BillToCustomer."No." <> "Bill-to Customer No." then
@@ -170,8 +155,6 @@ page 30037 "APIV2 - Sales Quotes"
 
                         if not BillToCustomer.Get("Bill-to Customer No.") then
                             Error(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer Id" := BillToCustomer.SystemId;
                         RegisterFieldSet(FieldNo("Bill-to Customer Id"));
@@ -714,6 +697,7 @@ page 30037 "APIV2 - Sales Quotes"
 
     local procedure SetCalculatedFields()
     begin
+        Rec.LoadFields("Currency Code");
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
     end;
 

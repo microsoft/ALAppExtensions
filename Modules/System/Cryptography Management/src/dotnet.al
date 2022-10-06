@@ -5,7 +5,23 @@
 
 dotnet
 {
-    assembly("mscorlib")
+    assembly("System.Core")
+    {
+        type("System.Security.Cryptography.X509Certificates.CertificateRequest"; CertificateRequest) { }
+    }
+
+    assembly("System.Security.Cryptography.Xml")
+    {
+        type("System.Security.Cryptography.Xml.EncryptedXml"; "EncryptedXml") { }
+        type("System.Security.Cryptography.Xml.EncryptedData"; "EncryptedData") { }
+        type("System.Security.Cryptography.Xml.EncryptionMethod"; "EncryptionMethod") { }
+        type("System.Security.Cryptography.Xml.EncryptedKey"; "EncryptedKey") { }
+        type("System.Security.Cryptography.Xml.CipherData"; "CipherData") { }
+        type("System.Security.Cryptography.Xml.KeyInfoX509Data"; "KeyInfoX509Data") { }
+        type("System.Security.Cryptography.Xml.KeyInfoEncryptedKey"; "KeyInfoEncryptedKey") { }
+    }
+
+    assembly("netstandard")
     {
         type("System.Security.Cryptography.RijndaelManaged"; "Cryptography.RijndaelManaged") { }
         type("System.Security.Cryptography.CipherMode"; "Cryptography.CipherMode") { }
@@ -20,32 +36,15 @@ dotnet
         type("System.Security.Cryptography.DESCryptoServiceProvider"; "Cryptography.DESCryptoServiceProvider") { }
         type("System.Security.Cryptography.RSASignaturePadding"; RSASignaturePadding) { }
         type("System.Security.Cryptography.TripleDESCryptoServiceProvider"; "Cryptography.TripleDESCryptoServiceProvider") { }
-    }
-
-    assembly("System")
-    {
         type("System.Security.Cryptography.X509Certificates.X509BasicConstraintsExtension"; X509BasicConstraintsExtension) { }
         type("System.Security.Cryptography.X509Certificates.X509EnhancedKeyUsageExtension"; X509EnhancedKeyUsageExtension) { }
         type("System.Security.Cryptography.X509Certificates.X509KeyUsageExtension"; X509KeyUsageExtension) { }
         type("System.Security.Cryptography.X509Certificates.X509KeyUsageFlags"; X509KeyUsageFlags) { }
         type("System.Security.Cryptography.OidCollection"; OidCollection) { }
         type("System.Security.Cryptography.Oid"; Oid) { }
-    }
-
-    assembly("System.Core")
-    {
-        type("System.Security.Cryptography.X509Certificates.CertificateRequest"; CertificateRequest) { }
         type("System.Security.Cryptography.AesCryptoServiceProvider"; "Cryptography.AesCryptoServiceProvider") { }
+
     }
 
-    assembly("System.Security")
-    {
-        type("System.Security.Cryptography.Xml.EncryptedXml"; "EncryptedXml") { }
-        type("System.Security.Cryptography.Xml.EncryptedData"; "EncryptedData") { }
-        type("System.Security.Cryptography.Xml.EncryptionMethod"; "EncryptionMethod") { }
-        type("System.Security.Cryptography.Xml.EncryptedKey"; "EncryptedKey") { }
-        type("System.Security.Cryptography.Xml.CipherData"; "CipherData") { }
-        type("System.Security.Cryptography.Xml.KeyInfoX509Data"; "KeyInfoX509Data") { }
-        type("System.Security.Cryptography.Xml.KeyInfoEncryptedKey"; "KeyInfoEncryptedKey") { }
-    }
 }
+

@@ -1504,12 +1504,12 @@ report 31245 "Fixed Asset - Book Value 2 CZF"
         end;
     end;
 
-    local procedure GetStartingDate(StartingDate: Date): Date
+    local procedure GetStartingDate(StartingDate2: Date): Date
     begin
-        if StartingDate <= 00000101D then
+        if StartingDate2 <= 00000101D then
             exit(0D);
 
-        exit(StartingDate - 1);
+        exit(StartingDate2 - 1);
     end;
 
     local procedure ShowSection(Section: Option Body,GroupFooter,Footer; Type: Integer): Boolean

@@ -4,16 +4,7 @@ pageextension 31060 "Item List CZZ" extends "Item List"
     {
         modify("Prepa&yment Percentages")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

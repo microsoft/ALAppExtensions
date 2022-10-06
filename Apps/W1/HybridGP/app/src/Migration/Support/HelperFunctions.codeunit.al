@@ -69,7 +69,6 @@ Codeunit 4037 "Helper Functions"
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
         GeneralTemplateNameTxt: Label 'GENERAL', Locked = true;
 
-
 #if not CLEAN21
     [Obsolete('Method is not supported, it was using files', '21.0')]
     procedure GetEntities(EntityName: Text; var JArray: JsonArray): Boolean
@@ -552,6 +551,16 @@ Codeunit 4037 "Helper Functions"
     procedure CreateVendorEFTBankAccounts()
     begin
         CreateVendorEFTBankAccountsImp();
+    end;
+
+    procedure CreateVendorClasses()
+    begin
+        CreateVendorClassesImp();
+    end;
+
+    procedure CreateCustomerClasses()
+    begin
+        CreateCustomerClassesImp();
     end;
 
     procedure CreateSetupRecordsIfNeeded()
@@ -1042,6 +1051,12 @@ Codeunit 4037 "Helper Functions"
         GPSY40101: Record "GP SY40101";
         GPSY06000: Record "GP SY06000";
         GPMC40200: Record "GP MC40200";
+        GPPM00100: Record "GP PM00100";
+        GPPM00200: Record "GP PM00200";
+        GPRM00101: Record "GP RM00101";
+        GPRM00201: Record "GP RM00201";
+        GPIV00101: Record "GP IV00101";
+        GPIV40400: Record "GP IV40400";
     begin
         GPAccount.DeleteAll();
         GPGLTransactions.DeleteAll();
@@ -1072,6 +1087,15 @@ Codeunit 4037 "Helper Functions"
 
         GPSY06000.DeleteAll();
         GPMC40200.DeleteAll();
+
+        GPPM00100.DeleteAll();
+        GPPM00200.DeleteAll();
+
+        GPRM00101.DeleteAll();
+        GPRM00201.DeleteAll();
+        
+        GPIV00101.DeleteAll();
+        GPIV40400.DeleteAll();
 
         Session.LogMessage('00007GH', 'Cleaned up staging tables.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
     end;
@@ -1728,7 +1752,7 @@ Codeunit 4037 "Helper Functions"
         FiscalPeriods: Codeunit FiscalPeriods;
     begin
         FiscalPeriods.MoveStagingData();
-        Session.LogMessage('', 'Created Fiscal Periods', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        Session.LogMessage('0000HRB', 'Created Fiscal Periods', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetOpenFiscalPeriodsCreated();
     end;
 
@@ -1737,8 +1761,26 @@ Codeunit 4037 "Helper Functions"
         GPVendorMigrator: CodeUnit "GP Vendor Migrator";
     begin
         GPVendorMigrator.MigrateVendorEFTBankAccounts();
-        Session.LogMessage('', 'Created EFT Bank Accounts', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        Session.LogMessage('0000HRC', 'Created EFT Bank Accounts', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetVendorEFTBankAccountsCreated();
+    end;
+
+    local procedure CreateVendorClassesImp()
+    var
+        GPVendorMigrator: CodeUnit "GP Vendor Migrator";
+    begin
+        GPVendorMigrator.MigrateVendorClasses();
+        Session.LogMessage('0000HWD', 'Created Vendor Classes', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        SetVendorClassesCreated();
+    end;
+
+    local procedure CreateCustomerClassesImp()
+    var
+        GPCustomerMigrator: CodeUnit "GP Customer Migrator";
+    begin
+        GPCustomerMigrator.MigrateCustomerClasses();
+        Session.LogMessage('0000HWE', 'Created Customer Classes', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        SetCustomerClassesCreated();
     end;
 
     local procedure SetDimentionsCreated()
@@ -1797,6 +1839,20 @@ Codeunit 4037 "Helper Functions"
         GPConfiguration.Modify();
     end;
 
+    local procedure SetVendorClassesCreated()
+    begin
+        GPConfiguration.GetSingleInstance();
+        GPConfiguration."Vendor Classes Created" := true;
+        GPConfiguration.Modify();
+    end;
+
+    local procedure SetCustomerClassesCreated()
+    begin
+        GPConfiguration.GetSingleInstance();
+        GPConfiguration."Customer Classes Created" := true;
+        GPConfiguration.Modify();
+    end;
+
     local procedure SetPreMigrationCleanupCompleted()
     begin
         GPConfiguration.GetSingleInstance();
@@ -1852,6 +1908,18 @@ Codeunit 4037 "Helper Functions"
         exit(GPConfiguration."Vendor EFT Bank Acc. Created");
     end;
 
+    local procedure VendorClassesCreated(): Boolean
+    begin
+        GPConfiguration.GetSingleInstance();
+        exit(GPConfiguration."Vendor Classes Created");
+    end;
+
+    local procedure CustomerClassesCreated(): Boolean
+    begin
+        GPConfiguration.GetSingleInstance();
+        exit(GPConfiguration."Customer Classes Created");
+    end;
+
     procedure PreMigrationCleanupCompleted(): Boolean
     begin
         GPConfiguration.GetSingleInstance();
@@ -1902,10 +1970,13 @@ Codeunit 4037 "Helper Functions"
         if not VendorEFTBankAccountsCreated() then
             CreateVendorEFTBankAccounts();
 
-        if CheckBooksCreated() and OpenPurchaseOrdersCreated() and FiscalPeriodsCreated() and VendorEFTBankAccountsCreated() then
-            exit(true);
+        if not VendorClassesCreated() then
+            CreateVendorClasses();
 
-        exit(false);
+        if not CustomerClassesCreated() then
+            CreateCustomerClasses();
+
+        exit(GPConfiguration.IsAllPostMigrationDataCreated());
     end;
 
     procedure CheckMigrationStatus()
@@ -1972,5 +2043,28 @@ Codeunit 4037 "Helper Functions"
             OutValue := '';
 
         exit(OutValue);
+    end;
+
+    procedure GetGPAccountNumberByIndex(GPAccountIndex: Integer): Code[20]
+    var
+        GPAccount: Record "GP Account";
+    begin
+        if (GPAccountIndex > 0) then
+            if GPAccount.Get(GPAccountIndex) then
+                exit(CopyStr(GPAccount.AcctNum, 1, 20));
+
+        exit('');
+    end;
+
+    procedure EnsureAccountHasGenProdPostingAccount(AccountNumber: Code[20])
+    var
+        GLAccount: Record "G/L Account";
+    begin
+        if GLAccount.Get(AccountNumber) then
+            // Ensure the GLAccount has a Gen. Prod. Posting Group.
+            if GLAccount."Gen. Prod. Posting Group" = '' then begin
+                GLAccount."Gen. Prod. Posting Group" := PostingGroupCodeTxt;
+                GLAccount.Modify(true);
+            end;
     end;
 }

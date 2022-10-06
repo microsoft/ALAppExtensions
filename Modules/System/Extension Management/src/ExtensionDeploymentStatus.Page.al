@@ -15,6 +15,9 @@ page 2508 "Extension Deployment Status"
     SourceTable = "NAV App Tenant Operation";
     ContextSensitiveHelpPage = 'ui-extensions';
     Permissions = tabledata "Nav App Tenant Operation" = r;
+    UsageCategory = Administration;
+    ApplicationArea = All;
+    Caption = 'Extension Installation Status';
 
     layout
     {
@@ -26,13 +29,13 @@ page 2508 "Extension Deployment Status"
                 {
                     ApplicationArea = All;
                     Caption = 'Name';
-                    ToolTip = 'Specifies the name of the App.';
+                    ToolTip = 'Specifies the name of the app.';
                 }
                 field(Publisher; AppPublisher)
                 {
                     ApplicationArea = All;
                     Caption = 'Publisher';
-                    ToolTip = 'Specifies the name of the App Publisher.';
+                    ToolTip = 'Specifies the name of the app Publisher.';
                 }
                 field("Operation Type"; OperationType)
                 {
@@ -51,14 +54,14 @@ page 2508 "Extension Deployment Status"
                 {
                     ApplicationArea = All;
                     Caption = 'Schedule';
-                    ToolTip = 'Specifies the deployment Schedule.';
+                    ToolTip = 'Specifies the deployment schedule.';
                     Width = 12;
                 }
                 field(AppVersion; Version)
                 {
                     ApplicationArea = All;
                     Caption = 'App Version';
-                    ToolTip = 'Specifies the version of the App.';
+                    ToolTip = 'Specifies the version of the app.';
                     Width = 6;
                 }
                 field("Started On"; "Started On")

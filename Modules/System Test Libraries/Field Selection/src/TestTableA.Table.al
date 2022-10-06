@@ -6,6 +6,7 @@
 table 135036 "Test Table A"
 {
     DataClassification = SystemMetadata;
+    ReplicateData = false;
 
     fields
     {

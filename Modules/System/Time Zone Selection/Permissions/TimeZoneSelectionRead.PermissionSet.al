@@ -9,6 +9,6 @@ permissionset 9216 "Time Zone Selection - Read"
 
     IncludedPermissionSets = "Time Zone Selection - Objects";
 
-    Permissions = tabledata "Page Data Personalization" = r,
+    Permissions = tabledata "Page Data Personalization" = R, // Page.RunModal requires this
                   tabledata "Time Zone" = r;
 }

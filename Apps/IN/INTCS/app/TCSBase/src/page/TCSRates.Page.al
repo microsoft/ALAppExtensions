@@ -402,6 +402,7 @@ page 18816 "TCS Rates"
 
     trigger OnOpenPage()
     begin
+        ColumnCount := 0;
         GlobalTaxType := '';
         TCSSetup.Get();
         TCSSetup.TestField(TCSSetup."Tax Type");

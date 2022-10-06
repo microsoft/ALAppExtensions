@@ -265,6 +265,7 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                     Caption = 'Find Entries';
                     Image = Navigate;
                     Ellipsis = true;
+                    ShortCutKey = 'Ctrl+Alt+Q';
                     ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
                     trigger OnAction()
@@ -330,13 +331,7 @@ page 31173 "Sales Adv. Letter Entries CZZ"
 
     var
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
         IsClosed: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsMgtCZZ.TestIsEnabled();
-    end;
 
     trigger OnAfterGetRecord()
     begin

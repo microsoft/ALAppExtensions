@@ -1,8 +1,5 @@
 codeunit 31420 "Report Selection Handler CZZ"
 {
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-
     [EventSubscriber(ObjectType::Page, Page::"Report Selection - Sales", 'OnSetUsageFilterOnAfterSetFiltersByReportUsage', '', false, false)]
     local procedure AddSalesAdvanceReportsOnSetUsageFilterOnAfterSetFiltersByReportUsage(var Rec: Record "Report Selections"; ReportUsage2: Option)
     begin
@@ -36,14 +33,14 @@ codeunit 31420 "Report Selection Handler CZZ"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Customer Report Selections", 'OnMapTableUsageValueToPageValueOnCaseElse', '', false, false)]
-    local procedure AddSalesAdvanceReportsOnMapTableUsageValueToPageValueOnCaseElse(var ReportUsage: Option; Rec: Record "Custom Report Selection")
+    [EventSubscriber(ObjectType::Page, Page::"Customer Report Selections", 'OnAfterOnMapTableUsageValueToPageValue', '', false, false)]
+    local procedure AddSalesAdvanceReportsOnAfterOnMapTableUsageValueToPageValue(var Usage2: Enum "Custom Report Selection Sales"; CustomReportSelection: Record "Custom Report Selection")
     begin
-        case Rec.Usage of
+        case CustomReportSelection.Usage of
             "Report Selection Usage"::"Sales Advance Letter CZZ":
-                ReportUsage := Enum::"Custom Report Selection Sales"::"Advance Letter CZZ".AsInteger();
+                Usage2 := Usage2::"Advance Letter CZZ";
             "Report Selection Usage"::"Sales Advance VAT Document CZZ":
-                ReportUsage := Enum::"Custom Report Selection Sales"::"Advance VAT Document CZZ".AsInteger();
+                Usage2 := Usage2::"Advance VAT Document CZZ";
         end;
     end;
 
@@ -61,9 +58,6 @@ codeunit 31420 "Report Selection Handler CZZ"
     [EventSubscriber(ObjectType::Page, Page::"Customer Report Selections", 'OnAfterFilterCustomerUsageReportSelections', '', false, false)]
     local procedure AddSalesAdvanceReportsOnAfterFilterCustomerUsageReportSelections(var ReportSelections: Record "Report Selections")
     begin
-        if not AdvancePaymentsMgtCZZ.IsEnabled() then
-            exit;
-
         ReportSelections.SetFilter(
             Usage, '%1|%2|%3|%4|%5|%6|%7|%8|%9|%10',
             "Report Selection Usage"::"S.Quote",
@@ -81,9 +75,6 @@ codeunit 31420 "Report Selection Handler CZZ"
     [EventSubscriber(ObjectType::Page, Page::"Vendor Report Selections", 'OnAfterFilterVendorUsageReportSelections', '', false, false)]
     local procedure AddPurchaseAdvanceReportsOnAfterFilterVendorUsageReportSelections(var ReportSelections: Record "Report Selections")
     begin
-        if not AdvancePaymentsMgtCZZ.IsEnabled() then
-            exit;
-
         ReportSelections.SetFilter(
             Usage, '%1|%2|%3|%4|%5|%6',
             ReportSelections.Usage::"P.Order",

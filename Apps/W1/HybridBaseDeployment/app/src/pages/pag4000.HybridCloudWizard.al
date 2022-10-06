@@ -655,12 +655,18 @@ page 4000 "Hybrid Cloud Setup Wizard"
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
         GuidedExperience: Codeunit "Guided Experience";
+        Handled: Boolean;
+        CloseWizard: Boolean;
     begin
         if not (CloseAction = Action::OK) then
             exit(true);
 
         if not IsSaas then
             exit(true);
+
+        OnHandleCloseWizard(Handled, CloseWizard);
+        if Handled then
+            exit(CloseWizard);
 
         if not GuidedExperience.Exists("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Hybrid Cloud Setup Wizard") then
             exit;
@@ -672,6 +678,11 @@ page 4000 "Hybrid Cloud Setup Wizard"
         end else
             if not Confirm(HybridNotSetupQst, false) then
                 exit(false);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnHandleCloseWizard(var Handled: Boolean; var CloseWizard: Boolean)
+    begin
     end;
 
     protected var
@@ -794,10 +805,10 @@ page 4000 "Hybrid Cloud Setup Wizard"
     end;
 
     local procedure ShowDelegatedAdminStep(): Boolean;
-    var
-        DelegatedAdminStepVisible: Boolean;
     begin
         DelegatedAdminStepVisible := HybridCloudManagement.CheckNeedsApprovalToRunCloudMigration();
+        if not DelegatedAdminStepVisible then
+            exit(false);
 
         ResetWizardControls();
         exit(DelegatedAdminStepVisible);

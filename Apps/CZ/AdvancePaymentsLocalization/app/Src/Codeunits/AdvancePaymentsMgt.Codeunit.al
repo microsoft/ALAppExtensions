@@ -2,6 +2,7 @@ codeunit 31086 "Advance Payments Mgt. CZZ"
 {
     Permissions = tabledata "NAV App Installed App" = r;
 
+#if not CLEAN21
     var
         AdvancePaymentsFeatureIdTok: Label 'AdvancePaymentsLocalizationForCzech', Locked = true, MaxLength = 50;
 
@@ -9,9 +10,6 @@ codeunit 31086 "Advance Payments Mgt. CZZ"
     var
         FeatureManagementFacade: Codeunit "Feature Management Facade";
     begin
-        if IsTestingEnvironment() then
-            exit(false);
-
         FeatureEnabled := FeatureManagementFacade.IsEnabled(AdvancePaymentsFeatureIdTok);
         OnAfterIsEnabled(FeatureEnabled);
     end;
@@ -29,15 +27,19 @@ codeunit 31086 "Advance Payments Mgt. CZZ"
         exit(AdvancePaymentsFeatureIdTok);
     end;
 
-    local procedure IsTestingEnvironment(): Boolean
-    var
-        NAVAppInstalledApp: Record "NAV App Installed App";
-    begin
-        exit(NAVAppInstalledApp.Get('74e323c4-70a3-49ce-b18e-fe9ccaff01d3')); // application "Tests-Marketing"
-    end;
-
     [IntegrationEvent(false, false)]
     local procedure OnAfterIsEnabled(var FeatureEnabled: Boolean)
     begin
     end;
+
+#endif
+
+#if not CLEAN19
+    procedure DontUseObsoleteAdvancePayments()
+    var
+        AdvancePaymentsInstalledErr: Label 'Advance Payments Localization for Czech is installed.\Please use this instead of obsoleted version.';
+    begin
+        Error(AdvancePaymentsInstalledErr);
+    end;
+#endif
 }

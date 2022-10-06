@@ -4,6 +4,7 @@ report 31189 "Sales Invoice CZL"
     RDLCLayout = './Src/Reports/SalesInvoice.rdl';
     Caption = 'Sales Invoice';
     PreviewMode = PrintLayout;
+    WordMergeDataItem = "Sales Invoice Header";
 
     dataset
     {
@@ -133,6 +134,18 @@ report 31189 "Sales Invoice CZL"
             column(DisplayAdditionalFeeNote; DisplayAdditionalFeeNote)
             {
             }
+            column(GreetingLbl; GreetingLbl)
+            {
+            }
+            column(BodyLbl; BodyLbl)
+            {
+            }
+            column(ClosingLbl; ClosingLbl)
+            {
+            }
+            column(DocumentNoLbl; DocumentNoLbl)
+            {
+            }
             column(No_SalesInvoiceHeader; "No.")
             {
             }
@@ -181,7 +194,7 @@ report 31189 "Sales Invoice CZL"
             column(DueDate_SalesInvoiceHeaderCaption; FieldCaption("Due Date"))
             {
             }
-            column(DueDate_SalesInvoiceHeader; "Due Date")
+            column(DueDate_SalesInvoiceHeader; FormatDate("Due Date"))
             {
             }
             column(DocumentDate_SalesInvoiceHeaderCaption; FieldCaption("Document Date"))
@@ -489,18 +502,16 @@ report 31189 "Sales Invoice CZL"
                     column(VATClauseIdentifier; TempVATAmountLine."VAT Identifier")
                     {
                     }
-                    column(VATClauseDescription; VATClause.Description)
+                    column(VATClauseDescription; VATClauseText)
                     {
                     }
-                    column(VATClauseDescription2; VATClause."Description 2")
-                    {
-                    }
+
                     trigger OnAfterGetRecord()
                     begin
                         TempVATAmountLine.GetLine(Number);
                         if not VATClause.Get(TempVATAmountLine."VAT Clause Code") then
                             CurrReport.Skip();
-                        VATClause.GetDescription("Sales Invoice Header");
+                        VATClauseText := VATClause.GetDescriptionText("Sales Invoice Header");
                     end;
 
                     trigger OnPreDataItem()
@@ -697,6 +708,7 @@ report 31189 "Sales Invoice CZL"
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
         ExchRateText: Text[50];
+        VATClauseText: Text;
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];
@@ -736,6 +748,10 @@ report 31189 "Sales Invoice CZL"
         TotalAfterPrepayedLbl: Label 'Total after Prepayed Advances';
         PaymentsLbl: Label 'Payments List';
         UnitPriceExclVATLbl: Label 'Unit Price Excl. VAT';
+        GreetingLbl: Label 'Hello';
+        ClosingLbl: Label 'Sincerely';
+        BodyLbl: Label 'Thank you for your business. Your invoice is attached to this message.';
+        DocumentNoLbl: Label 'No.';
         [InDataSet]
         LogInteractionEnable: Boolean;
         DisplayAdditionalFeeNote: Boolean;
@@ -799,6 +815,11 @@ report 31189 "Sales Invoice CZL"
     begin
         FormatAddress.SalesInvBillTo(CustAddr, SalesInvoiceHeader);
         FormatAddress.SalesInvShipTo(ShipToAddr, CustAddr, SalesInvoiceHeader);
+    end;
+
+    local procedure FormatDate(DateValue: Date): Text
+    begin
+        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

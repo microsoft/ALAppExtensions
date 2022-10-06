@@ -1,0 +1,86 @@
+﻿name: Create Online Dev. Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environmentName:
+        description: Name of the online environment
+        required: true
+      reUseExistingEnvironment:
+        description: Reuse environment if it exists
+        required: false
+        default: 'N'
+      directCommit:
+        description: Direct COMMIT (Y/N)
+        required: false
+        default: 'N'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+defaults:
+  run:
+    shell: PowerShell
+
+jobs:
+  CreateOnlineDevelopmentEnvironment:
+    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Initialize the workflow
+        id: init
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.0
+        with:
+          eventId: "DO0093"
+
+      - name: Read settings
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.0
+        with:
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+
+      - name: Read secrets
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.0
+        env:
+          secrets: ${{ toJson(secrets) }}
+        with:
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+          settingsJson: ${{ env.Settings }}
+          secrets: 'adminCenterApiCredentials'
+
+      - name: Check AdminCenterApiCredentials / Initiate Device Login (open to see code)
+        run: |
+          $adminCenterApiCredentials = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($env:adminCenterApiCredentials))
+          if ($adminCenterApiCredentials) {
+            Write-Host "AdminCenterApiCredentials provided!"
+          }
+          else {
+            Write-Host "AdminCenterApiCredentials not provided, initiating Device Code flow"
+            $ALGoHelperPath = "$([System.IO.Path]::GetTempFileName()).ps1"
+            $webClient = New-Object System.Net.WebClient
+            $webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/v2.0/AL-Go-Helper.ps1', $ALGoHelperPath)
+            . $ALGoHelperPath
+            $BcContainerHelperPath = DownloadAndImportBcContainerHelper -baseFolder $ENV:GITHUB_WORKSPACE
+            $authContext = New-BcAuthContext -includeDeviceLogin -deviceLoginTimeout ([TimeSpan]::FromSeconds(0))
+            MaskValueInLog -value $authContext.deviceCode
+            Add-Content -Path $env:GITHUB_ENV -Value "adminCenterApiCredentials={""deviceCode"":""$($authContext.deviceCode)""}"
+            CleanupAfterBcContainerHelper -bcContainerHelperPath $bcContainerHelperPath
+          }
+
+      - name: Create Development Environment
+        uses: microsoft/AL-Go-Actions/CreateDevelopmentEnvironment@v2.0
+        with:
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+          environmentName: ${{ github.event.inputs.environmentName }}
+          reUseExistingEnvironment: ${{ github.event.inputs.reUseExistingEnvironment }}
+          directCommit: ${{ github.event.inputs.directCommit }}
+          adminCenterApiCredentials: ${{ env.adminCenterApiCredentials }} 
+
+      - name: Finalize the workflow
+        if: always()
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.0
+        with:
+          eventId: "DO0093"
+          telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}

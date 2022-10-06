@@ -1,6 +1,6 @@
 table 40100 "GP Bank MSTR"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

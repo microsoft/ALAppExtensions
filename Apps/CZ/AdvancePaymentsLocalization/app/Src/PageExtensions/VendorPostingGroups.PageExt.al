@@ -1,23 +1,14 @@
 #if not CLEAN19
+#pragma warning disable AL0432
 pageextension 31192 "Vendor Posting Groups CZZ" extends "Vendor Posting Groups"
 {
     layout
     {
-#pragma warning disable AL0432
         modify("Advance Account")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
-#pragma warning restore AL0432
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }
+#pragma warning restore AL0432
 #endif

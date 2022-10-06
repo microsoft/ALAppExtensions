@@ -11,7 +11,7 @@ codeunit 149002 "BCPT Role Wrapper"
     var
         GlobalBCPTLine: Record "BCPT Line";
         GlobalBCPTHeader: Record "BCPT Header";
-        BCPTHeader: Record "BCPT Header";
+        ActiveBCPTHeader: Record "BCPT Header";
         NoOfInsertedLogEntries: Integer;
         AccumulatedWaitTimeMs: Integer;
         WasSuccess: Boolean;
@@ -30,13 +30,13 @@ codeunit 149002 "BCPT Role Wrapper"
         NoOfInsertedLogEntries := 0;
         AccumulatedWaitTimeMs := 0;
         PoissonLimit := 0;
-        InitializeBCPTLineForRun(Rec, BCPTHeader, PoissonLimit);
-        SetBCPTHeader(BCPTHeader);
+        InitializeBCPTLineForRun(Rec, ActiveBCPTHeader, PoissonLimit);
+        SetBCPTHeader(ActiveBCPTHeader);
 
-        StartTime := BCPTHeader."Started at";
-        CurrentWorkDate := BCPTHeader."Work date starts at";
+        StartTime := ActiveBCPTHeader."Started at";
+        CurrentWorkDate := ActiveBCPTHeader."Work date starts at";
 
-        ExecuteBCPTLine(Rec, BCPTHeader, StartTime, CurrentWorkDate, PoissonLimit);
+        ExecuteBCPTLine(Rec, ActiveBCPTHeader, StartTime, CurrentWorkDate, PoissonLimit);
     end;
 
     local procedure InitializeBCPTLineForRun(var BCPTLine: Record "BCPT Line"; var BCPTHeader: Record "BCPT Header"; PoissonLimit: Integer)
@@ -137,7 +137,7 @@ codeunit 149002 "BCPT Role Wrapper"
 
     internal procedure GetBCPTHeaderTag(): Text[20]
     begin
-        exit(BCPTHeader.Tag);
+        exit(ActiveBCPTHeader.Tag);
     end;
 
     /// <summary>

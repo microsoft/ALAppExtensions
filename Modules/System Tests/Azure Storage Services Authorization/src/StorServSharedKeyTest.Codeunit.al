@@ -7,11 +7,16 @@ codeunit 132917 "Stor. Serv. Shared Key Test"
 {
     Subtype = Test;
 
+    var
+        SharedKeyLbl: Label 'SharedKey %1:', Locked = true;
+        RandomUriLbl: Label 'https://%1.blob.windows.net/%2/?%3=%4&%5=%6', Locked = true;
+
     [Test]
     procedure SharedKeyAuthorizationNoHeadersTest()
     var
         SharedKeyAuthorization: Interface "Storage Service Authorization";
         Headers: HttpHeaders;
+        StorageAccount: Text;
         Uri: Text;
         AuthorizationValue: array[10] of Text;
     begin
@@ -33,12 +38,12 @@ codeunit 132917 "Stor. Serv. Shared Key Test"
         Assert.IsTrue(Headers.Contains('Authorization'), 'The HTTP request should contain Authorization header');
 
         Headers.GetValues('Authorization', AuthorizationValue);
-        Assert.IsTrue(StrPos(AuthorizationValue[1], StrSubstNo('SharedKey %1:', StorageAccount)) = 1, 'Authorizarion header is not in the right format');
+        Assert.IsTrue(StrPos(AuthorizationValue[1], StrSubstNo(SharedKeyLbl, StorageAccount)) = 1, 'Authorizarion header is not in the right format');
     end;
 
     local procedure GenerateRandomUri(StorageAccount: Text): Text
     begin
-        exit(StrSubstNo('https://%1.blob.windows.net/%2/?%3=%4&5=%6', StorageAccount, Any.AlphabeticText(5), Any.AlphanumericText(5), Any.AlphanumericText(5), Any.AlphanumericText(5), Any.AlphanumericText(5)));
+        exit(StrSubstNo(RandomUriLbl, StorageAccount, Any.AlphabeticText(5), Any.AlphanumericText(5), Any.AlphanumericText(5), Any.AlphanumericText(5), Any.AlphanumericText(5)));
     end;
 
     var
@@ -46,5 +51,4 @@ codeunit 132917 "Stor. Serv. Shared Key Test"
         Any: Codeunit Any;
         StorageServiceAuthorization: Codeunit "Storage Service Authorization";
         HttpRequest: HttpRequestMessage;
-        StorageAccount: Text;
 }

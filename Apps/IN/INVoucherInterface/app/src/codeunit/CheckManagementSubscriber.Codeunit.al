@@ -7,6 +7,8 @@ codeunit 18970 "Check Management Subscriber"
         NoAppliedEntryErr: Label 'Cannot find an applied entry within the specified filter.';
         StaleCheckExpiryDateErr: Label 'Cheque Ledger entry can be marked as Stale only after %1. ', Comment = '%1= Stale Check Expiry Date';
         CheckMarkedStaleErr: Label 'The cheque has already been marked stale.';
+        VoidCheckConfirmationLbl: Label 'Void Check %1?', Comment = '%1 = Check No';
+        VoidAllCheckLbl: Label 'Void all printed checks?';
 
     procedure FinancialStaleCheck(var CheckLedgerEntry: Record "Check Ledger Entry")
     var
@@ -22,6 +24,10 @@ codeunit 18970 "Check Management Subscriber"
         TDSEntryNo: Integer;
         TDSAccountNo: Code[20];
     begin
+        TotalTDSEncludingSheCess := 0;
+        TDSAccountNo := '';
+        TDSEntryNo := 0;
+
         if CheckLedgerEntry."Stale Cheque" = true then
             Error(CheckMarkedStaleErr);
 
@@ -114,12 +120,12 @@ codeunit 18970 "Check Management Subscriber"
             CheckLedgerEntry."Bal. Account Type"::"Fixed Asset":
                 PostFAEntry(GenJournalLine, CheckLedgerEntry);
             else begin
-                    GenJournalLine."Bal. Account Type" := CheckLedgerEntry."Bal. Account Type";
-                    GenJournalLine.Validate("Bal. Account No.", CheckLedgerEntry."Bal. Account No.");
-                    GenJournalLine."Shortcut Dimension 1 Code" := '';
-                    GenJournalLine."Shortcut Dimension 2 Code" := '';
-                    GenJnlPostLine.RunWithoutCheck(GenJournalLine);
-                end;
+                GenJournalLine."Bal. Account Type" := CheckLedgerEntry."Bal. Account Type";
+                GenJournalLine.Validate("Bal. Account No.", CheckLedgerEntry."Bal. Account No.");
+                GenJournalLine."Shortcut Dimension 1 Code" := '';
+                GenJournalLine."Shortcut Dimension 2 Code" := '';
+                GenJnlPostLine.RunWithoutCheck(GenJournalLine);
+            end;
         end;
 
         CheckLedgerEntry."Original Entry Status" := CheckLedgerEntry."Entry Status";
@@ -310,6 +316,10 @@ codeunit 18970 "Check Management Subscriber"
         TDSEntryNo: Integer;
         TDSAccountNo: Code[20];
     begin
+        TotalTDSEncludingSheCess := 0;
+        TDSAccountNo := '';
+        TDSEntryNo := 0;
+
         BankAccount.Get(CheckLedgerEntry."Bank Account No.");
         BankAccountLedgerEntry.Get(CheckLedgerEntry."Bank Account Ledger Entry No.");
         GLEntry.SetCurrentKey("Transaction No.");
@@ -379,6 +389,10 @@ codeunit 18970 "Check Management Subscriber"
         TDSEntryNo: Integer;
         TDSAccountNo: Code[20];
     begin
+        TotalTDSEncludingSheCess := 0;
+        TDSAccountNo := '';
+        TDSEntryNo := 0;
+
         if ConfirmFinancialStale.GetVoidType() = 0 then
             if UnApplyVendInvoices(CheckLedgerEntry, ConfirmFinancialStale.GetVoidDate()) then
                 GenJournalLine."Applies-to ID" := CheckLedgerEntry."Document No.";
@@ -556,4 +570,45 @@ codeunit 18970 "Check Management Subscriber"
         GenJnlLine."Cheque No." := CopyStr(ChequeNo, 1, 10);
         GenJnlLine."Cheque Date" := GenJnlLine."Posting Date";
     end;
+
+    procedure OnActionPrintCheckforContravoucher(GenJourLine: Record "Gen. Journal Line")
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        DocumentPrint: Codeunit "Document-Print";
+    begin
+        GenJournalLine.Reset();
+        GenJournalLine.Copy(GenJourLine);
+        DocumentPrint.PrintCheck(GenJournalLine);
+        Codeunit.Run(Codeunit::"Adjust Gen. Journal Balance", GenJournalLine);
+    end;
+
+    procedure OnActionVoidCheckforContravoucher(GenJourLine: Record "Gen. Journal Line")
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        if not GeneralLedgerSetup."Activate Cheque No." then begin
+            if Confirm(VoidCheckConfirmationLbl, false, GenJourLine."Document No.") then
+                VoidCheckVoucher(GenJourLine);
+        end else
+            if Confirm(VoidCheckConfirmationLbl, false, GenJourLine."Cheque No.") then
+                VoidCheckVoucher(GenJourLine);
+    end;
+
+    procedure OnActionVoidAllChecksforContravoucher(GenJourLine: Record "Gen. Journal Line")
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+    begin
+        if Confirm(VoidAllCheckLbl, false) then begin
+            GenJournalLine.Reset();
+            GenJournalLine.Copy(GenJourLine);
+            GenJournalLine.SetRange("Bank Payment Type", GenJourLine."Bank Payment Type"::"Computer Check");
+            GenJournalLine.SetRange("Check Printed", true);
+            if GenJournalLine.FindSet() then
+                repeat
+                    VoidCheckVoucher(GenJourLine);
+                until GenJournalLine.Next() = 0;
+        end;
+    end;
+
 }

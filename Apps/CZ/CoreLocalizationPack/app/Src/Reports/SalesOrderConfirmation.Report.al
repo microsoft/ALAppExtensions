@@ -4,6 +4,7 @@ report 31187 "Sales Order Confirmation CZL"
     RDLCLayout = './Src/Reports/SalesOrderConfirmation.rdl';
     Caption = 'Sales Order Confirmation';
     PreviewMode = PrintLayout;
+    WordMergeDataItem = "Sales Header";
 
     dataset
     {
@@ -110,6 +111,18 @@ report 31187 "Sales Order Confirmation CZL"
             column(VATLbl; VATLbl)
             {
             }
+            column(GreetingLbl; GreetingLbl)
+            {
+            }
+            column(BodyLbl; BodyLbl)
+            {
+            }
+            column(ClosingLbl; ClosingLbl)
+            {
+            }
+            column(DocumentNoLbl; DocumentNoLbl)
+            {
+            }
             column(No_SalesHeader; "No.")
             {
             }
@@ -183,6 +196,12 @@ report 31187 "Sales Order Confirmation CZL"
             {
             }
             column(AmountIncludingVAT_SalesHeader; "Amount Including VAT")
+            {
+            }
+            column(DueDate_SalesHeaderCaption; FieldCaption("Due Date"))
+            {
+            }
+            column(DueDateFormat_SalesHeader; FormatDate("Due Date"))
             {
             }
             column(DocFooterText; DocFooterText)
@@ -514,6 +533,10 @@ report 31187 "Sales Order Confirmation CZL"
         DiscPercentLbl: Label 'Discount %';
         TotalLbl: Label 'total';
         VATLbl: Label 'VAT';
+        GreetingLbl: Label 'Hello';
+        ClosingLbl: Label 'Sincerely';
+        BodyLbl: Label 'Thank you for your business. Your order confirmation is attached to this message.';
+        DocumentNoLbl: Label 'No.';
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; ArchiveDocumentFrom: Boolean; LogInteractionFrom: Boolean)
     begin
@@ -539,6 +562,11 @@ report 31187 "Sales Order Confirmation CZL"
     begin
         FormatAddress.SalesHeaderBillTo(CustAddr, SalesHeader);
         FormatAddress.SalesHeaderShipTo(ShipToAddr, CustAddr, SalesHeader);
+    end;
+
+    local procedure FormatDate(DateValue: Date): Text
+    begin
+        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

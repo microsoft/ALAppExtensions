@@ -12,7 +12,7 @@ codeunit 13690 "MS - ECSL Report Export File"
         ReportTxt: Text;
         NoDownload: Boolean;
         CompanyVATRegNo: Text;
-        ExceedingLenghtErr: Label 'It is not possible to display %1 in a field with a length of %2.';
+        ExceedingLenghtErr: Label 'It is not possible to display %1 in a field with a length of %2.', Comment = '%1 = Text to be displayed; %2 = Maximum length for the field';
         InvalidPeriodErr: Label 'The period is not valid.';
 
     trigger OnRun();
@@ -122,15 +122,19 @@ codeunit 13690 "MS - ECSL Report Export File"
     end;
 
     local procedure AddHeader(var txtBuilder: TextBuilder);
+    var
+        HeaderTxt: Label '0,%1,LISTE,,,,,,', Locked = true;
     begin
         txtBuilder.AppendLine(
-          StrSubstNo('0,%1,LISTE,,,,,,', CompanyVATRegNo));
+          StrSubstNo(HeaderTxt, CompanyVATRegNo));
     end;
 
     local procedure PopulateLine(VATReportHeader: Record "VAT Report Header"; CountryCode: Code[10]; VatRegNo: Text; SalesAmount: Decimal; ServiceAmount: Decimal; TriangulatedAmount: Decimal): Text;
+    var
+        LineTxt: Label '2,%1,%2,%3,%4,%5,%6,%7,%8', Locked = true;
     begin
         exit(
-          StrSubstNo('2,%1,%2,%3,%4,%5,%6,%7,%8',
+          StrSubstNo(LineTxt,
             CheckLength(FORMAT(VATReportHeader."No."), 10),
             FormatDate(VATReportHeader."End Date"),
             CompanyVATRegNo,
@@ -142,9 +146,11 @@ codeunit 13690 "MS - ECSL Report Export File"
     end;
 
     local procedure AddGrandTotal(var txtBuilder: TextBuilder; TotalCount: Decimal; TotalAmont: Decimal);
+    var
+        GrandTotalTxt: Label '10,%1,%2,,,,,,', Locked = true;
     begin
         txtBuilder.AppendLine(
-          StrSubstNo('10,%1,%2,,,,,,',
+          StrSubstNo(GrandTotalTxt,
             DecimalNumeralFormat(TotalCount, 9),
             DecimalNumeralFormat(TotalAmont, 15)));
     end;

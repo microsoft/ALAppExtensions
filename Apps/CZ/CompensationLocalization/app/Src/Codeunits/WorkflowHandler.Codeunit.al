@@ -61,9 +61,13 @@ codeunit 31277 "Workflow Handler CZC"
     local procedure AddWorkflowTableRelationsToLibrary()
     var
         ApprovalEntry: Record "Approval Entry";
+        CompensationHeaderCZC: Record "Compensation Header CZC";
+        CompensationLineCZC: Record "Compensation Line CZC";
     begin
         WorkflowSetup.InsertTableRelation(Database::"Compensation Header CZC", 0,
           Database::"Approval Entry", ApprovalEntry.FieldNo("Record ID to Approve"));
+        WorkflowSetup.InsertTableRelation(Database::"Compensation Header CZC", CompensationHeaderCZC.FieldNo("No."),
+          Database::"Compensation Line CZC", CompensationLineCZC.FieldNo("Compensation No."));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Response Handling", 'OnAddWorkflowResponsePredecessorsToLibrary', '', false, false)]
@@ -209,7 +213,7 @@ codeunit 31277 "Workflow Handler CZC"
         RecordRestrictionMgt.UpdateRestriction(Rec, xRec);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Setup", 'OnInsertWorkflowTemplates', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Setup", 'OnAfterInitWorkflowTemplates', '', false, false)]
     local procedure InsertWorkflowTemplates()
     begin
         if IsTestingEnvironment() then
@@ -229,6 +233,8 @@ codeunit 31277 "Workflow Handler CZC"
     var
         Workflow: Record Workflow;
     begin
+        if Workflow.Get(WorkflowSetup.GetWorkflowTemplateCode(CompensationApprWorkflowCodeTxt)) then
+            exit;
         WorkflowSetup.InsertWorkflowTemplate(Workflow, CompensationApprWorkflowCodeTxt, CompensationApprWorkflowDescTxt, FinCategoryTxt);
         InsertCompensationApprovalWorkflowDetails(Workflow);
         WorkflowSetup.MarkWorkflowAsTemplate(Workflow);

@@ -51,6 +51,32 @@ codeunit 139525 "Library - VAT Group"
         VATReportHeader.Insert();
     end;
 
+    procedure MockVATReportHeaderWithStatmentLines(var VATReportHeader: Record "VAT Report Header"; StartDate: Date; EndDate: Date)
+    var
+        VATStatementName: Record "VAT Statement Name";
+        VATStatementLine: Record "VAT Statement Line";
+        VATStatementReportLine: Record "VAT Statement Report Line";
+        LibraryERM: Codeunit "Library - ERM";
+        i: Integer;
+    begin
+        VATStatementLine.DeleteAll();
+        LibraryERM.CreateVATStatementNameWithTemplate(VATStatementName);
+        for i := 1 to 9 do begin
+            LibraryERM.CreateVATStatementLine(VATStatementLine, VATStatementName."Statement Template Name", VATStatementName.Name);
+            VATStatementLine."Box No." := Format(i);
+            VATStatementLine.Modify();
+        end;
+
+        VATReportHeader.Init();
+        VATReportHeader."Statement Template Name" := VATStatementName."Statement Template Name";
+        VATReportHeader."Statement Name" := VATStatementName.Name;
+        MockVATReportHeaderWithDates(VATReportHeader, DMY2Date(1, 1, 2020), DMY2Date(31, 1, 2020));
+
+        MockVATStatementReportLineWithBoxNo(VATStatementReportLine, VATReportHeader, 100, '001', '001');
+        MockVATStatementReportLineWithBoxNo(VATStatementReportLine, VATReportHeader, 200, '002', '002');
+        MockVATStatementReportLineWithBoxNo(VATStatementReportLine, VATReportHeader, 300, '003', '003');
+    end;
+
     procedure MockVATStatementReportLine(var VATStatementReportLine: Record "VAT Statement Report Line"; VATReportHeader: Record "VAT Report Header"; Amount: Decimal)
     begin
         MockVATStatementReportLineBase(

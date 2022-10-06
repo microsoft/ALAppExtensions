@@ -6,7 +6,7 @@ pageextension 31216 "Acc. Schedule Extensions CZZ" extends "Acc. Schedule Extens
 #pragma warning disable AL0432
         modify(Prepayment)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -23,28 +23,15 @@ pageextension 31216 "Acc. Schedule Extensions CZZ" extends "Acc. Schedule Extens
 
     trigger OnOpenPage()
     begin
-#if not CLEAN20
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-#endif
         UpdateControls();
     end;
 
     var
-#if not CLEAN20
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        [InDataSet]
-        AdvancePaymentsEnabledCZZ: Boolean;
-#endif
         [InDataSet]
         AdvancePaymentsVisibleCZZ: Boolean;
 
     local procedure UpdateControls()
     begin
-#if not CLEAN20
-        AdvancePaymentsVisibleCZZ := false;
-        if not AdvancePaymentsEnabledCZZ then
-            exit;
-#endif
         AdvancePaymentsVisibleCZZ := LedgEntryType in [LedgEntryType::"Customer Entry", LedgEntryType::"Vendor Entry"];
     end;
 }

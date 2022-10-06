@@ -78,7 +78,7 @@ codeunit 131107 "Library - Application Area DK"
 
     procedure CreateFoundationSetupForCurrentUser(var ApplicationAreaSetup: Record "Application Area Setup")
     begin
-        ApplicationAreaSetup."User ID" := UserId;
+        ApplicationAreaSetup."User ID" := COPYSTR(UserId, 1, 50);
         ApplicationAreaSetup.Validate(Basic, true);
         ApplicationAreaSetup.Validate("Basic EU", true);
         ApplicationAreaSetup.Validate("Basic DK", true);

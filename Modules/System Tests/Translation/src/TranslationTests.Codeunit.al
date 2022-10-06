@@ -20,6 +20,7 @@ codeunit 137121 "Translation Tests"
         CannotTranslateTempRecErr: Label 'Translations cannot be added or retrieved for temporary records.';
         DifferentTableErr: Label 'The records cannot belong to different tables.';
         NoRecordIdErr: Label 'The variant passed is not a record.';
+        CalculateValueLbl: Label '%1-%2', Locked = true;
 
     [Test]
     [Scope('OnPrem')]
@@ -303,19 +304,19 @@ codeunit 137121 "Translation Tests"
     [Scope('OnPrem')]
     procedure TestTranslateForTemporaryRecords()
     var
-        TranslationTestTable: Record "Translation Test Table" temporary;
+        TempTranslationTestTable: Record "Translation Test Table" temporary;
     begin
         // [SCENARIO] Checks for an error message when translation is set for a temporary record
         Initialize();
 
         PermissionsMock.Set('Translation Edit');
-        
+
         // [GIVEN] A record in a temporary table is created
-        CreateRecord(TranslationTestTable);
+        CreateRecord(TempTranslationTestTable);
 
         // [WHEN] Translation is set on it
-        asserterror Translation.Set(TranslationTestTable, TranslationTestTable.FieldNo(TextField),
-          CalculateValue(TranslationTestTable, Text1Txt));
+        asserterror Translation.Set(TempTranslationTestTable, TempTranslationTestTable.FieldNo(TextField),
+          CalculateValue(TempTranslationTestTable, Text1Txt));
 
         // [THEN] Error is raised
         Assert.ExpectedError(CannotTranslateTempRecErr);
@@ -372,7 +373,7 @@ codeunit 137121 "Translation Tests"
 
     local procedure CalculateValue(TranslationTestTable: Record "Translation Test Table"; OrigValue: Text): Text[2048]
     begin
-        exit(CopyStr(StrSubstNo('%1-%2', TranslationTestTable.PK, OrigValue), 1, 2048));
+        exit(CopyStr(StrSubstNo(CalculateValueLbl, TranslationTestTable.PK, OrigValue), 1, 2048));
     end;
 
     [ModalPageHandler]

@@ -15,12 +15,26 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Code';
             DataClassification = SystemMetadata;
+            NotBlank = true;
         }
         field(2; "Shopify URL"; Text[250])
         {
             Caption = 'Shopify URL';
             DataClassification = SystemMetadata;
             ExtendedDatatype = URL;
+
+            trigger OnValidate()
+            var
+                ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
+            begin
+                if ("Shopify URL" <> '') then begin
+                    if not "Shopify URL".ToLower().StartsWith('https://') then
+                        "Shopify URL" := CopyStr('https://' + "Shopify URL", 1, MaxStrLen("Shopify URL"));
+
+                    if not ShpfyAuthenticationMgt.IsValidShopUrl("Shopify URL") then
+                        Error(InvalidShopUrlErr);
+                end;
+            end;
         }
         field(3; Enabled; Boolean)
         {
@@ -61,6 +75,14 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             TableRelation = "G/L Account";
             ValidateTableRelation = true;
+
+            trigger OnValidate()
+            var
+                GLAccount: Record "G/L Account";
+            begin
+                if GLAccount.Get("Shipping Charges Account") then
+                    CheckGLAccount(GLAccount);
+            end;
         }
         field(9; "Language Code"; Code[10])
         {
@@ -87,7 +109,7 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Sync Item Images';
             DataClassification = SystemMetadata;
-            OptionCaption = ' ,To Shopify,From Shopify';
+            OptionCaption = 'Disabled,To Shopify,From Shopify';
             OptionMembers = " ","To Shopify","From Shopify";
         }
         field(13; "Sync Item Extended Text"; boolean)
@@ -276,6 +298,14 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             TableRelation = "G/L Account";
             ValidateTableRelation = true;
+
+            trigger OnValidate()
+            var
+                GLAccount: Record "G/L Account";
+            begin
+                if GLAccount.Get("Tip Account") then
+                    CheckGLAccount(GLAccount);
+            end;
         }
         field(48; "Sold Gift Card Account"; Code[20])
         {
@@ -283,6 +313,14 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             TableRelation = "G/L Account";
             ValidateTableRelation = true;
+
+            trigger OnValidate()
+            var
+                GLAccount: Record "G/L Account";
+            begin
+                if GLAccount.Get("Sold Gift Card Account") then
+                    CheckGLAccount(GLAccount);
+            end;
         }
         field(49; "Customer Mapping Type"; enum "Shpfy Customer Mapping")
         {
@@ -310,24 +348,56 @@ table 30102 "Shpfy Shop"
             Caption = 'Collection Last Export Version';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
+#if not CLEAN21
+            ObsoleteTag = '21.0';
+            ObsoleteState = Pending;
+#else
+            ObsoleteTag = '24.0';
+            ObsoleteState = Removed;
+#endif
         }
         field(101; "Collection Last Import Version"; BigInteger)
         {
             Caption = 'Collection Last Import Version';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
+#if not CLEAN21
+            ObsoleteTag = '21.0';
+            ObsoleteState = Pending;
+#else
+            ObsoleteTag = '24.0';
+            ObsoleteState = Removed;
+#endif
         }
         field(102; "Product Last Export Version"; BigInteger)
         {
             Caption = 'Product Last Export Version';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
+#if not CLEAN21
+            ObsoleteTag = '21.0';
+            ObsoleteState = Pending;
+#else
+            ObsoleteTag = '24.0';
+            ObsoleteState = Removed;
+#endif
         }
         field(103; "Product Last Import Version"; BigInteger)
         {
             Caption = 'Product Last Import Version';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
+#if not CLEAN21
+            ObsoleteTag = '21.0';
+            ObsoleteState = Pending;
+#else
+            ObsoleteTag = '24.0';
+            ObsoleteState = Removed;
+#endif
         }
         field(104; "SKU Mapping"; Enum "Shpfy SKU Mappging")
         {
@@ -347,6 +417,12 @@ table 30102 "Shpfy Shop"
             DataClassification = CustomerContent;
             Description = 'Choose in which order the system try to find the county for the tax area.';
         }
+        field(107; "Allow Outgoing Requests"; Boolean)
+        {
+            Caption = 'Allow Outgoing Requests';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;
@@ -362,8 +438,11 @@ table 30102 "Shpfy Shop"
         key(Idx1; "Shop Id") { }
     }
 
+    var
+        InvalidShopUrlErr: Label 'The URL must refer to the internal shop location at myshopify.com. It must not be the public URL that customers use, such as myshop.com.';
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure GetAccessToken() Result: Text
     var
         ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
@@ -376,6 +455,7 @@ table 30102 "Shpfy Shop"
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure RequestAccessToken()
     var
         ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
@@ -387,14 +467,15 @@ table 30102 "Shpfy Shop"
     end;
 
     [NonDebuggable]
+    [Scope('OnPrem')]
     internal procedure HasAccessToken(): Boolean
     var
-        AuthorizationMgt: Codeunit "Shpfy Authentication Mgt.";
+        ShpfyAuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
         Store: Text;
     begin
         Store := GetStoreName();
         if Store <> '' then
-            exit(AuthorizationMgt.AccessTokenExist(Store));
+            exit(ShpfyAuthenticationMgt.AccessTokenExist(Store));
     end;
 
     local procedure GetStoreName() Store: Text
@@ -454,5 +535,12 @@ table 30102 "Shpfy Shop"
             SyncInfo."Last Sync Time" := ToDateTime;
             SyncInfo.Insert();
         end;
+    end;
+
+    internal procedure CheckGLAccount(GLAccount: Record "G/L Account")
+    begin
+        GLAccount.TestField("Account Type", GLAccount."Account Type"::Posting);
+        GLAccount.TestField("Direct Posting", true);
+        GLAccount.TestField(Blocked, false);
     end;
 }

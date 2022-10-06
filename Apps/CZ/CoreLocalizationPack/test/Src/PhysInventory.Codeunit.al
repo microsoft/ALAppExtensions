@@ -31,54 +31,6 @@ codeunit 148093 "Phys. Inventory CZL"
     end;
 
     [Test]
-    [HandlerFunctions('RequestPageCalculateInventoryHandler')]
-    procedure LoadingNotStoredItems()
-    var
-        Item: Record Item;
-        ItemJournalBatch: Record "Item Journal Batch";
-        ItemJournalLine: Record "Item Journal Line";
-        ItemJournalTemplate: Record "Item Journal Template";
-        InvtMovementTemplateCZL1: Record "Invt. Movement Template CZL";
-        InvtMovementTemplateCZL2: Record "Invt. Movement Template CZL";
-    begin
-        Initialize();
-
-        // [GIVEN] The item has been created.
-        LibraryInventory.CreateItem(Item);
-
-        // [GIVEN] The inventory movement template of positive adjustment type has been created.
-        CreateInvtMovementTemplate(
-          InvtMovementTemplateCZL1, InvtMovementTemplateCZL1."Entry Type"::"Positive Adjmt.");
-
-        // [GIVEN] The inventory movement template of nagative adjustment type has been created.
-        CreateInvtMovementTemplate(
-          InvtMovementTemplateCZL2, InvtMovementTemplateCZL2."Entry Type"::"Negative Adjmt.");
-
-        // [GIVEN] The item journal lines have been initialized.
-        LibraryInventory.SelectItemJournalTemplateName(ItemJournalTemplate, ItemJournalTemplate.Type::"Phys. Inventory");
-        LibraryInventory.SelectItemJournalBatchName(ItemJournalBatch, ItemJournalTemplate.Type::"Phys. Inventory", ItemJournalTemplate.Name);
-        LibraryInventory.ClearItemJournal(ItemJournalTemplate, ItemJournalBatch);
-        MakeItemJournalLine(ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name);
-
-        // [WHEN] Run calculate inventory.
-        RunCalculateInventory(ItemJournalLine, Item."No.", WorkDate(), true, true);
-
-        // [THEN] The created inventory templates will used in item journal lines.
-        ItemJournalLine.SetRange("Journal Template Name", ItemJournalBatch."Journal Template Name");
-        ItemJournalLine.SetRange("Journal Batch Name", ItemJournalBatch.Name);
-        ItemJournalLine.SetRange("Item No.", Item."No.");
-        ItemJournalLine.FindFirst();
-
-        ItemJournalLine.Validate("Qty. (Phys. Inventory)", ItemJournalLine."Qty. (Calculated)" + 1);
-        ItemJournalLine.TestField("Entry Type", ItemJournalLine."Entry Type"::"Positive Adjmt.");
-        ItemJournalLine.TestField("Invt. Movement Template CZL", InvtMovementTemplateCZL1.Name);
-
-        ItemJournalLine.Validate("Qty. (Phys. Inventory)", ItemJournalLine."Qty. (Calculated)" - 1);
-        ItemJournalLine.TestField("Entry Type", ItemJournalLine."Entry Type"::"Negative Adjmt.");
-        ItemJournalLine.TestField("Invt. Movement Template CZL", InvtMovementTemplateCZL2.Name);
-    end;
-
-    [Test]
     procedure LoadingStoredItems()
     var
         Item: Record Item;
@@ -136,22 +88,6 @@ codeunit 148093 "Phys. Inventory CZL"
         ItemJournalLine.Validate("Qty. (Phys. Inventory)", ItemJournalLine."Qty. (Calculated)" - 1);
         ItemJournalLine.TestField("Entry Type", ItemJournalLine."Entry Type"::"Negative Adjmt.");
         ItemJournalLine.TestField("Invt. Movement Template CZL", InvtMovementTemplateCZL2.Name);
-    end;
-
-    local procedure RunCalculateInventory(ItemJournalLine: Record "Item Journal Line"; ItemNo: Code[20]; PostingDate: Date; ItemsNotOnInvt: Boolean; ItemsWithoutChange: Boolean)
-    var
-        Item: Record Item;
-        CalculateInventory: Report "Calculate Inventory";
-    begin
-        Clear(CalculateInventory);
-        Item.SetRange("No.", ItemNo);
-        CalculateInventory.UseRequestPage(true);
-        CalculateInventory.SetTableView(Item);
-        CalculateInventory.SetItemJnlLine(ItemJournalLine);
-        CalculateInventory.InitializeRequest(PostingDate, ItemJournalLine."Document No.", ItemsNotOnInvt, false);
-        LibraryVariableStorage.Enqueue(ItemsWithoutChange);
-        Commit();
-        CalculateInventory.Run();
     end;
 
     local procedure CreateGenBusPostingGroup(var GenBusinessPostingGroup: Record "Gen. Business Posting Group")
@@ -212,12 +148,4 @@ codeunit 148093 "Phys. Inventory CZL"
         InventorySetup.Validate("Def.Tmpl. for Phys.Neg.Adj CZL", InvtMovementTemplateName);
         InventorySetup.Modify();
     end;
-
-    [RequestPageHandler]
-    procedure RequestPageCalculateInventoryHandler(var CalculateInventory: TestRequestPage "Calculate Inventory")
-    begin
-        CalculateInventory.ItemsWithoutChange.SetValue(LibraryVariableStorage.DequeueBoolean());
-        CalculateInventory.OK().Invoke();
-    end;
 }
-

@@ -33,9 +33,6 @@ codeunit 148004 "Library - Compensation CZC"
         CustLedgerEntry.Reset();
         CustLedgerEntry.SetRange("Document Type", GenJournalDocumentType);
         CustLedgerEntry.SetRange(Open, true);
-#if not CLEAN18
-        CustLedgerEntry.SetRange("Amount on Credit (LCY)", 0);
-#endif
         CustLedgerEntry.SetRange("Compensation Amount (LCY) CZC", 0);
         CustLedgerEntry.FindFirst();
     end;
@@ -45,9 +42,6 @@ codeunit 148004 "Library - Compensation CZC"
         VendorLedgerEntry.Reset();
         VendorLedgerEntry.SetRange("Document Type", GenJournalDocumentType);
         VendorLedgerEntry.SetRange(Open, true);
-#if not CLEAN18
-        VendorLedgerEntry.SetRange("Amount on Credit (LCY)", 0);
-#endif
         VendorLedgerEntry.SetRange("Compensation Amount (LCY) CZC", 0);
         VendorLedgerEntry.FindFirst();
     end;

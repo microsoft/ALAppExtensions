@@ -24,12 +24,12 @@ page 2026 "Image Analysis Tags"
                     Enabled = false;
                     Editable = false;
                     Style = Strong;
+                    ToolTip = 'Specifies the tag name.';
 
                     trigger OnDrillDown()
                     begin
                         Error('');
                     end;
-
                 }
 
                 field(TagConfidence; "Tag Confidence")
@@ -39,10 +39,12 @@ page 2026 "Image Analysis Tags"
                     Editable = false;
                     Style = Attention;
                     StyleExpr = Emphasize;
+                    ToolTip = 'Specifies the tag confidence.';
                 }
                 field(ActionToPerform; "Action To Perform")
                 {
                     ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the action to perform.';
                 }
 
                 field(DetailsText; "Details Text")
@@ -50,6 +52,7 @@ page 2026 "Image Analysis Tags"
                     Editable = false;
                     Enabled = false;
                     ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the image analyzer details.';
 
                     trigger OnDrillDown()
                     var
@@ -78,6 +81,7 @@ page 2026 "Image Analysis Tags"
                 field(AppendToDescription; AppendTagTxt)
                 {
                     Caption = 'Add to the Item Description';
+                    ToolTip = 'Specifies the tag to append to item description.';
                     Editable = false;
                     Enabled = false;
                     ApplicationArea = Basic, Suite;
@@ -127,6 +131,7 @@ page 2026 "Image Analysis Tags"
                     Image = FilterLines;
                     InFooterBar = true;
                     Promoted = true;
+                    PromotedOnly = true;
                     PromotedIsBig = True;
                     PromotedCategory = Category4;
 
@@ -146,6 +151,7 @@ page 2026 "Image Analysis Tags"
                     Image = AllLines;
                     InFooterBar = true;
                     Promoted = true;
+                    PromotedOnly = true;
                     PromotedIsBig = True;
                     PromotedCategory = Category4;
 
@@ -167,6 +173,7 @@ page 2026 "Image Analysis Tags"
                     Visible = True;
                     Image = Approvals;
                     Promoted = true;
+                    PromotedOnly = true;
                     PromotedIsBig = True;
                     PromotedCategory = Category5;
 
@@ -190,7 +197,7 @@ page 2026 "Image Analysis Tags"
         Item.Get("Detected On Item No");
         PageItemDescription := Item.Description;
 
-        SetFilter("Tag Confidence", StrSubstNo('>%1', ConfidencePercent));
+        SetFilter("Tag Confidence", '>%1', ConfidencePercent);
         SetCurrentKey("Tag Confidence");
         SetAscending("Tag Confidence", true); //descending does not work
         FilterOn := true;
@@ -208,6 +215,7 @@ page 2026 "Image Analysis Tags"
         [InDataSet]
         Emphasize: Boolean;
         FilterOn: Boolean;
+        TagAppendedDescriptionTxt: Label '%1 %2', Locked = true;
 
     procedure ToggleConfidenceTagFilter()
     begin
@@ -218,19 +226,18 @@ page 2026 "Image Analysis Tags"
         if FilterOn then
             SetFilter("Tag Confidence", '')
         else
-            SetFilter("Tag Confidence", StrSubstNo('>%1', ConfidencePercent));
+            SetFilter("Tag Confidence", '>%1', ConfidencePercent);
 
         FilterOn := not FilterOn;
     end;
 
     procedure AppendTagToDescription(CurrentTagName: Text[250])
-    var
     begin
         if StrPos(lowercase(PageItemDescription), lowercase(CurrentTagName)) > 0 then
             exit;
 
         if PageItemDescription <> '' then
-            PageItemDescription := Copystr(StrSubstNo('%1 %2', PageItemDescription, CurrentTagName), 1, MaxStrLen(PageItemDescription))
+            PageItemDescription := Copystr(StrSubstNo(TagAppendedDescriptionTxt, PageItemDescription, CurrentTagName), 1, MaxStrLen(PageItemDescription))
         else
             PageItemDescription := Copystr(CurrentTagName, 1, MaxStrLen(PageItemDescription));
 

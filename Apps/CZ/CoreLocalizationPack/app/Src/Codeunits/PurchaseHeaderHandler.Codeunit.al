@@ -63,20 +63,14 @@ codeunit 11744 "Purchase Header Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType', '', false, false)]
-    local procedure UpdateBankInfoAndRegNosOnValidatePurchaseHeaderPayToVendorNo(var PurchaseHeader: Record "Purchase Header"; Vendor: Record Vendor)
-    var
-        CompanyInformation: Record "Company Information";
-        ResponsibilityCenter: Record "Responsibility Center";
+    local procedure UpdateBankInfoAndRegNosOnValidatePurchaseHeaderPayToVendorNo(var PurchaseHeader: Record "Purchase Header"; var xPurchaseHeader: Record "Purchase Header"; Vendor: Record Vendor)
     begin
-        if PurchaseHeader.IsCreditDocType() then begin
-            if PurchaseHeader."Responsibility Center" = '' then begin
-                CompanyInformation.Get();
-                PurchaseHeader.Validate("Bank Account Code CZL", CompanyInformation."Default Bank Account Code CZL");
-            end else begin
-                ResponsibilityCenter.Get(PurchaseHeader."Responsibility Center");
-                PurchaseHeader.Validate("Bank Account Code CZL", ResponsibilityCenter."Default Bank Account Code CZL");
-            end;
-        end else
+        if PurchaseHeader.IsCreditDocType() and
+           ((PurchaseHeader."Currency Code" = xPurchaseHeader."Currency Code") or
+            (PurchaseHeader."Responsibility Center" <> xPurchaseHeader."Responsibility Center"))
+        then
+            PurchaseHeader.Validate("Bank Account Code CZL", PurchaseHeader.GetDefaulBankAccountNoCZL())
+        else
             PurchaseHeader.Validate("Bank Account Code CZL", Vendor."Preferred Bank Account Code");
         PurchaseHeader."Registration No. CZL" := Vendor."Registration No. CZL";
         PurchaseHeader."Tax Registration No. CZL" := Vendor."Tax Registration No. CZL";
@@ -89,16 +83,15 @@ codeunit 11744 "Purchase Header Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'Currency Factor', false, false)]
-    local procedure UpdateVATCurrencyfactorCZLOnBeforeCurrencyFactorValidate(var Rec: Record "Purchase Header"; var xRec: Record "Purchase Header")
+    local procedure UpdateVATCurrencyfactorCZLOnBeforeCurrencyFactorValidate(var Rec: Record "Purchase Header")
     begin
-        if Rec."Currency Factor" <> xRec."Currency Factor" then
-            Rec.UpdateVATCurrencyFactorCZL();
+        Rec.UpdateVATCurrencyFactorCZLByCurrencyFactorCZL();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterUpdateCurrencyFactor', '', false, false)]
     local procedure OnAfterUpdateCurrencyFactor(var PurchaseHeader: Record "Purchase Header")
     begin
-        PurchaseHeader.UpdateVATCurrencyFactorCZL()
+        PurchaseHeader.UpdateVATCurrencyFactorCZLByCurrencyFactorCZL()
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeValidateEvent', 'Vendor Posting Group', false, false)]
@@ -132,9 +125,41 @@ codeunit 11744 "Purchase Header Handler CZL"
         end;
     end;
 
+#if not CLEAN19
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnGetVATCurrencyFactor', '', false, false)]
     local procedure ReturnVATCurrencyFactorCZLOnGetVATCurrencyFactor(Rec: Record "Purchase Header"; var VATCurrencyFactor: Decimal)
     begin
         VATCurrencyFactor := Rec."VAT Currency Factor CZL";
+    end;
+
+#endif
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'VAT Country/Region Code', false, false)]
+    local procedure UpdateVATRegistrationNoCodeOnAfterVATCountryRegionCodeValidate(var Rec: Record "Purchase Header")
+    var
+        PayToVendor: Record Vendor;
+    begin
+        if Rec."Pay-to Vendor No." <> '' then begin
+            PayToVendor.Get(Rec."Pay-to Vendor No.");
+            Rec."VAT Registration No." := PayToVendor."VAT Registration No.";
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'Buy-from Country/Region Code', false, false)]
+    local procedure UpdateVATCountryRegionCodeOnAfterBuyFromCountryRegionCodeValidate(var Rec: Record "Purchase Header"; var xRec: Record "Purchase Header")
+    begin
+        if (Rec."Buy-from Country/Region Code" <> xRec."Buy-from Country/Region Code") and (xRec."Buy-from Country/Region Code" <> '') then
+            Rec.Validate("VAT Country/Region Code", Rec."Buy-from Country/Region Code");
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnValidateOrderAddressCodeOnAfterCopyBuyFromVendorAddressFieldsFromVendor', '', false, false)]
+    local procedure UpdateVATCountryRegionCodeOnValidateOrderAddressCodeOnAfterCopyBuyFromVendorAddressFieldsFromVendor(var PurchaseHeader: Record "Purchase Header"; Vend: Record Vendor)
+    begin
+        PurchaseHeader.Validate("VAT Country/Region Code", Vend."Country/Region Code");
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterCopyAddressInfoFromOrderAddress', '', false, false)]
+    local procedure UpdateVATCountryRegionCodeOnAfterCopyAddressInfoFromOrderAddress(var OrderAddress: Record "Order Address"; var PurchHeader: Record "Purchase Header")
+    begin
+        PurchHeader.Validate("VAT Country/Region Code", OrderAddress."Country/Region Code");
     end;
 }

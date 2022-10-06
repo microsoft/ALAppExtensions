@@ -13,6 +13,10 @@ codeunit 10681 "Electronic VAT Installation"
         SubmissionEnvironmentUrlLbl: Label 'https://skd.apps.altinn.no/', Locked = true;
         SubmissionAppUrlLbl: Label 'skd/mva-melding-innsending-v1/', Locked = true;
         ElectronicVATLbl: Label 'ELEC VAT', Locked = true;
+        ElectronicVATSetupTitleTxt: Label 'Set up electronic VAT submission';
+        ElectronicVATSetupShortTitleTxt: Label 'Electronic VAT submission';
+        ElectronicVATSetupDescriptionTxt: Label 'Set up Business Central to be able to report VAT to the Norwegian authorities.';
+
 
     trigger OnInstallAppPerCompany()
     var
@@ -78,7 +82,10 @@ codeunit 10681 "Electronic VAT Installation"
     local procedure CreateVATReportsConfiguration()
     var
         VATReportsConfiguration: Record "VAT Reports Configuration";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        NOVATReportTok: Label 'NO VAT Reporting', Locked = true;
     begin
+        FeatureTelemetry.LogUptake('0000HTK', NOVATReportTok, Enum::"Feature Uptake Status"::"Set up");
         if VATReportsConfiguration.Get(VATReportsConfiguration."VAT Report Type"::"VAT Return", ElectronicVATLbl) then
             exit;
         VATReportsConfiguration.Validate("VAT Report Type", VATReportsConfiguration."VAT Report Type"::"VAT Return");
@@ -135,5 +142,13 @@ codeunit 10681 "Electronic VAT Installation"
             exit;
         if ElecVATSetup.Get() and ElecVATSetup.Enabled then
             GuidedExperience.CompleteAssistedSetup(ObjectType, ObjectID);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', true, true)]
+    local procedure InsertIntoManualSetupOnRegisterManualSetup()
+    var
+        GuidedExperience: Codeunit "Guided Experience";
+    begin
+        GuidedExperience.InsertManualSetup(ElectronicVATSetupTitleTxt, ElectronicVATSetupShortTitleTxt, ElectronicVATSetupDescriptionTxt, 5, ObjectType::Page, Page::"Electronic VAT Setup Card", "Manual Setup Category"::Finance, '', true);
     end;
 }

@@ -41,11 +41,6 @@ codeunit 4025 "GP Cloud Migration"
         CompanyFailedToMigrateMsg: Label 'Migration did not start because the company setup is still in process.', Locked = true;
         InitiateMigrationMsg: Label 'Initiate GP Migration.', Locked = true;
         StartMigrationMsg: Label 'Start Migration', Locked = true;
-        GPSY40100Lbl: Label 'SY40100', Locked = true;
-        GPSY40101Lbl: Label 'SY40101', Locked = true;
-        GPCM20600Lbl: Label 'CM20600', Locked = true;
-        GPMC40200Lbl: Label 'MC40200', Locked = true;
-        GPSY06000Lbl: Label 'SY06000', Locked = true;
 
     local procedure InitiateGPMigration()
     var
@@ -56,6 +51,7 @@ codeunit 4025 "GP Cloud Migration"
         GPVendor: Record "GP Vendor";
         GPItem: Record "GP Item";
         GPConfiguration: Record "GP Configuration";
+        GPPopulateCombinedTables: Codeunit "GP Populate Combined Tables";
         HelperFunctions: Codeunit "Helper Functions";
         DataMigrationFacade: Codeunit "Data Migration Facade";
         WizardIntegration: Codeunit "Wizard Integration";
@@ -72,6 +68,11 @@ codeunit 4025 "GP Cloud Migration"
             HelperFunctions.SetProcessesRunning(false);
             exit;
         end;
+
+        GPPopulateCombinedTables.CleanupCombinedTables();
+        Commit();
+        GPPopulateCombinedTables.PopulateAllMappedTables();
+        Commit();
 
         Flag := false;
         HelperFunctions.ResetAdjustforPaymentInGLSetup(Flag);
@@ -105,10 +106,10 @@ codeunit 4025 "GP Cloud Migration"
             HelperFunctions.UpdateGlobalDimensionNo();
         end;
 
-        CreateDataMigrationStatusRecords(Database::"G/L Account", GPAccount.Count(), 4090, 4017);
-        CreateDataMigrationStatusRecords(Database::"Customer", GPCustomer.Count(), 4093, 4018);
-        CreateDataMigrationStatusRecords(Database::"Vendor", GPVendor.Count(), 4096, 4022);
-        CreateDataMigrationStatusRecords(Database::"Item", GPItem.Count(), 4095, 4019);
+        CreateDataMigrationStatusRecords(Database::"G/L Account", GPAccount.Count(), Database::"GP Account", Codeunit::"GP Account Migrator");
+        CreateDataMigrationStatusRecords(Database::"Customer", GPCustomer.Count(), Database::"GP Customer", Codeunit::"GP Customer Migrator");
+        CreateDataMigrationStatusRecords(Database::"Vendor", GPVendor.Count(), Database::"GP Vendor", Codeunit::"GP Vendor Migrator");
+        CreateDataMigrationStatusRecords(Database::"Item", GPItem.Count(), Database::"GP Item", Codeunit::"GP Item Migrator");
 
         Session.LogMessage('0000BBI', StartMigrationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
         DataMigrationFacade.StartMigration(HelperFunctions.GetMigrationTypeTxt(), FALSE);
@@ -142,12 +143,94 @@ codeunit 4025 "GP Cloud Migration"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInsertDefaultTableMappings', '', false, false)]
     local procedure OnInsertDefaultTableMappings(DeleteExisting: Boolean; ProductID: Text[250])
+    var
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
     begin
-        UpdateOrInsertRecord(Database::"GP SY40100", GPSY40100Lbl);
-        UpdateOrInsertRecord(Database::"GP SY40101", GPSY40101Lbl);
-        UpdateOrInsertRecord(Database::"GP CM20600", GPCM20600Lbl);
-        UpdateOrInsertRecord(Database::"GP MC40200", GPMC40200Lbl);
-        UpdateOrInsertRecord(Database::"GP SY06000", GPSY06000Lbl);
+        if ProductID <> HybridGPWizard.ProductId() then
+            exit;
+
+        UpdateOrInsertRecord(Database::"GP Checkbook MSTR", 'CM00100');
+        UpdateOrInsertRecord(Database::"GP Checkbook Transactions", 'CM20200');
+        UpdateOrInsertRecord(Database::"GP CM20600", 'CM20600');
+
+        UpdateOrInsertRecord(Database::"GP GL00100", 'GL00100');
+        UpdateOrInsertRecord(Database::"GP GL10110", 'GL10110');
+        UpdateOrInsertRecord(Database::"GP GL10111", 'GL10111');
+        UpdateOrInsertRecord(Database::"GP GL40200", 'GL40200');
+
+        UpdateOrInsertRecord(Database::"GP IV00101", 'IV00101');
+        UpdateOrInsertRecord(Database::"GP IV00102", 'IV00102');
+        UpdateOrInsertRecord(Database::"GP IV00105", 'IV00105');
+        UpdateOrInsertRecord(Database::"GP IV00200", 'IV00200');
+        UpdateOrInsertRecord(Database::"GP IV00300", 'IV00300');
+        UpdateOrInsertRecord(Database::"GP IV10200", 'IV10200');
+        UpdateOrInsertRecord(Database::"GP IV40400", 'IV40400');
+
+        UpdateOrInsertRecord(Database::GPIVBinQtyTransferHist, 'IV30004');
+        UpdateOrInsertRecord(Database::GPIVTrxHist, 'IV30200');
+        UpdateOrInsertRecord(Database::GPIVTrxAmountsHist, 'IV30300');
+        UpdateOrInsertRecord(Database::GPIVTrxDetailHist, 'IV30301');
+        UpdateOrInsertRecord(Database::GPIVTrxBinQtyHist, 'IV30302');
+        UpdateOrInsertRecord(Database::GPIVSerialLotNumberHist, 'IV30400');
+        UpdateOrInsertRecord(Database::GPIVDistributionHist, 'IV30500');
+        UpdateOrInsertRecord(Database::GPIVLotAttributeHist, 'IV30600');
+        UpdateOrInsertRecord(Database::"GP IV40201", 'IV40201');
+        UpdateOrInsertRecord(Database::"GP Item Location", 'IV40700');
+
+        UpdateOrInsertRecord(Database::"GP MC40000", 'MC40000');
+        UpdateOrInsertRecord(Database::"GP MC40200", 'MC40200');
+
+        UpdateOrInsertRecord(Database::"GP PM00100", 'PM00100');
+        UpdateOrInsertRecord(Database::"GP PM00200", 'PM00200');
+        UpdateOrInsertRecord(Database::"GP PM00201", 'PM00201');
+        UpdateOrInsertRecord(Database::"GP Vendor Address", 'PM00300');
+        UpdateOrInsertRecord(Database::"GP PM20000", 'PM20000');
+        UpdateOrInsertRecord(Database::GPPMHist, 'PM30200');
+
+        UpdateOrInsertRecord(Database::"GP POPPOHeader", 'POP10100');
+        UpdateOrInsertRecord(Database::"GP POPPOLine", 'POP10110');
+        UpdateOrInsertRecord(Database::GPPOPReceiptApply, 'POP10500');
+        UpdateOrInsertRecord(Database::GPPOPReceiptHist, 'POP30300');
+        UpdateOrInsertRecord(Database::GPPOPReceiptLineHist, 'POP30310');
+        UpdateOrInsertRecord(Database::GPPOPSerialLotHist, 'POP30330');
+        UpdateOrInsertRecord(Database::GPPOPPOHist, 'POP30100');
+        UpdateOrInsertRecord(Database::GPPOPPOLineHist, 'POP30110');
+        UpdateOrInsertRecord(Database::GPPOPPOTaxHist, 'POP30160');
+        UpdateOrInsertRecord(Database::GPPOPBinQtyHist, 'POP30340');
+        UpdateOrInsertRecord(Database::GPPOPTaxHist, 'POP30360');
+        UpdateOrInsertRecord(Database::GPPOPDistributionHist, 'POP30390');
+        UpdateOrInsertRecord(Database::GPPOPLandedCostHist, 'POP30700');
+
+        UpdateOrInsertRecord(Database::"GP RM00101", 'RM00101');
+        UpdateOrInsertRecord(Database::"GP Customer Address", 'RM00102');
+        UpdateOrInsertRecord(Database::"GP RM00103", 'RM00103');
+        UpdateOrInsertRecord(Database::"GP RM00201", 'RM00201');
+        UpdateOrInsertRecord(Database::"GP RM20101", 'RM20101');
+        UpdateOrInsertRecord(Database::GPRMHist, 'RM30101');
+
+        UpdateOrInsertRecord(Database::GPSOPTrxHist, 'SOP30200');
+        UpdateOrInsertRecord(Database::GPSOPDepositHist, 'SOP30201');
+        UpdateOrInsertRecord(Database::GPSOPTrxAmountsHist, 'SOP30300');
+        UpdateOrInsertRecord(Database::GPSOPCommissionsWorkHist, 'SOP10101');
+        UpdateOrInsertRecord(Database::GPSOPDistributionWorkHist, 'SOP10102');
+        UpdateOrInsertRecord(Database::GPSOPPaymentWorkHist, 'SOP10103');
+        UpdateOrInsertRecord(Database::GPSOPProcessHoldWorkHist, 'SOP10104');
+        UpdateOrInsertRecord(Database::GPSOPTaxesWorkHist, 'SOP10105');
+        UpdateOrInsertRecord(Database::GPSOPUserDefinedWorkHist, 'SOP10106');
+        UpdateOrInsertRecord(Database::GPSOPTrackingNumbersWorkHist, 'SOP10107');
+        UpdateOrInsertRecord(Database::GPSOPWorkflowWorkHist, 'SOP10112');
+        UpdateOrInsertRecord(Database::GPSOPSerialLotWorkHist, 'SOP10201');
+        UpdateOrInsertRecord(Database::GPSOPLineCommentWorkHist, 'SOP10202');
+        UpdateOrInsertRecord(Database::GPSOPBinQuantityWorkHist, 'SOP10203');
+
+        UpdateOrInsertRecord(Database::"GP SY00300", 'SY00300');
+        UpdateOrInsertRecord(Database::"GP SY01100", 'SY01100');
+        UpdateOrInsertRecord(Database::"GP SY01200", 'SY01200');
+        UpdateOrInsertRecord(Database::"GP Payment Terms", 'SY03300');
+        UpdateOrInsertRecord(Database::"GP Bank MSTR", 'SY04100');
+        UpdateOrInsertRecord(Database::"GP SY06000", 'SY06000');
+        UpdateOrInsertRecord(Database::"GP SY40100", 'SY40100');
+        UpdateOrInsertRecord(Database::"GP SY40101", 'SY40101');
     end;
 
     local procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128])
