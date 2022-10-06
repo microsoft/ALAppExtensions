@@ -58,7 +58,7 @@ codeunit 447 "Record Link Management"
     /// </summary>
     /// <param name="FromRecord">The source record from which links are copied.</param>
     /// <param name="ToRecord">The destination record to which links are copied.</param>
-    /// <param name="SkipReset">Out parameter to set if reset of Notify field is skipped.</param>
+    /// <param name="SkipReset">Out parameter to set if reset of Notify field should be skipped.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnBeforeCopyLinks(FromRecord: Variant; ToRecord: Variant; var SkipReset: Boolean)
     begin
