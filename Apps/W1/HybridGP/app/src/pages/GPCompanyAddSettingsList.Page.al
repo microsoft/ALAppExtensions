@@ -72,6 +72,36 @@ page 4051 "GP Company Add. Settings List"
                     ToolTip = 'Specifies whether to migrate the Inventory module.';
                     ApplicationArea = All;
                 }
+                field("Migrate Only GL Master"; Rec."Migrate Only GL Master")
+                {
+                    Caption = 'GL Master Only';
+                    ToolTip = 'Specifies whether to migrate GL master data only.';
+                    ApplicationArea = All;
+                }
+                field("Migrate Only Bank Master"; Rec."Migrate Only Bank Master")
+                {
+                    Caption = 'Bank Master Only';
+                    ToolTip = 'Specifies whether to migrate Bank master data only.';
+                    ApplicationArea = All;
+                }
+                field("Migrate Only Payables Master"; Rec."Migrate Only Payables Master")
+                {
+                    Caption = 'Payables Master Only';
+                    ToolTip = 'Specifies whether to migrate Payables master data only.';
+                    ApplicationArea = All;
+                }
+                field("Migrate Only Rec. Master"; Rec."Migrate Only Rec. Master")
+                {
+                    Caption = 'Rec. Master Only';
+                    ToolTip = 'Specifies whether to migrate Receivables master data only.';
+                    ApplicationArea = All;
+                }
+                field("Migrate Only Inventory Master"; Rec."Migrate Only Inventory Master")
+                {
+                    Caption = 'Inventory Master Only';
+                    ToolTip = 'Specifies whether to migrate Inventory master data only.';
+                    ApplicationArea = All;
+                }
                 field("Migrate Inactive Customers"; Rec."Migrate Inactive Customers")
                 {
                     Caption = 'Inactive Customers';
@@ -88,6 +118,18 @@ page 4051 "GP Company Add. Settings List"
                 {
                     Caption = 'Inactive Checkbooks';
                     ToolTip = 'Specifies whether to migrate inactive checkbooks.';
+                    ApplicationArea = All;
+                }
+                field("Migrate Inactive Items"; Rec."Migrate Inactive Items")
+                {
+                    Caption = 'Inactive Items';
+                    ToolTip = 'Specifies whether to migrate inactive items.';
+                    ApplicationArea = All;
+                }
+                field("Migrate Discontinued Items"; Rec."Migrate Discontinued Items")
+                {
+                    Caption = 'Discontinued Items';
+                    ToolTip = 'Specifies whether to migrate discontinued items.';
                     ApplicationArea = All;
                 }
                 field("Migrate Customer Classes"; Rec."Migrate Customer Classes")

@@ -26,8 +26,12 @@ codeunit 4017 "GP Account Migrator"
     procedure OnMigrateAccountTransactions(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         GPAccount: Record "GP Account";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
+            exit;
+
+        if GPCompanyAdditionalSettings.GetMigrateOnlyGLMaster() then
             exit;
 
         GPAccount.Get(RecordIdToMigrate);
@@ -38,9 +42,13 @@ codeunit 4017 "GP Account Migrator"
     procedure OnMigratePostingGroups(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         GPAccount: Record "GP Account";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HelperFunctions: Codeunit "Helper Functions";
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
+            exit;
+
+        if GPCompanyAdditionalSettings.GetMigrateOnlyGLMaster() then
             exit;
 
         GPAccount.Get(RecordIdToMigrate);

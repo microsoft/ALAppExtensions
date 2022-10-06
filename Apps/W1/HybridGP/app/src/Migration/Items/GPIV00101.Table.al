@@ -69,4 +69,9 @@ table 40116 "GP IV00101"
             Clustered = true;
         }
     }
+
+    procedure IsDiscontinued(): Boolean
+    begin
+        exit(ITEMTYPE = 2);
+    end;
 }

@@ -23,9 +23,31 @@ codeunit 4019 "GP Item Migrator"
             exit;
 
         GPItem.Get(RecordIdToMigrate);
+
+        if not ShouldMigrateItem(GPItem) then
+            exit;
+
         MigrateItemDetails(GPItem, Sender);
     end;
+
 #pragma warning restore AA0207
+    local procedure ShouldMigrateItem(var GPItem: Record "GP Item"): Boolean
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPIV00101: Record "GP IV00101";
+    begin
+        if GPIV00101.Get(GPItem.No) then begin
+            if GPIV00101.INACTIVE then
+                if not GPCompanyAdditionalSettings.GetMigrateInactiveItems() then
+                    exit(false);
+
+            if GPIV00101.IsDiscontinued() then
+                if not GPCompanyAdditionalSettings.GetMigrateDiscontinuedItems() then
+                    exit(false);
+        end;
+
+        exit(true);
+    end;
 
     procedure MigrateItemDetails(GPItem: Record "GP Item"; ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
     begin
@@ -52,11 +74,15 @@ codeunit 4019 "GP Item Migrator"
     procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         GPItem: Record "GP Item";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         if not ChartOfAccountsMigrated then
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
+            exit;
+
+        if GPCompanyAdditionalSettings.GetMigrateOnlyInventoryMaster() then
             exit;
 
         if GPItem.Get(RecordIdToMigrate) then
@@ -70,6 +96,7 @@ codeunit 4019 "GP Item Migrator"
         ItemJnlLine: Record "Item Journal Line";
         GPItem: Record "GP Item";
         GPItemTransaction: Record "GP Item Transactions";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         AdjustItemInventory: Codeunit "Adjust Item Inventory";
         GPItemTransactionAverageQuery: Query "GP Item Transaction Average";
         GPItemTransactionStandardQuery: Query "GP Item Transaction Standard";
@@ -82,7 +109,13 @@ codeunit 4019 "GP Item Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
             exit;
 
+        if GPCompanyAdditionalSettings.GetMigrateOnlyInventoryMaster() then
+            exit;
+
         if GPItem.Get(RecordIdToMigrate) then begin
+            if not Sender.DoesItemExist(GPItem.No) then
+                exit;
+
             if GPItem.ItemType = 0 then
                 case GetCostingMethod(GPItem) of
                     CostingMethodOption::Average:
@@ -178,6 +211,9 @@ codeunit 4019 "GP Item Migrator"
         GPIV00101: Record "GP IV00101";
         ItemClassId: Text[11];
     begin
+        if not Sender.DoesItemExist(GPItem.No) then
+            exit;
+
         MigrateItemClassesIfNeeded(GPItem, Sender);
 
         if GPItem.ItemType = 0 then begin
@@ -185,7 +221,7 @@ codeunit 4019 "GP Item Migrator"
                 if GPIV00101.Get(GPItem.No) then
 #pragma warning disable AA0139
                     ItemClassId := GPIV00101.ITMCLSCD.Trim();
-#pragma warning restore AA0139     
+#pragma warning restore AA0139
 
             if (ItemClassId <> '') then
                 Sender.SetInventoryPostingGroup(ItemClassId)

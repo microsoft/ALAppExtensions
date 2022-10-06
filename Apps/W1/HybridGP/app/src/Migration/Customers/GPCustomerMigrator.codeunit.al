@@ -25,12 +25,16 @@ codeunit 4018 "GP Customer Migrator"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerPostingGroups', '', true, true)]
     procedure OnMigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HelperFunctions: Codeunit "Helper Functions";
     begin
         if not ChartOfAccountsMigrated then
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Customer" then
+            exit;
+
+        if GPCompanyAdditionalSettings.GetMigrateOnlyReceivablesMaster() then
             exit;
 
         Sender.CreatePostingSetupIfNeeded(
@@ -48,6 +52,7 @@ codeunit 4018 "GP Customer Migrator"
     var
         MigrationGPCustomer: Record "GP Customer";
         MigrationGPCustTrans: Record "GP Customer Transactions";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
         HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
@@ -56,6 +61,9 @@ codeunit 4018 "GP Customer Migrator"
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Customer" then
+            exit;
+
+        if GPCompanyAdditionalSettings.GetMigrateOnlyReceivablesMaster() then
             exit;
 
         MigrationGPCustomer.Get(RecordIdToMigrate);
@@ -398,6 +406,7 @@ codeunit 4018 "GP Customer Migrator"
 
     procedure MigrateCustomerClasses()
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPRM00101: Record "GP RM00101";
         GPRM00201: Record "GP RM00201";
         CustomerPostingGroup: Record "Customer Posting Group";
@@ -406,6 +415,9 @@ codeunit 4018 "GP Customer Migrator"
         ClassId: Text[20];
         AccountNumber: Code[20];
     begin
+        if not GPCompanyAdditionalSettings.GetMigrateCustomerClasses() then
+            exit;
+
         if not GPRM00101.FindSet() then
             exit;
 
