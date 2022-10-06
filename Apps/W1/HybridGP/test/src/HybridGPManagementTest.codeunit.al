@@ -180,6 +180,7 @@ codeunit 139660 "HybridGP Management Test"
                         ']';
     end;
 
+#pragma warning disable AA0150
     local procedure InsertNotification(var RunId: Text; var StartTime: DateTime; var TriggerType: Text)
     var
         WebhookNotification: Record "Webhook Notification";
@@ -194,4 +195,5 @@ codeunit 139660 "HybridGP Management Test"
         NotificationStream.WriteText(NotificationText);
         WebhookNotification.Insert(true);
     end;
+#pragma warning restore AA0150
 }

@@ -1,4 +1,4 @@
-permissionsetextension 4027 "D365 TEAM MEMBER - HGP" extends "D365 TEAM MEMBER"
+permissionsetextension 4028 "INTELLIGENT CLOUD - HGP" extends "INTELLIGENT CLOUD"
 {
     Permissions = tabledata "GP Account" = RIMD,
                   tabledata GPPOPTaxHist = RIMD,
@@ -81,8 +81,8 @@ permissionsetextension 4027 "D365 TEAM MEMBER - HGP" extends "D365 TEAM MEMBER"
                   tabledata "GP IV00200" = RIMD,
                   tabledata "GP IV00300" = RIMD,
                   tabledata "GP IV10200" = RIMD,
-                  tabledata "GP IV40201" = RIMD,
                   tabledata "GP IV40400" = RIMD,
+                  tabledata "GP IV40201" = RIMD,
                   tabledata "GP MC40000" = RIMD,
                   tabledata "GP PM00201" = RIMD,
                   tabledata "GP PM20000" = RIMD,
