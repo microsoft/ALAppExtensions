@@ -54,33 +54,4 @@ table 4049 "GP Vendor Address"
             Clustered = true;
         }
     }
-
-    procedure MoveStagingData()
-    var
-        OrderAddress: Record "Order Address";
-        Vendor: Record Vendor;
-        HelperFunctions: Codeunit "Helper Functions";
-        Exists: Boolean;
-    begin
-        if Vendor.Get(VENDORID) then begin
-            Exists := OrderAddress.Get(VENDORID, CopyStr(ADRSCODE, 1, 10));
-            OrderAddress.Init();
-            OrderAddress."Vendor No." := VENDORID;
-            OrderAddress.Code := CopyStr(ADRSCODE, 1, 10);
-            OrderAddress.Name := Vendor.Name;
-            OrderAddress.Address := ADDRESS1;
-            OrderAddress."Address 2" := CopyStr(ADDRESS2, 1, 50);
-            OrderAddress.City := CopyStr(CITY, 1, 30);
-            OrderAddress.Contact := VNDCNTCT;
-            OrderAddress."Phone No." := HelperFunctions.CleanGPPhoneOrFaxNumber(PHNUMBR1);
-            OrderAddress."Fax No." := HelperFunctions.CleanGPPhoneOrFaxNumber(FAXNUMBR);
-            OrderAddress."Post Code" := ZIPCODE;
-            OrderAddress.County := STATE;
-
-            if not Exists then
-                OrderAddress.Insert()
-            else
-                OrderAddress.Modify();
-        end;
-    end;
 }
