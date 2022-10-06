@@ -48,9 +48,6 @@ codeunit 4017 "GP Account Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
             exit;
 
-        if GPCompanyAdditionalSettings.GetMigrateOnlyGLMaster() then
-            exit;
-
         GPAccount.Get(RecordIdToMigrate);
         Sender.CreateGenBusinessPostingGroupIfNeeded(CopyStr(PostingGroupCodeTxt, 1, 20), CopyStr(PostingGroupDescriptionTxt, 1, 50));
         Sender.CreateGenProductPostingGroupIfNeeded(CopyStr(PostingGroupCodeTxt, 1, 20), CopyStr(PostingGroupDescriptionTxt, 1, 50));

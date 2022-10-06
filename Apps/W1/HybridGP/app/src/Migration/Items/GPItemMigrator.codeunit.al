@@ -22,10 +22,13 @@ codeunit 4019 "GP Item Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
             exit;
 
-        GPItem.Get(RecordIdToMigrate);
-
-        if not ShouldMigrateItem(GPItem) then
+        if not GPItem.Get(RecordIdToMigrate) then
             exit;
+
+        if not ShouldMigrateItem(GPItem) then begin
+            DecrementMigratedCount();
+            exit;
+        end;
 
         MigrateItemDetails(GPItem, Sender);
     end;
@@ -47,6 +50,14 @@ codeunit 4019 "GP Item Migrator"
         end;
 
         exit(true);
+    end;
+
+    local procedure DecrementMigratedCount()
+    var
+        HelperFunctions: Codeunit "Helper Functions";
+        DataMigrationStatusFacade: Codeunit "Data Migration Status Facade";
+    begin
+        DataMigrationStatusFacade.IncrementMigratedRecordCount(HelperFunctions.GetMigrationTypeTxt(), Database::Item, -1);
     end;
 
     procedure MigrateItemDetails(GPItem: Record "GP Item"; ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
@@ -80,9 +91,6 @@ codeunit 4019 "GP Item Migrator"
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
-            exit;
-
-        if GPCompanyAdditionalSettings.GetMigrateOnlyInventoryMaster() then
             exit;
 
         if GPItem.Get(RecordIdToMigrate) then

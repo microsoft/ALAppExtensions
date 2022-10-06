@@ -34,9 +34,6 @@ codeunit 4018 "GP Customer Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"GP Customer" then
             exit;
 
-        if GPCompanyAdditionalSettings.GetMigrateOnlyReceivablesMaster() then
-            exit;
-
         Sender.CreatePostingSetupIfNeeded(
             CopyStr(PostingGroupCodeTxt, 1, 5),
             CopyStr(PostingGroupDescriptionTxt, 1, 20),
