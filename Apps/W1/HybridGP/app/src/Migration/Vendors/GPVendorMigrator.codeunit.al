@@ -3,7 +3,7 @@ codeunit 4022 "GP Vendor Migrator"
     TableNo = "GP Vendor";
 
     var
-        DocumentNo: Text[30];
+        GlobalDocumentNo: Text[30];
         PostingGroupCodeTxt: Label 'GP', Locked = true;
         VendorBatchNameTxt: Label 'GPVEND', Locked = true;
         SourceCodeTxt: Label 'GENJNL', Locked = true;
@@ -11,6 +11,7 @@ codeunit 4022 "GP Vendor Migrator"
         AddressCodeRemitToTxt: Label 'REMIT TO', Comment = 'GP ADRSCODE', Locked = true;
         AddressCodePrimaryTxt: Label 'PRIMARY', Comment = 'GP ADRSCODE', Locked = true;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
     procedure OnMigrateVendor(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -139,6 +140,7 @@ codeunit 4022 "GP Vendor Migrator"
                 Sender.SetGeneralJournalLineExternalDocumentNo(CopyStr(GPVendorTransactions.DOCNUMBR, 1, 20) + '-' + CopyStr(GPVendorTransactions.GLDocNo, 1, 14));
             until GPVendorTransactions.Next() = 0;
     end;
+#pragma warning restore AA0207
 
     local procedure MigrateVendorDetails(GPVendor: Record "GP Vendor"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
     var
@@ -239,7 +241,7 @@ codeunit 4022 "GP Vendor Migrator"
 
     procedure PopulateStagingTable(JArray: JsonArray)
     begin
-        DocumentNo := 'V00000';
+        GlobalDocumentNo := 'V00000';
         GetPMTrxFromJson(JArray);
     end;
 
@@ -334,8 +336,8 @@ codeunit 4022 "GP Vendor Migrator"
             end;
 
             RecordVariant := GPVendorTransactions;
-            DocumentNo := CopyStr(IncStr(DocumentNo), 1, 30);
-            UpdatePMTrxFromJson(RecordVariant, ChildJToken, DocumentNo);
+            GlobalDocumentNo := CopyStr(IncStr(GlobalDocumentNo), 1, 30);
+            UpdatePMTrxFromJson(RecordVariant, ChildJToken, GlobalDocumentNo);
             GPVendorTransactions := RecordVariant;
             HelperFunctions.SetVendorTransType(GPVendorTransactions);
             GPVendorTransactions.Modify(true);
@@ -435,7 +437,9 @@ codeunit 4022 "GP Vendor Migrator"
         ShouldSetAsPrimaryAccount: Boolean;
         TrimmedADRSCODE: Code[15];
     begin
+#pragma warning disable AA0139        
         TrimmedADRSCODE := GPSY06000.ADRSCODE.Trim();
+#pragma warning restore AA0139
 
         // The Remit To is the preferred account
         if TrimmedADRSCODE = AddressCodeRemitToTxt then
@@ -446,7 +450,7 @@ codeunit 4022 "GP Vendor Migrator"
                 SearchGPSY06000.SetRange("CustomerVendor_ID", GPSY06000.CustomerVendor_ID);
                 SearchGPSY06000.SetRange("ADRSCODE", AddressCodeRemitToTxt);
                 SearchGPSY06000.SetRange("INACTIVE", false);
-                if not SearchGPSY06000.FindFirst() then
+                if SearchGPSY06000.IsEmpty() then
                     ShouldSetAsPrimaryAccount := true
             end;
 
@@ -458,7 +462,6 @@ codeunit 4022 "GP Vendor Migrator"
 
     procedure MigrateVendorClasses()
     var
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPPM00200: Record "GP PM00200";
         GPPM00100: Record "GP PM00100";
         VendorPostingGroup: Record "Vendor Posting Group";
@@ -466,20 +469,17 @@ codeunit 4022 "GP Vendor Migrator"
         HelperFunctions: Codeunit "Helper Functions";
         ClassId: Text[20];
         AccountNumber: Code[20];
-        MigrateVendorClasses: Boolean;
     begin
         if not GPPM00200.FindSet() then
-            exit;
-
-        MigrateVendorClasses := GPCompanyAdditionalSettings.GetMigrateVendorClasses();
-        if not MigrateVendorClasses then
             exit;
 
         repeat
             Clear(GPPM00100);
             Clear(VendorPostingGroup);
 
+#pragma warning disable AA0139
             ClassId := GPPM00200.VNDCLSID.Trim();
+#pragma warning restore AA0139            
             if ClassId <> '' then
                 if Vendor.Get(GPPM00200.VENDORID) then begin
                     if not VendorPostingGroup.Get(ClassId) then

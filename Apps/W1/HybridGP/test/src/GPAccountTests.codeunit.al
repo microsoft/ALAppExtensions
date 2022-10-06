@@ -158,12 +158,10 @@ codeunit 139661 "GP Account Tests"
         // [THEN] Journal entries are created
         GenJournalBatch.SetRange("Journal Template Name", 'GENERAL');
         GenJournalBatch.SetFilter(Name, 'GP2020BB');
-        GenJournalBatch.FindSet();
         Assert.RecordCount(GenJournalBatch, 1);
 
         GenJournalLine.SetRange("Journal Template Name", 'GENERAL');
         GenJournalLine.SetRange("Journal Batch Name", 'GP2020BB');
-        GenJournalLine.FindSet();
         Assert.RecordCount(GenJournalLine, 2);
     end;
 
@@ -209,12 +207,10 @@ codeunit 139661 "GP Account Tests"
         // [THEN] Journal entries are created
         GenJournalBatch.SetRange("Journal Template Name", 'GENERAL');
         GenJournalBatch.SetFilter(Name, 'GP2020BB');
-        GenJournalBatch.FindSet();
         Assert.RecordCount(GenJournalBatch, 0);
 
         GenJournalLine.SetRange("Journal Template Name", 'GENERAL');
         GenJournalLine.SetRange("Journal Batch Name", 'GP2020BB');
-        GenJournalLine.FindSet();
         Assert.RecordCount(GenJournalLine, 0);
     end;
 
@@ -751,7 +747,10 @@ codeunit 139661 "GP Account Tests"
     local procedure ConfigureMigrationSettings(InitialHistYear: Integer)
     begin
         GPCompanyMigrationSettings.Init();
+#pragma warning disable AA0139
         GPCompanyMigrationSettings.Name := CompanyName();
+#pragma warning restore AA0139
+
         GPCompanyMigrationSettings.Insert(true);
 
         GPCompanyAdditionalSettings.Init();

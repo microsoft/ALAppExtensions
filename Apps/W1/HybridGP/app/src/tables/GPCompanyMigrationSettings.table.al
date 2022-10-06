@@ -30,8 +30,6 @@ table 4044 "GP Company Migration Settings"
                 GPSegmentNames: Record "GP Segment Name";
             begin
                 GPSegmentNames.SetFilter("Company Name", Name);
-                if (GPSegmentNames.Count() > 0) and ("Global Dimension 1" = '') then
-                    Error(GlobalDimension1MustNotBeBlankErr);
 
                 if ("Global Dimension 1" <> '') and ("Global Dimension 1" = "Global Dimension 2") then begin
                     GPSegmentNames.SetFilter("Segment Name", '<> %1', "Global Dimension 1");
@@ -51,12 +49,7 @@ table 4044 "GP Company Migration Settings"
             DataClassification = SystemMetadata;
 
             trigger OnValidate()
-            var
-                GPSegmentNames: Record "GP Segment Name";
             begin
-                if (GPSegmentNames.Count() > 1) and ("Global Dimension 2" = '') then
-                    Error(GlobalDimension2MustNotBeBlankErr);
-
                 if ("Global Dimension 1" <> '') and ("Global Dimension 1" = "Global Dimension 2") then
                     Error(GlobalDimensionsCannotBeTheSameErr);
             end;
@@ -95,7 +88,5 @@ table 4044 "GP Company Migration Settings"
     }
 
     var
-        GlobalDimension1MustNotBeBlankErr: Label 'Global Dimension 1 cannot be blank.';
-        GlobalDimension2MustNotBeBlankErr: Label 'Global Dimension 2 cannot be blank.';
         GlobalDimensionsCannotBeTheSameErr: Label 'Global Dimension 1 and Global Dimension 2 cannot be the same.';
 }
