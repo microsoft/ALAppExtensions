@@ -47,7 +47,9 @@ permissionset 4031 "HybridGP - Edit"
                     tabledata "GPSOPTrxHist" = IMD,
                     tabledata "GPSOPUserDefinedWorkHist" = IMD,
                     tabledata "GPSOPWorkflowWorkHist" = IMD,
+#pragma warning disable AL0432
                     tabledata "GPForecastTemp" = IMD,
+#pragma warning restore AL0432
                     tabledata "GP Item" = IMD,
                     tabledata "GP Item Location" = IMD,
                     tabledata "GP Item Transactions" = IMD,

@@ -24,12 +24,18 @@ page 4021 "GP Migration Settings List"
                     ToolTip = 'Name of the company';
                     Width = 6;
                 }
+
+#if not CLEAN22
                 field("Global Dimension 1"; Rec."Global Dimension 1")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Global Dimension 1';
                     ToolTip = 'Global Dimension 1';
                     Width = 10;
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
                 }
                 field("Global Dimension 2"; Rec."Global Dimension 2")
                 {
@@ -37,6 +43,10 @@ page 4021 "GP Migration Settings List"
                     Caption = 'Global Dimension 2';
                     ToolTip = 'Global Dimension 2';
                     Width = 10;
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
                 }
                 field("Migrate Inactive Customers"; Rec."Migrate Inactive Customers")
                 {
@@ -44,6 +54,10 @@ page 4021 "GP Migration Settings List"
                     Caption = 'Migrate Inactive Customers';
                     ToolTip = 'Specifies whether to migrate inactive customers.';
                     Width = 8;
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
                 }
                 field("Migrate Inactive Vendors"; Rec."Migrate Inactive Vendors")
                 {
@@ -51,6 +65,10 @@ page 4021 "GP Migration Settings List"
                     Caption = 'Migrate Inactive Vendors';
                     ToolTip = 'Specifies whether to migrate inactive vendors.';
                     Width = 8;
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
                 }
                 field("Migrate Inactive Checkbooks"; MigrateInactiveCheckbooks)
                 {
@@ -58,6 +76,10 @@ page 4021 "GP Migration Settings List"
                     Caption = 'Migrate Inactive Checkbooks';
                     ToolTip = 'Specifies whether to migrate inactive checkbooks.';
                     Width = 8;
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
 
                     trigger OnValidate()
                     var
@@ -79,6 +101,10 @@ page 4021 "GP Migration Settings List"
                     Caption = 'Migrate Vendor Classes';
                     ToolTip = 'Specifies whether to migrate Vendor Classes.';
                     Width = 8;
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
 
                     trigger OnValidate()
                     var
@@ -100,6 +126,10 @@ page 4021 "GP Migration Settings List"
                     Caption = 'Migrate Customer Classes';
                     ToolTip = 'Specifies whether to migrate Customer Classes.';
                     Width = 8;
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
 
                     trigger OnValidate()
                     var
@@ -115,12 +145,17 @@ page 4021 "GP Migration Settings List"
                         end;
                     end;
                 }
+
                 field("Migrate Item Classes"; MigrateItemClasses)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Migrate Item Classes';
                     ToolTip = 'Specifies whether to migrate Item Classes.';
                     Width = 8;
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
 
                     trigger OnValidate()
                     var
@@ -141,7 +176,11 @@ page 4021 "GP Migration Settings List"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Initial Historical Year';
                     ToolTip = 'Specifies which Historical year to start with.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by page GP Migration Configuration';		    
                     Width = 8;
+                    ObsoleteTag = '22.0';
 
                     trigger OnValidate()
                     var
@@ -157,10 +196,13 @@ page 4021 "GP Migration Settings List"
                         end;
                     end;
                 }
+		#endif
             }
         }
     }
 
+
+#if not CLEAN22
     trigger OnAfterGetRecord()
     var
         GPSegmentNames: Record "GP Segment Name";
@@ -195,4 +237,5 @@ page 4021 "GP Migration Settings List"
         MigrateCustomerClasses: Boolean;
         MigrateItemClasses: Boolean;
         InitialYear: Integer;
+#endif
 }

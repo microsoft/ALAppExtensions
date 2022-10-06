@@ -147,7 +147,9 @@ page 40015 "Hybrid Companies List"
     trigger OnAfterGetRecord()
     begin
         if Rec."Company Initialization Status" = Rec."Company Initialization Status"::"Initialization Failed" then
-            CompanyInitializationFailureTxt := Rec.GetCompanyInitFailureMessage();
+            CompanyInitializationFailureTxt := Rec.GetCompanyInitFailureMessage()
+        else
+            Clear(CompanyInitializationFailureTxt);
 
         if Rec."Company Initialization Status" <> Rec."Company Initialization Status"::Initialized then
             FieldStyleTxt := 'Unfavorable'

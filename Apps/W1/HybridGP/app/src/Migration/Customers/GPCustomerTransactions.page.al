@@ -10,17 +10,61 @@ page 4094 "GP Customer Transactions"
         {
             repeater(General)
             {
-                field(Id; Id) { ApplicationArea = All; ToolTip = 'Id'; }
-                field(CUSTNMBR; CUSTNMBR) { ApplicationArea = All; ToolTip = 'Customer Number'; }
-                field(DOCNUMBR; DOCNUMBR) { ApplicationArea = All; ToolTip = 'Document Number'; }
-                field(DOCDATE; DOCDATE) { ApplicationArea = All; ToolTip = 'Document Date'; }
-                field(DUEDATE; DUEDATE) { ApplicationArea = All; ToolTip = 'Due Date'; }
-                field(CURTRXAM; CURTRXAM) { ApplicationArea = All; ToolTip = 'Customer Transaction Amount'; }
-                field(RMDTYPAL; RMDTYPAL) { ApplicationArea = All; ToolTip = 'RMDTYPAL'; }
-                field(GLDocNo; GLDocNo) { ApplicationArea = All; ToolTip = 'GL Document Number'; }
-                field(TransType; TransType) { ApplicationArea = All; ToolTip = 'Transaction Type'; }
-                field(SLPRSNID; SLPRSNID) { ApplicationArea = All; ToolTip = 'Salesperson Id'; }
-                field(PYMTRMID; PYMTRMID) { ApplicationArea = All; ToolTip = 'PYMTRMID'; }
+                field(Id; Rec.Id)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Id';
+                }
+                field(CUSTNMBR; Rec.CUSTNMBR)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Customer Number';
+                }
+                field(DOCNUMBR; Rec.DOCNUMBR)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Document Number';
+                }
+                field(DOCDATE; Rec.DOCDATE)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Document Date';
+                }
+                field(DUEDATE; Rec.DUEDATE)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Due Date';
+                }
+                field(CURTRXAM; Rec.CURTRXAM)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Customer Transaction Amount';
+                }
+                field(RMDTYPAL; Rec.RMDTYPAL)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'RMDTYPAL';
+                }
+                field(GLDocNo; Rec.GLDocNo)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'GL Document Number';
+                }
+                field(TransType; Rec.TransType)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Transaction Type';
+                }
+                field(SLPRSNID; Rec.SLPRSNID)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Salesperson Id';
+                }
+                field(PYMTRMID; Rec.PYMTRMID)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'PYMTRMID';
+                }
             }
         }
     }
