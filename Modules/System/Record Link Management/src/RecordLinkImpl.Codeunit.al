@@ -33,10 +33,10 @@ codeunit 4470 "Record Link Impl."
         RecordRefTo: RecordRef;
         SkipReset: Boolean;
     begin
+        SkipReset := false;
+        RecordLinkManagement.OnBeforeCopyLinks(FromRecordVariant, ToRecordVariant, SkipReset);        
         RecordRefTo.GetTable(ToRecordVariant);
         RecordRefTo.CopyLinks(FromRecordVariant);
-        SkipReset := false;
-        RecordLinkManagement.OnBeforeCopyLinks(FromRecordVariant, ToRecordVariant, SkipReset);
         if not SkipReset then
             ResetNotifyOnLinks(RecordRefTo);
         RecordLinkManagement.OnAfterCopyLinks(FromRecordVariant, ToRecordVariant);
