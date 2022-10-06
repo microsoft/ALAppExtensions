@@ -415,7 +415,7 @@ codeunit 148130 "Bank Stmt File Wizard Tests"
         Clear(TempBlob);
         TempBlob.CreateOutStream(OutStream);
         WriteLine(OutStream, StrSubstNo('%1;%2;%3', DateHeaderTxt, DescriptionHeaderTxt, AmountHeaderTxt));
-        DateText := Format(WorkDate(), 0, '<Day,2>.<Month,2>.<Year4>');
+        DateText := Format(GetDate(), 0, '<Day,2>.<Month,2>.<Year4>');
         WriteLine(OutStream, StrSubstNo('%1;%2;%3', DateText, LibraryUtility.GenerateGUID(), '123''456.78'));
         WriteLine(OutStream, StrSubstNo('%1;%2;%3', DateText, LibraryUtility.GenerateGUID(), '23''456'));
         WriteLine(OutStream, StrSubstNo('%1;%2;%3', DateText, LibraryUtility.GenerateGUID(), '3''456''789.10'));
@@ -429,7 +429,7 @@ codeunit 148130 "Bank Stmt File Wizard Tests"
         Clear(TempBlob);
         TempBlob.CreateOutStream(OutStream);
         WriteLine(OutStream, StrSubstNo('%1;%2;%3', DateHeaderTxt, DescriptionHeaderTxt, AmountHeaderTxt));
-        DateText := Format(WorkDate(), 0, '<Day,2>.<Month,2>.<Year4>');
+        DateText := Format(GetDate(), 0, '<Day,2>.<Month,2>.<Year4>');
         AmountsText.AddRange('123''456.78', '23''456', '3''456''789.10');
         WriteLine(OutStream, StrSubstNo('%1;%2;%3', DateText, LibraryUtility.GenerateGUID(), AmountsText.Get(1)));
         WriteLine(OutStream, StrSubstNo('%1;%2;%3', DateText, LibraryUtility.GenerateGUID(), AmountsText.Get(2)));
@@ -444,7 +444,7 @@ codeunit 148130 "Bank Stmt File Wizard Tests"
         Clear(TempBlob);
         TempBlob.CreateOutStream(OutStream);
         WriteLine(OutStream, StrSubstNo('%1;%2;%3', DateHeaderTxt, DescriptionHeaderTxt, AmountHeaderTxt));
-        DateText := Format(WorkDate(), 0, '<Day,2>.<Month,2>.<Year4>');
+        DateText := Format(GetDate(), 0, '<Day,2>.<Month,2>.<Year4>');
         WriteLine(OutStream, StrSubstNo('%1;%2;%3', DateText, LibraryUtility.GenerateGUID(), '123,456.78'));
         WriteLine(OutStream, StrSubstNo('%1;%2;%3', DateText, LibraryUtility.GenerateGUID(), '23,456'));
         WriteLine(OutStream, StrSubstNo('%1;%2;%3', DateText, LibraryUtility.GenerateGUID(), '3,456,789.10'));
@@ -460,7 +460,7 @@ codeunit 148130 "Bank Stmt File Wizard Tests"
         Clear(TempBlob);
         TempBlob.CreateOutStream(OutStream);
         WriteLine(OutStream, StrSubstNo('%1%4%2%4%3', DateHeaderTxt, DescriptionHeaderTxt, AmountHeaderTxt, CsvSeparator)); // header: Date;Description;Amount
-        DateText := Format(WorkDate(), 0, DateFormat);
+        DateText := Format(GetDate(), 0, DateFormat);
         for i := 1 to 3 do begin
             AmountText := Format(LibraryRandom.RandDecInRange(-999999, 999999, 2), 0, AmountFormat);
             WriteLine(OutStream, StrSubstNo('%1%4%2%4%3', DateText, LibraryUtility.GenerateGUID(), AmountText, CsvSeparator));  // line: 21.12.2021;abcd;123456.78
@@ -471,6 +471,22 @@ codeunit 148130 "Bank Stmt File Wizard Tests"
     begin
         OutStream.WriteText(LineText);
         OutStream.WriteText();
+    end;
+
+    local procedure GetDate(): Date
+    var
+        Date: Date;
+        Day: Integer;
+        Month: Integer;
+        Year: Integer;
+    begin
+        Date := WorkDate();
+        Day := Date2DMY(Date, 1);
+        Month := Date2DMY(Date, 2);
+        Year := Date2DMY(Date, 3);
+        if Day <= 12 then
+            Day += 12;
+        exit(DMY2Date(Day, Month, Year));
     end;
 
     [ModalPageHandler]

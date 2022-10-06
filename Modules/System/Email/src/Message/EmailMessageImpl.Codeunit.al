@@ -62,11 +62,11 @@ codeunit 8905 "Email Message Impl."
 
     procedure Create(Recipients: List of [Text]; Subject: Text; Body: Text; HtmlFormatted: Boolean; CCRecipients: List of [Text]; BCCRecipients: List of [Text])
     begin
-        Clear(EmailMessageAttachmentRec);
-        Clear(EmailMessageRec);
+        Clear(GlobalEmailMessageAttachment);
+        Clear(GlobalEmailMessage);
 
-        EmailMessageRec.Id := CreateGuid();
-        EmailMessageRec.Insert();
+        GlobalEmailMessage.Id := CreateGuid();
+        GlobalEmailMessage.Insert();
 
         UpdateMessage(Recipients, Subject, Body, HtmlFormatted, CCRecipients, BCCRecipients);
     end;
@@ -84,16 +84,20 @@ codeunit 8905 "Email Message Impl."
     end;
 
     procedure Modify()
+    var
+        EmailMessage: Record "Email Message";
     begin
-        EmailMessageRec.Modify();
+        EmailMessage.SetRange(Id, GlobalEmailMessage.Id);
+        if not EmailMessage.IsEmpty() then // Don't modify if email message hasn't been inserted
+            GlobalEmailMessage.Modify();
     end;
 
     procedure GetBody() BodyText: Text
     var
         BodyInStream: InStream;
     begin
-        EmailMessageRec.CalcFields(Body);
-        EmailMessageRec.Body.CreateInStream(BodyInStream, TextEncoding::UTF8);
+        GlobalEmailMessage.CalcFields(Body);
+        GlobalEmailMessage.Body.CreateInStream(BodyInStream, TextEncoding::UTF8);
         BodyInStream.Read(BodyText);
     end;
 
@@ -101,13 +105,13 @@ codeunit 8905 "Email Message Impl."
     var
         BodyOutStream: OutStream;
     begin
-        Clear(EmailMessageRec.Body);
+        Clear(GlobalEmailMessage.Body);
 
         if BodyText = '' then
             exit;
 
         ReplaceRgbaColorsWithRgb(BodyText);
-        EmailMessageRec.Body.CreateOutStream(BodyOutStream, TextEncoding::UTF8);
+        GlobalEmailMessage.Body.CreateOutStream(BodyOutStream, TextEncoding::UTF8);
         BodyOutStream.Write(BodyText);
     end;
 
@@ -130,12 +134,12 @@ codeunit 8905 "Email Message Impl."
 
     procedure GetSubject(): Text[2048]
     begin
-        exit(EmailMessageRec.Subject);
+        exit(GlobalEmailMessage.Subject);
     end;
 
     local procedure SetSubjectValue(Subject: Text)
     begin
-        EmailMessageRec.Subject := CopyStr(Subject, 1, MaxStrLen(EmailMessageRec.Subject));
+        GlobalEmailMessage.Subject := CopyStr(Subject, 1, MaxStrLen(GlobalEmailMessage.Subject));
     end;
 
     procedure SetSubject(Subject: Text)
@@ -146,12 +150,12 @@ codeunit 8905 "Email Message Impl."
 
     procedure IsBodyHTMLFormatted(): Boolean
     begin
-        exit(EmailMessageRec."HTML Formatted Body");
+        exit(GlobalEmailMessage."HTML Formatted Body");
     end;
 
     local procedure SetBodyHTMLFormattedValue(Value: Boolean)
     begin
-        EmailMessageRec."HTML Formatted Body" := Value;
+        GlobalEmailMessage."HTML Formatted Body" := Value;
     end;
 
     procedure SetBodyHTMLFormatted(Value: Boolean)
@@ -162,7 +166,7 @@ codeunit 8905 "Email Message Impl."
 
     procedure IsRead(): Boolean
     begin
-        exit(not EmailMessageRec.Editable);
+        exit(not GlobalEmailMessage.Editable);
     end;
 
     procedure GetContentTypeFromFilename(FileName: Text): Text[250]
@@ -262,6 +266,7 @@ codeunit 8905 "Email Message Impl."
         TenantMedia.CalcFields(Content);
         EmailMessageAttachment.Length := TenantMedia.Content.Length;
         EmailMessageAttachment.Insert();
+        Modify();
     end;
 
     local procedure ReplaceRgbaColorsWithRgb(var Body: Text)
@@ -273,7 +278,7 @@ codeunit 8905 "Email Message Impl."
 
     local procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; InLine: Boolean; ContentId: Text[40]; var EmailMessageAttachment: Record "Email Message Attachment")
     begin
-        EmailMessageAttachment."Email Message Id" := EmailMessageRec.Id;
+        EmailMessageAttachment."Email Message Id" := GlobalEmailMessage.Id;
         EmailMessageAttachment."Attachment Name" := AttachmentName;
         EmailMessageAttachment."Content Type" := ContentType;
         EmailMessageAttachment.InLine := InLine;
@@ -284,7 +289,7 @@ codeunit 8905 "Email Message Impl."
     var
         EmailRecipients: Record "Email Recipient";
     begin
-        EmailRecipients.SetRange("Email Message Id", EmailMessageRec.Id);
+        EmailRecipients.SetRange("Email Message Id", GlobalEmailMessage.Id);
         exit(GetEmailAddressesOfRecipients(EmailRecipients));
     end;
 
@@ -292,7 +297,7 @@ codeunit 8905 "Email Message Impl."
     var
         EmailRecipients: Record "Email Recipient";
     begin
-        EmailRecipients.SetRange("Email Message Id", EmailMessageRec.Id);
+        EmailRecipients.SetRange("Email Message Id", GlobalEmailMessage.Id);
         EmailRecipients.SetRange("Email Recipient Type", RecipientType);
         exit(GetEmailAddressesOfRecipients(EmailRecipients));
     end;
@@ -337,7 +342,7 @@ codeunit 8905 "Email Message Impl."
         UniqueRecipients: Dictionary of [Text, Text];
         Recipient: Text;
     begin
-        EmailRecipientRecord.SetRange("Email Message Id", EmailMessageRec.Id);
+        EmailRecipientRecord.SetRange("Email Message Id", GlobalEmailMessage.Id);
         EmailRecipientRecord.SetRange("Email Recipient Type", RecipientType);
 
         if not EmailRecipientRecord.IsEmpty() then
@@ -348,13 +353,14 @@ codeunit 8905 "Email Message Impl."
             if Recipient <> '' then
                 if UniqueRecipients.Add(Recipient.ToLower(), Recipient) then begin // Set the recipient key to lowercase to prevent duplicates
                     EmailRecipientRecord.Init();
-                    EmailRecipientRecord."Email Message Id" := EmailMessageRec.Id;
+                    EmailRecipientRecord."Email Message Id" := GlobalEmailMessage.Id;
                     EmailRecipientRecord."Email Recipient Type" := RecipientType;
                     EmailRecipientRecord."Email Address" := CopyStr(Recipient, 1, MaxStrLen(EmailRecipientRecord."Email Address"));
 
                     EmailRecipientRecord.Insert();
                 end;
         end;
+        Modify();
     end;
 
     procedure AddRecipient(RecipientType: Enum "Email Recipient Type"; Recipient: Text)
@@ -381,28 +387,29 @@ codeunit 8905 "Email Message Impl."
     var
         MediaId: Guid;
     begin
-        MediaId := EmailMessageAttachmentRec.Data.MediaId();
+        MediaId := GlobalEmailMessageAttachment.Data.MediaId();
         TenantMedia.Get(MediaID);
         Clear(TenantMedia.Content);
         TenantMedia.Modify();
+        Modify();
         exit(not TenantMedia.Content.HasValue());
     end;
 
     procedure Attachments_First(): Boolean
     begin
-        EmailMessageAttachmentRec.SetRange("Email Message Id", EmailMessageRec.Id);
-        exit(EmailMessageAttachmentRec.FindFirst());
+        GlobalEmailMessageAttachment.SetRange("Email Message Id", GlobalEmailMessage.Id);
+        exit(GlobalEmailMessageAttachment.FindFirst());
     end;
 
     procedure Attachments_Next(): Integer
     begin
-        EmailMessageAttachmentRec.SetRange("Email Message Id", EmailMessageRec.Id);
-        exit(EmailMessageAttachmentRec.Next());
+        GlobalEmailMessageAttachment.SetRange("Email Message Id", GlobalEmailMessage.Id);
+        exit(GlobalEmailMessageAttachment.Next());
     end;
 
     procedure Attachments_GetName(): Text[250]
     begin
-        exit(EmailMessageAttachmentRec."Attachment Name");
+        exit(GlobalEmailMessageAttachment."Attachment Name");
     end;
 
     procedure Attachments_GetContent(var InStream: InStream)
@@ -411,7 +418,7 @@ codeunit 8905 "Email Message Impl."
         MediaID: Guid;
         Handled: Boolean;
     begin
-        MediaID := EmailMessageAttachmentRec.Data.MediaId();
+        MediaID := GlobalEmailMessageAttachment.Data.MediaId();
         TenantMedia.Get(MediaID);
         TenantMedia.CalcFields(Content);
 
@@ -435,34 +442,34 @@ codeunit 8905 "Email Message Impl."
 
     procedure Attachments_GetContentType(): Text[250]
     begin
-        exit(EmailMessageAttachmentRec."Content Type");
+        exit(GlobalEmailMessageAttachment."Content Type");
     end;
 
     procedure Attachments_GetContentId(): Text[40]
     begin
-        exit(EmailMessageAttachmentRec."Content Id");
+        exit(GlobalEmailMessageAttachment."Content Id");
     end;
 
     procedure Attachments_IsInline(): Boolean
     begin
-        exit(EmailMessageAttachmentRec.InLine);
+        exit(GlobalEmailMessageAttachment.InLine);
     end;
 
     procedure Attachments_GetLength(): Integer
     begin
-        exit(EmailMessageAttachmentRec.Length);
+        exit(GlobalEmailMessageAttachment.Length);
     end;
 
     procedure GetId(): Guid
     begin
-        exit(EmailMessageRec.Id);
+        exit(GlobalEmailMessage.Id);
     end;
 
     procedure Get(MessageId: guid): Boolean
     begin
-        Clear(EmailMessageAttachmentRec);
+        Clear(GlobalEmailMessageAttachment);
 
-        exit(EmailMessageRec.Get(MessageId));
+        exit(GlobalEmailMessage.Get(MessageId));
     end;
 
     procedure ValidateRecipients()
@@ -478,6 +485,11 @@ codeunit 8905 "Email Message Impl."
 
         foreach Recipient in Recipients do
             EmailAccount.ValidateEmailAddress(Recipient, false);
+    end;
+
+    procedure GetNoOfModifies(): Integer
+    begin
+        exit(GlobalEmailMessage."No. of Modifies");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sent Email", 'OnAfterDeleteEvent', '', false, false)]
@@ -565,6 +577,8 @@ codeunit 8905 "Email Message Impl."
 
         if EmailMessageOld.Get(Rec.Id) and (not EmailMessageOld.Editable) then
             Error(EmailMessageSentCannotModifyErr);
+
+        Rec."No. of Modifies" += 1;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Email Message Attachment", 'OnBeforeDeleteEvent', '', false, false)]
@@ -645,20 +659,20 @@ codeunit 8905 "Email Message Impl."
 
     procedure MarkAsRead()
     begin
-        if EmailMessageRec.Editable then begin
-            EmailMessageRec.Editable := false;
-            EmailMessageRec.Modify();
+        if GlobalEmailMessage.Editable then begin
+            GlobalEmailMessage.Editable := false;
+            GlobalEmailMessage.Modify();
         end;
     end;
 
     procedure GetEmailMessage(var EmailMessage: Record "Email Message")
     begin
-        EmailMessage := EmailMessageRec;
+        EmailMessage := GlobalEmailMessage;
     end;
 
     var
-        EmailMessageRec: Record "Email Message";
-        EmailMessageAttachmentRec: Record "Email Message Attachment";
+        GlobalEmailMessage: Record "Email Message";
+        GlobalEmailMessageAttachment: Record "Email Message Attachment";
         TenantMedia: Record "Tenant Media";
         EmailMessageQueuedCannotModifyErr: Label 'Cannot edit the email because it has been queued to be sent.';
         EmailMessageSentCannotModifyErr: Label 'Cannot edit the message because it has already been sent.';

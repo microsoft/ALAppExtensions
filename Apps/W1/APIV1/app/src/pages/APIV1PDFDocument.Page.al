@@ -16,10 +16,14 @@ page 20057 "APIV1 - PDF Document"
         {
             repeater(Group)
             {
+#pragma warning disable AW0009
+#pragma warning disable AL0273
                 field(content; Content)
+#pragma warning restore
                 {
                     ApplicationArea = All;
                     Caption = 'content', Locked = true;
+                    ToolTip = 'Specifies the content.';
                     Editable = false;
                 }
             }
@@ -33,7 +37,6 @@ page 20057 "APIV1 - PDF Document"
     trigger OnFindRecord(Which: Text): Boolean
     var
         PDFDocumentManagement: Codeunit "PDF Document Management";
-        TypeHelper: Codeunit "Type Helper";
         DocumentId: Guid;
         FilterView: Text;
         DocumentIdFilter: Text;
@@ -46,10 +49,10 @@ page 20057 "APIV1 - PDF Document"
             if (DocumentIdFilter <> '') and (IdFilter <> '') and (LowerCase(DocumentIdFilter) <> LowerCase(IdFilter)) then
                 Error(ConflictingIdsErr, DocumentIdFilter, IdFilter);
             if DocumentIdFilter <> '' then
-                DocumentId := TypeHelper.GetGuidAsString(DocumentIdFilter)
+                DocumentId := DocumentIdFilter
             else
                 if IdFilter <> '' then
-                    DocumentId := TypeHelper.GetGuidAsString(IdFilter);
+                    DocumentId := IdFilter;
             SetView(FilterView);
             if IsNullGuid(DocumentId) then
                 exit(false);

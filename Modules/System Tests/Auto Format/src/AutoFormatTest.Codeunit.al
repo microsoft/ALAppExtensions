@@ -13,7 +13,7 @@ codeunit 132584 "Auto Format Test"
     var
         LibraryAssert: Codeunit "Library Assert";
         AutoFormatTest: Codeunit "Auto Format Test";
-        AutoFormatType: Enum "Auto Format";
+        AutoFormatEnum: Enum "Auto Format";
 
     [Test]
     procedure TestAutoFormatType0()
@@ -37,7 +37,7 @@ codeunit 132584 "Auto Format Test"
         // [GIVEN] The function ResolveAutoFormat
         // [WHEN] Calling the function with AutoFormatType=0 and AutoFormatExpr=whatever value
         // [THEN] An empty string is returned
-        LibraryAssert.AreEqual('', AutoFormat.ResolveAutoFormat(AutoFormatType::DefaultFormat, 'RandomText'), 'The return value should be an empty string');
+        LibraryAssert.AreEqual('', AutoFormat.ResolveAutoFormat(AutoFormatEnum::DefaultFormat, 'RandomText'), 'The return value should be an empty string');
     end;
 
     [Test]
@@ -60,7 +60,7 @@ codeunit 132584 "Auto Format Test"
         // [GIVEN] The function ResolveAutoFormat
         // [WHEN] Calling the function with AutoFormatType=11 and AutoFormatExpr=data formatting expression (<Precision,1:2><Standard Format,0> in this case)
         // [THEN] The same data formatting expression is returned
-        LibraryAssert.AreEqual('<Precision,1:2><Standard Format,0>', AutoFormat.ResolveAutoFormat(AutoFormatType::CustomFormatExpr, '<Precision,1:2><Standard Format,0>'),
+        LibraryAssert.AreEqual('<Precision,1:2><Standard Format,0>', AutoFormat.ResolveAutoFormat(AutoFormatEnum::CustomFormatExpr, '<Precision,1:2><Standard Format,0>'),
             'The return value should be "<Precision,1:2><Standard Format,0>"');
     end;
 
@@ -135,7 +135,7 @@ codeunit 132584 "Auto Format Test"
     [Normal]
     local procedure HandleOnResolveAutoFormat(AutoFormatType: Enum "Auto Format"; AutoFormatExpr: Text[80]; VAR Result: Text[80]; VAR Resolved: Boolean)
     begin
-        if AutoFormatType = AutoFormatType::"1 Decimal" then begin
+        if AutoFormatType = AutoFormatEnum::"1 Decimal" then begin
             Result := '<Precision,1:1><Standard Format,0>';
             Resolved := true;
         end;

@@ -146,7 +146,6 @@ table 1853 "MS - Sales Forecast Setup"
 
     var
         SpecifyApiKeyErr: Label 'You must specify an API key and an API URI in the Sales and Inventory Forecast Setup page.';
-        ExceedingLenghtErr: Label 'It is not possible to have the Uri %1 in a field with a length of %2.';
 
     procedure GetSingleInstance()
     begin
@@ -154,13 +153,6 @@ table 1853 "MS - Sales Forecast Setup"
             Init();
             Insert();
         end;
-    end;
-
-    local procedure CheckUriLength(Txt: Text): Text[250];
-    begin
-        if STRLEN(Txt) > 250 then
-            ERROR(ExceedingLenghtErr, Txt, 250);
-        exit(CopyStr(Txt, 1, 250));
     end;
 
     procedure CheckURIAndKey()
@@ -185,11 +177,6 @@ table 1853 "MS - Sales Forecast Setup"
         if EnvironmentInfo.IsSaaS() then
             exit(false);
         exit((GetAPIUri() = '') or (GetAPIKey() = ''));
-    end;
-
-    local procedure HMSDuration(H: Integer; M: Integer; S: Integer): Duration
-    begin
-        exit((((H * 60) + M) * 60 + S) * 1000);
     end;
 
     [NonDebuggable]

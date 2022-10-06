@@ -13,7 +13,7 @@ Codeunit 13652 FIK_MatchGenJournalLines
         MatchLengthTreshold: Integer;
         NormalizingFactor: Integer;
         MatchStatus: Option NoMatch,Duplicate,IsPaid,Partial,Extra,Fully;
-        MatchSummaryMsg: Label '%1 payment lines out of %2 have been applied.\\';
+        MatchSummaryMsg: Label '%1 payment lines out of %2 have been applied.\\', Comment = '%1 = Number of matched General Journal Lines; %2 = Total number of General Journal Lines';
         ProgressBarMsg: Label 'Please wait while the operation is being completed.';
         FIKDescriptionPartialTxt: Label 'Partial Amount';
         FIKDescriptionExtraTxt: Label 'Excess Amount';
@@ -21,9 +21,9 @@ Codeunit 13652 FIK_MatchGenJournalLines
         FIKDescriptionNoMatchTxt: Label 'No Matching FIK Number';
         FIKDescriptionFullMatchTxt: Label 'Matching Amount';
         FIKDescriptionIsPaidTxt: Label 'Invoice Already Paid';
-        MatchPartialTxt: Label '%1 payment lines are partially paid.\';
-        MatchExtraTxt: Label '%1 payment lines have excess amounts.\';
-        MatchFullyTxt: Label '%1 payment lines are fully applied.\';
+        MatchPartialTxt: Label '%1 payment lines are partially paid.\', Comment = '%1 = Number of matched General Journal Lines that has been partially paid';
+        MatchExtraTxt: Label '%1 payment lines have excess amounts.\', Comment = '%1 = Number of matched General Journal Lines that has excess amounts';
+        MatchFullyTxt: Label '%1 payment lines are fully applied.\', Comment = '%1 = Number of matched General Journal Lines that has been fully paid';
         MatchDetailsTxt: Label 'Details:\';
 
 
@@ -232,6 +232,7 @@ Codeunit 13652 FIK_MatchGenJournalLines
     LOCAL PROCEDURE GetUpdatedFIKDescription(TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary): Text[50];
     VAR
         FIKDescription: Text[50];
+        UpdatedFIKDescriptionTxt: Label '%1 - %2', Locked = true;
     BEGIN
         CASE TempBankStatementMatchingBuffer.Quality OF
             MatchStatus::Fully:
@@ -248,7 +249,7 @@ Codeunit 13652 FIK_MatchGenJournalLines
                 FIKDescription := FIKDescriptionDuplicateTxt;
         END;
         if FIKDescription <> '' THEN
-            exit(CopyStr(STRSUBSTNO('%1 - %2', FIKDescription, TempBankStatementMatchingBuffer.DescriptionBankStatment), 1, 50))
+            exit(CopyStr(STRSUBSTNO(UpdatedFIKDescriptionTxt, FIKDescription, TempBankStatementMatchingBuffer.DescriptionBankStatment), 1, 50))
         else
             exit(CopyStr(TempBankStatementMatchingBuffer.DescriptionBankStatment, 1, 50));
     END;

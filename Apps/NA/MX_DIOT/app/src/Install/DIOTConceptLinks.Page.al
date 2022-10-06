@@ -4,7 +4,7 @@ page 27031 "DIOT Concept Links"
     Editable = true;
     Caption = 'DIOT Concept Links';
     SourceTable = "DIOT Concept Link";
-    DataCaptionExpression = StrSubstNo('Concept No. = %1', "DIOT Concept No.");
+    DataCaptionExpression = StrSubstNo(DataCaptionTxt, "DIOT Concept No.");
     layout
     {
         area(Content)
@@ -26,4 +26,7 @@ page 27031 "DIOT Concept Links"
             }
         }
     }
+
+    var
+        DataCaptionTxt: Label 'Concept No. = %1', Comment = '%1 = DIOT Concept No. Field Value';
 }

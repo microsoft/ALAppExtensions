@@ -7,10 +7,12 @@ codeunit 132912 "Azure AD Plan Tests"
 {
     Subtype = Test;
     TestPermissions = Disabled;
+    EventSubscriberInstance = Manual;
 
     var
         LibraryAssert: Codeunit "Library Assert";
         PermissionsMock: Codeunit "Permissions Mock";
+        EnvironmentInformationTestLibrary: Codeunit "Environment Info Test Library";
 
     [Test]
     [Scope('OnPrem')]
@@ -18,12 +20,12 @@ codeunit 132912 "Azure AD Plan Tests"
     var
         AzureADPlan: Codeunit "Azure AD Plan";
     begin
-        // [SCENARIO] There should be 17 Plans
+        // [SCENARIO] There should be 18 Plans
 
         // Verify the module highest permission level is sufficient ignore non Tables
         PermissionsMock.Set('AAD Plan View');
 
-        LibraryAssert.AreEqual(17, AzureADPlan.GetAvailablePlansCount(),
+        LibraryAssert.AreEqual(18, AzureADPlan.GetAvailablePlansCount(),
             'The number of available plans has changed. Make sure that you have added or removed tests on these changes in Plan-Based tests and then update the number of plans in this test.');
     end;
 
@@ -93,7 +95,8 @@ codeunit 132912 "Azure AD Plan Tests"
     procedure TestIsGraphUserEntitledFromServicePlan()
     var
         AzureADPlan: Codeunit "Azure AD Plan";
-        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
+        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
+        MockGraphQueryTestLibrary: Codeunit "MockGraphQuery Test Library";
         GraphUserInfo: DotNet UserInfo;
         UserID: Guid;
         PlanID: Guid;
@@ -105,16 +108,16 @@ codeunit 132912 "Azure AD Plan Tests"
 
         // [GIVEN] a service plan and a user who is entitled to a plan 
         UserId := CreateGuid();
-        CreateGraphUser(GraphUserInfo, UserId);
-        PlanID := AzureADPlanTestLibraries.CreatePlan('TestPlan');
-        PopulateMockGraph(GraphUserInfo, PlanID, 'TestPlan');
+        PlanID := AzureADPlanTestLibrary.CreatePlan('TestPlan');
+        MockGraphQueryTestLibrary.CreateGraphUser(GraphUserInfo, UserId, '', '', '');
+        MockGraphQueryTestLibrary.PopulateMockGraph(GraphUserInfo, PlanID, 'TestPlan');
 
         // [WHEN] checking if the user is entitled to a service plan
         // [THEN] the result should be true
         LibraryAssert.AreEqual(true, AzureADPlan.IsGraphUserEntitledFromServicePlan(GraphUserInfo), 'The user should be entitled from the service Plan');
 
         // [GIVEN] a user who is NOT entitled to any plan
-        CreateGraphUser(GraphUserInfo, UserSecurityId());
+        MockGraphQueryTestLibrary.CreateGraphUser(GraphUserInfo, UserSecurityId(), '', '', '');
 
         // [WHEN] checking if the user is entitled to a plan
         // [THEN] the result should be false
@@ -123,25 +126,32 @@ codeunit 132912 "Azure AD Plan Tests"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
+    [CommitBehavior(CommitBehavior::Ignore)]
     [Scope('OnPrem')]
     procedure TestUpdateUserPlans()
     var
         AzureADPlan: Codeunit "Azure AD Plan";
+        AzureADGraphTestLibrary: Codeunit "Azure AD Graph Test Library";
+        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
+        MockGraphQueryTestLibrary: Codeunit "MockGraphQuery Test Library";
         GraphUserInfo: DotNet UserInfo;
         UserID: Guid;
         PlanID: Guid;
     begin
         DeleteAllFromTablePlanAndUserPlan();
-        AzureADPlan.SetTestInProgress(true);
 
         // Verify the module highest permission level is sufficient ignore non Tables
         PermissionsMock.Set('AAD Plan View');
 
+        BindSubscription(AzureADGraphTestLibrary);
+        BindSubscription(AzureADPlanTestLibrary);
+
         // [GIVEN] a User and a GraphUser with a Plan which is not in the table Plan and a user
         UserId := CreateGuid();
-        CreateGraphUser(GraphUserInfo, UserId);
         PlanID := CreateGuid();
-        PopulateMockGraph(GraphUserInfo, PlanID, 'TestPlan');
+        AzureADGraphTestLibrary.SetMockGraphQuery(MockGraphQueryTestLibrary);
+        MockGraphQueryTestLibrary.CreateGraphUser(GraphUserInfo, UserId, '', '', '');
+        MockGraphQueryTestLibrary.PopulateMockGraph(GraphUserInfo, PlanID, 'TestPlan');
 
         LibraryAssert.AreEqual(false, AzureADPlan.DoesPlanExist(PlanID), 'The new Plan should not exist in the table Plan');
         LibraryAssert.AreEqual(false, AzureADPlan.IsPlanAssignedToUser(PlanID, UserID), 'The new Plan should not be assigned to the user');
@@ -298,6 +308,326 @@ codeunit 132912 "Azure AD Plan Tests"
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
+    procedure AssignPlansToUserDelegatedAdmin()
+    var
+        UserPlan: Record "User Plan";
+        AzureADPlan: Codeunit "Azure AD Plan";
+        UserPermissions: Codeunit "User Permissions";
+        PlanConfiguration: Codeunit "Plan Configuration";
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
+        AzureADUserTestLibrary: Codeunit "Azure AD User Test Library";
+        PlanConfigurationLibrary: Codeunit "Plan Configuration Library";
+        UserPermissionsLibrary: Codeunit "User Permissions Library";
+        AzureAdPlanTest: Codeunit "Azure AD Plan Tests";
+        PlanIds: Codeunit "Plan Ids";
+        UserSID: Guid;
+    begin
+        // [Scenario] Delegated admin plan is assigned to a user who is a delegated admin
+
+        DeleteAllFromTablePlanAndUserPlan();
+        PlanConfigurationLibrary.ClearPlanConfigurations();
+        BindSubscription(AzureAdPlanTest);
+        EnvironmentInformationTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [Given] Two SUPER users (need to have at least two users because if it's only one, the SUPER role will not be removed) 
+        UserSID := UserPermissionsLibrary.CreateSuperUser('NEWUSER');
+        UserPermissionsLibrary.CreateSuperUser('ANOTHERUSER');
+
+        // [Given] The Delegated Admin agent - Partner plan exists
+        AzureADPlanTestLibraries.CreatePlan(PlanIds.GetDelegatedAdminPlanId(), 'Delegated Admin agent - Partner', 9022, '7584DDCA-27B8-E911-BB26-000D3A2B005C');
+
+        // [Given] The plan is not assigned to the current user
+        LibraryAssert.IsFalse(UserPlan.Get(PlanIds.GetDelegatedAdminPlanId(), UserSID), 'Plan should not be assigned to user');
+
+        // [Given] The current user is a delegated admin
+        BindSubscription(AzureADUserTestLibrary);
+        AzureADUserTestLibrary.SetIsUserDelegatedtAdmin(true);
+
+        // [Given] The plan configuration for the plan is not customized
+        LibraryAssert.IsFalse(PlanConfiguration.IsCustomized(PlanIds.GetDelegatedAdminPlanId()), 'Plan configuration should not be customized');
+
+        // [When] The plan is assigned per delegated role
+        AzureADPlan.AssignPlanToUserWithDelegatedRole(UserSID);
+
+        // [Then] There is an entry in the User Plan table
+        LibraryAssert.AreEqual(1, UserPlan.Count(), 'There should be only one plan assignments');
+        LibraryAssert.IsTrue(UserPlan.FindFirst(), 'The should be a plan assigned');
+        LibraryAssert.AreEqual(UserSID, UserPlan."User Security ID", 'Wrong user was assigned a plan');
+        LibraryAssert.AreEqual(PlanIds.GetDelegatedAdminPlanId(), UserPlan."Plan ID", 'Wrong plan was assigned');
+
+        // [Then] SUPER was not removed from the user
+        LibraryAssert.IsTrue(UserPermissions.IsSuper(UserSID), 'User should be SUPER');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
+    procedure AssignPlansToUserNoDelegatedAdmin()
+    var
+        UserPlan: Record "User Plan";
+        AzureADPlan: Codeunit "Azure AD Plan";
+        UserPermissions: Codeunit "User Permissions";
+        PlanConfiguration: Codeunit "Plan Configuration";
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
+        AzureADUserTestLibrary: Codeunit "Azure AD User Test Library";
+        PlanConfigurationLibrary: Codeunit "Plan Configuration Library";
+        UserPermissionsLibrary: Codeunit "User Permissions Library";
+        AzureAdPlanTest: Codeunit "Azure AD Plan Tests";
+        PlanIds: Codeunit "Plan Ids";
+        UserSID: Guid;
+    begin
+        // [Scenario] Delegated admin plan is not assigned to a user if they are not delegated admin
+
+        DeleteAllFromTablePlanAndUserPlan();
+        PlanConfigurationLibrary.ClearPlanConfigurations();
+        BindSubscription(AzureAdPlanTest);
+        EnvironmentInformationTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [Given] Two SUPER users (need to have at least two users because if it's only one, the SUPER role will not be removed) 
+        UserSID := UserPermissionsLibrary.CreateSuperUser('NEWUSER');
+        UserPermissionsLibrary.CreateSuperUser('ANOTHERUSER');
+
+        // [Given] The Delegated Admin agent - Partner plan exists
+        AzureADPlanTestLibraries.CreatePlan(PlanIds.GetDelegatedAdminPlanId(), 'Delegated Admin agent - Partner', 9022, '7584DDCA-27B8-E911-BB26-000D3A2B005C');
+
+        // [Given] The plan is not assigned to the current user
+        LibraryAssert.IsFalse(UserPlan.Get(PlanIds.GetDelegatedAdminPlanId(), UserSID), 'Plan should not be assigned to user');
+
+        // [Given] The current user is not a delegated admin
+        BindSubscription(AzureADUserTestLibrary);
+        AzureADUserTestLibrary.SetIsUserDelegatedtAdmin(false);
+
+        // [Given] The plan configuration for the plan is not customized
+        LibraryAssert.IsFalse(PlanConfiguration.IsCustomized(PlanIds.GetDelegatedAdminPlanId()), 'Plan configuration should not be customized');
+
+        // [When] The plan is assigned per delegated role
+        AzureADPlan.AssignPlanToUserWithDelegatedRole(UserSID);
+
+        // [Then] There is no entry in the User Plan table
+        LibraryAssert.AreEqual(0, UserPlan.Count(), 'There should not be any plan assignments');
+
+        // [Then] SUPER was not removed from the user
+        LibraryAssert.IsTrue(UserPermissions.IsSuper(UserSID), 'User should be SUPER');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
+    procedure AssignPlansToUserDelegatedAdminKeepSuper()
+    var
+        UserPlan: Record "User Plan";
+        AzureADPlan: Codeunit "Azure AD Plan";
+        UserPermissions: Codeunit "User Permissions";
+        PlanConfiguration: Codeunit "Plan Configuration";
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
+        AzureADUserTestLibrary: Codeunit "Azure AD User Test Library";
+        PlanConfigurationLibrary: Codeunit "Plan Configuration Library";
+        UserPermissionsLibrary: Codeunit "User Permissions Library";
+        AzureAdPlanTest: Codeunit "Azure AD Plan Tests";
+        PlanIds: Codeunit "Plan Ids";
+        UserSID, NullGuid : Guid;
+    begin
+        // [Scenario] Delegated admin plan is assigned to a user and their SUPER role is not removed if the plan configuration contains SUPER
+
+        DeleteAllFromTablePlanAndUserPlan();
+        PlanConfigurationLibrary.ClearPlanConfigurations();
+        BindSubscription(AzureAdPlanTest);
+        EnvironmentInformationTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [Given] Two SUPER users (need to have at least two users because if it's only one, the SUPER role will not be removed) 
+        UserSID := UserPermissionsLibrary.CreateSuperUser('NEWUSER');
+        UserPermissionsLibrary.CreateSuperUser('ANOTHERUSER');
+
+        // [Given] The Delegated Admin agent - Partner plan exists
+        AzureADPlanTestLibraries.CreatePlan(PlanIds.GetDelegatedAdminPlanId(), 'Delegated Admin agent - Partner', 9022, '7584DDCA-27B8-E911-BB26-000D3A2B005C');
+
+        // [Given] The plan is not assigned to the current user
+        LibraryAssert.IsFalse(UserPlan.Get(PlanIds.GetDelegatedAdminPlanId(), UserSID), 'Plan should not be assigned to user');
+
+        // [Given] The current user is a delegated admin
+        BindSubscription(AzureADUserTestLibrary);
+        AzureADUserTestLibrary.SetIsUserDelegatedtAdmin(true);
+
+        // [Given] The plan configuration for the plan is customized and contains SUPER
+        PlanConfigurationLibrary.AddConfiguration(PlanIds.GetDelegatedAdminPlanId(), true);
+        PlanConfiguration.AddCustomPermissionSetToPlan(PlanIds.GetDelegatedAdminPlanId(), 'SUPER', NullGuid, 0, '');
+
+        // [When] The plan is assigned per delegated role
+        AzureADPlan.AssignPlanToUserWithDelegatedRole(UserSID);
+
+        // [Then] There is an entry in the User Plan table
+        LibraryAssert.AreEqual(1, UserPlan.Count(), 'There should be only one plan assignments');
+        LibraryAssert.IsTrue(UserPlan.FindFirst(), 'The should be a plan assigned');
+        LibraryAssert.AreEqual(UserSID, UserPlan."User Security ID", 'Wrong user was assigned a plan');
+        LibraryAssert.AreEqual(PlanIds.GetDelegatedAdminPlanId(), UserPlan."Plan ID", 'Wrong plan was assigned');
+
+        // [Then] SUPER was not removed from the user
+        LibraryAssert.IsTrue(UserPermissions.IsSuper(UserSID), 'User should be SUPER');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
+    procedure AssignPlansToUserDelegatedHelpdesk()
+    var
+        UserPlan: Record "User Plan";
+        AzureADPlan: Codeunit "Azure AD Plan";
+        UserPermissions: Codeunit "User Permissions";
+        PlanConfiguration: Codeunit "Plan Configuration";
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
+        AzureADUserTestLibrary: Codeunit "Azure AD User Test Library";
+        PlanConfigurationLibrary: Codeunit "Plan Configuration Library";
+        UserPermissionsLibrary: Codeunit "User Permissions Library";
+        AzureAdPlanTest: Codeunit "Azure AD Plan Tests";
+        PlanIds: Codeunit "Plan Ids";
+        UserSID: Guid;
+    begin
+        // [Scenario] Delegated helpdesk plan is assigned to a delegated helpdesk user
+
+        DeleteAllFromTablePlanAndUserPlan();
+        PlanConfigurationLibrary.ClearPlanConfigurations();
+        BindSubscription(AzureAdPlanTest);
+        EnvironmentInformationTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [Given]Two SUPER users (need to have at least two users because if it's only one, the SUPER role will not be removed) 
+        UserSID := UserPermissionsLibrary.CreateSuperUser('NEWUSER');
+        UserPermissionsLibrary.CreateSuperUser('ANOTHERUSER');
+
+        // [Given] The Delegated Helpdesk agent - Partner plan exists
+        AzureADPlanTestLibraries.CreatePlan(PlanIds.GetHelpDeskPlanId(), 'Delegated Helpdesk agent - Partner', 9022, '8884DDCA-27B8-E911-BB26-000D3A2B005C');
+
+        // [Given] The plan is not assigned to the current user
+        LibraryAssert.IsFalse(UserPlan.Get(PlanIds.GetHelpDeskPlanId(), UserSID), 'Plan should not be assigned to user');
+
+        // [Given] The current user is a delegated admin
+        BindSubscription(AzureADUserTestLibrary);
+        AzureADUserTestLibrary.SetIsUserDelegatedtHelpdesk(true);
+
+        // [Given] The plan configuration for the plan is not customized
+        LibraryAssert.IsFalse(PlanConfiguration.IsCustomized(PlanIds.GetHelpDeskPlanId()), 'Plan configuration should not be customized');
+
+        // [When] The plan is assigned per delegated role
+        AzureADPlan.AssignPlanToUserWithDelegatedRole(UserSID);
+
+        // [Then] There is an entry in the User Plan table
+        LibraryAssert.AreEqual(1, UserPlan.Count(), 'There should be only one plan assignments');
+        LibraryAssert.IsTrue(UserPlan.FindFirst(), 'The should be a plan assigned');
+        LibraryAssert.AreEqual(UserSID, UserPlan."User Security ID", 'Wrong user was assigned a plan');
+        LibraryAssert.AreEqual(PlanIds.GetHelpDeskPlanId(), UserPlan."Plan ID", 'Wrong plan was assigned');
+
+        // [Then] SUPER was not removed from the user
+        LibraryAssert.IsTrue(UserPermissions.IsSuper(UserSID), 'User should be SUPER');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
+    procedure AssignPlansToUserNoDelegatedHelpdesk()
+    var
+        UserPlan: Record "User Plan";
+        AzureADPlan: Codeunit "Azure AD Plan";
+        UserPermissions: Codeunit "User Permissions";
+        PlanConfiguration: Codeunit "Plan Configuration";
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
+        AzureADUserTestLibrary: Codeunit "Azure AD User Test Library";
+        PlanConfigurationLibrary: Codeunit "Plan Configuration Library";
+        UserPermissionsLibrary: Codeunit "User Permissions Library";
+        AzureAdPlanTest: Codeunit "Azure AD Plan Tests";
+        PlanIds: Codeunit "Plan Ids";
+        UserSID: Guid;
+    begin
+        // [Scenario] Delegated helpdesk plan is not assigned to a user if they are not delegated helpdesk agent
+
+        DeleteAllFromTablePlanAndUserPlan();
+        PlanConfigurationLibrary.ClearPlanConfigurations();
+        BindSubscription(AzureAdPlanTest);
+        EnvironmentInformationTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [Given] Two SUPER users (need to have at least two users because if it's only one, the SUPER role will not be removed) 
+        UserSID := UserPermissionsLibrary.CreateSuperUser('NEWUSER');
+        UserPermissionsLibrary.CreateSuperUser('ANOTHERUSER');
+
+        // [Given] The Delegated Helpdesk agent - Partner plan exists
+        AzureADPlanTestLibraries.CreatePlan(PlanIds.GetHelpDeskPlanId(), 'Delegated Helpdesk agent - Partner', 9022, '8884DDCA-27B8-E911-BB26-000D3A2B005C');
+
+        // [Given] The plan is not assigned to the current user
+        LibraryAssert.IsFalse(UserPlan.Get(PlanIds.GetHelpDeskPlanId(), UserSID), 'Plan should not be assigned to user');
+
+        // [Given] The current user is not a delegated helpdesk
+        BindSubscription(AzureADUserTestLibrary);
+        AzureADUserTestLibrary.SetIsUserDelegatedtHelpdesk(false);
+
+        // [Given] The plan configuration for the plan is not customized
+        LibraryAssert.IsFalse(PlanConfiguration.IsCustomized(PlanIds.GetHelpDeskPlanId()), 'Plan configuration should not be customized');
+
+        // [When] The plan is assigned per delegated role
+        AzureADPlan.AssignPlanToUserWithDelegatedRole(UserSID);
+
+        // [Then] There is no entry in the User Plan table
+        LibraryAssert.AreEqual(0, UserPlan.Count(), 'There should not be any plan assignments');
+
+        // [Then] SUPER was not removed from the user
+        LibraryAssert.IsTrue(UserPermissions.IsSuper(UserSID), 'User should be SUPER');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
+    procedure AssignPlansToUserDelegatedHelpdeskKeepSuper()
+    var
+        UserPlan: Record "User Plan";
+        AzureADPlan: Codeunit "Azure AD Plan";
+        UserPermissions: Codeunit "User Permissions";
+        PlanConfiguration: Codeunit "Plan Configuration";
+        AzureADPlanTestLibraries: Codeunit "Azure AD Plan Test Library";
+        AzureADUserTestLibrary: Codeunit "Azure AD User Test Library";
+        PlanConfigurationLibrary: Codeunit "Plan Configuration Library";
+        UserPermissionsLibrary: Codeunit "User Permissions Library";
+        AzureAdPlanTest: Codeunit "Azure AD Plan Tests";
+        PlanIds: Codeunit "Plan Ids";
+        UserSID, NullGuid : Guid;
+    begin
+        // [Scenario] Delegated helpdesk plan is assigned to a user and their SUPER role is not removed if the plan configuration contains SUPER
+
+        DeleteAllFromTablePlanAndUserPlan();
+        PlanConfigurationLibrary.ClearPlanConfigurations();
+        BindSubscription(AzureAdPlanTest);
+        EnvironmentInformationTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [Given] Two SUPER users (need to have at least two users because if it's only one, the SUPER role will not be removed)  
+        UserSID := UserPermissionsLibrary.CreateSuperUser('NEWUSER');
+        UserPermissionsLibrary.CreateSuperUser('ANOTHERUSER');
+
+        // [Given] The Delegated Helpdesk agent - Partner plan exists
+        AzureADPlanTestLibraries.CreatePlan(PlanIds.GetHelpDeskPlanId(), 'Delegated Heldesk agent - Partner', 9022, '8884DDCA-27B8-E911-BB26-000D3A2B005C');
+
+        // [Given] The plan is not assigned to the current user
+        LibraryAssert.IsFalse(UserPlan.Get(PlanIds.GetHelpDeskPlanId(), UserSID), 'Plan should not be assigned to user');
+
+        // [Given] The current user is a delegated helpdesk
+        BindSubscription(AzureADUserTestLibrary);
+        AzureADUserTestLibrary.SetIsUserDelegatedtHelpdesk(true);
+
+        // [Given] The plan configuration for the plan is customized and contains SUPER
+        PlanConfigurationLibrary.AddConfiguration(PlanIds.GetHelpDeskPlanId(), true);
+        PlanConfiguration.AddCustomPermissionSetToPlan(PlanIds.GetHelpDeskPlanId(), 'SUPER', NullGuid, 0, '');
+
+        // [When] The plan is assigned per delegated role
+        AzureADPlan.AssignPlanToUserWithDelegatedRole(UserSID);
+
+        // [Then] There is an entry in the User Plan table
+        LibraryAssert.AreEqual(1, UserPlan.Count(), 'There should be only one plan assignments');
+        LibraryAssert.IsTrue(UserPlan.FindFirst(), 'The should be a plan assigned');
+        LibraryAssert.AreEqual(UserSID, UserPlan."User Security ID", 'Wrong user was assigned a plan');
+        LibraryAssert.AreEqual(PlanIds.GetHelpDeskPlanId(), UserPlan."Plan ID", 'Wrong plan was assigned');
+
+        // [Then] SUPER was not removed from the user
+        LibraryAssert.IsTrue(UserPermissions.IsSuper(UserSID), 'User should be SUPER');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
     procedure GetAvailablePlansCount()
     var
         AzureADPlan: Codeunit "Azure AD Plan";
@@ -320,31 +650,26 @@ codeunit 132912 "Azure AD Plan Tests"
         LibraryAssert.AreEqual(1, AzureADPlan.GetAvailablePlansCount(), 'The Plan table should have only 1 Plan');
     end;
 
-    local procedure PopulateMockGraph(GraphUserInfo: DotNet UserInfo; PlanId: Guid; PlanName: Text)
+    [Test]
+    [HandlerFunctions('ModalHandler')]
+    [Scope('OnPrem')]
+    procedure AddPlanConfigurationLicense()
     var
-        MockGraphQuery: DotNet MockGraphQuery;
+        PlanConfiguration: Record "Plan Configuration";
+        PlanConfigurationLibrary: Codeunit "Plan Configuration Library";
+        PlanConfigurationList: TestPage "Plan Configuration List";
     begin
-        MockGraphQuery := MockGraphQuery.MockGraphQuery();
-        MockGraphQuery.AddUser(GraphUserInfo);
-        AddUserPlan(MockGraphQuery, GraphUserInfo, PlanId, PlanName);
-    end;
+        // [SCENARIO] Inserting a new License on Plan Configuration page using custom 'New' action.
+        // [GIVEN] An empty list of plan configurations
+        PlanConfigurationLibrary.ClearPlanConfigurations();
 
-    local procedure CreateGraphUser(var GraphUserInfo: DotNet UserInfo; UserId: Guid)
-    begin
-        GraphUserInfo := GraphUserInfo.UserInfo();
-        GraphUserInfo.ObjectId := UserId;
-    end;
+        // [WHEN] User opens Plan Configuration page and presses the custom 'New'' action
+        PlanConfigurationList.OpenView();
+        PlanConfigurationList.New.Invoke();
 
-    local procedure AddUserPlan(var MockGraphQuery: DotNet MockGraphQuery; GraphUserInfo: DotNet UserInfo; PlanId: Guid; PlanName: Text)
-    var
-        AssignedPlan: DotNet ServicePlanInfo;
-    begin
-        AssignedPlan := AssignedPlan.ServicePlanInfo();
-        AssignedPlan.ServicePlanId := PlanId;
-        AssignedPlan.ServicePlanName := PlanName;
-        AssignedPlan.CapabilityStatus := 'Enabled';
-
-        MockGraphQuery.AddAssignedPlanToUser(GraphUserInfo, AssignedPlan);
+        // [WHEN] User selects a Plan in modal and clicks OK
+        // [THEN] License is added to Plan Configuration table ("Null" record in test)
+        LibraryAssert.RecordCount(PlanConfiguration, 1);
     end;
 
     local procedure DeleteAllFromTablePlanAndUserPlan()
@@ -353,5 +678,18 @@ codeunit 132912 "Azure AD Plan Tests"
     begin
         AzureADPlanTestLibraries.DeleteAllPlans();
         AzureADPlanTestLibraries.DeleteAllUserPlan();
+    end;
+
+    [ModalPageHandler]
+    procedure ModalHandler(var Plans: TestPage "Plans")
+    var
+    begin
+        Plans.OK().Invoke();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Plan", 'OnUpdateUserAccessForSaaS', '', false, false)]
+    local procedure MockUserGroupsAdded(UserSecurityID: Guid; var UserGroupsAdded: Boolean)
+    begin
+        UserGroupsAdded := true;
     end;
 }

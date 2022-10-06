@@ -22,6 +22,8 @@ codeunit 8906 "Email Editor"
         if IsNewOutbox then
             EmailEditor.SetAsNew();
 
+        BeforeOpenEmailEditor(EmailOutbox.GetMessageId());
+
         if IsModal then begin
             Commit(); // Commit before opening modally
             EmailEditor.RunModal();
@@ -29,6 +31,27 @@ codeunit 8906 "Email Editor"
         end
         else
             EmailEditor.Run();
+    end;
+
+    local procedure BeforeOpenEmailEditor(MessageId: Guid)
+    var
+        Email: Codeunit Email;
+        EmailMessage: Codeunit "Email Message";
+        Telemetry: Codeunit Telemetry;
+        Dimensions: Dictionary of [Text, Text];
+        LastModifiedNo: Integer;
+    begin
+        EmailMessage.Get(MessageId);
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        Email.OnBeforeOpenEmailEditor(EmailMessage, IsNewOutbox);
+
+        EmailMessage.Get(MessageId); // Get any latest changes
+        if LastModifiedNo < EmailMessage.GetNoOfModifies() then begin
+            Dimensions.Add('Category', EmailCategoryLbl);
+            Dimensions.Add('EmailMessageId', EmailMessage.GetId());
+            Telemetry.LogMessage('0000I2G', EmailModifiedByEventTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
+        end;
     end;
 
     procedure CheckPermissions(EmailOutbox: Record "Email Outbox")
@@ -486,4 +509,5 @@ codeunit 8906 "Email Editor"
         LoadingTemplateExitedMsg: Label 'Did not apply word template to email as user exited dialog.';
         NoPrimarySourceOnEmailErr: Label 'Failed to find the primary source entity';
         NoAttachmentContentMsg: Label 'The attachment content is no longer available.';
+        EmailModifiedByEventTxt: Label 'Email has been modified by event', Locked = true;
 }

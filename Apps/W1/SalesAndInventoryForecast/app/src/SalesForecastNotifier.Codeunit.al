@@ -139,7 +139,7 @@ codeunit 1854 "Sales Forecast Notifier"
     var
         DocumentTypeInt: Integer;
     begin
-        DocumentTypeInt := PurchaseHeader."Document Type";
+        DocumentTypeInt := PurchaseHeader."Document Type".AsInteger();
         StockoutNotification.Message := NotificationTxt;
         StockoutNotification.SetData('PurchaseHeaderType', Format(DocumentTypeInt));
         StockoutNotification.SetData('PurchaseHeaderNo', PurchaseHeader."No.");
@@ -171,7 +171,7 @@ codeunit 1854 "Sales Forecast Notifier"
         repeat
             ReorderQty := SalesForecastQuery.ExpectedSales - SalesForecastQuery.Inventory;
             if ReorderQty > 0 then
-                CreatePurchaseLine(DocumentTypeInt, DocumentNo, SalesForecastQuery.ItemNo, ReorderQty);
+                CreatePurchaseLine(Enum::"Purchase Document Type".FromInteger(DocumentTypeInt), DocumentNo, SalesForecastQuery.ItemNo, ReorderQty);
         until not SalesForecastQuery.Read();
     end;
 
@@ -185,7 +185,7 @@ codeunit 1854 "Sales Forecast Notifier"
         MyNotifications.Disable(GetNotificationGuid())
     end;
 
-    local procedure CreatePurchaseLine(DocumentType: Option Quote,"Order",Invoice,"Credit Memo","Blanket Order","Return Order"; DocumentNo: Code[20]; ItemNo: Code[20]; DeltaQty: Decimal)
+    local procedure CreatePurchaseLine(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20]; ItemNo: Code[20]; DeltaQty: Decimal)
     var
         PurchaseLine: Record "Purchase Line";
         Item: Record Item;
@@ -216,7 +216,7 @@ codeunit 1854 "Sales Forecast Notifier"
         exit(NextLineNo);
     end;
 
-    local procedure PurchaseLineWithItemExists(DocumentType: Option Quote,"Order",Invoice,"Credit Memo","Blanket Order","Return Order"; DocumentNo: Code[20]; ItemNo: Code[20]): Boolean
+    local procedure PurchaseLineWithItemExists(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20]; ItemNo: Code[20]): Boolean
     var
         PurchaseLine: Record "Purchase Line";
     begin
@@ -241,7 +241,7 @@ codeunit 1854 "Sales Forecast Notifier"
         CreateAndShowPurchaseDocument(ItemNo, DummyPurchaseHeader."Document Type"::Order);
     end;
 
-    local procedure CreateAndShowPurchaseDocument(ItemNo: Code[20]; DocumentType: Option)
+    local procedure CreateAndShowPurchaseDocument(ItemNo: Code[20]; DocumentType: Enum "Purchase Document Type")
     var
         Item: Record Item;
         PurchaseHeader: Record "Purchase Header";

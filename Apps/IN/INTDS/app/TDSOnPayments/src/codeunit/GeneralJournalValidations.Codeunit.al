@@ -52,15 +52,12 @@ codeunit 18766 "General Journal Validations"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Handler", 'OnBeforeGenJnlLinePostFromTaxEngine', '', false, false)]
     local procedure OnBeforeGenJnlLinePostFromTaxEngine(var GenJnlLine: Record "Gen. Journal Line")
-    var
-        CalculateTax: Codeunit "Calculate Tax";
     begin
         if GenJnlLine."TDS Section Code" = '' then
             exit;
 
         GenJnlLine."TDS Posting to G/L" := true;
         GenJnlLine."TDS Invoice Amount" := GenJnlLine.Amount;
-        CalculateTax.CallTaxEngineOnGenJnlLine(GenJnlLine, GenJnlLine);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Handler", 'OnAfterGenJnlLinePostFromTaxEngine', '', false, false)]

@@ -171,16 +171,16 @@ codeunit 4751 "Recommended Apps Impl."
         ErrMsg: Text;
     begin
         Regex.Match(AppSourceURL, '(?i)(?<=appsource.microsoft.com\/)(.+)(?=\/product)', 1, Matches);
-        LanguageCode := Matches.ReadValue();
+        LanguageCode := CopyStr(Matches.ReadValue(), 1, 5);
 
         Regex.Match(AppSourceURL, '(?i)(?<=PUBID.)(.+)(?=(%7CAID|\|AID))', 1, Matches);
-        PubId := Matches.ReadValue();
+        PubId := CopyStr(Matches.ReadValue(), 1, 100);
 
         Regex.Match(AppSourceURL, '(?i)(?<=AID.)(.+)(?=(%7CPAPPID|\|PAPPID))', 1, Matches);
-        AId := Matches.ReadValue();
+        AId := CopyStr(Matches.ReadValue(), 1, 100);
 
         Regex.Match(AppSourceURL, '(?i)(?<=PAPPID.)(.+)(?=(\?tab=Overview))|(?<=PAPPID.)(.+)(?=($))', 1, Matches);
-        PAppId := Matches.ReadValue();
+        PAppId := CopyStr(Matches.ReadValue(), 1, 100);
 
         if (LanguageCode = '') or (PubId = '') or (AId = '') or (PAppId = '') then begin
             ErrMsg := StrSubstNo(URLNotWellFormattedErrLbl, Id, AppSourceURL);

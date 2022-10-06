@@ -396,13 +396,13 @@ codeunit 130002 "Library Assert"
         exit(Left = Right)
     end;
 
-    local procedure VerifyFailure(expectedErrorCode: Text; failureText: Text)
+    local procedure VerifyFailure(ErrorCodeExpected: Text; FailureText: Text)
     var
-        errorCode: Text;
+        ErrorCode: Text;
     begin
-        errorCode := GetLastErrorCode();
+        ErrorCode := GetLastErrorCode();
 
-        IsTrue(errorCode = expectedErrorCode, failureText);
+        IsTrue(ErrorCode = ErrorCodeExpected, FailureText);
         ClearLastError();
     end;
 }

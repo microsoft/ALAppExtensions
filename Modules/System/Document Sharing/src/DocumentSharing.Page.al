@@ -57,12 +57,12 @@ page 9560 "Document Sharing"
 
     trigger OnAfterGetCurrRecord()
     var
-        InStr: InStream;
+        Data: InStream;
     begin
         Rec.CalcFields(Rec.Token);
-        Rec.Token.CreateInStream(InStr);
+        Rec.Token.CreateInStream(Data);
 
-        InStr.ReadText(SharingToken);
+        Data.ReadText(SharingToken);
     end;
 
     var

@@ -102,7 +102,6 @@ page 40023 "Setup Cloud Migration API"
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         ShowSettingsStep: Boolean;
     begin
-        // TODO: Need verification event on GP
         HybridCloudManagement.OnGetHybridProductType(TempHybridProductType);
         if not TempHybridProductType.Get(Rec."Product ID") then
             Error(WrongProductIdErr);

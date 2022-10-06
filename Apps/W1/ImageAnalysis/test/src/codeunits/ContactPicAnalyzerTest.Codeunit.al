@@ -10,7 +10,6 @@ codeunit 139593 "Contact Pic Analyzer Test"
 
     var
         Assert: Codeunit Assert;
-        NotificationHandled: Boolean;
 
     [Test]
     [HandlerFunctions('NotificationHandler')]
@@ -80,7 +79,6 @@ codeunit 139593 "Contact Pic Analyzer Test"
         ContactProfileAnswer: Record "Contact Profile Answer";
         ContactPictureAnalyze: Codeunit "Contact Picture Analyze";
     begin
-        NotificationHandled := false;
         ImageAnalysisSetup.GetSingleInstance();
         ImageAnalysisSetup."Image-Based Attribute Recognition Enabled" := true;
         ImageAnalysisSetup.Modify();

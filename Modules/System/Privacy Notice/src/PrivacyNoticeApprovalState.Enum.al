@@ -9,7 +9,7 @@
 enum 1563 "Privacy Notice Approval State"
 {
     Extensible = false;
-    
+
     /// <summary>
     /// No decision has been made for the Privacy Notice.
     /// </summary>

@@ -1,16 +1,16 @@
 #if not CLEAN19
+#pragma warning disable AL0432
 pageextension 31042 "Purchase Journal CZZ" extends "Purchase Journal"
 {
     layout
     {
-#pragma warning disable AL0432
         modify("Prepayment Type")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify(Prepayment)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
     }
 
@@ -18,27 +18,17 @@ pageextension 31042 "Purchase Journal CZZ" extends "Purchase Journal"
     {
         modify("Link Advance Letters")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Link Whole Advance Letter")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("UnLink Linked Advance Letters")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
-#pragma warning restore AL0432
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }
-
+#pragma warning restore AL0432
 #endif

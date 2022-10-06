@@ -17,4 +17,38 @@ codeunit 11785 "Service Line Handler CZL"
     begin
         ServiceLine."Tariff No. CZL" := Resource."Tariff No. CZL";
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Line", 'OnBeforeModifyEvent', '', false, false)]
+    local procedure RemoveVATCorrectionOnBeforeModifyEvent(var Rec: Record "Service Line"; RunTrigger: Boolean)
+    begin
+        if Rec.IsTemporary() then
+            exit;
+        if not RunTrigger then
+            exit;
+        RemoveVATCorrection(Rec);
+    end;
+
+    local procedure RemoveVATCorrection(var ServiceLine: Record "Service Line")
+    var
+        ServiceLine2: Record "Service Line";
+    begin
+        // remove vat correction on current line
+        if (ServiceLine."VAT Difference" <> 0) and (ServiceLine.Quantity <> 0) then begin
+            ServiceLine."VAT Difference" := 0;
+            ServiceLine.UpdateAmounts();
+        end;
+
+        // remove vat correction on another lines except the current line
+        ServiceLine2.Reset();
+        ServiceLine2.SetRange("Document Type", ServiceLine."Document Type");
+        ServiceLine2.SetRange("Document No.", ServiceLine."Document No.");
+        ServiceLine2.SetFilter("Line No.", '<>%1', ServiceLine."Line No.");
+        ServiceLine2.SetFilter("VAT Difference", '<>0');
+        if ServiceLine2.FindSet() then
+            repeat
+                ServiceLine2."VAT Difference" := 0;
+                ServiceLine2.UpdateAmounts();
+                ServiceLine2.Modify();
+            until ServiceLine2.Next() = 0;
+    end;
 }

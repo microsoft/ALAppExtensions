@@ -7,6 +7,7 @@ codeunit 18931 "Gen. Jnl. Post Line Subscriber"
         GeneralLedgerSetup: Record "General Ledger Setup";
         DocumentNo: Code[20];
     begin
+        DocumentNo := '';
         GeneralLedgerSetup.Get();
         GenJournalLine.TestField("Check Printed", true);
         CheckLedgerEntry.LockTable();

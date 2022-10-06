@@ -3426,6 +3426,18 @@ End Function</Code>
         <Field Name="CreatorLbl">
           <DataField>CreatorLbl</DataField>
         </Field>
+        <Field Name="GreetingLbl">
+          <DataField>GreetingLbl</DataField>
+        </Field>
+        <Field Name="BodyLbl">
+          <DataField>BodyLbl</DataField>
+        </Field>
+        <Field Name="ClosingLbl">
+          <DataField>ClosingLbl</DataField>
+        </Field>
+        <Field Name="DocumentNoLbl">
+          <DataField>DocumentNoLbl</DataField>
+        </Field>
         <Field Name="VATIdentLbl">
           <DataField>VATIdentLbl</DataField>
         </Field>
@@ -3539,6 +3551,15 @@ End Function</Code>
         </Field>
         <Field Name="OriginalAdvanceVATDocumentNoLbl">
           <DataField>OriginalAdvanceVATDocumentNoLbl</DataField>
+        </Field>
+        <Field Name="AmountIncludingVATLbl">
+          <DataField>AmountIncludingVATLbl</DataField>
+        </Field>
+        <Field Name="AmountIncludingVAT">
+          <DataField>AmountIncludingVAT</DataField>
+        </Field>
+        <Field Name="AmountIncludingVATFormat">
+          <DataField>AmountIncludingVATFormat</DataField>
         </Field>
         <Field Name="CopyNo">
           <DataField>CopyNo</DataField>

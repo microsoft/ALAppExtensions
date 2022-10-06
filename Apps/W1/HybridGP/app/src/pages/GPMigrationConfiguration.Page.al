@@ -268,6 +268,7 @@ page 4050 "GP Migration Configuration"
                 ToolTip = 'Reset all companies to the default settings.';
                 Promoted = true;
                 PromotedCategory = Process;
+                PromotedOnly = true;
                 Image = Setup;
 
                 trigger OnAction()
@@ -284,6 +285,7 @@ page 4050 "GP Migration Configuration"
                 ToolTip = 'Attempt to set the Dimensions for all Companies.';
                 Promoted = true;
                 PromotedCategory = Process;
+                PromotedOnly = true;
                 Image = Dimensions;
 
                 trigger OnAction()
@@ -321,8 +323,6 @@ page 4050 "GP Migration Configuration"
     end;
 
     trigger OnOpenPage()
-    var
-        IntroNotification: Notification;
     begin
         if not Rec.Get() then
             Rec.Insert();
@@ -337,7 +337,7 @@ page 4050 "GP Migration Configuration"
         HybridCompany: Record "Hybrid Company";
     begin
         HybridCompany.SetRange(Replicate, true);
-        if HybridCompany.FindSet() then begin
+        if HybridCompany.FindSet() then
             repeat
                 if not GPCompanyAdditionalSettingsEachCompany.Get(HybridCompany.Name) then begin
                     GPCompanyAdditionalSettingsEachCompany.Validate(Name, HybridCompany.Name);
@@ -356,7 +356,6 @@ page 4050 "GP Migration Configuration"
                     GPCompanyAdditionalSettingsEachCompany.Insert();
                 end;
             until HybridCompany.Next() = 0;
-        end;
 
         CurrPage.Update();
     end;
@@ -438,7 +437,7 @@ page 4050 "GP Migration Configuration"
         GPCompanyAdditionalSettingsCompanies: Record "GP Company Additional Settings";
     begin
         GPCompanyAdditionalSettingsCompanies.SetFilter("Name", '<>%1', '');
-        if GPCompanyAdditionalSettingsCompanies.FindSet() then begin
+        if GPCompanyAdditionalSettingsCompanies.FindSet() then
             repeat
                 if (DimensionLabel = '') or CompanyHasSegment(GPCompanyAdditionalSettingsCompanies.Name, DimensionLabel) then begin
                     if DimensionNumber = 1 then
@@ -450,7 +449,6 @@ page 4050 "GP Migration Configuration"
                     GPCompanyAdditionalSettingsCompanies.Modify();
                 end;
             until GPCompanyAdditionalSettingsCompanies.Next() = 0;
-        end;
     end;
 
     local procedure CompanyHasSegment(CompanyName: Text[50]; SegmentName: Text[30]): Boolean
@@ -460,13 +458,12 @@ page 4050 "GP Migration Configuration"
         GPSegmentName.SetRange("Company Name", CompanyName);
         GPSegmentName.SetRange("Segment Name", SegmentName);
 
-        exit(GPSegmentName.FindFirst());
+        exit(not GPSegmentName.IsEmpty());
     end;
 
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         ShowManagementPromptOnClose: Boolean;
-        IntroNotificationMsg: Label 'Use this configuration page to specify what information will be migrated from GP to Business Central.';
         CompanyMissingDimensionExitQst: Label 'A Company is missing a Dimension. Are you sure you want to exit?';
         OpenCloudMigrationPageQst: Label 'Would you like to open the Cloud Migration Management page to manage your data migrations?';
         ResetAllQst: Label 'Are you sure? This will reset all company migration settings to their default values.';

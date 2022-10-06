@@ -1,6 +1,6 @@
 table 40099 "GP Checkbook MSTR"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

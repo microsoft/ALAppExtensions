@@ -6,19 +6,19 @@ pageextension 31200 "Vendor Stat. FactBox CZZ" extends "Vendor Statistics FactBo
 #pragma warning disable AL0432
         modify("Pay-To No. of Open. Adv. L.")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Pay-to No. of P.F.Inv. Adv. L.")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Pay-To No. of P.Inv. Adv. L.")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Pay-To No. of P.Pay. Adv. L.")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -29,7 +29,6 @@ pageextension 31200 "Vendor Stat. FactBox CZZ" extends "Vendor Statistics FactBo
                 ApplicationArea = Basic, Suite;
                 Caption = 'Advances';
                 ToolTip = 'Specifies the number of opened advance letters.';
-                Visible = AdvancePaymentsEnabledCZZ;
 
                 trigger OnDrillDown()
                 var
@@ -44,11 +43,6 @@ pageextension 31200 "Vendor Stat. FactBox CZZ" extends "Vendor Statistics FactBo
             }
         }
     }
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 
     trigger OnAfterGetCurrRecord()
     var
@@ -71,9 +65,7 @@ pageextension 31200 "Vendor Stat. FactBox CZZ" extends "Vendor Statistics FactBo
     end;
 
     var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
         CurrVendorNoCZZ: Code[20];
-        AdvancePaymentsEnabledCZZ: Boolean;
         AdvancesCZZ: Integer;
         TaskIdCalculateCueCZZ: Integer;
 

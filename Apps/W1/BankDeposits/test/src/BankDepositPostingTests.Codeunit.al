@@ -268,7 +268,9 @@ codeunit 139769 "Bank Deposit Posting Tests"
         PostBankDeposit(BankDepositHeader);
 
         // Verify: Verify Journal Batch Name in G/L Entry after post Deposit with Account Type GL.
+#pragma warning disable AA0210
         GLEntry.SetRange("Bal. Account No.", GLAccount."No.");
+#pragma warning restore
         GLEntry.FindFirst();
         GLEntry.TestField("Journal Batch Name", BankDepositHeader."Journal Batch Name");
     end;

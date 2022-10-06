@@ -3,23 +3,25 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-Table 132508 "Record Link Record Test"
+table 132508 "Record Link Record Test"
 {
-  fields
-  {
-    field(1; PK; Integer)
+    ReplicateData = false;
+
+    fields
     {
-      AutoIncrement = true;
+        field(1; PK; Integer)
+        {
+            AutoIncrement = true;
+        }
+        field(2; Field; Text[50])
+        {
+        }
     }
-    field(2; Field; Text[50])
+    keys
     {
+        key(Key1; PK, Field)
+        {
+            Clustered = true;
+        }
     }
-  }
-  keys
-  {
-    key(Key1; PK, Field)
-    {
-      Clustered = true;
-    }
-  }
 }

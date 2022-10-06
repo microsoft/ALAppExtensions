@@ -21,6 +21,7 @@ codeunit 9058 "Plan Upgrade Tag"
         PerDatabaseUpgradeTags.Add(GetRenamePlansUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetRenameTeamMemberPlanUpgradeTag());
         PerDatabaseUpgradeTags.Add(GetPlanfigurationsUpgradeTag());
+        PerDatabaseUpgradeTags.Add(GetMicrosoft365UpgradeTag());
     end;
 
     /// <summary>
@@ -66,6 +67,15 @@ codeunit 9058 "Plan Upgrade Tag"
     internal procedure GetPremiumPartnerSandboxUpgradeTag(): Code[250]
     begin
         exit('MS-426983-AddPremiumPartnerSandbox-20220218');
+    end;
+
+    /// <summary>
+    /// Returns the Microsoft 365 upgrade tag.
+    /// </summary>
+    /// <returns>The Microsoft365 upgrade tag.</returns>
+    internal procedure GetMicrosoft365UpgradeTag(): Code[250]
+    begin
+        exit('MS-410756-AddMicrosoft365-20220825');
     end;
 
     internal procedure GetPlanfigurationsUpgradeTag(): Code[250]

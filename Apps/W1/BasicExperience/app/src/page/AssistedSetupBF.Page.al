@@ -156,11 +156,11 @@ page 20600 "Assisted Setup BF"
 
     local procedure LoadTopBanners();
     begin
-        if MediaRepository.GET('AssistedSetup-NoText-400px.png', FORMAT(CURRENTCLIENTTYPE))
+        if MediaRepository.GetForCurrentClientType('AssistedSetup-NoText-400px.png')
       then
-            if MediaResources.GET(MediaRepository."Media Resources Ref")
+            if MediaResources.Get(MediaRepository."Media Resources Ref")
         then
-                TopBannerVisible := MediaResources."Media Reference".HASVALUE;
+                TopBannerVisible := MediaResources."Media Reference".HasValue();
     end;
 
     var

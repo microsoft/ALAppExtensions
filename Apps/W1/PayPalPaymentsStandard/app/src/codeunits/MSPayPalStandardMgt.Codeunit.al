@@ -191,7 +191,6 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         PaymentMethod.Code := PayPalPaymentMethodCodeTok;
         PaymentMethod.Description := PayPalPaymentMethodDescTok;
         PaymentMethod."Bal. Account Type" := PaymentMethod."Bal. Account Type"::"G/L Account";
-        PaymentMethod."Use for Invoicing" := true;
         IF PaymentMethod.INSERT() THEN;
         InsertCanadaFrenchTranslation();
     end;

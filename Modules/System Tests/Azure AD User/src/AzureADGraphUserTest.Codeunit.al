@@ -6,15 +6,14 @@
 codeunit 132911 "Azure AD Graph User Test"
 {
     Subtype = Test;
-    EventSubscriberInstance = Manual;
 
     var
         AzureADGraphUser: Codeunit "Azure AD Graph User";
-        AzureADGraphUserTest: Codeunit "Azure AD Graph User Test";
+        AzureADGraphTestLibrary: Codeunit "Azure AD Graph Test Library";
+        MockGraphQueryTestLibrary: Codeunit "MockGraphQuery Test Library";
         LibraryAssert: Codeunit "Library Assert";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         PermissionsMock: Codeunit "Permissions Mock";
-        MockGraphQuery: DotNet MockGraphQuery;
 
         NewAADUserIdLbl: Label '6D59EA6C-BD8c-4694-A839-FE5C70089021';
         AADUserIdWithEmptyObjectIdLbl: Label '28E0F872-F014-4EA4-B47D-6AF6F13B3FE1';
@@ -45,6 +44,7 @@ codeunit 132911 "Azure AD Graph User Test"
         NewAADUserDisplayNameLbl: Label 'New User Display Name';
 
         CurrentUserEmailLbl: Label 'Current User Email';
+#pragma warning disable AA0240
         NewAADUserEmailLbl: Label 'newemail@microsoft.com';
 
         CurrentUserPrincipalNameLbl: Label 'Current User Principal Name';
@@ -56,6 +56,7 @@ codeunit 132911 "Azure AD Graph User Test"
         UpdatedUser5PrincipalNameLbl: Label 'principal5@microsoft.com';
         UpdatedUser6PrincipalNameLbl: Label 'principal6@microsoft.com';
         UpdatedUser7PrincipalNameLbl: Label 'principal7@microsoft.com';
+#pragma warning restore AA0240
 
         CurrentUserGivenNameLbl: Label 'Current User Given Name';
         NewAADUserGivenNameLbl: Label 'New User Given Name';
@@ -63,120 +64,60 @@ codeunit 132911 "Azure AD Graph User Test"
 
         CurrentUserPreferredLanguageLbl: Label 'Current User Preferred Language';
         NewAADUserPreferredLanguageLbl: Label 'New User Preferred Language';
+        UserFullNameLbl: Label '%1 %2', Locked = true;
 
     local procedure Initialize()
     var
         UserProperty: Record "User Property";
     begin
         Clear(AzureADGraphUser);
+        Clear(MockGraphQueryTestLibrary);
         UserProperty.DeleteAll();
 
-        AzureADGraphUser.SetTestInProgress(true);
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
 
-        AzureADGraphUserTest.SetupMockGraphQuery();
+        MockGraphQueryTestLibrary.SetupMockGraphQuery();
+        AzureADGraphTestLibrary.SetMockGraphQuery(MockGraphQueryTestLibrary);
+        AddAzureADUsers();
 
-        BindSubscription(AzureADGraphUserTest);
+        BindSubscription(AzureADGraphTestLibrary);
     end;
 
     local procedure TearDown()
     begin
-        AzureADGraphUser.SetTestInProgress(false);
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
 
-        UnbindSubscription(AzureADGraphUserTest);
+        UnbindSubscription(AzureADGraphTestLibrary);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Graph", 'OnInitialize', '', false, false)]
-    local procedure OnGraphInitialization(var GraphQuery: DotNet GraphQuery)
-    begin
-        GraphQuery := GraphQuery.GraphQuery(MockGraphQuery);
-    end;
-
-    procedure SetupMockGraphQuery()
+    local procedure AddAzureADUsers()
     var
         UserInfo: DotNet UserInfo;
     begin
-        MockGraphQuery := MockGraphQuery.MockGraphQuery();
-
-        CreateAzureADUser(UserInfo, UserSecurityId(), CurrentUserObjectIdLbl, CurrentUserSurnameLbl, CurrentUserDisplayNameLbl,
+        MockGraphQueryTestLibrary.CreateAzureADUser(UserInfo, UserSecurityId(), CurrentUserObjectIdLbl, CurrentUserSurnameLbl, CurrentUserDisplayNameLbl,
             CurrentUserEmailLbl, CurrentUserPrincipalNameLbl, CurrentUserGivenNameLbl, CurrentUserPreferredLanguageLbl, false);
-        MockGraphQuery.CurrentUserUserObject := UserInfo;
+        MockGraphQueryTestLibrary.SetCurrentUser(UserInfo);
 
-        CreateAzureADUser(UserInfo, NewAADUserIdLbl, NewAADUserObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+        MockGraphQueryTestLibrary.CreateAzureADUser(UserInfo, NewAADUserIdLbl, NewAADUserObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
             NewAADUserEmailLbl, NewAADUserPrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
-        CreateAzureADUser(UserInfo, AADUserIdWithEmptyObjectIdLbl, '', '', '', '', '', '', '', false);
-        CreateAzureADUser(UserInfo, AADUserWithEmptySurnameUserIdLbl, AADUserWithEmptySurnameObjectIdLbl, '', '', '', '',
+        MockGraphQueryTestLibrary.CreateAzureADUser(UserInfo, AADUserIdWithEmptyObjectIdLbl, '', '', '', '', '', '', '', false);
+        MockGraphQueryTestLibrary.CreateAzureADUser(UserInfo, AADUserWithEmptySurnameUserIdLbl, AADUserWithEmptySurnameObjectIdLbl, '', '', '', '',
             AADUserGivenNameForUserWithEmptySurnameLbl, '', false);
 
-        CreateAzureADUser(UserInfo, UserToUpdate1IdLbl, UpdatedUser1ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+        MockGraphQueryTestLibrary.CreateAzureADUser(UserInfo, UserToUpdate1IdLbl, UpdatedUser1ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
             NewAADUserEmailLbl, UpdatedUser1PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
-        CreateAzureADUser(UserInfo, UserToUpdate2IdLbl, UpdatedUser2ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+        MockGraphQueryTestLibrary.CreateAzureADUser(UserInfo, UserToUpdate2IdLbl, UpdatedUser2ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
             NewAADUserEmailLbl, UpdatedUser2PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
-        CreateAzureADUser(UserInfo, UserToUpdate3IdLbl, UpdatedUser3ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+        MockGraphQueryTestLibrary.CreateAzureADUser(UserInfo, UserToUpdate3IdLbl, UpdatedUser3ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
             NewAADUserEmailLbl, UpdatedUser3PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
-        CreateAzureADUser(UserInfo, UserToUpdate4IdLbl, UpdatedUser4ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+        MockGraphQueryTestLibrary.CreateAzureADUser(UserInfo, UserToUpdate4IdLbl, UpdatedUser4ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
             NewAADUserEmailLbl, UpdatedUser4PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
-        CreateAzureADUser(UserInfo, UserToUpdate5IdLbl, UpdatedUser5ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+        MockGraphQueryTestLibrary.CreateAzureADUser(UserInfo, UserToUpdate5IdLbl, UpdatedUser5ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
             NewAADUserEmailLbl, UpdatedUser5PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
-        CreateAzureADUser(UserInfo, UserToUpdate6IdLbl, UpdatedUser6ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+        MockGraphQueryTestLibrary.CreateAzureADUser(UserInfo, UserToUpdate6IdLbl, UpdatedUser6ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
             NewAADUserEmailLbl, UpdatedUser6PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
-        CreateAzureADUser(UserInfo, UserToUpdate7IdLbl, UpdatedUser7ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
+        MockGraphQueryTestLibrary.CreateAzureADUser(UserInfo, UserToUpdate7IdLbl, UpdatedUser7ObjectIdLbl, NewAADUserSurnameLbl, NewAADUserDisplayNameLbl,
             NewAADUserEmailLbl, UpdatedUser7PrincipalNameLbl, NewAADUserGivenNameLbl, NewAADUserPreferredLanguageLbl, true);
-    end;
-
-    local procedure CreateAzureADUser(var UserInfo: DotNet UserInfo; UserSecurityId: Guid; ObjectId: Text; Surname: Text; DisplayName: Text; Email: Text; PrincipalName: Text; GivenName: Text; PreferredLanguage: Text; AccountEnabled: Boolean)
-    begin
-        CreateUserProperty(UserSecurityId, ObjectId);
-
-        CreateUserInfo(UserInfo, ObjectId, Surname, DisplayName, Email, PrincipalName,
-            GivenName, PreferredLanguage, AccountEnabled);
-
-        MockGraphQuery.AddUser(UserInfo);
-    end;
-
-    local procedure CreateUserProperty(UserSecurityId: Guid; AuthenticationObjectId: Text)
-    var
-        UserProperty: Record "User Property";
-    begin
-        UserProperty.Init();
-
-        UserProperty."User Security ID" := UserSecurityId;
-        UserProperty."Authentication Object ID" := CopyStr(AuthenticationObjectId, 1, 80);
-
-        UserProperty.Insert();
-    end;
-
-    local procedure CreateUserInfo(var UserInfo: DotNet UserInfo; ObjectId: Text; Surname: Text; DisplayName: Text; Email: Text; PrincipalName: Text; GivenName: Text; PreferredLanguage: Text; AccountEnabled: Boolean)
-    begin
-        UserInfo := UserInfo.UserInfo();
-
-        UserInfo.ObjectId := ObjectId;
-        UserInfo.Surname := Surname;
-        UserInfo.DisplayName := DisplayName;
-        UserInfo.Mail := Email;
-        UserInfo.UserPrincipalName := PrincipalName;
-        UserInfo.GivenName := GivenName;
-        UserInfo.PreferredLanguage := PreferredLanguage;
-        UserInfo.AccountEnabled := AccountEnabled;
-    end;
-
-    local procedure InsertUser(var User: Record User; UserSecurityId: Guid; Enabled: Boolean; FullName: Text; ContactEmail: Text; AuthenticationEmail: Text; UserName: Text)
-    begin
-        User.Init();
-
-        User."User Security ID" := UserSecurityId;
-        User."Full Name" := CopyStr(FullName, 1, 80);
-        User."Contact Email" := CopyStr(ContactEmail, 1, 80);
-        User."Authentication Email" := CopyStr(AuthenticationEmail, 1, 80);
-        User."User Name" := CopyStr(UserName, 1, 50);
-
-        if Enabled then
-            User.State := User.State::Enabled
-        else
-            User.State := User.State::Disabled;
-
-        User.Insert();
     end;
 
     [Test]
@@ -388,7 +329,7 @@ codeunit 132911 "Azure AD Graph User Test"
 
         // [GIVEN] A user
         UserId := CreateGuid();
-        InsertUser(User, UserId, false, '', '', 'email@email.com', 'username');
+        MockGraphQueryTestLibrary.InsertUser(User, UserId, false, '', '', 'email@email.com', 'username');
 
         // [WHEN] Trying to get the user authentication object ID for the user
         UserAuthenticationObjectId := AzureADGraphUser.GetUserAuthenticationObjectId(UserId);
@@ -473,7 +414,7 @@ codeunit 132911 "Azure AD Graph User Test"
 
         // [GIVEN] A user
         UserId := CreateGuid();
-        InsertUser(User, UserId, false, '', '', 'email@email.com', 'username');
+        MockGraphQueryTestLibrary.InsertUser(User, UserId, false, '', '', 'email@email.com', 'username');
 
         // [WHEN] Trying to get the user authentication object ID for the user
         Result := AzureADGraphUser.TryGetUserAuthenticationObjectId(UserId, UserAuthenticationObjectId);
@@ -545,13 +486,11 @@ codeunit 132911 "Azure AD Graph User Test"
         Initialize();
 
         // [GIVEN] A user's full name, contact email and authentication email
-#pragma warning disable AA0217
-        UserFullName := StrSubstNo('%1 %2', NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
-#pragma warning restore
+        UserFullName := StrSubstNo(UserFullNameLbl, NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
         UserName := 'username';
 
         // [GIVEN] A new user
-        InsertUser(User, NewAADUserIdLbl, true, UserFullName, NewAADUserEmailLbl, NewAADUserPrincipalNameLbl, UserName);
+        MockGraphQueryTestLibrary.InsertUser(User, NewAADUserIdLbl, true, UserFullName, NewAADUserEmailLbl, NewAADUserPrincipalNameLbl, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
         AzureADGraphUser.GetGraphUser(NewAADUserIdLbl, GraphUserInfo);
@@ -603,7 +542,7 @@ codeunit 132911 "Azure AD Graph User Test"
         AuthenticationEmail := 'authentication_email1@microsoft.com';
 
         // [GIVEN] A new user
-        InsertUser(User, NewAADUserIdLbl, false, UserFullName, ContactEmail, AuthenticationEmail, UserName);
+        MockGraphQueryTestLibrary.InsertUser(User, NewAADUserIdLbl, false, UserFullName, ContactEmail, AuthenticationEmail, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
         AzureADGraphUser.GetGraphUser(NewAADUserIdLbl, GraphUserInfo);
@@ -613,7 +552,7 @@ codeunit 132911 "Azure AD Graph User Test"
         LibraryAssert.IsTrue(IsUserModified, 'The user requires updates');
 
         // [THEN] The returned user should be updated
-        AADUserFullName := StrSubstNo('%1 %2', NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
+        AADUserFullName := StrSubstNo(UserFullNameLbl, NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
 
         LibraryAssert.AreEqual(User.State::Enabled, User.State, 'The state of the user is incorrect');
         LibraryAssert.AreEqual(AADUserFullName, User."Full Name", 'The full name of the user is incorrect');
@@ -657,7 +596,7 @@ codeunit 132911 "Azure AD Graph User Test"
         AuthenticationEmail := 'authentication_email2@microsoft.com';
 
         // [GIVEN] A new user
-        InsertUser(User, UserToUpdate1IdLbl, true, UserFullName, ContactEmail, AuthenticationEmail, UserName);
+        MockGraphQueryTestLibrary.InsertUser(User, UserToUpdate1IdLbl, true, UserFullName, ContactEmail, AuthenticationEmail, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
         AzureADGraphUser.GetGraphUser(UserToUpdate1IdLbl, GraphUserInfo);
@@ -667,7 +606,7 @@ codeunit 132911 "Azure AD Graph User Test"
         LibraryAssert.IsTrue(IsUserModified, 'The user requires updates');
 
         // [THEN] The returned user should be updated
-        AADUserFullName := StrSubstNo('%1 %2', NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
+        AADUserFullName := StrSubstNo(UserFullNameLbl, NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
 
         LibraryAssert.AreEqual(User.State::Enabled, User.State, 'The state of the user is incorrect');
         LibraryAssert.AreEqual(AADUserFullName, User."Full Name", 'The full name of the user is incorrect');
@@ -704,13 +643,13 @@ codeunit 132911 "Azure AD Graph User Test"
         Initialize();
 
         // [GIVEN] A user's full name, contact email and authentication email
-        UserFullName := StrSubstNo('%1 %2', NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
+        UserFullName := StrSubstNo(UserFullNameLbl, NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
         UserName := 'username3';
         ContactEmail := 'contact_email3@microsoft.com';
         AuthenticationEmail := 'authentication_email3@microsoft.com';
 
         // [GIVEN] A new user
-        InsertUser(User, UserToUpdate2IdLbl, true, UserFullName, ContactEmail, AuthenticationEmail, UserName);
+        MockGraphQueryTestLibrary.InsertUser(User, UserToUpdate2IdLbl, true, UserFullName, ContactEmail, AuthenticationEmail, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
         AzureADGraphUser.GetGraphUser(UserToUpdate2IdLbl, GraphUserInfo);
@@ -755,12 +694,12 @@ codeunit 132911 "Azure AD Graph User Test"
         Initialize();
 
         // [GIVEN] A user's full name, contact email and authentication email
-        UserFullName := StrSubstNo('%1 %2', NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
+        UserFullName := StrSubstNo(UserFullNameLbl, NewAADUserGivenNameLbl, NewAADUserSurnameLbl);
         UserName := 'username4';
         AuthenticationEmail := 'authentication_email4@microsoft.com';
 
         // [GIVEN] A new user
-        InsertUser(User, UserToUpdate3IdLbl, true, UserFullName, NewAADUserEmailLbl, AuthenticationEmail, UserName);
+        MockGraphQueryTestLibrary.InsertUser(User, UserToUpdate3IdLbl, true, UserFullName, NewAADUserEmailLbl, AuthenticationEmail, UserName);
 
         // [WHEN] Updating the user from the Azure Graph
         AzureADGraphUser.GetGraphUser(UserToUpdate3IdLbl, GraphUserInfo);
@@ -802,10 +741,10 @@ codeunit 132911 "Azure AD Graph User Test"
 
         // [GIVEN] 4 new users - all of them have corresponding users in the Azure AD Graph API, 
         // but their addresses don't correspond to the ones in the graph 
-        InsertUser(User, UserToUpdate4IdLbl, true, '', 'email1@microsoft.com', UpdatedUser5PrincipalNameLbl, 'username10');
-        InsertUser(User, UserToUpdate5IdLbl, true, '', 'email2@microsoft.com', UpdatedUser7PrincipalNameLbl, 'username20');
-        InsertUser(User, UserToUpdate6IdLbl, true, '', 'email3@microsoft.com', UpdatedUser4PrincipalNameLbl, 'username30');
-        InsertUser(User, UserToUpdate7IdLbl, true, '', 'email4@microsoft.com', UpdatedUser6PrincipalNameLbl, 'username40');
+        MockGraphQueryTestLibrary.InsertUser(User, UserToUpdate4IdLbl, true, '', 'email1@microsoft.com', UpdatedUser5PrincipalNameLbl, 'username10');
+        MockGraphQueryTestLibrary.InsertUser(User, UserToUpdate5IdLbl, true, '', 'email2@microsoft.com', UpdatedUser7PrincipalNameLbl, 'username20');
+        MockGraphQueryTestLibrary.InsertUser(User, UserToUpdate6IdLbl, true, '', 'email3@microsoft.com', UpdatedUser4PrincipalNameLbl, 'username30');
+        MockGraphQueryTestLibrary.InsertUser(User, UserToUpdate7IdLbl, true, '', 'email4@microsoft.com', UpdatedUser6PrincipalNameLbl, 'username40');
 
         // [WHEN] Calling EnsureAuthenticationEmailIsNotInUse on one of the email addresses
         AzureADGraphUser.EnsureAuthenticationEmailIsNotInUse(UserToUpdate4IdLbl);

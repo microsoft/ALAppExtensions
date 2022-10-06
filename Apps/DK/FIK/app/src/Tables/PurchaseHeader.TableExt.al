@@ -59,5 +59,5 @@ tableextension 13613 PurchaseHeader extends "Purchase Header"
         }
     }
     var
-        PmtReferenceErr: Label '%1 should be blank for %2 %3.';
+        PmtReferenceErr: Label '%1 should be blank for %2 %3.', Comment = '%1 = Payment Reference Field Caption; %2 = Payment Reference Table Caption; %3 = Payment Method Code';
 }

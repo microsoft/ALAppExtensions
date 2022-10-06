@@ -25,11 +25,15 @@ codeunit 1925 "Sampling Perf. Profiler Impl."
     procedure Stop()
     var
         ProfilingResultsMemoryStream: DotNet MemoryStream;
+        ErrorMessage: Text;
     begin
-        ProfilingResultsMemoryStream := SamplingProfiler.StopProfiling();
+        ProfilingResultsMemoryStream := SamplingProfiler.StopProfiling(ErrorMessage);
         IsRecordingRunning := false;
         UpdateCpuProfile(ProfilingResultsMemoryStream);
         ProfilingResultsMemoryStream.Dispose();
+
+        if ErrorMessage <> '' then
+            Message(ErrorMessage);
     end;
 
     procedure IsRecordingInProgress(): Boolean

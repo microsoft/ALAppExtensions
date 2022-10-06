@@ -23,7 +23,7 @@ page 1899 "C5 CustTable List"
                 field("Error Message"; MigrationErrorText)
                 {
                     ApplicationArea = All;
-
+                    Caption = 'Error Message';
                     Enabled = false;
                 }
                 field(Account; Account) { ApplicationArea = All; }

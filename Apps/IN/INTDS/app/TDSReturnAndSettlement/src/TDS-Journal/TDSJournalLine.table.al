@@ -695,10 +695,7 @@ table 18747 "TDS Journal Line"
 
             trigger OnValidate()
             begin
-                TestField("TDS Base Amount Applied", 0);
-                "TDS Base Amount Adjusted" := true;
-                "TDS Base Amount" := "TDS Base Amount Applied";
-
+                Validate("TDS % Applied", ((("TDS Base Amount Applied" / "TDS Base Amount") * 100) * "TDS %") / 100);
                 if ("TDS % Applied" = 0) and (not "TDS Adjusted") then begin
                     "TDS % Applied" := "TDS %";
                     "Balance TDS Amount" := "TDS %" * "TDS Base Amount" / 100;

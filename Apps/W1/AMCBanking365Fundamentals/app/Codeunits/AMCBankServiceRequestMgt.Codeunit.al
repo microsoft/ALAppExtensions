@@ -23,6 +23,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         BankPathTxt: Label '//return/pack/bank', Locked = true;
         PackPathTxt: Label '//return/pack', Locked = true;
         FeatureConsentErr: Label 'The AMC Banking 365 Fundamentals feature is not enabled. You can enable the feature on the AMC Banking Setup page by turning on the Enabled toggle, or by using the assisted setup guide.';
+        FeatureConsentQst: Label '%1\\Do you want us to open the AMC Banking Setup page for you?', Comment = '%1 = FeatureConsentErr';
 
     procedure CreateEnvelope(VAR requestDocXML: XmlDocument; VAR EnvXmlElement: XmlElement; Username: Text; Password: Text; UsernameTokenValue: Text);
     var
@@ -184,6 +185,13 @@ codeunit 20118 "AMC Bank Service Request Mgt."
             exit(true);
 
         AMCBankingSetup.Get();
+        if not AMCBankingSetup."AMC Enabled" then
+            if Confirm(StrSubstNo(FeatureConsentQst, FeatureConsentErr), false) then begin
+                Commit();
+                Page.RunModal(Page::"AMC Banking Setup");
+                AMCBankingSetup.Get();
+            end;
+
         if not AMCBankingSetup."AMC Enabled" then
             Error(FeatureConsentErr);
 
@@ -701,6 +709,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
     end;
 
 #if not CLEAN20
+#pragma warning disable
     [Obsolete('This method is obsolete and it will be removed. Use GetFinstaXPath instead', '20.0')]
     procedure GetFinstaXPath(ResponseNode: Text): Text
     begin
@@ -736,6 +745,7 @@ codeunit 20118 "AMC Bank Service Request Mgt."
     begin
         exit(StrSubstNo(PackPathTxt, ResponseNode));
     end;
+#pragma warning restore
 #endif
     procedure GetFinstaXPath(): Text
     begin

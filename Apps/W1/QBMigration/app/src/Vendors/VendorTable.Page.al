@@ -45,12 +45,13 @@ page 1914 "MigrationQB VendorTable"
                 {
                     ApplicationArea = All;
                     Caption = 'Vendor Transactions';
+                    ToolTip = 'View QuickBooks vendor transactions.';
                     Promoted = true;
                     PromotedIsBig = true;
                     PromotedOnly = true;
                     Image = EntriesList;
                     RunObject = Page "MigrationQB VendorTrans";
-                    RunPageLink = VendorRef = field (ListId);
+                    RunPageLink = VendorRef = field(ListId);
                     RunPageMode = Edit;
                 }
             }

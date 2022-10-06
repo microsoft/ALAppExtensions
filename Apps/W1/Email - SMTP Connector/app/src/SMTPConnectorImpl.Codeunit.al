@@ -163,7 +163,7 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
                     SMTPAccount."Authentication Type"), Verbosity::Normal, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
         end;
 
-        BuildSMTPMessage(Message, SMTPAccount, SMTPMessage);
+        BuildSMTPMessage(Message);
 
         ClearLastError();
         Result := SMTPClient.Send(SMTPMessage);
@@ -174,7 +174,7 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
             SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
             Session.LogMessage('00009UZ', StrSubstNo(SmtpSendTelemetryErrorMsg, SMTPAccount."Authentication Type", SMTPErrorCode), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
-            SMTPSendError := GetSendError(SMTPErrorCode, SMTPAccount);
+            SMTPSendError := GetSendError(SMTPErrorCode);
 
             Error(SMTPSendError);
         end;
@@ -182,14 +182,14 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         Session.LogMessage('00009UX', SmtpSendTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
     end;
 
-    local procedure BuildSMTPMessage(EmailMessage: Codeunit "Email Message"; SMTPAccount: Record "SMTP Account"; var SMTPMessage: Codeunit "SMTP Message")
+    local procedure BuildSMTPMessage(EmailMessage: Codeunit "Email Message")
     var
         FromName, FromAddress : Text;
         Recipients: List of [Text];
         AttachmentInStream: InStream;
     begin
         // From name/email address
-        GetFrom(SMTPAccount, FromName, FromAddress);
+        GetFrom(FromName, FromAddress);
         SMTPMessage.AddFrom(FromName, FromAddress);
 
         // To, Cc and Bcc Recipients
@@ -214,7 +214,7 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
             until EmailMessage.Attachments_Next() = 0;
     end;
 
-    local procedure GetFrom(SMTPAccount: Record "SMTP Account"; var FromName: Text; var FromAddress: Text)
+    local procedure GetFrom(var FromName: Text; var FromAddress: Text)
     var
         User: Record User;
     begin
@@ -303,37 +303,37 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         exit(ErrorResponse);
     end;
 
-    internal procedure IsAccountValid(SMTPAccount: Record "SMTP Account" temporary): Boolean
+    internal procedure IsAccountValid(SMTPAccountRec: Record "SMTP Account" temporary): Boolean
     begin
         // Name is a mandatory field
-        if SMTPAccount.Name = '' then
+        if SMTPAccountRec.Name = '' then
             exit(false);
 
         // Email Address is a mandatory field if a specific account is used
-        if (SMTPAccount."Sender Type" = SMTPAccount."Sender Type"::"Specific User") and (SMTPAccount."Email Address" = '') then
+        if (SMTPAccountRec."Sender Type" = SMTPAccountRec."Sender Type"::"Specific User") and (SMTPAccountRec."Email Address" = '') then
             exit(false);
 
         // Server is a mandatory field
-        if SMTPAccount.Server = '' then
+        if SMTPAccountRec.Server = '' then
             exit(false);
 
         // User Name is a mandatory field if the authentication type is Basic
-        if (SMTPAccount."Authentication Type" = SMTPAccount."Authentication Type"::Basic) and (SMTPAccount."User Name" = '') then
+        if (SMTPAccountRec."Authentication Type" = SMTPAccountRec."Authentication Type"::Basic) and (SMTPAccountRec."User Name" = '') then
             exit(false);
 
         // User Name is a mandatory field if the authentication type is NTLM
-        if (SMTPAccount."Authentication Type" = SMTPAccount."Authentication Type"::NTLM) and (SMTPAccount."User Name" = '') then
+        if (SMTPAccountRec."Authentication Type" = SMTPAccountRec."Authentication Type"::NTLM) and (SMTPAccountRec."User Name" = '') then
             exit(false);
 
         exit(true);
     end;
 
     [NonDebuggable]
-    internal procedure CreateAccount(var SMTPAccount: Record "SMTP Account"; Password: Text; var EmailAccount: Record "Email Account")
+    internal procedure CreateAccount(var SMTPAccountToCopy: Record "SMTP Account"; Password: Text; var EmailAccount: Record "Email Account")
     var
         NewSMTPAccount: Record "SMTP Account";
     begin
-        NewSMTPAccount.TransferFields(SMTPAccount);
+        NewSMTPAccount.TransferFields(SMTPAccountToCopy);
 
         NewSMTPAccount.Id := CreateGuid();
         NewSMTPAccount.SetPassword(Password);
@@ -399,12 +399,12 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         end;
     end;
 
-    local procedure GetSendError(ErrorCode: Text; SMTPAccount: Record "SMTP Account"): Text
+    local procedure GetSendError(ErrorCode: Text): Text
     var
         FromName, FromAddress : Text;
     begin
         if ErrorCode = '5.2.252' then begin
-            GetFrom(SMTPAccount, FromName, FromAddress);
+            GetFrom(FromName, FromAddress);
             exit(StrSubstNo(SendAsDeniedErr, FromAddress, SMTPAccount."User Name"));
         end;
 

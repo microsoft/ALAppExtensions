@@ -98,6 +98,8 @@ codeunit 130630 "No Transactions Subscriber"
                 exit(true);
             'Field Monitoring Setup':
                 exit(true);
+            'Email View Policy':
+                exit(true);
         end;
 
         exit(false);

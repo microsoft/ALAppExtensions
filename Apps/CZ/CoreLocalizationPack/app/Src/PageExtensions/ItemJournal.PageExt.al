@@ -59,7 +59,7 @@ pageextension 11711 "Item Journal CZL" extends "Item Journal"
                 Visible = false;
             }
         }
-        addafter("Transaction Specification")
+        addbefore("Shortcut Dimension 1 Code")
         {
             field("Tariff No. CZL"; Rec."Tariff No. CZL")
             {

@@ -64,13 +64,13 @@ page 20030 "APIV1 - Units of Measure"
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
         INSERT(TRUE);
 
-        RecRef.GETTABLE(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CURRENTDATETIME());
-        RecRef.SETTABLE(Rec);
+        RecordRef.GETTABLE(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecordRef, TempFieldSet, CURRENTDATETIME());
+        RecordRef.SETTABLE(Rec);
 
         EXIT(FALSE);
     end;

@@ -4,7 +4,7 @@ pageextension 31058 "Customer List CZZ" extends "Customer List"
     {
         modify("Prepa&yment Percentages")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         addlast(creation)
         {
@@ -16,7 +16,6 @@ pageextension 31058 "Customer List CZZ" extends "Customer List"
                 Image = NewDocument;
                 Promoted = true;
                 PromotedCategory = Category5;
-                Visible = AdvancePaymentsEnabledCZZ;
 
                 trigger OnAction()
                 var
@@ -40,13 +39,4 @@ pageextension 31058 "Customer List CZZ" extends "Customer List"
             }
         }
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

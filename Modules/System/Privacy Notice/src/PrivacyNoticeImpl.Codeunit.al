@@ -11,6 +11,7 @@ codeunit 1565 "Privacy Notice Impl."
 
     var
         EmptyGuid: Guid;
+        PrivacyAgreementTxt: Label 'By using %1, you consent to your data being shared with Microsoft services that might be outside of your organization''s selected geographic boundaries and might have different compliance and security standards than %2. Your privacy is important to us, and you can choose whether to share data with the service. To learn more, follow the link below.', Comment = '%1 = the integration service name, ex. Microsoft Sharepoint, %2 = the full marketing name, such as Microsoft Dynamics 365 Business Central.';
         MicrosoftPrivacyLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=521839';
         AdminDisabledIntegrationMsg: Label 'Your admin has disabled the integration with %1, please contact your administrator to approve this integration.', Comment = '%1 = a service name such as Microsoft Teams';
         MissingLinkErr: Label 'No privacy notice link was specified';
@@ -28,7 +29,7 @@ codeunit 1565 "Privacy Notice Impl."
         UserPrivacyApprovalStateTelemetryTxt: Label 'User privacy approval state: %1', Locked = true;
         RegisteringPrivacyNoticesFailedTelemetryErr: Label 'Privacy notices could not be registered', Locked = true;
         PrivacyNoticeNotCreatedTelemetryErr: Label 'A privacy notice could not be created', Locked = true;
-        PrivacyNoticeDoesNotExistTelemetryErr: Label 'The Privacy Notice does not exist.', Locked = true;
+        PrivacyNoticeDoesNotExistTelemetryTxt: Label 'The Privacy Notice %1 does not exist.', Locked = true;
         SystemEventPrivacyNoticeNotCreatedTelemetryErr: Label 'System event privacy notice could be created.', Locked = true;
 
     trigger OnRun()
@@ -46,6 +47,11 @@ codeunit 1565 "Privacy Notice Impl."
     procedure CreatePrivacyNotice(Id: Code[50]; IntegrationName: Text[250]): Boolean
     begin
         exit(CreatePrivacyNotice(Id, IntegrationName, MicrosoftPrivacyLinkTxt));
+    end;
+
+    procedure GetDefaultPrivacyAgreementTxt(): Text
+    begin
+        exit(PrivacyAgreementTxt);
     end;
 
     procedure ConfirmPrivacyNoticeApproval(PrivacyNoticeId: Code[50]): Boolean
@@ -108,7 +114,7 @@ codeunit 1565 "Privacy Notice Impl."
 
         // If the Privacy Notice does not exist then re-initialize all Privacy Notices
         if not PrivacyNotice.Get(PrivacyNoticeId) then begin
-            Session.LogMessage('0000GN7', PrivacyNoticeDoesNotExistTelemetryErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
+            Session.LogMessage('0000GN7', StrSubstNo(PrivacyNoticeDoesNotExistTelemetryTxt, PrivacyNoticeId), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
             if Company.Get(CompanyName()) and Company."Evaluation Company" then
                 exit("Privacy Notice Approval State"::Agreed); // Auto-agree for evaluation companies if admin has not explicitly disagreed
             exit("Privacy Notice Approval State"::"Not set"); // If there are no Privacy Notice then it is by default "Not set".
@@ -264,7 +270,7 @@ codeunit 1565 "Privacy Notice Impl."
             IsApproved := ConfirmPrivacyNoticeApproval(PrivacyNoticeId);
             exit;
         end;
-        
+
         CreateDefaultPrivacyNoticesInSeparateThread(); // First attempt creating the system privacy notice by creating default privacy notices
         if not PrivacyNotice.IsEmpty() then begin
             IsApproved := ConfirmPrivacyNoticeApproval(PrivacyNoticeId);
@@ -279,5 +285,14 @@ codeunit 1565 "Privacy Notice Impl."
 
         Session.LogMessage('0000GP9', SystemEventPrivacyNoticeNotCreatedTelemetryErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
         IsApproved := false;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetPrivacyNoticeApprovalState', '', false, false)]
+    local procedure GetPrivacyNoticeApprovalState(PrivacyNoticeIntegrationName: Text; var PrivacyNoticeApprovalState: Integer)
+    var
+        PrivacyNoticeId: Code[50];
+    begin
+        PrivacyNoticeId := CopyStr(PrivacyNoticeIntegrationName, 1, 50);
+        PrivacyNoticeApprovalState := CheckPrivacyNoticeApprovalState(PrivacyNoticeId).AsInteger();
     end;
 }

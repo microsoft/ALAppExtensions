@@ -24,7 +24,8 @@ codeunit 31250 "Install Application CZA"
                   tabledata "Detailed G/L Entry CZA" = im,
                   tabledata "G/L Entry" = m,
                   tabledata "Item Entry Relation" = m,
-                  tabledata "Default Dimension" = m;
+                  tabledata "Default Dimension" = m,
+                  tabledata "Standard Item Journal Line" = m;
 
     var
         InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
@@ -88,6 +89,7 @@ codeunit 31250 "Install Application CZA"
         CopyGLEntry();
         CopyItemEntryRelation();
         CopyDefaultDimension();
+        CopyStandardItemJournalLine();
     end;
 
     local procedure CopyInventorySetup();
@@ -417,6 +419,18 @@ codeunit 31250 "Install Application CZA"
                     DefaultDimension.Modify(false);
                 end;
             until DefaultDimension.Next() = 0;
+    end;
+
+    local procedure CopyStandardItemJournalLine();
+    var
+        StandardItemJournalLine: Record "Standard Item Journal Line";
+    begin
+        StandardItemJournalLine.SetLoadFields("New Location Code");
+        if StandardItemJournalLine.FindSet(true) then
+            repeat
+                StandardItemJournalLine."New Location Code CZA" := StandardItemJournalLine."New Location Code";
+                StandardItemJournalLine.Modify(false);
+            until StandardItemJournalLine.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

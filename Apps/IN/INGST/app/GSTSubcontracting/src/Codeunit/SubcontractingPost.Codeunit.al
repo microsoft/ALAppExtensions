@@ -556,7 +556,12 @@ codeunit 18466 "Subcontracting Post"
         Completed: Boolean;
         SNInfoRequired: Boolean;
         LotInfoRequired: Boolean;
+        IsHandled: Boolean;
     begin
+        OnBeforePostSubconComp(ProdOrder, ProdOrderLine, ProdOrderComp, Purchaseline, IsHandled);
+        if IsHandled then
+            exit;
+
         SubOrderCompVend.SetRange("Document No.", Purchaseline."Document No.");
         SubOrderCompVend.SetRange("Production Order No.", ProdOrderComp."Prod. Order No.");
         SubOrderCompVend.SetRange("Production Order Line No.", ProdOrderComp."Prod. Order Line No.");
@@ -1108,7 +1113,12 @@ codeunit 18466 "Subcontracting Post"
         TrackingQtyHandled: Decimal;
         TrackingQtyToHandle: Decimal;
         QuantitySent: Decimal;
+        IsHandled: Boolean;
     begin
+        OnBeforeRecieveBackComp(ProdOrder, ProdOrderLine, ProdOrderComp, IsHandled);
+        if IsHandled then
+            exit;
+
         SubOrderCompListVendLocal.Reset();
         SubOrderCompListVendLocal.SetRange("Document No.", Purchline2."Document No.");
         SubOrderCompListVendLocal.SetRange("Production Order No.", ProdOrderComp."Prod. Order No.");
@@ -1308,7 +1318,12 @@ codeunit 18466 "Subcontracting Post"
         TrackingQtyHandled: Decimal;
         TrackingQtyToHandle: Decimal;
         QuantitySent: Decimal;
+        IsHandled: Boolean;
     begin
+        OnBeforePostSubconCompCE(ProdOrder, ProdOrderLine, ProdOrderComp, Purchline, IsHandled);
+        if IsHandled then
+            exit;
+
         SubOrderCompVend.SetRange("Document No.", Purchline."Document No.");
         SubOrderCompVend.SetRange("Production Order No.", ProdOrderComp."Prod. Order No.");
         SubOrderCompVend.SetRange("Production Order Line No.", ProdOrderComp."Prod. Order Line No.");
@@ -1450,9 +1465,13 @@ codeunit 18466 "Subcontracting Post"
                             end;
                         until (ItemLedgerEntry.Next() = 0) or Completed;
                 AppliedDeliveryChallan."Qty. to Return (C.E.)" := 0;
+
+                OnBeforeModifyApplyDeliveryChallan(AppliedDeliveryChallan, SubOrderCompVend);
                 AppliedDeliveryChallan.Modify();
+                OnAfterModifyApplyDeliveryChallan(AppliedDeliveryChallan, SubOrderCompVend);
 
             until AppliedDeliveryChallan.Next() = 0;
+
         SubOrderCompVend."Qty. to Return (C.E.)" := 0;
         SubOrderCompVend.Modify();
     end;
@@ -1778,7 +1797,12 @@ codeunit 18466 "Subcontracting Post"
         AppliedDeliveryChallan: Record "Applied Delivery Challan";
         SubOrderCompVend2: Record "Sub Order Comp. List Vend";
         AppDelChEntry: Record "Applied Delivery Challan Entry";
+        IsHandled: Boolean;
     begin
+        OnBeforeDelApplyDeliveryChallan(ProdOrder, ProdOrderLine, ProdOrderComp, IsHandled);
+        if IsHandled then
+            exit;
+
         SubOrderCompVend2.Reset();
         SubOrderCompVend2.SetRange("Production Order No.", ProdOrderComp."Prod. Order No.");
         SubOrderCompVend2.SetRange("Production Order Line No.", ProdOrderComp."Prod. Order Line No.");
@@ -2036,6 +2060,13 @@ codeunit 18466 "Subcontracting Post"
 
         ReservEngineMgt.InitFilterAndSortingLookupFor(ReservEntry, false);
         FilterReservForVend(ReservEntry, AppliedDeliveryChallan, Direction, ItemLedgerEntry, Type_);
+
+        if ItemLedgerEntry."Serial No." <> '' then
+            ReservEntry.SetRange("Serial No.", ItemLedgerEntry."Serial No.");
+
+        if ItemLedgerEntry."Lot No." <> '' then
+            ReservEntry.SetRange("Lot No.", ItemLedgerEntry."Lot No.");
+
         exit(ReservEntry.Findlast());
     end;
 
@@ -2182,68 +2213,69 @@ codeunit 18466 "Subcontracting Post"
 
         QuantityTracked := Abs(QuantityTracked);
 
-        TempTrackingSpecification.Init();
-        TempTrackingSpecification."Entry No." := 1;
-        TempTrackingSpecification."Item No." := AppliedDeliveryChallan."Item No.";
-        if ReservEntry.FindFirst() then begin
-            TempTrackingSpecification."Serial No." := ReservEntry."Serial No.";
-            TempTrackingSpecification."Lot No." := ReservEntry."Lot No.";
-        end;
+        if ReservEntry.FindSet() then
+            repeat
+                TempTrackingSpecification.Init();
+                TempTrackingSpecification."Entry No." := 1;
+                TempTrackingSpecification."Item No." := AppliedDeliveryChallan."Item No.";
+                TempTrackingSpecification."Serial No." := ReservEntry."Serial No.";
+                TempTrackingSpecification."Lot No." := ReservEntry."Lot No.";
 
-        Case Type_ of
-            Type_::Consume:
-                begin
-                    if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. to Consume") and SNRequired then
-                        Error(SerialNoErr, AppliedDeliveryChallan."Item No.");
+                Case Type_ of
+                    Type_::Consume:
+                        begin
+                            if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. to Consume") and SNRequired then
+                                Error(SerialNoErr, AppliedDeliveryChallan."Item No.");
 
-                    if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. to Consume") and LotRequired then
-                        Error(LotNoErr, AppliedDeliveryChallan."Item No.");
+                            if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. to Consume") and LotRequired then
+                                Error(LotNoErr, AppliedDeliveryChallan."Item No.");
 
-                    TempTrackingSpecification.TestFieldError(
-                        Copystr(AppliedDeliveryChallan.FieldCaption("Qty. to Consume"), 1, 80),
-                        QuantityTracked,
-                        AppliedDeliveryChallan."Qty. to Consume");
+                            TempTrackingSpecification.TestFieldError(
+                                Copystr(AppliedDeliveryChallan.FieldCaption("Qty. to Consume"), 1, 80),
+                                QuantityTracked,
+                                AppliedDeliveryChallan."Qty. to Consume");
+                        end;
+                    Type_::RejectVE:
+                        begin
+                            if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. To Return (V.E.)") and SNRequired then
+                                Error(SerialNoErr, AppliedDeliveryChallan."Item No.");
+
+                            if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. To Return (V.E.)") and lotRequired then
+                                Error(LotNoErr, AppliedDeliveryChallan."Item No.");
+
+                            TempTrackingSpecification.TestFieldError(
+                                CopyStr(AppliedDeliveryChallan.FieldCaption("Qty. To Return (V.E.)"), 1, 80),
+                                QuantityTracked,
+                                AppliedDeliveryChallan."Qty. To Return (V.E.)");
+                        end;
+                    Type_::RejectCE:
+                        begin
+                            if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. to Return (C.E.)") and (SNRequired) then
+                                Error(SerialNoErr, AppliedDeliveryChallan."Item No.");
+
+                            if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. to Return (C.E.)") and (LotRequired) then
+                                Error(LotNoErr, AppliedDeliveryChallan."Item No.");
+
+                            TempTrackingSpecification.TestFieldError(
+                                CopyStr(AppliedDeliveryChallan.FieldCaption("Qty. to Return (C.E.)"), 1, 80),
+                                QuantityTracked,
+                                AppliedDeliveryChallan."Qty. to Return (C.E.)");
+                        end;
+                    Type_::Receive:
+                        begin
+                            if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. to Receive") and (SNRequired) then
+                                Error(SerialNoErr, AppliedDeliveryChallan."Item No.");
+
+                            if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. to Receive") and (LotRequired) then
+                                Error(LotNoErr, AppliedDeliveryChallan."Item No.");
+
+                            TempTrackingSpecification.TestFieldError(
+                                CopyStr(AppliedDeliveryChallan.FieldCaption("Qty. to Receive"), 1, 80),
+                                QuantityTracked,
+                                AppliedDeliveryChallan."Qty. to Receive");
+                        end;
                 end;
-            Type_::RejectVE:
-                begin
-                    if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. To Return (V.E.)") and SNRequired then
-                        Error(SerialNoErr, AppliedDeliveryChallan."Item No.");
-
-                    if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. To Return (V.E.)") and lotRequired then
-                        Error(LotNoErr, AppliedDeliveryChallan."Item No.");
-
-                    TempTrackingSpecification.TestFieldError(
-                        CopyStr(AppliedDeliveryChallan.FieldCaption("Qty. To Return (V.E.)"), 1, 80),
-                        QuantityTracked,
-                        AppliedDeliveryChallan."Qty. To Return (V.E.)");
-                end;
-            Type_::RejectCE:
-                begin
-                    if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. to Return (C.E.)") and (SNRequired) then
-                        Error(SerialNoErr, AppliedDeliveryChallan."Item No.");
-
-                    if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. to Return (C.E.)") and (LotRequired) then
-                        Error(LotNoErr, AppliedDeliveryChallan."Item No.");
-
-                    TempTrackingSpecification.TestFieldError(
-                        CopyStr(AppliedDeliveryChallan.FieldCaption("Qty. to Return (C.E.)"), 1, 80),
-                        QuantityTracked,
-                        AppliedDeliveryChallan."Qty. to Return (C.E.)");
-                end;
-            Type_::Receive:
-                begin
-                    if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. to Receive") and (SNRequired) then
-                        Error(SerialNoErr, AppliedDeliveryChallan."Item No.");
-
-                    if (QuantityTracked = 0) and (QuantityTracked <> AppliedDeliveryChallan."Qty. to Receive") and (LotRequired) then
-                        Error(LotNoErr, AppliedDeliveryChallan."Item No.");
-
-                    TempTrackingSpecification.TestFieldError(
-                        CopyStr(AppliedDeliveryChallan.FieldCaption("Qty. to Receive"), 1, 80),
-                        QuantityTracked,
-                        AppliedDeliveryChallan."Qty. to Receive");
-                end;
-        end;
+            until ReservEntry.Next() = 0;
     end;
 
     procedure GetReceiptNo(ReceivingNo: Code[20])
@@ -2452,5 +2484,35 @@ codeunit 18466 "Subcontracting Post"
             (not AllowApplication)
         then
             AllowApplication := true;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterModifyApplyDeliveryChallan(var AppliedDeliveryChallan: Record "Applied Delivery Challan"; SubOrderCompVend: Record "Sub Order Comp. List Vend")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeModifyApplyDeliveryChallan(var AppliedDeliveryChallan: Record "Applied Delivery Challan"; SubOrderCompVend: Record "Sub Order Comp. List Vend")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeDelApplyDeliveryChallan(var ProdOrder: Record "Production Order"; var ProdOrderLine: Record "Prod. Order Line"; var ProdOrderComp: Record "Prod. Order Component"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostSubconComp(var ProdOrder: Record "Production Order"; var ProdOrderLine: Record "Prod. Order Line"; var ProdOrderComp: Record "Prod. Order Component"; var Purchaseline: Record "Purchase line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeRecieveBackComp(var ProdOrder: Record "Production Order"; var ProdOrderLine: Record "Prod. Order Line"; var ProdOrderComp: Record "Prod. Order Component"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostSubconCompCE(var ProdOrder: Record "Production Order"; var ProdOrderLine: Record "Prod. Order Line"; var ProdOrderComp: Record "Prod. Order Component"; var Purchline: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
     end;
 }

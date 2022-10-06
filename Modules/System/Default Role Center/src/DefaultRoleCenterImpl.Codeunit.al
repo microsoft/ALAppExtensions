@@ -18,6 +18,7 @@ codeunit 9171 "Default Role Center Impl."
     var
         AllProfile: Record "All Profile";
         DefaultRoleCenter: Codeunit "Default Role Center";
+        CurrentModuleInfo: ModuleInfo;
         RoleCenterId: Integer;
         Handled: Boolean;
     begin
@@ -26,7 +27,8 @@ codeunit 9171 "Default Role Center Impl."
         if not IsValidRoleCenterId(RoleCenterId) then begin
             Session.LogMessage('0000DUH', StrSubstNo(InvalidRoleCenterIDTelemetryMsg, RoleCenterId), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTxt);
 
-            AllProfile.Get(AllProfile.Scope::Tenant, '63ca2fa4-4f03-4f2b-a480-172fef340d3f', 'BLANK');
+            NavApp.GetCurrentModuleInfo(CurrentModuleInfo);
+            AllProfile.Get(AllProfile.Scope::Tenant, CurrentModuleInfo.Id, 'BLANK');
             if not AllProfile.Enabled then begin
                 AllProfile.Enabled := true;
                 AllProfile.Modify();

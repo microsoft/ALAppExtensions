@@ -6,6 +6,7 @@
 table 138702 "Retention Policy Test Data 3"
 {
     DataClassification = SystemMetadata;
+    ReplicateData = false;
 
     fields
     {

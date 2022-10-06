@@ -132,6 +132,32 @@ The search filter of the user.
 *Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
 
+### OnEditInExcelWithStructuredFilter (Event) <a name="OnEditInExcelWithStructuredFilter"></a> 
+ This event is called when Edit in Excel is invoked, handling JSON structured filters. It also allows overriding the Edit in Excel functionality.
+
+#### Syntax
+```
+[IntegrationEvent(false, false)]
+internal procedure OnEditInExcelWithStructuredFilter(ServiceName: Text[240]; Filter: JsonObject; Payload: JsonObject; SearchFilter: Text; var Handled: Boolean)
+```
+#### Parameters
+*ServiceName ([Text[240]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The name of the web service already created for use with Edit in Excel.
+
+*Filter ([JsonObject](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/jsonobject/jsonobject-data-type))* 
+
+Business Central Filter to be applied in Edit in Excel
+
+*Payload ([JsonObject](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/jsonobject/jsonobject-data-type)*
+
+Object binding the name of the filtered field with  its EdmType
+
+*SearchFilter ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+
+The search filter of the user.
+
+*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
 
 
 ## Excel Centralized Depl. Wizard (Page 1480)

@@ -113,22 +113,9 @@ codeunit 18716 "TDS Subscribers"
         PurchaseLine: Record "Purchase Line";
         CalculateTax: Codeunit "Calculate Tax";
     begin
+        PurchaseLine.LoadFields("Document Type", "Document No.");
         PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
         PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
-        if PurchaseLine.FindSet() then
-            repeat
-                CalculateTax.CallTaxEngineOnPurchaseLine(PurchaseLine, PurchaseLine);
-            until PurchaseLine.Next() = 0;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Get Receipt", 'OnAfterInsertLines', '', false, false)]
-    local procedure OnAfterInsertReceiptLines(var PurchHeader: Record "Purchase Header")
-    var
-        PurchaseLine: Record "Purchase Line";
-        CalculateTax: Codeunit "Calculate Tax";
-    begin
-        PurchaseLine.SetRange("Document Type", PurchHeader."Document Type");
-        PurchaseLine.SetRange("Document No.", PurchHeader."No.");
         if PurchaseLine.FindSet() then
             repeat
                 CalculateTax.CallTaxEngineOnPurchaseLine(PurchaseLine, PurchaseLine);

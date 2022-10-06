@@ -9,7 +9,6 @@ codeunit 139664 "GP Data Migration Tests"
     TestPermissions = Disabled;
 
     var
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPCustomer: Record "GP Customer";
         GPVendor: Record "GP Vendor";
@@ -34,22 +33,23 @@ codeunit 139664 "GP Data Migration Tests"
         VendorIdWithBankStr3Txt: Label 'Vendor003', Comment = 'Vendor Id with bank account information', Locked = true;
         VendorIdWithBankStr4Txt: Label 'Vendor004', Comment = 'Vendor Id with bank account information', Locked = true;
         ValidSwiftCodeStrTxt: Label 'BOFAUS3N', Comment = 'Valid SWIFT Code', Locked = true;
+#pragma warning disable AA0240
         ValidIBANStrTxt: Label 'GB33BUKB20201555555555', Comment = 'Valid IBAN code', Locked = true;
+#pragma warning restore AA0240
         AddressCodeRemitToTxt: Label 'REMIT TO', Comment = 'GP ADRSCODE', Locked = true;
         AddressCodePrimaryTxt: Label 'PRIMARY', Comment = 'GP ADRSCODE', Locked = true;
         AddressCodeWarehouseTxt: Label 'WAREHOUSE', Comment = 'GP ADRSCODE', Locked = true;
         AddressCodeOtherTxt: Label 'OTHER', Comment = 'Dummy GP ADRSCODE', Locked = true;
         AddressCodeOther2Txt: Label 'OTHER2', Comment = 'Dummy GP ADRSCODE', Locked = true;
         CurrencyCodeUSTxt: Label 'Z-US$', Comment = 'GP US Currency Code', Locked = true;
-        PONumber: Label 'PO001', Comment = 'PO number for Migrate Open POs setting tests', Locked = true;
-        PostingGroupCode: Label 'GP', Locked = true;
+        PONumberTxt: Label 'PO001', Comment = 'PO number for Migrate Open POs setting tests', Locked = true;
+        PostingGroupCodeTxt: Label 'GP', Locked = true;
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGPCustomerImport()
     var
         Customer: Record "Customer";
-        GenBusPostingGroup: Record "Gen. Business Posting Group";
         HelperFunctions: Codeunit "Helper Functions";
         CustomerCount: Integer;
     begin
@@ -336,10 +336,7 @@ codeunit 139664 "GP Data Migration Tests"
     procedure TestPayablesDisabled()
     var
         Vendor: Record Vendor;
-        CompanyInformation: Record "Company Information";
-        OrderAddress: Record "Order Address";
         HelperFunctions: Codeunit "Helper Functions";
-        Country: Code[10];
         VendorCount: Integer;
     begin
         // [SCENARIO] All Vendor are queried from GP, but the Payables Module is disabled
@@ -644,7 +641,7 @@ codeunit 139664 "GP Data Migration Tests"
         // [then] Then the currencies will be migrated
         Currency.Reset();
         Currency.SetRange(Code, CurrencyCodeUSTxt);
-        Assert.AreEqual(true, Currency.FindFirst(), 'Currency was not created.');
+        Assert.IsFalse(Currency.IsEmpty(), 'Currency was not created.');
 
         // [then] Then the correct number of Vendor Bank Accounts are imported
         VendorBankAccount.Reset();
@@ -771,10 +768,10 @@ codeunit 139664 "GP Data Migration Tests"
         VendorPostingGroup.Get('USA-US-C');
         Assert.AreEqual('USA-US-C', VendorPostingGroup.Code, 'Code of VendorPostingGroup is incorrect.');
         Assert.AreEqual('U.S. Vendors-Contract Services', VendorPostingGroup.Description, 'Description of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('2100', VendorPostingGroup."Payables Account", 'Payables Account of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('8010', VendorPostingGroup."Service Charge Acc.", 'Service Charge Acc. of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('4600', VendorPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('2105', VendorPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('1', VendorPostingGroup."Payables Account", 'Payables Account of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('4', VendorPostingGroup."Service Charge Acc.", 'Service Charge Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('3', VendorPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('2', VendorPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of VendorPostingGroup is incorrect.');
         Assert.AreEqual('', VendorPostingGroup."Payment Tolerance Debit Acc.", 'Payment Tolerance Debit Acc. of VendorPostingGroup is incorrect.');
         Assert.AreEqual('', VendorPostingGroup."Payment Tolerance Credit Acc.", 'Payment Tolerance Credit Acc. of VendorPostingGroup is incorrect.');
 
@@ -888,7 +885,6 @@ codeunit 139664 "GP Data Migration Tests"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestOpenPOSettingDisabled()
     var
-        VendorPostingGroup: Record "Vendor Posting Group";
         PurchaseHeader: Record "Purchase Header";
         HelperFunctions: Codeunit "Helper Functions";
     begin
@@ -914,15 +910,14 @@ codeunit 139664 "GP Data Migration Tests"
         HelperFunctions.CreatePostMigrationData();
 
         // [then] Then the POs will NOT be migrated
-        PurchaseHeader.SetRange("No.", PONumber);
-        Assert.IsFalse(PurchaseHeader.FindSet(), 'POs should not have been created.');
+        PurchaseHeader.SetRange("No.", PONumberTxt);
+        Assert.IsTrue(PurchaseHeader.IsEmpty(), 'POs should not have been created.');
     end;
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestOpenPOSettingEnabled()
     var
-        VendorPostingGroup: Record "Vendor Posting Group";
         PurchaseHeader: Record "Purchase Header";
         HelperFunctions: Codeunit "Helper Functions";
     begin
@@ -947,8 +942,8 @@ codeunit 139664 "GP Data Migration Tests"
         HelperFunctions.CreatePostMigrationData();
 
         // [then] Then the POs will be migrated
-        PurchaseHeader.SetRange("No.", PONumber);
-        Assert.IsTrue(PurchaseHeader.FindSet(), 'POs should have been created.');
+        PurchaseHeader.SetRange("No.", PONumberTxt);
+        Assert.IsFalse(PurchaseHeader.IsEmpty(), 'POs should have been created.');
     end;
 
     [Normal]
@@ -976,13 +971,13 @@ codeunit 139664 "GP Data Migration Tests"
         GPPOPPOLine.DeleteAll();
         GPPOPPOHeader.DeleteAll();
 
-        if not GenBusPostingGroup.Get(PostingGroupCode) then begin
-            GenBusPostingGroup.Validate("Code", PostingGroupCode);
+        if not GenBusPostingGroup.Get(PostingGroupCodeTxt) then begin
+            GenBusPostingGroup.Validate("Code", PostingGroupCodeTxt);
             GenBusPostingGroup.Insert(true);
         end;
 
-        if not VendorPostingGroup.Get(PostingGroupCode) then begin
-            VendorPostingGroup.Validate("Code", PostingGroupCode);
+        if not VendorPostingGroup.Get(PostingGroupCodeTxt) then begin
+            VendorPostingGroup.Validate("Code", PostingGroupCodeTxt);
             VendorPostingGroup.Insert(true);
         end;
 
@@ -2662,6 +2657,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendor.Insert();
 
         GPVendorAddress.Init();
+#pragma warning disable AA0139
         GPVendorAddress.VENDORID := GPVendor.VENDORID;
         GPVendorAddress.ADRSCODE := AddressCodeRemitToTxt;
         GPVendorAddress.VNDCNTCT := GPVendor.VNDCNTCT;
@@ -2934,6 +2930,8 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY06000.IntlBankAcctNum := ValidIBANStrTxt;
         GPSY06000.SWIFTADDR := ValidSwiftCodeStrTxt;
         GPSY06000.Insert();
+#pragma warning restore AA0139
+
     end;
 
     local procedure CreateVendorClassData()
@@ -2942,7 +2940,7 @@ codeunit 139664 "GP Data Migration Tests"
         GLAccount: Record "G/L Account";
     begin
         GPAccount.Init();
-        GPAccount.AcctNum := '2100';
+        GPAccount.AcctNum := '1';
         GPAccount.AcctIndex := 35;
         GPAccount.Name := 'Accounts Payable';
         GPAccount.Active := true;
@@ -2955,7 +2953,7 @@ codeunit 139664 "GP Data Migration Tests"
         GLAccount.Insert();
 
         GPAccount.Init();
-        GPAccount.AcctNum := '2105';
+        GPAccount.AcctNum := '2';
         GPAccount.AcctIndex := 36;
         GPAccount.Name := 'Purchases Discounts Available';
         GPAccount.Active := true;
@@ -2968,7 +2966,7 @@ codeunit 139664 "GP Data Migration Tests"
         GLAccount.Insert();
 
         GPAccount.Init();
-        GPAccount.AcctNum := '4600';
+        GPAccount.AcctNum := '3';
         GPAccount.AcctIndex := 139;
         GPAccount.Name := 'Purchases Discounts Taken';
         GPAccount.Active := true;
@@ -2981,7 +2979,7 @@ codeunit 139664 "GP Data Migration Tests"
         GLAccount.Insert();
 
         GPAccount.Init();
-        GPAccount.AcctNum := '8010';
+        GPAccount.AcctNum := '4';
         GPAccount.AcctIndex := 190;
         GPAccount.Name := 'Finance Charge Expense';
         GPAccount.Active := true;
@@ -3071,7 +3069,8 @@ codeunit 139664 "GP Data Migration Tests"
 
     local procedure CreateOpenPOData()
     begin
-        GPPOPPOHeader.PONUMBER := PONumber;
+        Clear(GPPOPPOHeader);
+        GPPOPPOHeader.PONUMBER := PONumberTxt;
         GPPOPPOHeader.VENDORID := 'DUFFY';
         GPPOPPOHeader.DOCDATE := Today();
         GPPOPPOHeader.PRMDATE := Today();

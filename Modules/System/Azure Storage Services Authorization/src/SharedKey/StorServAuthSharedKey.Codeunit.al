@@ -117,7 +117,7 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
     local procedure GetCanonicalizedResource(StorageAccount: Text; UriString: Text): Text
     var
         Uri: Codeunit Uri;
-        UriBuider: Codeunit "Uri Builder";
+        UriBuilder: Codeunit "Uri Builder";
         SortedDictionaryQuery: DotNet GenericSortedDictionary2;
         SortedDictionaryEntry: DotNet GenericKeyValuePair2;
         QueryString: Text;
@@ -131,8 +131,8 @@ codeunit 9064 "Stor. Serv. Auth. Shared Key" implements "Storage Service Authori
         Uri.Init(UriString);
         Uri.GetSegments(Segments);
 
-        UriBuider.Init(UriString);
-        QueryString := UriBuider.GetQuery();
+        UriBuilder.Init(UriString);
+        QueryString := UriBuilder.GetQuery();
 
         StringBuilderResource.Append('/');
         StringBuilderResource.Append(StorageAccount);

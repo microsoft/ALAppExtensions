@@ -1,6 +1,3 @@
-#if not CLEAN18
-#pragma warning disable AL0432
-#endif
 pageextension 31215 "Reconciliation CZL" extends Reconciliation
 {
     layout
@@ -9,12 +6,6 @@ pageextension 31215 "Reconciliation CZL" extends Reconciliation
         {
             Visible = false;
         }
-#if not CLEAN18
-        modify(Type)
-        {
-            Visible = false;
-        }
-#endif        
         addafter("No.")
         {
             field("Account Type CZL"; Rec."Account Type CZL")

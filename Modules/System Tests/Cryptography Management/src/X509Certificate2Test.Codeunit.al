@@ -106,11 +106,11 @@ codeunit 132587 "X509Certificate2 Test"
         // [GIVEN] Get Test Certificate Base64 value
         CertBase64Value := GetCertificateBase64();
 
-        // [WHEN]  Get Certificate Expiration
+        // [WHEN]  Get Certificate Expiration in Local Time Zone
         X509CertificateCryptography.GetCertificateExpiration(CertBase64Value, '', Expiration);
 
-        // [THEN] Certificate Expiration Date is retrieved        
-        LibraryAssert.AreEqual(Expiration, GetExpirationDate(), 'Failed to create certificate.');
+        // [THEN] Certificate Expiration Date is retrieved
+        LibraryAssert.AreEqual(Expiration, GetExpirationDateTimeInLocalTimeZone(), 'Wrong certificate Expiration DateTime.');
     end;
 
     [Test]
@@ -123,11 +123,11 @@ codeunit 132587 "X509Certificate2 Test"
         // [GIVEN] Get Test Certificate Base64 value
         CertBase64Value := GetCertificateBase64();
 
-        // [WHEN]  Get Certificate NotBefore
+        // [WHEN]  Get Certificate NotBefore in Local Time Zone
         X509CertificateCryptography.GetCertificateNotBefore(CertBase64Value, '', NotBefore);
 
         // [THEN] Certificate NotBefore Date is retrieved        
-        LibraryAssert.AreEqual(NotBefore, GetNotBeforeDate(), 'Failed to create certificate.');
+        LibraryAssert.AreEqual(NotBefore, GetNotBeforeDateInLocalTimeZone(), 'Wrong certificate NotBefore DateTime.');
     end;
 
     [Test]
@@ -165,9 +165,9 @@ codeunit 132587 "X509Certificate2 Test"
         LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'Subject'), GetSubject(), 'Failed to create certificate.');
         LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'Thumbprint'), GetThumbprint(), 'Failed to create certificate.');
         LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'Issuer'), GetIssuer(), 'Failed to create certificate.');
-        LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'NotAfter'), GetJsonExpirationDate(), 'Failed to create certificate.');
-        LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'NotBefore'), GetJsonNotBeforeDate(), 'Failed to create certificate.');
-        LibraryAssert.AreEqual(ReturnJsonTokenBoolValue(CertPropertyJson, 'HasPrivateKey'), GetHasPrivateKey(), 'Failed to create certificate.');
+        LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'NotAfter'), Format(GetExpirationDateTimeInLocalTimeZone(), 0, 0), 'Wrong certificate Expriation DateTime.');
+        LibraryAssert.AreEqual(ReturnJsonTokenTextValue(CertPropertyJson, 'NotBefore'), Format(GetNotBeforeDateInLocalTimeZone(), 0, 0), 'Wrong certificate NotBefore DateTime.');
+        LibraryAssert.AreEqual(CheckJsonTokenHasPrivateKey(CertPropertyJson, 'HasPrivateKey'), GetHasPrivateKey(), 'Wrong PrivateKey field in json certificate.');
     end;
 
     [Test]
@@ -197,14 +197,14 @@ codeunit 132587 "X509Certificate2 Test"
         exit(JToken.AsValue().AsText());
     end;
 
-    local procedure ReturnJsonTokenBoolValue(CertPropertyJson: Text; PropertyName: Text): Boolean
+    local procedure CheckJsonTokenHasPrivateKey(CertPropertyJson: Text; PropertyName: Text): Boolean
     var
         JObject: JsonObject;
         JToken: JsonToken;
     begin
         JObject.ReadFrom(CertPropertyJson);
         JObject.Get(PropertyName, JToken);
-        exit(JToken.AsValue().AsBoolean());
+        exit(JToken.AsValue().AsText() = 'Yes');
     end;
 
     local procedure GetCertificateBase64(): Text
@@ -252,28 +252,26 @@ codeunit 132587 "X509Certificate2 Test"
         exit('CN=Root Agency');
     end;
 
-    local procedure GetExpirationDate(): DateTime
+    local procedure GetExpirationDateTimeInLocalTimeZone(): DateTime
     begin
-        exit(CreateDateTime(20291231D, 230000T));
+        exit(CreateDateTime(20291231D, 220000T) + OffsetToLocalTimeZone());
     end;
 
-    local procedure GetNotBeforeDate(): DateTime
+    local procedure GetNotBeforeDateInLocalTimeZone(): DateTime
     begin
-        exit(CreateDateTime(20191231D, 230000T));
+        exit(CreateDateTime(20191231D, 220000T) + OffsetToLocalTimeZone());
+    end;
+
+    local procedure OffsetToLocalTimeZone(): Duration
+    var
+        TimeZoneInfo: DotNet TimeZoneInfo;
+    begin
+        TimeZoneInfo := TimeZoneInfo.Local;
+        exit(TimeZoneInfo.BaseUtcOffset());
     end;
 
     local procedure GetHasPrivateKey(): Boolean
     begin
         exit(false);
-    end;
-
-    local procedure GetJsonExpirationDate(): Text
-    begin
-        exit('2029-12-31T22:00:00Z');
-    end;
-
-    local procedure GetJsonNotBeforeDate(): Text
-    begin
-        exit('2019-12-31T22:00:00Z');
     end;
 }

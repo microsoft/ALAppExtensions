@@ -11,7 +11,7 @@ codeunit 134686 "Email Accounts Test"
     var
         Assert: Codeunit "Library Assert";
         PermissionsMock: Codeunit "Permissions Mock";
-        AccountNameLbl: Label '%1 (%2)';
+        AccountNameLbl: Label '%1 (%2)', Locked = true;
         AccountToSelect: Guid;
 
     [Test]
@@ -139,7 +139,7 @@ codeunit 134686 "Email Accounts Test"
         // [GIVEN] A connector is installed and an account is added
         ConnectorMock.Initialize();
         ConnectorMock.AddAccount(TempAccount);
-        
+
         PermissionsMock.Set('Email Edit');
 
         // [WHEN] The Send Email action is invoked

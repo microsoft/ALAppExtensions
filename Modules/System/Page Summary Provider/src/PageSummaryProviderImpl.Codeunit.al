@@ -227,7 +227,7 @@ codeunit 2717 "Page Summary Provider Impl."
     var
         TenantMediaThumbnails: Record "Tenant Media Thumbnails";
         Base64Convert: Codeunit "Base64 Convert";
-        InStr: InStream;
+        Data: InStream;
     begin
         FieldType := 'Media';
         // Filter on large image thumbnail
@@ -242,8 +242,8 @@ codeunit 2717 "Page Summary Provider Impl."
         end;
 
         TenantMediaThumbnails.CalcFields(Content);
-        TenantMediaThumbnails.Content.CreateInStream(InStr);
-        FieldValue := Base64Convert.ToBase64(InStr);
+        TenantMediaThumbnails.Content.CreateInStream(Data);
+        FieldValue := Base64Convert.ToBase64(Data);
         MimeType := TenantMediaThumbnails."Mime Type";
     end;
 

@@ -103,7 +103,9 @@ page 20049 "APIV1 - JournalLines"
                 field(dimensions; DimensionsJSON)
                 {
                     Caption = 'Dimensions', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'Collection(DIMENSION)';
+#pragma warning restore
                     ToolTip = 'Specifies Journal Line Dimensions.';
 
                     trigger OnValidate()

@@ -1743,7 +1743,7 @@ codeunit 18131 "GST On Purchase Tests"
     end;
 
     [ModalPageHandler]
-    procedure NoSeriesHandler(var NoSeriesList: TestPage "No. Series List")
+    procedure NoSeriesHandler(var NoSeriesList: TestPage "No. Series")
     begin
         NoSeriesList.Cancel().Invoke();
     end;

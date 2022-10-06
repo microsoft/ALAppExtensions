@@ -8,7 +8,6 @@ codeunit 132909 "Azure AD User Management Test"
     Permissions = TableData "User Property" = rimd,
                   TableData "User" = r;
     Subtype = Test;
-    EventSubscriberInstance = Manual;
 
     trigger OnRun()
     begin
@@ -18,11 +17,11 @@ codeunit 132909 "Azure AD User Management Test"
     var
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         PermissionsMock: Codeunit "Permissions Mock";
-        AzureADUserManagementImpl: Codeunit "Azure AD User Mgmt. Impl.";
-        AzureADGraphUser: Codeunit "Azure AD Graph User";
         LibraryAssert: Codeunit "Library Assert";
-        MockGraphQuery: DotNet MockGraphQuery;
-        DeviceGroupNameTxt: Label 'Dynamics 365 Business Central Device Users', Locked = true;
+        AzureADGraphTestLibrary: Codeunit "Azure AD Graph Test Library";
+        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
+        AzureADUserMgtTestLibrary: Codeunit "Azure AD User Mgt Test Library";
+        MockGraphQueryTestLibrary: Codeunit "MockGraphQuery Test Library";
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -30,14 +29,13 @@ codeunit 132909 "Azure AD User Management Test"
     procedure TestCodeunitRunNoSaaS()
     var
         User: Record User;
-        AzureADUserManagementTest: Codeunit "Azure AD User Management Test";
-        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
+        AzureADUserMgmtImpl: Codeunit "Azure AD User Mgmt. Impl.";
         AzureADPlan: Codeunit "Azure AD Plan";
         UserSecurityId: Guid;
     begin
         // [SCENARIO] Codeunit AzureADUserManagement exits immediately if not running in SaaS
 
-        Initialize(AzureADUserManagementTest);
+        Initialize();
         AzureADPlanTestLibrary.DeleteAllUserPlan();
 
         // [GIVEN] Not running in SaaS
@@ -45,7 +43,7 @@ codeunit 132909 "Azure AD User Management Test"
 
         // [GIVEN] The Azure AD Graph contains a user with the AccountEnabled flag set to true
         UserSecurityId := CreateGuid();
-        AzureADUserManagementTest.AddGraphUser(UserSecurityId);
+        AddGraphUser(UserSecurityId);
         AzureADPlanTestLibrary.AssignUserToPlan(UserSecurityId, CreateGuid());
 
         // [GIVEN] The user record's state is disabled
@@ -55,7 +53,7 @@ codeunit 132909 "Azure AD User Management Test"
         PermissionsMock.Set('AAD User Mgt Exec');
 
         // [WHEN] Running Azure AD User Management
-        AzureADUserManagementImpl.Run(UserSecurityId);
+        AzureADUserMgmtImpl.Run(UserSecurityId);
 
         // [THEN] no error is thrown, the codeunit silently exits
 
@@ -67,7 +65,7 @@ codeunit 132909 "Azure AD User Management Test"
         LibraryAssert.AreNotEqual(false, AzureADPlan.DoesUserHavePlans(UserSecurityId),
             'The User Plan table should not be empty for this user');
 
-        UnbindSubscription(AzureADUserManagementTest);
+        TearDown();
     end;
 
     [Test]
@@ -77,9 +75,7 @@ codeunit 132909 "Azure AD User Management Test"
     var
         User: Record User;
         UserProperty: Record "User Property";
-        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
         AzureADPlan: Codeunit "Azure AD Plan";
-        AzureADUserManagementTest: Codeunit "Azure AD User Management Test";
         UserLoginTestLibrary: Codeunit "User Login Test Library";
         UserId: Guid;
         PlanId: Guid;
@@ -87,7 +83,7 @@ codeunit 132909 "Azure AD User Management Test"
         // [SCENARIO] Codeunit AzureADUserManagement exits immediately if the User 
         // Property for the user does not exist 
 
-        Initialize(AzureADUserManagementTest);
+        Initialize();
         AzureADPlanTestLibrary.DeleteAllUserPlan();
 
         // [GIVEN] Running in SaaS
@@ -99,7 +95,7 @@ codeunit 132909 "Azure AD User Management Test"
 
         // [GIVEN] The Azure AD Graph contains a user 
         UserId := CreateGuid();
-        AzureADUserManagementTest.AddGraphUser(UserId);
+        AddGraphUser(UserId);
 
         // [GIVEN] There is a User Plan entry corresponding to the user, 
         // but the plan is not assigned to the user in the Azure AD Graph     
@@ -116,7 +112,7 @@ codeunit 132909 "Azure AD User Management Test"
         PermissionsMock.Set('AAD User Mgt Exec');
 
         // [WHEN] Running Azure AD User Management on the user
-        AzureADUserManagementTest.RunAzureADUserManagement(UserId);
+        AzureADUserMgtTestLibrary.Run(UserId);
 
         // [THEN] The user record is not updated
         User.Get(UserId);
@@ -127,7 +123,7 @@ codeunit 132909 "Azure AD User Management Test"
         LibraryAssert.AreEqual(true, AzureADPlan.IsPlanAssignedToUser(PlanId, UserId),
             'The User Plan table should contain the unassigned user plan');
 
-        UnbindSubscription(AzureADUserManagementTest);
+        TearDown();
     end;
 
     [Test]
@@ -136,10 +132,8 @@ codeunit 132909 "Azure AD User Management Test"
     procedure TestCodeunitRunUserNotFirstLogin()
     var
         UserProperty: Record "User Property";
-        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
         AzureADPlan: Codeunit "Azure AD Plan";
         UserLoginTestLibrary: Codeunit "User Login Test Library";
-        AzureADUserManagementTest: Codeunit "Azure AD User Management Test";
         PlanId: Guid;
     begin
         // [SCENARIO] Codeunit AzureADUserManagement exits immediately if the user has logged in before
@@ -148,14 +142,14 @@ codeunit 132909 "Azure AD User Management Test"
 
         // [GIVEN] Running in SaaS
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
-        Initialize(AzureADUserManagementTest);
+        Initialize();
 
         // [GIVEN] The User Property and User Plan tables are empty      
         UserProperty.DeleteAll();
         AzureADPlanTestLibrary.DeleteAllUserPlan();
 
         // [GIVEN] The Azure AD Graph contains a user 
-        AzureADUserManagementTest.AddGraphUser(UserSecurityId());
+        AddGraphUser(UserSecurityId());
 
         // [GIVEN] There is a User Plan entry corresponding to the user, 
         // but the plan is not assigned to the user in the Azure AD Graph        
@@ -175,13 +169,13 @@ codeunit 132909 "Azure AD User Management Test"
         PermissionsMock.Set('AAD User Mgt Exec');
 
         // [WHEN] Running Azure AD User Management on the user
-        AzureADUserManagementTest.RunAzureADUserManagement(UserSecurityId());
+        AzureADUserMgtTestLibrary.Run(UserSecurityId());
 
         // [THEN] The User Plan that exists in the database, but not in the Azure AD Graph is not deleted
         LibraryAssert.AreEqual(true, AzureADPlan.IsPlanAssignedToUser(PlanId, UserSecurityId()),
             'The User Plan table should contain the unassigned user plan');
 
-        UnbindSubscription(AzureADUserManagementTest);
+        TearDown();
     end;
 
     [Test]
@@ -191,9 +185,7 @@ codeunit 132909 "Azure AD User Management Test"
     var
         User: Record User;
         UserProperty: Record "User Property";
-        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
         AzureADPlan: Codeunit "Azure AD Plan";
-        AzureADUserManagementTest: Codeunit "Azure AD User Management Test";
         UserLoginTestLibrary: Codeunit "User Login Test Library";
         UserId: Guid;
         PlanId: Guid;
@@ -202,7 +194,7 @@ codeunit 132909 "Azure AD User Management Test"
 
         // [GIVEN] Running in SaaS
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
-        Initialize(AzureADUserManagementTest);
+        Initialize();
 
         // [GIVEN] The User Property and User Plan tables are empty      
         UserProperty.DeleteAll();
@@ -210,7 +202,7 @@ codeunit 132909 "Azure AD User Management Test"
 
         // [GIVEN] The Azure AD Graph contains a user 
         UserId := CreateGuid();
-        AzureADUserManagementTest.AddGraphUser(UserId);
+        AddGraphUser(UserId);
 
         // [GIVEN] There is a User Plan entry corresponding to the user, 
         // but the plan is not assigned to the user in the Azure AD Graph     
@@ -233,7 +225,7 @@ codeunit 132909 "Azure AD User Management Test"
         PermissionsMock.Set('AAD User Mgt Exec');
 
         // [WHEN] Running Azure AD User Management on the user
-        AzureADUserManagementTest.RunAzureADUserManagement(UserId);
+        AzureADUserMgtTestLibrary.Run(UserId);
 
         // [THEN] The user record is not updated
         User.Get(UserId);
@@ -244,7 +236,7 @@ codeunit 132909 "Azure AD User Management Test"
         LibraryAssert.AreEqual(true, AzureADPlan.IsPlanAssignedToUser(PlanId, UserId),
             'The User Plan table should contain the unassigned user plan');
 
-        UnbindSubscription(AzureADUserManagementTest);
+        TearDown();
     end;
 
     [Test]
@@ -254,15 +246,13 @@ codeunit 132909 "Azure AD User Management Test"
     var
         User: Record User;
         UserProperty: Record "User Property";
-        AzureADUserManagementTest: Codeunit "Azure AD User Management Test";
-        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
         UserLoginTestLibrary: Codeunit "User Login Test Library";
         UserId: Guid;
         AssignedUserPlanId: Guid;
         UnassignedUserPlanRecordId: Guid;
         UnassignedUserPlanId: Guid;
     begin
-        Initialize(AzureADUserManagementTest);
+        Initialize();
 
         AssignedUserPlanId := CreateGuid();
         UnassignedUserPlanRecordId := CreateGuid();
@@ -277,18 +267,18 @@ codeunit 132909 "Azure AD User Management Test"
 
         // [GIVEN] The Azure AD Graph contains a user 
         UserId := CreateGuid();
-        AzureADUserManagementTest.AddGraphUser(UserId);
+        AddGraphUser(UserId);
 
         // [GIVEN] There is a User Plan entry corresponding to the user, 
         // but the plan is not assigned to the user in the Azure AD Graph        
         AzureADPlanTestLibrary.AssignUserToPlan(UserId, UnassignedUserPlanRecordId);
 
         // [GIVEN] Both the Azure AD Graph and the database contain a User Plan for the user
-        AzureADUserManagementTest.AddGraphUserPlan(UserId, AssignedUserPlanId, '', 'Enabled');
+        MockGraphQueryTestLibrary.AddUserPlan(UserId, AssignedUserPlanId, '', 'Enabled');
         AzureADPlanTestLibrary.AssignUserToPlan(UserId, AssignedUserPlanId);
 
         // [GIVEN] The Azure AD Graph contains a User Plan that the database does not
-        AzureADUserManagementTest.AddGraphUserPlan(UserId, UnassignedUserPlanId, '', 'Enabled');
+        MockGraphQueryTestLibrary.AddUserPlan(UserId, UnassignedUserPlanId, '', 'Enabled');
 
         // [GIVEN] The user record's state is disabled
         DisableUserAccount(UserId);
@@ -306,14 +296,14 @@ codeunit 132909 "Azure AD User Management Test"
         PermissionsMock.Set('AAD User Mgt Exec');
 
         // [WHEN] Running Azure AD User Management on the user
-        AzureADUserManagementTest.RunAzureADUserManagement(UserId);
+        AzureADUserMgtTestLibrary.Run(UserId);
 
         // [THEN] The user record is not updated
         User.Get(UserId);
         LibraryAssert.AreEqual(User.State::Disabled, User.State,
             'The User record should not have not been updated');
 
-        UnbindSubscription(AzureADUserManagementTest);
+        TearDown();
     end;
 
     [Test]
@@ -322,14 +312,12 @@ codeunit 132909 "Azure AD User Management Test"
     var
         User: Record User;
         UserProperty: Record "User Property";
-        AzureADUserManagementTest: Codeunit "Azure AD User Management Test";
-        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
         AzureADPlan: Codeunit "Azure AD Plan";
         UserLoginTestLibrary: Codeunit "User Login Test Library";
         UserId: Guid;
         AssignedUserPlanId: Guid;
     begin
-        Initialize(AzureADUserManagementTest);
+        Initialize();
 
         AssignedUserPlanId := CreateGuid();
 
@@ -342,10 +330,10 @@ codeunit 132909 "Azure AD User Management Test"
 
         // [GIVEN] The Azure AD Graph contains a user 
         UserId := CreateGuid();
-        AzureADUserManagementTest.AddGraphUser(UserId);
+        AddGraphUser(UserId);
 
         // [GIVEN] The Azure AD Graph contains a User Plan that the database does not
-        AzureADUserManagementTest.AddGraphUserPlan(UserId, AssignedUserPlanId, '', 'Enabled');
+        MockGraphQueryTestLibrary.AddUserPlan(UserId, AssignedUserPlanId, '', 'Enabled');
 
         // [GIVEN] The user record's state is disabled
         DisableUserAccount(UserId);
@@ -360,7 +348,7 @@ codeunit 132909 "Azure AD User Management Test"
         UserLoginTestLibrary.DeleteAllLoginInformation(UserId);
 
         // [WHEN] Running Azure AD User Management on the user
-        AzureADUserManagementTest.RunAzureADUserManagement(UserId);
+        AzureADUserMgtTestLibrary.Run(UserId);
 
         // [THEN] The user record is updated
         User.Get(UserId);
@@ -371,149 +359,36 @@ codeunit 132909 "Azure AD User Management Test"
         LibraryAssert.AreEqual(true, AzureADPlan.IsPlanAssigned(AssignedUserPlanId),
             'There should be an entry corresponding to the unassigned plan in the User Plan table');
 
-        UnbindSubscription(AzureADUserManagementTest);
+        TearDown();
     end;
 
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestOfficeSyncWizard()
+    local procedure Initialize()
+    begin
+        Clear(AzureADGraphTestLibrary);
+        Clear(AzureADPlanTestLibrary);
+        Clear(AzureADUserMgtTestLibrary);
+        Clear(MockGraphQueryTestLibrary);
+
+        BindSubscription(AzureADGraphTestLibrary);
+        BindSubscription(AzureADPlanTestLibrary);
+        BindSubscription(AzureADUserMgtTestLibrary);
+
+        MockGraphQueryTestLibrary.SetupMockGraphQuery();
+        AzureADGraphTestLibrary.SetMockGraphQuery(MockGraphQueryTestLibrary);
+    end;
+
+    local procedure TearDown()
+    begin
+        UnbindSubscription(AzureADGraphTestLibrary);
+        UnbindSubscription(AzureADPlanTestLibrary);
+        UnbindSubscription(AzureADUserMgtTestLibrary);
+    end;
+
+    local procedure AddGraphUser(UserId: Text)
     var
-        User: Record User;
-        TempAzureADUserUpdate: Record "Azure AD User Update Buffer" temporary;
-        AzureADPlan: Codeunit "Azure AD Plan";
-        AzureADUserManagementTest: Codeunit "Azure AD User Management Test";
-        AzureADUserMgmtImpl: Codeunit "Azure AD User Mgmt. Impl.";
-        PlanIds: Codeunit "Plan Ids";
-        GraphUserNonBC: DotNet UserInfo;
-        GraphUserDevice: DotNet UserInfo;
-        GraphUserEssential: DotNet UserInfo;
+        NullGuid: Guid;
     begin
-        Initialize(AzureADUserManagementTest);
-        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
-        AzureADUserMgmtImpl.SetTestInProgress(true);
-
-        // create office users
-        AzureADUserManagementTest.AddGraphUser(GraphUserDevice);
-        SetValuesOnGraphUser(GraphUserDevice, 'device@microsoft.com', 'emailDevice@microsoft.com', 'Device', 'Guy');
-        AzureADUserManagementTest.AssignDeviceGroup(GraphUserDevice);
-
-        AzureADUserManagementTest.AddGraphUser(GraphUserEssential);
-        SetValuesOnGraphUser(GraphUserEssential, 'essential@microsoft.com', 'emailEssential@microsoft.com', 'Essential', 'Guy');
-        AzureADUserManagementTest.AssignPlan(GraphUserEssential, PlanIds.GetEssentialPlanId(), 'service', 'status');
-
-        AzureADUserManagementTest.AddGraphUser(GraphUserNonBC);
-        SetValuesOnGraphUser(GraphUserNonBC, 'office@microsoft.com', 'emailNonBC@microsoft.com', 'No', 'BC');
-
-        // run the wizard to sync them
-        AzureADUserMgmtImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdate);
-        AzureADUserMgmtImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdate);
-
-        // verify users
-        User.SetRange("User Name", 'device');
-        LibraryAssert.IsTrue(User.FindFirst(), 'User not created');
-        LibraryAssert.AreEqual(GraphUserDevice.UserPrincipalName(), User."Authentication Email", 'mismatch');
-        LibraryAssert.AreEqual(GraphUserDevice.Mail(), User."Contact Email", 'mismatch');
-        LibraryAssert.AreEqual('Device Guy', User."Full Name", 'mismatch');
-
-        User.SetRange("User Name", 'essential');
-        LibraryAssert.IsTrue(User.FindFirst(), 'User not created');
-        LibraryAssert.AreEqual(GraphUserEssential.UserPrincipalName(), User."Authentication Email", 'mismatch');
-        LibraryAssert.AreEqual(GraphUserEssential.Mail(), User."Contact Email", 'mismatch');
-        LibraryAssert.AreEqual('Essential Guy', User."Full Name", 'mismatch');
-        LibraryAssert.IsTrue(AzureADPlan.DoesUserHavePlans(User."User Security ID"), 'User plan not created');
-        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetEssentialPlanId(), User."User Security ID"), 'wrong plan assigned');
-
-        User.SetRange("User Name", 'office');
-        LibraryAssert.IsTrue(User.IsEmpty(), 'User got created');
-
-        UnbindSubscription(AzureADUserManagementTest);
-        // create new users + modify some of the old ones + remove some old ones
-
-        // run the wizard to sync and verify changes
-    end;
-
-
-    local procedure Initialize(AzureADUserManagementTest: Codeunit "Azure AD User Management Test")
-    begin
-        Clear(AzureADUserManagementImpl);
-        AzureADUserManagementTest.SetupMockGraphQuery();
-        BindSubscription(AzureADUserManagementTest);
-    end;
-
-    procedure SetupMockGraphQuery()
-    begin
-        MockGraphQuery := MockGraphQuery.MockGraphQuery();
-    end;
-
-    procedure AddGraphUser(UserId: Text)
-    var
-        GraphUserInfo: DotNet UserInfo;
-    begin
-        CreateGraphUser(GraphUserInfo, UserId);
-        MockGraphQuery.AddUser(GraphUserInfo);
-    end;
-
-    procedure AddGraphUser(var GraphUserInfo: DotNet UserInfo)
-    begin
-        CreateGraphUser(GraphUserInfo, CreateGuid());
-        MockGraphQuery.AddUser(GraphUserInfo);
-    end;
-
-    local procedure CreateGraphUser(var GraphUserInfo: DotNet UserInfo; UserId: Text)
-    begin
-        GraphUserInfo := GraphUserInfo.UserInfo();
-        GraphUserInfo.ObjectId := UserId;
-        GraphUserInfo.UserPrincipalName := 'email@microsoft.com';
-        GraphUserInfo.Mail := 'email@microsoft.com';
-        GraphUserInfo.AccountEnabled := true;
-    end;
-
-    procedure AssignPlan(var GraphUserInfo: DotNet UserInfo; AssignedPlanId: Guid; AssignedPlanService: Text; CapabilityStatus: Text)
-    var
-        AssignedServicePlanInfo: DotNet ServicePlanInfo;
-        GuidVariant: Variant;
-    begin
-        AssignedServicePlanInfo := AssignedServicePlanInfo.ServicePlanInfo();
-        GuidVariant := AssignedPlanId;
-        AssignedServicePlanInfo.ServicePlanId := GuidVariant;
-        AssignedServicePlanInfo.ServicePlanName := AssignedPlanService;
-        AssignedServicePlanInfo.CapabilityStatus := CapabilityStatus;
-
-        MockGraphQuery.AddAssignedPlanToUser(GraphUserInfo, AssignedServicePlanInfo);
-    end;
-
-    procedure AssignDeviceGroup(var GraphUserInfo: DotNet UserInfo)
-    var
-        AssignedGroup: DotNet GroupInfo;
-    begin
-        AssignedGroup := AssignedGroup.GroupInfo();
-        AssignedGroup.DisplayName := DeviceGroupNameTxt;
-
-        MockGraphQuery.AddUserGroup(GraphUserInfo, AssignedGroup);
-    end;
-
-    local procedure SetValuesOnGraphUser(var GraphUserInfo: DotNet UserInfo; PrincipalName: Text; ContactMail: Text; FirstName: Text; Surname: Text)
-    begin
-        GraphUserInfo.UserPrincipalName := PrincipalName;
-        GraphUserInfo.Mail := ContactMail;
-        GraphUserInfo.GivenName := FirstName;
-        GraphUserInfo.Surname := Surname;
-    end;
-
-    procedure AddGraphUserPlan(UserId: Text; AssignedPlanId: Guid; AssignedPlanService: Text; CapabilityStatus: Text)
-    var
-        GraphUserInfo: DotNet UserInfo;
-        AssignedServicePlanInfo: DotNet ServicePlanInfo;
-        GuidVariant: Variant;
-    begin
-        AssignedServicePlanInfo := AssignedServicePlanInfo.ServicePlanInfo();
-        GuidVariant := AssignedPlanId;
-        AssignedServicePlanInfo.ServicePlanId := GuidVariant;
-        AssignedServicePlanInfo.ServicePlanName := AssignedPlanService;
-        AssignedServicePlanInfo.CapabilityStatus := CapabilityStatus;
-
-        GraphUserInfo := MockGraphQuery.GetUserByObjectId(UserId);
-        MockGraphQuery.AddAssignedPlanToUser(GraphUserInfo, AssignedServicePlanInfo);
+        MockGraphQueryTestLibrary.AddGraphUser(UserId, 'John', 'Doe', 'email@microsoft.com', NullGuid, '', '');
     end;
 
     local procedure DisableUserAccount(UserSecurityId: Guid)
@@ -524,27 +399,6 @@ codeunit 132909 "Azure AD User Management Test"
         User."User Security ID" := UserSecurityId;
         User.State := User.State::Disabled;
         User.Insert();
-    end;
-
-    procedure RunAzureADUserManagement(UserId: Guid)
-    begin
-        AzureADUserManagementImpl.SetTestInProgress(true);
-        AzureADUserManagementImpl.Run(UserId);
-    end;
-
-    procedure GetGraphUserAssignedPlans(var AssignedPlans: DotNet IEnumerable; UserId: Guid)
-    var
-        GraphUserInfo: DotNet UserInfo;
-    begin
-        AzureADGraphUser.SetTestInProgress(true);
-        AzureADGraphUser.GetGraphUser(UserId, GraphUserInfo);
-        AssignedPlans := GraphUserInfo.AssignedPlans();
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Graph", 'OnInitialize', '', false, false)]
-    local procedure OnGraphInitialization(var GraphQuery: DotNet GraphQuery)
-    begin
-        GraphQuery := GraphQuery.GraphQuery(MockGraphQuery);
     end;
 }
 

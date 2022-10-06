@@ -158,6 +158,7 @@ codeunit 148040 "MS - ECSL Export Test"
         FileObj.CREATEOUTSTREAM(OutStrm);
         OutStrm.WRITETEXT(ReportTxt);
         FileObj.CreateInStream(InStrm);
+        LineNo := 0;
 
         while InStrm.ReadText(Linetxt) <> 0 do
             case SelectStr(1, Linetxt) of
@@ -225,12 +226,9 @@ codeunit 148040 "MS - ECSL Export Test"
     local procedure AssertSequenceInLines(lineTxt: Text; ReportNo: code[20]; LineNo: integer);
     var
         ECSLVATReportLine: Record "ECSL VAT Report Line";
-        VatRegNo: Code[20];
         CountryCode: Code[10];
         GoodsValInt: Integer;
     begin
-        VatRegNo := CopyStr(SelectStr(6, Linetxt), 1, MaxStrLen(VatRegNo));
-
         ECSLVATReportLine.SetCurrentKey("Customer VAT Reg. No.");
         ECSLVATReportLine.SetAscending("Customer VAT Reg. No.", true);
         ECSLVATReportLine.SetRange("Report No.", ReportNo);

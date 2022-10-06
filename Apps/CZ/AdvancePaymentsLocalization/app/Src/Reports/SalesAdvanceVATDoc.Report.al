@@ -5,6 +5,7 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
     Caption = 'Sales - Advance VAT Document';
     PreviewMode = PrintLayout;
     UsageCategory = None;
+    WordMergeDataItem = TempSalesAdvLetterEntry;
 
     dataset
     {
@@ -69,6 +70,7 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
         dataitem("Sales Adv. Letter Entry"; "Sales Adv. Letter Entry CZZ")
         {
             DataItemTableView = sorting("Entry No.");
+            RequestFilterFields = "Entry No.";
 
             trigger OnAfterGetRecord()
             begin
@@ -112,6 +114,18 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                 {
                 }
                 column(CreatorLbl; CreatorLbl)
+                {
+                }
+                column(GreetingLbl; GreetingLbl)
+                {
+                }
+                column(BodyLbl; BodyLbl)
+                {
+                }
+                column(ClosingLbl; ClosingLbl)
+                {
+                }
+                column(DocumentNoLbl; DocumentNoLbl)
                 {
                 }
                 column(VATIdentLbl; VATIdentLbl)
@@ -223,6 +237,12 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                 {
                 }
                 column(OriginalAdvanceVATDocumentNoLbl; OriginalAdvanceVATDocumentNoLbl)
+                {
+                }
+                column(AmountIncludingVATLbl; AmountIncludingVATLbl)
+                {
+                }
+                column(AmountIncludingVAT; AmountIncludingVAT)
                 {
                 }
                 dataitem(CopyLoop; "Integer")
@@ -351,6 +371,8 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                 }
 
                 trigger OnAfterGetRecord()
+                var
+                    SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ";
                 begin
                     CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
 
@@ -390,6 +412,10 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                         PaymentMethod.Init()
                     else
                         PaymentMethod.Get("Payment Method Code");
+
+                    SalesAdvLetterLineCZZ.SetRange("Document No.", "No.");
+                    SalesAdvLetterLineCZZ.CalcSums("Amount Including VAT");
+                    AmountIncludingVAT := SalesAdvLetterLineCZZ."Amount Including VAT";
                 end;
             }
 
@@ -444,6 +470,7 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
         CustAddr: array[8] of Text[100];
         DocFooterText: Text[1000];
         DocumentLabel: Text;
+        AmountIncludingVAT: Decimal;
         CalculatedExchRate: Decimal;
         NoOfCop: Integer;
         CopyNo: Integer;
@@ -466,6 +493,11 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
         VATLbl: Label 'VAT';
         AdvanceLetterLbl: Label 'VAT Document to Advance Letter';
         OriginalAdvanceVATDocumentNoLbl: Label 'Original Advance VAT Document No.';
+        GreetingLbl: Label 'Hello';
+        ClosingLbl: Label 'Sincerely';
+        BodyLbl: Label 'The sales advance VAT document is attached to this message.';
+        DocumentNoLbl: Label 'No.';
+        AmountIncludingVATLbl: Label 'Amount Including VAT';
 
     local procedure IsCreditMemo(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"): Boolean
     begin

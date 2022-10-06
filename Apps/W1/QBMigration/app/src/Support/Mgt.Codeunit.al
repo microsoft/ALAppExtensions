@@ -10,7 +10,7 @@ codeunit 1916 "MigrationQB Mgt"
 
     procedure ImportQBData(): Boolean
     var
-        MigrationQBConfig: Record "MigrationQB Config" temporary;
+        TempMigrationQBConfig: Record "MigrationQB Config" temporary;
         FileManagement: Codeunit "File Management";
         MigrationQBDataLoader: Codeunit "MigrationQB Data Loader";
         ServerFile: Text;
@@ -22,12 +22,12 @@ codeunit 1916 "MigrationQB Mgt"
             OnZipFileMissing();
             Error(SomethingWentWrongErr);
         end;
-        MigrationQBConfig.Init();
-        MigrationQBConfig."Zip File" := CopyStr(ServerFile, 1, 250);
-        MigrationQBConfig.Insert();
+        TempMigrationQBConfig.Init();
+        TempMigrationQBConfig."Zip File" := CopyStr(ServerFile, 1, 250);
+        TempMigrationQBConfig.Insert();
 
         // Trying to process ZIP file and clean up in case of an error.
-        if not Codeunit.Run(Codeunit::"MigrationQB Data Reader", MigrationQBConfig) then begin
+        if not Codeunit.Run(Codeunit::"MigrationQB Data Reader", TempMigrationQBConfig) then begin
             MigrationQBDataLoader.CleanupFiles();
             Error(GetLastErrorText());
         end;

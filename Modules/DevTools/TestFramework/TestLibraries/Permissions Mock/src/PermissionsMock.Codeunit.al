@@ -56,7 +56,9 @@ codeunit 131006 "Permissions Mock"
     /// <param name="RoleID">The Permission Set to set.</param>
     procedure Assign(RoleID: Code[20])
     var
+#pragma warning disable AL0432
         PermissionSet: Record "Permission Set";
+#pragma warning restore AL0432
     begin
         if not Started then
             exit;

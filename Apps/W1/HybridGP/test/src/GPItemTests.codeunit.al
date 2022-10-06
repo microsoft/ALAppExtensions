@@ -7,12 +7,10 @@ codeunit 139662 "GP Item Tests"
     TestPermissions = Disabled;
 
     var
-        GPIV00101: Record "GP IV00101";
-        GPIV40400: Record "GP IV40400";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         Assert: Codeunit Assert;
         ItemDataMigrationFacade: Codeunit "Item Data Migration Facade";
         GPItemMigrator: Codeunit "GP Item Migrator";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPTestHelperFunctions: Codeunit "GP Test Helper Functions";
 
     [Test]
@@ -21,7 +19,6 @@ codeunit 139662 "GP Item Tests"
     var
         GPItem: Record "GP Item";
         Item: Record "Item";
-        DataMigrationEntity: Record "Data Migration Entity";
         HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] Items are migrated from GP
@@ -110,7 +107,6 @@ codeunit 139662 "GP Item Tests"
     var
         GPItem: Record "GP Item";
         InventoryPostingGroup: Record "Inventory Posting Group";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] Items and their class information are queried from GP
         // [GIVEN] GP data
@@ -147,8 +143,6 @@ codeunit 139662 "GP Item Tests"
         GPIV40400: Record "GP IV40400";
         InventoryPostingGroup: Record "Inventory Posting Group";
         InventoryPostingSetup: Record "Inventory Posting Setup";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] Items and their class information are queried from GP
         // [GIVEN] GP data
@@ -164,10 +158,7 @@ codeunit 139662 "GP Item Tests"
 
         GPTestHelperFunctions.InitializeMigration();
 
-        GPIV00101.FindSet();
         Assert.RecordCount(GPIV00101, 3);
-
-        GPIV40400.FindSet();
         Assert.RecordCount(GPIV40400, 2);
 
         Assert.IsTrue(GPIV00101.Get('1 1/2\"SASH BRSH'), 'Could not locate item.');
@@ -181,10 +172,10 @@ codeunit 139662 "GP Item Tests"
 
         // [THEN] The Inventory Posting Groups will be migrated
         Item.SetFilter("No.", '%1|%2|%3', '1 1/2\"SASH BRSH', '12345ITEMNUMBER!@#$%', '4'' STEPLADDER');
-        Assert.IsTrue(Item.FindSet(), 'Could not find Items by code.');
+        Assert.IsFalse(Item.IsEmpty(), 'Could not find Items by code.');
 
         InventoryPostingGroup.SetFilter("Code", '%1|%2|%3', 'TEST-1', 'TEST-2', 'GP');
-        Assert.IsTrue(InventoryPostingGroup.FindSet(), 'Could not find Inventory Posting Groups by code.');
+        Assert.IsFalse(InventoryPostingGroup.IsEmpty(), 'Could not find Inventory Posting Groups by code.');
         Assert.RecordCount(InventoryPostingGroup, 3);
 
         // [THEN] Fields for the first Inventory Posting Setup will be correct

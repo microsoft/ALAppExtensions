@@ -15,14 +15,14 @@ codeunit 148104 "SAF-T Check Tests"
         SAFTTestHelper: Codeunit "SAF-T Test Helper";
         LibraryDimension: Codeunit "Library - Dimension";
         LibraryERM: Codeunit "Library - ERM";
-        LibraryRandom : Codeunit "Library - Random";
+        LibraryRandom: Codeunit "Library - Random";
         SAFTMappingType: Enum "SAF-T Mapping Type";
         IsInitialized: Boolean;
         MappingNotDoneErr: Label 'One or more G/L accounts do not have a mapping setup. Open the SAF-T Mapping Setup page for the selected mapping range and map each G/L account either to the  standard account or the grouping code.';
         DimensionWithoutAnalysisCodeErr: Label 'One or more dimensions do not have a SAF-T analysis code. Open the Dimensions page and specify a SAF-T analysis code for each dimension.';
-        VATPostingSetupWithoutTaxCodeErr: Label 'One or more VAT posting setup do not have a %1. Open the VAT Posting Setup page and specify %1 for each VAT posting setup combination.';
+        VATPostingSetupWithoutTaxCodeErr: Label 'One or more VAT posting setup do not have a %1. Open the VAT Posting Setup page and specify %1 for each VAT posting setup combination.', Comment = '%1 = Tax Code Field Caption';
         SourceCodeWithoutSAFTCodeErr: Label 'One or more source codes do not have a SAF-T source code. Open the Source Codes page and specify a SAF-T source code for each source code.';
-        FieldValueIsNotSpecifiedErr: Label '%1 is not specified';
+        FieldValueIsNotSpecifiedErr: Label '%1 is not specified', Comment = '%1 = Field Caption';
 
     [Test]
     [HandlerFunctions('ErrorLogPageHandler')]

@@ -20,6 +20,35 @@ codeunit 130456 "Test Suite Mgt."
         DialogUpdatingTestsMsg: Label 'Updating Tests: \#1#\#2#', Comment = '1 = Object being processed, 2 = Progress', Locked = true;
         ErrorMessageWithCallStackErr: Label 'Error Message: %1 - Error Call Stack: ', Locked = true;
 
+    procedure IsTestMethodLine(FunctionName: Text[128]): Boolean
+    begin
+        exit((FunctionName <> '') and (FunctionName <> 'OnRun'))
+    end;
+
+    procedure SetCCTrackingType(var ALTestSuite: Record "AL Test Suite"; NewCCTrackingType: Integer)
+    begin
+        ALTestSuite.Validate("CC Tracking Type", NewCCTrackingType);
+        ALTestSuite.Modify(true);
+    end;
+
+    procedure SetCCMap(var ALTestSuite: Record "AL Test Suite"; NewCCMap: Integer)
+    begin
+        ALTestSuite.Validate("CC Coverage Map", NewCCMap);
+        ALTestSuite.Modify(true);
+    end;
+
+    procedure SetCCTrackAllSessions(var ALTestSuite: Record "AL Test Suite"; NewCCTrackAllSessions: Boolean)
+    begin
+        ALTestSuite.Validate("CC Track All Sessions", NewCCTrackAllSessions);
+        ALTestSuite.Modify(true);
+    end;
+
+    procedure SetCodeCoverageExporterID(var ALTestSuite: Record "AL Test Suite"; NewCodeCoverageExporterID: Integer)
+    begin
+        ALTestSuite.Validate("CC Exporter ID", NewCodeCoverageExporterID);
+        ALTestSuite.Modify(true);
+    end;
+
     procedure RunTestSuiteSelection(var TestMethodLine: Record "Test Method Line")
     var
         ALTestSuite: Record "AL Test Suite";
@@ -63,6 +92,7 @@ codeunit 130456 "Test Suite Mgt."
         ALTestSuite: Record "AL Test Suite";
     begin
         ALTestSuite.Get(TestMethodLine."Test Suite");
+
         TestMethodLine.Reset();
         TestMethodLine.SetRange("Test Suite", ALTestSuite.Name);
         TestMethodLine.SetRange(Result, TestMethodLine.Result::" ");
@@ -74,8 +104,38 @@ codeunit 130456 "Test Suite Mgt."
 
         TestMethodLine.SetRange("Test Codeunit", TestMethodLine."Test Codeunit");
 
-        RunSelectedTests(TestMethodLine);
+        if ALTestSuite."Stability Run" then
+            RunNextTestStabilityRun(TestMethodLine)
+        else
+            RunSelectedTests(TestMethodLine);
+
+        TestMethodLine.SetRange(Result);
         exit(true);
+    end;
+
+    procedure RunNextTestStabilityRun(var TestMethodLine: Record "Test Method Line")
+    var
+        NextTestMethodLine: Record "Test Method Line";
+        CurrentTestMethodLine: Record "Test Method Line";
+    begin
+        SetFiltersToTestMethods(TestMethodLine, NextTestMethodLine);
+        if NextTestMethodLine.FindSet() then
+            repeat
+                if NextTestMethodLine.Run then begin
+                    CurrentTestMethodLine.Copy(NextTestMethodLine);
+                    CurrentTestMethodLine.SetRange("Line No.", NextTestMethodLine."Line No.");
+                    RunSelectedTests(CurrentTestMethodLine);
+                end;
+            until NextTestMethodLine.Next() = 0;
+
+        TestMethodLine.Get(TestMethodLine.RecordId);
+    end;
+
+    local procedure SetFiltersToTestMethods(var CodeunitTestMethodLine: Record "Test Method Line"; var FunctionTestMethodLine: Record "Test Method Line")
+    begin
+        FunctionTestMethodLine.SetRange("Test Suite", CodeunitTestMethodLine."Test Suite");
+        FunctionTestMethodLine.SetRange("Line Type", CodeunitTestMethodLine."Line Type"::Function);
+        FunctionTestMethodLine.SetRange("Test Codeunit", CodeunitTestMethodLine."Test Codeunit");
     end;
 
     procedure TestResultsToJSON(var TestMethodLine: Record "Test Method Line"): Text
@@ -206,6 +266,18 @@ codeunit 130456 "Test Suite Mgt."
         GetTestMethods(ALTestSuite, AllObjWithCaption);
     end;
 
+    procedure SelectTestProceduresByName(ALTestSuite: Code[10]; TestProcedureRangeFilter: Text)
+    var
+        TestMethodLine: Record "Test Method Line";
+    begin
+        TestMethodLine.SetRange("Test Suite", ALTestSuite);
+        TestMethodLine.SetRange("Line Type", TestMethodLine."Line Type"::Function);
+        TestMethodLine.ModifyAll(Run, false);
+
+        TestMethodLine.SetFilter(Name, TestProcedureRangeFilter);
+        TestMethodLine.ModifyAll(Run, true);
+    end;
+
     procedure SelectTestMethodsByExtension(var ALTestSuite: Record "AL Test Suite"; ExtensionID: Text)
     var
         AllObjWithCaption: Record AllObjWithCaption;
@@ -238,6 +310,12 @@ codeunit 130456 "Test Suite Mgt."
         ALTestSuite.Modify(true);
     end;
 
+    procedure ChangeStabilityRun(var ALTestSuite: Record "AL Test Suite"; NewStabiltyRun: Boolean)
+    begin
+        ALTestSuite.Validate("Stability Run", NewStabiltyRun);
+        ALTestSuite.Modify(true);
+    end;
+
     procedure CreateTestSuite(var TestSuiteName: Code[10])
     var
         ALTestSuite: Record "AL Test Suite";
@@ -261,6 +339,26 @@ codeunit 130456 "Test Suite Mgt."
             TestLineNo := GetLastTestLineNo(ALTestSuite) + 10000;
             AddTestMethod(AllObjWithCaption, ALTestSuite, TestLineNo);
         until AllObjWithCaption.Next() = 0;
+    end;
+
+    procedure UpdateCodeCoverageTrackingType(var NewALTestSuite: Record "AL Test Suite")
+    var
+        ALTestSuite: Record "AL Test Suite";
+    begin
+        ALTestSuite.Get(NewALTestSuite.RecordId);
+        ALTestSuite.Validate("CC Tracking Type", NewALTestSuite."CC Tracking Type");
+        ALTestSuite.Modify();
+        NewALTestSuite.Copy(ALTestSuite);
+    end;
+
+    procedure UpdateCodeCoverageTrackAllSesssions(var NewALTestSuite: Record "AL Test Suite")
+    var
+        ALTestSuite: Record "AL Test Suite";
+    begin
+        ALTestSuite.Get(NewALTestSuite.RecordId);
+        ALTestSuite.Validate("CC Track All Sessions", NewALTestSuite."CC Track All Sessions");
+        ALTestSuite.Modify();
+        NewALTestSuite.Copy(ALTestSuite);
     end;
 
     procedure UpdateTestMethods(var TestMethodLine: record "Test Method Line")

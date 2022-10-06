@@ -13,7 +13,7 @@ pageextension 11743 "Posted Return Shipment CZL" extends "Posted Return Shipment
             {
                 ApplicationArea = Basic, Suite;
                 Editable = false;
-                ToolTip = 'Specifies a description of the purchase receipt. The posting description also appers on vendor and G/L entries.';
+                ToolTip = 'Specifies a description of the document. The posting description also appers on vendor and G/L entries.';
                 Visible = false;
             }
         }

@@ -213,15 +213,4 @@ codeunit 9024 "Azure AD Graph User"
     begin
         AzureADGraphUserImpl.EnsureAuthenticationEmailIsNotInUse(AuthenticationEmail);
     end;
-
-    /// <summary>
-    /// Sets a flag that is used to determine whether a test is in progress or not.
-    /// </summary>
-    /// <param name="TestInProgress">The value to be set to the flag.</param>
-    [Scope('OnPrem')]
-    [NonDebuggable]
-    procedure SetTestInProgress(TestInProgress: Boolean)
-    begin
-        AzureADGraphUserImpl.SetTestInProgress(TestInProgress);
-    end;
 }

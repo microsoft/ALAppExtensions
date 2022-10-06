@@ -6,7 +6,8 @@ codeunit 31251 "Upgrade Application CZA"
                   tabledata "Inventory Setup" = m,
                   tabledata "Manufacturing Setup" = m,
                   tabledata "Transfer Shipment Line" = m,
-                  tabledata "Item Entry Relation" = m;
+                  tabledata "Item Entry Relation" = m,
+                  tabledata "Standard Item Journal Line" = m;
 
     var
         DataUpgradeMgt: Codeunit "Data Upgrade Mgt.";
@@ -59,6 +60,7 @@ codeunit 31251 "Upgrade Application CZA"
         UpgradeManufacturingSetup();
         UpgradeTransferShipmentLine();
         UpgradeItemEntryRelation();
+        UpgradeStandardItemJournalLine();
     end;
 
     local procedure UpgradeDetailedGLEntry()
@@ -198,6 +200,21 @@ codeunit 31251 "Upgrade Application CZA"
                 ItemEntryRelation."Undo CZA" := ItemEntryRelation.Undo;
                 ItemEntryRelation.Modify(false);
             until ItemEntryRelation.Next() = 0;
+    end;
+
+    local procedure UpgradeStandardItemJournalLine();
+    var
+        StandardItemJournalLine: Record "Standard Item Journal Line";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion210PerCompanyUpgradeTag()) then
+            exit;
+
+        StandardItemJournalLine.SetLoadFields("New Location Code");
+        if StandardItemJournalLine.FindSet(true) then
+            repeat
+                StandardItemJournalLine."New Location Code CZA" := StandardItemJournalLine."New Location Code";
+                StandardItemJournalLine.Modify(false);
+            until StandardItemJournalLine.Next() = 0;
     end;
 
     local procedure SetDatabaseUpgradeTags();

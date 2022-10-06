@@ -1,6 +1,6 @@
 table 4056 "GPPOPLandedCostHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

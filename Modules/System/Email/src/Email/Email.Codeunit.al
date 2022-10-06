@@ -530,6 +530,25 @@ codeunit 8901 "Email"
     begin
     end;
 
+    /// <summary>
+    /// Integration event that allows updating of the email message before the email editor opens.
+    /// </summary>
+    /// <param name="EmailMessage">Email message codeunit which is linked to the current email.</param>
+    /// <param name="IsNewEmail">True if this is a newly created email.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnBeforeOpenEmailEditor(var EmailMessage: Codeunit "Email Message"; IsNewEmail: Boolean)
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event that allows updating of the email message before the email is queued for sending.
+    /// </summary>
+    /// <param name="EmailMessage">Email message codeunit which is linked to the current email.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnBeforeSendEmail(var EmailMessage: Codeunit "Email Message")
+    begin
+    end;
+
     #endregion
 
     var

@@ -343,6 +343,7 @@ codeunit 20341 "Tax Document GL Posting"
                     TaxGenJnlLine.Validate("Currency Factor", TransactionPostingBuffer."Currency Factor");
                     UpdateSourceOnGenJnlLine(TaxGenJnlLine, GenJournalLine);
                     TaxGenJnlLine."Dimension Set ID" := TransactionPostingBuffer."Dimension Set ID";
+                    TaxGenJnlLine."Document Date" := GenJournalLine."Document Date";
 
                     DimensionManagement.UpdateGlobalDimFromDimSetID(
                         TaxGenJnlLine."Dimension Set ID",

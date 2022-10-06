@@ -20,9 +20,8 @@ table 40105 "GP Company Additional Settings"
             var
                 GPCompanyMigrationSettings: Record "GP Company Migration Settings";
             begin
-                if Rec."Migrate Inactive Customers" then begin
+                if Rec."Migrate Inactive Customers" then
                     Rec.Validate("Migrate Receivables Module", true);
-                end;
 
                 if (not GPCompanyMigrationSettings.Get(Name)) then begin
                     GPCompanyMigrationSettings.Name := Name;
@@ -42,9 +41,8 @@ table 40105 "GP Company Additional Settings"
             var
                 GPCompanyMigrationSettings: Record "GP Company Migration Settings";
             begin
-                if Rec."Migrate Inactive Vendors" then begin
+                if Rec."Migrate Inactive Vendors" then
                     Rec.Validate("Migrate Payables Module", true);
-                end;
 
                 if (not GPCompanyMigrationSettings.Get(Name)) then begin
                     GPCompanyMigrationSettings.Name := Name;
@@ -62,9 +60,8 @@ table 40105 "GP Company Additional Settings"
 
             trigger OnValidate()
             begin
-                if Rec."Migrate Inactive Checkbooks" then begin
+                if Rec."Migrate Inactive Checkbooks" then
                     Rec.Validate("Migrate Bank Module", true);
-                end;
             end;
         }
         field(11; "Migrate Vendor Classes"; Boolean)
@@ -74,9 +71,8 @@ table 40105 "GP Company Additional Settings"
 
             trigger OnValidate()
             begin
-                if Rec."Migrate Vendor Classes" then begin
+                if Rec."Migrate Vendor Classes" then
                     Rec.Validate("Migrate Payables Module", true);
-                end;
             end;
         }
         field(12; "Migrate Customer Classes"; Boolean)
@@ -86,9 +82,8 @@ table 40105 "GP Company Additional Settings"
 
             trigger OnValidate()
             begin
-                if Rec."Migrate Customer Classes" then begin
+                if Rec."Migrate Customer Classes" then
                     Rec.Validate("Migrate Receivables Module", true);
-                end;
             end;
         }
         field(13; "Migrate Item Classes"; Boolean)
@@ -98,9 +93,8 @@ table 40105 "GP Company Additional Settings"
 
             trigger OnValidate()
             begin
-                if Rec."Migrate Item Classes" then begin
+                if Rec."Migrate Item Classes" then
                     Rec.Validate("Migrate Inventory Module", true);
-                end;
             end;
         }
         field(14; "Oldest GL Year to Migrate"; Integer)
@@ -114,9 +108,8 @@ table 40105 "GP Company Additional Settings"
 
             trigger OnValidate()
             begin
-                if not Rec."Migrate Bank Module" then begin
+                if not Rec."Migrate Bank Module" then
                     Rec.Validate("Migrate Inactive Checkbooks", false);
-                end;
             end;
         }
         field(16; "Migrate Payables Module"; Boolean)
@@ -224,17 +217,19 @@ table 40105 "GP Company Additional Settings"
 
     procedure GetSingleInstance()
     var
-        CurrentCompanyName: Text[30];
+        CurrentCompanyName: Text[50];
     begin
+#pragma warning disable AA0139
         CurrentCompanyName := CompanyName();
 
         if Name = CurrentCompanyName then
             exit;
 
-        if not Get(CurrentCompanyName) then begin
-            Name := CurrentCompanyName;
-            Insert();
+        if not Rec.Get(CurrentCompanyName) then begin
+            Rec.Name := CurrentCompanyName;
+            Rec.Insert();
         end;
+#pragma warning restore AA0139
     end;
 
     // Modules

@@ -135,16 +135,19 @@ page 18942 "Check Preview Custom"
                         field(Placeholder4; PlaceHolderLbl)
                         {
                             ApplicationArea = Basic, Suite;
+                            ShowCaption = false;
                             Visible = false;
                         }
                         field(Placeholder5; PlaceHolderLbl)
                         {
                             ApplicationArea = Basic, Suite;
+                            ShowCaption = false;
                             Visible = false;
                         }
                         field(Placeholder6; PlaceHolderLbl)
                         {
                             ApplicationArea = Basic, Suite;
+                            ShowCaption = false;
                             Visible = false;
                         }
                     }

@@ -8,7 +8,7 @@ Codeunit 13651 FIK_MatchBankRecLines
     TableNo = "Bank Acc. Reconciliation";
 
     VAR
-        MatchSummaryMsg: Label '%1 payment lines out of %2 have been applied.\\';
+        MatchSummaryMsg: Label '%1 payment lines out of %2 have been applied.\\', Comment = '%1 = Number of matched Bank Account Reconciliation lines; %2 = Total number of Bank Account Reconciliation lines';
         ProgressBarMsg: Label 'Please wait while the operation is being completed.';
         FIKDescriptionPartialTxt: Label 'Partial Amount';
         FIKDescriptionExtraTxt: Label 'Excess Amount';
@@ -16,11 +16,11 @@ Codeunit 13651 FIK_MatchBankRecLines
         FIKDescriptionNoMatchTxt: Label 'No Matching FIK Number';
         FIKDescriptionFullMatchTxt: Label 'Matching Amount';
         FIKDescriptionIsPaidTxt: Label 'Invoice Already Paid';
-        MatchPartialTxt: Label '%1 payment lines are partially paid.\';
-        MatchExtraTxt: Label '%1 payment lines have excess amounts.\';
-        MatchFullyTxt: Label '%1 payment lines are fully applied.\';
-        MatchDuplicateTxt: Label '%1 payment lines are duplicates.\';
-        MatchIsPaidTxt: Label '%1 payment lines are already paid.\';
+        MatchPartialTxt: Label '%1 payment lines are partially paid.\', Comment = '%1 = Number of matched Bank Account Reconciliation lines that has been partially paid';
+        MatchExtraTxt: Label '%1 payment lines have excess amounts.\', Comment = '%1 = Number of matched Bank Account Reconciliation lines that has excess amounts';
+        MatchFullyTxt: Label '%1 payment lines are fully applied.\', Comment = '%1 = Number of matched Bank Account Reconciliation lines that has been fully applied';
+        MatchDuplicateTxt: Label '%1 payment lines are duplicates.\', Comment = '%1 = Number of duplicates in Bank Account Reconciliation lines';
+        MatchIsPaidTxt: Label '%1 payment lines are already paid.\', Comment = '%1 = Number of matched Bank Account Reconciliation lines that has been paid';
         MatchDetailsTxt: Label 'Details:\';
 
 
@@ -217,6 +217,7 @@ Codeunit 13651 FIK_MatchBankRecLines
     LOCAL PROCEDURE GetUpdatedFIKDescription(TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary): Text[140];
     VAR
         StatusText: Text;
+        UpdatedFIKDescriptionTxt: Label '%1 - %2', Locked = true;
     BEGIN
         WITH TempBankStatementMatchingBuffer DO BEGIN
             CASE MatchStatus OF
@@ -236,7 +237,7 @@ Codeunit 13651 FIK_MatchBankRecLines
                     EXIT(COPYSTR(DescriptionBankStatment, 1, 140));
             END;
 
-            EXIT(CopyStr(STRSUBSTNO('%1 - %2', StatusText, DescriptionBankStatment), 1, 50));
+            EXIT(CopyStr(STRSUBSTNO(UpdatedFIKDescriptionTxt, StatusText, DescriptionBankStatment), 1, 50));
         END;
     END;
 

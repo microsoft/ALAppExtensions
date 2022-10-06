@@ -50,10 +50,23 @@ codeunit 9560 "Document Sharing"
     /// <param name="InStream">Specifies the data to be shared (e.g. a report pdf).</param>
     /// <param name="DocumentSharingIntent">Specifies the sharing intent of the document.</param>
     procedure Share(FileName: Text; FileExtension: Text; InStream: Instream; DocumentSharingIntent: Enum "Document Sharing Intent")
+    begin
+        Share(FileName, FileExtension, Instream, DocumentSharingIntent, "Document Sharing Source"::App);
+    end;
+
+    /// <summary>
+    /// Triggers the document sharing flow.
+    /// </summary>
+    /// <param name="FileName">Specifies the file name of the document (without file extension). It should only include valid filename characters.</param>
+    /// <param name="FileExtension">Specifies the file extension (e.g. '.pdf').</param>
+    /// <param name="InStream">Specifies the data to be shared (e.g. a report pdf).</param>
+    /// <param name="DocumentSharingIntent">Specifies the sharing intent of the document.</param>
+    /// <param name="DocumentSharingSource">Specifies the sharing source of the document.</param>
+    procedure Share(FileName: Text; FileExtension: Text; InStream: Instream; DocumentSharingIntent: Enum "Document Sharing Intent"; DocumentSharingSource: Enum "Document Sharing Source")
     var
         DocumentSharingImpl: Codeunit "Document Sharing Impl.";
     begin
-        DocumentSharingImpl.Share(FileName, FileExtension, Instream, DocumentSharingIntent);
+        DocumentSharingImpl.Share(FileName, FileExtension, Instream, DocumentSharingIntent, DocumentSharingSource);
     end;
 
     /// <summary>
@@ -64,7 +77,19 @@ codeunit 9560 "Document Sharing"
     var
         DocumentSharingImpl: Codeunit "Document Sharing Impl.";
     begin
-        exit(DocumentSharingImpl.ShareEnabled());
+        exit(DocumentSharingImpl.ShareEnabled("Document Sharing Source"::App));
+    end;
+
+    /// <summary>
+    /// Checks if document sharing is enabled.
+    /// </summary>
+    /// <param name="DocumentSharingSource">Specifies the sharing source of the document.</param>
+    /// <returns>Returns true if sharing is enabled, false otherwise.</returns>
+    procedure ShareEnabled(DocumentSharingSource: Enum "Document Sharing Source"): Boolean
+    var
+        DocumentSharingImpl: Codeunit "Document Sharing Impl.";
+    begin
+        exit(DocumentSharingImpl.ShareEnabled(DocumentSharingSource));
     end;
 
     /// <summary>
@@ -83,6 +108,15 @@ codeunit 9560 "Document Sharing"
     /// <param name="CanUpload">Specifies whether there is a subscriber that can handle the upload.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnCanUploadDocument(var CanUpload: Boolean)
+    begin
+    end;
+
+    /// <summary>
+    /// Raised to test if there are any document services that can handle the upload for a system document.
+    /// </summary>
+    /// <param name="CanUpload">Specifies whether there is a subscriber that can handle the upload.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnCanUploadSystemDocument(var CanUpload: Boolean)
     begin
     end;
 }

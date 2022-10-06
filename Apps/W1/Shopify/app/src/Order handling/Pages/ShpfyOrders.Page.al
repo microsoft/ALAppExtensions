@@ -14,7 +14,7 @@ page 30115 "Shpfy Orders"
     UsageCategory = Lists;
     AboutTitle = 'About Shopify Orders';
     AboutText = 'These orders from all your connected shops are ready to become sales orders or invoices in Business Central. They''re here because you aren''t automatically creating sales documents in Business Central.';
-
+    SourceTableView = sorting("Created At") order(descending);
     layout
     {
         area(content)
@@ -135,6 +135,7 @@ page 30115 "Shpfy Orders"
                     Style = Favorable;
                     StyleExpr = true;
                     ToolTip = 'Specifies the sales order number that has been created for the Shopify Order.';
+                    LookupPageId = "Sales Order List";
                 }
                 field(SalesInvoiceNo; Rec."Sales Invoice No.")
                 {
@@ -142,6 +143,7 @@ page 30115 "Shpfy Orders"
                     Style = Favorable;
                     StyleExpr = true;
                     ToolTip = 'Specifies the sales invoice number that has been created for the Shopify Order.';
+                    LookupPageId = "Sales Invoice List";
                 }
                 field("Error"; Rec."Has Error")
                 {
@@ -258,6 +260,21 @@ page 30115 "Shpfy Orders"
                         ProcessShopifyOrders.ProcessShopifyOrders(ShopifyOrderHeader);
                         CurrPage.Update(false);
                     end;
+                end;
+            }
+            action(SyncShipments)
+            {
+                ApplicationArea = All;
+                Caption = 'Sync Shipments To Shopify';
+                Image = Export;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                ToolTip = 'Synchronize shipments to Shopify.';
+
+                trigger OnAction();
+                begin
+                    Report.Run(Report::"Shpfy Sync Shipm. to Shopify");
                 end;
             }
         }

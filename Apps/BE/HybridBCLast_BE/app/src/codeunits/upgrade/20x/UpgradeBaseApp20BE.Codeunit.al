@@ -170,34 +170,6 @@ codeunit 40022 "Upgrade BaseApp 20 BE"
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetVendLedgerEntryPmtDiscPossibleUpgradeTag());
     end;
 
-    local procedure UpgradeGenJournalLinePmtDiscountPossible()
-    var
-        GenJournalLine: Record "Gen. Journal Line";
-        UpgradeTag: Codeunit "Upgrade Tag";
-        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
-        EnvironmentInformation: Codeunit "Environment Information";
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetGenJournalLinePmtDiscPossibleUpgradeTag()) then
-            exit;
-
-        GenJournalLine.SetLoadFields(
-            "Orig. Pmt. Disc. Possible", "Orig. Pmt. Disc. Possible(LCY)",
-            "Original Pmt. Disc. Possible", "Org. Pmt. Disc. Possible (LCY)");
-        GenJournalLine.SetFilter("Org. Pmt. Disc. Possible (LCY)", '<>%1', 0);
-        GenJournalLine.SetRange("Orig. Pmt. Disc. Possible(LCY)", 0);
-        if EnvironmentInformation.IsSaaS() then
-            if LogTelemetryForManyRecords(Database::"Gen. Journal Line", GenJournalLine.Count()) then
-                exit;
-        if GenJournalLine.FindSet() then
-            repeat
-                GenJournalLine."Orig. Pmt. Disc. Possible" := GenJournalLine."Original Pmt. Disc. Possible";
-                GenJournalLine."Orig. Pmt. Disc. Possible(LCY)" := GenJournalLine."Org. Pmt. Disc. Possible (LCY)";
-                GenJournalLine.Modify();
-            until GenJournalLine.Next() = 0;
-
-        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetGenJournalLinePmtDiscPossibleUpgradeTag());
-    end;
-
     local procedure LogTelemetryForManyRecords(TableNo: Integer; NoOfRecords: Integer): Boolean;
     begin
         Session.LogMessage(

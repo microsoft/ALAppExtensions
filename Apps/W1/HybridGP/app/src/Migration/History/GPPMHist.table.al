@@ -1,6 +1,6 @@
 table 4053 "GPPMHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

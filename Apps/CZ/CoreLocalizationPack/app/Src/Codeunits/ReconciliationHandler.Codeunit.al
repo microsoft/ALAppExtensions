@@ -1,6 +1,3 @@
-#if not CLEAN18
-#pragma warning disable AL0432
-#endif
 codeunit 31431 "Reconciliation Handler CZL"
 {
     [EventSubscriber(ObjectType::Page, Page::Reconciliation, 'OnAfterSetGenJnlLine', '', false, false)]

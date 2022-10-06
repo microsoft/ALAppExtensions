@@ -11,10 +11,15 @@ codeunit 20286 "Use Case Event Handling"
     var
         SalesHeader: Record "Sales Header";
     begin
+        if SalesLine.CanCalculateTax() then
+            exit;
+
         if (SalesLine.Quantity = 0) and (xSalesLine.Quantity = 0) then
             exit;
+
         if not SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.") then
             exit;
+
         UseCaseExecution.HandleEvent('OnAfterUpdateSalesUnitPrice', SalesLine, SalesHeader."Currency Code", SalesHeader."Currency Factor");
     end;
 
@@ -23,10 +28,15 @@ codeunit 20286 "Use Case Event Handling"
     var
         PurchaseHeader: Record "Purchase Header";
     begin
+        if PurchLine.CanCalculateTax() then
+            exit;
+
         if (PurchLine.Quantity = 0) and (xPurchLine.Quantity = 0) then
             exit;
+
         if not PurchaseHeader.Get(PurchLine."Document Type", PurchLine."Document No.") then
             exit;
+
         UseCaseExecution.HandleEvent('OnAfterUpdatePurchUnitPrice', PurchLine, PurchaseHeader."Currency Code", PurchaseHeader."Currency Factor");
     end;
 
@@ -55,11 +65,15 @@ codeunit 20286 "Use Case Event Handling"
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterValidateEvent', 'Amount', false, false)]
     procedure OnAfterPostGenJnlLine(var Rec: Record "Gen. Journal Line"; var xRec: Record "Gen. Journal Line");
     begin
+        if Rec.CanCalculateTax() then
+            exit;
+
         if rec."System-Created Entry" then
             exit;
 
         if (Rec.Amount = 0) and (xRec.Amount = 0) then
             exit;
+
         UseCaseExecution.HandleEvent('OnGenJnlPost', Rec, Rec."Currency Code", Rec."Currency Factor");
     end;
 

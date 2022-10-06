@@ -205,6 +205,15 @@ codeunit 11700 "Acc. Schedule Management CZL"
             AccSchedExtensionMgtCZL.ValidateFormula(Rec);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Categ. Generate Acc. Schedules", 'OnCreateIncomeStatementOnAfterCreateCOGSGroup', '', false, false)]
+    local procedure DeleteAccSchedLinesOnCreateIncomeStatementOnAfterCreateCOGSGroup(var AccScheduleLine: Record "Acc. Schedule Line"; var IsHandled: Boolean)
+    begin
+        AccScheduleLine.Reset();
+        AccScheduleLine.SetRange("Schedule Name", AccScheduleLine."Schedule Name");
+        AccScheduleLine.DeleteAll();
+        IsHandled := true;
+    end;
+
     procedure CalcCorrectionCell(var AccScheduleLine: Record "Acc. Schedule Line"; var ColumnLayout: Record "Column Layout"; CalcAddCurr: Boolean): Decimal
     var
         LocalAccScheduleLine: Record "Acc. Schedule Line";

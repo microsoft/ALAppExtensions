@@ -10,7 +10,7 @@ page 30125 "Shpfy Payouts"
     PageType = List;
     PromotedActionCategories = 'New,Process,Report,Inspect';
     SourceTable = "Shpfy Payout";
-    SourceTableView = sorting(Id) order(descending);
+    SourceTableView = sorting(Date) order(descending);
     UsageCategory = History;
 
     layout

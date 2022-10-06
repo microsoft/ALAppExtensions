@@ -38,7 +38,6 @@ codeunit 1083 "MS - Wallet Webhook Management"
         NoPaymentRegistrationSetupErrTxt: Label 'The Payment Registration Setup window is not filled in correctly for user %1.';
         PaymentRegistrationSetupFieldErrTxt: Label 'The Payment Registration Setup window is not filled in for user %1.';
         CannotMakePaymentWarningTxt: Label 'You may not be able to accept payments throught Microsoft Pay Payments. %1', Comment = '%1 is an error message.';
-        SetupDeleteOrDisableWithOpenInvoiceQst: Label 'You have unpaid invoices with a Microsoft Pay Payments link. Deleting or disabling the Microsoft Pay Payments account setup will make you unable to accept payments through Microsoft Pay Payments.\\ Do you want to continue?';
         ChargeRequestFailedResponseTxt: Label 'Error while charging payment token. Response status code %1.', Locked = true;
         ChargeCannotReadResponseTxt: Label 'Cannot read response on charge call.', Locked = true;
         ChargeEmptyResponseTxt: Label 'Empty reponse on charge call.', Locked = true;
@@ -585,46 +584,5 @@ codeunit 1083 "MS - Wallet Webhook Management"
         EXIT(FALSE);
     END;
 
-    [EventSubscriber(ObjectType::Table, Database::"MS - Wallet Merchant Account", 'OnBeforeDeleteEvent', '', false, false)]
-    local procedure OnBeforeDeleteMSWalletAccount(var Rec: Record "MS - Wallet Merchant Account"; RunTrigger: Boolean);
-    begin
-        if Rec.IsTemporary() then
-            exit;
-
-        CheckMSWalletAccountWithOpenInvoices();
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"MS - Wallet Merchant Account", 'OnBeforeValidateEvent', 'Enabled', false, false)]
-    local procedure OnBeforeDisableMSWalletAccount(VAR Rec: Record "MS - Wallet Merchant Account"; VAR xRec: Record "MS - Wallet Merchant Account"; CurrFieldNo: Integer)
-    begin
-        if not Rec.Enabled and xRec.Enabled then
-            CheckMSWalletAccountWithOpenInvoices();
-    end;
-
-    local procedure CheckMSWalletAccountWithOpenInvoices();
-    var
-        MSWalletPayment: Record "MS - Wallet Payment";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        EnvInfoProxy: Codeunit "Env. Info Proxy";
-    begin
-        if not GuiAllowed() then
-            exit;
-
-        if EnvInfoProxy.IsInvoicing() then
-            exit;
-
-        if not MSWalletPayment.FindSet() then
-            exit;
-        repeat
-            IF SalesInvoiceHeader.GET(MSWalletPayment."Invoice No") THEN BEGIN
-                SalesInvoiceHeader.CALCFIELDS(Closed);
-                IF not SalesInvoiceHeader.Closed THEN begin
-                    if Confirm(SetupDeleteOrDisableWithOpenInvoiceQst) then
-                        exit;
-                    Error('');
-                end;
-            end;
-        until MSWalletPayment.Next() = 0;
-    end;
 }
 #endif

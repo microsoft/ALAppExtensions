@@ -39,6 +39,7 @@ codeunit 10660 "Loc. Manufacturing Demodata-NO"
         Vendor.validate("Vendor Posting Group", 'INNENLANDS');
     end;
 
+
     var
         ManufacturingDemoAccount: Record "Manufacturing Demo Account";
         ManufacturingDemoAccounts: Codeunit "Manufacturing Demo Accounts";

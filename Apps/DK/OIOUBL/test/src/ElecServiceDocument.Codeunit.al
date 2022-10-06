@@ -28,12 +28,11 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         Assert: Codeunit Assert;
         IDCapTxt: Label 'cbc:ID';
         TaxAmountCapTxt: Label 'cbc:TaxExclusiveAmount';
-        DefaultProfileIDTxt: Label 'Procurement-BilSim-1.0';
         AccountingCostCodeCapTxt: Label 'cbc:AccountingCostCode';
         OIOUBLFormatNameTxt: Label 'OIOUBL';
         PEPPOLFormatNameTxt: Label 'PEPPOL';
         DefaultCodeTxt: Label 'DEFAULT';
-        NonExistingDocumentFormatErr: Label 'The electronic document format OIOUBL does not exist for the document type %1.';
+        NonExistingDocumentFormatErr: Label 'The electronic document format OIOUBL does not exist for the document type %1.', Comment = '%1 = Service Invoice Document Type';
         isInitialized: Boolean;
 
     [Test]
@@ -1646,13 +1645,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         ServiceLine.MODIFY(true);
     end;
 
-    local procedure CreateServiceLineWithDiscount(var ServiceLine: Record "Service Line"; ServiceHeader: Record "Service Header"; LineDiscountPct: Integer)
-    begin
-        CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo(), ServiceHeader."OIOUBL-Account Code");
-        ServiceLine.Validate("Line Discount %", LineDiscountPct);
-        ServiceLine.Modify(true);
-    end;
-
     local procedure CreateServiceLineWithLineAndInvoiceDiscount(var ServiceLine: Record "Service Line"; ServiceHeader: Record "Service Header"; LineDiscountAmt: Decimal; InvDiscountAmt: Decimal)
     begin
         CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo(), ServiceHeader."OIOUBL-Account Code");
@@ -1709,20 +1701,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
             SetRange(Usage, DocFormatUsage);
             DeleteAll();
             InsertElectronicFormat(DocFormatCode, '', CodeunitID, 0, DocFormatUsage);
-        end;
-    end;
-
-    local procedure CreateOIOUBLProfile(): Code[10];
-    var
-        OIOUBLProfile: Record "OIOUBL-Profile";
-    // LibraryUtility: Codeunit "Library - Utility";
-    begin
-        with OIOUBLProfile do begin
-            VALIDATE("OIOUBL-Code", LibraryUtility.GenerateRandomCode(FIELDNO("OIOUBL-Code"), DATABASE::"OIOUBL-Profile"));
-            VALIDATE("OIOUBL-Profile ID", DefaultProfileIDTxt);
-
-            INSERT(true);
-            exit("OIOUBL-Code");
         end;
     end;
 
@@ -2002,15 +1980,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         LibraryWorkflow: Codeunit "Library - Workflow";
     begin
         LibraryWorkflow.SetUpEmailAccount();
-    end;
-
-    local procedure UpdateServiceLineUnitOfMeasure(ServiceLine: Record "Service Line");
-    var
-        UnitOfMeasure: Record "Unit of Measure";
-    begin
-        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
-        ServiceLine.VALIDATE("Unit of Measure", UnitOfMeasure.Code);
-        ServiceLine.MODIFY(true);
     end;
 
     local procedure UpdateVATPostingSetupPct(var VATPostingSetup: Record "VAT Posting Setup"; NewVATPct: Decimal) OldVATPct: Decimal;

@@ -16,6 +16,7 @@ page 20060 "APIV1 - Aut. User Permission"
                 {
                     ApplicationArea = All;
                     Caption = 'id', Locked = true;
+                    ToolTip = 'Specifies the role id.';
 
                     trigger OnValidate()
                     var
@@ -42,22 +43,26 @@ page 20060 "APIV1 - Aut. User Permission"
                 {
                     ApplicationArea = All;
                     Caption = 'company', Locked = true;
+                    ToolTip = 'Specifies the company name.';
                 }
                 field(appId; "App ID")
                 {
                     ApplicationArea = All;
                     Caption = 'appId';
+                    ToolTip = 'Specifies the app id.';
                 }
                 field(extensionName; "App Name")
                 {
                     ApplicationArea = All;
                     Caption = 'extensionName', Locked = true;
                     Editable = false;
+                    ToolTip = 'Specifies the app name.';
                 }
                 field(scope; Scope)
                 {
                     ApplicationArea = All;
                     Caption = 'scope';
+                    ToolTip = 'Specifies the scope.';
                 }
             }
         }

@@ -38,7 +38,9 @@ page 20010 "APIV1 - Vendors"
                 field(address; PostalAddressJSON)
                 {
                     Caption = 'address', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the address for the vendor.';
 
                     trigger OnValidate()
@@ -228,7 +230,7 @@ page 20010 "APIV1 - Vendors"
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
         Vendor: Record Vendor;
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
         Vendor.SETRANGE("No.", "No.");
         IF NOT Vendor.ISEMPTY() THEN
@@ -237,9 +239,9 @@ page 20010 "APIV1 - Vendors"
         INSERT(TRUE);
 
         ProcessPostalAddress();
-        RecRef.GETTABLE(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CURRENTDATETIME());
-        RecRef.SETTABLE(Rec);
+        RecordRef.GETTABLE(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecordRef, TempFieldSet, CURRENTDATETIME());
+        RecordRef.SETTABLE(Rec);
 
         MODIFY(TRUE);
         SetCalculatedFields();
