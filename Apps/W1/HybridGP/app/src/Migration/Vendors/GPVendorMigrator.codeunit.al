@@ -500,7 +500,7 @@ codeunit 4022 "GP Vendor Migrator"
                     SearchGPSY06000.SetRange("CustomerVendor_ID", Vendor."No.");
                     SearchGPSY06000.SetRange("ADRSCODE", RemitToAddressCode);
                     SearchGPSY06000.SetRange("INACTIVE", false);
-                    if not SearchGPSY06000.FindFirst() then
+                    if SearchGPSY06000.IsEmpty() then
                         ShouldSetAsPrimaryAccount := true;
                 end;
         end;

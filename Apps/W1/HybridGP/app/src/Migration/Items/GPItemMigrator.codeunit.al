@@ -36,7 +36,6 @@ codeunit 4019 "GP Item Migrator"
 #pragma warning restore AA0207
     local procedure ShouldMigrateItem(var GPItem: Record "GP Item"): Boolean
     var
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPIV00101: Record "GP IV00101";
     begin
         if GPIV00101.Get(GPItem.No) then begin
@@ -85,7 +84,6 @@ codeunit 4019 "GP Item Migrator"
     procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         GPItem: Record "GP Item";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         if not ChartOfAccountsMigrated then
             exit;
@@ -104,7 +102,6 @@ codeunit 4019 "GP Item Migrator"
         ItemJnlLine: Record "Item Journal Line";
         GPItem: Record "GP Item";
         GPItemTransaction: Record "GP Item Transactions";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         AdjustItemInventory: Codeunit "Adjust Item Inventory";
         GPItemTransactionAverageQuery: Query "GP Item Transaction Average";
         GPItemTransactionStandardQuery: Query "GP Item Transaction Standard";
@@ -121,7 +118,7 @@ codeunit 4019 "GP Item Migrator"
             exit;
 
         if GPItem.Get(RecordIdToMigrate) then begin
-            if not Sender.DoesItemExist(GPItem.No) then
+            if not Sender.DoesItemExist(CopyStr(GPItem.No, 1, MaxStrLen(Item."No."))) then
                 exit;
 
             if GPItem.ItemType = 0 then
@@ -216,10 +213,11 @@ codeunit 4019 "GP Item Migrator"
 
     procedure MigrateItemInventoryPostingGroup(GPItem: Record "GP Item"; var Sender: Codeunit "Item Data Migration Facade")
     var
+        Item: Record Item;
         GPIV00101: Record "GP IV00101";
         ItemClassId: Text[11];
     begin
-        if not Sender.DoesItemExist(GPItem.No) then
+        if not Sender.DoesItemExist(CopyStr(GPItem.No, 1, MaxStrLen(Item."No."))) then
             exit;
 
         MigrateItemClassesIfNeeded(GPItem, Sender);

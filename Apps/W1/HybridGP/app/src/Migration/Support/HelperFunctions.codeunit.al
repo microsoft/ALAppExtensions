@@ -1159,7 +1159,6 @@ Codeunit 4037 "Helper Functions"
 
     procedure GetNumberOfItems(): Integer;
     var
-        GPItem: Record "GP Item";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPIV00101: Record "GP IV00101";
     begin
