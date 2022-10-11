@@ -4,7 +4,9 @@ page 1697 "Posted Bank Deposit Subform"
     Caption = 'Posted Bank Deposit Subform';
     Editable = false;
     PageType = ListPart;
+#pragma warning disable AL0729
     PromotedActionCategories = 'New,Process,Report,Line,Functions';
+#pragma warning restore
     SourceTable = "Posted Bank Deposit Line";
     Permissions = tabledata "Posted Bank Deposit Line" = r;
 
@@ -100,10 +102,12 @@ page 1697 "Posted Bank Deposit Subform"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Account &Card';
                     Image = Account;
+#pragma warning disable AL0729
                     Promoted = true;
                     PromotedOnly = true;
                     PromotedCategory = Category4;
                     PromotedIsBig = true;
+#pragma warning restore
                     ShortCutKey = 'Shift+F7';
                     ToolTip = 'View or change detailed information about the account on the deposit line.';
 
@@ -117,10 +121,12 @@ page 1697 "Posted Bank Deposit Subform"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Account Ledger E&ntries';
                     Image = LedgerEntries;
+#pragma warning disable AL0729
                     Promoted = true;
                     PromotedOnly = true;
                     PromotedCategory = Category5;
                     PromotedIsBig = true;
+#pragma warning restore
                     ShortCutKey = 'Ctrl+F7';
                     ToolTip = 'View ledger entries that are posted for the account on the deposit line.';
 
@@ -134,10 +140,12 @@ page 1697 "Posted Bank Deposit Subform"
                     ApplicationArea = Suite;
                     Caption = 'Dimensions';
                     Image = Dimensions;
+#pragma warning disable AL0729
                     Promoted = true;
                     PromotedOnly = true;
                     PromotedCategory = Category4;
                     PromotedIsBig = true;
+#pragma warning restore
                     ShortCutKey = 'Alt+D';
                     ToolTip = 'View or edit dimensions, such as area, project, or department, that you can assign to sales and purchase documents to distribute costs and analyze transaction history.';
 

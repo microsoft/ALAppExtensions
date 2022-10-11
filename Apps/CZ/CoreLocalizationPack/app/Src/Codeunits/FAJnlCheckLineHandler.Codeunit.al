@@ -1,5 +1,8 @@
 codeunit 31317 "FA Jnl. Check Line Handler CZL"
 {
+    var
+        UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Jnl.-Check Line", 'OnAfterCheckGenJnlLine', '', false, false)]
     local procedure UserChecksAllowedOnAfterCheckGenJnlLine(var GenJnlLine: Record "Gen. Journal Line")
     begin
@@ -18,7 +21,11 @@ codeunit 31317 "FA Jnl. Check Line Handler CZL"
         UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, JournalTemplateName);
     end;
 
-
-    var
-        UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+    // temporary subscriber until correction of "FA Posting Type" in "Invoice Posting Buffer"
+    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterCopyToGenJnlLineFA', '', false, false)]
+    local procedure CopyCustom2OnAfterCopyToGenJnlLineFA(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostingBuffer: Record "Invoice Posting Buffer")
+    begin
+        if InvoicePostingBuffer."FA Posting Type".AsInteger() = 3 then
+            GenJnlLine."FA Posting Type" := GenJnlLine."FA Posting Type"::"Custom 2";
+    end;
 }

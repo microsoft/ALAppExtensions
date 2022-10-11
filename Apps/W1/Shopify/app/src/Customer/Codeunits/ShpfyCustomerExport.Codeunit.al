@@ -82,15 +82,14 @@ codeunit 30116 "Shpfy Customer Export"
 
         Clear(ShopifyCustomer);
         Clear(ShopifyAddress);
-        if FillInShopifyCustomerData(Customer, ShopifyCustomer, ShopifyAddress) then begin
+        if FillInShopifyCustomerData(Customer, ShopifyCustomer, ShopifyAddress) then
             if CustomerApi.CreateCustomer(ShopifyCustomer, ShopifyAddress) then begin
                 ShopifyCustomer."Customer SystemId" := Customer.SystemId;
                 ShopifyCustomer."Last Updated by BC" := CurrentDateTime;
                 ShopifyCustomer.Insert();
                 ShopifyAddress.Insert();
             end;
-            MetadataFields(Customer, ShopifyCustomer);
-        end;
+        MetadataFields(Customer, ShopifyCustomer);
     end;
 
     /// <summary> 
@@ -162,8 +161,10 @@ codeunit 30116 "Shpfy Customer Export"
         if (Customer."Country/Region Code" = '') and CompanyInfo.Get() then
             Customer."Country/Region Code" := CompanyInfo."Country/Region Code";
 
-        if Country.Get(Customer."Country/Region Code") then
+        if Country.Get(Customer."Country/Region Code") then begin
+            Country.TestField("ISO Code");
             ShopAddress."Country/Region Code" := Country."ISO Code";
+        end;
 
         ShopAddress.Phone := Customer."Phone No.";
 

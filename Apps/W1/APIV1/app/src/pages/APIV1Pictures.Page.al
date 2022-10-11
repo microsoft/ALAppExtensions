@@ -18,30 +18,38 @@ page 20055 "APIV1 - Pictures"
                 {
                     ApplicationArea = All;
                     Caption = 'id', Locked = true;
+                    ToolTip = 'Specifies the id.';
                     Editable = false;
                 }
                 field(width; Width)
                 {
                     ApplicationArea = All;
                     Caption = 'width', Locked = true;
+                    ToolTip = 'Specifies the width.';
                     Editable = false;
                 }
                 field(height; Height)
                 {
                     ApplicationArea = All;
                     Caption = 'height', Locked = true;
+                    ToolTip = 'Specifies the height.';
                     Editable = false;
                 }
                 field(contentType; "Mime Type")
                 {
                     ApplicationArea = All;
                     Caption = 'contentType';
+                    ToolTip = 'Specifies the content type.';
                     Editable = false;
                 }
+#pragma warning disable AL0273
+#pragma warning disable AW0004
                 field(content; Content)
+#pragma warning restore
                 {
                     ApplicationArea = All;
                     Caption = 'content';
+                    ToolTip = 'Specifies the content.';
                 }
             }
         }

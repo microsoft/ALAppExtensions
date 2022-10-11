@@ -184,6 +184,7 @@ codeunit 31362 "Match Bank Payment CZB"
                                     if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::"Credit Memo" then
                                         GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
                                 end;
+                                GenJournalLine.SetSuppressCommit(true);
                                 GenJournalLine.Validate("Applies-to Doc. No.", TempMatchBankPaymentBufferCZB."Document No.");
                             end;
                             if BankAccount."Dimension from Apply Entry CZB" then
@@ -670,6 +671,7 @@ codeunit 31362 "Match Bank Payment CZB"
     local procedure OnAfterValidateGenJournalLine(var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var GenJournalLine: Record "Gen. Journal Line"; SearchRuleLineCZB: Record "Search Rule Line CZB")
     begin
     end;
+#if not CLEAN19
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeFillMatchBankPaymentBufferSalesAdvance(GenJournalLine: Record "Gen. Journal Line"; SearchRuleLineCZB: Record "Search Rule Line CZB"; var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var IsHandled: Boolean);
@@ -680,4 +682,5 @@ codeunit 31362 "Match Bank Payment CZB"
     local procedure OnBeforeFillMatchBankPaymentBufferPurchaseAdvance(GenJournalLine: Record "Gen. Journal Line"; SearchRuleLineCZB: Record "Search Rule Line CZB"; var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var IsHandled: Boolean);
     begin
     end;
+#endif
 }

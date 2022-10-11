@@ -10,7 +10,7 @@ page 8930 "Email View Policy List"
 {
     AdditionalSearchTerms = 'Email Personalization,Email Preferences,Policies';
     ApplicationArea = All;
-    Caption = 'User Email Policies';
+    Caption = 'User Email View Policies';
     Extensible = false;
     DelayedInsert = true;
     PageType = List;

@@ -417,7 +417,7 @@ codeunit 20343 "Tax Posting Buffer Mgmt."
 
     procedure GetTotalTaxAmount(): Decimal
     begin
-        exit(Abs(TotalTaxAmount));
+        exit(TotalTaxAmount);
     end;
 
     [IntegrationEvent(true, false)]

@@ -13,6 +13,11 @@ tableextension 18934 "Bank Account Ext" extends "Bank Account"
                     Error(StipulatedPeriodNegativeErr);
             end;
         }
+        field(18930; "UPI ID"; Text[50])
+        {
+            Caption = 'UPI ID';
+            DataClassification = CustomerContent;
+        }
     }
 
     var

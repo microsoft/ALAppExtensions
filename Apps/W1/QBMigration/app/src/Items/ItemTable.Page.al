@@ -44,6 +44,7 @@ page 1916 "MigrationQB ItemTable"
                     Image = EntriesList;
                     RunObject = Page "MigrationQB Posting Accounts";
                     RunPageMode = Edit;
+                    ToolTip = 'View QuickBooks posting accounts.';
                 }
             }
         }

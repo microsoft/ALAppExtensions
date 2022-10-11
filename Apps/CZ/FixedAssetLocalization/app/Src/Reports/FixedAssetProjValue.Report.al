@@ -233,11 +233,11 @@ report 31248 "Fixed Asset - Proj. Value CZF"
                     if UntilDate >= EndingDate then
                         CurrReport.Break();
                     if Number = 1 then begin
-                        CalculateFirstDeprAmount(Done);
+                        CalculateFirstDeprAmount();
                         if FADepreciationBook."Book Value" <> 0 then
                             Done := Done or not EntryPrinted;
                     end else
-                        CalculateSecondDeprAmount(Done);
+                        CalculateSecondDeprAmount();
                     if Done then
                         UpdateTotals()
                     else
@@ -717,7 +717,7 @@ report 31248 "Fixed Asset - Proj. Value CZF"
         AssetAmounts[4] := 0;
     end;
 
-    local procedure CalculateFirstDeprAmount(var Done: Boolean)
+    local procedure CalculateFirstDeprAmount()
     var
         FirstTime: Boolean;
     begin
@@ -736,7 +736,7 @@ report 31248 "Fixed Asset - Proj. Value CZF"
           DepreciationCalculation.DeprInFiscalYear("Fixed Asset"."No.", DeprBookCode, UntilDate);
     end;
 
-    local procedure CalculateSecondDeprAmount(var Done: Boolean)
+    local procedure CalculateSecondDeprAmount()
     begin
         GetNextDate();
         CalculateDepreciation.Calculate(
@@ -774,13 +774,13 @@ report 31248 "Fixed Asset - Proj. Value CZF"
             UntilDate := EndingDate;
     end;
 
-    local procedure GetPeriodEndingDate(UseAccountingPeriod: Boolean; PeriodEndingDate: Date; var PeriodLength: Integer): Date
+    local procedure GetPeriodEndingDate(UseAccountingPeriod2: Boolean; PeriodEndingDate: Date; var PeriodLength2: Integer): Date
     var
         AccountingPeriod: Record "Accounting Period";
         UntilDate2: Date;
     begin
-        if not UseAccountingPeriod or AccountingPeriod.IsEmpty then
-            exit(FADateCalculation.CalculateDate(PeriodEndingDate, PeriodLength, Year365Days));
+        if not UseAccountingPeriod2 or AccountingPeriod.IsEmpty then
+            exit(FADateCalculation.CalculateDate(PeriodEndingDate, PeriodLength2, Year365Days));
         AccountingPeriod.SetFilter(
           "Starting Date", '>=%1', DepreciationCalculation.ToMorrow(PeriodEndingDate, Year365Days) + 1);
         if AccountingPeriod.FindFirst() then begin
@@ -788,16 +788,16 @@ report 31248 "Fixed Asset - Proj. Value CZF"
                 UntilDate2 := DepreciationCalculation.Yesterday(AccountingPeriod."Starting Date", Year365Days)
             else
                 UntilDate2 := AccountingPeriod."Starting Date" - 1;
-            PeriodLength :=
+            PeriodLength2 :=
               DepreciationCalculation.DeprDays(
                 DepreciationCalculation.ToMorrow(PeriodEndingDate, Year365Days), UntilDate2, Year365Days);
-            if (PeriodLength <= 5) or (PeriodLength > DaysInFiscalYear) then
-                PeriodLength := DaysInFiscalYear;
+            if (PeriodLength2 <= 5) or (PeriodLength2 > DaysInFiscalYear) then
+                PeriodLength2 := DaysInFiscalYear;
             exit(UntilDate2);
         end;
         if Year365Days then
             Error(YouMustCreateAccPeriodsErr, DepreciationCalculation.ToMorrow(EndingDate, Year365Days) + 1);
-        exit(FADateCalculation.CalculateDate(PeriodEndingDate, PeriodLength, Year365Days));
+        exit(FADateCalculation.CalculateDate(PeriodEndingDate, PeriodLength2, Year365Days));
     end;
 
     local procedure MakeGroupTotalText()
@@ -983,18 +983,18 @@ report 31248 "Fixed Asset - Proj. Value CZF"
         GroupAmounts[4] += AssetAmounts[4] - PrevAmount[2];
     end;
 
-    local procedure CalculationDone(Done: Boolean; FirstDeprDate: Date): Boolean
+    local procedure CalculationDone(Done2: Boolean; FirstDeprDate2: Date): Boolean
     var
         TableDeprCalculation: Codeunit "Table Depr. Calculation";
     begin
-        if Done or
+        if Done2 or
            (FADepreciationBook."Depreciation Method" <> FADepreciationBook."Depreciation Method"::"User-Defined")
         then
-            exit(Done);
+            exit(Done2);
         exit(
           TableDeprCalculation.GetTablePercent(
             DeprBookCode, FADepreciationBook."Depreciation Table Code",
-            FADepreciationBook."First User-Defined Depr. Date", FirstDeprDate, UntilDate) = 0);
+            FADepreciationBook."First User-Defined Depr. Date", FirstDeprDate2, UntilDate) = 0);
     end;
 
     local procedure UpdateReqForm()

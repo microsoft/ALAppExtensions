@@ -137,13 +137,17 @@ page 20041 "APIV1 - Time Registr. Entries"
                 {
                     Caption = 'unitOfMeasure', Locked = true;
                     Editable = false;
+#pragma warning disable AL0667
                     ODataEDMType = 'ITEM-UOM';
+#pragma warning restore
                     ToolTip = 'Specifies Unit of Measure.';
                 }
                 field(dimensions; DimensionsJSON)
                 {
                     Caption = 'dimensions', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'Collection(DIMENSION)';
+#pragma warning restore
                     ToolTip = 'Specifies Time registration Dimensions.';
 
                     trigger OnValidate()

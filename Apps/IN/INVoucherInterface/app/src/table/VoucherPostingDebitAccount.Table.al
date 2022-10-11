@@ -42,6 +42,21 @@ table 18929 "Voucher Posting Debit Account"
                 CheckAccountType();
             end;
         }
+        field(5; "For UPI Payments"; Boolean)
+        {
+            DataClassification = EndUserIdentifiableInformation;
+
+            trigger OnValidate()
+            var
+                BankAccount: Record "Bank Account";
+            begin
+                if "For UPI Payments" then begin
+                    CheckAccountType();
+                    BankAccount.Get("Account No.");
+                    BankAccount.TestField("UPI ID");
+                end;
+            end;
+        }
     }
     keys
     {

@@ -2,6 +2,17 @@
 {
     layout
     {
+        modify(ShippingOptionWithLocation)
+        {
+            trigger OnAfterValidate()
+            begin
+                GstPurchaseSubscriber.SetLocationCodeVisibleForQuoteandInvoice(IsLocationVisible, ShipToOptions);
+            end;
+        }
+        modify(Control81)
+        {
+            Visible = IsLocationVisible;
+        }
         modify("Posting Date")
         {
             trigger OnAfterValidate()
@@ -13,6 +24,7 @@
         }
         modify("Location Code")
         {
+            ShowMandatory = ShipToOptions = ShipToOptions::"Custom Address";
             trigger OnAfterValidate()
             var
                 GSTBaseValidation: Codeunit "GST Base Validation";
@@ -237,4 +249,14 @@
             }
         }
     }
+
+    trigger OnAfterGetRecord()
+    begin
+        GstPurchaseSubscriber.SetLocationCodeVisibleForQuoteandInvoice(IsLocationVisible, ShipToOptions);
+    end;
+
+    var
+        GstPurchaseSubscriber: Codeunit "GST Purchase Subscribers";
+        [InDataSet]
+        IsLocationVisible: boolean;
 }

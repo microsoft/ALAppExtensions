@@ -178,18 +178,18 @@ codeunit 148005 "C5 Item Migrator Test"
     var
         C5ItemMigrator: Codeunit "C5 Item Migrator";
     begin
-        C5ItemMigrator.OnMigrateItem(ItemDataMigrationFacade, C5InvenTable.RecordId());
+        C5ItemMigrator.MigrateItem(ItemDataMigrationFacade, C5InvenTable.RecordId());
 
-        C5ItemMigrator.OnMigrateItemTrackingCode(ItemDataMigrationFacade, C5InvenTable.RecordId());
-        C5ItemMigrator.OnMigrateCostingMethod(ItemDataMigrationFacade, C5InvenTable.RecordId());
-        C5ItemMigrator.OnMigrateItemUnitOfMeasure(ItemDataMigrationFacade, C5InvenTable.RecordId());
-        C5ItemMigrator.OnMigrateItemDiscountGroup(ItemDataMigrationFacade, C5InvenTable.RecordId());
-        C5ItemMigrator.OnMigrateItemSalesLineDiscount(ItemDataMigrationFacade, C5InvenTable.RecordId());
-        C5ItemMigrator.OnMigrateItemPrices(ItemDataMigrationFacade, C5InvenTable.RecordId());
-        C5ItemMigrator.OnMigrateItemTariffNo(ItemDataMigrationFacade, C5InvenTable.RecordId());
-        C5ItemMigrator.OnMigrateItemDimensions(ItemDataMigrationFacade, C5InvenTable.RecordId());
-        C5ItemMigrator.OnMigrateItemPostingGroups(ItemDataMigrationFacade, C5InvenTable.RecordId(), MigrateTransactions);
-        C5ItemMigrator.OnMigrateInventoryTransactions(ItemDataMigrationFacade, C5InvenTable.RecordId(), MigrateTransactions);
+        C5ItemMigrator.MigrateItemTrackingCode(ItemDataMigrationFacade, C5InvenTable.RecordId());
+        C5ItemMigrator.MigrateCostingMethod(ItemDataMigrationFacade, C5InvenTable.RecordId());
+        C5ItemMigrator.MigrateItemUnitOfMeasure(ItemDataMigrationFacade, C5InvenTable.RecordId());
+        C5ItemMigrator.MigrateItemDiscountGroup(ItemDataMigrationFacade, C5InvenTable.RecordId());
+        C5ItemMigrator.MigrateItemSalesLineDiscount(ItemDataMigrationFacade, C5InvenTable.RecordId());
+        C5ItemMigrator.MigrateItemPrices(ItemDataMigrationFacade, C5InvenTable.RecordId());
+        C5ItemMigrator.MigrateItemTariffNo(ItemDataMigrationFacade, C5InvenTable.RecordId());
+        C5ItemMigrator.MigrateItemDimensions(ItemDataMigrationFacade, C5InvenTable.RecordId());
+        C5ItemMigrator.MigrateItemPostingGroups(ItemDataMigrationFacade, C5InvenTable.RecordId(), MigrateTransactions);
+        C5ItemMigrator.MigrateInventoryTransactions(ItemDataMigrationFacade, C5InvenTable.RecordId(), MigrateTransactions);
     end;
 
     local procedure CleanupStagingTables()

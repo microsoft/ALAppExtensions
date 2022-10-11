@@ -107,6 +107,7 @@ table 18466 "Applied Delivery Challan"
         field(10; "Qty. to Receive"; Decimal)
         {
             Caption = 'Qty. to Receive';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -128,6 +129,7 @@ table 18466 "Applied Delivery Challan"
         field(11; "Qty. to Consume"; Decimal)
         {
             Caption = 'Qty. to Consume';
+            DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -151,6 +153,7 @@ table 18466 "Applied Delivery Challan"
         field(12; "Qty. to Return (C.E.)"; Decimal)
         {
             Caption = 'Qty. to Return (C.E.)';
+            DecimalPlaces = 0 : 3;
             Editable = true;
             DataClassification = CustomerContent;
 
@@ -175,6 +178,7 @@ table 18466 "Applied Delivery Challan"
         field(13; "Qty. To Return (V.E.)"; Decimal)
         {
             Caption = 'Qty. To Return (V.E.)';
+            DecimalPlaces = 0 : 3;
             Editable = true;
             DataClassification = CustomerContent;
 
@@ -349,7 +353,7 @@ table 18466 "Applied Delivery Challan"
     begin
         if DeliveryChallanLine.Get("Applied Delivery Challan No.", "App. Delivery Challan Line No.") then begin
             DeliveryChallanLine.CalcFields("Remaining Quantity");
-            if (DeliveryChallanLine."Remaining Quantity" * DeliveryChallanLine."Quantity per") <
+            if (DeliveryChallanLine."Remaining Quantity") <
                ("Qty. to Receive" + "Qty. to Consume" + "Qty. to Return (C.E.)" + "Qty. To Return (V.E.)")
             then
                 Error(RemainingQtyErr)
@@ -382,7 +386,7 @@ table 18466 "Applied Delivery Challan"
             TrackingSpecification."Item No." := "Item No.";
             TrackingSpecification."Location Code" := DeliveryChallanLn."Vendor Location";
             TrackingSpecification.Description := Item.Description;
-            TrackingSpecification."Variant Code" := DeliveryChallanLine."Variant Code";
+            TrackingSpecification."Variant Code" := DeliveryChallanLn."Variant Code";
             TrackingSpecification."Source ID" := '';
             TrackingSpecification."Source Batch Name" := '';
             TrackingSpecification."Source Prod. Order Line" := 0;
@@ -394,7 +398,7 @@ table 18466 "Applied Delivery Challan"
             TrackingSpecification."Qty. to Invoice (Base)" := Quantity_;
             TrackingSpecification."Quantity Handled (Base)" := 0;
             TrackingSpecification."Quantity Invoiced (Base)" := 0;
-            TrackingSpecification."Qty. per Unit of Measure" := DeliveryChallanLine."Quantity per";
+            TrackingSpecification."Qty. per Unit of Measure" := DeliveryChallanLn."Quantity per";
         end;
     end;
 

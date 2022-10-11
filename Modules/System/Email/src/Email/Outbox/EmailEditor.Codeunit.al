@@ -22,6 +22,8 @@ codeunit 8906 "Email Editor"
         if IsNewOutbox then
             EmailEditor.SetAsNew();
 
+        BeforeOpenEmailEditor(EmailOutbox.GetMessageId());
+
         if IsModal then begin
             Commit(); // Commit before opening modally
             EmailEditor.RunModal();
@@ -29,6 +31,27 @@ codeunit 8906 "Email Editor"
         end
         else
             EmailEditor.Run();
+    end;
+
+    local procedure BeforeOpenEmailEditor(MessageId: Guid)
+    var
+        Email: Codeunit Email;
+        EmailMessage: Codeunit "Email Message";
+        Telemetry: Codeunit Telemetry;
+        Dimensions: Dictionary of [Text, Text];
+        LastModifiedNo: Integer;
+    begin
+        EmailMessage.Get(MessageId);
+        LastModifiedNo := EmailMessage.GetNoOfModifies();
+
+        Email.OnBeforeOpenEmailEditor(EmailMessage, IsNewOutbox);
+
+        EmailMessage.Get(MessageId); // Get any latest changes
+        if LastModifiedNo < EmailMessage.GetNoOfModifies() then begin
+            Dimensions.Add('Category', EmailCategoryLbl);
+            Dimensions.Add('EmailMessageId', EmailMessage.GetId());
+            Telemetry.LogMessage('0000I2G', EmailModifiedByEventTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Dimensions);
+        end;
     end;
 
     procedure CheckPermissions(EmailOutbox: Record "Email Outbox")
@@ -195,40 +218,46 @@ codeunit 8906 "Email Editor"
             until EmailRelatedAttachment.Next() = 0;
     end;
 
-    local procedure GetPrimarySourceEntity(var PrimarySource: Integer; EmailMessageID: Guid; Dict: Dictionary of [Integer, Guid]): Boolean
+    local procedure GetPrimarySourceEntity(var PrimarySource: Integer; EmailMessageID: Guid; RelatedIds: List of [Integer]): Boolean
     var
         EmailRelatedRecord: Record "Email Related Record";
-        Count: Integer;
+        RelatedId: Integer;
     begin
         // If there is only one key in the dict, then there is no need to use DB resources.
-        If Dict.Keys.Count = 1 then begin
-            PrimarySource := Dict.Keys.Get(1);
+        If RelatedIds.Count = 1 then begin
+            PrimarySource := RelatedIds.Get(1);
             exit(true);
         end;
 
         EmailRelatedRecord.SetRange("Email Message Id", EmailMessageID);
-        for Count := 1 to Dict.Keys.Count() do begin
-            EmailRelatedRecord.SetFilter("Table Id", Format(Dict.Keys.Get(Count)));
-            EmailRelatedRecord.FindFirst();
+        foreach RelatedId in RelatedIds do begin
+            EmailRelatedRecord.SetFilter("Table Id", Format(RelatedId));
 
-            if EmailRelatedRecord."Relation Type" = EmailRelatedRecord."Relation Type"::"Primary Source" then begin
-                PrimarySource := Dict.Keys.Get(Count);
-                exit(true);
-            end;
+            if EmailRelatedRecord.FindSet() then
+                repeat
+                    if EmailRelatedRecord."Relation Type" = EmailRelatedRecord."Relation Type"::"Primary Source" then begin
+                        PrimarySource := RelatedId;
+                        exit(true);
+                    end;
+                until EmailRelatedRecord.Next() = 0;
         end;
 
         exit(false);
     end;
 
-    local procedure FindEmailSourceEntities(EmailMessageID: Guid; var Dict: Dictionary of [Integer, Guid]): Boolean
+    local procedure FindEmailSourceEntities(EmailMessageID: Guid; var Dict: Dictionary of [Integer, Text]): Boolean
     var
         EmailRelatedRecord: Record "Email Related Record";
+        SystemIdFilter: Text;
     begin
         EmailRelatedRecord.SetRange("Email Message Id", EmailMessageID);
-        EmailRelatedRecord.FindSet();
-        repeat
-            Dict.Add(EmailRelatedRecord."Table Id", EmailRelatedRecord."System Id");
-        until EmailRelatedRecord.Next() <= 0;
+        if EmailRelatedRecord.FindSet() then
+            repeat
+                if Dict.Get(EmailRelatedRecord."Table Id", SystemIdFilter) then
+                    Dict.Set(EmailRelatedRecord."Table Id", SystemIdFilter + '|' + Format(EmailRelatedRecord."System Id"))
+                else
+                    Dict.Add(EmailRelatedRecord."Table Id", Format(EmailRelatedRecord."System Id"));
+            until EmailRelatedRecord.Next() <= 0;
 
         exit(EmailRelatedRecord.Count() > 0);
     end;
@@ -238,11 +267,11 @@ codeunit 8906 "Email Editor"
         WordTemplateRecord: Record "Word Template";
         WordTemplateToTextWizard: Page "Word Template To Text Wizard";
         TemplateSize: Integer;
-        Dict: Dictionary of [Integer, Guid];
+        Dict: Dictionary of [Integer, Text];
         PrimarySource: Integer;
     begin
         if FindEmailSourceEntities(EmailMessageID, Dict) then begin
-            if not GetPrimarySourceEntity(PrimarySource, EmailMessageID, Dict) then
+            if not GetPrimarySourceEntity(PrimarySource, EmailMessageID, Dict.Keys) then
                 Error(NoPrimarySourceOnEmailErr);
 
             WordTemplateToTextWizard.SetData(Dict, PrimarySource);
@@ -274,7 +303,7 @@ codeunit 8906 "Email Editor"
         Filename: Text;
         FileSize: Integer;
         ContentType: Text[250];
-        Dict: Dictionary of [Integer, Guid];
+        Dict: Dictionary of [Integer, Text];
     begin
         if FindEmailSourceEntities(EmailMessageID, Dict) then begin
             WordTemplateSelectionWizard.SetData(Dict);
@@ -480,4 +509,5 @@ codeunit 8906 "Email Editor"
         LoadingTemplateExitedMsg: Label 'Did not apply word template to email as user exited dialog.';
         NoPrimarySourceOnEmailErr: Label 'Failed to find the primary source entity';
         NoAttachmentContentMsg: Label 'The attachment content is no longer available.';
+        EmailModifiedByEventTxt: Label 'Email has been modified by event', Locked = true;
 }

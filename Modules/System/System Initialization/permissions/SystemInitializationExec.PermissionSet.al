@@ -10,5 +10,8 @@ permissionset 150 "System Initialization - Exec"
 
     IncludedPermissionSets = "System Initialization - Obj.",
                              "User Login Times - View",
-                             "AAD User Management - Exec";
+                             "AAD User Management - Exec",
+                             "Telemetry - Exec";
+
+    Permissions = Tabledata "Signup Context Values" = RI;
 }

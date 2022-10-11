@@ -4,7 +4,7 @@
 enum 30132 "Shpfy SKU Mappging"
 {
     Access = Internal;
-    Caption = 'Shopify SKU Mappging';
+    Caption = 'Shopify SKU Mapping';
     Extensible = true;
 
     value(0; " ")

@@ -22,6 +22,8 @@ codeunit 139043 "Web Service Management Test"
         PageCTxt: Label 'PageC';
         PageDTxt: Label 'PageD';
         ODataUnboundActionHelpUrlLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2138827';
+        UrlMissingServiceNameErr: Label 'Url was ''%1'' but should be populated and contain ServiceName ''%2''.', Locked = true;
+        UrlServiceNotApplicableErr: Label 'Url was ''%1'' but should be "Not applicable" for ''%2''.', Locked = true;
 
     [Test]
     [Scope('OnPrem')]
@@ -656,17 +658,17 @@ codeunit 139043 "Web Service Management Test"
     begin
         Assert.IsTrue(
           StrPos(Url, ServiceName) > 1,
-          StrSubstNo('Url was ''%1'' but should be populated and contain ServiceName ''%2''.', Url, ServiceName))
+          StrSubstNo(UrlMissingServiceNameErr, Url, ServiceName))
     end;
 
     local procedure VerifyUrlMissingServiceName(Url: Text; ServiceName: Text[240])
     begin
-        Assert.AreEqual('Not applicable', Url, StrSubstNo('Url was ''%1'' but should be "Not applicable" for ''%2''.', Url, ServiceName));
+        Assert.AreEqual('Not applicable', Url, StrSubstNo(UrlServiceNotApplicableErr, Url, ServiceName));
     end;
 
     local procedure VerifyODataV4CodeunitHelpUrl(Url: Text; ServiceName: Text[240])
     begin
-        Assert.AreEqual(ODataUnboundActionHelpUrlLbl, Url, StrSubstNo('Url was ''%1'' but should be "Not applicable" for ''%2''.', Url, ServiceName));
+        Assert.AreEqual(ODataUnboundActionHelpUrlLbl, Url, StrSubstNo(UrlServiceNotApplicableErr, Url, ServiceName));
     end;
 
     local procedure Initialize()

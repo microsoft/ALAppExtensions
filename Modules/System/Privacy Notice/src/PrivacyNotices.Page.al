@@ -8,7 +8,7 @@ page 1565 "Privacy Notices"
     Caption = 'Privacy Notices Status';
     PageType = List;
     ApplicationArea = All;
-    UsageCategory = Lists;
+    UsageCategory = Administration;
     SourceTable = "Privacy Notice";
     SourceTableView = Sorting("Integration Service Name")
                       Where("User SID Filter" = filter('00000000-0000-0000-0000-000000000000'));
@@ -42,7 +42,7 @@ page 1565 "Privacy Notices"
                 }
                 field(Accepted; Accepted)
                 {
-                    Caption = 'Agree for All';
+                    Caption = 'Agree for Everyone';
                     ToolTip = 'Specifies whether an administrator has accepted the integration''s privacy notice on behalf of all users.';
                     ApplicationArea = All;
 
@@ -59,7 +59,7 @@ page 1565 "Privacy Notices"
                 }
                 field(Rejected; Rejected)
                 {
-                    Caption = 'Disagree for All';
+                    Caption = 'Disagree for Everyone';
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether an administrator has disagreed to the integration''s privacy notice on behalf of all users.';
 
@@ -76,7 +76,7 @@ page 1565 "Privacy Notices"
                 }
                 field(LetUserDecide; UserDecides)
                 {
-                    Caption = 'Let User Decide';
+                    Caption = 'Let Users Decide';
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether users can choose to agree or disagree to the integration''s privacy notice for themselves.';
 

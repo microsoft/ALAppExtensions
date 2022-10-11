@@ -635,7 +635,7 @@ codeunit 11748 "Install Application CZL"
 #if not CLEAN20
             SalesReceivablesSetup."Allow Alter Posting Groups CZL" := SalesReceivablesSetup."Allow Alter Posting Groups";
 #else
-            SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups";
+                SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups";
 #endif
             SalesReceivablesSetup.Modify(false);
         end;
@@ -651,7 +651,7 @@ codeunit 11748 "Install Application CZL"
 #if not CLEAN20
             PurchasesPayablesSetup."Allow Alter Posting Groups CZL" := PurchasesPayablesSetup."Allow Alter Posting Groups";
 #else
-            PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups";
+                PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups";
 #endif
             PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" := PurchasesPayablesSetup."Default Orig. Doc. VAT Date";
             PurchasesPayablesSetup.Modify(false);
@@ -668,7 +668,7 @@ codeunit 11748 "Install Application CZL"
 #if not CLEAN20
             ServiceMgtSetup."Allow Alter Posting Groups CZL" := ServiceMgtSetup."Allow Alter Cust. Post. Groups";
 #else
-            ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Cust. Post. Groups";
+                ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Cust. Post. Groups";
 #endif
             ServiceMgtSetup.Modify(false);
         end;
@@ -763,35 +763,19 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyDetailedCustLedgEntry();
     var
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
-#if CLEAN18
         ApplTransactionDictionary: Dictionary of [Integer, Boolean];
-#else
-        ApplAcrCustPostGroupsCZL: Query "Appl.Acr. Cust.Post.Groups CZL";
-        ApplAcrossPostGrpEntryNo: List of [Integer];
-#endif
     begin
-#if not CLEAN18
-        if ApplAcrCustPostGroupsCZL.Open() then
-            while ApplAcrCustPostGroupsCZL.Read() do
-                ApplAcrossPostGrpEntryNo.Add(ApplAcrCustPostGroupsCZL.Entry_No_);
-#endif
         DetailedCustLedgEntry.SetLoadFields("Entry No.", "Customer Posting Group", "Entry Type", "Transaction No.");
         if DetailedCustLedgEntry.FindSet(true) then
             repeat
                 DetailedCustLedgEntry."Customer Posting Group CZL" := DetailedCustLedgEntry."Customer Posting Group";
-#if CLEAN18
                 if DetailedCustLedgEntry."Entry Type" = DetailedCustLedgEntry."Entry Type"::Application then
                     DetailedCustLedgEntry."Appl. Across Post. Groups CZL" :=
                         IsCustomerApplAcrossPostGrpTransaction(DetailedCustLedgEntry."Transaction No.", ApplTransactionDictionary);
-#else
-                if ApplAcrossPostGrpEntryNo.Contains(DetailedCustLedgEntry."Entry No.") then
-                    DetailedCustLedgEntry."Appl. Across Post. Groups CZL" := true;
-#endif
                 DetailedCustLedgEntry.Modify(false);
             until DetailedCustLedgEntry.Next() = 0;
     end;
 
-#if CLEAN18
     procedure IsCustomerApplAcrossPostGrpTransaction(TransactionNo: Integer; var ApplTransactionDictionary: Dictionary of [Integer, Boolean]) ApplAcrossPostGroups: Boolean
     var
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
@@ -799,6 +783,7 @@ codeunit 11748 "Install Application CZL"
     begin
         if not ApplTransactionDictionary.Get(TransactionNo, ApplAcrossPostGroups) then begin
             FirstCustomerPostingGroup := '';
+            DetailedCustLedgEntry.SetLoadFields("Customer Posting Group");
             DetailedCustLedgEntry.SetCurrentKey("Transaction No.", "Customer No.", "Entry Type");
             DetailedCustLedgEntry.SetRange("Transaction No.", TransactionNo);
             DetailedCustLedgEntry.SetRange("Entry Type", DetailedCustLedgEntry."Entry Type"::Application);
@@ -812,7 +797,6 @@ codeunit 11748 "Install Application CZL"
         end;
     end;
 
-#endif
     local procedure CopyVendLedgerEntry();
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
@@ -837,35 +821,19 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyDetailedVendorLedgEntry();
     var
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
-#if CLEAN18
         ApplTransactionDictionary: Dictionary of [Integer, Boolean];
-#else
-        ApplAcrVendPostGroupsCZL: Query "Appl.Acr. Vend.Post.Groups CZL";
-        ApplAcrossPostGrpEntryNo: List of [Integer];
-#endif
     begin
-#if not CLEAN18
-        if ApplAcrVendPostGroupsCZL.Open() then
-            while ApplAcrVendPostGroupsCZL.Read() do
-                ApplAcrossPostGrpEntryNo.Add(ApplAcrVendPostGroupsCZL.Entry_No_);
-#endif
         DetailedVendorLedgEntry.SetLoadFields("Entry No.", "Vendor Posting Group", "Entry Type", "Transaction No.");
         if DetailedVendorLedgEntry.FindSet(true) then
             repeat
                 DetailedVendorLedgEntry."Vendor Posting Group CZL" := DetailedVendorLedgEntry."Vendor Posting Group";
-#if CLEAN18
                 if DetailedVendorLedgEntry."Entry Type" = DetailedVendorLedgEntry."Entry Type"::Application then
                     DetailedVendorLedgEntry."Appl. Across Post. Groups CZL" :=
                         IsVendorApplAcrossPostGrpTransaction(DetailedVendorLedgEntry."Transaction No.", ApplTransactionDictionary);
-#else
-                if ApplAcrossPostGrpEntryNo.Contains(DetailedVendorLedgEntry."Entry No.") then
-                    DetailedVendorLedgEntry."Appl. Across Post. Groups CZL" := true;
-#endif
                 DetailedVendorLedgEntry.Modify(false);
             until DetailedVendorLedgEntry.Next() = 0;
     end;
 
-#if CLEAN18
     procedure IsVendorApplAcrossPostGrpTransaction(TransactionNo: Integer; var ApplTransactionDictionary: Dictionary of [Integer, Boolean]) ApplAcrossPostGroups: Boolean
     var
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
@@ -873,8 +841,8 @@ codeunit 11748 "Install Application CZL"
     begin
         if not ApplTransactionDictionary.Get(TransactionNo, ApplAcrossPostGroups) then begin
             FirstVendorPostingGroup := '';
-            DetailedVendorLedgEtnry.SetLoadFields("Vendor Posting Group");
             DetailedVendorLedgEntry.SetCurrentKey("Transaction No.", "Vendor No.", "Entry Type");
+            DetailedVendorLedgEntry.SetLoadFields("Vendor Posting Group");
             DetailedVendorLedgEntry.SetRange("Transaction No.", TransactionNo);
             DetailedVendorLedgEntry.SetRange("Entry Type", DetailedVendorLedgEntry."Entry Type"::Application);
             if DetailedVendorLedgEntry.FindSet() then
@@ -887,7 +855,6 @@ codeunit 11748 "Install Application CZL"
         end;
     end;
 
-#endif
     local procedure CopyVATEntry();
     var
         VATEntry: Record "VAT Entry";
@@ -1955,13 +1922,13 @@ codeunit 11748 "Install Application CZL"
     local procedure ConvertAccScheduleLineTotalingTypeEnumValues(var AccScheduleLine: Record "Acc. Schedule Line");
     begin
 #if CLEAN19
-        if AccScheduleLine."Totaling Type" = 14 then //14 = AccScheduleLine.Type::Custom
+            if AccScheduleLine."Totaling Type" = 14 then //14 = AccScheduleLine.Type::Custom
 #else
         if AccScheduleLine."Totaling Type" = AccScheduleLine."Totaling Type"::Custom then
 #endif
             AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Custom CZL";
 #if CLEAN19
-        if AccScheduleLine."Totaling Type" = 15 then //15 = AccScheduleLine.Type::Constant
+            if AccScheduleLine."Totaling Type" = 15 then //15 = AccScheduleLine.Type::Constant
 #else
         if AccScheduleLine."Totaling Type" = AccScheduleLine."Totaling Type"::Constant then
 #endif
@@ -2140,9 +2107,7 @@ codeunit 11748 "Install Application CZL"
 
     local procedure CopyTariffNumber();
     var
-#if CLEAN18
         UnitOfMeasure: Record "Unit of Measure";
-#endif
         TariffNumber: Record "Tariff Number";
     begin
         TariffNumber.SetLoadFields("Statement Code", "Statement Limit Code", "VAT Stat. Unit of Measure Code", "Allow Empty Unit of Meas.Code", "Full Name ENG", "Description EN CZL",
@@ -2155,12 +2120,7 @@ codeunit 11748 "Install Application CZL"
                 TariffNumber."Allow Empty UoM Code CZL" := TariffNumber."Allow Empty Unit of Meas.Code";
                 TariffNumber."Description EN CZL" := CopyStr(TariffNumber."Full Name ENG", 1, MaxStrLen(TariffNumber."Description EN CZL"));
                 TariffNumber."Suppl. Unit of Meas. Code CZL" := TariffNumber."Supplem. Unit of Measure Code";
-#if not CLEAN18
-                // Field "Supplementary Units" will change from FlowField to Normal in CLEAN18. Existing data has to be updated according to original CalcFormula.
-                TariffNumber.CalcFields("Supplementary Units");
-#else
                 TariffNumber."Supplementary Units" := UnitOfMeasure.Get(TariffNumber."Supplem. Unit of Measure Code");
-#endif
                 TariffNumber.Modify(false);
             until TariffNumber.Next() = 0;
     end;

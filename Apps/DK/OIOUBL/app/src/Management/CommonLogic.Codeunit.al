@@ -146,7 +146,7 @@ codeunit 13648 "OIOUBL-Common Logic"
     Local procedure InsertSupplierParty(var AccountingSupplierPartyElement: XmlElement; SalespersonCode: Code[20]);
     var
         SalespersonPurchaser: Record "Salesperson/Purchaser";
-        CompanyAddress: Record "Standard Address" temporary;
+        TempCompanyAddress: Record "Standard Address" temporary;
         SalespersonContact: Record Contact;
         PartyElement: XmlElement;
     begin
@@ -158,10 +158,10 @@ codeunit 13648 "OIOUBL-Common Logic"
           OIOUBLDocumentEncode.GetCompanyVATRegNo(CompanyInfo."VAT Registration No.")));
         InsertPartyIdentification(PartyElement, OIOUBLDocumentEncode.GetCompanyVATRegNo(CompanyInfo."VAT Registration No."));
         InsertPartyName(PartyElement, CompanyInfo.Name);
-        CompanyAddress.CopyFromCompanyInformation(CompanyInfo);
+        TempCompanyAddress.CopyFromCompanyInformation(CompanyInfo);
         InsertAddress(PartyElement,
           'PostalAddress',
-          CompanyAddress,
+          TempCompanyAddress,
           CompanyInfo."E-Mail");
         InsertPartyTaxScheme(PartyElement);
         InsertPartyLegalEntity(PartyElement);

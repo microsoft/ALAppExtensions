@@ -83,10 +83,12 @@ codeunit 18392 "GST Transfer Subscribers"
     begin
         if not Item.Get(Rec."Item No.") then
             exit;
+
         Rec."GST Credit" := Item."GST Credit";
         Rec."GST Group Code" := Item."GST Group Code";
         Rec."HSN/SAC Code" := Item."HSN/SAC Code";
         Rec.Exempted := Item.Exempted;
+        Rec.Validate("Transfer Price");
     end;
 
     [EventSubscriber(ObjectType::Table, DATABASE::"Transfer Line", 'OnBeforeValidateEvent', 'Quantity', false, false)]
@@ -98,12 +100,8 @@ codeunit 18392 "GST Transfer Subscribers"
     [EventSubscriber(ObjectType::Table, DATABASE::"Transfer Line", 'OnAfterValidateEvent', 'Transfer price', false, false)]
     local procedure ValidateTransferPrice(var Rec: Record "Transfer Line")
     begin
-        if (Rec."GST Group Code" = '') or (Rec."HSN/SAC Code" = '') then
-            exit;
-
         Rec.TestField("Quantity Shipped", 0);
         Rec.Amount := Round(Rec.Quantity * Rec."Transfer Price");
-        Rec.Validate(Quantity);
     end;
 
     [EventSubscriber(ObjectType::table, DATABASE::"Transfer Line", 'OnAfterValidateEvent', 'Exempted', false, false)]
@@ -140,7 +138,7 @@ codeunit 18392 "GST Transfer Subscribers"
     var
         Item: Record "Item";
     begin
-        if Item.Get(Rec."Item No.") then
-            Rec.Validate("Transfer Price", Item."Unit Cost" * Rec."Qty. per Unit of Measure");
+        Item.Get(Rec."Item No.");
+        Rec.Validate("Transfer Price", Item."Unit Cost" * Rec."Qty. per Unit of Measure");
     end;
 }

@@ -7,31 +7,31 @@ codeunit 3709 "Video Impl."
 {
     Access = Internal;
 
-    procedure InsertIntoBuffer(var ProductVideoBuffer: Record "Product Video Buffer"; AppID: Guid; Title: Text[250]; VideoUrl: Text[2048]; TableNum: Integer; SystemId: Guid; Category: Enum "Video Category")
+    procedure InsertIntoBuffer(var ProductVideoBufferRec: Record "Product Video Buffer"; AppID: Guid; Title: Text[250]; VideoUrl: Text[2048]; TableNum: Integer; SystemId: Guid; Category: Enum "Video Category")
     var
-        ProductVideoBuff: Record "Product Video Buffer";
+        ProductVideoBuffer: Record "Product Video Buffer";
         EntryNo: Integer;
     begin
         if VideoUrl = '' then
             exit;
 
-        ProductVideoBuff.SetRange("Video Url", VideoUrl);
-        if not ProductVideoBuff.IsEmpty() then
+        ProductVideoBuffer.SetRange("Video Url", VideoUrl);
+        if not ProductVideoBuffer.IsEmpty() then
             exit;
 
-        ProductVideoBuff.Reset();
-        if ProductVideoBuffer.FindLast() then
-            EntryNo := ProductVideoBuffer.ID;
+        ProductVideoBuffer.Reset();
+        if ProductVideoBufferRec.FindLast() then
+            EntryNo := ProductVideoBufferRec.ID;
         EntryNo += 1;
-        ProductVideoBuffer.Init();
-        ProductVideoBuffer.ID := EntryNo;
-        ProductVideoBuffer.Title := Title;
-        ProductVideoBuffer."Video Url" := VideoUrl;
-        ProductVideoBuffer."Table Num" := TableNum;
-        ProductVideoBuffer."System ID" := SystemId;
-        ProductVideoBuffer."App ID" := AppID;
-        ProductVideoBuffer.Category := Category;
-        ProductVideoBuffer.Insert();
+        ProductVideoBufferRec.Init();
+        ProductVideoBufferRec.ID := EntryNo;
+        ProductVideoBufferRec.Title := Title;
+        ProductVideoBufferRec."Video Url" := VideoUrl;
+        ProductVideoBufferRec."Table Num" := TableNum;
+        ProductVideoBufferRec."System ID" := SystemId;
+        ProductVideoBufferRec."App ID" := AppID;
+        ProductVideoBufferRec.Category := Category;
+        ProductVideoBufferRec.Insert();
     end;
 
     procedure Play(Url: Text)

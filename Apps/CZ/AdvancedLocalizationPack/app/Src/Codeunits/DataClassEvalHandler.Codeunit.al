@@ -23,6 +23,7 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         ManufacturingSetup: Record "Manufacturing Setup";
         PostedAssemblyHeader: Record "Posted Assembly Header";
         PostedAssemblyLine: Record "Posted Assembly Line";
+        StandardItemJournalLine: Record "Standard Item Journal Line";
         ValueEntry: Record "Value Entry";
         TransferRoute: Record "Transfer Route";
         TransferHeader: Record "Transfer Header";
@@ -70,6 +71,7 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         DataClassificationMgt.SetFieldToNormal(Database::"Manufacturing Setup", ManufacturingSetup.FieldNo("Exact Cost Rev.Mand. Cons. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Posted Assembly Header", PostedAssemblyHeader.FieldNo("Gen. Bus. Posting Group CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Posted Assembly Line", PostedAssemblyLine.FieldNo("Gen. Bus. Posting Group CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Standard Item Journal Line", StandardItemJournalLine.FieldNo("New Location Code CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Value Entry", ValueEntry.FieldNo("Invoice-to Source No. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Value Entry", ValueEntry.FieldNo("Delivery-to Source No. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Value Entry", ValueEntry.FieldNo("Currency Code CZA"));

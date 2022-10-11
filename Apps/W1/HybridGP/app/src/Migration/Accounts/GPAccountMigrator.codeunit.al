@@ -9,6 +9,7 @@ codeunit 4017 "GP Account Migrator"
         BeginningBalanceTrxTxt: Label 'Beginning Balance', Locked = true;
         GlDocNoTxt: Label 'G00001', Locked = true;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
     procedure OnMigrateGlAccount(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -89,6 +90,7 @@ codeunit 4017 "GP Account Migrator"
 
         CreateBeginningBalance(GPAccount);
     end;
+#pragma warning restore AA0207
 
     local procedure CreateBeginningBalance(GPAccount: Record "GP Account")
     var
@@ -108,7 +110,7 @@ codeunit 4017 "GP Account Migrator"
         GPGL10111.SetRange(ACTINDX, GPAccount.AcctIndex);
         GPGL10111.SetRange(PERIODID, 0);
         GPGL10111.SetRange(YEAR1, InitialYear);
-        if not GPGL10111.Get() then
+        if not GPGL10111.FindFirst() then
             exit;
 
         BeginningBalance := GPGL10111.PERDBLNC;

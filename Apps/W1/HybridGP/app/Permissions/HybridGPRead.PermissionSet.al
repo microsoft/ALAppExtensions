@@ -47,7 +47,9 @@ permissionset 4032 "HybridGP - Read"
                     tabledata "GPSOPTrxHist" = R,
                     tabledata "GPSOPUserDefinedWorkHist" = R,
                     tabledata "GPSOPWorkflowWorkHist" = R,
+#pragma warning disable AL0432
                     tabledata "GPForecastTemp" = R,
+#pragma warning restore AL0432
                     tabledata "GP Item" = R,
                     tabledata "GP Item Location" = R,
                     tabledata "GP Item Transactions" = R,
@@ -76,7 +78,25 @@ permissionset 4032 "HybridGP - Read"
                     tabledata "GP PM00200" = R,
                     tabledata "GP RM00101" = R,
                     tabledata "GP RM00201" = R,
+                    tabledata "GP GL00100" = R,
+                    tabledata "GP GL10110" = R,
+                    tabledata "GP GL10111" = R,
+                    tabledata "GP GL40200" = R,
                     tabledata "GP IV00101" = R,
+                    tabledata "GP IV00102" = R,
+                    tabledata "GP IV00105" = R,
+                    tabledata "GP IV00200" = R,
+                    tabledata "GP IV00300" = R,
+                    tabledata "GP IV10200" = R,
+                    tabledata "GP IV40201" = R,
                     tabledata "GP IV40400" = R,
-                    tabledata "GP GL10111" = R;
+                    tabledata "GP MC40000" = R,
+                    tabledata "GP PM00201" = R,
+                    tabledata "GP PM20000" = R,
+                    tabledata "GP RM00103" = R,
+                    tabledata "GP RM20101" = R,
+                    tabledata "GP SY00300" = R,
+                    tabledata "GP SY01100" = R,
+                    tabledata "GP SY01200" = R,
+                    tabledata "GP SY03300" = R;
 }

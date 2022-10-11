@@ -7,6 +7,8 @@ table 1990 "Guided Experience Item"
 {
     Caption = 'Guided Experience Item';
     Access = Internal;
+    ReplicateData = false;
+    Permissions = tabledata "Primary Guided Experience Item" = rd;
 
     fields
     {
@@ -134,6 +136,12 @@ table 1990 "Guided Experience Item"
             Caption = 'Spotlight Tour Type';
             DataClassification = SystemMetadata;
         }
+        field(22; "Extension Publisher"; Text[250])
+        {
+            Caption = 'Extension Publisher';
+            FieldClass = FlowField;
+            CalcFormula = Lookup("Published Application".Publisher where(ID = FIELD("Extension ID"), "Tenant Visible" = CONST(true)));
+        }
     }
 
     keys
@@ -147,9 +155,22 @@ table 1990 "Guided Experience Item"
         }
         key(Key3; "Assisted Setup Group")
         {
-
+        }
+        key(Key4; "Extension ID", "Guided Experience Type")
+        {
+        }
+        key(Key5; "Video Url")
+        {
         }
     }
+
+    trigger OnDelete()
+    var
+        PrimaryGuidedExperienceItem: Record "Primary Guided Experience Item";
+    begin
+        PrimaryGuidedExperienceItem.SetRange("Primary Setup", Rec.SystemId);
+        PrimaryGuidedExperienceItem.DeleteAll();
+    end;
 
     var
         ObjectAndLinkErr: Label 'You cannot populate the Object Type to Run or the Object ID to Run fields when the Link field is not empty.';

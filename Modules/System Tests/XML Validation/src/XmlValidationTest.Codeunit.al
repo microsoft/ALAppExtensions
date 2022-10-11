@@ -110,4 +110,55 @@ codeunit 135051 "Xml Validation Test"
         Assert.IsFalse(Result, 'Xml shoud not validate successfully.');
         Assert.ExpectedError(InvalidSchemaErrTxt);
     end;
+
+    [Test]
+    procedure TestValidXmlWithOneSchema()
+    var
+        XmlValidation: Codeunit "Xml Validation";
+        Xml, XmlSchema, Namespace : Text;
+        Result: Boolean;
+    begin
+        // [GIVEN] A string representing an xml document with a correctly applied schema
+        Xml := XmlValidationTestHelper.GetValidXml();
+
+        // [GIVEN] A string representing an xml schema
+        XmlSchema := XmlValidationTestHelper.GetXmlSchema();
+
+        // [GIVEN] A namespace
+        Namespace := XmlValidationTestHelper.GetNamespace();
+
+        // [GIVEN] Set XML document to validation
+        XmlValidation.TrySetValidatedDocument(Xml);
+
+        // [GIVEN] Add XSD schema for validation
+        XmlValidation.TryAddValidationSchema(XmlSchema, Namespace);
+
+        // [WHEN] Validation is performed
+        Result := XmlValidation.TryValidateAgainstSchema();
+
+        // [THEN] Validation is successful and no error text is returned
+        Assert.IsTrue(Result, 'Xml should validate successfully.');
+    end;
+
+    [Test]
+    procedure TestValidXmlWithMultipleSchemas()
+    var
+        XmlValidation: Codeunit "Xml Validation";
+        Result: Boolean;
+    begin
+        // [GIVEN] Set XML document to validation
+        XmlValidation.TrySetValidatedDocument(XmlValidationTestHelper.GetBooksXml());
+
+        // [GIVEN] Add XSD schema 1 for validation
+        XmlValidation.TryAddValidationSchema(XmlValidationTestHelper.GetBooksSchemaXsd1(), XmlValidationTestHelper.GetBooksNamespace1());
+
+        // [GIVEN] Add XSD schema 2 for validation
+        XmlValidation.TryAddValidationSchema(XmlValidationTestHelper.GetBooksSchemaXsd2(), XmlValidationTestHelper.GetBooksNamespace2());
+
+        // [WHEN] Validation is performed
+        Result := XmlValidation.TryValidateAgainstSchema();
+
+        // [THEN] Validation is successful and no error text is returned
+        Assert.IsTrue(Result, 'Xml should validate successfully.');
+    end;
 }

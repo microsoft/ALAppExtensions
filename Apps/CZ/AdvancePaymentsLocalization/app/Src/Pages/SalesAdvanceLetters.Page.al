@@ -384,11 +384,4 @@ page 31170 "Sales Advance Letters CZZ"
             }
         }
     }
-
-    trigger OnOpenPage()
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-    begin
-        AdvancePaymentsMgtCZZ.TestIsEnabled();
-    end;
 }

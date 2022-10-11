@@ -459,12 +459,12 @@ page 2501 "Extension Details"
 
     local procedure SetLanguageConfig()
     var
-        WinLanguagesTable: Record "Windows Language";
+        WindowsLanguageTable: Record "Windows Language";
     begin
         LanguageID := GlobalLanguage();
-        WinLanguagesTable.SetRange("Language ID", LanguageID);
-        if WinLanguagesTable.FindFirst() then
-            LanguageName := WinLanguagesTable.Name;
+        WindowsLanguageTable.SetRange("Language ID", LanguageID);
+        if WindowsLanguageTable.FindFirst() then
+            LanguageName := WindowsLanguageTable.Name;
     end;
 
     local procedure SetPageConfig()

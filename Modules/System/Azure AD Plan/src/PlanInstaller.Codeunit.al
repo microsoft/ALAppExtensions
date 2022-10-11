@@ -31,6 +31,7 @@ codeunit 9056 "Plan Installer"
         CreatePlan('62E90394-69F5-4237-9190-012177145E10', 'Internal Administrator', 9022, '9B84DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetEssentialISVPlanId(), 'Dynamics 365 Business Central Essential - Embedded', 9022, '2E84DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetTeamMemberPlanId(), 'Dynamics 365 Business Central Team Member', 9028, '5784DDCA-27B8-E911-BB26-000D3A2B005C');
+        CreatePlan(PlanIds.GetMicrosoft365PlanId(), 'Microsoft 365', 8999, '57ff2da0-773e-42df-b2af-ffb7a2317929');
         CreatePlan(PlanIds.GetPremiumPlanId(), 'Dynamics 365 Business Central Premium', 9022, '3884DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetBasicFinancialsISVPlanId(), 'D365 Business Central Basic Financials', 9022, '4C84DDCA-27B8-E911-BB26-000D3A2B005C');
         CreatePlan(PlanIds.GetEssentialPlanId(), 'Dynamics 365 Business Central Essential', 9022, '2484DDCA-27B8-E911-BB26-000D3A2B005C');

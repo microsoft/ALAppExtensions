@@ -8,17 +8,7 @@ pageextension 31162 "Cash Document Subform CZZ" extends "Cash Document Subform C
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies advance letter no.';
-                Visible = AdvancePaymentsEnabledCZZ;
             }
         }
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

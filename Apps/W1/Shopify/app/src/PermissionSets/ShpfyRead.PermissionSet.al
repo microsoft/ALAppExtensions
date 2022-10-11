@@ -18,6 +18,7 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Customer Template" = R,
         tabledata "Shpfy Data Capture" = R,
         tabledata "Shpfy Gift Card" = R,
+        tabledata "Shpfy Initial Import Line" = r,
         tabledata "Shpfy Inventory Item" = R,
         tabledata "Shpfy Log Entry" = R,
         tabledata "Shpfy Metafield" = R,
@@ -37,7 +38,12 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Payout" = R,
         tabledata "Shpfy Product" = R,
         tabledata "Shpfy Province" = R,
+#if not CLEAN21
+#pragma warning disable AL0432
         tabledata "Shpfy Registered Store" = R,
+#pragma warning restore AL0432
+#endif
+        tabledata "Shpfy Registered Store New" = R,
         tabledata "Shpfy Shipment Method Mapping" = R,
         tabledata "Shpfy Shop" = R,
         tabledata "Shpfy Shop Collection Map" = R,

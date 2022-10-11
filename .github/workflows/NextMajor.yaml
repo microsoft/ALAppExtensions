@@ -1,0 +1,137 @@
+﻿name: Test Next Major
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: PowerShell
+
+jobs:
+  Initialization:
+    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    outputs:
+      telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+      settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
+      projects: ${{ steps.ReadSettings.outputs.ProjectsJson }}
+      projectCount: ${{ steps.ReadSettings.outputs.ProjectCount }}
+      githubRunner: ${{ steps.ReadSettings.outputs.GitHubRunnerJson }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Initialize the workflow
+        id: init
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.0
+        with:
+          eventId: "DO0099"
+
+      - name: Read settings
+        id: ReadSettings
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.0
+        with:
+          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+          getProjects: 'Y'
+
+  Build:
+    needs: [ Initialization ]
+    if: ${{ needs.Initialization.outputs.projectCount > 0 }}
+    runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
+    strategy:
+      matrix:
+        project: ${{ fromJson(needs.Initialization.outputs.projects) }}
+      fail-fast: false
+    name: Build ${{ matrix.project }}
+    outputs:
+      TestResultsArtifactsName: ${{ steps.calculateArtifactNames.outputs.TestResultsArtifactsName }}
+      BcptTestResultsArtifactsName: ${{ steps.calculateArtifactNames.outputs.BcptTestResultsArtifactsName }}
+      BuildOutputArtifactsName: ${{ steps.calculateArtifactNames.outputs.BuildOutputArtifactsName }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Read settings
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.0
+        with:
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          project: ${{ matrix.project }}
+
+      - name: Read secrets
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.0
+        env:
+          secrets: ${{ toJson(secrets) }}
+        with:
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          settingsJson: ${{ env.Settings }}
+          secrets: 'licenseFileUrl,insiderSasToken,CodeSignCertificateUrl,CodeSignCertificatePassword,KeyVaultCertificateUrl,KeyVaultCertificatePassword,KeyVaultClientId'
+
+      - name: Run pipeline
+        uses: microsoft/AL-Go-Actions/RunPipeline@v2.0
+        with:
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          Project: ${{ matrix.project }}
+          settingsJson: ${{ env.Settings }}
+          SecretsJson: ${{ env.RepoSecrets }}
+
+      - name: Calculate Artifact names
+        id: calculateArtifactNames
+        if: success() || failure()
+        run: |
+          $settings = '${{ env.Settings }}' | ConvertFrom-Json
+          $project = '${{ matrix.project }}'
+          if ($project -eq ".") { $project = $settings.RepoName }
+          'TestResults','BcptTestResults','BuildOutput' | ForEach-Object {
+            $name = "$($_)ArtifactsName"
+            $value = "$($project.Replace('\','_'))-$_-NextMajor-$([DateTime]::UtcNow.ToString('yyyyMMdd'))"
+            Write-Host "::set-output name=$name::$value"
+            Add-Content -Path $env:GITHUB_ENV -Value "$name=$value"
+          }
+
+      - name: Publish artifacts - build output
+        uses: actions/upload-artifact@v2
+        if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
+        with:
+          name: ${{ env.buildOutputArtifactsName }}
+          path: '${{ matrix.project }}/BuildOutput.txt'
+          if-no-files-found: ignore
+
+      - name: Publish artifacts - test results
+        uses: actions/upload-artifact@v2
+        if: (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',matrix.project)) != '')
+        with:
+          name: ${{ env.testResultsArtifactsName }}
+          path: '${{ matrix.project }}/TestResults.xml'
+          if-no-files-found: ignore
+
+      - name: Publish artifacts - bcpt test results
+        uses: actions/upload-artifact@v2
+        if: (success() || failure()) && (hashFiles(format('{0}/bcptTestResults.json',matrix.project)) != '')
+        with:
+          name: ${{ env.bcptTestResultsArtifactsName }}
+          path: '${{ matrix.project }}/bcptTestResults.json'
+          if-no-files-found: ignore
+
+      - name: Cleanup
+        if: always()
+        uses: microsoft/AL-Go-Actions/PipelineCleanup@v2.0
+        with:
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          Project: ${{ matrix.project }}
+
+  PostProcess:
+    if: always()
+    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    needs: [ Initialization, Build ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Finalize the workflow
+        id: PostProcess
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.0
+        with:
+          eventId: "DO0099"
+          telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}

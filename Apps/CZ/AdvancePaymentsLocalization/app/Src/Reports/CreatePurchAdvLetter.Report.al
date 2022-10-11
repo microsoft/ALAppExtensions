@@ -68,9 +68,7 @@ report 31029 "Create Purch. Adv. Letter CZZ"
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
         AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
         PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
-#pragma warning disable AL0432
-        TempInvoicePostBuffer: Record "Invoice Post. Buffer" temporary;
-#pragma warning restore AL0432
+        TempAdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ" temporary;
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
         PurchPost: Codeunit "Purch.-Post";
         AdvanceLetterCode: Code[20];
@@ -107,6 +105,9 @@ report 31029 "Create Purch. Adv. Letter CZZ"
     end;
 
     trigger OnPostReport()
+    var
+        ConfirmManagement: Codeunit "Confirm Management";
+        OpenAdvanceLetterQst: Label 'Do you want to open created Advance Letter?';
     begin
         CreateAdvanceLetterHeader();
 
@@ -120,28 +121,29 @@ report 31029 "Create Purch. Adv. Letter CZZ"
         end else begin
             if TempPurchaseLine.FindSet() then
                 repeat
-                    TempInvoicePostBuffer.Init();
-                    TempInvoicePostBuffer."VAT Bus. Posting Group" := TempPurchaseLine."VAT Bus. Posting Group";
-                    TempInvoicePostBuffer."VAT Prod. Posting Group" := TempPurchaseLine."VAT Prod. Posting Group";
-                    if TempInvoicePostBuffer.Find() then begin
-                        TempInvoicePostBuffer.Amount += TempPurchaseLine."Amount Including VAT";
-                        TempInvoicePostBuffer.Modify();
+                    TempAdvancePostingBufferCZZ.Init();
+                    TempAdvancePostingBufferCZZ."VAT Bus. Posting Group" := TempPurchaseLine."VAT Bus. Posting Group";
+                    TempAdvancePostingBufferCZZ."VAT Prod. Posting Group" := TempPurchaseLine."VAT Prod. Posting Group";
+                    if TempAdvancePostingBufferCZZ.Find() then begin
+                        TempAdvancePostingBufferCZZ.Amount += TempPurchaseLine."Amount Including VAT";
+                        TempAdvancePostingBufferCZZ.Modify();
                     end else begin
-                        TempInvoicePostBuffer.Amount := TempPurchaseLine."Amount Including VAT";
-                        TempInvoicePostBuffer.Insert();
+                        TempAdvancePostingBufferCZZ.Amount := TempPurchaseLine."Amount Including VAT";
+                        TempAdvancePostingBufferCZZ.Insert();
                     end;
                 until TempPurchaseLine.Next() = 0;
 
-            if TempInvoicePostBuffer.FindSet() then
+            if TempAdvancePostingBufferCZZ.FindSet() then
                 repeat
-                    CreateAdvanceLetterLine('', TempInvoicePostBuffer."VAT Bus. Posting Group", TempInvoicePostBuffer."VAT Prod. Posting Group", TempInvoicePostBuffer.Amount);
-                until TempInvoicePostBuffer.Next() = 0;
+                    CreateAdvanceLetterLine('', TempAdvancePostingBufferCZZ."VAT Bus. Posting Group", TempAdvancePostingBufferCZZ."VAT Prod. Posting Group", TempAdvancePostingBufferCZZ.Amount);
+                until TempAdvancePostingBufferCZZ.Next() = 0;
         end;
 
         CreateAdvanceLetterApplication();
 
-        if GuiAllowed() then
-            Page.Run(Page::"Purch. Advance Letter CZZ", PurchAdvLetterHeaderCZZ);
+        if ConfirmManagement.GetResponseOrDefault(OpenAdvanceLetterQst, false) then
+            if GuiAllowed() then
+                Page.Run(Page::"Purch. Advance Letter CZZ", PurchAdvLetterHeaderCZZ);
     end;
 
     local procedure CreateAdvanceLetterHeader()
@@ -193,6 +195,7 @@ report 31029 "Create Purch. Adv. Letter CZZ"
         PurchAdvLetterHeaderCZZ."Currency Factor" := PurchaseHeader."Currency Factor";
         PurchAdvLetterHeaderCZZ."VAT Country/Region Code" := PurchaseHeader."VAT Country/Region Code";
         PurchAdvLetterHeaderCZZ."Automatic Post VAT Usage" := AdvanceLetterTemplateCZZ."Automatic Post VAT Document";
+        OnCreateAdvanceLetterHeaderOnBeforeModifyPurchAdvLetterHeaderCZZ(PurchaseHeader, AdvanceLetterTemplateCZZ, PurchAdvLetterHeaderCZZ);
         PurchAdvLetterHeaderCZZ.Modify(true);
     end;
 
@@ -245,5 +248,10 @@ report 31029 "Create Purch. Adv. Letter CZZ"
             Currency.Get(PurchaseHeader."Currency Code");
             Currency.TestField("Amount Rounding Precision");
         end;
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnCreateAdvanceLetterHeaderOnBeforeModifyPurchAdvLetterHeaderCZZ(PurchaseHeader: Record "Purchase Header"; AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
     end;
 }

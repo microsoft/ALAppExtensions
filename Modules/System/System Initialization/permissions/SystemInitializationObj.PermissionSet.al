@@ -9,5 +9,6 @@ permissionset 218 "System Initialization - Obj."
     Assignable = false;
 
     Permissions = Codeunit "System Initialization Impl." = X,
-                  Codeunit "System Initialization" = X;
+                  Codeunit "System Initialization" = X,
+                  Table "Signup Context Values" = X;
 }

@@ -106,7 +106,9 @@ page 20045 "APIV1 - Sales Quote Lines"
                 {
                     ApplicationArea = All;
                     Caption = 'lineDetails', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'DOCUMENTLINEOBJECTDETAILS';
+#pragma warning restore
                     ToolTip = 'Specifies details about the line.';
 
                     trigger OnValidate()
@@ -190,7 +192,9 @@ page 20045 "APIV1 - Sales Quote Lines"
                 {
                     ApplicationArea = All;
                     Caption = 'unitOfMeasure', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'ITEM-UOM';
+#pragma warning restore
                     ToolTip = 'Specifies Unit of Measure.';
 
                     trigger OnValidate()

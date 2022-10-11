@@ -52,8 +52,11 @@ codeunit 1869 "C5 Unzip"
     begin
     end;
 
+#if not CLEAN21
+    [Obsolete('Event is not used.', '21.0')]
     [IntegrationEvent(false, false)]
     local procedure OnExtractFolderMissing()
     begin
     end;
+#endif
 }

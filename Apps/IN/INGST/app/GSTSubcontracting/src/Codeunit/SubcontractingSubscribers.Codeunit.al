@@ -226,4 +226,18 @@ codeunit 18469 "Subcontracting Subscribers"
         if PurchaseHeader.Subcontracting then
             Receive := true;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Req. Wksh.-Make Order", 'OnInitPurchOrderLineOnAfterValidateLineDiscount', '', false, false)]
+    local procedure OnInitPurchOrderLineOnAfterValidateLineDiscount(var PurchOrderLine: Record "Purchase Line"; PurchOrderHeader: Record "Purchase Header"; RequisitionLine: Record "Requisition Line")
+    begin
+        UpdateSubcontractingPostingDate(PurchOrderLine, PurchOrderHeader);
+    end;
+
+    local procedure UpdateSubcontractingPostingDate(var PurchaseLine: Record "Purchase Line"; PurchaseHeader: Record "Purchase Header")
+    begin
+        if not PurchaseHeader.Subcontracting then
+            exit;
+
+        PurchaseLine."Posting Date" := PurchaseHeader."Posting Date";
+    end;
 }

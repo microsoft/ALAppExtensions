@@ -389,19 +389,19 @@ report 31244 "Fixed Asset - Book Value 1 CZF"
         TwoPlaceholdersTok: Label '%1 %2', Locked = true;
         ThreePlaceholdersTok: Label '%1 %2 %3', Locked = true;
 
-    local procedure AddPostingType(PostingType: Option "Write-Down",Appreciation,"Custom 1","Custom 2")
+    local procedure AddPostingType(PostingType2: Option "Write-Down",Appreciation,"Custom 1","Custom 2")
     var
         ii, jj : Integer;
     begin
-        ii := PostingType + 3;
-        case PostingType of
-            PostingType::"Write-Down":
+        ii := PostingType2 + 3;
+        case PostingType2 of
+            PostingType2::"Write-Down":
                 FAPostingTypeSetup.Get(DeprBookCode, FAPostingTypeSetup."FA Posting Type"::"Write-Down");
-            PostingType::Appreciation:
+            PostingType2::Appreciation:
                 FAPostingTypeSetup.Get(DeprBookCode, FAPostingTypeSetup."FA Posting Type"::Appreciation);
-            PostingType::"Custom 1":
+            PostingType2::"Custom 1":
                 FAPostingTypeSetup.Get(DeprBookCode, FAPostingTypeSetup."FA Posting Type"::"Custom 1");
-            PostingType::"Custom 2":
+            PostingType2::"Custom 2":
                 FAPostingTypeSetup.Get(DeprBookCode, FAPostingTypeSetup."FA Posting Type"::"Custom 2");
         end;
         if FAPostingTypeSetup."Depreciation Type" then
@@ -560,12 +560,12 @@ report 31244 "Fixed Asset - Book Value 1 CZF"
         end;
     end;
 
-    local procedure GetStartingDate(StartingDate: Date): Date
+    local procedure GetStartingDate(StartingDate2: Date): Date
     begin
-        if StartingDate <= 00000101D then
+        if StartingDate2 <= 00000101D then
             exit(0D);
 
-        exit(StartingDate - 1);
+        exit(StartingDate2 - 1);
     end;
 
     procedure SetMandatoryFields(DepreciationBookCodeFrom: Code[10]; StartingDateFrom: Date; EndingDateFrom: Date)

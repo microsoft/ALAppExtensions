@@ -13,9 +13,7 @@ codeunit 2504 "Extension Management"
     var
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         ExtensionOperationImpl: Codeunit "Extension Operation Impl";
-#if not CLEAN17
         ExtensionMarketplace: Codeunit "Extension Marketplace";
-#endif
 
     /// <summary>
     /// Installs an extension, based on its PackageId and Locale Identifier.
@@ -324,6 +322,15 @@ codeunit 2504 "Extension Management"
 #endif
 
     /// <summary>
+    /// Installs an extension, based on its extension id.
+    /// </summary>
+    /// <param name="AppId">The ID of the extension package.</param>
+    procedure InstallMarketplaceExtension(AppId: Guid)
+    begin
+        ExtensionMarketplace.InstallAppsourceExtensionWithRefreshSession(AppId, '');
+    end;
+
+    /// <summary>
     /// Returns the Name of the app given the App Id.
     /// </summary>
     /// <param name="AppId">The unique identifier of the app.</param>
@@ -334,17 +341,17 @@ codeunit 2504 "Extension Management"
     end;
 
     /// <summary>
-    /// Returns the detailed message from a deployment operation
+    /// Returns the detailed message from a deployment operation.
     /// </summary>
     /// <param name="OperationId">The Id of the operation to get the detailed message from.</param>
-    /// <returns>The detailed message as text</returns>
+    /// <returns>The detailed message as text.</returns>
     procedure GetDeploymentDetailedStatusMessage(OperationId: Guid): Text
     begin
         exit(ExtensionOperationImpl.GetDeploymentDetailedStatusMessage(OperationId));
     end;
 
     /// <summary>
-    /// Writes the detailed message from a deployment operation to a stream
+    /// Writes the detailed message from a deployment operation to a stream.
     /// </summary>
     /// <param name="OperationId">The Id of the operation to get the detailed message from.</param>
     /// <param name="OutStream">An OutStream to write the message to.</param>
@@ -354,3 +361,4 @@ codeunit 2504 "Extension Management"
         ExtensionOperationImpl.GetDeploymentDetailedStatusMessageAsStream(OperationId, OutStream);
     end;
 }
+

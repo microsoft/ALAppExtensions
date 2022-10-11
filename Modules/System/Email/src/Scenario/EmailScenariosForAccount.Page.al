@@ -53,11 +53,11 @@ page 8894 "Email Scenarios for Account"
 
     trigger OnOpenPage()
     begin
-        EmailScenario.GetAvailableScenariosForAccount(Rec, Rec);
+        EmailScenarioImpl.GetAvailableScenariosForAccount(Rec, Rec);
         Rec.SetCurrentKey("Display Name");
         if Rec.FindFirst() then; // set the selection to the first record
     end;
 
     var
-        EmailScenario: Codeunit "Email Scenario Impl.";
+        EmailScenarioImpl: Codeunit "Email Scenario Impl.";
 }

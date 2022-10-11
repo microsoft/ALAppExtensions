@@ -63,7 +63,7 @@ page 1080 "MS - Wallet Merchant Setup"
                     {
                         ApplicationArea = Invoicing;
                         ToolTip = 'Specifies if test mode is enabled. If you send invoices and get payments in test mode, no actual money transfer will be made.';
-                        Visible = IsInvApp;
+                        Visible = false;
                     }
                 }
                 field(Logo; MSWalletMerchantTemplate.Logo)
@@ -181,13 +181,10 @@ page 1080 "MS - Wallet Merchant Setup"
     trigger OnOpenPage();
     var
         MSWalletMgt: Codeunit "MS - Wallet Mgt.";
-        EnvInfoProxy: Codeunit "Env. Info Proxy";
     begin
         MSWalletMgt.GetTemplate(MSWalletMerchantTemplate);
         MSWalletMerchantTemplate.RefreshLogoIfNeeded();
         MSWalletMgt.SendDeprecationNotification(MSWalletMerchantTemplate.RecordId());
-
-        IsInvApp := EnvInfoProxy.IsInvoicing();
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean;
@@ -204,6 +201,5 @@ page 1080 "MS - Wallet Merchant Setup"
         LiveModeChangeConfirmQst: Label 'Changing the account setup to Live Mode will make you unable to accept Test Mode payments through Microsoft Pay Payments.\\Do you want to continue?';
         ExchangeWithExternalServicesMsg: Label 'This extension uses the Microsoft Pay Payments service. By enabling this extension, you will be subject to the applicable terms, conditions, and privacy policies that Microsoft Pay Payments may make available.\\When you establish a connection through the Microsoft Pay Payments extension, customer data from the invoice, such as invoice number, due date, amount, and currency, as well as your Microsoft Pay Payments account ID, will be inserted into the Microsoft Pay Payments payment link on invoices and sent to Microsoft Pay Payments when the customer chooses the link to pay. This data is used to ensure that the link contains enough information for your customers to pay the invoice, as well as for Microsoft Pay Payments to identify you as the recipient of a payment using the link.\\By installing this solution, you agree for this limited set of data to be sent to the Microsoft Pay Payments service. Note that you can disable or uninstall the Microsoft Pay Payments extension at any time to discontinue the functionality.';
         DisableEnableConfirm: Boolean;
-        IsInvApp: Boolean;
 }
 #endif

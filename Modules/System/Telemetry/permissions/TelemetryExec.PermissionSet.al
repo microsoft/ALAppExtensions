@@ -11,5 +11,7 @@ permissionset 8703 "Telemetry - Exec"
                              "Language - Read",
                              "Environment Info. - Objects";
 
-    Permissions = tabledata "Feature Uptake" = rimd;
+    Permissions = tabledata Company = r,
+                  tabledata "User Personalization" = r,
+                  tabledata "Feature Uptake" = rimd;
 }

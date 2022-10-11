@@ -9,6 +9,9 @@ page 30134 "Shpfy Transactions"
     PageType = List;
     SourceTable = "Shpfy Order Transaction";
     UsageCategory = History;
+    ModifyAllowed = false;
+    InsertAllowed = false;
+    SourceTableView = sorting("Created At") order(descending);
 
     layout
     {

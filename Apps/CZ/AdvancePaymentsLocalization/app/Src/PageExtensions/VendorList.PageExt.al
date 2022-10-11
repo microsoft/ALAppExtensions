@@ -4,7 +4,7 @@ pageextension 31063 "Vendor List CZZ" extends "Vendor List"
     {
         modify("Prepa&yment Percentages")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         addlast(creation)
         {
@@ -16,7 +16,6 @@ pageextension 31063 "Vendor List CZZ" extends "Vendor List"
                 Image = NewDocument;
                 Promoted = true;
                 PromotedCategory = Category4;
-                Visible = AdvancePaymentsEnabledCZZ;
 
                 trigger OnAction()
                 var
@@ -40,13 +39,4 @@ pageextension 31063 "Vendor List CZZ" extends "Vendor List"
             }
         }
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

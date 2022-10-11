@@ -1,6 +1,6 @@
 table 4071 "GPSOPLineCommentWorkHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

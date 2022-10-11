@@ -16,7 +16,7 @@ codeunit 501 OAuth2
 
 #if not CLEAN18
     /// <summary>
-    /// Gets the authorization token based on the authorization code via the OAuth2 v1.0 code grant flow. 
+    /// Gets the authorization token based on the authorization code via the OAuth2 v1.0 code grant flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the "Azure Portal - Certificates &amp; Secrets".</param>
@@ -36,7 +36,7 @@ codeunit 501 OAuth2
 #endif
 
     /// <summary>
-    /// Gets the authorization token based on the authorization code via the OAuth2 v1.0 code grant flow. 
+    /// Gets the authorization token based on the authorization code via the OAuth2 v1.0 code grant flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
     /// <param name="Certificate">The Base64-encoded certificate for the Application (client) configured in the "Azure Portal - Certificates &amp; Secrets".</param>
@@ -54,7 +54,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the authorization token based on the authorization code via the OAuth2 v2.0 code grant flow. 
+    /// Gets the authorization token based on the authorization code via the OAuth2 v2.0 code grant flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the "Azure Portal - Certificates &amp; Secrets".</param>
@@ -72,7 +72,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the authorization token based on the authorization code via the OAuth2 v2.0 code grant flow. 
+    /// Gets the authorization token based on the authorization code via the OAuth2 v2.0 code grant flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
     /// <param name="Certificate">The Base64-encoded certificate for the application (client) configured in the "Azure Portal - Certificates &amp; Secrets".</param>
@@ -90,7 +90,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the authorization token based on the authorization code via the OAuth2 v2.0 code grant flow. 
+    /// Gets the authorization token based on the authorization code via the OAuth2 v2.0 code grant flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the "Azure Portal - Certificates &amp; Secrets".</param>
@@ -109,7 +109,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the authorization token based on the authorization code via the OAuth2 v2.0 code grant flow. 
+    /// Gets the authorization token based on the authorization code via the OAuth2 v2.0 code grant flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
     /// <param name="Certificate">The Base64-encoded certificate for the application (client) configured in the "Azure Portal - Certificates &amp; Secrets".</param>
@@ -128,7 +128,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access token and token cache state with authorization code flow. 
+    /// Gets the access token and token cache state with authorization code flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the "Azure Portal - Certificates &amp; Secrets".</param>
@@ -147,7 +147,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access token and token cache state with authorization code flow. 
+    /// Gets the access token and token cache state with authorization code flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
     /// <param name="Certificate">The Base64-encoded certificate for the application (client) configured in the "Azure Portal - Certificates &amp; Secrets".</param>
@@ -166,7 +166,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access token and token cache state with authorization code flow. 
+    /// Gets the access token and token cache state with authorization code flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the "Azure Portal - Certificates &amp; Secrets".</param>
@@ -186,7 +186,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access token and token cache state with authorization code flow. 
+    /// Gets the access token and token cache state with authorization code flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the "Azure portal – App registrations" experience assigned to your app.</param>
     /// <param name="Certificate">The Base64-encoded certificate for the application (client) configured in the "Azure Portal - Certificates &amp; Secrets".</param>
@@ -208,7 +208,7 @@ codeunit 501 OAuth2
 #pragma warning disable AS0022
 #if not CLEAN18
     /// <summary>
-    /// Gets the authentication token via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+    /// Gets the authentication token via the On-Behalf-Of OAuth2 v1.0 protocol flow.
     /// </summary>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
     /// <param name="ResourceURL">The Application ID of the resource the application is requesting access to. This parameter can be empty.</param>
@@ -224,7 +224,7 @@ codeunit 501 OAuth2
 #endif
 
     /// <summary>
-    /// Gets the authentication token via the On-Behalf-Of OAuth2 v2.0 protocol flow. 
+    /// Gets the authentication token via the On-Behalf-Of OAuth2 v2.0 protocol flow.
     /// </summary>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
     /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
@@ -238,7 +238,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the authentication token via the On-Behalf-Of OAuth2 v2.0 protocol flow. 
+    /// Gets the authentication token via the On-Behalf-Of OAuth2 v2.0 protocol flow.
     /// </summary>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
     /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
@@ -268,7 +268,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access token via the Client Credentials OAuth2 v1.0 grant flow. 
+    /// Gets the access token via the Client Credentials OAuth2 v1.0 grant flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the Azure Portal - Certificates &amp; Secrets.</param>
@@ -284,7 +284,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access token via the Client Credentials OAuth2 v2.0 grant flow. 
+    /// Gets the access token via the Client Credentials OAuth2 v2.0 grant flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the Azure Portal - Certificates &amp; Secrets.</param>
@@ -301,7 +301,7 @@ codeunit 501 OAuth2
 
 #if not CLEAN17
     /// <summary>
-    /// Gets the access token from cache or a refreshed token via OAuth2 v1.0 protocol. 
+    /// Gets the access token from cache or a refreshed token via OAuth2 v1.0 protocol.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the Azure Portal - Certificates &amp; Secrets.</param>
@@ -321,7 +321,7 @@ codeunit 501 OAuth2
 
 #if not CLEAN18
     /// <summary>
-    /// Gets the access token from cache or a refreshed token via OAuth2 v1.0 protocol. 
+    /// Gets the access token from cache or a refreshed token via OAuth2 v1.0 protocol.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the Azure Portal - Certificates &amp; Secrets.</param>
@@ -339,7 +339,7 @@ codeunit 501 OAuth2
 #endif
 
     /// <summary>
-    /// Gets the access token from cache or a refreshed token via OAuth2 v1.0 protocol. 
+    /// Gets the access token from cache or a refreshed token via OAuth2 v1.0 protocol.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
     /// <param name="Certificate">The Base64-encoded certificate for the Application (client) configured in the Azure Portal - Certificates &amp; Secrets.</param>
@@ -355,7 +355,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access token from cache or a refreshed token via OAuth2 v2.0 protocol. 
+    /// Gets the access token from cache or a refreshed token via OAuth2 v2.0 protocol.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the Azure Portal - Certificates &amp; Secrets.</param>
@@ -370,7 +370,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access token from cache or a refreshed token via OAuth2 v2.0 protocol. 
+    /// Gets the access token from cache or a refreshed token via OAuth2 v2.0 protocol.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the Azure Portal - Certificates &amp; Secrets.</param>
@@ -386,7 +386,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access token from cache or a refreshed token via OAuth2 v2.0 protocol. 
+    /// Gets the access token from cache or a refreshed token via OAuth2 v2.0 protocol.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
     /// <param name="Certificate">The Base64-encoded certificate for the Application (client) configured in the Azure Portal - Certificates &amp; Secrets.</param>
@@ -401,7 +401,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access token from cache or a refreshed token via OAuth2 v2.0 protocol. 
+    /// Gets the access token from cache or a refreshed token via OAuth2 v2.0 protocol.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
     /// <param name="Certificate">The Base64-encoded certificate for the Application (client) configured in the Azure Portal - Certificates &amp; Secrets.</param>
@@ -418,7 +418,7 @@ codeunit 501 OAuth2
 
 #if not CLEAN18
     /// <summary>
-    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v1.0 protocol flow.
     /// </summary>
     /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
@@ -435,7 +435,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access token and token cache  via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+    /// Gets the access token and token cache  via the On-Behalf-Of OAuth2 v1.0 protocol flow.
     /// </summary>
     /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
@@ -452,7 +452,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow. 
+    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow.
     /// </summary>
     /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
@@ -470,7 +470,7 @@ codeunit 501 OAuth2
 #endif
 
     /// <summary>
-    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow. 
+    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow.
     /// </summary>
     /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
@@ -486,7 +486,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow. 
+    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow.
     /// </summary>
     /// <param name="OAuthAuthorityUrl">The identity authorization provider URL.</param>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
@@ -504,7 +504,7 @@ codeunit 501 OAuth2
 
 #if not CLEAN18
     /// <summary>
-    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v1.0 protocol flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
@@ -522,7 +522,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+    /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow.
     /// </summary>
     /// <param name="LoginHint">The user login hint, i.e. authentication email.</param>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
@@ -540,7 +540,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow. 
+    /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v2.0 protocol flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
@@ -559,7 +559,7 @@ codeunit 501 OAuth2
 #endif
 
     /// <summary>
-    /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+    /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow.
     /// </summary>
     /// <param name="LoginHint">The user login hint, i.e. authentication email.</param>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
@@ -576,7 +576,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+    /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow.
     /// </summary>
     /// <param name="LoginHint">The user login hint, i.e. authentication email.</param>
     /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
@@ -594,7 +594,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+    /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal - App registrations experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the Azure Portal - Certificates &amp; Secrets.</param>
@@ -612,7 +612,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow. 
+    /// Gets the token and token cache via the On-Behalf-Of OAuth2 v1.0 protocol flow.
     /// </summary>
     /// <param name="ClientId">The Application (client) ID that the Azure portal - App registrations experience assigned to your app.</param>
     /// <param name="ClientSecret">The Application (client) secret configured in the Azure Portal - Certificates &amp; Secrets.</param>
@@ -630,6 +630,7 @@ codeunit 501 OAuth2
         OAuth2Impl.AcquireOnBehalfOfTokensByTokenCache(ClientId, ClientSecret, LoginHint, RedirectURL, Scopes, TokenCache, AccessToken, IdToken, NewTokenCache);
     end;
 
+#if not CLEAN21
     /// <summary>
     /// Gets the token with username and password.
     /// </summary>
@@ -641,12 +642,15 @@ codeunit 501 OAuth2
     /// <param name="AccessToken">Exit parameter containing the access token.</param>
     /// <param name="IdToken">Exit parameter containing the id token.</param>
     [NonDebuggable]
+    [Obsolete('AcquireTokensWithUserCredentials is deprecated and will be removed in version 23.0. We recommend that you switch to any of the remaining non-deprecated functions in this class to acquire tokens already now.', '21.0')]
     [TryFunction]
     procedure AcquireTokensWithUserCredentials(OAuthAuthorityUrl: Text; ClientId: Text; Scopes: List of [Text]; UserName: Text; Credential: Text; var AccessToken: Text; var IdToken: Text)
     begin
         OAuth2Impl.AcquireTokensWithUserCredentials(OAuthAuthorityUrl, ClientId, Scopes, UserName, Credential, AccessToken, IdToken);
     end;
+#endif
 
+#if not CLEAN21
     /// <summary>
     /// Gets the token with username and password.
     /// </summary>
@@ -657,12 +661,14 @@ codeunit 501 OAuth2
     /// <param name="AccessToken">Exit parameter containing the access token.</param>
     /// <param name="IdToken">Exit parameter containing the id token.</param>
     [NonDebuggable]
+    [Obsolete('AcquireTokensWithUserCredentials is deprecated and will be removed in version 23.0. We recommend that you switch to any of the remaining non-deprecated functions in this class to acquire tokens already now', '21.0')]
     [Scope('OnPrem')]
     [TryFunction]
     procedure AcquireTokensWithUserCredentials(OAuthAuthorityUrl: Text; Scopes: List of [Text]; UserName: Text; Credential: Text; var AccessToken: Text; var IdToken: Text)
     begin
         OAuth2Impl.AcquireTokensWithUserCredentials(OAuthAuthorityUrl, Scopes, UserName, Credential, AccessToken, IdToken);
     end;
+#endif
 #pragma warning restore AS0022
 
     /// <summary>
@@ -675,7 +681,7 @@ codeunit 501 OAuth2
     end;
 
     /// <summary>
-    /// Returns the default Business Central redirectURL 
+    /// Returns the default Business Central redirectURL
     /// </summary>
     [NonDebuggable]
     procedure GetDefaultRedirectURL(var RedirectUrl: text)

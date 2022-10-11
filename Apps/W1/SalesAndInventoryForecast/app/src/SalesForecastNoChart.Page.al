@@ -99,7 +99,6 @@ page 1851 "Sales Forecast No Chart"
         LastValidDate: Date;
         NumberOfPeriodsToPredict: Integer;
         VariancePercSetup: Decimal;
-        NumberOfPeriodsWithHistory: Integer;
         NumberOfPeriodsWithHistoryLoc: Integer;
         HasMinimumHistory: Boolean;
         HasMinimumHistoryLoc: Boolean;
@@ -149,8 +148,6 @@ page 1851 "Sales Forecast No Chart"
             WorkDate());
         OnAfterHasMinimumSIHistData("No.", HasMinimumHistoryLoc, NumberOfPeriodsWithHistoryLoc, MSSalesForecastSetup."Period Type", WorkDate(), StatusType);
         HasMinimumHistory := (HasMinimumHistory OR HasMinimumHistoryLoc);
-        if NumberOfPeriodsWithHistoryLoc > NumberOfPeriodsWithHistory then
-            NumberOfPeriodsWithHistory := NumberOfPeriodsWithHistoryLoc; // Otherwise, NumberOfPeriodsWithHistory is already the bigger number
         if not HasMinimumHistory then begin
             SetStatusText(StatusType::"Not enough historical data");
             exit;

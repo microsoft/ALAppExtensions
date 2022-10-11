@@ -210,11 +210,16 @@ page 1694 "Posted Bank Deposit"
                 PromotedOnly = true;
                 PromotedCategory = Category4;
                 PromotedIsBig = true;
+                ShortcutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all bank account ledger entries that exist for this bank deposit.';
 
                 trigger OnAction()
+                var
+                    Navigate: Page Navigate;
                 begin
-                    Rec.FindEntries();
+                    Navigate.SetDoc(Rec."Posting Date", Rec."No.");
+                    Navigate.SetNavigationFromPostedBankDeposit(true);
+                    Navigate.Run();
                 end;
             }
         }

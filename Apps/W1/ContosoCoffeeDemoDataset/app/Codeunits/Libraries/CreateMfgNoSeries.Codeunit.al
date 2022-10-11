@@ -12,10 +12,10 @@ codeunit 4783 "Create Mfg No. Series"
         EndingNo := '10' + Format(No + 1);
         InsertSeries(
           SeriesCode, Code, Description,
-          StartingNo + '001',
-          EndingNo + '999',
+          CopyStr(StartingNo + '001', 1, 20),
+          CopyStr(EndingNo + '999', 1, 20),
           '',
-          EndingNo + '995',
+          CopyStr(EndingNo + '995', 1, 20),
           1,
           false);
     end;
@@ -34,10 +34,10 @@ codeunit 4783 "Create Mfg No. Series"
         EndingNo := Format(No + 1);
         InsertSeries(
           SeriesCode, Code, Description,
-          StartingNo + '001',
-          EndingNo + '999',
+          CopyStr(StartingNo + '001', 1, 20),
+          CopyStr(EndingNo + '999', 1, 20),
           '',
-          EndingNo + '995',
+          CopyStr(EndingNo + '995', 1, 20),
           1,
           false,
           false);

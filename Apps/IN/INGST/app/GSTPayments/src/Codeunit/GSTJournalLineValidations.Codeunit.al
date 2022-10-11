@@ -1165,9 +1165,15 @@ codeunit 18244 "GST Journal Line Validations"
             exit;
         end;
 
-        if GenJournalLine."Location State Code" = GenJournalLine.State then
-            GenJournalLine."GST Jurisdiction Type" := GenJournalLine."GST Jurisdiction Type"::Intrastate
-        else
-            GenJournalLine."GST Jurisdiction Type" := GenJournalLine."GST Jurisdiction Type"::Interstate;
+        if GenJournalLine.State = '' then begin
+            if GenJournalLine."Location State Code" <> GenJournalLine."GST Bill-to/BuyFrom State Code" then
+                GenJournalLine."GST Jurisdiction Type" := GenJournalLine."GST Jurisdiction Type"::Interstate
+            else
+                GenJournalLine."GST Jurisdiction Type" := GenJournalLine."GST Jurisdiction Type"::Intrastate;
+        end else
+            if GenJournalLine."Location State Code" = GenJournalLine.State then
+                GenJournalLine."GST Jurisdiction Type" := GenJournalLine."GST Jurisdiction Type"::Intrastate
+            else
+                GenJournalLine."GST Jurisdiction Type" := GenJournalLine."GST Jurisdiction Type"::Interstate;
     end;
 }

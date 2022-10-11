@@ -11,7 +11,6 @@ codeunit 9014 "Azure AD Graph Impl."
         EnvironmentInformation: Codeunit "Environment Information";
         [NonDebuggable]
         GraphQuery: DotNet GraphQuery;
-        IsTestInProgress: Boolean;
         IsGraphInitialized: Boolean;
 
     [NonDebuggable]
@@ -91,6 +90,14 @@ codeunit 9014 "Azure AD Graph Impl."
     end;
 
     [NonDebuggable]
+    procedure IsM365CollaborationEnabled(): Boolean
+    begin
+        if CanQueryGraph() then
+            exit(GraphQuery.IsM365CollaborationEnabled());
+        exit(false);
+    end;
+
+    [NonDebuggable]
     procedure GetUsersPage(NumberOfUsers: Integer; var UserInfoPage: DotNet UserInfoPage)
     begin
         if CanQueryGraph() then
@@ -98,9 +105,26 @@ codeunit 9014 "Azure AD Graph Impl."
     end;
 
     [NonDebuggable]
-    procedure SetTestInProgress(TestInProgress: Boolean)
+    procedure GetLicensedUsersPage(AssingedPlans: DotNet StringArray; NumberOfUsers: Integer; var UserInfoPage: DotNet UserInfoPage)
     begin
-        IsTestInProgress := TestInProgress;
+        if CanQueryGraph() then
+            UserInfoPage := GraphQuery.GetLicensedUsersPage(AssingedPlans, NumberOfUsers);
+    end;
+
+    [NonDebuggable]
+    procedure GetGroupMembers(GroupDisplayName: Text; var GroupMembers: DotNet IEnumerable)
+    begin
+        // AzureAdGraphQuery will throw an exception if the group does not exist.
+        // Ignoring this exception, and letting the caller to only check for IsNull(GroupMembers)
+        if TryGetGroupMembers(GroupDisplayName, GroupMembers) then;
+    end;
+
+    [NonDebuggable]
+    [TryFunction]
+    local procedure TryGetGroupMembers(GroupDisplayName: Text; var GroupMembers: DotNet IEnumerable)
+    begin
+        if CanQueryGraph() then
+            GroupMembers := GraphQuery.GetGroupMembers(GroupDisplayName);
     end;
 
     [NonDebuggable]
@@ -115,7 +139,7 @@ codeunit 9014 "Azure AD Graph Impl."
     [NonDebuggable]
     local procedure Initialize(): Boolean
     var
-        AzureADGraph: codeunit "Azure AD Graph";
+        Handled: Boolean;
     begin
         if not EnvironmentInformation.IsSaaS() then
             exit(false);
@@ -123,13 +147,18 @@ codeunit 9014 "Azure AD Graph Impl."
         if IsGraphInitialized then
             exit(true);
 
-        if IsTestInProgress then
-            AzureADGraph.OnInitialize(GraphQuery)
-        else
+        OnInitialize(GraphQuery, Handled);
+        if not Handled then
             GraphQuery := GraphQuery.GraphQuery();
 
         IsGraphInitialized := not IsNull(GraphQuery);
         exit(IsGraphInitialized);
+    end;
+
+    [InternalEvent(false)]
+    [NonDebuggable]
+    local procedure OnInitialize(var GraphQuery: DotNet GraphQuery; var Handled: Boolean)
+    begin
     end;
 }
 

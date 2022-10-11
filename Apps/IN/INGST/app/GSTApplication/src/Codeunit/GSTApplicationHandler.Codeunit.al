@@ -463,7 +463,7 @@ codeunit 18430 "GST Application Handler"
                         ApplyingVendorLedgerEntry."Vendor No.",
                         VendorLedgerEntry."Document No.",
                         ApplyingVendorLedgerEntry."Total TDS Including SHE CESS",
-                        OldCVLedgerEntryBuffer."Amount to Apply",
+                        AmountToApply,
                         VendorLedgerEntry."Original Currency Factor")
                     then
                         exit;
@@ -1308,7 +1308,7 @@ codeunit 18430 "GST Application Handler"
                         ApplyingCustLedgEntry,
                         CustLedgerEntry,
                         AmountToApply,
-                        CVLedgerEntryBuffer."Remaining Amt. (LCY)",
+                        OldCVLedgerEntryBuffer."Remaining Amt. (LCY)",
                         InvoiceGSTAmount,
                         AppliedGSTAmount,
                         InvoiceAmount)
@@ -1317,7 +1317,7 @@ codeunit 18430 "GST Application Handler"
                         ApplyingCustLedgEntry,
                         CustLedgerEntry,
                         AmountToApply,
-                        CVLedgerEntryBuffer."Remaining Amt. (LCY)",
+                        OldCVLedgerEntryBuffer."Remaining Amt. (LCY)",
                         InvoiceGSTAmount,
                         AppliedGSTAmount,
                         InvoiceAmount);
@@ -2082,7 +2082,7 @@ codeunit 18430 "GST Application Handler"
         DetailedGSTLedgerEntryNew.TransferFields(DetailedGSTLedgerEntry);
         DetailedGSTLedgerEntryNew."Entry No." := 0;
         DetailedGSTLedgerEntryNew."Document No." := DetailedGSTLedgerEntryNew."Document No.";
-        DetailedGSTLedgerEntryNew."Transaction No." := TransactionNo;
+        DetailedGSTLedgerEntryNew."Transaction No." := DetailedGSTLedgerEntry."Transaction No.";
         DetailedGSTLedgerEntryNew."Entry Type" := DetailedGSTLedgerEntryNew."Entry Type"::Application;
         DetailedGSTLedgerEntryNew."GST Base Amount" := -DetailedGSTLedgerEntry."GST Base Amount";
         DetailedGSTLedgerEntryNew."GST Amount" := -DetailedGSTLedgerEntry."GST Amount";
@@ -2408,10 +2408,9 @@ codeunit 18430 "GST Application Handler"
                                 if (NewCVLedgEntryBuf."Original Currency Factor" > OldCVLedgEntryBuf."Original Currency Factor") or (NewCVLedgEntryBuf."Original Currency Factor" < OldCVLedgEntryBuf."Original Currency Factor") then begin
                                     AppliedForeignCurrAmt := Round(AppliedAmt / NewCVLedgEntryBuf."Adjusted Currency Factor");
                                     PostGSTPurchaseApplication(GenJnlLine, NewCVLedgEntryBuf, OldCVLedgEntryBuf, AppliedForeignCurrAmt);
-                                    if Vendor."GST Vendor Type" <> Vendor."GST Vendor Type"::" " then
-                                        GSTApplSessionMgt.SetOnlinePostApplication(true);
                                 end else
                                     PostGSTPurchaseApplication(GenJnlLine, NewCVLedgEntryBuf, OldCVLedgEntryBuf, AppliedAmtLCY);
+                                SetPostApplication(Vendor, GenJnlLine);
                             end else
                                 PostGSTPurchaseApplication(GenJnlLine, NewCVLedgEntryBuf, OldCVLedgEntryBuf, AppliedAmtLCY);
 
@@ -2506,10 +2505,12 @@ codeunit 18430 "GST Application Handler"
         GenJournalLine: Record "Gen. Journal Line";
         var TempIDimPostingBuffer: Record "Dimension Posting Buffer" temporary)
     var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         TransactionType: Enum "Detail Ledger Transaction Type";
     begin
-        UnApplyGSTApplication(GenJournalLine, TransactionType::Sales, DetailedCustLedgEntry."Transaction No.", DetailedCustLedgEntry."Document No.");
+        CustLedgerEntry.Get(DetailedCustLedgEntry."Cust. Ledger Entry No.");
+        UnApplyGSTApplication(GenJournalLine, TransactionType::Sales, CustLedgerEntry."Transaction No.", DetailedCustLedgEntry."Document No.");
         GSTApplSessionMgt.PostApplicationGenJournalLine(GenJnlPostLine);
         GSTApplSessionMgt.ClearAllSessionVariables();
     end;
@@ -2547,11 +2548,7 @@ codeunit 18430 "GST Application Handler"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"VendEntry-Apply Posted Entries", 'OnAfterPostApplyVendLedgEntry', '', false, false)]
     local procedure OnAfterPostApplyVendLedgEntry(GenJournalLine: Record "Gen. Journal Line"; VendorLedgerEntry: Record "Vendor Ledger Entry"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     begin
-        if GSTApplSessionMgt.GetOnlinePostApplication() then begin
-            GSTApplSessionMgt.SetOnlinePostApplication(false);
-            GSTApplSessionMgt.SetOnlinePostApplicationLastEntryNo(0);
-            GSTApplSessionMgt.SetOnlinePostApplicationLastEntryNoForGLRegister(0);
-        end;
+        ClearPostApplication();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterInitGLRegister', '', false, false)]
@@ -2573,11 +2570,174 @@ codeunit 18430 "GST Application Handler"
         end
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Preview", 'OnRunPreview', '', false, false)]
+    local procedure OnRunPreview(var Result: Boolean; Subscriber: Variant; RecVar: Variant)
+    begin
+        ClearPostApplication();
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeUpdateGLReg', '', false, false)]
     local procedure OnBeforeUpdateGLReg(IsTransactionConsistent: Boolean; var IsGLRegInserted: Boolean; var GLReg: Record "G/L Register"; var IsHandled: Boolean; var GenJnlLine: Record "Gen. Journal Line"; GlobalGLEntry: Record "G/L Entry")
     begin
+        BeforeUpdateGLReg(IsTransactionConsistent, IsGLRegInserted, GLReg);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostPurchaseDoc', '', false, false)]
+    local procedure PurchPostOnBeforePostPurchaseDoc(var PurchaseHeader: Record "Purchase Header")
+    begin
+        CheckGSTVendorType(PurchaseHeader);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostPurchaseDoc', '', false, false)]
+    local procedure PurchPostOnAfterPostPurchaseDoc(var PurchaseHeader: Record "Purchase Header")
+    begin
+        UpdateSubconPurchaseHeader(PurchaseHeader);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterPostItemJnlLine', '', false, false)]
+    local procedure OnAfterPostItemJnlLine(
+        var ItemJournalLine: Record "Item Journal Line";
+        ItemLedgerEntry: Record "Item Ledger Entry";
+        var ValueEntryNo: Integer;
+        var InventoryPostingToGL: Codeunit "Inventory Posting To G/L";
+        CalledFromAdjustment: Boolean;
+        CalledFromInvtPutawayPick: Boolean;
+        var ItemRegister: Record "Item Register";
+        var ItemLedgEntryNo: Integer;
+        var ItemApplnEntryNo: Integer)
+    begin
+        SubcontractingEntryNosAfterPostItemJnlLine(ItemJournalLine, ItemLedgEntryNo, ItemApplnEntryNo, ValueEntryNo);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnBeforePostItemJnlLine', '', false, false)]
+    local procedure OnBeforePostItemJnlLine(
+        var ItemJournalLine: Record "Item Journal Line";
+        CalledFromAdjustment: Boolean;
+        CalledFromInvtPutawayPick: Boolean;
+        var ItemRegister: Record "Item Register";
+        var ItemLedgEntryNo: Integer;
+        var ValueEntryNo: Integer;
+        var ItemApplnEntryNo: Integer)
+    begin
+        SubcontractingEntryNosBeforePostItemJnlLine(ItemJournalLine, ItemLedgEntryNo, ValueEntryNo, ItemApplnEntryNo);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Order Subcon Details Receipt", 'OnBeforeActionEvent', '&Receive', true, true)]
+    local procedure OnBeforeActionEvent(var Rec: Record "Purchase Line")
+    begin
+        SubconOrderReceiptBeforeActionEvent(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Order Subcon Details Receipt", 'OnAfterActionEvent', '&Receive', true, true)]
+    local procedure OnAfterActionEvent(Rec: Record "Purchase Line")
+    begin
+        SubconOrderReceiptAfterActionEvent(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Multiple Order Subcon Receipt", 'OnBeforeActionEvent', '&Receive', true, true)]
+    local procedure OnBeforeActionEventMultipleSubCon(var Rec: Record "Multiple Subcon. Order Details")
+    begin
+        MultipleSubconOrderReceiptBeforeActionEvent(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Multiple Order Subcon Receipt", 'OnAfterActionEvent', '&Receive', true, true)]
+    local procedure OnAfterActionEventMultipleSubCon(Rec: Record "Multiple Subcon. Order Details")
+    begin
+        MultipleSubconOrderReceiptAfterActionEvent(Rec."Subcontractor No.");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnCopyToTempLinesOnAfterSetFilters', '', false, false)]
+    local procedure OnCopyToTempLinesOnAfterSetFilters(var PurchaseLine: Record "Purchase Line"; PurchaseHeader: Record "Purchase Header")
+    begin
+        PurchPostOnCopyToTempLinesOnAfterSetFilters(PurchaseLine, PurchaseHeader);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostPurchLine', '', false, false)]
+    local procedure OnBeforePostPurchLine(var PurchHeader: Record "Purchase Header"; var PurchLine: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
+        SubcontractingPurchPostBeforePostPurchLine(PurchHeader, PurchLine, IsHandled);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterInitGLEntry', '', false, false)]
+    local procedure SubcontractingOnAfterInitGLEntry(var GLEntry: Record "G/L Entry"; GenJournalLine: Record "Gen. Journal Line"; Amount: Decimal; AddCurrAmount: Decimal; UseAddCurrAmount: Boolean; var CurrencyFactor: Decimal)
+    begin
+        InitSubconMultipleRecieptNextGLEntry(GLEntry);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post (Yes/No)", 'OnBeforeConfirmPost', '', false, false)]
+    local procedure OnBeforeConfirmPost(var PurchaseHeader: Record "Purchase Header"; var HideDialog: Boolean; var IsHandled: Boolean; var DefaultOption: Integer)
+    begin
+        SubcontractingPurchPostYesNoBeforeConfirmPost(PurchaseHeader, DefaultOption);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnBeforeCopyFromProdOrderComp', '', false, false)]
+    local procedure OnBeforeCopyFromProdOrderComp(var ItemJournalLine: Record "Item Journal Line"; var ProdOrderComp: Record "Prod. Order Component"; var IsHandled: Boolean)
+    begin
+        OnBeforeCopyFromProdOrderCompSubcontract(IsHandled);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Subcontracting Post", 'OnAfterValidateUnitofMeasureCodeSubcontract', '', false, false)]
+    local procedure OnAfterValidateUnitofMeasureCodeSubcontract(var ItemJournalLine: Record "Item Journal Line"; ProdOrderComponent: Record "Prod. Order Component")
+    begin
+        CopyFromProdOrderCompSubcontract(ItemJournalLine, ProdOrderComponent);
+    end;
+
+    local procedure OnBeforeCopyFromProdOrderCompSubcontract(var IsHandled: Boolean): Boolean
+    begin
+        if not GSTApplSessionMgt.GetSubcontracting() then
+            exit;
+
+        IsHandled := true;
+    end;
+
+    local procedure CopyFromProdOrderCompSubcontract(var ItemJournalLine: Record "Item Journal Line"; ProdOrderComp: Record "Prod. Order Component")
+    begin
+        if not GSTApplSessionMgt.GetSubcontracting() then
+            exit;
+
+        ItemJournalLine.Validate("Order Line No.", ProdOrderComp."Prod. Order Line No.");
+        ItemJournalLine.Validate("Prod. Order Comp. Line No.", ProdOrderComp."Line No.");
+        ItemJournalLine."Unit of Measure Code" := ProdOrderComp."Unit of Measure Code";
+        ItemJournalLine."Location Code" := ProdOrderComp."Location Code";
+        ItemJournalLine.Validate("Variant Code", ProdOrderComp."Variant Code");
+        ItemJournalLine.Validate("Bin Code", ProdOrderComp."Bin Code");
+    end;
+
+    local procedure SetPostApplication(Vendor: Record Vendor; GenJnlLine: Record "Gen. Journal Line")
+    var
+        IsHandled: Boolean;
+    begin
+        OnBeforeSetPostApplication(Vendor, GenJnlLine, IsHandled);
+        if IsHandled then
+            exit;
+
+        if (Vendor."GST Vendor Type" = Vendor."GST Vendor Type"::" ") then
+            exit;
+
+        if (GenJnlLine."Source Type" <> GenJnlLine."Source Type"::Vendor) then
+            exit;
+
+        if GenJnlLine."Offline Application" then
+            GSTApplSessionMgt.SetOnlinePostApplication(true);
+    end;
+
+    local procedure ClearPostApplication()
+    begin
+        if GSTApplSessionMgt.GetOnlinePostApplication() then begin
+            GSTApplSessionMgt.SetOnlinePostApplication(false);
+            GSTApplSessionMgt.SetOnlinePostApplicationLastEntryNo(0);
+            GSTApplSessionMgt.SetOnlinePostApplicationLastEntryNoForGLRegister(0);
+        end;
+    end;
+
+    local procedure BeforeUpdateGLReg(IsTransactionConsistent: Boolean; var IsGLRegInserted: Boolean; var GLReg: Record "G/L Register")
+    var
+        GLRegister: Record "G/L Register";
+    begin
         if GSTApplSessionMgt.GetOnlinePostApplication() then
-            IsGLRegInserted := true;
+            if IsTransactionConsistent then
+                if GLRegister.Get(GLReg."No.") then
+                    IsGLRegInserted := true;
     end;
 
     local procedure InitNextEntryNo(): Integer
@@ -2604,8 +2764,226 @@ codeunit 18430 "GST Application Handler"
         exit(LastEntryNo);
     end;
 
+    local procedure CheckGSTVendorType(PurchaseHeader: Record "Purchase Header")
+    var
+        Vendor: Record vendor;
+    begin
+        if not PurchaseHeader.Subcontracting then
+            exit;
+
+        Vendor.Get(PurchaseHeader."Buy-From Vendor No.");
+        GSTApplSessionMgt.SetSubcontracting(Vendor."GST Vendor Type" <> Vendor."GST Vendor Type"::" ");
+    end;
+
+    local procedure UpdateSubconPurchaseHeader(var PurchaseHeader: Record "Purchase Header")
+    var
+        AppliestoIDReceipt: Code[50];
+    begin
+        if not PurchaseHeader.Subcontracting then
+            exit;
+
+        if GSTApplSessionMgt.GetSubcontracting() then begin
+            GSTApplSessionMgt.SetSubcontracting(false);
+
+            if GSTApplSessionMgt.GetSubContractingReceivingMultiple(AppliestoIDReceipt) then begin
+                PurchaseHeader.SubConPostLine := 0;
+                PurchaseHeader."Subcon. Multiple Receipt" := true;
+            end
+        end;
+    end;
+
+    local procedure SubcontractingEntryNosAfterPostItemJnlLine(var ItemJournalLine: Record "Item Journal Line"; var ItemLedgEntryNo: Integer; var ItemApplnEntryNo: Integer; var ValueEntryNo: Integer)
+    begin
+        if not GSTApplSessionMgt.GetSubcontracting() then
+            exit;
+
+        if (ItemJournalLine.Subcontracting) or ((ItemJournalLine."Lot No." <> '') and (ItemJournalLine."Subcon Order No." <> '')) then
+            if (ItemLedgEntryNo <> 0) and (ItemApplnEntryNo <> 0) and (ValueEntryNo <> 0) then
+                GSTApplSessionMgt.SetSubcontractingEntryNo(ItemLedgEntryNo, ItemApplnEntryNo, ValueEntryNo);
+    end;
+
+    local procedure SubcontractingEntryNosBeforePostItemJnlLine(var ItemJournalLine: Record "Item Journal Line"; var ItemLedgEntryNo: Integer; var ValueEntryNo: Integer; var ItemApplnEntryNo: Integer)
+    begin
+        if not GSTApplSessionMgt.GetSubcontracting() then
+            exit;
+
+        if not ItemJournalLine.Subcontracting then
+            exit;
+
+        CheckLastEntryNoAndSet(ItemLedgEntryNo, ValueEntryNo, ItemApplnEntryNo);
+    end;
+
+    local procedure CheckLastEntryNoAndSet(var ItemLedgEntryNo: Integer;
+        var ValueEntryNo: Integer;
+        var ItemApplnEntryNo: Integer)
+    var
+        LastItemLedgEntryNo: Integer;
+        LastItemApplnEntryNo: Integer;
+        LastValueEntryNo: Integer;
+    begin
+        GSTApplSessionMgt.GetSubcontractingEntryNo(LastItemLedgEntryNo, LastItemApplnEntryNo, LastValueEntryNo);
+
+        if (LastItemLedgEntryNo = 0) and (LastItemApplnEntryNo = 0) and (LastValueEntryNo = 0) then
+            exit;
+
+        if LastItemLedgEntryNo <> 0 then
+            if ItemLedgEntryNo = 0 then
+                ItemLedgEntryNo := LastItemLedgEntryNo
+            else
+                ItemLedgEntryNo := LastItemLedgEntryNo + 1;
+
+        if LastItemApplnEntryNo <> 0 then
+            if ItemApplnEntryNo = 0 then
+                ItemApplnEntryNo := LastItemApplnEntryNo
+            else
+                ItemApplnEntryNo := LastItemApplnEntryNo + 1;
+
+        if LastValueEntryNo <> 0 then
+            if ValueEntryNo = 0 then
+                ValueEntryNo := LastValueEntryNo
+            else
+                ValueEntryNo := LastValueEntryNo + 1;
+    end;
+
+    local procedure SubconOrderReceiptBeforeActionEvent(var PurchaseLine: Record "Purchase Line")
+    begin
+        if not PurchaseLine.Subcontracting then
+            exit;
+
+        PurchaseLine.SubConReceive := true;
+        PurchaseLine."Subcon. Receiving" := true;
+        PurchaseLine.Modify(true);
+        GSTApplSessionMgt.SetSubContractingReceiving(true);
+        GSTApplSessionMgt.SetSubcontractingEntryNo(0, 0, 0);
+    end;
+
+    local procedure SubconOrderReceiptAfterActionEvent(var PurchLine: Record "Purchase Line")
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        if not GSTApplSessionMgt.GetSubContractingReceiving() then
+            exit;
+
+        if not PurchLine.Subcontracting then
+            exit;
+
+        if not PurchaseLine.Get(PurchLine."Document Type", PurchLine."Document No.", PurchLine."Line No.") then
+            exit;
+
+        if PurchaseLine."Subcon. Receiving" then begin
+            PurchaseLine."Subcon. Receiving" := false;
+            PurchaseLine.Modify();
+            GSTApplSessionMgt.SetSubContractingReceiving(false);
+            if PurchaseLine.Subcontracting then
+                GSTApplSessionMgt.SetSubcontractingEntryNo(0, 0, 0);
+        end
+    end;
+
+    local procedure MultipleSubconOrderReceiptBeforeActionEvent(var MultipleSubconOrderDetails: Record "Multiple Subcon. Order Details")
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        PurchaseLine.SetCurrentKey("Document Type", "Buy-from Vendor No.", Subcontracting, "Applies-to ID (Receipt)");
+        PurchaseLine.SetRange("Document Type", PurchaseLine."Document Type"::Order);
+        PurchaseLine.SetRange("Buy-from Vendor No.", MultipleSubconOrderDetails."Subcontractor No.");
+        PurchaseLine.SetRange(Subcontracting, true);
+        PurchaseLine.SetRange("Applies-to ID (Receipt)", MultipleSubconOrderDetails."No.");
+        if PurchaseLine.FindFirst() then begin
+            GSTApplSessionMgt.SetSubContractingReceivingMultiple(true, MultipleSubconOrderDetails."No.");
+            GSTApplSessionMgt.SetSubcontractingEntryNo(0, 0, 0);
+            GSTApplSessionMgt.SetSubcontractingLastGLEntryNo(0);
+        end
+    end;
+
+    local procedure MultipleSubconOrderReceiptAfterActionEvent(SubcontractorNo: Code[20])
+    var
+        PurchaseHeader: Record "Purchase Header";
+        AppliestoIDReceipt: Code[50];
+    begin
+        if not GSTApplSessionMgt.GetSubContractingReceivingMultiple(AppliestoIDReceipt) then
+            exit;
+
+        PurchaseHeader.SetCurrentKey("Document Type", "Buy-from Vendor No.", "Subcon. Multiple Receipt", Subcontracting);
+        PurchaseHeader.SetRange("Document Type", PurchaseHeader."Document Type"::Order);
+        PurchaseHeader.SetRange("Buy-from Vendor No.", SubcontractorNo);
+        PurchaseHeader.SetRange("Subcon. Multiple Receipt", true);
+        PurchaseHeader.SetRange(Subcontracting, true);
+        if PurchaseHeader.FindSet() then
+            PurchaseHeader.ModifyAll("Subcon. Multiple Receipt", false);
+
+        AppliestoIDReceipt := '';
+        GSTApplSessionMgt.SetSubContractingReceivingMultiple(false, AppliestoIDReceipt);
+        GSTApplSessionMgt.SetSubcontractingEntryNo(0, 0, 0);
+        GSTApplSessionMgt.SetSubcontractingLastGLEntryNo(0);
+    end;
+
+    local procedure PurchPostOnCopyToTempLinesOnAfterSetFilters(var PurchaseLine: Record "Purchase Line"; PurchaseHeader: Record "Purchase Header")
+    var
+        AppliestoIDReceipt: Code[50];
+    begin
+        if GSTApplSessionMgt.GetSubContractingReceiving() then
+            if PurchaseHeader.Subcontracting then
+                PurchaseLine.SetRange("Subcon. Receiving", true);
+
+        if GSTApplSessionMgt.GetSubContractingReceivingMultiple(AppliestoIDReceipt) then
+            if PurchaseHeader.Subcontracting then
+                PurchaseLine.SetRange("Applies-to ID (Receipt)", AppliestoIDReceipt);
+    end;
+
+    local procedure SubcontractingPurchPostBeforePostPurchLine(var PurchHeader: Record "Purchase Header"; var PurchLine: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
+        if not GSTApplSessionMgt.GetSubContractingReceiving() then
+            exit;
+
+        if (PurchHeader.Subcontracting and PurchLine.Subcontracting) then begin
+            if PurchLine."Vendor Shipment No." = '' then
+                IsHandled := true;
+
+            if not PurchLine."Subcon. Receiving" then
+                IsHandled := true
+            else
+                IsHandled := false;
+        end;
+    end;
+
+    local procedure SubcontractingPurchPostYesNoBeforeConfirmPost(var PurchaseHeader: Record "Purchase Header"; var DefaultOption: Integer)
+    begin
+        if not PurchaseHeader.Subcontracting then
+            exit;
+
+        DefaultOption := 2;
+    end;
+
+    local procedure InitSubconMultipleRecieptNextGLEntry(var GLEntry: Record "G/L Entry")
+    var
+        AppliestoIDReceipt: Code[50];
+        LastEntryNo: Integer;
+    begin
+        if not GSTApplSessionMgt.GetSubcontracting() then
+            exit;
+
+        if GSTApplSessionMgt.GetSubContractingReceivingMultiple(AppliestoIDReceipt) then begin
+            LastEntryNo := GSTApplSessionMgt.GetSubcontractingLastGLEntryNo();
+
+            if LastEntryNo <> 0 then begin
+                GLEntry."Entry No." := LastEntryNo + 1;
+                GSTApplSessionMgt.SetSubcontractingLastGLEntryNo(GLEntry."Entry No.");
+            end
+            else begin
+                LastEntryNo := InitNextEntryNo();
+                GLEntry."Entry No." := LastEntryNo;
+                GSTApplSessionMgt.SetSubcontractingLastGLEntryNo(LastEntryNo);
+            end;
+        end
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeApplyGSTApplicationCreditMemo(CVLedgerEntryBuffer: Record "CV Ledger Entry Buffer"; OldCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer"; TransactionType: Enum "Detail Ledger Transaction Type"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeSetPostApplication(Vendor: Record Vendor; GenJnlLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
     begin
     end;
 }

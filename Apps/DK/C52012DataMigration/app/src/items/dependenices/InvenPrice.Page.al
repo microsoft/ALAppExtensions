@@ -17,14 +17,14 @@ page 1888 "C5 InvenPrice"
             group(General)
             {
 #pragma warning disable AA0218
-                field(ItemNumber;ItemNumber) { ApplicationArea=All; }
-                field(Price;Price) { ApplicationArea=All; }
-                field(PriceUnit;PriceUnit) { ApplicationArea=All; }
-                field(Currency;Currency) { ApplicationArea=All; }
-                field(PriceGroup;PriceGroup) { ApplicationArea=All; }
-                field(ContributionRatio;ContributionRatio) { ApplicationArea=All; }
-                field(Date_;Date_) { ApplicationArea=All; }
-                field(SalesVat;SalesVat) { ApplicationArea=All; }
+                field(ItemNumber; ItemNumber) { ApplicationArea = All; }
+                field(Price; Price) { ApplicationArea = All; }
+                field(PriceUnit; PriceUnit) { ApplicationArea = All; }
+                field(Currency; Currency) { ApplicationArea = All; }
+                field(PriceGroup; PriceGroup) { ApplicationArea = All; }
+                field(ContributionRatio; ContributionRatio) { ApplicationArea = All; }
+                field(Date_; Date_) { ApplicationArea = All; }
+                field(SalesVat; SalesVat) { ApplicationArea = All; }
 #pragma warning restore
             }
         }
@@ -40,13 +40,15 @@ page 1888 "C5 InvenPrice"
 
                 action(C5InvenPriceGroup)
                 {
-                    ApplicationArea=All;
+                    ApplicationArea = All;
                     Caption = 'C5 InvenPriceGroup';
                     Image = Group;
-                    Promoted=true;
-                    PromotedIsBig=True;
-                    RunObject=Page "C5 InvenPriceGroup";
-                    RunPageLink=Group=field(PriceGroup);
+                    Promoted = true;
+                    PromotedOnly = true;
+                    PromotedIsBig = True;
+                    RunObject = Page "C5 InvenPriceGroup";
+                    RunPageLink = Group = field(PriceGroup);
+                    ToolTip = 'Open the C5 Inventory Price Groups page.';
                 }
             }
         }

@@ -362,7 +362,8 @@ codeunit 3970 "Image Impl."
         LoadImage(Image);
         PropertyList := Image.PropertyIdList();
         if not PropertyList.Contains(OrientationPropertyId) then
-            exit;
+            exit(Enum::"Rotate Flip Type"::RotateNoneFlipNone);
+
         PropertyItem := Image.GetPropertyItem(OrientationPropertyId);
         OrientationValue := BitConverter.ToUInt16(PropertyItem.Value, 0);
         case OrientationValue of

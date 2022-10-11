@@ -175,7 +175,8 @@ codeunit 2026 "Item Attr Populate"
     begin
         if StrLen(Txt) <= 1 then
             exit(UpperCase(Txt));
-
+#pragma warning disable AA0217
         exit(StrSubstNo('%1%2', Uppercase(CopyStr(Txt, 1, 1)), LowerCase(CopyStr(Txt, 2))));
+#pragma warning restore AA0217
     end;
 }

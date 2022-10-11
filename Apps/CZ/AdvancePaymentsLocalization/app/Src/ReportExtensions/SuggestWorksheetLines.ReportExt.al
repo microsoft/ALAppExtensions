@@ -2,24 +2,6 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
 {
     dataset
     {
-#if not CLEAN19
-        modify("Sales Advance Letter Line")
-        {
-            trigger OnBeforePreDataItem()
-            begin
-                if AdvancePaymentsEnabledCZZ then
-                    CurrReport.Break();
-            end;
-        }
-        modify("Purch. Advance Letter Line")
-        {
-            trigger OnBeforePreDataItem()
-            begin
-                if AdvancePaymentsEnabledCZZ then
-                    CurrReport.Break();
-            end;
-        }
-#endif
         addafter("Cash Flow Azure AI Buffer")
         {
             dataitem("Sales Adv. Letter Header CZZ"; "Sales Adv. Letter Header CZZ")
@@ -81,18 +63,6 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
     {
         layout
         {
-#if not CLEAN19
-#pragma warning disable AL0432
-            modify("ConsiderSource[SourceType::""Sales Advance Letters""]")
-            {
-                Visible = not AdvancePaymentsEnabledCZZ;
-            }
-            modify("ConsiderSource[SourceType::""Purchase Advance Letters""]")
-            {
-                Visible = not AdvancePaymentsEnabledCZZ;
-            }
-#pragma warning restore AL0432
-#endif
             addafter("ConsiderSource[SourceType::""G/L Budget""]")
             {
                 field(IsSalesAdvanceLettersConsidered; IsSalesAdvanceLettersConsideredCZZ)
@@ -100,28 +70,15 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
                     ApplicationArea = Basic, Suite;
                     Caption = 'Sales Advances';
                     ToolTip = 'Specifies if sales advances will be sugested';
-#if not CLEAN19
-                    Visible = AdvancePaymentsEnabledCZZ;
-#endif
                 }
                 field(IsPurchaseAdvanceLettersConsidered; IsPurchaseAdvanceLettersConsideredCZZ)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Purchase Advances';
                     ToolTip = 'Specifies if purchase advances will be sugested';
-#if not CLEAN19
-                    Visible = AdvancePaymentsEnabledCZZ;
-#endif
                 }
             }
         }
-
-#if not CLEAN19
-        trigger OnOpenPage()
-        begin
-            AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-        end;
-#endif
 
         trigger OnClosePage()
         begin
@@ -142,10 +99,6 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
         CashFlowSetup: Record "Cash Flow Setup";
         VendorCZZ: Record Vendor;
         SuggWkshLinesHandlerCZZ: Codeunit "Sugg. Wksh. Lines Handler CZZ";
-#if not CLEAN19
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-#endif
         IsSalesAdvanceLettersConsideredCZZ: Boolean;
         IsPurchaseAdvanceLettersConsideredCZZ: Boolean;
         SalesAdvancesCZZMsg: Label 'Sales Advances';
@@ -252,5 +205,11 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
         PurchAdvLetterEntryCZZ.SetRange(Cancelled, false);
         PurchAdvLetterEntryCZZ.CalcSums("Amount (LCY)");
         exit(InitialAmount - PurchAdvLetterEntryCZZ."Amount (LCY)");
+    end;
+
+    procedure InitializeRequestCZZ(IsSalesAdvanceLettersConsidered: Boolean; IsPurchaseAdvanceLettersConsidered: Boolean)
+    begin
+        IsSalesAdvanceLettersConsideredCZZ := IsSalesAdvanceLettersConsidered;
+        IsPurchaseAdvanceLettersConsideredCZZ := IsPurchaseAdvanceLettersConsidered;
     end;
 }

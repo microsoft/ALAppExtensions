@@ -13,6 +13,7 @@ permissionset 6710 "Web Service Management - Read"
     Permissions = tabledata AllObj = r,
                   tabledata AllObjWithCaption = r,
                   tabledata Field = r,
+                  tabledata "Record Link" = R,
                   tabledata "Tenant Web Service" = R,
                   tabledata "Tenant Web Service Columns" = R,
                   tabledata "Tenant Web Service Filter" = R,

@@ -9,7 +9,6 @@ permissionset 134689 "Email View Perm"
     IncludedPermissionSets = "Email - Admin";
 
     // Direct permissions needed for tests
-    // Include Test Tables, but exclude Test Email Account Table
     Permissions =
         tabledata "Test Email Connector Setup" = RIMD,
         tabledata "Test Email Account" = RIMD, // Needed for the Record to get passed in Library Assert

@@ -3,6 +3,7 @@ codeunit 4701 "VAT Group Helper Functions"
     var
         AssistedSetupDescriptionTxt: Label 'VAT Group Management allows independent companies to enter into a VAT Group with the purpose of eliminating VAT claims amongst each other.';
         AssistedSetupTxt: Label 'Set up VAT Group Management';
+        AssistedSetupShortTitleTxt: Label 'VAT Group Management';
         NoVATReportSetupErr: Label 'The VAT report setup was not found. You can create one on the VAT Report Setup page.';
         AssistedSetupHelpLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2141039', Locked = true;
 
@@ -146,8 +147,16 @@ codeunit 4701 "VAT Group Helper Functions"
     local procedure AddVATReportSetupWizard()
     var
         GuidedExperience: Codeunit "Guided Experience";
+        Language: Codeunit Language;
+        CurrentGlobalLanguage: Integer;
     begin
-        GuidedExperience.InsertAssistedSetup(AssistedSetupTxt, AssistedSetupTxt, AssistedSetupDescriptionTxt, 0, ObjectType::Page, Page::"VAT Group Setup Guide", "Assisted Setup Group"::GettingStarted, '', "Video Category"::Uncategorized, AssistedSetupHelpLinkTxt);
+        GuidedExperience.InsertAssistedSetup(AssistedSetupTxt, AssistedSetupShortTitleTxt, AssistedSetupDescriptionTxt, 5, ObjectType::Page, Page::"VAT Group Setup Guide", "Assisted Setup Group"::GettingStarted, '', "Video Category"::GettingStarted, AssistedSetupHelpLinkTxt, true);
+
+        CurrentGlobalLanguage := GlobalLanguage();
+        GlobalLanguage(Language.GetDefaultApplicationLanguageId());
+        GuidedExperience.AddTranslationForSetupObjectTitle("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"VAT Group Setup Guide", Language.GetDefaultApplicationLanguageId(), AssistedSetupTxt);
+        GuidedExperience.AddTranslationForSetupObjectDescription("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"VAT Group Setup Guide", Language.GetDefaultApplicationLanguageId(), AssistedSetupDescriptionTxt);
+        GlobalLanguage(CurrentGlobalLanguage);
     end;
 
     internal procedure GetVATGroupDefaultBCVersion(): Enum "VAT Group BC Version"

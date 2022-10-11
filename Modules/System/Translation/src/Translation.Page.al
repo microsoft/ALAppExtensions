@@ -68,9 +68,9 @@ page 3712 Translation
         CaptionTxt: Text;
         LanguageNameValue: Text;
 
-    internal procedure SetTableId(Value: Integer)
+    internal procedure SetTableId(TableNo: Integer)
     begin
-        TableId := Value;
+        TableId := TableNo;
     end;
 
     /// <summary>

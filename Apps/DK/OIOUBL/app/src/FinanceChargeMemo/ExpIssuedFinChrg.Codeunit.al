@@ -16,7 +16,6 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
         SalesSetup: Record "Sales & Receivables Setup";
         OIOUBLDocumentEncode: Codeunit "OIOUBL-Document Encode";
         OIOUBLXMLGenerator: Codeunit "OIOUBL-Common Logic";
-        IssuedFinChargeMemoLineFound: Boolean;
         DocNameSpace: Text[250];
         DocNameSpace2: Text[250];
 
@@ -235,7 +234,6 @@ codeunit 13638 "OIOUBL-Exp. Issued Fin. Chrg"
 
     procedure UpdateTaxAmtAndTaxableAmt(Amount: Decimal; VATAmount: Decimal; var TaxableAmountParam: Decimal; var TaxAmountParam: Decimal);
     begin
-        IssuedFinChargeMemoLineFound := TRUE;
         TaxableAmountParam := TaxableAmountParam + Amount;
         TaxAmountParam := TaxAmountParam + VATAmount
     end;

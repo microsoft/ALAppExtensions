@@ -36,29 +36,34 @@ page 1919 "MigrationQB Default Accounts"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Sales Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks sales account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Sales Credit Memo Account"; SalesCreditMemoAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Sales Credit Memo Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks sales credit memo account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Sales Line Disc. Account"; SalesLineDiscAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Sales Line Disc. Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks sales line discount account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Sales Inv. Disc. Account"; SalesInvDiscAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Sales Inv. Disc. Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks sales invoice discount account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("1"; '')
                 {
-                    Caption = '';
+                    Caption = ' ';
+                    ToolTip = ' ';
                     ShowCaption = true;
                     ApplicationArea = Basic, Suite;
                 }
@@ -66,29 +71,34 @@ page 1919 "MigrationQB Default Accounts"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Purch. Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks purchase account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Purch. Credit Memo Account"; PurchCreditMemoAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Purch. Credit Memo Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks purchase credit memo account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Purch. Line Disc. Account"; PurchLineDiscAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Purch. Line Disc. Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks purchase line discount account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Purch. Inv. Disc. Account"; PurchInvDiscAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Purch. Inv. Disc. Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks purchase invoice discount account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("2"; '')
                 {
-                    Caption = '';
+                    Caption = ' ';
+                    ToolTip = ' ';
                     ShowCaption = true;
                     ApplicationArea = Basic, Suite;
                 }
@@ -108,23 +118,27 @@ page 1919 "MigrationQB Default Accounts"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'COGS Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks COGS account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Inventory Adjmt. Account"; InventoryAdjmtAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Inventory Adjmt. Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks inventory adjustment account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Inventory Account"; InventoryAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Inventory Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks inventory account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("3"; '')
                 {
-                    Caption = '';
+                    Caption = ' ';
+                    ToolTip = ' ';
                     ShowCaption = true;
                     ApplicationArea = Basic, Suite;
                 }
@@ -132,17 +146,20 @@ page 1919 "MigrationQB Default Accounts"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Receivables Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks receivables account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Service Charge Acc."; ServiceChargeAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Service Charge Acc.';
+                    ToolTip = 'Specifies the account number of the QuickBooks service charge account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("4"; '')
                 {
-                    Caption = '';
+                    Caption = ' ';
+                    ToolTip = ' ';
                     ShowCaption = true;
                     ApplicationArea = Basic, Suite;
                 }
@@ -150,12 +167,14 @@ page 1919 "MigrationQB Default Accounts"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Payables Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks payables account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Purch. Service Charge Acc."; PurchServiceChargeAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Purch. Service Charge Acc.';
+                    ToolTip = 'Specifies the account number of the QuickBooks purchase service charge account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
             }
@@ -174,6 +193,7 @@ page 1919 "MigrationQB Default Accounts"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Unit of Measure';
+                    ToolTip = 'Specifies the unit of measure.';
                     TableRelation = "Unit of Measure";
 
                     trigger OnValidate();

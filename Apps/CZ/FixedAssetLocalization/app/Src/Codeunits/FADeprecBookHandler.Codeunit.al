@@ -110,37 +110,6 @@ codeunit 31239 "FA Deprec. Book Handler CZF"
         end;
     end;
 
-#if not CLEAN18
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Fixed Asset", 'OnAfterValidateEvent', 'Clasification Code', false, false)]
-    local procedure CheckTaxDepreciationCodeOnAfterValidateEvent(var Rec: Record "Fixed Asset")
-    var
-        TaxDepreciationGroupCZF: Record "Tax Depreciation Group CZF";
-        ClassificationCodeCZF: Record "Classification Code CZF";
-        DeprecGroupMismatchMsg: Label 'The depreciation group (%1) associated with classification code %2 doesn''t correspond to depreciation group (%3) associated with tax depreciation group code %4.', Comment = '%1 = Classification Code Depreciation Group, %2 = Fixed Asset Clasification Code, %3 = Tax Depreciation Group Code, %4 = Tax Deprec. Group Code';
-    begin
-        if Rec."Classification Code CZF" = '' then
-            exit;
-
-        FADepreciationBook.SetRange("FA No.", Rec."No.");
-        FADepreciationBook.SetFilter("Tax Deprec. Group Code CZF", '<>%1', '');
-        if not FADepreciationBook.FindFirst() then
-            exit;
-
-        if FADepreciationBook."Tax Deprec. Group Code CZF" <> '' then begin
-            TaxDepreciationGroupCZF.SetRange(Code, FADepreciationBook."Tax Deprec. Group Code CZF");
-            TaxDepreciationGroupCZF.SetRange("Starting Date", 0D, WorkDate());
-            if TaxDepreciationGroupCZF.FindLast() then begin
-                ClassificationCodeCZF.Get(Rec."Classification Code CZF");
-                if ClassificationCodeCZF."Depreciation Group" <> TaxDepreciationGroupCZF."Depreciation Group" then
-                    Message(DeprecGroupMismatchMsg,
-                      ClassificationCodeCZF."Depreciation Group", Rec."Classification Code CZF", TaxDepreciationGroupCZF."Depreciation Group", FADepreciationBook."Tax Deprec. Group Code CZF");
-            end;
-        end;
-    end;
-
-#pragma warning restore AL0432
-#endif
     [EventSubscriber(ObjectType::Page, Page::"Fixed Asset Card", 'OnAfterLoadDepreciationBooks', '', false, false)]
     local procedure ShowDeprBooksOnAfterLoadDepreciationBooks(var Simple: Boolean)
     begin
@@ -170,5 +139,61 @@ codeunit 31239 "FA Deprec. Book Handler CZF"
         FALedgerEntry.SetRange("Depreciation Book Code", Rec."Depreciation Book Code");
         if not FALedgerEntry.IsEmpty() then
             Error(FAPostingGroupCanNotBeChangedErr);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Duplicate Depr. Book", 'OnAfterAdjustGenJnlLine', '', false, false)]
+    local procedure OnAfterAdjustGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; var GenJournalLine2: Record "Gen. Journal Line")
+    begin
+        GenJournalLine."Reason Code" := GenJournalLine2."Reason Code";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Duplicate Depr. Book", 'OnAfterMakeFAJnlLine', '', false, false)]
+    local procedure OnAfterMakeFAJnlLine(var FAJnlLine: Record "FA Journal Line"; var GenJnlLine: Record "Gen. Journal Line")
+    begin
+        FAJnlLine."Reason Code" := GenJnlLine."Reason Code";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Duplicate Depr. Book", 'OnAfterMakeGenJnlLine', '', false, false)]
+    local procedure OnAfterMakeGenJnlLine(var GenJnlLine: Record "Gen. Journal Line"; var FAJnlLine: Record "FA Journal Line")
+    begin
+        GenJnlLine."Reason Code" := FAJnlLine."Reason Code";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Duplicate Depr. Book", 'OnAfterAdjustFAJnlLine', '', false, false)]
+    local procedure OnAfterAdjustFAJnlLine(var FAJournalLine: Record "FA Journal Line"; var FAJournalLine2: Record "FA Journal Line")
+    begin
+        FAJournalLine."Reason Code" := FAJournalLine2."Reason Code";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"FA Journal Setup", 'OnBeforeSetFAJnlTrailCodes', '', false, false)]
+    local procedure SetResourceCodeOnBeforeSetFAJnlTrailCodes(var FAJnlLine: Record "FA Journal Line"; var IsHandled: Boolean)
+    var
+        FAJnlTemplate: Record "FA Journal Template";
+    begin
+        if IsHandled then
+            exit;
+
+        if (FAJnlLine."Reason Code" = '') or (FAJnlLine."FA Posting Type" <> FAJnlLine."FA Posting Type"::Disposal) then
+            exit;
+
+        FAJnlTemplate.Get(FAJnlLine."Journal Template Name");
+        FAJnlLine."Source Code" := FAJnlTemplate."Source Code";
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"FA Journal Setup", 'OnBeforeSetGenJnlTrailCodes', '', false, false)]
+    local procedure SetResourceCodeOnBeforeSetGenJnlTrailCodes(var GenJnlLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    var
+        GenJnlTemplate: Record "Gen. Journal Template";
+    begin
+        if IsHandled then
+            exit;
+
+        if (GenJnlLine."Reason Code" = '') or (GenJnlLine."FA Posting Type" <> GenJnlLine."FA Posting Type"::Disposal) then
+            exit;
+
+        GenJnlTemplate.Get(GenJnlLine."Journal Template Name");
+        GenJnlLine."Source Code" := GenJnlTemplate."Source Code";
+        IsHandled := true;
     end;
 }

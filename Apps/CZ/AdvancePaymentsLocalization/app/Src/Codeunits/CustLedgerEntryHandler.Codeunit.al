@@ -5,14 +5,9 @@ codeunit 31004 "Cust. Ledger Entry Handler CZZ"
 
     [EventSubscriber(ObjectType::Table, Database::"Cust. Ledger Entry", 'OnAfterCopyCustLedgerEntryFromGenJnlLine', '', false, false)]
     local procedure CustLedgerEntryOnAfterCopyCustLedgerEntryFromGenJnlLine(var CustLedgerEntry: Record "Cust. Ledger Entry"; GenJournalLine: Record "Gen. Journal Line")
-    var
-        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
     begin
         CustLedgerEntry."Advance Letter No. CZZ" := GenJournalLine."Adv. Letter No. (Entry) CZZ";
-        if CustLedgerEntry."Advance Letter No. CZZ" <> '' then begin
-            SalesAdvLetterHeaderCZZ.Get(CustLedgerEntry."Advance Letter No. CZZ");
-            CustLedgerEntry."Adv. Letter Template Code CZZ" := SalesAdvLetterHeaderCZZ."Advance Letter Code";
-        end;
+        CustLedgerEntry."Adv. Letter Template Code CZZ" := GenJournalLine."Adv. Letter Template Code CZZ";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Cust. Ledger Entry", 'OnIsRelatedToAdvanceLetterCZL', '', false, false)]
@@ -26,11 +21,8 @@ codeunit 31004 "Cust. Ledger Entry Handler CZZ"
     var
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
         AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
     begin
         if CustLedgerEntry."Advance Letter No. CZZ" = '' then
-            exit;
-        if not AdvancePaymentsMgtCZZ.IsEnabled() then
             exit;
 
         SalesAdvLetterHeaderCZZ.Get(CustLedgerEntry."Advance Letter No. CZZ");
@@ -51,6 +43,15 @@ codeunit 31004 "Cust. Ledger Entry Handler CZZ"
             Error(AppliedToAdvanceLetterErr);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustEntry-Apply Posted Entries", 'OnPostUnApplyCustomerCommitOnAfterGetCustLedgEntry', '', false, false)]
+    local procedure CheckAdvanceOnPostUnApplyCustomerCommitOnAfterGetCustLedgEntry(var CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+        if (CustLedgerEntry."Advance Letter No. CZZ" <> '') or
+           (CustLedgerEntry."Adv. Letter Template Code CZZ" <> '')
+        then
+            Error(AppliedToAdvanceLetterErr);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustEntry-Apply Posted Entries", 'OnBeforeUnApplyCustomer', '', false, false)]
     local procedure CheckAdvanceOnBeforeUnApplyCustomer(DtldCustLedgEntry: Record "Detailed Cust. Ledg. Entry")
     var
@@ -67,12 +68,8 @@ codeunit 31004 "Cust. Ledger Entry Handler CZZ"
     [EventSubscriber(ObjectType::Table, Database::"Cust. Ledger Entry", 'OnBeforeCalcLinkAdvAmount', '', false, false)]
 #pragma warning restore AL0432
     local procedure ResetAmountOnBeforeCalcLinkAdvAmount(var Amount: Decimal; var IsHandled: Boolean)
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
     begin
         if IsHandled then
-            exit;
-        if not AdvancePaymentsMgtCZZ.IsEnabled() then
             exit;
 
         Amount := 0;

@@ -35,7 +35,7 @@ codeunit 31389 "CalendarManagement Handler CZB"
                 WhereUsedBaseCalendar."Base Calendar Code" := BaseCalendarCode;
                 WhereUsedBaseCalendar."Source Type" := WhereUsedBaseCalendar."Source Type"::"Bank Account CZB";
                 WhereUsedBaseCalendar."Source Code" := BankAccount."No.";
-                WhereUsedBaseCalendar."Source Name" := BankAccount.Name;
+                WhereUsedBaseCalendar."Source Name" := CopyStr(BankAccount.Name, 1, MaxStrLen(WhereUsedBaseCalendar."Source Name"));
                 WhereUsedBaseCalendar."Customized Changes Exist" := CalendarManagement.CustomizedChangesExist(BankAccount);
                 WhereUsedBaseCalendar.Insert();
             until BankAccount.Next() = 0;

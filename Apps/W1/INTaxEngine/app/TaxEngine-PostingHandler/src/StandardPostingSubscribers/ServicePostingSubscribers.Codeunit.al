@@ -103,7 +103,10 @@ codeunit 20339 "Service Posting Subscribers"
     begin
         TaxPostingHandler.GetCurrency(ServiceHeader."Currency Code", Currency);
         Currency.TestField("Invoice Rounding Precision");
-        TotalAmount := AmountIncludingVAT + TaxPostingBufferMgmt.GetTotalTaxAmount();
+        if ServiceHeader."Document Type" in ["Sales Document Type"::"Credit Memo", "Sales Document Type"::"Return Order"] then
+            TotalAmount := AmountIncludingVAT + TaxPostingBufferMgmt.GetTotalTaxAmount()
+        else
+            TotalAmount := AmountIncludingVAT - TaxPostingBufferMgmt.GetTotalTaxAmount();
 
         InvoiceRoundingAmount :=
           -Round(

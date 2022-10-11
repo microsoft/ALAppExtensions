@@ -316,7 +316,7 @@ report 18932 "Ledger"
                     SourceDesc := '';
                     if "Source Code" <> '' then begin
                         SourceCode.Get("Source Code");
-                        SourceDesc := SourceCode.Description;
+                        SourceDesc := CopyStr(SourceCode.Description, 1, 50);
                     end;
 
                     AccountName := '';

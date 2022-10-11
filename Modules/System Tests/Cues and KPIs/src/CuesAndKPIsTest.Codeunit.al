@@ -335,7 +335,7 @@ codeunit 135039 "Cues And KPIs Test"
         RecordRef.Open(9701); // Cue Setup
         if RecordRef.FindSet() then
             repeat
-                CuesAndKPIs.ChangeUserForSetupEntry(RecordRef, Copystr(CompanyName(), 1, 30), CopyStr(UserId(), 1, 30));
+                CuesAndKPIs.ChangeUserForSetupEntry(RecordRef, Copystr(CompanyName(), 1, 30), CopyStr(UserId(), 1, 50));
             until RecordRef.Next() = 0;
 
         // verify
@@ -436,8 +436,40 @@ codeunit 135039 "Cues And KPIs Test"
         // [WHEN] ConvertStyleToStyleText is called
         // [THEN] The custom style defined in the event subscriber is returned
         BindSubscription(CuesAndKPIsTest);
-        Assert.AreEqual('CustomValue', CuesAndKPIs.ConvertStyleToStyleText(4), 'Custom style conversion different than expected');
+        Assert.AreEqual('CustomValue', CuesAndKPIs.ConvertStyleToStyleText(Enum::"Cues And KPIs Style".FromInteger(4)), 'Custom style conversion different than expected');
         UnbindSubscription(CuesAndKPIsTest);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [Scope('OnPrem')]
+    procedure TestPersonalizedCueSetupExistsForCurrentUser()
+    var
+        CueSetupAdministratorPage: TestPage "Cue Setup Administrator";
+    begin
+        Initialize();
+
+        CueSetupAdministratorPage.OpenEdit();
+
+        // [GIVEN] No Cue Setup record exists for the current user
+        CueSetupAdministratorPage.New();
+        InsertIntoCueSetupAdminPage(CueSetupAdministratorPage, 'DummyUser', CueTableId, CueNormalIntegerFieldId,
+            CueStyle::Unfavorable, 0, CueStyle::None, 200.0, CueStyle::None);
+
+        // [WHEN] PersonalizedCueSetupExistsForCurrentUser is called
+        // [THEN] false is returned
+        Assert.IsFalse(CuesAndKPIs.PersonalizedCueSetupExistsForCurrentUser(CueTableId, CueNormalIntegerFieldId), 'Personalized Cue Setup exists.');
+
+        // [GIVEN] A Cue Setup record exists for the current user
+        CueSetupAdministratorPage.New();
+        InsertIntoCueSetupAdminPage(CueSetupAdministratorPage, UserId, CueTableId, CueNormalIntegerFieldId,
+            CueStyle::Unfavorable, 0, CueStyle::None, 200.0, CueStyle::None);
+
+        // [WHEN] PersonalizedCueSetupExistsForCurrentUser is called
+        // [THEN] true is returned
+        Assert.IsTrue(CuesAndKPIs.PersonalizedCueSetupExistsForCurrentUser(CueTableId, CueNormalIntegerFieldId), 'Personalized Cue Setup does not exists.');
+
+        CueSetupAdministratorPage.Close();
     end;
 
     local procedure Initialize()
@@ -529,9 +561,9 @@ codeunit 135039 "Cues And KPIs Test"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cues And KPIs", 'OnConvertStyleToStyleText', '', true, true)]
     [Normal]
-    procedure OnConvertStyleToStyleText(CueStyle: Enum "Cues And KPIs Style"; VAR Result: Text; VAR Resolved: Boolean)
+    local procedure OnConvertStyleToStyleText(CueStyle: Enum "Cues And KPIs Style"; VAR Result: Text; VAR Resolved: Boolean)
     begin
-        if CueStyle = 4 then begin
+        if CueStyle.AsInteger() = 4 then begin
             Result := 'CustomValue';
             Resolved := true;
         end;

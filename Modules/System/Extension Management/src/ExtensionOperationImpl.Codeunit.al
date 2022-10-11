@@ -18,14 +18,17 @@ codeunit 2503 "Extension Operation Impl"
         OperationInvokerHasBeenCreated: Boolean;
         InstallerHasBeenCreated: Boolean;
         ExtensionFileNameTxt: Label '%1_%2_%3.zip', Comment = '%1=Name, %2=Publisher, %3=Version', Locked = true;
-        OperationProgressMsg: Label 'We are installing the extension. You can view the progress on the Status page.';
-        CurrentOperationProgressMsg: Label 'Extension deployment is in progress. Please check the Deployment Status page for updates.';
-        ScheduledOperationMajorProgressMsg: Label 'Extension deployment has been scheduled for the next major version. Please check the Deployment Status page for updates.';
-        ScheduledOperationMinorProgressMsg: Label 'Extension deployment has been scheduled for the next minor version. Please check the Deployment Status page for updates.';
+        CurrentOperationProgressMsg: Label 'Extension installation is in progress. Please check the Extension Installation Status page for updates.';
+        ScheduledOperationMajorProgressMsg: Label 'Extension installation has been scheduled for the next major version. Please check the Extension Installation Status page for updates.';
+        ScheduledOperationMinorProgressMsg: Label 'Extension installation has been scheduled for the next minor version. Please check the Extension Installation Status page for updates.';
         DownloadExtensionSourceIsNotAllowedErr: Label 'The effective policies for this package do not allow you to download the source code. Contact the extension provider for more information.';
         DialogTitleTxt: Label 'Export';
         OutExtTxt: Label 'Text Files (*.txt)|*.txt|*.*';
         NotSufficientPermissionErr: Label 'You do not have sufficient permissions to manage extensions. Please contact your administrator.';
+        InstallationFailedOpenDetailsQst: Label 'Sorry, we couldn''t install the app. Do you want to see the details?';
+        InstallationFailedOpenDetailsTxt: Label 'App installation failed. User has chosen to see the details.';
+        InstallationFailedDoNotOpenDetailsTxt: Label 'App installation failed. User has chosen not to check out the details.';
+        PageCaptionTok: Label '%1 %2', Comment = '%1 = Page default caption %2 = App name';
 
     local procedure AssertIsInitialized()
     begin
@@ -36,14 +39,37 @@ codeunit 2503 "Extension Operation Impl"
     end;
 
     procedure DeployExtension(AppId: Guid; lcid: Integer; IsUIEnabled: Boolean)
+    var
+        NAVAppTenantOperation: Record "NAV App Tenant Operation";
+        ExtensionOperationImpl: Codeunit "Extension Operation Impl";
+        ExtnInstallationProgress: Page "Extn. Installation Progress";
+        ExtnDeploymentStatusDetail: Page "Extn Deployment Status Detail";
+        OperationId: Guid;
     begin
         CheckPermissions();
         InitializeOperationInvoker();
-        DotNetALNavAppOperationInvoker.DeployTarget(AppId, Format(lcid));
-        if IsUIEnabled then
-            Message(OperationProgressMsg);
-    end;
 
+        OperationId := DotNetALNavAppOperationInvoker.DeployTarget(AppId, Format(lcid));
+
+        if IsUIEnabled then begin
+            ExtnInstallationProgress.SetOperationIdToMonitor(OperationId);
+            ExtnInstallationProgress.Caption(StrSubstNo(PageCaptionTok, ExtnInstallationProgress.Caption, GetAppName(AppId, OperationId)));
+            ExtnInstallationProgress.RunModal();
+
+            ExtensionOperationImpl.RefreshStatus(OperationId);
+            NAVAppTenantOperation.Get(OperationId);
+
+            if NAVAppTenantOperation.Status = NAVAppTenantOperation.Status::Failed then begin
+                if Confirm(InstallationFailedOpenDetailsQst) then begin
+                    Session.LogMessage('0000I2M', InstallationFailedOpenDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', 'Extensions');
+                    ExtnDeploymentStatusDetail.SetOperationRecord(NAVAppTenantOperation);
+                    ExtnDeploymentStatusDetail.RunModal();
+                end else
+                    Session.LogMessage('0000I2N', InstallationFailedDoNotOpenDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', 'Extensions');
+                exit;
+            end;
+        end;
+    end;
 
     procedure UploadExtension(PackageInStream: InStream; lcid: Integer)
     var
@@ -270,6 +296,21 @@ codeunit 2503 "Extension Operation Impl"
         Schedule := GetDeployOperationSchedule(OperationId);
     end;
 
+    procedure GetDeployOperationInfo(OperationId: Guid; var Version: Text; var Publisher: Text; var AppName: Text; var AppId: Guid)
+    begin
+        CheckPermissions();
+        AppName := GetDeployOperationAppName(OperationId);
+        AppId := GetDeployOperationAppId(OperationId);
+        Publisher := GetDeployOperationAppPublisher(OperationId);
+        Version := GetDeployOperationAppVersion(OperationId);
+    end;
+
+    procedure GetDeployOperationAppId(OperationId: Guid): Guid
+    begin
+        InitializeOperationInvoker();
+        exit(DotNetALNavAppOperationInvoker.GetDeployOperationAppId(OperationId));
+    end;
+
     procedure GetDeployOperationAppName(OperationId: Guid): Text
     begin
         InitializeOperationInvoker();
@@ -391,6 +432,14 @@ codeunit 2503 "Extension Operation Impl"
             if PublishedApplication.FindFirst() then
                 AppName := PublishedApplication.Name;
         end;
+    end;
+
+    internal procedure GetAppName(AppId: Guid; OperationId: Guid) AppName: Text
+    begin
+        AppName := GetAppName(AppId);
+
+        if AppName = '' then
+            AppName := GetDeployOperationAppName(OperationId);
     end;
 }
 

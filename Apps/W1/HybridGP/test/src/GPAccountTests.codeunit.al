@@ -121,7 +121,6 @@ codeunit 139661 "GP Account Tests"
     procedure TestLimitingGPHistYear()
     var
         GPGLTransactions: Record "GP GLTransactions";
-        DimensionSetEntry: Record "Dimension Set Entry";
         GPAccount: Record "GP Account";
         GLAccount: Record "G/L Account";
         GPSegements: Record "GP Segments";
@@ -130,8 +129,6 @@ codeunit 139661 "GP Account Tests"
         GPGL10111: Record "GP GL10111";
         GenJournalLine: Record "Gen. Journal Line";
         GenJournalBatch: Record "Gen. Journal Batch";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] Beginning balance entry is created when using limiting GP hist year
         // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
@@ -161,12 +158,10 @@ codeunit 139661 "GP Account Tests"
         // [THEN] Journal entries are created
         GenJournalBatch.SetRange("Journal Template Name", 'GENERAL');
         GenJournalBatch.SetFilter(Name, 'GP2020BB');
-        GenJournalBatch.FindSet();
         Assert.RecordCount(GenJournalBatch, 1);
 
         GenJournalLine.SetRange("Journal Template Name", 'GENERAL');
         GenJournalLine.SetRange("Journal Batch Name", 'GP2020BB');
-        GenJournalLine.FindSet();
         Assert.RecordCount(GenJournalLine, 2);
     end;
 
@@ -175,7 +170,6 @@ codeunit 139661 "GP Account Tests"
     procedure TestLimitingGPHistYearNotUsed()
     var
         GPGLTransactions: Record "GP GLTransactions";
-        DimensionSetEntry: Record "Dimension Set Entry";
         GPAccount: Record "GP Account";
         GLAccount: Record "G/L Account";
         GPSegements: Record "GP Segments";
@@ -184,8 +178,6 @@ codeunit 139661 "GP Account Tests"
         GPGL10111: Record "GP GL10111";
         GenJournalLine: Record "Gen. Journal Line";
         GenJournalBatch: Record "Gen. Journal Batch";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] Beginning balance entry is created when using limiting GP hist year
         // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
@@ -215,12 +207,10 @@ codeunit 139661 "GP Account Tests"
         // [THEN] Journal entries are created
         GenJournalBatch.SetRange("Journal Template Name", 'GENERAL');
         GenJournalBatch.SetFilter(Name, 'GP2020BB');
-        GenJournalBatch.FindSet();
         Assert.RecordCount(GenJournalBatch, 0);
 
         GenJournalLine.SetRange("Journal Template Name", 'GENERAL');
         GenJournalLine.SetRange("Journal Batch Name", 'GP2020BB');
-        GenJournalLine.FindSet();
         Assert.RecordCount(GenJournalLine, 0);
     end;
 
@@ -757,7 +747,10 @@ codeunit 139661 "GP Account Tests"
     local procedure ConfigureMigrationSettings(InitialHistYear: Integer)
     begin
         GPCompanyMigrationSettings.Init();
+#pragma warning disable AA0139
         GPCompanyMigrationSettings.Name := CompanyName();
+#pragma warning restore AA0139
+
         GPCompanyMigrationSettings.Insert(true);
 
         GPCompanyAdditionalSettings.Init();

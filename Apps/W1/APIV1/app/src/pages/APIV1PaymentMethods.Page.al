@@ -56,7 +56,7 @@ page 20020 "APIV1 - Payment Methods"
     var
         PaymentMethod: Record "Payment Method";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
         PaymentMethod.SETRANGE(Code, Code);
         IF NOT PaymentMethod.ISEMPTY() THEN
@@ -64,9 +64,9 @@ page 20020 "APIV1 - Payment Methods"
 
         INSERT(TRUE);
 
-        RecRef.GETTABLE(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CURRENTDATETIME());
-        RecRef.SETTABLE(Rec);
+        RecordRef.GETTABLE(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecordRef, TempFieldSet, CURRENTDATETIME());
+        RecordRef.SETTABLE(Rec);
 
         MODIFY(TRUE);
         EXIT(FALSE);

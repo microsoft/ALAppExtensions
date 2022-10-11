@@ -9,6 +9,7 @@ pageextension 31290 "Administrator RC CZB" extends "Administrator Main Role Cent
                 ApplicationArea = Basic, Suite;
                 Caption = 'Search Rules';
                 RunObject = page "Search Rule List CZB";
+                ToolTip = 'View or edit search rules.';
             }
         }
     }

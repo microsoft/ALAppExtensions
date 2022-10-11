@@ -5,6 +5,8 @@
 
 table 135038 "My Video Source"
 {
+    ReplicateData = false;
+
     fields
     {
         field(1; PrimaryKey; Integer)
