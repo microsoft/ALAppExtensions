@@ -1169,7 +1169,7 @@ Codeunit 4037 "Helper Functions"
             GPIV00101.SetRange(INACTIVE, false);
 
         if not GPCompanyAdditionalSettings.GetMigrateDiscontinuedItems() then
-            GPIV00101.SetFilter(ITEMTYPE, '<>%1', 2);
+            GPIV00101.SetFilter(ITEMTYPE, '<>%1', GPIV00101.DiscontinuedItemTypeId());
 
         exit(GPIV00101.Count());
     end;

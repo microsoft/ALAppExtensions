@@ -70,8 +70,13 @@ table 40116 "GP IV00101"
         }
     }
 
+    procedure DiscontinuedItemTypeId(): Integer
+    begin
+        exit(2);
+    end;
+
     procedure IsDiscontinued(): Boolean
     begin
-        exit(ITEMTYPE = 2);
+        exit(Rec.ITEMTYPE = DiscontinuedItemTypeId());
     end;
 }

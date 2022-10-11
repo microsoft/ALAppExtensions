@@ -3,7 +3,6 @@ codeunit 4022 "GP Vendor Migrator"
     TableNo = "GP Vendor";
 
     var
-        HelperFunctions: Codeunit "Helper Functions";
         GlobalDocumentNo: Text[30];
         PostingGroupCodeTxt: Label 'GP', Locked = true;
         VendorBatchNameTxt: Label 'GPVEND', Locked = true;
@@ -27,6 +26,7 @@ codeunit 4022 "GP Vendor Migrator"
     procedure OnMigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        HelperFunctions: Codeunit "Helper Functions";
     begin
         if not ChartOfAccountsMigrated then
             exit;
@@ -54,6 +54,7 @@ codeunit 4022 "GP Vendor Migrator"
         GPVendorTransactions: Record "GP Vendor Transactions";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
+        HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
     begin
         if not ChartOfAccountsMigrated then
@@ -150,6 +151,7 @@ codeunit 4022 "GP Vendor Migrator"
     local procedure MigrateVendorDetails(GPVendor: Record "GP Vendor"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
     var
         CompanyInformation: Record "Company Information";
+        HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
         VendorName: Text[50];
         ContactName: Text[50];
@@ -241,6 +243,7 @@ codeunit 4022 "GP Vendor Migrator"
     local procedure CreateOrUpdateOrderAddress(Vendor: Record Vendor; GPVendorAddress: Record "GP Vendor Address"; AddressCode: Code[10])
     var
         OrderAddress: Record "Order Address";
+        HelperFunctions: Codeunit "Helper Functions";
     begin
         if not OrderAddress.Get(Vendor."No.", AddressCode) then begin
             OrderAddress."Vendor No." := Vendor."No.";
@@ -263,6 +266,7 @@ codeunit 4022 "GP Vendor Migrator"
     local procedure CreateOrUpdateRemitAddress(Vendor: Record Vendor; GPVendorAddress: Record "GP Vendor Address"; AddressCode: Code[10])
     var
         RemitAddress: Record "Remit Address";
+        HelperFunctions: Codeunit "Helper Functions";
     begin
         if not RemitAddress.Get(AddressCode, Vendor."No.") then begin
             RemitAddress."Vendor No." := Vendor."No.";
@@ -298,6 +302,7 @@ codeunit 4022 "GP Vendor Migrator"
     local procedure GetVendorsFromJson(JArray: JsonArray)
     var
         GPVendor: Record "GP Vendor";
+        HelperFunctions: Codeunit "Helper Functions";
         RecordVariant: Variant;
         ChildJToken: JsonToken;
         EntityId: Text[75];
@@ -330,6 +335,7 @@ codeunit 4022 "GP Vendor Migrator"
     local procedure UpdateVendorFromJson(var RecordVariant: Variant; JToken: JsonToken)
     var
         GPVendor: Record "GP Vendor";
+        HelperFunctions: Codeunit "Helper Functions";
     begin
         HelperFunctions.UpdateFieldValue(RecordVariant, GPVendor.FieldNO(VENDORID), JToken.AsObject(), 'VENDORID');
         HelperFunctions.UpdateFieldValue(RecordVariant, GPVendor.FieldNO(VENDNAME), JToken.AsObject(), 'VENDNAME');
@@ -363,6 +369,7 @@ codeunit 4022 "GP Vendor Migrator"
     local procedure GetPMTrxFromJson(JArray: JsonArray);
     var
         GPVendorTransactions: Record "GP Vendor Transactions";
+        HelperFunctions: Codeunit "Helper Functions";
         RecordVariant: Variant;
         ChildJToken: JsonToken;
         EntityId: Text[40];
@@ -396,6 +403,7 @@ codeunit 4022 "GP Vendor Migrator"
     local procedure UpdatePMTrxFromJson(var RecordVariant: Variant; JToken: JsonToken; DocumentNo: Text[30])
     var
         GPVendorTransactions: Record "GP Vendor Transactions";
+        HelperFunctions: Codeunit "Helper Functions";
     begin
         HelperFunctions.UpdateFieldValue(RecordVariant, GPVendorTransactions.FieldNo(VENDORID), JToken.AsObject(), 'VENDORID');
         HelperFunctions.UpdateFieldValue(RecordVariant, GPVendorTransactions.FieldNo(DOCNUMBR), JToken.AsObject(), 'DOCNUMBR');
@@ -518,6 +526,7 @@ codeunit 4022 "GP Vendor Migrator"
         GPPM00100: Record "GP PM00100";
         VendorPostingGroup: Record "Vendor Posting Group";
         Vendor: Record Vendor;
+        HelperFunctions: Codeunit "Helper Functions";
         ClassId: Text[20];
         AccountNumber: Code[20];
     begin

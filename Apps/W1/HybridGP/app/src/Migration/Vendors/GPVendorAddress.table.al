@@ -54,4 +54,9 @@ table 4049 "GP Vendor Address"
             Clustered = true;
         }
     }
+
+    [Obsolete('Vendor address logic moved to the GP Vendor Migrator code unit.')]
+    procedure MoveStagingData()
+    begin
+    end;
 }
