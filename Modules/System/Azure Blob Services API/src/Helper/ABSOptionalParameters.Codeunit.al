@@ -192,7 +192,7 @@ codeunit 9047 "ABS Optional Parameters"
     /// <param name="BytesEndValue">Integer value specifying the Bytes end range value</param>
     procedure Range(BytesStartValue: Integer; BytesEndValue: Integer)
     var
-        RangeBytesLbl: Label 'bytes=%1-%2', Comment = '%1 = Start Range; %2 = End Range';
+        RangeBytesLbl: Label 'bytes=%1-%2', Comment = '%1 = Start Range; %2 = End Range', Locked = true;
     begin
         SetRequestHeader('x-ms-range', StrSubstNo(RangeBytesLbl, BytesStartValue, BytesEndValue));
     end;
@@ -204,7 +204,7 @@ codeunit 9047 "ABS Optional Parameters"
     /// <param name="BytesEndValue">Integer value specifying the Bytes end range value</param>
     procedure SourceRange(BytesStartValue: Integer; BytesEndValue: Integer)
     var
-        RangeBytesLbl: Label 'bytes=%1-%2', Comment = '%1 = Start Range; %2 = End Range';
+        RangeBytesLbl: Label 'bytes=%1-%2', Comment = '%1 = Start Range; %2 = End Range', Locked = true;
     begin
         SetRequestHeader('x-ms-source-range', StrSubstNo(RangeBytesLbl, BytesStartValue, BytesEndValue));
     end;
