@@ -75,6 +75,11 @@ table 40116 "GP IV00101"
         exit(2);
     end;
 
+    procedure KitItemTypeId(): Integer
+    begin
+        exit(3);
+    end;
+
     procedure IsDiscontinued(): Boolean
     begin
         exit(Rec.ITEMTYPE = DiscontinuedItemTypeId());

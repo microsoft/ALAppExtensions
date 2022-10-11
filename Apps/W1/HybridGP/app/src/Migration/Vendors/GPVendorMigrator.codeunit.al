@@ -25,16 +25,12 @@ codeunit 4022 "GP Vendor Migrator"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
     procedure OnMigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HelperFunctions: Codeunit "Helper Functions";
     begin
         if not ChartOfAccountsMigrated then
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Vendor" then
-            exit;
-
-        if GPCompanyAdditionalSettings.GetMigrateOnlyPayablesMaster() then
             exit;
 
         Sender.CreatePostingSetupIfNeeded(
