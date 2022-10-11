@@ -99,6 +99,9 @@ table 2681 "Data Search Setup (Table)"
                 GetSubtypesForField(SubtypeList, Database::"Purchase Header", 1);
             Database::"Service Header", Database::"Service Line":
                 GetSubtypesForField(SubtypeList, Database::"Service Header", 1);
+            else begin
+                OnGetSubtypesOnElseCase(Rec, SubtypeList);
+            end;
         end;
     end;
 
@@ -130,5 +133,15 @@ table 2681 "Data Search Setup (Table)"
         AllProfile.SetRange("Profile ID", GetProfileID());
         if AllProfile.FindFirst() then;
         exit(AllProfile."Role Center ID");
+    end;
+
+    /// <summary>
+    /// Enables adding new Tables with a Subtype.
+    /// </summary>
+    /// <param name="DataSearchSetupTable">The Current Setup Record</param>
+    /// <param name="SubtypeList">List of integer. Should be filled with the EnumValueOrdinal Values of the SubType</param>
+    [IntegrationEvent(false, false)]
+    local procedure OnGetSubtypesOnElseCase(DataSearchSetupTable: Record "Data Search Setup (Table)"; var SubtypeList: list of [Integer])
+    begin
     end;
 }

@@ -141,6 +141,9 @@ codeunit 2680 "Data Search in Table"
                 SetTypeFilterOnRecRef(RecRef, TableType, 1);
             Database::"Service Header", Database::"Service Line":
                 SetTypeFilterOnRecRef(RecRef, TableType, 1);
+            else begin
+                OnSetListedFieldFiltersOnRecRefOnSetTypeFilterOnRecRef(RecRef, TableType);
+            end;
         end;
 
         RecRef.FilterGroup(-1); // 'OR' group
@@ -306,5 +309,15 @@ codeunit 2680 "Data Search in Table"
                 end;
             end;
         exit('');
+    end;
+
+    /// <summary>
+    /// Enables to set a filter on a Table Sub Type for new Tables.
+    /// </summary>
+    /// <param name="RecRef">The RecRef on which the filter should be applied</param>
+    /// <param name="TableSubType">The table sub type of the search setup</param>
+    [IntegrationEvent(false, false)]
+    local procedure OnSetListedFieldFiltersOnRecRefOnSetTypeFilterOnRecRef(var RecRef: RecordRef; TableSubType: Integer)
+    begin
     end;
 }

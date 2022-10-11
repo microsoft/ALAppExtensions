@@ -83,13 +83,18 @@ table 2680 "Data Search Result"
         if PageNo <> 0 then
             if PageMetadata.Get(PageNo) then
                 PageCaption := PageMetadata.Caption;
-        if Rec."Table No." in
-            [Database::"Sales Line", Database::"Sales Invoice Line", Database::"Sales Shipment Line", Database::"Sales Cr.Memo Line",
-             Database::"Purchase Line", Database::"Purch. Inv. Line", Database::"Purch. Rcpt. Line", Database::"Purch. Cr. Memo Line",
-             Database::"Service Line", Database::"Service Invoice Line", Database::"Service Cr.Memo Line"]
-        then
+        if CheckIsLineTable(Rec."Table No.") then
             PageCaption += ' - ' + linesLbl;
         exit(PageCaption);
+    end;
+
+    local procedure CheckIsLineTable(TableNo: Integer) Result: Boolean
+    begin
+        Result := TableNo in
+            [Database::"Sales Line", Database::"Sales Invoice Line", Database::"Sales Shipment Line", Database::"Sales Cr.Memo Line",
+             Database::"Purchase Line", Database::"Purch. Inv. Line", Database::"Purch. Rcpt. Line", Database::"Purch. Cr. Memo Line",
+             Database::"Service Line", Database::"Service Invoice Line", Database::"Service Cr.Memo Line"];
+        OnAfterCheckIsLineTable(TableNo, Result);
     end;
 
     internal procedure GetListPageNo(): Integer
@@ -170,6 +175,7 @@ table 2680 "Data Search Result"
                         PageNo := Page::"Service Quotes";
                 end;
         end;
+        OnGetListPageNoOnAfterMapTableSubtype(Rec, PageNo);
         if PageNo = 0 then
             if TableMetaData.Get(TableNo) then
                 PageNo := TableMetaData.LookupPageID;
@@ -243,6 +249,7 @@ table 2680 "Data Search Result"
     local procedure MapLinesPageToDocumentPage(var RecRef: RecordRef): Boolean
     var
         Mapped: Boolean;
+        IsHandled: Boolean;
     begin
         Mapped := true;
         case RecRef.Number of
@@ -288,8 +295,11 @@ table 2680 "Data Search Result"
                 PostedWhseReciptLineToHeader(RecRef, RecRef);
             Database::"Assembly Line":
                 AssemblyLineToHeader(RecRef, RecRef);
-            else
-                Mapped := false;
+            else begin
+                OnMapLinesPageToDocumentPageOnElseCase(RecRef.Number(), RecRef.RecordId(), RecRef, RecRef, Mapped, IsHandled);
+                if not IsHandled then
+                    Mapped := false;
+            end;
         end;
         exit(Mapped);
     end;
@@ -504,4 +514,42 @@ table 2680 "Data Search Result"
         AssemblyHeader.Get(AssemblyLine."Document Type", AssemblyLine."Document No.");
         HeaderRecRef.GetTable(AssemblyHeader);
     end;
+
+
+    /// <summary>
+    /// Enables to map a line RecordRef to a header RecordRef.
+    /// </summary>
+    /// <param name="LineTableNo">The Table No. of the Line Record</param>
+    /// <param name="LineRecordId">The RecordId of the Line Record</param>
+    /// <param name="LineRecRef">The Line RecordRef</param>
+    /// <param name="HeaderRecRef">The Header RecordRef</param>
+    /// <param name="Mapped">Set to true if the LineRecRef was mapped</param>
+    /// <param name="IsHandled">Set to true if you did the mapping</param>
+    [IntegrationEvent(false, false)]
+    local procedure OnMapLinesPageToDocumentPageOnElseCase(LineTableNo: Integer; LineRecordId: RecordId; var LineRecRef: RecordRef; var HeaderRecRef: RecordRef; var Mapped: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    /// <summary>
+    /// Enables provide specific List Page ID for Table Sub Types or Line Tables
+    /// If you map a Line Result to the Header Page No. make sure to subscribe to the event OnMapLinesPageToDocumentPageOnElseCase, too.
+    /// </summary>
+    /// <param name="DataSearchResult">The current Search Result Record</param>
+    /// <param name="PageNo">The Liste Page No for this Table</param>
+    [IntegrationEvent(false, false)]
+    local procedure OnGetListPageNoOnAfterMapTableSubtype(DataSearchResult: Record "Data Search Result"; var PageNo: Integer)
+    begin
+    end;
+
+    /// <summary>
+    /// Enables to mark a Table that is a line Table.
+    /// </summary>
+    /// <param name="TableNo">The Table No. to check</param>
+    /// <param name="Result">If the Table is a Line table, this parameter should be set to true</param>
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCheckIsLineTable(TableNo: Integer; var Result: Boolean)
+    begin
+    end;
+
+    
 }
