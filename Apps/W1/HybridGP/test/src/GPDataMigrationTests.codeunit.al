@@ -53,12 +53,14 @@ codeunit 139664 "GP Data Migration Tests"
     var
         Customer: Record "Customer";
         GenJournalLine: Record "Gen. Journal Line";
+        InitialGenJournalLineCount: Integer;
         CustomerCount: Integer;
     begin
         // [SCENARIO] All Customers are queried from GP
 
         // [GIVEN] GP data
         Initialize();
+        InitialGenJournalLineCount := GenJournalLine.Count();
 
         GPTestHelperFunctions.CreateConfigurationSettings();
 
@@ -148,7 +150,7 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('31847240200000', Customer."Fax No.", 'Fax No. of Migrated Customer is wrong');
 
         // [THEN] Transactions will be created
-        Assert.RecordCount(GenJournalLine, 1);
+        Assert.RecordCount(GenJournalLine, 1 + InitialGenJournalLineCount);
     end;
 
     [Test]
@@ -158,12 +160,14 @@ codeunit 139664 "GP Data Migration Tests"
         Customer: Record "Customer";
         GenBusPostingGroup: Record "Gen. Business Posting Group";
         GenJournalLine: Record "Gen. Journal Line";
+        InitialGenJournalLineCount: Integer;
         CustomerCount: Integer;
     begin
         // [SCENARIO] All Customers are queried from GP
 
         // [GIVEN] GP data
         Initialize();
+        InitialGenJournalLineCount := GenJournalLine.Count();
 
         GPTestHelperFunctions.CreateConfigurationSettings();
 
@@ -253,7 +257,7 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('31847240200000', Customer."Fax No.", 'Fax No. of Migrated Customer is wrong');
 
         // [THEN] Transactions will NOT be created
-        Assert.RecordCount(GenJournalLine, 0);
+        Assert.RecordCount(GenJournalLine, InitialGenJournalLineCount);
     end;
 
     [Test]
@@ -304,12 +308,14 @@ codeunit 139664 "GP Data Migration Tests"
         OrderAddress: Record "Order Address";
         RemitAddress: Record "Remit Address";
         GenJournalLine: Record "Gen. Journal Line";
+        InitialGenJournalLineCount: Integer;
         Country: Code[10];
         VendorCount: Integer;
     begin
         // [SCENARIO] All Vendor are queried from GP
         // [GIVEN] GP data
         Initialize();
+        InitialGenJournalLineCount := GenJournalLine.Count();
 
         GPTestHelperFunctions.CreateConfigurationSettings();
 
@@ -475,7 +481,7 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual('61855501040000', OrderAddress."Fax No.", 'Fax No. of Migrated Vendor Address should be empty');
 
         // [THEN] Vendor transactions will be created
-        Assert.RecordCount(GenJournalLine, 1);
+        Assert.RecordCount(GenJournalLine, 1 + InitialGenJournalLineCount);
     end;
 
     [Test]
@@ -483,15 +489,14 @@ codeunit 139664 "GP Data Migration Tests"
     procedure TestPayablesMasterDataOnly()
     var
         Vendor: Record Vendor;
-        CompanyInformation: Record "Company Information";
-        OrderAddress: Record "Order Address";
         GenJournalLine: Record "Gen. Journal Line";
-        Country: Code[10];
+        InitialGenJournalLineCount: Integer;
         VendorCount: Integer;
     begin
         // [SCENARIO] All Vendor are queried from GP
         // [GIVEN] GP data
         Initialize();
+        InitialGenJournalLineCount := GenJournalLine.Count();
 
         GPTestHelperFunctions.CreateConfigurationSettings();
 
@@ -522,7 +527,7 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual(VendorCount, Vendor.Count(), 'Wrong number of Migrated Vendors read');
 
         // [THEN] Vendor transactions will NOT be created
-        Assert.RecordCount(GenJournalLine, 0);
+        Assert.RecordCount(GenJournalLine, InitialGenJournalLineCount);
     end;
 
     [Test]
@@ -530,8 +535,6 @@ codeunit 139664 "GP Data Migration Tests"
     procedure TestPayablesDisabled()
     var
         Vendor: Record Vendor;
-        OrderAddress: Record "Order Address";
-        Country: Code[10];
         VendorCount: Integer;
     begin
         // [SCENARIO] All Vendor are queried from GP, but the Payables Module is disabled
