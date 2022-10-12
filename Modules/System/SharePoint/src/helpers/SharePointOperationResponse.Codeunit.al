@@ -85,7 +85,7 @@ codeunit 9108 "SharePoint Operation Response"
     end;
 
     [NonDebuggable]
-    internal procedure GetDiagnostics(): Codeunit "SharePoint Diagnostics"
+    internal procedure GetDiagnostics(): Interface "HTTP Diagnostics"
     begin
         exit(SharepointDiagnostics);
     end;

@@ -22,7 +22,7 @@ codeunit 9144 "SharePoint Authorization Code" implements "SharePoint Authorizati
         Scopes: List of [Text];
         [NonDebuggable]
         ExpiryDate: DateTime;
-        AuthorityTxt: Label 'https://login.microsoftonline.com/{AadTenantId}/oauth2/v2.0/authorize', Locked = true;
+        AuthorityTxt: Label 'https://login.microsoftonline.com/%1/oauth2/v2.0/authorize', Comment = '%1 = AAD tenant ID', Locked = true;
         BearerTxt: Label 'Bearer %1', Comment = '%1 - Token', Locked = true;
 
     [NonDebuggable]
@@ -36,12 +36,13 @@ codeunit 9144 "SharePoint Authorization Code" implements "SharePoint Authorizati
         ExpiryDate := 0DT;
     end;
 
+    [NonDebuggable]
     procedure Authorize(var HttpRequestMessage: HttpRequestMessage);
     var
         Headers: HttpHeaders;
     begin
         HttpRequestMessage.GetHeaders(Headers);
-        Headers.Add('Authorization', GetAuthenticationHeaderValue(GetToken()));
+        Headers.Add('Authorization', StrSubstNo(BearerTxt, GetToken()));
     end;
 
     [NonDebuggable]
@@ -64,27 +65,18 @@ codeunit 9144 "SharePoint Authorization Code" implements "SharePoint Authorizati
         IsHandled, IsSuccess : Boolean;
     begin
         OnBeforeGetToken(IsHandled, IsSuccess, ErrorText, AccessToken);
+
         if not IsHandled then begin
-            OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, GetAuthorityUrl(AadTenantId), '', Scopes, "Prompt Interaction"::Login, AccessToken, AuthCodeErr);
+            OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, StrSubstNo(AuthorityTxt, AadTenantId), '', Scopes, "Prompt Interaction"::Login, AccessToken, AuthCodeErr);
+
             if not IsSuccess then
                 if AuthCodeErr <> '' then
                     ErrorText := AuthCodeErr
                 else
                     ErrorText := GetLastErrorText();
         end;
+
         exit(IsSuccess);
-    end;
-
-    local procedure GetAuthorityUrl(AadTenantId: Text) Url: Text
-    begin
-        Url := AuthorityTxt;
-        Url := Url.Replace('{AadTenantId}', AadTenantId);
-    end;
-
-    [NonDebuggable]
-    local procedure GetAuthenticationHeaderValue(AccessToken: Text) Value: Text;
-    begin
-        Value := StrSubstNo(BearerTxt, AccessToken);
     end;
 
     [InternalEvent(false, true)]

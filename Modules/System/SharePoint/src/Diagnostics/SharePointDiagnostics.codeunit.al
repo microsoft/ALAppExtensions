@@ -6,37 +6,40 @@
 /// <summary>
 /// Stores detailed information about failed api call
 /// </summary>
-codeunit 9111 "SharePoint Diagnostics"
+codeunit 9111 "SharePoint Diagnostics" implements "HTTP Diagnostics"
 {
-    Access = Public;
+    Access = Internal;
 
     var
         ErrorMessage, ResponseReasonPhrase : Text;
         HttpStatusCode, RetryAfter : Integer;
-        IsSuccessStatusCode: Boolean;
+        SuccessStatusCode: Boolean;
 
     /// <summary>
-    /// Gets reponse details
+    /// Gets reponse details.
     /// </summary>
     /// <returns>HttpResponseMessage.IsSuccessStatusCode</returns>
-    procedure GetIsSuccessStatusCode(): Boolean
+    [NonDebuggable]
+    procedure IsSuccessStatusCode(): Boolean
     begin
-        exit(IsSuccessStatusCode);
+        exit(SuccessStatusCode);
     end;
 
     /// <summary>
-    /// Gets reponse details
+    /// Gets response details.
     /// </summary>
     /// <returns>HttpResponseMessage.StatusCode</returns>
+    [NonDebuggable]
     procedure GetHttpStatusCode(): Integer
     begin
         exit(HttpStatusCode);
     end;
 
     /// <summary>
-    /// Gets reponse details
+    /// Gets response details.
     /// </summary>
     /// <returns>Retry-after header value</returns>
+    [NonDebuggable]
     procedure GetHttpRetryAfter(): Integer
     begin
         exit(RetryAfter);
@@ -46,23 +49,26 @@ codeunit 9111 "SharePoint Diagnostics"
     /// Gets reponse details
     /// </summary>
     /// <returns>Error message</returns>
+    [NonDebuggable]
     procedure GetErrorMessage(): Text
     begin
         exit(ErrorMessage);
     end;
 
     /// <summary>
-    /// Gets reponse details
+    /// Gets response details.
     /// </summary>
     /// <returns>HttpResponseMessage.ResponseReasonPhrase</returns>
+    [NonDebuggable]
     procedure GetResponseReasonPhrase(): Text
     begin
         exit(ResponseReasonPhrase);
     end;
 
+    [NonDebuggable]
     internal procedure SetParameters(NewIsSuccesss: Boolean; NewHttpStatusCode: Integer; NewResponseReasonPhrase: Text; NewRetryAfter: Integer; NewErrorMessage: Text)
     begin
-        IsSuccessStatusCode := NewIsSuccesss;
+        SuccessStatusCode := NewIsSuccesss;
         HttpStatusCode := NewHttpStatusCode;
         ResponseReasonPhrase := NewResponseReasonPhrase;
         RetryAfter := NewRetryAfter;

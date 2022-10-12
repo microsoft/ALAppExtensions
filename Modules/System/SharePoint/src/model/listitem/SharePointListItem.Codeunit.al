@@ -7,6 +7,7 @@ codeunit 9103 "SharePoint List Item"
 {
     Access = Internal;
 
+    [NonDebuggable]
     procedure Parse(Payload: Text; var SharePointListItem: Record "SharePoint List Item" temporary)
     var
         JObject: JsonObject;
@@ -15,6 +16,7 @@ codeunit 9103 "SharePoint List Item"
             Parse(JObject, SharePointListItem);
     end;
 
+    [NonDebuggable]
     procedure Parse(Payload: JsonObject; var SharePointListItem: Record "SharePoint List Item" temporary)
     var
         JToken: JsonToken;
@@ -26,6 +28,7 @@ codeunit 9103 "SharePoint List Item"
             end;
     end;
 
+    [NonDebuggable]
     procedure ParseSingleReturnValue(Payload: Text; var SharePointListItem: Record "SharePoint List Item" temporary)
     var
         JObject: JsonObject;
@@ -39,6 +42,7 @@ codeunit 9103 "SharePoint List Item"
             end;
     end;
 
+    [NonDebuggable]
     local procedure ParseSingle(Payload: JsonObject) SharePointListItem: Record "SharePoint List Item" temporary
     var
         SharePointUriBuilder: Codeunit "SharePoint Uri Builder";
@@ -83,6 +87,5 @@ codeunit 9103 "SharePoint List Item"
             //guid'854d7f21-1c6a-43ab-a081-20404894b449' -> 854d7f21-1c6a-43ab-a081-20404894b449
             SharePointListItem."List Id" := SharePointUriBuilder.GetMethodParameter('Lists').Substring(6, 36);
         end;
-
     end;
 }

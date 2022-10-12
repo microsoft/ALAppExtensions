@@ -14,8 +14,8 @@ codeunit 9101 "SharePoint Client Impl."
         Authorization: Interface "SharePoint Authorization";
         ReadResponseFailedErr: Label 'Could not read response.';
         IncorrectResponseErr: Label 'Incorrect response.';
-        IncorrectResponseLogErr: Label 'Incorrect request digest response: %1.';
-        SharePointCategoryLbl: Label 'AL SharePoint';
+        IncorrectResponseLogErr: Label 'Incorrect request digest response: %1.', Comment = '%1 = the response text', Locked = true;
+        SharePointCategoryLbl: Label 'AL SharePoint', Locked = true;
 
     procedure Initialize(BaseUrl: Text; Auth: Interface "SharePoint Authorization")
     begin
@@ -31,7 +31,7 @@ codeunit 9101 "SharePoint Client Impl."
         Authorization := Auth;
     end;
 
-    procedure GetDiagnostics(): Codeunit "SharePoint Diagnostics"
+    procedure GetDiagnostics(): Interface "HTTP Diagnostics"
     begin
         exit(SharePointOperationResponse.GetDiagnostics());
     end;
@@ -82,7 +82,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -103,7 +103,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -123,7 +123,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -145,7 +145,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -166,7 +166,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -188,7 +188,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsStream(FileInStream);
@@ -209,7 +209,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsStream(FileInStream);
@@ -229,7 +229,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsStream(FileInStream);
@@ -259,7 +259,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointHttpContent.FromFileInStream(FileInStream);
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Post(SharePointUriBuilder, SharePointHttpContent);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -288,7 +288,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointHttpContent.FromFileInStream(FileInStream);
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Post(SharePointUriBuilder, SharePointHttpContent);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -313,7 +313,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointHttpContent.FromFileInStream(FileInStream);
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Post(SharePointUriBuilder, SharePointHttpContent);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -337,7 +337,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointHttpContent.FromFileInStream(FileInStream);
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Post(SharePointUriBuilder, SharePointHttpContent);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -368,7 +368,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Post(SharePointUriBuilder, SharePointHttpContent);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -397,7 +397,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Post(SharePointUriBuilder, SharePointHttpContent);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -425,7 +425,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Post(SharePointUriBuilder, SharePointHttpContent);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -448,7 +448,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -467,7 +467,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -485,7 +485,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsStream(FileInStream);
@@ -504,7 +504,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -531,7 +531,7 @@ codeunit 9101 "SharePoint Client Impl."
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Post(SharePointUriBuilder, SharePointHttpContent);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -559,7 +559,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointHttpContent.FromFileInStream(FileInStream);
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Post(SharePointUriBuilder, SharePointHttpContent);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);
@@ -582,7 +582,7 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointHttpContent.FromFileInStream(FileInStream);
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Post(SharePointUriBuilder, SharePointHttpContent);
-        if not SharePointOperationResponse.GetDiagnostics().GetIsSuccessStatusCode() then
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
 
         SharePointOperationResponse.GetResultAsText(Result);

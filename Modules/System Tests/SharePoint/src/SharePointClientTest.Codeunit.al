@@ -426,7 +426,7 @@ codeunit 132970 "SharePoint Client Test"
     procedure TestTooManyRequestsErrorResponse()
     var
         TempSharePointListItem: Record "SharePoint List Item" temporary;
-        SharepointDiagnostics: Codeunit "SharePoint Diagnostics";
+        SharepointDiagnostics: Interface "HTTP Diagnostics";
         Guid: Guid;
         IsSuccess: Boolean;
     begin

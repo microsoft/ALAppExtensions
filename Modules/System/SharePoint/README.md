@@ -19,7 +19,7 @@ Use "SharePoint Authorization module".
         SharePointAuth: Codeunit "SharePoint Auth.";
         SharePointAuthorization: Interface "SharePoint Authorization";
     begin
-        SharePointAuthorization := SharePointAuth.CreateUserCredentials('<AadTenantId>', '<ClientId>', '<UserName>', '<Credential>', '<Scope/Scopes>');
+        SharePointAuthorization := SharePointAuth.CreateAuthorizationCode('<AadTenantId>', '<ClientId>', '<ClientSecret>', '<Scope>');
 ```
 
 # SharePoint API

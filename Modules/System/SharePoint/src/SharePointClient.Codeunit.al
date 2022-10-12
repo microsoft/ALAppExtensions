@@ -14,7 +14,7 @@ codeunit 9100 "SharePoint Client"
         SharePointClientImpl: Codeunit "SharePoint Client Impl.";
 
     /// <summary>
-    /// Initialize SharePoint client.
+    /// Initializes SharePoint client.
     /// </summary>
     /// <param name="BaseUrl">SharePoint URL to use.</param>
     /// <param name="Authorization">The authorization to use.</param>
@@ -24,7 +24,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Initialize SharePoint client.
+    /// Initializes SharePoint client.
     /// </summary>
     /// <param name="BaseUrl">SharePoint URL to use.</param>    
     /// <param name="Namespace">Namespace to use.</param>
@@ -35,10 +35,10 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Returns detailed information on last api call.
+    /// Returns detailed information on last API call.
     /// </summary>
-    /// <returns>Codeunit holding http resonse status, reason phrase, headers and possible error information for tha last api call</returns>
-    procedure GetDiagnostics(): Codeunit "SharePoint Diagnostics"
+    /// <returns>Codeunit holding http resonse status, reason phrase, headers and possible error information for tha last API call</returns>
+    procedure GetDiagnostics(): Interface "HTTP Diagnostics"
     begin
         exit(SharePointClientImpl.GetDiagnostics());
     end;
@@ -46,7 +46,7 @@ codeunit 9100 "SharePoint Client"
     #region Lists
 
     /// <summary>
-    /// Get all lists on the given site.
+    /// Gets all lists on the given site.
     /// </summary>
     /// <param name="SharePointList">Collection of the result (temporary record).</param>
     /// <returns>True if the operation was successful; otherwise - false.</returns>
@@ -56,7 +56,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Get all list items for the given list.
+    /// Gets all list items for the given list.
     /// </summary>
     /// <param name="ListTitle">The title of the list/</param>
     /// <param name="SharePointListItem">Collection of the result (temporary record).</param>
@@ -67,7 +67,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Get all list items for the given list.
+    /// Gets all list items for the given list.
     /// </summary>
     /// <param name="ListId">The GUID of the list/</param>
     /// <param name="SharePointListItem">Collection of the result (temporary record).</param>
@@ -78,7 +78,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Get all attachments for the given list item.
+    /// Gets all attachments for the given list item.
     /// </summary>
     /// <param name="ListTitle">The title of the list</param>
     /// <param name="ListItemId">Unique id of the item within the list. </param>
@@ -90,7 +90,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Get all attachments for the given list item.
+    /// Gets all attachments for the given list item.
     /// </summary>
     /// <param name="ListId">The GUID of the list</param>
     /// <param name="ListItemId">Unique id of the item within the list. </param>
@@ -235,7 +235,7 @@ codeunit 9100 "SharePoint Client"
     #region Folders
 
     /// <summary>
-    /// List all subfolders in the given folder.
+    /// Lists all subfolders in the given folder.
     /// </summary>
     /// <remarks>Only top level subfolders are included.</remarks>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
@@ -247,7 +247,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// List all files in the given folder.
+    /// Lists all files in the given folder.
     /// </summary>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
     /// <param name="SharePointFile">Collection of the result (temporary record).</param>
@@ -258,7 +258,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Download a file to the client.
+    /// Downloads a file to the client.
     /// </summary>
     /// <param name="OdataId">The odata.id parameter of the file entity.</param>
     /// <param name="FileName">Name to be given to the file on the client side. Does not need to match the server side name.</param>
@@ -269,7 +269,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Get root folder for the list entity (Document Library).
+    /// Gets root folder for the list entity (Document Library).
     /// </summary>    
     /// <remarks>See "Is Catalog" parameter of the list.</remarks>
     /// <param name="OdataId">The odata.id parameter of the list entity.</param>
@@ -281,7 +281,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Create a new folder.
+    /// Creates a new folder.
     /// </summary>
     /// <remarks>Create subfolders by manipulating URL.</remarks>
     /// <param name="ServerRelativeUrl">URL of the new folder.</param>
@@ -293,7 +293,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Add a file to specific folder.
+    /// Adds a file to specific folder.
     /// </summary>
     /// <remarks>Requires UI interaction to pick a file.</remarks>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
@@ -305,7 +305,7 @@ codeunit 9100 "SharePoint Client"
     end;
 
     /// <summary>
-    /// Add a file to specific folder.
+    /// Adds a file to specific folder.
     /// </summary>
     /// <remarks>Does not require UI interaction.</remarks>
     /// <param name="ServerRelativeUrl">URL of the parent folder.</param>
@@ -319,5 +319,4 @@ codeunit 9100 "SharePoint Client"
     end;
 
     #endregion
-
 }
