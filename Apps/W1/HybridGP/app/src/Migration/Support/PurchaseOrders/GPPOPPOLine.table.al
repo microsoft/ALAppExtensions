@@ -555,6 +555,7 @@ table 40103 "GP POPPOLine"
     var
         PostingGroupTxt: Label 'GP', Locked = true;
 
+    [Obsolete('Logic moved to GP PO Migrator codeunit')]
     procedure MoveStagingData(PO_Number: Text[18])
     var
         PurchaseLine: Record "Purchase Line";
