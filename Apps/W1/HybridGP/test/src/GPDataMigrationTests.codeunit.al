@@ -920,6 +920,7 @@ codeunit 139664 "GP Data Migration Tests"
     var
         PurchaseHeader: Record "Purchase Header";
         HelperFunctions: Codeunit "Helper Functions";
+        UnitOfMeasure: Record "Unit of Measure";
     begin
         // [SCENARIO] Vendors and their PO information are queried from GP
         // [GIVEN] GP data
@@ -944,6 +945,10 @@ codeunit 139664 "GP Data Migration Tests"
         // [then] Then the POs will be migrated
         PurchaseHeader.SetRange("No.", PONumberTxt);
         Assert.IsFalse(PurchaseHeader.IsEmpty(), 'POs should have been created.');
+
+        // [THEN] the unit of measure is created
+        UnitOfMeasure.SetRange(Code, 'Building');
+        Assert.IsFalse(UnitOfMeasure.IsEmpty(), 'UofM should have been created.');
     end;
 
     [Normal]
@@ -3069,7 +3074,7 @@ codeunit 139664 "GP Data Migration Tests"
 
     local procedure CreateOpenPOData()
     begin
-        Clear(GPPOPPOHeader);
+        GPPOPPOHeader.Init();
         GPPOPPOHeader.PONUMBER := PONumberTxt;
         GPPOPPOHeader.VENDORID := 'DUFFY';
         GPPOPPOHeader.DOCDATE := Today();
@@ -3077,5 +3082,20 @@ codeunit 139664 "GP Data Migration Tests"
         GPPOPPOHeader.PYMTRMID := '2% EOM/Net 15th';
         GPPOPPOHeader.SHIPMTHD := 'Space Ship';
         GPPOPPOHeader.Insert();
+
+        GPPOPPOLine.Init();
+        GPPOPPOLine.PONUMBER := PONumberTxt;
+        GPPOPPOLine.VENDORID := 'DUFFY';
+        GPPOPPOLine.NONINVEN := 1;
+        GPPOPPOLine.UOFM := 'Building';
+        GPPOPPOLine.LOCNCODE := '';
+        GPPOPPOLine.PRMDATE := DMY2Date(11, 10, 2022);
+        GPPOPPOLine.ITEMNMBR := 'T123456';
+        GPPOPPOLine.ITEMDESC := 'Test 123456';
+        GPPOPPOLine.ORD := 1;
+        GPPOPPOLine.QTYORDER := 1;
+        GPPOPPOLine.UNITCOST := 1;
+        GPPOPPOLine.EXTDCOST := 1;
+        GPPOPPOLine.Insert();
     end;
 }
