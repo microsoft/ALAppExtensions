@@ -1664,9 +1664,9 @@ Codeunit 4037 "Helper Functions"
 
     local procedure CreateOpenPOsImp()
     var
-        GPPOPPOHeader: Record "GP POPPOHeader";
+        GPPOMigrator: Codeunit "GP PO Migrator";
     begin
-        GPPOPPOHeader.MoveStagingData();
+        GPPOMigrator.MigratePOStagingData();
         Session.LogMessage('0000CQP', 'Created Open Purchase Orders', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetOpenPurchaseOrdersCreated();
     end;
