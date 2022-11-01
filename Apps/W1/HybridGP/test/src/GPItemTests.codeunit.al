@@ -28,10 +28,13 @@ codeunit 139662 "GP Item Tests"
         GPTestHelperFunctions.CreateConfigurationSettings();
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Inactive Items", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Discontinued Items", true);
         GPCompanyAdditionalSettings.Modify();
 
         // [GIVEN] Some records are created in the staging table
         CreateStagingTableEntries(GPItem);
+        CreateItemClassData();
 
         Assert.IsTrue(GPCompanyAdditionalSettings.GetInventoryModuleEnabled(), 'Inventory module should be enabled.');
 
@@ -85,6 +88,7 @@ codeunit 139662 "GP Item Tests"
 
         // [GIVEN] Some records are created in the staging table
         CreateStagingTableEntries(GPItem);
+        CreateItemClassData();
 
         GPTestHelperFunctions.InitializeMigration();
 
@@ -158,7 +162,7 @@ codeunit 139662 "GP Item Tests"
 
         GPTestHelperFunctions.InitializeMigration();
 
-        Assert.RecordCount(GPIV00101, 3);
+        Assert.RecordCount(GPIV00101, 5);
         Assert.RecordCount(GPIV40400, 2);
 
         Assert.IsTrue(GPIV00101.Get('1 1/2\"SASH BRSH'), 'Could not locate item.');
@@ -200,6 +204,95 @@ codeunit 139662 "GP Item Tests"
         Assert.AreEqual('TEST-2', Item."Inventory Posting Group", 'Inventory Posting Group of migrated Item is incorrect.');
     end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestInactiveItemsDisabled()
+    var
+        GPItem: Record "GP Item";
+        Item: Record "Item";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] Items are migrated from GP
+        // [GIVEN] There are no records in Item staging table
+        Initialize();
+
+        // [GIVEN] Migration is configured to not migrate inactive items
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Inactive Items", false);
+        GPCompanyAdditionalSettings.Validate("Migrate Discontinued Items", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [THEN] 
+        Assert.IsFalse(GPCompanyAdditionalSettings.GetMigrateInactiveItems(), 'Should be configured to not migrate inactive items.');
+
+        // [GIVEN] Some records are created in the staging table
+        CreateStagingTableEntries(GPItem);
+        CreateItemClassData();
+        GPTestHelperFunctions.InitializeMigration();
+
+        // [THEN] Calculated item count to migrate will be correct
+        Assert.AreEqual(4, HelperFunctions.GetNumberOfItems(), 'Wrong number of Items calculated');
+
+        // [WHEN] Migrate is called
+        GPItem.FindSet();
+        repeat
+            Migrate(GPItem);
+        until GPItem.Next() = 0;
+
+        // [THEN] Inactive items will not be migrated
+        Assert.IsTrue(Item.Count() > 0, 'Items were not migrated.');
+        Item.SetRange("No.", 'ITEM INACTIVE');
+        Assert.IsTrue(Item.IsEmpty(), 'Inactive item should not have been migrated.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestDiscontinuedItemsDisabled()
+    var
+        GPItem: Record "GP Item";
+        Item: Record "Item";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] Items are migrated from GP
+        // [GIVEN] There are no records in Item staging table
+        Initialize();
+
+        // [GIVEN] Migration is configured to not migrate discontinued items
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Inactive Items", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Discontinued Items", false);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [GIVEN] Some records are created in the staging table
+        CreateStagingTableEntries(GPItem);
+        CreateItemClassData();
+        GPTestHelperFunctions.InitializeMigration();
+
+        // [THEN] 
+        Assert.IsFalse(GPCompanyAdditionalSettings.GetMigrateDiscontinuedItems(), 'Should be configured to not migrate discontinued items.');
+
+        // [THEN] Calculated item count to migrate will be correct
+        Assert.AreEqual(4, HelperFunctions.GetNumberOfItems(), 'Wrong number of Items calculated');
+
+        // [WHEN] Migrate is called
+        GPItem.FindSet();
+        repeat
+            Migrate(GPItem);
+        until GPItem.Next() = 0;
+
+        // [THEN] Discontinued items will not be migrated
+        Assert.IsTrue(Item.Count() > 0, 'Items were not migrated.');
+        Item.SetRange("No.", 'ITEM INACTIVE');
+        Assert.IsTrue(Item.FindFirst(), 'Inactive item should have been migrated.');
+
+        Item.SetRange("No.", 'ITEM DISCONTINUED');
+        Assert.IsTrue(Item.IsEmpty(), 'Discontinued item should have been migrated.');
+    end;
+
     local procedure Initialize()
     var
         DataMigrationEntity: Record "Data Migration Entity";
@@ -234,6 +327,8 @@ codeunit 139662 "GP Item Tests"
     end;
 
     local procedure CreateStagingTableEntries(var GPItem: Record "GP Item")
+    var
+        GPIV00101: Record "GP IV00101";
     begin
         GPItem.Init();
         GPItem.No := '1 1/2\"SASH BRSH';
@@ -288,6 +383,52 @@ codeunit 139662 "GP Item Tests"
         GPItem.SalesUnitOfMeasure := 'Each';
         GPItem.PurchUnitOfMeasure := 'Each';
         GPItem.Insert();
+
+        GPItem.Init();
+        GPItem.No := 'ITEM INACTIVE';
+        GPItem.Description := 'Inactive item';
+        GPItem.SearchDescription := 'inactive';
+        GPItem.ShortName := 'Inactive item';
+        GPItem.BaseUnitOfMeasure := 'Each';
+        GPItem.CostingMethod := '0';
+        GPItem.CurrentCost := 1;
+        GPItem.StandardCost := 1;
+        GPItem.UnitListPrice := 5;
+        GPItem.ShipWeight := 1;
+        GPItem.QuantityOnHand := 120.75000;
+        GPItem.SalesUnitOfMeasure := 'Each';
+        GPItem.PurchUnitOfMeasure := 'Each';
+        GPItem.Insert();
+
+#pragma warning disable AA0139
+        GPIV00101.Init();
+        GPIV00101.ITEMNMBR := GPItem.No;
+        GPIV00101.INACTIVE := true;
+        GPIV00101.Insert();
+#pragma warning restore AA0139
+
+        GPItem.Init();
+        GPItem.No := 'ITEM DISCONTINUED';
+        GPItem.Description := 'Discontinued item';
+        GPItem.SearchDescription := 'discontinued';
+        GPItem.ShortName := 'Discontinued item';
+        GPItem.BaseUnitOfMeasure := 'Each';
+        GPItem.CostingMethod := '0';
+        GPItem.CurrentCost := 1;
+        GPItem.StandardCost := 1;
+        GPItem.UnitListPrice := 5;
+        GPItem.ShipWeight := 1;
+        GPItem.QuantityOnHand := 120.75000;
+        GPItem.SalesUnitOfMeasure := 'Each';
+        GPItem.PurchUnitOfMeasure := 'Each';
+        GPItem.Insert();
+
+#pragma warning disable AA0139
+        GPIV00101.Init();
+        GPIV00101.ITEMNMBR := GPItem.No;
+        GPIV00101.ITEMTYPE := 2;
+        GPIV00101.Insert();
+#pragma warning restore AA0139
     end;
 
     local procedure CreateItemClassData()
