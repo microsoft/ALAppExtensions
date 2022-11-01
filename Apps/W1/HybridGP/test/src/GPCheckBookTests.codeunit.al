@@ -238,6 +238,44 @@ codeunit 139678 "GP Checkbook Tests"
 
     [Test]
     [TransactionModel(TransactionModel::AutoCommit)]
+    procedure TestBankMasterDataOnly()
+    var
+        BankAccount: Record "Bank Account";
+        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
+        GenJournalLine: Record "Gen. Journal Line";
+    begin
+        // [SCENARIO] CheckBooks are migrated from GP
+        // [GIVEN] There are no records in the BankAcount table
+        ClearTables();
+        GenJournalLine.DeleteAll();
+        BankAccountLedgerEntry.Reset();
+        BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
+        BankAccountLedgerEntry.DeleteAll();
+
+        // [GIVEN] Some records are created in the staging table
+        //  including reconciled bank transactions
+        CreateMoreCheckBookData();
+
+        // [GIVEN] Inactive checkbooks are NOT to be migrated
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Only Bank Master", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
+
+        // [WHEN] Checkbook migration code is called
+        Migrate();
+
+        // [THEN] Active Bank Accounts are created
+        Assert.RecordCount(BankAccount, 3);
+
+        // [THEN] General Journal Lines are not created
+        Assert.RecordCount(GenJournalLine, 0);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoCommit)]
     procedure TestGPCheckbookMigrationBankTransfers()
     var
         BankAccount: Record "Bank Account";
@@ -260,6 +298,7 @@ codeunit 139678 "GP Checkbook Tests"
         GPTestHelperFunctions.CreateConfigurationSettings();
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Bank Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Only Bank Master", false);
         GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", false);
         GPCompanyAdditionalSettings.Modify();
 

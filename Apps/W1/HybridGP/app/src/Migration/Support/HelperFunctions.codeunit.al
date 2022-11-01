@@ -1159,13 +1159,21 @@ Codeunit 4037 "Helper Functions"
 
     procedure GetNumberOfItems(): Integer;
     var
-        GPItem: Record "GP Item";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPIV00101: Record "GP IV00101";
     begin
         if not GPCompanyAdditionalSettings.GetInventoryModuleEnabled() then
             exit(0);
 
-        exit(GPItem.Count());
+        GPIV00101.SetFilter(ITEMTYPE, '<>%1', GPIV00101.KitItemTypeId());
+
+        if not GPCompanyAdditionalSettings.GetMigrateInactiveItems() then
+            GPIV00101.SetRange(INACTIVE, false);
+
+        if not GPCompanyAdditionalSettings.GetMigrateDiscontinuedItems() then
+            GPIV00101.SetFilter(ITEMTYPE, '<>%1&<>%2', GPIV00101.DiscontinuedItemTypeId(), GPIV00101.KitItemTypeId());
+
+        exit(GPIV00101.Count());
     end;
 
     procedure GetNumberOfCustomers(): Integer;

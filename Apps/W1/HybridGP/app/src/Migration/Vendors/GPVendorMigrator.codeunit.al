@@ -8,8 +8,6 @@ codeunit 4022 "GP Vendor Migrator"
         VendorBatchNameTxt: Label 'GPVEND', Locked = true;
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
-        AddressCodeRemitToTxt: Label 'REMIT TO', Comment = 'GP ADRSCODE', Locked = true;
-        AddressCodePrimaryTxt: Label 'PRIMARY', Comment = 'GP ADRSCODE', Locked = true;
 
 #pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
@@ -50,6 +48,7 @@ codeunit 4022 "GP Vendor Migrator"
     var
         GPVendor: Record "GP Vendor";
         GPVendorTransactions: Record "GP Vendor Transactions";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
         HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
@@ -58,6 +57,9 @@ codeunit 4022 "GP Vendor Migrator"
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Vendor" then
+            exit;
+
+        if GPCompanyAdditionalSettings.GetMigrateOnlyPayablesMaster() then
             exit;
 
         GPVendor.Get(RecordIdToMigrate);
@@ -145,30 +147,12 @@ codeunit 4022 "GP Vendor Migrator"
     local procedure MigrateVendorDetails(GPVendor: Record "GP Vendor"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
     var
         CompanyInformation: Record "Company Information";
-        GPVendorAddress: Record "GP Vendor Address";
         HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
         VendorName: Text[50];
         ContactName: Text[50];
         Country: Code[10];
     begin
-        // If the Remit To address is found, make that the main address
-        GPVendorAddress.SetRange(VENDORID, GPVendor.VENDORID);
-        GPVendorAddress.SetRange(ADRSCODE, 'REMIT TO');
-        if GPVendorAddress.FindFirst() then begin
-            GPVendor.VNDCNTCT := GPVendorAddress.VNDCNTCT;
-            GPVendor.ADDRESS1 := GPVendorAddress.ADDRESS1;
-            GPVendor.ADDRESS2 := GPVendorAddress.ADDRESS2;
-            GPVendor.CITY := GPVendorAddress.CITY;
-            GPVendor.STATE := GPVendorAddress.STATE;
-            GPVendor.ZIPCODE := GPVendorAddress.ZIPCODE;
-            GPVendor.PHNUMBR1 := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.PHNUMBR1);
-            GPVendor.FAXNUMBR := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.FAXNUMBR);
-        end else begin
-            GPVendor.PHNUMBR1 := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendor.PHNUMBR1);
-            GPVendor.FAXNUMBR := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendor.FAXNUMBR);
-        end;
-
         VendorName := CopyStr(GPVendor.VENDNAME, 1, 50);
         ContactName := CopyStr(GPVendor.VNDCNTCT, 1, 50);
         if not VendorDataMigrationFacade.CreateVendorIfNeeded(CopyStr(GPVendor.VENDORID, 1, 20), VendorName) then
@@ -190,8 +174,8 @@ codeunit 4022 "GP Vendor Migrator"
             CopyStr(GPVendor.ADDRESS2, 1, 50), Country,
             CopyStr(GPVendor.ZIPCODE, 1, 20), CopyStr(GPVendor.CITY, 1, 30));
 
-        VendorDataMigrationFacade.SetPhoneNo(GPVendor.PHNUMBR1);
-        VendorDataMigrationFacade.SetFaxNo(GPVendor.FAXNUMBR);
+        VendorDataMigrationFacade.SetPhoneNo(HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendor.PHNUMBR1));
+        VendorDataMigrationFacade.SetFaxNo(HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendor.FAXNUMBR));
         VendorDataMigrationFacade.SetContact(ContactName);
         VendorDataMigrationFacade.SetVendorPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
         VendorDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
@@ -223,13 +207,79 @@ codeunit 4022 "GP Vendor Migrator"
 
     local procedure MigrateVendorAddresses(GPVendor: Record "GP Vendor")
     var
+        Vendor: Record Vendor;
+        GPPM00200: Record "GP PM00200";
         GPVendorAddress: Record "GP Vendor Address";
+        AddressCode: Code[10];
+        AssignedPrimaryAddressCode: Code[10];
+        AssignedRemitToAddressCode: Code[10];
     begin
-        GPVendorAddress.SetRange(VENDORID, GPVendor.VENDORID);
+        if not Vendor.Get(GPVendor.VENDORID) then
+            exit;
+
+        if GPPM00200.Get(GPVendor.VENDORID) then begin
+            AssignedPrimaryAddressCode := CopyStr(GPPM00200.VADDCDPR.Trim(), 1, MaxStrLen(AssignedPrimaryAddressCode));
+            AssignedRemitToAddressCode := CopyStr(GPPM00200.VADCDTRO.Trim(), 1, MaxStrLen(AssignedRemitToAddressCode));
+        end;
+
+        GPVendorAddress.SetRange(VENDORID, Vendor."No.");
         if GPVendorAddress.FindSet() then
             repeat
-                GPVendorAddress.MoveStagingData();
+                AddressCode := CopyStr(GPVendorAddress.ADRSCODE.Trim(), 1, MaxStrLen(AddressCode));
+
+                if AddressCode = AssignedRemitToAddressCode then
+                    CreateOrUpdateRemitAddress(Vendor, GPVendorAddress, AddressCode);
+
+                if (AddressCode = AssignedPrimaryAddressCode) or (AddressCode <> AssignedRemitToAddressCode) then
+                    CreateOrUpdateOrderAddress(Vendor, GPVendorAddress, AddressCode);
+
             until GPVendorAddress.Next() = 0;
+    end;
+
+    local procedure CreateOrUpdateOrderAddress(Vendor: Record Vendor; GPVendorAddress: Record "GP Vendor Address"; AddressCode: Code[10])
+    var
+        OrderAddress: Record "Order Address";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        if not OrderAddress.Get(Vendor."No.", AddressCode) then begin
+            OrderAddress."Vendor No." := Vendor."No.";
+            OrderAddress.Code := AddressCode;
+            OrderAddress.Insert();
+        end;
+
+        OrderAddress.Name := Vendor.Name;
+        OrderAddress.Address := GPVendorAddress.ADDRESS1;
+        OrderAddress."Address 2" := CopyStr(GPVendorAddress.ADDRESS2, 1, MaxStrLen(OrderAddress."Address 2"));
+        OrderAddress.City := CopyStr(GPVendorAddress.CITY, 1, MaxStrLen(OrderAddress.City));
+        OrderAddress.Contact := GPVendorAddress.VNDCNTCT;
+        OrderAddress."Phone No." := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.PHNUMBR1);
+        OrderAddress."Fax No." := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.FAXNUMBR);
+        OrderAddress."Post Code" := GPVendorAddress.ZIPCODE;
+        OrderAddress.County := GPVendorAddress.STATE;
+        OrderAddress.Modify();
+    end;
+
+    local procedure CreateOrUpdateRemitAddress(Vendor: Record Vendor; GPVendorAddress: Record "GP Vendor Address"; AddressCode: Code[10])
+    var
+        RemitAddress: Record "Remit Address";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        if not RemitAddress.Get(AddressCode, Vendor."No.") then begin
+            RemitAddress."Vendor No." := Vendor."No.";
+            RemitAddress.Code := AddressCode;
+            RemitAddress.Insert();
+        end;
+
+        RemitAddress.Name := Vendor.Name;
+        RemitAddress.Address := GPVendorAddress.ADDRESS1;
+        RemitAddress."Address 2" := CopyStr(GPVendorAddress.ADDRESS2, 1, MaxStrLen(RemitAddress."Address 2"));
+        RemitAddress.City := CopyStr(GPVendorAddress.CITY, 1, MaxStrLen(RemitAddress.City));
+        RemitAddress.Contact := GPVendorAddress.VNDCNTCT;
+        RemitAddress."Phone No." := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.PHNUMBR1);
+        RemitAddress."Fax No." := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.FAXNUMBR);
+        RemitAddress."Post Code" := GPVendorAddress.ZIPCODE;
+        RemitAddress.County := GPVendorAddress.STATE;
+        RemitAddress.Modify();
     end;
 
 #if not CLEAN21
@@ -376,7 +426,7 @@ codeunit 4022 "GP Vendor Migrator"
 
         repeat
             if Vendor.Get(GPSY06000.CustomerVendor_ID) then begin
-                CurrencyCode := CopyStr(GPSY06000.CURNCYID, 1, 10);
+                CurrencyCode := CopyStr(GPSY06000.CURNCYID, 1, MaxStrLen(CurrencyCode));
                 CreateCurrencyIfNeeded(CurrencyCode);
                 CreateSwiftCodeIfNeeded(GPSY06000.SWIFTADDR);
 
@@ -434,25 +484,30 @@ codeunit 4022 "GP Vendor Migrator"
     local procedure SetPreferredBankAccountIfNeeded(GPSY06000: Record "GP SY06000"; var Vendor: Record Vendor)
     var
         SearchGPSY06000: Record "GP SY06000";
+        GPPM00200: Record "GP PM00200";
         ShouldSetAsPrimaryAccount: Boolean;
-        TrimmedADRSCODE: Code[15];
+        AddressCode: Code[10];
+        PrimaryAddressCode: Code[10];
+        RemitToAddressCode: Code[10];
     begin
-#pragma warning disable AA0139        
-        TrimmedADRSCODE := GPSY06000.ADRSCODE.Trim();
-#pragma warning restore AA0139
+        if GPPM00200.Get(Vendor."No.") then begin
+            AddressCode := CopyStr(GPSY06000.ADRSCODE.Trim(), 1, MaxStrLen(AddressCode));
+            PrimaryAddressCode := CopyStr(GPPM00200.VADDCDPR.Trim(), 1, MaxStrLen(PrimaryAddressCode));
+            RemitToAddressCode := CopyStr(GPPM00200.VADCDTRO.Trim(), 1, MaxStrLen(RemitToAddressCode));
 
-        // The Remit To is the preferred account
-        if TrimmedADRSCODE = AddressCodeRemitToTxt then
-            ShouldSetAsPrimaryAccount := true
-        else
-            if (TrimmedADRSCODE = AddressCodePrimaryTxt) then begin
-                // If the Vendor does not have a Remit To account, then use the Primary account instead
-                SearchGPSY06000.SetRange("CustomerVendor_ID", GPSY06000.CustomerVendor_ID);
-                SearchGPSY06000.SetRange("ADRSCODE", AddressCodeRemitToTxt);
-                SearchGPSY06000.SetRange("INACTIVE", false);
-                if SearchGPSY06000.IsEmpty() then
-                    ShouldSetAsPrimaryAccount := true
-            end;
+            // The Remit To is the preferred account
+            if AddressCode = RemitToAddressCode then
+                ShouldSetAsPrimaryAccount := true
+            else
+                if AddressCode = PrimaryAddressCode then begin
+                    // If the Vendor does not have a Remit To account, then use the Primary account instead
+                    SearchGPSY06000.SetRange("CustomerVendor_ID", Vendor."No.");
+                    SearchGPSY06000.SetRange("ADRSCODE", RemitToAddressCode);
+                    SearchGPSY06000.SetRange("INACTIVE", false);
+                    if SearchGPSY06000.IsEmpty() then
+                        ShouldSetAsPrimaryAccount := true;
+                end;
+        end;
 
         if ShouldSetAsPrimaryAccount then begin
             Vendor.Validate(Vendor."Preferred Bank Account Code", GPSY06000.EFTBankCode);
@@ -462,6 +517,7 @@ codeunit 4022 "GP Vendor Migrator"
 
     procedure MigrateVendorClasses()
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPPM00200: Record "GP PM00200";
         GPPM00100: Record "GP PM00100";
         VendorPostingGroup: Record "Vendor Posting Group";
@@ -471,6 +527,9 @@ codeunit 4022 "GP Vendor Migrator"
         AccountNumber: Code[20];
     begin
         if not GPPM00200.FindSet() then
+            exit;
+
+        if not GPCompanyAdditionalSettings.GetMigrateVendorClasses() then
             exit;
 
         repeat
