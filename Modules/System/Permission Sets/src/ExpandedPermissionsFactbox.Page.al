@@ -66,11 +66,4 @@ page 9863 "Expanded Permissions Factbox"
             }
         }
     }
-
-    internal procedure Refresh(RoleId: Code[30]; AppId: Guid)
-    begin
-        Rec.SetRange("Role ID", RoleId);
-        Rec.SetRange("App ID", AppID);
-    end;
-
 }

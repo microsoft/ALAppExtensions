@@ -28,12 +28,12 @@ page 8702 "Company Size Cache Part"
                 field(CompanyName; Rec."Company Name")
                 {
                     ApplicationArea = All;
-                    Tooltip = 'The name of the company.';
+                    Tooltip = 'Specifies the name of the company.';
                 }
                 field(SizeKB; Rec."Size (KB)")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'How much space the company occupies in the database (in kilobytes)';
+                    ToolTip = 'Specifies how much space the company occupies in the database (in kilobytes)';
                 }
             }
             group(Total)
@@ -43,7 +43,7 @@ page 8702 "Company Size Cache Part"
                 {
                     ApplicationArea = All;
                     Caption = 'Total (KB)';
-                    ToolTip = 'How much space all companies occupy in the database (in kilobytes)';
+                    ToolTip = 'Specifies how much space all companies occupy in the database (in kilobytes)';
                 }
             }
         }

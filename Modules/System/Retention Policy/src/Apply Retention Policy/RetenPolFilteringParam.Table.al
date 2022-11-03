@@ -29,6 +29,14 @@ table 3906 "Reten. Pol. Filtering Param"
         {
             DataClassification = SystemMetadata;
         }
+        /// <summary>
+        /// The earliest expiration date for which there are more expired records than the maximum to be deleted in a single run.
+        /// </summary>
+        field(100; "Expired Record Expiration Date"; Date)
+        {
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
     }
 
     keys

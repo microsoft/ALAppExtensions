@@ -12,11 +12,23 @@ pageextension 20289 "Sales Order Statistics Ext" extends "Sales Order Statistics
 
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        FormatLine();
+    end;
+
     trigger OnAfterGetRecord()
+    begin
+        FormatLine();
+    end;
+
+    local procedure UpdateComponentRecords()
     var
         SalesLine: Record "Sales Line";
         SalesLineID: List of [RecordID];
     begin
+        SalesLine.LoadFields("Document Type", "Document No.");
         SalesLine.SetRange("Document Type", "Document Type");
         SalesLine.SetRange("Document No.", "No.");
         if SalesLine.FindSet() then
@@ -25,8 +37,15 @@ pageextension 20289 "Sales Order Statistics Ext" extends "Sales Order Statistics
             until SalesLine.Next() = 0;
 
         CurrPage."Tax Summary".Page.UpdateTaxComponent(SalesLineID);
+        RecordsCalculated := true;
+    end;
+
+    local procedure FormatLine()
+    begin
+        if not RecordsCalculated then
+            UpdateComponentRecords();
     end;
 
     var
-
+        RecordsCalculated: Boolean;
 }

@@ -176,7 +176,7 @@ codeunit 2750 "Universal Printer Setup"
             // Bug 393946: Universal Print: Default settings for printers are not loaded
             // According to documentation, the Graph APIs for the print share list should return capabilities and defaults, but that is not the case
             // even if the fields are $select-ed explicitly. Getting the defaults for each single printer is slower but works.
-            // See docs: https://docs.microsoft.com/en-us/graph/api/print-list-shares?view=graph-rest-1.0&tabs=http
+            // Visit the docs: https://go.microsoft.com/fwlink/?linkid=2206184
             Session.LogMessage('0000EUQ', NoDefaultsAvailableTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
             GetDefaults(UniversalPrinterSettings);
         end;

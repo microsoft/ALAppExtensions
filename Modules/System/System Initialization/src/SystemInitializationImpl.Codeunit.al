@@ -36,13 +36,10 @@ codeunit 151 "System Initialization Impl."
         CODEUNIT.Run(CODEUNIT::"Azure AD User Management");
 
         if Session.CurrentClientType() in [ClientType::Web, ClientType::Windows, ClientType::Desktop, ClientType::Tablet, ClientType::Phone] then begin
-            // Check to set signup context
+            // Check to set signup context and commits if it updates
             SetSignupContext();
-
+            // UserLogin commits if it updates.
             UserLoginTimeTracker.CreateOrUpdateLoginInfo();
-
-            // This commit needs to be performed before the password modal dialog is displayed, otherwise an error occurs
-            Commit();
         end;
 
 #if not CLEAN20
@@ -71,16 +68,19 @@ codeunit 151 "System Initialization Impl."
         if SignupContext.IsEmpty() then begin
             InsertSignupContext(SignupContextValues."Signup Context"::" ");
             Telemetry.LogMessage('0000HOI', NoSignupContextTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher);
+            Commit();
             exit;
         end;
 
         if not SignupContext.Get('name') then begin
             InsertSignupContext(SignupContextValues."Signup Context"::" ");
             Telemetry.LogMessage('0000HOJ', NoNameKeySignupContextTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher);
+            Commit();
             exit;
         end;
 
         SetSignupContext(SignupContext, SignupContextValues);
+        Commit();
     end;
 
     internal procedure SetSignupContext(SignupContext: Record "Signup Context"; var SignupContextValues: Record "Signup Context Values")

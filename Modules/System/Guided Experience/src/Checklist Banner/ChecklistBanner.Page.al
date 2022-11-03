@@ -484,7 +484,7 @@ page 1990 "Checklist Banner"
             if ChecklistItemBuffer.Code = Rec.Code then
                 IsLastChecklistItem := true;
 
-        if ChecklistBanner.ExecuteChecklistItem(Rec, Tour, IsLastChecklistItem, IsEvaluationCompany) then
+        if ChecklistBanner.ExecuteChecklistItem(Rec, Tour, IsLastChecklistItem) then
             ChecklistCompletionCount += 1;
 
         CheckForChecklistCompletion();

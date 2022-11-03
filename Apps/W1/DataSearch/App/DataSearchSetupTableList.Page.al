@@ -25,10 +25,10 @@ page 2683 "Data Search Setup (Table) List"
                     NewProfileID: Code[30];
                 begin
                     DataSearchDefaults.PopulateProfiles(TempAllProfile);
-
+                    TempAllProfile := AllProfile;
                     if Page.RunModal(Page::Roles, TempAllProfile) = Action::LookupOK then begin
                         AllProfile := TempAllProfile;
-                        NewProfileID := TempAllProfile."Profile ID";
+                        NewProfileID := AllProfile."Profile ID";
                         RoleCenterID := AllProfile."Role Center ID";
                         if NewProfileID <> ProfileID then begin
                             ProfileID := NewProfileID;
@@ -99,9 +99,7 @@ page 2683 "Data Search Setup (Table) List"
                     if not Confirm(ResetQst, false) then
                         exit;
                     RemoveSetup();
-                    InitSetup(RoleCenterID);
                     RefreshProfileSelection(RoleCenterID);
-                    SetEnabledTablesFilter();
                 end;
             }
             action(ShowAllTables)
@@ -128,7 +126,7 @@ page 2683 "Data Search Setup (Table) List"
 
                 trigger OnAction()
                 begin
-                    SetEnabledTablesFilter();
+                    SetEnabledTablesFilter(RoleCenterID);
                 end;
             }
         }
@@ -151,14 +149,12 @@ page 2683 "Data Search Setup (Table) List"
         if AllProfile.FindFirst() then;
         RoleCenterID := AllProfile."Role Center ID";
         AllProfile.SetRange("Profile ID");
-        InitSetup(RoleCenterID);
         RefreshProfileSelection(RoleCenterID);
         Rec.FilterGroup(2);
         Rec.SetRange("Object Type", Rec."Object Type"::Table);
         Rec.SetRange("Object ID", 1, 2000000000 - 1);
         Rec.SetRAnge("Object Subtype", 'Normal');
         Rec.FilterGroup(0);
-        SetEnabledTablesFilter();
     end;
 
     var
@@ -190,6 +186,7 @@ page 2683 "Data Search Setup (Table) List"
     local procedure RefreshProfileSelection(NewRoleCenterID: Integer)
     begin
         TempDataSearchSetupTable.DeleteAll();
+        InitSetup(RoleCenterID);
         DataSearchSetupTable.SetRange("Role Center ID", NewRoleCenterID);
         DataSearchSetupTable.SetRange("Table Subtype", 0);
         if DataSearchSetupTable.FindSet() then
@@ -197,6 +194,7 @@ page 2683 "Data Search Setup (Table) List"
                 TempDataSearchSetupTable := DataSearchSetupTable;
                 TempDataSearchSetupTable.Insert();
             until DataSearchSetupTable.Next() = 0;
+        SetEnabledTablesFilter(NewRoleCenterID);
     end;
 
     local procedure UpdateRec()
@@ -225,37 +223,26 @@ page 2683 "Data Search Setup (Table) List"
         end;
     end;
 
-    local procedure SetEnabledTablesFilter()
-    begin
-        SetEnabledTablesFilter(RoleCenterID);
-    end;
-
     local procedure SetEnabledTablesFilter(NewRoleCenterID: Integer)
     var
         DataSearchSetupTable2: Record "Data Search Setup (Table)";
-        EnabledTablesList: List of [Integer];
+        EnabledTablesCount: Integer;
         FilterTxt: TextBuilder;
-        TableNo: Integer;
-        First: Boolean;
     begin
         DataSearchSetupTable2.SetRange("Role Center ID", NewRoleCenterID);
         DataSearchSetupTable2.SetRange("Table Subtype", 0);
         DataSearchSetupTable2.SetLoadFields("Table No.");
         if DataSearchSetupTable2.FindSet() then
             repeat
-                EnabledTablesList.Add(DataSearchSetupTable2."Table No.");
+                EnabledTablesCount += 1;
+                if EnabledTablesCount > 1000 then begin
+                    Rec.SetRange("Object ID");
+                    exit;
+                end;
+                if EnabledTablesCount > 1 then
+                    FilterTxt.Append('|');
+                FilterTxt.Append(Format(DataSearchSetupTable2."Table No."));
             until DataSearchSetupTable2.Next() = 0;
-        if EnabledTablesList.Count > 1000 then begin
-            Rec.SetRange("Object ID");
-            exit;
-        end;
-        First := true;
-        foreach TableNo in EnabledTablesList do begin
-            if not First then
-                FilterTxt.Append('|');
-            First := false;
-            FilterTxt.Append(Format(TableNo));
-        end;
         Rec.SetFilter("Object ID", FilterTxt.ToText());
         TableFilterIsSet := true;
     end;

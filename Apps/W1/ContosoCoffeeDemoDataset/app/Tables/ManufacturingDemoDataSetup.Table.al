@@ -27,7 +27,7 @@ table 4760 "Manufacturing Demo Data Setup"
             DataClassification = CustomerContent;
             OptionMembers = VAT,"Sales Tax";
         }
-        field(18; "Base VAT Code"; code[10])
+        field(18; "Base VAT Code"; code[20])
         {
             DataClassification = CustomerContent;
             TableRelation = "VAT Product Posting Group";
@@ -36,33 +36,33 @@ table 4760 "Manufacturing Demo Data Setup"
         {
             DataClassification = CustomerContent;
         }
-        field(30; "Finished Code"; code[10])
+        field(30; "Finished Code"; code[20])
         {
             DataClassification = CustomerContent;
             TableRelation = "Inventory Posting Group";
             ValidateTableRelation = false;
         }
-        field(31; "Retail Code"; code[10])
+        field(31; "Retail Code"; code[20])
         {
             DataClassification = CustomerContent;
             Caption = 'Retail - Gen. Prod. Posting Group';
             TableRelation = "Gen. Product Posting Group";
         }
-        field(32; "Raw Mat Code"; code[10])
+        field(32; "Raw Mat Code"; code[20])
         {
             DataClassification = CustomerContent;
             Caption = 'Raw Mat - Gen. Prod. Posting Group';
             TableRelation = "Gen. Product Posting Group";
             ValidateTableRelation = false;
         }
-        field(33; "Manufact Code"; code[10])
+        field(33; "Manufact Code"; code[20])
         {
             DataClassification = CustomerContent;
             Caption = 'Capacity - Gen. Prod. Posting Group';
             TableRelation = "Gen. Product Posting Group";
             ValidateTableRelation = false;
         }
-        field(34; "Domestic Code"; code[10])
+        field(34; "Domestic Code"; code[20])
         {
             DataClassification = CustomerContent;
             Caption = 'Domestic - Gen. Bus. Posting Group';

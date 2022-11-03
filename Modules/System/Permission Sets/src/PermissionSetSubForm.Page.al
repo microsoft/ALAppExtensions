@@ -34,7 +34,8 @@ page 9864 "Permission Set Subform"
                     trigger OnValidate()
                     begin
                         if PermissionSetRelationImpl.ModifyPermissionSetType(CurrAppId, CurrRoleId, CurrScope, Rec."Related App ID", Rec."Related Role ID", Rec.Type) then
-                            RefreshTreeView();
+                            if Rec."Related Role ID" <> '' then
+                                RefreshTreeView();
                     end;
                 }
 
@@ -59,6 +60,47 @@ page 9864 "Permission Set Subform"
                     ApplicationArea = All;
                     Editable = false;
                 }
+            }
+        }
+    }
+
+    actions
+    {
+        area(Processing)
+        {
+            action(ViewPermissionSet)
+            {
+                ApplicationArea = All;
+                Caption = 'View Permission Set';
+                ToolTip = 'View Permission Set';
+                Image = View;
+                Enabled = Rec."Role ID" <> '';
+                Scope = Repeater;
+
+                trigger OnAction()
+                var
+                    TempPermissionSetBuffer: Record "PermissionSet Buffer" temporary;
+                begin
+                    Rec.Validate("Related App ID");
+
+                    TempPermissionSetBuffer.Init();
+                    TempPermissionSetBuffer."App ID" := Rec."Related App ID";
+                    TempPermissionSetBuffer."Role ID" := Rec."Related Role ID";
+                    TempPermissionSetBuffer.Scope := Rec."Related Scope";
+                    Page.Run(Page::"Permission Set", TempPermissionSetBuffer);
+                end;
+            }
+
+            action(ViewPermisions)
+            {
+                ApplicationArea = All;
+                Image = Permission;
+                Scope = Repeater;
+                Enabled = Rec."Role ID" <> '';
+                Caption = 'View Permissions In Set';
+                ToolTip = 'View a flat list of the permissions in the set.';
+                RunObject = page "Expanded Permissions";
+                RunPageLink = "Role ID" = field("Related Role ID"), "App ID" = field("Related App ID");
             }
         }
     }

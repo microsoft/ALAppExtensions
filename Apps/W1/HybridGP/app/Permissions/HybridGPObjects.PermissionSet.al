@@ -58,7 +58,6 @@ permissionset 4029 "HybridGP - Objects"
                     table "GPSOPWorkflowWorkHist" = X,
                     codeunit "Install GP SmartLists" = X,
                     codeunit "GPForecastHandler" = X,
-                    codeunit "GP PO Migrator" = X,
 #pragma warning disable AL0432
                     table "GPForecastTemp" = X,
 #pragma warning restore AL0432

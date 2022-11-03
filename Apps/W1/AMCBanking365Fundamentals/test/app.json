@@ -6,6 +6,7 @@
     "description":  "Tests for the AMC Banking 365 Fundamentals extension.",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "version":  "19.1.0.0",
 =======
     "version":  "20.4.0.0",
@@ -13,6 +14,9 @@
 =======
     "version":  "21.0.0.0",
 >>>>>>> 3f7fb5c3 (Update to 21.0 (#20524))
+=======
+    "version":  "21.1.0.0",
+>>>>>>> 642e512b (Update to 21.1)
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2101583",
@@ -24,7 +28,7 @@
                              "id":  "16319982-4995-4fb1-8fb2-2b1e13773e3b",
                              "name":  "AMC Banking 365 Fundamentals",
                              "publisher":  "Microsoft",
-                             "version":  "21.0.0.0"
+                             "version":  "21.1.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
@@ -32,6 +36,7 @@
                              "publisher":  "Microsoft",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                              "version":  "19.1.0.0"
 =======
                              "version":  "20.4.0.0"
@@ -39,6 +44,9 @@
 =======
                              "version":  "21.0.0.0"
 >>>>>>> 3f7fb5c3 (Update to 21.0 (#20524))
+=======
+                             "version":  "21.1.0.0"
+>>>>>>> 642e512b (Update to 21.1)
                          },
                          {
                              "id":  "9856ae4f-d1a7-46ef-89bb-6ef056398228",
@@ -46,6 +54,7 @@
                              "publisher":  "Microsoft",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                              "version":  "19.1.0.0"
 =======
                              "version":  "20.4.0.0"
@@ -53,6 +62,9 @@
 =======
                              "version":  "21.0.0.0"
 >>>>>>> 3f7fb5c3 (Update to 21.0 (#20524))
+=======
+                             "version":  "21.1.0.0"
+>>>>>>> 642e512b (Update to 21.1)
                          },
                          {
                              "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
@@ -60,6 +72,7 @@
                              "name":  "Library Variable Storage",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                              "version":  "19.1.0.0"
 =======
                              "version":  "20.4.0.0"
@@ -67,6 +80,9 @@
 =======
                              "version":  "21.0.0.0"
 >>>>>>> 3f7fb5c3 (Update to 21.0 (#20524))
+=======
+                             "version":  "21.1.0.0"
+>>>>>>> 642e512b (Update to 21.1)
                          }
                      ],
     "platform":  "21.0.0.0",
@@ -86,6 +102,7 @@
                                    "includeSourceInSymbolFile":  true
                                },
 <<<<<<< HEAD
+<<<<<<< HEAD
     "application":  "20.4.0.0"
 }
 >>>>>>> 44afd413 (Update to 20.4)
@@ -93,3 +110,7 @@
     "application":  "21.0.0.0"
 }
 >>>>>>> 3f7fb5c3 (Update to 21.0 (#20524))
+=======
+    "application":  "21.1.0.0"
+}
+>>>>>>> 642e512b (Update to 21.1)

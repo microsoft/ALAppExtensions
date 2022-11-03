@@ -6,7 +6,6 @@ codeunit 18001 "GST Base Validation"
         OnlyAlphabetErr: Label 'Only Alphabet is allowed in the position %1.', Comment = '%1 = Position';
         OnlyNumericErr: Label 'Only Numeric is allowed in the position %1.', Comment = '%1 = Position';
         OnlyAlphaNumericErr: Label 'Only AlphaNumeric is allowed in the position %1.', Comment = '%1 = Position';
-        OnlyZErr: Label 'Only Z value is allowed in the position %1.', Comment = '%1 = Position';
         SamePanErr: Label 'In GST Registration No from postion 3 to 12 the value should be same as the PAN No. %1.', Comment = '%1 = PANNo';
         PANErr: Label 'PAN No. must be entered in Company Information.';
         GSTCompyErr: Label 'Please delete the GST Registration No. %1 from Company Information.', Comment = '%1 =GstRegNo';
@@ -52,8 +51,6 @@ codeunit 18001 "GST Base Validation"
                     CheckIsNumeric(RegistrationNo, Position);
                 13:
                     CheckIsAlphaNumeric(RegistrationNo, Position);
-                14:
-                    CheckForZValue(RegistrationNo, Position);
                 15:
                     CheckIsAlphaNumeric(RegistrationNo, Position)
             end;
@@ -653,12 +650,6 @@ codeunit 18001 "GST Base Validation"
     begin
         if not ((CopyStr(RegistrationNo, Position, 1) in ['0' .. '9']) or (CopyStr(RegistrationNo, Position, 1) in ['A' .. 'Z'])) then
             Error(OnlyAlphaNumericErr, Position);
-    end;
-
-    local procedure CheckForZValue(RegistrationNo: Code[20]; Position: Integer)
-    begin
-        if not (CopyStr(RegistrationNo, Position, 1) in ['Z']) then
-            Error(OnlyZErr, Position);
     end;
 
     local procedure CheckDependentDataInCompanyAndLocation(var GSTRegistrationNos: Record "GST Registration Nos.")

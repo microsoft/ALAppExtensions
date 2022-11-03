@@ -498,8 +498,8 @@ page 4705 "VAT Group Setup Guide"
         OAuth2: Codeunit OAuth2;
         Step: Option Welcome,"Select Type","Setup Representative","Setup Member","Setup Member WSAK","Setup Member OAuth2","Setup VAT Report",Finish;
         VATGroupRole: Enum "VAT Group Role";
-        VATGroupAuthenticationType: Enum "VAT Group Authentication Type OnPrem";
-        VATGroupAuthenticationTypeSaas: Enum "VAT Group Authentication Type Saas";
+        VATGroupAuthenticationType: Enum "VAT Group Auth Type OnPrem";
+        VATGroupAuthenticationTypeSaas: Enum "VAT Group Auth Type Saas";
         NextEnabled, BackEnabled, FinishEnabled, TopBannerVisible, DoneVisible, JobQueueVisible, IsJobQueueEnabled, TestConnectionVisible, IsSaaS, GroupRepresentativeOnSaaS : Boolean;
         MemberIdentifier: Guid;
         [NonDebuggable]
@@ -745,7 +745,7 @@ page 4705 "VAT Group Setup Guide"
         VATReportSetup."VAT Group BC Version" := GroupRepresentativeBCVersion;
         VATReportSetup."Group Representative API URL" := APIURL;
         VATReportSetup."Group Member ID" := MemberIdentifier;
-        VATReportSetup."Authentication Type" := VATGroupAuthenticationType;
+        VATReportSetup."VAT Group Authentication Type" := VATGroupAuthenticationType;
         VATReportSetup."User Name Key" := VATReportSetup.SetSecret(VATReportSetup."User Name Key", Username);
         VATReportSetup."Web Service Access Key Key" := VATReportSetup.SetSecret(VATReportSetup."Web Service Access Key Key", WebServiceAccessKey);
         VATReportSetup."Client ID Key" := VATReportSetup.SetSecret(VATReportSetup."Client ID Key", ClientId);

@@ -386,7 +386,7 @@ codeunit 30114 "Shpfy Customer API"
         StateString := JHelper.GetValueAsText(JCustomer, 'state').ToLower();
         StateString := Format(StateString[1]).ToUpper() + CopyStr(StateString, 2);
         Evaluate(ShopifyCustomer.State, StateString);
-        if JHelper.GetValueAsBoolean(JCustomer, 'hasNote') then begin
+        if JHelper.GetValueAsText(JCustomer, 'note') <> '' then begin
             Clear(ShopifyCustomer.Note);
             ShopifyCustomer.Note.CreateOutStream(OutStream, TextEncoding::UTF8);
             OutStream.WriteText(JHelper.GetValueAsText(JCustomer, 'note'));

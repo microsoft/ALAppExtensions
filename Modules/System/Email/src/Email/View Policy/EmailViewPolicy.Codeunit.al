@@ -42,9 +42,9 @@ codeunit 8930 "Email View Policy"
         if not TempSentEmails.IsTemporary() then
             Error(NotATempRecordErr);
 
-        AllSentEmails.SetFilter("Account Id", TempSentEmails.GetFilter("Account Id"));
-        AllSentEmails.SetFilter("Date Time Sent", TempSentEmails.GetFilter("Date Time Sent"));
-        AllSentEmails.SetFilter("User Security Id", TempSentEmails.GetFilter("User Security Id"));
+        TempSentEmails.CopyFilter("Account Id", AllSentEmails."Account Id");
+        TempSentEmails.CopyFilter("Date Time Sent", AllSentEmails."Date Time Sent");
+        TempSentEmails.CopyFilter("User Security Id", AllSentEmails."User Security Id");
         TempSentEmails.Reset();
 
         if not TempSentEmails.IsEmpty() then
@@ -64,9 +64,9 @@ codeunit 8930 "Email View Policy"
         if not TempEmailOutbox.IsTemporary() then
             Error(NotATempRecordErr);
 
-        AllEmailOutbox.SetFilter("Account Id", TempEmailOutbox.GetFilter("Account Id"));
-        AllEmailOutbox.SetFilter(Status, TempEmailOutbox.GetFilter(Status));
-        AllEmailOutbox.SetFilter("User Security Id", TempEmailOutbox.GetFilter("User Security Id"));
+        TempEmailOutbox.CopyFilter("Account Id", AllEmailOutbox."Account Id");
+        TempEmailOutbox.CopyFilter(Status, AllEmailOutbox.Status);
+        TempEmailOutbox.CopyFilter("User Security Id", AllEmailOutbox."User Security Id");
         TempEmailOutbox.Reset();
 
         if not TempEmailOutbox.IsEmpty() then

@@ -12,9 +12,14 @@
 >>>>>>> 44afd413 (Update to 20.4)
 =======
     "platform":  "21.0.0.0",
+<<<<<<< HEAD
     "application":  "21.0.0.0",
     "version":  "21.0.0.0",
 >>>>>>> 3f7fb5c3 (Update to 21.0 (#20524))
+=======
+    "application":  "21.1.0.0",
+    "version":  "21.1.0.0",
+>>>>>>> 642e512b (Update to 21.1)
     "help":  "https://go.microsoft.com/fwlink/?linkid=2101583",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  false,

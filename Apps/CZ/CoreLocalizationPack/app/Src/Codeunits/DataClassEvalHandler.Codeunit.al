@@ -275,6 +275,9 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
 #pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Account Type CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Account No. CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Net Change in Jnl. Curr. CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Balance after Posting Curr.CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Currency Code CZL"));
 #pragma warning restore AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("VAT Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Posting Setup", InventoryPostingSetup.FieldNo("Consumption Account CZL"));
