@@ -199,16 +199,20 @@ page 1696 "Posted Bank Deposit List"
         end;
     end;
 
-#if not CLEAN21
     trigger OnInit()
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+#if not CLEAN21
         FeatureBankDeposits: Codeunit "Feature Bank Deposits";
+#endif
     begin
+        FeatureTelemetry.LogUptake('0000IG2', 'Bank Deposit', Enum::"Feature Uptake Status"::Discovered);
+#if not CLEAN21
         if FeatureBankDeposits.ShouldSeePostedBankDeposits() then
             exit;
         FeatureBankDeposits.PromptFeatureBlockingOpen();
-    end;
 #endif
+    end;
 
     var
         GLRegisterReversed: Boolean;

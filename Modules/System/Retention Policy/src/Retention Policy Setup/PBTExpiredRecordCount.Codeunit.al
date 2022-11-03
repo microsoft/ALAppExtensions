@@ -21,6 +21,7 @@ codeunit 3911 "PBT Expired Record Count"
         BackgroundTaskResult: Dictionary of [Text, Text];
         RetentionPolicySetupSystemId: Guid;
         ExpiredRecordCount: Integer;
+        ExpiredRecordExpirationDate: Date;
     begin
         PageBackgroundParameters := Page.GetBackgroundParameters();
         if not Evaluate(RetentionPolicySetupSystemId, PageBackgroundParameters.Get(RetentionPolicySetup.FieldName(SystemId))) then
@@ -29,9 +30,9 @@ codeunit 3911 "PBT Expired Record Count"
         if not RetentionPolicySetup.GetBySystemId(RetentionPolicySetupSystemId) then
             exit;
 
-        ExpiredRecordCount := ApplyRetentionPolicy.GetExpiredRecordCount(RetentionPolicySetup);
+        ExpiredRecordCount := ApplyRetentionPolicy.GetExpiredRecordCount(RetentionPolicySetup, ExpiredRecordExpirationDate);
 
-        BackgroundTaskResult.Add(Format(RetentionPolicySetupSystemId), format(ExpiredRecordCount));
+        BackgroundTaskResult.Add(Format(ExpiredRecordExpirationDate), Format(ExpiredRecordCount));
         Page.SetBackgroundTaskResult(BackgroundTaskResult);
     end;
 }

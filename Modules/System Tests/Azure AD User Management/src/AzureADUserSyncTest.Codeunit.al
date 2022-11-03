@@ -132,6 +132,254 @@ codeunit 132928 "Azure AD User Sync Test"
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [CommitBehavior(CommitBehavior::Ignore)]
+    procedure TestTeamsUserIsNotRecognisedAsBcUserWhenTheSwitchIsOff()
+    var
+        User: Record User;
+        TempAzureADUserUpdateBuffer: Record "Azure AD User Update Buffer" temporary;
+        AzureADUserSyncImpl: Codeunit "Azure AD User Sync Impl.";
+        AzureADPlan: Codeunit "Azure AD Plan";
+    begin
+        Initialize();
+
+        // [GIVEN] Users with different licenses are present in Azure AD and have corresponding users in BC
+        CreateUsers(false);
+
+        // [GIVEN] All the information in Azure AD and BC is synchronized
+        AzureADUserSyncImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
+        AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
+
+        // [GIVEN] The tenant admin has turned off the M365 collaboration switch
+        MockGraphQueryTestLibrary.SetM365CollaborationEnabled(false);
+
+        // [WHEN] All the information in Azure AD and BC is synchronized
+        AzureADUserSyncImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
+        LibraryAssert.AreEqual(1, AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer), UnexpectedNoOfChangesErr);
+
+        // [THEN] The Teams user get all the user plans removed
+        User.SetRange("Authentication Email", TeamsUserEmailTxt);
+        LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
+        LibraryAssert.IsFalse(AzureADPlan.DoesUserHavePlans(User."User Security ID"), IncorrectPlanErr);
+
+        TearDown();
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [CommitBehavior(CommitBehavior::Ignore)]
+    procedure TestSyncEnvironmentDirectoryGroupWithNoMembers()
+    var
+        TempAzureADUserUpdateBuffer: Record "Azure AD User Update Buffer" temporary;
+        AzureADUserSyncImpl: Codeunit "Azure AD User Sync Impl.";
+    begin
+        Initialize();
+
+        // [GIVEN] Users with different licenses are present in Azure AD
+        CreateUsers(true);
+
+        // [GIVEN] The environemnt directory group is defined
+        MockGraphQueryTestLibrary.SetEnvironmentDirectoryGroup('Group with no members');
+
+        // [WHEN] All the information in Azure AD and BC is synchronized
+        // [THEN] There are no updates applied
+        AzureADUserSyncImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
+        LibraryAssert.AreEqual(0, AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer), UnexpectedNoOfChangesErr);
+
+        TearDown();
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [CommitBehavior(CommitBehavior::Ignore)]
+    procedure TestSyncEnvironmentDirectoryGroupWithMembers()
+    var
+        User: Record User;
+        TempAzureADUserUpdateBuffer: Record "Azure AD User Update Buffer" temporary;
+        AzureADUserSyncImpl: Codeunit "Azure AD User Sync Impl.";
+        AzureADPlan: Codeunit "Azure AD Plan";
+        PlanIds: Codeunit "Plan Ids";
+        GroupNameTxt: Label 'Group with members';
+    begin
+        Initialize();
+
+        // [GIVEN] Users with different licenses are present in Azure AD, they are all members of the specified group
+        CreateUsers(true, GroupNameTxt);
+
+        // [GIVEN] The environemnt directory group is defined
+        MockGraphQueryTestLibrary.SetEnvironmentDirectoryGroup(GroupNameTxt);
+
+        // [WHEN] The information from M365 is fetched and applied
+        AzureADUserSyncImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
+        AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
+
+        // [THEN] Five users are created: Essential, Team memeber, Teams, Internal admin and Device (only non-BC user is skipped)
+        // Even though Teams users and Internal admins are normally skipped during sync, here we bring them in
+        // because they were explicitly added to the environemnt group by the admin.
+        LibraryAssert.AreEqual(5, User.Count(), UnexpectedNumberOfUsersErr);
+
+        // Verify Essential user
+        User.SetRange("Authentication Email", EssentialEmailTxt);
+        LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
+        LibraryAssert.AreEqual(EssentialEmailTxt, User."Contact Email", UnexpectedContactEmailErr);
+        LibraryAssert.AreEqual('Essential User', User."Full Name", UnexpectedFullNameErr);
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetEssentialPlanId(), User."User Security ID"), IncorrectPlanErr);
+
+        // Verify Team Memeber user
+        User.SetRange("Authentication Email", TeamMemberEmailTxt);
+        LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
+        LibraryAssert.AreEqual(TeamMemberEmailTxt, User."Contact Email", UnexpectedContactEmailErr);
+        LibraryAssert.AreEqual('Team Memeber User', User."Full Name", UnexpectedFullNameErr);
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetTeamMemberPlanId(), User."User Security ID"), IncorrectPlanErr);
+
+        // Verify Device user
+        User.SetRange("Authentication Email", DeviceEmailTxt);
+        LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
+        LibraryAssert.AreEqual(DeviceEmailTxt, User."Contact Email", UnexpectedContactEmailErr);
+        LibraryAssert.AreEqual('Device User', User."Full Name", UnexpectedFullNameErr);
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetDevicePlanId(), User."User Security ID"), IncorrectPlanErr);
+
+        // Verify Teams user
+        User.SetRange("Authentication Email", TeamsUserEmailTxt);
+        LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
+        LibraryAssert.AreEqual(TeamsUserEmailTxt, User."Contact Email", UnexpectedContactEmailErr);
+        LibraryAssert.AreEqual('Teams User', User."Full Name", UnexpectedFullNameErr);
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetMicrosoft365PlanId(), User."User Security ID"), IncorrectPlanErr);
+
+        // Verify Internal admin user
+        User.SetRange("Authentication Email", InternalAdminEmailTxt);
+        LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
+        LibraryAssert.AreEqual(InternalAdminEmailTxt, User."Contact Email", UnexpectedContactEmailErr);
+        LibraryAssert.AreEqual('Internal Admin User', User."Full Name", UnexpectedFullNameErr);
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetInternalAdminPlanId(), User."User Security ID"), IncorrectPlanErr);
+
+        TearDown();
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [CommitBehavior(CommitBehavior::Ignore)]
+    procedure TestSyncEnvironmentDirectoryGroupWithMembersAndM365CollaborationOff()
+    var
+        User: Record User;
+        TempAzureADUserUpdateBuffer: Record "Azure AD User Update Buffer" temporary;
+        AzureADUserSyncImpl: Codeunit "Azure AD User Sync Impl.";
+        GroupNameTxt: Label 'Group with members';
+    begin
+        Initialize();
+
+        // [GIVEN] Users with different licenses are present in Azure AD, they are all members of the specified group
+        CreateUsers(true, GroupNameTxt);
+
+        // [GIVEN] The environemnt directory group is defined
+        MockGraphQueryTestLibrary.SetEnvironmentDirectoryGroup(GroupNameTxt);
+
+        // [GIVEN] The tenant admin has turned off the M365 collaboration switch
+        MockGraphQueryTestLibrary.SetM365CollaborationEnabled(false);
+
+        // [WHEN] The information from M365 is fetched and applied
+        AzureADUserSyncImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
+        AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
+
+        // [THEN] Four users are created: Essential, Team memeber, Internal admin and Device (Teams and non-BC users are skipped)
+        LibraryAssert.AreEqual(4, User.Count(), UnexpectedNumberOfUsersErr);
+
+        // Verify Teams user is not created
+        User.SetRange("Authentication Email", TeamsUserEmailTxt);
+        LibraryAssert.IsTrue(User.IsEmpty(), UserWasNotCreatedErr);
+
+        TearDown();
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [CommitBehavior(CommitBehavior::Ignore)]
+    procedure TestUpdateUsersFromEnvironmentDirectoryGroupWithMembers()
+    var
+        User: Record User;
+        TempAzureADUserUpdateBuffer: Record "Azure AD User Update Buffer" temporary;
+        AzureADUserSyncImpl: Codeunit "Azure AD User Sync Impl.";
+        AzureADPlan: Codeunit "Azure AD Plan";
+        PlanIds: Codeunit "Plan Ids";
+        GraphUserEssential: DotNet UserInfo;
+        // NullIEnumerable: DotNet GenericList1;
+        GroupNameTxt: Label 'Group with members';
+    begin
+        Initialize();
+
+        // [GIVEN] The environemnt directory group is defined
+        MockGraphQueryTestLibrary.SetEnvironmentDirectoryGroup(GroupNameTxt);
+
+        // [GIVEN] A user with Essentials license in Azure AD who has a corresponding user in BC and is a member of the environment security group
+        MockGraphQueryTestLibrary.AddAndReturnGraphUser(GraphUserEssential, CreateGuid(), 'Essential', CommonLastNameTxt, EssentialEmailTxt);
+        MockGraphQueryTestLibrary.AddUserPlan(GraphUserEssential.ObjectId, PlanIds.GetEssentialPlanId(), '', 'Enabled');
+        MockGraphQueryTestLibrary.AddGraphUserToGroup(GraphUserEssential, GroupNameTxt);
+        AzureADUserMgtTestLibrary.CreateUser(GraphUserEssential);
+
+        // [WHEN] The information from M365 is fetched and applied
+        // [THEN] Only one update is applied - the user plan
+        AzureADUserSyncImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
+        LibraryAssert.AreEqual(1, AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer), UnexpectedNoOfChangesErr);
+
+        // Verify Essential user plan
+        User.SetRange("Authentication Email", EssentialEmailTxt);
+        LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetEssentialPlanId(), User."User Security ID"), IncorrectPlanErr);
+
+        // [WHEN] The admin has changed the security group, so the Essentials user is not a part of the the environment security group
+        MockGraphQueryTestLibrary.SetEnvironmentDirectoryGroup('New environment group');
+
+        // [WHEN] The information from M365 is fetched and applied 
+        // [THEN] Only one update is applied - removing user plans from the Essentials user
+        AzureADUserSyncImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
+        LibraryAssert.AreEqual(1, AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer), UnexpectedNoOfChangesErr);
+
+        // Verify Essential user has no plans
+        User.SetRange("Authentication Email", EssentialEmailTxt);
+        LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
+        LibraryAssert.IsFalse(AzureADPlan.DoesUserHavePlans(User."User Security ID"), IncorrectPlanErr);
+
+        TearDown();
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [CommitBehavior(CommitBehavior::Ignore)]
+    procedure TestUpdateInternalAdminNotMemberOfEnvironmentGroup()
+    var
+        User: Record User;
+        TempAzureADUserUpdateBuffer: Record "Azure AD User Update Buffer" temporary;
+        AzureADUserSyncImpl: Codeunit "Azure AD User Sync Impl.";
+        AzureADPlan: Codeunit "Azure AD Plan";
+        PlanIds: Codeunit "Plan Ids";
+        GraphUserInternalAdmin: DotNet UserInfo;
+        // NullIEnumerable: DotNet GenericList1;
+        GroupNameTxt: Label 'Group with members';
+    begin
+        Initialize();
+
+        // [GIVEN] The environemnt directory group is defined
+        MockGraphQueryTestLibrary.SetEnvironmentDirectoryGroup(GroupNameTxt);
+
+        // [GIVEN] A user who is global admin in Azure AD who has a corresponding user in BC and is not a member of the environment security group
+        MockGraphQueryTestLibrary.AddAndReturnGraphUser(GraphUserInternalAdmin, CreateGuid(), 'Internal Admin', CommonLastNameTxt, InternalAdminEmailTxt);
+        MockGraphQueryTestLibrary.AddUserRole(GraphUserInternalAdmin.ObjectId, PlanIds.GetInternalAdminPlanId(), '', '', true);
+        AzureADUserMgtTestLibrary.CreateUser(GraphUserInternalAdmin);
+
+        // [WHEN] The information from M365 is fetched and applied
+        // [THEN] Only one update is applied - the user plan
+        AzureADUserSyncImpl.FetchUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer);
+        LibraryAssert.AreEqual(1, AzureADUserSyncImpl.ApplyUpdatesFromAzureGraph(TempAzureADUserUpdateBuffer), UnexpectedNoOfChangesErr);
+
+        // Verify Internal Admin user plan
+        User.SetRange("Authentication Email", InternalAdminEmailTxt);
+        LibraryAssert.IsTrue(User.FindFirst(), UserWasNotCreatedErr);
+        LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetInternalAdminPlanId(), User."User Security ID"), IncorrectPlanErr);
+
+        TearDown();
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [CommitBehavior(CommitBehavior::Ignore)]
     procedure TestUpdateLanguage()
     var
         User: Record User;
@@ -458,6 +706,11 @@ codeunit 132928 "Azure AD User Sync Test"
     end;
 
     local procedure CreateUsers(AzureAdOnly: Boolean)
+    begin
+        CreateUsers(AzureAdOnly, '');
+    end;
+
+    local procedure CreateUsers(AzureAdOnly: Boolean; EnvironmentGroup: Text)
     var
         PlanIds: Codeunit "Plan Ids";
         GraphUserEssential, GraphUserTeams, GraphUserTeamMemeber, GraphUserInternalAdmin, GraphUserDevice, GraphUserNonBC : DotNet UserInfo;
@@ -488,6 +741,15 @@ codeunit 132928 "Azure AD User Sync Test"
 
         // A user with a license non recognised by BC
         MockGraphQueryTestLibrary.AddAndReturnGraphUser(GraphUserNonBC, CreateGuid(), 'Non BC', CommonLastNameTxt, NonBcEmailTxt);
+
+        if EnvironmentGroup <> '' then begin
+            MockGraphQueryTestLibrary.AddGraphUserToGroup(GraphUserEssential, EnvironmentGroup);
+            MockGraphQueryTestLibrary.AddGraphUserToGroup(GraphUserTeamMemeber, EnvironmentGroup);
+            MockGraphQueryTestLibrary.AddGraphUserToGroup(GraphUserTeams, EnvironmentGroup);
+            MockGraphQueryTestLibrary.AddGraphUserToGroup(GraphUserInternalAdmin, EnvironmentGroup);
+            MockGraphQueryTestLibrary.AddGraphUserToGroup(GraphUserDevice, EnvironmentGroup);
+            MockGraphQueryTestLibrary.AddGraphUserToGroup(GraphUserNonBC, EnvironmentGroup);
+        end;
 
         if AzureAdOnly then
             exit;

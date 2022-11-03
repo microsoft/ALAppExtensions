@@ -98,6 +98,13 @@ codeunit 9014 "Azure AD Graph Impl."
     end;
 
     [NonDebuggable]
+    procedure GetEnvironmentDirectoryGroup(): Text
+    begin
+        if CanQueryGraph() then
+            exit(GraphQuery.GetEnvironmentDirectoryGroup());
+    end;
+
+    [NonDebuggable]
     procedure GetUsersPage(NumberOfUsers: Integer; var UserInfoPage: DotNet UserInfoPage)
     begin
         if CanQueryGraph() then
@@ -120,11 +127,63 @@ codeunit 9014 "Azure AD Graph Impl."
     end;
 
     [NonDebuggable]
+    procedure GetMembersForGroupId(GroupId: Text; var GroupMembers: DotNet IEnumerable)
+    begin
+        // AzureAdGraphQuery will throw an exception if the group does not exist.
+        // Ignoring this exception, and letting the caller to only check for IsNull(GroupMembers)
+        if TryGetMembersForGroupId(GroupId, GroupMembers) then;
+    end;
+
+    [NonDebuggable]
     [TryFunction]
     local procedure TryGetGroupMembers(GroupDisplayName: Text; var GroupMembers: DotNet IEnumerable)
     begin
         if CanQueryGraph() then
             GroupMembers := GraphQuery.GetGroupMembers(GroupDisplayName);
+    end;
+
+    [NonDebuggable]
+    [TryFunction]
+    local procedure TryGetMembersForGroupId(GroupId: Text; var GroupMembers: DotNet IEnumerable)
+    begin
+        if CanQueryGraph() then
+            GroupMembers := GraphQuery.GetMembersForGroupId(GroupId);
+    end;
+
+    [NonDebuggable]
+    procedure IsGroupMember(GroupDisplayName: Text; GraphUserInfo: DotNet UserInfo): Boolean
+    var
+        GroupInfo: DotNet GroupInfo;
+    begin
+        if IsNull(GraphUserInfo) then
+            exit(false);
+
+        if IsNull(GraphUserInfo.Groups()) then
+            exit(false);
+
+        foreach GroupInfo in GraphUserInfo.Groups() do
+            if not IsNull(GroupInfo.DisplayName()) then
+                if GroupInfo.DisplayName().ToUpper() = UpperCase(GroupDisplayName) then
+                    exit(true);
+        exit(false);
+    end;
+
+    [NonDebuggable]
+    procedure IsMemberOfGroupWithId(GroupId: Text; GraphUserInfo: DotNet UserInfo): Boolean
+    var
+        GroupInfo: DotNet GroupInfo;
+    begin
+        if IsNull(GraphUserInfo) then
+            exit(false);
+
+        if IsNull(GraphUserInfo.Groups()) then
+            exit(false);
+
+        foreach GroupInfo in GraphUserInfo.Groups() do
+            if not IsNull(GroupInfo.ObjectId()) then
+                if GroupInfo.ObjectId().ToUpper() = UpperCase(GroupId) then
+                    exit(true);
+        exit(false);
     end;
 
     [NonDebuggable]

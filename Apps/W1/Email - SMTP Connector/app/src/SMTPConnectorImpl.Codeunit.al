@@ -15,16 +15,16 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         SmtpCategoryLbl: Label 'Email SMTP', Locked = true;
         ConnectorDescriptionTxt: Label 'Use SMTP to send emails.';
 
-        SmtpConnectTelemetryErrorMsg: Label 'Unable to connect to SMTP server. Smtp server: %1, server port: %2, authentication: %3, error code: %4', Comment = '%1=the smtp server, %2=the server port, %3=authentication, %4=error code', Locked = true;
-        SmtpAuthenticateTelemetryErrorMsg: Label 'Unable to connect to SMTP server. Authentication email from: %1, smtp server: %2, server port: %3, authentication: %4 error code: %5', Comment = '%1=the from address, %2=the smtp server, %3=the server port, %4=authentication, %5=error code', Locked = true;
-        SmtpSendTelemetryErrorMsg: Label 'Unable to send email. Authentication: %1. Error code: %2', Comment = '%1=authentication, %2=error code', Locked = true;
+        SmtpConnectTelemetryErrorMsg: Label 'Unable to connect to SMTP server. Smtp server: %1, server port: %2, authentication: %3, error code: %4, error: %5', Comment = '%1=the smtp server, %2=the server port, %3=authentication, %4=error code, %5=error message', Locked = true;
+        SmtpAuthenticateTelemetryErrorMsg: Label 'Unable to connect to SMTP server. Authentication email from: %1, smtp server: %2, server port: %3, authentication: %4, error code: %5, error: %6', Comment = '%1=the from address, %2=the smtp server, %3=the server port, %4=authentication, %5=error code, %6=error message', Locked = true;
+        SmtpSendTelemetryErrorMsg: Label 'Unable to send email. Authentication: %1, error code: %2, error: %3', Comment = '%1=authentication, %2=error code, %3=error message', Locked = true;
         SmtpConnectedTelemetryMsg: Label 'Connected to SMTP server %1 on server port %2, authentication: %3', Comment = '%1=the smtp server, %2=the server port, %3=authentication', Locked = true;
         SmtpAuthenticateTelemetryMsg: Label 'Authenticated to SMTP server.  Authentication email from: %1, smtp server: %2, server port: %3, authentication: %4', Comment = '%1=the from address, %2=the smtp server, %3=the server port, %4=authentication', Locked = true;
 
-        ConnectionFailureErr: Label 'Cannot connect to server %1.', Comment = '%1 = The SMTP server address';
-        AuthenticationFailureErr: Label 'Cannot authenticate the credentials on server %1.', Comment = '%1 = The SMTP server address';
-        SendingFailureErr: Label 'Cannot send the email.';
-        SendAsDeniedErr: Label 'Can''t send the email. The %1 account does not have Send As permissions on your mail server for the %2 account.', Comment = '%1 = the email account sending the email, e.g. sales@cronus.com; %2 = the email account used for authentication, e.g. email@cronus.com';
+        IncorrectAuthenticationDataErr: Label 'The SMTP server rejected the authentication request, as the authentication data is incorrect. Verify that your Username and Password are correct and that the SMTP server supports the specified authentication type (%1). SMTP error code: 535.', Comment = '%1 = authentication type (e. g. Basic)';
+        SendAsDeniedErr: Label 'Could not send the email. The %1 account does not have Send As permissions on your mail server for the %2 account.', Comment = '%1 = the email account sending the email, e.g. sales@cronus.com; %2 = the email account used for authentication, e.g. email@cronus.com';
+        NoRecipientsErr: Label 'Could not send the email, as no recipients have been specified.';
+        NoSenderErr: Label 'Could not send the email, as the sender has not been specified.';
 
         SmtpSendTelemetryMsg: Label 'Email sent.';
         TestEmailBodyTxt: Label '<p style="font-family:Verdana,Arial;font-size:10pt"><b>The user %1 sent this message to test their email settings. You do not need to reply to this message.</b></p><p style="font-family:Verdana,Arial;font-size:9pt"><b>Sent through SMTP Server:</b> %2<BR><b>SMTP Port:</b> %3<BR><b>Authentication:</b> %4<BR><b>Using Secure Connection:</b> %5<br/></p>', Comment = '%1 is an email address, such as user@domain.com; %2 is the name of a mail server, such as mail.live.com; %3 is the TCP port number, such as 25; %4 is the authentication method, such as Basic Authentication; %5 is a boolean value, such as True;', Locked = true;
@@ -32,6 +32,12 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         SMTPConnectorBase64LogoTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAExSURBVHgB7ZiBbYMwEEXPKANkg2IWaztBu0HTDdoN6GT2CNmAfrc5yaAEmtiuY+k/CVkgc/xnyzIgQgghhDSMsdZO0jCdNE7zArvFuZ+m6eC9/5I7o+/7fdd1r8j3gtO9Xr+0Bu5G5FJwZWsRVxPZCq7M1gA6P6PxcR1jzAhJh4KP8g+E4MMwHPBchzxvMg9/DAMa95/NgHPOnIo8oUC4uV/ULzYjGyMegn+g/cSzj3HmswJR0eIi1wTXi38WkIIitwS/WUAyiqQETxaQBJEcwbMJyBUiOYNnF1DWROQ3dJbgSnYBZUVESQquxJmzvswh1IhBsGc2xJ8NCIdFn/eU8Et2UoAggmYMM4L2QRJHfI0iAspJpCj8oKkNBWpDgdpQoDbNC/DXYm2aFyCEEEKa5htkbSOpWa7j1QAAAABJRU5ErkJggg==', Locked = true;
         ObfuscateLbl: Label '%1*%2@%3', Comment = '%1 = First character of username , %2 = Last character of username, %3 = Host', Locked = true;
         UserHasNoContactEmailErr: Label 'The user specified for SMTP emailing does not have a contact email set. Please update the user''s contact email to use Current User type for SMTP.';
+        ServerCannotBeEmptyErr: Label 'Server URL field cannot be empty.';
+        CouldNotRecogniseTheServerErr: Label 'The provided SMTP Server URL %1 is not valid.', Comment = '%1 = server URL';
+        NoResponseOnConnectErr: Label 'The SMTP server %1 did not respond to the connection request.', Comment = '%1 = server URL';
+        CouldNotConnectErr: Label 'Could not connect to the SMTP server.\\%1', Comment = '%1 = the error message returned by the SMTP server.';
+        CouldNotAuthenticateErr: Label 'Could not authenticate on the SMTP server.\\%1', Comment = '%1 = the error message returned by the SMTP server.';
+        CouldNotSendErr: Label 'Could not send the email.\\%1', Comment = '%1 = the error message returned by the SMTP server.';
 
     /// <summary>
     /// Gets the registered accounts for the SMTP connector.
@@ -109,7 +115,7 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         Account: Record "SMTP Account";
         SMTPAuthentication: Codeunit "SMTP Authentication";
         Result: Boolean;
-        SMTPErrorCode, SMTPSendError : Text;
+        SMTPErrorCode: Text;
     begin
         if not Account.Get(AccountId) then
             Error(NotRegisteredAccountErr);
@@ -126,9 +132,10 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
                     SMTPAccount.Server,
                     SMTPAccount."Server Port",
                     SMTPAccount."Authentication Type",
-                    SMTPErrorCode), Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+                    SMTPErrorCode,
+                    GetLastErrorText(true)), Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
-            Error(ConnectionFailureErr, SMTPAccount.Server);
+            ThrowSmtpConnectionError(GetLastErrorText());
         end;
 
         Session.LogMessage('00009UV', StrSubstNo(SmtpConnectedTelemetryMsg,
@@ -151,9 +158,10 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
                         SMTPAccount.Server,
                         SMTPAccount."Server Port",
                         SMTPAccount."Authentication Type",
-                        SMTPErrorCode), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+                        SMTPErrorCode,
+                        GetLastErrorText(true)), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
-                Error(AuthenticationFailureErr, SMTPAccount.Server);
+                ThrowSmtpAuthenticationError(GetLastErrorText());
             end;
 
             Session.LogMessage('00009XF', StrSubstNo(SmtpAuthenticateTelemetryMsg,
@@ -172,11 +180,12 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
             SMTPClient.Disconnect();
 
             SMTPErrorCode := GetSmtpErrorCodeFromResponse(GetLastErrorText());
-            Session.LogMessage('00009UZ', StrSubstNo(SmtpSendTelemetryErrorMsg, SMTPAccount."Authentication Type", SMTPErrorCode), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+            Session.LogMessage('00009UZ', StrSubstNo(SmtpSendTelemetryErrorMsg,
+                    SMTPAccount."Authentication Type",
+                    SMTPErrorCode,
+                    GetLastErrorText(true)), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
-            SMTPSendError := GetSendError(SMTPErrorCode);
-
-            Error(SMTPSendError);
+            ThrowSmtpSendError(GetLastErrorText());
         end;
 
         Session.LogMessage('00009UX', SmtpSendTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
@@ -284,23 +293,75 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         SMTPAccountConfig."Secure Connection" := true;
     end;
 
+    local procedure ThrowSmtpConnectionError(ErrorResponse: Text): Text
+    begin
+        if ErrorResponse.Contains('The host name cannot be empty') then
+            Error(ServerCannotBeEmptyErr);
+
+        if ErrorResponse.Contains('No such host is known') then
+            Error(CouldNotRecogniseTheServerErr, SMTPAccount.Server);
+
+        if ErrorResponse.Contains('A connection attempt failed because the connected party did not properly respond after a period of time') then
+            Error(NoResponseOnConnectErr, SMTPAccount.Server);
+
+        Error(CouldNotConnectErr, GetErrorContent(ErrorResponse));
+    end;
+
+    local procedure ThrowSmtpAuthenticationError(ErrorResponse: Text): Text
+    begin
+        if ErrorResponse.Contains('535:') then
+            Error(IncorrectAuthenticationDataErr, SMTPAccount."Authentication Type");
+
+        Error(CouldNotAuthenticateErr, GetErrorContent(ErrorResponse));
+    end;
+
+    local procedure ThrowSmtpSendError(ErrorResponse: Text): Text
+    var
+        FromName, FromAddress : Text;
+    begin
+        if ErrorResponse.Contains('No recipients have been specified') then
+            Error(NoRecipientsErr);
+
+        if ErrorResponse.Contains('No sender has been specified') then
+            Error(NoSenderErr);
+
+        if ErrorResponse.Contains('5.2.252') then begin
+            GetFrom(FromName, FromAddress);
+            Error(SendAsDeniedErr, FromAddress, SMTPAccount."User Name")
+        end;
+
+        Error(CouldNotSendErr, GetErrorContent(ErrorResponse));
+    end;
+
     procedure GetSmtpErrorCodeFromResponse(ErrorResponse: Text): Text
+    var
+        Regex: Codeunit Regex;
+        TextPosition: Integer;
+        ErrorCode: Text;
+    begin
+        ErrorResponse := GetErrorContent(ErrorResponse);
+
+        TextPosition := StrPos(ErrorResponse, ' ');
+        if TextPosition <> 0 then
+            ErrorCode := CopyStr(ErrorResponse, 1, TextPosition - 1);
+
+        // If the error message does not start with the error code, return empty string
+        if Regex.IsMatch(ErrorCode, '[a-zA-Z]') then
+            exit('');
+
+        exit(ErrorCode);
+    end;
+
+    local procedure GetErrorContent(ErrorResponse: Text): Text
     var
         TextPosition: Integer;
     begin
         TextPosition := StrPos(ErrorResponse, 'failed with this message:');
-
         if TextPosition = 0 then
-            exit('');
+            exit(ErrorResponse);
 
         ErrorResponse := CopyStr(ErrorResponse, TextPosition + StrLen('failed with this message:'));
-        ErrorResponse := DelChr(ErrorResponse, '<', ' ');
-
-        TextPosition := StrPos(ErrorResponse, ' ');
-        if TextPosition <> 0 then
-            ErrorResponse := CopyStr(ErrorResponse, 1, TextPosition - 1);
-
-        exit(ErrorResponse);
+        exit(ErrorResponse.Trim())
     end;
 
     internal procedure IsAccountValid(SMTPAccountRec: Record "SMTP Account" temporary): Boolean
@@ -397,17 +458,5 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
 
             ObfuscatedEmail += '* (Not a valid email)';
         end;
-    end;
-
-    local procedure GetSendError(ErrorCode: Text): Text
-    var
-        FromName, FromAddress : Text;
-    begin
-        if ErrorCode = '5.2.252' then begin
-            GetFrom(FromName, FromAddress);
-            exit(StrSubstNo(SendAsDeniedErr, FromAddress, SMTPAccount."User Name"));
-        end;
-
-        exit(SendingFailureErr);
     end;
 }

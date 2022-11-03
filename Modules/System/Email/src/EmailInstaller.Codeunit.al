@@ -12,9 +12,11 @@ codeunit 1596 "Email Installer"
     Permissions = tabledata Field = r;
 
     trigger OnInstallAppPerCompany()
+    var
+        EmailViewPolicy: Codeunit "Email View Policy";
     begin
         AddRetentionPolicyAllowedTables();
-        SetDefaultEmailViewPolicy(Enum::"Email View Policy"::AllRelatedRecordsEmails);
+        EmailViewPolicy.CheckForDefaultEntry(Enum::"Email View Policy"::AllRelatedRecordsEmails); // Default record is AllRelatedRecords for new tenants
     end;
 
     procedure AddRetentionPolicyAllowedTables()
@@ -32,27 +34,9 @@ codeunit 1596 "Email Installer"
         UpgradeTag.SetUpgradeTag(GetEmailTablesAddedToAllowedListUpgradeTag());
     end;
 
-    procedure SetDefaultEmailViewPolicy(DefaultEmailViewPolicy: Enum "Email View Policy")
-    var
-        EmailViewPolicy: Codeunit "Email View Policy";
-        UpgradeTag: Codeunit "Upgrade Tag";
-    begin
-        if UpgradeTag.HasUpgradeTag(GetDefaultEmailViewPolicyUpgradeTag()) then
-            exit;
-
-        EmailViewPolicy.CheckForDefaultEntry(DefaultEmailViewPolicy);
-
-        UpgradeTag.SetUpgradeTag(GetDefaultEmailViewPolicyUpgradeTag());
-    end;
-
     local procedure GetEmailTablesAddedToAllowedListUpgradeTag(): Code[250]
     begin
         exit('MS-373161-EmailLogEntryAdded-20201005');
-    end;
-
-    local procedure GetDefaultEmailViewPolicyUpgradeTag(): Code[250]
-    begin
-        exit('MS-445654-DefaultEmailViewPolicyChanged-20221908');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterInitialization', '', false, false)]

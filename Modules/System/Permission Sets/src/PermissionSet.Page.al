@@ -51,6 +51,7 @@ page 9855 "Permission Set"
                 ShowFilter = true;
                 Visible = IsTenant;
                 ApplicationArea = All;
+                UpdatePropagation = Both;
                 SubPageLink = "Role ID" = field("Role ID"), "App ID" = field("App ID");
             }
 
@@ -91,10 +92,19 @@ page 9855 "Permission Set"
             }
         }
 
+#if not CLEAN22
         area(factboxes)
         {
+            ObsoleteState = Pending;
+            ObsoleteReason = 'Factbox no longer used. Use the "View Permissions In Set" actions on the Permission Set parts instead.';
+            ObsoleteTag = '22.0';
+
             part(PermissionsRelated; "Expanded Permissions Factbox")
             {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Factbox no longer used. Use the "View Permissions In Set" actions on the Permission Set parts instead.';
+                ObsoleteTag = '22.0';
+                Visible = false;
                 ApplicationArea = All;
                 Caption = 'Included permissions';
                 ShowFilter = true;
@@ -104,6 +114,7 @@ page 9855 "Permission Set"
                 AboutText = 'The Included permissions FactBox lists the permissions that are included in permissions sets that have been added to this set.';
             }
         }
+#endif
     }
 
     actions
@@ -201,13 +212,15 @@ page 9855 "Permission Set"
         TempPermissionSetRelationBufferList: Record "Permission Set Relation Buffer" temporary;
         TempPermissionSetRelationBufferTree: Record "Permission Set Relation Buffer" temporary;
     begin
-        CurrPage.Permissions.Page.SetPageVariables(Rec."App ID");
+        CurrPage.Permissions.Page.SetPermissionSet(Rec."Role ID", Rec."App ID", IsTenant);
         CurrPage.PermissionSets.Page.SetPermissionSet(Rec."Role ID", Rec."App ID", IsTenant);
         CurrPage.PermissionSetTree.Page.SetPermissionSet(Rec."Role ID", Rec."App ID", IsTenant);
+        CurrPage.Permissions.Page.SetPermissionSetRelation(PermissionSetRelationImpl);
         CurrPage.PermissionSets.Page.SetPermissionSetRelation(PermissionSetRelationImpl);
         CurrPage.PermissionSetTree.Page.SetPermissionSetRelation(PermissionSetRelationImpl);
         CurrPage.PermissionSets.Page.GetSourceRecord(TempPermissionSetRelationBufferList);
         CurrPage.PermissionSetTree.Page.GetSourceRecord(TempPermissionSetRelationBufferTree);
+
         PermissionSetRelationImpl.AddPermissionSetRelationBufferList(TempPermissionSetRelationBufferList);
         PermissionSetRelationImpl.AddPermissionSetRelationBufferTree(TempPermissionSetRelationBufferTree);
     end;

@@ -21,31 +21,26 @@ page 9049 "Default User Groups In Plan"
     {
         area(content)
         {
-            group("Default User Groups")
+            repeater(Group)
             {
-                ShowCaption = false;
-
-                repeater(Group)
+                field("User Group"; Rec."User Group Code")
                 {
-                    field("User Group"; Rec."User Group Code")
-                    {
-                        ApplicationArea = All;
-                        Caption = 'User Group';
-                        ToolTip = 'Specifies the ID of the user group.';
-                    }
-                    field("User Group Name"; Rec."User Group Name")
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Description';
-                        ToolTip = 'Specifies the description of the user group.';
-                    }
-                    field(Company; FirstCompanyTok)
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Company';
-                        ToolTip = 'The user group will be assigned to the first company that a member of the user group signs in to.';
-                        Style = AttentionAccent;
-                    }
+                    ApplicationArea = All;
+                    Caption = 'User Group';
+                    ToolTip = 'Specifies the ID of the user group.';
+                }
+                field("User Group Name"; Rec."User Group Name")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Description';
+                    ToolTip = 'Specifies the description of the user group.';
+                }
+                field(Company; FirstCompanyTok)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Company';
+                    ToolTip = 'The user group will be assigned to the first company that a member of the user group signs in to.';
+                    Style = AttentionAccent;
                 }
             }
         }

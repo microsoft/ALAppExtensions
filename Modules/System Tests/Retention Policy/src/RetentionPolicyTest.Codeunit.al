@@ -13,9 +13,650 @@ codeunit 138702 "Retention Policy Test"
         Assert: Codeunit "Library Assert";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         PermissionsMock: Codeunit "Permissions Mock";
+        DateFieldNoMustHaveAValueErr: Label 'The field Date Field No. must have a value in the retention policy for table %1, %2', Comment = '%1 = table number, %2 = table caption';
 
     trigger OnRun()
     begin
+    end;
+
+    [Test]
+    procedure TestExpirationDateWhereOlderFilterViewS1()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // base scenario
+        // ExpirationDate < NullDateReplacement
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo(SystemCreatedAt);
+        ExpirationDate := CalcDate('<-1Y>', Today());
+        NullDateReplacementDate := CalcDate('<-6M>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&..%2))', DateFieldNo, Format(FixViewsTimeZoneIssueMaxRange(ExpirationDate - 1), 0, 9));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        // parse out time component
+        ActualView := ActualView.Remove(ActualView.LastIndexOf('T'), 10);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateWhereOlderFilterViewS2()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // NullDateReplacement < ExpirationDate
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo(SystemCreatedAt);
+        ExpirationDate := CalcDate('<-6M>', Today());
+        NullDateReplacementDate := CalcDate('<-1Y>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>=''''&..%2))', DateFieldNo, Format(FixViewsTimeZoneIssueMaxRange(ExpirationDate - 1), 0, 9));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        // parse out time component
+        ActualView := ActualView.Remove(ActualView.LastIndexOf('T'), 10);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateWhereOlderFilterViewS3()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // CustomDateField
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo("Date Field");
+        ExpirationDate := CalcDate('<-1Y>', Today());
+        NullDateReplacementDate := CalcDate('<-6M>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&..%2))', DateFieldNo, Format(ExpirationDate - 1, 0, 9));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateWhereOlderFilterViewS4()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // custom datetime field
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo("DateTime Field");
+        ExpirationDate := CalcDate('<-1Y>', Today());
+        NullDateReplacementDate := CalcDate('<-6M>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&..%2))', DateFieldNo, Format(FixViewsTimeZoneIssueMaxRange(ExpirationDate - 1), 0, 9));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        // parse out time component
+        ActualView := ActualView.Remove(ActualView.LastIndexOf('T'), 10);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateWhereOlderFilterViewS5()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView : Text;
+    begin
+        // [SCENARIO]
+        // DateFieldNo error
+        // Setup
+        DateFieldNo := 0;
+        ExpirationDate := CalcDate('<-1Y>', Today());
+        NullDateReplacementDate := CalcDate('<-6M>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&..%2))', DateFieldNo, Format(FixViewsTimeZoneIssueMaxRange(ExpirationDate - 1), 0, 9));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        AssertError ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        Assert.ExpectedError(StrSubstNo(DateFieldNoMustHaveAValueErr, RecordRef.Number, RecordRef.Caption));
+    end;
+
+    [Test]
+    procedure TestExpirationDateWhereOlderFilterViewS6()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // NullDateReplacement < ExpirationDate and custom datetimefield
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo("DateTime Field");
+        ExpirationDate := CalcDate('<-6M>', Today());
+        NullDateReplacementDate := CalcDate('<-1Y>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&..%2))', DateFieldNo, Format(FixViewsTimeZoneIssueMaxRange(ExpirationDate - 1), 0, 9));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetWhereOlderExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        // parse out time component
+        ActualView := ActualView.Remove(ActualView.LastIndexOf('T'), 10);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateWhereNewerFilterViewS1()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // base scenario
+        // ExpirationDate < NullDateReplacement
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo(SystemCreatedAt);
+        ExpirationDate := CalcDate('<-1Y>', Today());
+        NullDateReplacementDate := CalcDate('<-6M>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>=''''&%2..))', DateFieldNo, Format(FixViewsTimeZoneIssueMinRange(ExpirationDate), 0, 9));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetWhereNewerExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        // parse out time component
+        ActualView := ActualView.Remove(ActualView.LastIndexOf('T'), 10);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateWhereNewerFilterViewS2()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // NullDateReplacement < ExpirationDate
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo(SystemCreatedAt);
+        ExpirationDate := CalcDate('<-6M>', Today());
+        NullDateReplacementDate := CalcDate('<-1Y>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&%2..))', DateFieldNo, Format(FixViewsTimeZoneIssueMinRange(ExpirationDate), 0, 9));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetWhereNewerExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        // parse out time component
+        ActualView := ActualView.Remove(ActualView.LastIndexOf('T'), 10);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateWhereNewerFilterViewS3()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // CustomDateField
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo("Date Field");
+        ExpirationDate := CalcDate('<-1Y>', Today());
+        NullDateReplacementDate := CalcDate('<-6M>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&%2..))', DateFieldNo, Format(ExpirationDate, 0, 9));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetWhereNewerExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateWhereNewerFilterViewS4()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // custom datetime field
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo("DateTime Field");
+        ExpirationDate := CalcDate('<-1Y>', Today());
+        NullDateReplacementDate := CalcDate('<-6M>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&%2..))', DateFieldNo, Format(FixViewsTimeZoneIssueMinRange(ExpirationDate), 0, 9));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetWhereNewerExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        // parse out time component
+        ActualView := ActualView.Remove(ActualView.LastIndexOf('T'), 10);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateWhereNewerFilterViewS5()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView : Text;
+    begin
+        // [SCENARIO]
+        // DateFieldNo error
+        // Setup
+        DateFieldNo := 0;
+        ExpirationDate := CalcDate('<-1Y>', Today());
+        NullDateReplacementDate := CalcDate('<-6M>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&%2..))', DateFieldNo, Format(FixViewsTimeZoneIssueMinRange(ExpirationDate), 0, 9));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        AssertError ApplyRetentionPolicy.SetWhereNewerExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        Assert.ExpectedError(StrSubstNo(DateFieldNoMustHaveAValueErr, RecordRef.Number, RecordRef.Caption));
+    end;
+
+    [Test]
+    procedure TestExpirationDateWhereNewerFilterViewS6()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // NullDateReplacement < ExpirationDate and custom datetimefield
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo("DateTime Field");
+        ExpirationDate := CalcDate('<-6M>', Today());
+        NullDateReplacementDate := CalcDate('<-1Y>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(>''''&%2..))', DateFieldNo, Format(FixViewsTimeZoneIssueMinRange(ExpirationDate), 0, 9));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetWhereNewerExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        // parse out time component
+        ActualView := ActualView.Remove(ActualView.LastIndexOf('T'), 10);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateSingleDateFilterViewS1()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // base scenario
+        // ExpirationDate < NullDateReplacement
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo(SystemCreatedAt);
+        ExpirationDate := CalcDate('<-1Y>', Today());
+        NullDateReplacementDate := CalcDate('<-6M>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(%2))', DateFieldNo, SingleDateViewTimeRange(ExpirationDate - 1));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetSingleDateExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateSingleDateFilterViewS2()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // NullDateReplacement < ExpirationDate
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo(SystemCreatedAt);
+        ExpirationDate := CalcDate('<-6M>', Today());
+        NullDateReplacementDate := CalcDate('<-1Y>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(''''..''''|%2))', DateFieldNo, SingleDateViewTimeRange(ExpirationDate - 1));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetSingleDateExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateSingleDateFilterViewS3()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // CustomDateField
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo("Date Field");
+        ExpirationDate := CalcDate('<-1Y>', Today());
+        NullDateReplacementDate := CalcDate('<-6M>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(%2))', DateFieldNo, Format(ExpirationDate - 1, 0, 9));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetSingleDateExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateSingleDateFilterViewS4()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // custom datetime field
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo("DateTime Field");
+        ExpirationDate := CalcDate('<-1Y>', Today());
+        NullDateReplacementDate := CalcDate('<-6M>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(%2))', DateFieldNo, SingleDateViewTimeRange(ExpirationDate - 1));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetSingleDateExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
+    end;
+
+    [Test]
+    procedure TestExpirationDateSingleDateFilterViewS5()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView : Text;
+    begin
+        // [SCENARIO]
+        // DateFieldNo error
+        // Setup
+        DateFieldNo := 0;
+        ExpirationDate := CalcDate('<-1Y>', Today());
+        NullDateReplacementDate := CalcDate('<-6M>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(%2))', DateFieldNo, SingleDateViewTimeRange(ExpirationDate - 1));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        AssertError ApplyRetentionPolicy.SetSingleDateExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        Assert.ExpectedError(StrSubstNo(DateFieldNoMustHaveAValueErr, RecordRef.Number, RecordRef.Caption));
+    end;
+
+    [Test]
+    procedure TestExpirationDateSingleDateFilterViewS6()
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        RecordRef: RecordRef;
+        ExpirationDate: Date;
+        NullDateReplacementDate: Date;
+        DateFieldNo: Integer;
+        Filtergroup: Integer;
+        EmptyView, ExpectedView, ActualView : Text;
+    begin
+        // [SCENARIO]
+        // NullDateReplacement < ExpirationDate and custom datetimefield
+        // Setup
+        DateFieldNo := RetentionPolicyTestData.FieldNo("DateTime Field");
+        ExpirationDate := CalcDate('<-6M>', Today());
+        NullDateReplacementDate := CalcDate('<-1Y>', Today());
+        Filtergroup := 10;
+        EmptyView := 'VERSION(1) SORTING(Field1)';
+        ExpectedView := StrSubstNo('VERSION(1) SORTING(Field1) WHERE(Field%1=1(%2))', DateFieldNo, SingleDateViewTimeRange(ExpirationDate - 1));
+        RecordRef.GetTable(RetentionPolicyTestData);
+
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty to start with.');
+
+        // Execute
+        ApplyRetentionPolicy.SetSingleDateExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, Filtergroup, NullDateReplacementDate);
+
+        // Verify
+        ActualView := RecordRef.GetView(false);
+        Assert.AreEqual(ExpectedView, ActualView, 'The view is not correct');
+        RecordRef.Filtergroup := 0;
+        Assert.AreEqual(EmptyView, RecordRef.GetView(false), 'View should be empty in filtergroup 0');
     end;
 
     [Test]
@@ -443,7 +1084,7 @@ codeunit 138702 "Retention Policy Test"
         InsertRetentionPolicyTestData('<-3W>', 'Subset A'); // keep
         InsertRetentionPolicyTestData('<-5W>', 'Subset A'); // keep
         InsertRetentionPolicyTestData('<-6W>', 'Subset A'); // keep
-        InsertRetentionPolicyTestData('<-100Y>', 'Subset A'); // keep
+        InsertRetentionPolicyTestData('<-2Y>', 'Subset A'); // keep
 
         Assert.AreEqual(7, RetentionPolicyTestData.Count(), 'Incorrect number of records before applying retention policy');
 
@@ -454,6 +1095,47 @@ codeunit 138702 "Retention Policy Test"
         Assert.RecordIsNotEmpty(RetentionPolicyTestData);
         RetentionPolicyTestData.SetRange(Description, 'Subset A');
         Assert.AreEqual(7, RetentionPolicyTestData.Count(), 'Incorrect number of records after applying retention policy');
+    end;
+
+    [HandlerFunctions('RetentionPolicyFilterPageHandler')]
+    [Test]
+    procedure TestApplyRetentionPolicy1KLines()
+    var
+        RetentionPeriod: Record "Retention Period";
+        RetentionPolicySetup: Record "Retention Policy Setup";
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ApplyRetentionPolicy: Codeunit "Apply Retention Policy";
+        DateFormulaLbl: Label '<-%1D>', Locked = true;
+        i: Integer;
+    begin
+        PermissionsMock.Set('Retention Pol. Admin');
+        // Setup
+        ClearTestData();
+        InsertEnabledRetentionPolicySetupForSubsets(RetentionPolicySetup, RetentionPolicyTestData.FieldNo("Date Field"));
+        InsertOneWeekRetentionPeriod(RetentionPeriod);
+        InsertEnabledRetentionPolicySetupLine(RetentionPolicySetup, RetentionPeriod, RetentionPolicySetup."Date Field No.", '', RetentionPolicyTestData.FieldNo(Description));
+        InsertNeverDeleteRetentionPeriod(RetentionPeriod);
+        InsertEnabledRetentionPolicySetupLine(RetentionPolicySetup, RetentionPeriod, RetentionPolicySetup."Date Field No.", 'Subset A', RetentionPolicyTestData.FieldNo(Description));
+
+        InsertRetentionPolicyTestData('<-3D>', ''); // keep
+        for i := 1 to 499 do
+            InsertRetentionPolicyTestData(StrSubsTNo(DateFormulaLbl, Any.IntegerInRange(10, 365)), ''); // delete
+        InsertRetentionPolicyTestData('<-5D>', 'Subset A'); // keep
+        for i := 1 to 498 do
+            InsertRetentionPolicyTestData(StrSubsTNo(DateFormulaLbl, Any.IntegerInRange(10, 365)), 'Subset A'); // keep
+        InsertRetentionPolicyTestData('<-2Y>', 'Subset A'); // keep
+
+        Assert.AreEqual(1000, RetentionPolicyTestData.Count(), 'Incorrect number of records before applying retention policy');
+
+        // Exercise
+        ApplyRetentionPolicy.ApplyRetentionPolicy(RetentionPolicySetup, false);
+
+        // Verify
+        Assert.RecordIsNotEmpty(RetentionPolicyTestData);
+        RetentionPolicyTestData.SetRange(Description, 'Subset A');
+        Assert.AreEqual(500, RetentionPolicyTestData.Count(), 'Incorrect number of records after applying retention policy');
+        RetentionPolicyTestData.SetRange(Description, '');
+        Assert.AreEqual(1, RetentionPolicyTestData.Count(), 'Incorrect number of records after applying retention policy');
     end;
 
     [HandlerFunctions('RetentionPolicyFilterPageHandler')]
@@ -482,7 +1164,7 @@ codeunit 138702 "Retention Policy Test"
         InsertRetentionPolicyTestData('<-5D>', 'Subset A');
         for i := 1 to 9998 do
             InsertRetentionPolicyTestData(StrSubsTNo(DateFormulaLbl, Any.IntegerInRange(10, 365)), 'Subset A'); // keep
-        InsertRetentionPolicyTestData('<-100Y>', 'Subset A'); // keep
+        InsertRetentionPolicyTestData('<-2Y>', 'Subset A'); // keep
 
         Assert.AreEqual(20000, RetentionPolicyTestData.Count(), 'Incorrect number of records before applying retention policy');
 
@@ -700,7 +1382,7 @@ codeunit 138702 "Retention Policy Test"
         InsertRetentionPolicyTestData('<-3W>', 'Subset A', 'Subset E'); // keep because of ''
         InsertRetentionPolicyTestData('<-5W>', 'Subset B', 'Subset D'); // delete because of D
         InsertRetentionPolicyTestData('<-6W>', 'Subset A', 'Subset E'); // delete because of A 
-        InsertRetentionPolicyTestData('<-100Y>', 'Subset B', 'Subset E'); // delete because of ''
+        InsertRetentionPolicyTestData('<-2Y>', 'Subset B', 'Subset E'); // delete because of ''
 
         Assert.AreEqual(7, RetentionPolicyTestData.Count(), 'Incorrect number of records before applying retention policy');
 
@@ -744,7 +1426,7 @@ codeunit 138702 "Retention Policy Test"
         InsertRetentionPolicyTestData('<-3W>', 'Subset A', 'Subset E'); // delete because of A
         InsertRetentionPolicyTestData('<-5W>', 'Subset B', 'Subset D'); // delete because of D
         InsertRetentionPolicyTestData('<-6W>', 'Subset A', 'Subset E'); // delete because of A
-        InsertRetentionPolicyTestData('<-100Y>', 'Subset B', 'Subset E'); // keep (no policy)
+        InsertRetentionPolicyTestData('<-2Y>', 'Subset B', 'Subset E'); // keep (no policy)
 
         Assert.AreEqual(7, RetentionPolicyTestData.Count(), 'Incorrect number of records before applying retention policy');
 
@@ -961,5 +1643,34 @@ codeunit 138702 "Retention Policy Test"
     local procedure RetentionPolicyCode(RetentionPeriod: Variant) RetentionPolicyCode: Code[20]
     begin
         RetentionPolicyCode := CopyStr(UpperCase(Format(RetentionPeriod)), 1, MaxStrLen(RetentionPolicyCode))
+    end;
+
+    local procedure FixViewsTimeZoneIssueMaxRange(InDate: Date): Date
+    begin
+        exit(ParseDateOutOfViewRange(StrSubstNo('WHERE(Field2000000001=1(..%1))', InDate)))
+    end;
+
+    local procedure FixViewsTimeZoneIssueMinRange(InDate: Date): Date
+    begin
+        exit(ParseDateOutOfViewRange(StrSubstNo('WHERE(Field2000000001=1(%1..))', InDate)))
+    end;
+
+    local procedure ParseDateOutOfViewRange(ViewText: Text) OutDate: Date
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+    begin
+        RetentionPolicyTestData.SetView(ViewText);
+        ViewText := RetentionPolicyTestData.GetView(false);
+        Evaluate(OutDate, ViewText.Substring(ViewText.LastIndexOf('T') - 10, 10));
+    end;
+
+    local procedure SingleDateViewTimeRange(InDate: Date): Text
+    var
+        RetentionPolicyTestData: Record "Retention Policy Test Data";
+        ViewText: Text;
+    begin
+        RetentionPolicyTestData.SetView(StrSubstNo('WHERE(Field2000000001=1(%1))', InDate));
+        ViewText := RetentionPolicyTestData.GetView(false);
+        exit(ViewText.Substring(ViewText.LastIndexOf('(') + 1, 42))
     end;
 }

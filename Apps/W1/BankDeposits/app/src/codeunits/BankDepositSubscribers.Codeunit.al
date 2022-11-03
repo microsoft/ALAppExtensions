@@ -101,16 +101,22 @@ codeunit 1695 "Bank Deposit Subscribers"
     var
         BankAccReconciliation: Record "Bank Acc. Reconciliation";
         BankDepositHeader: Record "Bank Deposit Header";
+        Company: Record Company;
         BankDepositFeatureMgt: Codeunit "Bank Deposit Feature Mgt.";
     begin
         if FeatureKey.ID <> BankDepositFeatureMgt.GetFeatureKeyId() then
             exit;
 
-        BankAccReconciliation.SetRange("Statement Type", BankAccReconciliation."Statement Type"::"Bank Reconciliation");
-        if BankDepositHeader.IsEmpty() and BankAccReconciliation.IsEmpty() then
-            exit;
-
-        Error(EnableFeatureErr);
+        if Company.FindSet() then
+        repeat
+            BankAccReconciliation.ChangeCompany(Company.Name);
+            BankAccReconciliation.Reset();
+            BankAccReconciliation.SetRange("Statement Type", BankAccReconciliation."Statement Type"::"Bank Reconciliation");
+            BankDepositHeader.ChangeCompany(Company.Name);
+            BankDepositHeader.Reset();
+            if (not BankDepositHeader.IsEmpty()) or (not BankAccReconciliation.IsEmpty()) then
+                Error(EnableFeatureErr, Company.Name);
+        until Company.Next() = 0;
     end;
 #endif
 
@@ -120,6 +126,6 @@ codeunit 1695 "Bank Deposit Subscribers"
         OnBeforeUndoPostingBankDepositLbl: Label 'User is attempting to undo posted bank deposit.', Locked = true;
         OnAfterUndoPostingBankDepositLbl: Label 'User successfully reversed all transactions in posted bank deposit.', Locked = true;
 #if not CLEAN21
-        EnableFeatureErr: Label 'You must either post or delete all bank deposits and bank account reconcililations before disabling Bank Deposits feature.';
+        EnableFeatureErr: Label 'You must either post or delete all bank deposits and bank account reconciliations for company %1 and every company on this environment before disabling Bank Deposits feature.', Comment = '%1 - Name of the company';
 #endif
 }
