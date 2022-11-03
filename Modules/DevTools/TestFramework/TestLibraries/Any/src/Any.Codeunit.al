@@ -20,7 +20,7 @@ codeunit 130500 "Any"
     /// <returns>Pseudo-random boolean value</returns>
     procedure Boolean(): Boolean
     begin
-        exit(IntegerInRange(1, 100) mod 2 = 0);
+        exit(GetNextValue(2) = 2);
     end;
 
     /// <summary>
