@@ -54,7 +54,7 @@ codeunit 447 "Record Link Management"
     end;
 
     /// <summary>
-    /// Integration event for before resetting notify field.
+    /// Integration event for before copying links.
     /// </summary>
     /// <param name="FromRecord">The source record from which links are copied.</param>
     /// <param name="ToRecord">The destination record to which links are copied.</param>

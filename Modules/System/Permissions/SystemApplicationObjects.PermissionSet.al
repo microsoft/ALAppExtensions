@@ -71,6 +71,7 @@ PermissionSet 219 "System Application - Objects"
                              "Environment Cleanup - Objects",
                              "Satisfaction Survey - Objects",
                              "Secrets - Objects",
+                             "SharePoint API - Objects",
                              "System Initialization - Obj.",
                              "Table Information - Objects",
                              "Telemetry - Objects",

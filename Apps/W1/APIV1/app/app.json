@@ -2,13 +2,13 @@
     "id":  "8afe7b40-8c87-4beb-ada0-451d1761bf95",
     "name":  "_Exclude_APIV1_",
     "publisher":  "Microsoft",
-    "version":  "21.0.0.0",
+    "version":  "21.1.0.0",
     "brief":  "APIV1",
     "description":  "APIV1",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
-    "help":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
-    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/en-gb/dynamics365/business-central",
+    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=2182906",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2206603",
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "ExtensionLogo.png",
     "dependencies":  [
@@ -24,5 +24,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "21.0.0.0"
+    "application":  "21.1.0.0"
 }

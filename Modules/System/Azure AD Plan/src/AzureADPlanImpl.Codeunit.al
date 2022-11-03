@@ -454,6 +454,12 @@ codeunit 9018 "Azure AD Plan Impl."
         TempPlan.Reset();
         TempPlan.DeleteAll();
 
+        // Do not consider plans of non-admin users who are not members of the environment security group
+        if AzureADGraph.GetEnvironmentDirectoryGroup() <> '' then
+            if (not AzureADGraph.IsMemberOfGroupWithId(AzureADGraph.GetEnvironmentDirectoryGroup(), GraphUserInfo)) then
+                if not IsInternalAdmin(GraphUserInfo) then
+                    exit;
+
         // Loop through assigned Azure AD Plans
         if not IsNull(GraphUserInfo.AssignedPlans()) then
             foreach AssignedPlan in GraphUserInfo.AssignedPlans() do begin
@@ -496,19 +502,21 @@ codeunit 9018 "Azure AD Plan Impl."
 
     [NonDebuggable]
     local procedure IsDeviceRole(var GraphUserInfo: DotNet UserInfo): Boolean
-    var
-        GroupInfo: DotNet GroupInfo;
     begin
-        if IsNull(GraphUserInfo) then
-            exit(false);
+        exit(AzureADGraph.IsGroupMember(DeviceGroupNameTxt, GraphUserInfo));
+    end;
 
-        if IsNull(GraphUserInfo.Groups()) then
-            exit(false);
-
-        foreach GroupInfo in GraphUserInfo.Groups() do
-            if not IsNull(GroupInfo.DisplayName()) then
-                if GroupInfo.DisplayName().ToUpper() = UpperCase(DeviceGroupNameTxt) then
+    [NonDebuggable]
+    local procedure IsInternalAdmin(var GraphUserInfo: DotNet UserInfo): Boolean
+    var
+        PlanIds: Codeunit "Plan IDs";
+        DirectoryRole: DotNet RoleInfo;
+    begin
+        if not IsNull(GraphUserInfo.Roles()) then
+            foreach DirectoryRole in GraphUserInfo.Roles() do
+                if DirectoryRole.RoleTemplateId() = PlanIds.GetInternalAdminPlanId() then
                     exit(true);
+
         exit(false);
     end;
 

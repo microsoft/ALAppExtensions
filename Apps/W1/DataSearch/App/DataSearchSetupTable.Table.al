@@ -97,8 +97,12 @@ table 2681 "Data Search Setup (Table)"
                 GetSubtypesForField(SubtypeList, Database::"Sales Header", 1);
             Database::"Purchase Header", Database::"Purchase Line":
                 GetSubtypesForField(SubtypeList, Database::"Purchase Header", 1);
-            Database::"Service Header", Database::"Service Line":
+            Database::"Service Header", Database::"Service Item Line":
                 GetSubtypesForField(SubtypeList, Database::"Service Header", 1);
+            Database::"Service Contract Header":
+                GetSubtypesForField(SubtypeList, Database::"Service Contract Header", 2);
+            Database::"Service Contract Line":
+                GetSubtypesForField(SubtypeList, Database::"Service Contract Line", 1);
         end;
     end;
 

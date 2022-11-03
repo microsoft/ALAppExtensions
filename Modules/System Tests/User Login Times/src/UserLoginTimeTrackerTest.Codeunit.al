@@ -8,7 +8,7 @@ codeunit 130044 "User Login Time Tracker Test"
     // Tests for the User Login Time Tracker codeunit
 
     Subtype = Test;
-    Permissions = tabledata "User Login" = r,
+    Permissions = tabledata "User Login" = rm,
                   tabledata "User Environment Login" = r;
 
     var
@@ -224,6 +224,7 @@ codeunit 130044 "User Login Time Tracker Test"
     var
         UserLogin: Record "User Login";
         UserEnvironmentLogin: Record "User Environment Login";
+        ExpectedPenultimateDateTime: DateTime;
     begin
         // [GIVEN] The User Login table is empty
         UserLoginTestLibrary.DeleteAllLoginInformation();
@@ -249,6 +250,12 @@ codeunit 130044 "User Login Time Tracker Test"
         LibraryAssert.AreEqual(1, UserEnvironmentLogin.Count(), 'The User Environment Login table should contain a single entry');
         LibraryAssert.IsTrue(UserLogin.Get(UserSecurityId()), 'There should be a User Enviroment Login entry for the current user');
 
+        // [GIVEN] It's more than 1 minute since the user logged in last time
+        UserLogin.Get(UserSecurityId());
+        UserLogin."Last Login Date" := CurrentDateTime() - 61000; // 'more than 60 seconds'.
+        UserLogin.Modify();
+        ExpectedPenultimateDateTime := UserLogin."Last Login Date";
+
         // [WHEN] Calling CreateOrUpdateLoginInfo
         UserLoginTimeTracker.CreateOrUpdateLoginInfo();
 
@@ -260,7 +267,7 @@ codeunit 130044 "User Login Time Tracker Test"
         // [THEN] The fields of the User Login table should be properly assigned	
         LibraryAssert.AreEqual(UserSecurityId(), UserLogin."User SID", 'The user security ID is incorrect');
         LibraryAssert.AreNotEqual(0D, UserLogin."First Login Date", 'The first login date should not be empty');
-        LibraryAssert.AreNotEqual(0DT, UserLogin."Penultimate Login Date", 'The penultimate not be empty');
+        LibraryAssert.AreEqual(ExpectedPenultimateDateTime, UserLogin."Penultimate Login Date", 'The penultimate is not correct');
         LibraryAssert.AreNotEqual(0DT, UserLogin."Last Login Date", 'The last login date not be empty');
 
         // [THEN] The User Environment Login table should contain a single record (the one for the current test user)

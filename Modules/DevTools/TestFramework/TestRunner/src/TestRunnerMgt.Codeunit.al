@@ -82,14 +82,14 @@ codeunit 130454 "Test Runner - Mgt"
             exit(true);
         end;
 
-        // Start permission mock if installed
-        StartStopPermissionMock();
-
         if not GetTestFunction(TestMethodLineFunction, FunctionName, TestSuite, CodeunitID, LineNoTestFilter) then
             exit(false);
 
         if not TestMethodLineFunction.Run then
             exit(false);
+
+        // Start permission mock if installed
+        StartStopPermissionMock();
 
         SetStartTimeOnTestLine(TestMethodLineFunction);
         OnBeforeTestMethodRun(TestMethodLineFunction, CodeunitID, CodeunitName, FunctionName, FunctionTestPermissions);

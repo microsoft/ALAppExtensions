@@ -87,6 +87,7 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
         {
             group("Foreign Trade")
             {
+                Caption = 'Foreign Trade';
                 field("Language Code CZL"; Rec."Language Code")
                 {
                     ApplicationArea = Basic, Suite;

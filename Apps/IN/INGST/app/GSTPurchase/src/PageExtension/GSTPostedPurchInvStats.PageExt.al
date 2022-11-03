@@ -15,12 +15,27 @@ pageextension 18103 "GST Posted Purch. Inv Stats." extends "Purchase Invoice Sta
     }
 
     trigger OnAfterGetRecord()
-    var
-        GSTStatistics: Codeunit "GST Statistics";
     begin
-        GSTStatistics.GetStatisticsPostedPurchInvAmount(Rec, GSTAmount);
+        FormatLine();
+    end;
+
+    local procedure GetGSTAmount()
+    var
+        GSTStatsManagement: Codeunit "GST Stats Management";
+    begin
+        GSTAmount := GSTStatsManagement.GetGstStatsAmount();
+        Calculated := true;
+        GSTStatsManagement.ClearSessionVariable();
+    end;
+
+    local procedure FormatLine()
+    begin
+        if not Calculated then
+            GetGSTAmount();
     end;
 
     var
+
         GSTAmount: Decimal;
+        Calculated: Boolean;
 }

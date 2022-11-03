@@ -38,38 +38,25 @@ codeunit 3916 "Reten. Pol. Delete. Impl." implements "Reten. Pol. Deleting"
         RetentionPolicyLog: Codeunit "Retention Policy Log";
     begin
         RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(LimitNumberOfRecordsLbl, RecordRef.Number, RecordRef.Caption, MaxNumberOfRecordsToDelete, TotalMaxNumberOfRecordsToDelete, TotalMaxNumberOfRecordsToDelete - MaxNumberOfRecordsToDelete));
-
-        if RecordRef.MarkedOnly() then
-            UnmarkRecordsToLimit(RecordRef, MaxNumberOfRecordsToDelete)
-        else
-            MarkRecordsToLimit(RecordRef, MaxNumberOfRecordsToDelete);
-
+        FilterRecordsToLimit(RecordRef, MaxNumberOfRecordsToDelete);
         SkipOnApplyRetentionPolicyRecordLimitExceeded := false;
     end;
 
-    local procedure UnmarkRecordsToLimit(var RecordRef: RecordRef; StartRecordIndex: Integer)
-    begin
-        RecordRef.FindSet();
-        RecordRef.Next(StartRecordIndex);
-        RecordRef.MarkedOnly(false);
-        repeat
-            RecordRef.Mark(false);
-        until RecordRef.Next() = 0;
-        RecordRef.MarkedOnly(true);
-    end;
-
-    local procedure MarkRecordsToLimit(var RecordRef: RecordRef; RecordCount: Integer)
+    local procedure FilterRecordsToLimit(var RecordRef: RecordRef; StartRecordIndex: Integer)
     var
+        FieldRef: FieldRef;
+        KeyRef: KeyRef;
         i: integer;
     begin
         RecordRef.FindSet();
-        repeat
-            RecordRef.Mark(true);
+        RecordRef.Next(StartRecordIndex);
+
+        KeyRef := RecordRef.KeyIndex(RecordRef.CurrentKeyIndex());
+        for i := 1 to KeyRef.FieldCount() do begin
+            FieldRef := KeyRef.FieldIndex(i);
+            FieldRef.SetFilter('<%1', FieldRef.Value);
             i += 1;
-            if RecordRef.Next() = 0 then
-                i := RecordCount;
-        until i >= RecordCount;
-        RecordRef.MarkedOnly(true);
+        end;
     end;
 
     local procedure NumberOfRecordsToDeleteBuffer(): Integer

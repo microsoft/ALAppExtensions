@@ -19,5 +19,18 @@ pageextension 31215 "Reconciliation CZL" extends Reconciliation
                 ToolTip = 'Specifies the account no. that is being reconciled.';
             }
         }
+        addlast(Control6)
+        {
+            field("Net Change in Jnl. Curr. CZL"; Rec."Net Change in Jnl. Curr. CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the Net Change in Journal (in Currency).';
+            }
+            field("Balance after Posting Curr.CZL"; Rec."Balance after Posting Curr.CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the Balance after Posting (in Currency).';
+            }
+        }
     }
 }

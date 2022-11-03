@@ -18,10 +18,13 @@ codeunit 1697 "Setup Bank Deposit Reports"
     end;
 
     internal procedure InsertSetupData()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         if IsSetupCompleted() then
             exit;
 
+        FeatureTelemetry.LogUptake('0000IG6', 'Bank Deposit', Enum::"Feature Uptake Status"::"Set up");
         SetupNumberSeries();
         SetupJournalTemplateAndBatch();
         SetupReportSelections();

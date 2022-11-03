@@ -122,7 +122,7 @@ codeunit 139507 "Test Data Search"
         VerifyTableCaptionForTable(Database::"Purchase Line", PurchaseDocumentType::Quote.AsInteger(), Page::"Purchase Quotes");
         VerifyTableCaptionForTable(Database::"Purchase Line", PurchaseDocumentType::Order.AsInteger(), Page::"Purchase Orders");
         VerifyTableCaptionForTable(Database::"Service Header", ServiceDocumentType::"Order".AsInteger(), Page::"Service Orders");
-        VerifyTableCaptionForTable(Database::"Service Line", ServiceDocumentType::Invoice.AsInteger(), Page::"Service Invoices");
+        VerifyTableCaptionForTable(Database::"Service Item Line", ServiceDocumentType::Invoice.AsInteger(), Page::"Service Invoices");
     end;
 
     local procedure VerifyTableCaptionForTable(TableNo: Integer; TableSubType: Integer; PageNo: Integer)
@@ -140,7 +140,7 @@ codeunit 139507 "Test Data Search"
         if TableNo in
             [Database::"Sales Line", Database::"Sales Invoice Line", Database::"Sales Shipment Line", Database::"Sales Cr.Memo Line",
              Database::"Purchase Line", Database::"Purch. Inv. Line", Database::"Purch. Rcpt. Line", Database::"Purch. Cr. Memo Line",
-             Database::"Service Line", Database::"Service Invoice Line", Database::"Service Cr.Memo Line"]
+             Database::"Service Item Line", Database::"Service Invoice Line", Database::"Service Cr.Memo Line"]
         then
             ExpectedCaption += ' - ' + 'lines';
 

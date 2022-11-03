@@ -14,13 +14,28 @@ pageextension 18102 "GST Purchase Invoice Stats." extends "Purchase Statistics"
         }
     }
 
-    trigger OnAfterGetRecord()
-    var
-        GSTStatistics: Codeunit "GST Statistics";
+     trigger OnAfterGetRecord()
     begin
-        GSTStatistics.GetPurchaseStatisticsAmount(Rec, GSTAmount);
+        FormatLine();
+    end;
+
+    local procedure GetGSTAmount()
+    var
+        GSTStatsManagement: Codeunit "GST Stats Management";
+    begin
+        GSTAmount := GSTStatsManagement.GetGstStatsAmount();
+        Calculated := true;
+        GSTStatsManagement.ClearSessionVariable();
+    end;
+
+    local procedure FormatLine()
+    begin
+        if not Calculated then
+            GetGSTAmount();
     end;
 
     var
+
         GSTAmount: Decimal;
+        Calculated: Boolean;
 }

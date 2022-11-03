@@ -15,12 +15,27 @@ pageextension 18166 "GST Posted Sales Cr Memo Stats" extends "Sales Credit Memo 
     }
 
     trigger OnAfterGetRecord()
-    var
-        GSTStatistics: Codeunit "GST Statistics";
     begin
-        GSTStatistics.GetStatisticsPostedSalesCrMemoAmount(Rec, GSTAmount);
+        FormatLine();
+    end;
+
+    local procedure GetGSTAmount()
+    var
+        GSTStatsManagement: Codeunit "GST Stats Management";
+    begin
+        GSTAmount := GSTStatsManagement.GetGstStatsAmount();
+        Calculated := true;
+        GSTStatsManagement.ClearSessionVariable();
+    end;
+
+    local procedure FormatLine()
+    begin
+        if not Calculated then
+            GetGSTAmount();
     end;
 
     var
+
         GSTAmount: Decimal;
+        Calculated: Boolean;
 }

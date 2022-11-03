@@ -321,20 +321,95 @@ codeunit 9988 "Word Template Impl."
         end;
     end;
 
-    [TryFunction]
-    local procedure TryMailMergeExecute(var DataDictionary: Dictionary of [Text, Text]; SaveFormat: Enum "Word Templates Save Format"; var Output: OutStream)
+    procedure Merge(SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format")
     var
-        GenericDictionary: DotNet GenericDictionary2;
-        MergeField: Text;
+        MailMergeFilterPageBuilder: FilterPageBuilder;
+        RecordRef: RecordRef;
+        FilterView: Text;
     begin
-        GenericDictionary := GenericDictionary.Dictionary();
-        foreach MergeField in DataDictionary.Keys do
-            GenericDictionary.Add(MergeField, DataDictionary.Get(MergeField));
+        MultipleDocuments := SplitDocument;
+        RecordRef.Open(WordTemplate."Table ID");
 
-        MailMerge.Execute(GenericDictionary, SaveFormat.AsInteger(), Output);
+        if Confirm(SpecifyFiltersQst) then begin
+            MailMergeFilterPageBuilder.AddTable(RecordRef.Caption(), RecordRef.Number());
+            MailMergeFilterPageBuilder.PageCaption(StrSubstNo(FilterPageBuilderCaptionLbl, RecordRef.Caption()));
+            MailMergeFilterPageBuilder.RunModal();
+
+            FilterView := MailMergeFilterPageBuilder.GetView(RecordRef.Caption(), false);
+            RecordRef.SetView(FilterView);
+        end;
+
+        Merge(RecordRef, SplitDocument, SaveFormat);
+        RecordRef.Close();
     end;
 
-    procedure Merge(Data: InStream; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format")
+    procedure Merge(RecordVariant: Variant; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format")
+    begin
+        if not RecordVariant.IsRecord() and not RecordVariant.IsRecordRef() then
+            Error(NotARecordErr);
+        MultipleDocuments := SplitDocument;
+        if SplitDocument then
+            MergeSplitDocument(RecordVariant, SaveFormat)
+        else
+            MergeOneDocument(RecordVariant, SaveFormat);
+    end;
+
+    // Merges each record separately into individual documents and puts them into a zip.
+    local procedure MergeSplitDocument(RecordVariant: Variant; SaveFormat: Enum "Word Templates Save Format")
+    var
+        DataCompression: Codeunit "Data Compression";
+        RecordRef: RecordRef;
+        FieldRef: FieldRef;
+        PrimaryKey: KeyRef;
+        InStream: InStream;
+        OutStream: OutStream;
+        EntryName: Text;
+        Index: Integer;
+        DataTable: DotNet DataTable;
+    begin
+        RecordRef.GetTable(RecordVariant);
+        DataCompression.CreateZipArchive();
+
+        if RecordRef.FindSet() then
+            repeat
+                CreateDataTable(DataTable);
+                FillDataTable(RecordRef, true, DataTable); // Adding columns
+                FillDataTable(RecordRef, false, DataTable); // Adding rows
+                ExecuteMerge(DataTable, true, SaveFormat);
+                GetDocument(InStream);
+                EntryName := RecordRef.Name();
+                PrimaryKey := RecordRef.KeyIndex(1);
+                for Index := 1 to PrimaryKey.FieldCount() do begin
+                    FieldRef := PrimaryKey.FieldIndex(Index);
+                    EntryName := EntryName + '_' + Format(FieldRef.Value);
+                end;
+                DataCompression.AddEntry(InStream, GetFileName(EntryName, SaveFormat));
+                ReloadWordTemplate();
+            until RecordRef.Next() = 0;
+
+        Clear(ResultTempBlob);
+        ResultTempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
+        DataCompression.SaveZipArchive(OutStream);
+    end;
+
+    local procedure MergeOneDocument(RecordVariant: Variant; SaveFormat: Enum "Word Templates Save Format")
+    var
+        RecordRef: RecordRef;
+        DataTable: DotNet DataTable;
+    begin
+        RecordRef.GetTable(RecordVariant);
+
+        CreateDataTable(DataTable);
+        FillDataTable(RecordRef, true, DataTable); // Adding columns
+        if RecordRef.FindSet() then
+            repeat
+                FillDataTable(RecordRef, false, DataTable); // Adding rows
+            until RecordRef.Next() = 0;
+
+        ExecuteMerge(DataTable, false, SaveFormat);
+    end;
+
+    local procedure ExecuteMerge(var Data: DotNet DataTable; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format")
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         CustomDimensions: Dictionary of [Text, Text];
@@ -362,76 +437,22 @@ codeunit 9988 "Word Template Impl."
     end;
 
     [TryFunction]
-    local procedure TryMailMergeExecute(Data: InStream; SaveFormat: Enum "Word Templates Save Format"; var Output: OutStream)
+    local procedure TryMailMergeExecute(var Data: DotNet DataTable; SaveFormat: Enum "Word Templates Save Format"; var Output: OutStream)
     begin
         MailMerge.Execute(Data, SaveFormat.AsInteger(), Output);
     end;
 
-    procedure Merge(RecordVariant: Variant; SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format")
-    begin
-        if not RecordVariant.IsRecord() and not RecordVariant.IsRecordRef() then
-            Error(NotARecordErr);
-        MultipleDocuments := SplitDocument;
-        if SplitDocument then
-            MergeSplitDocument(RecordVariant, SaveFormat)
-        else
-            MergeOneDocument(RecordVariant, SaveFormat);
-    end;
-
-    // Merges each record separately into individual documents and puts them into a zip.
-    local procedure MergeSplitDocument(RecordVariant: Variant; SaveFormat: Enum "Word Templates Save Format")
+    [TryFunction]
+    local procedure TryMailMergeExecute(var DataDictionary: Dictionary of [Text, Text]; SaveFormat: Enum "Word Templates Save Format"; var Output: OutStream)
     var
-        DataCompression: Codeunit "Data Compression";
-        RecordRef: RecordRef;
-        FieldRef: FieldRef;
-        PrimaryKey: KeyRef;
-        InStream: InStream;
-        OutStream: OutStream;
-        EntryName: Text;
-        Index: Integer;
-        Data: Dictionary of [Text, Text];
+        GenericDictionary: DotNet GenericDictionary2;
+        MergeField: Text;
     begin
-        RecordRef.GetTable(RecordVariant);
-        DataCompression.CreateZipArchive();
+        GenericDictionary := GenericDictionary.Dictionary();
+        foreach MergeField in DataDictionary.Keys do
+            GenericDictionary.Add(MergeField, DataDictionary.Get(MergeField));
 
-        if RecordRef.FindSet() then
-            repeat
-                WriteDataDict(RecordRef, Data);
-                Merge(Data, true, SaveFormat);
-                GetDocument(InStream);
-                EntryName := RecordRef.Name();
-                PrimaryKey := RecordRef.KeyIndex(1);
-                for Index := 1 to PrimaryKey.FieldCount() do begin
-                    FieldRef := PrimaryKey.FieldIndex(Index);
-                    EntryName := EntryName + '_' + Format(FieldRef.Value);
-                end;
-                DataCompression.AddEntry(InStream, GetFileName(EntryName, SaveFormat));
-                ReloadWordTemplate();
-            until RecordRef.Next() = 0;
-
-        Clear(ResultTempBlob);
-        ResultTempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
-        DataCompression.SaveZipArchive(OutStream);
-    end;
-
-    local procedure MergeOneDocument(RecordVariant: Variant; SaveFormat: Enum "Word Templates Save Format")
-    var
-        Data: Codeunit "Temp Blob";
-        RecordRef: RecordRef;
-        Reader: InStream;
-        Writer: OutStream;
-    begin
-        RecordRef.GetTable(RecordVariant);
-        Data.CreateOutStream(Writer, TextEncoding::UTF8);
-
-        WriteDataStream(RecordRef, Writer, true);
-        if RecordRef.FindSet() then
-            repeat
-                WriteDataStream(RecordRef, Writer, false);
-            until RecordRef.Next() = 0;
-
-        Data.CreateInStream(Reader, TextEncoding::UTF8);
-        Merge(Reader, false, SaveFormat);
+        MailMerge.Execute(GenericDictionary, SaveFormat.AsInteger(), Output);
     end;
 
     local procedure GetFileName(Name: Text; SaveFormat: Enum "Word Templates Save Format"): Text
@@ -450,28 +471,6 @@ codeunit 9988 "Word Template Impl."
             else
                 Error(NotAValidSaveFormatErr);
         end;
-    end;
-
-    procedure Merge(SplitDocument: Boolean; SaveFormat: Enum "Word Templates Save Format")
-    var
-        MailMergeFilterPageBuilder: FilterPageBuilder;
-        RecordRef: RecordRef;
-        FilterView: Text;
-    begin
-        MultipleDocuments := SplitDocument;
-        RecordRef.Open(WordTemplate."Table ID");
-
-        if Confirm(SpecifyFiltersQst) then begin
-            MailMergeFilterPageBuilder.AddTable(RecordRef.Caption(), RecordRef.Number());
-            MailMergeFilterPageBuilder.PageCaption(StrSubstNo(FilterPageBuilderCaptionLbl, RecordRef.Caption()));
-            MailMergeFilterPageBuilder.RunModal();
-
-            FilterView := MailMergeFilterPageBuilder.GetView(RecordRef.Caption(), false);
-            RecordRef.SetView(FilterView);
-        end;
-
-        Merge(RecordRef, SplitDocument, SaveFormat);
-        RecordRef.Close();
     end;
 
     procedure SetFiltersOnRecord(var RecordRef: RecordRef)
@@ -786,13 +785,22 @@ codeunit 9988 "Word Template Impl."
             until FieldRec.Next() = 0;
     end;
 
+    local procedure CreateDataTable(var DataTable: DotNet DataTable)
+    var
+        DotNetCultureInfo: DotNet CultureInfo;
+    begin
+        DataTable := DataTable.DataTable('DataTable');
+        DotNetCultureInfo := DotNetCultureInfo.CultureInfo(WindowsLanguage);
+        DataTable.Locale := DotNetCultureInfo.CurrentCulture;
+    end;
 
-    local procedure WriteDataStream(RecordRef: RecordRef; OutStream: OutStream; WriteNames: Boolean)
+    local procedure FillDataTable(RecordRef: RecordRef; WriteColumns: Boolean; var DataTable: DotNet DataTable)
     var
         RelatedTable: Record "Word Templates Related Table";
         RecordRefRelated: RecordRef;
     begin
-        WriteDataStream(RecordRef, OutStream, WriteNames, '');
+        RowsArrayList := RowsArrayList.ArrayList();
+        AddRecordRefToDataTable(RecordRef, WriteColumns, '', DataTable);
 
         RelatedTable.SetRange(Code, WordTemplate.Code);
         if RelatedTable.FindSet() then
@@ -800,17 +808,42 @@ codeunit 9988 "Word Template Impl."
                 Clear(RecordRefRelated);
                 RecordRefRelated.Open(RelatedTable."Related Table ID");
 
-                if WriteNames then begin
-                    OutStream.WriteText('|');
-                    WriteDataStream(RecordRefRelated, Outstream, WriteNames, StrSubstNo(PrependPatternTxt, RelatedTable."Related Table Code"));
-                end else
-                    if GetRelatedRecord(RecordRefRelated, RecordRef.Field(RelatedTable."Field No.").Value()) then begin
-                        OutStream.WriteText('|');
-                        WriteDataStream(RecordRefRelated, Outstream, WriteNames, '')
-                    end
+                if WriteColumns then
+                    AddRecordRefToDataTable(RecordRefRelated, WriteColumns, StrSubstNo(PrependPatternTxt, RelatedTable."Related Table Code"), DataTable)
+                else
+                    if GetRelatedRecord(RecordRefRelated, RecordRef.Field(RelatedTable."Field No.").Value()) then
+                        AddRecordRefToDataTable(RecordRefRelated, WriteColumns, '', DataTable)
 
             until RelatedTable.Next() = 0;
-        OutStream.WriteText();
+
+        if not WriteColumns then
+            DataTable.Rows.Add(RowsArrayList.ToArray());
+    end;
+
+    local procedure AddRecordRefToDataTable(RecordRef: RecordRef; WriteColumns: Boolean; PrependValue: Text; var DataTable: DotNet DataTable)
+    var
+        FieldRef: FieldRef;
+        MailMergeFieldsCount: Dictionary of [Text, Integer];
+        Field: Integer;
+        Counter: Integer;
+        AppendValue: Text;
+    begin
+        for Field := 1 to RecordRef.FieldCount() do begin
+            FieldRef := RecordRef.FieldIndex(Field);
+            if (FieldRef.Class <> FieldClass::FlowFilter) and not (FieldRef.Type in [FieldRef.Type::Blob,
+                                                                                     FieldRef.Type::MediaSet,
+                                                                                     FieldRef.Type::TableFilter,
+                                                                                     FieldRef.Type::Media,
+                                                                                     FieldRef.Type::RecordId]) then begin
+                if FieldRef.Class = FieldClass::FlowField then
+                    FieldRef.CalcField();
+                if WriteColumns then begin
+                    AppendValue := GetAppendValue(FieldRef.Caption(), Counter, MailMergeFieldsCount);
+                    DataTable.Columns.Add(StrSubstNo(MergeFieldTok, PrependValue, FieldRef.Caption(), AppendValue));
+                end else
+                    RowsArrayList.Add(Format(FieldRef.Value()));
+            end;
+        end;
     end;
 
     internal procedure GetRelatedRecord(var RelatedRecord: RecordRef; Reference: Variant) Found: Boolean
@@ -854,74 +887,6 @@ codeunit 9988 "Word Template Impl."
 
         FieldRef.SetRange(ReferenceVariant);
         exit(RecordRef.FindFirst());
-    end;
-
-    local procedure WriteDataStream(RecordRef: RecordRef; OutStream: OutStream; WriteNames: Boolean; PrependValue: Text)
-    var
-        FieldRef: FieldRef;
-        MailMergeFieldsCount: Dictionary of [Text, Integer];
-        Field: Integer;
-        Counter: Integer;
-        AppendValue: Text;
-    begin
-        for Field := 1 to RecordRef.FieldCount() do begin
-            FieldRef := RecordRef.FieldIndex(Field);
-            if (FieldRef.Class <> FieldClass::FlowFilter) and not (FieldRef.Type in [FieldRef.Type::Blob,
-                                                                                     FieldRef.Type::MediaSet,
-                                                                                     FieldRef.Type::TableFilter,
-                                                                                     FieldRef.Type::Media,
-                                                                                     FieldRef.Type::RecordId]) then begin
-                if FieldRef.Class = FieldClass::FlowField then
-                    FieldRef.CalcField();
-                if WriteNames then begin
-                    AppendValue := GetAppendValue(FieldRef.Caption(), Counter, MailMergeFieldsCount);
-                    OutStream.WriteText(StrSubstNo(MergeFieldTok, PrependValue, FieldRef.Caption(), AppendValue));
-                end else
-                    OutStream.WriteText(Format(FieldRef.Value()));
-                if Field < RecordRef.FieldCount() then
-                    OutStream.WriteText('|');
-            end;
-        end;
-    end;
-
-    local procedure WriteDataDict(RecordRef: RecordRef; var Data: Dictionary of [Text, Text])
-    var
-        RelatedTable: Record "Word Templates Related Table";
-        RecordRefRelated: RecordRef;
-    begin
-        WriteDataDict(RecordRef, Data, '');
-
-        RelatedTable.SetRange(Code, WordTemplate.Code);
-        if RelatedTable.FindSet() then
-            repeat
-                RecordRefRelated.Open(RelatedTable."Related Table ID");
-                if GetRelatedRecord(RecordRefRelated, RecordRef.Field(RelatedTable."Field No.").Value()) then
-                    WriteDataDict(RecordRefRelated, Data, StrSubstNo(PrependPatternTxt, RelatedTable."Related Table Code"));
-                RecordRefRelated.Close();
-            until RelatedTable.Next() = 0;
-    end;
-
-    local procedure WriteDataDict(RecordRef: RecordRef; var Data: Dictionary of [Text, Text]; PrependValue: Text)
-    var
-        FieldRef: FieldRef;
-        MailMergeFieldsCount: Dictionary of [Text, Integer];
-        Field: Integer;
-        Counter: Integer;
-        AppendValue: Text;
-    begin
-        for Field := 1 to RecordRef.FieldCount() do begin
-            FieldRef := RecordRef.FieldIndex(Field);
-            if (FieldRef.Class <> FieldClass::FlowFilter) and not (FieldRef.Type in [FieldRef.Type::Blob,
-                                                                                     FieldRef.Type::MediaSet,
-                                                                                     FieldRef.Type::TableFilter,
-                                                                                     FieldRef.Type::Media,
-                                                                                     FieldRef.Type::RecordId]) then begin
-                if FieldRef.Class = FieldClass::FlowField then
-                    FieldRef.CalcField();
-                AppendValue := GetAppendValue(FieldRef.Caption(), Counter, MailMergeFieldsCount);
-                Data.Set(StrSubstNo(MergeFieldTok, PrependValue, FieldRef.Caption(), AppendValue), Format(FieldRef.Value()));
-            end;
-        end;
     end;
 
     procedure GetMergeFields(var Value: List of [Text])
@@ -1067,6 +1032,7 @@ codeunit 9988 "Word Template Impl."
         ResultTempBlob: Codeunit "Temp Blob";
         TemplateTempBlob: Codeunit "Temp Blob";
         ZipFileTempBlob: Codeunit "Temp Blob";
+        RowsArrayList: DotNet ArrayList;
         MailMerge: DotNet MailMerge;
         MergeFields: List of [Text];
         ChosenFormat: Enum "Word Templates Save Format";

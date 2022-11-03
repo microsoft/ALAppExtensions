@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-pageextension 134686 "Email Editor Ext" extends "Email Editor"
+pageextension 134487 "Email Editor Ext" extends "Email Editor"
 {
     trigger OnOpenPage()
     var

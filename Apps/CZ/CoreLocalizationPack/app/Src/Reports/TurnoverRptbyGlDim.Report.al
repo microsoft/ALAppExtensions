@@ -304,10 +304,6 @@ report 11720 "Turnover Rpt. by Gl. Dim. CZL"
                 }
             }
         }
-        trigger OnOpenPage()
-        begin
-            Detail := Detail::Empty;
-        end;
     }
     trigger OnPreReport()
     begin
