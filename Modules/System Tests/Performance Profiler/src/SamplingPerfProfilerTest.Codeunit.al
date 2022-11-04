@@ -177,5 +177,60 @@ codeunit 135013 "Sampling Perf. Profiler Test"
 
         PerfProfilerTestLibrary.ClearData();
     end;
-}
 
+    [Test]
+    procedure GetProfilingCallTreeWithMultipleChildNodes()
+    var
+        ProfilingNode: Record "Profiling Node";
+    begin
+        // [SCENARIO] GetProfilingCallTree with multiple child nodes belonging to the same parent node
+
+        // [GIVEN] Initialize the profiler with the profile data containing multiple child nodes 
+        PerfProfilerTestLibrary.Initialize(PerfProfilerTestLibrary.GetPerformanceProfileWithMultipleChildNodes());
+
+        // [WHEN] Call GetProfilingCallTree
+        SamplingPerformanceProfiler.GetProfilingCallTree(ProfilingNode);
+
+        // [THEN] Call tree is propoerly aligned: 3 nodes are at the indentation level 1, 3 nodes at level 3
+        ProfilingNode.SetRange(Indentation, 1);
+        Assert.AreEqual(3, ProfilingNode.Count(), ProfilingNodeCountErr);
+
+        ProfilingNode.FindSet();
+        VerifyProfilingNode(ProfilingNode, 'TestNode2FunctionName', 0, 219, 1);
+
+        ProfilingNode.Next();
+        VerifyProfilingNode(ProfilingNode, 'TestNode5FunctionName', 210, 210, 2);
+
+        ProfilingNode.Next();
+        VerifyProfilingNode(ProfilingNode, 'TestNode7FunctionName', 0, 429, 1);
+
+        ProfilingNode.SetRange(Indentation, 3);
+        Assert.AreEqual(3, ProfilingNode.Count(), ProfilingNodeCountErr);
+
+        ProfilingNode.FindSet();
+        VerifyProfilingNode(ProfilingNode, 'TestNode4FunctionName', 0, 0, 1);
+
+        ProfilingNode.Next();
+        VerifyProfilingNode(ProfilingNode, 'TestNode5FunctionName', 219, 219, 2);
+
+        ProfilingNode.Next();
+        VerifyProfilingNode(ProfilingNode, 'TestNode9FunctionName', 0, 0, 1);
+
+        ProfilingNode.SetRange(Indentation, 3);
+        Assert.AreEqual(3, ProfilingNode.Count(), ProfilingNodeCountErr);
+
+        PerfProfilerTestLibrary.ClearData();
+    end;
+
+    local procedure VerifyProfilingNode(ProfilingNode: Record "Profiling Node"; MethodName: Text; SelfTime: Duration; FullTime: Duration; HitCount: Integer)
+    begin
+        Assert.AreEqual(MethodName, ProfilingNode."Method Name", ProfilingNodeNotMatchErr);
+        Assert.AreEqual(SelfTime, ProfilingNode."Self Time", ProfilingNodeNotMatchErr);
+        Assert.AreEqual(FullTime, ProfilingNode."Full Time", ProfilingNodeNotMatchErr);
+        Assert.AreEqual(HitCount, ProfilingNode."Hit Count", ProfilingNodeNotMatchErr);
+    end;
+
+    var
+        ProfilingNodeCountErr: Label 'The number of profiling nodes does not match the expected value.';
+        ProfilingNodeNotMatchErr: Label 'Profiling node does not match the expected value.';
+}
