@@ -471,9 +471,9 @@ codeunit 1279 "Cryptography Management Impl."
         exit(VerifyData(DataInStream, XmlString, HashAlgorithm, SignatureInStream));
     end;
     
-    procedure VerifyData(InputString: Text; SignatureKey: Codeunit "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream)
+    procedure VerifyData(InputString: Text; SignatureKey: Codeunit "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
     begin
-        VerifyData(InputString, SignatureKey.ToXmlString(), HashAlgorithm, SignatureInStream);
+        exit(VerifyData(InputString, SignatureKey.ToXmlString(), HashAlgorithm, SignatureInStream));
     end;
 
 #if not CLEAN19
@@ -521,9 +521,9 @@ codeunit 1279 "Cryptography Management Impl."
         exit(ISignatureAlgorithm.VerifyData(DataInStream, HashAlgorithm, SignatureInStream));
     end;
     
-    procedure VerifyData(DataInStream: InStream; SignatureKey: Codeunit "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream)
+    procedure VerifyData(DataInStream: InStream; SignatureKey: Codeunit "Signature Key"; HashAlgorithm: Enum "Hash Algorithm"; SignatureInStream: InStream): Boolean
     begin
-        VerifyData(DataInStream, SignatureKey.ToXmlString(), HashAlgorithm, SignatureInStream);
+        exit(VerifyData(DataInStream, SignatureKey.ToXmlString(), HashAlgorithm, SignatureInStream));
     end;
 
 #if not CLEAN19
