@@ -1,4 +1,4 @@
-﻿name: Test Current
+﻿name: ' Test Current'
 
 on:
   workflow_dispatch:
@@ -13,28 +13,71 @@ defaults:
 jobs:
   Initialization:
     runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    env:
+      workflowDepth: 1
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
       settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
       projects: ${{ steps.ReadSettings.outputs.ProjectsJson }}
       projectCount: ${{ steps.ReadSettings.outputs.ProjectCount }}
       githubRunner: ${{ steps.ReadSettings.outputs.GitHubRunnerJson }}
+      projectDependenciesJson: ${{ steps.ReadSettings.outputs.ProjectDependenciesJson }}
+      buildOrderJson: ${{ steps.ReadSettings.outputs.BuildOrderJson }}
+      buildOrderDepth: ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.0
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.1
         with:
           eventId: "DO0101"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.1
         with:
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           getProjects: 'Y'
+
+      - name: Determine Build Order
+        if: env.WorkflowDepth > 1
+        id: BuildOrder
+        run: |
+          $ErrorActionPreference = "STOP"
+          $projects = '${{ steps.ReadSettings.outputs.ProjectsJson }}' | ConvertFrom-Json
+          $buildOrder = '${{ steps.ReadSettings.outputs.BuildOrderJson }}' | ConvertFrom-Json
+          $depth = ${{ steps.ReadSettings.outputs.BuildOrderDepth }}
+          $workflowDepth = ${{ steps.ReadSettings.outputs.WorkflowDepth }}
+          if ($depth -lt $workflowDepth) {
+            Write-Host "::Error::Project Dependencies depth is $depth. Workflow is only setup for $workflowDepth. You need to Run Update AL-Go System Files to update the workflows"
+            $host.SetShouldExit(1)
+          }
+          $step = $depth
+          $depth..1 | ForEach-Object {
+            $ps = @($buildOrder."$_" | Where-Object { $projects -contains $_ })
+            if ($ps.Count -eq 1) {
+              $projectsJSon = "[$($ps | ConvertTo-Json -compress)]"
+            }
+            else {
+              $projectsJSon = $ps | ConvertTo-Json -compress
+            }
+            if ($ps.Count -gt 0) {
+              Add-Content -Path $env:GITHUB_OUTPUT -Value "Projects$($step)Json=$projectsJson"
+              Add-Content -Path $env:GITHUB_OUTPUT -Value "Projects$($step)Count=$($ps.count)"
+              Write-Host "Projects$($step)Json=$projectsJson"
+              Write-Host "Projects$($step)Count=$($ps.count)"
+              $step--
+            }
+          }
+          while ($step -ge 1) {
+              Add-Content -Path $env:GITHUB_OUTPUT -Value "Projects$($step)Json="
+              Add-Content -Path $env:GITHUB_OUTPUT -Value "Projects$($step)Count=0"
+              Write-Host "Projects$($step)Json="
+              Write-Host "Projects$($step)Count=0"
+              $step--
+          }
 
   Build:
     needs: [ Initialization ]
@@ -51,28 +94,34 @@ jobs:
       BuildOutputArtifactsName: ${{ steps.calculateArtifactNames.outputs.BuildOutputArtifactsName }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: '${{ github.workspace }}\.dependencies'
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.1
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.0
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.1
         env:
           secrets: ${{ toJson(secrets) }}
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           settingsJson: ${{ env.Settings }}
-          secrets: 'licenseFileUrl,insiderSasToken,CodeSignCertificateUrl,CodeSignCertificatePassword,KeyVaultCertificateUrl,KeyVaultCertificatePassword,KeyVaultClientId'
+          secrets: 'licenseFileUrl,insiderSasToken,CodeSignCertificateUrl,CodeSignCertificatePassword,KeyVaultCertificateUrl,KeyVaultCertificatePassword,KeyVaultClientId,GitHubPackagesContext'
 
       - name: Run pipeline
-        uses: microsoft/AL-Go-Actions/RunPipeline@v2.0
+        uses: microsoft/AL-Go-Actions/RunPipeline@v2.1
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           Project: ${{ matrix.project }}
+          ProjectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
           settingsJson: ${{ env.Settings }}
           SecretsJson: ${{ env.RepoSecrets }}
 
@@ -80,18 +129,19 @@ jobs:
         id: calculateArtifactNames
         if: success() || failure()
         run: |
+          $ErrorActionPreference = "STOP"
           $settings = '${{ env.Settings }}' | ConvertFrom-Json
           $project = '${{ matrix.project }}'
           if ($project -eq ".") { $project = $settings.RepoName }
           'TestResults','BcptTestResults','BuildOutput' | ForEach-Object {
             $name = "$($_)ArtifactsName"
             $value = "$($project.Replace('\','_'))-$_-Current-$([DateTime]::UtcNow.ToString('yyyyMMdd'))"
-            Write-Host "::set-output name=$name::$value"
+            Add-Content -Path $env:GITHUB_OUTPUT -Value "$name=$value"
             Add-Content -Path $env:GITHUB_ENV -Value "$name=$value"
           }
 
       - name: Publish artifacts - build output
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
         with:
           name: ${{ env.buildOutputArtifactsName }}
@@ -99,7 +149,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish artifacts - test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',matrix.project)) != '')
         with:
           name: ${{ env.testResultsArtifactsName }}
@@ -107,16 +157,24 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish artifacts - bcpt test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: (success() || failure()) && (hashFiles(format('{0}/bcptTestResults.json',matrix.project)) != '')
         with:
           name: ${{ env.bcptTestResultsArtifactsName }}
           path: '${{ matrix.project }}/bcptTestResults.json'
           if-no-files-found: ignore
 
+      - name: Analyze Test Results
+        id: analyzeTestResults
+        if: success() || failure()
+        uses: microsoft/AL-Go-Actions/AnalyzeTests@v2.1
+        with:
+          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+          Project: ${{ matrix.project }}
+
       - name: Cleanup
         if: always()
-        uses: microsoft/AL-Go-Actions/PipelineCleanup@v2.0
+        uses: microsoft/AL-Go-Actions/PipelineCleanup@v2.1
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           Project: ${{ matrix.project }}
@@ -127,11 +185,11 @@ jobs:
     needs: [ Initialization, Build ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.0
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.1
         with:
           eventId: "DO0101"
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
