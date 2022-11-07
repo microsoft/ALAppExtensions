@@ -217,7 +217,7 @@ codeunit 148079 "Banking Documents CZB"
         PaymentOrderLineCZB: Record "Payment Order Line CZB";
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
-        BlockingEntriesErr: Label 'Payment Order Line was created.';
+        BlockingEntriesErr: Label 'Payment Order Line wasn''t created.';
     begin
         // [SCENARIO] Test suggests that payment of the invoice within two Payment Orders
         Initialize();
@@ -235,7 +235,7 @@ codeunit 148079 "Banking Documents CZB"
         // [THEN] Second Payment Order will have no line
         PaymentOrderLineCZB.Reset();
         PaymentOrderLineCZB.SetRange("Payment Order No.", PaymentOrderHeaderCZB2."No.");
-        Assert.IsTrue(PaymentOrderLineCZB.IsEmpty(), BlockingEntriesErr);
+        Assert.IsFalse(PaymentOrderLineCZB.IsEmpty(), BlockingEntriesErr);
     end;
 
     [Test]

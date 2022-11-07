@@ -847,10 +847,16 @@ codeunit 18466 "Subcontracting Post"
         SNInfoRequired: Boolean;
         LotInfoRequired: Boolean;
         CheckTrackingLine: Boolean;
+        IsHandled: Boolean;
         TrackingQtyHandled: Decimal;
         TrackingQtyToHandle: Decimal;
         QuantitySent: Decimal;
     begin
+        IsHandled := false;
+        OnBeforePostScrapAtVE(ProdOrder, ProdOrderLine, ProdOrderComp, PurchaseLine, IsHandled);
+        if IsHandled then
+            exit;
+
         CompanyInformation.Get();
         SourceCodeSetup.Get();
         SubOrderCompVend.SetRange("Document No.", Purchline2."Document No.");
@@ -1484,8 +1490,14 @@ codeunit 18466 "Subcontracting Post"
         AppDelChallan: Record "Applied Delivery Challan")
     var
         CopyItemLedgerEntry: Record "Item Ledger Entry";
+        IsHandled: Boolean;
         AvailableQty: Decimal;
     begin
+        IsHandled := false;
+        OnBeforeGetApplicationLines(ProdOrderComp, SubOrderCompVend, ItemLedgerEntry, TotalQtyToPost, AppDelChallan, IsHandled);
+        if IsHandled then
+            exit;
+
         ItemLedgerEntry.Reset();
         if AppDelChallan."Applies-to Entry" = 0 then begin
             ItemLedgerEntry.SetCurrentKey("Order Type", "Order No.", "Order Line No.", "Prod. Order Comp. Line No.", "Entry Type", "Location Code");
@@ -2513,6 +2525,27 @@ codeunit 18466 "Subcontracting Post"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforePostSubconCompCE(var ProdOrder: Record "Production Order"; var ProdOrderLine: Record "Prod. Order Line"; var ProdOrderComp: Record "Prod. Order Component"; var Purchline: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostScrapAtVE(
+        ProdOrder: Record "Production Order";
+        ProdOrderLine: Record "Prod. Order Line";
+        ProdOrderComp: Record "Prod. Order Component";
+        PurchaseLine: Record "Purchase Line";
+        var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetApplicationLines(
+        ProdOrderComp: Record "Prod. Order Component";
+        SubOrderCompVend: Record "Sub Order Comp. List Vend";
+        var ItemLedgerEntry: Record "Item Ledger Entry";
+        TotalQtyToPost: Decimal;
+        AppDelChallan: Record "Applied Delivery Challan";
+        var IsHandled: Boolean)
     begin
     end;
 }

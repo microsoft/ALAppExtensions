@@ -17,13 +17,6 @@ codeunit 4015 "Hybrid GP Wizard"
         exit(CopyStr(ProductNameTxt, 1, 250));
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductDescription', '', false, false)]
-    local procedure HandleGetHybridProductDescription(ProductId: Text; var ProductDescription: Text)
-    begin
-        if ProductId = ProductIdTxt then
-            ProductDescription := ProductDescriptionTxt;
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductType', '', false, false)]
     local procedure OnGetHybridProductType(var HybridProductType: Record "Hybrid Product Type")
     var
@@ -41,6 +34,7 @@ codeunit 4015 "Hybrid GP Wizard"
         end;
     end;
 
+#pragma warning disable AA0245
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductName', '', false, false)]
     local procedure HandleGetHybridProductName(ProductId: Text; var ProductName: Text)
     begin
@@ -58,6 +52,14 @@ codeunit 4015 "Hybrid GP Wizard"
 
         CompanyDataType := CompanyDataType::"Standard Data";
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductDescription', '', false, false)]
+    local procedure HandleGetHybridProductDescription(ProductId: Text; var ProductDescription: Text)
+    begin
+        if ProductId = ProductIdTxt then
+            ProductDescription := ProductDescriptionTxt;
+    end;
+#pragma warning restore AA0245  
 
     [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanMapCustomTables', '', false, false)]
     local procedure OnCanMapCustomTables(var Enabled: Boolean)
@@ -132,10 +134,14 @@ codeunit 4015 "Hybrid GP Wizard"
     local procedure OnResetAllCloudData()
     var
         GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         GPCompanyMigrationSettings.Reset();
         if GPCompanyMigrationSettings.FindSet() then
             GPCompanyMigrationSettings.ModifyAll(ProcessesAreRunning, false);
+
+        if not GPCompanyAdditionalSettings.IsEmpty() then
+            GPCompanyAdditionalSettings.DeleteAll();
     end;
 
     local procedure ProcessesAreRunning(): Boolean
@@ -151,18 +157,18 @@ codeunit 4015 "Hybrid GP Wizard"
         exit(true);
     end;
 
-    local procedure CanHandle(productId: Text): Boolean
+    local procedure CanHandle(SelectedProductId: Text): Boolean
     begin
-        exit(productId = ProductIdTxt);
+        exit(SelectedProductId = ProductIdTxt);
     end;
 
     procedure GetGPMigrationEnabled(): Boolean
     var
-        InteligentCloudSetup: Record "Intelligent Cloud Setup";
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
-        if not InteligentCloudSetup.Get() then
+        if not IntelligentCloudSetup.Get() then
             exit(false);
 
-        exit(CanHandle(InteligentCloudSetup."Product ID"));
+        exit(CanHandle(IntelligentCloudSetup."Product ID"));
     end;
 }

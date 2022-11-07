@@ -79,7 +79,7 @@ codeunit 2751 "Universal Print Document Ready"
         CopyStream(DocumentOutStream, DocumentInStream);
         Size := TempBlob.Length();
 
-        // https://docs.microsoft.com/en-us/graph/upload-data-to-upload-session
+        // https://go.microsoft.com/fwlink/?linkid=2206361
         // check the maximum bytes in any given request is less than 10 MB.
         if Size > MaximumRequestSizeInBytes() then begin
             if GuiAllowed() then

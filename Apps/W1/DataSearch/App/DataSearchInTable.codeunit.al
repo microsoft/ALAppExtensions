@@ -139,7 +139,13 @@ codeunit 2680 "Data Search in Table"
                 SetTypeFilterOnRecRef(RecRef, TableType, 1);
             Database::"Purchase Header", Database::"Purchase Line":
                 SetTypeFilterOnRecRef(RecRef, TableType, 1);
-            Database::"Service Header", Database::"Service Line":
+            Database::"Service Header",  Database::"Service Line":
+                SetTypeFilterOnRecRef(RecRef, TableType, 1);
+            Database::"Service Item Line":
+                SetTypeFilterOnRecRef(RecRef, TableType, 43);
+            Database::"Service Contract Header":
+                SetTypeFilterOnRecRef(RecRef, TableType, 2);
+            Database::"Service Contract Line":
                 SetTypeFilterOnRecRef(RecRef, TableType, 1);
         end;
 

@@ -348,7 +348,7 @@ codeunit 3903 "Retention Policy Setup Impl."
         end;
     end;
 
-    local procedure FindOrCreateRetentionPeriod(RetentionPeriodEnum: enum "Retention Period Enum"; RetPeriodCalc: DateFormula): Code[20]
+    procedure FindOrCreateRetentionPeriod(RetentionPeriodEnum: enum "Retention Period Enum"; RetPeriodCalc: DateFormula): Code[20]
     var
         RetentionPeriod: Record "Retention Period";
     begin
@@ -360,20 +360,34 @@ codeunit 3903 "Retention Policy Setup Impl."
             exit(RetentionPeriod.Code);
 
         // create
-        RetentionPeriod.Code := CopyStr(format(RetentionPeriodEnum), 1, MaxStrLen(RetentionPeriod.Code));
-        if RetentionPeriod.Get(RetentionPeriod.Code) then begin
-            // ensure a unique code
-            RetentionPeriod.Init();
-            RetentionPeriod.Code := CopyStr(format(RetentionPeriodEnum), 1, MaxStrLen(RetentionPeriod.Code) - 2) + '01';
-            While RetentionPeriod.Get(RetentionPeriod.Code) do
-                RetentionPeriod.Code := IncStr(RetentionPeriod.Code);
-        end;
+        RetentionPeriod.Code := CreateUniqueRetentionPeriodCode(RetentionPeriodEnum);
         RetentionPeriod.Description := CopyStr(format(RetentionPeriodEnum), 1, MaxStrLen(RetentionPeriod.Description));
         RetentionPeriod.validate("Retention Period", RetentionPeriodEnum);
         if RetentionPeriod."Retention Period" = RetentionPeriod."Retention Period"::Custom then
             RetentionPeriod.validate("Ret. Period Calculation", RetPeriodCalc);
         RetentionPeriod.Insert(true);
         exit(RetentionPeriod.Code);
+    end;
+
+    procedure FindOrCreateRetentionPeriod(RetentionPeriodEnum: enum "Retention Period Enum"): Code[20]
+    var
+        RetPeriodCalc: DateFormula;
+    begin
+        Evaluate(RetPeriodCalc, '');
+        exit(FindOrCreateRetentionPeriod(RetentionPeriodEnum, RetPeriodCalc))
+    end;
+
+    local procedure CreateUniqueRetentionPeriodCode(RetentionPeriodEnum: enum "Retention Period Enum") RetentionPeriodCode: Code[20]
+    var
+        RetentionPeriod: Record "Retention Period";
+    begin
+        RetentionPeriodCode := CopyStr(format(RetentionPeriodEnum), 1, MaxStrLen(RetentionPeriodCode));
+        if RetentionPeriod.Get(RetentionPeriodCode) then begin
+            // ensure a unique code
+            RetentionPeriodCode := CopyStr(format(RetentionPeriodEnum), 1, MaxStrLen(RetentionPeriodCode) - 2) + '01';
+            While RetentionPeriod.Get(RetentionPeriodCode) do
+                RetentionPeriodCode := IncStr(RetentionPeriodCode);
+        end;
     end;
 
     procedure DeleteRetentionPolicySetup(var RetentionPolicySetup: Record "Retention Policy Setup")

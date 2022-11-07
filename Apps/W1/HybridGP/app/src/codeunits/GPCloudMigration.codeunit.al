@@ -38,6 +38,10 @@ codeunit 4025 "GP Cloud Migration"
     end;
 
     var
+        AccountsToMigrateCount: Integer;
+        CustomersToMigrateCount: Integer;
+        VendorsToMigrateCount: Integer;
+        ItemsToMigrateCount: Integer;
         CompanyFailedToMigrateMsg: Label 'Migration did not start because the company setup is still in process.', Locked = true;
         InitiateMigrationMsg: Label 'Initiate GP Migration.', Locked = true;
         StartMigrationMsg: Label 'Start Migration', Locked = true;
@@ -46,10 +50,6 @@ codeunit 4025 "GP Cloud Migration"
     var
         DataMigrationEntity: Record "Data Migration Entity";
         GPCompanyMigrationSettings: Record "GP Company Migration Settings";
-        GPAccount: Record "GP Account";
-        GPCustomer: Record "GP Customer";
-        GPVendor: Record "GP Vendor";
-        GPItem: Record "GP Item";
         GPConfiguration: Record "GP Configuration";
         GPPopulateCombinedTables: Codeunit "GP Populate Combined Tables";
         HelperFunctions: Codeunit "Helper Functions";
@@ -90,6 +90,11 @@ codeunit 4025 "GP Cloud Migration"
             exit;
         end;
 
+        AccountsToMigrateCount := HelperFunctions.GetNumberOfAccounts();
+        CustomersToMigrateCount := HelperFunctions.GetNumberOfCustomers();
+        VendorsToMigrateCount := HelperFunctions.GetNumberOfVendors();
+        ItemsToMigrateCount := HelperFunctions.GetNumberOfItems();
+
         CreateDataMigrationEntites(DataMigrationEntity);
 
         HelperFunctions.CreateSetupRecordsIfNeeded();
@@ -106,10 +111,7 @@ codeunit 4025 "GP Cloud Migration"
             HelperFunctions.UpdateGlobalDimensionNo();
         end;
 
-        CreateDataMigrationStatusRecords(Database::"G/L Account", GPAccount.Count(), Database::"GP Account", Codeunit::"GP Account Migrator");
-        CreateDataMigrationStatusRecords(Database::"Customer", GPCustomer.Count(), Database::"GP Customer", Codeunit::"GP Customer Migrator");
-        CreateDataMigrationStatusRecords(Database::"Vendor", GPVendor.Count(), Database::"GP Vendor", Codeunit::"GP Vendor Migrator");
-        CreateDataMigrationStatusRecords(Database::"Item", GPItem.Count(), Database::"GP Item", Codeunit::"GP Item Migrator");
+        CreateConfiguredDataMigrationStatusRecords();
 
         Session.LogMessage('0000BBI', StartMigrationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
         DataMigrationFacade.StartMigration(HelperFunctions.GetMigrationTypeTxt(), FALSE);
@@ -127,18 +129,41 @@ codeunit 4025 "GP Cloud Migration"
         DataMigrationStatus.Validate(Status, DataMigrationStatus.Status::Pending);
         DataMigrationStatus.Validate("Source Staging Table ID", StagingTableID);
         DataMigrationStatus.Validate("Migration Codeunit To Run", CodeunitToRun);
-        DataMigrationStatus.Insert()
+        DataMigrationStatus.Insert();
     end;
 
     local procedure CreateDataMigrationEntites(var DataMigrationEntity: Record "Data Migration Entity"): Boolean
     var
-        HelperFunctions: Codeunit "Helper Functions";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
-        DataMigrationEntity.InsertRecord(Database::"G/L Account", HelperFunctions.GetNumberOfAccounts());
-        DataMigrationEntity.InsertRecord(Database::Customer, HelperFunctions.GetNumberOfCustomers());
-        DataMigrationEntity.InsertRecord(Database::Vendor, HelperFunctions.GetNumberOfVendors());
-        DataMigrationEntity.InsertRecord(Database::Item, HelperFunctions.GetNumberOfItems());
+        DataMigrationEntity.InsertRecord(Database::"G/L Account", AccountsToMigrateCount);
+
+        if GPCompanyAdditionalSettings.GetReceivablesModuleEnabled() then
+            DataMigrationEntity.InsertRecord(Database::Customer, CustomersToMigrateCount);
+
+        if GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
+            DataMigrationEntity.InsertRecord(Database::Vendor, VendorsToMigrateCount);
+
+        if GPCompanyAdditionalSettings.GetInventoryModuleEnabled() then
+            DataMigrationEntity.InsertRecord(Database::Item, ItemsToMigrateCount);
+
         exit(true);
+    end;
+
+    local procedure CreateConfiguredDataMigrationStatusRecords()
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+    begin
+        CreateDataMigrationStatusRecords(Database::"G/L Account", AccountsToMigrateCount, Database::"GP Account", Codeunit::"GP Account Migrator");
+
+        if GPCompanyAdditionalSettings.GetReceivablesModuleEnabled() then
+            CreateDataMigrationStatusRecords(Database::"Customer", CustomersToMigrateCount, Database::"GP Customer", Codeunit::"GP Customer Migrator");
+
+        if GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
+            CreateDataMigrationStatusRecords(Database::"Vendor", VendorsToMigrateCount, Database::"GP Vendor", Codeunit::"GP Vendor Migrator");
+
+        if GPCompanyAdditionalSettings.GetInventoryModuleEnabled() then
+            CreateDataMigrationStatusRecords(Database::"Item", ItemsToMigrateCount, Database::"GP Item", Codeunit::"GP Item Migrator");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInsertDefaultTableMappings', '', false, false)]

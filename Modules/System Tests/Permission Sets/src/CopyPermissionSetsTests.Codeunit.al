@@ -179,7 +179,7 @@ codeunit 132439 "Copy Permission Sets Tests"
         LibraryAssert.IsTrue(TenantPermission.Get(AppId, RoleId, ObjectType::Codeunit, Codeunit::"Permission Set Relation"), 'Tenant permission set does not contain the expected permission.');
         LibraryAssert.IsTrue(TenantPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Tenant Permission Subform"), 'Tenant permission set does not contain the expected permission.');
         LibraryAssert.IsTrue(TenantPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Expanded Permissions"), 'Tenant permission set does not contain the expected permission.');
-        LibraryAssert.IsTrue(TenantPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Expanded Permissions Factbox"), 'Tenant permission set does not contain the expected permission.');
+        LibraryAssert.IsTrue(TenantPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Permission Set Tree"), 'Tenant permission set does not contain the expected permission.');
         LibraryAssert.IsTrue(TenantPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Permission Set"), 'Tenant permission set does not contain the expected permission.');
         LibraryAssert.IsTrue(TenantPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Permission Set Subform"), 'Tenant permission set does not contain the expected permission.');
         LibraryAssert.IsTrue(TenantPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Metadata Permission Subform"), 'Tenant permission set does not contain the expected permission.');
@@ -198,7 +198,7 @@ codeunit 132439 "Copy Permission Sets Tests"
         LibraryAssert.IsTrue(ExpandedPermission.Get(AppId, RoleId, ObjectType::Codeunit, Codeunit::"Permission Set Relation"), 'Expanded permission set does not contain the expected permission.');
         LibraryAssert.IsTrue(ExpandedPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Tenant Permission Subform"), 'Expanded permission set does not contain the expected permission.');
         LibraryAssert.IsTrue(ExpandedPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Expanded Permissions"), 'Expanded permission set does not contain the expected permission.');
-        LibraryAssert.IsTrue(ExpandedPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Expanded Permissions Factbox"), 'Expanded permission set does not contain the expected permission.');
+        LibraryAssert.IsTrue(ExpandedPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Permission Set Tree"), 'Expanded permission set does not contain the expected permission.');
         LibraryAssert.IsTrue(ExpandedPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Permission Set"), 'Expanded permission set does not contain the expected permission.');
         LibraryAssert.IsTrue(ExpandedPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Permission Set Subform"), 'Expanded permission set does not contain the expected permission.');
         LibraryAssert.IsTrue(ExpandedPermission.Get(AppId, RoleId, ObjectType::Page, Page::"Metadata Permission Subform"), 'Expanded permission set does not contain the expected permission.');

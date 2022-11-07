@@ -59,4 +59,12 @@ table 9988 "Word Template"
         {
         }
     }
+
+    fieldgroups
+    {
+        fieldgroup(Brick; Code, Name, "Table Caption", "Language Name")
+        {
+
+        }
+    }
 }

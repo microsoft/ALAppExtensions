@@ -27,7 +27,6 @@ codeunit 132438 "Permission Relation Tests"
 
     [Test]
     [HandlerFunctions('LookupPermissionSetAModalHandler')]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestIncludePermissionSet()
     var
         AggregatePermissionSet: Record "Aggregate Permission Set";
@@ -42,6 +41,7 @@ codeunit 132438 "Permission Relation Tests"
         // [GIVEN] A new empty permission set
         TenantPermissionSet.SetRange("Role ID", NewRoleIdLbl);
         TenantPermissionSet.DeleteAll();
+
         TenantPermissionSet.Init();
         TenantPermissionSet."Role ID" := NewRoleIdLbl;
         TenantPermissionSet.Name := NewNameLbl;
@@ -86,7 +86,6 @@ codeunit 132438 "Permission Relation Tests"
 
     [Test]
     [HandlerFunctions('LookupPermissionSetAModalHandler')]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestExcludePermissionSet()
     var
         AggregatePermissionSet: Record "Aggregate Permission Set";
@@ -101,6 +100,7 @@ codeunit 132438 "Permission Relation Tests"
         // [GIVEN] A new empty permission set
         TenantPermissionSet.SetRange("Role ID", NewRoleIdLbl);
         TenantPermissionSet.DeleteAll();
+
         TenantPermissionSet.Init();
         TenantPermissionSet."Role ID" := NewRoleIdLbl;
         TenantPermissionSet.Name := NewNameLbl;
@@ -154,7 +154,6 @@ codeunit 132438 "Permission Relation Tests"
 
     [Test]
     [HandlerFunctions('LookupPermissionSetAModalHandler')]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestExcludeAndIncludePermissionSetAgain()
     var
         AggregatePermissionSet: Record "Aggregate Permission Set";
@@ -170,6 +169,7 @@ codeunit 132438 "Permission Relation Tests"
         // [GIVEN] A new empty permission set
         TenantPermissionSet.SetRange("Role ID", NewRoleIdLbl);
         TenantPermissionSet.DeleteAll();
+
         TenantPermissionSet.Init();
         TenantPermissionSet."Role ID" := NewRoleIdLbl;
         TenantPermissionSet.Name := NewNameLbl;
@@ -226,7 +226,6 @@ codeunit 132438 "Permission Relation Tests"
 
     [Test]
     [HandlerFunctions('LookupPermissionSetAModalHandler')]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestIncludeAndDeletePermissionSet()
     var
         AggregatePermissionSet: Record "Aggregate Permission Set";
@@ -242,6 +241,7 @@ codeunit 132438 "Permission Relation Tests"
         // [GIVEN] A new empty permission set
         TenantPermissionSet.SetRange("Role ID", NewRoleIdLbl);
         TenantPermissionSet.DeleteAll();
+
         TenantPermissionSet.Init();
         TenantPermissionSet."Role ID" := NewRoleIdLbl;
         TenantPermissionSet.Name := NewNameLbl;
@@ -274,7 +274,6 @@ codeunit 132438 "Permission Relation Tests"
 
     [Test]
     [HandlerFunctions('LookupPermissionSetAModalHandler')]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestIncludeAndThenExcludePermissionSet()
     var
         AggregatePermissionSet: Record "Aggregate Permission Set";
@@ -289,6 +288,7 @@ codeunit 132438 "Permission Relation Tests"
         // [GIVEN] A new empty permission set
         TenantPermissionSet.SetRange("Role ID", NewRoleIdLbl);
         TenantPermissionSet.DeleteAll();
+
         TenantPermissionSet.Init();
         TenantPermissionSet."Role ID" := NewRoleIdLbl;
         TenantPermissionSet.Name := NewNameLbl;
@@ -319,7 +319,6 @@ codeunit 132438 "Permission Relation Tests"
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestIncludePermissionToPermissionSet()
     var
         TenantPermission: Record "Tenant Permission";
@@ -362,7 +361,6 @@ codeunit 132438 "Permission Relation Tests"
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestExcludePermissionFromPermissionSet()
     var
         TenantPermission: Record "Tenant Permission";
@@ -407,7 +405,6 @@ codeunit 132438 "Permission Relation Tests"
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestExcludePartialPermissionFromPermissionSet()
     var
         TenantPermission: Record "Tenant Permission";
@@ -458,7 +455,6 @@ codeunit 132438 "Permission Relation Tests"
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestExcludePartialIndirectPermissionFromPermissionSet()
     var
         TenantPermission: Record "Tenant Permission";
@@ -509,7 +505,6 @@ codeunit 132438 "Permission Relation Tests"
 
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestReduceToIndirectPermissionFromPermissionSet()
     var
         TenantPermission: Record "Tenant Permission";
@@ -560,7 +555,6 @@ codeunit 132438 "Permission Relation Tests"
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestChangePermissionFromPermissionSet()
     var
         TenantPermission: Record "Tenant Permission";
@@ -589,7 +583,6 @@ codeunit 132438 "Permission Relation Tests"
         // [WHEN] Opening the permission page 
         PermissionSetPage.Trap();
         PermissionSetRelation.OpenPermissionSetPage(NewNameLbl, NewRoleIdLbl, NullGuid, Scope::Tenant);
-        LibraryAssert.AreEqual(NewRoleIdLbl, PermissionSetPage."Role ID".Value(), 'Role ID is not as expected.');
 
         // [WHEN] Adding an exclude permission to the set
         PermissionSetPage.Permissions.New();
@@ -600,6 +593,7 @@ codeunit 132438 "Permission Relation Tests"
         PermissionSetPage.Permissions."Insert Permission".SetValue(TenantPermission."Insert Permission"::Yes);
         PermissionSetPage.Permissions."Modify Permission".SetValue(TenantPermission."Modify Permission"::Yes);
         PermissionSetPage.Permissions."Delete Permission".SetValue(TenantPermission."Delete Permission"::Yes);
+        PermissionSetPage.Permissions.Next();
         PermissionSetPage.Close();
 
         // [THEN] The new set does not contain the added permission
@@ -617,7 +611,6 @@ codeunit 132438 "Permission Relation Tests"
         // [WHEN] Opening the permission page 
         PermissionSetPage.Trap();
         PermissionSetRelation.OpenPermissionSetPage(NewNameTwo, NewRoleIdTwo, NullGuid, Scope::Tenant);
-        LibraryAssert.AreEqual(NewRoleIdTwo, PermissionSetPage."Role ID".Value(), 'Role ID is not as expected.');
 
         // [WHEN] Adding an include permission to the set
         PermissionSetPage.Permissions.New();
@@ -627,6 +620,7 @@ codeunit 132438 "Permission Relation Tests"
         PermissionSetPage.Permissions."Insert Permission".SetValue(TenantPermission."Insert Permission"::Indirect);
         PermissionSetPage.Permissions."Modify Permission".SetValue(TenantPermission."Modify Permission"::Indirect);
         PermissionSetPage.Permissions."Delete Permission".SetValue(TenantPermission."Delete Permission"::" ");
+        PermissionSetPage.Permissions.Next();
         PermissionSetPage.Close();
 
         // [THEN] The permission is now Rim for the table data.
@@ -651,6 +645,9 @@ codeunit 132438 "Permission Relation Tests"
         NullGuid: Guid;
     begin
         // [GIVEN] An empty tenant permission set
+        TenantPermissionSet.SetRange("Role ID", NewRoleIdLbl);
+        TenantPermissionSet.DeleteAll();
+
         TenantPermissionSet."Role ID" := NewRoleIdLbl;
         TenantPermissionSet."App ID" := NullGuid;
         TenantPermissionSet.Name := NewNameLbl;
@@ -686,6 +683,9 @@ codeunit 132438 "Permission Relation Tests"
         NullGuid: Guid;
     begin
         // [GIVEN] An empty tenant permission set
+        TenantPermissionSet.SetRange("Role ID", NewRoleIdLbl);
+        TenantPermissionSet.DeleteAll();
+
         TenantPermissionSet."Role ID" := NewRoleIdLbl;
         TenantPermissionSet."App ID" := NullGuid;
         TenantPermissionSet.Name := NewNameLbl;
@@ -726,6 +726,7 @@ codeunit 132438 "Permission Relation Tests"
     var
         ExpandedPermission: Record "Expanded Permission";
     begin
+        Commit(); // Needs to commit to ensure expanded permission is updated and avoid instabilities
         LibraryAssert.IsTrue(ExpandedPermission.Get(AppId, RoleId, ObjType, ObjId), 'Expanded permission set does not contain the expected permission.');
         LibraryAssert.AreEqual(ExpandedPermission."Read Permission", Read, 'Read permission is not set as expected.');
         LibraryAssert.AreEqual(ExpandedPermission."Insert Permission", Insert, 'Insert permission is not set as expected.');
@@ -738,6 +739,7 @@ codeunit 132438 "Permission Relation Tests"
     var
         ExpandedPermission: Record "Expanded Permission";
     begin
+        Commit(); // Needs to commit to ensure expanded permission is updated and avoid instabilities
         LibraryAssert.IsFalse(ExpandedPermission.Get(AppId, RoleId, ObjType, ObjId), 'Expanded permission set contains a permission that should not be included.');
     end;
 
@@ -745,6 +747,7 @@ codeunit 132438 "Permission Relation Tests"
     var
         ExpandedPermission: Record "Expanded Permission";
     begin
+        Commit(); // Needs to commit to ensure expanded permission is updated and avoid instabilities
         ExpandedPermission.SetRange("App ID", AppId);
         ExpandedPermission.SetRange("Role ID", RoleId);
         LibraryAssert.AreEqual(ExpectedCount, ExpandedPermission.Count(), 'Expanded permissions does not contain the expected number of permissions');
@@ -754,6 +757,7 @@ codeunit 132438 "Permission Relation Tests"
     var
         ExpandedPermission: Record "Expanded Permission";
     begin
+        Commit(); // Needs to commit to ensure expanded permission is updated and avoid instabilities
         ExpandedPermission.SetRange("App ID", AppId);
         ExpandedPermission.SetRange("Role ID", RoleId);
         LibraryAssert.IsTrue(ExpandedPermission.IsEmpty(), 'Expanded permissions is not empty');

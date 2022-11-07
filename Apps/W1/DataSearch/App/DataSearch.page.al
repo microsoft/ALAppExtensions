@@ -3,11 +3,12 @@ page 2680 "Data Search"
     PageType = ListPlus;
     Caption = 'Search in company data [Preview]';
     ApplicationArea = All;
-    UsageCategory = Administration;
-    SaveValues = true;
-    InsertAllowed = false;
+    UsageCategory = Tasks;
+    SourceTable = "Data Search Source Temp";  // necessary in order to position cursor in search field
+    SourceTableTemporary = true;
     DeleteAllowed = false;
-    ModifyAllowed = false;
+    AboutTitle = 'About Search in company data';
+    AboutText = 'Enter one or more search words in the search field. To see which tables are being searched, select Results | Show tables to search.';
 
     layout
     {
@@ -75,6 +76,20 @@ page 2680 "Data Search"
         SearchString := '';
     end;
 
+    trigger OnClosePage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        FeatureUptakeStatus: Enum "Feature Uptake Status";
+    begin
+        FeatureTelemetry.LogUptake('0000IOJ', TelemetryCategoryLbl, FeatureUptakeStatus::Discovered);
+    end;
+
+    // necessary in order to position cursor in search field
+    trigger OnNewRecord(BelowxRec: Boolean)
+    begin
+        Rec.Description := CopyStr(CurrPage.Caption, 1, MaxStrLen(Rec.Description));
+    end;
+
     local procedure LaunchSearch()
     var
         DataSearchSetupTable: Record "Data Search Setup (Table)";
@@ -85,6 +100,7 @@ page 2680 "Data Search"
         RoleCenterID: Integer;
         NoOfTablesToSearch: Integer;
     begin
+        CancelRunningTasks();
         RoleCenterID := DataSearchSetupTable.GetRoleCenterID();
         CurrPage.LinesPart.Page.SetSearchParams(SearchString, RoleCenterID);
         CurrPage.LinesPart.Page.ClearResults();
@@ -147,11 +163,21 @@ page 2680 "Data Search"
         exit(true);
     end;
 
+    local procedure CancelRunningTasks()
+    var
+        TaskId: Integer;
+    begin
+        foreach TaskId in ActiveSearches.Keys do
+            if CurrPage.CancelBackgroundTask(TaskId) then;
+        Clear(ActiveSearches);
+        Clear(QueuedSearches);
+    end;
+
     trigger OnPageBackgroundTaskCompleted(TaskId: Integer; Results: Dictionary of [Text, Text])
     var
         TableTypeID: Integer;
     begin
-        if not ActiveSearches.ContainsKey(TaskID) then
+        if not ActiveSearches.ContainsKey(TaskId) then
             exit;
         TableTypeID := ActiveSearches.Get(TaskId);
         ActiveSearches.Remove(TaskId);

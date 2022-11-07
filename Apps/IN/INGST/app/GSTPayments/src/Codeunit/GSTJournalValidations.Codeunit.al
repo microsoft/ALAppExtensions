@@ -7,6 +7,7 @@ codeunit 18246 "GST Journal Validations"
         DeleteErr: Label 'There is Record having Higher Lower Limit than %1 of Bank Charge', Comment = '%1 =Upper Limit';
         UpperLimitSmallModifyErr: Label 'There must not be any Record of Bank Charge Code %1 Where Lower Limit is Smaller than %2.', Comment = '%1 = Bank Charge Code , %2 = Upper Limit';
         UpperLimitBigModifyErr: Label 'There is no Record of Bank Charge Code %1 , Where Lower Limit is same as %2 .', Comment = '%1 = Bank Charge Code, %2 = Upper Limit';
+        GSTBankChargeBoolErr: Label 'You Can not have multiple Bank Charges, when Bank Charge Boolean in General Journal Line is True.';
 
     //Bank Charge - Definition
     procedure GSTGroupCodeBankCharge(var BankCharge: Record "Bank Charge")
@@ -188,6 +189,22 @@ codeunit 18246 "GST Journal Validations"
             exit;
 
         GenJnlLine.Get(JournalTemplateName, journalbatchname, LineNo);
+    end;
+
+    procedure CheckMultipleBankCharge(JournalBankCharges: Record "Journal Bank Charges")
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        JournalBankChargesCountCheck: Record "Journal Bank Charges";
+    begin
+        GenJournalLine.Get(JournalBankCharges."Journal Template Name", JournalBankCharges."Journal Batch Name", JournalBankCharges."Line No.");
+        if not GenJournalLine."Bank Charge" then
+            exit;
+
+        JournalBankChargesCountCheck.SetRange("Journal Template Name", JournalBankCharges."Journal Template Name");
+        JournalBankChargesCountCheck.SetRange("Journal Batch Name", JournalBankCharges."Journal Batch Name");
+        JournalBankChargesCountCheck.SetRange("Line No.", JournalBankCharges."Line No.");
+        if JournalBankChargesCountCheck.Count > 1 then
+            Error(GSTBankChargeBoolErr);
     end;
 
     local procedure CheckOtherUpperLowerLimits(var BankChargeDeemedValueSetup2: Record "Bank Charge Deemed Value Setup")

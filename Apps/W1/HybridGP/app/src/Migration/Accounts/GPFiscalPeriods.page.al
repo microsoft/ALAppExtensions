@@ -13,10 +13,26 @@ page 4092 "GP Fiscal Periods"
         {
             group(General)
             {
-                field(PERIODID; PERIODID) { ApplicationArea = All; ToolTip = 'Period Id'; }
-                field(YEAR1; YEAR1) { ApplicationArea = All; ToolTip = 'Year 1'; }
-                field(PERIODDT; PERIODDT) { ApplicationArea = All; ToolTip = 'PERIODDT'; }
-                field(PERDENDT; PERDENDT) { ApplicationArea = All; ToolTip = 'PERDENDT'; }
+                field(PERIODID; Rec.PERIODID)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Period Id';
+                }
+                field(YEAR1; Rec.YEAR1)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Year 1';
+                }
+                field(PERIODDT; Rec.PERIODDT)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'PERIODDT';
+                }
+                field(PERDENDT; Rec.PERDENDT)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'PERDENDT';
+                }
             }
         }
     }

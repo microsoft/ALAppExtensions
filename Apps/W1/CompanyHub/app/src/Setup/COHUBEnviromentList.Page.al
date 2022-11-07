@@ -111,7 +111,9 @@ page 1166 "COHUB Enviroment List"
     trigger OnOpenPage()
     var
         COHUBCore: Codeunit "COHUB Core";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         COHUBCore.ShowNotSupportedOnPremNotification();
+        FeatureTelemetry.LogUptake('0000IFI', COHUBCore.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
     end;
 }

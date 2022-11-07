@@ -133,16 +133,6 @@ codeunit 11744 "Purchase Header Handler CZL"
     end;
 
 #endif
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'VAT Country/Region Code', false, false)]
-    local procedure UpdateVATRegistrationNoCodeOnAfterVATCountryRegionCodeValidate(var Rec: Record "Purchase Header")
-    var
-        PayToVendor: Record Vendor;
-    begin
-        if Rec."Pay-to Vendor No." <> '' then begin
-            PayToVendor.Get(Rec."Pay-to Vendor No.");
-            Rec."VAT Registration No." := PayToVendor."VAT Registration No.";
-        end;
-    end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'Buy-from Country/Region Code', false, false)]
     local procedure UpdateVATCountryRegionCodeOnAfterBuyFromCountryRegionCodeValidate(var Rec: Record "Purchase Header"; var xRec: Record "Purchase Header")

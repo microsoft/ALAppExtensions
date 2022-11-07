@@ -66,6 +66,7 @@ page 9857 "Permission Set Tree"
                     Caption = 'Exclude';
                     ToolTip = 'Excludes the selected permission set.';
                     Image = Cancel;
+                    Enabled = Rec."Role ID" <> '';
                     Visible = (CurrScope = CurrScope::Tenant) and (Rec.Type = Rec.Type::Include);
                     Scope = Repeater;
 
@@ -97,6 +98,18 @@ page 9857 "Permission Set Tree"
                         TempPermissionSetBuffer.Scope := Rec."Related Scope";
                         Page.Run(Page::"Permission Set", TempPermissionSetBuffer);
                     end;
+                }
+
+                action(ViewPermisions)
+                {
+                    ApplicationArea = All;
+                    Image = Permission;
+                    Scope = Repeater;
+                    Enabled = Rec."Role ID" <> '';
+                    Caption = 'View Permissions In Set';
+                    ToolTip = 'View a flat list of the permissions in the set.';
+                    RunObject = page "Expanded Permissions";
+                    RunPageLink = "Role ID" = field("Related Role ID"), "App ID" = field("Related App ID");
                 }
             }
         }

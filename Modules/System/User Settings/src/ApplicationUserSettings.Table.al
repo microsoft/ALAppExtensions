@@ -8,17 +8,23 @@
 /// </summary>
 table 9222 "Application User Settings"
 {
-    Access = Internal;
+    Access = Public;
     DataPerCompany = false;
     ReplicateData = false;
 
     fields
     {
+        /// <summary>
+        /// The user security ID of the user for whom the settings are applied.
+        /// </summary>
         field(1; "User Security ID"; Guid)
         {
             DataClassification = EndUserIdentifiableInformation;
         }
 
+        /// <summary>
+        /// Specifies whether teaching tips are enabled.
+        /// </summary>
         field(2; "Teaching Tips"; Boolean)
         {
             DataClassification = CustomerContent;

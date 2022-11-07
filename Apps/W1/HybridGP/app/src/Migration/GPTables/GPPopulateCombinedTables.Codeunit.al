@@ -43,7 +43,9 @@ codeunit 40125 "GP Populate Combined Tables"
                 AccountDescription := GPGL00100.ACTDESCR;
 
             CLEAR(GPAccount);
+#pragma warning disable AA0139
             GPAccount.AcctNum := GPGL00100.MNACSGMT.Trim();
+#pragma warning restore AA0139
             GPAccount.AcctIndex := GPGL00100.ACTINDX;
             GPAccount.Name := CopyStr(AccountDescription.Trim(), 1, MaxStrLen(GPAccount.Name));
             GPAccount.SearchName := GPAccount.Name;
@@ -303,6 +305,7 @@ codeunit 40125 "GP Populate Combined Tables"
 
         repeat
             Clear(GPCustomer);
+#pragma warning disable AA0139
             GPCustomer.CUSTNMBR := GPRM00101.CUSTNMBR.Trim();
             GPCustomer.CUSTNAME := GPRM00101.CUSTNAME.Trim();
             GPCustomer.STMTNAME := GPRM00101.STMTNAME.Trim();
@@ -322,6 +325,7 @@ codeunit 40125 "GP Populate Combined Tables"
             GPCustomer.TAXSCHID := GPRM00101.TAXSCHID.Trim();
             GPCustomer.UPSZONE := GPRM00101.UPSZONE.Trim();
             GPCustomer.TAXEXMT1 := GPRM00101.TAXEXMT1.Trim();
+#pragma warning restore AA0139   
 
             if GPRM00101.PHONE1.Contains('E+') then
                 GPCustomer.PHONE1 := '00000000000000'
@@ -367,8 +371,10 @@ codeunit 40125 "GP Populate Combined Tables"
 
             GPCustomerTransactions.Id := FORMAT(I);
             I += 1;
+#pragma warning disable AA0139
             GPCustomerTransactions.CUSTNMBR := GPRM20101.CUSTNMBR.TrimEnd();
             GPCustomerTransactions.DOCNUMBR := GPRM20101.DOCNUMBR.TrimEnd();
+#pragma warning restore AA0139            
             GPCustomerTransactions.DOCDATE := GPRM20101.DOCDATE;
             if GPRM20101.RMDTYPAL in [1, 3, 4, 5] then
                 GPCustomerTransactions.DUEDATE := GPRM20101.DUEDATE;
@@ -497,6 +503,7 @@ codeunit 40125 "GP Populate Combined Tables"
 
         repeat
             Clear(GPVendor);
+#pragma warning disable AA0139            
             GPVendor.VENDORID := GPPM00200Vendor.VENDORID.TrimEnd();
             GPVendor.VENDNAME := GPPM00200Vendor.VENDNAME.TrimEnd();
             GPVendor.SEARCHNAME := GPPM00200Vendor.VENDNAME.TrimEnd();
@@ -514,6 +521,7 @@ codeunit 40125 "GP Populate Combined Tables"
             GPVendor.TAXSCHID := GPPM00200Vendor.TAXSCHID.TrimEnd();
             GPVendor.UPSZONE := GPPM00200Vendor.UPSZONE.TrimEnd();
             GPVendor.TXIDNMBR := GPPM00200Vendor.TXIDNMBR.TrimEnd();
+#pragma warning restore AA0139    
 
             if GPPM00200Vendor.PHNUMBR1.Contains('E+') then
                 GPVendor.PHNUMBR1 := '00000000000000'
@@ -559,14 +567,18 @@ codeunit 40125 "GP Populate Combined Tables"
             Clear(GPVendorTransactions);
             GPVendorTransactions.Id := FORMAT(I);
             I += 1;
+#pragma warning disable AA0139            
             GPVendorTransactions.VENDORID := GPPM20000.VENDORID.Trim();
             GPVendorTransactions.DOCNUMBR := GPPM20000.DOCNUMBR.Trim();
+            GPVendorTransactions.PYMTRMID := GPPM20000.PYMTRMID.Trim();
+#pragma warning restore AA0139
+
             GPVendorTransactions.DOCDATE := GPPM20000.DOCDATE;
             GPVendorTransactions.DUEDATE := GPPM20000.DUEDATE;
 
             GPVendorTransactions.CURTRXAM := GPPM20000.CURTRXAM;
             GPVendorTransactions.DOCTYPE := GPPM20000.DOCTYPE;
-            GPVendorTransactions.PYMTRMID := GPPM20000.PYMTRMID.Trim();
+
             GPVendorTransactions.GLDocNo := CopyStr('V' + GPVendorTransactions.Id + '00000', 1, MaxStrLen(GPVendorTransactions.GLDocNo));
 
             case GPPM20000.DOCTYPE of
@@ -604,8 +616,9 @@ codeunit 40125 "GP Populate Combined Tables"
             GPItem.No := CopyStr(GPIV00101Inventory.ITEMNMBR.TrimEnd(), 1, MaxStrLen(DummyItem."No."));
             GPItem.Description := CopyStr(GPIV00101Inventory.ITEMDESC.TrimEnd(), 1, MaxStrLen(GPItem.Description));
             GPItem.SearchDescription := CopyStr(GPIV00101Inventory.ITEMDESC.TrimEnd(), 1, MaxStrLen(GPItem.SearchDescription));
+#pragma warning disable AA0139
             GPItem.ShortName := GPIV00101Inventory.ITEMNMBR.TrimEnd();
-
+#pragma warning restore AA0139     
             CASE GPIV00101Inventory.ITEMTYPE of
                 1, 2:
                     GPItem.ItemType := 0;
@@ -628,11 +641,12 @@ codeunit 40125 "GP Populate Combined Tables"
 
             GPItem.CurrentCost := GPIV00101Inventory.CURRCOST;
             GPItem.StandardCost := GPIV00101Inventory.STNDCOST;
+#pragma warning disable AA0139
             GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
             GPItem.PurchUnitOfMeasure := GPIV00101Inventory.PRCHSUOM.Trim();
             GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
             GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
-
+#pragma warning restore AA0139  
             CASE GPIV00101Inventory.ITMTRKOP of
                 2:
                     GPItem.ItemTrackingCode := ItemTrackingCodeSERIALLbl;
@@ -648,7 +662,9 @@ codeunit 40125 "GP Populate Combined Tables"
 
             GPIV40201InventoryUom.SetRange(UOMSCHDL, GPIV00101Inventory.UOMSCHDL);
             if GPIV40201InventoryUom.FindFirst() then
+#pragma warning disable AA0139
                 GPItem.BaseUnitOfMeasure := GPIV40201InventoryUom.BASEUOFM.Trim();
+#pragma warning restore AA0139  
 
             GPIV00102InventoryQty.SetRange(ITEMNMBR, GPIV00101Inventory.ITEMNMBR);
             GPIV00102InventoryQty.SetRange(LOCNCODE, '');
@@ -1030,7 +1046,10 @@ codeunit 40125 "GP Populate Combined Tables"
                 repeat
                     if not GPCompanyMigrationSettings.Get(HybridCompany.Name) then begin
                         Clear(GPCompanyMigrationSettings);
+#pragma warning disable AA0139
+                        // We need to throw the exception if lenght is longer
                         GPCompanyMigrationSettings.Name := HybridCompany.Name;
+#pragma warning restore AA0139
                         GPCompanyMigrationSettings."Global Dimension 1" := '';
                         GPCompanyMigrationSettings."Global Dimension 2" := '';
                         GPCompanyMigrationSettings."Migrate Inactive Customers" := true;

@@ -15,7 +15,17 @@ pageextension 20285 "Posted Sales Cr. Stats Ext" extends "Sales Credit Memo Stat
         }
     }
 
+    trigger OnAfterGetRecord()
+    begin
+        FormatLine();
+    end;
+
     trigger OnAfterGetCurrRecord()
+    begin
+        FormatLine();
+    end;
+
+    local procedure UpdateComponentRecords()
     var
         SaleCrMemoLine: Record "Sales Cr.Memo Line";
         DocumentNo: Code[20];
@@ -33,8 +43,15 @@ pageextension 20285 "Posted Sales Cr. Stats Ext" extends "Sales Credit Memo Stat
 
         DocumentNo := "No.";
         CurrPage."Tax Compoent Summary".Page.UpdateTaxComponent(RecordIDList);
+        RecordsCalculated := true;
+    end;
+
+    local procedure FormatLine()
+    begin
+        if not RecordsCalculated then
+            UpdateComponentRecords();
     end;
 
     var
-
+        RecordsCalculated: Boolean;
 }

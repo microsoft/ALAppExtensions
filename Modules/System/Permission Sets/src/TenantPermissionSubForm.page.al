@@ -155,7 +155,7 @@ page 9859 "Tenant Permission Subform"
                         Rec."Execute Permission" := PermissionImpl.GetPermission(Rec.Type, ExecutePermissionAsTxt);
                     end;
                 }
-                field("Security Filter"; "Security Filter")
+                field("Security Filter"; Rec."Security Filter")
                 {
                     ApplicationArea = All;
                     Enabled = IsTableData;
@@ -236,9 +236,16 @@ page 9859 "Tenant Permission Subform"
 
     trigger OnDeleteRecord(): Boolean
     var
+        TenantPermission: Record "Tenant Permission";
         PermissionSetRelation: Codeunit "Permission Set Relation";
     begin
         PermissionSetRelation.VerifyUserCanEditPermissionSet(CurrentAppID);
+
+        CurrPage.SetSelectionFilter(TenantPermission);
+        TenantPermission.DeleteAll(true); // Record needs to be deleted before refreshing tree
+        RefreshTreeView();
+
+        exit(false);
     end;
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
@@ -256,7 +263,10 @@ page 9859 "Tenant Permission Subform"
         PermissionRecExists := true;
         IsNewRecord := false;
         ZeroObjStyleExpr := Rec."Object ID" = 0;
-        exit(true)
+
+        Rec.Insert(true); // Record needs to be inserted before refreshing tree
+        RefreshTreeView();
+        exit(false);
     end;
 
     trigger OnModifyRecord(): Boolean
@@ -267,6 +277,10 @@ page 9859 "Tenant Permission Subform"
 
         PermissionRecExists := true;
         IsNewRecord := false;
+
+        Rec.Modify(true); // Record needs to be modified before refreshing tree
+        RefreshTreeView();
+        exit(false);
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
@@ -282,9 +296,28 @@ page 9859 "Tenant Permission Subform"
         CurrPageIsEditable := true;
     end;
 
+#if not CLEAN22
+    [Obsolete('No longer used.', '22.0')]
     procedure SetPageVariables(AppId: Guid)
     begin
         CurrentAppID := AppId;
+    end;
+#endif
+
+    internal procedure SetPermissionSet(RoleId: Code[30]; AppId: Guid; Tenant: Boolean)
+    begin
+        if Tenant then
+            CurrentScope := CurrentScope::Tenant
+        else
+            CurrentScope := CurrentScope::System;
+
+        CurrentRoleID := RoleId;
+        CurrentAppID := AppId;
+    end;
+
+    internal procedure SetPermissionSetRelation(var PermissionSetRelationImplVar: Codeunit "Permission Set Relation Impl.")
+    begin
+        PermissionSetRelationImpl := PermissionSetRelationImplVar;
     end;
 
     local procedure ActivateControls()
@@ -293,8 +326,17 @@ page 9859 "Tenant Permission Subform"
         CurrPageIsEditable := CurrPage.Editable();
     end;
 
+    local procedure RefreshTreeView()
+    begin
+        PermissionSetRelationImpl.RefreshPermissionSets(CurrentRoleID, CurrentAppID, CurrentScope);
+        CurrPage.Update(false);
+    end;
+
     var
         PermissionImpl: Codeunit "Permission Impl.";
+        PermissionSetRelationImpl: Codeunit "Permission Set Relation Impl.";
+        CurrentScope: Option System,Tenant;
+        CurrentRoleID: Code[30];
         CurrentAppID: Guid;
         [InDataSet]
         IsTableData: Boolean;

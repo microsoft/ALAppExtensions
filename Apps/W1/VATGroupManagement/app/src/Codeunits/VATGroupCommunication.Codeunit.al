@@ -53,7 +53,7 @@ codeunit 4700 "VAT Group Communication"
         PrepareHeaders(HttpRequestMessage, IsBatch);
         PrepareContent(HttpRequestMessage, Content);
 
-        if VATReportSetup."Authentication Type" = VATReportSetup."Authentication Type"::WindowsAuthentication then
+        if VATReportSetup."VAT Group Authentication Type" = VATReportSetup."VAT Group Authentication Type"::WindowsAuthentication then
             HttpClient.UseDefaultNetworkWindowsAuthentication();
 
         HttpClient.Send(HttpRequestMessage, HttpResponseMessage);
@@ -191,12 +191,12 @@ codeunit 4700 "VAT Group Communication"
 
         HttpRequestHeaders.Add('Accept', 'application/json');
 
-        if VATReportSetup."Authentication Type" = VATReportSetup."Authentication Type"::WebServiceAccessKey then begin
+        if VATReportSetup."VAT Group Authentication Type" = VATReportSetup."VAT Group Authentication Type"::WebServiceAccessKey then begin
             Base64AuthHeader := Base64Convert.ToBase64(VATReportSetup.GetSecret(VATReportSetup."User Name Key") + ':' + VATReportSetup.GetSecret(VATReportSetup."Web Service Access Key Key"));
             HttpRequestHeaders.Add('Authorization', 'Basic ' + Base64AuthHeader);
         end;
 
-        if VATReportSetup."Authentication Type" = VATReportSetup."Authentication Type"::OAuth2 then
+        if VATReportSetup."VAT Group Authentication Type" = VATReportSetup."VAT Group Authentication Type"::OAuth2 then
             HttpRequestHeaders.Add('Authorization', 'Bearer ' + GetBearerTokenFromCache());
 
         if IsBatch then

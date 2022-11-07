@@ -23,7 +23,7 @@ permissionset 9862 "Permission Sets - Objects"
         page "Permission Lookup List" = X,
         page "Permission Set" = X,
         page "Permission Set Subform" = X,
-		page "Permission Set Tree" = X,
+        page "Permission Set Tree" = X,
         page "Tenant Permission Subform" = X,
         xmlport "Export Permission Sets System" = X,
         xmlport "Export Permission Sets Tenant" = X,

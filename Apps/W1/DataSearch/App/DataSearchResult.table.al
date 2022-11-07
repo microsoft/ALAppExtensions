@@ -86,7 +86,8 @@ table 2680 "Data Search Result"
         if Rec."Table No." in
             [Database::"Sales Line", Database::"Sales Invoice Line", Database::"Sales Shipment Line", Database::"Sales Cr.Memo Line",
              Database::"Purchase Line", Database::"Purch. Inv. Line", Database::"Purch. Rcpt. Line", Database::"Purch. Cr. Memo Line",
-             Database::"Service Line", Database::"Service Invoice Line", Database::"Service Cr.Memo Line"]
+             Database::"Service Item Line", Database::"Service Contract Line", Database::"Service Invoice Line", Database::"Service Cr.Memo Line",
+             Database::"Service Shipment Item Line", Database::"Service Shipment Line"]
         then
             PageCaption += ' - ' + linesLbl;
         exit(PageCaption);
@@ -98,6 +99,7 @@ table 2680 "Data Search Result"
         SalesDocumentType: Enum "Sales Document Type";
         PurchaseDocumentType: Enum "Purchase Document Type";
         ServiceDocumentType: Enum "Service Document Type";
+        ServiceContractType: Enum "Service Contract Type";
         TableNo: Integer;
         PageNo: Integer;
     begin
@@ -107,8 +109,10 @@ table 2680 "Data Search Result"
                 TableNo := Database::"Sales Header";
             Database::"Purchase Line":
                 TableNo := Database::"Purchase Header";
-            Database::"Service Line":
+            Database::"Service Item Line":
                 TableNo := Database::"Service Header";
+            Database::"Service Contract Line":
+                TableNo := Database::"Service Contract Header";
             Database::"Sales Invoice Line":
                 TableNo := Database::"Sales Invoice Header";
             Database::"Sales Shipment Line":
@@ -121,6 +125,8 @@ table 2680 "Data Search Result"
                 TableNo := Database::"Purch. Cr. Memo Hdr.";
             Database::"Purch. Rcpt. Line":
                 TableNo := Database::"Purch. Rcpt. Header";
+            Database::"Service Shipment Item Line", Database::"Service Shipment Line":
+                TableNo := Database::"Service Shipment Header";
             Database::"Service Invoice Line":
                 TableNo := Database::"Service Invoice Header";
             Database::"Service Cr.Memo Line":
@@ -168,6 +174,15 @@ table 2680 "Data Search Result"
                         PageNo := Page::"Service Orders";
                     ServiceDocumentType::Quote.AsInteger():
                         PageNo := Page::"Service Quotes";
+                end;
+            Database::"Service Contract Header":
+                case Rec."Table Subtype" of
+                    ServiceContractType::Contract.AsInteger():
+                        PageNo := Page::"Service Contract List";
+                    ServiceContractType::Quote.AsInteger():
+                        PageNo := Page::"Service Contract Quotes";
+                    ServiceContractType::Template.AsInteger():
+                        PageNo := Page::"Service Contract Template List";
                 end;
         end;
         if PageNo = 0 then
@@ -262,12 +277,24 @@ table 2680 "Data Search Result"
                 PurchRcptLineToHeader(RecRef, RecRef);
             Database::"Purch. Cr. Memo Line":
                 PurchCrMemoLineToHeader(RecRef, RecRef);
-            Database::"Service Line":
-                ServiceLineToHeader(RecRef, RecRef);
             Database::"Sales Line Archive":
                 SalesLineArchiveToHeader(RecRef, RecRef);
             Database::"Purchase Line Archive":
                 PurchaseLineArchiveToHeader(RecRef, RecRef);
+            Database::"Job Task":
+                JobTaskToJob(RecRef, RecRef);
+            Database::"Job Planning Line":
+                JobPlanningLineToJob(RecRef, RecRef);
+            Database::"Service Item Line":
+                ServiceItemLineToHeader(RecRef, RecRef);
+            Database::"Service Shipment Item Line":
+                ServiceShipmentItemLineToHeader(RecRef, RecRef);
+            Database::"Service Shipment Line":
+                ServiceShipmentLineToHeader(RecRef, RecRef);
+            Database::"Service Invoice Line":
+                ServiceInvoiceLineToHeader(RecRef, RecRef);
+            Database::"Service Cr.Memo Line":
+                ServiceCrMemoLineToHeader(RecRef, RecRef);
             Database::"Service Contract Line":
                 ServiceContractLineToHeader(RecRef, RecRef);
             Database::"Prod. Order Line":
@@ -374,14 +401,54 @@ table 2680 "Data Search Result"
         HeaderRecRef.GetTable(PurchCrMemoHdr);
     end;
 
-    local procedure ServiceLineToHeader(var LineRecRef: RecordRef; var HeaderRecRef: RecordRef)
+    local procedure ServiceItemLineToHeader(var LineRecRef: RecordRef; var HeaderRecRef: RecordRef)
     var
         ServiceHeader: Record "Service Header";
-        ServiceLine: Record "Service Line";
+        ServiceItemLine: Record "Service Item Line";
     begin
-        LineRecRef.SetTable(ServiceLine);
-        ServiceHeader.Get(ServiceLine."Document Type", ServiceLine."Document No.");
+        LineRecRef.SetTable(ServiceItemLine);
+        ServiceHeader.Get(ServiceItemLine."Document Type", ServiceItemLine."Document No.");
         HeaderRecRef.GetTable(ServiceHeader);
+    end;
+
+    local procedure ServiceShipmentItemLineToHeader(var LineRecRef: RecordRef; var HeaderRecRef: RecordRef)
+    var
+        ServiceShipmentHeader: Record "Service Shipment Header";
+        ServiceShipmentItemLine: Record "Service Shipment Item Line";
+    begin
+        LineRecRef.SetTable(ServiceShipmentItemLine);
+        ServiceShipmentHeader.Get(ServiceShipmentItemLine."No.");
+        HeaderRecRef.GetTable(ServiceShipmentHeader);
+    end;
+
+    local procedure ServiceShipmentLineToHeader(var LineRecRef: RecordRef; var HeaderRecRef: RecordRef)
+    var
+        ServiceShipmentHeader: Record "Service Shipment Header";
+        ServiceShipmentLine: Record "Service Shipment Line";
+    begin
+        LineRecRef.SetTable(ServiceShipmentLine);
+        ServiceShipmentHeader.Get(ServiceShipmentLine."Document No.");
+        HeaderRecRef.GetTable(ServiceShipmentHeader);
+    end;
+
+    local procedure ServiceInvoiceLineToHeader(var LineRecRef: RecordRef; var HeaderRecRef: RecordRef)
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        ServiceInvoiceLine: Record "Service Invoice Line";
+    begin
+        LineRecRef.SetTable(ServiceInvoiceLine);
+        ServiceInvoiceHeader.Get(ServiceInvoiceLine."Document No.");
+        HeaderRecRef.GetTable(ServiceInvoiceHeader);
+    end;
+
+    local procedure ServiceCrMemoLineToHeader(var LineRecRef: RecordRef; var HeaderRecRef: RecordRef)
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        ServiceCrMemoLine: Record "Service Cr.Memo Line";
+    begin
+        LineRecRef.SetTable(ServiceCrMemoLine);
+        ServiceCrMemoHeader.Get(ServiceCrMemoLine."Document No.");
+        HeaderRecRef.GetTable(ServiceCrMemoHeader);
     end;
 
     local procedure ServiceContractLineToHeader(var LineRecRef: RecordRef; var HeaderRecRef: RecordRef)
@@ -412,6 +479,26 @@ table 2680 "Data Search Result"
         LineRecRef.SetTable(PurchaseLineArchive);
         PurchaseHeaderArchive.Get(PurchaseLineArchive."Document Type", PurchaseLineArchive."Document No.", PurchaseHeaderArchive."Doc. No. Occurrence", PurchaseLineArchive."Version No.");
         HeaderRecRef.GetTable(PurchaseHeaderArchive);
+    end;
+
+    local procedure JobTaskToJob(var LineRecRef: RecordRef; var HeaderRecRef: RecordRef)
+    var
+        Job: Record Job;
+        JobTask: Record "Job Task";
+    begin
+        LineRecRef.SetTable(JobTask);
+        Job.Get(JobTask."Job No.");
+        HeaderRecRef.GetTable(Job);
+    end;
+
+    local procedure JobPlanningLineToJob(var LineRecRef: RecordRef; var HeaderRecRef: RecordRef)
+    var
+        Job: Record Job;
+        JobPlanningLine: Record "Job Planning Line";
+    begin
+        LineRecRef.SetTable(JobPlanningLine);
+        Job.Get(JobPlanningLine."Job No.");
+        HeaderRecRef.GetTable(Job);
     end;
 
     local procedure ProdOrderLineToHeader(var LineRecRef: RecordRef; var HeaderRecRef: RecordRef)

@@ -4,13 +4,13 @@
     "publisher":  "Microsoft",
     "brief":  "Predict whether payments for sales will be on-time.",
     "description":  "Keep receivables healthy by assessing the risk of late payments up-front. This extension uses historical data to predict delinquent invoices, so you can take a pre-emptive action such as changing the payment terms.",
-    "version":  "21.0.0.0",
+    "version":  "21.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2009020",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206446",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "ExtensionLogo.png",
-    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2206446",
     "dependencies":  [
 
                      ],
@@ -24,5 +24,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "21.0.0.0"
+    "application":  "21.1.0.0"
 }

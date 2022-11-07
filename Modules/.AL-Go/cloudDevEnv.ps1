@@ -1,4 +1,4 @@
-﻿#
+#
 # Script for creating cloud development environment
 # Please do not modify this script as it will be auto-updated from the AL-Go Template
 # Recommended approach is to use as is or add a script (freddyk-devenv.ps1), which calls this script with the user specific parameters

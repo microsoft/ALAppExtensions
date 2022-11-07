@@ -7,11 +7,11 @@ codeunit 139661 "GP Account Tests"
     TestPermissions = Disabled;
 
     var
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         Assert: Codeunit Assert;
         GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade";
         MSGPAccountMigrationTests: Codeunit "GP Account Tests";
+        GPTestHelperFunctions: Codeunit "GP Test Helper Functions";
         InvalidAccountNoMsg: Label 'Account No. was expected to be %1 but it was %2 instead', Comment = '%1 - expected value; %2 - actual value', Locked = true;
         InvalidAccountTypeMsg: Label 'Account Type was expected to be %1 but it was %2 instead', Comment = '%1 - expected value; %2 - actual value', Locked = true;
         InvalidAccountCategoryMsg: Label 'Account Category was expected to be %1 but it was %2 instead', Comment = '%1 - expected value; %2 - actual value', Locked = true;
@@ -79,6 +79,49 @@ codeunit 139661 "GP Account Tests"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGLMasterDataOnly()
+    var
+        GPGLTransactions: Record "GP GLTransactions";
+        GPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
+        GPSegements: Record "GP Segments";
+        GPCodes: Record "GP Codes";
+        GPFiscalPeriods: Record "GP Fiscal Periods";
+        GenJournalLine: Record "Gen. Journal Line";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] G/L Accounts are migrated from GP
+        // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
+        if not BindSubscription(MSGPAccountMigrationTests) then
+            exit;
+        ClearTables();
+
+        // [GIVEN] GL Master Data Only is enabled
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Only GL Master", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [GIVEN] Some records are created in the staging tables
+        CreateAccountData(GPAccount);
+        CreateDimensionData(GPSegements, GPCodes);
+        HelperFunctions.CreateDimensions();
+        CreateFiscalPeriods(GPFiscalPeriods);
+        CreateTrxData(GPGLTransactions);
+
+        // [WHEN] MigrationAccounts is called
+        GPAccount.FindSet();
+        repeat
+            Migrate(GPAccount);
+        until GPAccount.Next() = 0;
+
+        // [THEN] Accounts are created, but with no transactions
+        Assert.RecordCount(GLAccount, 7);
+        Assert.RecordCount(GenJournalLine, 0);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGPDimensionsCreation()
     var
         GPSegements: Record "GP Segments";
@@ -136,6 +179,8 @@ codeunit 139661 "GP Account Tests"
             exit;
         ClearTables();
 
+        GPTestHelperFunctions.CreateConfigurationSettings();
+
         // [GIVEN] Some records are created in the staging table
         CreateAccountData(GPAccount);
         CreateLimitGPHistData(GPGL10111, GPAccount, GPFiscalPeriods);
@@ -144,7 +189,11 @@ codeunit 139661 "GP Account Tests"
         CreateTrxData(GPGLTransactions);
 
         // [GIVEN] A limiting year is used
-        ConfigureMigrationSettings(2020);
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Oldest GL Year to Migrate", 2020);
+        GPCompanyAdditionalSettings.Modify();
+
+        GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] MigrationAccounts is called
         GPAccount.FindSet();
@@ -158,12 +207,10 @@ codeunit 139661 "GP Account Tests"
         // [THEN] Journal entries are created
         GenJournalBatch.SetRange("Journal Template Name", 'GENERAL');
         GenJournalBatch.SetFilter(Name, 'GP2020BB');
-        GenJournalBatch.FindSet();
         Assert.RecordCount(GenJournalBatch, 1);
 
         GenJournalLine.SetRange("Journal Template Name", 'GENERAL');
         GenJournalLine.SetRange("Journal Batch Name", 'GP2020BB');
-        GenJournalLine.FindSet();
         Assert.RecordCount(GenJournalLine, 2);
     end;
 
@@ -209,12 +256,10 @@ codeunit 139661 "GP Account Tests"
         // [THEN] Journal entries are created
         GenJournalBatch.SetRange("Journal Template Name", 'GENERAL');
         GenJournalBatch.SetFilter(Name, 'GP2020BB');
-        GenJournalBatch.FindSet();
         Assert.RecordCount(GenJournalBatch, 0);
 
         GenJournalLine.SetRange("Journal Template Name", 'GENERAL');
         GenJournalLine.SetRange("Journal Batch Name", 'GP2020BB');
-        GenJournalLine.FindSet();
         Assert.RecordCount(GenJournalLine, 0);
     end;
 
@@ -239,8 +284,6 @@ codeunit 139661 "GP Account Tests"
         DimensionValues.DeleteAll();
         GPFiscalPeriods.DeleteAll();
         GPGLTransactions.DeleteAll();
-        GPCompanyMigrationSettings.DeleteAll();
-        GPCompanyAdditionalSettings.DeleteAll();
     end;
 
     local procedure Migrate(GPAccount: Record "GP Account")
@@ -746,17 +789,5 @@ codeunit 139661 "GP Account Tests"
         GPFiscalPeriods.PERIODDT := 20200101D;
         GPFiscalPeriods.PERDENDT := 20200101D;
         GPFiscalPeriods.Insert(true);
-    end;
-
-    local procedure ConfigureMigrationSettings(InitialHistYear: Integer)
-    begin
-        GPCompanyMigrationSettings.Init();
-        GPCompanyMigrationSettings.Name := CompanyName();
-        GPCompanyMigrationSettings.Insert(true);
-
-        GPCompanyAdditionalSettings.Init();
-        GPCompanyAdditionalSettings.Name := GPCompanyMigrationSettings.Name;
-        GPCompanyAdditionalSettings."Oldest GL Year to Migrate" := InitialHistYear;
-        GPCompanyAdditionalSettings.Insert(true);
     end;
 }

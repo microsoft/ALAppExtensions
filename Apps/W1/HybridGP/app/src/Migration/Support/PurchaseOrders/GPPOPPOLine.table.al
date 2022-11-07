@@ -620,7 +620,7 @@ table 40103 "GP POPPOLine"
             until Next() = 0;
     end;
 
-    local procedure CreateNonInventoryItem(ItemNo: Code[20]; ItemDescription: Text[100]; UnitCost: Decimal; UnitOfMeasure: Text[10])
+    local procedure CreateNonInventoryItem(ItemNo: Code[20]; ItemDescription: Text[100]; ItemUnitCost: Decimal; UnitOfMeasure: Text[10])
     var
         NewItem: Record Item;
         ItemType: Enum "Item Type";
@@ -633,7 +633,7 @@ table 40103 "GP POPPOLine"
         NewItem.Validate("No.", ItemNo);
         NewItem.Description := ItemDescription;
         NewItem.Validate(Type, ItemType::"Non-Inventory");
-        NewItem.Validate("Unit Cost", UnitCost);
+        NewItem.Validate("Unit Cost", ItemUnitCost);
         NewItem.Validate("Gen. Prod. Posting Group", PostingGroupTxt);
         NewItem.Insert(true);
         NewItem.Validate("Base Unit of Measure", UnitOfMeasure);
