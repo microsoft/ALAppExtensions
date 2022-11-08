@@ -1,4 +1,4 @@
-﻿name: Create release
+﻿name: ' Create release'
 
 on:
   workflow_dispatch:
@@ -54,11 +54,11 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.0
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.1
         with:
           eventId: "DO0094"
 
@@ -70,18 +70,18 @@ jobs:
       upload_url: ${{ steps.createrelease.outputs.upload_url }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.1
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           get: TemplateUrl,RepoName
           getProjects: 'Y'
 
       - name: Check for updates to AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@v2.0
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@v2.1
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           templateUrl: ${{ env.TemplateUrl }}
@@ -89,6 +89,7 @@ jobs:
       - name: Analyze Artifacts
         id: analyzeartifacts
         run: |
+          $ErrorActionPreference = "STOP"
           $projects = '${{ steps.ReadSettings.outputs.ProjectsJson }}' | ConvertFrom-Json
           $projects | out-host
           $include = @()
@@ -124,12 +125,12 @@ jobs:
           }
           $artifacts = @{ "include" = $include }
           $artifactsJson = $artifacts | ConvertTo-Json -compress
-          Write-Host "::set-output name=artifacts::$artifactsJson"
-          Write-Host "set-output name=artifacts::$artifactsJson"
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "artifacts=$artifactsJson"
+          Write-Host "artifacts=$artifactsJson"
 
       - name: Prepare release notes
         id: createreleasenotes
-        uses: microsoft/AL-Go-Actions/CreateReleaseNotes@v2.0
+        uses: microsoft/AL-Go-Actions/CreateReleaseNotes@v2.1
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           tag_name: ${{ github.event.inputs.tag }}
@@ -154,24 +155,25 @@ jobs:
       fail-fast: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.1
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.0
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.1
         env:
           secrets: ${{ toJson(secrets) }}
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           settingsJson: ${{ env.Settings }}
-          secrets: 'StorageContext'
+          secrets: 'NuGetContext,StorageContext'
 
       - name: Download artifact
         run: |
+          $ErrorActionPreference = "STOP"
           Write-Host "Downloading artifact ${{ matrix.name}}"
           $headers = @{ 
               "Authorization" = "token ${{ github.token }}"
@@ -189,26 +191,52 @@ jobs:
           asset_name: '${{ matrix.name }}.zip'
           asset_content_type: application/zip
 
-      - name: DeliveryContext
-        id: deliveryContext
+      - name: NuGetContext
+        id: nuGetContext
+        if: ${{ env.NuGetContext }}
+        run: |
+          $ErrorActionPreference = "STOP"
+          $nuGetContext = ''
+          if ('${{ matrix.atype }}' -eq 'Apps') {
+            $nuGetContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable('NuGetContext')))
+          }
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "nuGetContext=$nuGetContext"
+          Write-Host "nuGetContext=$nuGetContext"
+
+      - name: Deliver to NuGet
+        uses: microsoft/AL-Go-Actions/Deliver@v2.1
+        if: ${{ steps.nuGetContext.outputs.nuGetContext }}
+        env:
+          deliveryContext: ${{ steps.nuGetContext.outputs.nuGetContext }}
+        with:
+          type: 'Release'
+          projects: ${{ matrix.project }}
+          deliveryTarget: 'NuGet'
+          artifacts: ${{ github.event.inputs.appVersion }}
+          atypes: 'Apps,TestApps'
+
+      - name: StorageContext
+        id: storageContext
         if: ${{ env.StorageContext }}
         run: |
-          $contextName = 'StorageContext'
-          $deliveryContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable($contextName)))
-          Write-Host "::set-output name=deliveryContext::$deliveryContext"
-          Write-Host "set-output name=deliveryContext::$deliveryContext"
+          $ErrorActionPreference = "STOP"
+          $storageContext = ''
+          if ('${{ matrix.atype }}' -eq 'Apps') {
+            $storageContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable('StorageContext')))
+          }
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "storageContext=$storageContext"
 
-      - name: Deliver
-        uses: microsoft/AL-Go-Actions/Deliver@v2.0
-        if: ${{ env.StorageContext }}
+      - name: Deliver to Storage
+        uses: microsoft/AL-Go-Actions/Deliver@v2.1
+        if: ${{ steps.storageContext.outputs.storageContext }}
         env:
-          deliveryContext: ${{ steps.deliveryContext.outputs.deliveryContext }}
+          deliveryContext: ${{ steps.storageContext.outputs.storageContext }}
         with:
           type: 'Release'
           projects: ${{ matrix.project }}
           deliveryTarget: 'Storage'
           artifacts: ${{ github.event.inputs.appVersion }}
-          atypes: ${{ matrix.atype }}
+          atypes: 'Apps,TestApps,Dependencies'
 
   CreateReleaseBranch:
     if: ${{ github.event.inputs.createReleaseBranch=='Y' }}
@@ -216,10 +244,11 @@ jobs:
     needs: [ Initialization, CreateRelease, UploadArtifacts ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Create Release Branch
         run: |
+          $ErrorActionPreference = "STOP"
           git checkout -b release/${{ github.event.inputs.tag }}
           git config user.name ${{ github.actor}}
           git config user.email ${{ github.actor}}@users.noreply.github.com
@@ -232,7 +261,7 @@ jobs:
     needs: [ Initialization, CreateRelease, UploadArtifacts ]
     steps:
       - name: Update Version Number
-        uses: microsoft/AL-Go-Actions/IncrementVersionNumber@v2.0
+        uses: microsoft/AL-Go-Actions/IncrementVersionNumber@v2.1
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           versionNumber: ${{ github.event.inputs.updateVersionNumber }}
@@ -244,11 +273,11 @@ jobs:
     needs: [ Initialization, CreateRelease, UploadArtifacts, CreateReleaseBranch, UpdateVersionNumber ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.0
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.1
         with:
           eventId: "DO0094"
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}

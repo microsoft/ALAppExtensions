@@ -1,10 +1,10 @@
-﻿name: Update AL-Go System Files
+﻿name: ' Update AL-Go System Files'
 
 on:
   workflow_dispatch:
     inputs:
       templateUrl:
-        description: Template Repository URL (current is https://github.com/microsoft/AL-Go-PTE@v2.0)
+        description: Template Repository URL (current is https://github.com/microsoft/AL-Go-PTE@main)
         required: false
         default: ''
       directCommit:
@@ -24,22 +24,22 @@ jobs:
     runs-on: [ windows-latest ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.0
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.1
         with:
           eventId: "DO0098"
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.1
         with:
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           get: KeyVaultName,GhTokenWorkflowSecretName,TemplateUrl
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.0
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.1
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -51,6 +51,7 @@ jobs:
         env:
           templateUrl: ${{ github.event.inputs.templateUrl }}
         run: |
+          $ErrorActionPreference = "STOP"
           $templateUrl = $ENV:templateUrl
           if ($templateUrl) {
             Write-Host "Using Template Url: $templateUrl"
@@ -62,6 +63,7 @@ jobs:
           directCommit: ${{ github.event.inputs.directCommit }}
           eventName: ${{ github.event_name }}
         run: |
+          $ErrorActionPreference = "STOP"
           $directCommit = $ENV:directCommit
           Write-Host $ENV:eventName
           if ($ENV:eventName -eq 'schedule') {
@@ -71,7 +73,7 @@ jobs:
           Add-Content -Path $env:GITHUB_ENV -Value "DirectCommit=$directCommit"
 
       - name: Update AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@v2.0
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@v2.1
         with:
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           token: ${{ env.ghTokenWorkflow }}
@@ -81,7 +83,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.0
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.1
         with:
           eventId: "DO0098"
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
