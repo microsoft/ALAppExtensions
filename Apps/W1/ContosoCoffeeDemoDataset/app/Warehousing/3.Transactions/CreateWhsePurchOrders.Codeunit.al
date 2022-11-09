@@ -10,30 +10,30 @@ codeunit 4796 "Create Whse Purch Orders"
     begin
         WhseDemoDataSetup.Get();
 
-        // For 1.1.1.	Receiving Items with Inventory Put-Away
+        // Receiving Items with Inventory Put-Away
         CreatePurchaseOrder('107000', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Simple", WhseDemoDataSetup."Main Item No.", 10);
-        // For 1.2.1.	Receiving a Single Order with Whse. Receipt
+        // Receiving a Single Order with Whse. Receipt
         CreatePurchaseOrder('107001', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Simple", WhseDemoDataSetup."Main Item No.", 20);
 
-        // For 1.2.2.	Combining Orders on a Whse. Receipt
+        // Combining Orders on a Whse. Receipt
         CreatePurchaseOrder('107002', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 10);
         CreatePurchaseOrder('107003', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 20);
         CreatePurchaseOrder('107004', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 30);
         CreatePurchaseOrder('107005', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 40);
 
-        // For 1.3.1.	Receiving Scenarios 1.3.	Advanced Logistics Location
-        // For 1.3.1.1.	Receiving & Put-Away with Bin Defaults
+        // Receiving Scenarios 1.3.	Advanced Logistics Location
+        // Receiving & Put-Away with Bin Defaults
         CreatePurchaseOrder('107006', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Main Item No.", 10, 'BAG');
         CreatePurchaseOrder('107007', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Main Item No.", 15, 'BAG');
 
-        // For 1.3.1.2.	Receiving & Put-Away with Breakbulk
+        // Receiving & Put-Away with Breakbulk
         CreatePurchaseOrder('107008', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Complex Item No.", 20, 'BAG');
         CreatePurchaseOrder('107009', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Complex Item No.", 10, 'PALLET');
 
-        // For 1.3.1.3.	Receiving & Put-Away with Bin Capacity Limits
+        // Receiving & Put-Away with Bin Capacity Limits
         CreatePurchaseOrder('107010', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Complex Item No.", 10, 'PALLET');
 
-        // For 1.3.1.4.	Receiving & Put-Away By Zones
+        // Receiving & Put-Away By Zones
         CreatePurchaseOrder('107011', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Complex Item No.", 10, 'PALLET');
 
     end;
