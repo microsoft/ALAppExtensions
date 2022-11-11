@@ -118,12 +118,12 @@ report 11016 "Create XML-File VAT Adv.Notif."
         CalcTaxAmountMsg: Label 'Calculating Tax Amounts';
         CreateSalesVATAdvNotifMsg: Label 'Creating Sales VAT Adv. Notif.';
         XMLDocHasNotBeenCreatedErr: Label 'The XML Document has not been created.';
-        ErrorMustConsistErr: Label 'The %1 must consist of 4 digits.';
-        ErrorKeyFigureErr: Label 'Key figure %1 must not be negative.';
-        XMLFileHasBeenCreatedMsg: Label 'The XML-File for the %1 has been created successfully.';
-        XMLFileExistsErr: Label 'The XML-File for the %1 already exists.';
-        TruncateRequestMsg: Label 'The length of the field %1 of table %2 exceeds the maximum length of %3 allowed. The text will be truncated from\\%4 to\%5.\\Do you want to continue?';
-        ErrorCategoryErr: Label 'Please make sure that as well category %1 and %2 are defined in %3 %4.';
+        ErrorMustConsistErr: Label 'The %1 must consist of 4 digits.', Comment = '%1 = Tax Office Number Field Caption';
+        ErrorKeyFigureErr: Label 'Key figure %1 must not be negative.', Comment = '%1 = Key Figure No.';
+        XMLFileHasBeenCreatedMsg: Label 'The XML-File for the %1 has been created successfully.', Comment = '%1 = Sales VAT Advance Notif. Table Caption';
+        XMLFileExistsErr: Label 'The XML-File for the %1 already exists.', Comment = '%1 = Sales VAT Advance Notif. Table Caption';
+        TruncateRequestMsg: Label 'The length of the field %1 of table %2 exceeds the maximum length of %3 allowed. The text will be truncated from\\%4 to\%5.\\Do you want to continue?', Comment = '%1 = Checked Company Info Field Caption; %2 = Company Info Table Caption; %3 = Maximum Length; %4 = Original Field Value; %5 = Truncated Text';
+        ErrorCategoryErr: Label 'Please make sure that as well category %1 and %2 are defined in %3 %4.', Comment = '%1 = Tax Pair Category; %2 = Tax Pair Category; %3 = VAT Statement Name Table Caption; %4 = VAT Statement Name Table Name';
         ElsterTok: Label 'ElsterTelemetryCategoryTok', Locked = true;
         CreateXMLFileMsg: Label 'Creating XML file', Locked = true;
         CreateXMLFileSuccessMsg: Label 'XML file created successfully', Locked = true;
@@ -374,7 +374,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
         XmlRootElem := XmlElemNew;
     end;
 
-    local procedure AddUseData(var XmlRootElem: XmlElement; var XmlNameSpace: Text)
+    local procedure AddUseData(var XmlRootElem: XmlElement; XmlNameSpace: Text)
     var
         TempNameValueBuffer: Record "Name/Value Buffer" temporary;
         XmlElemNew: XmlElement;

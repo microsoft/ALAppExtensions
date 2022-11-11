@@ -448,6 +448,17 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         exit(CountryRegion.IsIntrastatCZL("Ship-to Country/Region Code", true));
     end;
 
+    procedure GetDefaulBankAccountNoCZL() BankAccountNo: Code[20]
+    var
+        BankAccount: Record "Bank Account";
+        IsHandled: Boolean;
+    begin
+        OnBeforeGetDefaulBankAccountNoCZL(Rec, BankAccountNo, IsHandled);
+        if IsHandled then
+            exit(BankAccountNo);
+        exit(BankAccount.GetDefaultBankAccountNoCZL("Responsibility Center", "Currency Code"));
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeIsUnreliablePayerCheckPossibleCZL(var PurchaseHeader: Record "Purchase Header"; var CheckPossible: Boolean)
     begin
@@ -485,6 +496,11 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeConfirmUpdateVATCurrencyFactorCZL(var PurchaseHeader: Record "Purchase Header"; var HideValidationDialog: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetDefaulBankAccountNoCZL(var PurchaseHeader: Record "Purchase Header"; var BankAccountNo: Code[20]; var IsHandled: Boolean);
     begin
     end;
 }

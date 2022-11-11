@@ -26,8 +26,17 @@ page 1997 "Checklist Resurfacing"
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
         ChecklistImplementation: Codeunit "Checklist Implementation";
+        UserNameCode: Code[50];
     begin
-        if CloseAction = CloseAction::Yes then
-            ChecklistImplementation.SetChecklistVisibility(UserId(), true, true);
+        if CloseAction = CloseAction::Yes then begin
+            UserNameCode := CopyStr(UserId(), 1, 50);
+            If not ChecklistImplementation.DoesUserHaveChecklistItemsAssigned(UserNameCode) then
+                Message(EmptyChecklistMsg)
+            else
+                ChecklistImplementation.SetChecklistVisibility(UserId(), true, true);
+        end;
     end;
+
+    var
+        EmptyChecklistMsg: Label 'Your checklist is empty. You can add items to it on the Checklist Administration page.';
 }

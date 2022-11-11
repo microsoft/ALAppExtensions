@@ -6,6 +6,7 @@ report 31014 "Sales - Advance Letter CZZ"
     PreviewMode = PrintLayout;
     UsageCategory = None;
     Permissions = tabledata "Sales Adv. Letter Header CZZ" = m;
+    WordMergeDataItem = "Sales Advance Letter Header";
 
     dataset
     {
@@ -99,6 +100,18 @@ report 31014 "Sales - Advance Letter CZZ"
             column(CreatorLbl; CreatorLbl)
             {
             }
+            column(GreetingLbl; GreetingLbl)
+            {
+            }
+            column(BodyLbl; BodyLbl)
+            {
+            }
+            column(ClosingLbl; ClosingLbl)
+            {
+            }
+            column(DocumentNoLbl; DocumentNoLbl)
+            {
+            }
             column(No_SalesAdvanceLetterHeader; "No.")
             {
             }
@@ -183,7 +196,13 @@ report 31014 "Sales - Advance Letter CZZ"
             column(AdvanceDueDate_SalesAdvancLetterHeaderCaption; FieldCaption("Advance Due Date"))
             {
             }
-            column(AdvanceDueDate_SalesAdvancLetterHeader; "Advance Due Date")
+            column(AdvanceDueDate_SalesAdvancLetterHeader; FormatDate("Advance Due Date"))
+            {
+            }
+            column(AmountIncludingVATLbl; AmountIncludingVATLbl)
+            {
+            }
+            column(AmountIncludingVAT; AmountIncludingVAT)
             {
             }
             dataitem(CopyLoop; "Integer")
@@ -284,6 +303,8 @@ report 31014 "Sales - Advance Letter CZZ"
             }
 
             trigger OnAfterGetRecord()
+            var
+                SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ";
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
 
@@ -294,6 +315,10 @@ report 31014 "Sales - Advance Letter CZZ"
 
                 FormatAddress.FormatAddr(CustAddr, "Bill-to Name", "Bill-to Name 2", "Bill-to Contact", "Bill-to Address", "Bill-to Address 2",
                   "Bill-to City", "Bill-to Post Code", "Bill-to County", "Bill-to Country/Region Code");
+
+                SalesAdvLetterLineCZZ.SetRange("Document No.", "No.");
+                SalesAdvLetterLineCZZ.CalcSums("Amount Including VAT");
+                AmountIncludingVAT := SalesAdvLetterLineCZZ."Amount Including VAT";
             end;
         }
     }
@@ -332,6 +357,7 @@ report 31014 "Sales - Advance Letter CZZ"
         DocFooterText: Text[1000];
         PaymentSymbol: array[2] of Text;
         PaymentSymbolLabel: array[2] of Text;
+        AmountIncludingVAT: Decimal;
         NoOfCop: Integer;
         CopyNo: Integer;
         NoOfLoops: Integer;
@@ -345,6 +371,11 @@ report 31014 "Sales - Advance Letter CZZ"
         SalespersonLbl: Label 'Salesperson';
         TotalLbl: Label 'total';
         CreatorLbl: Label 'Posted by';
+        GreetingLbl: Label 'Hello';
+        ClosingLbl: Label 'Sincerely';
+        BodyLbl: Label 'The sales advance letter is attached to this message.';
+        DocumentNoLbl: Label 'No.';
+        AmountIncludingVATLbl: Label 'Amount Including VAT';
 
     local procedure FormatDocumentFields(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
     begin
@@ -357,6 +388,11 @@ report 31014 "Sales - Advance Letter CZZ"
           SalesAdvLetterHeaderCZZ."Constant Symbol", SalesAdvLetterHeaderCZZ.FieldCaption("Constant Symbol"),
           SalesAdvLetterHeaderCZZ."Specific Symbol", SalesAdvLetterHeaderCZZ.FieldCaption("Specific Symbol"));
         DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText(SalesAdvLetterHeaderCZZ."Language Code");
+    end;
+
+    local procedure FormatDate(DateValue: Date): Text
+    begin
+        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

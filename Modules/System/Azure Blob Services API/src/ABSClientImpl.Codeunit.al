@@ -474,7 +474,6 @@ codeunit 9051 "ABS Client Impl."
     procedure GetBlobTags(BlobName: Text; var Tags: Dictionary of [Text, Text]; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
     var
         ABSOperationResponse: Codeunit "ABS Operation Response";
-        ABSFormatHelper: Codeunit "ABS Format Helper";
         Operation: Enum "ABS Operation";
         ResponseText: Text;
     begin

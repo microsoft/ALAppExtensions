@@ -19,6 +19,7 @@ permissionset 11730 "CZ Core Pack - Read CZL"
                   tabledata "Acc. Schedule Result Hist. CZL" = R,
                   tabledata "Acc. Schedule Result Line CZL" = R,
                   tabledata "Acc. Schedule Result Value CZL" = R,
+                  tabledata "Adj. Exchange Rate Buffer CZL" = R,
                   tabledata "Bank Acc. Adjust. Buffer CZL" = R,
                   tabledata "Certificate Code CZL" = R,
                   tabledata "Commodity CZL" = R,

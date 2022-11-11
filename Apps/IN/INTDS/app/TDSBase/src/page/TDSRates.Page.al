@@ -432,6 +432,7 @@ page 18697 "TDS Rates"
 
     trigger OnOpenPage()
     begin
+        ColumnCount := 0;
         GlobalTaxType := '';
         TDSSetup.Get();
         TDSSetup.TestField(TDSSetup."Tax Type");

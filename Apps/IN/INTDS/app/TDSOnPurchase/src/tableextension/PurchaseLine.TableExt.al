@@ -136,6 +136,9 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
     local procedure UpdateTaxAmountOnCurrentDocument()
     var
         PurchaseLine: Record "Purchase Line";
+        PrevPurchaseLine: Record "Purchase Line";
+        PreviousTransactionValue: Record "Tax Transaction Value";
+        CurrentTransactionValue: Record "Tax Transaction Value";
         CalculateTax: Codeunit "Calculate Tax";
     begin
         PurchaseLine.SetRange("Document Type", "Document Type");
@@ -144,13 +147,39 @@ tableextension 18716 "Purchase Line" extends "Purchase Line"
         if not PurchaseLine.IsEmpty() then
             Modify();
 
+        PrevPurchaseLine := Rec;
+        PreviousTransactionValue := GetComponentValue(PrevPurchaseLine);
+
+        PurchaseLine.LoadFields("Document Type", "Document No.", "Line No.");
         PurchaseLine.SetRange("Document Type", "Document Type");
         PurchaseLine.SetRange("Document No.", "Document No.");
         PurchaseLine.SetFilter("Line No.", '<>%1', "Line No.");
         if PurchaseLine.FindSet() then
             repeat
-                CalculateTax.CallTaxEngineOnPurchaseLine(PurchaseLine, PurchaseLine);
+                CurrentTransactionValue := GetComponentValue(PurchaseLine);
+                if not ((((PreviousTransactionValue.Amount = 0) and (CurrentTransactionValue.Amount = 0)) or
+                    ((PreviousTransactionValue.Amount <> 0) and (CurrentTransactionValue.Amount <> 0))
+                    ) and (PreviousTransactionValue.Percent = CurrentTransactionValue.Percent))
+                then begin
+                    CalculateTax.CallTaxEngineOnPurchaseLine(PurchaseLine, PurchaseLine);
+                    if PreviousTransactionValue.Amount = 0 then
+                        PreviousTransactionValue := GetComponentValue(PurchaseLine);
+                end;
             until PurchaseLine.Next() = 0;
+    end;
+
+    local procedure GetComponentValue(PurchaseLine: Record "Purchase Line"): Record "Tax Transaction Value"
+    var
+        TaxTransactionValue: Record "Tax Transaction Value";
+    begin
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
+        TaxTransactionValue.SetFilter("Tax Type", '%1', 'TDS');
+        TaxTransactionValue.SetRange("Tax Record ID", PurchaseLine.RecordId);
+        TaxTransactionValue.SetRange("Value Type", TaxTransactionValue."Value Type"::COMPONENT);
+        TaxTransactionValue.SetRange("Value ID", 1);
+        if TaxTransactionValue.FindFirst() then;
+
+        exit(TaxTransactionValue);
     end;
 
     local procedure IsFieldValueModified(FieldNo: Integer): Boolean

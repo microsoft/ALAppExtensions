@@ -8,6 +8,7 @@ table 130443 "Word Templates Test Table"
     DataClassification = SystemMetadata;
     TableType = Temporary;
     Caption = 'Word Templates Test / Table "<>:/\|?*'; // Used to verify that reserved characters are removed in template name
+    ReplicateData = false;
 
     fields
     {

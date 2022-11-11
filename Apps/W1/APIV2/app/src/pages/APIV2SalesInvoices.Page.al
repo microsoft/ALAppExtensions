@@ -97,13 +97,9 @@ page 30012 "APIV2 - Sales Invoices"
                     Caption = 'Customer Id';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if not SellToCustomer.GetBySystemId("Customer Id") then
                             Error(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Sell-to Customer No." := SellToCustomer."No.";
                         RegisterFieldSet(FieldNo("Customer Id"));
@@ -116,8 +112,6 @@ page 30012 "APIV2 - Sales Invoices"
                     Caption = 'Customer No.';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if SellToCustomer."No." <> '' then begin
                             if SellToCustomer."No." <> "Sell-to Customer No." then
@@ -127,8 +121,6 @@ page 30012 "APIV2 - Sales Invoices"
 
                         if not SellToCustomer.Get("Sell-to Customer No.") then
                             Error(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Customer Id" := SellToCustomer.SystemId;
                         RegisterFieldSet(FieldNo("Customer Id"));
@@ -150,13 +142,9 @@ page 30012 "APIV2 - Sales Invoices"
                     Caption = 'Bill-To Customer Id';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if not BillToCustomer.GetBySystemId("Bill-to Customer Id") then
                             Error(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer No." := BillToCustomer."No.";
                         RegisterFieldSet(FieldNo("Bill-to Customer Id"));
@@ -168,8 +156,6 @@ page 30012 "APIV2 - Sales Invoices"
                     Caption = 'Bill-To Customer No.';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if BillToCustomer."No." <> '' then begin
                             if BillToCustomer."No." <> "Bill-to Customer No." then
@@ -179,8 +165,6 @@ page 30012 "APIV2 - Sales Invoices"
 
                         if not BillToCustomer.Get("Bill-to Customer No.") then
                             Error(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer Id" := BillToCustomer.SystemId;
                         RegisterFieldSet(FieldNo("Bill-to Customer Id"));
@@ -676,6 +660,7 @@ page 30012 "APIV2 - Sales Invoices"
         PaymentTerms: Record "Payment Terms";
         ShipmentMethod: Record "Shipment Method";
         O365SetupEmail: Codeunit "O365 Setup Email";
+        APIV2SendSalesDocument: Codeunit "APIV2 - Send Sales Document";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
         CannotChangeIDErr: Label 'The id cannot be changed.';
         LCYCurrencyCode: Code[10];
@@ -705,9 +690,9 @@ page 30012 "APIV2 - Sales Invoices"
         PostedInvoiceActionErr: Label 'The action can be applied to a posted invoice only.';
         DraftInvoiceActionErr: Label 'The action can be applied to a draft invoice only.';
         CannotFindInvoiceErr: Label 'The invoice cannot be found.';
-        CancelingInvoiceFailedCreditMemoCreatedAndPostedErr: Label 'Canceling the invoice failed because of the following error: \\%1\\A credit memo is posted.';
-        CancelingInvoiceFailedCreditMemoCreatedButNotPostedErr: Label 'Canceling the invoice failed because of the following error: \\%1\\A credit memo is created but not posted.';
-        CancelingInvoiceFailedNothingCreatedErr: Label 'Canceling the invoice failed because of the following error: \\%1.';
+        CancelingInvoiceFailedCreditMemoCreatedAndPostedErr: Label 'Canceling the invoice failed because of the following error: \\%1\\A credit memo is posted.', Comment = '%1 - arbitrary text (an error message)';
+        CancelingInvoiceFailedCreditMemoCreatedButNotPostedErr: Label 'Canceling the invoice failed because of the following error: \\%1\\A credit memo is created but not posted.', Comment = '%1 - arbitrary text (an error message)';
+        CancelingInvoiceFailedNothingCreatedErr: Label 'Canceling the invoice failed because of the following error: \\%1.', Comment = '%1 - arbitrary text (an error message)';
         EmptyEmailErr: Label 'The send-to email is empty. Specify email either for the customer or for the invoice in email preview.';
         AlreadyCanceledErr: Label 'The invoice cannot be canceled because it has already been canceled.';
         InvoiceClosedErr: Label 'The invoice is closed. The corrective credit memo will not be applied to the invoice.';
@@ -716,6 +701,7 @@ page 30012 "APIV2 - Sales Invoices"
 
     local procedure SetCalculatedFields()
     begin
+        Rec.LoadFields("No.", "Currency Code", "Amount Including VAT", Posted, Status);
         GetRemainingAmount();
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, "Currency Code");
     end;
@@ -918,12 +904,10 @@ page 30012 "APIV2 - Sales Invoices"
 
     local procedure PostInvoice(var SalesHeader: Record "Sales Header"; var SalesInvoiceHeader: Record "Sales Invoice Header")
     var
-        DummyO365SalesDocument: Record "O365 Sales Document";
         LinesInstructionMgt: Codeunit "Lines Instruction Mgt.";
-        O365SendResendInvoice: Codeunit "O365 Send + Resend Invoice";
         PreAssignedNo: Code[20];
     begin
-        O365SendResendInvoice.CheckDocumentIfNoItemsExists(SalesHeader, false, DummyO365SalesDocument);
+        APIV2SendSalesDocument.CheckDocumentIfNoItemsExists(SalesHeader);
         LinesInstructionMgt.SalesCheckAllLinesHaveQuantityAssigned(SalesHeader);
         PreAssignedNo := SalesHeader."No.";
         SalesHeader.SendToPosting(Codeunit::"Sales-Post");
@@ -943,11 +927,9 @@ page 30012 "APIV2 - Sales Invoices"
 
     local procedure SendDraftInvoice(var SalesHeader: Record "Sales Header")
     var
-        DummyO365SalesDocument: Record "O365 Sales Document";
         LinesInstructionMgt: Codeunit "Lines Instruction Mgt.";
-        O365SendResendInvoice: Codeunit "O365 Send + Resend Invoice";
     begin
-        O365SendResendInvoice.CheckDocumentIfNoItemsExists(SalesHeader, false, DummyO365SalesDocument);
+        APIV2SendSalesDocument.CheckDocumentIfNoItemsExists(SalesHeader);
         LinesInstructionMgt.SalesCheckAllLinesHaveQuantityAssigned(SalesHeader);
         O365SetupEmail.CheckMailSetup();
         CheckSendToEmailAddress(SalesHeader."No.");

@@ -49,7 +49,9 @@ page 20040 "APIV1 - G/L Entry Attachments"
                         GraphMgtAttachmentBuffer.RegisterFieldSet(FIELDNO("Byte Size"), TempFieldBuffer);
                     end;
                 }
+#pragma warning disable AL0273
                 field(content; Content)
+#pragma warning restore
                 {
                     Caption = 'content', Locked = true;
 
@@ -105,7 +107,9 @@ page 20040 "APIV1 - G/L Entry Attachments"
     var
         FileManagement: Codeunit "File Management";
         TypeHelper: Codeunit "Type Helper";
+#pragma warning disable AA0072
         Value: Variant;
+#pragma warning restore
         GLEntryNoFilter: Text;
         FilterView: Text;
     begin

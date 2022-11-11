@@ -396,7 +396,7 @@ report 18933 "Voucher Register"
                 begin
                     FALedgerEntry.Reset();
                     FALedgerEntry.SetRange("G/L Entry No.", "Entry No.");
-                    if FALedgerEntry.FindFirst() then begin
+                    if not FALedgerEntry.IsEmpty() then begin
                         FixedAsset.Get("Source No.");
                         AccName := CopyStr(FixedAsset.Description, 1, MaxStrLen(AccName));
                     end else begin
@@ -531,6 +531,6 @@ report 18933 "Voucher Register"
             if NoTextIndex > ArrayLen(NoText) then
                 Error(ExceededStringErr, AddText);
         end;
-        NoText[NoTextIndex] := DelChr(NoText[NoTextIndex] + ' ' + AddText, '<');
+        NoText[NoTextIndex] := CopyStr(DelChr(NoText[NoTextIndex] + ' ' + AddText, '<'), 1, 80);
     end;
 }

@@ -20,7 +20,7 @@ codeunit 139768 "UT Page Bank Deposit"
         Initialized: Boolean;
         InitializeHandled: Boolean;
         ValueMustExistMsg: Label 'Value must exist.';
-        PostingDateErr: Label 'Validation error for Field: Posting Date,  Message = ''Posting Date must have a value in Bank Deposit Header: No.=%1. It cannot be zero or empty. (Select Refresh to discard errors)''';
+        PostingDateErr: Label 'Validation error for Field: Posting Date,  Message = ', Comment = 'Label contains error message for invalid posting date''Posting Date must have a value in Bank Deposit Header: No.=%1. It cannot be zero or empty. (Select Refresh to discard errors)''';
         FeatureKeyIdTok: Label 'StandardizedBankReconciliationAndDeposits', Locked = true;
 
     [Test]
@@ -768,7 +768,7 @@ codeunit 139768 "UT Page Bank Deposit"
         GenJournalLine."Document No." := LibraryUTUtility.GetNewCode();
         GenJournalLine.Description := GenJournalLine."Document No.";
         GenJournalLine."Source Type" := GenJournalLine."Source Type"::"Bank Account";
-        GenJournalLine."Source Code" := BankDepositHeader."Bank Account No.";
+        GenJournalLine."Source Code" := CopyStr(BankDepositHeader."Bank Account No.", 1, MaxStrLen(GenJournalLine."Source Code"));
         GenJournalLine.Insert();
     end;
 
@@ -839,15 +839,15 @@ codeunit 139768 "UT Page Bank Deposit"
 
     local procedure CreateDetailedCustomerLedgerEntry(CustLedgerEntryNo: Integer; CustomerNo: Code[20])
     var
-        DetailedCustomerLedgEntry: Record "Detailed Cust. Ledg. Entry";
-        DetailedCustomerLedgEntry2: Record "Detailed Cust. Ledg. Entry";
+        DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
+        DetailedCustLedgEntry2: Record "Detailed Cust. Ledg. Entry";
     begin
-        DetailedCustomerLedgEntry2.FindLast();
-        DetailedCustomerLedgEntry."Entry No." := DetailedCustomerLedgEntry2."Entry No." + 1;
-        DetailedCustomerLedgEntry."Cust. Ledger Entry No." := CustLedgerEntryNo;
-        DetailedCustomerLedgEntry."Customer No." := CustomerNo;
-        DetailedCustomerLedgEntry.Amount := LibraryRandom.RandDec(10, 2);
-        DetailedCustomerLedgEntry.Insert();
+        DetailedCustLedgEntry2.FindLast();
+        DetailedCustLedgEntry."Entry No." := DetailedCustLedgEntry2."Entry No." + 1;
+        DetailedCustLedgEntry."Cust. Ledger Entry No." := CustLedgerEntryNo;
+        DetailedCustLedgEntry."Customer No." := CustomerNo;
+        DetailedCustLedgEntry.Amount := LibraryRandom.RandDec(10, 2);
+        DetailedCustLedgEntry.Insert();
     end;
 
     local procedure CreatePostedSalesInvoiceLine(SellToCustomerNo: Code[20])
@@ -911,10 +911,12 @@ codeunit 139768 "UT Page Bank Deposit"
         GenJournalLine.SetRange("Journal Template Name", BankDepositHeader."Journal Template Name");
         GenJournalLine.SetRange("Journal Batch Name", BankDepositHeader."Journal Batch Name");
         GenJournalLine.SetRange("Posting Date", BankDepositHeader."Posting Date");
+#pragma warning disable AA0210
         GenJournalLine.SetRange("Bal. Account Type", GenJournalLine."Bal. Account Type"::"Bank Account");
         GenJournalLine.SetRange("Bal. Account No.", BankDepositHeader."Bank Account No.");
         GenJournalLine.SetRange("Currency Code", CurrencyCode);
         GenJournalLine.SetRange("Currency Factor", CurrencyFactor);
+#pragma warning restore
         Assert.RecordCount(GenJournalLine, 2);
 
         GenJournalLine.FindFirst();

@@ -92,7 +92,7 @@ page 20023 "APIV1 - Payment Terms"
     var
         PaymentTerms: Record "Payment Terms";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
         PaymentTerms.SETRANGE(Code, Code);
         IF NOT PaymentTerms.ISEMPTY() THEN
@@ -100,9 +100,9 @@ page 20023 "APIV1 - Payment Terms"
 
         INSERT(TRUE);
 
-        RecRef.GETTABLE(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CURRENTDATETIME());
-        RecRef.SETTABLE(Rec);
+        RecordRef.GETTABLE(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecordRef, TempFieldSet, CURRENTDATETIME());
+        RecordRef.SETTABLE(Rec);
 
         MODIFY(TRUE);
         EXIT(FALSE);

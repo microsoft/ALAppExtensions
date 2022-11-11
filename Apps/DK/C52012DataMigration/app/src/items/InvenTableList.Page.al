@@ -23,6 +23,7 @@ page 1901 "C5 InvenTable List"
                 field("Error Message"; MigrationErrorText)
                 {
                     ApplicationArea = All;
+                    Caption = 'Error Message';
                     Enabled = false;
                 }
                 field(ItemNumber; ItemNumber) { ApplicationArea = All; }

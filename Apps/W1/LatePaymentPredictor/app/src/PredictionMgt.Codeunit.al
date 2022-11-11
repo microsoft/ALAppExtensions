@@ -172,7 +172,7 @@ codeunit 1950 "LP Prediction Mgt."
         LPSetupNotification.Id := SetupNotificationId;
         LPSetupNotification.Message := EnableNotificationMsg;
         LPSetupNotification.SetData('ActionCaption', PredictActionCaptionTxt);
-        SalesDocType := SalesHeader."Document Type";
+        SalesDocType := SalesHeader."Document Type".AsInteger();
         LPSetupNotification.SetData('SalesHeaderDocType', Format(SalesDocType));
         LPSetupNotification.SetData('SalesHeaderNum', SalesHeader."No.");
         LPSetupNotification.AddAction(EnableTxt, Codeunit::"LP Prediction Mgt.", 'Enable');

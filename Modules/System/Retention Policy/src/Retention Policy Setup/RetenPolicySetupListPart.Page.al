@@ -14,7 +14,6 @@ page 3905 "Reten. Policy Setup ListPart"
     CardPageId = "Retention Policy Setup Card";
     Editable = false;
     RefreshOnActivate = true;
-    PromotedActionCategories = 'New, Process, Report, Navigate';
 
     layout
     {
@@ -66,9 +65,6 @@ page 3905 "Reten. Policy Setup ListPart"
             {
                 Caption = 'Apply Manually';
                 ApplicationArea = All;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 Image = TestDatabase;
                 ToolTip = 'Apply the retention policy and delete all expired records in the table.';
 
@@ -83,9 +79,6 @@ page 3905 "Reten. Policy Setup ListPart"
             {
                 Caption = 'Apply All';
                 ApplicationArea = All;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 Image = TestDatabase;
                 ToolTip = 'Apply all non-manual and enabled retention policies now and delete any expired records.';
 

@@ -20,6 +20,8 @@ codeunit 139481 "Headlines Test"
         Text75Txt: Label '123456789012345678901234567890123456789012345678901234567890123456789012345', Locked = true;
         NoonGreetingTxt: Label 'Hi, %1!', Comment = 'Displayed between 12:00 and 13:59. %1 is the user name.';
         SimpleNoonGreetingTxt: Label 'Hi!', Comment = 'Displayed between 12:00 and 13:59.';
+        QualifierPayloadHeadlineLbl: Label '<qualifier>%1</qualifier><payload>%2</payload>', Locked = true;
+        LongQualifierPayloadHeadlineLbl: Label '<qualifier>%1</qualifier><payload>%2%3</payload>', Locked = true;
 
     [Test]
     procedure TestEmphasize()
@@ -74,7 +76,7 @@ codeunit 139481 "Headlines Test"
           Headlines.GetHeadlineText(Text50Txt, Text75Txt, Result),
           'Expected valid headline creation to work with long qualidier and payload');
         Assert.AreEqual(
-          StrSubstNo('<qualifier>%1</qualifier><payload>%2</payload>', Text50Txt, Text75Txt), Result,
+          StrSubstNo(QualifierPayloadHeadlineLbl, Text50Txt, Text75Txt), Result,
           'Wrong headline text with payload and qualifier.');
 
         // [WHEN] GetHeadlineText is called with extra long payload but is still short enough when we remove the emphasize
@@ -84,7 +86,7 @@ codeunit 139481 "Headlines Test"
             Text50Txt, Text75Txt + '<emphasize></emphasize><emphasize></emphasize><emphasize></emphasize>', Result),
           'Expected valid headline creation to work with long payload but emphasize');
         Assert.AreEqual(
-          StrSubstNo('<qualifier>%1</qualifier><payload>%2%3</payload>',
+          StrSubstNo(LongQualifierPayloadHeadlineLbl,
             Text50Txt, Text75Txt, '<emphasize></emphasize><emphasize></emphasize><emphasize></emphasize>'), Result,
           'Wrong headline with long payload containing emphasize and long qualifier.');
 

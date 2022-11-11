@@ -8,6 +8,7 @@ codeunit 130454 "Test Runner - Mgt"
     Permissions = TableData "AL Test Suite" = rimd, TableData "Test Method Line" = rimd;
 
     var
+        ALTestRunnerResetEnvironment: Codeunit "ALTestRunner Reset Environment";
         SkipLoggingResults: Boolean;
 
     trigger OnRun()
@@ -17,7 +18,9 @@ codeunit 130454 "Test Runner - Mgt"
     procedure RunTests(var NewTestMethodLine: Record "Test Method Line")
     var
         TestMethodLine: Record "Test Method Line";
+        ALCodeCoverageMgt: Codeunit "AL Code Coverage Mgt.";
     begin
+        ALTestRunnerResetEnvironment.Initialize();
         TestMethodLine.Copy(NewTestMethodLine);
         TestMethodLine.SetRange("Test Suite", TestMethodLine."Test Suite");
         TestMethodLine.ModifyAll(Result, TestMethodLine.Result::" ");
@@ -27,6 +30,7 @@ codeunit 130454 "Test Runner - Mgt"
 
         TestMethodLine.SetRange("Line Type", TestMethodLine."Line Type"::Codeunit);
 
+        ALCodeCoverageMgt.Initialize(TestMethodLine."Test Suite");
         OnRunTestSuite(TestMethodLine);
 
         if TestMethodLine.FindSet() then
@@ -78,14 +82,14 @@ codeunit 130454 "Test Runner - Mgt"
             exit(true);
         end;
 
-        // Start permission mock if installed
-        StartStopPermissionMock();
-
         if not GetTestFunction(TestMethodLineFunction, FunctionName, TestSuite, CodeunitID, LineNoTestFilter) then
             exit(false);
 
         if not TestMethodLineFunction.Run then
             exit(false);
+
+        // Start permission mock if installed
+        StartStopPermissionMock();
 
         SetStartTimeOnTestLine(TestMethodLineFunction);
         OnBeforeTestMethodRun(TestMethodLineFunction, CodeunitID, CodeunitName, FunctionName, FunctionTestPermissions);

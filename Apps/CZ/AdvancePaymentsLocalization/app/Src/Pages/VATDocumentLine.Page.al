@@ -2,9 +2,7 @@ page 31186 "VAT Document Line CZZ"
 {
     PageType = ListPart;
     Caption = 'VAT Document Line';
-#pragma warning disable AL0432
-    SourceTable = "Invoice Post. Buffer";
-#pragma warning restore AL0432
+    SourceTable = "Advance Posting Buffer CZZ";
     SourceTableTemporary = true;
     InsertAllowed = false;
 
@@ -206,18 +204,16 @@ page 31186 "VAT Document Line CZZ"
         end;
     end;
 
-#pragma warning disable AL0432
-    procedure InitDocumentLines(NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; var InvoicePostBuffer: Record "Invoice Post. Buffer")
-#pragma warning restore AL0432
+    procedure InitDocumentLines(NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
     begin
         CurrencyCode := NewCurrencyCode;
         CurrencyFactor := NewCurrencyFactor;
 
-        if InvoicePostBuffer.FindSet() then
+        if AdvancePostingBufferCZZ.FindSet() then
             repeat
-                Rec := InvoicePostBuffer;
+                Rec := AdvancePostingBufferCZZ;
                 Rec.Insert();
-            until InvoicePostBuffer.Next() = 0;
+            until AdvancePostingBufferCZZ.Next() = 0;
     end;
 
     local procedure GetCurrency(NewCurrencyCode: Code[10])
@@ -230,17 +226,15 @@ page 31186 "VAT Document Line CZZ"
         end;
     end;
 
-#pragma warning disable AL0432
-    procedure GetDocumentLines(var InvoicePostBuffer: Record "Invoice Post. Buffer")
-#pragma warning restore AL0432
+    procedure GetDocumentLines(var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
     begin
-        InvoicePostBuffer.Reset();
-        InvoicePostBuffer.DeleteAll();
+        AdvancePostingBufferCZZ.Reset();
+        AdvancePostingBufferCZZ.DeleteAll();
 
         if Rec.FindSet() then
             repeat
-                InvoicePostBuffer := Rec;
-                InvoicePostBuffer.Insert();
+                AdvancePostingBufferCZZ := Rec;
+                AdvancePostingBufferCZZ.Insert();
             until Rec.Next() = 0;
     end;
 

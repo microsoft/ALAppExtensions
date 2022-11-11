@@ -5,6 +5,8 @@
 
 table 134686 "Test Email Account"
 {
+    ReplicateData = false;
+
     fields
     {
         field(1; Id; Guid)

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <DataExchDef Code="INTRA-2022-ES" Name="Intrastat Report 2022" Type="5" ReadingWritingXMLport="1231" ExternalDataHandlingCodeunit="4813" ColumnSeparator="2" FileType="1" ReadingWritingCodeunit="1276">
+    <DataExchLineDef LineType="1" Code="DEFAULT" Name="DEFAULT" ColumnCount="14">
+      <DataExchColumnDef ColumnNo="1" Name="Country/Region Code" Show="false" DataType="0" Length="2" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" />
+      <DataExchColumnDef ColumnNo="2" Name="Area" Show="false" DataType="0" Length="2" TextPaddingRequired="false" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" />
+      <DataExchColumnDef ColumnNo="3" Name="Shpt. Method Code" Show="false" DataType="0" Length="3" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" />
+      <DataExchColumnDef ColumnNo="4" Name="Transaction Type" Show="false" DataType="0" Length="2" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" />
+      <DataExchColumnDef ColumnNo="5" Name="Transport Method" Show="false" DataType="0" Length="1" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" />
+      <DataExchColumnDef ColumnNo="6" Name="Entry/Exit Point" Show="false" DataType="0" Length="4" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" />
+      <DataExchColumnDef ColumnNo="7" Name="Tariff No." Show="false" DataType="0" Length="8" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" />
+      <DataExchColumnDef ColumnNo="8" Name="Country/Region of Origin Code" Show="false" DataType="0" Length="2" TextPaddingRequired="false" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" />
+      <DataExchColumnDef ColumnNo="9" Name="Statistical System" Show="false" DataType="0" TextPaddingRequired="false" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" />
+      <DataExchColumnDef ColumnNo="10" Name="Total Weight" Show="false" DataType="2" DataFormat="&lt;Precision,2:&gt;&lt;Integer&gt;&lt;Decimal&gt;" DataFormattingCulture="en-US" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" />
+      <DataExchColumnDef ColumnNo="11" Name="Quantity" Show="false" DataType="2" DataFormat="&lt;Precision,2:&gt;&lt;Integer&gt;&lt;Decimal&gt;" DataFormattingCulture="en-US" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" />
+      <DataExchColumnDef ColumnNo="12" Name="Amount" Show="false" DataType="2" DataFormat="&lt;Precision,2:&gt;&lt;Integer&gt;&lt;Decimal&gt;" DataFormattingCulture="en-US" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" />
+      <DataExchColumnDef ColumnNo="13" Name="Statistical Value" Show="false" DataType="2" DataFormat="&lt;Precision,2:&gt;&lt;Integer&gt;&lt;Decimal&gt;" DataFormattingCulture="en-US" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" />
+      <DataExchColumnDef ColumnNo="14" Name="Partner Tax ID" Show="false" DataType="0" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" />
+      <DataExchMapping TableId="4812" Name="" KeyIndex="1" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="1" FieldID="7" Optional="true" TransformationRule="EUCOUNTRYCODELOOKUP">
+          <TransformationRules>
+            <Code>EUCOUNTRYCODELOOKUP</Code>
+            <Description>EU Country Lookup</Description>
+            <TransformationType>13</TransformationType>
+            <FindValue>&amp;#032;</FindValue>
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>9</TableID>
+            <SourceFieldID>1</SourceFieldID>
+            <TargetFieldID>7</TargetFieldID>
+            <FieldLookupRule>1</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="2" FieldID="26" Optional="true" />
+        <DataExchFieldMapping ColumnNo="3" FieldID="28" Optional="true" />
+        <DataExchFieldMapping ColumnNo="4" FieldID="8" Optional="true" />
+        <DataExchFieldMapping ColumnNo="5" FieldID="9" Optional="true" />
+        <DataExchFieldMapping ColumnNo="6" FieldID="25" Optional="true" />
+        <DataExchFieldMapping ColumnNo="7" FieldID="5" Optional="true" TransformationRule="TRIMALL">
+          <TransformationRules>
+            <Code>TRIMALL</Code>
+            <Description>Removes all spaces</Description>
+            <TransformationType>5</TransformationType>
+            <FindValue>&amp;#032;</FindValue>
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="8" FieldID="24" Optional="true" TransformationRule="EUCOUNTRYCODELOOKUP">
+          <TransformationRules>
+            <Code>EUCOUNTRYCODELOOKUP</Code>
+            <Description>EU Country Lookup</Description>
+            <TransformationType>13</TransformationType>
+            <FindValue>&amp;#032;</FindValue>
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>9</TableID>
+            <SourceFieldID>1</SourceFieldID>
+            <TargetFieldID>7</TargetFieldID>
+            <FieldLookupRule>1</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="9" FieldID="36" Optional="true" TransformationRule="FIRSTCHAR">
+          <TransformationRules>
+            <Code>FIRSTCHAR</Code>
+            <Description>Get first character</Description>
+            <TransformationType>4</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>1</StartPosition>
+            <Length>1</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule>TRIMALL</NextTransformationRule>
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+          </TransformationRules>
+          <TransformationRules>
+            <Code>TRIMALL</Code>
+            <Description>Removes all spaces</Description>
+            <TransformationType>5</TransformationType>
+            <FindValue>&amp;#032;</FindValue>
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="10" FieldID="21" Optional="true" />
+        <DataExchFieldMapping ColumnNo="11" FieldID="14" Optional="true" />
+        <DataExchFieldMapping ColumnNo="12" FieldID="13" Optional="true" />
+        <DataExchFieldMapping ColumnNo="13" FieldID="17" Optional="true" />
+        <DataExchFieldMapping ColumnNo="14" FieldID="29" Optional="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+  </DataExchDef>
+</root>

@@ -286,7 +286,7 @@ codeunit 148166 "Elster Pages UT"
     end;
 
     [ModalPageHandler]
-    procedure NoSeriesListPageHandler(var NoSeriesList: TestPage "No. Series List");
+    procedure NoSeriesListPageHandler(var NoSeriesList: TestPage "No. Series");
     begin
         NoSeriesList.OK().Invoke();
     end;

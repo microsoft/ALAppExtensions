@@ -236,7 +236,7 @@ report 13690 "Intrastat Export To Disk"
         MissingFileNameErr: Label 'Enter the file name.';
         RegNoFormatTxt: Label 'WwWw';
         RegNoFormatNameTxt: Label 'INTRASTAT';
-        ZeroFormatErr: Label 'It is not possible to display %1 in a field with a length of %2.';
+        ZeroFormatErr: Label 'It is not possible to display %1 in a field with a length of %2.', Comment = '%1 = Text to be displayed; %2 = Maximum length for the field';
 
     local procedure DecimalNumeralZeroFormat(DecimalNumeral: Decimal; Length: Integer): Text[250];
     begin

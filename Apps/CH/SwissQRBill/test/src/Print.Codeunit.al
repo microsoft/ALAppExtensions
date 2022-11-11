@@ -1,6 +1,7 @@
 codeunit 148092 "Swiss QR-Bill Test Print"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     trigger OnRun()
     begin

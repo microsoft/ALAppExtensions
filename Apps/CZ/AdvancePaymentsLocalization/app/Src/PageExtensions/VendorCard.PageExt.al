@@ -4,13 +4,13 @@ pageextension 31053 "Vendor Card CZZ" extends "Vendor Card"
     {
         modify("Prepayment %")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #if not CLEAN19
 #pragma warning disable AL0432
         modify("Advances (LCY)")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -20,21 +20,21 @@ pageextension 31053 "Vendor Card CZZ" extends "Vendor Card"
     {
         modify("Prepa&yment Percentages")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #if not CLEAN19
 #pragma warning disable AL0432
         modify("Advance Letters")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Ad&vance Invoices")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Advance Credit &Memos")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -48,7 +48,6 @@ pageextension 31053 "Vendor Card CZZ" extends "Vendor Card"
                 Image = NewDocument;
                 Promoted = true;
                 PromotedCategory = Category6;
-                Visible = AdvancePaymentsEnabledCZZ;
 
                 trigger OnAction()
                 var
@@ -72,13 +71,4 @@ pageextension 31053 "Vendor Card CZZ" extends "Vendor Card"
             }
         }
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }

@@ -1,4 +1,4 @@
-﻿name: Create Online Dev. Environment
+﻿name: ' Create Online Dev. Environment'
 
 on:
   workflow_dispatch:
@@ -28,21 +28,21 @@ jobs:
     runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.0
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.1
         with:
           eventId: "DO0093"
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@v2.1
         with:
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.0
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.1
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -60,17 +60,18 @@ jobs:
             Write-Host "AdminCenterApiCredentials not provided, initiating Device Code flow"
             $ALGoHelperPath = "$([System.IO.Path]::GetTempFileName()).ps1"
             $webClient = New-Object System.Net.WebClient
-            $webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/v2.0/AL-Go-Helper.ps1', $ALGoHelperPath)
+            $webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/v2.1/AL-Go-Helper.ps1', $ALGoHelperPath)
             . $ALGoHelperPath
             $BcContainerHelperPath = DownloadAndImportBcContainerHelper -baseFolder $ENV:GITHUB_WORKSPACE
             $authContext = New-BcAuthContext -includeDeviceLogin -deviceLoginTimeout ([TimeSpan]::FromSeconds(0))
             MaskValueInLog -value $authContext.deviceCode
-            Add-Content -Path $env:GITHUB_ENV -Value "adminCenterApiCredentials={""deviceCode"":""$($authContext.deviceCode)""}"
+            $adminCenterApiCredentials = "{""deviceCode"":""$($authContext.deviceCode)""}"
+            Add-Content -Path $env:GITHUB_ENV -Value "adminCenterApiCredentials=$([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($adminCenterApiCredentials)))"
             CleanupAfterBcContainerHelper -bcContainerHelperPath $bcContainerHelperPath
           }
 
       - name: Create Development Environment
-        uses: microsoft/AL-Go-Actions/CreateDevelopmentEnvironment@v2.0
+        uses: microsoft/AL-Go-Actions/CreateDevelopmentEnvironment@v2.1
         with:
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           environmentName: ${{ github.event.inputs.environmentName }}
@@ -80,7 +81,7 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.0
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.1
         with:
           eventId: "DO0093"
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}

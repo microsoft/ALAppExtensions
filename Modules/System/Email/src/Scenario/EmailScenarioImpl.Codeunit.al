@@ -228,7 +228,7 @@ codeunit 8892 "Email Scenario Impl."
 
             // If the scenario is available, allow partner to determine if it should be shown
             if IsAvailable then
-                EmailScenario.OnBeforeInsertAvailableEmailScenario(CurrentScenario, IsAvailable);
+                EmailScenario.OnBeforeInsertAvailableEmailScenario(Enum::"Email Scenario".FromInteger(CurrentScenario), IsAvailable);
 
             if IsAvailable then begin
                 EmailScenarios."Account Id" := EmailAccount."Account Id";

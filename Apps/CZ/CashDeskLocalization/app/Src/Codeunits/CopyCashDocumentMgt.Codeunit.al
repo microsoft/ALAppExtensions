@@ -5,6 +5,7 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
         ErrorMessageManagement: Codeunit "Error Message Management";
         ConfirmManagement: Codeunit "Confirm Management";
         CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
+        DimensionManagement: Codeunit DimensionManagement;
         CashDocType: Option "Cash Document","Posted Cash Document";
         IncludeHeader: Boolean;
         RecalculateLines: Boolean;
@@ -28,6 +29,7 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
         CashDocumentReleaseCZP: Codeunit "Cash Document-Release CZP";
         ErrorContextElement: Codeunit "Error Context Element";
         ErrorMessageHandler: Codeunit "Error Message Handler";
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
         NextLineNo: Integer;
         LinesNotCopied: Integer;
         ReleaseDocument: Boolean;
@@ -87,12 +89,13 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
             end;
 
             CopyFieldsFromOldCashDocHeader(ToCashDocumentHeaderCZP, OldCashDocumentHeaderCZP);
-            if RecalculateLines then
-                ToCashDocumentHeaderCZP.CreateDim(
-                  Database::"Responsibility Center", ToCashDocumentHeaderCZP."Responsibility Center",
-                  Database::"Salesperson/Purchaser", ToCashDocumentHeaderCZP."Salespers./Purch. Code",
-                  Database::"Cash Desk CZP", ToCashDocumentHeaderCZP."Cash Desk No.",
-                  ToCashDocumentHeaderCZP.GetPartnerTableNo(), ToCashDocumentHeaderCZP."Partner No.");
+            if RecalculateLines then begin
+                DimensionManagement.AddDimSource(DefaultDimSource, Database::"Responsibility Center", ToCashDocumentHeaderCZP."Responsibility Center", false);
+                DimensionManagement.AddDimSource(DefaultDimSource, Database::"Salesperson/Purchaser", ToCashDocumentHeaderCZP."Salespers./Purch. Code", false);
+                DimensionManagement.AddDimSource(DefaultDimSource, Database::"Cash Desk CZP", ToCashDocumentHeaderCZP."Cash Desk No.", false);
+                DimensionManagement.AddDimSource(DefaultDimSource, ToCashDocumentHeaderCZP.GetPartnerTableNo(), ToCashDocumentHeaderCZP."Partner No.", false);
+                ToCashDocumentHeaderCZP.CreateDim(DefaultDimSource);
+            end;
             ToCashDocumentHeaderCZP."No. Printed" := 0;
             ToCashDocumentHeaderCZP.Modify();
         end;

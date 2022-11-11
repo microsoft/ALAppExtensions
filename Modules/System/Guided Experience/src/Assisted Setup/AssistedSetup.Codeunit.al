@@ -47,13 +47,13 @@ codeunit 3725 "Assisted Setup"
     /// <param name="AssistantName">The name as shown for the setup.</param>
     /// <param name="GroupName">The assisted setup group enum that this belongs to.</param>
     /// <param name="VideoLink">The URL of the video that explains the purpose and use of this setup.</param>
-    /// <param name="VideoCategory">The category of the video for this setup.</param>
+    /// <param name="Category">The category of the video for this setup.</param>
     /// <param name="HelpLink">The help url that explains the purpose and usage of this setup.</param>
     [Obsolete('Replaced by Insert in the Guided Experience codeunit.', '18.0')]
-    procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group"; VideoLink: Text[250]; VideoCategory: Enum "Video Category"; HelpLink: Text[250])
+    procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group"; VideoLink: Text[250]; Category: Enum "Video Category"; HelpLink: Text[250])
     begin
         GuidedExperienceImpl.Insert(CopyStr(AssistantName, 1, 2048), CopyStr(AssistantName, 1, 50), '', 0, ExtensionId, GuidedExperienceType::"Assisted Setup",
-            ObjectType::Page, PageID, '', GroupName, VideoLink, VideoCategory, HelpLink, ManualSetupCategory::Uncategorized, '',
+            ObjectType::Page, PageID, '', GroupName, VideoLink, Category, HelpLink, ManualSetupCategory::Uncategorized, '',
             SpotlightTourType::None, SpotlightTourTexts, true);
     end;
 
@@ -63,14 +63,14 @@ codeunit 3725 "Assisted Setup"
     /// <param name="AssistantName">The name as shown for the setup.</param>
     /// <param name="GroupName">The assisted setup group enum that this belongs to.</param>
     /// <param name="VideoLink">The URL of the video that explains the purpose and use of this setup.</param>
-    /// <param name="VideoCategory">The category of the video for this setup.</param>
+    /// <param name="Category">The category of the video for this setup.</param>
     /// <param name="HelpLink">The help url that explains the purpose and usage of this setup.</param>
     /// <param name="Description">The description of this setup.</param>
     [Obsolete('Replaced by Insert in the Guided Experience codeunit.', '18.0')]
-    procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group"; VideoLink: Text[250]; VideoCategory: Enum "Video Category"; HelpLink: Text[250]; Description: Text[1024])
+    procedure Add(ExtensionID: Guid; PageID: Integer; AssistantName: Text; GroupName: Enum "Assisted Setup Group"; VideoLink: Text[250]; Category: Enum "Video Category"; HelpLink: Text[250]; Description: Text[1024])
     begin
         GuidedExperienceImpl.Insert(CopyStr(AssistantName, 1, 2048), CopyStr(AssistantName, 1, 50), Description, 0, ExtensionId,
-            GuidedExperienceType::"Assisted Setup", ObjectType::Page, PageID, '', GroupName, VideoLink, VideoCategory, HelpLink,
+            GuidedExperienceType::"Assisted Setup", ObjectType::Page, PageID, '', GroupName, VideoLink, Category, HelpLink,
             ManualSetupCategory::Uncategorized, '', SpotlightTourType::None, SpotlightTourTexts, true);
     end;
 

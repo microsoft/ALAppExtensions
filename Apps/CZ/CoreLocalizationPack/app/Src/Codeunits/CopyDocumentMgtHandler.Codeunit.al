@@ -1,4 +1,3 @@
-#pragma warning disable AL0603
 codeunit 11740 "Copy Document Mgt. Handler CZL"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterTransfldsFromSalesToPurchLine', '', false, false)]
@@ -22,13 +21,13 @@ codeunit 11740 "Copy Document Mgt. Handler CZL"
     local procedure UpdateBankInfoOnCopySalesDocUpdateHeaderOnBeforeUpdateCustLedgerEntry(var ToSalesHeader: Record "Sales Header"; FromDocType: Option)
     begin
         if (ToSalesHeader.IsCreditDocType() and not
-                (FromDocType in ["Sales Document Type From"::"Return Order",
-                                "Sales Document Type From"::"Credit Memo",
-                                "Sales Document Type From"::"Posted Credit Memo"])) or
+                (FromDocType in ["Sales Document Type From"::"Return Order".AsInteger(),
+                                "Sales Document Type From"::"Credit Memo".AsInteger(),
+                                "Sales Document Type From"::"Posted Credit Memo".AsInteger()])) or
            (not ToSalesHeader.IsCreditDocType() and
-                (FromDocType in ["Sales Document Type From"::"Return Order",
-                                "Sales Document Type From"::"Credit Memo",
-                                "Sales Document Type From"::"Posted Credit Memo"]))
+                (FromDocType in ["Sales Document Type From"::"Return Order".AsInteger(),
+                                "Sales Document Type From"::"Credit Memo".AsInteger(),
+                                "Sales Document Type From"::"Posted Credit Memo".AsInteger()]))
         then begin
             ToSalesHeader."Specific Symbol CZL" := '';
             ToSalesHeader."Variable Symbol CZL" := '';

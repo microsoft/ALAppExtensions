@@ -135,7 +135,9 @@ table 149001 "BCPT Line"
             FieldClass = FlowField;
             CalcFormula = Count("BCPT Log Entry" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Version Filter"), Operation = const('Scenario')));
         }
+#pragma warning disable AA0232
         field(16; "Total Duration (ms)"; Integer)
+#pragma warning restore AA0232
         {
             Caption = 'Total Duration (ms)';
             Editable = false;
@@ -237,6 +239,11 @@ table 149001 "BCPT Line"
         key(Key1; "BCPT Code", "Line No.")
         {
             Clustered = true;
+        }
+
+        key(Key2; "No. of Sessions")
+        {
+            SumIndexFields = "No. of Sessions";
         }
     }
 

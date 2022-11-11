@@ -20,10 +20,13 @@ codeunit 1690 "Bank Deposit-Post"
         BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         GenJnlCheckLine: Codeunit "Gen. Jnl.-Check Line";
         UpdateAnalysisView: Codeunit "Update Analysis View";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TotalAmountLCY: Decimal;
         NextLineNo: Integer;
         CurrLineNo: Integer;
     begin
+        FeatureTelemetry.LogUptake('0000IG4', 'Bank Deposit', Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000IG5', 'Bank Deposit', 'Bank deposit posted');
         OnBeforeBankDepositPost(Rec);
 
         // Check deposit
@@ -229,9 +232,9 @@ codeunit 1690 "Bank Deposit-Post"
         ProgressDialog: Dialog;
         TotalAmountsMustMatchErr: Label 'The %1 must match the %2.', Comment = '%1 - total amount, %2 - total amount on the lines';
         PostingDepositTxt: Label 'Posting Bank Deposit No. %1...\\', Comment = '%1 - bank deposit number';
-        BankDepositLineTxt: Label 'Bank Deposit Line  #2########\';
+        BankDepositLineTxt: Label 'Bank Deposit Line  #2########\', Comment = '#2- a number (progress indicator)';
         DividerTxt: Label '@3@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', Locked = true;
-        StatusTxt: Label 'Status        #4###################\';
+        StatusTxt: Label 'Status        #4###################\', Comment = '#4 - a number (progress indicator)';
         MovingToHistoryTxt: Label 'Moving Bank Deposit to History';
         PostingLinesToLedgersTxt: Label 'Posting Lines to Ledgers';
         PostingBankEntryTxt: Label 'Posting Bank Account Ledger Entry';

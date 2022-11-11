@@ -6,6 +6,7 @@
 codeunit 139763 "Email Logging Tests"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     var
         EmailLoggingAPIHelper: Codeunit "Email Logging API Helper";

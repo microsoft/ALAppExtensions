@@ -518,21 +518,6 @@ The plan to check.
 *[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
 
 True, if the service plan is a Business Central Plan, false otherwise.
-### SetTestInProgress (Method) <a name="SetTestInProgress"></a> 
-
- Sets this codeunit in test mode (for running unit tests).
- 
-
-#### Syntax
-```
-[Scope('OnPrem')]
-[NonDebuggable]
-procedure SetTestInProgress(EnableTestability: Boolean)
-```
-#### Parameters
-*EnableTestability ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
-
-True to enable the test mode.
 
 ### OnRemoveUserGroupsForUserAndPlan (Event) <a name="OnRemoveUserGroupsForUserAndPlan"></a> 
 

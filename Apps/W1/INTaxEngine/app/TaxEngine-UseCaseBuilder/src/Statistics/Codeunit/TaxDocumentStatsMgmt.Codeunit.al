@@ -46,6 +46,7 @@ codeunit 20301 "Tax Document Stats Mgmt."
     var
         TaxTransactionValue: Record "Tax Transaction Value";
         UseCaseID: Guid;
+        TotalsByTaxType: Dictionary of [Code[20], Decimal];
     begin
         TaxTransactionValue.SetCurrentKey("Case ID", "Tax Record ID", "Value ID");
         TaxTransactionValue.SetRange("Tax Record ID", RecId);
@@ -57,7 +58,28 @@ codeunit 20301 "Tax Document Stats Mgmt."
 
                 FillComponentBuffer(TaxTransactionValue);
                 UseCaseID := TaxTransactionValue."Case ID";
+                FillTotalsByTaxType(TotalsByTaxType, TaxTransactionValue);
             until TaxTransactionValue.Next() = 0;
+
+        OnAfterFillTotalsByTaxType(TotalsByTaxType);
+    end;
+
+    local procedure FillTotalsByTaxType(var TotalsByTaxType: Dictionary of [Code[20], Decimal];
+                                            TaxTransactionValue: Record "Tax Transaction Value")
+    var
+        TaxTypeObjHelper: Codeunit "Tax Type Object Helper";
+        Amount: Decimal;
+    begin
+        If TaxTransactionValue.Percent = 0 then
+            exit;
+
+        if TotalsByTaxType.ContainsKey(TaxTransactionValue."Tax Type") then begin
+            Amount := TotalsByTaxType.Get(TaxTransactionValue."Tax Type");
+            TotalsByTaxType.Remove(TaxTransactionValue."Tax Type");
+        end;
+
+        Amount += TaxTypeObjHelper.GetComponentAmountFrmTransValue(TaxTransactionValue);
+        TotalsByTaxType.Add(TaxTransactionValue."Tax Type", Amount);
     end;
 
     local procedure UpdateCaseIdList(CaseId: Guid; var CaseIDList: List of [Guid])
@@ -135,6 +157,11 @@ codeunit 20301 "Tax Document Stats Mgmt."
             TaxUseCase.Get(CaseID);
 
         exit(TaxUseCase.Description);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterFillTotalsByTaxType(var TotalsByTaxType: Dictionary of [Code[20], Decimal])
+    begin
     end;
 
     var

@@ -1,6 +1,6 @@
 table 4069 "GPSOPDepositHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

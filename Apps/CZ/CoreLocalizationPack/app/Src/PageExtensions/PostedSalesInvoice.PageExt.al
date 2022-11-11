@@ -2,7 +2,22 @@ pageextension 11733 "Posted Sales Invoice CZL" extends "Posted Sales Invoice"
 {
     layout
     {
+#if not CLEAN20
+#pragma warning disable AL0432
         movelast(General; "Posting Description")
+#pragma warning restore AL0432
+#else
+        addlast(General)
+        {
+            field("Posting Description"; Rec."Posting Description")
+            {
+                ApplicationArea = Basic, Suite;
+                Editable = false;
+                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
+                Visible = false;
+            }
+        }
+#endif
         addbefore("Location Code")
         {
             field("Reason Code CZL"; Rec."Reason Code")

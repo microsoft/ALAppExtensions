@@ -9,6 +9,7 @@ codeunit 1912 "MigrationQB Customer Migrator"
         PostingGroupDescriptionTxt: Label 'Migrated from QB', Locked = true;
         EmptyStringTxt: Label '', Locked = true;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomer', '', true, true)]
     procedure OnMigrateCustomer(VAR Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -19,7 +20,9 @@ codeunit 1912 "MigrationQB Customer Migrator"
         MigrationQBCustomer.Get(RecordIdToMigrate);
         MigrateCustomerDetails(MigrationQBCustomer, Sender);
     end;
+#pragma warning restore AA0207
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerPostingGroups', '', true, true)]
     procedure OnMigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
@@ -39,7 +42,9 @@ codeunit 1912 "MigrationQB Customer Migrator"
         Sender.SetCustomerPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
         Sender.ModifyCustomer(true);
     end;
+#pragma warning restore AA0207
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerTransactions', '', true, true)]
     procedure OnMigrateCustomerTransactions(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
@@ -118,6 +123,7 @@ codeunit 1912 "MigrationQB Customer Migrator"
                 Sender.SetGeneralJournalLineExternalDocumentNo(MigrationQBCustTrans.TxnId);
             until MigrationQBCustTrans.Next() = 0;
     end;
+#pragma warning restore AA0207
 
     local procedure MigrateCustomerDetails(MigrationQBCustomer: Record "MigrationQB Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
     var
@@ -329,7 +335,7 @@ codeunit 1912 "MigrationQB Customer Migrator"
 
             RecordVariant := MigrationQBCustTrans;
             DocumentNo := CopyStr(IncStr(DocumentNo), 1, 30);
-            UpdateInvoiceFromJson(RecordVariant, ChildJToken, DocumentNo);
+            UpdateInvoiceFromJson(RecordVariant, ChildJToken);
             MigrationQBCustTrans := RecordVariant;
             MigrationQBCustTrans.Modify(true);
 
@@ -360,7 +366,7 @@ codeunit 1912 "MigrationQB Customer Migrator"
 
             RecordVariant := MigrationQBCustTrans;
             DocumentNo := CopyStr(IncStr(DocumentNo), 1, 30);
-            UpdatePaymentFromJson(RecordVariant, ChildJToken, DocumentNo);
+            UpdatePaymentFromJson(RecordVariant, ChildJToken);
             MigrationQBCustTrans := RecordVariant;
             MigrationQBCustTrans.Modify(true);
 
@@ -392,14 +398,14 @@ codeunit 1912 "MigrationQB Customer Migrator"
 
             RecordVariant := MigrationQBCustTrans;
             DocumentNo := CopyStr(IncStr(DocumentNo), 1, 30);
-            UpdateCreditMemoFromJson(RecordVariant, ChildJToken, DocumentNo);
+            UpdateCreditMemoFromJson(RecordVariant, ChildJToken);
             MigrationQBCustTrans := RecordVariant;
             MigrationQBCustTrans.Modify(true);
             i := i + 1;
         end;
     end;
 
-    local procedure UpdateInvoiceFromJson(var RecordVariant: Variant; JToken: JsonToken; DocumentNo: Text[30])
+    local procedure UpdateInvoiceFromJson(var RecordVariant: Variant; JToken: JsonToken)
     var
         MigrationQBCustTrans: Record "MigrationQB CustomerTrans";
         HelperFunctions: Codeunit "MigrationQB Helper Functions";
@@ -419,7 +425,7 @@ codeunit 1912 "MigrationQB Customer Migrator"
         end;
     end;
 
-    local procedure UpdatePaymentFromJson(var RecordVariant: Variant; JToken: JsonToken; DocumentNo: Text[30])
+    local procedure UpdatePaymentFromJson(var RecordVariant: Variant; JToken: JsonToken)
     var
         MigrationQBCustTrans: Record "MigrationQB CustomerTrans";
         HelperFunctions: Codeunit "MigrationQB Helper Functions";
@@ -439,7 +445,7 @@ codeunit 1912 "MigrationQB Customer Migrator"
         end;
     end;
 
-    local procedure UpdateCreditMemoFromJson(var RecordVariant: Variant; JToken: JsonToken; DocumentNo: Text[30])
+    local procedure UpdateCreditMemoFromJson(var RecordVariant: Variant; JToken: JsonToken)
     var
         MigrationQBCustTrans: Record "MigrationQB CustomerTrans";
         HelperFunctions: Codeunit "MigrationQB Helper Functions";

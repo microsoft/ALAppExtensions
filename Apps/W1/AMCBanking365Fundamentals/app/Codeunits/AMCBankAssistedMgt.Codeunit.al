@@ -17,15 +17,12 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         AssistedSetupNeededNotificationTxt: Label 'The AMC Banking 365 Fundamentals extension needs some information.';
         AssistedSetupNotificationActionTxt: Label 'Do you want to open the AMC Banking Setup page to run the Assisted Setup action?';
         PleaseRunAssistedSetupNotificationActionTxt: Label 'Please run the Assisted setup action to complete the AMC Banking setup.';
-
         DemoSolutionNotificationTxt: Label 'The AMC Banking 365 Fundamentals extension is in Demo mode.';
         DemoSolutionNotificationActionTxt: Label 'Do you want to open the AMC Banking 365 Fundamentals extension setup page?';
         DemoSolutionNotificationNameTok: Label 'Notify user of AMC Banking Demo solution.';
         DemoSolutionNotificationDescTok: Label 'Show a notification informing the user that AMC Banking is working in Demo solution.';
         DontShowThisAgainMsg: Label 'Don''t show this again.';
-
         AssistedSetupTxt: Label 'Set up AMC Banking 365 Fundamentals extension';
-
         AssistedSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2115384', Locked = true;
         AssistedSetupDescriptionTxt: Label 'Connect to an online bank service that can convert bank data from Business Central into the formats of your bank, to make it easier, and more accurate, to send data to your banks.';
         ReturnPathTxt: Label '//return/pack', Locked = true;
@@ -1015,11 +1012,17 @@ codeunit 20117 "AMC Bank Assisted Mgt."
     var
         AMCBankingSetup: Record "AMC Banking Setup";
         GuidedExperience: Codeunit "Guided Experience";
-        AssistedSetupGroup: Enum "Assisted Setup Group";
-        VideoCategory: Enum "Video Category";
+        Language: Codeunit Language;
+        CurrentGlobalLanguage: Integer;
     begin
-        GuidedExperience.InsertAssistedSetup(AssistedSetupTxt, CopyStr(AssistedSetupTxt, 1, 50), AssistedSetupDescriptionTxt, 5, ObjectType::Page, Page::"AMC Bank Assisted Setup", AssistedSetupGroup::ReadyForBusiness,
-                                            '', VideoCategory::ReadyForBusiness, AssistedSetupHelpTxt);
+        GuidedExperience.InsertAssistedSetup(AssistedSetupTxt, CopyStr(AssistedSetupTxt, 1, 50), AssistedSetupDescriptionTxt, 5, ObjectType::Page, Page::"AMC Bank Assisted Setup", "Assisted Setup Group"::ReadyForBusiness,
+                                            '', "Video Category"::ReadyForBusiness, AssistedSetupHelpTxt, true);
+
+        CurrentGlobalLanguage := GlobalLanguage();
+        GlobalLanguage(Language.GetDefaultApplicationLanguageId());
+        GuidedExperience.AddTranslationForSetupObjectTitle("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"AMC Bank Assisted Setup", Language.GetDefaultApplicationLanguageId(), AssistedSetupTxt);
+        GuidedExperience.AddTranslationForSetupObjectDescription("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"AMC Bank Assisted Setup", Language.GetDefaultApplicationLanguageId(), AssistedSetupDescriptionTxt);
+        GlobalLanguage(CurrentGlobalLanguage);
 
         if AMCBankingSetup.Get() then
             GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"AMC Bank Assisted Setup");

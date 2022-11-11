@@ -24,7 +24,7 @@ codeunit 148170 "Elster ERM Batch Reports"
         LibraryUtility: Codeunit "Library - Utility";
         LibraryRandom: Codeunit "Library - Random";
         IsInitialized: Boolean;
-        VATStatementNameWarningMessageErr: Label 'Please make sure that as well category %1 and %2 are defined in %3 %4.';
+        VATStatementNameWarningMessageErr: Label 'Please make sure that as well category %1 and %2 are defined in %3 %4.', Comment = '%1 = Tax Pair Category; %2 = Tax Pair Category; %3 = VAT Statement Name Table Caption; %4 = VAT Statement Name Table Name';
 
     [Test]
     [HandlerFunctions('VatStatementPreviewPageHandler,VatStatementTemplateListPageHandler')]

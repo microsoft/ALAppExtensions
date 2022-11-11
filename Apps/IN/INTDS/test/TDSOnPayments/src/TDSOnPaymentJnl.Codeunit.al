@@ -511,6 +511,61 @@ codeunit 18803 "TDS On Payment Jnl"
         Assert.ExpectedError(TANNoErr);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure TDSVendorWithRecurringGeneralMethodBlank()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        ConcessionalCode: Record "Concessional Code";
+        TDSPostingSetup: Record "TDS Posting Setup";
+    begin
+        // [GIVEN] Created Setup for AssesseeCode,TDSPostingSetup,TDSSection,ConcessionalCode with Threshold and Surcharge Overlook.
+        LibraryTDS.CreateTDSSetup(Vendor, TDSPostingSetup, ConcessionalCode);
+        LibraryTDS.UpdateVendorWithPANWithoutConcessional(Vendor, true, true);
+        CreateTaxRateSetup(TDSPostingSetup."TDS Section", Vendor."Assessee Code", '', WorkDate());
+
+        // [WHEN] Create General Journal        
+        CreatePaymentGenJnlLineForTDSVendorwithRecurring(GenJournalLine, Vendor."No.");
+
+        // [THEN] Verify allowed section on vendor and recurring method is blank
+        VerifyAllowedSectionAndRecurringMethodBlankForTDSVendor(TDSPostingSetup, GenJournalLine, Vendor."No.");
+    end;
+
+    local procedure CreatePaymentGenJnlLineForTDSVendorwithRecurring(
+        var GenJournalLine: Record "Gen. Journal Line";
+        VendorNo: Code[20])
+    var
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalTemplate: Record "Gen. Journal Template";
+    begin
+        LibraryERM.CreateRecurringTemplateName(GenJournalTemplate);
+        LibraryERM.CreateRecurringBatchName(GenJournalBatch, GenJournalTemplate.Name);
+        LibraryERM.CreateGeneralJnlLineWithBalAcc(GenJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name,
+        GenJournalLine."Document Type"::Payment, GenJournalLine."Account Type"::Vendor, VendorNo,
+        GenJournalLine."Bal. Account Type"::"G/L Account", CreateGLAccountWithDirectPostingNoVAT(), LibraryRandom.RandDec(10000, 2));
+        GenJournalLine.Validate("Recurring Method", GenJournalLine."Recurring Method"::" ");
+        GenJournalLine.Validate("TDS Section Code");
+        GenJournalLine.Validate(Amount, LibraryRandom.RandDec(10000, 2));
+        GenJournalLine.Modify();
+    end;
+
+    local procedure VerifyAllowedSectionAndRecurringMethodBlankForTDSVendor(
+        TDSPostingSetup: Record "TDS Posting Setup";
+        GenJournalLine: Record "Gen. Journal Line";
+        VendorNo: Code[20])
+    var
+        AllowedSections: Record "Allowed Sections";
+        Assert: Codeunit Assert;
+    begin
+        AllowedSections.SetRange("Vendor No", VendorNo);
+        if AllowedSections.FindFirst() then begin
+            Assert.AreEqual(TDSPostingSetup."TDS Section", AllowedSections."TDS Section",
+                StrSubstNo(VerifyErr, AllowedSections.FieldCaption("TDS Section"), AllowedSections.TableCaption));
+            Assert.AreEqual(GenJournalLine."Recurring Method", GenJournalLine."Recurring Method"::" ",
+                StrSubstNo(VerifyErr, GenJournalLine.FieldCaption("Recurring Method"), GenJournalLine.TableCaption));
+        end;
+    end;
+
     local procedure CreatePaymentGenJnlLineForTDS(var GenJournalLine: Record "Gen. Journal Line"; var Vendor: Record Vendor)
     var
         GenJournalBatch: Record "Gen. Journal Batch";
@@ -891,4 +946,5 @@ codeunit 18803 "TDS On Payment Jnl"
         CountryCodeLbl: Label 'CountryCode', Locked = true;
         SuccessMsg: Label 'The journal lines were successfully posted.', Locked = true;
         NotPostedErr: Label 'The journal lines were not posted.', Locked = true;
+        VerifyErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = Field Caption and Table Caption';
 }

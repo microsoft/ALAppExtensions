@@ -1,17 +1,17 @@
-// ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See License.txt in the project root for license information.
-// ------------------------------------------------------------------------------------------------
-
 permissionset 11752 "CZ Advance Payments - Obj. CZZ"
 {
     Access = Public;
     Assignable = false;
     Caption = 'CZ Advance Payments - Objects';
 
-    Permissions = Codeunit "Adj. Exch. Rates Handler CZZ" = X,
+    Permissions = Codeunit "Acc. Sched. Ext. Handler CZZ" = X,
                   Codeunit "Advance Letter Doc. Totals CZZ" = X,
+#if not CLEAN21
+#pragma warning disable AL0432
+                  Codeunit "Adj. Exch. Rates Handler CZZ" = X,
                   Codeunit "Advance Payments Mgt. CZZ" = X,
+#pragma warning restore AL0432
+#endif            
                   Codeunit "Adv. Payments Approv. Mgt. CZZ" = X,
                   Codeunit "Calculate Customer Stats. CZZ" = X,
                   Codeunit "Calculate Vendor Stats. CZZ" = X,
@@ -24,10 +24,15 @@ permissionset 11752 "CZ Advance Payments - Obj. CZZ"
                   Codeunit "Data Class. Eval. Handler CZZ" = X,
                   Codeunit "Doc. Attachment Handler CZZ" = X,
                   Codeunit "EET Management Handler CZZ" = X,
+#if not CLEAN21
+#pragma warning disable AL0432
                   Codeunit "Feature Advance Payments CZZ" = X,
+#pragma warning restore AL0432
+#endif
                   Codeunit "Gen.Jnl.-Check Ln. Handler CZZ" = X,
                   Codeunit "Gen.Jnl-Post Batch Handler CZZ" = X,
                   Codeunit "Gen.Jnl.-Post Line Handler CZZ" = X,
+                  Codeunit "Gen. Ledger Setup Handler CZZ" = X,
                   Codeunit "Guided Experience Handler CZZ" = X,
                   Codeunit "Incoming Document Handler CZZ" = X,
                   Codeunit "Install Application CZZ" = X,
@@ -102,6 +107,7 @@ permissionset 11752 "CZ Advance Payments - Obj. CZZ"
                   Table "Advance Letter Application CZZ" = X,
                   Table "Advance Letter Link Buffer CZZ" = X,
                   Table "Advance Letter Template CZZ" = X,
+                  Table "Advance Posting Buffer CZZ" = X,
                   Table "Purch. Adv. Letter Entry CZZ" = X,
                   Table "Purch. Adv. Letter Header CZZ" = X,
                   Table "Purch. Adv. Letter Line CZZ" = X,

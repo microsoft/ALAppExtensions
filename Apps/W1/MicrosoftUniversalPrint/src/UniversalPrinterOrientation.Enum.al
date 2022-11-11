@@ -5,7 +5,7 @@
 
 /// <summary>
 /// Specifies orientations used for printing. The value of each ID corresponds to the value assigned by Universal Print.
-/// See https://docs.microsoft.com/en-us/graph/api/resources/printercapabilities.
+/// Visit https://go.microsoft.com/fwlink/?linkid=2206448
 /// </summary>
 enum 2751 "Universal Printer Orientation"
 {

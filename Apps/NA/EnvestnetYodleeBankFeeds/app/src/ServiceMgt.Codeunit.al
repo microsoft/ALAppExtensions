@@ -1,4 +1,4 @@
-﻿codeunit 1450 "MS - Yodlee Service Mgt."
+codeunit 1450 "MS - Yodlee Service Mgt."
 {
     var
         ResponseTempBlob: Codeunit "Temp Blob";
@@ -868,13 +868,16 @@
         RefreshDateTimeTxt: Text;
         ProviderId: Text;
         ProviderName: Text;
+        OAuthMigrationStatus: Text;
     begin
         CheckServiceEnabled();
         GetLinkedBankAccount(OnlineBankAccountID, AccountNode);
         ProviderName := FindNodeText(AccountNode, '/root/root/account/providerName');
         ProviderId := FindNodeText(AccountNode, '/root/root/account/providerId');
+        OAuthMigrationStatus := FindNodeText(AccountNode, '/root/root/account/oauthMigrationStatus');
         Session.LogMessage('0000A07', ProviderName, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         Session.LogMessage('0000A08', ProviderId, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+        Session.LogMessage('0000INC', OAuthMigrationStatus, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         if MSYodleeBankServiceSetup.Get() then
             Session.LogMessage('0000F76', MSYodleeBankServiceSetup."Consumer Name", Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         Session.LogMessage('00006PN', OnlineBankID, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
@@ -1909,7 +1912,9 @@
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
+#pragma warning disable AA0207
     procedure HandleVANRegisterServiceConnection(var ServiceConnection: Record 1400)
+#pragma warning restore
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         RecRef: RecordRef;

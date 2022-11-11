@@ -49,8 +49,22 @@ codeunit 3910 "Apply Retention Policy"
     procedure GetExpiredRecordCount(RetentionPolicySetup: Record "Retention Policy Setup"): Integer;
     var
         ApplyRetentionPolicyImpl: Codeunit "Apply Retention Policy Impl.";
+        ExpiredRecordExpirationDate: Date;
     begin
-        Exit(ApplyRetentionPolicyImpl.GetExpiredRecordCount(RetentionPolicySetup))
+        Exit(ApplyRetentionPolicyImpl.GetExpiredRecordCount(RetentionPolicySetup, ExpiredRecordExpirationDate))
+    end;
+
+    /// <summary>
+    /// Returns the number of expired records for the given Retention Policy Setup record. These records would be deleted if the Retention Policy was applied.
+    /// </summary>
+    /// <param name="RetentionPolicySetup">This is the setup record which defines the retention policy for which the expired records will be counted.</param>
+    /// <param name="ExpiredRecordExpirationDate">The earliest expiration date for which there are more expired records than the maximum to be deleted in a single run.</param>
+    /// <returns>The number of records which are expired.</returns>
+    procedure GetExpiredRecordCount(RetentionPolicySetup: Record "Retention Policy Setup"; var ExpiredRecordExpirationDate: Date): Integer;
+    var
+        ApplyRetentionPolicyImpl: Codeunit "Apply Retention Policy Impl.";
+    begin
+        Exit(ApplyRetentionPolicyImpl.GetExpiredRecordCount(RetentionPolicySetup, ExpiredRecordExpirationDate))
     end;
 
     /// <summary>
@@ -83,6 +97,22 @@ codeunit 3910 "Apply Retention Policy"
         ApplyRetentionPolicyImpl: Codeunit "Apply Retention Policy Impl.";
     begin
         ApplyRetentionPolicyImpl.SetWhereNewerExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, FilterGroup, NullDateReplacementValue);
+    end;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="DateFieldNo"></param>
+    /// <param name="ExpirationDate"></param>
+    /// <param name="RecordRef"></param>
+    /// <param name="FilterGroup"></param>
+    /// <param name="NullDateReplacementValue"></param>
+    /// <param name="CurrDate"></param>
+    procedure SetSingleDateExpirationDateFilter(DateFieldNo: Integer; ExpirationDate: Date; var RecordRef: RecordRef; FilterGroup: Integer; NullDateReplacementValue: Date)
+    var
+        ApplyRetentionPolicyImpl: Codeunit "Apply Retention Policy Impl.";
+    begin
+        ApplyRetentionPolicyImpl.SetSingleDateExpirationDateFilter(DateFieldNo, ExpirationDate, RecordRef, FilterGroup, NullDateReplacementValue);
     end;
 
     /// <summary>

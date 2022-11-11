@@ -45,6 +45,11 @@ pageextension 11740 "Purchase Credit Memo CZL" extends "Purchase Credit Memo"
         }
         addlast("Invoice Details")
         {
+            field("VAT Registration No. CZL"; Rec."VAT Registration No.")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+            }
             field("Registration No. CZL"; Rec."Registration No. CZL")
             {
                 ApplicationArea = Basic, Suite;

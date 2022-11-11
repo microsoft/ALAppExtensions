@@ -322,13 +322,7 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
 
     var
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
         IsClosed: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsMgtCZZ.TestIsEnabled();
-    end;
 
     trigger OnAfterGetRecord()
     begin

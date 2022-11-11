@@ -5450,6 +5450,9 @@ End Function
         <Field Name="CurrencyCode_IssuedReminderHeader">
           <DataField>CurrencyCode_IssuedReminderHeader</DataField>
         </Field>
+        <Field Name="Contact_IssuedReminderHeader">
+          <DataField>Contact_IssuedReminderHeader</DataField>
+        </Field>
         <Field Name="DocFooterText">
           <DataField>DocFooterText</DataField>
         </Field>
@@ -5519,6 +5522,9 @@ End Function
         <Field Name="RemainingAmount_IssuedReminderLineFormat">
           <DataField>RemainingAmount_IssuedReminderLineFormat</DataField>
         </Field>
+        <Field Name="Description_IssuedReminderLineCaption">
+          <DataField>Description_IssuedReminderLineCaption</DataField>
+        </Field>
         <Field Name="Description_IssuedReminderLine">
           <DataField>Description_IssuedReminderLine</DataField>
         </Field>
@@ -5536,6 +5542,9 @@ End Function
         </Field>
         <Field Name="AmountInclVATFormat">
           <DataField>AmountInclVATFormat</DataField>
+        </Field>
+        <Field Name="LineAmountText">
+          <DataField>LineAmountText</DataField>
         </Field>
         <Field Name="InterestAmountLbl">
           <DataField>InterestAmountLbl</DataField>
@@ -5575,6 +5584,24 @@ End Function
         </Field>
         <Field Name="LineNo_NotDueLine">
           <DataField>LineNo_NotDueLine</DataField>
+        </Field>
+        <Field Name="GreetingLbl">
+          <DataField>GreetingLbl</DataField>
+        </Field>
+        <Field Name="AmtDueLbl">
+          <DataField>AmtDueLbl</DataField>
+        </Field>
+        <Field Name="BodyLbl">
+          <DataField>BodyLbl</DataField>
+        </Field>
+        <Field Name="ClosingLbl">
+          <DataField>ClosingLbl</DataField>
+        </Field>
+        <Field Name="TotalLineAmount">
+          <DataField>TotalLineAmount</DataField>
+        </Field>
+        <Field Name="TotalLineAmountFormat">
+          <DataField>TotalLineAmountFormat</DataField>
         </Field>
         <Field Name="FullName_Employee">
           <DataField>FullName_Employee</DataField>

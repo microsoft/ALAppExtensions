@@ -73,6 +73,9 @@ table 2028 "MS - Image Analyzer Tags"
         {
             Clustered = true;
         }
+        key(Key1; "Action To Perform")
+        {
+        }
     }
 
     fieldgroups
@@ -201,7 +204,7 @@ table 2028 "MS - Image Analyzer Tags"
                 "Item Attribute Value Id" := ItemAttributeValue.id;
                 "Item Attribute Value Name" := ItemAttributeValue.Value;
             end else
-                Error(StrSubstNo(AttributeAlreadyAssignedErr, ItemAttribute.Name));
+                Error(AttributeAlreadyAssignedErr, ItemAttribute.Name);
         end;
     end;
 

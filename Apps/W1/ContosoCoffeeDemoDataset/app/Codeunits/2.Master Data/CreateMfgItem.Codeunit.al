@@ -131,7 +131,7 @@ codeunit 4770 "Create Mfg Item"
                     ReplenishmentSystem::Purchase, 1, '<1W>', 0, XPartsTok, ManufacturingDemoFiles.GetNoPicture(), '');
 
         InsertData('SP-BOM1302', XControlPanelDisplayTok, AdjustManufacturingData.AdjustPrice(0), AdjustManufacturingData.AdjustPrice(5.03), '81000', '4577-BB', 0, '', '',
-                    CostingMethod::FIFO, FlushingMethod::Forward, '', 0, '', 0, ReorderingPolicy::"Lot-for-Lot", true, ManufacturingPolicy::"Make-to-Stock", 0, 0, 0, 0, 0, '',
+                    CostingMethod::FIFO, FlushingMethod::Backward, '', 0, '', 0, ReorderingPolicy::"Lot-for-Lot", true, ManufacturingPolicy::"Make-to-Stock", 0, 0, 0, 0, 0, '',
                     ReplenishmentSystem::Purchase, 1, '<1W>', 0, XPartsTok, ManufacturingDemoFiles.GetNoPicture(), '');
 
         InsertData('SP-BOM1303', XButtonTok, AdjustManufacturingData.AdjustPrice(0), AdjustManufacturingData.AdjustPrice(2.89), '81000', 'T5555-FF', 0, '', '',
@@ -182,7 +182,7 @@ codeunit 4770 "Create Mfg Item"
         // Products
         XAirpotDuoTok: Label 'Airpot Duo', MaxLength = 30;
         XAirpotTok: Label 'Airpot', MaxLength = 30;
-        XAirpotLiteTok: Label 'Airpot lite', MaxLength = 30;
+        XAirpotLiteTok: Label 'Airpot lite';
         XAutoDripTok: Label 'AutoDrip', MaxLength = 30;
         XAutoDripLiteTok: Label 'AutoDripLite', MaxLength = 30;
         XAutoDripLiteBlackTok: Label 'AutoDripLite - Black', MaxLength = 30;
@@ -213,8 +213,8 @@ codeunit 4770 "Create Mfg Item"
         XFaciaPanelWithDisplayTok: Label 'Facia Panel with display', MaxLength = 30;
         XGlassCarafeTok: Label 'Glass Carafe', MaxLength = 30;
         XStillCarafeTok: Label 'Stainless still thermal carafe', MaxLength = 30;
-        XReservoirTok: Label 'Reservoir.', MaxLength = 30;
-        XHeatingElementTok: Label 'Heating element.', MaxLength = 30;
+        XReservoirTok: Label 'Reservoir', MaxLength = 30;
+        XHeatingElementTok: Label 'Heating element', MaxLength = 30;
         XWaterTubingTok: Label 'Water tubing', MaxLength = 30;
         XReservoirTestKitTok: Label 'Reservoir testing kit', MaxLength = 30;
         XPaintBlackTok: Label 'Paint, black', MaxLength = 30;
@@ -259,9 +259,6 @@ codeunit 4770 "Create Mfg Item"
         Item: Record Item;
         ObjInStream: InStream;
     begin
-        if item.Get("No.") then
-            exit;
-
         Item.Init();
         Item.Validate("No.", "No.");
         Item.Validate(Description, Description);
@@ -355,9 +352,6 @@ codeunit 4770 "Create Mfg Item"
     var
         ItemCategory: Record "Item Category";
     begin
-        if ItemCategory.Get(ChildCategoryCode) then
-            exit;
-
         ItemCategory.Init();
         ItemCategory.Validate(Code, ChildCategoryCode);
         ItemCategory.Validate("Parent Category", ParentCategoryCode);

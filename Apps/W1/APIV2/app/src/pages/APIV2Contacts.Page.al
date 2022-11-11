@@ -81,7 +81,9 @@ page 30071 "APIV2 - Contacts"
 
                     trigger OnValidate()
                     begin
+#pragma warning disable AL0432
                         RegisterFieldSet(FieldNo("Business Relation"));
+#pragma warning restore
                     end;
                 }
 #endif

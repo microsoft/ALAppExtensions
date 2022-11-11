@@ -65,7 +65,7 @@ page 20027 "APIV1 - Countries/Regions"
     var
         CountryRegion: Record "Country/Region";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
-        RecRef: RecordRef;
+        RecordRef: RecordRef;
     begin
         CountryRegion.SETRANGE(Code, Code);
         IF NOT CountryRegion.ISEMPTY() THEN
@@ -73,9 +73,9 @@ page 20027 "APIV1 - Countries/Regions"
 
         INSERT(TRUE);
 
-        RecRef.GETTABLE(Rec);
-        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecRef, TempFieldSet, CURRENTDATETIME());
-        RecRef.SETTABLE(Rec);
+        RecordRef.GETTABLE(Rec);
+        GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecordRef, TempFieldSet, CURRENTDATETIME());
+        RecordRef.SETTABLE(Rec);
 
         MODIFY(TRUE);
         EXIT(FALSE);

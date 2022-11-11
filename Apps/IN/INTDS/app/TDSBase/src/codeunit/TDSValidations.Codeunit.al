@@ -127,6 +127,7 @@ codeunit 18688 "TDS Validations"
         if not TDSEntryUpdateMgt.IsTDSEntryUpdateStarted(TDSEntry."Entry No.") then
             TDSEntryUpdateMgt.SetTDSEntryForUpdate(TDSEntry);
 
+        GSTAmount := 0;
         TaxBaseSubscribers.GetGSTAmountFromTransNo(Rec."Transaction No.", TDSEntry."Document No.", GSTAmount);
         InitialInvoiceAmount := TDSEntryUpdateMgt.GetTDSEntryToUpdateInitialInvoiceAmount(TDSEntry."Entry No.");
         TDSEntry."Invoice Amount" := InitialInvoiceAmount + Abs(GSTAmount);

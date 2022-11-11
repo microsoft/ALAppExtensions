@@ -50,7 +50,7 @@ codeunit 1481 "Edit in Excel"
     end;
 
     /// <summary>
-    /// This event is called when Edit in Excel is invoked and allows overriding the Edit in Excel functionality.
+    /// This event is called when Edit in Excel is invoked, accepting Filter in Text format. It allows overriding the Edit in Excel functionality.
     /// </summary>
     /// <param name="ServiceName">The name of the web service already created for use with Edit in Excel.</param>
     /// <param name="Filter">The Business Central filter to be applied in Edit in Excel.</param>
@@ -58,6 +58,19 @@ codeunit 1481 "Edit in Excel"
     //  <param name="Handled">Specifies whether the event has been handled and no further execution should occur.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnEditInExcel(ServiceName: Text[240]; ODataFilter: Text; SearchFilter: Text; var Handled: Boolean)
+    begin
+    end;
+
+    /// <summary>
+    /// This event is called when Edit in Excel is invoked, handling JSON structured filters. It also allows overriding the Edit in Excel functionality.
+    /// </summary>
+    /// <param name="ServiceName">The name of the web service already created for use with Edit in Excel.</param>
+    /// <param name="Filter">Business Central Filter to be applied in Edit in Excel.</param>
+    /// <param name="Payload">Object binding the name of the filtered field with its EdmType</param>
+    /// <param name="SearchFilter">The search filter of the user.</param>
+    //  <param name="Handled">Specifies whether the event has been handled and no further execution should occur.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnEditInExcelWithStructuredFilter(ServiceName: Text[240]; Filter: JsonObject; Payload: JsonObject; SearchFilter: Text; var Handled: Boolean)
     begin
     end;
 }

@@ -19,8 +19,8 @@ codeunit 9010 "Azure AD User Management"
         Codeunit.Run(Codeunit::"Azure AD User Mgmt. Impl.");
     end;
 
-    /// <summary>    
-    /// Retrieves all the users from Azure AD. If the users already exist in the database, 
+    /// <summary>
+    /// Retrieves all the users from Azure AD. If the users already exist in the database,
     /// they are updated to match the ones from Azure AD; otherwise new users are inserted in the database.
     /// </summary>
     [Scope('OnPrem')]
@@ -81,17 +81,6 @@ codeunit 9010 "Azure AD User Management"
     procedure IsUserDelegated(UserSecID: Guid): Boolean
     begin
         exit(AzureADUserMgmtImpl.IsUserDelegated(UserSecID));
-    end;
-
-    /// <summary>
-    /// Sets a flag that is used to determine whether a test is in progress.
-    /// </summary>
-    /// <param name="TestInProgress">The value to be set to the flag.</param>
-    [Scope('OnPrem')]
-    [NonDebuggable]
-    procedure SetTestInProgress(TestInProgress: Boolean)
-    begin
-        AzureADUserMgmtImpl.SetTestInProgress(TestInProgress);
     end;
 
     /// <summary>

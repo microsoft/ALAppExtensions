@@ -201,7 +201,7 @@ page 12 "Email Viewer"
         HasSourceRecord := EmailImpl.HasSourceRecord(Rec."Message Id");
         IsHTMLFormatted := EmailMessageImpl.IsBodyHTMLFormatted();
         HasAttachments := EmailMessageImpl.Attachments_First();
-        CurrPage.Attachments.Page.UpdateValues(EmailMessageImpl.GetId(), false);
+        CurrPage.Attachments.Page.UpdateValues(EmailMessageImpl, false);
     end;
 
     trigger OnOpenPage()
@@ -213,12 +213,12 @@ page 12 "Email Viewer"
         CurrPage.SetTableView(Rec);
     end;
 
-    local procedure UpdateFromField(EmailAccount: Record "Email Account" temporary)
+    local procedure UpdateFromField(EmailAccountRec: Record "Email Account" temporary)
     begin
-        if EmailAccount."Email Address" = '' then
+        if EmailAccountRec."Email Address" = '' then
             FromDisplayName := ''
         else
-            FromDisplayName := StrSubstNo(FromDisplayNameLbl, EmailAccount.Name, EmailAccount."Email Address");
+            FromDisplayName := StrSubstNo(FromDisplayNameLbl, EmailAccountRec.Name, EmailAccountRec."Email Address");
     end;
 
     var

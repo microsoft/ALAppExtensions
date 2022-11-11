@@ -115,6 +115,13 @@ page 30135 "Shpfy Authentication"
             exit(OAuthProperties.Get(Property));
     end;
 
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure GetAuthError(): Text
+    begin
+        exit(AuthError);
+    end;
+
     var
         [NonDebuggable]
         OAuthRequestUrl: Text;

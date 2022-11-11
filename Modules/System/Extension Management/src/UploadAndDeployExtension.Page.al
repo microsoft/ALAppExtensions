@@ -139,7 +139,6 @@ page 2507 "Upload And Deploy Extension"
                 Image = ServiceOrderSetup;
                 Enabled = IsAccepted;
                 InFooterBar = true;
-                Promoted = true;
                 RunPageMode = Edit;
 
                 trigger OnAction()

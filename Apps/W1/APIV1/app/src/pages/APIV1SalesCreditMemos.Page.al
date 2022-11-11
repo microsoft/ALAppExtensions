@@ -87,13 +87,9 @@ page 20038 "APIV1 - Sales Credit Memos"
                     Caption = 'customerId', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF NOT SellToCustomer.GetBySystemId("Customer Id") THEN
                             ERROR(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Sell-to Customer No." := SellToCustomer."No.";
                         RegisterFieldSet(FIELDNO("Customer Id"));
@@ -109,8 +105,6 @@ page 20038 "APIV1 - Sales Credit Memos"
                     Caption = 'customerNumber', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF SellToCustomer."No." <> '' THEN BEGIN
                             IF SellToCustomer."No." <> "Sell-to Customer No." THEN
@@ -120,8 +114,6 @@ page 20038 "APIV1 - Sales Credit Memos"
 
                         IF NOT SellToCustomer.GET("Sell-to Customer No.") THEN
                             ERROR(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Customer Id" := SellToCustomer.SystemId;
                         RegisterFieldSet(FIELDNO("Customer Id"));
@@ -143,13 +135,9 @@ page 20038 "APIV1 - Sales Credit Memos"
                     Caption = 'billToCustomerId', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF NOT BillToCustomer.GetBySystemId("Bill-to Customer Id") THEN
                             ERROR(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer No." := BillToCustomer."No.";
                         RegisterFieldSet(FIELDNO("Bill-to Customer Id"));
@@ -161,8 +149,6 @@ page 20038 "APIV1 - Sales Credit Memos"
                     Caption = 'billToCustomerNumber', Locked = true;
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         IF BillToCustomer."No." <> '' THEN BEGIN
                             IF BillToCustomer."No." <> "Bill-to Customer No." THEN
@@ -173,8 +159,6 @@ page 20038 "APIV1 - Sales Credit Memos"
                         IF NOT BillToCustomer.GET("Bill-to Customer No.") THEN
                             ERROR(CouldNotFindBillToCustomerErr);
 
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
-
                         "Bill-to Customer Id" := BillToCustomer.SystemId;
                         RegisterFieldSet(FIELDNO("Bill-to Customer Id"));
                         RegisterFieldSet(FIELDNO("Bill-to Customer No."));
@@ -183,7 +167,9 @@ page 20038 "APIV1 - Sales Credit Memos"
                 field(sellingPostalAddress; SellingPostalAddressJSONText)
                 {
                     Caption = 'sellingPostalAddress', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the selling address of the Sales Invoice.';
 
                     trigger OnValidate()
@@ -194,7 +180,9 @@ page 20038 "APIV1 - Sales Credit Memos"
                 field(billingPostalAddress; BillingPostalAddressJSONText)
                 {
                     Caption = 'billingPostalAddress', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the billing address of the Sales Credit Memo.';
 
                     trigger OnValidate()
@@ -829,11 +817,11 @@ page 20038 "APIV1 - Sales Credit Memos"
         end;
     end;
 
-    local procedure SetActionResponse(var ActionContext: WebServiceActionContext; InvoiceId: Guid)
+    local procedure SetActionResponse(var ActionContext: WebServiceActionContext; InvoiceIdentifier: Guid)
     begin
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(Page::"APIV1 - Sales Credit Memos");
-        ActionContext.AddEntityKey(FieldNo(Id), InvoiceId);
+        ActionContext.AddEntityKey(FieldNo(Id), InvoiceIdentifier);
         ActionContext.SetResultCode(WebServiceActionResultCode::Deleted);
     end;
 

@@ -140,9 +140,11 @@ codeunit 30166 "Shpfy Process Order"
         ShopifyOrderLine: Record "Shpfy Order Line";
         ShopifyOrderShippingCost: Record "Shpfy Order Shipping Charges";
         ShopLocation: Record "Shpfy Shop Location";
+        ShpfySuppressAsmWarning: Codeunit "Shpfy Suppress Asm Warning";
         IsHandled: Boolean;
         ShopfyOrderNoLbl: Label 'Shopify Order No.: %1', Comment = '%1 = Order No.';
     begin
+        BindSubscription(ShpfySuppressAsmWarning);
         if ShopifyShop."Shopify Order No. on Doc. Line" then begin
             SalesLine.Init();
             SalesLine.SetHideValidationDialog(true);

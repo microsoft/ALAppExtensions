@@ -1,6 +1,6 @@
 table 4059 "GPPOPPOTaxHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

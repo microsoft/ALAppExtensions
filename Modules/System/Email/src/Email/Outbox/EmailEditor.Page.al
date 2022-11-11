@@ -351,7 +351,7 @@ page 13 "Email Editor"
         EmailScheduled := Rec.Status in [Enum::"Email Status"::Queued, Enum::"Email Status"::Processing];
         HasSourceRecord := EmailImpl.HasSourceRecord(Rec."Message Id");
         IsHTMLFormatted := EmailMessageImpl.IsBodyHTMLFormatted();
-        CurrPage.Attachments.Page.UpdateValues(EmailMessageImpl.GetId(), not EmailScheduled);
+        CurrPage.Attachments.Page.UpdateValues(EmailMessageImpl, not EmailScheduled);
     end;
 
     trigger OnOpenPage()

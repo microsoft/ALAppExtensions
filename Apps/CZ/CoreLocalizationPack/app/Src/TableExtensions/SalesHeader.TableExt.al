@@ -382,6 +382,17 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         exit(CountryRegion.IsIntrastatCZL("VAT Country/Region Code", false));
     end;
 
+    procedure GetDefaulBankAccountNoCZL() BankAccountNo: Code[20]
+    var
+        BankAccount: Record "Bank Account";
+        IsHandled: Boolean;
+    begin
+        OnBeforeGetDefaulBankAccountNoCZL(Rec, BankAccountNo, IsHandled);
+        if IsHandled then
+            exit(BankAccountNo);
+        exit(BankAccount.GetDefaultBankAccountNoCZL("Responsibility Center", "Currency Code"));
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateBankInfoCZL(var SalesHeader: Record "Sales Header")
     begin
@@ -414,6 +425,11 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeConfirmUpdateVATCurrencyFactorCZL(var SalesHeader: Record "Sales Header"; var HideValidationDialog: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetDefaulBankAccountNoCZL(var SalesHeader: Record "Sales Header"; var BankAccountNo: Code[20]; var IsHandled: Boolean);
     begin
     end;
 }

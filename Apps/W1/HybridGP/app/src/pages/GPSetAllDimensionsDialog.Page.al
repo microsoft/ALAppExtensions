@@ -20,6 +20,7 @@ page 4052 "GP Set All Dimensions Dialog"
                 Caption = 'Dimension 1';
                 TableRelation = "GP Segment Name" where("Company Name" = const(''));
                 ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the value for Dimension 1';
             }
 
             field("Dimension 2"; Dimension2)
@@ -27,6 +28,7 @@ page 4052 "GP Set All Dimensions Dialog"
                 Caption = 'Dimension 2';
                 TableRelation = "GP Segment Name" where("Company Name" = const(''));
                 ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the value for Dimension 2';
 
                 trigger OnValidate()
                 begin
@@ -50,9 +52,9 @@ page 4052 "GP Set All Dimensions Dialog"
 
                 trigger OnAction()
                 begin
-                    if (Dimension1 = '') and (Dimension2 = '') then begin
+                    if (Dimension1 = '') and (Dimension2 = '') then
                         BlanksClearValue := Confirm(BothDimensionsBlankConfirmMsg)
-                    end else begin
+                    else begin
                         if Dimension1 = '' then
                             BlanksClearValue := Confirm(OneDimensionBlankConfirmMsg, false, 1);
 
@@ -108,18 +110,16 @@ page 4052 "GP Set All Dimensions Dialog"
             until HybridCompany.Next() = 0;
 
         GPSegmentName.SetFilter("Company Name", '<>%1', '');
-        if GPSegmentName.FindSet() then begin
+        if GPSegmentName.FindSet() then
             repeat
-                if not GPSegmentNameUnique.Get(GPSegmentName."Segment Name", '') then begin
+                if not GPSegmentNameUnique.Get(GPSegmentName."Segment Name", '') then
                     if MigratingCompanyList.IndexOf(GPSegmentName."Company Name") > 0 then begin
                         GPSegmentNameUnique."Company Name" := '';
                         GPSegmentNameUnique."Segment Name" := GPSegmentName."Segment Name";
                         GPSegmentNameUnique."Segment Number" := GPSegmentName."Segment Number";
                         GPSegmentNameUnique.Insert();
                     end;
-                end;
             until GPSegmentName.Next() = 0;
-        end;
     end;
 
     procedure GetDimension1(): Text[30]
@@ -150,5 +150,5 @@ page 4052 "GP Set All Dimensions Dialog"
         ConfirmedYes: Boolean;
         GlobalDimensionsCannotBeTheSameErr: Label 'Dimension 1 and Dimension 2 cannot be the same.';
         BothDimensionsBlankConfirmMsg: Label 'Both dimensions are empty. Do you want to clear both dimensions for all companies?';
-        OneDimensionBlankConfirmMsg: Label 'You don''t have a value for Dimension %1. Do you want to clear Dimension %1 for all companies?';
+        OneDimensionBlankConfirmMsg: Label 'You don''t have a value for Dimension %1. Do you want to clear Dimension %1 for all companies?', Comment = '%1 - Dimension name';
 }

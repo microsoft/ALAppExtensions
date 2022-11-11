@@ -23,6 +23,13 @@ codeunit 4779 "Create Mfg Item Jnl Line"
         InsertData('SP-BOM1107', 50, ManufacturingDemoDataSetup."Manufacturing Location");
         InsertData('SP-BOM1108', 50, ManufacturingDemoDataSetup."Manufacturing Location");
         InsertData('SP-BOM1109', 50, ManufacturingDemoDataSetup."Manufacturing Location");
+
+        InsertData('SP-BOM2000', 50, ManufacturingDemoDataSetup."Manufacturing Location");
+
+        InsertData('SP-BOM1305', 1000, ManufacturingDemoDataSetup."Manufacturing Location");
+        InsertData('SP-BOM1302', 50, ManufacturingDemoDataSetup."Manufacturing Location");
+        InsertData('SP-BOM1303', 50, ManufacturingDemoDataSetup."Manufacturing Location");
+        InsertData('SP-BOM1304', 50, ManufacturingDemoDataSetup."Manufacturing Location");
     end;
 
     var

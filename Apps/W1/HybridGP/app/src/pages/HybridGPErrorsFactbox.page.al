@@ -15,12 +15,12 @@ page 4031 "Hybrid GP Errors Factbox"
             {
                 ShowCaption = false;
 
-                field("Migration Errors"; MigrationErrorCount)
+                field("Migration Errors"; Rec.MigrationErrorCount)
                 {
                     Caption = 'Migration Errors';
                     ApplicationArea = Basic, Suite;
                     Style = Unfavorable;
-                    StyleExpr = (MigrationErrorCount > 0);
+                    StyleExpr = (Rec.MigrationErrorCount > 0);
                     ToolTip = 'Indicates the number of errors that occurred during the migration.';
 
                     trigger OnDrillDown()
@@ -32,12 +32,12 @@ page 4031 "Hybrid GP Errors Factbox"
                     end;
                 }
 
-                field("Posting Errors"; PostingErrorCount)
+                field("Posting Errors"; Rec.PostingErrorCount)
                 {
                     Caption = 'Posting Errors';
                     ApplicationArea = Basic, Suite;
                     Style = Unfavorable;
-                    StyleExpr = (PostingErrorCount > 0);
+                    StyleExpr = (Rec.PostingErrorCount > 0);
                     ToolTip = 'Indicates the number of posting errors that occurred during the migration.';
 
                     trigger OnDrillDown()

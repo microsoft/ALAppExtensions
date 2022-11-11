@@ -170,8 +170,6 @@ page 149004 "BCPT Lines"
                 ApplicationArea = All;
                 Caption = 'New';
                 Image = New;
-                Promoted = true;
-                PromotedCategory = Process;
                 Scope = Repeater;
                 ToolTip = 'Add a new line.';
 
@@ -182,7 +180,7 @@ page 149004 "BCPT Lines"
                     // Missing implementation for very first record
                     NextBCPTLine := Rec;
                     Rec.init();
-                    if NextBCPTLine.Find('>') then
+                    if NextBCPTLine.Next() <> 0 then
                         Rec."Line No." := (NextBCPTLine."Line No." - Rec."Line No.") div 2
                     else
                         Rec."Line No." += 10000;
@@ -207,8 +205,6 @@ page 149004 "BCPT Lines"
                 Visible = false;
                 Caption = 'Make Child';  //'Indent';
                 Image = Indent;
-                Promoted = true;
-                PromotedCategory = Process;
                 ToolTip = 'Make this process a child of the above session.';
                 trigger OnAction()
                 begin
@@ -221,8 +217,6 @@ page 149004 "BCPT Lines"
                 Visible = false;
                 Caption = 'Make Session';  //'Outdent';
                 Image = DecreaseIndent;
-                Promoted = true;
-                PromotedCategory = Process;
                 ToolTip = 'Make this process its own session.';
 
                 trigger OnAction()
@@ -250,11 +244,11 @@ page 149004 "BCPT Lines"
             if BCPTHeader.Get(Rec."BCPT Code") then;
     end;
 
-    local procedure GetAvg(NoOfIterations: Integer; TotalNo: Integer): Integer
+    local procedure GetAvg(NumIterations: Integer; TotalNo: Integer): Integer
     begin
-        if NoOfIterations = 0 then
+        if NumIterations = 0 then
             exit(0);
-        exit(TotalNo div NoOfIterations);
+        exit(TotalNo div NumIterations);
     end;
 
     local procedure GetDiffPct(BaseNo: Integer; No: Integer): Decimal

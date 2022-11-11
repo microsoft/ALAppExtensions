@@ -44,12 +44,12 @@ codeunit 9811 "Password Dialog Impl."
         end;
     end;
 
-    procedure ValidatePassword(RequiresPasswordConfirmation: Boolean; ValidatePassword: Boolean; Password: Text; ConfirmPassword: Text): Boolean
+    procedure ValidatePassword(RequiresPasswordConfirmation: Boolean; RequiresPasswordValidation: Boolean; Password: Text; ConfirmPassword: Text): Boolean
     begin
         if RequiresPasswordConfirmation and (Password <> ConfirmPassword) then
             Error(PasswordMismatchErr);
 
-        if ValidatePassword then
+        if RequiresPasswordValidation then
             ValidatePasswordStrength(Password);
         if Password = '' then
             if not Confirm(ConfirmBlankPasswordQst) then

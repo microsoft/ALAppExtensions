@@ -1495,6 +1495,7 @@ codeunit 139680 "GP Fiscal Periods Tests"
     var
         d: date;
     begin
-        d := DMY2Date(29, 2, Year);
+        d := DMY2Date(29, 2, Year); // Error should be thrown here if it is not
+        Clear(d);
     end;
 }

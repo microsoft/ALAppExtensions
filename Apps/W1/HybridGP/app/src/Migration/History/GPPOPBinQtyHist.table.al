@@ -1,6 +1,6 @@
 table 4054 "GPPOPBinQtyHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

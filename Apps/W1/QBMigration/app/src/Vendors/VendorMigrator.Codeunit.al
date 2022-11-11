@@ -8,6 +8,7 @@ codeunit 1913 "MigrationQB Vendor Migrator"
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from QB', Locked = true;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
     procedure OnMigrateVendor(VAR Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -18,7 +19,9 @@ codeunit 1913 "MigrationQB Vendor Migrator"
         MigrationQBVendor.Get(RecordIdToMigrate);
         MigrateVendorDetails(MigrationQBVendor, Sender);
     end;
+#pragma warning restore AA0207
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
     procedure OnMigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
@@ -38,7 +41,9 @@ codeunit 1913 "MigrationQB Vendor Migrator"
         Sender.SetVendorPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
         Sender.ModifyVendor(true);
     end;
+#pragma warning restore AA0207
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorTransactions', '', true, true)]
     procedure OnMigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
@@ -118,6 +123,7 @@ codeunit 1913 "MigrationQB Vendor Migrator"
 				Sender.SetGeneralJournalLineExternalDocumentNo(MigrationQBVendTrans.DocNumber);				
 			until MigrationQBVendTrans.Next() = 0;	 */
     end;
+#pragma warning restore AA0207
 
     local procedure MigrateVendorDetails(MigrationQBVendor: Record "MigrationQB Vendor"; VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
     var
@@ -320,7 +326,7 @@ codeunit 1913 "MigrationQB Vendor Migrator"
 
             RecordVariant := MigrationQBVendTrans;
             DocumentNo := CopyStr(IncStr(DocumentNo), 1, 30);
-            UpdateInvoiceFromJson(RecordVariant, ChildJToken, DocumentNo);
+            UpdateInvoiceFromJson(RecordVariant, ChildJToken);
             MigrationQBVendTrans := RecordVariant;
             MigrationQBVendTrans.Modify(true);
 
@@ -328,79 +334,7 @@ codeunit 1913 "MigrationQB Vendor Migrator"
         end;
     end;
 
-    local procedure GetPaymentsFromJson(JArray: JsonArray);
-    var
-        MigrationQBVendTrans: Record "MigrationQB VendorTrans";
-        HelperFunctions: Codeunit "MigrationQB Helper Functions";
-        RecordVariant: Variant;
-        ChildJToken: JsonToken;
-        AppliedChildJToken: JsonToken;
-        AppliedJArray: JsonArray;
-        EntityId: Text[15];
-        id: Text[100];
-        i: Integer;
-        j: Integer;
-    begin
-        i := 0;
-
-        WHILE JArray.Get(i, ChildJToken) do begin
-            EntityId := CopyStr(HelperFunctions.TrimStringQuotes(HelperFunctions.GetTextFromJToken(ChildJToken, 'Id')), 1, 15);
-
-            if HelperFunctions.GetArrayPropertyValueFromJObjectByName(ChildJToken.AsObject(), 'AppliedToTxnRetList', AppliedJArray) then begin
-                j := 0;
-                WHILE AppliedJArray.Get(j, AppliedChildJToken) do begin
-                    MigrationQBVendTrans.Init();
-                    id := CopyStr(HelperFunctions.GetTextFromJToken(AppliedChildJToken, 'TxnId'), 1, 100);
-                    if not MigrationQBVendTrans.Get(id, MigrationQBVendTrans.TransType::Payment) then begin
-                        MigrationQBVendTrans.Validate(MigrationQBVendTrans.Id, id);
-                        MigrationQBVendTrans.Validate(MigrationQBVendTrans.TransType, MigrationQBVendTrans.TransType::Payment);
-                        MigrationQBVendTrans.Insert(true);
-                        RecordVariant := MigrationQBVendTrans;
-                        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendTrans.FieldNo(Amount), AppliedChildJToken.AsObject(), 'UnappliedAmt');
-                        DocumentNo := CopyStr(IncStr(DocumentNo), 1, 30);
-                        UpdatePaymentFromJson(RecordVariant, ChildJToken, DocumentNo);
-                        MigrationQBVendTrans := RecordVariant;
-                        MigrationQBVendTrans.Modify(true);
-                    end;
-                    j := j + 1;
-                end;
-            end;
-            i := i + 1;
-        end;
-    end;
-
-    local procedure GetVendorCreditMemosFromJson(JArray: JsonArray);
-    var
-        MigrationQBVendTrans: Record "MigrationQB VendorTrans";
-        HelperFunctions: Codeunit "MigrationQB Helper Functions";
-        RecordVariant: Variant;
-        ChildJToken: JsonToken;
-        EntityId: Text[15];
-        i: Integer;
-    begin
-        i := 0;
-
-        WHILE JArray.Get(i, ChildJToken) do begin
-            EntityId := CopyStr(HelperFunctions.TrimStringQuotes(HelperFunctions.GetTextFromJToken(ChildJToken, 'Id')), 1, 15);
-
-            if not MigrationQBVendTrans.Get(EntityId, MigrationQBVendTrans.TransType::"Credit Memo") then begin
-                MigrationQBVendTrans.Init();
-                MigrationQBVendTrans.Validate(MigrationQBVendTrans.Id, EntityId);
-                MigrationQBVendTrans.Validate(MigrationQBVendTrans.TransType, MigrationQBVendTrans.TransType::"Credit Memo");
-                MigrationQBVendTrans.Insert(true);
-            end;
-
-            RecordVariant := MigrationQBVendTrans;
-            DocumentNo := CopyStr(IncStr(DocumentNo), 1, 30);
-            UpdateVendorCreditMemoFromJson(RecordVariant, ChildJToken, DocumentNo);
-            MigrationQBVendTrans := RecordVariant;
-            MigrationQBVendTrans.Modify(true);
-
-            i := i + 1;
-        end;
-    end;
-
-    local procedure UpdateInvoiceFromJson(var RecordVariant: Variant; JToken: JsonToken; DocumentNo: Text[30])
+    local procedure UpdateInvoiceFromJson(var RecordVariant: Variant; JToken: JsonToken)
     var
         MigrationQBVendTrans: Record "MigrationQB VendorTrans";
         HelperFunctions: Codeunit "MigrationQB Helper Functions";
@@ -417,31 +351,5 @@ codeunit 1913 "MigrationQB Vendor Migrator"
             HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendTrans.FieldNo(Amount), JToken.AsObject(), 'RemainingBalance');
             HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendTrans.FieldNo(VendorRef), JToken.AsObject(), 'VendorRef.ListId');
         end;
-    end;
-
-    local procedure UpdatePaymentFromJson(var RecordVariant: Variant; JToken: JsonToken; DocumentNo: Text[30])
-    var
-        MigrationQBVendTrans: Record "MigrationQB VendorTrans";
-        HelperFunctions: Codeunit "MigrationQB Helper Functions";
-    begin
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendTrans.FieldNo(DocNumber), JToken.AsObject(), 'TxnNumber');
-        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendTrans.FieldNo(VendorRef), JToken.AsObject(), 'PayeeEntityRef.ListId');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendTrans.FieldNo(TxnDate), JToken.AsObject(), 'TxnDate');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendTrans.FieldNo(DueDate), JToken.AsObject(), 'DueDate');
-        HelperFunctions.UpdateFieldWithValue(RecordVariant, MigrationQBVendTrans.FieldNo(GLDocNo), DocumentNo);
-    end;
-
-    local procedure UpdateVendorCreditMemoFromJson(var RecordVariant: Variant; JToken: JsonToken; DocumentNo: Text[30])
-    var
-        MigrationQBVendTrans: Record "MigrationQB VendorTrans";
-        HelperFunctions: Codeunit "MigrationQB Helper Functions";
-    begin
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendTrans.FieldNo(DocNumber), JToken.AsObject(), 'TxnNumber');
-        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendTrans.FieldNo(VendorRef), JToken.AsObject(), 'VendorRef.ListId');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendTrans.FieldNo(TxnDate), JToken.AsObject(), 'TxnDate');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendTrans.FieldNo(DueDate), JToken.AsObject(), 'DueDate');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendTrans.FieldNo(Amount), JToken.AsObject(), 'CreditAmount');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendTrans.FieldNo(OpenAmount), JToken.AsObject(), 'OpenAmount');
-        HelperFunctions.UpdateFieldWithValue(RecordVariant, MigrationQBVendTrans.FieldNo(GLDocNo), DocumentNo);
     end;
 }

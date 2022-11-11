@@ -24,6 +24,56 @@ codeunit 31078 "Item Journal Line Handler CZL"
             Rec.Validate("Invt. Movement Template CZL", InvtMovementTemplateName);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyFromProdOrderLine', '', false, false)]
+    local procedure UpdateUnitCostOnAfterCopyFromProdOrderLine(var ItemJournalLine: Record "Item Journal Line"; ProdOrderLine: Record "Prod. Order Line")
+    var
+        ProdOrderLine2: Record "Prod. Order Line";
+        UnitCost: Decimal;
+    begin
+        ProdOrderLine2.SetFilterByReleasedOrderNo(ItemJournalLine."Order No.");
+        ProdOrderLine2.SetRange("Item No.", ItemJournalLine."Item No.");
+        if ProdOrderLine2.Count() <> 1 then // ShouldCopyFromSingleProdOrderLine
+            exit;
+
+        UnitCost := RetrieveCosts(ItemJournalLine);
+        ItemJournalLine."Unit Cost" := UnitCost;
+        ItemJournalLine."Unit Amount" := UnitCost;
+    end;
+
+    local procedure RetrieveCosts(var ItemJournalLine: Record "Item Journal Line") UnitCost: Decimal
+    var
+        Item: Record Item;
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        if (ItemJournalLine."Value Entry Type" <> ItemJournalLine."Value Entry Type"::"Direct Cost") or (ItemJournalLine."Item Charge No." <> '') then
+            exit;
+
+        if ItemJournalLine."Entry Type" = ItemJournalLine."Entry Type"::Transfer then
+            UnitCost := 0
+        else begin
+            Item.Get(ItemJournalLine."Item No.");
+            GeneralLedgerSetup.Get();
+            UnitCost := FindUnitCost(Item, ItemJournalLine);
+            if Item."Costing Method" <> Item."Costing Method"::Standard then
+                UnitCost := Round(UnitCost, GeneralLedgerSetup."Unit-Amount Rounding Precision");
+        end;
+    end;
+
+    local procedure FindUnitCost(Item: Record Item; ItemJournalLine: Record "Item Journal Line") UnitCost: Decimal
+    var
+        InventorySetup: Record "Inventory Setup";
+        StockkeepingUnit: Record "Stockkeeping Unit";
+    begin
+        InventorySetup.Get();
+        if InventorySetup."Average Cost Calc. Type" = InventorySetup."Average Cost Calc. Type"::Item then
+            UnitCost := Item."Unit Cost"
+        else
+            if StockkeepingUnit.Get(ItemJournalLine."Location Code", ItemJournalLine."Item No.", ItemJournalLine."Variant Code") then
+                UnitCost := StockkeepingUnit."Unit Cost"
+            else
+                UnitCost := Item."Unit Cost";
+    end;
+
     local procedure GetInvtMovementTemplateName(ItemJournalLine: Record "Item Journal Line"): Code[10]
     var
         InventorySetup: Record "Inventory Setup";

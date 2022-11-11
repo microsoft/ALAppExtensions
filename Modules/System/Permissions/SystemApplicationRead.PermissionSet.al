@@ -26,6 +26,7 @@ PermissionSet 21 "System Application - Read"
                              "Language - Read",
                              "Object Selection - Read",
                              "Page Summary Provider - Read",
+                             "Page Action Provider - Read",
                              "Password - Exec",
                              "Printer Management - Read",
                              "Record Link Management - Read",

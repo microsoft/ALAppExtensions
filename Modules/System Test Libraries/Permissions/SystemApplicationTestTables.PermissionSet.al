@@ -14,6 +14,7 @@ permissionset 132585 "System Application Test Tables"
                   tabledata "Test Email Connector Setup" = RIMD,
                   tabledata "Test Table A" = RIMD,
                   tabledata "Test Table B" = RIMD,
+                  tabledata "Page Action Provider Test" = RIMD,
                   tabledata "Page Provider Summary Test" = RIMD,
                   tabledata "Page Provider Summary Test2" = RIMD,
                   tabledata "Record Link Record Test" = RIMD,

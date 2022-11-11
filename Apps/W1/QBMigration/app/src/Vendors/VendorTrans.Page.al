@@ -33,6 +33,7 @@ page 1915 "MigrationQB VendorTrans"
                 {
                     ApplicationArea = All;
                     Caption = 'Posting Accounts';
+                    ToolTip = 'View QuickBooks posting accounts.';
                     Promoted = true;
                     PromotedIsBig = true;
                     PromotedOnly = true;

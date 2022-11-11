@@ -85,6 +85,9 @@ table 1867 "C5 InvenItemGroup"
         {
             Clustered = true;
         }
+        key(Key1; Group)
+        {
+        }
     }
 }
 

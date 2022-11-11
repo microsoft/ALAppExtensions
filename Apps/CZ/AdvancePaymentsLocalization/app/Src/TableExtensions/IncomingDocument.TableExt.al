@@ -20,9 +20,6 @@ tableextension 31049 "Incoming Document CZZ" extends "Incoming Document"
         AdvanceLetterTemplate: Record "Advance Letter Template CZZ";
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
     begin
-#if not CLEAN19
-        AdvancePaymentsMgtCZZ.TestIsEnabled();
-#endif
         if "Document Type" <> "Document Type"::"Purchase Advance CZZ" then
             TestIfAlreadyExists();
 
@@ -73,9 +70,6 @@ tableextension 31049 "Incoming Document CZZ" extends "Incoming Document"
         AdvanceLetterTemplate: Record "Advance Letter Template CZZ";
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
     begin
-#if not CLEAN19
-        AdvancePaymentsMgtCZZ.TestIsEnabled();
-#endif
         if "Document Type" <> "Document Type"::"Sales Advance CZZ" then
             TestIfAlreadyExists();
 
@@ -105,7 +99,4 @@ tableextension 31049 "Incoming Document CZZ" extends "Incoming Document"
         ShowRecord();
     end;
     #endregion sales
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
 }

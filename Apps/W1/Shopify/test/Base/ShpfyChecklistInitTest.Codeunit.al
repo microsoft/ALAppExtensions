@@ -1,14 +1,12 @@
-codeunit 135620 "Shpfy Checklist Init. Test"
+codeunit 139580 "Shpfy Checklist Init. Test"
 {
     Subtype = Test;
-    TestPermissions = Restrictive;
+    TestPermissions = Disabled;
 
     var
         Assert: Codeunit Assert;
-        LibraryLowerPermissions: Codeunit "Library - Lower Permissions";
         LibrarySignupContext: Codeunit "Library - Signup Context";
-        TakeTheNextStepLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2198403', Locked = true;
-        BusinessCentralLovesShopifyVideoLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2198401', Locked = true;
+        LearnBusinessCentralLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2198400', Locked = true;
         ReadyToGoLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2198402', Locked = true;
 
     [Test]
@@ -29,8 +27,6 @@ codeunit 135620 "Shpfy Checklist Init. Test"
         // [GIVEN] The company type is non-evaluation
         SetEvaluationPropertyForCompany(false);
 
-        LibraryLowerPermissions.SetOutsideO365Scope();
-
         // [GIVEN] The Checklist Setup table is empty
         ChecklistSetupTestLibrary.DeleteAll();
 
@@ -40,8 +36,6 @@ codeunit 135620 "Shpfy Checklist Init. Test"
 
         // Given the signup context is Shopify
         MockShopifySignupContext();
-
-        LibraryLowerPermissions.SetO365Basic();
 
         // [WHEN] Calling OnCompanyOpen
         TriggerOnCompanyOpen();
@@ -55,7 +49,7 @@ codeunit 135620 "Shpfy Checklist Init. Test"
             'The Guided Experience Item table should no longer be empty.');
 
         // [THEN] The checklist item table should contain the correct number of entries
-        Assert.AreEqual(3, ChecklistTestLibrary.GetCount(),
+        Assert.AreEqual(5, ChecklistTestLibrary.GetCount(),
             'The Checklist Item table contains the wrong number of entries.');
 
         // [THEN] Verify that the checklist items were created for the right objects
@@ -80,8 +74,6 @@ codeunit 135620 "Shpfy Checklist Init. Test"
         // [GIVEN] The company type is evaluation
         SetEvaluationPropertyForCompany(true);
 
-        LibraryLowerPermissions.SetOutsideO365Scope();
-
         // [GIVEN] The Checklist Setup table is empty
         ChecklistSetupTestLibrary.DeleteAll();
 
@@ -91,8 +83,6 @@ codeunit 135620 "Shpfy Checklist Init. Test"
 
         // Given the signup context is Shopify
         MockShopifySignupContext();
-
-        LibraryLowerPermissions.SetO365Basic();
 
         // [WHEN] Calling OnCompanyOpen
         TriggerOnCompanyOpen();
@@ -106,55 +96,11 @@ codeunit 135620 "Shpfy Checklist Init. Test"
             'The Guided Experience Item table should no longer be empty.');
 
         // [THEN] The checklist item table should contain the correct number of entries
-        Assert.AreEqual(3, ChecklistTestLibrary.GetCount(),
+        Assert.AreEqual(4, ChecklistTestLibrary.GetCount(),
             'The Checklist Item table contains the wrong number of entries.');
 
         // [THEN] Verify that the checklist items were created for the right objects
         VerifyBusinessManagerEvalChecklistItems();
-    end;
-
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestSignupContextChecklistInitialization()
-    var
-        GuidedExperienceTestLibrary: Codeunit "Guided Experience Test Library";
-        ChecklistTestLibrary: Codeunit "Checklist Test Library";
-        ChecklistSetupTestLibrary: Codeunit "Checklist Setup Test Library";
-        TestClientTypeSubscriber: Codeunit "Test Client Type Subscriber";
-    begin
-        LibrarySignupContext.DeleteSignupContext();
-        LibrarySignupContext.SetDisableSystemUserCheck();
-
-        // [GIVEN] The client type is set to Web
-        TestClientTypeSubscriber.SetClientType(ClientType::Web);
-
-        // [GIVEN] The company type is non-evaluation
-        SetEvaluationPropertyForCompany(false);
-
-        LibraryLowerPermissions.SetOutsideO365Scope();
-
-        // [GIVEN] The Checklist Setup table is empty
-        ChecklistSetupTestLibrary.DeleteAll();
-
-        // [GIVEN] The Guided Experience Item and Checklist Item tables are empty
-        GuidedExperienceTestLibrary.DeleteAll();
-        ChecklistTestLibrary.DeleteAll();
-
-        // [GIVEN] The Signup Context is an unknown value to BaseApp
-        LibrarySignupContext.SetTestValueSignupContext();
-
-        LibraryLowerPermissions.SetO365Basic();
-
-        // [WHEN] Calling OnCompanyOpen
-        TriggerOnCompanyOpen();
-
-        // [THEN] The checklist setup should be marked as done
-        Assert.IsFalse(ChecklistSetupTestLibrary.IsChecklistSetupDone(),
-            'The checklist setup should not be completed as this is not a context known to us.');
-
-        // [THEN] The guided experience item table should be empty
-        Assert.AreEqual(0, GuidedExperienceTestLibrary.GetCount(),
-            'The Guided Experience Item table should be empty when an unknown context is provided.');
     end;
 
     local procedure SetEvaluationPropertyForCompany(IsEvaluationCompany: Boolean)
@@ -179,17 +125,17 @@ codeunit 135620 "Shpfy Checklist Init. Test"
             ObjectType::Page, Page::"Business Manager Role Center", BusinessManagerProfileID),
             'The checklist item for the Business Manager Role Center was not created.');
 
-        //Assert.IsTrue(ChecklistTestLibrary.ChecklistItemExists(GuidedExperienceType::"Assisted Setup",
-        //    ObjectType::Page, Page::"Shpfy Connector Wizard", BusinessManagerProfileID),
-        //    'The checklist item for the Assisted Company Setup Wizard was not created.');
-
         Assert.IsTrue(ChecklistTestLibrary.ChecklistItemExists(GuidedExperienceType::"Assisted Setup",
-            ObjectType::Page, Page::"Company Details", BusinessManagerProfileID),
-            'The checklist item for the Azure AD User Update Wizard was not created.');
+           ObjectType::Page, Page::"Shpfy Connector Guide", BusinessManagerProfileID),
+           'The checklist item for the Shpfy Connector Guide was not created.');
+
+        Assert.IsTrue(ChecklistTestLibrary.ChecklistItemExists(GuidedExperienceType::"Application Feature",
+            ObjectType::Codeunit, Codeunit::"Company Details Checklist Item", BusinessManagerProfileID),
+            'The checklist item for Company Details was not created.');
 
         Assert.IsTrue(ChecklistTestLibrary.ChecklistItemExists(GuidedExperienceType::Learn,
-            TakeTheNextStepLinkTxt, BusinessManagerProfileID),
-            'The checklist item for the Users page was not created.');
+                    LearnBusinessCentralLinkTxt, BusinessManagerProfileID),
+                    'The checklist item for Learn page was not created.');
     end;
 
     local procedure VerifyBusinessManagerEvalChecklistItems()
@@ -198,23 +144,19 @@ codeunit 135620 "Shpfy Checklist Init. Test"
         GuidedExperienceType: Enum "Guided Experience Type";
         BusinessManagerEvalProfileID: Code[30];
     begin
-        BusinessManagerEvalProfileID := 'Business Manager Evaluation';
+        BusinessManagerEvalProfileID := 'BUSINESS MANAGER EVALUATION';
 
-        Assert.IsTrue(ChecklistTestLibrary.ChecklistItemExists(GuidedExperienceType::Video,
-            BusinessCentralLovesShopifyVideoLinkTxt, BusinessManagerEvalProfileID),
-            'The checklist item for the Business Manager Role Center was not created.');
-
-        //Assert.IsTrue(ChecklistTestLibrary.ChecklistItemExists(GuidedExperienceType::"Assisted Setup",
-        //    ObjectType::Page, Page::"Shpfy Connector Wizard", BusinessManagerEvalProfileID),
-        //    'The checklist item for the Assisted Company Setup Wizard was not created.');
-
-        Assert.IsTrue(ChecklistTestLibrary.ChecklistItemExists(GuidedExperienceType::Learn,
-            ReadyToGoLinkTxt, BusinessManagerEvalProfileID),
-            'The checklist item for the Azure AD User Update Wizard was not created.');
+        Assert.IsTrue(ChecklistTestLibrary.ChecklistItemExists(GuidedExperienceType::"Assisted Setup",
+           ObjectType::Page, Page::"Shpfy Connector Guide", BusinessManagerEvalProfileID),
+           'The checklist item for the Shpfy Connector Guide was not created.');
 
         Assert.IsTrue(ChecklistTestLibrary.ChecklistItemExists(GuidedExperienceType::"Application Feature",
-            ObjectType::Codeunit, Codeunit::"Start Trial", BusinessManagerEvalProfileID),
-            'The checklist item for the Users page was not created.');
+            ObjectType::Codeunit, Codeunit::"Shpfy Checklist Item List", BusinessManagerEvalProfileID),
+            'The checklist item for Item List page was not created.');
+
+        Assert.IsTrue(ChecklistTestLibrary.ChecklistItemExists(GuidedExperienceType::Learn,
+           ReadyToGoLinkTxt, BusinessManagerEvalProfileID),
+            'The checklist item for Ready To Go page was not created.');
     end;
 
     local procedure GetProfileID(RoleCenterID: Integer): Code[30]
@@ -245,6 +187,6 @@ codeunit 135620 "Shpfy Checklist Init. Test"
     local procedure MockShopifySignupContext()
     begin
         LibrarySignupContext.SetSignupContext('name', 'shopify');
-        LibrarySignupContext.SetSignupContext('shop', 'https://shop.url');
+        LibrarySignupContext.SetSignupContext('shop', 'testshop.myshopify.com');
     end;
 }
