@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Test objects for the User Selection module.",
     "description":  "Test objects for User Selection module.",
-    "version":  "21.1.0.0",
+    "version":  "21.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,7 +15,7 @@
                              "id":  "7f850a76-a58c-4ade-a14f-7d7acff97115",
                              "name":  "User Selection",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          }
                      ],
     "screenshots":  [

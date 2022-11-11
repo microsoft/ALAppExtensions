@@ -17,17 +17,20 @@ codeunit 8887 "Email Test Mail"
         TestEmailSuccessMsg: Label 'Test email has been sent to %1.\Check your email for messages to make sure that the email was delivered successfully.', Comment = '%1 is an email address.';
         TestEmailFailedMsg: Label 'An error has occured while sending the email, please look at the Outbox to find the error.';
         TestEmailOtherTxt: Label 'Other...';
+        TestExceedsRateLimitMsg: Label 'Email is not sent because the sent emails exceed the rate limit for the email account.';
 
     trigger OnRun()
     var
         Email: Codeunit Email;
         EmailMessage: Codeunit "Email Message";
+        EmailRateLimitImpl: Codeunit "Email Rate Limit Impl.";
         EmailUserSpecifiedAddress: Page "Email User-Specified Address";
         EmailRecipient: Text;
         EmailChoices: Text;
         SelectedEmailChoice: Integer;
         EmailBody: Text;
         EmailChoicesSubLbl: Label '%1,%2', Locked = true;
+        RateLimitDuration: Duration;
     begin
         EmailChoices := StrSubstNo(EmailChoicesSubLbl, Rec."Email Address", TestEmailOtherTxt);
         SelectedEmailChoice := StrMenu(EmailChoices, 2, TestEmailChoiceTxt);
@@ -53,6 +56,10 @@ codeunit 8887 "Email Test Mail"
             EmailBody := StrSubstNo(TestEmailBodyTxt, UserId(), Rec.Connector);
 
         EmailMessage.Create(EmailRecipient, TestEmailSubjectTxt, EmailBody, true);
+
+        if EmailRateLimitImpl.IsRateLimitExceeded(Rec."Account Id", Rec.Connector, Rec."Email Address", RateLimitDuration) then
+            Error(TestExceedsRateLimitMsg);
+
         if Email.Send(EmailMessage, Rec) then
             Message(StrSubstNo(TestEmailSuccessMsg, EmailRecipient))
         else
