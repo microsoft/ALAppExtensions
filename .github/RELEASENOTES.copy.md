@@ -2,6 +2,8 @@
 
 Note that when using the preview version of AL-Go for GitHub, you need to Update your AL-Go system files, as soon as possible when told to do so.
 
+## v2.1
+
 ### Issues
 - Issue #233 AL-Go for GitHub causes GitHub to issue warnings
 - Issue #244 Give error if AZURE_CREDENTIALS contains line breaks

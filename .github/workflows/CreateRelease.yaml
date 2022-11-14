@@ -58,7 +58,7 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.1
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
         with:
           eventId: "DO0094"
 
@@ -74,14 +74,14 @@ jobs:
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.1
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           get: TemplateUrl,RepoName
           getProjects: 'Y'
 
       - name: Check for updates to AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@v2.1
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@preview
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           templateUrl: ${{ env.TemplateUrl }}
@@ -110,10 +110,10 @@ jobs:
             $allArtifacts = Invoke-WebRequest -UseBasicParsing -Headers $headers -Uri "$($ENV:GITHUB_API_URL)/repos/$($ENV:GITHUB_REPOSITORY)/actions/artifacts" | ConvertFrom-Json
             $artifactsVersion = $appVersion
             if ($appVersion -eq "latest") {
-              $artifact = $allArtifacts.artifacts | Where-Object { $_.name -like "$project-*-Apps-*" } | Select-Object -First 1
-              $artifactsVersion = $artifact.name.SubString($artifact.name.IndexOf('-Apps-')+6)
+              $artifact = $allArtifacts.artifacts | Where-Object { $_.name -notlike "$project-PR*" -and $_.name -like "$project-*-Apps-*" } | Select-Object -First 1
+              $artifactsVersion = $artifact.name.SubString($artifact.name.LastIndexOf('-Apps-')+6)
             }
-            $allArtifacts.artifacts | Where-Object { $_.name -like "$project-*-Apps-$($artifactsVersion)" -or $_.name -like "$project-*-TestApps-$($artifactsVersion)" -or $_.name -like "$project-*-Dependencies-$($artifactsVersion)" } | ForEach-Object {
+            $allArtifacts.artifacts | Where-Object { $_.name -notlike "$project-PR*" -and ($_.name -like "$project-*-Apps-$($artifactsVersion)" -or $_.name -like "$project-*-TestApps-$($artifactsVersion)" -or $_.name -like "$project-*-Dependencies-$($artifactsVersion)") } | ForEach-Object {
               $atype = $_.name.SubString(0,$_.name.Length-$artifactsVersion.Length-1)
               $atype = $atype.SubString($atype.LastIndexOf('-')+1)
               $include += $( [ordered]@{ "name" = $_.name; "url" = $_.archive_download_url; "atype" = $atype; "project" = $thisproject } )
@@ -130,7 +130,7 @@ jobs:
 
       - name: Prepare release notes
         id: createreleasenotes
-        uses: microsoft/AL-Go-Actions/CreateReleaseNotes@v2.1
+        uses: microsoft/AL-Go-Actions/CreateReleaseNotes@preview
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           tag_name: ${{ github.event.inputs.tag }}
@@ -148,7 +148,7 @@ jobs:
           body: ${{ steps.createreleasenotes.outputs.releaseNotes }}
 
   UploadArtifacts:
-    runs-on: [ windows-latest ] 
+    runs-on: [ self-hosted,1ES.Pool=ALAppExt ] 
     needs: [ CreateRelease ]
     strategy:
       matrix: ${{ fromJson(needs.CreateRelease.outputs.artifacts) }}
@@ -158,12 +158,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.1
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.1
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -201,10 +201,9 @@ jobs:
             $nuGetContext = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String([System.Environment]::GetEnvironmentVariable('NuGetContext')))
           }
           Add-Content -Path $env:GITHUB_OUTPUT -Value "nuGetContext=$nuGetContext"
-          Write-Host "nuGetContext=$nuGetContext"
 
       - name: Deliver to NuGet
-        uses: microsoft/AL-Go-Actions/Deliver@v2.1
+        uses: microsoft/AL-Go-Actions/Deliver@preview
         if: ${{ steps.nuGetContext.outputs.nuGetContext }}
         env:
           deliveryContext: ${{ steps.nuGetContext.outputs.nuGetContext }}
@@ -227,7 +226,7 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "storageContext=$storageContext"
 
       - name: Deliver to Storage
-        uses: microsoft/AL-Go-Actions/Deliver@v2.1
+        uses: microsoft/AL-Go-Actions/Deliver@preview
         if: ${{ steps.storageContext.outputs.storageContext }}
         env:
           deliveryContext: ${{ steps.storageContext.outputs.storageContext }}
@@ -261,7 +260,7 @@ jobs:
     needs: [ Initialization, CreateRelease, UploadArtifacts ]
     steps:
       - name: Update Version Number
-        uses: microsoft/AL-Go-Actions/IncrementVersionNumber@v2.1
+        uses: microsoft/AL-Go-Actions/IncrementVersionNumber@preview
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           versionNumber: ${{ github.event.inputs.updateVersionNumber }}
@@ -277,7 +276,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.1
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
         with:
           eventId: "DO0094"
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}

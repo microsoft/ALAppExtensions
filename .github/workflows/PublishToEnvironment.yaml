@@ -33,13 +33,13 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.1
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
         with:
           eventId: "DO0097"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.1
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           getEnvironments: ${{ github.event.inputs.environmentName }}
@@ -65,10 +65,10 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "envName=$envName"
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.1
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.1
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -126,7 +126,7 @@ jobs:
           Write-Host "projects=$projects"
 
       - name: Deploy
-        uses: microsoft/AL-Go-Actions/Deploy@v2.1
+        uses: microsoft/AL-Go-Actions/Deploy@preview
         env:
           authContext: ${{ steps.authContext.outputs.authContext }}
         with:
@@ -146,7 +146,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.1
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
         with:
           eventId: "DO0097"
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
