@@ -1,6 +1,6 @@
 ﻿{
     "type":  "PTE",
-    "templateUrl":  "https://github.com/microsoft/AL-Go-PTE@main",
+    "templateUrl":  "https://github.com/microsoft/AL-Go-PTE@preview",
     "bcContainerHelperVersion":  "dev",
     "runs-on":  "self-hosted,1ES.Pool=ALAppExt",
     "cacheImageName":  "",
