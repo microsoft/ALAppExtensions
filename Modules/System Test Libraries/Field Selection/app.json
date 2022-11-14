@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Library with Test Tables for the Field Selection module",
     "description":  "Library with Test Tables for the Field Selection module",
-    "version":  "21.1.0.0",
+    "version":  "21.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,7 +15,7 @@
                              "id":  "94245fbb-b5b1-416e-b8cf-484306646e82",
                              "name":  "Field Selection",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          }
                      ],
     "screenshots":  [

@@ -2,7 +2,7 @@
     "id":  "c4cf59d0-e2fe-4af8-b7ce-084aa91ba487",
     "name":  "Regex Tests",
     "publisher":  "Microsoft",
-    "version":  "21.1.0.0",
+    "version":  "21.2.0.0",
     "brief":  "",
     "description":  "Tests for Regex module.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,13 +15,13 @@
                              "id":  "b185fd4a-677b-48d3-a701-768de7563df0",
                              "name":  "Regex",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          }
                      ],
     "platform":  "21.0.0.0",

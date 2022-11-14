@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Tests for Upgrade Tags module",
-    "version":  "21.1.0.0",
+    "version":  "21.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,31 +15,31 @@
                              "id":  "93b83ef6-9666-4c1d-b130-c232f4047621",
                              "publisher":  "Microsoft",
                              "name":  "Upgrade Tags",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "publisher":  "Microsoft",
                              "name":  "Library Assert",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          },
                          {
                              "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
                              "publisher":  "Microsoft",
                              "name":  "Any",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          },
                          {
                              "id":  "40860557-a18d-42ad-aecb-22b7dd80dc80",
                              "name":  "Permissions Mock",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          },
                          {
                              "id":  "4313b056-0cde-4a07-a700-c984cfbb209c",
                              "name":  "Upgrade Tags Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          }
                      ],
     "screenshots":  [
