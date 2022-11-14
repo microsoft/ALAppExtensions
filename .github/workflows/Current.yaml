@@ -30,13 +30,13 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v2.1
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
         with:
           eventId: "DO0101"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.1
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           getProjects: 'Y'
@@ -102,13 +102,13 @@ jobs:
           path: '${{ github.workspace }}\.dependencies'
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v2.1
+        uses: microsoft/AL-Go-Actions/ReadSettings@preview
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           project: ${{ matrix.project }}
 
       - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v2.1
+        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
         env:
           secrets: ${{ toJson(secrets) }}
         with:
@@ -117,7 +117,7 @@ jobs:
           secrets: 'licenseFileUrl,insiderSasToken,CodeSignCertificateUrl,CodeSignCertificatePassword,KeyVaultCertificateUrl,KeyVaultCertificatePassword,KeyVaultClientId,GitHubPackagesContext'
 
       - name: Run pipeline
-        uses: microsoft/AL-Go-Actions/RunPipeline@v2.1
+        uses: microsoft/AL-Go-Actions/RunPipeline@preview
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           Project: ${{ matrix.project }}
@@ -167,14 +167,14 @@ jobs:
       - name: Analyze Test Results
         id: analyzeTestResults
         if: success() || failure()
-        uses: microsoft/AL-Go-Actions/AnalyzeTests@v2.1
+        uses: microsoft/AL-Go-Actions/AnalyzeTests@preview
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           Project: ${{ matrix.project }}
 
       - name: Cleanup
         if: always()
-        uses: microsoft/AL-Go-Actions/PipelineCleanup@v2.1
+        uses: microsoft/AL-Go-Actions/PipelineCleanup@preview
         with:
           parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
           Project: ${{ matrix.project }}
@@ -189,7 +189,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@v2.1
+        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
         with:
           eventId: "DO0101"
           telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
