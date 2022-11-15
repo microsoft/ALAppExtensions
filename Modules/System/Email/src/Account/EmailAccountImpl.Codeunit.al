@@ -7,7 +7,8 @@ codeunit 8889 "Email Account Impl."
 {
     Access = Internal;
     Permissions = tabledata "Email Connector Logo" = rimd,
-                  tabledata "Email Scenario" = imd;
+                  tabledata "Email Scenario" = imd,
+                  tabledata "Email Rate Limit" = rd;
 
     procedure GetAllAccounts(LoadLogos: Boolean; var TempEmailAccount: Record "Email Account" temporary)
     var
@@ -42,9 +43,11 @@ codeunit 8889 "Email Account Impl."
         TempEmailAccount.SetCurrentKey(Name);
     end;
 
+    [InherentPermissions(PermissionObjectType::TableData, Database::"Email Rate Limit", 'rd')]
     procedure DeleteAccounts(var EmailAccountsToDelete: Record "Email Account")
     var
         CurrentDefaultEmailAccount: Record "Email Account";
+        EmailRateLimitToDelete: Record "Email Rate Limit";
         ConfirmManagement: Codeunit "Confirm Management";
         EmailScenario: Codeunit "Email Scenario";
         EmailConnector: Interface "Email Connector";
@@ -67,6 +70,9 @@ codeunit 8889 "Email Account Impl."
             if IsValidConnector(EmailAccountsToDelete.Connector) then begin
                 EmailConnector := EmailAccountsToDelete.Connector;
                 EmailConnector.DeleteAccount(EmailAccountsToDelete."Account Id");
+                // Delete the corresponding account in the Rate Limit table.
+                if EmailRateLimitToDelete.Get(EmailAccountsToDelete."Account Id", EmailAccountsToDelete.Connector) then
+                    EmailRateLimitToDelete.Delete();
             end;
         until EmailAccountsToDelete.Next() = 0;
 

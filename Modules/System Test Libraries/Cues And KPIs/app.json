@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Library with Test Tables for the Cues And KPIs module",
     "description":  "Library with Test Tables for the Cues And KPIs module",
-    "version":  "21.1.0.0",
+    "version":  "21.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,7 +15,7 @@
                              "id":  "1d643b0c-a545-46b1-8514-11196184b38f",
                              "name":  "Cues and KPIs",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          }
                      ],
     "screenshots":  [

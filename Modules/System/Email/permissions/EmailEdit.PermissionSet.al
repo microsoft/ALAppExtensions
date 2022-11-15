@@ -14,6 +14,7 @@ PermissionSet 8901 "Email - Edit"
     Permissions = tabledata "Email Connector Logo" = imd,
                   tabledata "Email Error" = imd,
                   tabledata "Email Outbox" = imd,
+                  tabledata "Email Rate Limit" = imd,
                   tabledata "Sent Email" = imd,
                   tabledata "Email Message" = imd,
                   tabledata "Email Message Attachment" = imd,

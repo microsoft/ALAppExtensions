@@ -97,6 +97,21 @@ page 8887 "Email Accounts"
                     ToolTip = 'Specifies the type of email extension that the account is added to.';
                     Visible = false;
                 }
+
+                field(EmailRateLimit; RateLimit)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Email Rate Limit';
+                    ToolTip = 'Set rate limit per minute for the email account.';
+                    Visible = true;
+
+                    trigger OnDrillDown()
+                    var
+                        EmailRateLimitImpl: Codeunit "Email Rate Limit Impl.";
+                    begin
+                        EmailRateLimitImpl.UpdateRateLimit(Rec);
+                    end;
+                }
             }
         }
 
@@ -314,12 +329,16 @@ page 8887 "Email Accounts"
     end;
 
     trigger OnAfterGetRecord()
+    var
+        EmailRateLimitImpl: Codeunit "Email Rate Limit Impl.";
     begin
         // Updating the accounts is done via OnAfterGetRecord in the cases when an account was changed from the corresponding connector's page
         if UpdateAccounts then begin
             UpdateAccounts := false;
             UpdateEmailAccounts();
         end;
+
+        RateLimit := EmailRateLimitImpl.GetRateLimit(Rec."Account Id", Rec.Connector, Rec."Email Address");
 
         DefaultTxt := '';
 
@@ -397,8 +416,11 @@ page 8887 "Email Accounts"
     var
         DefaultEmailAccount: Record "Email Account";
         EmailAccountImpl: Codeunit "Email Account Impl.";
+        EmailRateLimitImpl: Codeunit "Email Rate Limit Impl.";
         [InDataSet]
         IsDefault: Boolean;
+        [InDataSet]
+        RateLimit: Integer;
         CanUserManageEmailSetup: Boolean;
         DefaultTxt: Text;
         UpdateAccounts: Boolean;

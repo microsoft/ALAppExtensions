@@ -2,7 +2,7 @@
     "id":  "e67710a1-095d-4111-879b-f2012580752b",
     "name":  "XML Validation Test",
     "publisher":  "Microsoft",
-    "version":  "21.1.0.0",
+    "version":  "21.2.0.0",
     "brief":  "Tests for the XML Validation module",
     "description":  "Tests for the XML Validation module",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,13 +15,13 @@
                              "id":  "4f3ad876-6f18-4b10-bb2c-08bb136f6919",
                              "name":  "XML Validation",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          }
                      ],
     "screenshots":  [
