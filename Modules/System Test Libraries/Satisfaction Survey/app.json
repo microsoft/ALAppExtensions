@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Test objects for the Satisfaction Survey module.",
     "description":  "Test objects for the Satisfaction Survey module.",
-    "version":  "21.1.0.0",
+    "version":  "21.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,7 +15,7 @@
                              "id":  "5d03ef2d-13f0-4132-b941-48387b581434",
                              "name":  "Satisfaction Survey",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          }
                      ],
     "screenshots":  [

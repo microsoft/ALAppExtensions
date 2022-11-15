@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Test objects for the User Settings module.",
     "description":  "Test objects for User Settings module.",
-    "version":  "21.1.0.0",
+    "version":  "21.2.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,7 +15,7 @@
                              "id":  "7b9b59f5-a68d-4271-b11a-0d3b9c0938dd",
                              "name":  "User Settings",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          }
                      ],
     "screenshots":  [

@@ -121,7 +121,8 @@ page 8944 "Email Address Lookup"
                 end;
             until EmailAddressLookup.Next() = 0;
             FullAddressLookup := true;
-            CurrPage.Close();
+
+            EntityType := EmailAddressEntity;
         end;
     end;
 

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Tests for the tenant license state codeunit",
-    "version":  "21.1.0.0",
+    "version":  "21.2.0.0",
     "privacyStatement":  "",
     "EULA":  "",
     "help":  "",
@@ -15,25 +15,25 @@
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          },
                          {
                              "id":  "21566fb3-3c6b-4cac-a70d-052f5d66ac64",
                              "name":  "Tenant License State",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          },
                          {
                              "id":  "40860557-a18d-42ad-aecb-22b7dd80dc80",
                              "name":  "Permissions Mock",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          },
                          {
                              "id":  "1fcac6f5-6c28-4f04-8a00-682bbc1ecadf",
                              "name":  "Tenant License State Test Library",
                              "publisher":  "Microsoft",
-                             "version":  "21.1.0.0"
+                             "version":  "21.2.0.0"
                          }
                      ],
     "screenshots":  [
