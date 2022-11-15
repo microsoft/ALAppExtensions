@@ -190,7 +190,9 @@ table 1690 "Bank Deposit Header"
             Editable = false;
             FieldClass = FlowField;
         }
+#pragma warning disable AA0232
         field(22; "Total Deposit Lines"; Decimal)
+#pragma warning restore
         {
             AutoFormatExpression = "Currency Code";
             AutoFormatType = 1;
@@ -342,7 +344,9 @@ table 1690 "Bank Deposit Header"
         LocalGenJournalTemplate: Record "Gen. Journal Template";
         LocalGenJournalBatch: Record "Gen. Journal Batch";
     begin
+#pragma warning disable AA0210
         LocalGenJournalTemplate.SetRange(Type, LocalGenJournalTemplate.Type::"Bank Deposits");
+#pragma warning restore
         if LocalGenJournalTemplate.Count() <> 1 then
             exit(false);
 

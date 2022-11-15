@@ -8,6 +8,9 @@ codeunit 11023 "Elster Management"
     var
         SubmissionMessageNotCreatedErr: Label 'No submission message has been created. Press the Create action to generate it.';
         CannotIdentifyAmountsErr: Label 'Cannot identify XML nodes related to amounts in the submission message.';
+        ElecVATReportingTitleTxt: Label 'Set up electronic VAT reporting to the authorities.';
+        ElecVATReportingShortTitleTxt: Label 'Electronic VAT reporting';
+        ElecVATReportingDescriptionTxt: Label 'Create the files needed to report VAT via ELSTER to authorities and comply with German VAT requirements.';
 
     procedure GetElsterUpgradeTag(): Code[250];
     begin
@@ -41,11 +44,22 @@ codeunit 11023 "Elster Management"
             Evaluate(RowNo, DelChr(TempXMLBuffer.Name, '=', DelChr(TempXMLBuffer.Name, '=', '1234567890')));
             if not (RowNo in [9, 10, 22, 23, 26, 29]) then begin
                 TempElecVATDeclBuffer.Code := '#' + Format(RowNo);
-                Evaluate(TempElecVATDeclBuffer.Amount, TempXMLBuffer.Value);
+                TempElecVATDeclBuffer.Amount := FormatDecimal(TempXMLBuffer.Value);
                 TempElecVATDeclBuffer.Insert();
             end;
         until TempXMLBuffer.Next() = 0;
         Page.Run(0, TempElecVATDeclBuffer);
+    end;
+
+    local procedure FormatDecimal(DecimalStr: Text) : Decimal
+    var 
+        Value: Decimal;
+    begin
+        case CopyStr(FORMAT(1 / 2),2,1) of
+            '.': Evaluate(Value, ConvertStr(DecimalStr, ',', '.'));
+            ',': Evaluate(Value, ConvertStr(DecimalStr, '.', ','));
+        end;
+        exit(Value);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
@@ -53,5 +67,13 @@ codeunit 11023 "Elster Management"
     begin
         PerCompanyUpgradeTags.Add(GetElsterUpgradeTag());
         PerCompanyUpgradeTags.Add(GetCleanupElsterTag());
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterManualSetup', '', true, true)]
+    local procedure InsertIntoMAnualSetupOnRegisterManualSetup()
+    var
+        GuidedExperience: Codeunit "Guided Experience";
+    begin
+        GuidedExperience.InsertManualSetup(ElecVATReportingTitleTxt, ElecVATReportingShortTitleTxt, ElecVATReportingDescriptionTxt, 2, ObjectType::Page, Page::"Electronic VAT Decl. Setup", "Manual Setup Category"::Finance, '', true);
     end;
 }

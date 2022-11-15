@@ -1,9 +1,9 @@
-codeunit 135627 "Shpfy Product Mapping Test"
+codeunit 139604 "Shpfy Product Mapping Test"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     var
-        Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
 
     [Test]

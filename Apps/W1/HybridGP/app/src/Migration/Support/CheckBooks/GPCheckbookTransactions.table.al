@@ -1,6 +1,6 @@
 table 40101 "GP Checkbook Transactions"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
     Permissions = tableData "Bank Account Ledger Entry" = rim;
 

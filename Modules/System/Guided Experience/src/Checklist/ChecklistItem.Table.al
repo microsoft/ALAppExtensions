@@ -6,6 +6,7 @@
 table 1991 "Checklist Item"
 {
     Access = Internal;
+    ReplicateData = false;
 
     fields
     {

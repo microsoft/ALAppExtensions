@@ -1,7 +1,7 @@
 /// <summary>
-/// Codeunit Shpfy Customer GetName Test (ID 135607).
+/// Codeunit Shpfy Customer GetName Test (ID 139584).
 /// </summary>
-codeunit 135607 "Shpfy Customer GetName Test"
+codeunit 139584 "Shpfy Customer GetName Test"
 {
     Subtype = Test;
 

@@ -27,6 +27,7 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
                                     Validate(Amount, -SalesAdvLetterHeaderCZZ."To Pay");
                                 end;
                                 Validate("Dimension Set ID", SalesAdvLetterHeaderCZZ."Dimension Set ID");
+                                "Adv. Letter Template Code CZZ" := SalesAdvLetterHeaderCZZ."Advance Letter Code";
                             end;
                         "Account Type"::Vendor:
                             begin
@@ -38,6 +39,7 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
                                     Validate(Amount, PurchAdvLetterHeaderCZZ."To Pay");
                                 end;
                                 Validate("Dimension Set ID", PurchAdvLetterHeaderCZZ."Dimension Set ID");
+                                "Adv. Letter Template Code CZZ" := PurchAdvLetterHeaderCZZ."Advance Letter Code";
                             end;
                         else
                             FieldError("Account Type");
@@ -88,6 +90,12 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
         field(31012; "Use Advance G/L Account CZZ"; Boolean)
         {
             Caption = 'Use Advance G/L Account';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(31013; "Adv. Letter Template Code CZZ"; Code[20])
+        {
+            Caption = 'Advance Letter Template Code';
             DataClassification = CustomerContent;
             Editable = false;
         }

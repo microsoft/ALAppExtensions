@@ -13,6 +13,7 @@ codeunit 135159 "Data Class. Worksheet Tests"
         LibraryAssert: Codeunit "Library Assert";
         PermissionsMock: Codeunit "Permissions Mock";
         NotificationCount: Integer;
+        FieldSyncStatusGetErr: Label 'The ID %1 cannot be found in the Field Sync Status table', Locked = true;
 
     [Test]
     [Scope('OnPrem')]
@@ -807,7 +808,7 @@ codeunit 135159 "Data Class. Worksheet Tests"
 
         repeat
             LibraryAssert.IsTrue(FieldSyncStatus.Get(FieldContentBuffer.Value.Value()),
-                StrSubstNo('The ID %1 cannot be found in the Field Sync Status table', FieldContentBuffer.Value.Value()));
+                StrSubstNo(FieldSyncStatusGetErr, FieldContentBuffer.Value.Value()));
         until not FieldContentBuffer.Next();
     end;
 

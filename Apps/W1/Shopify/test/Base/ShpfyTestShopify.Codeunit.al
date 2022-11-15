@@ -1,7 +1,7 @@
-codeunit 135602 "Shpfy Test Shopify"
+codeunit 139563 "Shpfy Test Shopify"
 {
     Subtype = Test;
-    TestPermissions = NonRestrictive;
+    TestPermissions = Disabled;
 
     var
         LibraryAssert: Codeunit "Library Assert";

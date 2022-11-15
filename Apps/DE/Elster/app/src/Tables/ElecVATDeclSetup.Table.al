@@ -42,7 +42,6 @@ table 11023 "Elec. VAT Decl. Setup"
         FeatureTelemetry.LogUptake('0001Q0F', ElecVATAdvanceNotTok, Enum::"Feature Uptake Status"::"Set up");
     end;
 
-
     procedure VerifyAndSetSalesVATAdvNotifPath()
     var
         ElectronicVATDeclSetup: Page "Electronic VAT Decl. Setup";

@@ -12,7 +12,7 @@ pageextension 11749 "Service Invoice CZL" extends "Service Invoice"
             field("Posting Description CZL"; Rec."Posting Description")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies a description of the purchase receipt. The posting description also appers on vendor and G/L entries.';
+                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
                 Visible = false;
             }
         }

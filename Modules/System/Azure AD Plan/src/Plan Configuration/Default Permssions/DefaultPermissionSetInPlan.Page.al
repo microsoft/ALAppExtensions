@@ -21,49 +21,44 @@ page 9827 "Default Permission Set In Plan"
     {
         area(content)
         {
-            group("Default Permission Sets")
+            repeater(PermissionSet)
             {
-                ShowCaption = false;
-
-                repeater(PermissionSet)
+                field("Permission Set"; Rec."Role ID")
                 {
-                    field("Permission Set"; Rec."Role ID")
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Permission Set';
-                        ToolTip = 'Specifies the ID of the permission set.';
-                    }
+                    ApplicationArea = All;
+                    Caption = 'Permission Set';
+                    ToolTip = 'Specifies the ID of the permission set.';
+                }
 
-                    field(Description; Rec."Role Name")
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Description';
-                        ToolTip = 'Specifies the description of the permission set.';
-                        DrillDown = false;
-                        Editable = false;
-                    }
-                    field(Company; FirstCompanyTok)
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Company';
-                        ToolTip = 'The permission set will be assigned to the first company that a user with this permission set signs in to.';
-                        Style = AttentionAccent;
-                    }
-                    field(ExtensionName; Rec."App Name")
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Extension Name';
-                        DrillDown = false;
-                        Editable = false;
-                        ToolTip = 'Specifies the name of the extension that provides the permission set.';
-                    }
-                    field(PermissionScope; Rec.Scope)
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Permission Scope';
-                        Editable = false;
-                        ToolTip = 'Specifies the scope of the permission set.';
-                    }
+                field(Description; Rec."Role Name")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Description';
+                    ToolTip = 'Specifies the description of the permission set.';
+                    DrillDown = false;
+                    Editable = false;
+                }
+                field(Company; FirstCompanyTok)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Company';
+                    ToolTip = 'The permission set will be assigned to the first company that a user with this permission set signs in to.';
+                    Style = AttentionAccent;
+                }
+                field(ExtensionName; Rec."App Name")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Extension Name';
+                    DrillDown = false;
+                    Editable = false;
+                    ToolTip = 'Specifies the name of the extension that provides the permission set.';
+                }
+                field(PermissionScope; Rec.Scope)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Permission Scope';
+                    Editable = false;
+                    ToolTip = 'Specifies the scope of the permission set.';
                 }
             }
         }

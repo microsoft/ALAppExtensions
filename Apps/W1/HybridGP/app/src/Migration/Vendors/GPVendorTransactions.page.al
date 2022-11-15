@@ -10,17 +10,56 @@ page 4097 "GP Vendor Transactions"
         {
             repeater(General)
             {
-                field(Id; Id) { ApplicationArea = All; ToolTip = 'Id'; }
-                field(VENDORID; VENDORID) { ApplicationArea = All; ToolTip = 'Vendor Id'; }
-                field(DOCNUMBR; DOCNUMBR) { ApplicationArea = All; ToolTip = 'Document Number'; }
-                field(DOCDATE; DOCDATE) { ApplicationArea = All; ToolTip = 'Document Date'; }
-                field(DUEDATE; DUEDATE) { ApplicationArea = All; ToolTip = 'Due Date'; }
-                field(CURTRXAM; CURTRXAM) { ApplicationArea = All; ToolTip = 'Customer Transaction Amount'; }
-                field(DOCTYPE; DOCTYPE) { ApplicationArea = All; ToolTip = 'Document Type'; }
-                field(GLDocNo; GLDocNo) { ApplicationArea = All; ToolTip = 'GL Document Number'; }
-                field(TransType; TransType) { ApplicationArea = All; ToolTip = 'Transaction Type'; }
-                field(PYMTRMID; PYMTRMID) { ApplicationArea = All; ToolTip = 'PYMTRMID'; }
-
+                field(Id; Rec.Id)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Id';
+                }
+                field(VENDORID; Rec.VENDORID)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Vendor Id';
+                }
+                field(DOCNUMBR; Rec.DOCNUMBR)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Document Number';
+                }
+                field(DOCDATE; Rec.DOCDATE)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Document Date';
+                }
+                field(DUEDATE; Rec.DUEDATE)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Due Date';
+                }
+                field(CURTRXAM; Rec.CURTRXAM)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Customer Transaction Amount';
+                }
+                field(DOCTYPE; Rec.DOCTYPE)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Document Type';
+                }
+                field(GLDocNo; Rec.GLDocNo)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'GL Document Number';
+                }
+                field(TransType; Rec.TransType)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Transaction Type';
+                }
+                field(PYMTRMID; Rec.PYMTRMID)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'PYMTRMID';
+                }
             }
         }
     }
@@ -49,3 +88,4 @@ page 4097 "GP Vendor Transactions"
         }
     }
 }
+

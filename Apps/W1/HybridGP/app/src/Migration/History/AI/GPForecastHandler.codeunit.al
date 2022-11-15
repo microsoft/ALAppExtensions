@@ -7,7 +7,9 @@ codeunit 4034 "GPForecastHandler"
 
     var
         TempGPTimeSeriesBuffer: Record "Time Series Buffer" temporary;
+#pragma warning disable AL0432
         TempGPForecastTemp: Record "GPForecastTemp" temporary;
+#pragma warning restore AL0432
         CashFlowSetup: Record "Cash Flow Setup";
         MSSalesForecastSetup: Record "MS - Sales Forecast Setup";
         TimeSeriesManagement: Codeunit "Time Series Management";
@@ -16,6 +18,7 @@ codeunit 4034 "GPForecastHandler"
         TimeSeriesLibState: Option Uninitialized,Initialized,"Data Prepared",Done;
         XINVOICETxt: Label 'INVOICE', Locked = true;
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cash Flow Forecast Handler", 'OnAfterHasMinimumHistoricalData', '', true, true)]
     procedure OnAfterHasMinimumHistoricalData(var HasMinimumHistoryLoc: Boolean; var NumberOfPeriodsWithHistoryLoc: integer; PeriodType: Integer; ForecastStartDate: Date)
     var
@@ -265,6 +268,7 @@ codeunit 4034 "GPForecastHandler"
             MSSalesForecastSetup."Period Type",
             ForecastStartDate);
     end;
+#pragma warning restore AA0207
 
     local procedure PrepareData(var TempTimeSeriesBuffer: Record "Time Series Buffer" temporary; RecordVariant: Variant; GroupIdFieldNo: Integer; DateFieldNo: Integer; ValueFieldNo: Integer; InvoiceOption: Text; CreditMemoOption: Text; PeriodType: Integer; ForecastStartDate: Date; NumberOfPeriodsWithHistory: Integer)
     var

@@ -245,6 +245,7 @@ page 1680 "Email Logging Setup"
         EnvironmentInformation: Codeunit "Environment Information";
         ApplicationType: Enum "Email Logging App Type";
     begin
+        Session.LogMessage('0000HAG', StrSubstNo(ContextCompanyTxt, CompanyName()), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
         IsFeatureEnabled := EmailLoggingManagement.IsEmailLoggingUsingGraphApiFeatureEnabled();
         if not IsFeatureEnabled then
             Error(FeautureNotEnabledErr);
@@ -300,6 +301,7 @@ page 1680 "Email Logging Setup"
         EmailLoggingEnabledTxt: Label 'Email logging has been enabled.', Locked = true;
         EmailLoggingDisabledTxt: Label 'Email logging has been disabled.', Locked = true;
         CreateEmailLoggingJobTxt: Label 'Create email logging job', Locked = true;
+        ContextCompanyTxt: Label 'Open Email Logging setup. Company: %1', Locked = true;
         CategoryTok: Label 'Email Logging', Locked = true;
 
     [TryFunction]

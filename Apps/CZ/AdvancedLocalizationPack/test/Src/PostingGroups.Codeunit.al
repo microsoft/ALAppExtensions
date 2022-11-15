@@ -261,7 +261,7 @@ codeunit 148094 "Posting Groups CZA"
         LibraryInventory.CreateItemJournalBatch(ItemJournalBatch, ItemJournalTemplate.Name);
         LibraryInventory.CreateItem(Item);
         LibraryInventory.CreateItemJournalLine(
-          ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name, 0, Item."No.", 1);
+          ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name, "Gen. Journal Document Type"::" ", Item."No.", 1);
     end;
 
     local procedure CreateVendorLedgerEntry(Vendor: Record Vendor)
@@ -271,7 +271,7 @@ codeunit 148094 "Posting Groups CZA"
     begin
         LibraryERM.SelectGenJnlBatch(GenJournalBatch);
         LibraryERM.CreateGeneralJnlLine(
-          GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, 0,
+          GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, "Gen. Journal Document Type"::" ",
           GenJournalLine."Account Type"::Vendor, Vendor."No.",
           LibraryRandom.RandDec(1000, 2));
         LibraryERM.PostGeneralJnlLine(GenJournalLine);

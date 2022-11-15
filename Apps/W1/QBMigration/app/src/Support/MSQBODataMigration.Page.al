@@ -39,7 +39,7 @@ page 1830 "MS - QBO Data Migration"
 
                         trigger AuthorizationErrorOccurred(error: Text; desc: Text);
                         begin
-                            StatusTxt := StrSubstNo('%1: %2', error, desc);
+                            StatusTxt := StrSubstNo(StatusLbl, error, desc);
                         end;
 
                         trigger ControlAddInReady();
@@ -78,29 +78,34 @@ page 1830 "MS - QBO Data Migration"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Sales Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks sales account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Sales Credit Memo Account"; SalesCreditMemoAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Sales Credit Memo Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks sales credit memo account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Sales Line Disc. Account"; SalesLineDiscAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Sales Line Disc. Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks sales line discount account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Sales Inv. Disc. Account"; SalesInvDiscAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Sales Inv. Disc. Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks sales invoice discount account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("10"; '')
                 {
-                    Caption = '';
+                    Caption = ' ';
+                    ToolTip = ' ';
                     ShowCaption = true;
                     ApplicationArea = Basic, Suite;
                 }
@@ -108,29 +113,34 @@ page 1830 "MS - QBO Data Migration"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Purch. Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks purchase account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Purch. Credit Memo Account"; PurchCreditMemoAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Purch. Credit Memo Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks purchase credit memo account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Purch. Line Disc. Account"; PurchLineDiscAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Purch. Line Disc. Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks purchase line discount account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Purch. Inv. Disc. Account"; PurchInvDiscAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Purch. Inv. Disc. Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks purchase invoice discount account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("11"; '')
                 {
-                    Caption = '';
+                    Caption = ' ';
+                    ToolTip = ' ';
                     ShowCaption = true;
                     ApplicationArea = Basic, Suite;
                 }
@@ -144,23 +154,27 @@ page 1830 "MS - QBO Data Migration"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'COGS Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks COGS account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Inventory Adjmt. Account"; InventoryAdjmtAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Inventory Adjmt. Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks inventory adjustment account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Inventory Account"; InventoryAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Inventory Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks inventory account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("12"; '')
                 {
-                    Caption = '';
+                    Caption = ' ';
+                    ToolTip = ' ';
                     ShowCaption = true;
                     ApplicationArea = Basic, Suite;
                 }
@@ -168,17 +182,20 @@ page 1830 "MS - QBO Data Migration"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Receivables Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks receivables account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Service Charge Acc."; ServiceChargeAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Service Charge Acc.';
+                    ToolTip = 'Specifies the account number of the QuickBooks service charge account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("13"; '')
                 {
-                    Caption = '';
+                    Caption = ' ';
+                    ToolTip = ' ';
                     ShowCaption = true;
                     ApplicationArea = Basic, Suite;
                 }
@@ -186,12 +203,14 @@ page 1830 "MS - QBO Data Migration"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Payables Account';
+                    ToolTip = 'Specifies the account number of the QuickBooks payables account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
                 field("Purch. Service Charge Acc."; PurchServiceChargeAccount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Purch. Service Charge Acc.';
+                    ToolTip = 'Specifies the account number of the QuickBooks purchase service charge account.';
                     TableRelation = "MigrationQB Account".AcctNum;
                 }
             }
@@ -204,6 +223,7 @@ page 1830 "MS - QBO Data Migration"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Unit of Measure';
+                    ToolTip = 'Specifies the unit of measure.';
                     TableRelation = "Unit of Measure";
 
                     trigger OnValidate()
@@ -343,6 +363,8 @@ page 1830 "MS - QBO Data Migration"
         OAuthPropertiesErr: Label 'Unable to retrieve OAuthProperties.', Locked = true;
         TokenErr: Label 'Unable to retrieve Token(s) and\or company id.', Locked = true;
         StateErr: Label 'Unexpected State value passed back from remote call. Expected: %1; Actual: %2', Locked = true;
+        StatusLbl: Label '%1: %2', Locked = true;
+        CallBackUrlLbl: Label '%1/%2', Locked = true;
         ConsumerKey: Text;
         ConsumerSecret: Text;
         AuthRequestUrl: Text;
@@ -484,7 +506,7 @@ page 1830 "MS - QBO Data Migration"
 
         ExpectedState := HelperFunctions.FormatGuid(CreateGuid());
 
-        if not HelperFunctions.GetAuthRequestUrl(ConsumerKey, ConsumerSecret, ScopeTxt, RequestTokenUrlTxt, StrSubstNo('%1/%2', GetCallBackUrl(), 'OAuthLanding.htm'), ExpectedState, AuthRequestUrl) then begin
+        if not HelperFunctions.GetAuthRequestUrl(ConsumerKey, ConsumerSecret, ScopeTxt, RequestTokenUrlTxt, StrSubstNo(CallBackUrlLbl, GetCallBackUrl(), 'OAuthLanding.htm'), ExpectedState, AuthRequestUrl) then begin
             StatusTxt := GetStatusText(false);
             Session.LogMessage('0000AL5', AuthRequestUrlErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
             exit(false);
@@ -517,7 +539,7 @@ page 1830 "MS - QBO Data Migration"
 
         StatusTxt := 'Getting response';
 
-        if not HelperFunctions.GetAccessToken(AccessTokenUrlTxt, StrSubstNo('%1/%2', GetCallBackUrl(), 'OAuthLanding.htm'), AuthCode, ConsumerKey, ConsumerSecret, AccessTokenKey) then begin
+        if not HelperFunctions.GetAccessToken(AccessTokenUrlTxt, StrSubstNo(CallBackUrlLbl, GetCallBackUrl(), 'OAuthLanding.htm'), AuthCode, ConsumerKey, ConsumerSecret, AccessTokenKey) then begin
             StatusTxt := GetStatusText(false);
             Session.LogMessage('00007ES', TokenErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
             exit;

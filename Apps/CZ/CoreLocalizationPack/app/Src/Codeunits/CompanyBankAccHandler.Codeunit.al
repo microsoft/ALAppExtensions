@@ -2,17 +2,99 @@ codeunit 31447 "Company Bank Acc. Handler CZL"
 {
     #region unposted documents
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Company Bank Account Code', false, false)]
-    local procedure SalesUpdateBankAccountCodeCZLOnAfterValidateCompanyBankAccountCode(var Rec: Record "Sales Header")
+    local procedure SalesUpdateBankAccountCodeCZLOnAfterValidateCompanyBankAccountCode(var Rec: Record "Sales Header"; var xRec: Record "Sales Header"; CurrFieldNo: Integer)
     begin
-        if not Rec.IsCreditDocType() then
+        if Rec.IsCreditDocType() then
+            exit;
+
+        if (CurrFieldNo = Rec.FieldNo("Company Bank Account Code")) and
+           (Rec."Company Bank Account Code" <> xRec."Company Bank Account Code")
+        then
             Rec.Validate("Bank Account Code CZL", Rec."Company Bank Account Code");
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterValidateEvent', 'Company Bank Account Code', false, false)]
-    local procedure ServiceUpdateBankAccountCodeCZLOnAfterValidateCompanyBankAccountCode(var Rec: Record "Service Header")
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Currency Code', false, false)]
+    local procedure SalesUpdateBankAccountCodeCZLOnAfterSetCompanyBankAccount(var Rec: Record "Sales Header"; var xRec: Record "Sales Header")
+    begin
+        if Rec.IsCreditDocType() then
+            exit;
+
+        if Rec."Currency Code" <> xRec."Currency Code" then
+            Rec.Validate("Bank Account Code CZL", Rec.GetDefaulBankAccountNoCZL());
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Responsibility Center', false, false)]
+    local procedure SalesUpdateBankAccountCodeCZLOnAfterValidateEventResponsibilityCenter(var Rec: Record "Sales Header"; var xRec: Record "Sales Header")
+    begin
+        if Rec.IsCreditDocType() then
+            exit;
+        if (Rec."Currency Code" <> '') and
+           (Rec."Bank Account Code CZL" <> '')
+        then
+            exit;
+
+        if Rec."Responsibility Center" <> xRec."Responsibility Center" then
+            Rec.Validate("Bank Account Code CZL", Rec.GetDefaulBankAccountNoCZL());
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'Currency Code', false, false)]
+    local procedure PurchaseUpdateBankAccountCodeCZLOnAfterSetCompanyBankAccount(var Rec: Record "Purchase Header"; var xRec: Record "Purchase Header")
     begin
         if not Rec.IsCreditDocType() then
+            exit;
+
+        if Rec."Currency Code" <> xRec."Currency Code" then
+            Rec.Validate("Bank Account Code CZL", Rec.GetDefaulBankAccountNoCZL());
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'Responsibility Center', false, false)]
+    local procedure PurchaseUpdateBankAccountCodeCZLOnAfterValidateEventResponsibilityCenter(var Rec: Record "Purchase Header"; var xRec: Record "Purchase Header")
+    begin
+        if not Rec.IsCreditDocType() then
+            exit;
+        if (Rec."Currency Code" <> '') and
+           (Rec."Bank Account Code CZL" <> '')
+        then
+            exit;
+
+        if Rec."Responsibility Center" <> xRec."Responsibility Center" then
+            Rec.Validate("Bank Account Code CZL", Rec.GetDefaulBankAccountNoCZL());
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterValidateEvent', 'Company Bank Account Code', false, false)]
+    local procedure ServiceUpdateBankAccountCodeCZLOnAfterValidateCompanyBankAccountCode(var Rec: Record "Service Header"; var xRec: Record "Service Header"; CurrFieldNo: Integer)
+    begin
+        if Rec.IsCreditDocType() then
+            exit;
+
+        if (CurrFieldNo = Rec.FieldNo("Company Bank Account Code")) and
+           (Rec."Company Bank Account Code" <> xRec."Company Bank Account Code")
+        then
             Rec.Validate("Bank Account Code CZL", Rec."Company Bank Account Code");
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterValidateEvent', 'Currency Code', false, false)]
+    local procedure ServiceUpdateBankAccountCodeCZLOnAfterSetCompanyBankAccount(var Rec: Record "Service Header"; var xRec: Record "Service Header")
+    begin
+        if Rec.IsCreditDocType() then
+            exit;
+
+        if Rec."Currency Code" <> xRec."Currency Code" then
+            Rec.Validate("Bank Account Code CZL", Rec.GetDefaulBankAccountNoCZL());
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterValidateEvent', 'Responsibility Center', false, false)]
+    local procedure ServiceUpdateBankAccountCodeCZLOnAfterValidateEventResponsibilityCenter(var Rec: Record "Service Header"; var xRec: Record "Service Header")
+    begin
+        if Rec.IsCreditDocType() then
+            exit;
+        if (Rec."Currency Code" <> '') and
+           (Rec."Bank Account Code CZL" <> '')
+        then
+            exit;
+
+        if Rec."Responsibility Center" <> xRec."Responsibility Center" then
+            Rec.Validate("Bank Account Code CZL", Rec.GetDefaulBankAccountNoCZL());
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Reminder Header", 'OnAfterValidateEvent', 'Company Bank Account Code', false, false)]

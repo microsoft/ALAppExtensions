@@ -20,61 +20,77 @@ codeunit 9054 "ABS Container Content Helper"
         Node.WriteTo(OuterXml);
         Node.SelectSingleNode('.//Properties', PropertiesNode);
         ChildNodes := PropertiesNode.AsXmlElement().GetChildNodes();
-        if ChildNodes.Count = 0 then
-            AddNewEntry(ABSContainerContent, NameFromXml, OuterXml)
-        else
-            AddNewEntry(ABSContainerContent, NameFromXml, OuterXml, ChildNodes);
-    end;
 
-    [NonDebuggable]
-    procedure AddNewEntry(var ABSContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text)
-    var
-        ChildNodes: XmlNodeList;
-    begin
         AddNewEntry(ABSContainerContent, NameFromXml, OuterXml, ChildNodes);
     end;
 
     [NonDebuggable]
     procedure AddNewEntry(var ABSContainerContent: Record "ABS Container Content"; NameFromXml: Text; OuterXml: Text; ChildNodes: XmlNodeList)
     var
-        NextEntryNo: Integer;
         OutStream: OutStream;
+        EntryNo: Integer;
     begin
-        if NameFromXml.Contains('/') then
-            AddParentEntry(ABSContainerContent, NameFromXml);
+        AddParentEntries(NameFromXml, ABSContainerContent);
 
-        NextEntryNo := GetNextEntryNo(ABSContainerContent);
+        EntryNo := GetNextEntryNo(ABSContainerContent);
 
         ABSContainerContent.Init();
-
-        ABSContainerContent."Entry No." := NextEntryNo;
-        ABSContainerContent."Parent Directory" := GetDirectParentName(NameFromXml);
         ABSContainerContent.Level := GetLevel(NameFromXml);
+        ABSContainerContent."Parent Directory" := GetParentDirectory(NameFromXml);
         ABSContainerContent."Full Name" := CopyStr(NameFromXml, 1, 250);
         ABSContainerContent.Name := GetName(NameFromXml);
+
         SetPropertyFields(ABSContainerContent, ChildNodes);
+
         ABSContainerContent."XML Value".CreateOutStream(OutStream);
         OutStream.Write(OuterXml);
 
+        ABSContainerContent."Entry No." := EntryNo;
         ABSContainerContent.Insert(true);
     end;
 
     [NonDebuggable]
-    local procedure AddParentEntry(var ABSContainerContent: Record "ABS Container Content"; NameFromXml: Text)
+    local procedure AddParentEntries(NameFromXml: Text; var ABSContainerContent: Record "ABS Container Content")
     var
-        NextEntryNo: Integer;
+        ParentEntries: List of [Text];
+        CurrentParent, ParentEntryFullName, ParentEntryName : Text[2048];
+        Level, EntryNo : Integer;
     begin
-        NextEntryNo := GetNextEntryNo(ABSContainerContent);
+        // Check if the entry has parents: the Name will be something like /folder1/folder2/blob-name.
+        // For every parent folder, add a parent entry.
+        // The list of node that comes from sorted by full name, so there is no need for extra re-arrangement.
 
-        ABSContainerContent.Init();
+        if not NameFromXml.Contains('/') then
+            exit;
 
-        ABSContainerContent."Entry No." := NextEntryNo;
-        ABSContainerContent.Level := GetLevel(NameFromXml) - 1;
-        ABSContainerContent.Name := GetDirectParentName(NameFromXml);
-        ABSContainerContent."Parent Directory" := GetDirectParentName(NameFromXml);
-        ABSContainerContent."Content Type" := 'Directory';
+        CurrentParent := ''; // used to accumulate the full names of the entries
 
-        ABSContainerContent.Insert(true);
+        ParentEntries := NameFromXml.Split('/');
+
+        for Level := 1 to ParentEntries.Count() - 1
+        do begin
+            ParentEntryName := CopyStr(ParentEntries.Get(Level), 1, MaxStrLen(ABSContainerContent.Name));
+            ParentEntryFullName := CopyStr(CurrentParent + ParentEntryName, 1, MaxStrLen(ABSContainerContent.Name));
+
+            // Only create the parent entry if it doesn't exist already.
+            // The full name should be unique.
+            ABSContainerContent.SetRange("Full Name", ParentEntryFullName);
+            if not ABSContainerContent.FindLast() then begin
+                EntryNo := GetNextEntryNo(ABSContainerContent);
+
+                ABSContainerContent.Init();
+                ABSContainerContent.Level := Level - 1; // Levels start from 0 to be used for indentation
+                ABSContainerContent.Name := ParentEntryName;
+                ABSContainerContent."Full Name" := ParentEntryFullName;
+                ABSContainerContent."Parent Directory" := CurrentParent;
+                ABSContainerContent."Content Type" := 'Directory';
+
+                ABSContainerContent."Entry No." := EntryNo;
+                ABSContainerContent.Insert(true);
+            end;
+
+            CurrentParent := CopyStr(ABSContainerContent."Full Name" + '/', 1, MaxStrLen(ABSContainerContent.Name));
+        end;
     end;
 
     [NonDebuggable]
@@ -89,6 +105,9 @@ codeunit 9054 "ABS Container Content Helper"
         PropertyValue: Text;
         FldNo: Integer;
     begin
+        if ChildNodes.Count = 0 then
+            exit;
+
         foreach ChildNode in ChildNodes do begin
             PropertyName := ChildNode.AsXmlElement().Name;
             PropertyValue := ChildNode.AsXmlElement().InnerText;
@@ -113,6 +132,8 @@ codeunit 9054 "ABS Container Content Helper"
     [NonDebuggable]
     local procedure GetNextEntryNo(var ABSContainerContent: Record "ABS Container Content"): Integer
     begin
+        ABSContainerContent.Reset();
+
         if ABSContainerContent.FindLast() then
             exit(ABSContainerContent."Entry No." + 1)
         else
@@ -142,17 +163,15 @@ codeunit 9054 "ABS Container Content Helper"
     end;
 
     [NonDebuggable]
-    local procedure GetDirectParentName(Name: Text): Text[250]
+    local procedure GetParentDirectory(Name: Text): Text[250]
     var
-        StringSplit: List of [Text];
         Parent: Text;
     begin
-        if not Name.Contains('/') then
-            exit('root');
-        StringSplit := Name.Split('/');
-        Parent := StringSplit.Get(1);
-        if StringSplit.Count > 2 then
-            Parent := StringSplit.Get(StringSplit.Count() - 1);
+        if (not Name.Contains('/')) then
+            exit('');
+
+        Parent := CopyStr(Name, 1, Name.LastIndexOf('/'));
+
         exit(CopyStr(Parent, 1, 250));
     end;
 

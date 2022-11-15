@@ -20,6 +20,12 @@ tableextension 31039 "Payment Order Line CZZ" extends "Payment Order Line CZB"
             begin
                 if "Purch. Advance Letter No. CZZ" = '' then
                     exit;
+                if CurrFieldNo = FieldNo("Purch. Advance Letter No. CZZ") then
+                    if not PaymentOrderManagementCZB.CheckPaymentOrderLineApply(Rec, false) then begin
+                        if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(AdvanceLetterAlreadyAppliedQst, "Purch. Advance Letter No. CZZ"), false) then
+                            Error('');
+                        "Amount Must Be Checked" := true;
+                    end;
                 Rec.TestField(Type, Rec.Type::Vendor);
 
                 PurchAdvLetterHeaderCZZ.Get("Purch. Advance Letter No. CZZ");
@@ -67,4 +73,9 @@ tableextension 31039 "Payment Order Line CZZ" extends "Payment Order Line CZB"
             end;
         }
     }
+
+    var
+        PaymentOrderManagementCZB: Codeunit "Payment Order Management CZB";
+        ConfirmManagement: Codeunit "Confirm Management";
+        AdvanceLetterAlreadyAppliedQst: Label 'Advance Letter %1 is already applied on payment order. Do you want to continue?', Comment = '%1 = Advance Letter No.';
 }

@@ -23,6 +23,8 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 Caption = 'Configure GP Migration';
                 ToolTip = 'Configure migration settings for GP.';
                 Promoted = true;
+                PromotedIsBig = true;
+                PromotedOnly = true;
                 PromotedCategory = Process;
                 Image = Setup;
 
@@ -47,7 +49,7 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
             FactBoxesVisible := IntelligentCloudSetup."Product ID" = HybridGPWizard.ProductId();
 
         HybridCompany.SetRange(Replicate, true);
-        HasCompletedSetupWizard := HybridCompany.FindFirst();
+        HasCompletedSetupWizard := not HybridCompany.IsEmpty();
     end;
 
     var

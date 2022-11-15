@@ -83,13 +83,13 @@ codeunit 30116 "Shpfy Customer Export"
         Clear(ShopifyCustomer);
         Clear(ShopifyAddress);
         if FillInShopifyCustomerData(Customer, ShopifyCustomer, ShopifyAddress) then
-                if CustomerApi.CreateCustomer(ShopifyCustomer, ShopifyAddress) then begin
-                    ShopifyCustomer."Customer SystemId" := Customer.SystemId;
-                    ShopifyCustomer."Last Updated by BC" := CurrentDateTime;
-                    ShopifyCustomer.Insert();
-                    ShopifyAddress.Insert();
-                end;
-            MetadataFields(Customer, ShopifyCustomer);
+            if CustomerApi.CreateCustomer(ShopifyCustomer, ShopifyAddress) then begin
+                ShopifyCustomer."Customer SystemId" := Customer.SystemId;
+                ShopifyCustomer."Last Updated by BC" := CurrentDateTime;
+                ShopifyCustomer.Insert();
+                ShopifyAddress.Insert();
+            end;
+        MetadataFields(Customer, ShopifyCustomer);
     end;
 
     /// <summary> 

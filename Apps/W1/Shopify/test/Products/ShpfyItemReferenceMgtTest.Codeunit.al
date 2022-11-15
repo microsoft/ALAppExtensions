@@ -1,6 +1,7 @@
-codeunit 135624 "Shpfy Item Reference Mgt. Test"
+codeunit 139602 "Shpfy Item Reference Mgt. Test"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     var
         Any: Codeunit Any;
@@ -226,10 +227,8 @@ codeunit 135624 "Shpfy Item Reference Mgt. Test"
         ItemReference: Record "Item Reference";
         ShpfyItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
         ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
-        FoundVariantCode: Code[10];
         UoM: Code[10];
         VariantCode: Code[10];
-        FoundItemNo: Code[20];
         ReferenceNo: Code[50];
         Result: Code[50];
     begin

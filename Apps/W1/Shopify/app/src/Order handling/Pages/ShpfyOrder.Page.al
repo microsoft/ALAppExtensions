@@ -192,12 +192,14 @@ page 30113 "Shpfy Order"
                     ApplicationArea = All;
                     Editable = false;
                     ToolTip = 'Specifies the sales order number that has been created for the Shopify Order.';
+                    LookupPageId = "Sales Order List";
                 }
                 field(SalesInvoiceNo; Rec."Sales Invoice No.")
                 {
                     ApplicationArea = All;
                     Editable = false;
                     ToolTip = 'Specifies the sales invoice number that has been created for the Shopify Order.';
+                    LookupPageId = "Sales Invoice List";
                 }
                 field("Error"; Rec."Has Error")
                 {

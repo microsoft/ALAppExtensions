@@ -1,28 +1,18 @@
 #if not CLEAN19
+#pragma warning disable AL0432
 pageextension 31047 "Sales Statistics CZZ" extends "Sales Statistics"
 {
     layout
     {
-#pragma warning disable AL0432
         modify("Prepayment (Deduct)")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify("Invoicing (Final)")
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
-#pragma warning restore AL0432
     }
-
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
 }
-
+#pragma warning restore AL0432
 #endif

@@ -1,15 +1,18 @@
 /// <summary>
-/// Codeunit Shpfy Product Price Calc. Test (ID 135622).
+/// Codeunit Shpfy Product Price Calc. Test (ID 139605).
 /// </summary>
-codeunit 135622 "Shpfy Product Price Calc. Test"
+codeunit 139605 "Shpfy Product Price Calc. Test"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
+#if not CLEAN19
     var
         Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
 
-    [test]
+
+    [Test]
     procedure UnitTestCalcPriceTest()
     var
         ShpfyShop: Record "Shpfy Shop";
@@ -63,4 +66,5 @@ codeunit 135622 "Shpfy Product Price Calc. Test"
         // [THEN] InitPrice - InitDiscountPerc = Price
         LibraryAssert.AreNearlyEqual(InitPrice * (1 - InitDiscountPerc / 100), Price, 0.01, 'Discount Price');
     end;
+#endif
 }

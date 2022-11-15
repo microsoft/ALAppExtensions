@@ -1,6 +1,7 @@
-codeunit 135606 "Shpfy Customer Export Test"
+codeunit 139568 "Shpfy Customer Export Test"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     var
         LibraryAssert: Codeunit "Library Assert";

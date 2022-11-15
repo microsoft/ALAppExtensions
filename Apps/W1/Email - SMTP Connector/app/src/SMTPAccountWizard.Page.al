@@ -67,7 +67,9 @@ page 4511 "SMTP Account Wizard"
                 ApplicationArea = All;
                 Enabled = SenderFieldsEnabled;
                 Caption = 'Sender Name';
+#pragma warning disable AA0240
                 ToolTip = 'Specifies a name to add in front of the sender email address. For example, if you enter Stan in this field, and the email address is stan@cronus.com, the recipient will see the sender as Stan stan@cronus.com.';
+#pragma warning restore AA0240
             }
 
             field(EmailAddress; Rec."Email Address")

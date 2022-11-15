@@ -46,7 +46,7 @@ codeunit 149120 "BCPT Post Item Journal"
         if not ItemJournalBatch.Get(JournalTemplateName, JournalBatchName) then begin
             ItemJournalBatch.Init();
             ItemJournalBatch.Validate("Journal Template Name", JournalTemplateName);
-            ItemJournalBatch.SetupNewBatch;
+            ItemJournalBatch.SetupNewBatch();
             ItemJournalBatch.Validate(Name, JournalBatchName);
             ItemJournalBatch.Validate(Description, JournalBatchName + ' journal');
             ItemJournalBatch.Insert(true);
@@ -71,7 +71,7 @@ codeunit 149120 "BCPT Post Item Journal"
         RecRef.GetTable(ItemJournalLine);
         ItemJournalLine.Validate("Line No.", 10000);
         ItemJournalLine.Insert(true);
-        ItemJournalLine.Validate("Posting Date", WorkDate);
+        ItemJournalLine.Validate("Posting Date", WorkDate());
         ItemJournalLine.Validate("Entry Type", EntryType);
         if NoSeries.Get(ItemJournalBatch."No. Series") then
             DocumentNo := NoSeriesManagement.GetNextNo(ItemJournalBatch."No. Series", ItemJournalLine."Posting Date", false);

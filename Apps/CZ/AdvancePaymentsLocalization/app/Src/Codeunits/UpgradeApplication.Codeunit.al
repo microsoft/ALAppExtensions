@@ -7,6 +7,7 @@ codeunit 31088 "Upgrade Application CZZ"
         UpgradeTag: Codeunit "Upgrade Tag";
         UpgradeTagDefinitionsCZZ: Codeunit "Upgrade Tag Definitions CZZ";
         InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
+        InstallApplicationCZZ: Codeunit "Install Application CZZ";
 
     trigger OnUpgradePerDatabase()
     begin
@@ -24,18 +25,21 @@ codeunit 31088 "Upgrade Application CZZ"
     end;
 
     local procedure UpgradeData()
+    var
+        AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
     begin
-        UpgradeReportSelections();
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion200PerCompanyUpgradeTag()) then
+            UpgradeAdvancePaymentsReportReportSelections();
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion210PerCompanyUpgradeTag()) then
+            if AdvanceLetterTemplateCZZ.IsEmpty() then // feature AdvancePaymentsLocalizationForCzech was disabled
+                InstallApplicationCZZ.CopyData();
     end;
 
-    local procedure UpgradeReportSelections();
+    local procedure UpgradeAdvancePaymentsReportReportSelections();
     var
         AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
         ReportSelectionHandlerCZZ: Codeunit "Report Selection Handler CZZ";
     begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion200PerCompanyUpgradeTag()) then
-            exit;
-
         AdvanceLetterTemplateCZZ.SetRange("Sales/Purchase", AdvanceLetterTemplateCZZ."Sales/Purchase"::Purchase);
         AdvanceLetterTemplateCZZ.SetFilter("Document Report ID", '<>0');
         if AdvanceLetterTemplateCZZ.FindFirst() then
@@ -68,11 +72,19 @@ codeunit 31088 "Upgrade Application CZZ"
     begin
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion190PerDatabaseUpgradeTag()) then
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion190PerDatabaseUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion200PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion200PerDatabaseUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion210PerDatabaseUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion210PerDatabaseUpgradeTag());
     end;
 
     local procedure SetCompanyUpgradeTags();
     begin
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion190PerCompanyUpgradeTag()) then
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion190PerCompanyUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion200PerCompanyUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion200PerCompanyUpgradeTag());
+        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion210PerCompanyUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZZ.GetDataVersion210PerCompanyUpgradeTag());
     end;
 }

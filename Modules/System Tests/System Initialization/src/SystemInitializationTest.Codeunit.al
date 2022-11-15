@@ -29,13 +29,7 @@ codeunit 130045 "System Initialization Test"
     begin
         PermissionsMock.Set('System Init Exec');
         // [WHEN] Calling CompanyTriggers.OnCompanyOpen()
-#if not CLEAN20
-#pragma warning disable AL0432
-#endif
-        CompanyTriggers.OnCompanyOpen();
-#if not CLEAN20
-#pragma warning restore AL0432
-#endif
+        CompanyTriggers.OnCompanyOpenCompleted();
 
         // [THEN] Calling PasswordDialog.OpenChangePasswordDialog should NOT results in an error
         PasswordDialogManagement.OpenChangePasswordDialog(OldPassword, NewPassword);

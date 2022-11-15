@@ -1,6 +1,6 @@
 table 4072 "GPSOPPaymentWorkHist"
 {
-    ReplicateData = false;
+    DataClassification = CustomerContent;
     Extensible = false;
 
     fields

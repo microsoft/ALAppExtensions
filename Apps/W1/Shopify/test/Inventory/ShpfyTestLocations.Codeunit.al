@@ -1,10 +1,10 @@
 /// <summary>
-/// Codeunit Shpfy Test Locations (ID 135617).
+/// Codeunit Shpfy Test Locations (ID 139577).
 /// </summary>
-codeunit 135617 "Shpfy Test Locations"
+codeunit 139577 "Shpfy Test Locations"
 {
     Subtype = Test;
-    TestPermissions = NonRestrictive;
+    TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
     var

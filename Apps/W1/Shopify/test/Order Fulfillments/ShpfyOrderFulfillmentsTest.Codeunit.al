@@ -1,9 +1,10 @@
 /// <summary>
-/// Codeunit Shpfy Order Fulfillments Test (ID 135618).
+/// Codeunit Shpfy Order Fulfillments Test (ID 139578).
 /// </summary>
-codeunit 135618 "Shpfy Order Fulfillments Test"
+codeunit 139578 "Shpfy Order Fulfillments Test"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     var
         Any: Codeunit Any;

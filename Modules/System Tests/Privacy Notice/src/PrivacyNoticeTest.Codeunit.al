@@ -32,7 +32,7 @@ codeunit 132535 "Privacy Notice Test"
         PrivacyNotice.CalcFields(Enabled, Disabled);
         LibraryAssert.IsFalse(PrivacyNotice.Enabled, 'Privacy notice is enabled for admin.');
         LibraryAssert.IsFalse(PrivacyNotice.Disabled, 'Privacy notice is disabled for admin.');
-        
+
         // [THEN] Calculation of Enabled and Disabled will both be false for current user
         PrivacyNotice.SetRange("User SID Filter", UserSecurityId());
         PrivacyNotice.CalcFields(Enabled, Disabled);
@@ -44,13 +44,13 @@ codeunit 132535 "Privacy Notice Test"
         PrivacyNoticeApproval."User SID" := EmptyGuid;
         PrivacyNoticeApproval.Approved := true;
         PrivacyNoticeApproval.Insert();
-        
+
         // [THEN] The privacy notice enabled and disabled flags reflects this for admin
         PrivacyNotice.SetRange("User SID Filter", EmptyGuid);
         PrivacyNotice.CalcFields(Enabled, Disabled);
         LibraryAssert.IsTrue(PrivacyNotice.Enabled, 'Privacy notice should be enabled for admin. - 2');
         LibraryAssert.IsFalse(PrivacyNotice.Disabled, 'Privacy notice is disabled for admin. - 2');
-        
+
         // [THEN] The privacy notice enabled and disabled flags reflects this for current user
         PrivacyNotice.SetRange("User SID Filter", UserSecurityId());
         PrivacyNotice.CalcFields(Enabled, Disabled);
@@ -60,31 +60,31 @@ codeunit 132535 "Privacy Notice Test"
         // [GIVEN] The privacy notice is rejected by the admin
         PrivacyNoticeApproval.Approved := false;
         PrivacyNoticeApproval.Modify();
-        
+
         // [THEN] The privacy notice enabled and disabled flags reflects this for admin
         PrivacyNotice.SetRange("User SID Filter", EmptyGuid);
         PrivacyNotice.CalcFields(Enabled, Disabled);
         LibraryAssert.IsFalse(PrivacyNotice.Enabled, 'Privacy notice is enabled for admin. - 3');
         LibraryAssert.IsTrue(PrivacyNotice.Disabled, 'Privacy notice should be disabled for admin. - 3');
-        
+
         // [THEN] The privacy notice enabled and disabled flags reflects this for current user
         PrivacyNotice.SetRange("User SID Filter", UserSecurityId());
         PrivacyNotice.CalcFields(Enabled, Disabled);
         LibraryAssert.IsFalse(PrivacyNotice.Enabled, 'Privacy notice is enabled for current user. - 3');
         LibraryAssert.IsFalse(PrivacyNotice.Disabled, 'Privacy notice is disabled for current user. - 3');
-        
+
         // [GIVEN] The privacy notice is approved by the current user and disabled by the admin
         PrivacyNoticeApproval.ID := PrivacyNoticeName;
         PrivacyNoticeApproval."User SID" := UserSecurityId();
         PrivacyNoticeApproval.Approved := true;
         PrivacyNoticeApproval.Insert();
-        
+
         // [THEN] The privacy notice enabled and disabled flags reflects this for admin
         PrivacyNotice.SetRange("User SID Filter", EmptyGuid);
         PrivacyNotice.CalcFields(Enabled, Disabled);
         LibraryAssert.IsFalse(PrivacyNotice.Enabled, 'Privacy notice is enabled for admin. - 4');
         LibraryAssert.IsTrue(PrivacyNotice.Disabled, 'Privacy notice should be disabled for admin. - 4');
-        
+
         // [THEN] The privacy notice enabled and disabled flags reflects this for current user
         PrivacyNotice.SetRange("User SID Filter", UserSecurityId());
         PrivacyNotice.CalcFields(Enabled, Disabled);
@@ -107,7 +107,7 @@ codeunit 132535 "Privacy Notice Test"
         PrivacyNoticeName := 'AdminApprovesPrivacyNotice';
         PrivacyNoticeInterface.CreatePrivacyNotice(PrivacyNoticeName, PrivacyNoticeName);
         LibraryAssert.AreEqual("Privacy Notice Approval State"::"Not set", PrivacyNoticeInterface.GetPrivacyNoticeApprovalState(PrivacyNoticeName), 'The privacy notice state was set incorrectly');
-        
+
         // [WHEN] A privacy notice is approved through UI
         LibraryAssert.IsTrue(PrivacyNoticeInterface.ConfirmPrivacyNoticeApproval(PrivacyNoticeName), 'The privacy notice was not approved in the UI');
         LibraryAssert.AreEqual("Privacy Notice Approval State"::Agreed, PrivacyNoticeInterface.GetPrivacyNoticeApprovalState(PrivacyNoticeName), 'The privacy notice was not agreed to');
@@ -116,7 +116,7 @@ codeunit 132535 "Privacy Notice Test"
         PrivacyNotice.SetAutoCalcFields(Enabled, Disabled);
         PrivacyNotice.SetRange("User SID Filter", EmptyGuid);
         LibraryAssert.IsTrue(PrivacyNotice.Get(PrivacyNoticeName), 'No privacy notice record was created.');
-        
+
         LibraryAssert.IsTrue(PrivacyNotice.Enabled, 'Privacy notice was not approved.');
     end;
 
@@ -148,13 +148,14 @@ codeunit 132535 "Privacy Notice Test"
         // This is important since ConfirmPrivacyNoticeApproval will open a page which it cannot if we are in a write-tranaction.
         // However opening pages in tests during write-transactions does work
         ClearLastError();
-        asserterror begin
+        asserterror
+        begin
             if Codeunit.Run(Codeunit::"Privacy Notice") then;
             Error('');
         end;
         LibraryAssert.AreEqual('', GetLastErrorText(), 'Codeunit could not be run, looks like we started a write-transaction during ConfirmPrivacyNoticeApproval');
     end;
-    
+
     [Test]
     [HandlerFunctions('AcceptPrivacyNotice')]
     procedure AdminApprovesPrivacyNoticeAndDoesNotShowAfterwards()
@@ -165,7 +166,7 @@ codeunit 132535 "Privacy Notice Test"
     begin
         Init();
         PermissionsMock.Set(PrivacyPermissionSetAdminTxt);
-        
+
         // [GIVEN] A privacy notice
         PrivacyNoticeName := 'AdminApprovesPrivacyNoticeAndDoesNotShowAfterwards';
         PrivacyNoticeInterface.CreatePrivacyNotice(PrivacyNoticeName, PrivacyNoticeName);
@@ -176,7 +177,7 @@ codeunit 132535 "Privacy Notice Test"
         PrivacyNotice.SetAutoCalcFields(Enabled, Disabled);
         PrivacyNotice.SetRange("User SID Filter", EmptyGuid);
         LibraryAssert.IsTrue(PrivacyNotice.Get(PrivacyNoticeName), 'No privacy notice record was created.');
-        
+
         LibraryAssert.IsTrue(PrivacyNotice.Enabled, 'Privacy notice was not approved.');
 
         // [WHEN] The admin triggers the privacy approval again
@@ -206,7 +207,7 @@ codeunit 132535 "Privacy Notice Test"
 
         // [THEN] The status of the privacy notice is by default Agreed
         LibraryAssert.AreEqual("Privacy Notice Approval State"::Agreed, PrivacyNoticeInterface.GetPrivacyNoticeApprovalState(PrivacyNoticeName), 'The privacy notice was not agreed to');
-        
+
         // [WHEN] A privacy notice checked
         // [THEN] The privacy notice is automatically approved without any UI
         AllowShowingPrivacyNotice := false;
@@ -216,10 +217,10 @@ codeunit 132535 "Privacy Notice Test"
         PermissionsMock.ClearAssignments();
         SetEvaluationCompany(false);
         PermissionsMock.Set(PrivacyPermissionSetAdminTxt);
-        
+
         // [THEN] The status of the privacy notice is by default "Not set"
         LibraryAssert.AreEqual("Privacy Notice Approval State"::"Not set", PrivacyNoticeInterface.GetPrivacyNoticeApprovalState(PrivacyNoticeName), 'The privacy notice was not agreed to');
-        
+
         // [WHEN] The privacy notice checked
         // [THEN] The privacy notice is shown to the user (Handler function)
         AllowShowingPrivacyNotice := true;
@@ -247,12 +248,12 @@ codeunit 132535 "Privacy Notice Test"
 
         // [THEN] The status of the privacy notice is disagreed
         LibraryAssert.AreEqual("Privacy Notice Approval State"::Disagreed, PrivacyNoticeInterface.GetPrivacyNoticeApprovalState(PrivacyNoticeName), 'The privacy notice was not agreed to');
-        
+
         // [WHEN] The privacy notice checked
         // [THEN] The privacy notice is shown to the admin since it is currently disagreed to (Handler function)
         LibraryAssert.IsTrue(PrivacyNoticeInterface.ConfirmPrivacyNoticeApproval(PrivacyNoticeName), 'The privacy notice was not approved');
     end;
-    
+
     [Test]
     [HandlerFunctions('AcceptPrivacyNotice')]
     procedure UserApprovesPrivacyNoticeAndDoesNotShowAfterwards()
@@ -264,7 +265,7 @@ codeunit 132535 "Privacy Notice Test"
     begin
         Init();
         PermissionsMock.Set(PrivacyPermissionSetViewTxt);
-        
+
         // [GIVEN] A privacy notice
         PrivacyNoticeName := 'UserApprovesPrivacyNoticeAndDoesNotShowAfterwards';
         PrivacyNoticeInterface.CreatePrivacyNotice(PrivacyNoticeName, PrivacyNoticeName);
@@ -275,7 +276,7 @@ codeunit 132535 "Privacy Notice Test"
 
         // [THEN] A privacy notice is created
         LibraryAssert.IsTrue(PrivacyNotice.Get(PrivacyNoticeName), 'No privacy notice record was created.');
-        
+
         // [THEN] There are no privacy notice approvals by the admin
         LibraryAssert.IsFalse(PrivacyNoticeApproval.Get(PrivacyNoticeName, EmptyGuid), 'Admin decision was made on this privacy notice!');
 
@@ -288,7 +289,7 @@ codeunit 132535 "Privacy Notice Test"
         AllowShowingPrivacyNotice := false;
         LibraryAssert.IsTrue(PrivacyNoticeInterface.ConfirmPrivacyNoticeApproval(PrivacyNoticeName), 'The privacy notice approval was not saved.');
     end;
-    
+
     [Test]
     [HandlerFunctions('RejectPrivacyNotice')]
     procedure AdminRejectsPrivacyNoticeUserIsShownPrivacyNotice()
@@ -300,7 +301,7 @@ codeunit 132535 "Privacy Notice Test"
     begin
         Init();
         PermissionsMock.Set(PrivacyPermissionSetAdminTxt);
-        
+
         // [GIVEN] A privacy notice
         PrivacyNoticeName := 'AdminRejectsPrivacyNoticeUserIsShownPrivacyNotice';
         PrivacyNoticeInterface.CreatePrivacyNotice(PrivacyNoticeName, PrivacyNoticeName);
@@ -311,7 +312,7 @@ codeunit 132535 "Privacy Notice Test"
 
         // [THEN] A privacy notice is created
         LibraryAssert.IsTrue(PrivacyNotice.Get(PrivacyNoticeName), 'No privacy notice record was created.');
-        
+
         // [THEN] There are a privacy notice approvals by the admin which is rejected
         LibraryAssert.IsFalse(PrivacyNoticeApproval.Get(PrivacyNoticeName, EmptyGuid), 'Admin privacy notice should not exist!');
 
@@ -320,7 +321,7 @@ codeunit 132535 "Privacy Notice Test"
         PermissionsMock.Set(PrivacyPermissionSetViewTxt);
         LibraryAssert.IsFalse(PrivacyNoticeInterface.ConfirmPrivacyNoticeApproval(PrivacyNoticeName), 'The privacy notice request should have been rejected by the user.');
     end;
-    
+
     [Test]
     [HandlerFunctions('MessageHandler')]
     procedure AdminRejectsPrivacyNoticeInListUserReceivesError()
@@ -333,7 +334,7 @@ codeunit 132535 "Privacy Notice Test"
     begin
         Init();
         PermissionsMock.Set(PrivacyPermissionSetAdminTxt);
-        
+
         // [GIVEN] A privacy notice
         PrivacyNoticeName := 'AdminRejectsPrivacyNoticeInListUserReceivesError';
         PrivacyNoticeInterface.CreatePrivacyNotice(PrivacyNoticeName, PrivacyNoticeName);
@@ -356,7 +357,7 @@ codeunit 132535 "Privacy Notice Test"
         LibraryAssert.IsFalse(PrivacyNoticeInterface.ConfirmPrivacyNoticeApproval(PrivacyNoticeName), 'The privacy notice request should have been rejected.');
         LibraryAssert.AreEqual(StrSubstNo(AdminDisabledIntegrationMsg, PrivacyNoticeName), MessageReceived, 'Wrong message was received upon calling privacy approval.');
     end;
-    
+
     [Test]
     [HandlerFunctions('RejectPrivacyNotice')]
     procedure SecondUserToApproveAlsoReceivesPrivacyNotice()
@@ -377,7 +378,7 @@ codeunit 132535 "Privacy Notice Test"
         PrivacyNoticeApproval."User SID" := CreateGuid();
         PrivacyNoticeApproval.Approved := true;
         PrivacyNoticeApproval.Insert();
-        
+
         // [THEN] No decision has been made on the privacy notice for the current user
         LibraryAssert.AreEqual("Privacy Notice Approval State"::"Not set", PrivacyNoticeInterface.GetPrivacyNoticeApprovalState(PrivacyNoticeName), 'The privacy notice state was set incorrectly');
 
@@ -385,11 +386,11 @@ codeunit 132535 "Privacy Notice Test"
         // [THEN] The privacy notice is shown (handler) and the user can reject
         PermissionsMock.Set(PrivacyPermissionSetViewTxt);
         LibraryAssert.IsFalse(PrivacyNoticeInterface.ConfirmPrivacyNoticeApproval(PrivacyNoticeName), 'The privacy notice was not rejected in the UI');
-        
+
         // [THEN] There are a privacy notice approvals by the user is rejected
         LibraryAssert.IsFalse(PrivacyNoticeApproval.Get(PrivacyNoticeName, UserSecurityId()), 'User privacy notice approval should not exist since it was rejected!');
     end;
-    
+
     [Test]
     procedure UserApprovalDoesNotReflectOnPrivacyList()
     var
@@ -421,7 +422,7 @@ codeunit 132535 "Privacy Notice Test"
         LibraryAssert.AreEqual(PrivacyNoticeName, PrivacyNotices.IntegrationServiceName.Value, 'Wrong integration service name');
         LibraryAssert.IsFalse(PrivacyNotices.Accepted.AsBoolean(), 'Privacy notice should not have been admin approved!');
         PrivacyNotices.Close();
-        
+
         // [WHEN] The privacy approval list is opened
         // [THEN] The privacy notice has been approved by the current user
         PrivacyNoticeApprovals.Trap();
@@ -430,7 +431,7 @@ codeunit 132535 "Privacy Notice Test"
         LibraryAssert.AreEqual(PrivacyNoticeName, PrivacyNoticeApprovals.IntegrationServiceName.Value, 'Wrong integration service name on approvals page');
         LibraryAssert.IsTrue(PrivacyNoticeApprovals.Accepted.AsBoolean(), 'Privacy notice approval should have been approved!');
     end;
-    
+
     [Test]
     procedure UserRejectAdminApprovesUserIsAutoApproved()
     var
@@ -439,7 +440,7 @@ codeunit 132535 "Privacy Notice Test"
         EmptyGuid: Guid;
     begin
         Init();
-        
+
         // [GIVEN] A privacy notice
         PrivacyNoticeName := 'UserRejectAdminApprovesUserIsAutoApproved';
         PrivacyNoticeInterface.CreatePrivacyNotice(PrivacyNoticeName, PrivacyNoticeName);
@@ -461,7 +462,7 @@ codeunit 132535 "Privacy Notice Test"
         PermissionsMock.Set(PrivacyPermissionSetViewTxt);
         LibraryAssert.IsTrue(PrivacyNoticeInterface.ConfirmPrivacyNoticeApproval(PrivacyNoticeName), 'The privacy notice was not auto-approved');
     end;
-    
+
     [Test]
     procedure NormalUsersCannotApproveForAllThroughPrivacyNoticesList()
     var
@@ -470,7 +471,7 @@ codeunit 132535 "Privacy Notice Test"
         EmptyGuid: Guid;
     begin
         Init();
-        
+
         // [GIVEN] A privacy notice
         PrivacyNoticeName := 'NormalUsersCannotApproveForAllThroughPrivacyNotice';
         PrivacyNoticeInterface.CreatePrivacyNotice(PrivacyNoticeName, PrivacyNoticeName);

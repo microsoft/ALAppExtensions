@@ -72,16 +72,16 @@ codeunit 9011 "Azure AD Graph User Impl."
     end;
 
     [NonDebuggable]
-    procedure UpdateUserFromAzureGraph(var User: Record User; var GraphUserInfo: DotNet UserInfo): Boolean
+    procedure UpdateUserFromAzureGraph(var User: Record User; var AzureADUserInfo: DotNet UserInfo): Boolean
     var
         ModifyUser: Boolean;
         IsUserModified: Boolean;
         TempString: Text;
     begin
-        if IsNull(GraphUserInfo) then
+        if IsNull(AzureADUserInfo) then
             exit;
 
-        if not CheckUpdateUserRequired(User, GraphUserInfo) then
+        if not CheckUpdateUserRequired(User, AzureADUserInfo) then
             exit;
 
         User.LockTable();
@@ -90,33 +90,33 @@ codeunit 9011 "Azure AD Graph User Impl."
             exit;
         end;
 
-        SetUserLanguage(GraphUserInfo, User."User Security ID");
+        SetUserLanguage(AzureADUserInfo, User."User Security ID");
 
-        if GraphUserInfo.AccountEnabled() and (User.State = User.State::Disabled) then begin
+        if AzureADUserInfo.AccountEnabled() and (User.State = User.State::Disabled) then begin
             User.State := User.State::Enabled;
             ModifyUser := true;
         end;
 
-        if (not GraphUserInfo.AccountEnabled()) and (User.State = User.State::Enabled) then begin
+        if (not AzureADUserInfo.AccountEnabled()) and (User.State = User.State::Enabled) then begin
             User.State := User.State::Disabled;
             ModifyUser := true;
         end;
 
-        TempString := GetFullName(GraphUserInfo);
+        TempString := GetFullName(AzureADUserInfo);
         if LowerCase(User."Full Name") <> LowerCase(TempString) then begin
             User."Full Name" := CopyStr(TempString, 1, MaxStrLen(User."Full Name"));
             ModifyUser := true;
         end;
 
-        if not IsNull(GraphUserInfo.Mail()) then begin
-            TempString := GetContactEmail(GraphUserInfo);
+        if not IsNull(AzureADUserInfo.Mail()) then begin
+            TempString := GetContactEmail(AzureADUserInfo);
             if LowerCase(User."Contact Email") <> LowerCase(TempString) then begin
                 User."Contact Email" := CopyStr(TempString, 1, MaxStrLen(User."Contact Email"));
                 ModifyUser := true;
             end;
         end;
 
-        TempString := GetAuthenticationEmail(GraphUserInfo);
+        TempString := GetAuthenticationEmail(AzureADUserInfo);
         if LowerCase(User."Authentication Email") <> LowerCase(TempString) then begin
             // Clear current authentication mail
             User."Authentication Email" := '';
@@ -126,7 +126,7 @@ codeunit 9011 "Azure AD Graph User Impl."
             IsUserModified := true;
 
             EnsureAuthenticationEmailIsNotInUse(TempString);
-            UpdateAuthenticationEmail(User, GraphUserInfo);
+            UpdateAuthenticationEmail(User, AzureADUserInfo);
         end;
 
         if ModifyUser then
@@ -191,30 +191,30 @@ codeunit 9011 "Azure AD Graph User Impl."
     end;
 
     [NonDebuggable]
-    local procedure CheckUpdateUserRequired(var User: Record User; var GraphUserInfo: DotNet UserInfo): Boolean
+    local procedure CheckUpdateUserRequired(var User: Record User; var AzureADUserInfo: DotNet UserInfo): Boolean
     var
         TempString: Text;
     begin
         if not User.Get(User."User Security ID") then
             exit(false);
 
-        if GraphUserInfo.AccountEnabled() and (User.State = User.State::Disabled) then
+        if AzureADUserInfo.AccountEnabled() and (User.State = User.State::Disabled) then
             exit(true);
 
-        if (not GraphUserInfo.AccountEnabled()) and (User.State = User.State::Enabled) then
+        if (not AzureADUserInfo.AccountEnabled()) and (User.State = User.State::Enabled) then
             exit(true);
 
-        TempString := GetFullName(GraphUserInfo);
+        TempString := GetFullName(AzureADUserInfo);
         if LowerCase(User."Full Name") <> LowerCase(TempString) then
             exit(true);
 
-        if not IsNull(GraphUserInfo.Mail()) then begin
-            TempString := GetContactEmail(GraphUserInfo);
+        if not IsNull(AzureADUserInfo.Mail()) then begin
+            TempString := GetContactEmail(AzureADUserInfo);
             if LowerCase(User."Contact Email") <> LowerCase(TempString) then
                 exit(true);
         end;
 
-        TempString := CopyStr(Format(GraphUserInfo.UserPrincipalName()), 1, MaxStrLen(User."Authentication Email"));
+        TempString := CopyStr(Format(AzureADUserInfo.UserPrincipalName()), 1, MaxStrLen(User."Authentication Email"));
         if LowerCase(User."Authentication Email") <> LowerCase(TempString) then
             exit(true);
 
@@ -222,16 +222,16 @@ codeunit 9011 "Azure AD Graph User Impl."
     end;
 
     [NonDebuggable]
-    local procedure UpdateAuthenticationEmail(var User: Record User; var GraphUserInfo: DotNet UserInfo)
+    local procedure UpdateAuthenticationEmail(var User: Record User; var AzureADUserInfo: DotNet UserInfo)
     var
         NavUserAuthenticationHelper: DotNet NavUserAccountHelper;
     begin
-        if IsNull(GraphUserInfo) then
+        if IsNull(AzureADUserInfo) then
             exit;
 
-        User."Authentication Email" := GetAuthenticationEmail(GraphUserInfo);
+        User."Authentication Email" := GetAuthenticationEmail(AzureADUserInfo);
         if User.Modify() then
-            NavUserAuthenticationHelper.SetAuthenticationObjectId(User."User Security ID", GraphUserInfo.ObjectId());
+            NavUserAuthenticationHelper.SetAuthenticationObjectId(User."User Security ID", AzureADUserInfo.ObjectId());
     end;
 
     [NonDebuggable]
@@ -240,7 +240,7 @@ codeunit 9011 "Azure AD Graph User Impl."
         UserAccountHelper: DotNet NavUserAccountHelper;
         IsUserDelegatedAdministrator, Handled : Boolean;
     begin
-        OnIsUserDelegatedAdmin(IsUserDelegatedAdministrator, Handled);
+        OnIsUserDelegatedAdmin(IsUserDelegatedAdministrator, Handled); // used to mock UserAccountHelper.IsUserDelegatedAdmin()
         if Handled then
             exit(IsUserDelegatedAdministrator);
 
@@ -251,7 +251,12 @@ codeunit 9011 "Azure AD Graph User Impl."
     procedure IsUserDelegatedHelpdesk(): Boolean
     var
         UserAccountHelper: DotNet NavUserAccountHelper;
+        IsUserDelegatedHelpdeskAdmin, Handled : Boolean;
     begin
+        OnIsUserDelegatedHelpdesk(IsUserDelegatedHelpdeskAdmin, Handled); // used to mock UserAccountHelper.IsUserDelegatedHelpdesk()
+        if Handled then
+            exit(IsUserDelegatedHelpdeskAdmin);
+
         exit(UserAccountHelper.IsUserDelegatedHelpdesk());
     end;
 
@@ -273,12 +278,6 @@ codeunit 9011 "Azure AD Graph User Impl."
     begin
         CultureInfo := CultureInfo.CultureInfo(CultureName);
         CultureCode := CultureInfo.ThreeLetterWindowsLanguageName();
-    end;
-
-    [NonDebuggable]
-    procedure SetTestInProgress(TestInProgress: Boolean)
-    begin
-        AzureADGraph.SetTestInProgress(TestInProgress);
     end;
 
     [NonDebuggable]
@@ -357,6 +356,11 @@ codeunit 9011 "Azure AD Graph User Impl."
 
     [InternalEvent(false)]
     local procedure OnIsUserDelegatedAdmin(var IsUserDelegatedAdmin: Boolean; var Handled: Boolean)
+    begin
+    end;
+
+    [InternalEvent(false)]
+    local procedure OnIsUserDelegatedHelpdesk(var IsUserDelegatedHelpdesk: Boolean; var Handled: Boolean)
     begin
     end;
 }

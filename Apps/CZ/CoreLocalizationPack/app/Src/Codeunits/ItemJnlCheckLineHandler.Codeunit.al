@@ -8,4 +8,21 @@ codeunit 31313 "Item Jnl.CheckLine Handler CZL"
         if UserSetupAdvManagementCZL.IsCheckAllowed() and not CalledFromAdjustment then
             UserSetupAdvManagementCZL.CheckItemJournalLine(ItemJnlLine);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Check Line", 'OnAfterCheckItemJnlLine', '', false, false)]
+    local procedure CheckUnitOfMeasureCodeOnAfterCheckItemJnlLine(var ItemJnlLine: Record "Item Journal Line")
+    begin
+        if (ItemJnlLine.Quantity <> 0) and
+           (ItemJnlLine."Item Charge No." = '') and
+           not (ItemJnlLine."Value Entry Type" in [ItemJnlLine."Value Entry Type"::Revaluation, ItemJnlLine."Value Entry Type"::Rounding]) and
+           not ItemJnlLine.Adjustment
+        then
+            ItemJnlLine.TestField("Unit of Measure Code", ErrorInfo.Create());
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Check Line", 'OnCheckDatesOnAfterCalcShouldShowError', '', false, false)]
+    local procedure OnCheckDatesOnAfterCalcShouldShowError(var ShouldShowError: Boolean; CalledFromAdjustment: Boolean)
+    begin
+        ShouldShowError := ShouldShowError and (not CalledFromAdjustment);
+    end;
 }

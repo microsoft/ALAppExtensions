@@ -1,6 +1,7 @@
-codeunit 135629 "Shpfy Shipping Test"
+codeunit 139606 "Shpfy Shipping Test"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     var
         Any: Codeunit Any;

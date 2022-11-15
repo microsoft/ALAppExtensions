@@ -128,7 +128,7 @@ page 4504 "Microsoft 365 Email Wizard"
         LearnMoreTok: Label 'Learn more';
         LearnMorePermissionsTok: Label 'Learn more about shared mailboxes permissions';
         SharedMailboxesURLTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2139305';
-        SharedMailboxesPermissionsURLTxt: Label 'https://docs.microsoft.com/en-us/exchange/collaboration-exo/shared-mailboxes#which-permissions-should-you-use';
+        SharedMailboxesPermissionsURLTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2206606';
 
     trigger OnOpenPage()
     begin

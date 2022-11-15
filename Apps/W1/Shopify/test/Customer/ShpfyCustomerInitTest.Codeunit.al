@@ -1,7 +1,7 @@
 /// <summary>
-/// Codeunit Shpfy Customer Init Test (ID 135608).
+/// Codeunit Shpfy Customer Init Test (ID 139585).
 /// </summary>
-codeunit 135608 "Shpfy Customer Init Test"
+codeunit 139585 "Shpfy Customer Init Test"
 {
     SingleInstance = true;
 

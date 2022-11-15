@@ -10,7 +10,6 @@ codeunit 139592 "Item Attr Populate Test"
 
     var
         Assert: Codeunit Assert;
-        NotificationHandled: Boolean;
 
 
     [Test]
@@ -154,7 +153,6 @@ codeunit 139592 "Item Attr Populate Test"
     var
         ImageAnalysisSetup: Record "Image Analysis Setup";
     begin
-        NotificationHandled := false;
         ImageAnalysisSetup.DeleteAll();
         ImageAnalysisSetup.GetSingleInstance();
         ImageAnalysisSetup."Image-Based Attribute Recognition Enabled" := true;
@@ -179,7 +177,7 @@ codeunit 139592 "Item Attr Populate Test"
     begin
         ItemAttributeValue.Reset();
         ItemAttributeValue.SetRange(Value, 'Blue');
-        ItemAttributeValue.FindSet();
+        ItemAttributeValue.FindFirst();
         exit(ItemAttributeValueMapping.GET(DATABASE::Item, Item."No.", ItemAttributeValue."Attribute ID") and (ItemAttributeValueMapping."Item Attribute Value ID" = ItemAttributeValue.ID));
     end;
 
@@ -189,7 +187,7 @@ codeunit 139592 "Item Attr Populate Test"
     begin
         ItemAttributeValue.Reset();
         ItemAttributeValue.SetRange(Value, 'Blue');
-        ItemAttributeValue.FindSet();
+        ItemAttributeValue.FindFirst();
         exit((ImageAnalysisTags."Item Attribute Name Id" = ItemAttributeValue."Attribute ID") and (ImageAnalysisTags."Item Attribute Value Id" = ItemAttributeValue.ID));
     end;
 

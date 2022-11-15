@@ -91,8 +91,13 @@ table 30106 "Shpfy Customer Address"
             Caption = 'Ship-To Address SystemId';
             DataClassification = SystemMetadata;
             ObsoleteReason = 'Not used.';
+#if not CLEAN21
+            ObsoleteTag = '21.0';
             ObsoleteState = Pending;
-            ObsoleteTag = '20.3';
+#else
+            ObsoleteTag = '24.0';
+            ObsoleteState = Removed;
+#endif
         }
         field(102; CustomerSystemId; Guid)
         {

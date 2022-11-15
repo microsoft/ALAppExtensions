@@ -1,6 +1,7 @@
-codeunit 135623 "Shpfy Create Product Test"
+codeunit 139601 "Shpfy Create Product Test"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
 
     var
@@ -109,11 +110,11 @@ codeunit 135623 "Shpfy Create Product Test"
     procedure UnitTestCreateTempProductFromItemWithItemAttributes()
     var
         Item: Record Item;
+        ShpfyShop: Record "Shpfy Shop";
         TempShpfyProduct: Record "Shpfy Product" temporary;
         TempShpfyVariant: Record "Shpfy Variant" temporary;
         ShpfyCreateProduct: Codeunit "Shpfy Create Product";
         ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
-        ShpfyShop: Record "Shpfy Shop";
         ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU empty.
@@ -340,11 +341,11 @@ codeunit 135623 "Shpfy Create Product Test"
     var
         Item: Record Item;
         ItemVariant: Record "Item Variant";
+        ShpfyShop: Record "Shpfy Shop";
         TempShpfyProduct: Record "Shpfy Product" temporary;
         TempShpfyVariant: Record "Shpfy Variant" temporary;
         ShpfyCreateProduct: Codeunit "Shpfy Create Product";
         ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
-        ShpfyShop: Record "Shpfy Shop";
         ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU empty.
@@ -2803,4 +2804,3 @@ codeunit 135623 "Shpfy Create Product Test"
             until TempShpfyVariant.Next() = 0;
     end;
 }
-

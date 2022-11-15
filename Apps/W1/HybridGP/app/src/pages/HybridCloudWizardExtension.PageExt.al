@@ -11,6 +11,7 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
                 Visible = false;
                 ObsoleteState = Pending;
                 ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                ObsoleteTag = '22.0';
 
                 group("GPMigrationSettings.1.0")
                 {
@@ -18,6 +19,7 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
                     Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
 
                     part(pageGPMigrationSettings; "GP Migration Settings List")
                     {
@@ -32,6 +34,7 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
                     Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Replaced by page GP Migration Configuration';
+                    ObsoleteTag = '22.0';
 
                     group("GPMigrationSettings.2.1")
                     {

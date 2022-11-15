@@ -18,9 +18,11 @@ table 1180 "Data Privacy Entities"
             Caption = 'Table No.';
             DataClassification = SystemMetadata;
         }
+#pragma warning disable AL0685
         field(2; "Table Caption"; Text[80])
+#pragma warning restore AL0685
         {
-            CalcFormula = Lookup (AllObjWithCaption."Object Caption" WHERE("Object Type" = CONST(Table),
+            CalcFormula = Lookup(AllObjWithCaption."Object Caption" WHERE("Object Type" = CONST(Table),
                                                                            "Object ID" = FIELD("Table No.")));
             Caption = 'Table Caption';
             FieldClass = FlowField;

@@ -1,6 +1,3 @@
-#if not CLEAN18
-#pragma warning disable AL0432
-#endif
 pageextension 31215 "Reconciliation CZL" extends Reconciliation
 {
     layout
@@ -9,12 +6,6 @@ pageextension 31215 "Reconciliation CZL" extends Reconciliation
         {
             Visible = false;
         }
-#if not CLEAN18
-        modify(Type)
-        {
-            Visible = false;
-        }
-#endif        
         addafter("No.")
         {
             field("Account Type CZL"; Rec."Account Type CZL")
@@ -26,6 +17,19 @@ pageextension 31215 "Reconciliation CZL" extends Reconciliation
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the account no. that is being reconciled.';
+            }
+        }
+        addlast(Control6)
+        {
+            field("Net Change in Jnl. Curr. CZL"; Rec."Net Change in Jnl. Curr. CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the Net Change in Journal (in Currency).';
+            }
+            field("Balance after Posting Curr.CZL"; Rec."Balance after Posting Curr.CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the Balance after Posting (in Currency).';
             }
         }
     }

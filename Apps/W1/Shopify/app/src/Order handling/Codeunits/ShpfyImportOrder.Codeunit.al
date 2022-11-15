@@ -571,6 +571,7 @@ codeunit 30161 "Shpfy Import Order"
                 JHelper.GetValueIntoField(JAddress, 'province', RecRef, OrderHeader.FieldNo("Sell-to County"));
             end;
         end;
+        RecRef.SetTable(OrderHeader);
         if JHelper.GetJsonArray(JOrder, JArray, 'line_items') then
             AddLineItems(OrderHeader."Shopify Order Id", JArray);
     end;

@@ -50,7 +50,9 @@ page 20039 "APIV1 - Attachments"
                         GraphMgtAttachmentBuffer.RegisterFieldSet(FIELDNO("Byte Size"), TempFieldBuffer);
                     end;
                 }
-                field(content; Content)
+#pragma warning disable AL0273
+                field(content; Rec.Content)
+#pragma warning restore
                 {
                     Caption = 'content', Locked = true;
 
@@ -110,7 +112,6 @@ page 20039 "APIV1 - Attachments"
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
-        TypeHelper: Codeunit "Type Helper";
         FileManagement: Codeunit "File Management";
         DocumentIdFilter: Text;
         FilterView: Text;
@@ -119,7 +120,7 @@ page 20039 "APIV1 - Attachments"
             FilterView := GETVIEW();
             DocumentIdFilter := GETFILTER("Document Id");
             IF DocumentIdFilter <> '' THEN
-                VALIDATE("Document Id", TypeHelper.GetGuidAsString(DocumentIdFilter));
+                VALIDATE("Document Id", DocumentIdFilter);
             SETVIEW(FilterView);
         END;
         IF ISNULLGUID("Document Id") THEN

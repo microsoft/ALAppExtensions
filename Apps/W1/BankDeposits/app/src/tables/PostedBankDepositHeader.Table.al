@@ -92,18 +92,20 @@ table 1691 "Posted Bank Deposit Header"
         }
         field(21; Comment; Boolean)
         {
-            CalcFormula = Exist ("Bank Acc. Comment Line" WHERE("Table Name" = CONST("Posted Bank Deposit Header"),
+            CalcFormula = Exist("Bank Acc. Comment Line" WHERE("Table Name" = CONST("Posted Bank Deposit Header"),
                                                            "Bank Account No." = FIELD("Bank Account No."),
                                                            "No." = FIELD("No.")));
             Caption = 'Comment';
             Editable = false;
             FieldClass = FlowField;
         }
+#pragma warning disable AA0232
         field(22; "Total Deposit Lines"; Decimal)
+#pragma warning restore
         {
             AutoFormatExpression = "Currency Code";
             AutoFormatType = 1;
-            CalcFormula = Sum ("Posted Bank Deposit Line".Amount WHERE("Bank Deposit No." = FIELD("No.")));
+            CalcFormula = Sum("Posted Bank Deposit Line".Amount WHERE("Bank Deposit No." = FIELD("No.")));
             Caption = 'Total Deposit Lines';
             Editable = false;
             FieldClass = FlowField;
@@ -157,7 +159,9 @@ table 1691 "Posted Bank Deposit Header"
         UnableToFindGLRegisterErr: Label 'Cannot find a G/L Register for the selected posted bank deposit.';
         UnableToFindGLRegisterTelemetryErr: Label 'Cannot find a G/L Register for the selected posted bank deposit %1.', Locked = true;
 
+#if not CLEAN21
     [Scope('OnPrem')]
+    [Obsolete('Finding related entries is done through the `Navigate` page.', '21.0')]
     procedure FindEntries()
     var
         TempBankAccountLedgerEntry: Record "Bank Account Ledger Entry" temporary;
@@ -178,6 +182,7 @@ table 1691 "Posted Bank Deposit Header"
 
         Page.Run(Page::"Bank Account Ledger Entries", TempBankAccountLedgerEntry);
     end;
+#endif
 
     // no commits during the method execution. if one line fails to reverse, reversal of lines before it must not be committed
     [CommitBehavior(CommitBehavior::Ignore)]

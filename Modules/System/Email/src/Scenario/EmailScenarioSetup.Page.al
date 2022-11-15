@@ -72,7 +72,7 @@ page 8893 "Email Scenario Setup"
 
                     trigger OnAction()
                     begin
-                        SelectedRecord := Rec;
+                        SelectedEmailAccountScenario := Rec;
                         EmailScenarioImpl.AddScenarios(Rec);
 
                         EmailScenarioImpl.GetScenariosByEmailAccount(Rec);
@@ -100,7 +100,7 @@ page 8893 "Email Scenario Setup"
                     trigger OnAction()
                     begin
                         CurrPage.SetSelectionFilter(Rec);
-                        SelectedRecord := Rec;
+                        SelectedEmailAccountScenario := Rec;
 
                         EmailScenarioImpl.ChangeAccount(Rec);
                         EmailScenarioImpl.GetScenariosByEmailAccount(Rec); // refresh the data on the page
@@ -125,7 +125,7 @@ page 8893 "Email Scenario Setup"
                     trigger OnAction()
                     begin
                         CurrPage.SetSelectionFilter(Rec);
-                        SelectedRecord := Rec;
+                        SelectedEmailAccountScenario := Rec;
 
                         EmailScenarioImpl.DeleteScenario(Rec);
                         EmailScenarioImpl.GetScenariosByEmailAccount(Rec); // refresh the data on the page
@@ -177,12 +177,12 @@ page 8893 "Email Scenario Setup"
 
     local procedure SetSelectedRecord()
     begin
-        if not Rec.Get(SelectedRecord.Scenario, SelectedRecord."Account Id", SelectedRecord.Connector) then
+        if not Rec.Get(SelectedEmailAccountScenario.Scenario, SelectedEmailAccountScenario."Account Id", SelectedEmailAccountScenario.Connector) then
             Rec.FindFirst();
     end;
 
     var
-        SelectedRecord: Record "Email Account Scenario";
+        SelectedEmailAccountScenario: Record "Email Account Scenario";
         EmailScenarioImpl: Codeunit "Email Scenario Impl.";
         EmailAccountImpl: Codeunit "Email Account Impl.";
         EmailAccountId: Guid;

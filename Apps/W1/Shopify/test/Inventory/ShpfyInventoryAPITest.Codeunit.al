@@ -1,10 +1,10 @@
 /// <summary>
-/// Codeunit Shpfy Inventory API Test (ID 135615).
+/// Codeunit Shpfy Inventory API Test (ID 139586).
 /// </summary>
-codeunit 135615 "Shpfy Inventory API Test"
+codeunit 139586 "Shpfy Inventory API Test"
 {
     Subtype = Test;
-    TestPermissions = NonRestrictive;
+    TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
     SingleInstance = true;
 
@@ -32,9 +32,9 @@ codeunit 135615 "Shpfy Inventory API Test"
         ShpfyShopInventory := RandomShopInventoryRecord();
 
         // [WHEN] GetStock is invoked of codeunit "Shpfy Inventory API"
-        if BindSubscription(This) then;
+        BindSubscription(This);
         StockResult := ShpfyInventoryAPI.GetStock(ShpfyShopInventory);
-        if UnbindSubscription(This) then;
+        UnbindSubscription(This);
 
         // [THEN] StockResult = Stock
         LibraryAssert.AreEqual(Stock, StockResult, 'ShpfyInventoryAPI.GetStock(ShopInventory)');
@@ -54,19 +54,19 @@ codeunit 135615 "Shpfy Inventory API Test"
         ShpfyProduct: Record "Shpfy Product";
         ShpfyShop: Record "Shpfy Shop";
         ShpfyVariant: Record "Shpfy Variant";
-        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
     begin
-        Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         Stock := Any.DecimalInRange(1000, 2);
 
         Item.Init();
         Item."No." := Any.AlphabeticText(MaxStrLen(Item."No."));
         Item.Insert();
 
-        ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
+        ShpfyShop.Init();
+        ShpfyShop.Code := Any.AlphabeticText(MaxStrLen(ShpfyShop.Code));
+        ShpfyShopLocation."Shop Code" := ShpfyShop.Code;
+        ShpfyShop.Insert();
 
         ShpfyShopLocation.Init();
-        ShpfyShopLocation."Shop Code" := ShpfyShop.Code;
         ShpfyShopLocation.Id := Any.IntegerInRange(10000, 999999);
         ShpfyShopLocation.Disabled := false;
         ShpfyShopLocation.Insert();
@@ -91,6 +91,5 @@ codeunit 135615 "Shpfy Inventory API Test"
         ShopInventory."Product Id" := ShpfyProduct.Id;
         ShopInventory."Variant Id" := ShpfyVariant.Id;
         ShopInventory.Insert();
-        Commit();
     end;
 }

@@ -1,7 +1,7 @@
 /// <summary>
 /// Table Shpfy Test Fields (ID 135600).
 /// </summary>
-table 135600 "Shpfy Test Fields"
+table 139560 "Shpfy Test Fields"
 {
     Caption = 'Shpfy Test Fields';
     DataClassification = SystemMetadata;

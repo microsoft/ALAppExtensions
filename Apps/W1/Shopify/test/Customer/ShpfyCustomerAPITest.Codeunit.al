@@ -1,9 +1,10 @@
 /// <summary>
-/// Codeunit Shpfy Customer API Test (ID 135605).
+/// Codeunit Shpfy Customer API Test (ID 139589).
 /// </summary>
-codeunit 135605 "Shpfy Customer API Test"
+codeunit 139589 "Shpfy Customer API Test"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     var
         LibraryAssert: Codeunit "Library Assert";

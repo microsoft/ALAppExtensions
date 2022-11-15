@@ -347,9 +347,12 @@ page 4003 "Intelligent Cloud Management"
 
                 trigger OnAction()
                 var
+                    ReplicationRunCompletedArg: Record "Replication Run Completed Arg";
                     HybridCloudManagement: codeunit "Hybrid Cloud Management";
                 begin
                     HybridCloudManagement.RepairCompanionTableRecordConsistency();
+                    Commit();
+                    ReplicationRunCompletedArg.DeleteAll();
                 end;
             }
 
@@ -397,6 +400,7 @@ page 4003 "Intelligent Cloud Management"
         if not IsSuper then
             SendUserIsNotSuperNotification();
 
+        SendRepairDataNotification();
         IsOnPrem := NOT EnvironmentInformation.IsSaaS();
 
         if (not PermissionManager.IsIntelligentCloud()) and (not IsOnPrem) then
@@ -440,6 +444,31 @@ page 4003 "Intelligent Cloud Management"
         IsSetupComplete := PermissionManager.IsIntelligentCloud() OR (IsOnPrem AND NOT IntelligentCloudStatus.IsEmpty());
         IsMigratedCompany := HybridCompany.Get(CompanyName()) and HybridCompany.Replicate;
         AdlSetupEnabled := HybridCloudManagement.CanSetupAdlMigration();
+    end;
+
+    procedure SendRepairDataNotification()
+    var
+        ReplicationRunCompletedArg: Record "Replication Run Completed Arg";
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
+        RepairDataNotification: Notification;
+    begin
+        RepairDataNotification.Id := '7c075e6a-3ba0-48d4-9c93-8cd47ee740a5';
+        RepairDataNotification.Recall();
+
+        HybridReplicationSummary.SetCurrentKey("Start Time");
+        HybridReplicationSummary.Ascending := false;
+        if not HybridReplicationSummary.FindLast() then
+            exit;
+
+        if HybridReplicationSummary.Status = HybridReplicationSummary.Status::RepairDataPending then
+            exit;
+
+        if ReplicationRunCompletedArg.IsEmpty() then
+            exit;
+
+        RepairDataNotification.Message := DataRepairNotCompletedMsg;
+        RepairDataNotification.Scope := NotificationScope::LocalScope;
+        RepairDataNotification.Send();
     end;
 
     procedure SendUserIsNotSuperNotification();
@@ -563,4 +592,5 @@ page 4003 "Intelligent Cloud Management"
         IntelligentCloudIsDisabledMsg: Label 'Cloud migration has been disabled. To start the migration again, you must complete the wizard.';
         IntelligentCloudNotSetupMsg: Label 'Cloud migration was not set up. To migrate data to the cloud, complete the wizard.';
         RunReplicationConfirmQst: Label 'Are you sure you want to trigger migration?';
+        DataRepairNotCompletedMsg: Label 'Data repair has not completed. Before you complete the cloud migration or trigger an upgrade, invoke the ''Repair Companion Table Records'' action';
 }

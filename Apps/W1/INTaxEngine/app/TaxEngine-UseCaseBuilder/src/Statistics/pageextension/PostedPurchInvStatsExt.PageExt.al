@@ -15,7 +15,17 @@ pageextension 20284 "Posted Purch. Inv. Stats Ext" extends "Purchase Invoice Sta
         }
     }
 
+    trigger OnAfterGetRecord()
+    begin
+        FormatLine();
+    end;
+
     trigger OnAfterGetCurrRecord()
+    begin
+        FormatLine();
+    end;
+
+    local procedure UpdateComponentRecords()
     var
         PurchInvLine: Record "Purch. Inv. Line";
         DocumentNo: Code[20];
@@ -24,6 +34,7 @@ pageextension 20284 "Posted Purch. Inv. Stats Ext" extends "Purchase Invoice Sta
 
         if DocumentNo <> "No." then begin
             Clear(RecordIDList);
+            PurchInvLine.LoadFields("Document No.");
             PurchInvLine.SetRange("Document No.", "No.");
             if PurchInvLine.FindSet() then
                 repeat
@@ -33,8 +44,16 @@ pageextension 20284 "Posted Purch. Inv. Stats Ext" extends "Purchase Invoice Sta
 
         DocumentNo := "No.";
         CurrPage."Tax Compoent Summary".Page.UpdateTaxComponent(RecordIDList);
+        RecordsCalculated := true;
     end;
 
-    var
+    local procedure FormatLine()
+    begin
+        if not RecordsCalculated then
+            UpdateComponentRecords();
+    end;
 
+
+    var
+        RecordsCalculated: Boolean;
 }

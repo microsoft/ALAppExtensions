@@ -1,10 +1,11 @@
 /// <summary>
-/// Codeunit Shpfy Create Customer Test (ID 135604).
+/// Codeunit Shpfy Create Customer Test (ID 139565).
 /// </summary>
-codeunit 135604 "Shpfy Create Customer Test"
+codeunit 139565 "Shpfy Create Customer Test"
 {
     Subtype = Test;
     EventSubscriberInstance = Manual;
+    TestPermissions = Disabled;
 
     var
         LibraryAssert: Codeunit "Library Assert";

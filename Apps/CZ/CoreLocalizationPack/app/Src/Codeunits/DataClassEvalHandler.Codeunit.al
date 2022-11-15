@@ -25,6 +25,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         FinanceChargeMemoHeader: Record "Finance Charge Memo Header";
         GeneralLedgerSetup: Record "General Ledger Setup";
         GeneralPostingSetup: Record "General Posting Setup";
+        GenJournalBatch: Record "Gen. Journal Batch";
         GenJournalLine: Record "Gen. Journal Line";
         GenJournalTemplate: Record "Gen. Journal Template";
         GLAccount: Record "G/L Account";
@@ -37,6 +38,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
 #pragma warning disable AL0432
         InvoicePostBuffer: Record "Invoice Post. Buffer";
 #pragma warning restore AL0432
+        InvoicePostingBuffer: Record "Invoice Posting Buffer";
         IntrastatJnlBatch: Record "Intrastat Jnl. Batch";
         IntrastatJnlLine: Record "Intrastat Jnl. Line";
         InventoryReportEntry: Record "Inventory Report Entry";
@@ -129,6 +131,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Result Hist. CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Result Line CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Acc. Schedule Result Value CZL");
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"Adj. Exchange Rate Buffer CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Certificate Code CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Commodity CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Commodity Setup CZL");
@@ -252,6 +255,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Shared Account Schedule CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Acc. Schedule Results Nos. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"General Posting Setup", GeneralPostingSetup.FieldNo("Invt. Rounding Adj. Acc. CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Gen. Journal Batch", GenJournalBatch.FieldNo("Allow Hybrid Document CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Gen. Journal Line", GenJournalLine.FieldNo("VAT Delay CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Gen. Journal Line", GenJournalLine.FieldNo("VAT Currency Factor CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Gen. Journal Line", GenJournalLine.FieldNo("VAT Currency Code CZL"));
@@ -271,6 +275,9 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
 #pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Account Type CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Account No. CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Net Change in Jnl. Curr. CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Balance after Posting Curr.CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Currency Code CZL"));
 #pragma warning restore AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("VAT Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Posting Setup", InventoryPostingSetup.FieldNo("Consumption Account CZL"));
@@ -288,6 +295,11 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Invoice Post. Buffer", InvoicePostBuffer.FieldNo("Correction CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Invoice Post. Buffer", InvoicePostBuffer.FieldNo("Original Doc. VAT Date CZL"));
 #pragma warning restore AL0432        
+        DataClassificationMgt.SetFieldToNormal(Database::"Invoice Posting Buffer", InvoicePostingBuffer.FieldNo("Ext. Amount CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Invoice Posting Buffer", InvoicePostingBuffer.FieldNo("Ext. Amount Incl. VAT CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Invoice Posting Buffer", InvoicePostingBuffer.FieldNo("VAT Date CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Invoice Posting Buffer", InvoicePostingBuffer.FieldNo("Correction CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Invoice Posting Buffer", InvoicePostingBuffer.FieldNo("Original Doc. VAT Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Jnl. Batch", IntrastatJnlBatch.FieldNo("Declaration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Jnl. Batch", IntrastatJnlBatch.FieldNo("Statement Type CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Jnl. Line", IntrastatJnlLine.FieldNo("Additional Costs CZL"));

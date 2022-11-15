@@ -1,7 +1,7 @@
 codeunit 31435 "Incoming Document Handler CZZ"
 {
     var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
+        TwoPlaceholderTok: Label '%1 - %2', Locked = true;
 
     [EventSubscriber(ObjectType::Table, Database::"Incoming Document", 'OnAfterSetCreatedDocumentType', '', false, false)]
     local procedure AddAdvancesOnAfterSetCreatedDocumentType(var CreatedDocumentType: Dictionary of [Integer, Integer]; var CreatedDocumentStrMenu: Text)
@@ -10,10 +10,6 @@ codeunit 31435 "Incoming Document Handler CZZ"
         PurchAdvanceTxt: Label 'Purchase Advance';
         SalesAdvanceTxt: Label 'Sales Advance';
     begin
-#if not CLEAN19
-        if not AdvancePaymentsMgtCZZ.IsEnabled() then
-            exit;
-#endif
         NumberOfTypes := CreatedDocumentType.Count();
         CreatedDocumentType.Add(NumberOfTypes + 1, "Incoming Related Document Type"::"Purchase Advance CZZ".AsInteger());
         CreatedDocumentStrMenu += ',' + PurchAdvanceTxt;
@@ -40,11 +36,6 @@ codeunit 31435 "Incoming Document Handler CZZ"
         AlreadyUsedInPurchaseAdvanceErr: Label 'The incoming document has already been assigned to purchase advance %1.', Comment = '%1 = Document Number';
         AlreadyUsedInSalesAdvanceErr: Label 'The incoming document has already been assigned to sales advance %1.', Comment = '%1 = Document Number';
     begin
-#if not CLEAN19
-        if not AdvancePaymentsMgtCZZ.IsEnabled() then
-            exit;
-#endif
-
         case IncomingRelatedDocumentType of
             IncomingRelatedDocumentType::"Purchase Advance CZZ":
                 begin
@@ -167,5 +158,46 @@ codeunit 31435 "Incoming Document Handler CZZ"
                     RecordFound := true;
                 end;
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Incoming Document", 'OnAfterGetRelatedRecordCaption', '', false, false)]
+    local procedure GetRelatedRecordCaption(var RelatedRecordRef: RecordRef; var RecCaption: Text)
+    var
+        SalesAdvanceTxt: Label 'Sales Advance';
+        PurchAdvanceTxt: Label 'Purchase Advance';
+    begin
+        if RelatedRecordRef.IsEmpty() then
+            exit;
+
+        case RelatedRecordRef.Number of
+            Database::"Sales Adv. Letter Header CZZ":
+                RecCaption := StrSubstNo(TwoPlaceholderTok, SalesAdvanceTxt, GetRecordCaption(RelatedRecordRef));
+            Database::"Purch. Adv. Letter Header CZZ":
+                RecCaption := StrSubstNo(TwoPlaceholderTok, PurchAdvanceTxt, GetRecordCaption(RelatedRecordRef));
+        end;
+    end;
+
+    local procedure GetRecordCaption(var RecordRef: RecordRef): Text
+    var
+        FieldRef: FieldRef;
+        KeyRef: KeyRef;
+        KeyNo: Integer;
+        FieldNo: Integer;
+        RecCaption: Text;
+    begin
+        for KeyNo := 1 to RecordRef.KeyCount do begin
+            KeyRef := RecordRef.KeyIndex(KeyNo);
+            if KeyRef.Active then begin
+                for FieldNo := 1 to KeyRef.FieldCount do begin
+                    FieldRef := KeyRef.FieldIndex(FieldNo);
+                    if RecCaption <> '' then
+                        RecCaption := StrSubstNo(TwoPlaceholderTok, RecCaption, FieldRef.Value)
+                    else
+                        RecCaption := Format(FieldRef.Value);
+                end;
+                break;
+            end
+        end;
+        exit(RecCaption);
     end;
 }

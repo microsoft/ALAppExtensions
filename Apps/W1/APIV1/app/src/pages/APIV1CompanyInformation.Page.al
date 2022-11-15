@@ -31,7 +31,9 @@ page 20011 "APIV1 - Company Information"
                 field(address; PostalAddressJSON)
                 {
                     Caption = 'address', Locked = true;
+#pragma warning disable AL0667
                     ODataEDMType = 'POSTALADDRESS';
+#pragma warning restore
                     ToolTip = 'Specifies the company''s primary business address.';
                 }
                 field(phoneNumber; "Phone No.")
@@ -93,10 +95,9 @@ page 20011 "APIV1 - Company Information"
     trigger OnModifyRecord(): Boolean
     var
         CompanyInformation: Record "Company Information";
-        GraphMgtCompanyInfo: Codeunit "Graph Mgt - Company Info.";
     begin
         CompanyInformation.GetBySystemId(SystemId);
-        GraphMgtCompanyInfo.ProcessComplexTypes(Rec, PostalAddressJSON);
+        ProcessComplexTypes(Rec, PostalAddressJSON);
         MODIFY(TRUE);
 
         SetCalculatedFields();
@@ -116,9 +117,8 @@ page 20011 "APIV1 - Company Information"
     var
         AccountingPeriod: Record "Accounting Period";
         GeneralLedgerSetup: Record "General Ledger Setup";
-        GraphMgtCompanyInfo: Codeunit "Graph Mgt - Company Info.";
     begin
-        PostalAddressJSON := GraphMgtCompanyInfo.PostalAddressToJSON(Rec);
+        PostalAddressJSON := PostalAddressToJSON(Rec);
 
         GeneralLedgerSetup.GET();
         LCYCurrencyCode := GeneralLedgerSetup."LCY Code";
@@ -128,10 +128,39 @@ page 20011 "APIV1 - Company Information"
             FiscalYearStart := AccountingPeriod."Starting Date";
     end;
 
+    local procedure PostalAddressToJSON(CompanyInformation: Record "Company Information") JSON: Text
+    var
+        GraphMgtComplexTypes: Codeunit "Graph Mgt - Complex Types";
+    begin
+        with CompanyInformation do
+            GraphMgtComplexTypes.GetPostalAddressJSON(Address, "Address 2", City, County, "Country/Region Code", "Post Code", JSON);
+    end;
+
     local procedure ClearCalculatedFields()
     begin
         CLEAR(SystemId);
         CLEAR(PostalAddressJSON);
+    end;
+
+    local procedure ProcessComplexTypes(var CompanyInformation: Record "Company Information"; LocalPostalAddressJSON: Text)
+    begin
+        UpdatePostalAddress(LocalPostalAddressJSON, CompanyInformation);
+    end;
+
+    local procedure UpdatePostalAddress(LocalPostalAddressJSON: Text; var CompanyInformation: Record "Company Information")
+    var
+        GraphMgtComplexTypes: Codeunit "Graph Mgt - Complex Types";
+        RecordRef: RecordRef;
+    begin
+        if PostalAddressJSON = '' then
+            exit;
+
+        with CompanyInformation do begin
+            RecordRef.GetTable(CompanyInformation);
+            GraphMgtComplexTypes.ApplyPostalAddressFromJSON(LocalPostalAddressJSON, RecordRef,
+              FieldNo(Address), FieldNo("Address 2"), FieldNo(City), FieldNo(County), FieldNo("Country/Region Code"), FieldNo("Post Code"));
+            RecordRef.SetTable(CompanyInformation);
+        end;
     end;
 }
 

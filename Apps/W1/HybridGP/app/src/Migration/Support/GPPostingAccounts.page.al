@@ -13,119 +13,119 @@ page 4026 "GP Posting Accounts"
         {
             group(General)
             {
-                field(SalesAccount; SalesAccount)
+                field(SalesAccount; Rec.SalesAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Sales Account';
                     ToolTip = 'Sales Account';
                 }
-                field(SalesLineDiscAccount; SalesLineDiscAccount)
+                field(SalesLineDiscAccount; Rec.SalesLineDiscAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Sales Line Disc. Account';
                     ToolTip = 'Sales Line Disc. Account';
                 }
-                field(SalesInvDiscAccount; SalesInvDiscAccount)
+                field(SalesInvDiscAccount; Rec.SalesInvDiscAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Sales Inv. Disc. Account';
                     ToolTip = 'Sales Inv. Disc. Account';
                 }
 
-                field(SalesPmtDiscDebitAccount; SalesPmtDiscDebitAccount)
+                field(SalesPmtDiscDebitAccount; Rec.SalesPmtDiscDebitAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Purch. Account';
                     ToolTip = 'Purch. Account';
                 }
-                field(PurchAccount; PurchAccount)
+                field(PurchAccount; Rec.PurchAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Purch. Account';
                     ToolTip = 'Purch. Account';
                 }
-                field(PurchInvDiscAccount; PurchInvDiscAccount)
+                field(PurchInvDiscAccount; Rec.PurchInvDiscAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Purch. Inv. Disc. Account';
                     ToolTip = 'Purch. Inv. Disc. Account';
                 }
-                field(COGSAccount; COGSAccount)
+                field(COGSAccount; Rec.COGSAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'COGS Account';
                     ToolTip = 'COGS Account';
                 }
-                field(InventoryAdjmtAccount; InventoryAdjmtAccount)
+                field(InventoryAdjmtAccount; Rec.InventoryAdjmtAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Inventory Adjmt. Account';
                     ToolTip = 'Inventory Adjmt. Account';
                 }
-                field(SalesCreditMemoAccount; SalesCreditMemoAccount)
+                field(SalesCreditMemoAccount; Rec.SalesCreditMemoAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Sales Credit Memo Account';
                     ToolTip = 'Sales Credit Memo Account';
                 }
-                field(PurchPmtDiscDebitAcc; PurchPmtDiscDebitAcc)
+                field(PurchPmtDiscDebitAcc; Rec.PurchPmtDiscDebitAcc)
                 {
                     ApplicationArea = All;
                     Caption = 'Purchase Payment Discount Debit Account';
                     ToolTip = 'Purchase Payment Discount Debit Account';
                 }
 
-                field(PurchPrepaymentsAccount; PurchPrepaymentsAccount)
+                field(PurchPrepaymentsAccount; Rec.PurchPrepaymentsAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Purchase Prepayments Account';
                     ToolTip = 'Purchase Prepayments Account';
                 }
 
-                field(PurchaseVarianceAccount; PurchaseVarianceAccount)
+                field(PurchaseVarianceAccount; Rec.PurchaseVarianceAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Purchase Variance Account';
                     ToolTip = 'Purchase Variance Account';
                 }
 
-                field(InventoryAccount; InventoryAccount)
+                field(InventoryAccount; Rec.InventoryAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Inventory Account';
                     ToolTip = 'Inventory Account';
                 }
-                field(ReceivablesAccount; ReceivablesAccount)
+                field(ReceivablesAccount; Rec.ReceivablesAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Receivables Account';
                     ToolTip = 'Receivables Account';
                 }
-                field(ServiceChargeAccount; ServiceChargeAccount)
+                field(ServiceChargeAccount; Rec.ServiceChargeAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Service Charge Acc.';
                     ToolTip = 'Service Charge Acc.';
                 }
-                field(PaymentDiscDebitAccount; PaymentDiscDebitAccount)
+                field(PaymentDiscDebitAccount; Rec.PaymentDiscDebitAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Payment Disc. Debit Acc.';
                     ToolTip = 'Payment Disc. Debit Acc.';
                 }
-                field(PayablesAccount; PayablesAccount)
+                field(PayablesAccount; Rec.PayablesAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Payables Account';
                     ToolTip = 'Payables Account';
                 }
-                field(PurchServiceChargeAccount; PurchServiceChargeAccount)
+                field(PurchServiceChargeAccount; Rec.PurchServiceChargeAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Purch. Service Charge Acc.';
                     ToolTip = 'Purch. Service Charge Acc.';
                 }
-                field(PurchPmtDiscDebitAccount; PurchPmtDiscDebitAccount)
+                field(PurchPmtDiscDebitAccount; Rec.PurchPmtDiscDebitAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Purch. Payment Disc. Debit Acc.';

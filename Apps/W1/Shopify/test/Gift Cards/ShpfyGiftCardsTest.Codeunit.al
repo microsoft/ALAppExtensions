@@ -1,6 +1,7 @@
-codeunit 135610 "Shpfy Gift Cards Test"
+codeunit 139570 "Shpfy Gift Cards Test"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     var
         LibraryAssert: Codeunit "Library Assert";

@@ -50,22 +50,14 @@ codeunit 11745 "Service Header Handler CZL"
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyBillToCustomerFields', '', false, false)]
     local procedure UpdateUpdateBankInfoAndRegNosOnAfterCopyBillToCustomerFields(var ServiceHeader: Record "Service Header"; Customer: Record Customer)
-    var
-        CompanyInformation: Record "Company Information";
-        ResponsibilityCenter: Record "Responsibility Center";
     begin
-        if ServiceHeader."Document Type" <> ServiceHeader."Document Type"::"Credit Memo" then begin
-            if ServiceHeader."Responsibility Center" = '' then begin
-                CompanyInformation.Get();
-                ServiceHeader.Validate("Bank Account Code CZL", CompanyInformation."Default Bank Account Code CZL");
-            end else begin
-                ResponsibilityCenter.Get(ServiceHeader."Responsibility Center");
-                ServiceHeader.Validate("Bank Account Code CZL", ResponsibilityCenter."Default Bank Account Code CZL");
-            end;
-        end else
+        if ServiceHeader."Document Type" <> ServiceHeader."Document Type"::"Credit Memo" then
+            ServiceHeader.Validate("Bank Account Code CZL", ServiceHeader.GetDefaulBankAccountNoCZL())
+        else
             ServiceHeader.Validate("Bank Account Code CZL", Customer."Preferred Bank Account Code");
         ServiceHeader."Registration No. CZL" := Customer."Registration No. CZL";
         ServiceHeader."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
+        ServiceHeader."VAT Registration No." := Customer."VAT Registration No.";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeValidateEvent', 'EU 3-Party Trade', false, false)]
@@ -115,6 +107,17 @@ codeunit 11745 "Service Header Handler CZL"
                     ServiceLine."Physical Transfer CZL" := ServiceHeader."Physical Transfer CZL";
                     ServiceLine.Modify(true);
                 end;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterValidateEvent', 'VAT Country/Region Code', false, false)]
+    local procedure UpdateVATRegistrationNoCodeOnAfterVATCountryRegionCodeValidate(var Rec: Record "Service Header")
+    var
+        BillToCustomer: Record Customer;
+    begin
+        if Rec."Bill-to Customer No." <> '' then begin
+            BillToCustomer.Get(Rec."Bill-to Customer No.");
+            Rec."VAT Registration No." := BillToCustomer."VAT Registration No.";
         end;
     end;
 }

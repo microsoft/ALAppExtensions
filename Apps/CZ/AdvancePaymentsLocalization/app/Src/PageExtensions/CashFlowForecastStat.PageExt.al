@@ -6,11 +6,11 @@ pageextension 31198 "Cash Flow Forecast Stat. CZZ" extends "Cash Flow Forecast S
 #pragma warning disable AL0432
         modify(SalesAdvances)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
         modify(PurchaseAdvances)
         {
-            Visible = not AdvancePaymentsEnabledCZZ;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -21,9 +21,6 @@ pageextension 31198 "Cash Flow Forecast Stat. CZZ" extends "Cash Flow Forecast S
                 ApplicationArea = Basic, Suite;
                 Caption = 'Sales Advances';
                 ToolTip = 'Specifies an amount of sales advances';
-#if not CLEAN19
-                Visible = AdvancePaymentsEnabledCZZ;
-#endif
 
                 trigger OnDrillDown()
                 begin
@@ -35,9 +32,6 @@ pageextension 31198 "Cash Flow Forecast Stat. CZZ" extends "Cash Flow Forecast S
                 ApplicationArea = Basic, Suite;
                 Caption = 'Purchase Advances';
                 ToolTip = 'Specifies an amount of purchase advances';
-#if not CLEAN19
-                Visible = AdvancePaymentsEnabledCZZ;
-#endif
 
                 trigger OnDrillDown()
                 begin
@@ -46,14 +40,4 @@ pageextension 31198 "Cash Flow Forecast Stat. CZZ" extends "Cash Flow Forecast S
             }
         }
     }
-#if not CLEAN19
-    var
-        AdvancePaymentsMgtCZZ: Codeunit "Advance Payments Mgt. CZZ";
-        AdvancePaymentsEnabledCZZ: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        AdvancePaymentsEnabledCZZ := AdvancePaymentsMgtCZZ.IsEnabled();
-    end;
-#endif
 }

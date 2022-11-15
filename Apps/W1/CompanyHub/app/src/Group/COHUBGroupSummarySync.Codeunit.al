@@ -7,8 +7,13 @@ codeunit 1162 "COHUB Group Summary Sync"
         COHUBGroup: Record "COHUB Group";
         COHUBCompanyKPI: Record "COHUB Company KPI";
         COHUBGroupCompanySummary: Record "COHUB Group Company Summary";
+        COHUBCore: Codeunit "COHUB Core";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         SortOrder: Integer;
     begin
+        FeatureTelemetry.LogUptake('0000IFE', COHUBCore.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000IFF', COHUBCore.GetFeatureTelemetryName(), 'Group Sumary Sync');
+
         // Groups should get inserted into temp table with indentation 0.
         // Group Line rows should get inserted into temp table with indentation 1.
         COHUBGroupCompanySummary.DeleteAll();

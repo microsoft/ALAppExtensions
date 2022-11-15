@@ -31,25 +31,25 @@ page 8700 "Table Information"
                 field("Company Name"; Rec."Company Name")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The name of the company the table belongs to';
+                    ToolTip = 'Specifies the name of the company the table belongs to.';
                 }
 
                 field("Table Name"; Rec."Table Name")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The name of the table';
+                    ToolTip = 'Specifies the name of the table.';
                 }
 
                 field("Table No."; Rec."Table No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The ID number for the table';
+                    ToolTip = 'Specifies the ID of the table.';
                 }
 
                 field("No. of Records"; Rec."No. of Records")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The number of records in the table';
+                    ToolTip = 'Specifies the total number of records stored in the table.';
 
                     trigger OnDrillDown()
                     var
@@ -62,32 +62,32 @@ page 8700 "Table Information"
                 field("Record Size (Byte)"; Rec."Record Size")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The average size of a record (in bytes)';
+                    ToolTip = 'Specifies the average record size (in bytes).';
                 }
 
                 field("Size (KB)"; Rec."Size (KB)")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'How much space the table occupies in the database (in kilobytes)';
+                    ToolTip = 'Specifies the total amount of space the table occupies in the database (in kilobytes).';
                 }
 
                 field("Data Size (KB)"; Rec."Data Size (KB)")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'How much space the table data occupies in the database (in kilobytes)';
+                    ToolTip = 'Specifies how much space the table data occupies in the database (in kilobytes).';
                 }
 
                 field("Index Size (KB)"; Rec."Index Size (KB)")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'How much space the table indexes occupy in the database (in kilobytes)';
+                    ToolTip = 'Specifies how much space the table indexes (keys) occupy in the database (in kilobytes).';
                 }
 
                 field("Compression"; Rec."Compression")
                 {
                     ApplicationArea = All;
                     OptionCaption = 'None,Row,Page,,';
-                    ToolTip = 'The compression state of the table in the database';
+                    ToolTip = 'Specifies the type of compression that is applied to the table in the database.';
                 }
             }
         }

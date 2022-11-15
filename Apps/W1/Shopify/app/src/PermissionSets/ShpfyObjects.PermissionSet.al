@@ -35,7 +35,12 @@ permissionset 30104 "Shpfy - Objects"
         table "Shpfy Payout" = X,
         table "Shpfy Product" = X,
         table "Shpfy Province" = X,
+#if not CLEAN21
+#pragma warning disable AL0432
         table "Shpfy Registered Store" = X,
+#pragma warning restore AL0432
+#endif
+        table "Shpfy Registered Store New" = X,
         table "Shpfy Shipment Method Mapping" = X,
         table "Shpfy Shop" = X,
         table "Shpfy Shop Collection Map" = X,
@@ -46,6 +51,7 @@ permissionset 30104 "Shpfy - Objects"
         table "Shpfy Tax Area" = X,
         table "Shpfy Transaction Gateway" = X,
         table "Shpfy Variant" = X,
+        codeunit "Company Details Checklist Item" = X,
         codeunit "Shpfy Authentication Mgt." = X,
         codeunit "Shpfy Background Syncs" = X,
         codeunit "Shpfy Base64" = X,
@@ -98,8 +104,10 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy GQL VariantImages" = X,
         codeunit "Shpfy GraphQL Queries" = X,
         codeunit "Shpfy GraphQL Rate Limit" = X,
+        codeunit "Shpfy Guided Experience" = X,
         codeunit "Shpfy Hash" = X,
         codeunit "Shpfy Import Order" = X,
+        codeunit "Shpfy Initial Import" = X,
         codeunit "Shpfy Install Mgt." = X,
         codeunit "Shpfy Inventory API" = X,
         codeunit "Shpfy Inventory Events" = X,
@@ -148,6 +156,7 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy Variant API" = X,
         page "Shpfy Activities" = X,
         page "Shpfy Authentication" = X,
+        page "Shpfy Connector Guide" = X,
         page "Shpfy Credit Card Companies" = X,
         page "Shpfy Customer Adresses" = X,
         page "Shpfy Customer Card" = X,
@@ -157,6 +166,7 @@ permissionset 30104 "Shpfy - Objects"
         page "Shpfy Gift Cards" = X,
         page "Shpfy Gift Card Transactions" = X,
         page "Shpfy Inventory FactBox" = X,
+        page "Shpfy Initial Import" = X,
         page "Shpfy Log Entries" = X,
         page "Shpfy Log Entry Card" = X,
         page "Shpfy Order" = X,

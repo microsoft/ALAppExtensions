@@ -31,30 +31,34 @@ codeunit 4470 "Record Link Impl."
     procedure CopyLinks(FromRecordVariant: Variant; ToRecordVariant: Variant)
     var
         RecordRefTo: RecordRef;
+        SkipReset: Boolean;
     begin
+        SkipReset := false;
+        RecordLinkManagement.OnBeforeCopyLinks(FromRecordVariant, ToRecordVariant, SkipReset);        
         RecordRefTo.GetTable(ToRecordVariant);
         RecordRefTo.CopyLinks(FromRecordVariant);
-        ResetNotifyOnLinks(RecordRefTo);
+        if not SkipReset then
+            ResetNotifyOnLinks(RecordRefTo);
         RecordLinkManagement.OnAfterCopyLinks(FromRecordVariant, ToRecordVariant);
     end;
 
     procedure WriteNote(var RecordLink: Record "Record Link"; Note: Text)
     var
         BinWriter: DotNet BinaryWriter;
-        OStr: OutStream;
+        Output: OutStream;
     begin
-        RecordLink.Note.CreateOutStream(OStr, TEXTENCODING::UTF8);
-        BinWriter := BinWriter.BinaryWriter(OStr);
+        RecordLink.Note.CreateOutStream(Output, TEXTENCODING::UTF8);
+        BinWriter := BinWriter.BinaryWriter(Output);
         BinWriter.Write(Note);
     end;
 
     procedure ReadNote(RecordLink: Record "Record Link") Note: Text
     var
         BinReader: DotNet BinaryReader;
-        IStr: InStream;
+        Data: InStream;
     begin
-        RecordLink.Note.CreateInStream(IStr, TEXTENCODING::UTF8);
-        BinReader := BinReader.BinaryReader(IStr);
+        RecordLink.Note.CreateInStream(Data, TEXTENCODING::UTF8);
+        BinReader := BinReader.BinaryReader(Data);
         // Peek if stream is empty
         if BinReader.BaseStream().Position() = BinReader.BaseStream().Length() then
             exit;
@@ -78,7 +82,7 @@ codeunit 4470 "Record Link Impl."
         RecordLink: Record "Record Link";
         RecordRef: RecordRef;
         PrevRecID: RecordID;
-        Window: Dialog;
+        WindowDialog: Dialog;
         i: Integer;
         Total: Integer;
         TimeLocked: Time;
@@ -86,7 +90,7 @@ codeunit 4470 "Record Link Impl."
         RecordExists: Boolean;
     begin
         if GuiAllowed() then
-            Window.Open(RemovingMsg + RemovingStatusMsg);
+            WindowDialog.Open(RemovingMsg + RemovingStatusMsg);
         TimeLocked := Time();
         RecordLink.SetFilter(Company, '%1|%2', '', CompanyName());
         RecordLink.SetCurrentKey("Record ID");
@@ -98,7 +102,7 @@ codeunit 4470 "Record Link Impl."
             repeat
                 i := i + 1;
                 if GuiAllowed() and ((i mod 1000) = 0) then
-                    Window.Update(1, Round(i / Total * 10000, 1));
+                    WindowDialog.Update(1, Round(i / Total * 10000, 1));
                 if Format(RecordLink."Record ID") <> Format(PrevRecID) then begin  // Direct comparison doesn't work.
                     PrevRecID := RecordLink."Record ID";
                     RecordExists := RecordRef.Get(RecordLink."Record ID");
@@ -117,7 +121,7 @@ codeunit 4470 "Record Link Impl."
                 end;
             until RecordLink.Next() = 0;
         if GuiAllowed() then
-            Window.Close();
+            WindowDialog.Close();
     end;
 }
 

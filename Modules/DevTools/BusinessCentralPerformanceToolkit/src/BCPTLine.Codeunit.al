@@ -155,7 +155,7 @@ codeunit 149005 "BCPT Line"
         AddLogEntry(BCPTLine, ScenarioOperation, ExecutionSuccess, ErrorMessage, NoOfSQL, StartTime, EndTime);
     end;
 
-    internal procedure AddLogEntry(var BCPTLine: Record "BCPT Line"; Operation: Text; ExecutionSuccess: Boolean; Message: Text; NoOfSQLStatements: Integer; StartTime: DateTime; EndTime: Datetime)
+    internal procedure AddLogEntry(var BCPTLine: Record "BCPT Line"; Operation: Text; ExecutionSuccess: Boolean; Message: Text; NumSQLStatements: Integer; StartTime: DateTime; EndTime: Datetime)
     var
         BCPTLogEntry: Record "BCPT Log Entry";
         BCPTRoleWrapperImpl: Codeunit "BCPT Role Wrapper"; // single instance
@@ -172,9 +172,11 @@ codeunit 149005 "BCPT Line"
         BCPTLogEntry."Entry No." := 0;
         if ExecutionSuccess then
             BCPTLogEntry.Status := BCPTLogEntry.Status::Success
-        else
+        else begin
             BCPTLogEntry.Status := BCPTLogEntry.Status::Error;
-        BCPTLogEntry."No. of SQL Statements" := NoOfSQLStatements;
+            BCPTLogEntry."Error Call Stack" := CopyStr(GetLastErrorCallStack, 1, MaxStrLen(BCPTLogEntry."Error Call Stack"));
+        end;
+        BCPTLogEntry."No. of SQL Statements" := NumSQLStatements;
         BCPTLogEntry.Message := copystr(Message, 1, MaxStrLen(BCPTLogEntry.Message));
         BCPTLogEntry."End Time" := EndTime;
         BCPTLogEntry."Start Time" := StartTime;
@@ -207,7 +209,7 @@ codeunit 149005 "BCPT Line"
         Dimensions.Add('NoOfSqlStatements', Format(BCPTLogEntry."No. of SQL Statements"));
         Dimensions.Add('StartTime', Format(BCPTLogEntry."Start Time"));
         Dimensions.Add('EndTime', Format(BCPTLogEntry."End Time"));
-        Dimensions.Add('Duration', Format(BCPTLogEntry."Duration (ms)"));
+        Dimensions.Add('DurationInMs', Format(BCPTLogEntry."Duration (ms)"));
         Dimensions.Add('SessionNo', Format(BCPTLogEntry."Session No."));
         Session.LogMessage(
             '0000DGF',

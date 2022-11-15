@@ -4,6 +4,7 @@ report 31185 "Purchase Order CZL"
     RDLCLayout = './Src/Reports/PurchaseOrder.rdl';
     Caption = 'Purchase Order';
     PreviewMode = PrintLayout;
+    WordMergeDataItem = "Purchase Header";
 
     dataset
     {
@@ -119,6 +120,18 @@ report 31185 "Purchase Order CZL"
             column(VATLbl; VATLbl)
             {
             }
+            column(GreetingLbl; GreetingLbl)
+            {
+            }
+            column(BodyLbl; BodyLbl)
+            {
+            }
+            column(ClosingLbl; ClosingLbl)
+            {
+            }
+            column(DocumentNoLbl; DocumentNoLbl)
+            {
+            }
             column(No_PurchaseHeader; "No.")
             {
             }
@@ -162,6 +175,12 @@ report 31185 "Purchase Order CZL"
             {
             }
             column(ExpectedReceiptDate_PurchaseHeader; "Expected Receipt Date")
+            {
+            }
+            column(OrderDate_PurchaseHeaderCaption; FieldCaption("Order Date"))
+            {
+            }
+            column(OrderDate_PurchaseHeader; FormatDate("Order Date"))
             {
             }
             column(PaymentTerms; PaymentTerms.Description)
@@ -489,6 +508,10 @@ report 31185 "Purchase Order CZL"
         DiscPercentLbl: Label 'Discount %';
         TotalLbl: Label 'total';
         VATLbl: Label 'VAT';
+        GreetingLbl: Label 'Hello';
+        ClosingLbl: Label 'Sincerely';
+        BodyLbl: Label 'The purchase order is attached to this message.';
+        DocumentNoLbl: Label 'No.';
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; ArchiveDocumentFrom: Boolean; LogInteractionFrom: Boolean)
     begin
@@ -514,6 +537,11 @@ report 31185 "Purchase Order CZL"
     begin
         FormatAddress.PurchHeaderBuyFrom(VendAddr, PurchaseHeader);
         FormatAddress.PurchHeaderShipTo(ShipToAddr, PurchaseHeader);
+    end;
+
+    local procedure FormatDate(DateValue: Date): Text
+    begin
+        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

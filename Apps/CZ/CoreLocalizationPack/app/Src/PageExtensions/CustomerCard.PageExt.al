@@ -98,7 +98,7 @@ pageextension 11704 "Customer Card CZL" extends "Customer Card"
             }
         }
     }
-
+#if not CLEAN21
     trigger OnAfterGetCurrRecord()
     begin
         if Vendor.Get(Rec.GetLinkedVendorCZL()) then begin
@@ -116,4 +116,5 @@ pageextension 11704 "Customer Card CZL" extends "Customer Card"
         BalanceAsVendor: Decimal;
         [InDataSet]
         BalanceOfVendorEnabled: Boolean;
+#endif
 }

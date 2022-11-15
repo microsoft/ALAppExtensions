@@ -44,6 +44,8 @@ table 30113 "Shpfy Shop Location"
         field(5; "Location Filter"; Text[250])
         {
             Caption = 'Location Filter';
+            TableRelation = Location.Code;
+            ValidateTableRelation = false;
             DataClassification = CustomerContent;
             Description = 'Filter on location for calculating the stock.';
 
@@ -65,7 +67,12 @@ table 30113 "Shpfy Shop Location"
             Caption = 'Default Location Code';
             DataClassification = CustomerContent;
             Description = 'The default location code for use on a sales document.';
-            TableRelation = Location;
+            TableRelation = Location.Code where("Use as In-Transit" = const(false));
+            trigger OnValidate()
+            begin
+                if Rec."Location Filter" = '' then
+                    Rec."Location Filter" := Rec."Default Location Code";
+            end;
         }
 
         field(7; Disabled; Boolean)

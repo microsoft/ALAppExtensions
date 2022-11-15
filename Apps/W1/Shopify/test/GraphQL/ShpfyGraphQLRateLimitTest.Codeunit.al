@@ -1,7 +1,7 @@
 /// <summary>
 /// Codeunit Shpfy GraphQL Rate Limit Test (ID 135611).
 /// </summary>
-codeunit 135611 "Shpfy GraphQL Rate Limit Test"
+codeunit 139571 "Shpfy GraphQL Rate Limit Test"
 {
     Subtype = Test;
 

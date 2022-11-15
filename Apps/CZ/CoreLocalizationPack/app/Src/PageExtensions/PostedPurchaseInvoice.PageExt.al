@@ -13,7 +13,7 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
             {
                 ApplicationArea = Basic, Suite;
                 Editable = false;
-                ToolTip = 'Specifies a description of the purchase receipt. The posting description also appers on vendor and G/L entries.';
+                ToolTip = 'Specifies a description of the document. The posting description also appers on vendor and G/L entries.';
                 Visible = false;
             }
         }
@@ -87,6 +87,7 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
         {
             group("Foreign Trade")
             {
+                Caption = 'Foreign Trade';
                 field("Language Code CZL"; Rec."Language Code")
                 {
                     ApplicationArea = Basic, Suite;

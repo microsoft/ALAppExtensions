@@ -1,7 +1,7 @@
 /// <summary>
-/// Codeunit Shpfy Initialize Test (ID 135601).
+/// Codeunit Shpfy Initialize Test (ID 139561).
 /// </summary>
-codeunit 135601 "Shpfy Initialize Test"
+codeunit 139561 "Shpfy Initialize Test"
 {
     //EventSubscriberInstance = Manual;
     SingleInstance = true;

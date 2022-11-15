@@ -6,10 +6,10 @@
 codeunit 1868 "C5 Data Loader"
 {
     var
-        NameValueBuffer: Record "Name/Value Buffer" temporary;
+        TempNameValueBuffer: Record "Name/Value Buffer" temporary;
         HelperFunctions: Codeunit "C5 Helper Functions";
 
-
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnFillStagingTables', '', false, false)]
     procedure FillStagingTables()
     var
@@ -27,7 +27,7 @@ codeunit 1868 "C5 Data Loader"
         OnFillStagingTablesStarted();
         C5SchemaParameters.GetSingleInstance();
 
-        if not Codeunit.Run(Codeunit::"C5 Unzip", NameValueBuffer) then
+        if not Codeunit.Run(Codeunit::"C5 Unzip", TempNameValueBuffer) then
             StopPendingMigrationsAndSurfaceErrors();
 
         DataMigrationStatus.SetRange("Migration Type", C5MigrDashboardMgt.GetC5MigrationTypeTxt());
@@ -110,6 +110,7 @@ codeunit 1868 "C5 Data Loader"
         DurationAsInt := CurrentDateTime() - StartTime;
         OnFillStagingTablesFinished(DurationAsInt);
     end;
+#pragma warning restore AA0207
 
     [EventSubscriber(ObjectType::XmlPort, XMLPORT::"C5 LedTrans", 'OnThousandAccountTransactionsRead', '', true, true)]
     local procedure OnThousandRecordsRead()
@@ -711,7 +712,7 @@ codeunit 1868 "C5 Data Loader"
         FileContentStream: InStream;
     begin
         GetFileNameForRecord(RecordVariant, Filename);
-        if not HelperFunction.GetFileContentAsStream(Filename, NameValueBuffer, FileContentStream) then
+        if not HelperFunction.GetFileContentAsStream(Filename, TempNameValueBuffer, FileContentStream) then
             exit(false);
 
         HelperFunctions.ProcessStreamForSubstitutions(TempBlob, FileContentStream, ProcessedStream);

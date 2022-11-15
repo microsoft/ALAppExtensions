@@ -6,7 +6,6 @@ codeunit 31237 "FA History Management CZF"
     var
         FASetup: Record "FA Setup";
         FADepreciationBook: Record "FA Depreciation Book";
-        FixedAsset: Record "Fixed Asset";
         NoSeriesManagement: Codeunit NoSeriesManagement;
 
     procedure CreateFAHistoryEntry(FAHistoryTypeCZF: Enum "FA History Type CZF"; var FixedAsset: Record "Fixed Asset"; var xFixedAsset: Record "Fixed Asset")
@@ -67,6 +66,7 @@ codeunit 31237 "FA History Management CZF"
 
     procedure InsertFAHistoryEntry(FAHistoryTypeCZF: Enum "FA History Type CZF"; FANo: Code[20]; PostingDate: Date; DocumentNo: Code[20])
     var
+        FixedAsset: Record "Fixed Asset";
         OldValue: Code[20];
     begin
         FixedAsset.Get(FANo);
@@ -88,6 +88,7 @@ codeunit 31237 "FA History Management CZF"
 
     procedure UpdateFAHistoryEntry(FAHistoryTypeCZF: Enum "FA History Type CZF"; FANo: Code[20]; PostingDate: Date; DocumentNo: Code[20])
     var
+        FixedAsset: Record "Fixed Asset";
         FAHistoryEntryCZF: Record "FA History Entry CZF";
     begin
         FAHistoryEntryCZF.Reset();

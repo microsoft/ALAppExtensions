@@ -25,7 +25,6 @@ codeunit 30169 "Shpfy Payments"
     /// </summary>
     local procedure ImportPaymentTransactions()
     var
-        Transaction: Record "Shpfy Payment Transaction";
         SinceId: BigInteger;
         JTransactions: JsonArray;
         JItem: JsonToken;
@@ -40,9 +39,8 @@ codeunit 30169 "Shpfy Payments"
         repeat
             JResponse := CommunicationMgt.ExecuteWebRequest(Url, 'GET', JResponse, Url);
             if JHelper.GetJsonArray(JResponse, JTransactions, 'transactions') then
-                foreach JItem in JTransactions do begin
+                foreach JItem in JTransactions do
                     ImportPaymentTransaction(JItem, SinceId);
-                end;
         until Url = '';
 
         if SinceId > 0 then
@@ -149,7 +147,7 @@ codeunit 30169 "Shpfy Payments"
     var
         Transaction: Record "Shpfy Payment Transaction";
     begin
-        Transaction.SetRange("Shop Code", Shop.Code);
+        Transaction.SetRange("Shop Code", ShopCode);
         if Transaction.FindLast() then
             Exit(Transaction."Payout Id");
     end;

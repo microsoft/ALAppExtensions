@@ -2,7 +2,6 @@
 codeunit 31247 "Calc. Normal Depr. Handler CZF"
 {
     var
-        DepreciationBook: Record "Depreciation Book";
         DepreciationCalculation: Codeunit "Depreciation Calculation";
         AcquisitionDate: Date;
 
@@ -39,11 +38,6 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnAfterCalcSL', '', false, false)]
     local procedure OnAfterCalcSL(FADepreciationBook: Record "FA Depreciation Book"; BookValue: Decimal; var ExitValue: Decimal; var IsHandled: Boolean; var RemainingLife: Decimal)
     begin
-#if not CLEAN18
-        if not FADepreciationBook."Keep Depr. Ending Date" then
-            exit; // RemainingLife already calculated in Base Application
-
-#endif
         if not FADepreciationBook."Keep Deprec. Ending Date CZF" then
             RemainingLife += CalcDeprBreakDays(FADepreciationBook, 0D, 0D, true);
         if RemainingLife < 1 then begin
@@ -54,6 +48,7 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
 
     procedure CalcTaxAmount(var FADepreciationBook: Record "FA Depreciation Book"; DeprYears: Decimal; DaysInFiscalYear: Integer; NumberOfDays: Integer; BookValue: Decimal; DateFromProjection: Date; UntilDate: Date): Decimal
     var
+        DepreciationBook: Record "Depreciation Book";
         TaxDepreciationGroupCZF: Record "Tax Depreciation Group CZF";
         CalculatedFADepreciationBook: Record "FA Depreciation Book";
         FALedgerEntry: Record "FA Ledger Entry";
@@ -314,5 +309,46 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
         AccountingPeriod.SetRange("Starting Date", LastAppr, UntilDate);
         AccountingPeriod.SetRange("New Fiscal Year", true);
         exit(AccountingPeriod.Count());
+    end;
+
+    #region Use FA Ledger Check
+    [EventSubscriber(ObjectType::Table, Database::"FA Depreciation Book", 'OnAfterValidateEvent', 'Depreciation Book Code', false, false)]
+    local procedure SetUseFALedgerCheckOnAfterValidateDepreciationBookCode(var Rec: Record "FA Depreciation Book"; var xRec: Record "FA Depreciation Book")
+    var
+        DepreciationBook: Record "Depreciation Book";
+    begin
+        if (Rec."Depreciation Book Code" <> xRec."Depreciation Book Code") and (Rec."Depreciation Book Code" <> '') then begin
+            DepreciationBook.Get(Rec."Depreciation Book Code");
+            Rec."Use FA Ledger Check" := DepreciationBook."Use FA Ledger Check";
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnAfterGetDeprBooks', '', false, false)]
+    local procedure SetUseFALedgerCheckOnAfterGetDepreciationBooksCalculateNormalDepreciation(var DepreciationBook: Record "Depreciation Book"; var FADepreciationBook: Record "FA Depreciation Book")
+    begin
+        DepreciationBook."Use FA Ledger Check" := FADepreciationBook."Use FA Ledger Check";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Custom 1 Depr.", 'OnAfterGetDeprBooks', '', false, false)]
+    local procedure SetUseFALedgerCheckOnAfterGetDepreciationBooksCalculateCustom1Depreciation(var DepreciationBook: Record "Depreciation Book"; var FADepreciationBook: Record "FA Depreciation Book")
+    begin
+        DepreciationBook."Use FA Ledger Check" := FADepreciationBook."Use FA Ledger Check";
+    end;
+    #endregion Use FA Ledger Check
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Depreciation Calculation", 'OnBeforeCalcRounding', '', false, false)]
+    local procedure RoundUpOnBeforeCalcRounding(DeprBook: Record "Depreciation Book"; var DeprAmount: Decimal; var IsHandled: Boolean)
+    begin
+        if DeprBook."Use Rounding in Periodic Depr." then begin
+            DeprAmount := Round(DeprAmount, 1, '>');
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Depreciation Calculation", 'OnAfterGetFAPostingTypeSetup', '', false, false)]
+    local procedure CheckOnAfterGetFAPostingTypeSetup(var FAPostingTypeSetup: Record "FA Posting Type Setup"; Type: Option IncludeInDeprCalc,IncludeInGainLoss,DepreciationType,ReverseType)
+    begin
+        if Type = Type::IncludeInGainLoss then
+            FAPostingTypeSetup.TestField("Include in Gain/Loss Calc.", true);
     end;
 }

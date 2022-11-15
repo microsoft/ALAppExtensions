@@ -1,6 +1,7 @@
-codeunit 135628 "Shpfy Orders API Test"
+codeunit 139564 "Shpfy Orders API Test"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     var
         LibraryAssert: Codeunit "Library Assert";
@@ -80,7 +81,7 @@ codeunit 135628 "Shpfy Orders API Test"
     end;
 
     [Test]
-    procedure UnitTestDoMappingsonaShopifyOrder()
+    procedure UnitTestDoMappingsOnAShopifyOrder()
     var
         ShpfyShop: Record "Shpfy Shop";
         ShpfyOrderHeader: Record "Shpfy Order Header";

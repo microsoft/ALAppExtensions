@@ -1,7 +1,7 @@
 /// <summary>
-/// Codeunit Shpfy Location Subcriber (ID 135616).
+/// Codeunit Shpfy Location Subcriber (ID 139587).
 /// </summary>
-codeunit 135616 "Shpfy Location Subcriber"
+codeunit 139587 "Shpfy Location Subcriber"
 {
     SingleInstance = true;
     EventSubscriberInstance = Manual;
@@ -22,7 +22,6 @@ codeunit 135616 "Shpfy Location Subcriber"
     begin
         MakeReponse(CommunicationMgt.GetShopRecord(), CommunicationMgt.GetVersion(), HttpRequestMsg, HttpResponseMsg);
     end;
-
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnGetContent', '', true, false)]
     local procedure OnGetContent(HttpResponseMsg: HttpResponseMessage; var Response: Text)

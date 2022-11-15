@@ -6,6 +6,7 @@
 table 137121 "Translation Test Table"
 {
     LookupPageID = "Translation Test Page";
+    ReplicateData = false;
 
     fields
     {

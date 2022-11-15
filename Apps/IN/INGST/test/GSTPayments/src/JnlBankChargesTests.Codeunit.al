@@ -29,6 +29,36 @@ codeunit 18273 "Jnl Bank Charges Tests"
 
     [Test]
     [HandlerFunctions('TaxRatesPage')]
+    procedure CheckMultipleBankChargesNotAllowedAgainstBankChagreJournalLine()
+    var
+        BankAccount: Record "Bank Account";
+        GenJournalLine: Record "Gen. Journal Line";
+        Assert: Codeunit Assert;
+        VoucherType: Enum "Gen. Journal Template Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        DeferralCode: Code[10];
+        GLAccount: Code[20];
+    begin
+        // [SCENARIO] [445349] [Check that the system is not allowing to insert more than one line of Bank charges against Bank Charge journal line]
+        Initialize();
+        // [GIVEN] Created GST Setup and Bank Charges Setup
+        CreateGSTSetup(GSTVendorType::Registered, true, true);
+        CreateBankChargeSetup(BankAccount, VoucherType::"Bank Payment Voucher", false, true);
+        GLAccount := CreateGLAccountWithStraightLineDeferral(DeferralCode);
+
+        // [WHEN] Create Bank Payment Voucher with Multiple Bank Charges
+        CreateGenJournalLineForGLToBank(GenJournalLine, GLAccount, DeferralCode, BankAccount."No.");
+        UpdateBankCharges(GenJournalLine);
+        CreateBankChargeForJournalBankChargeLine(GenJournalLine, true);
+        asserterror CreateBankChargeForJournalBankChargeLine(GenJournalLine, false);
+
+        // [THEN] Verify error message for Bank Charges.
+        Assert.ExpectedError(GSTBankChargeBoolErr);
+    end;
+
+
+    [Test]
+    [HandlerFunctions('TaxRatesPage')]
     procedure PostFromBankPaymentVoucherWithInterstateBankChargesAvailment()
     var
         BankAccount: Record "Bank Account";
@@ -566,6 +596,22 @@ codeunit 18273 "Jnl Bank Charges Tests"
         exit(GenJournalLine."Document No.");
     end;
 
+    local procedure CreateBankChargeForJournalBankChargeLine(var GenJournalLine: Record "Gen. Journal Line"; FirstLine: Boolean)
+    var
+        JournalBankCharges: Record "Journal Bank Charges";
+    begin
+        JournalBankCharges.Init();
+        JournalBankCharges.Validate("Journal Template Name", GenJournalLine."Journal Template Name");
+        JournalBankCharges.Validate("Journal Batch Name", GenJournalLine."Journal Batch Name");
+        JournalBankCharges.Validate("Line No.", GenJournalLine."Line No.");
+        if FirstLine then
+            JournalBankCharges.Validate("Bank Charge", LibraryStorage.Get(BankChargeLbl))
+        else
+            JournalBankCharges.Validate("Bank Charge", LibraryStorage.Get(SecondBankChargeLbl));
+        JournalBankCharges.Validate("External Document No.", GenJournalLine."Document No.");
+        JournalBankCharges.Insert(true);
+    end;
+
     local procedure CreateGenJournalLineForVendorToBank(var GenJournalLine: Record "Gen. Journal Line"; BankAccNo: code[20])
     begin
         LibraryJournals.CreateGenJournalLine(GenJournalLine,
@@ -659,6 +705,7 @@ codeunit 18273 "Jnl Bank Charges Tests"
         CreateVoucherAccountSetup(VoucherType, CopyStr(LibraryStorage.Get(LocationCodeLbl), 1, 10));
         CreateGenJnlTemplateAndBatch(GenJournalTemplate, GenJournalBatch, CopyStr(LibraryStorage.Get(LocationCodeLbl), 1, 10), VoucherType);
         CreateBankCharge(ForeignExchange);
+        CreateSecondBankCharge(ForeignExchange);
     end;
 
     local procedure CreateBankCharge(ForeignExchange: Boolean)
@@ -682,6 +729,31 @@ codeunit 18273 "Jnl Bank Charges Tests"
             BankCharge.Validate("GST Credit", BankCharge."GST Credit"::"Non-Availment");
         BankCharge.Insert();
         LibraryStorage.Set(BankChargeLbl, BankCharge.Code);
+        if ForeignExchange then
+            CreateBankDeemedValueSetup();
+    end;
+
+    local procedure CreateSecondBankCharge(ForeignExchange: Boolean)
+    var
+        BankCharge: Record "Bank Charge";
+        GLAccount: Record "G/L Account";
+        InputCreditAvailment: Boolean;
+    begin
+        LibraryERM.CreateGLAccount(GLAccount);
+        BankCharge.Init();
+        BankCharge.Validate(Code, LibraryUtility.GenerateRandomCode(BankCharge.FieldNo(Code), Database::"Bank Charge"));
+        BankCharge.Validate(Description, BankCharge.Code);
+        BankCharge.Validate(Account, GLAccount."No.");
+        BankCharge.Validate("Foreign Exchange", ForeignExchange);
+        BankCharge.Validate("GST Group Code", LibraryStorage.Get(GSTGroupCodeLbl));
+        BankCharge.Validate("HSN/SAC Code", LibraryStorage.Get(HSNSACCodeLbl));
+        Evaluate(InputCreditAvailment, LibraryStorage.Get(InputCreditAvailmentLbl));
+        if InputCreditAvailment then
+            BankCharge.Validate("GST Credit", BankCharge."GST Credit"::Availment)
+        else
+            BankCharge.Validate("GST Credit", BankCharge."GST Credit"::"Non-Availment");
+        BankCharge.Insert();
+        LibraryStorage.Set(SecondBankChargeLbl, BankCharge.Code);
         if ForeignExchange then
             CreateBankDeemedValueSetup();
     end;
@@ -726,6 +798,22 @@ codeunit 18273 "Jnl Bank Charges Tests"
         GenJournalLine.Validate("HSN/SAC Code", LibraryStorage.Get(HSNSACCodeLbl));
         GenJournalLine.Validate("GST Credit", GenJournalLine."GST Credit"::Availment);
         GenJournalLine.Modify(true);
+    end;
+
+    local procedure UpdateBankCharges(var GenJournalLine: Record "Gen. Journal Line")
+    var
+        BankCharge: Record "Bank Charge";
+    begin
+        GenJournalLine.Validate("Bank Charge", true);
+        GenJournalLine.Modify(true);
+
+        BankCharge.Get(LibraryStorage.Get(BankChargeLbl));
+        BankCharge.Validate(Account, GenJournalLine."Account No.");
+        BankCharge.Modify();
+
+        BankCharge.Get(LibraryStorage.Get(SecondBankChargeLbl));
+        BankCharge.Validate(Account, GenJournalLine."Account No.");
+        BankCharge.Modify();
     end;
 
     local procedure VerifyGLEntryCount(
@@ -815,6 +903,8 @@ codeunit 18273 "Jnl Bank Charges Tests"
         VendorNoLbl: Label 'VendorNo';
         BankAccountLbl: Label 'BankAccount';
         BankChargeLbl: Label 'BankCharge';
+        SecondBankChargeLbl: Label 'SecondBankCharge';
         InputCreditAvailmentLbl: Label 'InputCreditAvailment';
         LocationStateCodeLbl: Label 'LocationStateCode';
+        GSTBankChargeBoolErr: Label 'You Can not have multiple Bank Charges, when Bank Charge Boolean in General Journal Line is True.';
 }

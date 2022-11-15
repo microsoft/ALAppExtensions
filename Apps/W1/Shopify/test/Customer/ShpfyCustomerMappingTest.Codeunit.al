@@ -1,9 +1,10 @@
 /// <summary>
-/// Codeunit Shpfy Customer Mapping Test (ID 135609).
+/// Codeunit Shpfy Customer Mapping Test (ID 139569).
 /// </summary>
-codeunit 135609 "Shpfy Customer Mapping Test"
+codeunit 139569 "Shpfy Customer Mapping Test"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     var
 

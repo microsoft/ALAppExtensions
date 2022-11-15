@@ -76,13 +76,9 @@ page 30028 "APIV2 - Sales Orders"
                     Caption = 'Customer Id';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if not SellToCustomer.GetBySystemId("Customer Id") then
                             Error(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Sell-to Customer No." := SellToCustomer."No.";
                         RegisterFieldSet(FieldNo("Customer Id"));
@@ -95,8 +91,6 @@ page 30028 "APIV2 - Sales Orders"
                     Caption = 'Customer No.';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if SellToCustomer."No." <> '' then begin
                             if SellToCustomer."No." <> "Sell-to Customer No." then
@@ -106,8 +100,6 @@ page 30028 "APIV2 - Sales Orders"
 
                         if not SellToCustomer.Get("Sell-to Customer No.") then
                             Error(CouldNotFindSellToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(SellToCustomer);
 
                         "Customer Id" := SellToCustomer.SystemId;
                         RegisterFieldSet(FieldNo("Customer Id"));
@@ -129,13 +121,9 @@ page 30028 "APIV2 - Sales Orders"
                     Caption = 'Bill-to Customer Id';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if not BillToCustomer.GetBySystemId("Bill-to Customer Id") then
                             Error(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer No." := BillToCustomer."No.";
                         RegisterFieldSet(FieldNo("Bill-to Customer Id"));
@@ -147,8 +135,6 @@ page 30028 "APIV2 - Sales Orders"
                     Caption = 'Bill-to Customer No.';
 
                     trigger OnValidate()
-                    var
-                        O365SalesInvoiceMgmt: Codeunit "O365 Sales Invoice Mgmt";
                     begin
                         if BillToCustomer."No." <> '' then begin
                             if BillToCustomer."No." <> "Bill-to Customer No." then
@@ -158,8 +144,6 @@ page 30028 "APIV2 - Sales Orders"
 
                         if not BillToCustomer.Get("Bill-to Customer No.") then
                             Error(CouldNotFindBillToCustomerErr);
-
-                        O365SalesInvoiceMgmt.EnforceCustomerTemplateIntegrity(BillToCustomer);
 
                         "Bill-to Customer Id" := BillToCustomer.SystemId;
                         RegisterFieldSet(FieldNo("Bill-to Customer Id"));
@@ -658,6 +642,7 @@ page 30028 "APIV2 - Sales Orders"
         ShipmentMethod: Record "Shipment Method";
         GraphMgtSalesOrderBuffer: Codeunit "Graph Mgt - Sales Order Buffer";
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
+        APIV2SendSalesDocument: Codeunit "APIV2 - Send Sales Document";
         LCYCurrencyCode: Code[10];
         CurrencyCodeTxt: Text;
         CannotChangeIDErr: Label 'The "id" cannot be changed.', Comment = 'id is a field name and should not be translated.';
@@ -787,13 +772,11 @@ page 30028 "APIV2 - Sales Orders"
 
     local procedure PostWithShipAndInvoice(var SalesHeader: Record "Sales Header"; var SalesInvoiceHeader: Record "Sales Invoice Header")
     var
-        DummyO365SalesDocument: Record "O365 Sales Document";
         LinesInstructionMgt: Codeunit "Lines Instruction Mgt.";
-        O365SendResendInvoice: Codeunit "O365 Send + Resend Invoice";
         OrderNo: Code[20];
         OrderNoSeries: Code[20];
     begin
-        O365SendResendInvoice.CheckDocumentIfNoItemsExists(SalesHeader, false, DummyO365SalesDocument);
+        APIV2SendSalesDocument.CheckDocumentIfNoItemsExists(SalesHeader);
         LinesInstructionMgt.SalesCheckAllLinesHaveQuantityAssigned(SalesHeader);
         OrderNo := SalesHeader."No.";
         OrderNoSeries := SalesHeader."No. Series";

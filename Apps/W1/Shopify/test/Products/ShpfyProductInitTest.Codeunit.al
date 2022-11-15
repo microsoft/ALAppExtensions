@@ -1,7 +1,7 @@
 /// <summary>
-/// Codeunit Shpfy Product Init Test (ID 135621).
+/// Codeunit Shpfy Product Init Test (ID 139603).
 /// </summary>
-codeunit 135621 "Shpfy Product Init Test"
+codeunit 139603 "Shpfy Product Init Test"
 {
     var
         Any: codeunit Any;
@@ -177,6 +177,7 @@ codeunit 135621 "Shpfy Product Init Test"
         ItemAttributeValue.Insert();
     end;
 
+#if not CLEAN19
     internal procedure CreateSalesPrice(Code: Code[10]; ItemNo: Code[20]; Price: Decimal)
     var
         CustomerPriceGroup: Record "Customer Price Group";
@@ -210,6 +211,7 @@ codeunit 135621 "Shpfy Product Init Test"
         SalesLineDiscount.Validate("Line Discount %", DiscountPerc);
         SalesLineDiscount.Insert();
     end;
+#endif
 
     internal procedure CreateStandardProduct(ShpfyShop: Record "Shpfy Shop") ShpfyVariant: Record "Shpfy Variant"
     var
@@ -251,7 +253,7 @@ codeunit 135621 "Shpfy Product Init Test"
         for Index := 1 to numberOfVariants do begin
             clear(ShpfyVariant);
             ShpfyVariant."Shop Code" := ShpfyShop.Code;
-            ShpfyVariant.Id := Any.IntegerInRange(10000, 99999);
+            ShpfyVariant.Id := GetShpfyVariantId();
             ShpfyVariant."Product Id" := ShpfyProduct.Id;
             ShpfyVariant.Barcode := Format(Any.IntegerInRange(1111111, 9999999));
             ShpfyVariant."Unit Cost" := Any.DecimalInRange(10, 20, 2);
@@ -304,5 +306,15 @@ codeunit 135621 "Shpfy Product Init Test"
                 ShpfyProduct."Product Type" := ItemCategory.Code;
         if Vendor.FindFirst() then
             ShpfyProduct.Vendor := Vendor.Name;
+    end;
+
+    local procedure GetShpfyVariantId(): BigInteger
+    var
+        ShpfyVariant: Record "Shpfy Variant";
+    begin
+        if ShpfyVariant.FindLast() then
+            exit(ShpfyVariant.Id + 1)
+        else
+            exit(10000);
     end;
 }

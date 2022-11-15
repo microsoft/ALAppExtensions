@@ -57,9 +57,9 @@ codeunit 30178 "Shpfy Product Export"
         ItemAttributeTranslation: Record "Item Attribute Translation";
         ItemAttributeValue: Record "Item Attribute Value";
         ItemAttributeValueMapping: Record "Item Attribute Value Mapping";
+        ShpfyTranslator: Report "Shpfy Translator";
         IsHandled: Boolean;
         Result: TextBuilder;
-        ShpfyTranslator: Report "Shpfy Translator";
         Language: codeunit Language;
         LanguageId: Integer;
     begin

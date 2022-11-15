@@ -1,9 +1,10 @@
 /// <summary>
-/// Codeunit Shpfy Create Item Test (ID 135620).
+/// Codeunit Shpfy Create Item Test (ID 139567).
 /// </summary>
-codeunit 135620 "Shpfy Create Item Test"
+codeunit 139567 "Shpfy Create Item Test"
 {
     Subtype = Test;
+    TestPermissions = Disabled;
 
     var
         LibraryAssert: codeunit "Library Assert";
