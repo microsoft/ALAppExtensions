@@ -100,22 +100,34 @@ report 31035 "Reminder MIR CZL"
             column(RegistrationNo_IssuedReminderHeader; "Registration No. CZL")
             {
             }
-            column(BankAccountNo_IssuedReminderHeaderCaption; FieldCaption("Bank Account No."))
+            column(BankAccountNo_IssuedReminderHeaderCaption; FieldCaption("Bank Account No. CZL"))
             {
             }
-            column(BankAccountNo_IssuedReminderHeader; "Bank Account No.")
+            column(BankAccountNo_IssuedReminderHeader; "Bank Account No. CZL")
             {
             }
-            column(IBAN_IssuedReminderHeaderCaption; FieldCaption(IBAN))
+            column(IBAN_IssuedReminderHeaderCaption; FieldCaption("IBAN CZL"))
             {
             }
-            column(IBAN_IssuedReminderHeader; IBAN)
+            column(IBAN_IssuedReminderHeader; "IBAN CZL")
             {
             }
-            column(SWIFTCode_IssuedReminderHeaderCaption; FieldCaption("SWIFT Code"))
+            column(SWIFTCode_IssuedReminderHeaderCaption; FieldCaption("SWIFT Code CZL"))
             {
             }
-            column(SWIFTCode_IssuedReminderHeader; "SWIFT Code")
+            column(SWIFTCode_IssuedReminderHeader; "SWIFT Code CZL")
+            {
+            }
+            column(PmntSymbol1; PaymentSymbolLabel[1])
+            {
+            }
+            column(PmntSymbol2; PaymentSymbol[1])
+            {
+            }
+            column(PmntSymbol3; PaymentSymbolLabel[2])
+            {
+            }
+            column(PmntSymbol4; PaymentSymbol[2])
             {
             }
             column(CustomerNo_IssuedReminderHeaderCaption; FieldCaption("Customer No."))
@@ -334,7 +346,7 @@ report 31035 "Reminder MIR CZL"
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
 
                 FormatAddress.IssuedReminder(CustAddr, "Issued Reminder Header");
-                DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText("Language Code");
+                FormatDocumentFields("Issued Reminder Header");
 
                 if LogInteraction and not IsReportInPreviewMode() then
                     SegManagement.LogDocument(
@@ -406,6 +418,8 @@ report 31035 "Reminder MIR CZL"
         VendLbl: Label 'Vendor';
         CustLbl: Label 'Customer';
         CustAddr: array[8] of Text[100];
+        PaymentSymbol: array[2] of Text;
+        PaymentSymbolLabel: array[2] of Text;
         DocFooterText: Text[1000];
         NoOfCopies: Integer;
         NoOfLoops: Integer;
@@ -435,6 +449,16 @@ report 31035 "Reminder MIR CZL"
         MailManagement: Codeunit "Mail Management";
     begin
         exit(CurrReport.Preview or MailManagement.IsHandlingGetEmailBody());
+    end;
+
+    local procedure FormatDocumentFields(IssuedReminderHeader: Record "Issued Reminder Header")
+    begin
+        FormatDocumentMgtCZL.SetPaymentSymbols(
+          PaymentSymbol, PaymentSymbolLabel,
+          IssuedReminderHeader."Variable Symbol CZL", IssuedReminderHeader.FieldCaption(IssuedReminderHeader."Variable Symbol CZL"),
+          IssuedReminderHeader."Constant Symbol CZL", IssuedReminderHeader.FieldCaption(IssuedReminderHeader."Constant Symbol CZL"),
+          IssuedReminderHeader."Specific Symbol CZL", IssuedReminderHeader.FieldCaption(IssuedReminderHeader."Specific Symbol CZL"));
+        DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText(IssuedReminderHeader."Language Code");
     end;
 }
 #endif

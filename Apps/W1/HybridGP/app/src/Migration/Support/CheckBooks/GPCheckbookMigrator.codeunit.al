@@ -29,7 +29,8 @@ codeunit 40025 "GP Checkbook Migrator"
                     UpdateBankInfo(DelChr(GPCheckbookMSTR.BANKID, '>', ' '), BankAccount);
                     BankAccount.Insert(true);
 
-                    CreateTransactions(BankAccount."No.", BankAccount."Bank Acc. Posting Group", GPCheckbookMSTR.CHEKBKID,
+                    if not GPCompanyAdditionalSettings.GetMigrateOnlyBankMaster() then
+                    	CreateTransactions(BankAccount."No.", BankAccount."Bank Acc. Posting Group", GPCheckbookMSTR.CHEKBKID,
                                             GPCheckbookMSTR.Last_Reconciled_Date, GPCheckbookMSTR.Last_Reconciled_Balance);
                 end;
         until GPCheckbookMSTR.Next() = 0;

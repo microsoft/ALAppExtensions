@@ -408,6 +408,7 @@ codeunit 148099 "SAF-T Test Helper"
         BankAccount: Record "Bank Account";
     begin
         CompanyInformation.Get();
+        CompanyInformation.IBAN := LibraryUtility.GenerateGUID();
         CompanyInformation."Bank Account No." := LibraryUtility.GenerateGUID();
         CompanyInformation.Modify();
         BankAccount.DeleteAll();
@@ -492,7 +493,6 @@ codeunit 148099 "SAF-T Test Helper"
             LibrarySales.CreateCustomerBankAccount(CustomerBankAccount, Customer."No.");
             CustomerBankAccount.Name := LibraryUtility.GenerateGUID();
             CustomerBankAccount."Bank Account No." := LibraryUtility.GenerateGUID();
-            CustomerBankAccount.IBAN := LibraryUtility.GenerateGUID();
             CustomerBankAccount."Bank Clearing Code" := LibraryUtility.GenerateGUID();
             CustomerBankAccount."SWIFT Code" := LibraryUtility.GenerateGUID();
             CustomerBankAccount.Modify(true);
@@ -535,7 +535,6 @@ codeunit 148099 "SAF-T Test Helper"
             LibraryPurchase.CreateVendorBankAccount(VendorBankAccount, Vendor."No.");
             VendorBankAccount.Name := LibraryUtility.GenerateGUID();
             VendorBankAccount."Bank Account No." := LibraryUtility.GenerateGUID();
-            VendorBankAccount.IBAN := LibraryUtility.GenerateGUID();
             VendorBankAccount."Bank Clearing Code" := LibraryUtility.GenerateGUID();
             VendorBankAccount."SWIFT Code" := LibraryUtility.GenerateGUID();
             VendorBankAccount.Modify(true);

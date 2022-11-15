@@ -21,7 +21,8 @@ page 8886 "Email Account Wizard"
     ShowFilter = false;
     LinksAllowed = false;
     Permissions = tabledata Media = r,
-                  tabledata "Media Resources" = r;
+                  tabledata "Media Resources" = r,
+                  tabledata "Email Rate Limit" = imd;
 
     layout
     {
@@ -262,6 +263,25 @@ page 8886 "Email Account Wizard"
                         ToolTip = 'Use this account for all scenarios for which an account is not specified. Scenarios are processes that involve sending documents or notifications by email.';
                     }
                 }
+
+                group(SetUpRateLimit)
+                {
+                    Caption = '';
+
+                    field(EmailRateLimitDisplay; EmailRateLimitDisplay)
+                    {
+                        ApplicationArea = All;
+                        Numeric = true;
+                        Caption = 'Rate limit per minute';
+                        ToolTip = 'Set the rate limit for the current account';
+
+                        trigger OnValidate()
+                        begin
+                            if (EmailRateLimitDisplay <> DefaultEmailRateLimitDisplay) then
+                                NotDefaultRateLimit := Evaluate(RateLimit, EmailRateLimitDisplay);
+                        end;
+                    }
+                }
             }
         }
     }
@@ -330,9 +350,12 @@ page 8886 "Email Account Wizard"
                 trigger OnAction()
                 var
                     EmailAccountImpl: Codeunit "Email Account Impl.";
+                    EmailRateLimitImpl: Codeunit "Email Rate Limit Impl.";
                 begin
                     if SetAsDefault then
                         EmailAccountImpl.MakeDefault(RegisteredAccount);
+
+                    EmailRateLimitImpl.RegisterRateLimit(RegisteredRateLimit, RegisteredAccount, RateLimit, NotDefaultRateLimit);
 
                     CurrPage.Close();
                 end;
@@ -384,6 +407,9 @@ page 8886 "Email Account Wizard"
         ShowWelcomeStep();
 
         EmailAccountImpl.FindAllConnectors(Rec);
+
+        EmailRateLimitDisplay := NoLimitTxt;
+        DefaultEmailRateLimitDisplay := NoLimitTxt;
 
         if not EmailScenario.GetDefaultEmailAccount(DefaultAccount) then
             SetAsDefault := true;
@@ -504,7 +530,9 @@ page 8886 "Email Account Wizard"
 
     var
         Step: Option Welcome,"Choose Connector","Register Account",Done;
+        RateLimit: Integer;
         RegisteredAccount: Record "Email Account";
+        RegisteredRateLimit: Record "Email Rate Limit";
         MediaResourcesStandard: Record "Media Resources";
         MediaResourcesDone: Record "Media Resources";
         AppSourceTok: Label 'AppSource';
@@ -512,6 +540,7 @@ page 8886 "Email Account Wizard"
         EmailCategoryLbl: Label 'Email', Locked = true;
         LearnMoreURLTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2134520', Locked = true;
         LearnMoreTok: Label 'Learn more';
+        NoLimitTxt: Label 'No limit';
         AccountCreationSuccessfullyCompletedDurationLbl: Label 'Successful creation of account completed. Duration: %1 milliseconds.', Comment = '%1 - Duration', Locked = true;
         AccountCreationFailureDurationLbl: Label 'Creation of account failed. Duration: %1 milliseconds.', Comment = '%1 - Duration', Locked = true;
         EmailConnectorHasBeenUninstalledMsg: Label 'The selected email extension has been uninstalled. You must reinstall the extension to add an account with it.';
@@ -534,5 +563,8 @@ page 8886 "Email Account Wizard"
         AccountId: Guid;
         ConnectorsAvailable: Boolean;
         SetAsDefault: Boolean;
+        NotDefaultRateLimit: Boolean;
         StartTime: DateTime;
+        EmailRateLimitDisplay: Text[250];
+        DefaultEmailRateLimitDisplay: Text[250];
 }

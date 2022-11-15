@@ -12,6 +12,29 @@ tableextension 31047 "G/L Account Net Change CZL" extends "G/L Account Net Chang
             Caption = 'Account No.';
             DataClassification = SystemMetadata;
         }
+
+        field(31005; "Net Change in Jnl. Curr. CZL"; Decimal)
+        {
+            AutoFormatExpression = "Currency Code CZL";
+            AutoFormatType = 1;
+            BlankZero = true;
+            Caption = 'Net Change in Jnl. (in Currency)';
+            DataClassification = SystemMetadata;
+        }
+        field(31006; "Balance after Posting Curr.CZL"; Decimal)
+        {
+            AutoFormatExpression = "Currency Code CZL";
+            AutoFormatType = 1;
+            BlankZero = true;
+            Caption = 'Balance after Posting (in Currency)';
+            DataClassification = SystemMetadata;
+        }
+        field(31007; "Currency Code CZL"; Code[10])
+        {
+            Caption = 'Currency Code';
+            TableRelation = Currency;
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

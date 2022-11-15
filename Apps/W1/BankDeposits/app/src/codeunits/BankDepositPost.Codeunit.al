@@ -20,10 +20,13 @@ codeunit 1690 "Bank Deposit-Post"
         BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         GenJnlCheckLine: Codeunit "Gen. Jnl.-Check Line";
         UpdateAnalysisView: Codeunit "Update Analysis View";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TotalAmountLCY: Decimal;
         NextLineNo: Integer;
         CurrLineNo: Integer;
     begin
+        FeatureTelemetry.LogUptake('0000IG4', 'Bank Deposit', Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000IG5', 'Bank Deposit', 'Bank deposit posted');
         OnBeforeBankDepositPost(Rec);
 
         // Check deposit

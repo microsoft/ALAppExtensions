@@ -85,16 +85,17 @@ page 30117 "Shpfy Shop Locations Mapping"
         exit(Rec.FindSet());
     end;
 
-    trigger OnClosePage()
+    trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
         ShpfyShopLocation: Record "Shpfy Shop Location";
-        DisableQst: Label 'One ore more lines have %1 specified, but stock synchronization is disabled. Do you want to close the page?', Comment = '%1 the name for location filter';
+        DisableQst: Label 'One or more lines have %1 specified, but stock synchronization is disabled. Do you want to close the page?', Comment = '%1 the name for location filter';
     begin
         ShpfyShopLocation.SetRange("Shop Code", Rec.GetFilter("Shop Code"));
         ShpfyShopLocation.SetFilter("Location Filter", '<>%1', '');
         ShpfyShopLocation.SetRange(Disabled, true);
         if ShpfyShopLocation.IsEmpty() then
-            exit;
-        if not Confirm(StrSubstNo(DisableQst, Rec.FieldCaption("Location Filter"))) then;
+            exit(true);
+        if not Confirm(StrSubstNo(DisableQst, Rec.FieldCaption("Location Filter"))) then
+            exit(false);
     end;
 }

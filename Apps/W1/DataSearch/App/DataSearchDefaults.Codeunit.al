@@ -30,11 +30,11 @@ codeunit 2681 "Data Search Defaults"
                 GetTableListForAccountant(TableList);
             Page::"Business Manager Role Center":
                 GetTableListForBusinessManager(TableList);
-            Page::"Service Manager Role Center":
+            Page::"Service Dispatcher Role Center", Page::"Service Manager Role Center":
                 GetTableListForServiceManager(TableList);
             Page::"Production Planner Role Center":
                 GetTableListForManufacturingManager(TableList);
-            Page::"Project Manager Role Center":
+            Page::"Project Manager Role Center", Page::"Job Project Manager RC":
                 GetTableListForProjectManager(TableList);
             Page::"Sales & Relationship Mgr. RC":
                 GetTableListForSalesAndRelManager(TableList);
@@ -146,7 +146,19 @@ codeunit 2681 "Data Search Defaults"
         TableList.Add(Database::"Sales Cr.Memo Header");
         TableList.Add(Database::"Sales Cr.Memo Line");
         TableList.Add(Database::"Service Header");
+        TableList.Add(Database::"Service Item Line");
         TableList.Add(Database::"Service Line");
+        TableList.Add(Database::"Service Item");
+        TableList.Add(Database::"Loaner");
+        TableList.Add(Database::"Service Contract Header");
+        TableList.Add(Database::"Service Contract Line");
+        TableList.Add(Database::"Service Invoice Header");
+        TableList.Add(Database::"Service Invoice Line");
+        TableList.Add(Database::"Service Shipment Header");
+        TableList.Add(Database::"Service Shipment Item Line");
+        TableList.Add(Database::"Service Shipment Line");
+        TableList.Add(Database::"Service Cr.Memo Header");
+        TableList.Add(Database::"Service Cr.Memo Line");
     end;
 
     local procedure GetTableListForManufacturingManager(var TableList: List of [Integer])
@@ -173,6 +185,8 @@ codeunit 2681 "Data Search Defaults"
         TableList.Add(Database::"Sales Cr.Memo Header");
         TableList.Add(Database::"Sales Cr.Memo Line");
         TableList.Add(Database::Job);
+        TableList.Add(Database::"Job Task");
+        TableList.Add(Database::"Job Planning Line");
         TableList.Add(Database::"Job Ledger Entry");
         TableList.Add(Database::Resource);
     end;

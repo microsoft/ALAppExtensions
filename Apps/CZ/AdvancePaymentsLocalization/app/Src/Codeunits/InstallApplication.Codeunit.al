@@ -836,7 +836,7 @@ codeunit 31087 "Install Application CZZ"
                 SalesAdvanceLetterEntry.SetRange("Customer Entry No.", CustLedgerEntry."Entry No.");
                 if SalesAdvanceLetterEntry.FindFirst() then begin
                     CustLedgerEntry.Validate("Advance Letter No. CZZ", SalesAdvanceLetterEntry."Letter No.");
-                    CustLedgerEntry.Validate("Adv. Letter Template Code CZZ", 'P_' + SalesAdvanceLetterEntry."Template Name");
+                    CustLedgerEntry."Adv. Letter Template Code CZZ" := 'P_' + SalesAdvanceLetterEntry."Template Name";
                 end else begin
                     AdvanceLink.SetLoadFields("Document No.");
                     AdvanceLink.SetRange("CV Ledger Entry No.", CustLedgerEntry."Entry No.");
@@ -845,7 +845,7 @@ codeunit 31087 "Install Application CZZ"
                     if AdvanceLink.FindFirst() and (AdvanceLink.Count() = 1) then begin
                         SalesAdvanceLetterHeader.Get(AdvanceLink."Document No.");
                         CustLedgerEntry.Validate("Advance Letter No. CZZ", SalesAdvanceLetterHeader."No.");
-                        CustLedgerEntry.Validate("Adv. Letter Template Code CZZ", 'P_' + SalesAdvanceLetterHeader."Template Code");
+                        CustLedgerEntry."Adv. Letter Template Code CZZ" := 'P_' + SalesAdvanceLetterHeader."Template Code";
                     end;
                 end;
                 CustLedgerEntry.Modify();
@@ -855,7 +855,7 @@ codeunit 31087 "Install Application CZZ"
                         if AppliedCustLedgerEntry.Get(CustLedgerEntry."Closed by Entry No.") then
                             if AppliedCustLedgerEntry."Advance Letter No. CZZ" = '' then begin
                                 AppliedCustLedgerEntry.Validate("Advance Letter No. CZZ", CustLedgerEntry."Advance Letter No. CZZ");
-                                AppliedCustLedgerEntry.Validate("Adv. Letter Template Code CZZ", CustLedgerEntry."Adv. Letter Template Code CZZ");
+                                AppliedCustLedgerEntry."Adv. Letter Template Code CZZ" := CustLedgerEntry."Adv. Letter Template Code CZZ";
                                 AppliedCustLedgerEntry.Modify();
                             end;
                     AppliedCustLedgerEntry.SetCurrentKey("Closed by Entry No.");
@@ -864,7 +864,7 @@ codeunit 31087 "Install Application CZZ"
                         repeat
                             if AppliedCustLedgerEntry."Advance Letter No. CZZ" = '' then begin
                                 AppliedCustLedgerEntry.Validate("Advance Letter No. CZZ", CustLedgerEntry."Advance Letter No. CZZ");
-                                AppliedCustLedgerEntry.Validate("Adv. Letter Template Code CZZ", CustLedgerEntry."Adv. Letter Template Code CZZ");
+                                AppliedCustLedgerEntry."Adv. Letter Template Code CZZ" := CustLedgerEntry."Adv. Letter Template Code CZZ";
                                 AppliedCustLedgerEntry.Modify();
                             end;
                         until AppliedCustLedgerEntry.Next() = 0;
@@ -888,7 +888,7 @@ codeunit 31087 "Install Application CZZ"
                 PurchAdvanceLetterEntry.SetRange("Vendor Entry No.", VendorLedgerEntry."Entry No.");
                 if PurchAdvanceLetterEntry.FindFirst() then begin
                     VendorLedgerEntry.Validate("Advance Letter No. CZZ", PurchAdvanceLetterEntry."Letter No.");
-                    VendorLedgerEntry.Validate("Adv. Letter Template Code CZZ", 'N_' + PurchAdvanceLetterEntry."Template Name");
+                    VendorLedgerEntry."Adv. Letter Template Code CZZ" := 'N_' + PurchAdvanceLetterEntry."Template Name";
                 end else begin
                     AdvanceLink.SetRange("CV Ledger Entry No.", VendorLedgerEntry."Entry No.");
                     AdvanceLink.SetRange(Type, AdvanceLink.Type::Purchase);
@@ -896,7 +896,7 @@ codeunit 31087 "Install Application CZZ"
                     if AdvanceLink.FindFirst() and (AdvanceLink.Count() = 1) then begin
                         PurchAdvanceLetterHeader.Get(AdvanceLink."Document No.");
                         VendorLedgerEntry.Validate("Advance Letter No. CZZ", PurchAdvanceLetterHeader."No.");
-                        VendorLedgerEntry.Validate("Adv. Letter Template Code CZZ", 'N_' + PurchAdvanceLetterHeader."Template Code");
+                        VendorLedgerEntry."Adv. Letter Template Code CZZ" := 'N_' + PurchAdvanceLetterHeader."Template Code";
                     end;
                 end;
                 VendorLedgerEntry.Modify();
@@ -906,7 +906,7 @@ codeunit 31087 "Install Application CZZ"
                         if AppliedVendorLedgerEntry.Get(VendorLedgerEntry."Closed by Entry No.") then
                             if AppliedVendorLedgerEntry."Advance Letter No. CZZ" = '' then begin
                                 AppliedVendorLedgerEntry.Validate("Advance Letter No. CZZ", VendorLedgerEntry."Advance Letter No. CZZ");
-                                AppliedVendorLedgerEntry.Validate("Adv. Letter Template Code CZZ", VendorLedgerEntry."Adv. Letter Template Code CZZ");
+                                AppliedVendorLedgerEntry."Adv. Letter Template Code CZZ" := VendorLedgerEntry."Adv. Letter Template Code CZZ";
                                 AppliedVendorLedgerEntry.Modify();
                             end;
                     AppliedVendorLedgerEntry.SetCurrentKey("Closed by Entry No.");
@@ -915,7 +915,7 @@ codeunit 31087 "Install Application CZZ"
                         repeat
                             if AppliedVendorLedgerEntry."Advance Letter No. CZZ" = '' then begin
                                 AppliedVendorLedgerEntry.Validate("Advance Letter No. CZZ", VendorLedgerEntry."Advance Letter No. CZZ");
-                                AppliedVendorLedgerEntry.Validate("Adv. Letter Template Code CZZ", VendorLedgerEntry."Adv. Letter Template Code CZZ");
+                                AppliedVendorLedgerEntry."Adv. Letter Template Code CZZ" := VendorLedgerEntry."Adv. Letter Template Code CZZ";
                                 AppliedVendorLedgerEntry.Modify();
                             end;
                         until AppliedVendorLedgerEntry.Next() = 0;

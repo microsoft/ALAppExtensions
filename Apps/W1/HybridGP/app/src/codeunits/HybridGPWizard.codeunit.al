@@ -164,11 +164,11 @@ codeunit 4015 "Hybrid GP Wizard"
 
     procedure GetGPMigrationEnabled(): Boolean
     var
-        InteligentCloudSetup: Record "Intelligent Cloud Setup";
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
-        if not InteligentCloudSetup.Get() then
+        if not IntelligentCloudSetup.Get() then
             exit(false);
 
-        exit(CanHandle(InteligentCloudSetup."Product ID"));
+        exit(CanHandle(IntelligentCloudSetup."Product ID"));
     end;
 }

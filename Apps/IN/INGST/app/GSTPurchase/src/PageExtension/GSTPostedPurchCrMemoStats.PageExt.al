@@ -15,12 +15,27 @@ pageextension 18104 "GST Posted Purch Cr Memo Stats" extends "Purch. Credit Memo
     }
 
     trigger OnAfterGetRecord()
-    var
-        GSTStatistics: Codeunit "GST Statistics";
     begin
-        GSTStatistics.GetStatisticsPostedPurchCrMemoAmount(Rec, GSTAmount);
+        FormatLine();
+    end;
+
+    local procedure GetGSTAmount()
+    var
+        GSTStatsManagement: Codeunit "GST Stats Management";
+    begin
+        GSTAmount := GSTStatsManagement.GetGstStatsAmount();
+        Calculated := true;
+        GSTStatsManagement.ClearSessionVariable();
+    end;
+
+    local procedure FormatLine()
+    begin
+        if not Calculated then
+            GetGSTAmount();
     end;
 
     var
+
         GSTAmount: Decimal;
+        Calculated: Boolean;
 }

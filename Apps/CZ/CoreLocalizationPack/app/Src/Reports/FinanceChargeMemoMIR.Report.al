@@ -142,6 +142,18 @@ report 31034 "Finance Charge Memo MIR CZL"
             column(SWIFTCode_IssuedFinChargeMemoHeader; "SWIFT Code CZL")
             {
             }
+            column(PmntSymbol1; PaymentSymbolLabel[1])
+            {
+            }
+            column(PmntSymbol2; PaymentSymbol[1])
+            {
+            }
+            column(PmntSymbol3; PaymentSymbolLabel[2])
+            {
+            }
+            column(PmntSymbol4; PaymentSymbol[2])
+            {
+            }
             column(CustomerNo_IssuedFinChargeMemoHeaderCaption; FieldCaption("Customer No."))
             {
             }
@@ -400,7 +412,7 @@ report 31034 "Finance Charge Memo MIR CZL"
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
 
                 FormatAddress.IssuedFinanceChargeMemo(CustAddr, "Issued Fin. Charge Memo Header");
-                DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText("Language Code");
+                FormatDocumentFields("Issued Fin. Charge Memo Header");
                 TotalInclVATText := StrSubstNo(TotalInclVATLbl, "Currency Code");
 
                 if LogInteraction and not IsReportInPreviewMode() then
@@ -468,6 +480,8 @@ report 31034 "Finance Charge Memo MIR CZL"
         SegManagement: Codeunit SegManagement;
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
+        PaymentSymbol: array[2] of Text;
+        PaymentSymbolLabel: array[2] of Text;
         DocFooterText: Text[1000];
         TotalInclVATText: Text[50];
         NoOfCopies: Integer;
@@ -506,6 +520,16 @@ report 31034 "Finance Charge Memo MIR CZL"
         MailManagement: Codeunit "Mail Management";
     begin
         exit(CurrReport.Preview or MailManagement.IsHandlingGetEmailBody());
+    end;
+
+    local procedure FormatDocumentFields(IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header")
+    begin
+        FormatDocumentMgtCZL.SetPaymentSymbols(
+          PaymentSymbol, PaymentSymbolLabel,
+          IssuedFinChargeMemoHeader."Variable Symbol CZL", IssuedFinChargeMemoHeader.FieldCaption(IssuedFinChargeMemoHeader."Variable Symbol CZL"),
+          IssuedFinChargeMemoHeader."Constant Symbol CZL", IssuedFinChargeMemoHeader.FieldCaption(IssuedFinChargeMemoHeader."Constant Symbol CZL"),
+          IssuedFinChargeMemoHeader."Specific Symbol CZL", IssuedFinChargeMemoHeader.FieldCaption(IssuedFinChargeMemoHeader."Specific Symbol CZL"));
+        DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText(IssuedFinChargeMemoHeader."Language Code");
     end;
 }
 #endif

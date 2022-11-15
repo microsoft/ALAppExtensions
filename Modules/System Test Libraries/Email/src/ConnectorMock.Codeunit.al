@@ -5,6 +5,8 @@
 
 codeunit 134688 "Connector Mock"
 {
+    Permissions = tabledata "Email Rate Limit" = rimd;
+
     procedure Initialize()
     begin
         TestEmailAccountSetup.DeleteAll();
@@ -16,6 +18,7 @@ codeunit 134688 "Connector Mock"
         TestEmailAccountSetup.Insert();
 
         EmailAccounts.DeleteAll();
+        EmailRateLimit.DeleteAll();
     end;
 
     procedure GetAccounts(var Accounts: Record "Email Account")
@@ -35,14 +38,20 @@ codeunit 134688 "Connector Mock"
         EmailAccounts.Id := Any.GuidValue();
         EmailAccounts.Name := CopyStr(Any.AlphanumericText(250), 1, 250);
         EmailAccounts.Email := CopyStr(Any.Email(), 1, 250);
-        #pragma warning disable AA0205
+#pragma warning disable AA0205
         EmailAccounts.Insert();
-        #pragma warning restore AA0205
+#pragma warning restore AA0205
 
         EmailAccount."Account Id" := EmailAccounts.Id;
         EmailAccount.Name := EmailAccounts.Name;
         EmailAccount."Email Address" := EmailAccounts.Email;
         EmailAccount.Connector := Enum::"Email Connector"::"Test Email Connector";
+
+        EmailRateLimit."Account Id" := EmailAccount."Account Id";
+        EmailRateLimit.Connector := EmailAccount.Connector;
+        EmailRateLimit."Email Address" := EmailAccount."Email Address";
+        EmailRateLimit."Rate Limit" := 0;
+        EmailRateLimit.Insert();
     end;
 
     procedure AddAccount(var Id: Guid)
@@ -53,6 +62,12 @@ codeunit 134688 "Connector Mock"
         EmailAccounts.Insert();
 
         Id := EmailAccounts.Id;
+
+        EmailRateLimit."Account Id" := Id;
+        EmailRateLimit.Connector := Enum::"Email Connector"::"Test Email Connector";
+        EmailRateLimit."Email Address" := EmailAccounts.Email;
+        EmailRateLimit."Rate Limit" := 0;
+        EmailRateLimit.Insert();
     end;
 
     procedure FailOnSend(): Boolean
@@ -109,6 +124,7 @@ codeunit 134688 "Connector Mock"
 
     var
         EmailAccounts: Record "Test Email Account";
+        EmailRateLimit: Record "Email Rate Limit";
         TestEmailAccountSetup: Record "Test Email Connector Setup";
         Any: Codeunit Any;
 }

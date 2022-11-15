@@ -69,4 +69,13 @@ codeunit 18245 "GST Journal Subscribers"
     begin
         GSTJournalLineValidations.OrderAddressCode(Rec);
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Journal Bank Charges", 'OnAfterInsertEvent', '', false, false)]
+    local procedure OnAfterInsertEventCheckMultipleBankCharge(var Rec: Record "Journal Bank Charges")
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        GSTJournalValidations.CheckMultipleBankCharge(Rec);
+    end;
 }

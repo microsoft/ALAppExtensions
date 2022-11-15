@@ -9,7 +9,9 @@ codeunit 8906 "Email Editor"
     Permissions = tabledata "Email Outbox" = rimd,
                   tabledata "Tenant Media" = r,
                   tabledata "Email Related Record" = rd,
-                  tabledata "Email View Policy" = r;
+                  tabledata "Email View Policy" = r,
+                  tabledata "Email Rate Limit" = r,
+                  tabledata "Sent Email" = r;
 
     procedure Open(EmailOutbox: Record "Email Outbox"; IsModal: Boolean): Enum "Email Action"
     var
@@ -197,7 +199,7 @@ codeunit 8906 "Email Editor"
             if not Confirm(ConfirmDiscardEmailQst, true) then
                 exit(false);
 
-        exit(EmailOutbox.Delete(true)); // This should detele the email message, recipients and attachments as well.
+        exit(EmailOutbox.Delete(true)); // This should delete the email message, recipients and attachments as well.
     end;
 
     procedure AttachFromRelatedRecords(EmailMessageID: Guid);

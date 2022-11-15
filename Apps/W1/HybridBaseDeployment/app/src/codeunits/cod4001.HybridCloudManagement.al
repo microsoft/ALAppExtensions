@@ -1,6 +1,7 @@
 codeunit 4001 "Hybrid Cloud Management"
 {
-    Permissions = tabledata "Installed Application" = r,
+    Permissions = tabledata "Published Application" = r,
+                  tabledata AllObj = r,
                   tabledata "Intelligent Cloud" = rimd,
                   tabledata "Intelligent Cloud Status" = rimd,
                   tabledata "Hybrid DA Approval" = rim,

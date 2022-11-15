@@ -72,6 +72,14 @@
         "CodeunitName":  "ABS Blob Client Test"
     },
     {
+        "Method":  "ListBlobHierarchyTest",
+        "CodeunitName":  "ABS Blob Client Test"
+    },
+    {
+        "Method":  "LeaseBlobTest",
+        "CodeunitName":  "ABS Blob Client Test"
+    },
+    {
         "Method":  "TestDateConversion",
         "CodeunitName":  "ABS Helper Functionality Test"
     },

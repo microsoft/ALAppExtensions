@@ -22,10 +22,42 @@ codeunit 4019 "GP Item Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
             exit;
 
-        GPItem.Get(RecordIdToMigrate);
+        if not GPItem.Get(RecordIdToMigrate) then
+            exit;
+
+        if not ShouldMigrateItem(GPItem) then begin
+            DecrementMigratedCount();
+            exit;
+        end;
+
         MigrateItemDetails(GPItem, Sender);
     end;
+
 #pragma warning restore AA0207
+    local procedure ShouldMigrateItem(var GPItem: Record "GP Item"): Boolean
+    var
+        GPIV00101: Record "GP IV00101";
+    begin
+        if GPIV00101.Get(GPItem.No) then begin
+            if GPIV00101.INACTIVE then
+                if not GPCompanyAdditionalSettings.GetMigrateInactiveItems() then
+                    exit(false);
+
+            if GPIV00101.IsDiscontinued() then
+                if not GPCompanyAdditionalSettings.GetMigrateDiscontinuedItems() then
+                    exit(false);
+        end;
+
+        exit(true);
+    end;
+
+    local procedure DecrementMigratedCount()
+    var
+        HelperFunctions: Codeunit "Helper Functions";
+        DataMigrationStatusFacade: Codeunit "Data Migration Status Facade";
+    begin
+        DataMigrationStatusFacade.IncrementMigratedRecordCount(HelperFunctions.GetMigrationTypeTxt(), Database::Item, -1);
+    end;
 
     procedure MigrateItemDetails(GPItem: Record "GP Item"; ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
     begin
@@ -82,7 +114,13 @@ codeunit 4019 "GP Item Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
             exit;
 
+        if GPCompanyAdditionalSettings.GetMigrateOnlyInventoryMaster() then
+            exit;
+
         if GPItem.Get(RecordIdToMigrate) then begin
+            if not Sender.DoesItemExist(CopyStr(GPItem.No, 1, MaxStrLen(Item."No."))) then
+                exit;
+
             if GPItem.ItemType = 0 then
                 case GetCostingMethod(GPItem) of
                     CostingMethodOption::Average:
@@ -175,9 +213,13 @@ codeunit 4019 "GP Item Migrator"
 
     procedure MigrateItemInventoryPostingGroup(GPItem: Record "GP Item"; var Sender: Codeunit "Item Data Migration Facade")
     var
+        Item: Record Item;
         GPIV00101: Record "GP IV00101";
         ItemClassId: Text[11];
     begin
+        if not Sender.DoesItemExist(CopyStr(GPItem.No, 1, MaxStrLen(Item."No."))) then
+            exit;
+
         MigrateItemClassesIfNeeded(GPItem, Sender);
 
         if GPItem.ItemType = 0 then begin
@@ -185,7 +227,7 @@ codeunit 4019 "GP Item Migrator"
                 if GPIV00101.Get(GPItem.No) then
 #pragma warning disable AA0139
                     ItemClassId := GPIV00101.ITMCLSCD.Trim();
-#pragma warning restore AA0139     
+#pragma warning restore AA0139
 
             if (ItemClassId <> '') then
                 Sender.SetInventoryPostingGroup(ItemClassId)

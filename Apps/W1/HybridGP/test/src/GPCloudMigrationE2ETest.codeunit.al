@@ -1,3 +1,4 @@
+#pragma warning disable AA0210
 codeunit 139671 "GP Cloud Migration E2E Test"
 {
     // [FEATURE] [GP Forecasting]
