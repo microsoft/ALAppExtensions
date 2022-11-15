@@ -3,9 +3,7 @@
 on:
   pull_request:
     paths-ignore:
-      - '*.md'
-      - '*.ps1'
-      - '*.yaml'
+      - '**.md'
     branches: [ 'main' ]
 
 defaults:
@@ -19,10 +17,12 @@ permissions:
 
 jobs:
   PullRequestHandler:
-    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    runs-on: [ windows-latest ]
     steps:
       - uses: actions/checkout@v3
-      
+        with:
+          lfs: true
+
       - name: Determine Changed Files
         id: ChangedFiles
         run: |

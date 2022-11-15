@@ -416,6 +416,22 @@ codeunit 501 OAuth2
         OAuth2Impl.AcquireTokensFromCacheWithCertificate(RedirectURL, ClientId, Certificate, OAuthAuthorityUrl, Scopes, AccessToken, IdToken);
     end;
 
+    /// <summary>
+    /// Gets the access token via OAuth2 v2.0 protocol, authenticating as a service principal (as the app whose credentials you are providing).
+    /// </summary>
+    /// <param name="ClientId">The Application (client) ID that the Azure portal – App registrations experience assigned to your app.</param>
+    /// <param name="Certificate">The Base64-encoded certificate for the Application (client) configured in the Azure Portal - Certificates &amp; Secrets.</param>
+    /// <param name="RedirectURL">The redirectURL of your app, where authentication responses can be sent and received by your app. It must exactly match one of the redirectURLs you registered in the portal. If this parameter is empty, the default Business Central URL will be used.</param>
+    /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
+    /// <param name="AccessToken">Exit parameter containing the access token.</param>
+    /// <param name="IdToken">Exit parameter containing the id token.</param>
+    [NonDebuggable]
+    [TryFunction]
+    procedure AcquireTokensWithCertificate(ClientId: Text; Certificate: Text; RedirectURL: Text; OAuthAuthorityUrl: Text; Scopes: List of [Text]; var AccessToken: Text; var IdToken: Text)
+    begin
+        OAuth2Impl.AcquireTokensWithCertificate(RedirectURL, ClientId, Certificate, OAuthAuthorityUrl, Scopes, AccessToken, IdToken);
+    end;
+
 #if not CLEAN18
     /// <summary>
     /// Gets the access and refresh token via the On-Behalf-Of OAuth2 v1.0 protocol flow.

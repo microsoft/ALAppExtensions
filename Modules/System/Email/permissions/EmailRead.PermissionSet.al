@@ -16,6 +16,7 @@ PermissionSet 8900 "Email - Read"
     Permissions = tabledata "Email Connector Logo" = r,
                   tabledata "Email Error" = r,
                   tabledata "Email Outbox" = r,
+                  tabledata "Email Rate Limit" = r,
                   tabledata "Sent Email" = r,
                   tabledata "Email Message" = r,
                   tabledata "Email Message Attachment" = r,
