@@ -13,13 +13,29 @@ pageextension 18716 "Posted Purch. Inv Statistics" extends "Purchase Invoice Sta
             }
         }
     }
+
     trigger OnAfterGetRecord()
-    var
-        TDSStatistics: Codeunit "TDS Statistics";
     begin
-        TDSStatistics.GetStatisticsPostedAmount(Rec, TDSAmount);
+        FormatLine();
+    end;
+
+    local procedure GetTDSAmount()
+    var
+        TDSStatsManagement: Codeunit "TDS Stats Management";
+    begin
+        TDSAmount := TDSStatsManagement.GetTDSStatsAmount();
+        Calculated := true;
+        TDSStatsManagement.ClearSessionVariable();
+    end;
+
+    local procedure FormatLine()
+    begin
+        if not Calculated then
+            GetTDSAmount();
     end;
 
     var
+
         TDSAmount: Decimal;
+        Calculated: Boolean;
 }

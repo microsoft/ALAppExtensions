@@ -1,4 +1,4 @@
-﻿codeunit 1151 "COHUB Core"
+codeunit 1151 "COHUB Core"
 {
     TableNo = "COHUB Enviroment";
     Access = Internal;
@@ -36,10 +36,15 @@
         DontShowAgainTok: Label 'Don''t show again';
         DontShowAgainSetupCompanyHubNotificationTxt: Label 'Company Hub Setup Notification', MaxLength = 128;
         DontShowAgainSetupCompanyHubNotificationDescriptionTxt: Label 'This notification is raised to help set up the company hub if no enviroments have been added.';
+        CompanyHubFeatureTelemetryNameTxt: Label 'Company Hub', Locked = true;
 
     procedure GoToCompany(COHUBEnviroment: Record "COHUB Enviroment"; Company: Text)
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000IFM', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000IFS', GetFeatureTelemetryName(), 'Opening company via link');
+
         if COHUBEnviroment.Link <> '' then begin
             HyperLink(COHUBEnviroment.Link + '&company=' + Company);
             Session.LogMessage('0000163', COHUBTelemetryGoToCompanyTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', COHUBTelemetryCategoryTxt);
@@ -50,8 +55,12 @@
     var
         COHUBCompanyEndpoint: Record "COHUB Company Endpoint";
         COHUBCompUrlTaskManager: Codeunit "COHUB Comp. Url Task Manager";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         SourceRecordRef: RecordRef;
     begin
+        FeatureTelemetry.LogUptake('0000IFN', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000IFT', GetFeatureTelemetryName(), 'Updating a single environment');
+
         if COHUBCompanyEndpoint.Get(EnviromentNumber, CompanyName, AssignedTo) then begin
             SourceRecordRef.GetTable(COHUBCompanyEndpoint);
             COHUBCompUrlTaskManager.GatherKPIData(COHUBCompanyEndpoint);
@@ -62,8 +71,11 @@
     var
         COHUBCompanyEndpoint: Record "COHUB Company Endpoint";
         COHUBCompUrlTaskManager: Codeunit "COHUB Comp. Url Task Manager";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         SourceRecordRef: RecordRef;
     begin
+        FeatureTelemetry.LogUptake('0000IFO', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000IFU', GetFeatureTelemetryName(), 'Setting User Task as completed');
         if COHUBCompanyEndpoint.Get(EnviromentNumber, CompanyName, AssignedTo) then begin
             SourceRecordRef.GetTable(COHUBCompanyEndpoint);
 
@@ -74,11 +86,14 @@
     procedure ShowSetupCompanyHubNotification()
     var
         MyNotifications: Record "My Notifications";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         NoEnviromentsEnteredNotification: Notification;
     begin
         if MyNotifications.Get(UserId, GetShowSetupCompanyHubNotificationId()) then
             if not MyNotifications.Enabled then
                 exit;
+
+        FeatureTelemetry.LogUptake('0000IFP', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
 
         NoEnviromentsEnteredNotification.Message(NoEnviromentsMsg);
         NoEnviromentsEnteredNotification.Id := GetShowSetupCompanyHubNotificationId();
@@ -97,7 +112,11 @@
     procedure UpdateAllCompanies(UpdatateAsync: Boolean)
     var
         COHUBEnviroment: Record "COHUB Enviroment";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000IFQ', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000IFV', GetFeatureTelemetryName(), 'Updating all companies');
+
         COHUBEnviroment.SetFilter(Link, '<> %1', '');
         COHUBEnviroment.SetFilter(Name, '<> %1', GetCRONUSEnviromentName());
         if COHUBEnviroment.FindSet() then
@@ -313,6 +332,7 @@
     procedure ImportEnviroments()
     var
         COHUBEnviroment: Record "COHUB Enviroment";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         EnviromentsJsonObject: JsonObject;
         CurrentEnviromentJsonToken: JsonToken;
         EnviromentsJToken: JsonToken;
@@ -336,6 +356,8 @@
             EnviromentFromJson(CurrentEnviromentJsonToken, COHUBEnviroment);
             COHUBEnviroment.Insert();
         end;
+
+        FeatureTelemetry.LogUptake('0000IFR', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up");
     end;
 
     procedure ShowNotSupportedOnPremNotification(): Boolean
@@ -455,16 +477,21 @@
                             COHUBEnviromentFieldRef.Value := FieldTextValue;
                         end
                     else begin
-                            UnsupportedValueErrorInfo.ErrorType := UnsupportedValueErrorInfo.ErrorType::Internal;
-                            UnsupportedValueErrorInfo.Message := UnsupportedFieldValueTypeErr;
-                            UnsupportedValueErrorInfo.Verbosity := UnsupportedValueErrorInfo.Verbosity::Error;
-                            UnsupportedValueErrorInfo.DataClassification := UnsupportedValueErrorInfo.DataClassification::SystemMetadata;
-                            Error(UnsupportedValueErrorInfo);
-                        end;
+                        UnsupportedValueErrorInfo.ErrorType := UnsupportedValueErrorInfo.ErrorType::Internal;
+                        UnsupportedValueErrorInfo.Message := UnsupportedFieldValueTypeErr;
+                        UnsupportedValueErrorInfo.Verbosity := UnsupportedValueErrorInfo.Verbosity::Error;
+                        UnsupportedValueErrorInfo.DataClassification := UnsupportedValueErrorInfo.DataClassification::SystemMetadata;
+                        Error(UnsupportedValueErrorInfo);
+                    end;
                 end;
         end;
 
         COHUBEnviromentRecordRef.SetTable(COHUBEnviroment);
+    end;
+
+    internal procedure GetFeatureTelemetryName(): Text
+    begin
+        exit(CompanyHubFeatureTelemetryNameTxt);
     end;
 
     [IntegrationEvent(false, false)]

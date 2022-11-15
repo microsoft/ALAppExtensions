@@ -13,6 +13,7 @@ page 13 "Email Editor"
     Caption = 'Compose an Email';
     Permissions = tabledata "Email Outbox" = rm,
                   tabledata "Email Message Attachment" = rid;
+
     UsageCategory = Tasks;
     ApplicationArea = All;
     DataCaptionExpression = '';

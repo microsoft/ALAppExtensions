@@ -20,31 +20,27 @@ page 9059 "Custom User Groups In Plan"
     {
         area(content)
         {
-            group("Assigned User Groups")
+            repeater(Group)
             {
-                ShowCaption = false;
-                repeater(Group)
+                field("User Group"; Rec."User Group Code")
                 {
-                    field("User Group"; Rec."User Group Code")
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Code';
-                        ToolTip = 'Specifies the ID of the user group.';
-                        NotBlank = true;
-                    }
-                    field("User Group Name"; Rec."User Group Name")
-                    {
-                        ApplicationArea = All;
-                        Editable = false;
-                        Caption = 'Name';
-                        ToolTip = 'Specifies the name of the user group.';
-                    }
-                    field("Company"; Rec."Company Name")
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Company';
-                        ToolTip = 'Specifies the company that the user group will have access to.';
-                    }
+                    ApplicationArea = All;
+                    Caption = 'Code';
+                    ToolTip = 'Specifies the ID of the user group.';
+                    NotBlank = true;
+                }
+                field("User Group Name"; Rec."User Group Name")
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                    Caption = 'Name';
+                    ToolTip = 'Specifies the name of the user group.';
+                }
+                field("Company"; Rec."Company Name")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Company';
+                    ToolTip = 'Specifies the company that the user group will have access to.';
                 }
             }
         }

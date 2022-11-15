@@ -133,17 +133,6 @@ codeunit 11743 "Sales Header Handler CZL"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'VAT Country/Region Code', false, false)]
-    local procedure UpdateVATRegistrationNoCodeOnAfterVATCountryRegionCodeValidate(var Rec: Record "Sales Header")
-    var
-        BillToCustomer: Record Customer;
-    begin
-        if Rec."Bill-to Customer No." <> '' then begin
-            BillToCustomer.Get(Rec."Bill-to Customer No.");
-            Rec."VAT Registration No." := BillToCustomer."VAT Registration No.";
-        end;
-    end;
-
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Ship-to Country/Region Code', false, false)]
     local procedure UpdateVATCountryRegionCodeOnAfterShipToCountryRegionCodeValidate(var Rec: Record "Sales Header")
     begin

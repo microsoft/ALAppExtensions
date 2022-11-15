@@ -79,9 +79,13 @@ codeunit 9013 "User Login Time Tracker Impl."
     begin
         Now := CurrentDateTime();
 
-        UserLogin.LockTable(); // to ensure that the latest version is picked up and the other users logging in wait here
+        SelectLatestVersion();
+        if UserLogin.Get(UserSecurityId()) then
+            if (Now < UserLogin."Last Login Date" + 60000) and (DT2Date(Now) = DT2Date(UserLogin."Last Login Date")) then // every 1 min on same day must be enough
+                exit;
 
         // Create or update the company login information
+        UserLogin.LockTable(); // to ensure that the latest version is picked up and the other users logging in wait here
         if UserLogin.Get(UserSecurityId()) then begin
             UserLogin."Penultimate Login Date" := UserLogin."Last Login Date";
             UserLogin."Last Login Date" := Now;
@@ -92,19 +96,17 @@ codeunit 9013 "User Login Time Tracker Impl."
             UserLogin."First Login Date" := DT2Date(Now);
             UserLogin."Penultimate Login Date" := 0DT;
             UserLogin."Last Login Date" := Now;
-
-            UserLogin.Insert(true);
+            if UserLogin.Insert(true) then;
 
             // Create login information for the environment
-            UserEnvironmentLogin.LockTable();
             if not UserEnvironmentLogin.Get(UserSecurityId()) then begin
                 UserEnvironmentLogin."User SID" := UserSecurityId();
-                UserEnvironmentLogin.Insert(true);
+                if UserEnvironmentLogin.Insert(true) then; // "if" to cater for race conditions
             end;
         end;
+        Commit();
 
 #if not CLEAN21
-        Commit();
         UserLoginTimeTracker.OnAfterCreateorUpdateLoginInfo(UserSecurityId());
 #endif
     end;

@@ -132,6 +132,93 @@ page 4050 "GP Migration Configuration"
                 }
             }
 
+            group(MasterOnly)
+            {
+                Caption = 'Master Data Only';
+                InstructionalText = 'Indicate if you want to migrate master data only.';
+
+                field("Migrate Only GL Master"; Rec."Migrate Only GL Master")
+                {
+                    Caption = 'General Ledger';
+                    ToolTip = 'Specifies whether to migrate GL master data only.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        PrepSettingsForFieldUpdate();
+
+                        repeat
+                            GPCompanyAdditionalSettings.Validate("Migrate Only GL Master", Rec."Migrate Only GL Master");
+                            GPCompanyAdditionalSettings.Modify();
+                        until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Migrate Only Bank Master"; Rec."Migrate Only Bank Master")
+                {
+                    Caption = 'Bank';
+                    ToolTip = 'Specifies whether to migrate Bank master data only.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        PrepSettingsForFieldUpdate();
+
+                        repeat
+                            GPCompanyAdditionalSettings.Validate("Migrate Only Bank Master", Rec."Migrate Only Bank Master");
+                            GPCompanyAdditionalSettings.Modify();
+                        until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Migrate Only Payables Master"; Rec."Migrate Only Payables Master")
+                {
+                    Caption = 'Payables';
+                    ToolTip = 'Specifies whether to migrate Payables master data only.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        PrepSettingsForFieldUpdate();
+
+                        repeat
+                            GPCompanyAdditionalSettings.Validate("Migrate Only Payables Master", Rec."Migrate Only Payables Master");
+                            GPCompanyAdditionalSettings.Modify();
+                        until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Migrate Only Rec. Master"; Rec."Migrate Only Rec. Master")
+                {
+                    Caption = 'Receivables';
+                    ToolTip = 'Specifies whether to migrate Receivables master data only.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        PrepSettingsForFieldUpdate();
+
+                        repeat
+                            GPCompanyAdditionalSettings.Validate("Migrate Only Rec. Master", Rec."Migrate Only Rec. Master");
+                            GPCompanyAdditionalSettings.Modify();
+                        until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Migrate Only Inventory Master"; Rec."Migrate Only Inventory Master")
+                {
+                    Caption = 'Inventory';
+                    ToolTip = 'Specifies whether to migrate Inventory master data only.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        PrepSettingsForFieldUpdate();
+
+                        repeat
+                            GPCompanyAdditionalSettings.Validate("Migrate Only Inventory Master", Rec."Migrate Only Inventory Master");
+                            GPCompanyAdditionalSettings.Modify();
+                        until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+            }
+
             group(Inactives)
             {
                 Caption = 'Inactive Records';
@@ -181,6 +268,40 @@ page 4050 "GP Migration Configuration"
 
                         repeat
                             GPCompanyAdditionalSettings.Validate("Migrate Inactive Checkbooks", Rec."Migrate Inactive Checkbooks");
+                            GPCompanyAdditionalSettings.Modify();
+                        until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+
+                field("Migrate Inactive Items"; Rec."Migrate Inactive Items")
+                {
+                    Caption = 'Inactive Items';
+                    ToolTip = 'Specifies whether to migrate inactive items.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        PrepSettingsForFieldUpdate();
+
+                        repeat
+                            GPCompanyAdditionalSettings.Validate("Migrate Inactive Items", Rec."Migrate Inactive Items");
+                            GPCompanyAdditionalSettings.Modify();
+                        until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+
+                field("Migrate Discontinued Items"; Rec."Migrate Discontinued Items")
+                {
+                    Caption = 'Discontinued Items';
+                    ToolTip = 'Specifies whether to migrate discontinued items.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        PrepSettingsForFieldUpdate();
+
+                        repeat
+                            GPCompanyAdditionalSettings.Validate("Migrate Discontinued Items", Rec."Migrate Discontinued Items");
                             GPCompanyAdditionalSettings.Modify();
                         until GPCompanyAdditionalSettings.Next() = 0;
                     end;
@@ -353,6 +474,12 @@ page 4050 "GP Migration Configuration"
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Open POs", Rec."Migrate Open POs");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inventory Module", Rec."Migrate Inventory Module");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Oldest GL Year To Migrate", Rec."Oldest GL Year To Migrate");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Only GL Master", Rec."Migrate Only GL Master");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Only Bank Master", Rec."Migrate Only Bank Master");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Only Payables Master", Rec."Migrate Only Payables Master");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Only Rec. Master", Rec."Migrate Only Rec. Master");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Only Inventory Master", Rec."Migrate Only Inventory Master");
+
                     GPCompanyAdditionalSettingsEachCompany.Insert();
                 end;
             until HybridCompany.Next() = 0;
@@ -395,6 +522,12 @@ page 4050 "GP Migration Configuration"
         Rec.Validate("Migrate Receivables Module", GPCompanyAdditionalSettingsInit."Migrate Receivables Module");
         Rec.Validate("Migrate Open POs", GPCompanyAdditionalSettingsInit."Migrate Open POs");
         Rec.Validate("Migrate Inventory Module", GPCompanyAdditionalSettingsInit."Migrate Inventory Module");
+        Rec.Validate("Migrate Only GL Master", GPCompanyAdditionalSettingsInit."Migrate Only GL Master");
+        Rec.Validate("Migrate Only Bank Master", GPCompanyAdditionalSettingsInit."Migrate Only Bank Master");
+        Rec.Validate("Migrate Only Payables Master", GPCompanyAdditionalSettingsInit."Migrate Only Payables Master");
+        Rec.Validate("Migrate Only Rec. Master", GPCompanyAdditionalSettingsInit."Migrate Only Rec. Master");
+        Rec.Validate("Migrate Only Inventory Master", GPCompanyAdditionalSettingsInit."Migrate Only Inventory Master");
+
         CurrPage.Update(true);
 
         EnsureSettingsForAllCompanies();

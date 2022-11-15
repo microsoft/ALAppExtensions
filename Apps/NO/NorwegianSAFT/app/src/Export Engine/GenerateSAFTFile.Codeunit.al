@@ -812,13 +812,15 @@ codeunit 10673 "Generate SAF-T File"
 
         SAFTXMLHelper.AddNewXMLNode('BankAccount', '');
         SAFTXMLHelper.AppendXMLNode('IBANNumber', IBAN);
-        SAFTXMLHelper.AppendXMLNode('BankAccountNumber', BankNumber);
-        SAFTXMLHelper.AppendXMLNode('BankAccountName', BankName);
-        if ClearingCode = '' then
-            SortCode := BranchNo
-        else
-            SortCode := ClearingCode;
-        SAFTXMLHelper.AppendXMLNode('SortCode', SortCode);
+        if IBAN = '' then begin
+            SAFTXMLHelper.AppendXMLNode('BankAccountNumber', BankNumber);
+            SAFTXMLHelper.AppendXMLNode('BankAccountName', BankName);
+            if ClearingCode = '' then
+                SortCode := BranchNo
+            else
+                SortCode := ClearingCode;
+            SAFTXMLHelper.AppendXMLNode('SortCode', SortCode);
+        end;
         SAFTXMLHelper.AppendXMLNode('BIC', SWIFT);
 
         SAFTXMLHelper.AppendXMLNode('CurrencyCode', SAFTExportMgt.GetISOCurrencyCode(CurrencyCode));

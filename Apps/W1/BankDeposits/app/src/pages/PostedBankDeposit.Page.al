@@ -157,7 +157,6 @@ page 1694 "Posted Bank Deposit"
                 var
                     PostedBankDepositHeader: Record "Posted Bank Deposit Header";
                     ReportSelections: Record "Report Selections";
-                    FeatureTelemetry: Codeunit "Feature Telemetry";
                     IsHandled: Boolean;
                 begin
                     if PostedBankDepositHeader.Get(Rec."No.") then begin
@@ -175,7 +174,6 @@ page 1694 "Posted Bank Deposit"
                         Error(BankDepositReportSelectionErr);
 
                     REPORT.Run(ReportSelections."Report ID", true, false, PostedBankDepositHeader);
-                    FeatureTelemetry.LogUsage('0000H7Z', 'Bank Deposit', 'Bank deposit printed');
                 end;
             }
             action(Undo)

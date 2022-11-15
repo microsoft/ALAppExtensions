@@ -12,11 +12,11 @@ interface SymmetricAlgorithm
     /// <summary>
     /// Initializes a new instance of the SymmetricAlgorithm. 
     /// </summary>    
-    internal procedure GetInstance(var DotNetSymmetricAlgorithm: DotNet "Cryptography.SymmetricAlgorithm");
+    procedure GetInstance(var DotNetSymmetricAlgorithm: DotNet "Cryptography.SymmetricAlgorithm");
 
     /// <summary>
     /// Returns Url of the encrypment method used
     /// </summary>
     /// <returns>An string containing the encrypment method Url.</returns>
-    internal procedure XmlEncrypmentMethodUrl(): Text;
+    procedure XmlEncrypmentMethodUrl(): Text;
 }

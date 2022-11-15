@@ -146,6 +146,18 @@ codeunit 9012 "Azure AD Graph"
     end;
 
     /// <summary>
+    /// Gets the name of the AAD security group defined in tenant admin center.
+    /// For more info, see https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/tenant-admin-center-environments#manage-access-using-azure-active-directory-groups
+    /// </summary>
+    /// <returns>The name of the AAD security group defined in tenant admin center.</returns>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure GetEnvironmentDirectoryGroup(): Text
+    begin
+        exit(AzureADGraphImpl.GetEnvironmentDirectoryGroup());
+    end;
+
+    /// <summary>
     /// Gets a list of users.
     /// </summary>
     /// <param name="NumberOfUsers">The number of users to return.</param>
@@ -180,6 +192,43 @@ codeunit 9012 "Azure AD Graph"
     procedure GetGroupMembers(GroupDisplayName: Text; var GroupMembers: DotNet IEnumerable)
     begin
         AzureADGraphImpl.GetGroupMembers(GroupDisplayName, GroupMembers);
+    end;
+
+    /// <summary>
+    /// Gets a list of users who are members of the specified AAD group.
+    /// </summary>
+    /// <param name="GroupId">The AAD object ID of the AAD security group.</param>
+    /// <param name="GroupMembers">A list of UserInfo objects identifying users that are members of the specified group.</param>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure GetMembersForGroupId(GroupId: Text; var GroupMembers: DotNet IEnumerable)
+    begin
+        AzureADGraphImpl.GetMembersForGroupId(GroupId, GroupMembers);
+    end;
+
+    /// <summary>
+    /// Checks if a given user is a member of an AAD security group.
+    /// </summary>
+    /// <param name="GroupDisplayName">The name of the AAD security group.</param>
+    /// <param name="GraphUserInfo">The user.</param>
+    /// <returns>True if the user is member of the AAD security group; otherwise - false.</returns>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure IsGroupMember(GroupDisplayName: Text; GraphUserInfo: DotNet UserInfo): Boolean
+    begin
+        exit(AzureADGraphImpl.IsGroupMember(GroupDisplayName, GraphUserInfo));
+    end;
+
+    /// <summary>
+    /// Checks if a given user is a member of an AAD security group.
+    /// </summary>
+    /// <param name="GroupId">The AAD object ID of the AAD security group.</param>
+    /// <param name="GraphUserInfo">The user.</param>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure IsMemberOfGroupWithId(GroupId: Text; GraphUserInfo: DotNet UserInfo): Boolean
+    begin
+        exit(AzureADGraphImpl.IsMemberOfGroupWithId(GroupId, GraphUserInfo));
     end;
 }
 #pragma warning restore AS0018

@@ -11,7 +11,7 @@ codeunit 30127 "Shpfy GQL Customer" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{customer(id: \"gid://shopify/Customer/{{CustomerId}}\") {legacyResourceId firstName lastName email phone acceptsMarketing acceptsMarketingUpdatedAt taxExempt taxExemptions verifiedEmail state hasNote note createdAt updatedAt tags addresses {id company firstName lastName address1 address2 zip city countryCodeV2 country provinceCode province phone} defaultAddress {id} metafields(namespace: \"Microsoft.Dynamics365.BusinessCentral\" first: 10) {edges {node {id namespace ownerType legacyResourceId key value}}}}}"}');
+        exit('{"query":"{customer(id: \"gid://shopify/Customer/{{CustomerId}}\") {legacyResourceId firstName lastName email phone acceptsMarketing acceptsMarketingUpdatedAt taxExempt taxExemptions verifiedEmail state note createdAt updatedAt tags addresses {id company firstName lastName address1 address2 zip city countryCodeV2 country provinceCode province phone} defaultAddress {id} metafields(namespace: \"Microsoft.Dynamics365.BusinessCentral\" first: 10) {edges {node {id namespace ownerType legacyResourceId key value}}}}}"}');
     end;
 
     /// <summary>

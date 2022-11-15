@@ -228,12 +228,18 @@ codeunit 132927 "MockGraphQuery Test Library"
     end;
 
     procedure AddGraphUserToDevicesGroup(GraphUser: DotNet UserInfo)
-    var
-        DevicesGroupInfo: DotNet GroupInfo;
     begin
-        DevicesGroupInfo := DevicesGroupInfo.GroupInfo();
-        DevicesGroupInfo.DisplayName := GetDevicesGroupName();
-        MockGraphQuery.AddUserGroup(GraphUser, DevicesGroupInfo);
+        AddGraphUserToGroup(GraphUser, GetDevicesGroupName());
+    end;
+
+    procedure AddGraphUserToGroup(GraphUser: DotNet UserInfo; GroupName: Text)
+    var
+        GroupInfo: DotNet GroupInfo;
+    begin
+        GroupInfo := GroupInfo.GroupInfo();
+        GroupInfo.DisplayName := GroupName;
+        GroupInfo.ObjectId := GroupName + ' Object ID';
+        MockGraphQuery.AddUserGroup(GraphUser, GroupInfo);
     end;
 
     local procedure CreateDirectoryRole(var DirectoryRole: DotNet RoleInfo; RoleTemplateId: Text; RoleDescription: Text; RoleDisplayName: Text; RoleIsSystem: Boolean)
@@ -256,6 +262,23 @@ codeunit 132927 "MockGraphQuery Test Library"
     procedure GetM365CollaborationEnabled(): Boolean
     begin
         exit(MockGraphQuery.IsM365CollaborationEnabled());
+    end;
+
+    procedure SetEnvironmentDirectoryGroup(EnvironmentDirectoryGroup: Text)
+    var
+        GroupInfo: DotNet GroupInfo;
+    begin
+        GroupInfo := GroupInfo.GroupInfo();
+        GroupInfo.DisplayName := EnvironmentDirectoryGroup;
+        // normally the object ID is a GUID, but here we use the group name for simplicity
+        GroupInfo.ObjectId := EnvironmentDirectoryGroup + ' Object ID';
+        MockGraphQuery.AddGroup(GroupInfo);
+        MockGraphQuery.CurrentEnvironmentSecurityGroup := GroupInfo;
+    end;
+
+    procedure GetEnvironmentDirectoryGroup(): Text
+    begin
+        exit(MockGraphQuery.GetEnvironmentDirectoryGroup());
     end;
 
     local procedure GetDevicesGroupName(): Text

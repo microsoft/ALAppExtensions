@@ -23,6 +23,8 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 Caption = 'Configure GP Migration';
                 ToolTip = 'Configure migration settings for GP.';
                 Promoted = true;
+                PromotedIsBig = true;
+                PromotedOnly = true;
                 PromotedCategory = Process;
                 Image = Setup;
 

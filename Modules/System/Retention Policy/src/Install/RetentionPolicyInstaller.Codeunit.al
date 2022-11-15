@@ -87,8 +87,8 @@ codeunit 3907 "Retention Policy Installer"
         exit(RetentionPolicyLogCategory::"Retention Policy - Setup");
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterInitialization', '', false, false)]
-    local procedure AddAllowedTablesOnAfterSystemInitialization()
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
+    local procedure AddAllowedTablesOnAfterLogin()
     begin
         AddAllowedTables();
     end;

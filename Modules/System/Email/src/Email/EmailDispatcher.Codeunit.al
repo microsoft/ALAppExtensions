@@ -7,7 +7,7 @@ codeunit 8888 "Email Dispatcher"
 {
     Access = Internal;
     TableNo = "Email Outbox";
-    Permissions = tabledata "Sent Email" = i,
+    Permissions = tabledata "Sent Email" = ri,
                   tabledata "Email Outbox" = rimd,
                   tabledata "Email Message" = r,
                   tabledata "Email Error" = ri;
@@ -23,15 +23,10 @@ codeunit 8888 "Email Dispatcher"
 
     trigger OnRun()
     var
-        EmailMessage: Record "Email Message";
-        SentEmail: Record "Sent Email";
-        SendEmail: Codeunit "Send Email";
-        Email: Codeunit Email;
-#if not CLEAN20
-        ClientTypeManagement: Codeunit "Client Type Management";
-#endif
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        EmailRateLimitImpl: Codeunit "Email Rate Limit Impl.";
         Dimensions: Dictionary of [Text, Text];
+        RateLimitDuration: Duration;
     begin
         Dimensions.Add('Connector', Format(Rec.Connector));
         Dimensions.Add('EmailMessageID', Format(Rec."Message Id", 0, 4));
@@ -42,13 +37,36 @@ codeunit 8888 "Email Dispatcher"
         // NB: Avoid adding events here as any error would cause a roll-back and possibly an inconsistent state of the Email Outbox.
         // -----------
 
-        UpdateOutboxStatus(Rec, Rec.Status::Processing);
+        Rec.LockTable(true);
+        if EmailRateLimitImpl.IsRateLimitExceeded(Rec."Account Id", Rec.Connector, Rec."Send From", RateLimitDuration) then
+            RescheduleEmail(RateLimitDuration, Dimensions, Rec)
+        else
+            SendEmail(Rec);
+    end;
 
-        if EmailMessageImpl.Get(Rec."Message Id") then begin
+    local procedure SendEmail(var EmailOutbox: Record "Email Outbox")
+    var
+        EmailMessage: Record "Email Message";
+        SentEmail: Record "Sent Email";
+        SendEmail: Codeunit "Send Email";
+        Email: Codeunit Email;
+#if not CLEAN20
+        ClientTypeManagement: Codeunit "Client Type Management";
+#endif
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        Dimensions: Dictionary of [Text, Text];
+    begin
+        // -----------
+        // NB: Avoid adding events here as any error would cause a roll-back and possibly an inconsistent state of the Email Outbox.
+        // -----------
+
+        UpdateOutboxStatus(EmailOutbox, EmailOutbox.Status::Processing);
+
+        if EmailMessageImpl.Get(EmailOutbox."Message Id") then begin
             LogAttachments();
 
-            SendEmail.SetConnector(Rec.Connector);
-            SendEmail.SetAccount(Rec."Account Id");
+            SendEmail.SetConnector(EmailOutbox.Connector);
+            SendEmail.SetAccount(EmailOutbox."Account Id");
 
             EmailMessageImpl.GetEmailMessage(EmailMessage);
             Success := SendEmail.Run(EmailMessage);
@@ -56,33 +74,51 @@ codeunit 8888 "Email Dispatcher"
             if Success then begin
                 FeatureTelemetry.LogUsage('0000CTV', EmailFeatureNameLbl, 'Email sent', Dimensions);
 
-                InsertToSentEmail(Rec, SentEmail);
+                InsertToSentEmail(EmailOutbox, SentEmail);
 
-                Rec.Delete();
+                EmailOutbox.Delete();
                 EmailMessageImpl.MarkAsRead();
                 Commit();
-            end
-            else begin
+            end else begin
                 FeatureTelemetry.LogError('0000CTP', EmailFeatureNameLbl, 'Failed to send email', GetLastErrorText(true), GetLastErrorCallStack(), Dimensions);
 
-                UpdateOutboxError(GetLastErrorText(), Rec);
-                UpdateOutboxStatus(Rec, Rec.Status::Failed);
+                UpdateOutboxError(GetLastErrorText(), EmailOutbox);
+                UpdateOutboxStatus(EmailOutbox, EmailOutbox.Status::Failed);
             end;
-        end
-        else begin
-            FeatureTelemetry.LogError('0000CTR', EmailFeatureNameLbl, 'Failed to find email', StrSubstNo(FailedToFindEmailMessageMsg, Rec."Message Id"), '', Dimensions);
-            UpdateOutboxError(FailedToFindEmailMessageErrorMsg, Rec);
-            UpdateOutboxStatus(Rec, Rec.Status::Failed);
+        end else begin
+            FeatureTelemetry.LogError('0000CTR', EmailFeatureNameLbl, 'Failed to find email', StrSubstNo(FailedToFindEmailMessageMsg, EmailOutbox."Message Id"), '', Dimensions);
+            UpdateOutboxError(FailedToFindEmailMessageErrorMsg, EmailOutbox);
+            UpdateOutboxStatus(EmailOutbox, EmailOutbox.Status::Failed);
         end;
 
         if Success then
             Email.OnAfterEmailSent(SentEmail)
         else
-            Email.OnAfterEmailSendFailed(Rec);
+            Email.OnAfterEmailSendFailed(EmailOutbox);
 #if not CLEAN20
         if (ClientTypeManagement.GetCurrentClientType() = ClientType::Background) then
-            Email.OnAfterSendEmail(Rec."Message Id", Success);
+            Email.OnAfterSendEmail(EmailOutbox."Message Id", Success);
 #endif
+    end;
+
+    local procedure RescheduleEmail(Delay: Duration; Dimensions: Dictionary of [Text, Text]; var EmailOutbox: Record "Email Outbox")
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        TaskId: Guid;
+    begin
+        // -----------
+        // NB: Avoid adding events here as any error would cause a roll-back and possibly an inconsistent state of the Email Outbox.
+        // -----------
+
+        TaskId := TaskScheduler.CreateTask(Codeunit::"Email Dispatcher", Codeunit::"Email Error Handler", true, CompanyName(), CurrentDateTime() + Delay, EmailOutbox.RecordId());
+
+        EmailOutbox."Task Scheduler Id" := TaskId;
+        EmailOutbox."Date Sending" := CurrentDateTime() + Delay;
+        EmailOutbox.Modify();
+
+        Dimensions.Add('TaskId', Format(TaskId));
+        FeatureTelemetry.LogUsage('0000CTK', EmailFeatureNameLbl, 'Email being rescheduled', Dimensions);
+        Success := true;
     end;
 
     local procedure InsertToSentEmail(EmailOutbox: Record "Email Outbox"; var SentEmail: Record "Sent Email")
