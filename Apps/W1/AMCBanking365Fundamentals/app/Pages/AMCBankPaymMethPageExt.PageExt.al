@@ -23,7 +23,7 @@ pageextension 20104 "AMC Bank Paym. Meth. Page Ext" extends "Payment Methods"
     trigger OnOpenPage()
     var
     begin
-        IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled();
+        IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled(); //Hotfix AMC-JN
     end;
 
 }

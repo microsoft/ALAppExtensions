@@ -1123,6 +1123,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Assisted Setup - Action Start update - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Page 3327916022 - Property 2019332006" size-unit="char" translate="yes" xml:space="preserve">
+          <source>New,Process,Page,Setup</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Property PromotedActionCategories</note>
+        </trans-unit>
         <trans-unit id="Page 3327916022 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>AMC Banking Bank Name List</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -1342,6 +1347,11 @@
           <source>Delete Entries Older Than 7 Days</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Webcall Log - Action Delete7days - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 3704095706 - Property 2019332006" size-unit="char" translate="yes" xml:space="preserve">
+          <source>New,Process,Page,Sign-up,Assisted setup,Bank Name,Encryption,Support</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Banking Setup - Property PromotedActionCategories</note>
         </trans-unit>
         <trans-unit id="Page 3704095706 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>AMC Banking Setup</source>

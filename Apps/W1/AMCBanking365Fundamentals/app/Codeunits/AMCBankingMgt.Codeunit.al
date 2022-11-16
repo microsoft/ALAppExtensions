@@ -42,7 +42,7 @@ codeunit 20105 "AMC Banking Mgt."
         AMCBankingPmtTypeDesc9Txt: Label 'SEPA credit transfer';
         NoDetailsMsg: Label 'The log does not contain any more details.';
         LicenserverNameTxt: Label 'https://license.amcbanking.com', Locked = true;
-        TestLicenserverNameTxt: Label 'https://licensetest.amcbanking.com', Locked = true;
+        TestLicenserverNameTxt: Label 'https://licensetest.amcbanking.com', Locked = true; //Hotfix AMC-JN
         LicenseRegisterTagTxt: Label '/api/v1/register/customer', Locked = true;
 
         FileExtTxt: Label '.txt';
@@ -76,7 +76,7 @@ codeunit 20105 "AMC Banking Mgt."
         exit('http://' + ApiVersion() + '.soap.xml.link.amc.dk/');
     end;
 
-    internal procedure GetCleanLicenseServerName(AMCBankingSetup: Record "AMC Banking Setup"): Text
+    internal procedure GetCleanLicenseServerName(AMCBankingSetup: Record "AMC Banking Setup"): Text //Hotfix AMC-JN
     var
         CleanLicenserverNameTxt: Text;
         DelPos: Integer;
@@ -94,7 +94,7 @@ codeunit 20105 "AMC Banking Mgt."
 
     procedure GetLicenseServerName(): Text
     begin
-        if (GetLicenseNumber() = CopyStr('BC' + AMCTenantId(), 1, 40)) then
+        if (GetLicenseNumber() = CopyStr('BC' + AMCTenantId(), 1, 40)) then //Hotfix AMC-JN
             exit(TestLicenserverNameTxt)
         else
             exit(LicenserverNameTxt);
@@ -105,7 +105,7 @@ codeunit 20105 "AMC Banking Mgt."
         exit(LicenseRegisterTagTxt);
     end;
 
-    internal procedure IsLicenseEqualAMC(): Boolean
+    internal procedure IsLicenseEqualAMC(): Boolean //Hotfix AMC-JN
     begin
         if (GetLicenseNumber() = CopyStr('BC' + AMCTenantId(), 1, 40)) then
             exit(true)
@@ -117,7 +117,7 @@ codeunit 20105 "AMC Banking Mgt."
     var
     begin
         if ((UpperCase(AMCBankingSetup.Solution) <> UpperCase(GetEnterPriseSolutionCode())) and
-            (EnvironmentInformation.IsSandbox()) and (not IsLicenseEqualAMC())) then
+            (EnvironmentInformation.IsSandbox()) and (not IsLicenseEqualAMC())) then //Hotfix AMC-JN
             exit(true)
         else
             exit(false)
@@ -451,7 +451,7 @@ codeunit 20105 "AMC Banking Mgt."
 
     end;
 
-    internal procedure IsAMCFundamentalsEnabled(): Boolean
+    internal procedure IsAMCFundamentalsEnabled(): Boolean //Hotfix AMC-JN
     var
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
@@ -662,7 +662,7 @@ codeunit 20105 "AMC Banking Mgt."
     end;
 
     [NonDebuggable]
-    internal procedure AMCTenantId(): Text
+    internal procedure AMCTenantId(): Text //Hotfix AMC-JN
     var
     begin
         Exit(CopyStr('fb79e895-7de3-4468-8184-cd181eb8b131', 1, 40)); //AMC Tenant Guid

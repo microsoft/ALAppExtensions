@@ -323,7 +323,7 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
         Clear(Currency);
         if (PaymentExportData."AMC Recip. Bank Acc. Currency" <> '') then
             if (Currency.get(PaymentExportData."AMC Recip. Bank Acc. Currency")) then
-                PaymentExportData."AMC Recip. Bank Acc. Currency" := Currency."ISO Code";
+                PaymentExportData."AMC Recip. Bank Acc. Currency" := Currency."ISO Code"; //Hotfix AMC-JN
 
 
         Clear(CountryRegion);

@@ -21,6 +21,6 @@ pageextension 20108 "AMC Bank Credit Trf. Reg. Ext" extends "Credit Transfer Reg
     trigger OnOpenPage()
     var
     begin
-        IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled();
+        IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled(); //Hotfix AMC-JN
     end;
 }
