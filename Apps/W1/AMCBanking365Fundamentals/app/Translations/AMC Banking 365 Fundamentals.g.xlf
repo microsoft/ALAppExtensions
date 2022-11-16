@@ -1123,11 +1123,6 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Assisted Setup - Action Start update - Property Caption</note>
         </trans-unit>
-        <trans-unit id="Page 3327916022 - Property 2019332006" size-unit="char" translate="yes" xml:space="preserve">
-          <source>New,Process,Page,Setup</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Bank Name List - Property PromotedActionCategories</note>
-        </trans-unit>
         <trans-unit id="Page 3327916022 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>AMC Banking Bank Name List</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -1348,11 +1343,6 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page AMC Bank Webcall Log - Action Delete7days - Property Caption</note>
         </trans-unit>
-        <trans-unit id="Page 3704095706 - Property 2019332006" size-unit="char" translate="yes" xml:space="preserve">
-          <source>New,Process,Page,Sign-up,Assisted setup,Bank Name,Encryption,Support</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Page AMC Banking Setup - Property PromotedActionCategories</note>
-        </trans-unit>
         <trans-unit id="Page 3704095706 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>AMC Banking Setup</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -1518,25 +1508,25 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">XmlPort AMC Bank Export CT - Property Caption</note>
         </trans-unit>
-        <trans-unit id="PageExtension 435676519 - Action 4027789718 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3408061871">
-          <source>Calls the AMC Bank Myaccount Page to be able to setup further informations for the bank accounts. External webpage will be opened by this button.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">PageExtension AMC Bank Bank Account List Ext - Action AMCShowServicePage - Property ToolTip</note>
-        </trans-unit>
-        <trans-unit id="PageExtension 435676519 - Action 4027789718 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3408061871">
-          <source>AMC Bank Page</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">PageExtension AMC Bank Bank Account List Ext - Action AMCShowServicePage - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="PageExtension 1620763456 - Control 1281447598 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2292249509">
+        <trans-unit id="PageExtension 225112926 - Control 1281447598 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2292249509">
           <source>Specifies your bank's data format as required by the AMC Banking when you import and export bank files.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">PageExtension AMC Bank Bank Account Page Ext - Control Bank Name format - Property ToolTip</note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension AMC Bank Bank Account Card - Control Bank Name format - Property ToolTip</note>
         </trans-unit>
-        <trans-unit id="PageExtension 1620763456 - Control 2292565801 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2292249509">
+        <trans-unit id="PageExtension 225112926 - Control 2292565801 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2292249509">
           <source>Specifies your bank file name incl. extension. (use %1 in filename to get DateTime as part of filename - if field is blank a Bankname.txt will be used as default filename).</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">PageExtension AMC Bank Bank Account Page Ext - Control Bank Filename - Property ToolTip</note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension AMC Bank Bank Account Card - Control Bank Filename - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1620763456 - Action 4027789718 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3408061871">
+          <source>Calls the AMC Bank Myaccount Page to be able to setup further informations for the bank accounts. External webpage will be opened by this button.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension AMC Bank Bank Account Page Ext - Action AMCShowServicePage - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1620763456 - Action 4027789718 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3408061871">
+          <source>AMC Bank Page</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension AMC Bank Bank Account Page Ext - Action AMCShowServicePage - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 3493802159 - Control 2640682147 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 294717160">
           <source>XTL Journal associated with the Credit Transfer Register</source>
@@ -1642,6 +1632,21 @@
           <source>Warning</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum AMCBankWebLogStatus - EnumValue Warning - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PermissionSet 362460516 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>AMC Banking - Edit</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PermissionSet AMC Banking - Edit - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PermissionSet 1925059026 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>AMC Banking - Read</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PermissionSet AMC Banking - Read - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PermissionSet 1617750238 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>AMC Banking- Objects</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PermissionSet AMC Banking- Objects - Property Caption</note>
         </trans-unit>
       </group>
     </body>

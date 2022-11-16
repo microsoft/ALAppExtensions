@@ -300,7 +300,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         AMCBankingMgt.CheckCredentials();
         AMCBankingSetup.Get();
 
-        AMCBankServiceRequestMgt.InitializeHttp(HttpRequestMessage, AMCBankingMgt.GetLicenseServerName() + '/' + AMCBankingMgt.GetLicenseXmlApi(), 'POST');
+        AMCBankServiceRequestMgt.InitializeHttp(HttpRequestMessage, AMCBankingMgt.GetCleanLicenseServerName(AMCBankingSetup) + '/' + AMCBankingMgt.GetLicenseXmlApi(), 'POST');
 
         PrepareSOAPRequestBodyModuleCreate(HttpRequestMessage);
 
