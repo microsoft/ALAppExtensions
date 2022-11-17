@@ -5,6 +5,7 @@
 *       @JesperSchulz @darjoo @IhorHandziuk @stkillen @AndreasMoth
 
 # AL-Go files are owned by Engineering Systems
+/SystemModules/.AL-Go @microsoft/dynamics-smb-engineering-systems
 /Modules/.AL-Go @microsoft/dynamics-smb-engineering-systems
 /.github @microsoft/dynamics-smb-engineering-systems
 /CODEOWNERS @microsoft/dynamics-smb-engineering-systems
