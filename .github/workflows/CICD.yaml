@@ -450,6 +450,13 @@ jobs:
             Add-Content -Path $env:GITHUB_OUTPUT -Value "$name=$value"
             Add-Content -Path $env:GITHUB_ENV -Value "$name=$value"
           }
+      
+      - name: Publish artifacts - project
+        uses: actions/upload-artifact@v3
+        with:
+          name: Full_Project
+          path: '${{ matrix.project }}'
+          if-no-files-found: ignore
 
       - name: Publish artifacts - apps
         uses: actions/upload-artifact@v3
