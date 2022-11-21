@@ -22,14 +22,6 @@ $packageParameters = @{
     "gitHubRepository" = "$ENV:GITHUB_SERVER_URL/$ENV:GITHUB_REPOSITORY"
 }
 
-$packageParameters.appFiles = @(Get-Item -Path (Join-Path $appsFolder "*.app") | ForEach-Object { $_.FullName })
-if ($testAppsFolder) {
-    $packageParameters.testAppFiles = @(Get-Item -Path (Join-Path $testAppsFolder "*.app") | ForEach-Object { $_.FullName })
-}
-if ($dependenciesFolder.Count -gt 0) {
-    $packageParameters.dependencyAppFiles = @(Get-Item -Path (Join-Path $dependenciesFolder "*.app") | ForEach-Object { $_.FullName })
-}
-
 # Determine package ID
 if ($nuGetAccount.ContainsKey('PackageName')) {
     $packageParameters.packageId = $nuGetAccount.PackageName.replace('{project}', $projectName).replace('{owner}', $ENV:GITHUB_REPOSITORY_OWNER).replace('{repo}',$env:RepoName)
@@ -48,7 +40,7 @@ if ($type -eq 'CD') {
 }
 
 # Determine package version
-$packageParameters.packageVersion = [System.Version] $appsFolder.SubString($appsFolder.IndexOf("-Apps-") + 6)
+$packageParameters.packageVersion = $appsFolder.SubString($appsFolder.IndexOf("-Apps-") + 6)
 
 # Determine package title
 if ($nuGetAccount.ContainsKey('PackageTitle')) {
@@ -74,32 +66,111 @@ else {
     $packageParameters.packageAuthors = 'mazhelez'
 }
 
-# TODO -remove
-$packageParameters.packageId = 'Microsoft-ALAppExtensions-preview'
-$packageParameters.packageTitle = $packageParameters.packageId
+Write-Host "Package parameters: "
+$packageParameters
 
-$packagePath = New-BcNuGetPackage @packageParameters
+$nuspec = GenerateNuspecTemplate `
+            -PackageId $packageParameters.packageId `
+            -Version $packageParameters.packageVersion `
 
-$package = Get-Item -Path $packagePath
-$packageName = $package.Name
+$packageFolder = Join-Path $env:TEMP ([GUID]::NewGuid().ToString())
+New-Item -Path $packageFolder -ItemType Directory | Out-Null
 
-Rename-Item -Path $package.FullName -NewName "$($package.Name).zip" -Force
+Write-Host "Package folder: $packageFolder"
 
-# Add source code to the package
-$tmpFolder = Join-Path $ENV:TEMP ([GUID]::NewGuid().ToString())
-Expand-Archive -Path "$($package.FullName).zip" -DestinationPath $tmpFolder
+try {
+    Write-Host "Copy main app files to package folder $packageFolder"
+    (gci -Path $appsFolder -Filter "*.app") | % {
+        Copy-Item -Path $_.FullName -Destination $packageFolder -Force
+    
+        $fileElement = $nuspec.CreateElement("file")
+        $fileElement.SetAttribute("src", $_.Name)
+        $fileElement.SetAttribute("target", $_.Name)
+    
+        $nuspec.package.files.AppendChild($fileElement) | Out-Null
+    }
+    
+    Write-Host "Copy test app files to package folder $packageFolder"
+    (gci -Path $testAppsFolder -Filter "*.app") | % {
+        Copy-Item -Path $_.FullName -Destination $packageFolder -Force -Container
+    
+        $fileElement = $nuspec.CreateElement("file")
+        $fileElement.SetAttribute("src", $_.Name)
+        $fileElement.SetAttribute("target", (Join-Path 'Tests' $_.Name))
+    
+        $nuspec.package.files.AppendChild($fileElement) | Out-Null
+    }
+    
+    Write-Host "Copy source code for project $project to package folder $packageFolder"
+    Copy-Item -Path (Join-Path $ENV:GITHUB_WORKSPACE $project) -Destination (Join-Path $packageFolder 'SourceCode') -Recurse -Force
+    $fileElement = $nuspec.CreateElement("file")
+    $fileElement.SetAttribute("src", "SourceCode\**")
+    $fileElement.SetAttribute("target", "SourceCode")
+    
+    $nuspec.package.files.AppendChild($fileElement) | Out-Null
+    
+    #Create .nuspec file(Join-Path $packageFolder 'manifest.nuspec')
+    $nuspecFilePath = (Join-Path $packageFolder 'manifest.nuspec')
+    $nuspec.Save($nuspecFilePath)
+    
+    # Download nuget CLI
+    # Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile ./nuget.exe
+    
+    $nugetOutput =  Invoke-Expression -Command "./nuget.exe pack $nuspecFilePath -OutputDirectory ."
+    
+    $nugetOutput | Write-Host
+    if ($LASTEXITCODE -or $null -eq $nugetOutput)
+    {
+        throw "Generating the nuget pack failed with exit code $LASTEXITCODE"
+    }
+    
+    $nugetOutput
+}
+finally {
+    Remove-Item $packageFolder -Recurse -Force
+}
 
-Copy-Item -Path (Join-Path . $project) -Destination (Join-Path $tmpFolder $projectName) -Recurse -Force
+$nugetPackageFile = gci -Path '.' -Filter "$($packageParameters.packageId)*.nupkg"
 
-Compress-Archive -Path "$tmpFolder\*" -DestinationPath "$($package.FullName).zip" -Force
+if(-not $nugetPackageFile) {
+    throw "Cannot find nupkg file"
+}
 
-Remove-Item -Path $tmpFolder -Recurse -Force -ErrorAction SilentlyContinue
+Write-Host "Push package $($nugetPackageFile.FullName) to $nuGetServerUrl"
+$nugetOutput =  Invoke-Expression -Command "./nuget.exe push $($nugetPackageFile.FullName) -ApiKey $nuGetToken -Source $nuGetServerUrl"
 
-Rename-Item -Path "$($package.FullName).zip" -NewName $packageName -Force
+$nugetOutput
 
-Write-Host $package.FullName
+function GenerateNuspecTemplate
+(
+    [Parameter(Mandatory=$true)]
+    $PackageId,
 
-#Push-BcNuGetPackage -nuGetServerUrl $nuGetServerUrl -nuGetToken $nuGetToken -bcNuGetPackage $package
+    [Parameter(Mandatory=$true)]
+    $Version
+)
+{
+    [xml] $template = '<?xml version="1.0" encoding="utf-8"?>
+    <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+        <metadata>
+            <id></id>
+            <version></version>
+            <title>Dynamics SMB Business Central</title>
+            <authors>Microsoft</authors>
+            <owners>Microsoft</owners>
+            <requireLicenseAcceptance>false</requireLicenseAcceptance>
+            <description>System Application for D365 Business Central</description>
+            <summary>System Application for D365 Business Central</summary>
+        </metadata>
+	    <files>
+	    </files>
+    </package>'
 
-#>
+    $template.package.metadata.id = $PackageId
+    $template.package.metadata.version = $Version
+    $template.package.files.file.Attributes['src'].Value = "$PackageSrcDir"
+    $template.package.files.file.Attributes['target'].Value = "$PackageTargetDirName"
+
+    return $template
+}
 
