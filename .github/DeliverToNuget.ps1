@@ -128,7 +128,7 @@ if(-not $nugetPackageFile) {
 }
 
 Write-Host "Push package $($nugetPackageFile.FullName) to $nuGetServerUrl" -ForegroundColor Magenta
-#$nugetOutput =  Invoke-Expression -Command "./nuget.exe push $($nugetPackageFile.FullName) -ApiKey $nuGetToken -Source $nuGetServerUrl"
+$nugetOutput =  Invoke-Expression -Command "./nuget.exe push $($nugetPackageFile.FullName) -ApiKey $nuGetToken -Source $nuGetServerUrl"
 
 if ($LASTEXITCODE -or $null -eq $nugetOutput)
 {
