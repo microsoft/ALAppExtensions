@@ -41,7 +41,7 @@ defaults:
 
 jobs:
   CreatePerformanceTestApp:
-    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    runs-on: [ self-hosted,1ES.Pool=ALAppExt2 ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
