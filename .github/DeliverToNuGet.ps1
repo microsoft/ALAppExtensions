@@ -121,7 +121,7 @@ finally {
 }
 
 # Get the newly created package
-$nugetPackageFile = gci -Path $outputDirectory -Filter "$($packageParameters.packageId)*.nupkg"
+$nugetPackageFile = gci -Path $outputDirectory -Filter "$packageId*.nupkg"
 
 if(-not $nugetPackageFile) {
     throw "Cannot find nupkg file"
