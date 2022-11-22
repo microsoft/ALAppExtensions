@@ -28,7 +28,7 @@ codeunit 9144 "SharePoint Authorization Code" implements "SharePoint Authorizati
     [NonDebuggable]
     procedure SetParameters(NewAadTenantId: Text; NewClientId: Text; NewClientSecret: Text; NewScopes: List of [Text])
     begin
-        NewAadTenantId := AadTenantId;
+        AadTenantId := NewAadTenantId;
         ClientId := NewClientId;
         ClientSecret := NewClientSecret;
         Scopes := NewScopes;
