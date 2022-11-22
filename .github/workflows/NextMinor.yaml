@@ -10,11 +10,12 @@ defaults:
   run:
     shell: PowerShell
 
+env:
+  workflowDepth: 1
+
 jobs:
   Initialization:
-    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
-    env:
-      workflowDepth: 1
+    runs-on: [ windows-latest ]
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
       settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
@@ -96,7 +97,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Download artifacts
+      - name: Download thisbuild artifacts
+        if: env.WorkflowDepth > 1
         uses: actions/download-artifact@v3
         with:
           path: '${{ github.workspace }}\.dependencies'
@@ -125,6 +127,24 @@ jobs:
           settingsJson: ${{ env.Settings }}
           SecretsJson: ${{ env.RepoSecrets }}
 
+      - name: Upload thisbuild artifacts - apps
+        if: env.WorkflowDepth > 1
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'thisbuild-${{ matrix.project }}-Apps'
+          path: '${{ matrix.project }}/.buildartifacts/Apps/'
+          if-no-files-found: ignore
+          retention-days: 1
+
+      - name: Upload thisbuild artifacts - test apps
+        if: env.WorkflowDepth > 1
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'thisbuild-${{ matrix.project }}-TestApps'
+          path: '${{ matrix.project }}/.buildartifacts/TestApps/'
+          if-no-files-found: ignore
+          retention-days: 1
+
       - name: Calculate Artifact names
         id: calculateArtifactNames
         if: success() || failure()
@@ -133,7 +153,7 @@ jobs:
           $settings = '${{ env.Settings }}' | ConvertFrom-Json
           $project = '${{ matrix.project }}'
           if ($project -eq ".") { $project = $settings.RepoName }
-          'TestResults','BcptTestResults','BuildOutput' | ForEach-Object {
+          'TestResults','BcptTestResults','BuildOutput','ContainerEventLog' | ForEach-Object {
             $name = "$($_)ArtifactsName"
             $value = "$($project.Replace('\','_'))-$_-NextMinor-$([DateTime]::UtcNow.ToString('yyyyMMdd'))"
             Add-Content -Path $env:GITHUB_OUTPUT -Value "$name=$value"
@@ -146,6 +166,14 @@ jobs:
         with:
           name: ${{ env.buildOutputArtifactsName }}
           path: '${{ matrix.project }}/BuildOutput.txt'
+          if-no-files-found: ignore
+
+      - name: Publish artifacts - container event log
+        uses: actions/upload-artifact@v3
+        if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',matrix.project)) != '')
+        with:
+          name: ${{ env.ContainerEventLogArtifactsName }}
+          path: '${{ matrix.project }}/ContainerEventLog.evtx'
           if-no-files-found: ignore
 
       - name: Publish artifacts - test results
@@ -181,7 +209,7 @@ jobs:
 
   PostProcess:
     if: always()
-    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    runs-on: [ windows-latest ]
     needs: [ Initialization, Build ]
     steps:
       - name: Checkout
