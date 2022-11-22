@@ -31,7 +31,7 @@ env:
 jobs:
   Initialization:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
-    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    runs-on: [ windows-latest ]
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
       settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
@@ -233,7 +233,7 @@ jobs:
           }
 
   CheckForUpdates:
-    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    runs-on: [ windows-latest ]
     needs: [ Initialization ]
     if: github.event_name != 'workflow_run'
     steps:
@@ -658,7 +658,7 @@ jobs:
       matrix:
         deliveryTarget: ${{ fromJson(needs.Initialization.outputs.deliveryTargets) }}
       fail-fast: false
-    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    runs-on: [ windows-latest ]
     name: Deliver to ${{ matrix.deliveryTarget }}
     steps:
       - name: Checkout
@@ -701,7 +701,7 @@ jobs:
 
   UpdatePRcheck:
     if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
-    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    runs-on: [ windows-latest ]
     needs: [ Initialization, Build ]
     steps:
       - name: Update CI/CD Workflow Check Run
@@ -718,7 +718,7 @@ jobs:
 
   PostProcess:
     if: (!cancelled()) && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
-    runs-on: [ self-hosted,1ES.Pool=ALAppExt ]
+    runs-on: [ windows-latest ]
     needs: [ Initialization, Build, Deploy, Deliver ]
     steps:
       - name: Checkout
