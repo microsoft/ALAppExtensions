@@ -35,7 +35,7 @@ procedure CreateNewUsersFromAzureAD()
 procedure CreateNewUserFromGraphUser(GraphUser: DotNet UserInfo)
 ```
 #### Parameters
-*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+*GraphUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
 The Azure AD user.
 
@@ -51,12 +51,12 @@ The Azure AD user.
 procedure SynchronizeLicensedUserFromDirectory(AuthenticationEmail: Text): Boolean
 ```
 #### Parameters
-*AuthenticationEmail ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*AuthenticationEmail ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The user's authentication email.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if there is a user in Azure AD corresponding to the authentication email; otherwise false.
 ### SynchronizeAllLicensedUsersFromDirectory (Method) <a name="SynchronizeAllLicensedUsersFromDirectory"></a> 
@@ -81,7 +81,7 @@ procedure SynchronizeAllLicensedUsersFromDirectory()
 procedure IsUserTenantAdmin(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the user is a tenant admin; otherwise false.
 ### IsUserDelegated (Method) <a name="IsUserDelegated"></a> 
@@ -95,12 +95,12 @@ True if the user is a tenant admin; otherwise false.
 procedure IsUserDelegated(UserSecID: Guid): Boolean
 ```
 #### Parameters
-*UserSecID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the user is a delegated user; otherwise false.
 
@@ -116,7 +116,7 @@ True if the user is a delegated user; otherwise false.
 internal procedure OnRestoreDefaultPermissions(UserSecurityID: Guid)
 ```
 #### Parameters
-*UserSecurityID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The ID of the user whos permission sets will be restored.
 

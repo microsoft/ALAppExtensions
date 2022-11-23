@@ -35,11 +35,11 @@ end;
 internal procedure OnBeforeGetDefaultRoleCenter(var RoleCenterId: Integer; var Handled: Boolean)
 ```
 #### Parameters
-*RoleCenterId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*RoleCenterId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Out parameter holding the Role Center ID.
 
-*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Handled ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Handled pattern
 

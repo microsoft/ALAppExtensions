@@ -345,6 +345,17 @@ codeunit 9016 "Azure AD Plan"
         exit(AzureAdPlanImpl.IsBCServicePlan(ServicePlanId));
     end;
 
+    /// <summary>    
+    /// Checks whether the current user is external.
+    /// </summary>
+    /// <returns>True if the current user is external, false otherwise.</returns>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure IsUserExternal(): Boolean
+    begin
+        exit(AzureAdPlanImpl.IsUserExternal());
+    end;
+
     /// <summary>
     /// Integration event, raised from <see cref="UpdateUserPlans"/>.
     /// Subscribe to this event to remove related user groups from the user.

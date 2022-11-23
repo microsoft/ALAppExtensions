@@ -21,7 +21,7 @@ Use this module to do the following:
 procedure GetAadTenantId(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 If it cannot be found, an empty string is returned.
 ### GetAadTenantDomainName (Method) <a name="GetAadTenantDomainName"></a> 
@@ -37,6 +37,6 @@ Cannot retrieve the Azure Active Directory tenant domain name.
 procedure GetAadTenantDomainName(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The AAD Tenant Domain Name.

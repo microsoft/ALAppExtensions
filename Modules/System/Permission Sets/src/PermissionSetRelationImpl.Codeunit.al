@@ -57,6 +57,24 @@ codeunit 9856 "Permission Set Relation Impl."
             Error(CannotManagePermissionsErr);
     end;
 
+    procedure SelectPermissionSets(CurrAppId: Guid; CurrRoleID: Code[30]; CurrScope: Option System,Tenant): Boolean
+    var
+        TempAggregatePermissionSet: Record "Aggregate Permission Set" temporary;
+        PermissionType: Option Include,Exclude;
+    begin
+        VerifyUserCanEditPermissionSet(CurrAppId);
+
+        if not LookupPermissionSet(true, TempAggregatePermissionSet) then
+            exit(false);
+
+        if TempAggregatePermissionSet.FindSet() then
+            repeat
+                AddNewPermissionSet(CurrAppId, CurrRoleID, CurrScope, TempAggregatePermissionSet."App ID", TempAggregatePermissionSet."Role ID", TempAggregatePermissionSet.Scope, PermissionType::Include)
+            until TempAggregatePermissionSet.Next() = 0;
+
+        exit(ValidatePermissionSet(CurrAppId, CurrRoleID, CurrScope))
+    end;
+
     procedure ModifyPermissionSet(CurrAppId: Guid; CurrRoleID: Code[30]; CurrScope: Option System,Tenant; RelatedAppId: Guid; RelatedRoleId: Code[30]; PermissionType: Option Include,Exclude): Boolean
     var
         TempAggregatePermissionSet: Record "Aggregate Permission Set" temporary;
@@ -64,7 +82,7 @@ codeunit 9856 "Permission Set Relation Impl."
     begin
         VerifyUserCanEditPermissionSet(CurrAppId);
 
-        if not LookupPermissionSet(CurrAppId, CurrRoleID, CurrScope, PermissionType, TempAggregatePermissionSet) then
+        if not LookupPermissionSet(false, TempAggregatePermissionSet) then
             exit(false);
 
         if TenantPermissionSetRel.Get(CurrAppId, CurrRoleID, RelatedAppId, RelatedRoleId) then
@@ -101,7 +119,6 @@ codeunit 9856 "Permission Set Relation Impl."
         else
             exit(AddNewPermissionSet(CurrAppId, CurrRoleID, CurrScope, RelatedAppId, RelatedRoleID, RelatedScope, PermissionType));
     end;
-
 
     procedure RemovePermissionSet(CurrAppId: Guid; CurrRoleID: Code[30]; RelatedAppId: Guid; RelatedRoleID: Code[30])
     var
@@ -235,6 +252,12 @@ codeunit 9856 "Permission Set Relation Impl."
     var
         TenantPermissionSetRel: Record "Tenant Permission Set Rel.";
     begin
+        if ((RelatedScope = CurrScope) and (RelatedAppId = CurrAppId) and (RelatedRoleId = CurrRoleID)) then
+            if PermissionType = PermissionType::Include then
+                Error(CannotIncludeItselfErr)
+            else
+                Error(CannotExcludeItselfErr);
+
         if TenantPermissionSetRel.Get(CurrAppId, CurrRoleId, RelatedAppId, RelatedRoleId) then
             if TenantPermissionSetRel.Type = PermissionType then
                 if PermissionType = PermissionType::Include then
@@ -263,21 +286,17 @@ codeunit 9856 "Permission Set Relation Impl."
             FeatureTelemetry.LogUsage('0000HZT', ComposablePermissionSetsTok, 'Permission set excluded.', GetCustomDimensions(CurrRoleID, CurrAppId, RelatedRoleId, RelatedAppId, RelatedScope));
     end;
 
-    local procedure LookupPermissionSet(CurrAppId: Guid; CurrRoleID: Code[30]; CurrScope: Option System,Tenant; PermissionType: Option Include,Exclude; var TempAggregatePermissionSet: Record "Aggregate Permission Set" temporary): Boolean
+    local procedure LookupPermissionSet(AllowMultiselect: Boolean; var TempAggregatePermissionSet: Record "Aggregate Permission Set" temporary): Boolean
     var
-        LookupPermissionSet: Page "Lookup Permission Set";
+        LookupPermissionSetPage: Page "Lookup Permission Set";
     begin
-        LookupPermissionSet.LookupMode(true);
+        LookupPermissionSetPage.LookupMode(true);
 
-        if LookupPermissionSet.RunModal() = ACTION::LookupOK then begin
-            LookupPermissionSet.GetRecord(TempAggregatePermissionSet);
-
-            if ((TempAggregatePermissionSet.Scope = CurrScope) and (TempAggregatePermissionSet."App ID" = CurrAppId) and (TempAggregatePermissionSet."Role ID" = CurrRoleID)) then
-                if PermissionType = PermissionType::Include then
-                    Error(CannotIncludeItselfErr)
-                else
-                    Error(CannotExcludeItselfErr);
-
+        if LookupPermissionSetPage.RunModal() = ACTION::LookupOK then begin
+            if AllowMultiselect then
+                LookupPermissionSetPage.GetSelectedRecords(TempAggregatePermissionSet)
+            else
+                LookupPermissionSetPage.GetSelectedRecord(TempAggregatePermissionSet);
             exit(true);
         end;
 

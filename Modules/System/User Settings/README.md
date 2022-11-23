@@ -27,7 +27,7 @@ Use this module to:
 procedure GetPageId(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The page ID for the User Settings page.
 ### GetUserSettings (Method) <a name="GetUserSettings"></a> 
@@ -40,7 +40,7 @@ The page ID for the User Settings page.
 procedure GetUserSettings(UserSecurityID: Guid; var UserSettings : Record "User Settings")
 ```
 #### Parameters
-*UserSecurityID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The user security id of the user.
 
@@ -58,7 +58,7 @@ The return Record with the settings od the User.
 procedure DisableTeachingTips(UserSecurityId: Guid)
 ```
 #### Parameters
-*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 
 
@@ -72,7 +72,7 @@ procedure DisableTeachingTips(UserSecurityId: Guid)
 procedure EnableTeachingTips(UserSecurityId: Guid)
 ```
 #### Parameters
-*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 
 
@@ -102,7 +102,7 @@ The return record that holds the default profile.
 procedure OnGetSettingsPageID(var SettingsPageID: Integer)
 ```
 #### Parameters
-*SettingsPageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*SettingsPageID ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The new page ID for the user settings page.
 
@@ -117,7 +117,7 @@ The new page ID for the user settings page.
 procedure OnBeforeOpenSettings(var Handled: Boolean)
 ```
 #### Parameters
-*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Handled ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Set to true to skip the default behavior.
 
@@ -166,11 +166,11 @@ The value of the settings after user interaction.
 procedure OnCompanyChange(NewCompanyName: Text; var IsSetupInProgress: Boolean)
 ```
 #### Parameters
-*NewCompanyName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*NewCompanyName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the new company.
 
-*IsSetupInProgress ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*IsSetupInProgress ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Set to true if the given company is still setting up.
 
@@ -202,19 +202,19 @@ The All Profile Record that holds the new profile.
 procedure OnAfterQueryClosePage(NewLanguageID: Integer; NewLocaleID: Integer; NewTimeZoneID: Text[180]; NewCompany: Text; NewAllProfile: Record "All Profile")
 ```
 #### Parameters
-*NewLanguageID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*NewLanguageID ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The Language ID selected.
 
-*NewLocaleID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*NewLocaleID ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The Locale ID selected.
 
-*NewTimeZoneID ([Text[180]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*NewTimeZoneID ([Text[180]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The Time Zone selected.
 
-*NewCompany ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*NewCompany ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The company selected.
 
@@ -234,11 +234,11 @@ The All Profile Record that holds the new profile.
 procedure OnBeforeLanguageChange(OldLanguageId: Integer; NewLanguageId: Integer)
 ```
 #### Parameters
-*OldLanguageId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*OldLanguageId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The old Language ID.
 
-*NewLanguageId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*NewLanguageId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The new Language ID selected.
 
@@ -254,11 +254,11 @@ The new Language ID selected.
 procedure OnBeforeWorkdateChange(OldWorkdate: Date; NewWorkdate: Date)
 ```
 #### Parameters
-*OldWorkdate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*OldWorkdate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The old work date.
 
-*NewWorkdate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*NewWorkdate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The new work date selected.
 

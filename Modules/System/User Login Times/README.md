@@ -22,12 +22,12 @@ Use this module to do the following:
 procedure IsFirstLogin(UserSecurityID: Guid): Boolean
 ```
 #### Parameters
-*UserSecurityID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The User Security ID.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if this is the first time the user logs in and false otherwise.
 ### AnyUserLoggedInSinceDate (Method) <a name="AnyUserLoggedInSinceDate"></a> 
@@ -40,12 +40,12 @@ True if this is the first time the user logs in and false otherwise.
 procedure AnyUserLoggedInSinceDate(FromDate: Date): Boolean
 ```
 #### Parameters
-*FromDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*FromDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The date to start searching from.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if any user logged in on or after the specified date and false otherwise.
 ### UserLoggedInSinceDateTime (Method) <a name="UserLoggedInSinceDateTime"></a> 
@@ -58,12 +58,12 @@ True if any user logged in on or after the specified date and false otherwise.
 procedure UserLoggedInSinceDateTime(FromDateTime: DateTime): Boolean
 ```
 #### Parameters
-*FromDateTime ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*FromDateTime ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 The DateTime to start searching from.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the current user logged in at or after the specified DateTime and false otherwise.
 ### GetPenultimateLoginDateTime (Method) <a name="GetPenultimateLoginDateTime"></a> 
@@ -76,7 +76,7 @@ True if the current user logged in at or after the specified DateTime and false 
 procedure GetPenultimateLoginDateTime(): DateTime
 ```
 #### Return Value
-*[DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type)*
+*[DateTime](https://go.microsoft.com/fwlink/?linkid=2210239)*
 
 The penultimate login DateTime of the current user, or 0DT if the user login cannot be found.
 ### CreateOrUpdateLoginInfo (Method) <a name="CreateOrUpdateLoginInfo"></a> 
@@ -100,7 +100,7 @@ procedure CreateOrUpdateLoginInfo()
 internal procedure OnAfterCreateorUpdateLoginInfo(UserSecurityId: Guid)
 ```
 #### Parameters
-*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The User Security ID of the user that is being created or updated.
 

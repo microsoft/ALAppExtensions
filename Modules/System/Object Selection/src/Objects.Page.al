@@ -29,7 +29,7 @@ page 358 Objects
                     ApplicationArea = All;
                     Caption = 'Type';
                     ToolTip = 'Specifies the object type.';
-                    Visible = false;
+                    Visible = VisibleObjType;
                 }
                 field("Object ID"; Rec."Object ID")
                 {
@@ -43,13 +43,21 @@ page 358 Objects
                     Caption = 'Object Caption';
                     DrillDown = false;
                     ToolTip = 'Specifies the caption of the object.';
+                    Visible = not HiddenObjCaption;
                 }
                 field("Object Name"; Rec."Object Name")
                 {
                     ApplicationArea = All;
                     Caption = 'Object Name';
                     ToolTip = 'Specifies the name of the object.';
-                    Visible = false;
+                    Visible = VisibleObjName;
+                }
+                field("Object Subtype"; Rec."Object Subtype")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Object Subtype';
+                    ToolTip = 'Specifies the subtype of the object.';
+                    Visible = VisibleObjType;
                 }
                 field(ExtensionName; AppName)
                 {
@@ -87,7 +95,36 @@ page 358 Objects
             AppName := PublishedApplication.Name;
     end;
 
+    procedure SetObjectTypeVisible(Visible: Boolean)
+    begin
+        VisibleObjType := Visible;
+    end;
+
+    procedure SetObjectNameVisible(Visible: Boolean)
+    begin
+        VisibleObjName := Visible;
+    end;
+
+    procedure SetObjectCaptionVisible(Visible: Boolean)
+    begin
+        HiddenObjCaption := not Visible;
+    end;
+
+    procedure GetSelectedRecords(var CurrSelectedRecords: Record AllObjWithCaption)
+    begin
+        CurrPage.SetSelectionFilter(Rec);
+
+        if Rec.FindSet() then
+            repeat
+                CurrSelectedRecords.Copy(Rec);
+                CurrSelectedRecords.Insert();
+            until Rec.Next() = 0;
+    end;
+
     var
         AppName: Text;
+        VisibleObjType: Boolean;
+        VisibleObjName: Boolean;
+        HiddenObjCaption: Boolean;
 }
 

@@ -129,4 +129,3 @@ codeunit 4109 "Temp Blob List Impl."
         RecordRef.SetTable(TempBlobRec);
     end;
 }
-

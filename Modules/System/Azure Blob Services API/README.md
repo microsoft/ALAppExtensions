@@ -55,11 +55,11 @@ var
 procedure Initialize(StorageAccount: Text; Container: Text; Authorization: Interface "Storage Service Authorization")
 ```
 #### Parameters
-*StorageAccount ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*StorageAccount ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of Storage Account to use.
 
-*Container ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Container ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the container to use.
 
@@ -78,11 +78,11 @@ The authorization to use.
 procedure Initialize(StorageAccount: Text; Container: Text; Authorization: Interface "Storage Service Authorization"; APIVersion: Enum "Storage Service API Version")
 ```
 #### Parameters
-*StorageAccount ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*StorageAccount ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of Storage Account to use.
 
-*Container ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Container ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the container to use.
 
@@ -107,14 +107,14 @@ Use %1 as a placeholder for the storage account name.
 procedure SetBaseUrl(BaseUrl: Text)
 ```
 #### Parameters
-*BaseUrl ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BaseUrl ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A valid URL string
 
 ### ListBlobs (Method) <a name="ListBlobs"></a> 
 
  Lists the blobs in a specific container.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs
+ see: https://go.microsoft.com/fwlink/?linkid=2210588
  
 
 #### Syntax
@@ -133,7 +133,7 @@ An operation reponse object
 ### ListBlobs (Method) <a name="ListBlobs"></a> 
 
  Lists the blobs in a specific container.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs
+ see: https://go.microsoft.com/fwlink/?linkid=2210588
  
 
 #### Syntax
@@ -156,7 +156,7 @@ An operation reponse object
 ### PutBlobBlockBlobUI (Method) <a name="PutBlobBlockBlobUI"></a> 
 
  Uploads a file as a BlockBlob (with File Selection Dialog).
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
  
 
 #### Syntax
@@ -170,7 +170,7 @@ An operation reponse object
 ### PutBlobBlockBlobUI (Method) <a name="PutBlobBlockBlobUI"></a> 
 
  Uploads a file as a BlockBlob (with File Selection Dialog).
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
  
 
 #### Syntax
@@ -189,7 +189,7 @@ An operation reponse object
 ### PutBlobBlockBlobStream (Method) <a name="PutBlobBlockBlobStream"></a> 
 
  Uploads the content of an InStream as a BlockBlob
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
  
 
 #### Syntax
@@ -197,11 +197,11 @@ An operation reponse object
 procedure PutBlobBlockBlobStream(BlobName: Text; var SourceStream: InStream): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*SourceStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*SourceStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 The Content of the Blob as InStream.
 
@@ -212,7 +212,7 @@ An operation reponse object
 ### PutBlobBlockBlobStream (Method) <a name="PutBlobBlockBlobStream"></a> 
 
  Uploads the content of an InStream as a BlockBlob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
  
 
 #### Syntax
@@ -220,11 +220,11 @@ An operation reponse object
 procedure PutBlobBlockBlobStream(BlobName: Text; var SourceStream: InStream; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*SourceStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*SourceStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 The Content of the Blob as InStream.
 
@@ -239,7 +239,7 @@ An operation reponse object
 ### PutBlobBlockBlobText (Method) <a name="PutBlobBlockBlobText"></a> 
 
  Uploads text as a BlockBlob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
  
 
 #### Syntax
@@ -247,11 +247,11 @@ An operation reponse object
 procedure PutBlobBlockBlobText(BlobName: Text; SourceText: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*SourceText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SourceText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The Content of the Blob as Text.
 
@@ -262,7 +262,7 @@ An operation reponse object
 ### PutBlobBlockBlobText (Method) <a name="PutBlobBlockBlobText"></a> 
 
  Uploads text as a BlockBlob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
  
 
 #### Syntax
@@ -270,11 +270,11 @@ An operation reponse object
 procedure PutBlobBlockBlobText(BlobName: Text; SourceText: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*SourceText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SourceText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The Content of the Blob as Text.
 
@@ -289,7 +289,7 @@ An operation reponse object
 ### PutBlobPageBlob (Method) <a name="PutBlobPageBlob"></a> 
 
  Creates a PageBlob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
  
 
 #### Syntax
@@ -297,11 +297,11 @@ An operation reponse object
 procedure PutBlobPageBlob(BlobName: Text; ContentType: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*ContentType ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContentType ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
 
@@ -312,7 +312,7 @@ An operation reponse object
 ### PutBlobPageBlob (Method) <a name="PutBlobPageBlob"></a> 
 
  Creates a PageBlob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
  
 
 #### Syntax
@@ -320,11 +320,11 @@ An operation reponse object
 procedure PutBlobPageBlob(BlobName: Text; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*ContentType ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContentType ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
 
@@ -339,7 +339,7 @@ An operation reponse object
 ### PutBlobAppendBlobStream (Method) <a name="PutBlobAppendBlobStream"></a> 
 
  The Put Blob operation creates a new append blob
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
  Uses 'application/octet-stream' as Content-Type
  
 
@@ -348,7 +348,7 @@ An operation reponse object
 procedure PutBlobAppendBlobStream(BlobName: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
@@ -359,7 +359,7 @@ An operation reponse object
 ### PutBlobAppendBlobStream (Method) <a name="PutBlobAppendBlobStream"></a> 
 
  The Put Blob operation creates a new append blob
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
  Uses 'application/octet-stream' as Content-Type
  
 
@@ -368,7 +368,7 @@ An operation reponse object
 procedure PutBlobAppendBlobStream(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
@@ -383,7 +383,7 @@ An operation reponse object
 ### PutBlobAppendBlobText (Method) <a name="PutBlobAppendBlobText"></a> 
 
  The Put Blob operation creates a new append blob
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
  Uses 'text/plain; charset=UTF-8' as Content-Type
  
 
@@ -392,7 +392,7 @@ An operation reponse object
 procedure PutBlobAppendBlobText(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
@@ -407,7 +407,7 @@ An operation reponse object
 ### PutBlobAppendBlob (Method) <a name="PutBlobAppendBlob"></a> 
 
  The Put Blob operation creates a new append blob
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210387
  
 
 #### Syntax
@@ -415,11 +415,11 @@ An operation reponse object
 procedure PutBlobAppendBlob(BlobName: Text; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*ContentType ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContentType ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
 
@@ -434,7 +434,7 @@ An operation reponse object
 ### AppendBlockText (Method) <a name="AppendBlockText"></a> 
 
  The Append Block operation commits a new block of data to the end of an existing append blob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block
+ see: https://go.microsoft.com/fwlink/?linkid=2211404
  Uses 'text/plain; charset=UTF-8' as Content-Type
  
 
@@ -443,11 +443,11 @@ An operation reponse object
 procedure AppendBlockText(BlobName: Text; ContentAsText: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*ContentAsText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContentAsText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text-variable containing the content that should be added to the Blob
 
@@ -458,7 +458,7 @@ An operation reponse object
 ### AppendBlockText (Method) <a name="AppendBlockText"></a> 
 
  The Append Block operation commits a new block of data to the end of an existing append blob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block
+ see: https://go.microsoft.com/fwlink/?linkid=2211404
  
 
 #### Syntax
@@ -466,15 +466,15 @@ An operation reponse object
 procedure AppendBlockText(BlobName: Text; ContentAsText: Text; ContentType: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*ContentAsText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContentAsText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text-variable containing the content that should be added to the Blob
 
-*ContentType ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContentType ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
 
@@ -485,7 +485,7 @@ An operation reponse object
 ### AppendBlockText (Method) <a name="AppendBlockText"></a> 
 
  The Append Block operation commits a new block of data to the end of an existing append blob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block
+ see: https://go.microsoft.com/fwlink/?linkid=2211404
  
 
 #### Syntax
@@ -493,15 +493,15 @@ An operation reponse object
 procedure AppendBlockText(BlobName: Text; ContentAsText: Text; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*ContentAsText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContentAsText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text-variable containing the content that should be added to the Blob
 
-*ContentType ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContentType ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
 
@@ -516,7 +516,7 @@ An operation reponse object
 ### AppendBlockStream (Method) <a name="AppendBlockStream"></a> 
 
  The Append Block operation commits a new block of data to the end of an existing append blob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block
+ see: https://go.microsoft.com/fwlink/?linkid=2211404
  Uses 'application/octet-stream' as Content-Type
  
 
@@ -525,11 +525,11 @@ An operation reponse object
 procedure AppendBlockStream(BlobName: Text; ContentAsStream: InStream): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*ContentAsStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*ContentAsStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 InStream containing the content that should be added to the Blob
 
@@ -540,7 +540,7 @@ An operation reponse object
 ### AppendBlockStream (Method) <a name="AppendBlockStream"></a> 
 
  The Append Block operation commits a new block of data to the end of an existing append blob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block
+ see: https://go.microsoft.com/fwlink/?linkid=2211404
  
 
 #### Syntax
@@ -548,15 +548,15 @@ An operation reponse object
 procedure AppendBlockStream(BlobName: Text; ContentAsStream: InStream; ContentType: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*ContentAsStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*ContentAsStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 InStream containing the content that should be added to the Blob
 
-*ContentType ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContentType ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
 
@@ -571,7 +571,7 @@ An operation reponse object
 ### AppendBlock (Method) <a name="AppendBlock"></a> 
 
  The Append Block operation commits a new block of data to the end of an existing append blob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block
+ see: https://go.microsoft.com/fwlink/?linkid=2211404
  
 
 #### Syntax
@@ -579,15 +579,15 @@ An operation reponse object
 procedure AppendBlock(BlobName: Text; ContentType: Text; SourceContent: Variant; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*ContentType ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContentType ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')
 
-*SourceContent ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*SourceContent ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 Variant containing the content that should be added to the Blob
 
@@ -602,7 +602,7 @@ An operation reponse object
 ### AppendBlockFromURL (Method) <a name="AppendBlockFromURL"></a> 
 
  The Append Block From URL operation commits a new block of data to the end of an existing append blob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block-from-url
+ see: https://go.microsoft.com/fwlink/?linkid=2211405
  
 
 #### Syntax
@@ -610,11 +610,11 @@ An operation reponse object
 procedure AppendBlockFromURL(BlobName: Text; SourceUri: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*SourceUri ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SourceUri ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Specifies the name of the source blob.
 
@@ -625,7 +625,7 @@ An operation reponse object
 ### AppendBlockFromURL (Method) <a name="AppendBlockFromURL"></a> 
 
  The Append Block From URL operation commits a new block of data to the end of an existing append blob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block-from-url
+ see: https://go.microsoft.com/fwlink/?linkid=2211405
  
 
 #### Syntax
@@ -633,11 +633,11 @@ An operation reponse object
 procedure AppendBlockFromURL(BlobName: Text; SourceUri: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*SourceUri ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SourceUri ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Specifies the name of the source blob.
 
@@ -652,7 +652,7 @@ An operation reponse object
 ### GetBlobAsFile (Method) <a name="GetBlobAsFile"></a> 
 
  Receives a Blob as a File from a Container.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210388
  
 
 #### Syntax
@@ -660,7 +660,7 @@ An operation reponse object
 procedure GetBlobAsFile(BlobName: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
@@ -671,7 +671,7 @@ An operation reponse object
 ### GetBlobAsFile (Method) <a name="GetBlobAsFile"></a> 
 
  Receives a Blob as a File from a Container.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210388
  
 
 #### Syntax
@@ -679,7 +679,7 @@ An operation reponse object
 procedure GetBlobAsFile(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
@@ -694,7 +694,7 @@ An operation reponse object
 ### GetBlobAsStream (Method) <a name="GetBlobAsStream"></a> 
 
  Receives a Blob as a InStream from a Container.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210388
  
 
 #### Syntax
@@ -702,11 +702,11 @@ An operation reponse object
 procedure GetBlobAsStream(BlobName: Text; var TargetStream: InStream): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*TargetStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*TargetStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 The result InStream containg the content of the Blob.
 
@@ -717,7 +717,7 @@ An operation reponse object
 ### GetBlobAsStream (Method) <a name="GetBlobAsStream"></a> 
 
  Receives a Blob as a InStream from a Container.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210388
  
 
 #### Syntax
@@ -725,11 +725,11 @@ An operation reponse object
 procedure GetBlobAsStream(BlobName: Text; var TargetStream: InStream; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*TargetStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*TargetStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 The result InStream containg the content of the Blob.
 
@@ -744,7 +744,7 @@ An operation reponse object
 ### GetBlobAsText (Method) <a name="GetBlobAsText"></a> 
 
  Receives a Blob as Text from a Container.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210388
  
 
 #### Syntax
@@ -752,11 +752,11 @@ An operation reponse object
 procedure GetBlobAsText(BlobName: Text; var TargetText: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*TargetText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*TargetText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The result Text containg the content of the Blob.
 
@@ -767,7 +767,7 @@ An operation reponse object
 ### GetBlobAsText (Method) <a name="GetBlobAsText"></a> 
 
  Receives a Blob as Text from a Container.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210388
  
 
 #### Syntax
@@ -775,11 +775,11 @@ An operation reponse object
 procedure GetBlobAsText(BlobName: Text; var TargetText: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*TargetText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*TargetText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The result Text containg the content of the Blob.
 
@@ -795,7 +795,7 @@ An operation reponse object
 
  The Set Blob Expiry operation sets an expiry time on an existing blob. This operation is only allowed on Hierarchical Namespace enabled accounts
  Sets the expiry time relative to the file creation time, x-ms-expiry-time must be specified as the number of milliseconds to elapse from creation time.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-expiry
+ see: https://go.microsoft.com/fwlink/?linkid=2210389
  
 
 #### Syntax
@@ -803,11 +803,11 @@ An operation reponse object
 procedure SetBlobExpiryRelativeToCreation(BlobName: Text; ExpiryTime: Integer): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*ExpiryTime ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*ExpiryTime ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Number if miliseconds (Integer) until the expiration.
 
@@ -819,7 +819,7 @@ An operation reponse object
 
  The Set Blob Expiry operation sets an expiry time on an existing blob. This operation is only allowed on Hierarchical Namespace enabled accounts
  Sets the expiry relative to the current time, x-ms-expiry-time must be specified as the number of milliseconds to elapse from now.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-expiry
+ see: https://go.microsoft.com/fwlink/?linkid=2210389
  
 
 #### Syntax
@@ -827,11 +827,11 @@ An operation reponse object
 procedure SetBlobExpiryRelativeToNow(BlobName: Text; ExpiryTime: Integer): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*ExpiryTime ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*ExpiryTime ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Number if miliseconds (Integer) until the expiration.
 
@@ -843,7 +843,7 @@ An operation reponse object
 
  The Set Blob Expiry operation sets an expiry time on an existing blob. This operation is only allowed on Hierarchical Namespace enabled accounts
  Sets the expiry to an absolute DateTime
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-expiry
+ see: https://go.microsoft.com/fwlink/?linkid=2210389
  
 
 #### Syntax
@@ -851,11 +851,11 @@ An operation reponse object
 procedure SetBlobExpiryAbsolute(BlobName: Text; ExpiryTime: DateTime): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*ExpiryTime ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*ExpiryTime ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 Absolute DateTime for the expiration.
 
@@ -867,7 +867,7 @@ An operation reponse object
 
  The Set Blob Expiry operation sets an expiry time on an existing blob. This operation is only allowed on Hierarchical Namespace enabled accounts
  Sets the file to never expire or removes the current expiry time, x-ms-expiry-time must not to be specified.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-expiry
+ see: https://go.microsoft.com/fwlink/?linkid=2210389
  
 
 #### Syntax
@@ -875,7 +875,7 @@ An operation reponse object
 procedure SetBlobExpiryNever(BlobName: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 
 
@@ -886,7 +886,7 @@ procedure SetBlobExpiryNever(BlobName: Text): Codeunit "ABS Operation Response"
 ### SetBlobTags (Method) <a name="SetBlobTags"></a> 
 
  The Set Blob Tags operation sets user-defined tags for the specified blob as one or more key-value pairs.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-tags
+ see: https://go.microsoft.com/fwlink/?linkid=2211407
  
 
 #### Syntax
@@ -894,7 +894,7 @@ procedure SetBlobExpiryNever(BlobName: Text): Codeunit "ABS Operation Response"
 procedure SetBlobTags(BlobName: Text; Tags: Dictionary of [Text, Text]): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
@@ -909,7 +909,7 @@ An operation reponse object
 ### DeleteBlob (Method) <a name="DeleteBlob"></a> 
 
  The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/delete-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2211408
  
 
 #### Syntax
@@ -917,7 +917,7 @@ An operation reponse object
 procedure DeleteBlob(BlobName: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
@@ -928,7 +928,7 @@ An operation reponse object
 ### DeleteBlob (Method) <a name="DeleteBlob"></a> 
 
  The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/delete-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2211408
  
 
 #### Syntax
@@ -936,7 +936,7 @@ An operation reponse object
 procedure DeleteBlob(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
@@ -951,7 +951,7 @@ An operation reponse object
 ### UndeleteBlob (Method) <a name="UndeleteBlob"></a> 
 
  The Undelete Blob operation restores the contents and metadata of a soft deleted blob and any associated soft deleted snapshots (version 2017-07-29 or later)
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/undelete-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210390
  
 
 #### Syntax
@@ -959,7 +959,7 @@ An operation reponse object
 procedure UndeleteBlob(BlobName: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
@@ -970,7 +970,7 @@ An operation reponse object
 ### UndeleteBlob (Method) <a name="UndeleteBlob"></a> 
 
  The Undelete Blob operation restores the contents and metadata of a soft deleted blob and any associated soft deleted snapshots (version 2017-07-29 or later)
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/undelete-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210390
  
 
 #### Syntax
@@ -978,7 +978,7 @@ An operation reponse object
 procedure UndeleteBlob(BlobName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
@@ -993,7 +993,7 @@ An operation reponse object
 ### CopyBlob (Method) <a name="CopyBlob"></a> 
 
  The Copy Blob operation copies a blob to a destination within the storage account.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/copy-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210589
  
 
 #### Syntax
@@ -1001,11 +1001,11 @@ An operation reponse object
 procedure CopyBlob(BlobName: Text; SourceName: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*SourceName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SourceName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Specifies the name of the source blob or file.
 
@@ -1016,7 +1016,7 @@ An operation reponse object
 ### CopyBlob (Method) <a name="CopyBlob"></a> 
 
  The Copy Blob operation copies a blob to a destination within the storage account.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/copy-blob
+ see: https://go.microsoft.com/fwlink/?linkid=2210589
  
 
 #### Syntax
@@ -1024,15 +1024,15 @@ An operation reponse object
 procedure CopyBlob(BlobName: Text; SourceName: Text; LeaseId: Guid; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*SourceName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SourceName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Specifies the name of the source blob or file.
 
-*LeaseId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*LeaseId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 Required if the destination blob has an active lease. The lease ID specified must match the lease ID of the destination blob.
 
@@ -1047,7 +1047,7 @@ An operation reponse object
 ### PutBlockList (Method) <a name="PutBlockList"></a> 
 
  The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-block-list
+ see: https://go.microsoft.com/fwlink/?linkid=2210392
  
 
 #### Syntax
@@ -1070,7 +1070,7 @@ An operation reponse object
 ### PutBlockFromURL (Method) <a name="PutBlockFromURL"></a> 
 
  The Put Block From URL operation creates a new block to be committed as part of a blob where the contents are read from a URL.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-block-from-url
+ see: https://go.microsoft.com/fwlink/?linkid=2211409
  
 
 #### Syntax
@@ -1078,15 +1078,15 @@ An operation reponse object
 procedure PutBlockFromURL(BlobName: Text; SourceUri: Text; BlockId: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*SourceUri ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SourceUri ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Specifies the name of the source block blob.
 
-*BlockId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlockId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Specifies the BlockId that should be put.
 
@@ -1097,7 +1097,7 @@ An operation reponse object
 ### PutBlockFromURL (Method) <a name="PutBlockFromURL"></a> 
 
  The Put Block From URL operation creates a new block to be committed as part of a blob where the contents are read from a URL.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-block-from-url
+ see: https://go.microsoft.com/fwlink/?linkid=2211409
  
 
 #### Syntax
@@ -1105,15 +1105,15 @@ An operation reponse object
 procedure PutBlockFromURL(BlobName: Text; SourceUri: Text; BlockId: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*BlobName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlobName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the blob.
 
-*SourceUri ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*SourceUri ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Specifies the name of the source block blob.
 
-*BlockId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BlockId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Specifies the BlockId that should be put.
 
@@ -1142,7 +1142,7 @@ An operation reponse object
 procedure Initialize(StorageAccount: Text; Authorization: Interface "Storage Service Authorization")
 ```
 #### Parameters
-*StorageAccount ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*StorageAccount ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of Storage Account to use.
 
@@ -1161,7 +1161,7 @@ The authorization to use.
 procedure Initialize(StorageAccount: Text; Authorization: Interface "Storage Service Authorization"; ApiVersion: Enum "Storage Service API Version")
 ```
 #### Parameters
-*StorageAccount ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*StorageAccount ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The Storage Account to use.
 
@@ -1186,14 +1186,14 @@ Use %1 as a placeholder for the storage account name.
 procedure SetBaseUrl(BaseUrl: Text)
 ```
 #### Parameters
-*BaseUrl ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*BaseUrl ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A valid URL string
 
 ### ListContainers (Method) <a name="ListContainers"></a> 
 
  List all containers in specific Storage Account.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/list-containers2
+ see: https://go.microsoft.com/fwlink/?linkid=2211410
  
 
 #### Syntax
@@ -1212,7 +1212,7 @@ An operation reponse object
 ### ListContainers (Method) <a name="ListContainers"></a> 
 
  List all containers in specific Storage Account.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/list-containers2
+ see: https://go.microsoft.com/fwlink/?linkid=2211410
  
 
 #### Syntax
@@ -1235,7 +1235,7 @@ An operation reponse object
 ### CreateContainer (Method) <a name="CreateContainer"></a> 
 
  Creates a new container in the Storage Account.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/create-container
+ see: https://go.microsoft.com/fwlink/?linkid=2211411
  
 
 #### Syntax
@@ -1243,7 +1243,7 @@ An operation reponse object
 procedure CreateContainer(ContainerName: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*ContainerName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContainerName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the container.
 
@@ -1254,7 +1254,7 @@ An operation reponse object
 ### CreateContainer (Method) <a name="CreateContainer"></a> 
 
  Creates a new container in the Storage Account.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/create-container
+ see: https://go.microsoft.com/fwlink/?linkid=2211411
  
 
 #### Syntax
@@ -1262,7 +1262,7 @@ An operation reponse object
 procedure CreateContainer(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*ContainerName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContainerName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the container to create.
 
@@ -1277,7 +1277,7 @@ An operation reponse object
 ### DeleteContainer (Method) <a name="DeleteContainer"></a> 
 
  Deletes a container from the Storage Account.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/delete-container
+ see: https://go.microsoft.com/fwlink/?linkid=2210393
  
 
 #### Syntax
@@ -1285,7 +1285,7 @@ An operation reponse object
 procedure DeleteContainer(ContainerName: Text): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*ContainerName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContainerName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the container.
 
@@ -1296,7 +1296,7 @@ An operation reponse object
 ### DeleteContainer (Method) <a name="DeleteContainer"></a> 
 
  Deletes a container from the Storage Account.
- see: https://docs.microsoft.com/en-us/rest/api/storageservices/delete-container
+ see: https://go.microsoft.com/fwlink/?linkid=2210393
  
 
 #### Syntax
@@ -1304,7 +1304,7 @@ An operation reponse object
 procedure DeleteContainer(ContainerName: Text; OptionalParameters: Codeunit "ABS Optional Parameters"): Codeunit "ABS Operation Response"
 ```
 #### Parameters
-*ContainerName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContainerName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the container to delete.
 
@@ -1332,7 +1332,7 @@ An operation reponse object
 procedure IsSuccessful(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the operation was successful; otherwise - false.
 ### GetError (Method) <a name="GetError"></a> 
@@ -1345,7 +1345,7 @@ True if the operation was successful; otherwise - false.
 procedure GetError(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 Text representation of the error that occurred during the operation.
 
@@ -1364,7 +1364,7 @@ Text representation of the error that occurred during the operation.
 procedure LeaseId("Value": Guid)
 ```
 #### Parameters
-*Value ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*Value ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 Guid value specifying the LeaseID
 
@@ -1378,7 +1378,7 @@ Guid value specifying the LeaseID
 procedure SourceLeaseId("Value": Text)
 ```
 #### Parameters
-*Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Value ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text value specifying the source LeaseID
 
@@ -1392,7 +1392,7 @@ Text value specifying the source LeaseID
 procedure Origin("Value": Text)
 ```
 #### Parameters
-*Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Value ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text value specifying the HttpHeader value
 
@@ -1420,7 +1420,7 @@ Text value specifying the HttpHeader value
 procedure AccessControlRequestHeaders("Value": Text)
 ```
 #### Parameters
-*Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Value ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text value specifying the HttpHeader value
 
@@ -1434,7 +1434,7 @@ Text value specifying the HttpHeader value
 procedure ClientRequestId("Value": Text)
 ```
 #### Parameters
-*Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Value ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text value specifying the HttpHeader value
 
@@ -1462,11 +1462,11 @@ Enum "Blob Public Access" value specifying the HttpHeader value
 procedure Metadata(MetaName: Text; "Value": Text)
 ```
 #### Parameters
-*MetaName ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*MetaName ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the Metadata-value.
 
-*Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Value ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text value specifying the Metadata value
 
@@ -1480,7 +1480,7 @@ Text value specifying the Metadata value
 procedure TagsValue("Value": Text)
 ```
 #### Parameters
-*Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Value ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text value specifying the HttpHeader value
 
@@ -1494,7 +1494,7 @@ Text value specifying the HttpHeader value
 procedure SourceIfModifiedSince("Value": DateTime)
 ```
 #### Parameters
-*Value ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*Value ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 DateTime value specifying the HttpHeader value
 
@@ -1508,7 +1508,7 @@ DateTime value specifying the HttpHeader value
 procedure SourceIfUnmodifiedSince("Value": DateTime)
 ```
 #### Parameters
-*Value ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*Value ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 DateTime value specifying the HttpHeader value
 
@@ -1522,7 +1522,7 @@ DateTime value specifying the HttpHeader value
 procedure SourceIfMatch("Value": Text)
 ```
 #### Parameters
-*Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Value ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text value specifying the HttpHeader value
 
@@ -1536,7 +1536,7 @@ Text value specifying the HttpHeader value
 procedure SourceIfNoneMatch("Value": Text)
 ```
 #### Parameters
-*Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Value ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text value specifying the HttpHeader value
 
@@ -1550,7 +1550,7 @@ Text value specifying the HttpHeader value
 procedure CopySourceName("Value": Text)
 ```
 #### Parameters
-*Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Value ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text value specifying the HttpHeader value
 
@@ -1592,7 +1592,7 @@ Enum "Blob Expiry Option" value specifying the HttpHeader value
 procedure BlobExpiryTime("Value": Integer)
 ```
 #### Parameters
-*Value ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Value ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Integer value specifying the HttpHeader value
 
@@ -1606,7 +1606,7 @@ Integer value specifying the HttpHeader value
 procedure BlobExpiryTime("Value": DateTime)
 ```
 #### Parameters
-*Value ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*Value ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 DateTime value specifying the HttpHeader value
 
@@ -1634,11 +1634,11 @@ Enum "Blob Access Tier" value specifying the HttpHeader value
 procedure Range(BytesStartValue: Integer; BytesEndValue: Integer)
 ```
 #### Parameters
-*BytesStartValue ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*BytesStartValue ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Integer value specifying the Bytes start range value
 
-*BytesEndValue ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*BytesEndValue ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Integer value specifying the Bytes end range value
 
@@ -1652,11 +1652,11 @@ Integer value specifying the Bytes end range value
 procedure SourceRange(BytesStartValue: Integer; BytesEndValue: Integer)
 ```
 #### Parameters
-*BytesStartValue ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*BytesStartValue ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Integer value specifying the Bytes start range value
 
-*BytesEndValue ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*BytesEndValue ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Integer value specifying the Bytes end range value
 
@@ -1670,7 +1670,7 @@ Integer value specifying the Bytes end range value
 procedure RequiresSync("Value": Boolean)
 ```
 #### Parameters
-*Value ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Value ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Boolean value specifying the HttpHeader value
 
@@ -1684,9 +1684,9 @@ Boolean value specifying the HttpHeader value
 procedure Timeout("Value": Integer)
 ```
 #### Parameters
-*Value ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Value ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
-Timeout in seconds. Most operations have a max. limit of 30 seconds. For more Information see: https://docs.microsoft.com/en-us/rest/api/storageservices/setting-timeouts-for-blob-service-operations
+Timeout in seconds. Most operations have a max. limit of 30 seconds. For more Information see: https://go.microsoft.com/fwlink/?linkid=2210591
 
 ### VersionId (Method) <a name="VersionId"></a> 
 
@@ -1698,7 +1698,7 @@ Timeout in seconds. Most operations have a max. limit of 30 seconds. For more In
 procedure VersionId("Value": DateTime)
 ```
 #### Parameters
-*Value ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*Value ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 The DateTime identifying the version
 
@@ -1712,7 +1712,7 @@ The DateTime identifying the version
 procedure Snapshot("Value": DateTime)
 ```
 #### Parameters
-*Value ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*Value ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 The DateTime identifying the Snapshot
 
@@ -1726,7 +1726,7 @@ The DateTime identifying the Snapshot
 procedure Snapshot("Value": Text)
 ```
 #### Parameters
-*Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Value ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The DateTime identifying the Snapshot
 
@@ -1740,7 +1740,7 @@ The DateTime identifying the Snapshot
 procedure Prefix("Value": Text)
 ```
 #### Parameters
-*Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Value ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Prefix to search for
 
@@ -1756,7 +1756,7 @@ Prefix to search for
 procedure Delimiter("Value": Text)
 ```
 #### Parameters
-*Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Value ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Delimiting character/string
 
@@ -1770,7 +1770,7 @@ Delimiting character/string
 procedure MaxResults("Value": Integer)
 ```
 #### Parameters
-*Value ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Value ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Max. number of results to return. Must be positive, must not be greater than 5000
 
@@ -1784,7 +1784,7 @@ Max. number of results to return. Must be positive, must not be greater than 500
 procedure BlockId("Value": Text)
 ```
 #### Parameters
-*Value ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Value ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes
 
@@ -1793,7 +1793,7 @@ A valid Base64 string value that identifies the block. Prior to encoding, the st
 
  Azure storage offers different access tiers.
  Azure Blog storage offers access tiers that let you manage the cost of storing large amounts of unstructured data, such as text or binary data.allowing you to store blob object data in the most cost-effective manner.
- See: https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-storage-tiers
+ See: https://go.microsoft.com/fwlink/?linkid=2210394
  
 
 ### Hot (value: 0)

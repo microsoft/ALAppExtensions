@@ -8,14 +8,12 @@
 /// </summary>
 page 8898 "Email Rate Limit Wizard"
 {
-    Caption = 'Set Up the Rate Limit per Minute';
+    Caption = 'Set Email Rate Limit per Minute';
     PageType = NavigatePage;
     DeleteAllowed = false;
     InsertAllowed = false;
     SourceTable = "Email Rate Limit";
-    SourceTableTemporary = true;
     InstructionalText = 'Assign email rate limit for an account';
-
     Permissions = tabledata "Email Rate Limit" = rim;
 
     layout
@@ -42,12 +40,12 @@ page 8898 "Email Rate Limit Wizard"
             {
                 ApplicationArea = All;
                 Caption = 'Rate Limit per Minute';
-                ToolTip = 'Specifies the rate limit for the current email account.';
+                ToolTip = 'Specifies the maximum number of emails per minute the account can send. A rate limit of 0 indicates no limit.';
                 Numeric = true;
 
                 trigger OnValidate()
                 begin
-                    DefaultEmailRateLimitDisplay := EmailRateLimitDisplay;
+                    UpdateRateLimitDisplay();
                 end;
             }
         }
@@ -66,9 +64,7 @@ page 8898 "Email Rate Limit Wizard"
 
                 trigger OnAction()
                 begin
-                    Rec := EmailRateLimit;
-                    Evaluate(Rec."Rate Limit", EmailRateLimitDisplay);
-                    EmailRateLimitImpl.UpdateRateLimitForAccount(Rec);
+                    Rec.Modify();
                     CurrPage.Close();
                 end;
             }
@@ -77,58 +73,24 @@ page 8898 "Email Rate Limit Wizard"
 
     trigger OnOpenPage()
     begin
-        Rec := EmailRateLimit;
+        EmailRateLimitDisplay := Format(Rec."Rate Limit");
+        UpdateRateLimitDisplay();
     end;
 
-    // Used to set the focus on an email account
-    internal procedure SetEmailAccountId(AccountId: Guid)
+    internal procedure SetEmailAccount(EmailAccount: Record "Email Account")
     begin
-        EmailAccountId := AccountId;
+        EmailName := EmailAccount.Name;
     end;
 
-    internal procedure SetEmailAddress(Address: Text[250])
+    internal procedure UpdateRateLimitDisplay()
     begin
-        EmailAddress := Address;
-    end;
-
-    internal procedure SetEmailName(Name: Text[250])
-    begin
-        EmailName := Name;
-    end;
-
-    internal procedure SetEmailConnector(Connector: Enum "Email Connector")
-    begin
-        EmailConnector := Connector;
-    end;
-
-    internal procedure SetDefaultRateLimitDisplay()
-    begin
-        EmailRateLimitDisplay := 'No Limit';
-        DefaultEmailRateLimitDisplay := 'No Limit';
-    end;
-
-    internal procedure UpdateDefaultRateLimitDisplay()
-    begin
-        EmailRateLimit.Get(EmailAccountId, EmailConnector);
-        EmailRateLimitDisplay := Format(EmailRateLimit."Rate Limit");
-        DefaultEmailRateLimitDisplay := Format(EmailRateLimit."Rate Limit");
-    end;
-
-    internal procedure GetEmailRateLimit(var RateLimit: Record "Email Rate Limit"): Boolean
-    begin
-        if IsNullGuid(Rec."Account Id") then
-            exit(false);
-        RateLimit.TransferFields(Rec);
-        exit(true);
+        Evaluate(Rec."Rate Limit", EmailRateLimitDisplay);
+        if Rec."Rate Limit" = 0 then
+            EmailRateLimitDisplay := NoLimitTxt;
     end;
 
     var
-        EmailRateLimit: Record "Email Rate Limit";
-        EmailRateLimitImpl: Codeunit "Email Rate Limit Impl.";
-        EmailAccountId: Guid;
         EmailRateLimitDisplay: Text[250];
-        DefaultEmailRateLimitDisplay: Text[250];
         EmailName: Text[250];
-        EmailAddress: Text[250];
-        EmailConnector: Enum "Email Connector";
+        NoLimitTxt: label 'No limit';
 }

@@ -12,5 +12,6 @@ PermissionSet 8902 "Email - Admin"
     IncludedPermissionSets = "Email - Edit";
 
     Permissions = tabledata "Email Scenario" = imd,
-                  tabledata "Email View Policy" = RIMd;
+                  tabledata "Email View Policy" = RIMd,
+                  tabledata "Email Scenario Attachments" = imd;
 }

@@ -16,15 +16,15 @@ If xml definition is not well-formed
 procedure TryValidateAgainstSchema(Xml: Text; XmlSchema: Text; Namespace: Text)
 ```
 #### Parameters
-*Xml ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Xml ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Xml string to validate.
 
-*XmlSchema ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*XmlSchema ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Xml schema string to validate against.
 
-*Namespace ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Namespace ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Namespace of the xml schema.
 
@@ -47,7 +47,7 @@ Xml document to validate.
 
 Xml document with the schema to validate against.
 
-*Namespace ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Namespace ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Namespace of the xml schema.
 
@@ -62,15 +62,15 @@ Namespace of the xml schema.
 procedure TryValidateAgainstSchema(XmlDocStream: InStream; XmlSchemaStream: InStream; Namespace: Text)
 ```
 #### Parameters
-*XmlDocStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*XmlDocStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 InStream holding the xml document to validate.
 
-*XmlSchemaStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*XmlSchemaStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 InStream holding the schema to validate against.
 
-*Namespace ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Namespace ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Namespace of the xml schema.
 
@@ -85,7 +85,7 @@ Namespace of the xml schema.
 procedure TrySetValidatedDocument(Xml: Text)
 ```
 #### Parameters
-*Xml ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Xml ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Xml string to validate.
 
@@ -115,7 +115,7 @@ Xml document to validate.
 procedure TrySetValidatedDocument(XmlDocInStream: InStream)
 ```
 #### Parameters
-*XmlDocInStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*XmlDocInStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 InStream holding the XML document to validate.
 
@@ -131,11 +131,11 @@ procedure TryAddValidationSchema(XmlSchema: Text; Namespace: Text)
 ```
 #### Parameters
 
-*XmlSchema ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*XmlSchema ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Xml schema string to validate against.
 
-*Namespace ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Namespace ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Namespace of the XML schema.
 
@@ -155,7 +155,7 @@ procedure TryAddValidationSchema(XmlSchemaDoc: XmlDocument; Namespace: Text)
 
 Xml document with the schema to validate against.
 
-*Namespace ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Namespace ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Namespace of the XML schema.
 
@@ -171,11 +171,11 @@ procedure TryAddValidationSchema(XmlSchemaInStream: InStream; Namespace: Text)
 ```
 #### Parameters
 
-*XmlSchemaStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*XmlSchemaStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 InStream holding the XSD schema to validate against.
 
-*Namespace ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Namespace ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Namespace of the XML schema.
 

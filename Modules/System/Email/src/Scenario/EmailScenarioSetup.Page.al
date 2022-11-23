@@ -132,6 +132,29 @@ page 8893 "Email Scenario Setup"
                         SetSelectedRecord();
                     end;
                 }
+
+                action(SetDefaultAttachments)
+                {
+                    Visible = (TypeOfEntry = TypeOfEntry::Scenario) and CanUserManageEmailSetup;
+
+                    ApplicationArea = All;
+                    Caption = 'Set Scenario Attachments';
+                    ToolTip = 'Attach one or more files that can be attached to emails for this scenario.';
+                    Image = Archive;
+                    Promoted = true;
+                    PromotedOnly = true;
+                    PromotedCategory = Process;
+                    PromotedIsBig = true;
+                    Scope = Repeater;
+
+                    trigger OnAction()
+                    var
+                        EmailScenarioAttachments: Page "Email Scenario Attach Setup";
+                    begin
+                        EmailScenarioAttachments.SetEmailScenario(Rec.Scenario);
+                        EmailScenarioAttachments.Run()
+                    end;
+                }
             }
         }
     }
