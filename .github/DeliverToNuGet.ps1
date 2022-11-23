@@ -7,7 +7,11 @@ function GenerateNuspec
     [Parameter(Mandatory=$true)]
     $PackageId,
     [Parameter(Mandatory=$true)]
-    $Version
+    $Version,
+    [Parameter(Mandatory=$true)]
+    $Authors,
+    [Parameter(Mandatory=$true)]
+    $Owners
 )
 {
     [xml] $template = '<?xml version="1.0" encoding="utf-8"?>
@@ -15,12 +19,14 @@ function GenerateNuspec
         <metadata>
             <id></id>
             <version></version>
-            <title>Dynamics SMB Business Central — System Application</title>
-            <authors>Microsoft</authors>
-            <owners>Microsoft</owners>
+            <title>D365 Business Central — System Modules</title>
+            <authors></authors>
+            <owners></owners>
             <requireLicenseAcceptance>false</requireLicenseAcceptance>
-            <description>System Application for D365 Business Central</description>
-            <summary>System Application for D365 Business Central</summary>
+            <description>System Application and Dev Tools for D365 Business Central</description>
+            <summary>
+                The package contains app files and source code for System Application, System Application Test libraries and tests, as well as Dev Tools for Dynamics365 Business Central.
+            </summary>
         </metadata>
 	    <files>
             <file src="SourceCode\**" target="SourceCode" exclude="**\.AL-Go\**"/>
@@ -29,6 +35,8 @@ function GenerateNuspec
 
     $template.package.metadata.id = $PackageId
     $template.package.metadata.version = $Version
+    $template.package.metadata.authors = $Authors
+    $template.package.metadata.owners = $Owners
 
     return $template
 }
@@ -37,11 +45,20 @@ try {
     $nuGetAccount = $parameters.Context | ConvertFrom-Json | ConvertTo-HashTable
     $nuGetServerUrl = $nuGetAccount.ServerUrl
     $nuGetToken = $nuGetAccount.Token
-    Write-Host "NuGetContext OK" -ForegroundColor Magenta
 }
 catch {
-    throw "NuGetContext secret is malformed. Needs to be formatted as Json, containing serverUrl and token as a minimum."
+    throw "NuGetContext secret is malformed. Needs to be formatted as JSON, containing serverUrl and token."
 }
+
+if (-not ($nuGetServerUrl)) {
+    throw "Cannot retrieve NuGet server URL from NuGetContext"
+} 
+
+if (-not $nuGetToken) {
+    throw "Cannot retrieve NuGet token  URL from NuGetContext"
+} 
+
+Write-Host "Successfully retrieved information from NuGetContext" -ForegroundColor Green
 
 $project = $parameters.project
 $projectName = $parameters.projectName
@@ -49,6 +66,7 @@ $appsFolder = $parameters.appsFolder
 $testAppsFolder = $parameters.testAppsFolder
 $type = $parameters.type
 
+# Construct package ID
 $packageId = "$($env:GITHUB_REPOSITORY_OWNER)-$($env:RepoName)"
 
 if (-not $project -or ($project -ne '.')) {
@@ -60,12 +78,15 @@ if ($type -eq 'CD') {
 }
 
 # Extract version from the published folders (naming convention)
-$packageVersion = $appsFolder.SubString($appsFolder.IndexOf("-Apps-") + 6)
+$packageVersion = $appsFolder.SubString($appsFolder.IndexOf("-Apps-") + "-Apps-".Length) #version is right after '-Apps-'
 
 $nuspec = GenerateNuspec `
             -PackageId $packageId `
             -Version $packageVersion `
+            -Authors "$env:GITHUB_REPOSITORY_OWNER" `
+            -Owners "$env:GITHUB_REPOSITORY_OWNER"
 
+# Create a temp folder to use for the packaging
 $packageFolder = Join-Path $env:TEMP ([GUID]::NewGuid().ToString())
 New-Item -Path $packageFolder -ItemType Directory | Out-Null
 
@@ -73,7 +94,7 @@ Write-Host "Package folder: $packageFolder" -ForegroundColor Magenta
 
 try {
     Write-Host "Copy main app files to package folder $packageFolder" -ForegroundColor Magenta
-    (gci -Path $appsFolder -Filter "*.app") | % {
+    gci -Path $appsFolder -Filter "*.app" | % {
         Copy-Item -Path $_.FullName -Destination $packageFolder -Force
     
         $fileElement = $nuspec.CreateElement("file")
@@ -84,8 +105,8 @@ try {
     }
     
     Write-Host "Copy test app files to package folder $packageFolder" -ForegroundColor Magenta
-    (gci -Path $testAppsFolder -Filter "*.app") | % {
-        Copy-Item -Path $_.FullName -Destination $packageFolder -Force -Container
+    gci -Path $testAppsFolder -Filter "*.app" | % {
+        Copy-Item -Path $_.FullName -Destination $packageFolder -Force
     
         $fileElement = $nuspec.CreateElement("file")
         $fileElement.SetAttribute("src", $_.Name)
@@ -97,11 +118,11 @@ try {
     Write-Host "Copy source code for project $project to package folder $packageFolder/SourceCode" -ForegroundColor Magenta
     Copy-Item -Path (Join-Path $env:GITHUB_WORKSPACE $project) -Destination (Join-Path $packageFolder 'SourceCode') -Recurse -Force
     
-    #Create .nuspec file(Join-Path $packageFolder 'manifest.nuspec')
+    #Create .nuspec file
     $nuspecFilePath = (Join-Path $packageFolder 'manifest.nuspec')
     $nuspec.Save($nuspecFilePath)
     
-    $outputDirectory = Join-Path $env:GITHUB_WORKSPACE 'out'
+    $outputDirectory = Join-Path $packageFolder 'out'
     New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
 
     Write-Host "Download nuget CLI" -ForegroundColor Magenta
@@ -114,23 +135,22 @@ try {
     {
         throw "Generating the nuget pack failed with exit code $LASTEXITCODE"
     }
+    
+    # Get the newly created package
+    $nugetPackageFile = gci -Path $outputDirectory -Filter "$packageId*.nupkg"
+
+    if(-not $nugetPackageFile) {
+        throw "Cannot find nupkg file in $outputDirectory"
+    }
+
+    Write-Host "Push package $($nugetPackageFile.FullName) to $nuGetServerUrl" -ForegroundColor Magenta
+    $nugetOutput =  Invoke-Expression -Command "$outputDirectory/nuget.exe push $($nugetPackageFile.FullName) -ApiKey $nuGetToken -Source $nuGetServerUrl"
+
+    if ($LASTEXITCODE -or $null -eq $nugetOutput)
+    {
+        throw "Pushing nuget package $($nugetPackageFile.FullName) failed with exit code $LASTEXITCODE"
+    }
 }
 finally {
     Remove-Item $packageFolder -Recurse -Force
 }
-
-# Get the newly created package
-$nugetPackageFile = gci -Path $outputDirectory -Filter "$packageId*.nupkg"
-
-if(-not $nugetPackageFile) {
-    throw "Cannot find nupkg file"
-}
-
-Write-Host "Push package $($nugetPackageFile.FullName) to $nuGetServerUrl" -ForegroundColor Magenta
-$nugetOutput =  Invoke-Expression -Command "$outputDirectory/nuget.exe push $($nugetPackageFile.FullName) -ApiKey $nuGetToken -Source $nuGetServerUrl"
-
-if ($LASTEXITCODE -or $null -eq $nugetOutput)
-{
-    throw "Pushing nuget package $($nugetPackageFile.FullName) failed with exit code $LASTEXITCODE"
-}
-
