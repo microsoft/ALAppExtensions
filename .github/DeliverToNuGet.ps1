@@ -104,7 +104,6 @@ try {
     $outputDirectory = Join-Path $env:GITHUB_WORKSPACE 'out'
     New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
 
-    
     Write-Host "Download nuget CLI" -ForegroundColor Magenta
     Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile $outputDirectory/nuget.exe
     
