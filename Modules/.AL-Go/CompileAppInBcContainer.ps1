@@ -4,7 +4,7 @@ Param(
 
 $appName = (gci -Path $($parameters.appProjectFolder) -Filter "app.json" | Get-Content | ConvertFrom-Json).name
 
-$buildArtifactsFolder = Join-Path -Path $parameters.appOutputFolder -ChildPath ".buildartifacts/Apps"
+$buildArtifactsFolder = Join-Path -Path $parameters.appProjectFolder -ChildPath ".buildartifacts/Apps" -Resolve
 
 if (!$parameters.ContainsKey("Features")) {
     $parameters["Features"] = @()
