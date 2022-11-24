@@ -28,9 +28,6 @@ function GenerateNuspec
                 The package contains app files and source code for System Application, System Application Test libraries and tests, as well as Dev Tools for Dynamics365 Business Central.
             </summary>
         </metadata>
-	    <files>
-            <file src="SourceCode\**" target="SourceCode" exclude="**\.AL-Go\**"/>
-	    </files>
     </package>'
 
     $template.package.metadata.id = $PackageId
@@ -39,6 +36,60 @@ function GenerateNuspec
     $template.package.metadata.owners = $Owners
 
     return $template
+}
+
+function GenerateSourceCodeArchive($AppFile, $ALGoProject, $FoldersLookup)
+{
+    Import-Module BCContainerHelper -DisableNameChecking 
+    Extract-AppFileToFolder -appFilename $AppFile.FullName -generateAppJson
+
+    $extractedAppFileFolder = Get-Item -Path "$($AppFile.FullName).source"
+    Write-Host "Extracted $($AppFile.FullName) to $($AppFile.FullName).source"
+
+    try {
+        $appJsonFile =  gci -Path $extractedAppFileFolder -Filter "app.json"
+        $appName = ($appJsonFile | Get-Content | ConvertFrom-Json).Name
+
+        Write-Host "App name: $appName"
+        
+        foreach($folder in $FoldersLookup) 
+        {
+            $currentAppSourcePath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath "$ALGoProject/$folder" -Resolve 
+            Write-Host "Looking in $currentAppSourcePath"
+
+            $currentAppName = (gci -Path $currentAppSourcePath -Filter "app.json" | Get-Content | ConvertFrom-Json).Name
+            
+            if($currentAppName -eq $appName) {
+                $appSourceFolder = ($appFile.FullName -replace ".app$", ".Source")
+                New-Item -Path $appSourceFolder -ItemType Directory | Out-Null
+
+                try {
+                    # Copy over the source code
+                    Copy-Item -Path $currentAppSourcePath/** -Destination $appSourceFolder -Recurse -Force
+                    
+                    # Copy over the app.json
+                    Copy-Item -Path "$extractedAppFileFolder/app.json" -Destination $appSourceFolder -Force
+                    
+                    # Copy over the Translations folder
+                    if(Test-Path "$extractedAppFileFolder/Translations") {
+                        Copy-Item -Path "$extractedAppFileFolder/Translations" -Destination $appSourceFolder -Container -Force
+                    }
+                    
+                    Compress-Archive -Path $appSourceFolder/** -DestinationPath "$appSourceFolder.zip" -Force
+
+                    $sourceCodeArchive = Get-Item -Path "$appSourceFolder.zip"
+
+                    return $appName, $sourceCodeArchive
+                }
+                finally {
+                    Remove-Item -Path $appSourceFolder -Force -Recurse
+                }
+            }
+        }
+    }
+    finally {
+        Remove-Item -Path $extractedAppFileFolder -Force -Recurse
+    }
 }
 
 try {
@@ -93,36 +144,35 @@ New-Item -Path $packageFolder -ItemType Directory | Out-Null
 Write-Host "Package folder: $packageFolder" -ForegroundColor Magenta
 
 try {
-    Write-Host "Copy main app files to package folder $packageFolder" -ForegroundColor Magenta
-    gci -Path $appsFolder -Filter "*.app" | % {
-        Copy-Item -Path $_.FullName -Destination $packageFolder -Force
-    
-        $fileElement = $nuspec.CreateElement("file")
-        $fileElement.SetAttribute("src", $_.Name)
-        $fileElement.SetAttribute("target", $_.Name)
-    
-        $nuspec.package.files.AppendChild($fileElement) | Out-Null
+    $appFiles = gci -Path $appsFolder -Filter "*.app"
+    $appFiles | % {
+        $appFile = $_
+        Write-Host "Processing $($appFile.FullName)" -ForegroundColor Magenta
+
+        $appName, $sourceCodeArchive = GenerateSourceCodeArchive -AppFile $appFile -ALGoProject $project -FoldersLookup @($($parameters.projectSettings.appFolders))
+
+        New-Item -Path "$packageFolder/Apps/$appName" -ItemType Directory -Force
+        Copy-Item -Path $appFile.FullName -Destination "$packageFolder/Apps/$appName" -Force
+        Copy-Item -Path $sourceCodeArchive.FullName -Destination "$packageFolder/Apps/$appName" -Force
     }
     
-    Write-Host "Copy test app files to package folder $packageFolder" -ForegroundColor Magenta
-    gci -Path $testAppsFolder -Filter "*.app" | % {
-        Copy-Item -Path $_.FullName -Destination $packageFolder -Force
-    
-        $fileElement = $nuspec.CreateElement("file")
-        $fileElement.SetAttribute("src", $_.Name)
-        $fileElement.SetAttribute("target", (Join-Path 'Tests' $_.Name))
-    
-        $nuspec.package.files.AppendChild($fileElement) | Out-Null
+    $testAppFiles = gci -Path $testAppsFolder -Filter "*.app"
+    $testAppFiles | % {
+        $appFile = $_
+        Write-Host "Processing $($appFile.FullName)" -ForegroundColor Magenta
+
+        $appName, $sourceCodeArchive = GenerateSourceCodeArchive -AppFile $appFile -ALGoProject $project -FoldersLookup @($($parameters.projectSettings.testFolders))
+
+        New-Item -Path "$packageFolder/Test Apps/$appName" -ItemType Directory -Force
+        Copy-Item -Path $appFile.FullName -Destination "$packageFolder/Test Apps/$appName" -Force
+        Copy-Item -Path $sourceCodeArchive.FullName -Destination "$packageFolder/Test Apps/$appName" -Force
     }
-    
-    Write-Host "Copy source code for project $project to package folder $packageFolder/SourceCode" -ForegroundColor Magenta
-    Copy-Item -Path (Join-Path $env:GITHUB_WORKSPACE $project) -Destination (Join-Path $packageFolder 'SourceCode') -Recurse -Force
     
     #Create .nuspec file
     $nuspecFilePath = (Join-Path $packageFolder 'manifest.nuspec')
     $nuspec.Save($nuspecFilePath)
     
-    $outputDirectory = Join-Path $packageFolder 'out'
+    $outputDirectory = Join-Path $env:GITHUB_WORKSPACE 'out'
     New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
 
     Write-Host "Download nuget CLI" -ForegroundColor Magenta
