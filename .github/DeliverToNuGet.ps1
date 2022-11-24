@@ -209,6 +209,4 @@ try {
 }
 finally {
     Remove-Item $packageFolder -Recurse -Force
-
-    CleanupAfterBcContainerHelper -bcContainerHelperPath $bcContainerHelperPath
 }
