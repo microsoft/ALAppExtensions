@@ -148,9 +148,9 @@ try {
     New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
 
     # Import BCContainerHelper
-    $ALGoHelperPath = Join-Path $outputDirectory "$([System.IO.Path]::GetTempFileName()).ps1"
-    $webClient = New-Object System.Net.WebClient
-    $webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/preview/AL-Go-Helper.ps1', $ALGoHelperPath)
+    $ALGoHelperPath = Join-Path $outputDirectory "AL-Go-Helper.ps1"
+    Invoke-WebRequest 'https://raw.githubusercontent.com/microsoft/AL-Go-Actions/preview/AL-Go-Helper.ps1' -OutFile $ALGoHelperPath
+
     . $ALGoHelperPath
     $BcContainerHelperPath = DownloadAndImportBcContainerHelper -baseFolder $outputDirectory
 
