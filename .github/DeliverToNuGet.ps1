@@ -144,6 +144,16 @@ New-Item -Path $packageFolder -ItemType Directory | Out-Null
 Write-Host "Package folder: $packageFolder" -ForegroundColor Magenta
 
 try {
+    $outputDirectory = Join-Path $env:GITHUB_WORKSPACE 'out'
+    New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
+
+    # Import BCContainerHelper
+    $ALGoHelperPath = Join-Path $outputDirectory "$([System.IO.Path]::GetTempFileName()).ps1"
+    $webClient = New-Object System.Net.WebClient
+    $webClient.DownloadFile('https://raw.githubusercontent.com/microsoft/AL-Go-Actions/preview/AL-Go-Helper.ps1', $ALGoHelperPath)
+    . $ALGoHelperPath
+    $BcContainerHelperPath = DownloadAndImportBcContainerHelper -baseFolder $outputDirectory
+
     $appFiles = gci -Path $appsFolder -Filter "*.app"
     $appFiles | % {
         $appFile = $_
@@ -171,9 +181,6 @@ try {
     #Create .nuspec file
     $nuspecFilePath = (Join-Path $packageFolder 'manifest.nuspec')
     $nuspec.Save($nuspecFilePath)
-    
-    $outputDirectory = Join-Path $env:GITHUB_WORKSPACE 'out'
-    New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
 
     Write-Host "Download nuget CLI" -ForegroundColor Magenta
     Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile $outputDirectory/nuget.exe
@@ -203,4 +210,6 @@ try {
 }
 finally {
     Remove-Item $packageFolder -Recurse -Force
+
+    CleanupAfterBcContainerHelper -bcContainerHelperPath $bcContainerHelperPath
 }
