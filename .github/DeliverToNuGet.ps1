@@ -40,7 +40,6 @@ function GenerateNuspec
 
 function GenerateSourceCodeArchive($AppFile, $ALGoProject, $FoldersLookup)
 {
-    Import-Module BCContainerHelper -DisableNameChecking 
     Extract-AppFileToFolder -appFilename $AppFile.FullName -generateAppJson
 
     $extractedAppFileFolder = Get-Item -Path "$($AppFile.FullName).source"
