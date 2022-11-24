@@ -17,6 +17,7 @@ codeunit 132438 "Permission Relation Tests"
         RoleIdDLbl: Label 'TEST SET D', Locked = true;
         NewRoleIdLbl: Label 'TEST SET', Locked = true;
         NewNameLbl: Label 'Test Set', Locked = true;
+        AnotherRoleIdLbl: Label 'ANOTHER SET', Locked = true;
         IncludedTok: Label 'Full', Locked = true;
         ExcludedTok: Label 'Excluded', Locked = true;
         PartialTok: Label 'Partial', Locked = true;
@@ -720,6 +721,73 @@ codeunit 132438 "Permission Relation Tests"
           StrSubstNo(EnabledActionErr, 'Stop', PermissionSetPage.Caption));
 
         // Cannot confirm the correct recording while in a test
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure TestRecordPermissions()
+    var
+        TenantPermissionSet: Record "Tenant Permission Set";
+        TempExpandedPermission: Record "Expanded Permission" temporary;
+        PermissionSetRelation: Codeunit "Permission Set Relation";
+        PermissionSetPage: TestPage "Permission Set";
+        NullGuid: Guid;
+    begin
+        // [GIVEN] An empty tenant permission set
+        TenantPermissionSet.SetRange("Role ID", NewRoleIdLbl);
+        TenantPermissionSet.DeleteAll();
+
+        TenantPermissionSet."Role ID" := NewRoleIdLbl;
+        TenantPermissionSet."App ID" := NullGuid;
+        TenantPermissionSet.Name := NewNameLbl;
+        TenantPermissionSet.Insert();
+
+        // [WHEN] The permission set page is opened
+        PermissionSetPage.Trap();
+        PermissionSetRelation.OpenPermissionSetPage(NewNameLbl, NewRoleIdLbl, NullGuid, Scope::Tenant);
+
+        // [THEN] Initial state is that Start is enabled and Stop is not
+        LibraryAssert.IsTrue(PermissionSetPage.Start.Enabled(),
+          StrSubstNo(DisabledActionErr, 'Start', PermissionSetPage.Caption));
+        LibraryAssert.IsFalse(PermissionSetPage.Stop.Enabled(),
+          StrSubstNo(EnabledActionErr, 'Stop', PermissionSetPage.Caption));
+
+        // [WHEN] Start is pressed
+        TenantPermissionSet.SetRange("Role ID", AnotherRoleIdLbl);
+        TenantPermissionSet.DeleteAll();
+        PermissionSetPage.Start.Invoke();
+
+        // [WHEN] An action requiring permissions is performed (insert a permission set)
+        TenantPermissionSet."Role ID" := AnotherRoleIdLbl;
+        TenantPermissionSet."App ID" := NullGuid;
+        TenantPermissionSet.Name := NewNameLbl;
+        TenantPermissionSet.Insert();
+
+        // [WHEN] Stop is pressed
+        PermissionSetPage.Stop.Invoke();
+
+        // [THEN] Insert permission is added
+        VerifyContainsExpandedPermission(NewRoleIdLbl, NullGuid, TempExpandedPermission."Object Type"::"Table Data", Database::"Tenant Permission Set",
+            TempExpandedPermission."Read Permission"::" ", TempExpandedPermission."Insert Permission"::Yes,
+            TempExpandedPermission."Modify Permission"::" ", TempExpandedPermission."Delete Permission"::" ",
+            TempExpandedPermission."Execute Permission"::" ");
+
+        // [WHEN] Start is pressed again
+        PermissionSetPage.Start.Invoke();
+
+        // [WHEN] An action requiring more permissions is performed (delete a permission set)
+        TenantPermissionSet.SetRange("Role ID", AnotherRoleIdLbl);
+        TenantPermissionSet.DeleteAll();
+
+        // [WHEN] Stop is pressed
+        PermissionSetPage.Stop.Invoke();
+
+        // [THEN] More permissions are added
+        VerifyContainsExpandedPermission(NewRoleIdLbl, NullGuid, TempExpandedPermission."Object Type"::"Table Data", Database::"Tenant Permission Set",
+            TempExpandedPermission."Read Permission"::Yes, TempExpandedPermission."Insert Permission"::Yes,
+            TempExpandedPermission."Modify Permission"::" ", TempExpandedPermission."Delete Permission"::Yes,
+            TempExpandedPermission."Execute Permission"::" ");
+
     end;
 
     local procedure VerifyContainsExpandedPermission(RoleId: Code[30]; AppId: Guid; ObjType: Option; ObjId: Integer; Read: Option; Insert: Option; Modify: Option; Delete: Option; Execute: Option)

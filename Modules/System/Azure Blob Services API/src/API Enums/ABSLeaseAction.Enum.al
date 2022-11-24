@@ -5,7 +5,7 @@
 
 /// <summary>
 /// The types of allowed lease operations
-/// See: https://docs.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api
+/// See: https://go.microsoft.com/fwlink/?linkid=2210594
 /// </summary>
 enum 9049 "ABS Lease Action"
 {

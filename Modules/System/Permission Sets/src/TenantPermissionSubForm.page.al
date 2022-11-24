@@ -59,6 +59,11 @@ page 9859 "Tenant Permission Subform"
                         ActivateControls();
                         PermissionImpl.UpdatePermissionLine(false, Rec, ObjectCaption, ObjectName, ReadPermissionAsTxt, InsertPermissionAsTxt, ModifyPermissionAsTxt, DeletePermissionAsTxt, ExecutePermissionAsTxt);
                     end;
+
+                    trigger OnLookup(var Text: Text): Boolean
+                    begin
+                        exit(PermissionImpl.LookupPermission(Rec."Object Type", Text))
+                    end;
                 }
                 field("Object Name"; ObjectName)
                 {
@@ -188,6 +193,28 @@ page 9859 "Tenant Permission Subform"
     {
         area(Processing)
         {
+            action(SelectPermissions)
+            {
+                ApplicationArea = All;
+                Caption = 'Select Objects';
+                ToolTip = 'Add two or more objects.';
+                Image = NewItem;
+                Ellipsis = true;
+                Enabled = CurrPageIsEditable;
+                Scope = Page;
+
+                trigger OnAction()
+                var
+                    PermissionImpl: Codeunit "Permission Impl.";
+                    PermissionSetRelation: Codeunit "Permission Set Relation";
+                begin
+                    PermissionSetRelation.VerifyUserCanEditPermissionSet(CurrentAppID);
+
+                    if PermissionImpl.SelectPermissions(CurrentAppId, CopyStr(CurrentRoleId, 1, 20)) then
+                        RefreshTreeView();
+                end;
+            }
+
             action(AddRelatedTablesAction)
             {
                 AccessByPermission = TableData "Tenant Permission" = I;

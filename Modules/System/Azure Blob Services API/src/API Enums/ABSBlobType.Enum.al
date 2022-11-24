@@ -5,7 +5,7 @@
 
 /// <summary>
 /// The types of BLOBs supported in Azure Blob Storage.
-/// See: https://docs.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api
+/// See: https://go.microsoft.com/fwlink/?linkid=2210594
 /// </summary>
 enum 9047 "ABS Blob Type"
 {

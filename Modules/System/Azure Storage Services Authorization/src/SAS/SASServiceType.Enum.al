@@ -5,7 +5,7 @@
 
 /// <summary>
 /// Defines the possible service types for account SAS
-/// More Information: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas#specifying-account-sas-parameters
+/// More Information: https://go.microsoft.com/fwlink/?linkid=2210398
 /// </summary>
 enum 9062 "SAS Service Type"
 {

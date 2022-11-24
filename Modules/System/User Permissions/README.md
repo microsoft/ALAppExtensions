@@ -23,12 +23,12 @@ User this module to do the following:
 procedure IsSuper(UserSecurityId: Guid): Boolean
 ```
 #### Parameters
-*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The security ID assigned to the user.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the user has the SUPER permissions set. Otherwise, false.
 ### RemoveSuperPermissions (Method) <a name="RemoveSuperPermissions"></a> 
@@ -42,7 +42,7 @@ True if the user has the SUPER permissions set. Otherwise, false.
 procedure RemoveSuperPermissions(UserSecurityId: Guid)
 ```
 #### Parameters
-*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The security ID of the user to modify.
 
@@ -56,12 +56,12 @@ The security ID of the user to modify.
 procedure CanManageUsersOnTenant(UserSecurityId: Guid): Boolean
 ```
 #### Parameters
-*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The security ID of the user to check for.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the user with the given user security ID can manage users on tenant; false otherwise.
 ### HasUserCustomPermissions (Method) <a name="HasUserCustomPermissions"></a> 
@@ -74,11 +74,11 @@ True if the user with the given user security ID can manage users on tenant; fal
 procedure HasUserCustomPermissions(UserSecurityId: Guid): Boolean
 ```
 #### Parameters
-*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The security ID of the user to check for.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the user with the given user security ID has custom permissions; false otherwise.

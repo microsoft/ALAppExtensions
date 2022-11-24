@@ -12,9 +12,17 @@ codeunit 135104 "Perf. Profiler Test Library"
         ProfilingDataProcessor: Codeunit "Profiling Data Processor";
 
     /// <summary>
-    /// Initializes the profiling data processor with the test profiling data.
+    /// Initializes the profiling data processor with the default test profiling data.
     /// </summary>
     procedure Initialize()
+    begin
+        Initialize(GetTestPerformanceProfile());
+    end;
+
+    /// <summary>
+    /// Initializes the profiling data processor with the test profiling data, allowing to load a specific profile required for a test.
+    /// </summary>
+    procedure Initialize(PerformanceProfile: Text)
     var
         RawProfilingNode: Record "Profiling Node";
         CallTreeProfilingNode: Record "Profiling Node";
@@ -24,7 +32,7 @@ codeunit 135104 "Perf. Profiler Test Library"
         OutStr: OutStream;
     begin
         TempBlob.CreateOutStream(OutStr);
-        OutStr.Write(GetTestPerformanceProfile());
+        OutStr.Write(PerformanceProfile);
         TempBlob.CreateInStream(SetDataInStr);
 
         SamplingPerformanceProfiler.SetData(SetDataInStr);
@@ -144,6 +152,38 @@ codeunit 135104 "Perf. Profiler Test Library"
         TextPerfProfileTextBuilder.Append('e":"CodeUnit_TestNode2","objectId":2}},{"id":6,"callFrame":{"functionName":"TestNode3FunctionName","scriptId":"CodeUnit_3","url":"TestNode3","lineNumber":0,"columnNumber":0},"hitCo');
         TextPerfProfileTextBuilder.Append('unt":1,"children":[],"declaringApplication":{"appName":"TestNode3App","appPublisher":"TestPublisher1","appVersion":"0.0.0.0"},"applicationDefinition":{"objectType":"CodeUnit","obje');
         TextPerfProfileTextBuilder.Append('ctName":"CodeUnit_TestNode3","objectId":3}}],"startTime":63780017494528714,"endTime":63780017556442928,"samples":[1,2,3,5,6],"timeDeltas":[0,100000,500000,100000,500000],"kind":1}');
+        exit(TextPerfProfileTextBuilder.ToText());
+    end;
+
+    /// <summary>
+    /// Gets a test performance profile containing multiple child nodes for the same parent node.
+    /// </summary>
+    /// <returns>A test performance profile.</returns>
+    procedure GetPerformanceProfileWithMultipleChildNodes(): Text
+    var
+        TextPerfProfileTextBuilder: TextBuilder;
+    begin
+        TextPerfProfileTextBuilder.Append('{"nodes":[{"id":1,"callFrame":{"functionName":"TestNode1FunctionName","scriptId":"Page_1","url":"TestNode1","lineNumber":20,"columnNumber":20},"hitCount":3,"children":[2,6,7],"decl');
+        TextPerfProfileTextBuilder.Append('aringApplication":{"appName":"TestNode1App","appPublisher":"TestPublisher1","appVersion":"0.0.0.0"},"applicationDefinition":{"objectType":"Page","objectName":"TestPage1","objectId"');
+        TextPerfProfileTextBuilder.Append(':1},"frameIdentifier":268484896},{"id":2,"callFrame":{"functionName":"TestNode2FunctionName","scriptId":"Table_4","url":"TestNode2","lineNumber":553,"columnNumber":8},"hitCount":1,');
+        TextPerfProfileTextBuilder.Append('"children":[3],"declaringApplication":{"appName":"TestNode2App","appPublisher":"TestPublisher2","appVersion":"0.0.0.0"},"applicationDefinition":{"objectType":"Table","objectName":"');
+        TextPerfProfileTextBuilder.Append('TestTable1","objectId":4},"frameIdentifier":303604335},{"id":3,"callFrame":{"functionName":"TestNode3FunctionName","scriptId":"Table_4","url":"TestNode3","lineNumber":839,"columnNu');
+        TextPerfProfileTextBuilder.Append('mber":7},"hitCount":1,"children":[4,5],"declaringApplication":{"appName":"TestNode2App","appPublisher":"TestPublisher2","appVersion":"0.0.0.0"},"applicationDefinition":{"ob');
+        TextPerfProfileTextBuilder.Append('jectType":"Table","objectName":"TestTable1","objectId":4},"frameIdentifier":1462541426},{"id":4,"callFrame":{"functionName":"TestNode4FunctionName","scriptId":"CodeUnit_1","url":"T');
+        TextPerfProfileTextBuilder.Append('estNode4","lineNumber":5,"columnNumber":8},"hitCount":1,"children":[],"declaringApplication":{"appName":"TestNode1App","appPublisher":"TestPublisher1","appVersion":"0.0.0.0"},"appl');
+        TextPerfProfileTextBuilder.Append('icationDefinition":{"objectType":"CodeUnit","objectName":"TestCodeunit1","objectId":1},"frameIdentifier":918612397},{"id":5,"callFrame":{"functionName":"TestNode5FunctionName","scr');
+        TextPerfProfileTextBuilder.Append('iptId":"CodeUnit_1","url":"TestNode5","lineNumber":16,"columnNumber":8},"hitCount":2,"children":[],"declaringApplication":{"appName":"TestNode1App","appPublisher":"TestPublisher1",');
+        TextPerfProfileTextBuilder.Append('"appVersion":"0.0.0.0"},"applicationDefinition":{"objectType":"CodeUnit","objectName":"TestCodeunit1","objectId":1},"frameIdentifier":-1430629655},{"id":6,"callFrame":{"functionNam');
+        TextPerfProfileTextBuilder.Append('e":"TestNode5FunctionName","scriptId":"CodeUnit_1","url":"TestNode6","lineNumber":16,"columnNumber":8},"hitCount":2,"children":[],"declaringApplication":{"appName":"TestNode1App","');
+        TextPerfProfileTextBuilder.Append('appPublisher":"TestPublisher1","appVersion":"0.0.0.0"},"applicationDefinition":{"objectType":"CodeUnit","objectName":"TestCodeunit1","objectId":1},"frameIdentifier":437789830},{"id');
+        TextPerfProfileTextBuilder.Append('":7,"callFrame":{"functionName":"TestNode7FunctionName","scriptId":"Page_1","url":"TestNode7","lineNumber":39,"columnNumber":8},"hitCount":1,"children":[8],"declaringApplication":{');
+        TextPerfProfileTextBuilder.Append('"appName":"TestNode1App","appPublisher":"TestPublisher1","appVersion":"0.0.0.0"},"applicationDefinition":{"objectType":"Page","objectName":"TestPage1","objectId":1},"frameIdentifie');
+        TextPerfProfileTextBuilder.Append('r":1581969},{"id":8,"callFrame":{"functionName":"TestNode8FunctionName","scriptId":"Table_2","url":"TestNode8","lineNumber":2162,"columnNumber":8},"hitCount":4,"children":[9],"decl');
+        TextPerfProfileTextBuilder.Append('aringApplication":{"appName":"TestNode2App","appPublisher":"TestPublisher2","appVersion":"0.0.0.0"},"applicationDefinition":{"objectType":"Table","objectName":"TestTable2","objectI');
+        TextPerfProfileTextBuilder.Append('d":2},"frameIdentifier":18711313},{"id":9,"callFrame":{"functionName":"TestNode9FunctionName","scriptId":"Table_2","url":"TestNode9","lineNumber":2200,"columnNumber":8},"hitCount"');
+        TextPerfProfileTextBuilder.Append(':1,"children":[],"declaringApplication":{"appName":"TestNode2App","appPublisher":"TestPublisher2","appVersion":"0.0.0.0"},"applicationDefinition":{"objectType":"Table","objectName"');
+        TextPerfProfileTextBuilder.Append(':"TestTable2","objectId":2},"frameIdentifier":650968763}],"startTime":63799826708387251,"endTime":63799826717061017,"samples":[1,4,5,6,8],"timeDeltas":[220413,0,218729,210322,42853');
+        TextPerfProfileTextBuilder.Append('0],"kind":1}');
         exit(TextPerfProfileTextBuilder.ToText());
     end;
 

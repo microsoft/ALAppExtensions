@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-// See: https://docs.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api
+// See: https://go.microsoft.com/fwlink/?linkid=2210594
 codeunit 9051 "ABS Client Impl."
 {
     Access = Internal;

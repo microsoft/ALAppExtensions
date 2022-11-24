@@ -21,7 +21,7 @@ procedure Open(var SelectedField: Record "Field"): Boolean
 The field record variable to set the selected fields. Any filters on this record will influence the page view.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 Returns true if a field was selected.
 

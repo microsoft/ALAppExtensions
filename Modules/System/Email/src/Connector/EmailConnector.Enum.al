@@ -6,7 +6,8 @@
 /// <summary>
 /// Enum that holds all of the available email connectors.
 /// </summary>
-enum 8889 "Email Connector" implements "Email Connector"
+enum 8889 "Email Connector" implements "Email Connector", "Default Email Rate Limit"
 {
     Extensible = true;
+    DefaultImplementation = "Default Email Rate Limit" = "Default Email Rate Limit";
 }

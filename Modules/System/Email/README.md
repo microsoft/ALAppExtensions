@@ -45,7 +45,7 @@ Holds information about the sent emails.
 procedure GetMessageId(): Guid
 ```
 #### Return Value
-*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+*[Guid](https://go.microsoft.com/fwlink/?linkid=2210122)*
 
 Message id.
 
@@ -74,7 +74,7 @@ procedure Send(EmailMessage: Codeunit "Email Message"; AccountId: Guid)
 
 The email message that is to be sent out.
 
-*AccountId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*AccountId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The email account ID which is used to send out the email.
 
@@ -102,7 +102,7 @@ Out variable that holds the registered e-mail accounts for the connector.
 procedure ShowAccountInformation(AccountId: Guid)
 ```
 #### Parameters
-*AccountId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*AccountId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The ID of the e-mail account
 
@@ -123,7 +123,7 @@ procedure RegisterAccount(var Account: Record "Email Account"): Boolean
 Out parameter with the details of the registered Account.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if an account was registered.
 ### DeleteAccount (Method) <a name="DeleteAccount"></a> 
@@ -136,12 +136,12 @@ True if an account was registered.
 procedure DeleteAccount(AccountId: Guid): Boolean
 ```
 #### Parameters
-*AccountId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*AccountId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The ID of the e-mail account
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if an account was deleted.
 ### GetLogoAsBase64 (Method) <a name="GetLogoAsBase64"></a> 
@@ -156,7 +156,7 @@ The recomended image size is 128x128.
 procedure GetLogoAsBase64(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 Base64 encoded image.
 ### GetDescription (Method) <a name="GetDescription"></a> 
@@ -169,7 +169,7 @@ Base64 encoded image.
 procedure GetDescription(): Text[250]
 ```
 #### Return Value
-*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text[250]](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 A more detailed desctiption of the connector.
 
@@ -188,7 +188,7 @@ A more detailed desctiption of the connector.
 procedure GetAllAccounts(LoadLogos: Boolean; var Accounts: Record "Email Account" temporary)
 ```
 #### Parameters
-*LoadLogos ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*LoadLogos ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Flag, used to determine whether to load the logos for the accounts.
 
@@ -220,7 +220,7 @@ Out parameter holding the email accounts.
 procedure IsAnyAccountRegistered(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if there is any account registered in the system, otherwise - false.
 ### ValidateEmailAddress (Method) <a name="ValidateEmailAddress"></a> 
@@ -238,7 +238,7 @@ If the provided email address is an empty string, the function will do nothing.
 procedure ValidateEmailAddress(EmailAddress: Text)
 ```
 #### Parameters
-*EmailAddress ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EmailAddress ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The email address to validate.
 
@@ -255,11 +255,11 @@ The email address "%1" is not valid.
 procedure ValidateEmailAddress(EmailAddress: Text; AllowEmptyValue: Boolean)
 ```
 #### Parameters
-*EmailAddress ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EmailAddress ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The email address to validate.
 
-*AllowEmptyValue ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*AllowEmptyValue ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Indicates whether to skip the validation if the provided email address is empty.
 
@@ -278,7 +278,7 @@ If the provided email address is an empty string, the function will do nothing.
 procedure ValidateEmailAddresses(EmailAddresses: Text)
 ```
 #### Parameters
-*EmailAddresses ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EmailAddresses ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The email addresses to validate, separated by semicolons.
 
@@ -295,11 +295,11 @@ The email address "%1" is not valid.
 procedure ValidateEmailAddresses(EmailAddresses: Text; AllowEmptyValue: Boolean)
 ```
 #### Parameters
-*EmailAddresses ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EmailAddresses ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The email addresses to validate, separated by semicolons.
 
-*AllowEmptyValue ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*AllowEmptyValue ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Indicates whether to skip the validation if no email address is provided.
 
@@ -310,11 +310,11 @@ Indicates whether to skip the validation if no email address is provided.
 internal procedure OnAfterValidateEmailAddress(EmailAddress: Text; AllowEmptyValue: Boolean)
 ```
 #### Parameters
-*EmailAddress ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*EmailAddress ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 
 
-*AllowEmptyValue ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*AllowEmptyValue ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 
 
@@ -424,7 +424,7 @@ procedure Enqueue(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; 
 
 The email message to use as payload.
 
-*EmailAccountId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*EmailAccountId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The ID of the email account to use for sending the email.
 
@@ -451,7 +451,7 @@ procedure Send(EmailMessage: Codeunit "Email Message"): Boolean
 The email message to use as payload.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the email was successfully sent; otherwise - false.
 ### Send (Method) <a name="Send"></a> 
@@ -475,7 +475,7 @@ The email message to use as payload.
 The scenario to use in order to determine the email account to use for sending the email.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the email was successfully sent; otherwise - false.
 ### Send (Method) <a name="Send"></a> 
@@ -501,7 +501,7 @@ The email message to use as payload.
 The email account to use for sending the email.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the email was successfully sent; otherwise - false
 ### Send (Method) <a name="Send"></a> 
@@ -520,7 +520,7 @@ procedure Send(EmailMessage: Codeunit "Email Message"; EmailAccountId: Guid; Ema
 
 The email message to use as payload.
 
-*EmailAccountId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*EmailAccountId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The ID of the email account to use for sending the email.
 
@@ -529,7 +529,7 @@ The ID of the email account to use for sending the email.
 The email connector to use for sending the email.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the email was successfully sent; otherwise - false
 ### OpenInEditor (Method) <a name="OpenInEditor"></a> 
@@ -598,7 +598,7 @@ procedure OpenInEditor(EmailMessage: Codeunit "Email Message"; EmailAccountId: G
 
 The email message to use as payload.
 
-*EmailAccountId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*EmailAccountId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The ID of the email account to use on the page.
 
@@ -684,7 +684,7 @@ procedure OpenInEditorModally(EmailMessage: Codeunit "Email Message"; EmailAccou
 
 The email message to use as payload.
 
-*EmailAccountId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*EmailAccountId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The ID of the email account to use on the page.
 
@@ -707,11 +707,11 @@ The action that the user performed with the email message.
 procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid)ResultSentEmails: Record "Sent Email" temporary
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The table ID of the record.
 
-*SystemId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*SystemId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The system ID of the record.
 
@@ -729,11 +729,11 @@ The sent email related to a record.
 procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid; var ResultSentEmails: Record "Sent Email" temporary)
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The table ID of the record.
 
-*SystemId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*SystemId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The system ID of the record.
 
@@ -751,7 +751,7 @@ The system ID of the record.
 procedure GetSentEmailsForRecord(RecordVariant: Variant; var ResultSentEmails: Record "Sent Email" temporary)
 ```
 #### Parameters
-*RecordVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*RecordVariant ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 Source Record.
 
@@ -769,7 +769,7 @@ The sent email related to a record.
 procedure GetEmailOutboxForRecord(RecordVariant: Variant; var ResultEmailOutbox: Record "Email Outbox" temporary)
 ```
 #### Parameters
-*RecordVariant ([Variant](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/variant/variant-data-type))* 
+*RecordVariant ([Variant](https://go.microsoft.com/fwlink/?linkid=2210243))* 
 
 Source Record.
 
@@ -787,11 +787,11 @@ The outbox emails related to a record.
 procedure OpenSentEmails(TableId: Integer; SystemId: Guid)
 ```
 #### Parameters
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The table ID of the record.
 
-*SystemId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*SystemId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The system ID of the record.
 
@@ -805,7 +805,7 @@ The system ID of the record.
 procedure GetOutboxEmailRecordStatus(MessageId: Guid)ResultStatus: Enum "Email Status"
 ```
 #### Parameters
-*MessageId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*MessageId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The MessageId of the record.
 
@@ -827,11 +827,11 @@ procedure AddRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; 
 
 The email message for which to create the relation.
 
-*TableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*TableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The table ID of the record.
 
-*SystemId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*SystemId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The system ID of the record.
 
@@ -855,7 +855,7 @@ procedure OnGetTestEmailBody(Connector: Enum "Email Connector"; var Body: Text)
 
 The connector used to send the email message.
 
-*Body ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Body ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Out param to set the email body to a new value.
 
@@ -870,15 +870,15 @@ Out param to set the email body to a new value.
 internal procedure OnShowSource(SourceTableId: Integer; SourceSystemId: Guid; var IsHandled: Boolean)
 ```
 #### Parameters
-*SourceTableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*SourceTableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 
 
-*SourceSystemId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*SourceSystemId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The system ID of the source record.
 
-*IsHandled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*IsHandled ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Out parameter to set if the event was handled.
 
@@ -897,11 +897,11 @@ internal procedure OnGetBodyForTestEmail(Connector: Enum "Email Connector"; Acco
 
 The connector used to send the email message.
 
-*AccountId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*AccountId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The account ID of the email account used to send the email message.
 
-*Body ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Body ([Text](https://go.microsoft.com/fwlink/?linkid=2210031
 
 Out param to set the email body to a new value.
 
@@ -916,11 +916,11 @@ Out param to set the email body to a new value.
 internal procedure OnAfterSendEmail(MessageId: Guid; Status: Boolean)
 ```
 #### Parameters
-*MessageId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*MessageId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The ID of the email in the queue.
 
-*Status ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Status ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 True if the message was successfully sent.
 
@@ -935,11 +935,11 @@ True if the message was successfully sent.
 internal procedure OnFindRelatedAttachments(SourceTableId: Integer; SourceSystemID: Guid; var EmailRelatedAttachments: Record "Email Related Attachment")
 ```
 #### Parameters
-*SourceTableId ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*SourceTableId ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The table number of the source record.
 
-*SourceSystemID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*SourceSystemID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The system ID of the source record.
 
@@ -958,15 +958,15 @@ Out parameter to return attachments related to the source record.
 internal procedure OnGetAttachment(AttachmentTableID: Integer; AttachmentSystemID: Guid; MessageID: Guid)
 ```
 #### Parameters
-*AttachmentTableID ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*AttachmentTableID ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The table number of the attachment.
 
-*AttachmentSystemID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*AttachmentSystemID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The system ID of the attachment.
 
-*MessageID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*MessageID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The ID of the email to add an attachment to.
 
@@ -981,7 +981,7 @@ The ID of the email to add an attachment to.
 internal procedure OnEnqueuedInOutbox(MessageId: Guid)
 ```
 #### Parameters
-*MessageId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*MessageId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The ID of the email that has been queued
 
@@ -1001,15 +1001,15 @@ The ID of the email that has been queued
 procedure Create(ToRecipients: Text; Subject: Text; Body: Text)
 ```
 #### Parameters
-*ToRecipients ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ToRecipients ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The recipient(s) of the email. A string containing the email addresses of the recipients separated by semicolon.
 
-*Subject ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Subject ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The subject of the email.
 
-*Body ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Body ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Raw text that will be used as body of the email.
 
@@ -1023,19 +1023,19 @@ Raw text that will be used as body of the email.
 procedure Create(ToRecipients: Text; Subject: Text; Body: Text; HtmlFormatted: Boolean)
 ```
 #### Parameters
-*ToRecipients ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ToRecipients ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The recipient(s) of the email. A string containing the email addresses of the recipients separated by semicolon.
 
-*Subject ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Subject ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The subject of the email.
 
-*Body ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Body ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The body of the email.
 
-*HtmlFormatted ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*HtmlFormatted ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Whether the body is HTML formatted.
 
@@ -1053,15 +1053,15 @@ procedure Create(ToRecipients: List of [Text]; Subject: Text; Body: Text; HtmlFo
 
 The recipient(s) of the email. A list of email addresses the email will be send directly to.
 
-*Subject ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Subject ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The subject of the email.
 
-*Body ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Body ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The body of the email
 
-*HtmlFormatted ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*HtmlFormatted ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Whether the body is HTML formatted
 
@@ -1079,15 +1079,15 @@ procedure Create(ToRecipients: List of [Text]; Subject: Text; Body: Text; HtmlFo
 
 The recipient(s) of the email. A list of email addresses the email will be send directly to.
 
-*Subject ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Subject ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The subject of the email.
 
-*Body ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Body ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The body of the email.
 
-*HtmlFormatted ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*HtmlFormatted ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Whether the body is HTML formatted.
 
@@ -1109,12 +1109,12 @@ TThe BCC recipient(s) of the email. A list of email addresses that will be liste
 procedure Get(MessageId: Guid): Boolean
 ```
 #### Parameters
-*MessageId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*MessageId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The ID of the email message to get.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the email was found; otherwise - false.
 ### GetBody (Method) <a name="GetBody"></a> 
@@ -1127,7 +1127,7 @@ True if the email was found; otherwise - false.
 procedure GetBody(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031
 
 The body of the email.
 ### GetSubject (Method) <a name="GetSubject"></a> 
@@ -1140,7 +1140,7 @@ The body of the email.
 procedure GetSubject(): Text[2048]
 ```
 #### Return Value
-*[Text[2048]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text[2048]](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The subject of the email.
 ### IsBodyHTMLFormatted (Method) <a name="IsBodyHTMLFormatted"></a> 
@@ -1153,7 +1153,7 @@ The subject of the email.
 procedure IsBodyHTMLFormatted(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the email body is formatted in HTML; otherwise - false.
 ### GetId (Method) <a name="GetId"></a> 
@@ -1166,7 +1166,7 @@ True if the email body is formatted in HTML; otherwise - false.
 procedure GetId(): Guid
 ```
 #### Return Value
-*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+*[Guid](https://go.microsoft.com/fwlink/?linkid=2210122)*
 
 The ID of the email.
 ### GetRecipients (Method) <a name="GetRecipients"></a> 
@@ -1197,15 +1197,15 @@ Out parameter filled with the recipients' email addresses.
 procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentBase64: Text)
 ```
 #### Parameters
-*AttachmentName ([Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*AttachmentName ([Text[250]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the file attachment.
 
-*ContentType ([Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContentType ([Text[250]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The Content Type of the file attachment.
 
-*AttachmentBase64 ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*AttachmentBase64 ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The Base64 text representation of the attachment.
 
@@ -1219,15 +1219,15 @@ The Base64 text representation of the attachment.
 procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentStream: InStream)
 ```
 #### Parameters
-*AttachmentName ([Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*AttachmentName ([Text[250]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The name of the file attachment.
 
-*ContentType ([Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ContentType ([Text[250]](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The Content Type of the file attachment.
 
-*AttachmentStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*AttachmentStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 The instream of the attachment.
 
@@ -1241,7 +1241,7 @@ The instream of the attachment.
 procedure Attachments_DeleteContent(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 Returns true if contents was successfully deleted, otherwise false.
 ### Attachments_First (Method) <a name="Attachments_First"></a> 
@@ -1254,7 +1254,7 @@ Returns true if contents was successfully deleted, otherwise false.
 procedure Attachments_First(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if there is any attachment; otherwise - false.
 ### Attachments_Next (Method) <a name="Attachments_Next"></a> 
@@ -1267,7 +1267,7 @@ True if there is any attachment; otherwise - false.
 procedure Attachments_Next(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The ID of the next attachment if it was found; otherwise - 0.
 ### Attachments_GetName (Method) <a name="Attachments_GetName"></a> 
@@ -1280,7 +1280,7 @@ The ID of the next attachment if it was found; otherwise - 0.
 procedure Attachments_GetName(): Text[250]
 ```
 #### Return Value
-*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text[250]](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The name of the current attachment.
 ### Attachments_GetContent (Method) <a name="Attachments_GetContent"></a> 
@@ -1293,7 +1293,7 @@ The name of the current attachment.
 procedure Attachments_GetContent(var AttachmentStream: InStream)
 ```
 #### Parameters
-*AttachmentStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*AttachmentStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 Out parameter with the content of the current attachment.
 
@@ -1307,7 +1307,7 @@ Out parameter with the content of the current attachment.
 procedure Attachments_GetContentBase64(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The content of the current attachment in Base64 encoding.
 ### Attachments_GetContentType (Method) <a name="Attachments_GetContentType"></a> 
@@ -1320,7 +1320,7 @@ The content of the current attachment in Base64 encoding.
 procedure Attachments_GetContentType(): Text[250]
 ```
 #### Return Value
-*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text[250]](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The content type of the current attachment.
 ### Attachments_GetContentId (Method) <a name="Attachments_GetContentId"></a> 
@@ -1335,7 +1335,7 @@ This value is filled only if the attachment is inline the email body.
 procedure Attachments_GetContentId(): Text[40]
 ```
 #### Return Value
-*[Text[40]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text[40]](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The content ID of the current attachment.
 ### Attachments_GetLength (Method) <a name="Attachments_GetLength"></a> 
@@ -1348,7 +1348,7 @@ The content ID of the current attachment.
 procedure Attachments_GetLength(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The content length of the current attachment.
 ### Attachments_IsInline (Method) <a name="Attachments_IsInline"></a> 
@@ -1361,7 +1361,7 @@ The content length of the current attachment.
 procedure Attachments_IsInline(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the attachment is inline the message body; otherwise - false.
 ### OnGetAttachmentContent (Event) <a name="OnGetAttachmentContent"></a> 
@@ -1376,7 +1376,7 @@ True if the attachment is inline the message body; otherwise - false.
 internal procedure OnGetAttachmentContent(MediaID: Guid; var InStream: Instream; var Handled: Boolean)
 ```
 #### Parameters
-*MediaID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*MediaID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 Id of the underlying media field that contains the attachment data.
 
@@ -1384,7 +1384,7 @@ Id of the underlying media field that contains the attachment data.
 
 Stream to that should pointed to the attachment data.
 
-*Handled ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Handled ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Was the attachment content added to the stream.
 
@@ -1409,7 +1409,7 @@ procedure GetDefaultEmailAccount(var EmailAccount: Record "Email Account"): Bool
 Out parameter holding information about the default email account.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if an account for the the default scenario was found; otherwise - false.
 ### GetEmailAccount (Method) <a name="GetEmailAccount"></a> 
@@ -1432,7 +1432,7 @@ The scenario to look for.
 Out parameter holding information about the email account.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if an account for the specified scenario was found; otherwise - false.
 ### SetDefaultEmailAccount (Method) <a name="SetDefaultEmailAccount"></a> 
@@ -1610,7 +1610,7 @@ procedure EnableLookupMode()
 procedure GetEmailAddress(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 Email address(es)
 ### SetEmailAddress (Method) <a name="SetEmailAddress"></a> 
@@ -1623,7 +1623,7 @@ Email address(es)
 procedure SetEmailAddress(Address: Text)
 ```
 #### Parameters
-*Address ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Address ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The value to be prefilled
 

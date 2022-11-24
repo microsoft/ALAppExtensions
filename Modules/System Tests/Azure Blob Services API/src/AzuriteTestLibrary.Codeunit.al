@@ -5,7 +5,7 @@
 
 /// <summary>
 /// Provides common authorization functionality for using Azurite in tests for Azure Storage Services.
-/// See: https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite
+/// See: https://go.microsoft.com/fwlink/?linkid=2212636
 /// </summary>
 codeunit 132923 "Azurite Test Library"
 {
@@ -41,7 +41,7 @@ codeunit 132923 "Azurite Test Library"
 
     /// <summary>
     /// Gets Azurite storage account name.
-    /// See: https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=visual-studio#well-known-storage-account-and-key
+    /// See: https://go.microsoft.com/fwlink/?linkid=2212637
     /// </summary>
     /// <returns>Azurite storage account name</returns>
     procedure GetStorageAccountName(): Text
@@ -60,7 +60,7 @@ codeunit 132923 "Azurite Test Library"
 
     /// <summary>
     /// Gets Azurite storage account key.
-    /// See: https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=visual-studio#well-known-storage-account-and-key
+    /// See: https://go.microsoft.com/fwlink/?linkid=2212637
     /// </summary>
     /// <returns>Azurite storage account key</returns>
     procedure GetAccessKey(): Text;

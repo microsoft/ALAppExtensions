@@ -568,4 +568,3 @@ codeunit 135032 "Temp Blob List Test"
         exit(ReadDataFromBlob(TempBlob));
     end;
 }
-
