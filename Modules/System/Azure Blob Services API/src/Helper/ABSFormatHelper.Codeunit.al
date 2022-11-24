@@ -249,12 +249,12 @@ codeunit 9044 "ABS Format Helper"
 
     procedure GetIso8601DateTime(MyDateTime: DateTime): Text
     begin
-        exit(FormatDateTime(MyDateTime, 's')); // https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings
+        exit(FormatDateTime(MyDateTime, 's')); // https://go.microsoft.com/fwlink/?linkid=2210384
     end;
 
     procedure GetRfc1123DateTime(MyDateTime: DateTime): Text
     begin
-        exit(FormatDateTime(MyDateTime, 'R')); // https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings
+        exit(FormatDateTime(MyDateTime, 'R')); // https://go.microsoft.com/fwlink/?linkid=2210384
     end;
 
     local procedure FormatDateTime(MyDateTime: DateTime; FormatSpecifier: Text): Text

@@ -236,7 +236,7 @@ page 9855 "Permission Set"
     begin
         if TablePermissionBuffer.FindSet() then
             repeat
-                PermissionSetCopyImpl.AddToNewTenantPermission(
+                PermissionSetCopyImpl.AddToTenantPermission(
                   Rec."App ID",
                   Rec."Role ID",
                   TablePermissionBuffer."Object Type",

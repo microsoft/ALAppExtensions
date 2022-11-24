@@ -28,11 +28,11 @@ This module is meant for on-premises use only.
 procedure GetGraphUser(UserSecurityId: Guid; var User: DotNet UserInfo)
 ```
 #### Parameters
-*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The user's security ID.
 
-*User ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+*User ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
 The Azure AD user.
 
@@ -49,15 +49,15 @@ The Azure AD user.
 procedure GetGraphUser(UserSecurityId: Guid; ForceFetchFromGraph: Boolean; var User: DotNet UserInfo)
 ```
 #### Parameters
-*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The user's security ID.
 
-*ForceFetchFromGraph ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*ForceFetchFromGraph ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Forces a graph call to get the latest details for the user.
 
-*User ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+*User ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
 The Azure AD user.
 
@@ -73,12 +73,12 @@ The Azure AD user.
 procedure GetObjectId(UserSecurityId: Guid): Text
 ```
 #### Parameters
-*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The user's security ID.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 
  The object ID of the Azure AD user, or an empty string if the user cannot be found.
@@ -97,12 +97,12 @@ User with Security ID UserSecurityId does not exist.
 procedure GetUserAuthenticationObjectId(UserSecurityId: Guid): Text
 ```
 #### Parameters
-*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The user's security ID.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The user's authentication object ID.
 ### TryGetUserAuthenticationObjectId (Method) <a name="TryGetUserAuthenticationObjectId"></a> 
@@ -117,16 +117,16 @@ The user's authentication object ID.
 procedure TryGetUserAuthenticationObjectId(UserSecurityId: Guid; var AuthenticationObjectId: Text): Boolean
 ```
 #### Parameters
-*UserSecurityId ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*UserSecurityId ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The user's security ID.
 
-*AuthenticationObjectId ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*AuthenticationObjectId ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Var parameter that hold the user's authention object ID.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the call was successful; otherwise - false.
 ### GetUser (Method) <a name="GetUser"></a> 
@@ -141,7 +141,7 @@ True if the call was successful; otherwise - false.
 procedure GetUser(AuthenticationObjectID: Text; var User: Record User): Boolean
 ```
 #### Parameters
-*AuthenticationObjectID ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*AuthenticationObjectID ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The user's Authentication object ID.
 
@@ -150,7 +150,7 @@ The user's Authentication object ID.
 The user that has provided Authentication object ID.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the user was found, false otherwise.
 ### IsUserDelegatedAdmin (Method) <a name="IsUserDelegatedAdmin"></a> 
@@ -165,7 +165,7 @@ True if the user was found, false otherwise.
 procedure IsUserDelegatedAdmin(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the current user is Delegated Admin, false otherwise.
 ### UpdateUserFromAzureGraph (Method) <a name="UpdateUserFromAzureGraph"></a> 
@@ -184,12 +184,12 @@ procedure UpdateUserFromAzureGraph(var User: Record User; var AzureADUser: DotNe
 
 The user record to update.
 
-*AzureADUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+*AzureADUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
 The Azure AD user.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the user record has been updated. Otherwise, false.
 ### GetAuthenticationEmail (Method) <a name="GetAuthenticationEmail"></a> 
@@ -206,12 +206,12 @@ Authentication email corresponds to userPrincipalName property on the Graph user
 procedure GetAuthenticationEmail(GraphUser: DotNet UserInfo): Text[250]
 ```
 #### Parameters
-*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+*GraphUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
 The Azure AD user.
 
 #### Return Value
-*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text[250]](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The authentication email of the provided Graph user. Can be used to assign to "Authentication Email" field on the User table.
 ### GetDisplayName (Method) <a name="GetDisplayName"></a> 
@@ -228,12 +228,12 @@ Display name corresponds to displayName property on the Graph user.
 procedure GetDisplayName(GraphUser: DotNet UserInfo): Text[50]
 ```
 #### Parameters
-*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+*GraphUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
 The Azure AD user.
 
 #### Return Value
-*[Text[50]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text[50]](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The display name of the provided Graph user. Can be used to assign to "User Name" field on the User table.
 ### GetContactEmail (Method) <a name="GetContactEmail"></a> 
@@ -250,12 +250,12 @@ Contact email corresponds to Mail property on the Graph user.
 procedure GetContactEmail(GraphUser: DotNet UserInfo): Text[250]
 ```
 #### Parameters
-*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+*GraphUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
 The Azure AD user.
 
 #### Return Value
-*[Text[250]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text[250]](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The contact email of the provided Graph user. Can be used to assign to "Contact Email" field on the User table.
 ### GetFullName (Method) <a name="GetFullName"></a> 
@@ -272,12 +272,12 @@ Full name is composed from the combination of givenName and surname properties o
 procedure GetFullName(GraphUser: DotNet UserInfo): Text[80]
 ```
 #### Parameters
-*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+*GraphUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
 The Azure AD user.
 
 #### Return Value
-*[Text[80]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text[80]](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The full name of the provided Graph user. Can be used to assign to "Full Name" field on the User table.
 ### GetPreferredLanguageID (Method) <a name="GetPreferredLanguageID"></a> 
@@ -297,12 +297,12 @@ The full name of the provided Graph user. Can be used to assign to "Full Name" f
 procedure GetPreferredLanguageID(GraphUser: DotNet UserInfo): Integer
 ```
 #### Parameters
-*GraphUser ([DotNet UserInfo](https://docs.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.clients.activedirectory.userinfo?view=azure-dotnet))* 
+*GraphUser ([DotNet UserInfo](https://go.microsoft.com/fwlink/?linkid=2210120))* 
 
 The Azure AD user.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The preferred language ID of the provided Graph user. Can be used to set the preferred language using the Language module.
 ### EnsureAuthenticationEmailIsNotInUse (Method) <a name="EnsureAuthenticationEmailIsNotInUse"></a> 
@@ -319,6 +319,6 @@ The preferred language ID of the provided Graph user. Can be used to set the pre
 procedure EnsureAuthenticationEmailIsNotInUse(AuthenticationEmail: Text)
 ```
 #### Parameters
-*AuthenticationEmail ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*AuthenticationEmail ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The authentication email address.

@@ -50,7 +50,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Lists the blobs in a specific container.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210588
     /// </summary>    
     /// <param name="ABSContainerContent">Collection of the result (temporary record).</param>
     /// <returns>An operation reponse object</returns>
@@ -63,7 +63,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Lists the blobs in a specific container.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210588
     /// </summary>    
     /// <param name="ABSContainerContent">Collection of the result (temporary record).</param>
     /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
@@ -75,7 +75,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Uploads a file as a BlockBlob (with File Selection Dialog).
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210387
     /// </summary>
     /// <returns>An operation reponse object</returns>
     procedure PutBlobBlockBlobUI(): Codeunit "ABS Operation Response"
@@ -87,7 +87,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Uploads a file as a BlockBlob (with File Selection Dialog).
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210387
     /// </summary>
     /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
     /// <returns>An operation reponse object</returns>
@@ -98,7 +98,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Uploads the content of an InStream as a BlockBlob
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210387
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceInStream">The Content of the Blob as InStream.</param>
@@ -112,7 +112,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Uploads the content of an InStream as a BlockBlob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210387
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceInStream">The Content of the Blob as InStream.</param>
@@ -125,7 +125,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Uploads text as a BlockBlob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210387
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceText">The Content of the Blob as Text.</param>
@@ -139,7 +139,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Uploads text as a BlockBlob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210387
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceText">The Content of the Blob as Text.</param>
@@ -152,7 +152,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Creates a PageBlob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210387
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
@@ -166,7 +166,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Creates a PageBlob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210387
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
@@ -179,7 +179,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Put Blob operation creates a new append blob
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210387
     /// Uses 'application/octet-stream' as Content-Type
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
@@ -193,7 +193,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Put Blob operation creates a new append blob
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210387
     /// Uses 'application/octet-stream' as Content-Type
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
@@ -206,7 +206,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Put Blob operation creates a new append blob
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210387
     /// Uses 'text/plain; charset=UTF-8' as Content-Type
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
@@ -218,7 +218,7 @@ codeunit 9053 "ABS Blob Client"
     end;
     /// <summary>
     /// The Put Blob operation creates a new append blob
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210387
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
@@ -231,7 +231,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Append Block operation commits a new block of data to the end of an existing append blob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211404
     /// Uses 'text/plain; charset=UTF-8' as Content-Type
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
@@ -244,7 +244,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Append Block operation commits a new block of data to the end of an existing append blob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211404
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ContentAsText">Text-variable containing the content that should be added to the Blob</param>
@@ -259,7 +259,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Append Block operation commits a new block of data to the end of an existing append blob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211404
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ContentAsText">Text-variable containing the content that should be added to the Blob</param>
@@ -273,7 +273,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Append Block operation commits a new block of data to the end of an existing append blob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211404
     /// Uses 'application/octet-stream' as Content-Type
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
@@ -288,7 +288,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Append Block operation commits a new block of data to the end of an existing append blob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211404
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ContentAsInStream">InStream containing the content that should be added to the Blob</param>
@@ -301,7 +301,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Append Block operation commits a new block of data to the end of an existing append blob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211404
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ContentType">Value for Content-Type HttpHeader (e.g. 'text/plain; charset=UTF-8')</param>
@@ -315,7 +315,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Append Block From URL operation commits a new block of data to the end of an existing append blob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block-from-url
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211405
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceUri">Specifies the name of the source blob.</param>
@@ -329,7 +329,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Append Block From URL operation commits a new block of data to the end of an existing append blob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/append-block-from-url
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211405
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceUri">Specifies the name of the source blob.</param>
@@ -342,7 +342,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Receives a Blob as a File from a Container.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210388
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <returns>An operation reponse object</returns>
@@ -355,7 +355,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Receives a Blob as a File from a Container.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210388
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
@@ -367,7 +367,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Receives a Blob as a InStream from a Container.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210388
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="TargetInStream">The result InStream containg the content of the Blob.</param>
@@ -381,7 +381,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Receives a Blob as a InStream from a Container.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210388
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="TargetInStream">The result InStream containg the content of the Blob.</param>
@@ -394,7 +394,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Receives a Blob as Text from a Container.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210388
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="TargetText">The result Text containg the content of the Blob.</param>
@@ -408,7 +408,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Receives a Blob as Text from a Container.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210388
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="TargetText">The result Text containg the content of the Blob.</param>
@@ -422,7 +422,7 @@ codeunit 9053 "ABS Blob Client"
     /// <summary>
     /// The Set Blob Expiry operation sets an expiry time on an existing blob. This operation is only allowed on Hierarchical Namespace enabled accounts
     /// Sets the expiry time relative to the file creation time, x-ms-expiry-time must be specified as the number of milliseconds to elapse from creation time.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-expiry
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210389
     /// </summary>    
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ExpiryTime">Number if miliseconds (Integer) until the expiration.</param>
@@ -435,7 +435,7 @@ codeunit 9053 "ABS Blob Client"
     /// <summary>
     /// The Set Blob Expiry operation sets an expiry time on an existing blob. This operation is only allowed on Hierarchical Namespace enabled accounts
     /// Sets the expiry relative to the current time, x-ms-expiry-time must be specified as the number of milliseconds to elapse from now.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-expiry
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210389
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>    
     /// <param name="ExpiryTime">Number if miliseconds (Integer) until the expiration.</param>
@@ -448,7 +448,7 @@ codeunit 9053 "ABS Blob Client"
     /// <summary>
     /// The Set Blob Expiry operation sets an expiry time on an existing blob. This operation is only allowed on Hierarchical Namespace enabled accounts
     /// Sets the expiry to an absolute DateTime
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-expiry
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210389
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>    
     /// <param name="ExpiryTime">Absolute DateTime for the expiration.</param>
@@ -461,7 +461,7 @@ codeunit 9053 "ABS Blob Client"
     /// <summary>
     /// The Set Blob Expiry operation sets an expiry time on an existing blob. This operation is only allowed on Hierarchical Namespace enabled accounts
     /// Sets the file to never expire or removes the current expiry time, x-ms-expiry-time must not to be specified.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-expiry
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210389
     /// </summary>    
     procedure SetBlobExpiryNever(BlobName: Text): Codeunit "ABS Operation Response"
     begin
@@ -470,7 +470,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Set Blob Tags operation sets user-defined tags for the specified blob as one or more key-value pairs.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/set-blob-tags
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211407
     /// </summary> 
     /// <param name="BlobName">The name of the blob.</param>   
     /// <param name="Tags">A Dictionary of [Text, Text] which contains the Tags you want to set.</param>    
@@ -482,7 +482,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Get Blob Tags operation gets user-defined tags for the specified blob as XmlDocument.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob-tags
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211502
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>   
     /// <param name="Tags">The result XmlDocument with blob tags.</param>    
@@ -496,7 +496,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Get Blob Tags operation gets user-defined tags for the specified blob as XmlDocument.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob-tags
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211502
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>   
     /// <param name="Tags">The result XmlDocument with blob tags.</param>
@@ -509,7 +509,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Get Blob Tags operation gets user-defined tags for the specified blob as one or more key-value pairs.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob-tags
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211502
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>   
     /// <param name="Tags">The result Dictionary of [Text, Text] with blob tags.</param>    
@@ -523,7 +523,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Get Blob Tags operation gets user-defined tags for the specified blob as one or more key-value pairs.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob-tags
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211502
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>   
     /// <param name="Tags">The result Dictionary of [Text, Text] with blob tags.</param>
@@ -536,7 +536,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/delete-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211408
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <returns>An operation reponse object</returns>
@@ -549,7 +549,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/delete-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211408
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
@@ -561,7 +561,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Undelete Blob operation restores the contents and metadata of a soft deleted blob and any associated soft deleted snapshots (version 2017-07-29 or later)
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/undelete-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210390
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <returns>An operation reponse object</returns>
@@ -574,7 +574,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Undelete Blob operation restores the contents and metadata of a soft deleted blob and any associated soft deleted snapshots (version 2017-07-29 or later)
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/undelete-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210390
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
@@ -586,7 +586,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Copy Blob operation copies a blob to a destination within the storage account.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/copy-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210589
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceName">Specifies the name of the source blob or file.</param>
@@ -601,7 +601,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Copy Blob operation copies a blob to a destination within the storage account.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/copy-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210589
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceName">Specifies the name of the source blob or file.</param>
@@ -615,7 +615,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-block-list
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210392
     /// </summary>
     /// <param name="CommitedBlocks">Dictionary of [Text, Integer] containing the list of commited blocks that should be put to the Blob</param>
     /// <param name="UncommitedBlocks">Dictionary of [Text, Integer] containing the list of uncommited blocks that should be put to the Blob</param>
@@ -627,7 +627,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Put Block From URL operation creates a new block to be committed as part of a blob where the contents are read from a URL.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-block-from-url
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211409
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceUri">Specifies the name of the source block blob.</param>
@@ -642,7 +642,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// The Put Block From URL operation creates a new block to be committed as part of a blob where the contents are read from a URL.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/put-block-from-url
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211409
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="SourceUri">Specifies the name of the source block blob.</param>
@@ -656,7 +656,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
@@ -671,7 +671,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
@@ -686,7 +686,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>    
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
@@ -702,7 +702,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>    
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
@@ -718,7 +718,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
@@ -733,7 +733,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>
     /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
@@ -747,7 +747,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Requests a new lease. If the blob does not have an active lease, the Blob service creates a lease on the blob. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>  
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
@@ -762,7 +762,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Releases a lease on a Blob if it is no longer needed so that another client may immediately acquire a lease against the blob
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be released</param>
@@ -776,7 +776,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Releases a lease on a Blob if it is no longer needed so that another client may immediately acquire a lease against the blob
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be released</param>
@@ -789,7 +789,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Renews a lease on a Blob to keep it locked again for the same amount of time as before
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
@@ -803,7 +803,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Renews a lease on a Blob to keep it locked again for the same amount of time as before
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
@@ -817,7 +817,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Breaks a lease on a blob but ensures that another client cannot acquire a new lease until the current lease period has expired
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
@@ -831,7 +831,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Breaks a lease on a blob but ensures that another client cannot acquire a new lease until the current lease period has expired
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
@@ -846,7 +846,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Breaks a lease on a blob but ensures that another client cannot acquire a new lease until the current lease period has expired
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
@@ -859,7 +859,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Breaks a lease on a blob but ensures that another client cannot acquire a new lease until the current lease period has expired
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
@@ -873,7 +873,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Changes the lease ID of an active lease
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be changed. Will contain the updated Guid after successful operation.</param>
@@ -888,7 +888,7 @@ codeunit 9053 "ABS Blob Client"
 
     /// <summary>
     /// Changes the lease ID of an active lease
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210391
     /// </summary>
     /// <param name="BlobName">The name of the blob.</param>  
     /// <param name="LeaseId">The Guid for the lease that should be changed</param>

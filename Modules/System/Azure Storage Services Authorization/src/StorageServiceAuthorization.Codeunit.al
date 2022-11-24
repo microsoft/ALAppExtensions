@@ -12,7 +12,7 @@ codeunit 9062 "Storage Service Authorization"
 
     /// <summary>
     /// Creates an account SAS (Shared Access Signature) for authorizing HTTP request to Azure Storage Services.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210398
     /// </summary>
     /// <param name="SigningKey">The signing key to use.</param>
     /// <param name="SignedVersion">Specifies the signed storage service version to use to authorize requests made with this account SAS. Must be set to version 2015-04-05 or later.</param>
@@ -30,7 +30,7 @@ codeunit 9062 "Storage Service Authorization"
 
     /// <summary>
     /// Creates an account SAS (Shared Access Signature) for authorizing HTTP request to Azure Storage Services.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210398
     /// </summary>
     /// <param name="SigningKey">The signing key to use.</param>
     /// <param name="SignedVersion">Specifies the signed storage service version to use to authorize requests made with this account SAS. Must be set to version 2015-04-05 or later.</param>
@@ -53,7 +53,7 @@ codeunit 9062 "Storage Service Authorization"
 
     /// <summary>
     /// Creates a Shared Key authorization mechanism for HTTP requests to Azure Storage Services.
-    /// See: https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
+    /// See: https://go.microsoft.com/fwlink/?linkid=2210396
     /// </summary>
     /// <param name="SharedKey">The shared key to use.</param>
     /// <returns>A Shared Key authorization.</returns>
@@ -67,7 +67,7 @@ codeunit 9062 "Storage Service Authorization"
 
     /// <summary>
     /// Creates a Shared Key authorization mechanism for HTTP requests to Azure Storage Services.
-    /// See: https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
+    /// See: https://go.microsoft.com/fwlink/?linkid=2210396
     /// </summary>
     /// <param name="SharedKey">The shared key to use.</param>
     /// <param name="ApiVersion">The API version to use.</param>

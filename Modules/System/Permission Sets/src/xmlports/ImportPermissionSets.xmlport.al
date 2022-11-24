@@ -100,6 +100,10 @@ xmlport 9864 "Import Permission Sets"
                     {
                         MinOccurs = Zero;
                     }
+                    fieldelement(PermissionType; TempTenantPermission.Type)
+                    {
+                        MinOccurs = Zero;
+                    }
                 }
 
                 trigger OnBeforeInsertRecord()

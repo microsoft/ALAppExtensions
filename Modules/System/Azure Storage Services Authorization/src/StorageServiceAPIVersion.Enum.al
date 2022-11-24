@@ -5,7 +5,7 @@
 
 /// <summary>
 /// Defines the available API versions for Azure Storage Services.
-/// See: https://docs.microsoft.com/en-us/rest/api/storageservices/previous-azure-storage-service-versions
+/// See: https://go.microsoft.com/fwlink/?linkid=2210598
 /// </summary>
 enum 9060 "Storage Service API Version"
 {

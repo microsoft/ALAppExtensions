@@ -229,23 +229,31 @@ codeunit 9863 "Permission Set Copy Impl."
         TenantPermission.Insert();
     end;
 
-    internal procedure AddToNewTenantPermission(AppID: Guid; RoleID: Code[30]; ObjectType: Option; ObjectID: Integer; AddRead: Option; AddInsert: Option; AddModify: Option; AddDelete: Option; AddExecute: Option): Boolean
+    internal procedure AddToTenantPermission(AppID: Guid; RoleID: Code[30]; ObjectType: Option; ObjectID: Integer; AddRead: Option; AddInsert: Option; AddModify: Option; AddDelete: Option; AddExecute: Option): Boolean
     var
         TenantPermission: Record "Tenant Permission";
+        LogActivityPermissions: Codeunit "Log Activity Permissions";
     begin
-        if TenantPermission.Get(AppID, RoleID, ObjectType, ObjectID) then
-            exit;
-
-        TenantPermission."App ID" := AppID;
-        TenantPermission."Role ID" := CopyStr(RoleID, 1, MaxStrLen(TenantPermission."Role ID"));
-        TenantPermission."Object Type" := ObjectType;
-        TenantPermission."Object ID" := ObjectID;
-        TenantPermission."Read Permission" := AddRead;
-        TenantPermission."Insert Permission" := AddInsert;
-        TenantPermission."Modify Permission" := AddModify;
-        TenantPermission."Delete Permission" := AddDelete;
-        TenantPermission."Execute Permission" := AddExecute;
-        TenantPermission.Insert();
+        TenantPermission.LockTable();
+        if not TenantPermission.Get(AppID, RoleID, ObjectType, ObjectID) then begin
+            TenantPermission."App ID" := AppID;
+            TenantPermission."Role ID" := CopyStr(RoleID, 1, MaxStrLen(TenantPermission."Role ID"));
+            TenantPermission."Object Type" := ObjectType;
+            TenantPermission."Object ID" := ObjectID;
+            TenantPermission."Read Permission" := AddRead;
+            TenantPermission."Insert Permission" := AddInsert;
+            TenantPermission."Modify Permission" := AddModify;
+            TenantPermission."Delete Permission" := AddDelete;
+            TenantPermission."Execute Permission" := AddExecute;
+            TenantPermission.Insert();
+        end else begin
+            TenantPermission."Read Permission" := LogActivityPermissions.GetMaxPermission(TenantPermission."Read Permission", AddRead);
+            TenantPermission."Insert Permission" := LogActivityPermissions.GetMaxPermission(TenantPermission."Insert Permission", AddInsert);
+            TenantPermission."Modify Permission" := LogActivityPermissions.GetMaxPermission(TenantPermission."Modify Permission", AddModify);
+            TenantPermission."Delete Permission" := LogActivityPermissions.GetMaxPermission(TenantPermission."Delete Permission", AddDelete);
+            TenantPermission."Execute Permission" := LogActivityPermissions.GetMaxPermission(TenantPermission."Execute Permission", AddExecute);
+            TenantPermission.Modify();
+        end;
     end;
 
     internal procedure AddReadAccessToRelatedTables(var TempTenantPermission: Record "Tenant Permission" temporary; AppID: Guid; RoleID: Code[30])
@@ -261,7 +269,7 @@ codeunit 9863 "Permission Set Copy Impl."
         TableRelationsMetadata.SetFilter("Related Table ID", '>0&<>%1', TempTenantPermission."Object ID");
         if TableRelationsMetadata.FindSet() then
             repeat
-                AddToNewTenantPermission(
+                AddToTenantPermission(
                   AppID, RoleID, TempTenantPermission."Object Type"::"Table Data", TableRelationsMetadata."Related Table ID", TempTenantPermission."Read Permission"::Yes,
                   TempTenantPermission."Insert Permission"::" ", TempTenantPermission."Modify Permission"::" ", TempTenantPermission."Delete Permission"::" ", TempTenantPermission."Execute Permission"::" ");
             until TableRelationsMetadata.Next() = 0;

@@ -107,7 +107,6 @@ page 8887 "Email Accounts"
 
                     trigger OnDrillDown()
                     var
-                        EmailRateLimitImpl: Codeunit "Email Rate Limit Impl.";
                     begin
                         EmailRateLimitImpl.UpdateRateLimit(Rec);
                     end;
@@ -227,6 +226,24 @@ page 8887 "Email Accounts"
                 end;
             }
 
+            action(SetUpRateLimit)
+            {
+                ApplicationArea = All;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+                Image = Setup;
+                Caption = 'Set email rate limit';
+                ToolTip = 'Sets a limit on how many emails can be sent from the account per minute.';
+                Visible = (not LookupMode) and CanUserManageEmailSetup;
+                Enabled = HasEmailAccount;
+
+                trigger OnAction()
+                begin
+                    EmailRateLimitImpl.UpdateRateLimit(Rec);
+                end;
+            }
+
             action(Delete)
             {
                 ApplicationArea = All;
@@ -314,6 +331,19 @@ page 8887 "Email Accounts"
                     EmailScenarioSetup.Run();
                 end;
             }
+
+            action(EmailScenarioAttachments)
+            {
+                ApplicationArea = All;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Category4;
+                Image = Documents;
+                Caption = 'Email Scenario Attachments';
+                ToolTip = 'Assign attachments to email scenarios.';
+                Visible = not LookupMode;
+                RunObject = page "Email Scenario Attach Setup";
+            }
         }
     }
 
@@ -329,8 +359,6 @@ page 8887 "Email Accounts"
     end;
 
     trigger OnAfterGetRecord()
-    var
-        EmailRateLimitImpl: Codeunit "Email Rate Limit Impl.";
     begin
         // Updating the accounts is done via OnAfterGetRecord in the cases when an account was changed from the corresponding connector's page
         if UpdateAccounts then begin

@@ -70,6 +70,12 @@
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
                              "version":  "21.2.0.0"
+                         },
+                         {
+                            "id":  "de35f591-7216-4e60-8be1-1911d71a7fc2",
+                            "name":  "Telemetry",
+                            "publisher":  "Microsoft",
+                            "version":  "21.2.0.0"
                          }
                      ],
     "internalsVisibleTo":  [
@@ -131,5 +137,5 @@
                      }
                  ],
     "target":  "OnPrem",
-    "contextSensitiveHelpUrl":  "https://docs.microsoft.com/dynamics365/business-central/"
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603"
 }

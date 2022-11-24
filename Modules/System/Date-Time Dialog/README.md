@@ -48,7 +48,7 @@ end;
 procedure SetDateTime(DateTime: DateTime)
 ```
 #### Parameters
-*DateTime ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*DateTime ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 The value to set.
 
@@ -62,6 +62,6 @@ The value to set.
 procedure GetDateTime(): DateTime
 ```
 #### Return Value
-*[DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type)*
+*[DateTime](https://go.microsoft.com/fwlink/?linkid=2210239)*
 
 The value that is set on the page.

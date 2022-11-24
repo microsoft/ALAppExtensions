@@ -5,7 +5,7 @@
 
 /// <summary>
 /// Optional parameters for Shared Access Signature authorization for Azure Storage Services.
-/// see: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas
+/// see: https://go.microsoft.com/fwlink/?linkid=2210398
 /// </summary>
 table 9064 "SAS Parameters"
 {

@@ -1157,11 +1157,14 @@ codeunit 1991 "Guided Experience Impl."
         GlobalLanguage(CurrentLanguage);
     end;
 
+#if not CLEAN22
+    [Obsolete('Use Telemetry.LogMessage to add common custom dimensions, like CompanyName.', '22.0')]
     procedure AddCompanyNameDimension(var Dimensions: Dictionary of [Text, Text])
     begin
         Dimensions.Add('CompanyName', CompanyName);
     end;
 
+    [Obsolete('Use Telemetry.LogMessage to add common custom dimensions, like UserRole.', '22.0')]
     procedure AddRoleDimension(var Dimensions: Dictionary of [Text, Text]; var UserPersonalization: Record "User Personalization")
     var
         Language: Codeunit Language;
@@ -1178,6 +1181,7 @@ codeunit 1991 "Guided Experience Impl."
 
         GlobalLanguage(CurrentLanguage);
     end;
+#endif
 
     local procedure RaiseOnRegisterSetupEvents()
     var
@@ -1187,14 +1191,14 @@ codeunit 1991 "Guided Experience Impl."
         GuidedExperience.OnRegisterManualSetup();
     end;
 
-    local procedure LogMessageOnDatabaseEvent(var Rec: Record "Guided Experience Item"; Tag: Text; Message: Text)
+    local procedure LogMessageOnDatabaseEvent(Rec: Record "Guided Experience Item"; Tag: Text; Message: Text)
     var
+        Telemetry: Codeunit Telemetry;
         Dimensions: Dictionary of [Text, Text];
     begin
         AddGuidedExperienceItemDimensions(Dimensions, Rec, 'GuidedExperience');
-        AddCompanyNameDimension(Dimensions);
 
-        Session.LogMessage(Tag, Message, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation,
+        Telemetry.LogMessage(Tag, Message, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation,
             TelemetryScope::ExtensionPublisher, Dimensions);
     end;
 

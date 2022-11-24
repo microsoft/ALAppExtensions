@@ -353,6 +353,7 @@ page 13 "Email Editor"
         HasSourceRecord := EmailImpl.HasSourceRecord(Rec."Message Id");
         IsHTMLFormatted := EmailMessageImpl.IsBodyHTMLFormatted();
         CurrPage.Attachments.Page.UpdateValues(EmailMessageImpl, not EmailScheduled);
+        CurrPage.Attachments.Page.UpdateEmailScenario(EmailScenario);
     end;
 
     trigger OnOpenPage()
@@ -443,6 +444,11 @@ page 13 "Email Editor"
         IsNewOutbox := true;
     end;
 
+    internal procedure SetEmailScenario(Scenario: Enum "Email Scenario")
+    begin
+        EmailScenario := Scenario;
+    end;
+
     var
         TempEmailAccount: Record "Email Account" temporary;
         EmailMessageImpl: Codeunit "Email Message Impl.";
@@ -454,6 +460,7 @@ page 13 "Email Editor"
         IsNewOutbox: Boolean;
         HasSourceRecord: Boolean;
         EmailBody, EmailSubject : Text;
+        EmailScenario: Enum "Email Scenario";
         [InDataSet]
         IsHTMLFormatted: Boolean;
         FromDisplayNameLbl: Label '%1 (%2)', Comment = '%1 - Account Name, %2 - Email address', Locked = true;

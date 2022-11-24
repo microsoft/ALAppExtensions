@@ -9,11 +9,59 @@ codeunit 9864 "Permission Impl."
 
     var
         AllObjTxt: Label 'All objects of type %1', Comment = '%1= type name, e.g. Table Data or Report or Page';
+        SelectObjectsLbl: Label 'Select objects to add';
+        SelectObjectLbl: Label 'Select object to add';
         PermissionAlreadyExistsWithDifferentTypeErr: Label 'The permission already exists with type %1', Comment = '%1 = the type of the existing permission';
         IncludeOption: Option " ",Yes,Indirect;
         IncludeDescriptionOption: Option "Specifies no permission","Specifies direct permission","Specifies indirect permission";
         ExcludeOption: Option " ",Exclude,"Reduce to indirect";
         ExcludeDescriptionOption: Option "No change to permission","Excludes any permission","Excludes any direct permission";
+
+    procedure SelectPermissions(CurrAppId: Guid; CurrRoleID: Code[20]): Boolean
+    var
+        TempAllObjWithCaption: Record AllObjWithCaption temporary;
+        Objects: Page Objects;
+    begin
+        TempAllObjWithCaption.SetRange("Object Type", TempAllObjWithCaption."Object Type"::TableData);
+
+        SetupObjectsPage(SelectObjectsLbl, Objects, TempAllObjWithCaption);
+
+        if Objects.RunModal() <> Action::LookupOK then
+            exit(false);
+
+        Clear(TempAllObjWithCaption);
+        Objects.GetSelectedRecords(TempAllObjWithCaption);
+
+        if TempAllObjWithCaption.FindSet() then
+            repeat
+                AddNewPermission(CurrAppId, CurrRoleID, TempAllObjWithCaption."Object Type", TempAllObjWithCaption."Object ID");
+            until TempAllObjWithCaption.Next() = 0;
+
+        exit(true);
+    end;
+
+    procedure LookupPermission(ObjectType: Option; var ObjectIDText: Text): Boolean
+    var
+        TempAllObjWithCaption: Record AllObjWithCaption temporary;
+        Objects: Page Objects;
+        ObjectID: Integer;
+    begin
+        TempAllObjWithCaption.SetRange("Object Type", ObjectType);
+        TempAllObjWithCaption."Object Type" := ObjectType;
+        if Evaluate(ObjectID, ObjectIDText) then
+            TempAllObjWithCaption."Object ID" := ObjectID;
+
+        SetupObjectsPage(SelectObjectLbl, Objects, TempAllObjWithCaption);
+
+        if Objects.RunModal() <> ACTION::LookupOK then
+            exit(false);
+
+        Clear(TempAllObjWithCaption);
+        Objects.GetRecord(TempAllObjWithCaption);
+
+        ObjectIDText := Format(TempAllObjWithCaption."Object ID");
+        exit(true);
+    end;
 
     procedure UpdatePermissionLine(IsTypeChanged: Boolean; var TenantPermission: Record "Tenant Permission"; var ObjectCaption: Text; var ObjectName: Text; var ReadPermissionAsTxt: Text[50]; var InsertPermissionAsTxt: Text[50]; var ModifyPermissionAsTxt: Text[50]; var DeletePermissionAsTxt: Text[50]; var ExecutePermissionAsTxt: Text[50])
     begin
@@ -158,6 +206,28 @@ codeunit 9864 "Permission Impl."
         PermissionLookupBuffer.Insert();
     end;
 
+    local procedure AddNewPermission(AppId: Guid; RoleId: Code[20]; PermissionObjectType: Option; ObjectID: Integer)
+    var
+        TenantPermission: Record "Tenant Permission";
+    begin
+        TenantPermission."App ID" := AppId;
+        TenantPermission."Role ID" := RoleId;
+        TenantPermission."Object Type" := PermissionObjectType;
+        TenantPermission."Object ID" := ObjectID;
 
+        VerifyPermissionAlreadyExists(TenantPermission);
+        EmptyIrrelevantPermissionFields(TenantPermission);
 
+        TenantPermission.Insert();
+    end;
+
+    local procedure SetupObjectsPage(PageCaption: Text; var Objects: Page Objects; var TempAllObjWithCaption: Record AllObjWithCaption temporary)
+    begin
+        Objects.SetTableView(TempAllObjWithCaption);
+        Objects.SetObjectTypeVisible(true);
+        Objects.SetObjectNameVisible(true);
+        Objects.SetObjectCaptionVisible(false);
+        Objects.Caption(PageCaption);
+        Objects.LookupMode(true);
+    end;
 }
