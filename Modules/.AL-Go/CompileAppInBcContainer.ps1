@@ -16,14 +16,18 @@ $appName = (gci -Path $($parameters.appProjectFolder) -Filter "app.json" | Get-C
 Write-Host "Current app name: $appName"
 
 # Create an archive with the current source code in the build artifacts folder
-$buildArtifactsFolder = "$($parameters.appProjectFolder)/.buildartifacts/Apps"
 
-if(-not (Test-Path $buildArtifactsFolder)) {
-    Write-Host "Creating $buildArtifactsFolder"
-    New-Item -Name $buildArtifactsFolder -ItemType Directory
+$archiveFile = "($env:TEMP)/$appName.Source.zip"
+Write-Host "Archive the current source code for app: $appName as $archiveFile"
+Compress-Archive -Path "$($parameters.appProjectFolder)" -DestinationPath "($env:TEMP)/$appName.Source.zip" -Force
+
+$buildArtifactsFolder = ".buildartifacts/Apps"
+
+if(-not (Test-Path $($parameters.appProjectFolder)/$buildArtifactsFolder)) {
+    Write-Host "Creating $buildArtifactsFolder in $($parameters.appProjectFolder)"
+    New-Item -Path $($parameters.appProjectFolder) -Name $buildArtifactsFolder -ItemType Directory
 }
 
-Write-Host "Archive the current source code for app: $appName in $buildArtifactsFolder as $($appName).Source.zip"
-Compress-Archive -Path "$($parameters.appProjectFolder)" -DestinationPath "$buildArtifactsFolder/$appName.Source.zip" -Force
+Move-Item -Path $archiveFile -Destination "$($parameters.appProjectFolder)/$buildArtifactsFolder" -Force
 
 $appFile
