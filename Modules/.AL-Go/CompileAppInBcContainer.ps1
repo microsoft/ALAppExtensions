@@ -20,7 +20,7 @@ if (!$parameters.ContainsKey("Features")) {
 }
 $parameters["Features"] = @("lcgtranslationfile", "generateCaptions")
 
-# $appFile = Compile-AppInBcContainer @parameters
+$appFile = Compile-AppInBcContainer @parameters
 
 $appProjectFolder = $parameters.appProjectFolder
 
@@ -57,4 +57,4 @@ Write-Host "Build artifacts folder: $buildArtifactsFolder"
 
 Move-Item -Path $archiveFile -Destination "$buildArtifactsFolder" -Force
 
-# $appFile
+$appFile
