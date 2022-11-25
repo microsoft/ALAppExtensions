@@ -27,11 +27,11 @@ $buildArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/Apps" # h
 
 if(-not (Test-Path $buildArtifactsFolder)) {
     Write-Host "Creating $buildArtifactsFolder"
-    New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/Apps" -ItemType Directory
+    New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/Apps" -ItemType Directory | Out-Null
 }
 
 Write-Host "Build artifacts folder: $buildArtifactsFolder"
 
-Move-Item -Path $archiveFile -Destination "$buildArtifactsFolder" -Force
+Move-Item -Path $archiveFile -Destination "$buildArtifactsFolder" -Force | Out-Null
 
 $appFile
