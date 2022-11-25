@@ -92,19 +92,15 @@ Write-Host "Package folder: $packageFolder" -ForegroundColor Magenta
 try {
     $outputDirectory = Join-Path $env:GITHUB_WORKSPACE 'out'
     New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
- 
-    gci -Path $appsFolder | % {
-        $file = $_
-        Write-Host "Processing $($file.FullName)" -ForegroundColor Magenta
 
-        Copy-Item -Path $file.FullName -Destination "$packageFolder/Apps/" -Force
+    $appsPackage = Join-Path $appsFolder 'Package'
+    if(Test-Path -Path "$appsPackage") {
+        Copy-Item -Path "$appsPackage/**" -Destination "$packageFolder/Apps/" -Recurse -Container -Force
     }
-    
-    gci -Path $testAppsFolder | % {
-        $file = $_
-        Write-Host "Processing $($file.FullName)" -ForegroundColor Magenta
 
-        Copy-Item -Path $file.FullName -Destination "$packageFolder/Tests/" -Force
+    $testAppsPackage = Join-Path $testAppsFolder 'Package'
+    if(Test-Path -Path "$testAppsPackage") {
+        Copy-Item -Path "$testAppsPackage/**" -Destination "$packageFolder/Tests/" -Recurse -Container -Force
     }
     
     #Create .nuspec file

@@ -21,17 +21,24 @@ Write-Host "Current app name: $appName; app folder: $appProjectFolder"
 
 $archiveFile = "$env:TEMP/$appName.Source.zip"
 Write-Host "Archive the current source code for app: $appName as $archiveFile"
-Compress-Archive -Path "$appProjectFolder" -DestinationPath $archiveFile -Force
+Compress-Archive -Path "$appProjectFolder/**" -DestinationPath $archiveFile -Force
 
-$buildArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/Apps" # hackidy-hack
-
-if(-not (Test-Path $buildArtifactsFolder)) {
-    Write-Host "Creating $buildArtifactsFolder"
-    New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/Apps" -ItemType Directory | Out-Null
+# TODO there must be a better way :D
+$holderFolder = 'Tests'
+if($appName -eq "System Application") {
+    $holderFolder = 'Apps'
 }
 
-Write-Host "Build artifacts folder: $buildArtifactsFolder"
+$packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName" # hackidy-hack
 
-Move-Item -Path $archiveFile -Destination "$buildArtifactsFolder" -Force | Out-Null
+if(-not (Test-Path $packageArtifactsFolder)) {
+    Write-Host "Creating $packageArtifactsFolder"
+    New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/$holderFolder/Package/$appName" -ItemType Directory | Out-Null
+}
+
+Write-Host "Build artifacts folder: $packageArtifactsFolder"
+
+Move-Item -Path $archiveFile -Destination "$packageArtifactsFolder" -Force | Out-Null
+Copy-Item -Path "$($appFile.FullName)" -Destination "$packageArtifactsFolder" -Force | Out-Null
 
 $appFile
