@@ -36,9 +36,9 @@ if(-not (Test-Path $packageArtifactsFolder)) {
     New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/$holderFolder/Package/$appName" -ItemType Directory | Out-Null
 }
 
-Write-Host "Build artifacts folder: $packageArtifactsFolder"
+Write-Host "Package artifacts folder: $packageArtifactsFolder"
 
-Move-Item -Path $archiveFile -Destination "$packageArtifactsFolder" -Force | Out-Null
-Copy-Item -Path "$($appFile.FullName)" -Destination "$packageArtifactsFolder" -Force | Out-Null
+Move-Item -Path "$archiveFile" -Destination "$packageArtifactsFolder" -Force | Out-Null
+Copy-Item -Path "$appFile" -Destination "$packageArtifactsFolder" -Force | Out-Null
 
 $appFile
