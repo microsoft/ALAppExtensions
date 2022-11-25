@@ -2,32 +2,59 @@ Param(
     [Hashtable] $parameters
 )
 
+function FindALGoProject($appProjectFolder)
+{
+    $currentFolder = Get-Item $appProjectFolder
+
+    do {
+        $currentFolder = $currentFolder.Parent
+    }
+    while(-not (Test-Path "$currentFolder/.AL-Go"))
+
+    return $currentFolder.FullName
+}
+
 # Setup compiler features to generate captions and LCGs
 if (!$parameters.ContainsKey("Features")) {
     $parameters["Features"] = @()
 }
 $parameters["Features"] = @("lcgtranslationfile", "generateCaptions")
 
-$appFile = Compile-AppInBcContainer @parameters
+# $appFile = Compile-AppInBcContainer @parameters
+
+$appProjectFolder = $parameters.appProjectFolder
 
 # Extract app name from app.json
-$appName = (gci -Path $($parameters.appProjectFolder) -Filter "app.json" | Get-Content | ConvertFrom-Json).name
+$appName = (gci -Path $appProjectFolder -Filter "app.json" | Get-Content | ConvertFrom-Json).name
 
-Write-Host "Current app name: $appName"
+Write-Host "Current app name: $appName; app folder: $appProjectFolder"
 
 # Create an archive with the current source code in the build artifacts folder
 
 $archiveFile = "$env:TEMP/$appName.Source.zip"
 Write-Host "Archive the current source code for app: $appName as $archiveFile"
-Compress-Archive -Path "$($parameters.appProjectFolder)" -DestinationPath $archiveFile -Force
+Compress-Archive -Path "$appProjectFolder" -DestinationPath $archiveFile -Force
 
-$buildArtifactsFolder = ".buildartifacts/Apps"
 
-if(-not (Test-Path $($parameters.appProjectFolder)/$buildArtifactsFolder)) {
-    Write-Host "Creating $buildArtifactsFolder in $($parameters.appProjectFolder)"
-    New-Item -Path $($parameters.appProjectFolder) -Name $buildArtifactsFolder -ItemType Directory
+if ($parameters['buildArtifactFolder']) {
+    Write-Host "Found artifacts folder in parameters!"
+    $buildArtifactsFolder = $parameters['buildArtifactFolder']
+}
+else {
+    $ALGoProjectFolder = FindALGoProject -appProjectFolder $appProjectFolder
+    Write-Host "AL-Go project: $ALGoProjectFolder"
+    $buildArtifactsFolder = ".buildartifacts/Apps" # hackidy-hack
+    
+    if(-not (Test-Path "$ALGoProjectFolder/$buildArtifactsFolder")) {
+        Write-Host "Creating $buildArtifactsFolder in $ALGoProjectFolder"
+        New-Item -Path "$ALGoProjectFolder" -Name $buildArtifactsFolder -ItemType Directory
+    }
+
+    $buildArtifactsFolder = "$ALGoProjectFolder/$buildArtifactsFolder"
 }
 
-Move-Item -Path $archiveFile -Destination "$($parameters.appProjectFolder)/$buildArtifactsFolder" -Force
+Write-Host "Build artifacts folder: $buildArtifactsFolder"
 
-$appFile
+Move-Item -Path $archiveFile -Destination "$buildArtifactsFolder" -Force
+
+# $appFile
