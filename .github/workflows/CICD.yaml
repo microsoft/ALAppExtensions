@@ -650,7 +650,7 @@ jobs:
 
   Deliver:
     needs: [ Initialization, Build ]
-    if: always() && needs.Build.result == 'Success' && github.event_name != 'workflow_run' && github.ref_name == 'main' && needs.Initialization.outputs.deliveryTargetCount > 0
+    if: needs.Initialization.outputs.deliveryTargetCount > 0
     strategy:
       matrix:
         deliveryTarget: ${{ fromJson(needs.Initialization.outputs.deliveryTargets) }}
