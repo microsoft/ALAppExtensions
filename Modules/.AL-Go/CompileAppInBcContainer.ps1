@@ -17,7 +17,7 @@ $appName = (gci -Path $($parameters.appProjectFolder) -Filter "app.json" | Get-C
 $buildArtifactsFolder = Join-Path -Path $parameters.appProjectFolder -ChildPath ".buildartifacts/Apps"
 
 if(-not (Test-Path $buildArtifactsFolder)) {
-    New-Item -Name $buildArtifactsFolder -ItemType Directory -
+    New-Item -Name $buildArtifactsFolder -ItemType Directory
 }
 
 Write-Host "Archive the current source code for app: $appName in $buildArtifactsFolder"
