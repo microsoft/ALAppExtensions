@@ -17,9 +17,9 @@ Write-Host "Current app name: $appName"
 
 # Create an archive with the current source code in the build artifacts folder
 
-$archiveFile = "($env:TEMP)/$appName.Source.zip"
+$archiveFile = "$env:TEMP/$appName.Source.zip"
 Write-Host "Archive the current source code for app: $appName as $archiveFile"
-Compress-Archive -Path "$($parameters.appProjectFolder)" -DestinationPath "($env:TEMP)/$appName.Source.zip" -Force
+Compress-Archive -Path "$($parameters.appProjectFolder)" -DestinationPath $archiveFile -Force
 
 $buildArtifactsFolder = ".buildartifacts/Apps"
 
