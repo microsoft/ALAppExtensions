@@ -85,10 +85,7 @@ codeunit 132508 "Record Link Mgt. Test"
 
         // [GIVEN] A new record is created to set record links on
         FromRecordLinkRecordTest.DeleteAll();
-        FromRecordLinkRecordTest.Init();
-        FromRecordLinkRecordTest.PK := 1;
-        FromRecordLinkRecordTest.Field := 'Rec A';
-        FromRecordLinkRecordTest.Insert();
+        CreateRecordLinkRecTest(FromRecordLinkRecordTest, 1, 'Rec A');
 
         // [GIVEN] Some text is written to the record Link
         RecordLink.Type := RecordLink.Type::Note;
@@ -107,10 +104,7 @@ codeunit 132508 "Record Link Mgt. Test"
         PermissionsMock.Set('Record Link View');
 
         // [GIVEN] A different instance of the table
-        ToRecordLinkRecordTest.Init();
-        ToRecordLinkRecordTest.PK := 2;
-        ToRecordLinkRecordTest.Field := 'Rec B';
-        ToRecordLinkRecordTest.Insert();
+        CreateRecordLinkRecTest(ToRecordLinkRecordTest, 2, 'Rec B');
 
         // [WHEN] The record link is copied to the other instance
         RecLinkCount := NewRecordLink.Count();
@@ -158,6 +152,46 @@ codeunit 132508 "Record Link Mgt. Test"
 
         // [THEN] No record link with that link id exists
         Assert.IsFalse(RecordLink.Get(RecordLink."Link ID"), 'As an orphan record link, this should have been removed.');
+    end;
+
+    [Test]
+    procedure RemoveRecordLinksFromRecordSet()
+    var
+        RecordLinkRecTest: Record "Record Link Record Test";
+        I: Integer;
+    begin
+        // [SCENARIO] Delete all record links from a filtered recordset
+
+        // [GIVEN] 6 records with record links
+        for I := 1 to 6 do begin
+            CreateRecordLinkRecTest(RecordLinkRecTest, I, Format(I));
+            RecordLinkRecTest.AddLink('');
+        end;
+
+        // [WHEN] Filter the table to include records 1, 3, and 5, and call RemoveLinks
+        RecordLinkRecTest.SetFilter(PK, '%1|%2|%3', 1, 3, 5);
+        RecordLinkManagement.RemoveLinks(RecordLinkRecTest);
+
+        // [THEN] Records 1, 3, 5 have no links
+        RecordLinkRecTest.FindSet();
+        repeat
+            Assert.IsFalse(RecordLinkRecTest.HasLinks(), 'Record must not have links.');
+        until RecordLinkRecTest.Next() = 0;
+
+        // [THEN] Records 2, 4, 6 have links
+        RecordLinkRecTest.SetFilter(PK, '%1|%2|%3', 2, 4, 6);
+        RecordLinkRecTest.FindSet();
+        repeat
+            Assert.IsTrue(RecordLinkRecTest.HasLinks(), 'Record must have a record link.');
+        until RecordLinkRecTest.Next() = 0;
+    end;
+
+    local procedure CreateRecordLinkRecTest(var RecordLinkRecTest: Record "Record Link Record Test"; TestRecPK: Integer; TestRecField: Text[50])
+    begin
+        RecordLinkRecTest.Init();
+        RecordLinkRecTest.PK := TestRecPK;
+        RecordLinkRecTest.Field := TestRecField;
+        RecordLinkRecTest.Insert();
     end;
 
     [ConfirmHandler]

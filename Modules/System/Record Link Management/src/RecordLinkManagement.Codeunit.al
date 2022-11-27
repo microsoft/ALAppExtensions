@@ -46,6 +46,15 @@ codeunit 447 "Record Link Management"
     end;
 
     /// <summary>
+    /// Removes all record links from all records in the RecVariant within current filters
+    /// </summary>
+    /// <param name="RecVariant">A filtered record. All record links associated with records within the filtered recordset will be deleted.</param>
+    procedure RemoveLinks(RecVariant: Variant)
+    begin
+        RecordLinkImpl.RemoveLinks(RecVariant);
+    end;
+
+    /// <summary>
     /// Iterates over the record link table and removes those with obsolete record ids.
     /// </summary>
     procedure RemoveOrphanedLinks()
