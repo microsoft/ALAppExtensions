@@ -19,7 +19,7 @@ function GenerateNuspec
         <metadata>
             <id></id>
             <version></version>
-            <title>D365 Business Central - System Modules</title>
+            <title>Dynamics 365 Business Central - System Modules</title>
             <authors></authors>
             <owners></owners>
             <requireLicenseAcceptance>false</requireLicenseAcceptance>
