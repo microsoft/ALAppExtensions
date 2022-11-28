@@ -50,5 +50,16 @@ table 9064 "SAS Parameters"
             OptionMembers = "https&http","https";
             OptionCaption = '"https and http",https', Locked = true;
         }
+
+        /// <summary>
+        /// Indicates the encryption scope to use to encrypt the request contents.
+        /// This field is supported with version 2020-12-06 and later.
+        /// See also: https://learn.microsoft.com/en-us/rest/api/storageservices/create-account-sas#specify-the-encryption-scope
+        /// </summary>
+        field(5; SignedEncryptionScope; Text[63])
+        {
+            DataClassification = SystemMetadata;
+        }
+
     }
 }
