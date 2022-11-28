@@ -6,7 +6,7 @@ Param(
 if (!$parameters.ContainsKey("Features")) {
     $parameters["Features"] = @()
 }
-$parameters["Features"] = @("lcgtranslationfile", "generateCaptions")
+$parameters["Features"] += @("lcgtranslationfile", "generateCaptions")
 
 $appFile = Compile-AppInBcContainer @parameters
 
