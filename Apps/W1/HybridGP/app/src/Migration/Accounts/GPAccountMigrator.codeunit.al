@@ -118,6 +118,8 @@ codeunit 4017 "GP Account Migrator"
             exit;
 
         BeginningBalance := GPGL10111.PERDBLNC;
+        if BeginningBalance = 0 then
+            exit;
 
         PostingGroupCode := PostingGroupCodeTxt + format(InitialYear) + 'BB';
         GPFiscalPeriods.SetRange(YEAR1, InitialYear);
