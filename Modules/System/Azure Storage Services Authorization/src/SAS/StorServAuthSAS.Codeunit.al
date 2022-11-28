@@ -122,7 +122,7 @@ codeunit 9061 "Stor. Serv. Auth. SAS" implements "Storage Service Authorization"
         StringToSign.Append(IPRange + NewLine());
         StringToSign.Append(ProtocolsToString(Protocols) + NewLine());
         StringToSign.Append(VersionToString(ApiVersion) + NewLine());
-        if SignedEncryptionScope <> ''
+        if SignedEncryptionScope <> '' then
             StringToSign.Append(SignedEncryptionScope + NewLine());
         exit(StringToSign.ToText());
     end;
