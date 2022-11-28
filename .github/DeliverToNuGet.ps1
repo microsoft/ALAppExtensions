@@ -19,13 +19,13 @@ function GenerateNuspec
         <metadata>
             <id></id>
             <version></version>
-            <title>D365 Business Central — System Modules</title>
+            <title>D365 Business Central - System Modules</title>
             <authors></authors>
             <owners></owners>
             <requireLicenseAcceptance>false</requireLicenseAcceptance>
             <description>System Application and Dev Tools for D365 Business Central</description>
             <summary>
-                The package contains app files and source code for System Application, System Application Test libraries and tests, as well as Dev Tools for Dynamics365 Business Central.
+                The package contains app files and source code for System Application, System Application Test libraries and tests, as well as Dev Tools for Dynamics 365 Business Central.
             </summary>
         </metadata>
     </package>'
@@ -95,17 +95,22 @@ try {
 
     $appsPackage = Join-Path $appsFolder 'Package'
     if(Test-Path -Path "$appsPackage") {
-        Copy-Item -Path "$appsPackage/*" -Destination "$packageFolder/Apps/" -Recurse -Container -Force
+        $AppsPackageItems = Get-ChildItem $appsPackage -Recurse
+        Write-Host $AppsPackageItems 
+        Copy-Item -Path "$appsPackage" -Destination "$packageFolder/Apps/" -Recurse -Container -Force 
     }
 
     $testAppsPackage = Join-Path $testAppsFolder 'Package'
     if(Test-Path -Path "$testAppsPackage") {
-        Copy-Item -Path "$testAppsPackage/*" -Destination "$packageFolder/Tests/" -Recurse -Container -Force
+        Copy-Item -Path "$testAppsPackage" -Destination "$packageFolder/Tests/" -Recurse -Container -Force
     }
     
     #Create .nuspec file
     $nuspecFilePath = (Join-Path $packageFolder 'manifest.nuspec')
     $nuspec.Save($nuspecFilePath)
+
+    $NugetItems = Get-ChildItem $packageFolder -Recurse
+    Write-Host "$NugetItems"
 
     Write-Host "Download nuget CLI" -ForegroundColor Magenta
     Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile $outputDirectory/nuget.exe
