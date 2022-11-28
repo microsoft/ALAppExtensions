@@ -24,7 +24,7 @@ Write-Host "Archive the current source code for app: $appName as $archiveFile"
 Compress-Archive -Path "$appProjectFolder/**" -DestinationPath $archiveFile -Force
 
 # TODO there must be a better way :D
-$holderFolder = 'Tests'
+$holderFolder = 'TestApps'
 if($appName -eq "System Application") {
     $holderFolder = 'Apps'
 }
