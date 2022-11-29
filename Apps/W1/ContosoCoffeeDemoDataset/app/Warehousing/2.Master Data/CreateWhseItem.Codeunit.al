@@ -165,6 +165,8 @@ codeunit 4793 "Create Whse Item"
     var
         Item: Record "Item";
     begin
+        if Item.Get(No) then
+            exit;
         Item.Init();
         Item."No." := No;
         Item."No. 2" := NoTwo;
@@ -317,6 +319,8 @@ codeunit 4793 "Create Whse Item"
     var
         UnitofMeasure: Record "Unit of Measure";
     begin
+        if UnitofMeasure.Get(Code) then
+            exit;
         UnitofMeasure.Init();
         UnitofMeasure."Code" := Code;
         UnitofMeasure."Description" := Description;
@@ -341,6 +345,8 @@ codeunit 4793 "Create Whse Item"
     var
         ItemUnitofMeasure: Record "Item Unit of Measure";
     begin
+        if ItemUnitofMeasure.Get(ItemNo, Code) then
+            exit;
         ItemUnitofMeasure.Init();
         ItemUnitofMeasure."Item No." := ItemNo;
         ItemUnitofMeasure."Code" := Code;

@@ -26,6 +26,8 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
     var
         Zone: Record "Zone";
     begin
+        if Zone.Get(LocationCode, Code) then
+            exit;
         Zone.Init();
         Zone."Location Code" := LocationCode;
         Zone."Code" := Code;
@@ -48,6 +50,8 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
     var
         BinType: Record "Bin Type";
     begin
+        if BinType.Get(Code) then
+            exit;
         BinType.Init();
         BinType."Code" := Code;
         BinType."Description" := Description;
@@ -75,6 +79,8 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
     var
         BinTemplate: Record "Bin Template";
     begin
+        if BinTemplate.Get(Code) then
+            exit;
         BinTemplate.Init();
         BinTemplate."Code" := Code;
         BinTemplate."Description" := Description;
@@ -109,6 +115,8 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
     var
         Bin: Record "Bin";
     begin
+        if Bin.Get(LocationCode, Code) then
+            exit;
         Bin.Init();
         Bin."Location Code" := LocationCode;
         Bin."Code" := Code;
@@ -133,6 +141,8 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
     var
         WarehouseClass: Record "Warehouse Class";
     begin
+        if WarehouseClass.Get(Code) then
+            exit;
         WarehouseClass.Init();
         WarehouseClass."Code" := Code;
         WarehouseClass."Description" := Description;
@@ -161,7 +171,7 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
         CreateBinType('PICK', 'Pick', false, false, false, true);
         CreateBinType('PUT AWAY', 'Put Away type', false, false, true, false);
         CreateBinType('PUTPICK', 'Put Away and Pick', false, false, true, true);
-        CreateBinType('QC', 'No type', false, false, false, false);
+        CreateBinType('QC', 'No type', true, false, false, false);
         CreateBinType('RECEIVE', 'Receive type', true, false, false, false);
         CreateBinType('SHIP', 'Ship type', false, true, false, false);
 
@@ -254,10 +264,10 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
         CreateBin('WHITE', 'W-07-0002', '', 'PRODUCTION', 'QC', '', 0, 0, 20000, 30000, true, false, true);
         CreateBin('WHITE', 'W-07-0003', '', 'PRODUCTION', 'QC', '', 0, 0, 20000, 30000, true, false, true);
         CreateBin('WHITE', 'W-07-0004', '', 'PRODUCTION', 'QC', '', 0, 0, 20000, 30000, true, false, true);
-        CreateBin('WHITE', 'W-08-0001', '', 'RECEIVE', 'RECEIVE', '', 0, 0, 10000, 10000, true, false, false);
-        CreateBin('WHITE', 'W-08-0002', '', 'RECEIVE', 'RECEIVE', '', 0, 0, 10000, 10000, true, false, false);
-        CreateBin('WHITE', 'W-08-0003', '', 'RECEIVE', 'RECEIVE', '', 0, 0, 10000, 10000, true, false, false);
-        CreateBin('WHITE', 'W-08-0004', '', 'RECEIVE', 'RECEIVE', '', 0, 0, 10000, 10000, true, false, false);
+        CreateBin('WHITE', 'W-08-0001', '', 'RECEIVE', 'RECEIVE', '', 0, 0, 100000, 100000, true, false, false);
+        CreateBin('WHITE', 'W-08-0002', '', 'RECEIVE', 'RECEIVE', '', 0, 0, 100000, 100000, true, false, false);
+        CreateBin('WHITE', 'W-08-0003', '', 'RECEIVE', 'RECEIVE', '', 0, 0, 100000, 100000, true, false, false);
+        CreateBin('WHITE', 'W-08-0004', '', 'RECEIVE', 'RECEIVE', '', 0, 0, 100000, 100000, true, false, false);
         CreateBin('WHITE', 'W-09-0001', '', 'SHIP', 'SHIP', '', 0, 200, 20000, 30000, false, false, false);
         CreateBin('WHITE', 'W-09-0002', '', 'SHIP', 'SHIP', '', 0, 200, 20000, 30000, false, false, false);
         CreateBin('WHITE', 'W-09-0003', '', 'SHIP', 'SHIP', '', 0, 200, 20000, 30000, true, false, false);

@@ -18,6 +18,8 @@ codeunit 4791 "Create Whse Put Away Template"
     var
         PutawayTemplateHeader: Record "Put-away Template Header";
     begin
+        if PutawayTemplateHeader.Get(Code) then
+            exit;
         PutawayTemplateHeader.Init();
         PutawayTemplateHeader."Code" := Code;
         PutawayTemplateHeader."Description" := Description;
@@ -38,6 +40,8 @@ codeunit 4791 "Create Whse Put Away Template"
     var
         PutawayTemplateLine: Record "Put-away Template Line";
     begin
+        if PutawayTemplateLine.Get(PutawayTemplateCode, LineNo) then
+            exit;
         PutawayTemplateLine.Init();
         PutawayTemplateLine."Put-away Template Code" := PutawayTemplateCode;
         PutawayTemplateLine."Line No." := LineNo;

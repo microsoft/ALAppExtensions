@@ -8,6 +8,7 @@ codeunit 4787 "Create Whse Locations"
     trigger OnRun()
     begin
         CreateCollection(false);
+        AddUserAsWarehouseEmployee(UserId);
     end;
 
     local procedure TextAsGuid(InputText: Text) OutputGuid: Guid
@@ -61,6 +62,8 @@ codeunit 4787 "Create Whse Locations"
     var
         Location: Record "Location";
     begin
+        if Location.Get(Code) then
+            exit;
         Location.Init();
         Location."Code" := Code;
         Location."Name" := Name;
@@ -104,8 +107,33 @@ codeunit 4787 "Create Whse Locations"
     local procedure CreateCollection(ShouldRunInsertTriggers: Boolean)
     begin
         DoInsertTriggers := ShouldRunInsertTriggers;
-        CreateLocation('SILVER', 'Silver Warehouse', '', '', 'Pier 10, 2', '', 'West End Lane', 'WC1 2GS', 'GB', false, true, true, TextAsDateFormula(''), true, true, true, true, false, Enum::"Location Default Bin Selection"::"Fixed Bin", TextAsDateFormula(''), TextAsDateFormula(''), '', false, false, false, 0, '', false, false, '', '', '', '', '', '', false);
+        CreateLocation('SILVER', 'Silver Warehouse', '', '', 'Pier 10, 2', '', 'West End Lane', 'WC1 2GS', 'GB', false, true, true, TextAsDateFormula(''), true, false, false, true, false, Enum::"Location Default Bin Selection"::"Fixed Bin", TextAsDateFormula(''), TextAsDateFormula(''), '', false, false, false, 0, '', false, false, '', '', '', '', '', '', false);
         CreateLocation('WHITE', 'White Warehouse', '', '', 'Merrily Grove Avenue 6, 2', '', 'West End Lane', 'WC1 2GS', 'GB', false, true, true, TextAsDateFormula(''), true, true, true, true, true, Enum::"Location Default Bin Selection"::" ", TextAsDateFormula(''), TextAsDateFormula(''), 'STD', false, false, true, 2, 'W-11-0001', false, false, 'W-08-0001', 'W-09-0001', 'W-14-0001', 'W-07-0002', 'W-07-0003', '', true);
         CreateLocation('YELLOW', 'Yellow Warehouse', '', '', 'Main Bristol Street, 10', '', 'Bristol', 'BS3 6KL', 'GB', false, true, true, TextAsDateFormula(''), false, true, true, false, false, Enum::"Location Default Bin Selection"::" ", TextAsDateFormula('1D'), TextAsDateFormula('1D'), '', false, false, false, 0, '', false, false, '', '', '', '', '', '', false);
+    end;
+
+    local procedure AddUserAsWarehouseEmployee(UserId: Text)
+    var
+        WarehouseEmployee: Record "Warehouse Employee";
+    begin
+        if not WarehouseEmployee.Get(UserId, 'SILVER') then begin
+            WarehouseEmployee.Init();
+            WarehouseEmployee."User ID" := UserId;
+            WarehouseEmployee."Location Code" := 'SILVER';
+            WarehouseEmployee.Default := true;
+            WarehouseEmployee.Insert(true);
+        end;
+        if not WarehouseEmployee.Get(UserId, 'YELLOW') then begin
+            WarehouseEmployee.Init();
+            WarehouseEmployee."User ID" := UserId;
+            WarehouseEmployee."Location Code" := 'YELLOW';
+            WarehouseEmployee.Insert(true);
+        end;
+        if not WarehouseEmployee.Get(UserId, 'WHITE') then begin
+            WarehouseEmployee.Init();
+            WarehouseEmployee."User ID" := UserId;
+            WarehouseEmployee."Location Code" := 'WHITE';
+            WarehouseEmployee.Insert(true);
+        end;
     end;
 }

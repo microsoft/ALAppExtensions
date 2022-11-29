@@ -106,8 +106,7 @@ codeunit 4799 "Create Warehousing Demo Data"
     local procedure CreateTransactionData()
     var
     begin
-        Codeunit.Run(Codeunit::"Create Whse Purch Orders");
-        Codeunit.Run(Codeunit::"Create Whse Sales Orders");
+        Codeunit.Run(Codeunit::"Create Whse Orders");
 
         OnAfterCreateTransactionData();
         Commit();

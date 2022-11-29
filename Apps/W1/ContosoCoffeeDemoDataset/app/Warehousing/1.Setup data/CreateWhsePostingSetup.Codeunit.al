@@ -180,6 +180,8 @@ codeunit 4788 "Create Whse Posting Setup"
     var
         InventoryPostingGroup: Record "Inventory Posting Group";
     begin
+        if InventoryPostingGroup.Get(Code) then
+            exit;
         InventoryPostingGroup.Init();
         InventoryPostingGroup."Code" := Code;
         InventoryPostingGroup."Description" := Description;
@@ -234,53 +236,63 @@ codeunit 4788 "Create Whse Posting Setup"
     var
         InventorySetup: Record "Inventory Setup";
     begin
-        if InventorySetup.Get() then
-            exit;
-        InventorySetup.Init();
-        InventorySetup."Primary Key" := PrimaryKey;
-        InventorySetup."Automatic Cost Posting" := AutomaticCostPosting;
-        InventorySetup."Location Mandatory" := LocationMandatory;
-        InventorySetup."Item Nos." := ItemNos;
-        InventorySetup."Automatic Cost Adjustment" := AutomaticCostAdjustment;
-        InventorySetup."Prevent Negative Inventory" := PreventNegativeInventory;
-        InventorySetup."Variant Mandatory if Exists" := VariantMandatoryifExists;
-        InventorySetup."Skip Prompt to Create Item" := SkipPrompttoCreateItem;
-        InventorySetup."Copy Item Descr. to Entries" := CopyItemDescrtoEntries;
-        InventorySetup."Invt. Cost Jnl. Template Name" := InvtCostJnlTemplateName;
-        InventorySetup."Invt. Cost Jnl. Batch Name" := InvtCostJnlBatchName;
-        InventorySetup."Transfer Order Nos." := TransferOrderNos;
-        InventorySetup."Posted Transfer Shpt. Nos." := PostedTransferShptNos;
-        InventorySetup."Posted Transfer Rcpt. Nos." := PostedTransferRcptNos;
-        InventorySetup."Copy Comments Order to Shpt." := CopyCommentsOrdertoShpt;
-        InventorySetup."Copy Comments Order to Rcpt." := CopyCommentsOrdertoRcpt;
-        InventorySetup."Nonstock Item Nos." := NonstockItemNos;
-        InventorySetup."Outbound Whse. Handling Time" := OutboundWhseHandlingTime;
-        InventorySetup."Inbound Whse. Handling Time" := InboundWhseHandlingTime;
-        InventorySetup."Expected Cost Posting to G/L" := ExpectedCostPostingtoGL;
-        InventorySetup."Default Costing Method" := DefaultCostingMethod;
-        InventorySetup."Average Cost Calc. Type" := AverageCostCalcType;
-        InventorySetup."Average Cost Period" := AverageCostPeriod;
-        InventorySetup."Allow Invt. Doc. Reservation" := AllowInvtDocReservation;
-        InventorySetup."Invt. Receipt Nos." := InvtReceiptNos;
-        InventorySetup."Posted Invt. Receipt Nos." := PostedInvtReceiptNos;
-        InventorySetup."Invt. Shipment Nos." := InvtShipmentNos;
-        InventorySetup."Posted Invt. Shipment Nos." := PostedInvtShipmentNos;
-        InventorySetup."Copy Comments to Invt. Doc." := CopyCommentstoInvtDoc;
-        InventorySetup."Direct Transfer Posting" := DirectTransferPosting;
-        InventorySetup."Posted Direct Trans. Nos." := PostedDirectTransNos;
-        InventorySetup."Package Nos." := PackageNos;
-        InventorySetup."Phys. Invt. Order Nos." := PhysInvtOrderNos;
-        InventorySetup."Posted Phys. Invt. Order Nos." := PostedPhysInvtOrderNos;
-        InventorySetup."Package Caption" := PackageCaption;
-        InventorySetup."Item Group Dimension Code" := ItemGroupDimensionCode;
-        InventorySetup."Inventory Put-away Nos." := InventoryPutawayNos;
-        InventorySetup."Inventory Pick Nos." := InventoryPickNos;
-        InventorySetup."Posted Invt. Put-away Nos." := PostedInvtPutawayNos;
-        InventorySetup."Posted Invt. Pick Nos." := PostedInvtPickNos;
-        InventorySetup."Inventory Movement Nos." := InventoryMovementNos;
-        InventorySetup."Registered Invt. Movement Nos." := RegisteredInvtMovementNos;
-        InventorySetup."Internal Movement Nos." := InternalMovementNos;
-        InventorySetup.Insert(DoInsertTriggers);
+        if InventorySetup.Get() then begin
+            // Validate that key Number Series fields are populated, often required in CRONUS SaaS Eval Data
+            InventorySetup."Inventory Pick Nos." := CheckValidate(InventorySetup."Inventory Pick Nos.", InventoryPickNos, 'Inventory Pick', 'IPI000001', 'IPI999999');
+            InventorySetup."Posted Invt. Pick Nos." := CheckValidate(InventorySetup."Posted Invt. Pick Nos.", PostedInvtPickNos, 'Posted Invt. Pick', 'PPI000001', 'PPI999999');
+            InventorySetup."Inventory Put-Away Nos." := CheckValidate(InventorySetup."Inventory Put-Away Nos.", InventoryPutAwayNos, 'Inventory Put-Away', 'IPI000001', 'IPU999999');
+            InventorySetup."Posted Invt. Put-Away Nos." := CheckValidate(InventorySetup."Posted Invt. Put-Away Nos.", PostedInvtPutAwayNos, 'Posted Invt. Put-Away', 'PPU000001', 'PPI999999');
+            InventorySetup."Inventory Movement Nos." := CheckValidate(InventorySetup."Inventory Movement Nos.", InventoryMovementNos, 'Inventory Movement', 'IM000001', 'IM999999');
+            InventorySetup."Registered Invt. Movement Nos." := CheckValidate(InventorySetup."Registered Invt. Movement Nos.", RegisteredInvtMovementNos, 'Reg. Inventory Movement', 'RIM000001', 'RIM999999');
+            InventorySetup."Internal Movement Nos." := CheckValidate(InventorySetup."Internal Movement Nos.", InternalMovementNos, 'Internal Movement', 'RINTM000001', 'RINTM999999');
+            InventorySetup.Modify(true);
+        end else begin
+            InventorySetup.Init();
+            InventorySetup."Primary Key" := PrimaryKey;
+            InventorySetup."Automatic Cost Posting" := AutomaticCostPosting;
+            InventorySetup."Location Mandatory" := LocationMandatory;
+            InventorySetup."Item Nos." := ItemNos;
+            InventorySetup."Automatic Cost Adjustment" := AutomaticCostAdjustment;
+            InventorySetup."Prevent Negative Inventory" := PreventNegativeInventory;
+            InventorySetup."Variant Mandatory if Exists" := VariantMandatoryifExists;
+            InventorySetup."Skip Prompt to Create Item" := SkipPrompttoCreateItem;
+            InventorySetup."Copy Item Descr. to Entries" := CopyItemDescrtoEntries;
+            InventorySetup."Invt. Cost Jnl. Template Name" := InvtCostJnlTemplateName;
+            InventorySetup."Invt. Cost Jnl. Batch Name" := InvtCostJnlBatchName;
+            InventorySetup."Transfer Order Nos." := TransferOrderNos;
+            InventorySetup."Posted Transfer Shpt. Nos." := PostedTransferShptNos;
+            InventorySetup."Posted Transfer Rcpt. Nos." := PostedTransferRcptNos;
+            InventorySetup."Copy Comments Order to Shpt." := CopyCommentsOrdertoShpt;
+            InventorySetup."Copy Comments Order to Rcpt." := CopyCommentsOrdertoRcpt;
+            InventorySetup."Nonstock Item Nos." := NonstockItemNos;
+            InventorySetup."Outbound Whse. Handling Time" := OutboundWhseHandlingTime;
+            InventorySetup."Inbound Whse. Handling Time" := InboundWhseHandlingTime;
+            InventorySetup."Expected Cost Posting to G/L" := ExpectedCostPostingtoGL;
+            InventorySetup."Default Costing Method" := DefaultCostingMethod;
+            InventorySetup."Average Cost Calc. Type" := AverageCostCalcType;
+            InventorySetup."Average Cost Period" := AverageCostPeriod;
+            InventorySetup."Allow Invt. Doc. Reservation" := AllowInvtDocReservation;
+            InventorySetup."Invt. Receipt Nos." := InvtReceiptNos;
+            InventorySetup."Posted Invt. Receipt Nos." := PostedInvtReceiptNos;
+            InventorySetup."Invt. Shipment Nos." := InvtShipmentNos;
+            InventorySetup."Posted Invt. Shipment Nos." := PostedInvtShipmentNos;
+            InventorySetup."Copy Comments to Invt. Doc." := CopyCommentstoInvtDoc;
+            InventorySetup."Direct Transfer Posting" := DirectTransferPosting;
+            InventorySetup."Posted Direct Trans. Nos." := PostedDirectTransNos;
+            InventorySetup."Package Nos." := PackageNos;
+            InventorySetup."Phys. Invt. Order Nos." := PhysInvtOrderNos;
+            InventorySetup."Posted Phys. Invt. Order Nos." := PostedPhysInvtOrderNos;
+            InventorySetup."Package Caption" := PackageCaption;
+            InventorySetup."Item Group Dimension Code" := ItemGroupDimensionCode;
+            InventorySetup."Inventory Put-away Nos." := InventoryPutawayNos;
+            InventorySetup."Inventory Pick Nos." := InventoryPickNos;
+            InventorySetup."Posted Invt. Put-away Nos." := PostedInvtPutawayNos;
+            InventorySetup."Posted Invt. Pick Nos." := PostedInvtPickNos;
+            InventorySetup."Inventory Movement Nos." := InventoryMovementNos;
+            InventorySetup."Registered Invt. Movement Nos." := RegisteredInvtMovementNos;
+            InventorySetup."Internal Movement Nos." := InternalMovementNos;
+            InventorySetup.Insert(DoInsertTriggers);
+        end;
     end;
 
     local procedure CreateInventoryPostingSetup(
@@ -420,6 +432,35 @@ codeunit 4788 "Create Whse Posting Setup"
         VATPostingSetup."VAT Calculation Type" := VATPostingSetup."VAT Calculation Type"::"Normal VAT";
         OnBeforeInsertVATPostingSetup(VATPostingSetup);
         VATPostingSetup.Insert(true);
+    end;
+
+    local procedure CheckValidate(CurrentInventorySetupField: Code[20]; NumberSeriesCode: Code[20]; SeriesDescription: Text; StartNo: Text; EndNo: Text) NewInvtSetupValue: Code[20]
+    var
+        NoSeries: Record "No. Series";
+        NoSeriesLine: Record "No. Series Line";
+    begin
+        if CurrentInventorySetupField <> '' then
+            exit(CurrentInventorySetupField);
+
+        if not NoSeries.Get(NumberSeriesCode) then begin
+            NoSeries.Init();
+            NoSeries.Code := NumberSeriesCode;
+            NoSeries.Description := SeriesDescription;
+            NoSeries.Validate("Default Nos.", true);
+            NoSeries.Insert(true);
+
+            NoSeriesLine.Init();
+            NoSeriesLine."Series Code" := NumberSeriesCode;
+            NoSeriesLine."Line No." := 10000;
+            NoSeriesLine.Insert(true);
+            NoSeriesLine.Validate("Starting No.", StartNo);
+            NoSeriesLine.Validate("Ending No.", EndNo);
+            NoSeriesLine.Validate("Increment-by No.", 1);
+            NoSeriesLine.Validate("Allow Gaps in Nos.", true);
+            NoSeriesLine.Modify(true);
+        end;
+
+        exit(NumberSeriesCode);
     end;
 
 

@@ -23,6 +23,7 @@ codeunit 4786 "Company Creation Wizard"
     local procedure InstallContosoDemoData()
     var
         CreateManufacturingDemoData: Codeunit "Create Manufacturing DemoData";
+        CreateWarehousingDemoData: Codeunit "Create Warehousing Demo Data";
     begin
         if not AssistedCompanySetupStatus.Get(CompanyName()) then
             exit;
@@ -31,6 +32,7 @@ codeunit 4786 "Company Creation Wizard"
             Telemetry.LogMessage('0000H74', StrSubstNo(ContosoCoffeeDemoDatasetInitilizationTok, ContosoCoffeeDemoDatasetFeatureNameTok),
                 Verbosity::Normal, DataClassification::SystemMetadata);
             CreateManufacturingDemoData.Create();
+            CreateWarehousingDemoData.Create();
         end;
     end;
 

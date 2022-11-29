@@ -31,6 +31,8 @@ codeunit 4789 "Create Whse Item Jnl"
     var
         ItemJournalTemplate: Record "Item Journal Template";
     begin
+        if ItemJournalTemplate.Get(Name) then
+            exit;
         ItemJournalTemplate.Init();
         ItemJournalTemplate."Name" := Name;
         ItemJournalTemplate."Description" := Description;
@@ -60,6 +62,8 @@ codeunit 4789 "Create Whse Item Jnl"
     var
         ItemJournalBatch: Record "Item Journal Batch";
     begin
+        if ItemJournalBatch.Get(JournalTemplateName, Name) then
+            exit;
         ItemJournalBatch.Init();
         ItemJournalBatch."Journal Template Name" := JournalTemplateName;
         ItemJournalBatch."Name" := Name;
@@ -87,6 +91,8 @@ codeunit 4789 "Create Whse Item Jnl"
     var
         WarehouseJournalTemplate: Record "Warehouse Journal Template";
     begin
+        if WarehouseJournalTemplate.Get(Name) then
+            exit;
         WarehouseJournalTemplate.Init();
         WarehouseJournalTemplate."Name" := Name;
         WarehouseJournalTemplate."Description" := Description;
