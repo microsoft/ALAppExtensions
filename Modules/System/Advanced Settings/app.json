@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Support for Advanced Settings page",
     "description":  "Support for Advanced Settings page",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,19 +15,19 @@
                              "id":  "901c89b7-132b-4c59-bb3f-2bfa4fbc70b5",
                              "name":  "Navigation Bar Subscribers",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "872fe7e8-9893-40ae-ab94-c123ed30fdbd",
                              "name":  "Extension Management",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "c64d75f0-e9f1-4d0f-9949-cd453b9b1466",
                              "name":  "Guided Experience",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          }
                      ],
     "internalsVisibleTo":  [

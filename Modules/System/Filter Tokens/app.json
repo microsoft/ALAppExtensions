@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Helper functions to manage filter texts",
     "description":  "This module enhances filtering by enabling users to enter additional filter tokens. The Code or Text filters accept the %me, %user, and %company filter tokens. The Date, Time, and DateTime filters accept the %today, %workdate, %yesterday, %tomorrow, %week, %month, %quarter filter tokens. In addition, the Date filters support date formulas. Developer can add more filter tokens by subscribing to the OnResolveDateFilterToken, OnResolveTextFilterToken, OnResolveTimeFilterToken, OnResolveDateTokenFromDateTimeFilter and OnResolveTimeTokenFromDateTimeFilter events.",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
