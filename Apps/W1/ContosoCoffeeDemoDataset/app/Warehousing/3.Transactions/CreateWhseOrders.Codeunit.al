@@ -37,7 +37,7 @@ codeunit 4796 "Create Whse Orders"
 
     procedure CreateOrdersScenario3()
     begin
-        CreatePurchaseOrder('107001', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Simple", WhseDemoDataSetup."Main Item No.", 20);
+        CreatePurchaseOrder('107001', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 20);
     end;
 
     procedure CreateOrdersScenario4()
@@ -50,15 +50,15 @@ codeunit 4796 "Create Whse Orders"
 
     procedure CreateOrdersScenario5()
     begin
-        CreateSalesOrder('105001', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple", WhseDemoDataSetup."Main Item No.", 10);
+        CreateSalesOrder('105001', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 10);
     end;
 
     procedure CreateOrdersScenario6()
     begin
-        CreateSalesOrder('105002', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple", WhseDemoDataSetup."Main Item No.", 10);
-        CreateSalesOrder('105003', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple", WhseDemoDataSetup."Main Item No.", 10);
-        CreateSalesOrder('105004', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple", WhseDemoDataSetup."Main Item No.", 10);
-        CreateSalesOrder('105005', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple", WhseDemoDataSetup."Main Item No.", 20);
+        CreateSalesOrder('105002', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 10);
+        CreateSalesOrder('105003', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 10);
+        CreateSalesOrder('105004', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 10);
+        CreateSalesOrder('105005', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 20);
     end;
 
     procedure CreateOrdersScenario7()
