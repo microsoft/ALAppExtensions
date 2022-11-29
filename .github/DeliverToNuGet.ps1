@@ -14,21 +14,7 @@ function GenerateNuspec
     $Owners
 )
 {
-    [xml] $template = '<?xml version="1.0" encoding="utf-8"?>
-    <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-        <metadata>
-            <id></id>
-            <version></version>
-            <title>Dynamics 365 Business Central - System Modules</title>
-            <authors></authors>
-            <owners></owners>
-            <requireLicenseAcceptance>false</requireLicenseAcceptance>
-            <description>System Application and Dev Tools for D365 Business Central</description>
-            <summary>
-                The package contains app files and source code for System Application, System Application Test libraries and tests, as well as Dev Tools for Dynamics 365 Business Central.
-            </summary>
-        </metadata>
-    </package>'
+    [xml] $template = Get-Content "$PSScriptRoot\.github\ALAppExtensions.nuspec"
 
     $template.package.metadata.id = $PackageId
     $template.package.metadata.version = $Version
