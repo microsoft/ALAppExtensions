@@ -5,126 +5,41 @@ codeunit 4789 "Create Whse Item Jnl"
         tabledata "Warehouse Journal Template" = rim;
 
     var
+        WhseDemoDataSetup: Record "Whse Demo Data Setup";
         DoInsertTriggers: Boolean;
 
     trigger OnRun()
     begin
-        CreateCollection(false);
+        WhseDemoDataSetup.Get();
+
+        CreateItemJournal();
+        CreateWhseItemJournal();
     end;
 
-    local procedure CreateItemJournalTemplate(
-        Name: Code[10];
-        Description: Text[80];
-        TestReportID: Integer;
-        PageID: Integer;
-        PostingReportID: Integer;
-        ForcePostingReport: Boolean;
-        Type: Enum "Item Journal Template Type";
-        SourceCode: Code[10];
-        ReasonCode: Code[10];
-        Recurring: Boolean;
-        NoSeries: Code[20];
-        PostingNoSeries: Code[20];
-        WhseRegisterReportID: Integer;
-        IncrementBatchName: Boolean
-    )
+    local procedure CreateItemJournal()
     var
-        ItemJournalTemplate: Record "Item Journal Template";
+        ItemJnlTemplate: Record "Item Journal Template";
+        ItemJnlLine: Record "Item Journal Line";
+        ItemJnlMgmt: Codeunit ItemJnlManagement;
+        ItemJnlBatchName: Code[20];
+        JnlSelected: Boolean;
     begin
-        if ItemJournalTemplate.Get(Name) then
-            exit;
-        ItemJournalTemplate.Init();
-        ItemJournalTemplate."Name" := Name;
-        ItemJournalTemplate."Description" := Description;
-        ItemJournalTemplate."Test Report ID" := TestReportID;
-        ItemJournalTemplate."Page ID" := PageID;
-        ItemJournalTemplate."Posting Report ID" := PostingReportID;
-        ItemJournalTemplate."Force Posting Report" := ForcePostingReport;
-        ItemJournalTemplate."Type" := Type;
-        ItemJournalTemplate."Source Code" := SourceCode;
-        ItemJournalTemplate."Reason Code" := ReasonCode;
-        ItemJournalTemplate."Recurring" := Recurring;
-        ItemJournalTemplate."No. Series" := NoSeries;
-        ItemJournalTemplate."Posting No. Series" := PostingNoSeries;
-        ItemJournalTemplate."Whse. Register Report ID" := WhseRegisterReportID;
-        ItemJournalTemplate."Increment Batch Name" := IncrementBatchName;
-        ItemJournalTemplate.Insert(DoInsertTriggers);
+        ItemJnlMgmt.TemplateSelection(PAGE::"Item Journal", 0, false, ItemJnlLine, JnlSelected);
+        if ItemJnlTemplate.FindFirst() then
+            ItemJnlMgmt.CheckTemplateName(ItemJnlTemplate.Name, ItemJnlBatchName);
     end;
 
-    local procedure CreateItemJournalBatch(
-        JournalTemplateName: Code[10];
-        Name: Code[10];
-        Description: Text[100];
-        ReasonCode: Code[10];
-        NoSeries: Code[20];
-        PostingNoSeries: Code[20]
-    )
+    local procedure CreateWhseItemJournal()
     var
-        ItemJournalBatch: Record "Item Journal Batch";
-    begin
-        if ItemJournalBatch.Get(JournalTemplateName, Name) then
-            exit;
-        ItemJournalBatch.Init();
-        ItemJournalBatch."Journal Template Name" := JournalTemplateName;
-        ItemJournalBatch."Name" := Name;
-        ItemJournalBatch."Description" := Description;
-        ItemJournalBatch."Reason Code" := ReasonCode;
-        ItemJournalBatch."No. Series" := NoSeries;
-        ItemJournalBatch."Posting No. Series" := PostingNoSeries;
-        ItemJournalBatch.Insert(DoInsertTriggers);
-    end;
-
-    local procedure CreateWarehouseJournalTemplate(
-        Name: Code[10];
-        Description: Text[80];
-        TestReportID: Integer;
-        PageID: Integer;
-        RegisteringReportID: Integer;
-        ForceRegisteringReport: Boolean;
-        Type: Enum "Warehouse Journal Template Type";
-        SourceCode: Code[10];
-        ReasonCode: Code[10];
-        NoSeries: Code[20];
-        RegisteringNoSeries: Code[20];
-        IncrementBatchName: Boolean
-    )
-    var
+        WarehouseJournalLine: Record "Warehouse Journal Line";
         WarehouseJournalTemplate: Record "Warehouse Journal Template";
+        WhseJnlBatchName: Code[10];
     begin
-        if WarehouseJournalTemplate.Get(Name) then
-            exit;
-        WarehouseJournalTemplate.Init();
-        WarehouseJournalTemplate."Name" := Name;
-        WarehouseJournalTemplate."Description" := Description;
-        WarehouseJournalTemplate."Test Report ID" := TestReportID;
-        WarehouseJournalTemplate."Page ID" := PageID;
-        WarehouseJournalTemplate."Registering Report ID" := RegisteringReportID;
-        WarehouseJournalTemplate."Force Registering Report" := ForceRegisteringReport;
-        WarehouseJournalTemplate."Type" := Type;
-        WarehouseJournalTemplate."Source Code" := SourceCode;
-        WarehouseJournalTemplate."Reason Code" := ReasonCode;
-        WarehouseJournalTemplate."No. Series" := NoSeries;
-        WarehouseJournalTemplate."Registering No. Series" := RegisteringNoSeries;
-        WarehouseJournalTemplate."Increment Batch Name" := IncrementBatchName;
-        WarehouseJournalTemplate.Insert(DoInsertTriggers);
-    end;
-
-    local procedure CreateCollection(ShouldRunInsertTriggers: Boolean)
-    begin
-        DoInsertTriggers := ShouldRunInsertTriggers;
-        CreateItemJournalTemplate('ITEM', 'Item Journal', 702, 40, 703, false, Enum::"Item Journal Template Type"::Item, 'ITEMJNL', '', false, 'IJNL-GEN', '', 7303, false);
-        CreateItemJournalTemplate('PHYS. INV.', 'Item Journal', 702, 392, 703, false, Enum::"Item Journal Template Type"::"Phys. Inventory", 'PHYSINVJNL', '', false, 'IJNL-PHYS', '', 7303, false);
-        CreateItemJournalTemplate('RECLASS', 'Item Reclass. Journal', 702, 393, 703, false, Enum::"Item Journal Template Type"::Item, 'RECLASSJNL', '', false, 'IJNL-RCL', '', 7303, false);
-        CreateItemJournalTemplate('RECURRING', 'Recurring Item Journal', 702, 286, 703, false, Enum::"Item Journal Template Type"::Item, 'ITEMJNL', '', true, '', 'IJNL-REC', 7303, false);
-        CreateItemJournalTemplate('REVAL', 'Revaluation Journal', 5812, 5803, 5805, false, Enum::"Item Journal Template Type"::Revaluation, 'REVALJNL', '', false, 'IJNL-REVAL', '', 7303, false);
-
-        CreateItemJournalBatch('ITEM', 'DEFAULT', 'Default Journal', '', 'IJNL-GEN', '');
-        CreateItemJournalBatch('PHYS. INV.', 'DEFAULT', 'Default Journal', '', 'IJNL-PHYS', '');
-        CreateItemJournalBatch('RECLASS', 'DEFAULT', 'Default Journal', '', 'IJNL-RCL', '');
-        CreateItemJournalBatch('REVAL', 'DEFAULT', 'Default Journal', '', 'IJNL-REVAL', '');
-
-        CreateWarehouseJournalTemplate('ADJMT', 'Adjustment Journal', 7302, 7324, 7303, false, Enum::"Warehouse Journal Template Type"::Item, 'WHITEM', '', 'WJNL-ADJ', '', false);
-        CreateWarehouseJournalTemplate('PHYSINVT', 'Physical Inventory Journal', 7302, 7326, 7303, false, Enum::"Warehouse Journal Template Type"::"Physical Inventory", 'WHPHYSINVT', '', 'WJNL-PHYS', '', false);
-        CreateWarehouseJournalTemplate('RECLASS', 'Reclassification Journal', 7302, 7365, 7303, false, Enum::"Warehouse Journal Template Type"::Reclassification, 'WHRCLSSJNL', '', 'WJNL-RCLSS', '', false);
+        WarehouseJournalLine.TemplateSelection(PAGE::"Whse. Item Journal", "Warehouse Journal Template Type"::Item, WarehouseJournalLine);
+        if WarehouseJournalTemplate.FindFirst() then begin
+            WarehouseJournalLine.CheckTemplateName(WarehouseJournalTemplate.Name, WhseDemoDataSetup."Location Basic Logistics", WhseJnlBatchName);
+            WarehouseJournalLine.CheckTemplateName(WarehouseJournalTemplate.Name, WhseDemoDataSetup."Location Simple", WhseJnlBatchName);
+            WarehouseJournalLine.CheckTemplateName(WarehouseJournalTemplate.Name, WhseDemoDataSetup."Location Directed", WhseJnlBatchName);
+        end;
     end;
 }
