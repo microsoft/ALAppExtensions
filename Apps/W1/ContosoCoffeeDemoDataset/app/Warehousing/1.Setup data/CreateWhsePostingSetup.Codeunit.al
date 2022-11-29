@@ -329,15 +329,15 @@ codeunit 4788 "Create Whse Posting Setup"
         CreateInventoryPostingSetup('', 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
         CreateInventoryPostingSetup('', 'RAW MAT', '2130', '', false, '2131', '2140', '7890', '7891', '7894', '7893', '7892');
         CreateInventoryPostingSetup('', 'RESALE', '2110', '', false, '2111', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Simple", 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup('SILVER', 'RAW MAT', '2130', '', false, '2131', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup('SILVER', 'RESALE', '2110', '', false, '2111', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup('WHITE', 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup('WHITE', 'RAW MAT', '2130', '', false, '2131', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup('WHITE', 'RESALE', '2110', '', false, '2111', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup('YELLOW', 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup('YELLOW', 'RAW MAT', '2130', '', false, '2131', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup('YELLOW', 'RESALE', '2110', '', false, '2111', '2140', '7890', '7891', '7894', '7893', '7892');
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Basic", 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Basic", 'RAW MAT', '2130', '', false, '2131', '2140', '7890', '7891', '7894', '7893', '7892');
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Basic", 'RESALE', '2110', '', false, '2111', '2140', '7890', '7891', '7894', '7893', '7892');
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Simple Logistics", 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Simple Logistics", 'RAW MAT', '2130', '', false, '2131', '2140', '7890', '7891', '7894', '7893', '7892');
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Simple Logistics", 'RESALE', '2110', '', false, '2111', '2140', '7890', '7891', '7894', '7893', '7892');
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Advanced Logistics", 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Advanced Logistics", 'RAW MAT', '2130', '', false, '2131', '2140', '7890', '7891', '7894', '7893', '7892');
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Advanced Logistics", 'RESALE', '2110', '', false, '2111', '2140', '7890', '7891', '7894', '7893', '7892');
 
         CreateWarehouseSetup('WMS-RCPT', 'WMS-RCPT+', 'WMS-SHIP', 'WMS-SHIP+', 'WMS-PUT', 'WMS-PUT+', 'WMS-PICK', 'WMS-PICK+', 'WMS-MOV', 'WMS-MOV+');
     end;
