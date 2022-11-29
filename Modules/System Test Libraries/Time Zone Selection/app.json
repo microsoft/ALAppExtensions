@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Library with Test objects for the Time Zone Selection module",
     "description":  "Library with Test objects for the Time Zone Selection module",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,7 +15,7 @@
                              "id":  "fa2b571d-3f92-4685-9113-421ea9c0b5f5",
                              "name":  "Time Zone Selection",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          }
                      ],
     "screenshots":  [
