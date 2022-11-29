@@ -95,8 +95,6 @@ try {
 
     $appsPackage = Join-Path $appsFolder 'Package'
     if(Test-Path -Path "$appsPackage") {
-        $AppsPackageItems = Get-ChildItem $appsPackage -Recurse
-        Write-Host $AppsPackageItems 
         Copy-Item -Path "$appsPackage" -Destination "$packageFolder/Apps/" -Recurse -Container -Force 
     }
 
@@ -108,9 +106,6 @@ try {
     #Create .nuspec file
     $nuspecFilePath = (Join-Path $packageFolder 'manifest.nuspec')
     $nuspec.Save($nuspecFilePath)
-
-    $NugetItems = Get-ChildItem $packageFolder -Recurse
-    Write-Host "$NugetItems"
 
     Write-Host "Download nuget CLI" -ForegroundColor Magenta
     Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile $outputDirectory/nuget.exe
