@@ -27,67 +27,67 @@ codeunit 4796 "Create Whse Orders"
     // Receiving Items with Inventory Put-Away
     procedure CreateOrdersScenario1()
     begin
-        CreatePurchaseOrder('107000', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Simple", WhseDemoDataSetup."Main Item No.", 100);
+        CreatePurchaseOrder('107000', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Basic", WhseDemoDataSetup."Main Item No.", 100);
     end;
 
     procedure CreateOrdersScenario2()
     begin
-        CreateSalesOrder('105000', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple", WhseDemoDataSetup."Main Item No.", 10);
+        CreateSalesOrder('105000', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Basic", WhseDemoDataSetup."Main Item No.", 10);
     end;
 
     procedure CreateOrdersScenario3()
     begin
-        CreatePurchaseOrder('107001', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 20);
+        CreatePurchaseOrder('107001', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 20);
     end;
 
     procedure CreateOrdersScenario4()
     begin
-        CreatePurchaseOrder('107002', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 10);
-        CreatePurchaseOrder('107003', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 20);
-        CreatePurchaseOrder('107004', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 30);
-        CreatePurchaseOrder('107005', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 40);
+        CreatePurchaseOrder('107002', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 10);
+        CreatePurchaseOrder('107003', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 20);
+        CreatePurchaseOrder('107004', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 30);
+        CreatePurchaseOrder('107005', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 40);
     end;
 
     procedure CreateOrdersScenario5()
     begin
-        CreateSalesOrder('105001', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 10);
+        CreateSalesOrder('105001', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 10);
     end;
 
     procedure CreateOrdersScenario6()
     begin
-        CreateSalesOrder('105002', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 10);
-        CreateSalesOrder('105003', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 10);
-        CreateSalesOrder('105004', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 10);
-        CreateSalesOrder('105005', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Basic Logistics", WhseDemoDataSetup."Main Item No.", 20);
+        CreateSalesOrder('105002', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 10);
+        CreateSalesOrder('105003', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 10);
+        CreateSalesOrder('105004', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 10);
+        CreateSalesOrder('105005', WhseDemoDataSetup."S. Customer No.", WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Main Item No.", 20);
     end;
 
     procedure CreateOrdersScenario7()
     begin
-        CreatePurchaseOrder('107006', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Complex Item No.", 10, 'BAG');
-        CreatePurchaseOrder('107007', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Complex Item No.", 15, 'BAG');
+        CreatePurchaseOrder('107006', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 10, 'BAG');
+        CreatePurchaseOrder('107007', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 15, 'BAG');
     end;
 
     procedure CreateOrdersScenario8()
     begin
-        CreatePurchaseOrder('107008', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Complex Item No.", 20, 'BAG');
-        CreatePurchaseOrder('107009', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Complex Item No.", 10, 'PALLET');
+        CreatePurchaseOrder('107008', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20, 'BAG');
+        CreatePurchaseOrder('107009', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 10, 'PALLET');
     end;
 
     procedure CreateOrdersScenario9()
     begin
-        CreatePurchaseOrder('107010', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Complex Item No.", 10, 'PALLET');
+        CreatePurchaseOrder('107010', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 10, 'PALLET');
     end;
 
     procedure CreateOrdersScenario10()
     begin
-        CreateSalesOrder('105006', WhseDemoDataSetup."L. Customer No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Complex Item No.", 20);
-        CreateSalesOrder('105007', WhseDemoDataSetup."L. Customer No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Complex Item No.", 20);
+        CreateSalesOrder('105006', WhseDemoDataSetup."L. Customer No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20);
+        CreateSalesOrder('105007', WhseDemoDataSetup."L. Customer No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20);
     end;
 
     procedure CreateOrdersScenario11()
     begin
-        CreatePurchaseOrder('107011', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Complex Item No.", 20, 'BAG');
-        CreateSalesOrder('105008', WhseDemoDataSetup."L. Customer No.", WhseDemoDataSetup."Location Directed", WhseDemoDataSetup."Complex Item No.", 20);
+        CreatePurchaseOrder('107011', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20, 'BAG');
+        CreateSalesOrder('105008', WhseDemoDataSetup."L. Customer No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20);
     end;
 
     var

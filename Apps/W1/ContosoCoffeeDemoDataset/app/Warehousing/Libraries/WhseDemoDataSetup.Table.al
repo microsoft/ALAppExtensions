@@ -155,23 +155,23 @@ table 4763 "Whse Demo Data Setup"
             TableRelation = Item;
             ValidateTableRelation = false;
         }
-        field(70; "Location Simple"; Code[20])
+        field(70; "Location Basic"; Code[20])
         {
-            Caption = 'Location Simple';
+            Caption = 'Location Basic';
             DataClassification = CustomerContent;
             TableRelation = Location;
             ValidateTableRelation = false;
         }
-        field(80; "Location Basic Logistics"; Code[20])
+        field(80; "Location Simple Logistics"; Code[20])
         {
-            Caption = 'Location Basic Logistics';
+            Caption = 'Location Simple Logistics';
             DataClassification = CustomerContent;
             TableRelation = Location;
             ValidateTableRelation = false;
         }
-        field(90; "Location Directed"; Code[20])
+        field(90; "Location Advanced Logistics"; Code[20])
         {
-            Caption = 'Location Directed';
+            Caption = 'Location Advanced Logistics';
             DataClassification = CustomerContent;
             TableRelation = Location;
             ValidateTableRelation = false;

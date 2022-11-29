@@ -28,17 +28,17 @@ page 4761 "Create Contoso Whse Demo Data"
             }
             group(Locations)
             {
-                field("Location Basic Logistics"; Rec."Location Basic Logistics")
+                field("Location Basic Logistics"; Rec."Location Simple Logistics")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the Code of the Location for the Basic Location scenarios.';
                 }
-                field("Location Simple"; Rec."Location Simple")
+                field("Location Simple"; Rec."Location Basic")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the Code of the Location for the Basic Logistics scenarios.';
                 }
-                field("Location Directed"; Rec."Location Directed")
+                field("Location Directed"; Rec."Location Advanced Logistics")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the Code of the Location for the Advanced Logistics scenarios.';

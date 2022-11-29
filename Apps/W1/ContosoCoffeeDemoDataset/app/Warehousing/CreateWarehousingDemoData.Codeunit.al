@@ -67,9 +67,9 @@ codeunit 4799 "Create Warehousing Demo Data"
         WhseDemoDataSetup."Vend. Gen. Bus. Posting Group" := XVENDORGBPGTok;
         WhseDemoDataSetup."Main Item No." := XMAINITEMTok;
         WhseDemoDataSetup."Complex Item No." := XCOMPLEXITEMTok;
-        WhseDemoDataSetup."Location Simple" := XLOCSIMPLETok;
-        WhseDemoDataSetup."Location Basic Logistics" := XLOCBASICLOGTok;
-        WhseDemoDataSetup."Location Directed" := XLOCDIRECTEDTok;
+        WhseDemoDataSetup."Location Basic" := XLOCSIMPLETok;
+        WhseDemoDataSetup."Location Simple Logistics" := XLOCBASICLOGTok;
+        WhseDemoDataSetup."Location Advanced Logistics" := XLOCDIRECTEDTok;
 
         WhseDemoDataSetup.Insert();
 
