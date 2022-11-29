@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Provides the tools needed to manage web services.",
     "description":  "Provides methods for creating and modifying web services, accessing web service URLs, getting and setting web service filters and clauses.",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,7 +15,7 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          }
                      ],
     "screenshots":  [

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Barcode providers for Dynamics 365 Business Central",
     "description":  "Barcode encoders for easy integration of barcodes in Dynamics 365 Business Central.",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -16,19 +16,19 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "b185fd4a-677b-48d3-a701-768de7563df0",
                              "name":  "Regex",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                              "name":  "BLOB Storage",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          }
                      ],
     "target":  "OnPrem",

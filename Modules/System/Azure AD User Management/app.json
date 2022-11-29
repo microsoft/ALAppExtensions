@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Manages Azure Active Directory users in Business Central.",
     "description":  "Manages the creation and synchronization of Azure Active Directory users in Business Central.",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,73 +15,73 @@
                              "id":  "2673d810-273e-402f-9093-2eaef7e03b83",
                              "name":  "Environment Information",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "959630b2-01c5-48d8-a477-d6d40da855fb",
                              "name":  "User Login Times",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "7f3d7c69-3ffc-4201-b2b9-9f7cd56f7c50",
                              "name":  "Client Type Management",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "publisher":  "Microsoft",
                              "name":  "DotNet Aliases",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "f2cc2ef8-949f-47d1-85b8-10bd6f8bc61c",
                              "publisher":  "Microsoft",
                              "name":  "Azure AD User",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "0b52d89c-c2f9-4660-a466-02e07bb06742",
                              "publisher":  "Microsoft",
                              "name":  "Azure AD Graph",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "c1d53fcd-ec4f-4ac5-ba49-af91a1dea38c",
                              "publisher":  "Microsoft",
                              "name":  "Azure AD Plan",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "5c36f279-480c-451b-b513-c1af8cfb0744",
                              "name":  "Language",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "a4584a53-9345-458a-af20-d1df2fab7bd8",
                              "publisher":  "Microsoft",
                              "name":  "Confirm Management",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "c56e3ef4-7ab0-4636-ae87-013a62f12213",
                              "publisher":  "Microsoft",
                              "name":  "User Permissions",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "c64d75f0-e9f1-4d0f-9949-cd453b9b1466",
                              "publisher":  "Microsoft",
                              "name":  "Guided Experience",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "de35f591-7216-4e60-8be1-1911d71a7fc2",
                              "name":  "Telemetry",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          }
                      ],
     "screenshots":  [

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Gets settings from the server.",
     "description":  "Exposes methods that get settings from the server configuration file. For example, it checks whether the Excel add-in is installed, or whether online services can be installed on the server.",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",

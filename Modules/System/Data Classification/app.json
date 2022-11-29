@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Handles data classification for objects that might contain sensitive information.",
     "description":  "Helps you comply with data privacy standards by enabling you to classify data for objects that might contain sensitive information. Classifications for data sensitivity include normal, personal, company confidential, and sensitive.",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",

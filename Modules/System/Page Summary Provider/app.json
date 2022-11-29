@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Provides a summary of an AL page",
     "description":  "Contains functionality for providing a summary for a given page.",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -15,13 +15,13 @@
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "0846d207-5dec-4c1b-afd8-6a25e1e14b9d",
                              "name":  "Base64 Convert",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          }
                      ],
     "internalsVisibleTo":  [

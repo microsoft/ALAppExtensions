@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Clean up data when copying environments",
     "description":  "Provides events to subscribe to in order to clean up data when copying an environment.",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
