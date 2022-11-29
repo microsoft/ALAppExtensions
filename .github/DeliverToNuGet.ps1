@@ -14,7 +14,7 @@ function GenerateNuspec
     $Owners
 )
 {
-    [xml] $template = Get-Content "$PSScriptRoot\.github\ALAppExtensions.nuspec"
+    [xml] $template = Get-Content "$PSScriptRoot\ALAppExtensions.nuspec"
 
     $template.package.metadata.id = $PackageId
     $template.package.metadata.version = $Version
