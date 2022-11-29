@@ -33,16 +33,16 @@ codeunit 4788 "Create Whse Posting Setup"
     begin
         WhseDemoAccount.ReturnAccountKey(true);
 
-        InsertGLAccount(WhseDemoAccount.Finished(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet", 0, '', 0, '', '', false);
-        InsertGLAccount(WhseDemoAccount.FinishedInterim(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet", 0, '', 0, '', '', false);
-        InsertGLAccount(WhseDemoAccount.FinishedWIP(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet", 0, '', 0, '', '', false);
-        InsertGLAccount(WhseDemoAccount.CustDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet", 0, '', 0, '', '', false);
-        InsertGLAccount(WhseDemoAccount.VendDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet", 0, '', 0, '', '', false);
-        InsertGLAccount(WhseDemoAccount.SalesDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement", 0, '', 0, '', '', false);
-        InsertGLAccount(WhseDemoAccount.PurchDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement", 0, '', 0, '', '', false);
-        InsertGLAccount(WhseDemoAccount.CostOfRetailSold(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement", 0, '', 0, '', '', false);
-        InsertGLAccount(WhseDemoAccount.SalesVAT(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet", 0, '', 0, '', '', false);
-        InsertGLAccount(WhseDemoAccount.PurchaseVAT(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet", 0, '', 0, '', '', false);
+        InsertGLAccount(WhseDemoAccount.Finished(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
+        InsertGLAccount(WhseDemoAccount.FinishedInterim(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
+        InsertGLAccount(WhseDemoAccount.FinishedWIP(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
+        InsertGLAccount(WhseDemoAccount.CustDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
+        InsertGLAccount(WhseDemoAccount.VendDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
+        InsertGLAccount(WhseDemoAccount.SalesDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
+        InsertGLAccount(WhseDemoAccount.PurchDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
+        InsertGLAccount(WhseDemoAccount.CostOfRetailSold(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
+        InsertGLAccount(WhseDemoAccount.SalesVAT(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
+        InsertGLAccount(WhseDemoAccount.PurchaseVAT(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
 
         WhseDemoAccount.ReturnAccountKey(false);
         GLAccountIndent.Indent();
@@ -80,7 +80,7 @@ codeunit 4788 "Create Whse Posting Setup"
             InsertVATPostingSetup(WhseDemoDataSetup."Domestic Code", WhseDemoDataSetup."Retail Code");
     end;
 
-    local procedure InsertGLAccount("No.": Code[20]; AccountType: Enum "G/L Account Type"; "Income/Balance": Enum "G/L Account Income/Balance"; NoOfBlankLines: Integer; Totaling: Text[30]; GenPostingType: Option; GenBusPostingGroup: Code[20]; GenProdPostingGroup: Code[20]; "Direct Posting": Boolean)
+    local procedure InsertGLAccount("No.": Code[20]; AccountType: Enum "G/L Account Type"; "Income/Balance": Enum "G/L Account Income/Balance")
     var
         GLAccount: Record "G/L Account";
     begin
@@ -93,15 +93,7 @@ codeunit 4788 "Create Whse Posting Setup"
         GLAccount.Validate("No.", WhseDemoAccount."Account Value");
         GLAccount.Validate(Name, WhseDemoAccount."Account Description");
         GLAccount.Validate("Account Type", AccountType);
-        if GLAccount."Account Type" = GLAccount."Account Type"::Posting then
-            GLAccount.Validate("Direct Posting", "Direct Posting");
         GLAccount.Validate("Income/Balance", "Income/Balance");
-        GLAccount.Validate("No. of Blank Lines", NoOfBlankLines);
-        if Totaling <> '' then
-            GLAccount.Validate(Totaling, Totaling);
-        GLAccount.Validate("Gen. Posting Type", GenPostingType);
-        GLAccount.Validate("Gen. Bus. Posting Group", GenBusPostingGroup);
-        GLAccount.Validate("Gen. Prod. Posting Group", GenProdPostingGroup);
         GLAccount.Insert();
     end;
 
@@ -193,38 +185,15 @@ codeunit 4788 "Create Whse Posting Setup"
         AutomaticCostPosting: Boolean;
         LocationMandatory: Boolean;
         ItemNos: Code[20];
-        AutomaticCostAdjustment: Enum "Automatic Cost Adjustment Type";
-        PreventNegativeInventory: Boolean;
-        VariantMandatoryifExists: Boolean;
-        SkipPrompttoCreateItem: Boolean;
         CopyItemDescrtoEntries: Boolean;
-        InvtCostJnlTemplateName: Code[10];
-        InvtCostJnlBatchName: Code[10];
         TransferOrderNos: Code[20];
         PostedTransferShptNos: Code[20];
         PostedTransferRcptNos: Code[20];
-        CopyCommentsOrdertoShpt: Boolean;
-        CopyCommentsOrdertoRcpt: Boolean;
-        NonstockItemNos: Code[20];
-        OutboundWhseHandlingTime: DateFormula;
-        InboundWhseHandlingTime: DateFormula;
-        ExpectedCostPostingtoGL: Boolean;
-        DefaultCostingMethod: Enum "Costing Method";
-        AverageCostCalcType: Enum "Average Cost Calculation Type";
-        AverageCostPeriod: Option;
-        AllowInvtDocReservation: Boolean;
         InvtReceiptNos: Code[20];
         PostedInvtReceiptNos: Code[20];
         InvtShipmentNos: Code[20];
         PostedInvtShipmentNos: Code[20];
-        CopyCommentstoInvtDoc: Boolean;
-        DirectTransferPosting: Option;
         PostedDirectTransNos: Code[20];
-        PackageNos: Code[20];
-        PhysInvtOrderNos: Code[20];
-        PostedPhysInvtOrderNos: Code[20];
-        PackageCaption: Text[30];
-        ItemGroupDimensionCode: Code[20];
         InventoryPutawayNos: Code[20];
         InventoryPickNos: Code[20];
         PostedInvtPutawayNos: Code[20];
@@ -238,6 +207,10 @@ codeunit 4788 "Create Whse Posting Setup"
     begin
         if InventorySetup.Get() then begin
             // Validate that key Number Series fields are populated, often required in CRONUS SaaS Eval Data
+            InventorySetup."Item Nos." := CheckNoSeriesSetup(InventorySetup."Item Nos.", ItemNos, 'Items', '1000', '9999');
+            InventorySetup."Transfer Order Nos." := CheckNoSeriesSetup(InventorySetup."Transfer Order Nos.", TransferOrderNos, 'Transfer Order', '1001', '9999');
+            InventorySetup."Posted Transfer Shpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Shpt. Nos.", PostedTransferShptNos, 'Transfer Shipment', '108001', '108999');
+            InventorySetup."Posted Transfer Rcpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Rcpt. Nos.", PostedTransferRcptNos, 'Transfer Receipt', '109000', '109999');
             InventorySetup."Inventory Pick Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Pick Nos.", InventoryPickNos, 'Inventory Pick', 'IPI000001', 'IPI999999');
             InventorySetup."Posted Invt. Pick Nos." := CheckNoSeriesSetup(InventorySetup."Posted Invt. Pick Nos.", PostedInvtPickNos, 'Posted Invt. Pick', 'PPI000001', 'PPI999999');
             InventorySetup."Inventory Put-Away Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Put-Away Nos.", InventoryPutAwayNos, 'Inventory Put-Away', 'IPI000001', 'IPU999999');
@@ -249,48 +222,19 @@ codeunit 4788 "Create Whse Posting Setup"
         end else begin
             InventorySetup.Init();
             InventorySetup."Primary Key" := PrimaryKey;
-            InventorySetup."Automatic Cost Posting" := AutomaticCostPosting;
             InventorySetup."Location Mandatory" := LocationMandatory;
-            InventorySetup."Item Nos." := ItemNos;
-            InventorySetup."Automatic Cost Adjustment" := AutomaticCostAdjustment;
-            InventorySetup."Prevent Negative Inventory" := PreventNegativeInventory;
-            InventorySetup."Variant Mandatory if Exists" := VariantMandatoryifExists;
-            InventorySetup."Skip Prompt to Create Item" := SkipPrompttoCreateItem;
             InventorySetup."Copy Item Descr. to Entries" := CopyItemDescrtoEntries;
-            InventorySetup."Invt. Cost Jnl. Template Name" := InvtCostJnlTemplateName;
-            InventorySetup."Invt. Cost Jnl. Batch Name" := InvtCostJnlBatchName;
-            InventorySetup."Transfer Order Nos." := TransferOrderNos;
-            InventorySetup."Posted Transfer Shpt. Nos." := PostedTransferShptNos;
-            InventorySetup."Posted Transfer Rcpt. Nos." := PostedTransferRcptNos;
-            InventorySetup."Copy Comments Order to Shpt." := CopyCommentsOrdertoShpt;
-            InventorySetup."Copy Comments Order to Rcpt." := CopyCommentsOrdertoRcpt;
-            InventorySetup."Nonstock Item Nos." := NonstockItemNos;
-            InventorySetup."Outbound Whse. Handling Time" := OutboundWhseHandlingTime;
-            InventorySetup."Inbound Whse. Handling Time" := InboundWhseHandlingTime;
-            InventorySetup."Expected Cost Posting to G/L" := ExpectedCostPostingtoGL;
-            InventorySetup."Default Costing Method" := DefaultCostingMethod;
-            InventorySetup."Average Cost Calc. Type" := AverageCostCalcType;
-            InventorySetup."Average Cost Period" := AverageCostPeriod;
-            InventorySetup."Allow Invt. Doc. Reservation" := AllowInvtDocReservation;
-            InventorySetup."Invt. Receipt Nos." := InvtReceiptNos;
-            InventorySetup."Posted Invt. Receipt Nos." := PostedInvtReceiptNos;
-            InventorySetup."Invt. Shipment Nos." := InvtShipmentNos;
-            InventorySetup."Posted Invt. Shipment Nos." := PostedInvtShipmentNos;
-            InventorySetup."Copy Comments to Invt. Doc." := CopyCommentstoInvtDoc;
-            InventorySetup."Direct Transfer Posting" := DirectTransferPosting;
-            InventorySetup."Posted Direct Trans. Nos." := PostedDirectTransNos;
-            InventorySetup."Package Nos." := PackageNos;
-            InventorySetup."Phys. Invt. Order Nos." := PhysInvtOrderNos;
-            InventorySetup."Posted Phys. Invt. Order Nos." := PostedPhysInvtOrderNos;
-            InventorySetup."Package Caption" := PackageCaption;
-            InventorySetup."Item Group Dimension Code" := ItemGroupDimensionCode;
-            InventorySetup."Inventory Put-away Nos." := InventoryPutawayNos;
-            InventorySetup."Inventory Pick Nos." := InventoryPickNos;
-            InventorySetup."Posted Invt. Put-away Nos." := PostedInvtPutawayNos;
-            InventorySetup."Posted Invt. Pick Nos." := PostedInvtPickNos;
-            InventorySetup."Inventory Movement Nos." := InventoryMovementNos;
-            InventorySetup."Registered Invt. Movement Nos." := RegisteredInvtMovementNos;
-            InventorySetup."Internal Movement Nos." := InternalMovementNos;
+            InventorySetup."Item Nos." := CheckNoSeriesSetup(InventorySetup."Item Nos.", ItemNos, 'Items', '1000', '9999');
+            InventorySetup."Transfer Order Nos." := CheckNoSeriesSetup(InventorySetup."Transfer Order Nos.", TransferOrderNos, 'Transfer Order', '1001', '9999');
+            InventorySetup."Posted Transfer Shpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Shpt. Nos.", PostedTransferShptNos, 'Transfer Shipment', '108001', '108999');
+            InventorySetup."Posted Transfer Rcpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Rcpt. Nos.", PostedTransferRcptNos, 'Transfer Receipt', '109000', '109999');
+            InventorySetup."Inventory Pick Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Pick Nos.", InventoryPickNos, 'Inventory Pick', 'IPI000001', 'IPI999999');
+            InventorySetup."Posted Invt. Pick Nos." := CheckNoSeriesSetup(InventorySetup."Posted Invt. Pick Nos.", PostedInvtPickNos, 'Posted Invt. Pick', 'PPI000001', 'PPI999999');
+            InventorySetup."Inventory Put-Away Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Put-Away Nos.", InventoryPutAwayNos, 'Inventory Put-Away', 'IPI000001', 'IPU999999');
+            InventorySetup."Posted Invt. Put-Away Nos." := CheckNoSeriesSetup(InventorySetup."Posted Invt. Put-Away Nos.", PostedInvtPutAwayNos, 'Posted Invt. Put-Away', 'PPU000001', 'PPI999999');
+            InventorySetup."Inventory Movement Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Movement Nos.", InventoryMovementNos, 'Inventory Movement', 'IM000001', 'IM999999');
+            InventorySetup."Registered Invt. Movement Nos." := CheckNoSeriesSetup(InventorySetup."Registered Invt. Movement Nos.", RegisteredInvtMovementNos, 'Reg. Inventory Movement', 'RIM000001', 'RIM999999');
+            InventorySetup."Internal Movement Nos." := CheckNoSeriesSetup(InventorySetup."Internal Movement Nos.", InternalMovementNos, 'Internal Movement', 'RINTM000001', 'RINTM999999');
             InventorySetup.Insert(DoInsertTriggers);
         end;
     end;
@@ -380,12 +324,12 @@ codeunit 4788 "Create Whse Posting Setup"
         CreateInventoryPostingGroup('RAW MAT', 'Raw materials');
         CreateInventoryPostingGroup('RESALE', 'Resale items');
 
-        CreateInventorySetup('', false, false, 'ITEM1', Enum::"Automatic Cost Adjustment Type"::Never, false, false, false, false, '', '', 'T-ORD', 'T-SHPT', 'T-RCPT', true, true, 'NS-ITEM', TextAsDateFormula(''), TextAsDateFormula(''), false, Enum::"Costing Method"::FIFO, Enum::"Average Cost Calculation Type"::"Item & Location & Variant", 1, false, 'I-RCPT', 'I-RCPT+', 'I-SHPT', 'I-SHPT+', false, 0, 'PDIRTRANS', '', 'PHYS-INV', 'PHYS-INV+', '', '', 'I-PUT', 'I-PICK', 'I-PUT+', 'I-PICK+', 'I-MOVEMENT', 'I-MOVE+', 'INT-MOVE');
+        CreateInventorySetup('', false, false, 'ITEM1', false, 'T-ORD', 'T-SHPT', 'T-RCPT', 'I-RCPT', 'I-RCPT+', 'I-SHPT', 'I-SHPT+', 'PDIRTRANS', 'I-PUT', 'I-PICK', 'I-PUT+', 'I-PICK+', 'I-MOVEMENT', 'I-MOVE+', 'INT-MOVE');
 
         CreateInventoryPostingSetup('', 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
         CreateInventoryPostingSetup('', 'RAW MAT', '2130', '', false, '2131', '2140', '7890', '7891', '7894', '7893', '7892');
         CreateInventoryPostingSetup('', 'RESALE', '2110', '', false, '2111', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup('SILVER', 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Simple", 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
         CreateInventoryPostingSetup('SILVER', 'RAW MAT', '2130', '', false, '2131', '2140', '7890', '7891', '7894', '7893', '7892');
         CreateInventoryPostingSetup('SILVER', 'RESALE', '2110', '', false, '2111', '2140', '7890', '7891', '7894', '7893', '7892');
         CreateInventoryPostingSetup('WHITE', 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
