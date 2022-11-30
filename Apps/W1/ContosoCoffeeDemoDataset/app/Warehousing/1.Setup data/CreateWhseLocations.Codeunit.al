@@ -3,17 +3,14 @@ codeunit 4787 "Create Whse Locations"
     Permissions = tabledata "Location" = rim;
 
     var
+        WhseDemoDataSetup: Record "Whse Demo Data Setup";
         DoInsertTriggers: Boolean;
 
     trigger OnRun()
     begin
-        CreateCollection(false);
+        WhseDemoDataSetup.Get();
+        CreateLocations(false);
         AddUserAsWarehouseEmployee(UserId);
-    end;
-
-    local procedure TextAsGuid(InputText: Text) OutputGuid: Guid
-    begin
-        Evaluate(OutputGuid, InputText);
     end;
 
     local procedure TextAsDateFormula(InputText: Text) OutputDateFormula: DateFormula
@@ -24,13 +21,6 @@ codeunit 4787 "Create Whse Locations"
     local procedure CreateLocation(
         Code: Code[10];
         Name: Text[100];
-        DefaultBinCode: Code[20];
-        NameTwo: Text[50];
-        Address: Text[100];
-        AddressTwo: Text[50];
-        City: Text[30];
-        PostCode: Code[20];
-        CountryRegionCode: Code[10];
         UseAsInTransit: Boolean;
         RequirePutaway: Boolean;
         RequirePick: Boolean;
@@ -41,16 +31,10 @@ codeunit 4787 "Create Whse Locations"
         BinMandatory: Boolean;
         DirectedPutawayandPick: Boolean;
         DefaultBinSelection: Enum "Location Default Bin Selection";
-        OutboundWhseHandlingTime: DateFormula;
-        InboundWhseHandlingTime: DateFormula;
         PutawayTemplateCode: Code[10];
-        UsePutawayWorksheet: Boolean;
-        PickAccordingtoFEFO: Boolean;
         AllowBreakbulk: Boolean;
         BinCapacityPolicy: Option;
         AdjustmentBinCode: Code[20];
-        AlwaysCreatePutawayLine: Boolean;
-        AlwaysCreatePickLine: Boolean;
         ReceiptBinCode: Code[20];
         ShipmentBinCode: Code[20];
         CrossDockBinCode: Code[20];
@@ -67,13 +51,6 @@ codeunit 4787 "Create Whse Locations"
         Location.Init();
         Location."Code" := Code;
         Location."Name" := Name;
-        Location."Default Bin Code" := DefaultBinCode;
-        Location."Name 2" := NameTwo;
-        Location."Address" := Address;
-        Location."Address 2" := AddressTwo;
-        Location."City" := City;
-        Location."Post Code" := PostCode;
-        Location."Country/Region Code" := CountryRegionCode;
         Location."Use As In-Transit" := UseAsInTransit;
         Location."Require Put-away" := RequirePutaway;
         Location."Require Pick" := RequirePick;
@@ -84,16 +61,10 @@ codeunit 4787 "Create Whse Locations"
         Location."Bin Mandatory" := BinMandatory;
         Location."Directed Put-away and Pick" := DirectedPutawayandPick;
         Location."Default Bin Selection" := DefaultBinSelection;
-        Location."Outbound Whse. Handling Time" := OutboundWhseHandlingTime;
-        Location."Inbound Whse. Handling Time" := InboundWhseHandlingTime;
         Location."Put-away Template Code" := PutawayTemplateCode;
-        Location."Use Put-away Worksheet" := UsePutawayWorksheet;
-        Location."Pick According to FEFO" := PickAccordingtoFEFO;
         Location."Allow Breakbulk" := AllowBreakbulk;
         Location."Bin Capacity Policy" := BinCapacityPolicy;
         Location."Adjustment Bin Code" := AdjustmentBinCode;
-        Location."Always Create Put-away Line" := AlwaysCreatePutawayLine;
-        Location."Always Create Pick Line" := AlwaysCreatePickLine;
         Location."Receipt Bin Code" := ReceiptBinCode;
         Location."Shipment Bin Code" := ShipmentBinCode;
         Location."Cross-Dock Bin Code" := CrossDockBinCode;
@@ -104,35 +75,35 @@ codeunit 4787 "Create Whse Locations"
         Location.Insert(DoInsertTriggers);
     end;
 
-    local procedure CreateCollection(ShouldRunInsertTriggers: Boolean)
+    local procedure CreateLocations(ShouldRunInsertTriggers: Boolean)
     begin
         DoInsertTriggers := ShouldRunInsertTriggers;
-        CreateLocation('SILVER', 'Silver Warehouse', '', '', 'Pier 10, 2', '', 'West End Lane', 'WC1 2GS', 'GB', false, true, true, TextAsDateFormula(''), true, false, false, true, false, Enum::"Location Default Bin Selection"::"Fixed Bin", TextAsDateFormula(''), TextAsDateFormula(''), '', false, false, false, 0, '', false, false, '', '', '', '', '', '', false);
-        CreateLocation('WHITE', 'White Warehouse', '', '', 'Merrily Grove Avenue 6, 2', '', 'West End Lane', 'WC1 2GS', 'GB', false, true, true, TextAsDateFormula(''), true, true, true, true, true, Enum::"Location Default Bin Selection"::" ", TextAsDateFormula(''), TextAsDateFormula(''), 'STD', false, false, true, 2, 'W-11-0001', false, false, 'W-08-0001', 'W-09-0001', 'W-14-0001', 'W-07-0002', 'W-07-0003', '', true);
-        CreateLocation('YELLOW', 'Yellow Warehouse', '', '', 'Main Bristol Street, 10', '', 'Bristol', 'BS3 6KL', 'GB', false, true, true, TextAsDateFormula(''), false, true, true, false, false, Enum::"Location Default Bin Selection"::" ", TextAsDateFormula('1D'), TextAsDateFormula('1D'), '', false, false, false, 0, '', false, false, '', '', '', '', '', '', false);
+        CreateLocation(WhseDemoDataSetup."Location Basic", 'Silver Warehouse', false, true, true, TextAsDateFormula(''), true, false, false, true, false, Enum::"Location Default Bin Selection"::"Fixed Bin", '', false, 0, '', '', '', '', '', '', '', false);
+        CreateLocation(WhseDemoDataSetup."Location Simple Logistics", 'Yellow Warehouse', false, true, true, TextAsDateFormula(''), false, true, true, false, false, Enum::"Location Default Bin Selection"::" ", '', false, 0, '', '', '', '', '', '', '', false);
+        CreateLocation(WhseDemoDataSetup."Location Advanced Logistics", 'White Warehouse', false, true, true, TextAsDateFormula(''), true, true, true, true, true, Enum::"Location Default Bin Selection"::" ", 'STD', true, 2, 'W-11-0001', 'W-08-0001', 'W-09-0001', 'W-14-0001', 'W-07-0002', 'W-07-0003', '', true);
     end;
 
     local procedure AddUserAsWarehouseEmployee(UserId: Text)
     var
         WarehouseEmployee: Record "Warehouse Employee";
     begin
-        if not WarehouseEmployee.Get(UserId, 'SILVER') then begin
+        if not WarehouseEmployee.Get(UserId, WhseDemoDataSetup."Location Basic") then begin
             WarehouseEmployee.Init();
             WarehouseEmployee."User ID" := UserId;
-            WarehouseEmployee."Location Code" := 'SILVER';
+            WarehouseEmployee."Location Code" := WhseDemoDataSetup."Location Basic";
             WarehouseEmployee.Default := true;
             WarehouseEmployee.Insert(true);
         end;
-        if not WarehouseEmployee.Get(UserId, 'YELLOW') then begin
+        if not WarehouseEmployee.Get(UserId, WhseDemoDataSetup."Location Simple Logistics") then begin
             WarehouseEmployee.Init();
             WarehouseEmployee."User ID" := UserId;
-            WarehouseEmployee."Location Code" := 'YELLOW';
+            WarehouseEmployee."Location Code" := WhseDemoDataSetup."Location Simple Logistics";
             WarehouseEmployee.Insert(true);
         end;
-        if not WarehouseEmployee.Get(UserId, 'WHITE') then begin
+        if not WarehouseEmployee.Get(UserId, WhseDemoDataSetup."Location Advanced Logistics") then begin
             WarehouseEmployee.Init();
             WarehouseEmployee."User ID" := UserId;
-            WarehouseEmployee."Location Code" := 'WHITE';
+            WarehouseEmployee."Location Code" := WhseDemoDataSetup."Location Advanced Logistics";
             WarehouseEmployee.Insert(true);
         end;
     end;
