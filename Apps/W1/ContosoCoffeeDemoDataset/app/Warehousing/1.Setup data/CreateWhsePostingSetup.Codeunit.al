@@ -15,6 +15,91 @@ codeunit 4788 "Create Whse Posting Setup"
         XRetailTxt: Label 'Retail Items', MaxLength = 50;
         XVATSetupDescTok: Label 'Setup for %1 / %2', MaxLength = 100, Comment = '%1 is the VAT Bus. Posting Group Code, %2 is the VAT Prod. Posting Group Code';
         XVATIdentifierTok: Label 'VAT25', MaxLength = 50;
+        XSeriesItemNosTok: Label 'ITEM1', MaxLength = 20;
+        XSeriesItemNosDescTok: Label 'Items', MaxLength = 100;
+        XSeriesItemNosStartTok: Label '1000', MaxLength = 20;
+        XSeriesItemNosEndTok: Label '9999', MaxLength = 20;
+        XSeriesTransferOrderNosTok: Label 'T-ORD', MaxLength = 20;
+        XSeriesTransferOrderNosDescTok: Label 'Transfer Order', MaxLength = 100;
+        XSeriesTransferOrderNosStartTok: Label '1001', MaxLength = 20;
+        XSeriesTransferOrderNosEndTok: Label '9999', MaxLength = 20;
+        XSeriesPostedTransferShptNosTok: Label 'T-SHIP', MaxLength = 20;
+        XSeriesPostedTransferShptNosDescTok: Label 'Transfer Shipment', MaxLength = 100;
+        XSeriesPostedTransferShptNosStartTok: Label '108001', MaxLength = 20;
+        XSeriesPostedTransferShptNosEndTok: Label '108999', MaxLength = 20;
+        XSeriesPostedTransferRcptNosTok: Label 'T-RCPT', MaxLength = 20;
+        XSeriesPostedTransferRcptNosDescTok: Label 'Transfer Receipt', MaxLength = 100;
+        XSeriesPostedTransferRcptNosStartTok: Label '109000', MaxLength = 20;
+        XSeriesPostedTransferRcptNosEndTok: Label '109999', MaxLength = 20;
+        XSeriesInventoryPickNosTok: Label 'I-PICK', MaxLength = 20;
+        XSeriesInventoryPickNosDescTok: Label 'Inventory Pick', MaxLength = 100;
+        XSeriesInventoryPickNosStartTok: Label 'IPI000001', MaxLength = 20;
+        XSeriesInventoryPickNosEndTok: Label 'IPI999999', MaxLength = 20;
+        XSeriesPostedInvtPickNosTok: Label 'I-PICK+', MaxLength = 20;
+        XSeriesPostedInvtPickNosDescTok: Label 'Posted Invt. Pick', MaxLength = 100;
+        XSeriesPostedInvtPickNosStartTok: Label 'PPI000001', MaxLength = 20;
+        XSeriesPostedInvtPickNosEndTok: Label 'PPI999999', MaxLength = 20;
+        XSeriesInventoryPutAwayNosTok: Label 'I-PUT', MaxLength = 20;
+        XSeriesInventoryPutAwayNosDescTok: Label 'Inventory Put-Away', MaxLength = 100;
+        XSeriesInventoryPutAwayNosStartTok: Label 'IPI000001', MaxLength = 20;
+        XSeriesInventoryPutAwayNosEndTok: Label 'IPU999999', MaxLength = 20;
+        XSeriesPostedInvtPutAwayNosTok: Label 'I-PUT+', MaxLength = 20;
+        XSeriesPostedInvtPutAwayNosDescTok: Label 'Posted Invt. Put-Away', MaxLength = 100;
+        XSeriesPostedInvtPutAwayNosStartTok: Label 'PPU000001', MaxLength = 20;
+        XSeriesPostedInvtPutAwayNosEndTok: Label 'PPI999999', MaxLength = 20;
+        XSeriesInventoryMovementNosTok: Label 'I-MOVE', MaxLength = 20;
+        XSeriesInventoryMovementNosDescTok: Label 'Inventory Movement', MaxLength = 100;
+        XSeriesInventoryMovementNosStartTok: Label 'IM000001', MaxLength = 20;
+        XSeriesInventoryMovementNosEndTok: Label 'IM999999', MaxLength = 20;
+        XSeriesRegisteredInvtMovementNosTok: Label 'I-MOVE+', MaxLength = 20;
+        XSeriesRegisteredInvtMovementNosDescTok: Label 'Reg. Inventory Movement', MaxLength = 100;
+        XSeriesRegisteredInvtMovementNosStartTok: Label 'RIM000001', MaxLength = 20;
+        XSeriesRegisteredInvtMovementNosEndTok: Label 'RIM999999', MaxLength = 20;
+        XSeriesInternalMovementNosTok: Label 'INT-MOVE', MaxLength = 20;
+        XSeriesInternalMovementNosDescTok: Label 'Internal Movement', MaxLength = 100;
+        XSeriesInternalMovementNosStartTok: Label 'RINTM000001', MaxLength = 20;
+        XSeriesInternalMovementNosEndTok: Label 'RINTM999999', MaxLength = 20;
+        XSeriesWhseReceiptNosTok: Label 'WMS-RCPT', MaxLength = 20;
+        XSeriesWhseReceiptNosDescTok: Label 'Whse. Receipt', MaxLength = 100;
+        XSeriesWhseReceiptNosStartTok: Label 'RE000001', MaxLength = 20;
+        XSeriesWhseReceiptNosEndTok: Label 'RE999999', MaxLength = 20;
+        XSeriesWhsePostedReceiptNosTok: Label 'WMS-RCPT+', MaxLength = 20;
+        XSeriesWhsePostedReceiptNosDescTok: Label 'Posted Whse. Receipt', MaxLength = 100;
+        XSeriesWhsePostedReceiptNosStartTok: Label 'R_000001', MaxLength = 20;
+        XSeriesWhsePostedReceiptNosEndTok: Label 'R_999999', MaxLength = 20;
+        XSeriesWhseShipNosTok: Label 'WMS-SHIP', MaxLength = 20;
+        XSeriesWhseShipNosDescTok: Label 'Whse. Ship', MaxLength = 100;
+        XSeriesWhseShipNosStartTok: Label 'SH000001', MaxLength = 20;
+        XSeriesWhseShipNosEndTok: Label 'SH999999', MaxLength = 20;
+        XSeriesWhsePostedShipNosTok: Label 'WMS-SHIP+', MaxLength = 20;
+        XSeriesWhsePostedShipNosDescTok: Label 'Posted Whse. Shpt.', MaxLength = 100;
+        XSeriesWhsePostedShipNosStartTok: Label 'S_000001', MaxLength = 20;
+        XSeriesWhsePostedShipNosEndTok: Label 'S_999999', MaxLength = 20;
+        XSeriesWhsePutAwayNosTok: Label 'WMS-PUT', MaxLength = 20;
+        XSeriesWhsePutAwayNosDescTok: Label 'Whse. Put-away', MaxLength = 100;
+        XSeriesWhsePutAwayNosStartTok: Label 'PU000001', MaxLength = 20;
+        XSeriesWhsePutAwayNosEndTok: Label 'PU999999', MaxLength = 20;
+        XSeriesWhseRegPutAwayNosTok: Label 'WMS-PUT-+', MaxLength = 20;
+        XSeriesWhseRegPutAwayNosDescTok: Label 'Registered Whse. Put-away', MaxLength = 100;
+        XSeriesWhseRegPutAwayNosStartTok: Label 'PU_000001', MaxLength = 20;
+        XSeriesWhseRegPutAwayNosEndTok: Label 'PU_999999', MaxLength = 20;
+        XSeriesWhsePickNosTok: Label 'WMS-PICK', MaxLength = 20;
+        XSeriesWhsePickNosDescTok: Label 'Whse. Pick', MaxLength = 100;
+        XSeriesWhsePickNosStartTok: Label 'PI000001', MaxLength = 20;
+        XSeriesWhsePickNosEndTok: Label 'PI999999', MaxLength = 20;
+        XSeriesWhseRegPickNosTok: Label 'WMS-PICK+', MaxLength = 20;
+        XSeriesWhseRegPickNosDescTok: Label 'Registered Whse. Put-away', MaxLength = 100;
+        XSeriesWhseRegPickNosStartTok: Label 'P_000001', MaxLength = 20;
+        XSeriesWhseRegPickNosEndTok: Label 'P_999999', MaxLength = 20;
+        XSeriesWhseMovementNosTok: Label 'WMS-MOV', MaxLength = 20;
+        XSeriesWhseMovementNosDescTok: Label 'Whse. Movement', MaxLength = 100;
+        XSeriesWhseMovementNosStartTok: Label 'WM000001', MaxLength = 20;
+        XSeriesWhseMovementNosEndTok: Label 'WM999999', MaxLength = 20;
+        XSeriesWhseRegMovementNosTok: Label 'WMS-MOVE+', MaxLength = 20;
+        XSeriesWhseRegMovementNosDescTok: Label 'Registered Whse. Movement', MaxLength = 100;
+        XSeriesWhseRegMovementNosStartTok: Label 'WM_000001', MaxLength = 20;
+        XSeriesWhseRegMovementNosEndTok: Label 'WM_999999', MaxLength = 20;
+
 
     trigger OnRun()
     begin
@@ -185,11 +270,6 @@ codeunit 4788 "Create Whse Posting Setup"
         TransferOrderNos: Code[20];
         PostedTransferShptNos: Code[20];
         PostedTransferRcptNos: Code[20];
-        InvtReceiptNos: Code[20];
-        PostedInvtReceiptNos: Code[20];
-        InvtShipmentNos: Code[20];
-        PostedInvtShipmentNos: Code[20];
-        PostedDirectTransNos: Code[20];
         InventoryPutawayNos: Code[20];
         InventoryPickNos: Code[20];
         PostedInvtPutawayNos: Code[20];
@@ -209,17 +289,17 @@ codeunit 4788 "Create Whse Posting Setup"
             InventorySetup.Insert(DoInsertTriggers);
         end;
         // Validate that key Number Series fields are populated, often required in CRONUS SaaS Eval Data
-        InventorySetup."Item Nos." := CheckNoSeriesSetup(InventorySetup."Item Nos.", ItemNos, 'Items', '1000', '9999');
-        InventorySetup."Transfer Order Nos." := CheckNoSeriesSetup(InventorySetup."Transfer Order Nos.", TransferOrderNos, 'Transfer Order', '1001', '9999');
-        InventorySetup."Posted Transfer Shpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Shpt. Nos.", PostedTransferShptNos, 'Transfer Shipment', '108001', '108999');
-        InventorySetup."Posted Transfer Rcpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Rcpt. Nos.", PostedTransferRcptNos, 'Transfer Receipt', '109000', '109999');
-        InventorySetup."Inventory Pick Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Pick Nos.", InventoryPickNos, 'Inventory Pick', 'IPI000001', 'IPI999999');
-        InventorySetup."Posted Invt. Pick Nos." := CheckNoSeriesSetup(InventorySetup."Posted Invt. Pick Nos.", PostedInvtPickNos, 'Posted Invt. Pick', 'PPI000001', 'PPI999999');
-        InventorySetup."Inventory Put-Away Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Put-Away Nos.", InventoryPutAwayNos, 'Inventory Put-Away', 'IPI000001', 'IPU999999');
-        InventorySetup."Posted Invt. Put-Away Nos." := CheckNoSeriesSetup(InventorySetup."Posted Invt. Put-Away Nos.", PostedInvtPutAwayNos, 'Posted Invt. Put-Away', 'PPU000001', 'PPI999999');
-        InventorySetup."Inventory Movement Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Movement Nos.", InventoryMovementNos, 'Inventory Movement', 'IM000001', 'IM999999');
-        InventorySetup."Registered Invt. Movement Nos." := CheckNoSeriesSetup(InventorySetup."Registered Invt. Movement Nos.", RegisteredInvtMovementNos, 'Reg. Inventory Movement', 'RIM000001', 'RIM999999');
-        InventorySetup."Internal Movement Nos." := CheckNoSeriesSetup(InventorySetup."Internal Movement Nos.", InternalMovementNos, 'Internal Movement', 'RINTM000001', 'RINTM999999');
+        InventorySetup."Item Nos." := CheckNoSeriesSetup(InventorySetup."Item Nos.", ItemNos, XSeriesItemNosDescTok, XSeriesItemNosStartTok, XSeriesItemNosEndTok);
+        InventorySetup."Transfer Order Nos." := CheckNoSeriesSetup(InventorySetup."Transfer Order Nos.", TransferOrderNos, XSeriesTransferOrderNosDescTok, XSeriesTransferOrderNosStartTok, XSeriesTransferOrderNosEndTok);
+        InventorySetup."Posted Transfer Shpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Shpt. Nos.", PostedTransferShptNos, XSeriesPostedTransferShptNosDescTok, XSeriesPostedTransferShptNosStartTok, XSeriesPostedTransferShptNosEndTok);
+        InventorySetup."Posted Transfer Rcpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Rcpt. Nos.", PostedTransferRcptNos, XSeriesPostedTransferRcptNosDescTok, XSeriesPostedTransferRcptNosStartTok, XSeriesPostedTransferRcptNosEndTok);
+        InventorySetup."Inventory Pick Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Pick Nos.", InventoryPickNos, XSeriesInventoryPickNosDescTok, XSeriesInventoryPickNosStartTok, XSeriesInventoryPickNosEndTok);
+        InventorySetup."Posted Invt. Pick Nos." := CheckNoSeriesSetup(InventorySetup."Posted Invt. Pick Nos.", PostedInvtPickNos, XSeriesPostedInvtPickNosDescTok, XSeriesPostedInvtPickNosStartTok, XSeriesPostedInvtPickNosEndTok);
+        InventorySetup."Inventory Put-Away Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Put-Away Nos.", InventoryPutAwayNos, XSeriesInventoryPutAwayNosDescTok, XSeriesInventoryPutAwayNosStartTok, XSeriesInventoryPutAwayNosEndTok);
+        InventorySetup."Posted Invt. Put-Away Nos." := CheckNoSeriesSetup(InventorySetup."Posted Invt. Put-Away Nos.", PostedInvtPutAwayNos, XSeriesPostedInvtPutAwayNosDescTok, XSeriesPostedInvtPutAwayNosStartTok, XSeriesPostedInvtPutAwayNosEndTok);
+        InventorySetup."Inventory Movement Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Movement Nos.", InventoryMovementNos, XSeriesInventoryMovementNosDescTok, XSeriesInventoryMovementNosStartTok, XSeriesInventoryMovementNosEndTok);
+        InventorySetup."Registered Invt. Movement Nos." := CheckNoSeriesSetup(InventorySetup."Registered Invt. Movement Nos.", RegisteredInvtMovementNos, XSeriesRegisteredInvtMovementNosDescTok, XSeriesRegisteredInvtMovementNosStartTok, XSeriesRegisteredInvtMovementNosEndTok);
+        InventorySetup."Internal Movement Nos." := CheckNoSeriesSetup(InventorySetup."Internal Movement Nos.", InternalMovementNos, XSeriesInternalMovementNosDescTok, XSeriesInternalMovementNosStartTok, XSeriesInternalMovementNosEndTok);
         InventorySetup.Modify(DoInsertTriggers);
     end;
 
@@ -265,16 +345,16 @@ codeunit 4788 "Create Whse Posting Setup"
             WarehouseSetup.Init();
             WarehouseSetup.Insert(DoInsertTriggers);
         end;
-        WarehouseSetup."Whse. Receipt Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Receipt Nos.", WhseReceiptNos, 'Whse. Receipt', 'RE000001', 'RE999999');
-        WarehouseSetup."Posted Whse. Receipt Nos." := CheckNoSeriesSetup(WarehouseSetup."Posted Whse. Receipt Nos.", WhsePostedReceiptNos, 'Posted Whse. Receipt', 'R_000001', 'R_999999');
-        WarehouseSetup."Whse. Ship Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Ship Nos.", WhseShipNos, 'Whse. Ship', 'SH000001', 'SH999999');
-        WarehouseSetup."Posted Whse. Shipment Nos." := CheckNoSeriesSetup(WarehouseSetup."Posted Whse. Shipment Nos.", WhsePostedShipNos, 'Posted Whse. Shpt.', 'S_000001', 'S_999999');
-        WarehouseSetup."Whse. Put-away Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Put-away Nos.", WhsePutAwayNos, 'Whse. Put-away', 'PU000001', 'PU999999');
-        WarehouseSetup."Registered Whse. Put-away Nos." := CheckNoSeriesSetup(WarehouseSetup."Registered Whse. Put-away Nos.", WhseRegPutAwayNos, 'Registered Whse. Put-away', 'PU_000001', 'PU_999999');
-        WarehouseSetup."Whse. Pick Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Pick Nos.", WhsePickNos, 'Whse. Pick', 'PI000001', 'PI999999');
-        WarehouseSetup."Registered Whse. Pick Nos." := CheckNoSeriesSetup(WarehouseSetup."Registered Whse. Pick Nos.", WhseRegPickNos, 'Registered Whse. Put-away', 'P_000001', 'P_999999');
-        WarehouseSetup."Whse. Movement Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Movement Nos.", WhseMovementNos, 'Whse. Movement', 'WM000001', 'WM999999');
-        WarehouseSetup."Registered Whse. Movement Nos." := CheckNoSeriesSetup(WarehouseSetup."Registered Whse. Movement Nos.", WhseRegMovementNos, 'Registered Whse. Movement', 'WM_000001', 'WM_999999');
+        WarehouseSetup."Whse. Receipt Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Receipt Nos.", WhseReceiptNos, XSeriesWhseReceiptNosDescTok, XSeriesWhseReceiptNosStartTok, XSeriesWhseReceiptNosEndTok);
+        WarehouseSetup."Posted Whse. Receipt Nos." := CheckNoSeriesSetup(WarehouseSetup."Posted Whse. Receipt Nos.", WhsePostedReceiptNos, XSeriesWhsePostedReceiptNosDescTok, XSeriesWhsePostedReceiptNosStartTok, XSeriesWhsePostedReceiptNosEndTok);
+        WarehouseSetup."Whse. Ship Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Ship Nos.", WhseShipNos, XSeriesWhseShipNosDescTok, XSeriesWhseShipNosStartTok, XSeriesWhseShipNosEndTok);
+        WarehouseSetup."Posted Whse. Shipment Nos." := CheckNoSeriesSetup(WarehouseSetup."Posted Whse. Shipment Nos.", WhsePostedShipNos, XSeriesWhsePostedShipNosDescTok, XSeriesWhsePostedShipNosStartTok, XSeriesWhsePostedShipNosEndTok);
+        WarehouseSetup."Whse. Put-away Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Put-away Nos.", WhsePutAwayNos, XSeriesWhsePutAwayNosDescTok, XSeriesWhsePutAwayNosStartTok, XSeriesWhsePutAwayNosEndTok);
+        WarehouseSetup."Registered Whse. Put-away Nos." := CheckNoSeriesSetup(WarehouseSetup."Registered Whse. Put-away Nos.", WhseRegPutAwayNos, XSeriesWhseRegPutAwayNosDescTok, XSeriesWhseRegPutAwayNosStartTok, XSeriesWhseRegPutAwayNosEndTok);
+        WarehouseSetup."Whse. Pick Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Pick Nos.", WhsePickNos, XSeriesWhsePickNosDescTok, XSeriesWhsePickNosStartTok, XSeriesWhsePickNosEndTok);
+        WarehouseSetup."Registered Whse. Pick Nos." := CheckNoSeriesSetup(WarehouseSetup."Registered Whse. Pick Nos.", WhseRegPickNos, XSeriesWhseRegPickNosDescTok, XSeriesWhseRegPickNosStartTok, XSeriesWhseRegPickNosEndTok);
+        WarehouseSetup."Whse. Movement Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Movement Nos.", WhseMovementNos, XSeriesWhseMovementNosDescTok, XSeriesWhseMovementNosStartTok, XSeriesWhseMovementNosEndTok);
+        WarehouseSetup."Registered Whse. Movement Nos." := CheckNoSeriesSetup(WarehouseSetup."Registered Whse. Movement Nos.", WhseRegMovementNos, XSeriesWhseRegMovementNosDescTok, XSeriesWhseRegMovementNosStartTok, XSeriesWhseRegMovementNosEndTok);
         WarehouseSetup.Modify(DoInsertTriggers);
     end;
 
@@ -283,14 +363,17 @@ codeunit 4788 "Create Whse Posting Setup"
         DoInsertTriggers := ShouldRunInsertTriggers;
         CreateInventoryPostingGroup(WhseDemoDataSetup."Resale Code", 'Resale items');
 
-        CreateInventorySetup('', false, false, 'ITEM1', false, 'T-ORD', 'T-SHPT', 'T-RCPT', 'I-RCPT', 'I-RCPT+', 'I-SHPT', 'I-SHPT+', 'PDIRTRANS', 'I-PUT', 'I-PICK', 'I-PUT+', 'I-PICK+', 'I-MOVEMENT', 'I-MOVE+', 'INT-MOVE');
+        CreateInventorySetup('', false, false, XSeriesItemNosTok, false, XSeriesTransferOrderNosTok, XSeriesPostedTransferShptNosTok, XSeriesPostedTransferRcptNosTok,
+            XSeriesInventoryPutAwayNosTok, XSeriesInventoryPickNosTok, XSeriesInventoryPutAwayNosTok, XSeriesInventoryPickNosTok,
+            XSeriesInventoryMovementNosTok, XSeriesRegisteredInvtMovementNosTok, XSeriesInternalMovementNosTok);
 
         CreateInventoryPostingSetup('', WhseDemoDataSetup."Resale Code", WhseDemoAccount.Resale(), '', false, WhseDemoAccount.ResaleInterim());
         CreateInventoryPostingSetup(WhseDemoDataSetup."Location Basic", WhseDemoDataSetup."Resale Code", WhseDemoAccount.Resale(), '', false, WhseDemoAccount.ResaleInterim());
         CreateInventoryPostingSetup(WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Resale Code", WhseDemoAccount.Resale(), '', false, WhseDemoAccount.ResaleInterim());
         CreateInventoryPostingSetup(WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Resale Code", WhseDemoAccount.Resale(), '', false, WhseDemoAccount.ResaleInterim());
 
-        CreateWarehouseSetup('WMS-RCPT', 'WMS-RCPT+', 'WMS-SHIP', 'WMS-SHIP+', 'WMS-PUT', 'WMS-PUT+', 'WMS-PICK', 'WMS-PICK+', 'WMS-MOV', 'WMS-MOV+');
+        CreateWarehouseSetup(XSeriesWhseReceiptNosTok, XSeriesWhsePostedReceiptNosTok, XSeriesWhseShipNosTok, XSeriesWhsePostedShipNosTok,
+            XSeriesWhsePutAwayNosTok, XSeriesWhseRegPutAwayNosTok, XSeriesWhsePickNosTok, XSeriesWhseRegPickNosTok, XSeriesWhseMovementNosTok, XSeriesWhseRegMovementNosTok);
     end;
 
     local procedure InsertCustomerPostingGroup(CustPostingGroupCode: Code[20]; ReceivablesAccount: Code[20])
@@ -374,7 +457,7 @@ codeunit 4788 "Create Whse Posting Setup"
         VATPostingSetup.Insert(DoInsertTriggers);
     end;
 
-    local procedure CheckNoSeriesSetup(CurrentSetupField: Code[20]; NumberSeriesCode: Code[20]; SeriesDescription: Text; StartNo: Text; EndNo: Text) NewSetupValue: Code[20]
+    local procedure CheckNoSeriesSetup(CurrentSetupField: Code[20]; NumberSeriesCode: Code[20]; SeriesDescription: Text[100]; StartNo: Code[20]; EndNo: Code[20]) NewSetupValue: Code[20]
     var
         NoSeries: Record "No. Series";
         NoSeriesLine: Record "No. Series Line";
