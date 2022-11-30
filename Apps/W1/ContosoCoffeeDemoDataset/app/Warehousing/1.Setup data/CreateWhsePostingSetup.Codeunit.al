@@ -106,10 +106,13 @@ codeunit 4788 "Create Whse Posting Setup"
         WhseDemoDataSetup.Get();
 
         CreateGLAccounts();
+        OnAfterCreateGLAccounts();
         CreatePostingGroups();
         CreatePostingSetups();
+        OnAfterCreatePostingSetups();
 
-        CreateCollection(true);
+        CreateInventorySetups(true);
+        OnAfterCreateInventorySetups();
     end;
 
 
@@ -180,7 +183,7 @@ codeunit 4788 "Create Whse Posting Setup"
         GLAccount.Validate(Name, WhseDemoAccount."Account Description");
         GLAccount.Validate("Account Type", AccountType);
         GLAccount.Validate("Income/Balance", "Income/Balance");
-        GLAccount.Insert();
+        GLAccount.Insert(DoInsertTriggers);
     end;
 
     local procedure InsertGenProdPostingGroup(NewCode: Code[20]; NewDescription: Text[50]; DefVATProdPostingGroup: Code[20])
@@ -198,8 +201,7 @@ codeunit 4788 "Create Whse Posting Setup"
             GenProductPostingGroup."Def. VAT Prod. Posting Group" := DefVATProdPostingGroup;
 
         OnBeforeGenProductPostingGroupInsert(GenProductPostingGroup);
-
-        GenProductPostingGroup.Insert();
+        GenProductPostingGroup.Insert(DoInsertTriggers);
     end;
 
     local procedure InsertGenBusPostingGroup("Code": Code[20]; Description: Text[50]; DefVATBusPostingGroup: Code[20])
@@ -217,8 +219,7 @@ codeunit 4788 "Create Whse Posting Setup"
             GenBusinessPostingGroup."Auto Insert Default" := true;
 
         OnBeforeGenBusinessPostingGroupInsert(GenBusinessPostingGroup);
-
-        GenBusinessPostingGroup.Insert();
+        GenBusinessPostingGroup.Insert(DoInsertTriggers);
     end;
 
     local procedure InsertGeneralPostingSetup(GenBusPostingGroup: Code[20]; GenProdPostingGroup: Code[20];
@@ -242,8 +243,7 @@ codeunit 4788 "Create Whse Posting Setup"
         end;
 
         OnBeforeGeneralPostingSetupInsert(GeneralPostingSetup);
-
-        GeneralPostingSetup.Insert();
+        GeneralPostingSetup.Insert(DoInsertTriggers);
     end;
 
     local procedure CreateInventoryPostingGroup(
@@ -280,6 +280,7 @@ codeunit 4788 "Create Whse Posting Setup"
     )
     var
         InventorySetup: Record "Inventory Setup";
+        IsHandled: Boolean;
     begin
         if not InventorySetup.Get() then begin
             InventorySetup.Init();
@@ -288,6 +289,9 @@ codeunit 4788 "Create Whse Posting Setup"
             InventorySetup."Copy Item Descr. to Entries" := CopyItemDescrtoEntries;
             InventorySetup.Insert(DoInsertTriggers);
         end;
+        OnBeforePopulateInventorySetupFields(InventorySetup, IsHandled);
+        if IsHandled then
+            exit;
         // Validate that key Number Series fields are populated, often required in CRONUS SaaS Eval Data
         InventorySetup."Item Nos." := CheckNoSeriesSetup(InventorySetup."Item Nos.", ItemNos, XSeriesItemNosDescTok, XSeriesItemNosStartTok, XSeriesItemNosEndTok);
         InventorySetup."Transfer Order Nos." := CheckNoSeriesSetup(InventorySetup."Transfer Order Nos.", TransferOrderNos, XSeriesTransferOrderNosDescTok, XSeriesTransferOrderNosStartTok, XSeriesTransferOrderNosEndTok);
@@ -323,6 +327,7 @@ codeunit 4788 "Create Whse Posting Setup"
         InventoryPostingSetup."Description" := Description;
         InventoryPostingSetup."View All Accounts on Lookup" := ViewAllAccountsonLookup;
         InventoryPostingSetup."Inventory Account (Interim)" := InventoryAccountInterim;
+        OnBeforeInsertInventoryPostingSetup(InventoryPostingSetup);
         InventoryPostingSetup.Insert(DoInsertTriggers);
     end;
 
@@ -340,11 +345,15 @@ codeunit 4788 "Create Whse Posting Setup"
     )
     var
         WarehouseSetup: Record "Warehouse Setup";
+        IsHandled: Boolean;
     begin
         if not WarehouseSetup.Get() then begin
             WarehouseSetup.Init();
             WarehouseSetup.Insert(DoInsertTriggers);
         end;
+        OnBeforePopulateWarehouseSetupFields(WarehouseSetup, IsHandled);
+        if IsHandled then
+            exit;
         WarehouseSetup."Whse. Receipt Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Receipt Nos.", WhseReceiptNos, XSeriesWhseReceiptNosDescTok, XSeriesWhseReceiptNosStartTok, XSeriesWhseReceiptNosEndTok);
         WarehouseSetup."Posted Whse. Receipt Nos." := CheckNoSeriesSetup(WarehouseSetup."Posted Whse. Receipt Nos.", WhsePostedReceiptNos, XSeriesWhsePostedReceiptNosDescTok, XSeriesWhsePostedReceiptNosStartTok, XSeriesWhsePostedReceiptNosEndTok);
         WarehouseSetup."Whse. Ship Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Ship Nos.", WhseShipNos, XSeriesWhseShipNosDescTok, XSeriesWhseShipNosStartTok, XSeriesWhseShipNosEndTok);
@@ -358,7 +367,7 @@ codeunit 4788 "Create Whse Posting Setup"
         WarehouseSetup.Modify(DoInsertTriggers);
     end;
 
-    local procedure CreateCollection(ShouldRunInsertTriggers: Boolean)
+    local procedure CreateInventorySetups(ShouldRunInsertTriggers: Boolean)
     begin
         DoInsertTriggers := ShouldRunInsertTriggers;
         CreateInventoryPostingGroup(WhseDemoDataSetup."Resale Code", 'Resale items');
@@ -465,11 +474,13 @@ codeunit 4788 "Create Whse Posting Setup"
         if CurrentSetupField <> '' then
             exit(CurrentSetupField);
 
+        OnBeforeConfirmNoSeriesExists(NumberSeriesCode);
         if not NoSeries.Get(NumberSeriesCode) then begin
             NoSeries.Init();
             NoSeries.Code := NumberSeriesCode;
             NoSeries.Description := SeriesDescription;
             NoSeries.Validate("Default Nos.", true);
+            OnBeforeInsertNoSeries(NoSeries);
             NoSeries.Insert(DoInsertTriggers);
 
             NoSeriesLine.Init();
@@ -480,6 +491,7 @@ codeunit 4788 "Create Whse Posting Setup"
             NoSeriesLine.Validate("Ending No.", EndNo);
             NoSeriesLine.Validate("Increment-by No.", 1);
             NoSeriesLine.Validate("Allow Gaps in Nos.", true);
+            OnBeforeModifyNoSeriesLine(NoSeries, NoSeriesLine);
             NoSeriesLine.Modify(true);
         end;
 
@@ -503,32 +515,77 @@ codeunit 4788 "Create Whse Posting Setup"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeCustomerPostingGroupInsert(CustomerPostingGroup: Record "Customer Posting Group")
+    local procedure OnBeforeCustomerPostingGroupInsert(var CustomerPostingGroup: Record "Customer Posting Group")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeVendorPostingGroupInsert(VendorPostingGroup: Record "Vendor Posting Group")
+    local procedure OnBeforeVendorPostingGroupInsert(var VendorPostingGroup: Record "Vendor Posting Group")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeInsertVATBusPostingGroup(VATBusPostingGroup: Record "VAT Business Posting Group")
+    local procedure OnBeforeInsertVATBusPostingGroup(var VATBusPostingGroup: Record "VAT Business Posting Group")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeInsertVATProdPostingGroup(VATProdPostingGroup: Record "VAT Product Posting Group")
+    local procedure OnBeforeInsertVATProdPostingGroup(var VATProdPostingGroup: Record "VAT Product Posting Group")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeCreateVATPostingSetup(BusinessGroupCode: Code[10]; ProductGroupCode: Code[10]; var IsHandled: Boolean)
+    local procedure OnBeforeCreateVATPostingSetup(var BusinessGroupCode: Code[10]; ProductGroupCode: Code[10]; var IsHandled: Boolean)
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeInsertVATPostingSetup(VATPostingSetup: Record "VAT Posting Setup")
+    local procedure OnBeforeInsertVATPostingSetup(var VATPostingSetup: Record "VAT Posting Setup")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeConfirmNoSeriesExists(var NumberSeriesCode: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertNoSeries(var NoSeries: Record "No. Series")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeModifyNoSeriesLine(var NoSeries: Record "No. Series"; var NoSeriesLine: Record "No. Series Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePopulateWarehouseSetupFields(var WarehouseSetup: Record "Warehouse Setup"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePopulateInventorySetupFields(var InventorySetup: Record "Inventory Setup"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertInventoryPostingSetup(var InventoryPostingSetup: Record "Inventory Posting Setup")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateInventorySetups()
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreatePostingSetups()
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateGLAccounts()
     begin
     end;
 }

@@ -13,7 +13,10 @@ codeunit 4789 "Create Whse Item Jnl"
         WhseDemoDataSetup.Get();
 
         CreateItemJournal();
+        OnAfterCreatedItemJournal();
+
         CreateWhseItemJournal();
+        OnAfterCreatedWhseItemJournal();
     end;
 
     local procedure CreateItemJournal()
@@ -41,5 +44,15 @@ codeunit 4789 "Create Whse Item Jnl"
             WarehouseJournalLine.CheckTemplateName(WarehouseJournalTemplate.Name, WhseDemoDataSetup."Location Simple Logistics", WhseJnlBatchName);
             WarehouseJournalLine.CheckTemplateName(WarehouseJournalTemplate.Name, WhseDemoDataSetup."Location Advanced Logistics", WhseJnlBatchName);
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreatedItemJournal()
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreatedWhseItemJournal()
+    begin
     end;
 }

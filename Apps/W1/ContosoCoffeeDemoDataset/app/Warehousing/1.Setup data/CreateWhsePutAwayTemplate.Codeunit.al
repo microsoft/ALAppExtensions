@@ -13,6 +13,7 @@ codeunit 4791 "Create Whse Put Away Template"
     trigger OnRun()
     begin
         CreatePutawayTemplateLines(false);
+        OnAfterCreatePutAwayTemplateLines();
     end;
 
     local procedure CreatePutawayTemplateHeader(
@@ -75,5 +76,10 @@ codeunit 4791 "Create Whse Put Away Template"
         CreatePutawayTemplateLine(XVARTok, 20000, '', false, true, false, false, false, true);
         CreatePutawayTemplateLine(XVARTok, 30000, '', false, true, false, false, false, false);
 
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreatePutAwayTemplateLines()
+    begin
     end;
 }

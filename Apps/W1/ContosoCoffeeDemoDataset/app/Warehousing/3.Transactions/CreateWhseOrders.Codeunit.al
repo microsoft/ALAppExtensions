@@ -113,9 +113,11 @@ codeunit 4796 "Create Whse Orders"
         PurchaseHeader."Document Type" := PurchaseHeader."Document Type"::Order;
         PurchaseHeader."No." := OrderNo;
         PurchaseHeader.Validate("Buy-from Vendor No.", VendorNo);
+        OnBeforeInsertPurchaseHeader(PurchaseHeader);
         PurchaseHeader.Insert(true);
         PurchaseHeader.Validate("Posting Date", AdjustWarehousingData.AdjustDate(19020601D));
         PurchaseHeader.Validate("Location Code", LocationCode);
+        OnBeforeModifyPurchaseHeader(PurchaseHeader);
         PurchaseHeader.Modify(true);
 
         PurchaseLine.Init();
@@ -129,6 +131,7 @@ codeunit 4796 "Create Whse Orders"
         PurchaseLine.Validate("Unit of Measure Code", UnitOfMeasure);
         PurchaseLine.Validate(Quantity, Quantity);
         PurchaseLine.Validate("Unit Cost", AdjustWarehousingData.AdjustPrice(10));
+        OnBeforeModifyPurchaseLine(PurchaseHeader, PurchaseLine);
         PurchaseLine.Modify(true);
     end;
 
@@ -149,9 +152,11 @@ codeunit 4796 "Create Whse Orders"
         SalesHeader."Document Type" := SalesHeader."Document Type"::Order;
         SalesHeader."No." := OrderNo;
         SalesHeader.Validate("Sell-To Customer No.", CustomerNo);
+        OnBeforeInsertSalesHeader(SalesHeader);
         SalesHeader.Insert(true);
         SalesHeader.Validate("Posting Date", AdjustWarehousingData.AdjustDate(19020601D));
         SalesHeader.Validate("Location Code", LocationCode);
+        OnBeforeModifySalesHeader(SalesHeader);
         SalesHeader.Modify(true);
 
         SalesLine.Init();
@@ -165,6 +170,37 @@ codeunit 4796 "Create Whse Orders"
         SalesLine.Validate("Unit of Measure Code", UnitOfMeasure);
         SalesLine.Validate(Quantity, Quantity);
         SalesLine.Validate("Unit Price", AdjustWarehousingData.AdjustPrice(15));
+        OnBeforeModifySalesLine(SalesHeader, SalesLine);
         SalesLine.Modify(true);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertPurchaseHeader(var PurchaseHeader: Record "Purchase Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeModifyPurchaseHeader(var PurchaseHeader: Record "Purchase Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeModifyPurchaseLine(var PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertSalesHeader(var SalesHeader: Record "Sales Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeModifySalesHeader(var SalesHeader: Record "Sales Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeModifySalesLine(var SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
+    begin
     end;
 }

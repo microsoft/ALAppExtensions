@@ -23,6 +23,7 @@ codeunit 4793 "Create Whse Item"
     trigger OnRun()
     begin
         CreateCollection(false);
+        OnAfterCreatedItems();
     end;
 
     local procedure CreateUnitofMeasure(
@@ -124,9 +125,7 @@ codeunit 4793 "Create Whse Item"
             Item.Picture.ImportStream(ObjInStream, ItemPictureDescription);
         end;
 
-
         OnBeforeItemInsert(Item);
-
         Item.Insert();
     end;
 
@@ -166,6 +165,11 @@ codeunit 4793 "Create Whse Item"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeItemInsert(var Item: Record Item)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreatedItems()
     begin
     end;
 }

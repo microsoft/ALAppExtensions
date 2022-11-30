@@ -7,10 +7,16 @@ codeunit 4787 "Create Whse Locations"
         DoInsertTriggers: Boolean;
 
     trigger OnRun()
+    var
+        IsHandled: Boolean;
     begin
         WhseDemoDataSetup.Get();
         CreateLocations(false);
-        AddUserAsWarehouseEmployee(UserId);
+        OnAfterCreateLocations();
+
+        OnBeforeAddCurrentUserAsWhseEmployee(IsHandled);
+        if not IsHandled then
+            AddUserAsWarehouseEmployee(UserId);
     end;
 
     local procedure TextAsDateFormula(InputText: Text) OutputDateFormula: DateFormula
@@ -72,6 +78,7 @@ codeunit 4787 "Create Whse Locations"
         Location."From-Assembly Bin Code" := FromAssemblyBinCode;
         Location."Asm.-to-Order Shpt. Bin Code" := AsmtoOrderShptBinCode;
         Location."Use ADCS" := UseADCS;
+        OnBeforeInsertCreateLocation(Location);
         Location.Insert(DoInsertTriggers);
     end;
 
@@ -106,5 +113,20 @@ codeunit 4787 "Create Whse Locations"
             WarehouseEmployee."Location Code" := WhseDemoDataSetup."Location Advanced Logistics";
             WarehouseEmployee.Insert(true);
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAddCurrentUserAsWhseEmployee(var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateLocations()
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertCreateLocation(var Location: Record Location)
+    begin
     end;
 }

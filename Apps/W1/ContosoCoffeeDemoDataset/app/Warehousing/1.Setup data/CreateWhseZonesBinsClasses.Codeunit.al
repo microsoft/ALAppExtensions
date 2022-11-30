@@ -37,6 +37,7 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
     begin
         WhseDemoDataSetup.Get;
         CreateCollection(false);
+        OnAfterCreateZonesBinsClasses();
     end;
 
     local procedure CreateZone(
@@ -139,6 +140,7 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
     )
     var
         Bin: Record "Bin";
+        IsHandled: Boolean;
     begin
         if Bin.Get(LocationCode, Code) then
             exit;
@@ -156,7 +158,11 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
         Bin."Empty" := Empty;
         Bin."Cross-Dock Bin" := CrossDockBin;
         Bin."Dedicated" := Dedicated;
-        Bin.Insert(DoInsertTriggers);
+
+        IsHandled := false;
+        OnBeforeInsertCreateBin(Bin, IsHandled);
+        if not IsHandled then
+            Bin.Insert(DoInsertTriggers);
     end;
 
     local procedure CreateWarehouseClass(
@@ -302,6 +308,16 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-14-0002', '', XCROSSDOCKTok, XPUTPICKTok, '', 0, 500, 0, 0, true, true, false);
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-14-0003', '', XCROSSDOCKTok, XPUTPICKTok, '', 0, 500, 0, 0, true, true, false);
         CreateBin(WhseDemoDataSetup."Location Advanced Logistics", 'W-14-0004', '', XCROSSDOCKTok, XPUTPICKTok, '', 0, 500, 0, 0, true, true, false);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateZonesBinsClasses()
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertCreateBin(var Bin: Record Bin; var IsHandled: Boolean)
+    begin
     end;
 
 }

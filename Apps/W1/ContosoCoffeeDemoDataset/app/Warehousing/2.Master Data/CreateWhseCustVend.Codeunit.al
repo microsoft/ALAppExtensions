@@ -5,9 +5,10 @@ codeunit 4794 "Create Whse Cust/Vend"
         WhseDemoDataSetup.Get();
 
         InsertVendorData(WhseDemoDataSetup."Vendor No.", XBeansSupplierLbl, WhseDemoDataSetup."Vendor Posting Group", WhseDemoDataSetup."Vend. Gen. Bus. Posting Group");
-
+        OnAfterCreatedVendors();
         InsertCustomerData(WhseDemoDataSetup."S. Customer No.", XSmallCustomerLbl, WhseDemoDataSetup."S. Cust. Posting Group", WhseDemoDataSetup."SCust. Gen. Bus. Posting Group");
         InsertCustomerData(WhseDemoDataSetup."L. Customer No.", XLargeCustomerLbl, WhseDemoDataSetup."L. Cust. Posting Group", WhseDemoDataSetup."LCust. Gen. Bus. Posting Group");
+        OnAfterCreatedCustomers();
     end;
 
     var
@@ -33,13 +34,12 @@ codeunit 4794 "Create Whse Cust/Vend"
             if TaxArea.FindFirst() then
                 Vendor.Validate("Tax Area Code", TaxArea.Code);
 
-        OnBeforeVendorInsert(Vendor);
-
         if Vendor."Vendor Posting Group" = '' then
             Vendor.Validate("Vendor Posting Group", VendorPostingGroup);
         if Vendor."Gen. Bus. Posting Group" = '' then
             Vendor.Validate("Gen. Bus. Posting Group", BusPostingGroup);
 
+        OnBeforeVendorInsert(Vendor);
         Vendor.Insert(true);
     end;
 
@@ -60,13 +60,12 @@ codeunit 4794 "Create Whse Cust/Vend"
             if TaxArea.FindFirst() then
                 Customer.Validate("Tax Area Code", TaxArea.Code);
 
-        OnBeforeCustomerInsert(Customer);
-
         if Customer."Customer Posting Group" = '' then
             Customer.Validate("Customer Posting Group", CustomerPostingGroup);
         if Customer."Gen. Bus. Posting Group" = '' then
             Customer.Validate("Gen. Bus. Posting Group", BusPostingGroup);
 
+        OnBeforeCustomerInsert(Customer);
         Customer.Insert(true);
     end;
 
@@ -77,6 +76,16 @@ codeunit 4794 "Create Whse Cust/Vend"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCustomerInsert(var Customer: Record Customer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreatedVendors()
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreatedCustomers()
     begin
     end;
 }
