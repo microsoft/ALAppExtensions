@@ -17,6 +17,11 @@ $appName = (gci -Path $appProjectFolder -Filter "app.json" | Get-Content | Conve
 
 Write-Host "Current app name: $appName; app folder: $appProjectFolder"
 
+# Create an archive with the current source code in the build artifacts folder
+$archiveFile = "$env:TEMP/$appName.Source.zip"
+Write-Host "Archive the current source code for app: $appName as $archiveFile"
+Compress-Archive -Path "$appProjectFolder/**" -DestinationPath $archiveFile -Force
+
 # TODO there must be a better way :D
 $holderFolder = 'TestApps'
 if($appName -eq "System Application") {
@@ -32,7 +37,7 @@ if(-not (Test-Path $packageArtifactsFolder)) {
 
 Write-Host "Package artifacts folder: $packageArtifactsFolder"
 
-Copy-Item -Path $appProjectFolder -Destination $packageArtifactsFolder -Recurse -Force | Out-Null
-Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
+Move-Item -Path "$archiveFile" -Destination "$packageArtifactsFolder" -Force | Out-Null
+Copy-Item -Path "$appFile" -Destination "$packageArtifactsFolder" -Force | Out-Null
 
 $appFile
