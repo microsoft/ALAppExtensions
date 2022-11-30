@@ -251,8 +251,10 @@ codeunit 50140 "Time Zone Management Test"
     local procedure VerifyOffsetIsCorrectForSelectedTimeZone(Offset: Duration; ExpectedOffsetInHours: Decimal)
     var
         ExpectedOffset: Duration;
+        OffsetMismatchErr: Label 'Offset did not match expected offset.', Locked = true;
     begin
         ExpectedOffset := ExpectedOffsetInHours * GetHourConversionFactor();
+        LibraryAssert.AreEqual(ExpectedOffset, Offset, OffsetMismatchErr);
     end;
 
     local procedure VerifyOffsetBetweenTimeZonesIsCorrect(Offset: Duration)
