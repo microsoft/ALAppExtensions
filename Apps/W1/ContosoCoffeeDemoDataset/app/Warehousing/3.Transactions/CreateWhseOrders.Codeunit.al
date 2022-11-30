@@ -1,6 +1,12 @@
 codeunit 4796 "Create Whse Orders"
 {
 
+    var
+        WhseDemoDataSetup: Record "Whse Demo Data Setup";
+        AdjustWarehousingData: Codeunit "Adjust Whse. Demo Data";
+        XPALLETTok: Label 'PALLET', MaxLength = 10, Comment = 'Must be the same as in CreateWhseItem codeunit';
+        XBAGTok: Label 'BAG', MaxLength = 10, Comment = 'Must be the same as in CreateWhseItem codeunit';
+
     trigger OnRun()
     begin
         WhseDemoDataSetup.Get();
@@ -63,19 +69,19 @@ codeunit 4796 "Create Whse Orders"
 
     procedure CreateOrdersScenario7()
     begin
-        CreatePurchaseOrder('107006', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 10, 'BAG');
-        CreatePurchaseOrder('107007', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 15, 'BAG');
+        CreatePurchaseOrder('107006', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 10, XBAGTok);
+        CreatePurchaseOrder('107007', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 15, XBAGTok);
     end;
 
     procedure CreateOrdersScenario8()
     begin
-        CreatePurchaseOrder('107008', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20, 'BAG');
-        CreatePurchaseOrder('107009', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 10, 'PALLET');
+        CreatePurchaseOrder('107008', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20, XBAGTok);
+        CreatePurchaseOrder('107009', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 10, XPALLETTok);
     end;
 
     procedure CreateOrdersScenario9()
     begin
-        CreatePurchaseOrder('107010', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 10, 'PALLET');
+        CreatePurchaseOrder('107010', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 10, XPALLETTok);
     end;
 
     procedure CreateOrdersScenario10()
@@ -86,12 +92,9 @@ codeunit 4796 "Create Whse Orders"
 
     procedure CreateOrdersScenario11()
     begin
-        CreatePurchaseOrder('107011', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20, 'BAG');
+        CreatePurchaseOrder('107011', WhseDemoDataSetup."Vendor No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20, XBAGTok);
         CreateSalesOrder('105008', WhseDemoDataSetup."L. Customer No.", WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Complex Item No.", 20);
     end;
-
-    var
-        WhseDemoDataSetup: Record "Whse Demo Data Setup";
 
     local procedure CreatePurchaseOrder(OrderNo: Code[20]; VendorNo: Code[20]; LocationCode: Code[10]; ItemNo: Code[20]; Quantity: Decimal)
     var
@@ -111,6 +114,7 @@ codeunit 4796 "Create Whse Orders"
         PurchaseHeader."No." := OrderNo;
         PurchaseHeader.Validate("Buy-from Vendor No.", VendorNo);
         PurchaseHeader.Insert(true);
+        PurchaseHeader.Validate("Posting Date", AdjustWarehousingData.AdjustDate(19020601D));
         PurchaseHeader.Validate("Location Code", LocationCode);
         PurchaseHeader.Modify(true);
 
@@ -124,6 +128,7 @@ codeunit 4796 "Create Whse Orders"
         PurchaseLine.Validate("Location Code", LocationCode);
         PurchaseLine.Validate("Unit of Measure Code", UnitOfMeasure);
         PurchaseLine.Validate(Quantity, Quantity);
+        PurchaseLine.Validate("Unit Cost", AdjustWarehousingData.AdjustPrice(10));
         PurchaseLine.Modify(true);
     end;
 
@@ -145,6 +150,7 @@ codeunit 4796 "Create Whse Orders"
         SalesHeader."No." := OrderNo;
         SalesHeader.Validate("Sell-To Customer No.", CustomerNo);
         SalesHeader.Insert(true);
+        SalesHeader.Validate("Posting Date", AdjustWarehousingData.AdjustDate(19020601D));
         SalesHeader.Validate("Location Code", LocationCode);
         SalesHeader.Modify(true);
 
@@ -158,6 +164,7 @@ codeunit 4796 "Create Whse Orders"
         SalesLine.Validate("Location Code", LocationCode);
         SalesLine.Validate("Unit of Measure Code", UnitOfMeasure);
         SalesLine.Validate(Quantity, Quantity);
+        SalesLine.Validate("Unit Price", AdjustWarehousingData.AdjustPrice(15));
         SalesLine.Modify(true);
     end;
 }

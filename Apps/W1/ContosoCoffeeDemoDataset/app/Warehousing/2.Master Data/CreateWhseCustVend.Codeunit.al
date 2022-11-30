@@ -4,10 +4,10 @@ codeunit 4794 "Create Whse Cust/Vend"
     begin
         WhseDemoDataSetup.Get();
 
-        InsertVendorData(WhseDemoDataSetup."Vendor No.", XBeansSupplierLbl, WhseDemoDataSetup."Vendor Posting Group", WhseDemoDataSetup."Vend. Gen. Bus. Posting Group", '', '');
+        InsertVendorData(WhseDemoDataSetup."Vendor No.", XBeansSupplierLbl, WhseDemoDataSetup."Vendor Posting Group", WhseDemoDataSetup."Vend. Gen. Bus. Posting Group");
 
-        InsertCustomerData(WhseDemoDataSetup."S. Customer No.", XSmallCustomerLbl, WhseDemoDataSetup."S. Cust. Posting Group", WhseDemoDataSetup."SCust. Gen. Bus. Posting Group", '', '');
-        InsertCustomerData(WhseDemoDataSetup."L. Customer No.", XLargeCustomerLbl, WhseDemoDataSetup."L. Cust. Posting Group", WhseDemoDataSetup."LCust. Gen. Bus. Posting Group", '', '');
+        InsertCustomerData(WhseDemoDataSetup."S. Customer No.", XSmallCustomerLbl, WhseDemoDataSetup."S. Cust. Posting Group", WhseDemoDataSetup."SCust. Gen. Bus. Posting Group");
+        InsertCustomerData(WhseDemoDataSetup."L. Customer No.", XLargeCustomerLbl, WhseDemoDataSetup."L. Cust. Posting Group", WhseDemoDataSetup."LCust. Gen. Bus. Posting Group");
     end;
 
     var
@@ -16,7 +16,7 @@ codeunit 4794 "Create Whse Cust/Vend"
         XSmallCustomerLbl: Label 'Localcino', MaxLength = 30;
         XLargeCustomerLbl: Label 'Mocha Multinational', MaxLength = 30;
 
-    local procedure InsertVendorData("No.": Code[20]; Name: Text[30]; VendorPostingGroup: Code[20]; BusPostingGroup: Code[20]; Address: Text[30]; CountryCode: Code[10])
+    local procedure InsertVendorData("No.": Code[20]; Name: Text[30]; VendorPostingGroup: Code[20]; BusPostingGroup: Code[20])
     var
         Vendor: Record Vendor;
         TaxArea: Record "Tax Area";
@@ -28,8 +28,6 @@ codeunit 4794 "Create Whse Cust/Vend"
 
         Vendor.Validate("No.", "No.");
         Vendor.Validate(Name, Name);
-        Vendor.Validate(Address, Address);
-        Vendor.Validate("Country/Region Code", CountryCode);
 
         if WhseDemoDataSetup."Company Type" = WhseDemoDataSetup."Company Type"::"Sales Tax" then
             if TaxArea.FindFirst() then
@@ -45,7 +43,7 @@ codeunit 4794 "Create Whse Cust/Vend"
         Vendor.Insert(true);
     end;
 
-    local procedure InsertCustomerData("No.": Code[20]; Name: Text[30]; CustomerPostingGroup: Code[20]; BusPostingGroup: Code[20]; Address: Text[30]; CountryCode: Code[10])
+    local procedure InsertCustomerData("No.": Code[20]; Name: Text[30]; CustomerPostingGroup: Code[20]; BusPostingGroup: Code[20])
     var
         Customer: Record Customer;
         TaxArea: Record "Tax Area";
@@ -57,8 +55,6 @@ codeunit 4794 "Create Whse Cust/Vend"
 
         Customer.Validate("No.", "No.");
         Customer.Validate(Name, Name);
-        Customer.Validate(Address, Address);
-        Customer.Validate("Country/Region Code", CountryCode);
 
         if WhseDemoDataSetup."Company Type" = WhseDemoDataSetup."Company Type"::"Sales Tax" then
             if TaxArea.FindFirst() then

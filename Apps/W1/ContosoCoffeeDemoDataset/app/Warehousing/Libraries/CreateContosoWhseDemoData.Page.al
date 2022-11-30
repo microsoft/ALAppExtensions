@@ -107,17 +107,12 @@ page 4761 "Create Contoso Whse Demo Data"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the Gen. Bus. Posting Group for the Vendor for all scenarios.';
                 }
-                field("Base VAT Code"; Rec."Base VAT Code")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Base VAT Code field.';
-                }
                 field("Domestic Code"; Rec."Domestic Code")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Domestic - Gen. Bus. Posting Group field.';
+                    ToolTip = 'Specifies the value of the Domestic - VAT Bus. Posting Group field.';
                 }
-                field("Finished Code"; Rec."Finished Code")
+                field("Resale Code"; Rec."Resale Code")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the Finished Code field.';
@@ -125,7 +120,7 @@ page 4761 "Create Contoso Whse Demo Data"
                 field("Retail Code"; Rec."Retail Code")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Retail - Gen. Prod. Posting Group field.';
+                    ToolTip = 'Specifies the value of the Retail - Gen. Prod. Posting Group field, which is also the VAT Prod. Posting Group used.';
                 }
 
             }

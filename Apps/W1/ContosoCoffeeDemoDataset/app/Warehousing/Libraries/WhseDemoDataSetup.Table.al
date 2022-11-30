@@ -34,22 +34,10 @@ table 4763 "Whse Demo Data Setup"
             OptionMembers = VAT,"Sales Tax";
             Caption = 'Company Type';
         }
-        field(18; "Base VAT Code"; code[10])
-        {
-            DataClassification = CustomerContent;
-            TableRelation = "VAT Product Posting Group";
-            Caption = 'Base VAT Code';
-        }
         field(24; "Adjust for Payment Discount"; Boolean)
         {
             DataClassification = CustomerContent;
             Caption = 'Adjust for Payment Discount';
-        }
-        field(30; "Finished Code"; code[10])
-        {
-            DataClassification = CustomerContent;
-            TableRelation = "Inventory Posting Group";
-            ValidateTableRelation = false;
         }
         field(31; "Retail Code"; code[10])
         {
@@ -62,6 +50,12 @@ table 4763 "Whse Demo Data Setup"
             DataClassification = CustomerContent;
             Caption = 'Domestic - Gen. Bus. Posting Group';
             TableRelation = "Gen. Business Posting Group";
+        }
+        field(35; "Resale Code"; code[10])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Resale - Inventory Posting Group';
+            TableRelation = "Inventory Posting Group";
         }
 
         field(38; "Price Factor"; Decimal)
