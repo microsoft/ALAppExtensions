@@ -185,13 +185,13 @@ codeunit 20352 "Connectivity App Definitions"
         AppId := '80d82476-426c-4812-be05-bfcbaf777868';
         AppName := 'IQ Banking';
         AppPublisher := 'InnoQubit Software';
-        AppDescription := 'This app allows generate payments and check entries on your banks.';
-        AppProviderSupportURL := 'https://innovaonline.es/Banking';
+        AppDescription := 'Manage your banks directly from Business Central. In order to make financial management easier, this app allows you import bank transactions and execute payments in an easy and secure way, without leaving your Business Central environment.';
+        AppProviderSupportURL := 'https://innovaonline.es/banking/bank';
         AppSourceUrl := 'https://appsource.microsoft.com/es-es/product/dynamics-365-business-central/PUBID.innoqubitsoftwaresl1638027829374%7CAID.iq-banking%7CPAPPID.80d82476-426c-4812-be05-bfcbaf777868';
         AppApprovedFor := 'ES';
         AppWorksOn := 'ES';
 
-        AddDescriptionTranslation(AppId, 'Esta aplicación permite generar pagos y comprobar las transacciones de tus bancos.', 1034);
+        AddDescriptionTranslation(AppId, 'Gestiona tus bancos directamente desde Business Central. Con la finalidad de facilitar la gestión financiera, esta app te permite importar transacciones bancarias y ejecutar pagos de una forma sencilla y segura, sin salir de tu entorno de Business Central.', 1034);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
