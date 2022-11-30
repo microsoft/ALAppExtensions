@@ -28,17 +28,17 @@ page 4761 "Create Contoso Whse Demo Data"
             }
             group(Locations)
             {
-                field("Location Basic Logistics"; Rec."Location Simple Logistics")
+                field("Location Basic"; Rec."Location Basic")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the Code of the Location for the Basic Location scenarios.';
                 }
-                field("Location Simple"; Rec."Location Basic")
+                field("Location Simple Logistics"; Rec."Location Simple Logistics")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Code of the Location for the Basic Logistics scenarios.';
+                    ToolTip = 'Specifies the Code of the Location for the Simple Logistics scenarios.';
                 }
-                field("Location Directed"; Rec."Location Advanced Logistics")
+                field("Location Advanced Logistics"; Rec."Location Advanced Logistics")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the Code of the Location for the Advanced Logistics scenarios.';
@@ -47,11 +47,10 @@ page 4761 "Create Contoso Whse Demo Data"
 
             group(MasterData)
             {
-
                 field("S. Customer No."; Rec."S. Customer No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Customer No. to use for the Basic Location and Basic Logistics scenarios.';
+                    ToolTip = 'Specifies the Customer No. to use for the Basic Location and Simple Logistics scenarios.';
                 }
                 field("L. Customer No."; Rec."L. Customer No.")
                 {
@@ -66,7 +65,7 @@ page 4761 "Create Contoso Whse Demo Data"
                 field("Main Item No."; Rec."Main Item No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Item No. to use for the Basic Location and Basic Logistics scenarios.';
+                    ToolTip = 'Specifies the Item No. to use for the Basic Location and Simple Logistics scenarios.';
                 }
                 field("Complex Item No."; Rec."Complex Item No.")
                 {
@@ -80,12 +79,12 @@ page 4761 "Create Contoso Whse Demo Data"
                 field("S. Cust. Posting Group"; Rec."S. Cust. Posting Group")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Cust. Posting Group for the Customer for the Basic Location and Basic Logistics scenarios.';
+                    ToolTip = 'Specifies the Cust. Posting Group for the Customer for the Basic Location and Simple Logistics scenarios.';
                 }
                 field("SCust. Gen. Bus. Posting Group"; Rec."SCust. Gen. Bus. Posting Group")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the Gen. Bus. Posting Group for the Customer for the Basic Location and Basic Logistics scenarios.';
+                    ToolTip = 'Specifies the Gen. Bus. Posting Group for the Customer for the Basic Location and Simple Logistics scenarios.';
                 }
                 field("L. Cust. Posting Group"; Rec."L. Cust. Posting Group")
                 {
@@ -115,14 +114,13 @@ page 4761 "Create Contoso Whse Demo Data"
                 field("Resale Code"; Rec."Resale Code")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Finished Code field.';
+                    ToolTip = 'Specifies the Inventory Posting Group used for Items.';
                 }
                 field("Retail Code"; Rec."Retail Code")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the Retail - Gen. Prod. Posting Group field, which is also the VAT Prod. Posting Group used.';
                 }
-
             }
 
             group("Pricing")
@@ -161,6 +159,7 @@ page 4761 "Create Contoso Whse Demo Data"
 
                 trigger OnAction()
                 begin
+                    //TODO: Telemetry tag
                     Telemetry.LogMessage('0000H72', StrSubstNo(ContosoCoffeeDemoDatasetInitilizationTok, ContosoCoffeeDemoDatasetFeatureNameTok),
                         Verbosity::Normal, DataClassification::SystemMetadata);
 
@@ -174,6 +173,7 @@ page 4761 "Create Contoso Whse Demo Data"
 
     trigger OnOpenPage()
     begin
+        //TODO: Telemetry tag
         FeatureTelemetry.LogUptake('0000GYT', ContosoCoffeeDemoDatasetFeatureNameTok, Enum::"Feature Uptake Status"::Discovered);
 
         CreateWarehousingDemoData.InitWarehousingDemoDataSetup();
