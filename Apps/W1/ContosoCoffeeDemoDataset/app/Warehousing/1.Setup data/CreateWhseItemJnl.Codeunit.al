@@ -37,8 +37,8 @@ codeunit 4789 "Create Whse Item Jnl"
     begin
         WarehouseJournalLine.TemplateSelection(PAGE::"Whse. Item Journal", "Warehouse Journal Template Type"::Item, WarehouseJournalLine);
         if WarehouseJournalTemplate.FindFirst() then begin
-            WarehouseJournalLine.CheckTemplateName(WarehouseJournalTemplate.Name, WhseDemoDataSetup."Location Simple Logistics", WhseJnlBatchName);
             WarehouseJournalLine.CheckTemplateName(WarehouseJournalTemplate.Name, WhseDemoDataSetup."Location Basic", WhseJnlBatchName);
+            WarehouseJournalLine.CheckTemplateName(WarehouseJournalTemplate.Name, WhseDemoDataSetup."Location Simple Logistics", WhseJnlBatchName);
             WarehouseJournalLine.CheckTemplateName(WarehouseJournalTemplate.Name, WhseDemoDataSetup."Location Advanced Logistics", WhseJnlBatchName);
         end;
     end;
