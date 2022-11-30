@@ -18,6 +18,6 @@ codeunit 50114 "TimeZoneInfo Initializer"
     var
         InvalidTimeZoneIdErr: Label 'You have passed an invalid timezone ID (%1). Please reference the time zone list for supported time zone IDs.', Comment = '%1 = The invalid time zone ID passed to the procedure.';
     begin
-        Error(InvalidTimeZoneIdErr);
+        Error(InvalidTimeZoneIdErr, TimeZoneId);
     end;
 }
