@@ -2,18 +2,18 @@ codeunit 4781 "Adjust Whse. Demo Data"
 {
     procedure AdjustPrice(UnitPrice: Decimal): Decimal
     var
-        WarehousingDemoDataSetup: Record "Whse Demo Data Setup";
+        WhseDemoDataSetup: Record "Whse Demo Data Setup";
     begin
         if UnitPrice = 0 then
             exit(0);
 
-        WarehousingDemoDataSetup.Get();
-        exit(Round(UnitPrice * WarehousingDemoDataSetup."Price Factor"));
+        WhseDemoDataSetup.Get();
+        exit(Round(UnitPrice * WhseDemoDataSetup."Price Factor"));
     end;
 
     procedure AdjustDate(OriginalDate: Date): Date
     var
-        WarehousingDemoDataSetup: Record "Whse Demo Data Setup";
+        WhseDemoDataSetup: Record "Whse Demo Data Setup";
         TempDate: Date;
         WeekDay: Integer;
         MonthDay: Integer;
@@ -21,14 +21,14 @@ codeunit 4781 "Adjust Whse. Demo Data"
         Month: Integer;
         Year: Integer;
     begin
-        if WarehousingDemoDataSetup.Get() then;
+        if WhseDemoDataSetup.Get() then;
         if OriginalDate <> 0D then begin
             TempDate := CalcDate('<+92Y>', OriginalDate);
             WeekDay := Date2DWY(TempDate, 1);
             MonthDay := Date2DMY(TempDate, 1);
             Month := Date2DMY(TempDate, 2);
             Week := Date2DWY(TempDate, 2);
-            Year := Date2DMY(TempDate, 3) + WarehousingDemoDataSetup."Starting Year" - 1994;
+            Year := Date2DMY(TempDate, 3) + WhseDemoDataSetup."Starting Year" - 1994;
             case Month of
                 1, 3, 5, 7, 8, 10, 12:
                     if (MonthDay = 31) or (MonthDay = 1) then

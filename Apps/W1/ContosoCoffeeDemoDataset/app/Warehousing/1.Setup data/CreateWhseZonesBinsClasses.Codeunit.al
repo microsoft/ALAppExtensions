@@ -35,7 +35,7 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
 
     trigger OnRun()
     begin
-        WhseDemoDataSetup.Get;
+        WhseDemoDataSetup.Get();
         CreateCollection(false);
         OnAfterCreateZonesBinsClasses();
     end;
@@ -86,41 +86,6 @@ codeunit 4790 "Create Whse ZonesBinsClasses"
         BinType."Put Away" := PutAway;
         BinType."Pick" := Pick;
         BinType.Insert(DoInsertTriggers);
-    end;
-
-    local procedure CreateBinTemplate(
-        Code: Code[20];
-        Description: Text[100];
-        LocationCode: Code[10];
-        BinDescription: Text[50];
-        ZoneCode: Code[10];
-        BinTypeCode: Code[10];
-        WarehouseClassCode: Code[10];
-        BlockMovement: Option;
-        BinRanking: Integer;
-        MaximumCubage: Decimal;
-        MaximumWeight: Decimal;
-        Dedicated: Boolean
-    )
-    var
-        BinTemplate: Record "Bin Template";
-    begin
-        if BinTemplate.Get(Code) then
-            exit;
-        BinTemplate.Init();
-        BinTemplate."Code" := Code;
-        BinTemplate."Description" := Description;
-        BinTemplate."Location Code" := LocationCode;
-        BinTemplate."Bin Description" := BinDescription;
-        BinTemplate."Zone Code" := ZoneCode;
-        BinTemplate."Bin Type Code" := BinTypeCode;
-        BinTemplate."Warehouse Class Code" := WarehouseClassCode;
-        BinTemplate."Block Movement" := BlockMovement;
-        BinTemplate."Bin Ranking" := BinRanking;
-        BinTemplate."Maximum Cubage" := MaximumCubage;
-        BinTemplate."Maximum Weight" := MaximumWeight;
-        BinTemplate."Dedicated" := Dedicated;
-        BinTemplate.Insert(DoInsertTriggers);
     end;
 
     local procedure CreateBin(

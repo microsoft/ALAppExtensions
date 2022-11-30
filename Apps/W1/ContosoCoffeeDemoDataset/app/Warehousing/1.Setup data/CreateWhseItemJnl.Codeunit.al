@@ -6,7 +6,6 @@ codeunit 4789 "Create Whse Item Jnl"
 
     var
         WhseDemoDataSetup: Record "Whse Demo Data Setup";
-        DoInsertTriggers: Boolean;
 
     trigger OnRun()
     begin
@@ -21,15 +20,15 @@ codeunit 4789 "Create Whse Item Jnl"
 
     local procedure CreateItemJournal()
     var
-        ItemJnlTemplate: Record "Item Journal Template";
-        ItemJnlLine: Record "Item Journal Line";
-        ItemJnlMgmt: Codeunit ItemJnlManagement;
-        ItemJnlBatchName: Code[20];
+        ItemJournalTemplate: Record "Item Journal Template";
+        ItemJournalLine: Record "Item Journal Line";
+        ItemJnlManagement: Codeunit ItemJnlManagement;
+        ItemJnlBatchName: Code[10];
         JnlSelected: Boolean;
     begin
-        ItemJnlMgmt.TemplateSelection(PAGE::"Item Journal", 0, false, ItemJnlLine, JnlSelected);
-        if ItemJnlTemplate.FindFirst() then
-            ItemJnlMgmt.CheckTemplateName(ItemJnlTemplate.Name, ItemJnlBatchName);
+        ItemJnlManagement.TemplateSelection(PAGE::"Item Journal", 0, false, ItemJournalLine, JnlSelected);
+        if ItemJournalTemplate.FindFirst() then
+            ItemJnlManagement.CheckTemplateName(ItemJournalTemplate.Name, ItemJnlBatchName);
     end;
 
     local procedure CreateWhseItemJournal()

@@ -3,7 +3,7 @@ codeunit 4796 "Create Whse Orders"
 
     var
         WhseDemoDataSetup: Record "Whse Demo Data Setup";
-        AdjustWarehousingData: Codeunit "Adjust Whse. Demo Data";
+        AdjustWhseDemoData: Codeunit "Adjust Whse. Demo Data";
         XPALLETTok: Label 'PALLET', MaxLength = 10, Comment = 'Must be the same as in CreateWhseItem codeunit';
         XBAGTok: Label 'BAG', MaxLength = 10, Comment = 'Must be the same as in CreateWhseItem codeunit';
 
@@ -115,7 +115,7 @@ codeunit 4796 "Create Whse Orders"
         PurchaseHeader.Validate("Buy-from Vendor No.", VendorNo);
         OnBeforeInsertPurchaseHeader(PurchaseHeader);
         PurchaseHeader.Insert(true);
-        PurchaseHeader.Validate("Posting Date", AdjustWarehousingData.AdjustDate(19020601D));
+        PurchaseHeader.Validate("Posting Date", AdjustWhseDemoData.AdjustDate(19020601D));
         PurchaseHeader.Validate("Location Code", LocationCode);
         OnBeforeModifyPurchaseHeader(PurchaseHeader);
         PurchaseHeader.Modify(true);
@@ -130,7 +130,7 @@ codeunit 4796 "Create Whse Orders"
         PurchaseLine.Validate("Location Code", LocationCode);
         PurchaseLine.Validate("Unit of Measure Code", UnitOfMeasure);
         PurchaseLine.Validate(Quantity, Quantity);
-        PurchaseLine.Validate("Unit Cost", AdjustWarehousingData.AdjustPrice(10));
+        PurchaseLine.Validate("Unit Cost", AdjustWhseDemoData.AdjustPrice(10));
         OnBeforeModifyPurchaseLine(PurchaseHeader, PurchaseLine);
         PurchaseLine.Modify(true);
     end;
@@ -154,7 +154,7 @@ codeunit 4796 "Create Whse Orders"
         SalesHeader.Validate("Sell-To Customer No.", CustomerNo);
         OnBeforeInsertSalesHeader(SalesHeader);
         SalesHeader.Insert(true);
-        SalesHeader.Validate("Posting Date", AdjustWarehousingData.AdjustDate(19020601D));
+        SalesHeader.Validate("Posting Date", AdjustWhseDemoData.AdjustDate(19020601D));
         SalesHeader.Validate("Location Code", LocationCode);
         OnBeforeModifySalesHeader(SalesHeader);
         SalesHeader.Modify(true);
@@ -169,7 +169,7 @@ codeunit 4796 "Create Whse Orders"
         SalesLine.Validate("Location Code", LocationCode);
         SalesLine.Validate("Unit of Measure Code", UnitOfMeasure);
         SalesLine.Validate(Quantity, Quantity);
-        SalesLine.Validate("Unit Price", AdjustWarehousingData.AdjustPrice(15));
+        SalesLine.Validate("Unit Price", AdjustWhseDemoData.AdjustPrice(15));
         OnBeforeModifySalesLine(SalesHeader, SalesLine);
         SalesLine.Modify(true);
     end;

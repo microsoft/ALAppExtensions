@@ -74,7 +74,7 @@ codeunit 4793 "Create Whse Item"
         ItemUnitofMeasure.Insert(DoInsertTriggers);
     end;
 
-    local procedure InsertItem("No.": Code[20]; Description: Text[30]; UnitPrice: Decimal; LastDirectCost: Decimal; GenProdPostingGr: Code[20];
+    local procedure InsertItem("No.": Code[20]; Description: Text[100]; UnitPrice: Decimal; LastDirectCost: Decimal; GenProdPostingGr: Code[20];
                                 InventoryPostingGroup: Code[20]; CostingMethod: enum "Costing Method"; BaseUnitOfMeasure: code[10];
                                 CategoryCode: Code[20]; ItempPicTempBlob: Codeunit "Temp Blob"; ItemPictureDescription: Text)
     var
@@ -132,7 +132,7 @@ codeunit 4793 "Create Whse Item"
     local procedure CreateCollection(ShouldRunInsertTriggers: Boolean)
     var
         WhseDemoDataFiles: Codeunit "Whse. Demo Data Files";
-        AdjustWarehousingData: Codeunit "Adjust Whse. Demo Data";
+        AdjustWhseDemoData: Codeunit "Adjust Whse. Demo Data";
     begin
         DoInsertTriggers := ShouldRunInsertTriggers;
 
@@ -140,11 +140,11 @@ codeunit 4793 "Create Whse Item"
         CreateUnitofMeasure(XPALLETTok, XPALLETDescTok, 'PF', '');
         CreateUnitofMeasure(XPCSTok, XPCSDescTok, 'EA', '');
 
-        InsertItem(WhseDemoDataSetup."Main Item No.", XBeansDesc1Tok, AdjustWarehousingData.AdjustPrice(15), AdjustWarehousingData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
-        InsertItem(WhseDemoDataSetup."Complex Item No.", XBeansDesc2Tok, AdjustWarehousingData.AdjustPrice(15), AdjustWarehousingData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
-        InsertItem('WRB-1010', XBeansDesc3Tok, AdjustWarehousingData.AdjustPrice(15), AdjustWarehousingData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
-        InsertItem('WRB-1011', XBeansDesc4Tok, AdjustWarehousingData.AdjustPrice(15), AdjustWarehousingData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
-        InsertItem('WRB-1012', XBeansDesc5Tok, AdjustWarehousingData.AdjustPrice(15), AdjustWarehousingData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
+        InsertItem(WhseDemoDataSetup."Main Item No.", XBeansDesc1Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
+        InsertItem(WhseDemoDataSetup."Complex Item No.", XBeansDesc2Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
+        InsertItem('WRB-1010', XBeansDesc3Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
+        InsertItem('WRB-1011', XBeansDesc4Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
+        InsertItem('WRB-1012', XBeansDesc5Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
 
         CreateItemUnitofMeasure(WhseDemoDataSetup."Main Item No.", XBAGTok, 176, 0, 16, 24, 24, 9216, 132);
         CreateItemUnitofMeasure(WhseDemoDataSetup."Main Item No.", XPALLETTok, 1763, 0, 48, 48, 40, 92160, 1323);

@@ -90,7 +90,7 @@ codeunit 4787 "Create Whse Locations"
         CreateLocation(WhseDemoDataSetup."Location Advanced Logistics", 'White Warehouse', false, true, true, TextAsDateFormula(''), true, true, true, true, true, Enum::"Location Default Bin Selection"::" ", 'STD', true, 2, 'W-11-0001', 'W-08-0001', 'W-09-0001', 'W-14-0001', 'W-07-0002', 'W-07-0003', '', true);
     end;
 
-    local procedure AddUserAsWarehouseEmployee(UserId: Text)
+    local procedure AddUserAsWarehouseEmployee(UserId: Text[50])
     var
         WarehouseEmployee: Record "Warehouse Employee";
     begin
