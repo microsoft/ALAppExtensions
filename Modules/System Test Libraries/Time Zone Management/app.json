@@ -1,0 +1,39 @@
+{
+  "id": "76e7cf97-ab30-49f0-b430-6a91b6ac9b53",
+  "name": "Time Zone Management Test Library",
+  "publisher": "Microsoft",
+  "version": "21.0.0.0",
+  "brief": "Library with Test objects for the Time Zone Management module",
+  "description": "Library with Test objects for the Time Zone Management module",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "",
+  "dependencies": [
+    {
+      "id": "4c315253-b024-4fdc-9c3d-794036768af5",
+      "name": "Time Zone Management",
+      "publisher": "Microsoft",
+      "version": "21.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "21.0.0.0",
+  "application": "21.0.0.0",
+  "idRanges": [
+    {
+      "from": 50100,
+      "to": 50149
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": false,
+    "includeSourceInSymbolFile": false
+  },
+  "runtime": "10.0",
+  "features": [
+    "NoImplicitWith"
+  ]
+}
