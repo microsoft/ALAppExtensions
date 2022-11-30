@@ -53,7 +53,7 @@ codeunit 4799 "Create Warehousing Demo Data"
         WhseDemoDataSetup.Init();
         WhseDemoDataSetup.Validate("Starting Year", Date2DMY(Today, 3) - 1);
 
-        WhseDemoDataSetup."Finished Code" := XFINISHEDTok;
+        WhseDemoDataSetup."Resale Code" := XRESALETok;
         WhseDemoDataSetup."Retail Code" := XRETAILTok;
         WhseDemoDataSetup."Domestic Code" := XDOMESTICTok;
         WhseDemoDataSetup."S. Customer No." := XSMALLCUSTTok;
@@ -68,8 +68,8 @@ codeunit 4799 "Create Warehousing Demo Data"
         WhseDemoDataSetup."Main Item No." := XMAINITEMTok;
         WhseDemoDataSetup."Complex Item No." := XCOMPLEXITEMTok;
         WhseDemoDataSetup."Location Basic" := XLOCSIMPLETok;
-        WhseDemoDataSetup."Location Simple Logistics" := XLOCBASICLOGTok;
-        WhseDemoDataSetup."Location Advanced Logistics" := XLOCDIRECTEDTok;
+        WhseDemoDataSetup."Location Simple Logistics" := XLOCBASICTok;
+        WhseDemoDataSetup."Location Advanced Logistics" := XLOCADVANCEDTok;
 
         WhseDemoDataSetup.Insert();
 
@@ -116,23 +116,23 @@ codeunit 4799 "Create Warehousing Demo Data"
         WhseDemoDataSetup: Record "Whse Demo Data Setup";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         ContosoCoffeeDemoDatasetFeatureNameTok: Label 'ContosoCoffeeDemoDataset', Locked = true;
-        XFINISHEDTok: Label 'FINISHED', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
+        XRESALETok: Label 'RESALE', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         XRETAILTok: Label 'RETAIL', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         XDOMESTICTok: Label 'DOMESTIC', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         XSMALLCUSTTok: Label '71000', MaxLength = 20;
-        XSMALLCUSTPGTok: Label 'DOMESTIC', MaxLength = 10;
-        XSMALLCUSTGBPGTok: Label 'DOMESTIC', MaxLength = 10;
+        XSMALLCUSTPGTok: Label 'SMALL', MaxLength = 10;
+        XSMALLCUSTGBPGTok: Label 'SMALL', MaxLength = 10;
         XLARGECUSTTok: Label '72000', MaxLength = 20;
-        XLARGECUSTPGTok: Label 'DOMESTIC', MaxLength = 10;
-        XLARGECUSTGBPGTok: Label 'DOMESTIC', MaxLength = 10;
+        XLARGECUSTPGTok: Label 'LARGE', MaxLength = 10;
+        XLARGECUSTGBPGTok: Label 'LARGE', MaxLength = 10;
         XVENDORTok: Label '83000', MaxLength = 20;
         XVENDORPGTok: Label 'DOMESTIC', MaxLength = 10;
         XVENDORGBPGTok: Label 'DOMESTIC', MaxLength = 10;
         XMAINITEMTok: Label 'WRB-1000', MaxLength = 20;
         XCOMPLEXITEMTok: Label 'WRB-1001', MaxLength = 20;
-        XLOCSIMPLETok: Label 'SILVER', MaxLength = 10;
-        XLOCBASICLOGTok: Label 'YELLOW', MaxLength = 10;
-        XLOCDIRECTEDTok: Label 'WHITE', MaxLength = 10;
+        XLOCBASICTok: Label 'SILVER', MaxLength = 10;
+        XLOCSIMPLETok: Label 'YELLOW', MaxLength = 10;
+        XLOCADVANCEDTok: Label 'WHITE', MaxLength = 10;
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCreateSetupData()

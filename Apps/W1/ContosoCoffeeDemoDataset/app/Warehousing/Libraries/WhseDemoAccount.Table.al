@@ -28,25 +28,18 @@ table 4762 "Whse. Demo Account"
         IsReturnKey := ReturnKey;
     end;
 
-    procedure Finished(): Code[20]
+    procedure Resale(): Code[20]
     begin
         if IsReturnKey then
-            exit('992120');
-        exit(WhseDemoAccounts.GetAccount('992120'));
+            exit('992110');
+        exit(WhseDemoAccounts.GetAccount('992110'));
     end;
 
-    procedure FinishedInterim(): Code[20]
+    procedure ResaleInterim(): Code[20]
     begin
         if IsReturnKey then
-            exit('992121');
-        exit(WhseDemoAccounts.GetAccount('992121'));
-    end;
-
-    procedure FinishedWip(): Code[20]
-    begin
-        if IsReturnKey then
-            exit('992140');
-        exit(WhseDemoAccounts.GetAccount('992140'));
+            exit('992111');
+        exit(WhseDemoAccounts.GetAccount('992111'));
     end;
 
     procedure CustDomestic(): Code[20]
@@ -75,13 +68,6 @@ table 4762 "Whse. Demo Account"
         if IsReturnKey then
             exit('997110');
         exit(WhseDemoAccounts.GetAccount('997110'));
-    end;
-
-    procedure CostOfRetailSold(): Code[20]
-    begin
-        if IsReturnKey then
-            exit('997190');
-        exit(WhseDemoAccounts.GetAccount('997190'));
     end;
 
     procedure SalesVAT(): Code[20]

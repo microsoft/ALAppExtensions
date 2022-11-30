@@ -9,6 +9,8 @@ codeunit 4788 "Create Whse Posting Setup"
         WhseDemoDataSetup: Record "Whse Demo Data Setup";
         WhseDemoAccount: record "Whse. Demo Account";
         WhseDemoAccounts: Codeunit "Whse. Demo Accounts";
+        XSmallGBGTxt: Label 'Small customers', MaxLength = 50;
+        XLargeGBGTxt: Label 'Large customers', MaxLength = 50;
         XDomesticTxt: Label 'Domestic customers and vendors', MaxLength = 50;
         XRetailTxt: Label 'Retail Items', MaxLength = 50;
         XVATSetupDescTok: Label 'Setup for %1 / %2', MaxLength = 100, Comment = '%1 is the VAT Bus. Posting Group Code, %2 is the VAT Prod. Posting Group Code';
@@ -33,14 +35,10 @@ codeunit 4788 "Create Whse Posting Setup"
     begin
         WhseDemoAccount.ReturnAccountKey(true);
 
-        InsertGLAccount(WhseDemoAccount.Finished(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
-        InsertGLAccount(WhseDemoAccount.FinishedInterim(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
-        InsertGLAccount(WhseDemoAccount.FinishedWIP(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
         InsertGLAccount(WhseDemoAccount.CustDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
         InsertGLAccount(WhseDemoAccount.VendDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
         InsertGLAccount(WhseDemoAccount.SalesDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
         InsertGLAccount(WhseDemoAccount.PurchDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
-        InsertGLAccount(WhseDemoAccount.CostOfRetailSold(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
         InsertGLAccount(WhseDemoAccount.SalesVAT(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
         InsertGLAccount(WhseDemoAccount.PurchaseVAT(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
 
@@ -59,7 +57,10 @@ codeunit 4788 "Create Whse Posting Setup"
     begin
         if WhseDemoDataSetup."Company Type" = WhseDemoDataSetup."Company Type"::VAT then
             InsertVATBusPostingGroup(WhseDemoDataSetup."Domestic Code", XDomesticTxt);
-        InsertGenBusPostingGroup(WhseDemoDataSetup."Domestic Code", XDomesticTxt, WhseDemoDataSetup."Domestic Code");
+
+        InsertGenBusPostingGroup(WhseDemoDataSetup."SCust. Gen. Bus. Posting Group", XSmallGBGTxt, WhseDemoDataSetup."Domestic Code");
+        InsertGenBusPostingGroup(WhseDemoDataSetup."LCust. Gen. Bus. Posting Group", XLargeGBGTxt, WhseDemoDataSetup."Domestic Code");
+        InsertGenBusPostingGroup(WhseDemoDataSetup."Vend. Gen. Bus. Posting Group", XDomesticTxt, WhseDemoDataSetup."Domestic Code");
 
         if WhseDemoDataSetup."Company Type" = WhseDemoDataSetup."Company Type"::VAT then
             InsertVATProdPostingGroup(WhseDemoDataSetup."Retail Code", XRetailTxt);
@@ -160,11 +161,6 @@ codeunit 4788 "Create Whse Posting Setup"
         GeneralPostingSetup.Insert();
     end;
 
-    local procedure TextAsDateFormula(InputText: Text) OutputDateFormula: DateFormula
-    begin
-        Evaluate(OutputDateFormula, InputText);
-    end;
-
     local procedure CreateInventoryPostingGroup(
         Code: Code[20];
         Description: Text[100]
@@ -205,38 +201,26 @@ codeunit 4788 "Create Whse Posting Setup"
     var
         InventorySetup: Record "Inventory Setup";
     begin
-        if InventorySetup.Get() then begin
-            // Validate that key Number Series fields are populated, often required in CRONUS SaaS Eval Data
-            InventorySetup."Item Nos." := CheckNoSeriesSetup(InventorySetup."Item Nos.", ItemNos, 'Items', '1000', '9999');
-            InventorySetup."Transfer Order Nos." := CheckNoSeriesSetup(InventorySetup."Transfer Order Nos.", TransferOrderNos, 'Transfer Order', '1001', '9999');
-            InventorySetup."Posted Transfer Shpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Shpt. Nos.", PostedTransferShptNos, 'Transfer Shipment', '108001', '108999');
-            InventorySetup."Posted Transfer Rcpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Rcpt. Nos.", PostedTransferRcptNos, 'Transfer Receipt', '109000', '109999');
-            InventorySetup."Inventory Pick Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Pick Nos.", InventoryPickNos, 'Inventory Pick', 'IPI000001', 'IPI999999');
-            InventorySetup."Posted Invt. Pick Nos." := CheckNoSeriesSetup(InventorySetup."Posted Invt. Pick Nos.", PostedInvtPickNos, 'Posted Invt. Pick', 'PPI000001', 'PPI999999');
-            InventorySetup."Inventory Put-Away Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Put-Away Nos.", InventoryPutAwayNos, 'Inventory Put-Away', 'IPI000001', 'IPU999999');
-            InventorySetup."Posted Invt. Put-Away Nos." := CheckNoSeriesSetup(InventorySetup."Posted Invt. Put-Away Nos.", PostedInvtPutAwayNos, 'Posted Invt. Put-Away', 'PPU000001', 'PPI999999');
-            InventorySetup."Inventory Movement Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Movement Nos.", InventoryMovementNos, 'Inventory Movement', 'IM000001', 'IM999999');
-            InventorySetup."Registered Invt. Movement Nos." := CheckNoSeriesSetup(InventorySetup."Registered Invt. Movement Nos.", RegisteredInvtMovementNos, 'Reg. Inventory Movement', 'RIM000001', 'RIM999999');
-            InventorySetup."Internal Movement Nos." := CheckNoSeriesSetup(InventorySetup."Internal Movement Nos.", InternalMovementNos, 'Internal Movement', 'RINTM000001', 'RINTM999999');
-            InventorySetup.Modify(true);
-        end else begin
+        if not InventorySetup.Get() then begin
             InventorySetup.Init();
             InventorySetup."Primary Key" := PrimaryKey;
             InventorySetup."Location Mandatory" := LocationMandatory;
             InventorySetup."Copy Item Descr. to Entries" := CopyItemDescrtoEntries;
-            InventorySetup."Item Nos." := CheckNoSeriesSetup(InventorySetup."Item Nos.", ItemNos, 'Items', '1000', '9999');
-            InventorySetup."Transfer Order Nos." := CheckNoSeriesSetup(InventorySetup."Transfer Order Nos.", TransferOrderNos, 'Transfer Order', '1001', '9999');
-            InventorySetup."Posted Transfer Shpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Shpt. Nos.", PostedTransferShptNos, 'Transfer Shipment', '108001', '108999');
-            InventorySetup."Posted Transfer Rcpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Rcpt. Nos.", PostedTransferRcptNos, 'Transfer Receipt', '109000', '109999');
-            InventorySetup."Inventory Pick Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Pick Nos.", InventoryPickNos, 'Inventory Pick', 'IPI000001', 'IPI999999');
-            InventorySetup."Posted Invt. Pick Nos." := CheckNoSeriesSetup(InventorySetup."Posted Invt. Pick Nos.", PostedInvtPickNos, 'Posted Invt. Pick', 'PPI000001', 'PPI999999');
-            InventorySetup."Inventory Put-Away Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Put-Away Nos.", InventoryPutAwayNos, 'Inventory Put-Away', 'IPI000001', 'IPU999999');
-            InventorySetup."Posted Invt. Put-Away Nos." := CheckNoSeriesSetup(InventorySetup."Posted Invt. Put-Away Nos.", PostedInvtPutAwayNos, 'Posted Invt. Put-Away', 'PPU000001', 'PPI999999');
-            InventorySetup."Inventory Movement Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Movement Nos.", InventoryMovementNos, 'Inventory Movement', 'IM000001', 'IM999999');
-            InventorySetup."Registered Invt. Movement Nos." := CheckNoSeriesSetup(InventorySetup."Registered Invt. Movement Nos.", RegisteredInvtMovementNos, 'Reg. Inventory Movement', 'RIM000001', 'RIM999999');
-            InventorySetup."Internal Movement Nos." := CheckNoSeriesSetup(InventorySetup."Internal Movement Nos.", InternalMovementNos, 'Internal Movement', 'RINTM000001', 'RINTM999999');
             InventorySetup.Insert(DoInsertTriggers);
         end;
+        // Validate that key Number Series fields are populated, often required in CRONUS SaaS Eval Data
+        InventorySetup."Item Nos." := CheckNoSeriesSetup(InventorySetup."Item Nos.", ItemNos, 'Items', '1000', '9999');
+        InventorySetup."Transfer Order Nos." := CheckNoSeriesSetup(InventorySetup."Transfer Order Nos.", TransferOrderNos, 'Transfer Order', '1001', '9999');
+        InventorySetup."Posted Transfer Shpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Shpt. Nos.", PostedTransferShptNos, 'Transfer Shipment', '108001', '108999');
+        InventorySetup."Posted Transfer Rcpt. Nos." := CheckNoSeriesSetup(InventorySetup."Posted Transfer Rcpt. Nos.", PostedTransferRcptNos, 'Transfer Receipt', '109000', '109999');
+        InventorySetup."Inventory Pick Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Pick Nos.", InventoryPickNos, 'Inventory Pick', 'IPI000001', 'IPI999999');
+        InventorySetup."Posted Invt. Pick Nos." := CheckNoSeriesSetup(InventorySetup."Posted Invt. Pick Nos.", PostedInvtPickNos, 'Posted Invt. Pick', 'PPI000001', 'PPI999999');
+        InventorySetup."Inventory Put-Away Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Put-Away Nos.", InventoryPutAwayNos, 'Inventory Put-Away', 'IPI000001', 'IPU999999');
+        InventorySetup."Posted Invt. Put-Away Nos." := CheckNoSeriesSetup(InventorySetup."Posted Invt. Put-Away Nos.", PostedInvtPutAwayNos, 'Posted Invt. Put-Away', 'PPU000001', 'PPI999999');
+        InventorySetup."Inventory Movement Nos." := CheckNoSeriesSetup(InventorySetup."Inventory Movement Nos.", InventoryMovementNos, 'Inventory Movement', 'IM000001', 'IM999999');
+        InventorySetup."Registered Invt. Movement Nos." := CheckNoSeriesSetup(InventorySetup."Registered Invt. Movement Nos.", RegisteredInvtMovementNos, 'Reg. Inventory Movement', 'RIM000001', 'RIM999999');
+        InventorySetup."Internal Movement Nos." := CheckNoSeriesSetup(InventorySetup."Internal Movement Nos.", InternalMovementNos, 'Internal Movement', 'RINTM000001', 'RINTM999999');
+        InventorySetup.Modify(DoInsertTriggers);
     end;
 
     local procedure CreateInventoryPostingSetup(
@@ -245,13 +229,7 @@ codeunit 4788 "Create Whse Posting Setup"
         InventoryAccount: Code[20];
         Description: Text[100];
         ViewAllAccountsonLookup: Boolean;
-        InventoryAccountInterim: Code[20];
-        WIPAccount: Code[20];
-        MaterialVarianceAccount: Code[20];
-        CapacityVarianceAccount: Code[20];
-        MfgOverheadVarianceAccount: Code[20];
-        CapOverheadVarianceAccount: Code[20];
-        SubcontractedVarianceAccount: Code[20]
+        InventoryAccountInterim: Code[20]
     )
     var
         InventoryPostingSetup: Record "Inventory Posting Setup";
@@ -265,12 +243,6 @@ codeunit 4788 "Create Whse Posting Setup"
         InventoryPostingSetup."Description" := Description;
         InventoryPostingSetup."View All Accounts on Lookup" := ViewAllAccountsonLookup;
         InventoryPostingSetup."Inventory Account (Interim)" := InventoryAccountInterim;
-        InventoryPostingSetup."WIP Account" := WIPAccount;
-        InventoryPostingSetup."Material Variance Account" := MaterialVarianceAccount;
-        InventoryPostingSetup."Capacity Variance Account" := CapacityVarianceAccount;
-        InventoryPostingSetup."Mfg. Overhead Variance Account" := MfgOverheadVarianceAccount;
-        InventoryPostingSetup."Cap. Overhead Variance Account" := CapOverheadVarianceAccount;
-        InventoryPostingSetup."Subcontracted Variance Account" := SubcontractedVarianceAccount;
         InventoryPostingSetup.Insert(DoInsertTriggers);
     end;
 
@@ -289,55 +261,34 @@ codeunit 4788 "Create Whse Posting Setup"
     var
         WarehouseSetup: Record "Warehouse Setup";
     begin
-        if WarehouseSetup.Get() then begin
-            WarehouseSetup."Whse. Receipt Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Receipt Nos.", WhseReceiptNos, 'Whse. Receipt', 'RE000001', 'RE999999');
-            WarehouseSetup."Posted Whse. Receipt Nos." := CheckNoSeriesSetup(WarehouseSetup."Posted Whse. Receipt Nos.", WhsePostedReceiptNos, 'Posted Whse. Receipt', 'R_000001', 'R_999999');
-            WarehouseSetup."Whse. Ship Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Ship Nos.", WhseShipNos, 'Whse. Ship', 'SH000001', 'SH999999');
-            WarehouseSetup."Posted Whse. Shipment Nos." := CheckNoSeriesSetup(WarehouseSetup."Posted Whse. Shipment Nos.", WhsePostedShipNos, 'Posted Whse. Shpt.', 'S_000001', 'S_999999');
-            WarehouseSetup."Whse. Put-away Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Put-away Nos.", WhsePutAwayNos, 'Whse. Put-away', 'PU000001', 'PU999999');
-            WarehouseSetup."Registered Whse. Put-away Nos." := CheckNoSeriesSetup(WarehouseSetup."Registered Whse. Put-away Nos.", WhseRegPutAwayNos, 'Registered Whse. Put-away', 'PU_000001', 'PU_999999');
-            WarehouseSetup."Whse. Pick Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Pick Nos.", WhsePickNos, 'Whse. Pick', 'PI000001', 'PI999999');
-            WarehouseSetup."Registered Whse. Pick Nos." := CheckNoSeriesSetup(WarehouseSetup."Registered Whse. Pick Nos.", WhseRegPickNos, 'Registered Whse. Put-away', 'P_000001', 'P_999999');
-            WarehouseSetup."Whse. Movement Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Movement Nos.", WhseMovementNos, 'Whse. Movement', 'WM000001', 'WM999999');
-            WarehouseSetup."Registered Whse. Movement Nos." := CheckNoSeriesSetup(WarehouseSetup."Registered Whse. Movement Nos.", WhseRegMovementNos, 'Registered Whse. Movement', 'WM_000001', 'WM_999999');
-            WarehouseSetup.Modify(true);
-        end else begin
+        if not WarehouseSetup.Get() then begin
             WarehouseSetup.Init();
-            WarehouseSetup."Whse. Receipt Nos." := WhseReceiptNos;
-            WarehouseSetup."Posted Whse. Receipt Nos." := WhsePostedReceiptNos;
-            WarehouseSetup."Whse. Ship Nos." := WhseShipNos;
-            WarehouseSetup."Posted Whse. Shipment Nos." := WhsePostedShipNos;
-            WarehouseSetup."Whse. Put-away Nos." := WhsePutAwayNos;
-            WarehouseSetup."Registered Whse. Put-away Nos." := WhseRegPutAwayNos;
-            WarehouseSetup."Whse. Pick Nos." := WhsePickNos;
-            WarehouseSetup."Registered Whse. Pick Nos." := WhseRegPickNos;
-            WarehouseSetup."Whse. Movement Nos." := WhseMovementNos;
-            WarehouseSetup."Registered Whse. Movement Nos." := WhseRegMovementNos;
-            WarehouseSetup.Insert(true);
+            WarehouseSetup.Insert(DoInsertTriggers);
         end;
+        WarehouseSetup."Whse. Receipt Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Receipt Nos.", WhseReceiptNos, 'Whse. Receipt', 'RE000001', 'RE999999');
+        WarehouseSetup."Posted Whse. Receipt Nos." := CheckNoSeriesSetup(WarehouseSetup."Posted Whse. Receipt Nos.", WhsePostedReceiptNos, 'Posted Whse. Receipt', 'R_000001', 'R_999999');
+        WarehouseSetup."Whse. Ship Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Ship Nos.", WhseShipNos, 'Whse. Ship', 'SH000001', 'SH999999');
+        WarehouseSetup."Posted Whse. Shipment Nos." := CheckNoSeriesSetup(WarehouseSetup."Posted Whse. Shipment Nos.", WhsePostedShipNos, 'Posted Whse. Shpt.', 'S_000001', 'S_999999');
+        WarehouseSetup."Whse. Put-away Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Put-away Nos.", WhsePutAwayNos, 'Whse. Put-away', 'PU000001', 'PU999999');
+        WarehouseSetup."Registered Whse. Put-away Nos." := CheckNoSeriesSetup(WarehouseSetup."Registered Whse. Put-away Nos.", WhseRegPutAwayNos, 'Registered Whse. Put-away', 'PU_000001', 'PU_999999');
+        WarehouseSetup."Whse. Pick Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Pick Nos.", WhsePickNos, 'Whse. Pick', 'PI000001', 'PI999999');
+        WarehouseSetup."Registered Whse. Pick Nos." := CheckNoSeriesSetup(WarehouseSetup."Registered Whse. Pick Nos.", WhseRegPickNos, 'Registered Whse. Put-away', 'P_000001', 'P_999999');
+        WarehouseSetup."Whse. Movement Nos." := CheckNoSeriesSetup(WarehouseSetup."Whse. Movement Nos.", WhseMovementNos, 'Whse. Movement', 'WM000001', 'WM999999');
+        WarehouseSetup."Registered Whse. Movement Nos." := CheckNoSeriesSetup(WarehouseSetup."Registered Whse. Movement Nos.", WhseRegMovementNos, 'Registered Whse. Movement', 'WM_000001', 'WM_999999');
+        WarehouseSetup.Modify(DoInsertTriggers);
     end;
 
     local procedure CreateCollection(ShouldRunInsertTriggers: Boolean)
     begin
         DoInsertTriggers := ShouldRunInsertTriggers;
-        CreateInventoryPostingGroup('FINISHED', 'Finished items');
-        CreateInventoryPostingGroup('RAW MAT', 'Raw materials');
-        CreateInventoryPostingGroup('RESALE', 'Resale items');
+        CreateInventoryPostingGroup(WhseDemoDataSetup."Resale Code", 'Resale items');
 
         CreateInventorySetup('', false, false, 'ITEM1', false, 'T-ORD', 'T-SHPT', 'T-RCPT', 'I-RCPT', 'I-RCPT+', 'I-SHPT', 'I-SHPT+', 'PDIRTRANS', 'I-PUT', 'I-PICK', 'I-PUT+', 'I-PICK+', 'I-MOVEMENT', 'I-MOVE+', 'INT-MOVE');
 
-        CreateInventoryPostingSetup('', 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup('', 'RAW MAT', '2130', '', false, '2131', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup('', 'RESALE', '2110', '', false, '2111', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Basic", 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Basic", 'RAW MAT', '2130', '', false, '2131', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Basic", 'RESALE', '2110', '', false, '2111', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Simple Logistics", 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Simple Logistics", 'RAW MAT', '2130', '', false, '2131', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Simple Logistics", 'RESALE', '2110', '', false, '2111', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Advanced Logistics", 'FINISHED', '2120', '', false, '2121', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Advanced Logistics", 'RAW MAT', '2130', '', false, '2131', '2140', '7890', '7891', '7894', '7893', '7892');
-        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Advanced Logistics", 'RESALE', '2110', '', false, '2111', '2140', '7890', '7891', '7894', '7893', '7892');
+        CreateInventoryPostingSetup('', WhseDemoDataSetup."Resale Code", WhseDemoAccount.Resale(), '', false, WhseDemoAccount.ResaleInterim());
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Basic", WhseDemoDataSetup."Resale Code", WhseDemoAccount.Resale(), '', false, WhseDemoAccount.ResaleInterim());
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Simple Logistics", WhseDemoDataSetup."Resale Code", WhseDemoAccount.Resale(), '', false, WhseDemoAccount.ResaleInterim());
+        CreateInventoryPostingSetup(WhseDemoDataSetup."Location Advanced Logistics", WhseDemoDataSetup."Resale Code", WhseDemoAccount.Resale(), '', false, WhseDemoAccount.ResaleInterim());
 
         CreateWarehouseSetup('WMS-RCPT', 'WMS-RCPT+', 'WMS-SHIP', 'WMS-SHIP+', 'WMS-PUT', 'WMS-PUT+', 'WMS-PICK', 'WMS-PICK+', 'WMS-MOV', 'WMS-MOV+');
     end;
@@ -353,7 +304,7 @@ codeunit 4788 "Create Whse Posting Setup"
         CustomerPostingGroup.Code := CustPostingGroupCode;
         CustomerPostingGroup.Validate("Receivables Account", ReceivablesAccount);
         OnBeforeCustomerPostingGroupInsert(CustomerPostingGroup);
-        CustomerPostingGroup.Insert(true);
+        CustomerPostingGroup.Insert(DoInsertTriggers);
     end;
 
     local procedure InsertVendorPostingGroup(VendorPostingGroupCode: Code[20]; PayablesAccount: Code[20])
@@ -367,7 +318,7 @@ codeunit 4788 "Create Whse Posting Setup"
         VendorPostingGroup.Code := VendorPostingGroupCode;
         VendorPostingGroup.Validate("Payables Account", PayablesAccount);
         OnBeforeVendorPostingGroupInsert(VendorPostingGroup);
-        VendorPostingGroup.Insert(true);
+        VendorPostingGroup.Insert(DoInsertTriggers);
     end;
 
     local procedure InsertVATBusPostingGroup(BusinessGroupCode: Code[10]; BusinessGroupDescription: Text)
@@ -381,7 +332,7 @@ codeunit 4788 "Create Whse Posting Setup"
         VATBusPostingGroup.Code := BusinessGroupCode;
         VATBusPostingGroup.Description := BusinessGroupDescription;
         OnBeforeInsertVATBusPostingGroup(VATBusPostingGroup);
-        VATBusPostingGroup.Insert(true);
+        VATBusPostingGroup.Insert(DoInsertTriggers);
     end;
 
     local procedure InsertVATProdPostingGroup(ProductGroupCode: Code[10]; ProductGroupDescriptionText: Text)
@@ -395,7 +346,7 @@ codeunit 4788 "Create Whse Posting Setup"
         VATProdPostingGroup.Code := ProductGroupCode;
         VATProdPostingGroup.Description := ProductGroupDescriptionText;
         OnBeforeInsertVATProdPostingGroup(VATProdPostingGroup);
-        VATProdPostingGroup.Insert(true);
+        VATProdPostingGroup.Insert(DoInsertTriggers);
     end;
 
     local procedure InsertVATPostingSetup(BusinessGroupCode: Code[10]; ProductGroupCode: Code[10])
@@ -420,7 +371,7 @@ codeunit 4788 "Create Whse Posting Setup"
         VATPostingSetup."VAT %" := 25;
         VATPostingSetup."VAT Calculation Type" := VATPostingSetup."VAT Calculation Type"::"Normal VAT";
         OnBeforeInsertVATPostingSetup(VATPostingSetup);
-        VATPostingSetup.Insert(true);
+        VATPostingSetup.Insert(DoInsertTriggers);
     end;
 
     local procedure CheckNoSeriesSetup(CurrentSetupField: Code[20]; NumberSeriesCode: Code[20]; SeriesDescription: Text; StartNo: Text; EndNo: Text) NewSetupValue: Code[20]
@@ -436,12 +387,12 @@ codeunit 4788 "Create Whse Posting Setup"
             NoSeries.Code := NumberSeriesCode;
             NoSeries.Description := SeriesDescription;
             NoSeries.Validate("Default Nos.", true);
-            NoSeries.Insert(true);
+            NoSeries.Insert(DoInsertTriggers);
 
             NoSeriesLine.Init();
             NoSeriesLine."Series Code" := NumberSeriesCode;
             NoSeriesLine."Line No." := 10000;
-            NoSeriesLine.Insert(true);
+            NoSeriesLine.Insert(DoInsertTriggers);
             NoSeriesLine.Validate("Starting No.", StartNo);
             NoSeriesLine.Validate("Ending No.", EndNo);
             NoSeriesLine.Validate("Increment-by No.", 1);
