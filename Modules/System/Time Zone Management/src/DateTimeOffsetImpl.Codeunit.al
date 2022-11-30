@@ -13,6 +13,15 @@ codeunit 50111 "DateTime Offset Impl."
         exit(Offset);
     end;
 
+    procedure GetUtcOffsetForUserTimeZone(SourceDateTime: DateTime): Duration
+    var
+        Session: SessionSettings;
+    begin
+        Session.Init();
+        if Session.TimeZone <> '' then
+            exit(GetUtcOffset(SourceDateTime, Session.TimeZone));
+    end;
+
     procedure GetTimeZoneOffset(SourceDateTime: DateTime; SourceTimeZoneId: Text; DestinationTimeZoneId: Text): Duration
     var
         SourceUtcOffset: Duration;
