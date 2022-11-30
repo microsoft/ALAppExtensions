@@ -5,10 +5,14 @@ codeunit 4791 "Create Whse Put Away Template"
 
     var
         DoInsertTriggers: Boolean;
+        XSTDTok: Label 'STD', Locked = true;
+        XVARTok: Label 'VAR', Locked = true;
+        XSTDDescTok: Label 'Standard Template', MaxLength = 100;
+        XVARDescTok: Label 'Variable Template', MaxLength = 100;
 
     trigger OnRun()
     begin
-        CreateCollection(false);
+        CreatePutawayTemplateLines(false);
     end;
 
     local procedure CreatePutawayTemplateHeader(
@@ -55,21 +59,21 @@ codeunit 4791 "Create Whse Put Away Template"
         PutawayTemplateLine.Insert(DoInsertTriggers);
     end;
 
-    local procedure CreateCollection(ShouldRunInsertTriggers: Boolean)
+    local procedure CreatePutawayTemplateLines(ShouldRunInsertTriggers: Boolean)
     begin
         DoInsertTriggers := ShouldRunInsertTriggers;
-        CreatePutawayTemplateHeader('STD', 'Standard Template');
-        CreatePutawayTemplateHeader('VAR', 'Variable Template');
+        CreatePutawayTemplateHeader(XSTDTok, XSTDDescTok);
+        CreatePutawayTemplateHeader(XVARTok, XVARDescTok);
 
-        CreatePutawayTemplateLine('STD', 10000, '', true, false, true, true, true, false);
-        CreatePutawayTemplateLine('STD', 20000, '', true, false, true, true, false, false);
-        CreatePutawayTemplateLine('STD', 30000, '', false, true, true, true, false, false);
-        CreatePutawayTemplateLine('STD', 40000, '', false, true, true, false, false, false);
-        CreatePutawayTemplateLine('STD', 50000, '', false, true, false, false, false, true);
-        CreatePutawayTemplateLine('STD', 60000, '', false, true, false, false, false, false);
-        CreatePutawayTemplateLine('VAR', 10000, '', false, true, true, true, false, false);
-        CreatePutawayTemplateLine('VAR', 20000, '', false, true, false, false, false, true);
-        CreatePutawayTemplateLine('VAR', 30000, '', false, true, false, false, false, false);
+        CreatePutawayTemplateLine(XSTDTok, 10000, '', true, false, true, true, true, false);
+        CreatePutawayTemplateLine(XSTDTok, 20000, '', true, false, true, true, false, false);
+        CreatePutawayTemplateLine(XSTDTok, 30000, '', false, true, true, true, false, false);
+        CreatePutawayTemplateLine(XSTDTok, 40000, '', false, true, true, false, false, false);
+        CreatePutawayTemplateLine(XSTDTok, 50000, '', false, true, false, false, false, true);
+        CreatePutawayTemplateLine(XSTDTok, 60000, '', false, true, false, false, false, false);
+        CreatePutawayTemplateLine(XVARTok, 10000, '', false, true, true, true, false, false);
+        CreatePutawayTemplateLine(XVARTok, 20000, '', false, true, false, false, false, true);
+        CreatePutawayTemplateLine(XVARTok, 30000, '', false, true, false, false, false, false);
 
     end;
 }
