@@ -16,7 +16,7 @@ function GenerateNuspec
 {
     [xml] $template = Get-Content "$PSScriptRoot\ALAppExtensions.nuspec"
 
-    $template.package.metadata.id = $PackageId
+    $template.package.metadata.id = (Get-Culture).TextInfo.ToTitleCase($PackageId)
     $template.package.metadata.version = $Version
     $template.package.metadata.authors = $Authors
     $template.package.metadata.owners = $Owners
@@ -50,14 +50,14 @@ $testAppsFolder = $parameters.testAppsFolder
 $type = $parameters.type
 
 # Construct package ID
-$packageId = "$($env:GITHUB_REPOSITORY_OWNER)-$($env:RepoName)"
+$packageId = "$($env:GITHUB_REPOSITORY_OWNER).$($env:RepoName)"
 
 if (-not $project -or ($project -ne '.')) {
-    $packageId += "-$projectName"
+    $packageId += ".$projectName"
 }
 
 if ($type -eq 'CD') {
-    $packageId += "-preview"
+    $packageId += ".preview"
 }
 
 # Extract version from the published folders (naming convention)
