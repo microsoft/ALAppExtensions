@@ -21,13 +21,13 @@ if(($branchName -eq 'main') -or $branchName.StartsWith('release/')) {
 
     Write-Host "Current app name: $appName; app folder: $appProjectFolder"
 
-    # TODO there must be a better way :D
+    # TODO Use Al-Go project settings to determine if the app is a test app or not.
     $holderFolder = 'TestApps'
     if($appName -eq "System Application") {
         $holderFolder = 'Apps'
     }
 
-    $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName" # hackidy-hack
+    $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName" # manually construct the artifacts folder
 
     if(-not (Test-Path $packageArtifactsFolder)) {
         Write-Host "Creating $packageArtifactsFolder"
