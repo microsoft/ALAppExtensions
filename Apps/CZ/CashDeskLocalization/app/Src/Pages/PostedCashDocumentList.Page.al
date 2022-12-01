@@ -148,9 +148,6 @@ page 31167 "Posted Cash Document List CZP"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
@@ -167,9 +164,6 @@ page 31167 "Posted Cash Document List CZP"
                 Caption = 'Find Entries';
                 Ellipsis = true;
                 Image = Navigate;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ShortCutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
@@ -177,6 +171,36 @@ page 31167 "Posted Cash Document List CZP"
                 begin
                     Rec.Navigate();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref(NavigatePromoted; "&Navigate")
+                {
+                }
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Cash Document';
+
+                actionref(DimensionsPromoted; Dimensions)
+                {
+                }
+                actionref(DocAttachPromoted; DocAttach)
+                {
+                }
+            }
+            group(Category_Report)
+            {
+                Caption = 'Report';
+
+                actionref(PrinttoAttachmentPromoted; PrintToAttachment)
+                {
+                }
             }
         }
     }

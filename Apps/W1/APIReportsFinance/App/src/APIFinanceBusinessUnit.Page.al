@@ -29,6 +29,22 @@ page 30301 "API Finance - Business Unit"
                 {
                     Caption = 'Code';
                 }
+                field(companyName; Rec."Company Name")
+                {
+                    Caption = 'Company Name';
+                }
+                field(currencyCode; Rec."Currency Code")
+                {
+                    Caption = 'Company Name';
+                }
+                field(consolidate; Rec.Consolidate)
+                {
+                    Caption = 'Consolidate';
+                }
+                field(consolidationPercentage; Rec."Consolidation %")
+                {
+                    Caption = 'Consolidation %';
+                }
                 field(startingDate; Rec."Starting Date")
                 {
                     Caption = 'Starting Date';
@@ -36,6 +52,10 @@ page 30301 "API Finance - Business Unit"
                 field(endingDate; Rec."Ending Date")
                 {
                     Caption = 'Ending Date';
+                }
+                field(lastRun; Rec."Last Run")
+                {
+                    Caption = 'Last Run';
                 }
                 field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {

@@ -30,6 +30,10 @@ page 30006 "APIV2 - Aut. Extension Upload"
                 {
                     Caption = 'Schedule';
                 }
+                field(schemaSyncMode; "Schema Sync Mode")
+                {
+                    Caption = 'Schema Sync Mode';
+                }
                 field(extensionContent; Content)
                 {
                     Caption = 'Content';
@@ -61,7 +65,7 @@ page 30006 "APIV2 - Aut. Extension Upload"
     begin
         if Content.HasValue() then begin
             Content.CreateInStream(FileInStream);
-            ExtensionManagement.UploadExtensionToVersion(FileInStream, GlobalLanguage(), Rec.Schedule);
+            ExtensionManagement.UploadExtensionToVersion(FileInStream, GlobalLanguage(), Rec.Schedule, Rec."Schema Sync Mode");
             Delete();
         end else
             Error(ExtensionContentEmptyErr);

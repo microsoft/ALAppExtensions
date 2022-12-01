@@ -283,6 +283,7 @@ table 4812 "Intrastat Report Line"
         {
             Caption = 'Supplementary Unit Conversion Factor';
             DecimalPlaces = 0 : 5;
+            Editable = false;
 
             trigger OnValidate()
             var
@@ -296,11 +297,23 @@ table 4812 "Intrastat Report Line"
         {
             Caption = 'Supplementary Unit of Measure';
             TableRelation = "Item Unit of Measure".Code where("Item No." = field("Item No."));
+
+            trigger OnValidate()
+            var
+                ItemUOM: Record "Item Unit of Measure";
+            begin
+                if "Suppl. Unit of Measure" <> '' then begin
+                    ItemUOM.Get("Item No.", "Suppl. Unit of Measure");
+                    Validate("Suppl. Conversion Factor", ItemUOM."Qty. per Unit of Measure");
+                end else
+                    Validate("Suppl. Conversion Factor", 0);
+            end;
         }
         field(35; "Supplementary Quantity"; Decimal)
         {
             Caption = 'Supplementary Quantity';
             DecimalPlaces = 0 : 5;
+            Editable = false;
         }
         field(36; "Statistical System"; Enum "Intrastat Report Stat. System")
         {
@@ -422,6 +435,9 @@ table 4812 "Intrastat Report Line"
         key(Key8; Type, "Country/Region Code", "Partner VAT ID", "Transaction Type", "Tariff No.", "Group Code", "Transport Method", "Transaction Specification", "Country/Region of Origin Code", "Area", "Corrective entry")
         {
         }
+        key(Key9; "Intrastat No.", Type)
+        {
+        }
     }
 
     trigger OnDelete()
@@ -436,7 +452,6 @@ table 4812 "Intrastat Report Line"
     trigger OnInsert()
     begin
         CheckHeaderStatusOpen();
-        IntrastatReportHeader.Get("Intrastat No.");
     end;
 
     trigger OnModify()
@@ -640,7 +655,7 @@ table 4812 "Intrastat Report Line"
                         Customer."Country/Region Code",
                         IntrastatReportMgt.GetVATRegNo(
                             Customer."Country/Region Code", Customer."VAT Registration No.", IntrastatReportSetup."Cust. VAT No. on File"),
-                        Customer."Partner Type" = Customer."Partner Type"::Person, EU3rdPartyTrade));
+                            IntrastatReportMgt.IsCustomerPrivatePerson(Customer), EU3rdPartyTrade));
                 end;
             ItemLedgerEntry."Source Type"::Vendor:
                 if Vendor."No." <> '' then begin
@@ -654,7 +669,7 @@ table 4812 "Intrastat Report Line"
                         Vendor."Country/Region Code",
                         IntrastatReportMgt.GetVATRegNo(
                             Vendor."Country/Region Code", Vendor."VAT Registration No.", IntrastatReportSetup."Vend. VAT No. on File"),
-                        Vendor."Partner Type" = Vendor."Partner Type"::Person, false));
+                            IntrastatReportMgt.IsVendorPrivatePerson(Vendor), false));
                 end;
         end;
     end;
@@ -692,8 +707,8 @@ table 4812 "Intrastat Report Line"
           GetPartnerIDForCountry(
             Customer."Country/Region Code",
             IntrastatReportMgt.GetVATRegNo(
-              Customer."Country/Region Code", Customer."VAT Registration No.", IntrastatReportSetup."Cust. VAT No. on File"),
-            Customer."Partner Type" = Customer."Partner Type"::Person, false));
+                Customer."Country/Region Code", Customer."VAT Registration No.", IntrastatReportSetup."Cust. VAT No. on File"),
+                IntrastatReportMgt.IsCustomerPrivatePerson(Customer), false));
     end;
 
     local procedure GetPartnerIDFromFAEntry(): Text[50]
@@ -737,8 +752,8 @@ table 4812 "Intrastat Report Line"
           GetPartnerIDForCountry(
             Vendor."Country/Region Code",
             IntrastatReportMgt.GetVATRegNo(
-              Vendor."Country/Region Code", Vendor."VAT Registration No.", IntrastatReportSetup."Vend. VAT No. on File"),
-            Vendor."Partner Type" = Vendor."Partner Type"::Person, false));
+                Vendor."Country/Region Code", Vendor."VAT Registration No.", IntrastatReportSetup."Vend. VAT No. on File"),
+                IntrastatReportMgt.IsVendorPrivatePerson(Vendor), false));
     end;
 
     local procedure GetPartnerIDForCountry(CountryRegionCode: Code[10]; VATRegistrationNo: Text[50]; IsPrivatePerson: Boolean; IsThirdPartyTrade: Boolean): Text[50]
