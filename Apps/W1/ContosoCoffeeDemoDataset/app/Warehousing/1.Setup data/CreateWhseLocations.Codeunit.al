@@ -16,7 +16,7 @@ codeunit 4787 "Create Whse Locations"
 
         OnBeforeAddCurrentUserAsWhseEmployee(IsHandled);
         if not IsHandled then
-            AddUserAsWarehouseEmployee(UserId);
+            AddUserAsWarehouseEmployee(CopyStr(UserId, 1, 50));
     end;
 
     local procedure TextAsDateFormula(InputText: Text) OutputDateFormula: DateFormula

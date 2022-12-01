@@ -52,6 +52,7 @@ codeunit 4799 "Create Warehousing Demo Data"
 
         WhseDemoDataSetup.Init();
         WhseDemoDataSetup.Validate("Starting Year", Date2DMY(Today, 3) - 1);
+        WhseDemoDataSetup."Auto Create Whse. Employees" := true;
 
         WhseDemoDataSetup."Resale Code" := XRESALETok;
         WhseDemoDataSetup."Retail Code" := XRETAILTok;
@@ -83,11 +84,11 @@ codeunit 4799 "Create Warehousing Demo Data"
         WhseDemoDataSetup.Get();
 
         Codeunit.Run(Codeunit::"Create Whse Demo Accounts");
-        Codeunit.Run(Codeunit::"Create Whse Item Jnl");
         Codeunit.Run(Codeunit::"Create Whse Put Away Template");
         Codeunit.Run(Codeunit::"Create Whse ZonesBinsClasses");
         Codeunit.Run(Codeunit::"Create Whse Locations");
         Codeunit.Run(Codeunit::"Create Whse Posting Setup");
+        Codeunit.Run(Codeunit::"Create Whse Item Jnl");
 
         OnAfterCreateSetupData();
         Commit();

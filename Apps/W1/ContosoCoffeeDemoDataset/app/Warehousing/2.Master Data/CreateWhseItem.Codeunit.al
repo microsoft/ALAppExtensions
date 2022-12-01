@@ -22,6 +22,7 @@ codeunit 4793 "Create Whse Item"
 
     trigger OnRun()
     begin
+        WhseDemoDataSetup.Get();
         CreateCollection(false);
         OnAfterCreatedItems();
     end;

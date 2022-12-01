@@ -144,7 +144,7 @@ codeunit 4788 "Create Whse Posting Setup"
 
         if WhseDemoDataSetup."Company Type" = WhseDemoDataSetup."Company Type"::VAT then
             InsertVATProdPostingGroup(WhseDemoDataSetup."Retail Code", XRetailTxt);
-        InsertGenProdPostingGroup(WhseDemoDataSetup."Retail Code", XRetailTxt, WhseDemoDataSetup."Retail Code");
+        InsertGenProdPostingGroup(WhseDemoDataSetup."Resale Code", XRetailTxt, WhseDemoDataSetup."Retail Code");
 
         InsertCustomerPostingGroup(WhseDemoDataSetup."S. Cust. Posting Group", WhseDemoAccount.CustDomestic());
         InsertCustomerPostingGroup(WhseDemoDataSetup."L. Cust. Posting Group", WhseDemoAccount.CustDomestic());
