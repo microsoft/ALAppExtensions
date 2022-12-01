@@ -78,6 +78,7 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
                     Page.Run(Page::"GP Migration Configuration");
                 end;
             end;
+
         }
     }
 

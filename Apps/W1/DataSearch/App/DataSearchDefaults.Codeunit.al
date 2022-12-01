@@ -20,6 +20,7 @@ codeunit 2681 "Data Search Defaults"
 
     internal procedure InitSetupForProfile(RoleCenterID: Integer)
     var
+        DataSearchEvents: Codeunit "Data Search Events";
         TableList: List of [Integer];
         TableNo: Integer;
     begin
@@ -52,6 +53,7 @@ codeunit 2681 "Data Search Defaults"
                 GetDefaultTableList(TableList);
         End;
         OnAfterGetTableList(RoleCenterID, TableList);
+        DataSearchEvents.OnAfterGetRolecCenterTableList(RoleCenterID, TableList);
         foreach TableNo in TableList do
             InitSetupForTable(RoleCenterID, TableNo);
     end;
@@ -327,8 +329,13 @@ codeunit 2681 "Data Search Defaults"
     end;
 
     local procedure ExcludedField(var FldRef: FieldRef): Boolean
+    var
+        DataSearchEvents: Codeunit "Data Search Events";
+        FieldIsExcluded: Boolean;
     begin
-        exit(
+        if FldRef.Relation = 0 then
+            exit;
+        FieldIsExcluded := (
             FldRef.Relation in [
                 Database::User, Database::"Dimension Value", Database::"Source Code", Database::"Business Unit", Database::"Reason Code", Database::"Gen. Business Posting Group",
                 Database::"Gen. Product Posting Group", Database::"No. Series", Database::"Tax Area", Database::"Tax Group", Database::"VAT Business Posting Group", Database::"VAT Product Posting Group",
@@ -336,6 +343,9 @@ codeunit 2681 "Data Search Defaults"
                 Database::Language, Database::"Payment Terms", Database::"Finance Charge Terms", Database::"Salesperson/Purchaser", Database::"Shipment Method", Database::"Customer Discount Group",
                 Database::"Country/Region", Database::"Payment Method", Database::Location, Database::"Reminder Terms", Database::Currency, Database::"Responsibility Center"
         ]);
+        if not FieldIsExcluded then
+            DataSearchEvents.OnGetExcludedRelatedTableField(FldRef.Relation, FieldIsExcluded);
+        exit(FieldIsExcluded);
     end;
 
     internal procedure PopulateProfiles(var TempAllProfile: Record "All Profile" temporary)
@@ -362,7 +372,7 @@ codeunit 2681 "Data Search Defaults"
     /// <summary>
     /// Enables adding and removing tables from the default initial setup for tables to search.
     /// </summary>
-    /// <param name="ProfileID">Name/code for the selected profile</param>
+    /// <param name="RoleCenterID">Page ID for the selected role center</param>
     /// <param name="ListOfTableNumbers">List of integer. Already filled with standard tables.</param>
     [IntegrationEvent(false, false)]
     local procedure OnAfterGetTableList(RoleCenterID: Integer; var ListOfTableNumbers: List of [Integer])

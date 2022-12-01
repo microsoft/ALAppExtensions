@@ -124,45 +124,6 @@ codeunit 132525 "Edit in Excel Test"
         LibraryAssert.AreEqual('WS3Service_Excel', TenantWebService."Service Name", 'The tenant web service has incorrect name');
     end;
 
-    // Bug 445200 Test succeeds locally but fails to publish due to a strange compilation error that is being investigated. Will be enabled after the issue is resolved
-    // [Test]
-    // procedure TestEditInExcelInvalidFilterObject()
-    // var
-    //     EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
-    //     JsonFilter: Text;
-    //     JsonPayload: Text;
-    //     FilterJsonObject: JsonObject;
-    //     PayloadJsonObject: JsonObject;
-    //     EntityFilterCollectionNode: DotNet FilterCollectionNode;
-    //     TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
-    //     FieldFilterGroupingOperator: Dictionary of [Text, Text];
-    // begin
-    //     // [Scenario] Edit in Excel is called with invalid json filter object
-    //     Init();
-
-    //     // [Given] Invalid json filter object (missing last bracket)
-    //     JsonFilter := '{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"01121212"}';
-    //     JsonPayload := '{ "fieldPayload": { "No": { "alName": "No.", "validInODataFilter": true, "edmType": "Edm.String" }}}';
-
-    //     LibraryAssert.IsFalse(FilterJsonObject.ReadFrom(JsonFilter), 'Json filter should not be readable');
-    //     LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
-
-    //     // [When] A FilterCollectionNode is created
-    //     TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
-    //     TestedEntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
-    //     EditinExcelTestLibrary.ConvertStructuredFiltersToEntityFilterCollection(FilterJsonObject, PayloadJsonObject, TestedEntityFilterCollectionNode, FieldFilterGroupingOperator, 132526);
-    //     EditinExcelTestLibrary.ReduceRedundantFilterCollectionNodes(TestedEntityFilterCollectionNode);
-
-    //     // [Then] It should be equal to an empty filter
-    //     EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
-    //     EntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
-    //     EditinExcelTestLibrary.ReduceRedundantFilterCollectionNodes(EntityFilterCollectionNode);
-
-    //     LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equal');
-    //     LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
-
-    // end;
-
     [Test]
     procedure TestEditInExcelStructuredFilter()
     var
@@ -178,6 +139,7 @@ codeunit 132525 "Edit in Excel Test"
         Init();
 
         // [Given] TenantWebServiceExists, JSON Filter and Payload Objects
+        // JSON filters and payloads are passed from platform, in order to retreive them, an AL extension is needed.
         TenantWebService.SetRange("Object Type", TenantWebService."Object Type"::Page);
         TenantWebService.SetRange("Object ID", Page::"Edit in Excel List");
         TenantWebService.DeleteAll();
@@ -192,192 +154,354 @@ codeunit 132525 "Edit in Excel Test"
         EditinExcelTestLibrary.GetEndPointAndCreateWorkbookWStructuredFilter(ServiceName, FilterJsonObject, PayloadJsonObject, '');
     end;
 
-    // Bug 445200 Test succeeds locally but fails to publish due to a strange compilation error that is being investigated. Will be enabled after the issue is resolved
-    // [Test]
-    // procedure TestEditInExcelStructuredFilterDefaultFilter()
-    // var
-    //     EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
-    //     JsonFilter: Text;
-    //     JsonPayload: Text;
-    //     FilterJsonObject: JsonObject;
-    //     PayloadJsonObject: JsonObject;
-    //     EntityFilterCollectionNode: DotNet FilterCollectionNode;
-    //     TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
-    //     FieldFilterGroupingOperator: Dictionary of [Text, Text];
+    [Test]
+    procedure TestEditInExcelInvalidFilter()
+    var
+        EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
+        JsonFilter: Text;
+        JsonPayload: Text;
+        FilterJsonObject: JsonObject;
+        PayloadJsonObject: JsonObject;
+        EntityFilterCollectionNode: DotNet FilterCollectionNode;
+        TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
 
-    // begin
-    //     // [Scenario] User clicks "Edit in Excel" without choosing additional filters. BC sends the default date filter
-    //     Init();
+    begin
+        // [Scenario] Invalid json filter is passed
+        Init();
 
-    //     // [Given] A Json Structured filter and Payload, TenantWebservice exist and is enabled
-    //     JsonFilter := '{"type":"and","childNodes":[{"type":"and","childNodes":[{"type":"ge","leftNode":{"type":"var","name":"Date_Filter"},"rightNode":{"type":"Edm.DateTimeOffset constant","value":"0001-01-01T00:00:00"}},{"type":"le","leftNode":{"type":"var","name":"Date_Filter"},"rightNode":{"type":"Edm.DateTimeOffset constant","value":"2024-01-25T00:00:00"}}]}]}';
-    //     JsonPayload := '{ "fieldPayload": {"Date_Filter": {"alName": "Date Filter","validInODataFilter": true,"edmType": "Edm.DateTimeOffset"}}}';
-    //     LibraryAssert.IsTrue(FilterJsonObject.ReadFrom(JsonFilter), 'Could not read json filter');
-    //     LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
+        // [Given] A Json Structured filter and Payload
+        JsonFilter := '"type":"and","childNodes":[{"type":"or","childNodes":[{"type":"or","childNodes":[{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"10000"}},{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"20000"}}]},{"type":"or","childNodes":[{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"30000"}},{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"40000"}}]}]}]}';
+        JsonPayload := '{ "fieldPayload": { "No": { "alName": "No.", "validInODataFilter": true, "edmType": "Edm.String" }}}';
+        LibraryAssert.IsFalse(FilterJsonObject.ReadFrom(JsonFilter), 'JSON filter should not be read - invalid');
+        LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
 
-    //     // [When] The FilterCollectionNode is created
-    //     TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
-    //     TestedEntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
-    //     EditinExcelTestLibrary.ConvertStructuredFiltersToEntityFilterCollection(FilterJsonObject, PayloadJsonObject, TestedEntityFilterCollectionNode, FieldFilterGroupingOperator, 132526);
-    //     EditinExcelTestLibrary.ReduceRedundantFilterCollectionNodes(TestedEntityFilterCollectionNode);
+        // [When] The FilterCollectionNode is created
+        TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
+        EditinExcelTestLibrary.AssembleFilter(TestedEntityFilterCollectionNode, FilterJsonObject, PayloadJsonObject, 132526);
 
-    //     // [Then] It should be equal to manually created  FilterCollectionNode 
-    //     EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
-    //     EntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
+        // [Then] It should be equal to manually created  FilterCollectionNode 
+        EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
+        EntityFilterCollectionNode.Operator := format("Excel Filter Node Type Test"::"or");
 
-    //     LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equal');
-    //     LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
-    // end;
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equal');
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
+    end;
 
-    // // Test succeeds locally but fails to publish due to a strange compilation error that is being investigated. Will be enabled after the issue is resolved
-    // [Test]
-    // procedure TestEditInExcelStructuredFilterOneChosenFilter()
-    // var
-    //     EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
-    //     JsonFilter: Text;
-    //     JsonPayload: Text;
-    //     FilterJsonObject: JsonObject;
-    //     PayloadJsonObject: JsonObject;
-    //     EntityFilterCollectionNode: DotNet FilterCollectionNode;
-    //     TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
-    //     FieldFilterGroupingOperator: Dictionary of [Text, Text];
-    // begin
-    //     // [Scenario] User chooses one filter, with BC appending the default date filter as well
+    [Test]
+    procedure TestEditInExcel4OrFilter()
+    var
+        EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
+        JsonFilter: Text;
+        JsonPayload: Text;
+        FilterJsonObject: JsonObject;
+        PayloadJsonObject: JsonObject;
+        EntityFilterCollectionNode: DotNet FilterCollectionNode;
+        TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
 
-    //     Init();
+    begin
+        // [Scenario] User clicks "Edit in Excel" with filter on "No" field - 4 or filters
+        Init();
 
-    //     // [Given] Filter and Payload JSON Objects, containing the date filter and the filter chosen by the user
-    //     JsonFilter := '{"type":"and","childNodes":[{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"01121212"}},{"type":"and","childNodes":[{"type":"ge","leftNode":{"type":"var","name":"Date_Filter"},"rightNode":{"type":"Edm.DateTimeOffset constant","value":"0001-01-01T00:00:00"}},{"type":"le","leftNode":{"type":"var","name":"Date_Filter"},"rightNode":{"type":"Edm.DateTimeOffset constant","value":"2024-01-25T00:00:00"}}]}]}';
-    //     JsonPayload := '{ "fieldPayload": { "No": { "alName": "No.", "validInODataFilter": true, "edmType": "Edm.String" }, "Date_Filter": { "alName": "Date Filter", "validInODataFilter": true, "edmType": "Edm.DateTimeOffset" }}}';
-    //     LibraryAssert.IsTrue(FilterJsonObject.ReadFrom(JsonFilter), 'Could not read json filter');
-    //     LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
+        // [Given] A Json Structured filter and Payload
+        JsonFilter := '{"type":"and","childNodes":[{"type":"or","childNodes":[{"type":"or","childNodes":[{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"10000"}},{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"20000"}}]},{"type":"or","childNodes":[{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"30000"}},{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"40000"}}]}]}]}';
+        JsonPayload := '{ "fieldPayload": { "No": { "alName": "No.", "validInODataFilter": true, "edmType": "Edm.String" }}}';
+        LibraryAssert.IsTrue(FilterJsonObject.ReadFrom(JsonFilter), 'Could not read json filter');
+        LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
 
-    //     // [When] The FilterCollectionNode is created
-    //     TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
-    //     TestedEntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
-    //     EditinExcelTestLibrary.ConvertStructuredFiltersToEntityFilterCollection(FilterJsonObject, PayloadJsonObject, TestedEntityFilterCollectionNode, FieldFilterGroupingOperator, 132526);
-    //     EditinExcelTestLibrary.ReduceRedundantFilterCollectionNodes(TestedEntityFilterCollectionNode);
+        // [When] The FilterCollectionNode is created
+        TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
+        EditinExcelTestLibrary.AssembleFilter(TestedEntityFilterCollectionNode, FilterJsonObject, PayloadJsonObject, 132526);
 
-    //     // [Then] It should be equal to manually created  FilterCollectionNode 
-    //     EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
-    //     EntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
+        // [Then] It should be equal to manually created  FilterCollectionNode 
+        EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
+        EntityFilterCollectionNode.Operator := format("Excel Filter Node Type Test"::"or");
+        AppendFilterBinaryNode(EntityFilterCollectionNode, 'eq', '10000', 'No', 'Edm.String');
+        AppendFilterBinaryNode(EntityFilterCollectionNode, 'eq', '20000', 'No', 'Edm.String');
+        AppendFilterBinaryNode(EntityFilterCollectionNode, 'eq', '30000', 'No', 'Edm.String');
+        AppendFilterBinaryNode(EntityFilterCollectionNode, 'eq', '40000', 'No', 'Edm.String');
 
-    //     AppendFilterBinaryNode(EntityFilterCollectionNode, 'eq', '01121212', 'No', 'Edm.String');
-    //     EditinExcelTestLibrary.ReduceRedundantFilterCollectionNodes(EntityFilterCollectionNode);
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equal');
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
+    end;
 
-    //     LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equals');
-    //     LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
-    // end;
 
-    // [Test]
-    // procedure TestEditInExcelStructuredFilterSingleFilter()
-    // var
-    //     EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
-    //     JsonFilter: Text;
-    //     JsonPayload: Text;
-    //     FilterJsonObject: JsonObject;
-    //     PayloadJsonObject: JsonObject;
-    //     EntityFilterCollectionNode: DotNet FilterCollectionNode;
-    //     TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
-    //     FieldFilterGroupingOperator: Dictionary of [Text, Text];
-    // begin
-    //     // [Scenario] Edit in Excel API is called with only a single filter passed
-    //     Init();
 
-    //     // [Given] A Filter object with one filter, Payload object
-    //     JsonFilter := '{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"01121212"}}';
-    //     JsonPayload := '{ "fieldPayload": { "No": { "alName": "No.", "validInODataFilter": true, "edmType": "Edm.String" }}}';
-    //     LibraryAssert.IsTrue(FilterJsonObject.ReadFrom(JsonFilter), 'Could not read json filter');
-    //     LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
+    [Test]
+    procedure TestEditInExcelAndOrFilter()
+    var
+        EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
+        JsonFilter: Text;
+        JsonPayload: Text;
+        FilterJsonObject: JsonObject;
+        PayloadJsonObject: JsonObject;
+        EntityFilterCollectionNode: DotNet FilterCollectionNode;
+        TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
 
-    //     // [When] FilterCollectionNode is created
-    //     TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
-    //     TestedEntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
-    //     EditinExcelTestLibrary.ConvertStructuredFiltersToEntityFilterCollection(FilterJsonObject, PayloadJsonObject, TestedEntityFilterCollectionNode, FieldFilterGroupingOperator, 132526);
-    //     EditinExcelTestLibrary.ReduceRedundantFilterCollectionNodes(TestedEntityFilterCollectionNode);
+    begin
+        // [Scenario] User clicks "Edit in Excel" with filtering on "No" field
+        // Desired filter by user: (((No eq '10000') or (No eq '20000')) and ((No eq '30000') or (No eq '40000')))
+        // Since this is invalid in BC, the two latter filters (30000 and 40000) are cut off
+        Init();
 
-    //     // [Then] The created FilterCollectionNode is equal to manually created filter
-    //     EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
-    //     EntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
-    //     AppendFilterBinaryNode(EntityFilterCollectionNode, 'eq', '01121212', 'No', 'Edm.String');
-    //     EditinExcelTestLibrary.ReduceRedundantFilterCollectionNodes(EntityFilterCollectionNode);
+        // [Given] A Json Structured filter and Payload
+        JsonFilter := '{"type":"and","childNodes":[{"type":"or","childNodes":[{"type":"or","childNodes":[{"type":"eq","leftNode":{"type":"var","name":"No"},' +
+        '"rightNode":{"type":"Edm.String constant","value":"10000"}},{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"20000"}}]},' +
+        '{"type":"and","childNodes":[{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"30000"}},{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"40000"}}]}]}]}';
+        JsonPayload := '{ "fieldPayload": { "No": { "alName": "No.", "validInODataFilter": true, "edmType": "Edm.String" }}}';
+        LibraryAssert.IsTrue(FilterJsonObject.ReadFrom(JsonFilter), 'Could not read json filter');
+        LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
 
-    //     LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equal');
-    //     LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
-    // end;
+        // [When] The FilterCollectionNode is created
+        TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
+        EditinExcelTestLibrary.AssembleFilter(TestedEntityFilterCollectionNode, FilterJsonObject, PayloadJsonObject, 132526);
 
-    // [Test]
-    // procedure TestEditInExcelStructuredFilterNoFilter()
-    // var
-    //     EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
-    //     JsonFilter: Text;
-    //     JsonPayload: Text;
-    //     FilterJsonObject: JsonObject;
-    //     PayloadJsonObject: JsonObject;
-    //     EntityFilterCollectionNode: DotNet FilterCollectionNode;
-    //     TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
-    //     FieldFilterGroupingOperator: Dictionary of [Text, Text];
-    // begin
-    //     // [Scenario] Empty JSON filter object is passed when calling Edit in Excel
-    //     Init();
+        // [Then] It should be equal to manually created  FilterCollectionNode 
+        EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
+        EntityFilterCollectionNode.Operator := format("Excel Filter Node Type Test"::"or");
+        // Sinche the 3rd and 4th filter are marked with "and" instead of "or", they will be omitted
+        AppendFilterBinaryNode(EntityFilterCollectionNode, 'eq', '10000', 'No', 'Edm.String');
+        AppendFilterBinaryNode(EntityFilterCollectionNode, 'eq', '20000', 'No', 'Edm.String');
 
-    //     // [Given] An empty object is passed in filter and payload
-    //     JsonFilter := '{}';
-    //     JsonPayload := '{}';
-    //     LibraryAssert.IsTrue(FilterJsonObject.ReadFrom(JsonFilter), 'Could not read json filter');
-    //     LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equal');
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
+    end;
 
-    //     // [When] FilterCollectionNode is created
-    //     TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
-    //     TestedEntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
-    //     EditinExcelTestLibrary.ConvertStructuredFiltersToEntityFilterCollection(FilterJsonObject, PayloadJsonObject, TestedEntityFilterCollectionNode, FieldFilterGroupingOperator, 132526);
-    //     EditinExcelTestLibrary.ReduceRedundantFilterCollectionNodes(TestedEntityFilterCollectionNode);
+    [Test]
+    procedure TestEditInExcel4Or1AndFilter()
+    var
+        EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
+        JsonFilter: Text;
+        JsonPayload: Text;
+        FilterJsonObject: JsonObject;
+        PayloadJsonObject: JsonObject;
+        EntityFilterCollectionNode: DotNet FilterCollectionNode;
+        EntityFilterNumberCollectionNode: DotNet FilterCollectionNode;
+        TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
 
-    //     // [Then] The created FilterCollectionNode is equal to manually created filter
-    //     EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
-    //     EntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
-    //     EditinExcelTestLibrary.ReduceRedundantFilterCollectionNodes(EntityFilterCollectionNode);
+    begin
+        // [Scenario] User clicks "Edit in Excel" with filter on "No" field - 4 or filters and one other filter
+        Init();
 
-    //     LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equal');
-    //     LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
-    // end;
+        // [Given] A Json Structured filter and Payload
+        JsonFilter := '{"type":"and","childNodes":[{"type":"or","childNodes":[{"type":"or","childNodes":[{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":' +
+         '{"type":"Edm.String constant","value":"10000"}},{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"20000"}}]},' +
+         '{"type":"or","childNodes":[{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"30000"}},{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"40000"}}]}]},{"type":"eq","leftNode":{"type":"var","name":"Country_Region_Code"},"rightNode":{"type":"Edm.String constant","value":"GB"}}]}';
+        JsonPayload := '{ "fieldPayload": { "No": { "alName": "No.", "validInODataFilter": true, "edmType": "Edm.String" }, "Country_Region_Code": { "alName": "Country/Region Code", "ValidInODataFilter": true, "edmType": "Edm.String" } }}';
+        LibraryAssert.IsTrue(FilterJsonObject.ReadFrom(JsonFilter), 'Could not read json filter');
+        LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
 
-    // [Test]
-    // procedure TestEditInExcelStructuredFilterIllegalFilter()
-    // var
-    //     EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
-    //     JsonFilter: Text;
-    //     JsonPayload: Text;
-    //     FilterJsonObject: JsonObject;
-    //     PayloadJsonObject: JsonObject;
-    //     EntityFilterCollectionNode: DotNet FilterCollectionNode;
-    //     TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
-    //     FieldFilterGroupingOperator: Dictionary of [Text, Text];
-    // begin
-    //     // [Scenario] API is called with a json filter that contains bor "OR" and "AND" operators, which is not supported by OData
-    //     Init();
+        // [When] The FilterCollectionNode is created
+        TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
+        EditinExcelTestLibrary.AssembleFilter(TestedEntityFilterCollectionNode, FilterJsonObject, PayloadJsonObject, 132526);
 
-    //     // [Given] A Json filter with both or and and operator on the Date field, Json Payload
-    //     JsonFilter := '{"type":"and","childNodes":[{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"1000"}},{"type":"or","childNodes":[{"type":"ge","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"0"}},{"type":"le","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"100"}}]}]}';
-    //     JsonPayload := '{ "fieldPayload": { "No": { "alName": "No.", "validInODataFilter": true, "edmType": "Edm.String" }}}';
-    //     LibraryAssert.IsTrue(FilterJsonObject.ReadFrom(JsonFilter), 'Could not read json filter');
-    //     LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
+        // [Then] It should be equal to manually created  FilterCollectionNode 
+        // We expect this: (((No eq '10000') or (No eq '20000') or (No eq '30000') or (No eq '40000')) and (Country_Region_Code eq 'GB'))
+        EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
+        EntityFilterCollectionNode.Operator := format("Excel Filter Node Type Test"::"and");
 
-    //     // [When] The FilterCollectionNode is Created
-    //     TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
-    //     TestedEntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
-    //     EditinExcelTestLibrary.ConvertStructuredFiltersToEntityFilterCollection(FilterJsonObject, PayloadJsonObject, TestedEntityFilterCollectionNode, FieldFilterGroupingOperator, 132526);
-    //     EditinExcelTestLibrary.ReduceRedundantFilterCollectionNodes(TestedEntityFilterCollectionNode);
+        EntityFilterNumberCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
+        EntityFilterNumberCollectionNode.Operator := format("Excel Filter Node Type Test"::"or");
+        AppendFilterBinaryNode(EntityFilterNumberCollectionNode, 'eq', '10000', 'No', 'Edm.String');
+        AppendFilterBinaryNode(EntityFilterNumberCollectionNode, 'eq', '20000', 'No', 'Edm.String');
+        AppendFilterBinaryNode(EntityFilterNumberCollectionNode, 'eq', '30000', 'No', 'Edm.String');
+        AppendFilterBinaryNode(EntityFilterNumberCollectionNode, 'eq', '40000', 'No', 'Edm.String');
+        EntityFilterCollectionNode.Collection.Add(EntityFilterNumberCollectionNode);
 
-    //     // [Then] The created Node is equal to manually created FilterCollectionNode, which ignores the additional illegal filters
-    //     EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
-    //     EntityFilterCollectionNode.Operator := format("Excel Filter Node Type"::"and");
-    //     AppendFilterBinaryNode(EntityFilterCollectionNode, 'eq', '1000', 'No', 'Edm.String');
-    //     EditinExcelTestLibrary.ReduceRedundantFilterCollectionNodes(EntityFilterCollectionNode);
+        AppendFilterBinaryNode(EntityFilterCollectionNode, 'eq', 'GB', 'Country_Region_Code', 'Edm.String');
 
-    //     LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equals');
-    //     LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
-    // end;
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equal');
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
+    end;
+
+    [Test]
+    procedure TestEditInExcel4Or1DimensionFilter()
+    var
+        EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
+        JsonFilter: Text;
+        JsonPayload: Text;
+        FilterJsonObject: JsonObject;
+        PayloadJsonObject: JsonObject;
+        EntityFilterCollectionNode: DotNet FilterCollectionNode;
+        EntityFilterNumberCollectionNode: DotNet FilterCollectionNode;
+        TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
+
+    begin
+        // [Scenario] User clicks "Edit in Excel" with filter on "No" field - 4 or filters along with other one-dimensional filters
+        Init();
+
+        // [Given] A Json Structured filter and Payload
+        JsonFilter := '{"type":"and","childNodes":[{"type":"or","childNodes":[{"type":"or","childNodes":[{"type":"eq","leftNode":' +
+                      '{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"10000"}},{"type":"eq","leftNode"' +
+                      ':{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"20000"}}]},{"type":"or",' +
+                      '"childNodes":[{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"30000"}},' +
+                      '{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"40000"}}]}]},{"type":' +
+                      '"eq","leftNode":{"type":"var","name":"Global_Dimension_1_Code"},"rightNode":{"type":"Edm.String constant","value":"SALES"}}]}';
+        JsonPayload := '{ "fieldPayload": { "No": { "alName": "No.", "validInODataFilter": true, "edmType": "Edm.String" }, "Global_Dimension_1_Code": {"alName": "Global Dimension 1 Code","validInODataFilter": true, "edmType": "Edm.String" }}}';
+        LibraryAssert.IsTrue(FilterJsonObject.ReadFrom(JsonFilter), 'Could not read json filter');
+        LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
+
+        // [When] The FilterCollectionNode is created
+        TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
+        EditinExcelTestLibrary.AssembleFilter(TestedEntityFilterCollectionNode, FilterJsonObject, PayloadJsonObject, 132526);
+
+        // [Then] It should be equal to manually created  FilterCollectionNode 
+        // We expect this: (((No eq '10000') or (No eq '20000') or (No eq '30000') or (No eq '40000')) and (Country_Region_Code eq 'GB'))
+        EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
+        EntityFilterCollectionNode.Operator := format("Excel Filter Node Type Test"::"and");
+
+        EntityFilterNumberCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
+        EntityFilterNumberCollectionNode.Operator := format("Excel Filter Node Type Test"::"or");
+        AppendFilterBinaryNode(EntityFilterNumberCollectionNode, 'eq', '10000', 'No', 'Edm.String');
+        AppendFilterBinaryNode(EntityFilterNumberCollectionNode, 'eq', '20000', 'No', 'Edm.String');
+        AppendFilterBinaryNode(EntityFilterNumberCollectionNode, 'eq', '30000', 'No', 'Edm.String');
+        AppendFilterBinaryNode(EntityFilterNumberCollectionNode, 'eq', '40000', 'No', 'Edm.String');
+        EntityFilterCollectionNode.Collection.Add(EntityFilterNumberCollectionNode);
+
+        AppendFilterBinaryNode(EntityFilterCollectionNode, 'eq', 'SALES', 'Global_Dimension_1_Code', 'Edm.String');
+
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equal');
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
+    end;
+
+    [Test]
+    procedure TestEditInExcelFilter1ValueForEachField()
+    var
+        EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
+        JsonFilter: Text;
+        JsonPayload: Text;
+        FilterJsonObject: JsonObject;
+        PayloadJsonObject: JsonObject;
+        EntityFilterCollectionNode: DotNet FilterCollectionNode;
+        TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
+
+    begin
+        // [Scenario] User clicks "Edit in Excel", filters selected have only 1 value for each filter
+        // That tests reducing redundant collections
+        Init();
+
+        // [Given] A Json Structured filter and Payload
+        JsonFilter := '{"type":"and","childNodes":[{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant",' +
+                      '"value":"10000"}},{"type":"eq","leftNode":{"type":"var","name":"Global_Dimension_1_Code"},"rightNode"' +
+                      ':{"type":"Edm.String constant","value":"SALES"}}]}';
+        JsonPayload := '{ "fieldPayload": { "No": { "alName": "No.", "validInODataFilter": true, "edmType": "Edm.String" }, "Global_Dimension_1_Code": {"alName": "Global Dimension 1 Code","validInODataFilter": true, "edmType": "Edm.String" }}}';
+        LibraryAssert.IsTrue(FilterJsonObject.ReadFrom(JsonFilter), 'Could not read json filter');
+        LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
+
+        // [When] The FilterCollectionNode is created
+        TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
+        EditinExcelTestLibrary.AssembleFilter(TestedEntityFilterCollectionNode, FilterJsonObject, PayloadJsonObject, 132526);
+
+        // [Then] It should be equal to manually created  FilterCollectionNode 
+        // We expect this: ( (No eq '10000') and (Global_Dimension_1_Code eq 'SALES'))
+        EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
+        EntityFilterCollectionNode.Operator := format("Excel Filter Node Type Test"::"and");
+        AppendFilterBinaryNode(EntityFilterCollectionNode, 'eq', '10000', 'No', 'Edm.String');
+        AppendFilterBinaryNode(EntityFilterCollectionNode, 'eq', 'SALES', 'Global_Dimension_1_Code', 'Edm.String');
+
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equal');
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
+    end;
+
+    [Test]
+    procedure TestEditInExcelFilterDefaultNoFields()
+    var
+        EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
+        JsonFilter: Text;
+        JsonPayload: Text;
+        FilterJsonObject: JsonObject;
+        PayloadJsonObject: JsonObject;
+        EntityFilterCollectionNode: DotNet FilterCollectionNode;
+        TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
+
+    begin
+        // [Scenario] An empty filter is passed, date_filter is selected on the page (not passed from platform)
+        Init();
+
+        // [Given] A Json Structured filter and Payload
+        JsonFilter := '{"type":"and","childNodes":[]}';
+        JsonPayload := '{ "fieldPayload": {}}';
+        LibraryAssert.IsTrue(FilterJsonObject.ReadFrom(JsonFilter), 'Could not read json filter');
+        LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
+
+        // [When] The FilterCollectionNode is created
+        TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
+        EditinExcelTestLibrary.AssembleFilter(TestedEntityFilterCollectionNode, FilterJsonObject, PayloadJsonObject, 132526);
+
+        // [Then] It should be equal to manually created  FilterCollectionNode 
+        // We expect this: ((No eq '10000'))
+        EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
+        EntityFilterCollectionNode.Operator := format("Excel Filter Node Type Test"::"and");
+
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equal');
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
+    end;
+
+
+    [Test]
+    procedure TestEditInExcelFilter1Field()
+    var
+        EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
+        JsonFilter: Text;
+        JsonPayload: Text;
+        FilterJsonObject: JsonObject;
+        PayloadJsonObject: JsonObject;
+        EntityFilterCollectionNode: DotNet FilterCollectionNode;
+        TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
+
+    begin
+        // [Scenario] User clicks "Edit in Excel" with one selected filter with one value
+        Init();
+
+        // [Given] A Json Structured filter and Payload
+        JsonFilter := '{"type":"and","childNodes":[{"type":"eq","leftNode":{"type":"var","name":"No"},"rightNode":{"type":"Edm.String constant","value":"10000"}}]}';
+        JsonPayload := '{ "fieldPayload": {}}';
+        LibraryAssert.IsTrue(FilterJsonObject.ReadFrom(JsonFilter), 'Could not read json filter');
+        LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
+
+        // [When] The FilterCollectionNode is created
+        TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
+        EditinExcelTestLibrary.AssembleFilter(TestedEntityFilterCollectionNode, FilterJsonObject, PayloadJsonObject, 132526);
+
+        // [Then] It should be equal to manually created  FilterCollectionNode 
+        EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
+        EntityFilterCollectionNode.Operator := format("Excel Filter Node Type Test"::"and");
+
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equal');
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
+    end;
+
+    [Test]
+    procedure TestEditInExcelFilterNoFilter()
+    var
+        EditinExcelTestLibrary: Codeunit "Edit in Excel Test Library";
+        JsonFilter: Text;
+        JsonPayload: Text;
+        FilterJsonObject: JsonObject;
+        PayloadJsonObject: JsonObject;
+        EntityFilterCollectionNode: DotNet FilterCollectionNode;
+        TestedEntityFilterCollectionNode: DotNet FilterCollectionNode;
+
+    begin
+        // [Scenario] User clicks "Edit in Excel" and empty filter is passed
+        Init();
+
+        // [Given] A Json Structured filter and Payload
+        JsonFilter := '{}';
+        JsonPayload := '{}';
+        LibraryAssert.IsTrue(FilterJsonObject.ReadFrom(JsonFilter), 'Could not read json filter');
+        LibraryAssert.IsTrue(PayloadJsonObject.ReadFrom(JsonPayload), 'Could not read json payload');
+
+        // [When] The FilterCollectionNode is created
+        TestedEntityFilterCollectionNode := TestedEntityFilterCollectionNode.FilterCollectionNode();
+        EditinExcelTestLibrary.AssembleFilter(TestedEntityFilterCollectionNode, FilterJsonObject, PayloadJsonObject, 132526);
+
+        // [Then] It should be equal to manually created  FilterCollectionNode 
+        EntityFilterCollectionNode := EntityFilterCollectionNode.FilterCollectionNode();
+        EntityFilterCollectionNode.Operator := format("Excel Filter Node Type Test"::"and");
+
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.Collection.Count(), TestedEntityFilterCollectionNode.Collection.Count(), 'Size of collections not equal');
+        LibraryAssert.AreEqual(EntityFilterCollectionNode.ToString(), TestedEntityFilterCollectionNode.ToString(), 'Filters not Equal');
+    end;
 
     procedure GetServiceName(): Text[240]
     begin

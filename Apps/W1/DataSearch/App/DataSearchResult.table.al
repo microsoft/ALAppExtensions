@@ -83,55 +83,81 @@ table 2680 "Data Search Result"
         if PageNo <> 0 then
             if PageMetadata.Get(PageNo) then
                 PageCaption := PageMetadata.Caption;
-        if Rec."Table No." in
-            [Database::"Sales Line", Database::"Sales Invoice Line", Database::"Sales Shipment Line", Database::"Sales Cr.Memo Line",
-             Database::"Purchase Line", Database::"Purch. Inv. Line", Database::"Purch. Rcpt. Line", Database::"Purch. Cr. Memo Line",
-             Database::"Service Item Line", Database::"Service Contract Line", Database::"Service Invoice Line", Database::"Service Cr.Memo Line",
-             Database::"Service Shipment Item Line", Database::"Service Shipment Line"]
-        then
+        if PageCaption = '' then begin
+            Rec.CalcFields("Table Caption");
+            PageCaption := Rec."Table Caption";
+        end;
+        if PageCaption = '' then
+            PageCaption := Format(Rec."Table No.");
+        if IsSubTable(Rec."Table No.") then
             PageCaption += ' - ' + linesLbl;
         exit(PageCaption);
+    end;
+
+    local procedure IsSubTable(TableNo: Integer): Boolean
+    var
+        DataSearchEvents: Codeunit "Data Search Events";
+        ParentTableNo: Integer;
+        TableIsSubtable: Boolean;
+    begin
+        TableIsSubtable := (
+            TableNo in
+                [Database::"Sales Line", Database::"Sales Invoice Line", Database::"Sales Shipment Line", Database::"Sales Cr.Memo Line",
+                 Database::"Purchase Line", Database::"Purch. Inv. Line", Database::"Purch. Rcpt. Line", Database::"Purch. Cr. Memo Line",
+                 Database::"Service Item Line", Database::"Service Contract Line", Database::"Service Invoice Line", Database::"Service Cr.Memo Line",
+                 Database::"Service Shipment Item Line", Database::"Service Shipment Line"]);
+        if not TableIsSubtable then begin
+            DataSearchEvents.OnGetParentTable(TableNo, ParentTableNo);
+            TableIsSubTable := ParentTableNo > 0;
+        end;
+        exit(TableIsSubtable);
     end;
 
     internal procedure GetListPageNo(): Integer
     var
         TableMetaData: Record "Table Metadata";
+        DataSearchEvents: Codeunit "Data Search Events";
         SalesDocumentType: Enum "Sales Document Type";
         PurchaseDocumentType: Enum "Purchase Document Type";
         ServiceDocumentType: Enum "Service Document Type";
         ServiceContractType: Enum "Service Contract Type";
         TableNo: Integer;
+        ParentTableNo: Integer;
         PageNo: Integer;
     begin
         TableNo := Rec."Table No.";
         case TableNo of
             Database::"Sales Line":
-                TableNo := Database::"Sales Header";
+                ParentTableNo := Database::"Sales Header";
             Database::"Purchase Line":
-                TableNo := Database::"Purchase Header";
+                ParentTableNo := Database::"Purchase Header";
             Database::"Service Item Line":
-                TableNo := Database::"Service Header";
+                ParentTableNo := Database::"Service Header";
             Database::"Service Contract Line":
-                TableNo := Database::"Service Contract Header";
+                ParentTableNo := Database::"Service Contract Header";
             Database::"Sales Invoice Line":
-                TableNo := Database::"Sales Invoice Header";
+                ParentTableNo := Database::"Sales Invoice Header";
             Database::"Sales Shipment Line":
-                TableNo := Database::"Sales Shipment Header";
+                ParentTableNo := Database::"Sales Shipment Header";
             Database::"Sales Cr.Memo Line":
-                TableNo := Database::"Sales Cr.Memo Header";
+                ParentTableNo := Database::"Sales Cr.Memo Header";
             Database::"Purch. Inv. Line":
-                TableNo := Database::"Purch. Inv. Header";
+                ParentTableNo := Database::"Purch. Inv. Header";
             Database::"Purch. Cr. Memo Line":
-                TableNo := Database::"Purch. Cr. Memo Hdr.";
+                ParentTableNo := Database::"Purch. Cr. Memo Hdr.";
             Database::"Purch. Rcpt. Line":
-                TableNo := Database::"Purch. Rcpt. Header";
+                ParentTableNo := Database::"Purch. Rcpt. Header";
             Database::"Service Shipment Item Line", Database::"Service Shipment Line":
-                TableNo := Database::"Service Shipment Header";
+                ParentTableNo := Database::"Service Shipment Header";
             Database::"Service Invoice Line":
-                TableNo := Database::"Service Invoice Header";
+                ParentTableNo := Database::"Service Invoice Header";
             Database::"Service Cr.Memo Line":
-                TableNo := Database::"Service Cr.Memo Header";
+                ParentTableNo := Database::"Service Cr.Memo Header";
         end;
+        if ParentTableNo = 0 then
+            DataSearchEvents.OnGetParentTable(TableNo, ParentTableNo);
+        if ParentTableNo > 0 then
+            TableNo := ParentTableNo;
 
         case TableNo of
             Database::"Sales Header":
@@ -186,6 +212,8 @@ table 2680 "Data Search Result"
                 end;
         end;
         if PageNo = 0 then
+            DataSearchEvents.OnGetListPageNo(Rec."Table No.", Rec."Table Subtype", PageNo);
+        if PageNo = 0 then
             if TableMetaData.Get(TableNo) then
                 PageNo := TableMetaData.LookupPageID;
         exit(PageNo);
@@ -227,37 +255,48 @@ table 2680 "Data Search Result"
                     RecRef.Open(Rec."Table No.");
                     if not RecRef.GetBySystemId(Rec."Parent ID") then
                         exit;
-                    ShowPage(RecRef);
+                    ShowPage(RecRef, Rec."Table Subtype");
                 end;
         end;
         LogUserHit(RoleCenterID, Rec."Table No.", rec."Table Subtype");
     end;
 
     internal procedure ShowPage(var RecRef: RecordRef)
+    begin
+        ShowPage(RecRef, Rec."Table Subtype");
+    end;
+
+    internal procedure ShowPage(var RecRef: RecordRef; TableType: Integer)
     var
         TableMetadata: Record "Table Metadata";
         PageMetaData: Record "Page Metadata";
         PageManagement: Codeunit "Page Management";
+        DataSearchEvents: Codeunit "Data Search Events";
         RecVariant: Variant;
-        PageID: Integer;
+        PageNo: Integer;
     begin
-        MapLinesPageToDocumentPage(RecRef);
+        MapLinesRecToHeaderRec(RecRef);
         RecVariant := RecRef;
         if not PageManagement.PageRun(RecVariant) then begin
-            if not TableMetadata.Get(RecRef.Number) then
-                exit;
-            PageID := TableMetadata.LookupPageID;
-            if not PageMetaData.Get(PageID) then
-                exit;
-            if PageMetaData.CardPageID <> 0 then
-                PageID := PageMetaData.CardPageID;
-            Page.Run(PageID, RecVariant);
+            DataSearchEvents.OnGetCardPageNo(RecRef.Number, TableType, PageNo);
+            if PageNo = 0 then begin
+                if not TableMetadata.Get(RecRef.Number) then
+                    exit;
+                PageNo := TableMetadata.LookupPageID;
+                if not PageMetaData.Get(PageNo) then
+                    exit;
+                if PageMetaData.CardPageID <> 0 then
+                    PageNo := PageMetaData.CardPageID;
+            end;
+            Page.Run(PageNo, RecVariant);
         end;
     end;
 
-    local procedure MapLinesPageToDocumentPage(var RecRef: RecordRef): Boolean
+    local procedure MapLinesRecToHeaderRec(var RecRef: RecordRef): Boolean
     var
+        DataSearchEvents: Codeunit "Data Search Events";
         Mapped: Boolean;
+        LineTableNo: Integer;
     begin
         Mapped := true;
         case RecRef.Number of
@@ -315,8 +354,13 @@ table 2680 "Data Search Result"
                 PostedWhseReciptLineToHeader(RecRef, RecRef);
             Database::"Assembly Line":
                 AssemblyLineToHeader(RecRef, RecRef);
-            else
-                Mapped := false;
+            Database::"Transfer Line":
+                TransferLineToHeader(RecRef, RecRef);
+            else begin
+                LineTableNo := RecRef.Number;
+                DataSearchEvents.OnMapLineRecToHeaderRec(RecRef, RecRef);
+                Mapped := LineTableNo <> RecRef.Number;
+            end;
         end;
         exit(Mapped);
     end;
@@ -467,7 +511,7 @@ table 2680 "Data Search Result"
         SalesLineArchive: Record "Sales Line Archive";
     begin
         LineRecRef.SetTable(SalesLineArchive);
-        SalesHeaderArchive.Get(SalesLineArchive."Document Type", SalesLineArchive."Document No.", SalesHeaderArchive."Doc. No. Occurrence", SalesLineArchive."Version No.");
+        SalesHeaderArchive.Get(SalesLineArchive."Document Type", SalesLineArchive."Document No.", SalesLineArchive."Doc. No. Occurrence", SalesLineArchive."Version No.");
         HeaderRecRef.GetTable(SalesHeaderArchive);
     end;
 
@@ -477,7 +521,7 @@ table 2680 "Data Search Result"
         PurchaseLineArchive: Record "Purchase Line Archive";
     begin
         LineRecRef.SetTable(PurchaseLineArchive);
-        PurchaseHeaderArchive.Get(PurchaseLineArchive."Document Type", PurchaseLineArchive."Document No.", PurchaseHeaderArchive."Doc. No. Occurrence", PurchaseLineArchive."Version No.");
+        PurchaseHeaderArchive.Get(PurchaseLineArchive."Document Type", PurchaseLineArchive."Document No.", PurchaseLineArchive."Doc. No. Occurrence", PurchaseLineArchive."Version No.");
         HeaderRecRef.GetTable(PurchaseHeaderArchive);
     end;
 
@@ -581,7 +625,6 @@ table 2680 "Data Search Result"
         HeaderRecRef.GetTable(PostedWhseReceiptHeader);
     end;
 
-
     local procedure AssemblyLineToHeader(var LineRecRef: RecordRef; var HeaderRecRef: RecordRef)
     var
         AssemblyHeader: Record "Assembly Header";
@@ -590,5 +633,15 @@ table 2680 "Data Search Result"
         LineRecRef.SetTable(AssemblyLine);
         AssemblyHeader.Get(AssemblyLine."Document Type", AssemblyLine."Document No.");
         HeaderRecRef.GetTable(AssemblyHeader);
+    end;
+
+    local procedure TransferLineToHeader(var LineRecRef: RecordRef; var HeaderRecRef: RecordRef)
+    var
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+    begin
+        LineRecRef.SetTable(TransferLine);
+        TransferHeader.Get(TransferLine."Document No.");
+        HeaderRecRef.GetTable(TransferHeader);
     end;
 }

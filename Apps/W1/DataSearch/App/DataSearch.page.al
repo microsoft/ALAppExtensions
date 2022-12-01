@@ -69,10 +69,6 @@ page 2680 "Data Search"
     trigger OnInit()
     begin
         NoOfParallelTasks := 5;
-    end;
-
-    trigger OnOpenPage()
-    begin
         SearchString := '';
     end;
 
@@ -90,7 +86,7 @@ page 2680 "Data Search"
         Rec.Description := CopyStr(CurrPage.Caption, 1, MaxStrLen(Rec.Description));
     end;
 
-    local procedure LaunchSearch()
+    internal procedure LaunchSearch()
     var
         DataSearchSetupTable: Record "Data Search Setup (Table)";
         DataSearchDefaults: Codeunit "Data Search Defaults";
@@ -186,9 +182,14 @@ page 2680 "Data Search"
         else
             DeQueueSearchInBackground();
 
-        CurrPage.LinesPart.Page.AddResults(TableTypeID, Results);
+        AddResults(TableTypeID, Results);
         if (ActiveSearches.Count() = 0) and (QueuedSearches.Count() = 0) then
             CurrPage.Update(true);
+    end;
+
+    protected procedure AddResults(TableTypeId: Integer; var Results: Dictionary of [Text, Text])
+    begin
+        CurrPage.LinesPart.Page.AddResults(TableTypeID, Results);
     end;
 
     trigger OnPageBackgroundTaskError(TaskId: Integer; ErrorCode: Text; ErrorText: Text; ErrorCallStack: Text; var IsHandled: Boolean)
@@ -197,5 +198,10 @@ page 2680 "Data Search"
         if ActiveSearches.ContainsKey(TaskID) then
             ActiveSearches.Remove(TaskId);
         DeQueueSearchInBackground();
+    end;
+
+    procedure SetSearchString(NewSearchString: Text)
+    begin
+        SearchString := NewSearchString;
     end;
 }

@@ -8,7 +8,7 @@ pageextension 5029 "SD Posted Purch. Inv. Subform" extends "Posted Purch. Invoic
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the code for a service transaction type.';
-                Visible = UseServDeclaration;
+                Visible = EnableServTransType;
             }
             field("Applicable For Serv. Decl."; Rec."Applicable For Serv. Decl.")
             {
@@ -21,11 +21,13 @@ pageextension 5029 "SD Posted Purch. Inv. Subform" extends "Posted Purch. Invoic
 
     var
         UseServDeclaration: Boolean;
+        EnableServTransType: Boolean;
 
     trigger OnOpenPage()
     var
         ServiceDeclarationMgt: Codeunit "Service Declaration Mgt.";
     begin
         UseServDeclaration := ServiceDeclarationMgt.IsFeatureEnabled();
+        EnableServTransType := ServiceDeclarationMgt.IsServTransTypeEnabled();
     end;
 }

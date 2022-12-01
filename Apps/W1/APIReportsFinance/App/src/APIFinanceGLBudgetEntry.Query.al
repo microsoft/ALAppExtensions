@@ -2,8 +2,8 @@ query 30305 "API Finance - GL Budget Entry"
 {
     QueryType = API;
     EntityCaption = 'General Budget Entry';
-    EntityName = 'generalBudgetEntry';
-    EntitySetName = 'generalBudgetEntrys';
+    EntityName = 'generalLedgerBudgetEntry';
+    EntitySetName = 'generalLedgerBudgetEntries';
     APIGroup = 'reportsFinance';
     APIPublisher = 'microsoft';
     APIVersion = 'beta';
