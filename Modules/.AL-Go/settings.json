@@ -12,8 +12,8 @@
                         "System Test Libraries",
                         "System Tests"
                     ],
-    "artifact":  "//21.2/base/first",
+    "artifact":  "//21.1/base/first",
     "enablePerTenantExtensionCop":  false,
-    "repoVersion":  "21.2",
+    "repoVersion":  "21.3",
     "doNotRunTests": true
 }
