@@ -1237,10 +1237,7 @@ codeunit 139833 "APIV2 - Attachments E2E"
         if DocumentRecordRef.Number() = Database::"Purchase Header" then begin
             DocumentRecordRef.SetTable(PurchaseHeader);
             IncomingDocument.Description := CopyStr(PurchaseHeader."Buy-from Vendor Name", 1, MaxStrLen(IncomingDocument.Description));
-            if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Order then
-                IncomingDocument."Document Type" := IncomingDocument."Document Type"::" ";
-            if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Invoice then
-                IncomingDocument."Document Type" := IncomingDocument."Document Type"::"Purchase Invoice";
+            IncomingDocument."Document Type" := IncomingDocument."Document Type"::"Purchase Invoice";
             IncomingDocument."Document No." := PurchaseHeader."No.";
             IncomingDocument.Insert(true);
             PurchaseHeader.Find();

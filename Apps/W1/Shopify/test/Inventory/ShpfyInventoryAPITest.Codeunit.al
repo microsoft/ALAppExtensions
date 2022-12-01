@@ -32,9 +32,9 @@ codeunit 139586 "Shpfy Inventory API Test"
         ShpfyShopInventory := RandomShopInventoryRecord();
 
         // [WHEN] GetStock is invoked of codeunit "Shpfy Inventory API"
-        BindSubscription(This);
+        if BindSubscription(This) then;
         StockResult := ShpfyInventoryAPI.GetStock(ShpfyShopInventory);
-        UnbindSubscription(This);
+        if UnbindSubscription(This) then;
 
         // [THEN] StockResult = Stock
         LibraryAssert.AreEqual(Stock, StockResult, 'ShpfyInventoryAPI.GetStock(ShopInventory)');
@@ -54,19 +54,19 @@ codeunit 139586 "Shpfy Inventory API Test"
         ShpfyProduct: Record "Shpfy Product";
         ShpfyShop: Record "Shpfy Shop";
         ShpfyVariant: Record "Shpfy Variant";
+        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
     begin
+        Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         Stock := Any.DecimalInRange(1000, 2);
 
         Item.Init();
         Item."No." := Any.AlphabeticText(MaxStrLen(Item."No."));
         Item.Insert();
 
-        ShpfyShop.Init();
-        ShpfyShop.Code := Any.AlphabeticText(MaxStrLen(ShpfyShop.Code));
-        ShpfyShopLocation."Shop Code" := ShpfyShop.Code;
-        ShpfyShop.Insert();
+        ShpfyShop := ShpfyCommunicationMgt.GetShopRecord();
 
         ShpfyShopLocation.Init();
+        ShpfyShopLocation."Shop Code" := ShpfyShop.Code;
         ShpfyShopLocation.Id := Any.IntegerInRange(10000, 999999);
         ShpfyShopLocation.Disabled := false;
         ShpfyShopLocation.Insert();
@@ -91,5 +91,6 @@ codeunit 139586 "Shpfy Inventory API Test"
         ShopInventory."Product Id" := ShpfyProduct.Id;
         ShopInventory."Variant Id" := ShpfyVariant.Id;
         ShopInventory.Insert();
+        Commit();
     end;
 }

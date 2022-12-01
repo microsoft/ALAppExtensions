@@ -120,13 +120,16 @@ codeunit 2680 "Data Search in Table"
     local procedure SetTypeFilterOnRecRef(var RecRef: RecordRef; TableType: Integer; FieldNo: Integer)
     var
         FldRef: FieldRef;
-    begin
+    begin 
+        if not RecRef.FieldExist(FieldNo) then
+            exit;
         FldRef := RecRef.Field(FieldNo);
         FldRef.SetRange(TableType);
     end;
 
     local procedure SetListedFieldFiltersOnRecRef(var RecRef: RecordRef; TableType: Integer; SearchString: Text; UseTextSearch: Boolean; var FieldList: List of [Integer])
     var
+        DataSearchEvents: Codeunit "Data Search Events";
         FldRef: FieldRef;
         FieldNo: Integer;
         LoadFieldsSet: Boolean;
@@ -135,19 +138,20 @@ codeunit 2680 "Data Search in Table"
             exit;
 
         case RecRef.Number of
-            Database::"Sales Header", Database::"Sales Line":
-                SetTypeFilterOnRecRef(RecRef, TableType, 1);
-            Database::"Purchase Header", Database::"Purchase Line":
-                SetTypeFilterOnRecRef(RecRef, TableType, 1);
-            Database::"Service Header",  Database::"Service Line":
-                SetTypeFilterOnRecRef(RecRef, TableType, 1);
-            Database::"Service Item Line":
-                SetTypeFilterOnRecRef(RecRef, TableType, 43);
-            Database::"Service Contract Header":
-                SetTypeFilterOnRecRef(RecRef, TableType, 2);
+            Database::"Sales Header", Database::"Sales Line",
+            Database::"Purchase Header", Database::"Purchase Line",
+            Database::"Service Header",  Database::"Service Line",
             Database::"Service Contract Line":
-                SetTypeFilterOnRecRef(RecRef, TableType, 1);
+                FieldNo := 1;
+            Database::"Service Item Line":
+                FieldNo := 43;
+            Database::"Service Contract Header":
+                FieldNo := 2;
         end;
+        if FieldNo = 0 then
+            DataSearchEvents.OnGetFieldNoForTableType(RecRef.Number, FieldNo);
+        if FieldNo > 0 then
+            SetTypeFilterOnRecRef(RecRef, TableType, FieldNo);
 
         RecRef.FilterGroup(-1); // 'OR' group
         foreach FieldNo in FieldList do

@@ -70,10 +70,10 @@ report 10020 "IRS 1096 Form"
                     CompanyFullAddress := 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
                     CompanyAddressDetails := 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
                     ContactName := 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-                    ContactPhoneNumber := 'XXXXXXXXXXX';
+                    ContactPhoneNumber := 'XXXXXXXXXXXXXX';
                     ContactEmail := 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
                     ContactFaxNumber := 'XXXXXXXXXXXXXXX';
-                    IdentificationNumber := 'XXXXXXXXX';
+                    IdentificationNumber := 'XXXXXXXXXX';
                     SocialSecurityNumber := 'XXXXXXXXX';
                     MISCCode := 'X';
                     INTCode := 'X';
@@ -190,10 +190,10 @@ report 10020 "IRS 1096 Form"
         CompanyFullAddress: Text;
         CompanyAddressDetails: Text;
         ContactName: Text[47];
-        ContactPhoneNumber: Text[11];
+        ContactPhoneNumber: Text[14];
         ContactEmail: Text;
         ContactFaxNumber: Text[15];
-        IdentificationNumber: Text[9];
+        IdentificationNumber: Text[10];
         SocialSecurityNumber: Text[9];
         TestPrint: Boolean;
         MISCCode: Code[1];

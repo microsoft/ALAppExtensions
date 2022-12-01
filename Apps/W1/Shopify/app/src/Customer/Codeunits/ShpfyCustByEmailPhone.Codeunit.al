@@ -48,9 +48,10 @@ codeunit 30113 "Shpfy Cust. By Email/Phone" implements "Shpfy ICustomer Mapping"
             ShpfyCustomerImport.SetAllowCreate(AllowCreate);
             ShpfyCustomerImport.Run();
             ShpfyCustomerImport.GetCustomer(ShpfyCustomer);
-            ShpfyCustomer.Find();
-            ShpfyCustomer.CalcFields("Customer No.");
+            if ShpfyCustomer.Find() then
+                ShpfyCustomer.CalcFields("Customer No.");
+            exit(ShpfyCustomer."Customer No.");
         end;
-        exit(ShpfyCustomer."Customer No.");
+        exit('');
     end;
 }

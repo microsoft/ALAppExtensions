@@ -39,5 +39,9 @@ tableextension 11150 "Intrastat Report Line AT" extends "Intrastat Report Line"
                     TestField(Type, Type::Shipment);
             end;
         }
+        modify("Transaction Type")
+        {
+            Caption = 'Nature of Transaction';
+        }
     }
 }

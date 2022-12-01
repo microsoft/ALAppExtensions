@@ -6,16 +6,23 @@ pageextension 11737 "Purchase Quote CZL" extends "Purchase Quote"
 #pragma warning disable AL0432
         movelast(General; "Posting Description")
 #pragma warning restore AL0432
-#else
+#endif
         addlast(General)
         {
+#if CLEAN20
             field("Posting Description CZL"; Rec."Posting Description")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies a description of the document. The posting description also appers on vendor and G/L entries.';
             }
-        }
 #endif
+            field("Your Reference CZL"; Rec."Your Reference")
+            {
+                ApplicationArea = Basic, Suite;
+                Importance = Additional;
+                ToolTip = 'Specifies the vendor''s reference. The contents will be printed on purchase documents.';
+            }
+        }
         addlast("Invoice Details")
         {
             field("Last Unreliab. Check Date CZL"; Rec."Last Unreliab. Check Date CZL")

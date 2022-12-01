@@ -137,7 +137,7 @@ report 31114 "Batch Post Sales Cr. Memos CZL"
     }
 
     var
-        ExchRateNotApplyMsg: Label 'The exchange rate associated with the new posting date on the sales header will not apply to the sales lines.';
+        ExchRateNotApplyMsg: Label 'The exchange rate associated with the new posting date on the sales header will apply to the sales lines.';
         CalcInvDiscReq: Boolean;
         EnterVATDateErr: Label 'Enter the VAT date.';
         ReplacePostingDateReq: Boolean;

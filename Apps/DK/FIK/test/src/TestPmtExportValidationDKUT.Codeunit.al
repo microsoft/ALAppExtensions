@@ -2176,7 +2176,7 @@ codeunit 148027 "TestPmtExport Validation DK UT"
     procedure GiroAccNoLength();
     var
         GenJournalLine: Record "Gen. Journal Line";
-        PaymentBuffer: Record "Payment Buffer";
+        VendorPaymentBuffer: Record "Vendor Payment Buffer";
         PaymentExportData: Record "Payment Export Data";
         PurchaseHeader: Record "Purchase Header";
         PurchInvHeader: Record "Purch. Inv. Header";
@@ -2216,8 +2216,8 @@ codeunit 148027 "TestPmtExport Validation DK UT"
 
         Assert.AreEqual(
           GiroAccNoLength,
-          LibraryUtility.GetFieldLength(DATABASE::"Payment Buffer", PaymentBuffer.FIELDNO(GiroAccNo)),
-          STRSUBSTNO(WrongGiroAccLengthErr, PaymentBuffer.TABLECAPTION()));
+          LibraryUtility.GetFieldLength(DATABASE::"Vendor Payment Buffer", VendorPaymentBuffer.FIELDNO(GiroAccNo)),
+          STRSUBSTNO(WrongGiroAccLengthErr, VendorPaymentBuffer.TABLECAPTION()));
 
         Assert.AreEqual(
           GiroAccNoLength,

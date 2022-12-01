@@ -72,6 +72,15 @@ codeunit 4008 "Hybrid BC Management"
         BackupUpgradeTags := true;
     end;
 
+    [EventSubscriber(ObjectType::Page, Page::"Migration Table Mapping", 'OnIsBCMigration', '', false, false)]
+    local procedure OnIsBCMigration(var SourceBC: Boolean)
+    begin
+        if not GetBCProductEnabled() then
+            exit;
+
+        SourceBC := true;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInvokeDataUpgrade', '', false, false)]
     local procedure InvokeDataUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary"; var Handled: Boolean)
     begin

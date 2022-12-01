@@ -19,6 +19,8 @@ codeunit 11740 "Copy Document Mgt. Handler CZL"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnCopySalesDocUpdateHeaderOnBeforeUpdateCustLedgerEntry', '', false, false)]
     local procedure UpdateBankInfoOnCopySalesDocUpdateHeaderOnBeforeUpdateCustLedgerEntry(var ToSalesHeader: Record "Sales Header"; FromDocType: Option)
+    var
+        Customer: Record Customer;
     begin
         if (ToSalesHeader.IsCreditDocType() and not
                 (FromDocType in ["Sales Document Type From"::"Return Order".AsInteger(),
@@ -32,7 +34,38 @@ codeunit 11740 "Copy Document Mgt. Handler CZL"
             ToSalesHeader."Specific Symbol CZL" := '';
             ToSalesHeader."Variable Symbol CZL" := '';
             ToSalesHeader."Constant Symbol CZL" := '';
-            ToSalesHeader.UpdateBankInfoCZL('', '', '', '', '', '', '');
+            if not ToSalesHeader.IsCreditDocType() then
+                ToSalesHeader.Validate("Bank Account Code CZL", ToSalesHeader.GetDefaulBankAccountNoCZL())
+            else begin
+                Customer.Get(ToSalesHeader."Bill-to Customer No.");
+                ToSalesHeader.Validate("Bank Account Code CZL", Customer."Preferred Bank Account Code");
+            end;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnCopyPurchDocUpdateHeaderOnBeforeUpdateVendLedgerEntry', '', false, false)]
+    local procedure UpdateBankInfoOnCopyPurchDocUpdateHeaderOnBeforeUpdateVendLedgerEntry(var ToPurchaseHeader: Record "Purchase Header"; FromDocType: Option)
+    var
+        Vendor: Record Vendor;
+    begin
+        if (ToPurchaseHeader.IsCreditDocType() and not
+                (FromDocType in ["Purchase Document Type From"::"Return Order".AsInteger(),
+                                "Purchase Document Type From"::"Credit Memo".AsInteger(),
+                                "Purchase Document Type From"::"Posted Credit Memo".AsInteger()])) or
+           (not ToPurchaseHeader.IsCreditDocType() and
+                (FromDocType in ["Purchase Document Type From"::"Return Order".AsInteger(),
+                                "Purchase Document Type From"::"Credit Memo".AsInteger(),
+                                "Purchase Document Type From"::"Posted Credit Memo".AsInteger()]))
+        then begin
+            ToPurchaseHeader."Specific Symbol CZL" := '';
+            ToPurchaseHeader."Variable Symbol CZL" := '';
+            ToPurchaseHeader."Constant Symbol CZL" := '';
+            if ToPurchaseHeader.IsCreditDocType() then
+                ToPurchaseHeader.Validate("Bank Account Code CZL", ToPurchaseHeader.GetDefaulBankAccountNoCZL())
+            else begin
+                Vendor.Get(ToPurchaseHeader."Pay-to Vendor No.");
+                ToPurchaseHeader.Validate("Bank Account Code CZL", Vendor."Preferred Bank Account Code");
+            end;
         end;
     end;
 

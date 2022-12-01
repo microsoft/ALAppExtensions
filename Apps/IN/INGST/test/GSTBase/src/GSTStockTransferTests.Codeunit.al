@@ -75,6 +75,30 @@ codeunit 18427 "GST Stock Transfer Tests"
         VerifyGSTEntries(PostedDocumentNo);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatesPage')]
+    procedure PostFromTransferOrderwithInterStateStockTransfer()
+    var
+        FromLocation, ToLocation, InTransitLocation : Record Location;
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        GSTGroupType: Enum "GST Group Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] [453739] Check if the system is able to Post with GST in case of Inter-State Stock Transfer Shipment and Receipt.
+        // [GIVEN] Created GST Setup ,Transfer Locations
+        CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+        CreateGSTSetup(GSTGroupType::Goods, false, false);
+
+        // [WHEN] Create and Post Interstate Transfer Order
+        PostedDocumentNo := CreateandPostTransferOrder(
+            TransferHeader,
+            TransferLine);
+
+        // [THEN] GLEntries Verified 
+        VerifyGSTEntries(PostedDocumentNo);
+    end;
+
     local procedure CreateItemWithInventory(): Code[20]
     var
         Item: Record Item;

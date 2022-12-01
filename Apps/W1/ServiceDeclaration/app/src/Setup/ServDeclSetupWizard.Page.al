@@ -87,6 +87,28 @@ page 5021 "Serv. Decl. Setup Wizard"
                         ApplicationArea = Basic, Suite;
                         ToolTip = 'Specifies whether the VAT Registration No. is enabled for the service declaration.';
                     }
+                    field("Vend. VAT Reg. No. Type"; Rec."Vend. VAT Reg. No. Type")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ToolTip = 'Specifies how a vendor''s VAT registration number exports to the file. 0 is the value of the VAT Reg. No. field, 1 adds the country code as a prefix, and 2 removes the country code.';
+                    }
+                    field("Cust. VAT Reg. No. Type"; Rec."Cust. VAT Reg. No. Type")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ToolTip = 'Specifies how a customer''s VAT registration number exports to the file. 0 is the value of the VAT Reg. No. field, 1 adds the country code as a prefix, and 2 removes the country code.';
+                    }
+                    field("Def. Customer/Vendor VAT No."; Rec."Def. Customer/Vendor VAT No.")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ToolTip = 'Specifies the VAT registration number that will be used if customer or vendor company does not have its own VAT registration number.';
+                        Visible = false;
+                    }
+                    field("Def. Private Person VAT No."; Rec."Def. Private Person VAT No.")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ToolTip = 'Specifies the VAT registration number that will be used if customer or vendor private person does not have its own VAT registration number.';
+                        Visible = false;
+                    }
                 }
             }
             group(Step3)
@@ -205,6 +227,7 @@ page 5021 "Serv. Decl. Setup Wizard"
         Rec.Insert();
         ServDeclMgt.InsertVATReportsConfiguration();
         UpdateServTransTypesCount();
+        EnableServTransType := ServDeclSetup."Enable Serv. Trans. Types";
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -238,6 +261,7 @@ page 5021 "Serv. Decl. Setup Wizard"
         Step3Visible: Boolean;
         FinishStepVisible: Boolean;
         SetupFinished: Boolean;
+        EnableServTransType: Boolean;
         Step: Option Start,Step2,Step3,FinishStep;
         ServTransTypesCount: Integer;
         SetupNotCompletedQst: Label 'The setup is not complete.\\Are you sure you want to exit?';
@@ -272,6 +296,11 @@ page 5021 "Serv. Decl. Setup Wizard"
             Step := Step - 1
         else
             Step := Step + 1;
+        if (not EnableServTransType) and (Step = Step::Step3) then
+            if Backwards then
+                Step -= 1
+            else
+                Step += 1;
 
         EnableControls();
     end;

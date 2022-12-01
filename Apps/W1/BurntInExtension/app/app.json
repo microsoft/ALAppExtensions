@@ -2,7 +2,7 @@
     "id":  "e1bc644c-1e88-4055-8650-86af327fc8b7",
     "name":  "_Exclude_BurntInExtension",
     "publisher":  "Microsoft",
-    "version":  "21.1.0.0",
+    "version":  "21.3.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2206604",
@@ -19,5 +19,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "21.1.0.0"
+    "application":  "21.3.0.0"
 }

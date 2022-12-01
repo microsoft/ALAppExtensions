@@ -65,10 +65,7 @@ codeunit 11744 "Purchase Header Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType', '', false, false)]
     local procedure UpdateBankInfoAndRegNosOnValidatePurchaseHeaderPayToVendorNo(var PurchaseHeader: Record "Purchase Header"; var xPurchaseHeader: Record "Purchase Header"; Vendor: Record Vendor)
     begin
-        if PurchaseHeader.IsCreditDocType() and
-           ((PurchaseHeader."Currency Code" = xPurchaseHeader."Currency Code") or
-            (PurchaseHeader."Responsibility Center" <> xPurchaseHeader."Responsibility Center"))
-        then
+        if PurchaseHeader.IsCreditDocType() then
             PurchaseHeader.Validate("Bank Account Code CZL", PurchaseHeader.GetDefaulBankAccountNoCZL())
         else
             PurchaseHeader.Validate("Bank Account Code CZL", Vendor."Preferred Bank Account Code");

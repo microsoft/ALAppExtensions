@@ -94,6 +94,12 @@ report 31253 "FA Physical Inventory List CZF"
             column(FADeprBook_BookValue; FADepreciationBook."Book Value")
             {
             }
+            column(FADeprBook_WriteDown; -FADepreciationBook."Write-Down")
+            {
+            }
+            column(FADeprBook_Appreciation; FADepreciationBook.Appreciation)
+            {
+            }
             column(LineNo; LineNo)
             {
             }
@@ -118,7 +124,7 @@ report 31253 "FA Physical Inventory List CZF"
                 if not FADepreciationBook.Get("No.", DeprBookCode) then
                     CurrReport.Skip();
                 FADepreciationBook.SetRange("FA Posting Date Filter", 0D, DocumentDate);
-                FADepreciationBook.CalcFields("Acquisition Cost", Depreciation, "Book Value");
+                FADepreciationBook.CalcFields("Acquisition Cost", Depreciation, "Book Value", "Write-Down", Appreciation);
                 if (FADepreciationBook."Disposal Date" > 0D) and (FADepreciationBook."Disposal Date" < DocumentDate) then
                     FADepreciationBook."Book Value" := 0;
                 if (FADepreciationBook."Book Value" = 0) and (not PrintZeroBookValue) then
@@ -278,6 +284,8 @@ report 31253 "FA Physical Inventory List CZF"
         AcquisitionCostLbl = 'Acquisition Cost';
         DepreciationLbl = 'Depreciation';
         BookValueLbl = 'Book Value';
+        WriteDownLbl = 'Write-Down';
+        AppreciationLbl = 'Appreciation';
         LineNoLbl = 'Line No.';
         QtyInvLbl = 'Quantity Inventored';
         TotalQuantityAmountLbl = 'Total (Quantity, Amount):';

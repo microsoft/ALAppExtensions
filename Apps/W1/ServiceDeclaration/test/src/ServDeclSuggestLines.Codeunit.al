@@ -48,11 +48,7 @@ codeunit 139905 "Serv. Decl. Suggest Lines"
 
         VATReportsConfiguration.SetRange("VAT Report Type", VATReportsConfiguration."VAT Report Type"::"Service Declaration");
         VATReportsConfiguration.FindFirst();
-
-        ServDeclHeader.Validate("Config. Code", VATReportsConfiguration."VAT Report Version");
-        ServDeclHeader.Validate("Starting Date", SalesHeader."Posting Date");
-        ServDeclHeader.Validate("Ending Date", SalesHeader."Posting Date");
-        ServDeclHeader.Insert(true);
+        CreateServDeclHeader(ServDeclHeader, VATReportsConfiguration."VAT Report Version", SalesHeader."Posting Date");
 
         codeunit.Run(VATReportsConfiguration."Suggest Lines Codeunit ID", ServDeclHeader);
 
@@ -105,11 +101,7 @@ codeunit 139905 "Serv. Decl. Suggest Lines"
 
         VATReportsConfiguration.SetRange("VAT Report Type", VATReportsConfiguration."VAT Report Type"::"Service Declaration");
         VATReportsConfiguration.FindFirst();
-
-        ServDeclHeader.Validate("Config. Code", VATReportsConfiguration."VAT Report Version");
-        ServDeclHeader.Validate("Starting Date", SalesHeader."Posting Date");
-        ServDeclHeader.Validate("Ending Date", SalesHeader."Posting Date");
-        ServDeclHeader.Insert(true);
+        CreateServDeclHeader(ServDeclHeader, VATReportsConfiguration."VAT Report Version", SalesHeader."Posting Date");
 
         codeunit.Run(VATReportsConfiguration."Suggest Lines Codeunit ID", ServDeclHeader);
 
@@ -146,11 +138,7 @@ codeunit 139905 "Serv. Decl. Suggest Lines"
 
         VATReportsConfiguration.SetRange("VAT Report Type", VATReportsConfiguration."VAT Report Type"::"Service Declaration");
         VATReportsConfiguration.FindFirst();
-
-        ServDeclHeader.Validate("Config. Code", VATReportsConfiguration."VAT Report Version");
-        ServDeclHeader.Validate("Starting Date", PurchaseHeader."Posting Date");
-        ServDeclHeader.Validate("Ending Date", PurchaseHeader."Posting Date");
-        ServDeclHeader.Insert(true);
+        CreateServDeclHeader(ServDeclHeader, VATReportsConfiguration."VAT Report Version", PurchaseHeader."Posting Date");
 
         codeunit.Run(VATReportsConfiguration."Suggest Lines Codeunit ID", ServDeclHeader);
 
@@ -158,6 +146,171 @@ codeunit 139905 "Serv. Decl. Suggest Lines"
         Assert.RecordCount(ServDeclLine, 1);
         ServDeclLine.FindFirst();
         ServDeclLine.TestField("Purchase Amount", PurchaseLine.Amount);
+    end;
+
+    [Test]
+    procedure SuggestLinesWithOriginalVATRegNoOfCustAndVend()
+    var
+        ServDeclSetup: Record "Service Declaration Setup";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        PurchHeader: Record "Purchase Header";
+        PurchLine: Record "Purchase Line";
+        VATReportsConfiguration: Record "VAT Reports Configuration";
+        ServDeclHeader: Record "Service Declaration Header";
+        ServDeclLine: Record "Service Declaration Line";
+        Customer: Record Customer;
+        Vendor: Record Vendor;
+    begin
+        // [SCENARIO 437878] Original VAT registration number of customer/vendor is taken for the suggested lines in service declaration
+
+        Initialize();
+        LibraryLowerPermissions.SetO365Setup();
+        LibraryLowerPermissions.AddSalesDocsPost();
+        LibraryLowerPermissions.AddPurchDocsPost();
+
+        ServDeclSetup.Get();
+        // [GIVEN] Set "Enable VAT Registration No." in the Service Declaration Setup
+        ServDeclSetup.Validate("Enable VAT Registration No.", true);
+        // [GIVEN] Set "VAT Reg. No." for "Cust. VAT Reg. No. Type" and "Vend. VAT Reg. No. Type" in Service Declaration Setup
+        ServDeclSetup.Validate("Cust. VAT Reg. No. Type", ServDeclSetup."Cust. VAT Reg. No. Type"::"VAT Reg. No.");
+        ServDeclSetup.Validate("Vend. VAT Reg. No. Type", ServDeclSetup."Vend. VAT Reg. No. Type"::"VAT Reg. No.");
+        ServDeclSetup.Modify(true);
+
+        // [GIVEN] Posted sales invoice with customer from country "ES" that has "VAT Reg. No." = "X"
+        LibraryServiceDeclaration.CreateSalesDocWithServTransTypeCode(SalesHeader, SalesLine);
+        // [GIVEN] Posted purchase invoice with customer from country "GB" that has "VAT Reg. No." = "Y"
+        LibraryServiceDeclaration.CreatePurchDocWithServTransTypeCode(PurchHeader, PurchLine);
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        LibraryPurchase.PostPurchaseDocument(PurchHeader, true, true);
+
+        // [GIVEN] Service declaration with same posting dates as posted sales and purchase invoices
+        VATReportsConfiguration.SetRange("VAT Report Type", VATReportsConfiguration."VAT Report Type"::"Service Declaration");
+        VATReportsConfiguration.FindFirst();
+        CreateServDeclHeader(ServDeclHeader, VATReportsConfiguration."VAT Report Version", SalesHeader."Posting Date");
+
+        // [WHEN] Suggest lines for the service declaration
+        codeunit.Run(VATReportsConfiguration."Suggest Lines Codeunit ID", ServDeclHeader);
+
+        // [THEN] "VAT Reg. No." in purchase service declaration line is "Y"
+        ServDeclLine.SetRange("Service Declaration No.", ServDeclHeader."No.");
+        ServDeclLine.FindSet();
+        Vendor.Get(PurchHeader."Buy-from Vendor No.");
+        ServDeclLine.TestField("VAT Reg. No.", Vendor."VAT Registration No.");
+        // [THEN] "VAT Reg. No." in sales service declaration line is "X"
+        ServDeclLine.Next();
+        Customer.Get(SalesHeader."Sell-to Customer No.");
+        ServDeclLine.TestField("VAT Reg. No.", Customer."VAT Registration No.");
+    end;
+
+    [Test]
+    procedure SuggestLinesWithVATRegWithCountryNoOfCustAndVend()
+    var
+        ServDeclSetup: Record "Service Declaration Setup";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        PurchHeader: Record "Purchase Header";
+        PurchLine: Record "Purchase Line";
+        VATReportsConfiguration: Record "VAT Reports Configuration";
+        ServDeclHeader: Record "Service Declaration Header";
+        ServDeclLine: Record "Service Declaration Line";
+        Customer: Record Customer;
+        Vendor: Record Vendor;
+    begin
+        // [SCENARIO 437878] Combination of VAT registration number and country code of customer/vendor is taken for the suggested lines in service declaration
+
+        Initialize();
+        LibraryLowerPermissions.SetO365Setup();
+        LibraryLowerPermissions.AddSalesDocsPost();
+        LibraryLowerPermissions.AddPurchDocsPost();
+
+        ServDeclSetup.Get();
+        // [GIVEN] Set "Enable VAT Registration No." in the Service Declaration Setup
+        ServDeclSetup.Validate("Enable VAT Registration No.", true);
+        // [GIVEN] Set "VAT Reg. No." for "Cust. VAT Reg. No. Type" and "Vend. VAT Reg. No. Type" in Service Declaration Setup
+        ServDeclSetup.Validate("Cust. VAT Reg. No. Type", ServDeclSetup."Cust. VAT Reg. No. Type"::"Country Code + VAT Reg. No.");
+        ServDeclSetup.Validate("Vend. VAT Reg. No. Type", ServDeclSetup."Vend. VAT Reg. No. Type"::"Country Code + VAT Reg. No.");
+        ServDeclSetup.Modify(true);
+
+        // [GIVEN] Posted sales invoice with customer from country "ES" that has "VAT Reg. No." = "X"
+        LibraryServiceDeclaration.CreateSalesDocWithServTransTypeCode(SalesHeader, SalesLine);
+        // [GIVEN] Posted purchase invoice with customer from country "GB" that has "VAT Reg. No." = "Y"
+        LibraryServiceDeclaration.CreatePurchDocWithServTransTypeCode(PurchHeader, PurchLine);
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        LibraryPurchase.PostPurchaseDocument(PurchHeader, true, true);
+
+        // [GIVEN] Service declaration with same posting dates as posted sales and purchase invoices
+        VATReportsConfiguration.SetRange("VAT Report Type", VATReportsConfiguration."VAT Report Type"::"Service Declaration");
+        VATReportsConfiguration.FindFirst();
+        CreateServDeclHeader(ServDeclHeader, VATReportsConfiguration."VAT Report Version", SalesHeader."Posting Date");
+
+        // [WHEN] Suggest lines for the service declaration
+        codeunit.Run(VATReportsConfiguration."Suggest Lines Codeunit ID", ServDeclHeader);
+
+        // [THEN] "VAT Reg. No." in purchase service declaration line is "GBY"
+        ServDeclLine.SetRange("Service Declaration No.", ServDeclHeader."No.");
+        ServDeclLine.FindSet();
+        Vendor.Get(PurchHeader."Buy-from Vendor No.");
+        ServDeclLine.TestField("VAT Reg. No.", Vendor."Country/Region Code" + Vendor."VAT Registration No.");
+        // [THEN] "VAT Reg. No." in sales service declaration line is "ESX"
+        ServDeclLine.Next();
+        Customer.Get(SalesHeader."Sell-to Customer No.");
+        ServDeclLine.TestField("VAT Reg. No.", Customer."Country/Region Code" + Customer."VAT Registration No.");
+    end;
+
+    [Test]
+    procedure ServDeclWithMixOfSalesAndPurchaseLinesWithResource()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        PurchHeader: Record "Purchase Header";
+        PurchLine: Record "Purchase Line";
+        ServDeclHeader: Record "Service Declaration Header";
+        ServDeclLine: Record "Service Declaration Line";
+        VATReportsConfiguration: Record "VAT Reports Configuration";
+        SalesInvNo: Code[20];
+        PurchInvNo: Code[20];
+    begin
+        // [FEATURE] [Sales] [Purchase] [Resource]
+        // [SCENARIO 456284] Stan can create a service declaration with posted sales and purcahse lines with resource
+
+        Initialize();
+        LibraryServiceDeclaration.CreateResSalesDocWithServTransTypeCode(SalesHeader, SalesLine);
+        LibraryServiceDeclaration.CreateResPurchDocWithServTransTypeCode(PurchHeader, PurchLine);
+
+        SalesInvNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        PurchInvNo := LibraryPurchase.PostPurchaseDocument(PurchHeader, true, true);
+
+        LibraryLowerPermissions.SetO365Setup();
+        LibraryLowerPermissions.AddSalesDocsPost();
+        LibraryLowerPermissions.AddPurchDocsPost();
+
+        VATReportsConfiguration.SetRange("VAT Report Type", VATReportsConfiguration."VAT Report Type"::"Service Declaration");
+        VATReportsConfiguration.FindFirst();
+        CreateServDeclHeader(ServDeclHeader, VATReportsConfiguration."VAT Report Version", SalesHeader."Posting Date");
+
+        codeunit.Run(VATReportsConfiguration."Suggest Lines Codeunit ID", ServDeclHeader);
+
+        ServDeclLine.SetRange("Service Declaration No.", ServDeclHeader."No.");
+        Assert.RecordCount(ServDeclLine, 2);
+        ServDeclLine.FindSet();
+        ServDeclLine.TestField("Document Type", 0);
+        ServDeclLine.TestField("Document No.", SalesInvNo);
+        ServDeclLine.TestField("Country/Region Code", SalesHeader."Bill-to Country/Region Code");
+        ServDeclLine.TestField("Service Transaction Code", SalesLine."Service Transaction Type Code");
+        ServDeclLine.TestField("Sales Amount", SalesLine.Amount);
+        ServDeclLine.TestField("Sales Amount (LCY)", SalesLine.Amount);
+        ServDeclLine.TestField("Purchase Amount", 0);
+        ServDeclLine.TestField("Purchase Amount (LCY)", 0);
+        ServDeclLine.Next();
+        ServDeclLine.TestField("Document Type", 0);
+        ServDeclLine.TestField("Document No.", PurchInvNo);
+        ServDeclLine.TestField("Country/Region Code", PurchHeader."VAT Country/Region Code");
+        ServDeclLine.TestField("Service Transaction Code", PurchLine."Service Transaction Type Code");
+        ServDeclLine.TestField("Sales Amount", 0);
+        ServDeclLine.TestField("Sales Amount (LCY)", 0);
+        ServDeclLine.TestField("Purchase Amount", PurchLine.Amount);
+        ServDeclLine.TestField("Purchase Amount (LCY)", PurchLine.Amount);
     end;
 
     local procedure Initialize()
@@ -173,5 +326,13 @@ codeunit 139905 "Serv. Decl. Suggest Lines"
         IsInitialized := true;
         Commit();
         LibraryTestInitialize.OnAfterTestSuiteInitialize(CODEUNIT::"Serv. Decl. Suggest Lines");
+    end;
+
+    local procedure CreateServDeclHeader(var ServDeclHeader: Record "Service Declaration Header"; VATReportVersion: Code[10]; PostingDate: Date)
+    begin
+        ServDeclHeader.Validate("Config. Code", VATReportVersion);
+        ServDeclHeader.Validate("Starting Date", PostingDate);
+        ServDeclHeader.Validate("Ending Date", PostingDate);
+        ServDeclHeader.Insert(true);
     end;
 }
