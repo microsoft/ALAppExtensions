@@ -129,10 +129,8 @@ table 10018 "IRS 1096 Form Header"
 
     trigger OnModify()
     begin
-        if CurrFieldNo <> 0 then begin
-            "Changed By" := CopyStr(UserId(), 1, MaxStrLen("Changed By"));
-            "Changed Date-Time" := CurrentDateTime();
-        end;
+        "Changed By" := CopyStr(UserId(), 1, MaxStrLen("Changed By"));
+        "Changed Date-Time" := CurrentDateTime();
     end;
 
     trigger OnDelete()

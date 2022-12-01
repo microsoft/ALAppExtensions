@@ -261,6 +261,15 @@ table 31006 "Sales Adv. Letter Entry CZZ"
             until SalesAdvLetterEntryCZZ.Next() = 0;
     end;
 
+    procedure CalcDocumentAmount(): Decimal
+    var
+        SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
+    begin
+        SalesAdvLetterEntryCZZ.SetRange("Document No.", "Document No.");
+        SalesAdvLetterEntryCZZ.CalcSums(Amount);
+        exit(SalesAdvLetterEntryCZZ.Amount)
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforePrintRecords(var ReportSelections: Record "Report Selections"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
     begin

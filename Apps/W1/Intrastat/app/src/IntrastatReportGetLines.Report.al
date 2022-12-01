@@ -192,19 +192,19 @@
                     Caption = 'Options';
                     field(StartingDate; StartDate)
                     {
-                        ApplicationArea = BasicEU, BasicNO;
+                        ApplicationArea = BasicEU, BasicNO, BasicCH;
                         Caption = 'Starting Date';
                         ToolTip = 'Specifies the date from which the report or batch job processes information.';
                     }
                     field(EndingDate; EndDate)
                     {
-                        ApplicationArea = BasicEU, BasicNO;
+                        ApplicationArea = BasicEU, BasicNO, BasicCH;
                         Caption = 'Ending Date';
                         ToolTip = 'Specifies the date to which the report or batch job processes information.';
                     }
                     field(AmountInclItemCharges; AmountInclItemCharges)
                     {
-                        ApplicationArea = BasicEU, BasicNO;
+                        ApplicationArea = BasicEU, BasicNO, BasicCH;
                         Caption = 'Amount incl. Item Charges';
                         ToolTip = 'Specifies the amount of the entry including any item charges.';
 
@@ -220,7 +220,7 @@
                     }
                     field(IndCostPctReq; IndirectCostPctReq)
                     {
-                        ApplicationArea = BasicEU, BasicNO;
+                        ApplicationArea = BasicEU, BasicNO, BasicCH;
                         Caption = 'Cost Regulation %';
                         DecimalPlaces = 0 : 5;
                         MaxValue = 100;
@@ -234,25 +234,25 @@
                     Caption = 'Additional';
                     field(SkipRecalcForZeros; SkipRecalcZeroAmounts)
                     {
-                        ApplicationArea = BasicEU, BasicNO;
+                        ApplicationArea = BasicEU, BasicNO, BasicCH;
                         Caption = 'Skip Recalculation for Zero Amounts';
                         ToolTip = 'Specifies that lines without amounts will not be recalculated during the batch job.';
                     }
                     field(SkipZeros; SkipZeroAmounts)
                     {
-                        ApplicationArea = BasicEU, BasicNO;
+                        ApplicationArea = BasicEU, BasicNO, BasicCH;
                         Caption = 'Skip Zero Amounts';
                         ToolTip = 'Specifies that item ledger entries without amounts will not be included in the batch job.';
                     }
                     field(ShowingItemCharges; ShowItemCharges)
                     {
-                        ApplicationArea = BasicEU, BasicNO;
+                        ApplicationArea = BasicEU, BasicNO, BasicCH;
                         Caption = 'Show Item Charge Entries';
                         ToolTip = 'Specifies if you want to show direct costs that your company has assigned and posted as item charges.';
                     }
                     field(SkipNotInvoiced; SkipNotInvoicedEntries)
                     {
-                        ApplicationArea = BasicEU, BasicNO;
+                        ApplicationArea = BasicEU, BasicNO, BasicCH;
                         Caption = 'Skip Non-Invoiced Entries';
                         ToolTip = 'Specifies if item ledger entries that are shipped or received but not yet invoiced must be excluded from the process.';
                     }

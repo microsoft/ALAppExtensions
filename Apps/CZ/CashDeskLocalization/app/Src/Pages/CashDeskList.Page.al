@@ -138,8 +138,6 @@ page 31150 "Cash Desk List CZP"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Statistics';
                     Image = Statistics;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     RunObject = Page "Cash Desk Statistics CZP";
                     RunPageLink = "No." = field("No."),
                                   "Date Filter" = field("Date Filter"),
@@ -253,9 +251,6 @@ page 31150 "Cash Desk List CZP"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Cash &Document';
                 Image = Document;
-                Promoted = true;
-                PromotedCategory = New;
-                PromotedOnly = true;
                 RunObject = Page "Cash Document CZP";
                 RunPageLink = "Cash Desk No." = field("No.");
                 RunPageMode = Create;
@@ -314,6 +309,23 @@ page 31150 "Cash Desk List CZP"
                     CashDeskCZP.SetRecFilter();
                     Report.RunModal(Report::"Cash Desk Inventory CZP", true, false, CashDeskCZP);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_New)
+            {
+                Caption = 'New';
+                actionref(CashDocumentPromoted; "Cash &Document")
+                {
+                }
+            }
+            group(Category_Process)
+            {
+                Caption = 'Process';
+                actionref(StatisticsPromoted; Statistics)
+                {
+                }
             }
         }
     }

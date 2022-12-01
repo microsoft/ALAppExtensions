@@ -13,12 +13,12 @@ page 4814 "Intrastat Report Checklist"
             {
                 field("Field No."; Rec."Field No.")
                 {
-                    ApplicationArea = BasicEU, BasicNO;
+                    ApplicationArea = BasicEU, BasicNO, BasicCH;
                     ToolTip = 'Specifies the number of the table field that this entry in the checklist uses.';
                 }
                 field("Field Name"; Rec."Field Name")
                 {
-                    ApplicationArea = BasicEU, BasicNO;
+                    ApplicationArea = BasicEU, BasicNO, BasicCH;
                     ToolTip = 'Specifies the name of the table field that this entry in the checklist uses.';
 
                     trigger OnAssistEdit()
@@ -28,12 +28,12 @@ page 4814 "Intrastat Report Checklist"
                 }
                 field("Filter Expression"; Rec."Filter Expression")
                 {
-                    ApplicationArea = BasicEU, BasicNO;
+                    ApplicationArea = BasicEU, BasicNO, BasicCH;
                     ToolTip = 'Specifies the filter expression that must be applied to the Intrastat line. The check for fields is run only on those lines that are passes the filter expression.';
                 }
                 field("Reversed Filter Expression"; Rec."Reversed Filter Expression")
                 {
-                    ApplicationArea = BasicEU, BasicNO;
+                    ApplicationArea = BasicEU, BasicNO, BasicCH;
                     ToolTip = 'Specifies that the check for fields is run only on those lines that do not match the filter expression. If the line is not filtered, this field is ignored.';
                 }
             }

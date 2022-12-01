@@ -3,7 +3,6 @@ page 31160 "Cash Document CZP"
     Caption = 'Cash Document';
     DelayedInsert = true;
     PageType = Document;
-    PromotedActionCategories = 'New,Process,Report,Approve,Request Approval';
     RefreshOnActivate = true;
     SourceTable = "Cash Document Header CZP";
     UsageCategory = None;
@@ -306,8 +305,6 @@ page 31160 "Cash Document CZP"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Statistics';
                     Image = Statistics;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ShortCutKey = 'F7';
                     RunPageMode = View;
                     ToolTip = 'View the statistics on the selected cash document.';
@@ -373,10 +370,6 @@ page 31160 "Cash Document CZP"
                     ApplicationArea = All;
                     Caption = 'Approve';
                     Image = Approve;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedIsBig = true;
-                    PromotedOnly = true;
                     ToolTip = 'Relations to the workflow.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
@@ -392,9 +385,6 @@ page 31160 "Cash Document CZP"
                     ApplicationArea = All;
                     Caption = 'Reject';
                     Image = Reject;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedIsBig = true;
                     ToolTip = 'Rejects credit document';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
@@ -410,8 +400,6 @@ page 31160 "Cash Document CZP"
                     ApplicationArea = All;
                     Caption = 'Delegate';
                     Image = Delegate;
-                    Promoted = true;
-                    PromotedCategory = Category4;
                     ToolTip = 'Specifies enu delegate of cash document.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
@@ -427,8 +415,6 @@ page 31160 "Cash Document CZP"
                     ApplicationArea = All;
                     Caption = 'Comments';
                     Image = ViewComments;
-                    Promoted = true;
-                    PromotedCategory = Category4;
                     ToolTip = 'Specifies cash document comments.';
                     Visible = OpenApprovalEntriesExistForCurrUser;
 
@@ -510,8 +496,6 @@ page 31160 "Cash Document CZP"
                     Caption = 'Copy Document';
                     Ellipsis = true;
                     Image = CopyDocument;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ToolTip = 'Create a new cash document by copying an existing cash document.';
 
                     trigger OnAction()
@@ -604,8 +588,6 @@ page 31160 "Cash Document CZP"
                     Caption = 'Post and New';
                     Ellipsis = true;
                     Image = PostOrder;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ShortCutKey = 'Shift+F9';
                     ToolTip = 'Finalize the cash document and create new cash document with same type. The values are posted to the related accounts.';
 
@@ -651,9 +633,6 @@ page 31160 "Cash Document CZP"
                     Caption = 'Send A&pproval Request';
                     Enabled = NOT OpenApprovalEntriesExist;
                     Image = SendApprovalRequest;
-                    Promoted = true;
-                    PromotedCategory = Category5;
-                    PromotedOnly = true;
                     ToolTip = 'Relations to the workflow.';
 
                     trigger OnAction()
@@ -670,8 +649,6 @@ page 31160 "Cash Document CZP"
                     Caption = 'Cancel Approval Re&quest';
                     Enabled = OpenApprovalEntriesExist;
                     Image = CancelApprovalRequest;
-                    Promoted = true;
-                    PromotedCategory = Category5;
                     ToolTip = 'Relations to the workflow.';
 
                     trigger OnAction()
@@ -707,15 +684,113 @@ page 31160 "Cash Document CZP"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
                 begin
                     Rec.PrintToDocumentAttachment();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                group(Category_Category7)
+                {
+                    Caption = 'Posting';
+                    ShowAs = SplitButton;
+
+                    actionref(PostPromoted; Post)
+                    {
+                    }
+                    actionref(PostAndNewPromoted; PostAndNew)
+                    {
+                    }
+                    actionref(PostAndPrintPromoted; PostAndPrint)
+                    {
+                    }
+                    actionref(PreviewPromoted; Preview)
+                    {
+                    }
+                }
+                group(Category_Category8)
+                {
+                    Caption = 'Release';
+                    ShowAs = SplitButton;
+
+                    actionref(ReleasePromoted; Release)
+                    {
+                    }
+                    actionref(ReleaseAndNewPromoted; ReleaseAndNew)
+                    {
+                    }
+                    actionref(ReleaseAndPrintPromoted; ReleaseAndPrint)
+                    {
+                    }
+                    actionref(ReopenPromoted; Reopen)
+                    {
+                    }
+                }
+            }
+            group(Category_Category4)
+            {
+                Caption = 'Approve';
+
+                actionref(ApprovePromoted; Approve)
+                {
+                }
+                actionref(RejectPromoted; Reject)
+                {
+                }
+                actionref(CommentPromoted; Comment)
+                {
+                }
+                actionref(DelegatePromoted; Delegate)
+                {
+                }
+            }
+            group(Category_Category5)
+            {
+                Caption = 'Request Approval';
+
+                actionref(SendApprovalRequestPromoted; SendApprovalRequest)
+                {
+                }
+                actionref(CancelApprovalRequestPromoted; CancelApprovalRequest)
+                {
+                }
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Cash Document';
+
+                actionref(DimensionsPromoted; Dimensions)
+                {
+                }
+                actionref(StatisticsPomoted; Statistics)
+                {
+                }
+                actionref(DocAttachPromoted; DocAttach)
+                {
+                }
+                actionref(ApprovalsPromoted; "A&pprovals")
+                {
+                }
+                actionref(CopyDocumentPomoted; CopyDocument)
+                {
+                }
+
+            }
+            group(Category_Report)
+            {
+                Caption = 'Report';
+
+                actionref(PrinttoAttachmentPromoted; PrintToAttachment)
+                {
+                }
             }
         }
     }

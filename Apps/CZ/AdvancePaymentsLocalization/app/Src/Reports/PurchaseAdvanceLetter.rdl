@@ -655,7 +655,8 @@ Cstr(Fields!PageLbl.Value)</Value>
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
-                                          <Textbox Name="Space3">
+                                          <Textbox Name="Textbox6">
+                                            <CanGrow>true</CanGrow>
                                             <KeepTogether>true</KeepTogether>
                                             <Paragraphs>
                                               <Paragraph>
@@ -667,9 +668,12 @@ Cstr(Fields!PageLbl.Value)</Value>
                                                     </Style>
                                                   </TextRun>
                                                 </TextRuns>
-                                                <Style />
+                                                <Style>
+                                                  <TextAlign>Left</TextAlign>
+                                                </Style>
                                               </Paragraph>
                                             </Paragraphs>
+                                            <rd:DefaultName>Textbox6</rd:DefaultName>
                                             <Style>
                                               <Border>
                                                 <Style>None</Style>
@@ -1185,14 +1189,14 @@ Cstr(Fields!PageLbl.Value)</Value>
                                       </TablixCell>
                                       <TablixCell>
                                         <CellContents>
-                                          <Textbox Name="PaymentMethod">
+                                          <Textbox Name="DocumentDate_PurchAdvanceLetterHeader">
                                             <CanGrow>true</CanGrow>
                                             <KeepTogether>true</KeepTogether>
                                             <Paragraphs>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!PaymentMethod.Value</Value>
+                                                    <Value>=Fields!DocumentDate_PurchAdvanceLetterHeader.Value</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                       <Format>d. M. yyyy</Format>
@@ -1204,8 +1208,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                                 </Style>
                                               </Paragraph>
                                             </Paragraphs>
-                                            <rd:DefaultName>PaymentMethod</rd:DefaultName>
-                                            <ZIndex>13</ZIndex>
+                                            <ZIndex>12</ZIndex>
                                             <Style>
                                               <Border>
                                                 <Style>None</Style>
@@ -1322,17 +1325,16 @@ Cstr(Fields!PageLbl.Value)</Value>
                                       </TablixCell>
                                       <TablixCell>
                                         <CellContents>
-                                          <Textbox Name="DocumentDate_PurchAdvanceLetterHeader">
+                                          <Textbox Name="PaymentMethod">
                                             <CanGrow>true</CanGrow>
                                             <KeepTogether>true</KeepTogether>
                                             <Paragraphs>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!DocumentDate_PurchAdvanceLetterHeader.Value</Value>
+                                                    <Value>=Fields!PaymentMethod.Value</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
-                                                      <Format>d. M. yyyy</Format>
                                                     </Style>
                                                   </TextRun>
                                                 </TextRuns>
@@ -1341,7 +1343,8 @@ Cstr(Fields!PageLbl.Value)</Value>
                                                 </Style>
                                               </Paragraph>
                                             </Paragraphs>
-                                            <ZIndex>12</ZIndex>
+                                            <rd:DefaultName>PaymentMethod</rd:DefaultName>
+                                            <ZIndex>13</ZIndex>
                                             <Style>
                                               <Border>
                                                 <Style>None</Style>

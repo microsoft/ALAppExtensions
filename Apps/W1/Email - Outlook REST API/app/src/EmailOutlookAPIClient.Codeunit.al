@@ -10,6 +10,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         GraphURLTxt: label 'https://graph.microsoft.com', Locked = true;
         SendEmailErr: Label 'Could not send the email message. Try again later.';
         SendEmailCodeErr: Label 'Failed to send email with status code %1.', Comment = '%1 - Http status code', Locked = true;
+        SendEmailExternalUserErr: Label 'Could not send the email because the user is external.';
         EmailSentTxt: Label 'Email sent.', Locked = true;
         DraftEmailCreatedTxt: Label 'Draft email created.', Locked = true;
         AttachmentAddedTxt: Label 'Attachment added.', Locked = true;
@@ -57,18 +58,23 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
     end;
 
     /// <summary>
-    /// Send email using Outlook API. If the message json parameter &lt;= 4 mb and wrapped in a message object it is sent in a single request, otherwise it is sent it in multiple requests
+    /// Send email using Outlook API. If the message json parameter &lt;= 4 mb and wrapped in a message object it is sent in a single request, otherwise it is sent it in multiple requests.
     /// </summary>
+    /// <error>User is external and cannot authenticate to the exchange server.</error>
     /// <param name="AccessToken">Access token of the account.</param>
     /// <param name="MessageJson">The JSON representing the email message.</param>
     [NonDebuggable]
     procedure SendEmail(AccessToken: Text; MessageJson: JsonObject)
     var
+        AzureADPlan: Codeunit "Azure AD Plan";
         JToken: JsonToken;
         Attachments: JsonArray;
         Attachment: JsonToken;
         MessageId: Text;
     begin
+        if AzureADPlan.IsUserExternal() then
+            Error(SendEmailExternalUserErr);
+
         if MessageJson.Contains('message') then
             SendMailSingleRequest(AccessToken, MessageJson)
         else begin

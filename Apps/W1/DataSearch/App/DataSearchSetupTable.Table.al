@@ -91,22 +91,26 @@ table 2681 "Data Search Setup (Table)"
     end;
 
     local procedure GetSubtypes(var SubtypeList: list of [Integer])
+    var
+        DataSearchEvents: Codeunit "Data Search Events";
+        FieldNo: Integer;
     begin
         Case Rec."Table No." of
-            Database::"Sales Header", Database::"Sales Line":
-                GetSubtypesForField(SubtypeList, Database::"Sales Header", 1);
-            Database::"Purchase Header", Database::"Purchase Line":
-                GetSubtypesForField(SubtypeList, Database::"Purchase Header", 1);
-            Database::"Service Header", Database::"Service Item Line":
-                GetSubtypesForField(SubtypeList, Database::"Service Header", 1);
-            Database::"Service Contract Header":
-                GetSubtypesForField(SubtypeList, Database::"Service Contract Header", 2);
+            Database::"Sales Header", Database::"Sales Line",
+            Database::"Purchase Header", Database::"Purchase Line",
+            Database::"Service Header", Database::"Service Item Line",
             Database::"Service Contract Line":
-                GetSubtypesForField(SubtypeList, Database::"Service Contract Line", 1);
+                FieldNo := 1;
+            Database::"Service Contract Header":
+                FieldNo := 2;
         end;
+        if FieldNo = 0 then
+            DataSearchEvents.OnGetFieldNoForTableType(Rec."Table No.", FieldNo);
+        if FieldNo > 0 then
+            GetSubtypesForField(Rec."Table No.", FieldNo, SubtypeList);
     end;
 
-    local procedure GetSubtypesForField(var SubtypeList: list of [Integer]; TableNo: Integer; FieldNo: Integer)
+    local procedure GetSubtypesForField(TableNo: Integer; FieldNo: Integer; var SubtypeList: list of [Integer])
     var
         RecRef: RecordRef;
         FldRef: FieldRef;

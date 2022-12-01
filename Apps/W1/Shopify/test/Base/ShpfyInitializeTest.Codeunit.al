@@ -7,6 +7,9 @@ codeunit 139561 "Shpfy Initialize Test"
     SingleInstance = true;
 
     var
+        DummyCustomer: Record Customer;
+        DummyItem: Record Item;
+        ShpfyShop: Record "Shpfy Shop";
         Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
         ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
@@ -14,18 +17,21 @@ codeunit 139561 "Shpfy Initialize Test"
 
     trigger OnRun()
     begin
-        if ShpfyCommunicationMgt.GetShopRecord()."Shopify URL" = '' then
+        if ShpfyShop.IsEmpty() then
             CreateShop();
         Commit();
     end;
 
     internal procedure CreateShop(): Record "Shpfy Shop"
     var
+        GLAccount: Record "G/L Account";
         ShpfyShop: Record "Shpfy Shop";
         Code: Code[10];
         UrlTxt: Label 'https://%1.myshopify.com', Comment = '%1 = Shop name', Locked = true;
     begin
         Code := Any.AlphabeticText(MaxStrLen(Code));
+        GLAccount.SetRange("Direct Posting", true);
+        GLAccount.FindLast();
 
         ShpfyShop.Init();
         ShpfyShop.Code := Code;
@@ -34,13 +40,84 @@ codeunit 139561 "Shpfy Initialize Test"
         ShpfyShop."Customer Template Code" := CreateCustomerTemplate();
         ShpfyShop."Item Template Code" := CreateItemTemplate();
         CreateVATPostingSetup(ShpfyShop."Customer Template Code", ShpfyShop."Item Template Code");
+        CreateVATPostingSetup(ShpfyShop."Customer Template Code", '');
+        ShpfyShop."Shipping Charges Account" := GLAccount."No.";
 
         ShpfyShop.Insert();
+        Commit();
         ShpfyCommunicationMgt.SetShop(ShpfyShop);
         ShpfyCommunicationMgt.SetTestInProgress(true);
+        CreateDummyCustomer(ShpfyShop."Customer Template Code");
+        CreateDummyItem(ShpfyShop."Item Template Code");
         exit(ShpfyShop);
     end;
 
+local procedure CreateDummyCustomer(CurrentTemplateCode: Code[10])
+    var
+        ConfigTemplateHeader: Record "Config. Template Header";
+        ConfigConfigTemplateLine: Record "Config. Template Line";
+        DimensionsTemplate: Record "Dimensions Template";
+        ConfigTemplateManagement: Codeunit "Config. Template Management";
+        NoSeriesMgt: Codeunit NoSeriesManagement;
+        RecRef: RecordRef;
+    begin
+        if (CurrentTemplateCode <> '') and ConfigTemplateHeader.Get(CurrentTemplateCode) then begin
+            Clear(DummyCustomer);
+            ConfigConfigTemplateLine.SetRange("Data Template Code", ConfigTemplateHeader.Code);
+            ConfigConfigTemplateLine.SetRange(Type, ConfigConfigTemplateLine.Type::Field);
+            ConfigConfigTemplateLine.SetRange("Table ID", Database::Customer);
+            ConfigConfigTemplateLine.SetRange("Field ID", DummyCustomer.FieldNo("No. Series"));
+            if ConfigConfigTemplateLine.FindFirst() and (ConfigConfigTemplateLine."Default Value" <> '') then
+                NoSeriesMgt.InitSeries(CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), 0D, DummyCustomer."No.", DummyCustomer."No. Series");
+            DummyCustomer.Insert(true);
+            RecRef.GetTable(DummyCustomer);
+            ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, RecRef);
+            DimensionsTemplate.InsertDimensionsFromTemplates(ConfigTemplateHeader, DummyCustomer."No.", Database::Customer);
+            RecRef.SetTable(DummyCustomer);
+            DummyCustomer.Name := 'Dummy Customer Name';
+            DummyCustomer."E-Mail" := 'dummy@customer.com';
+            DummyCustomer.Modify();
+            DummyCustomer.SetRecFilter();
+        end;
+    end;
+
+    local procedure CreateDummyItem(CurrentTemplateCode: Code[10])
+    var
+        ConfigTemplateHeader: Record "Config. Template Header";
+        ConfigConfigTemplateLine: Record "Config. Template Line";
+        DimensionsTemplate: Record "Dimensions Template";
+        ConfigTemplateManagement: Codeunit "Config. Template Management";
+        NoSeriesMgt: Codeunit NoSeriesManagement;
+        RecRef: RecordRef;
+    begin
+        if (CurrentTemplateCode <> '') and ConfigTemplateHeader.Get(CurrentTemplateCode) then begin
+            Clear(DummyItem);
+            ConfigConfigTemplateLine.SetRange("Data Template Code", ConfigTemplateHeader.Code);
+            ConfigConfigTemplateLine.SetRange(Type, ConfigConfigTemplateLine.Type::Field);
+            ConfigConfigTemplateLine.SetRange("Table ID", Database::Item);
+            ConfigConfigTemplateLine.SetRange("Field ID", DummyItem.FieldNo("No. Series"));
+            if ConfigConfigTemplateLine.FindFirst() and (ConfigConfigTemplateLine."Default Value" <> '') then
+                NoSeriesMgt.InitSeries(CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), CopyStr(ConfigConfigTemplateLine."Default Value", 1, 20), 0D, DummyItem."No.", DummyItem."No. Series");
+            DummyItem.Insert(true);
+            RecRef.GetTable(DummyItem);
+            ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, RecRef);
+            DimensionsTemplate.InsertDimensionsFromTemplates(ConfigTemplateHeader, DummyItem."No.", Database::Customer);
+            RecRef.SetTable(DummyItem);
+            DummyItem.Description := 'Dummy Item Description';
+            DummyItem.Modify();
+            DummyItem.SetRecFilter();
+        end;
+    end;
+
+    internal procedure GetDummyCustomer() Customer: Record Customer;
+    begin
+        Customer := DummyCustomer;
+    end;
+
+    internal procedure GetDummyItem() Item: Record Item;
+    begin
+        Item := DummyItem;
+    end;
 
     local procedure CreateItemTemplate() Code: Code[10]
     var
@@ -49,6 +126,7 @@ codeunit 139561 "Shpfy Initialize Test"
         GenProductPostingGroup: Record "Gen. Product Posting Group";
         VatProductPostingGroup: Record "VAT Product Posting Group";
         Item: Record Item;
+        NoSeries: Record "No. Series";
     begin
         Code := Any.AlphabeticText(MaxStrLen(Code));
         ConfigTemplateHeader.Init();
@@ -63,6 +141,8 @@ codeunit 139561 "Shpfy Initialize Test"
         AddFieldTemplate(ConfigTemplateHeader.Code, 20000, Database::Item, Item.FieldNo("Gen. Prod. Posting Group"), GenProductPostingGroup.Code);
         VatProductPostingGroup := CreateVatProdPostingGroup(Code);
         AddFieldTemplate(ConfigTemplateHeader.Code, 30000, Database::Item, Item.FieldNo("VAT Prod. Posting Group"), VatProductPostingGroup.Code);
+        NoSeries := CreateNoSeries('SHPFY');
+        AddFieldTemplate(ConfigTemplateHeader.Code, 40000, Database::Item, Item.FieldNo("No. Series"), NoSeries.Code);
     end;
 
     local procedure AddFieldTemplate(Code: code[10]; LineNo: Integer; TableId: Integer; FieldId: Integer; Value: Text)
@@ -109,6 +189,23 @@ codeunit 139561 "Shpfy Initialize Test"
         end;
     end;
 
+    local procedure CreateNoSeries(Code: Code[20]) NoSeries: Record "No. Series"
+    var
+        NoSeriesLine: Record "No. Series Line";
+    begin
+        if not NoSeries.Get(Code) then begin
+            NoSeries.Code := Code;
+            NoSeries."Default Nos." := true;
+            NoSeries.Insert();
+            NoSeriesLine."Series Code" := Code;
+            NoSeriesLine."Starting No." := '90000';
+            NoSeriesLine."Increment-by No." := 1;
+            NoSeriesLine."Ending No." := '100000';
+            NoSeriesLine.Open := true;
+            NoSeriesLine.Insert();
+        end;
+    end;
+
     local procedure CreateCustomerTemplate() Code: Code[10]
     var
         ConfigTemplateHeader: Record "Config. Template Header";
@@ -122,7 +219,7 @@ codeunit 139561 "Shpfy Initialize Test"
         Code := Any.AlphabeticText(MaxStrLen(Code));
         ConfigTemplateHeader.Init();
         ConfigTemplateHeader.Code := Code;
-        ConfigTemplateHeader.Validate("Table ID", Database::Customer);
+        ConfigTemplateHeader."Table ID" := Database::Customer;
         ConfigTemplateHeader.Enabled := true;
         ConfigTemplateHeader.Insert();
 
@@ -217,6 +314,7 @@ codeunit 139561 "Shpfy Initialize Test"
             VatPostingSetup."VAT Bus. Posting Group" := BusinessPostingGroup;
             VatPostingSetup."VAT Prod. Posting Group" := ProductPostingGroup;
             VatPostingSetup."VAT Calculation Type" := "Tax Calculation Type"::"Normal VAT";
+            VatPostingSetup."VAT %" := 10;
             VatPostingSetup.Insert();
         end;
 

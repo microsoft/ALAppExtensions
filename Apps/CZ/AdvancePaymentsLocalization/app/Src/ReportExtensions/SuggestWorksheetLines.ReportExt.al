@@ -57,6 +57,20 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
                 end;
             }
         }
+        modify("Cust. Ledger Entry")
+        {
+            trigger OnBeforePreDataItem()
+            begin
+                SetRange("Advance Letter No. CZZ", '');
+            end;
+        }
+        modify("Vendor Ledger Entry")
+        {
+            trigger OnBeforePreDataItem()
+            begin
+                SetRange("Advance Letter No. CZZ", '');
+            end;
+        }
     }
 
     requestpage
@@ -187,7 +201,7 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
         SalesAdvLetterEntryCZZ.SetRange("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::Payment);
         SalesAdvLetterEntryCZZ.SetRange(Cancelled, false);
         SalesAdvLetterEntryCZZ.CalcSums("Amount (LCY)");
-        exit(InitialAmount - SalesAdvLetterEntryCZZ."Amount (LCY)");
+        exit(InitialAmount + SalesAdvLetterEntryCZZ."Amount (LCY)");
     end;
 
     local procedure CalculateAmountForPurchaseAdvanceLetter(): Decimal
@@ -204,7 +218,7 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
         PurchAdvLetterEntryCZZ.SetRange("Entry Type", PurchAdvLetterEntryCZZ."Entry Type"::Payment);
         PurchAdvLetterEntryCZZ.SetRange(Cancelled, false);
         PurchAdvLetterEntryCZZ.CalcSums("Amount (LCY)");
-        exit(InitialAmount - PurchAdvLetterEntryCZZ."Amount (LCY)");
+        exit(InitialAmount + PurchAdvLetterEntryCZZ."Amount (LCY)");
     end;
 
     procedure InitializeRequestCZZ(IsSalesAdvanceLettersConsidered: Boolean; IsPurchaseAdvanceLettersConsidered: Boolean)

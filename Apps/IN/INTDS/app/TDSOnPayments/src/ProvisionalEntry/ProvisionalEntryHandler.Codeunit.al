@@ -9,7 +9,7 @@ codeunit 18768 "Provisional Entry Handler"
         InsertReversalProvisionalEntry(Number);
         TempReversalEntry.SetCurrentKey("Document No.", "Posting Date", "Entry Type", "Entry No.");
         if not HideDialog then
-            Page.RunModal(Page::"Reverse Entries", TempReversalEntry)
+            Page.RunModal(Page::"Reverse Transaction Entries", TempReversalEntry)
         else begin
             ReversalPost.SetPrint(false);
             ReversalPost.Run(TempReversalEntry);

@@ -308,10 +308,6 @@ codeunit 18391 "GST Transfer Order Shipment"
                             DetailedGSTEntryBuffer."GST Input/Output Credit Amount" := Sign * TaxTransactionValue.Amount;
                             DetailedGSTEntryBuffer."GST Base Amount" := Sign * TransferLine.Amount;
                             DetailedGSTEntryBuffer."GST %" := TaxTransactionValue.Percent;
-                            DetailedGSTEntryBuffer."GST Rounding Precision" := GeneralLedgerSetup."Inv. Rounding Precision (LCY)";
-                            DetailedGSTEntryBuffer."GST Rounding Type" := GSTBaseValidation.GenLedInvRoundingType2GSTInvRoundingTypeEnum(GeneralLedgerSetup."Inv. Rounding Type (LCY)");
-                            DetailedGSTEntryBuffer."GST Inv. Rounding Precision" := GeneralLedgerSetup."Inv. Rounding Precision (LCY)";
-                            DetailedGSTEntryBuffer."GST Inv. Rounding Type" := GSTBaseValidation.GenLedInvRoundingType2GSTInvRoundingTypeEnum(GeneralLedgerSetup."Inv. Rounding Type (LCY)");
                             DetailedGSTEntryBuffer."Currency Factor" := 1;
                             DetailedGSTEntryBuffer."GST Amount" := Sign * TaxTransactionValue.Amount;
                             DetailedGSTEntryBuffer."Custom Duty Amount" := TransferLine."Custom Duty Amount";
@@ -324,6 +320,7 @@ codeunit 18391 "GST Transfer Order Shipment"
 
                             DetailedGSTEntryBuffer."GST Component Code" := GetGSTComponent(TaxTransactionValue."Value ID");
                             DetailedGSTEntryBuffer."GST Group Code" := TransferLine."GST Group Code";
+                            GSTBaseValidation.GetTaxComponentRoundingPrecision(DetailedGSTEntryBuffer, TaxTransactionValue);
                             DetailedGSTEntryBuffer.Insert(true);
                         until TaxTransactionValue.Next() = 0;
                 end;
@@ -486,8 +483,8 @@ codeunit 18391 "GST Transfer Order Shipment"
                 TempGSTPostingBufferStage."Gen. Prod. Posting Group" := TransferLine."Gen. Prod. Posting Group";
                 TempGSTPostingBufferStage."GST Group Code" := TransferLine."GST Group Code";
                 QFactor := Abs(TransferLine."Qty. to Ship" / TransferLine.Quantity);
-                TempGSTPostingBufferStage."GST Base Amount" := GSTBaseValidation.RoundGSTPrecision(QFactor * DetailedGSTEntryBuffer."GST Base Amount");
-                TempGSTPostingBufferStage."GST Amount" := GSTBaseValidation.RoundGSTPrecision(QFactor * DetailedGSTEntryBuffer."GST Amount");
+                TempGSTPostingBufferStage."GST Base Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTEntryBuffer."GST Component Code", (QFactor * DetailedGSTEntryBuffer."GST Base Amount"));
+                TempGSTPostingBufferStage."GST Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTEntryBuffer."GST Component Code", (QFactor * DetailedGSTEntryBuffer."GST Amount"));
                 TempGSTPostingBufferStage."GST %" := DetailedGSTEntryBuffer."GST %";
                 TempGSTPostingBufferStage."GST Component Code" := DetailedGSTEntryBuffer."GST Component Code";
                 TempGSTPostingBufferStage."Account No." := GetGSTPayableAccountNo(GSTStateCode, DetailedGSTEntryBuffer."GST Component Code");
@@ -571,12 +568,12 @@ codeunit 18391 "GST Transfer Order Shipment"
 
                 if CurrencyCode = '' then
                     if GSTInvoiceRouding then
-                        TotalGSTAmount := GSTBaseValidation.RoundGSTInvoicePrecision(TotalGSTAmount, DetailedGSTEntryBuffer."Currency Code")
+                        TotalGSTAmount := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTEntryBuffer."GST Component Code", TotalGSTAmount)
                     else
-                        TotalGSTAmount := GSTBaseValidation.RoundGSTPrecision(TotalGSTAmount);
+                        TotalGSTAmount := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTEntryBuffer."GST Component Code", TotalGSTAmount);
 
                 if (CurrencyCode <> '') and GSTInvoiceRouding then
-                    TotalGSTAmount := GSTBaseValidation.RoundGSTInvoicePrecision(TotalGSTAmount, DetailedGSTEntryBuffer."Currency Code");
+                    TotalGSTAmount := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTEntryBuffer."GST Component Code", TotalGSTAmount);
 
             until DetailedGSTEntryBuffer.Next() = 0;
 
@@ -650,13 +647,17 @@ codeunit 18391 "GST Transfer Order Shipment"
             DetailedGSTLedgerEntry."GST Group Code" := DetailedGSTEntryBuffer."GST Group Code";
             DetailedGSTLedgerEntry."Document Line No." := DetailedGSTEntryBuffer."Line No.";
             if DetailedGSTEntryBuffer."GST Assessable Value" <> 0 then begin
-                DetailedGSTLedgerEntry."GST Base Amount" := -GSTBaseValidation.RoundGSTPrecision(
-                    DetailedGSTEntryBuffer."GST Assessable Value"
-                    + DetailedGSTEntryBuffer."Custom Duty Amount");
-                DetailedGSTLedgerEntry."GST Amount" := GSTBaseValidation.RoundGSTPrecision(DetailedGSTEntryBuffer."GST Amount");
+                DetailedGSTLedgerEntry."GST Base Amount" := -GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(
+                                                                                DetailedGSTEntryBuffer."GST Component Code", (
+                                                                                    DetailedGSTEntryBuffer."GST Assessable Value"
+                                                                                    + DetailedGSTEntryBuffer."Custom Duty Amount"));
+                DetailedGSTLedgerEntry."GST Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTEntryBuffer."GST Component Code",
+                                                                                                                (DetailedGSTEntryBuffer."GST Amount"));
             end else begin
-                DetailedGSTLedgerEntry."GST Base Amount" := GSTBaseValidation.RoundGSTPrecision(DetailedGSTEntryBuffer."GST Base Amount" * QtyShip / QtyBase);
-                DetailedGSTLedgerEntry."GST Amount" := GSTBaseValidation.RoundGSTPrecision(DetailedGSTEntryBuffer."GST Amount" * QtyShip / QtyBase);
+                DetailedGSTLedgerEntry."GST Base Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTEntryBuffer."GST Component Code",
+                                                                                                            (DetailedGSTEntryBuffer."GST Base Amount" * QtyShip / QtyBase));
+                DetailedGSTLedgerEntry."GST Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTEntryBuffer."GST Component Code",
+                                                                                                            (DetailedGSTEntryBuffer."GST Amount" * QtyShip / QtyBase));
             end;
 
             DetailedGSTLedgerEntry."Remaining Base Amount" := 0;
@@ -672,9 +673,11 @@ codeunit 18391 "GST Transfer Order Shipment"
 
             if DocTransferType = DocTransferType::"Transfer Receipt" then
                 if DetailedGSTEntryBuffer."GST Assessable Value" <> 0 then
-                    DetailedGSTLedgerEntry."Amount Loaded on Item" := GSTBaseValidation.RoundGSTPrecision(DetailedGSTEntryBuffer."Amount Loaded on Item")
+                    DetailedGSTLedgerEntry."Amount Loaded on Item" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTEntryBuffer."GST Component Code",
+                                                                                                                            DetailedGSTEntryBuffer."Amount Loaded on Item")
                 else
-                    DetailedGSTLedgerEntry."Amount Loaded on Item" := GSTBaseValidation.RoundGSTPrecision(DetailedGSTEntryBuffer."Amount Loaded on Item" * QtyShip / QtyBase)
+                    DetailedGSTLedgerEntry."Amount Loaded on Item" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTEntryBuffer."GST Component Code",
+                                                                                                    (DetailedGSTEntryBuffer."Amount Loaded on Item" * QtyShip / QtyBase))
             else
                 DetailedGSTLedgerEntry."Amount Loaded on Item" := 0;
 
