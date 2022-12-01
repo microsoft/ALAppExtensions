@@ -109,4 +109,10 @@ table 4005 "Hybrid Company"
         FailureMessageOutStream.Write(CompanyInitFailureMessage);
         Modify();
     end;
+
+    procedure GetRecommendedNumberOfCompaniesToReplicateInBatch(): Integer
+    begin
+        exit(10);
+    end;
+
 }

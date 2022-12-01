@@ -719,8 +719,12 @@ page 31171 "Sales Advance Letter CZZ"
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
+                var
+                    SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
                 begin
-                    Rec.PrintToDocumentAttachment();
+                    SalesAdvLetterHeaderCZZ := Rec;
+                    CurrPage.SetSelectionFilter(SalesAdvLetterHeaderCZZ);
+                    SalesAdvLetterHeaderCZZ.PrintToDocumentAttachment();
                 end;
             }
         }

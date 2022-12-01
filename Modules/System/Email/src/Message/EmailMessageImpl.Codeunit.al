@@ -13,7 +13,8 @@ codeunit 8905 "Email Message Impl."
                   tabledata "Email Recipient" = rid,
                   tabledata "Email Message Attachment" = rid,
                   tabledata "Email Related Record" = rd,
-                  tabledata "Tenant Media" = rm;
+                  tabledata "Tenant Media" = rm,
+                  tabledata "Email Attachments" = rimd;
 
     procedure Create(EmailMessageImpl: Codeunit "Email Message Impl.")
     var
@@ -30,7 +31,7 @@ codeunit 8905 "Email Message Impl."
         if EmailMessageImpl.Attachments_First() then
             repeat
                 EmailMessageImpl.Attachments_GetContent(AttachmentInStream);
-                AddAttachment(EmailMessageImpl.Attachments_GetName(), EmailMessageImpl.Attachments_GetContentType(), AttachmentInStream);
+                AddAttachment(EmailMessageImpl.Attachments_GetName(), EmailMessageImpl.Attachments_GetContentType(), AttachmentInStream, EmailMessageImpl.Attachments_IsInline(), EmailMessageImpl.Attachments_GetContentId());
             until EmailMessageImpl.Attachments_Next() = 0;
 
         EmailRelatedRecord.SetRange("Email Message Id", EmailMessageImpl.GetId());
@@ -247,12 +248,23 @@ codeunit 8905 "Email Message Impl."
         AddAttachmentInternal(AttachmentName, ContentType, AttachmentInStream);
     end;
 
+    procedure AddAttachment(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentInStream: InStream; InLine: Boolean; ContentId: Text[40])
+    begin
+        AddAttachmentInternal(AttachmentName, ContentType, AttachmentInStream, InLine, ContentId);
+    end;
+
     procedure AddAttachmentInternal(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentInStream: InStream) Size: Integer
     var
-        EmailMessageAttachment: Record "Email Message Attachment";
         NullGuid: Guid;
     begin
-        AddAttachment(AttachmentName, ContentType, false, NullGuid, EmailMessageAttachment);
+        exit(AddAttachmentInternal(AttachmentName, ContentType, AttachmentInStream, false, NullGuid));
+    end;
+
+    procedure AddAttachmentInternal(AttachmentName: Text[250]; ContentType: Text[250]; AttachmentInStream: InStream; InLine: Boolean; ContentId: Text[40]) Size: Integer
+    var
+        EmailMessageAttachment: Record "Email Message Attachment";
+    begin
+        AddAttachment(AttachmentName, ContentType, InLine, ContentId, EmailMessageAttachment);
         InsertAttachment(EmailMessageAttachment, AttachmentInStream, '');
         exit(EmailMessageAttachment.Length);
     end;
@@ -267,6 +279,33 @@ codeunit 8905 "Email Message Impl."
         EmailMessageAttachment.Length := TenantMedia.Content.Length;
         EmailMessageAttachment.Insert();
         Modify();
+    end;
+
+    procedure AddAttachmentsFromScenario(var EmailAttachments: Record "Email Attachments")
+    var
+        EmailMessageAttachment: Record "Email Message Attachment";
+        NullGuid: Guid;
+        ContentType: Text[250];
+    begin
+        if not EmailAttachments.FindSet() then
+            exit;
+        repeat
+            ContentType := GetContentTypeFromFilename(EmailAttachments."Attachment Name");
+            AddAttachment(EmailAttachments."Attachment Name", ContentType, false, NullGuid, EmailMessageAttachment);
+            InsertAttachmentsFromScenario(EmailMessageAttachment, EmailAttachments);
+        until EmailAttachments.Next() = 0;
+    end;
+
+    local procedure InsertAttachmentsFromScenario(EmailMessageAttachment: Record "Email Message Attachment"; EmailAttachments: Record "Email Attachments")
+    var
+        MediaID: Guid;
+    begin
+        EmailMessageAttachment.Data := EmailAttachments."Email Attachment";
+        MediaID := EmailMessageAttachment.Data.MediaId();
+        TenantMedia.Get(MediaID);
+        TenantMedia.CalcFields(Content);
+        EmailMessageAttachment.Length := TenantMedia.Content.Length;
+        EmailMessageAttachment.Insert();
     end;
 
     local procedure ReplaceRgbaColorsWithRgb(var Body: Text)

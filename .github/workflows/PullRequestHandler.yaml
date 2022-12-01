@@ -1,7 +1,7 @@
 ﻿name: 'Pull Request Handler'
 
 on:
-  pull_request:
+  pull_request_target:
     paths-ignore:
       - '**.md'
     branches: [ 'main' ]
@@ -22,6 +22,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           lfs: true
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Determine Changed Files
         id: ChangedFiles
@@ -41,11 +42,13 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "prfolder=$prfolder"
           $prPath = Join-Path $location $prFolder
           New-Item -Path $prPath -ItemType Directory | Out-Null
+          $prfilesChanged = @()
           Write-Host "Files Changed:"
           $response.files | ForEach-Object {
             $filename = $_.filename
             $status = $_.status
             Write-Host "- $filename $status"
+            $prFilesChanged += $filename
             $path = Join-Path $location $filename
             $newPath = Join-Path $prPath $filename
             $newfolder = [System.IO.Path]::GetDirectoryName($newpath)
@@ -75,7 +78,8 @@ jobs:
               Copy-Item -Path $path -Destination $newfolder -Force
             }
           }
-          Set-Content -path (Join-Path $prPath "comment_id") -value '${{ steps.CreateComment.outputs.comment_id }}' -NoNewLine -Force
+          Set-Content -path (Join-Path $prPath ".PullRequestCommentId") -value '${{ steps.CreateComment.outputs.comment_id }}' -Encoding UTF8 -NoNewLine -Force
+          Set-Content -path (Join-Path $prPath ".PullRequestFilesChanged") -value $prFilesChanged -Encoding UTF8 -Force
 
       - name: Upload Changed Files
         uses: actions/upload-artifact@v3

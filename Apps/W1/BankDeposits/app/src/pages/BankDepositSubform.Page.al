@@ -367,6 +367,7 @@ page 1693 "Bank Deposit Subform"
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
+        Rec.SetUpNewLine(xRec, xRec.Amount, false);
         if Rec."Journal Template Name" <> '' then begin
             Rec."Account Type" := xRec."Account Type";
             Rec."Document Type" := xRec."Document Type";

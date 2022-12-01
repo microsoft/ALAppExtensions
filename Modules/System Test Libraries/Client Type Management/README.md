@@ -12,7 +12,7 @@
 procedure SetClientType(NewClientType: ClientType)
 ```
 #### Parameters
-*NewClientType ([ClientType](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/clienttype/clienttype-option))* 
+*NewClientType ([ClientType](https://go.microsoft.com/fwlink/?linkid=2211600))* 
 
 The client type that will be returned from GetCurrentClientType.
 

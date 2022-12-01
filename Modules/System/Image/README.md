@@ -104,19 +104,19 @@ The Rectangles top left corner has to be within the image dimensions,
 procedure Crop(X: Integer; Y: Integer; Width: Integer; Height: Integer)
 ```
 #### Parameters
-*X ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*X ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 X coordinate of the rectangle.
 
-*Y ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Y ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Y coordinate of the rectangle.
 
-*Width ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Width ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Width of rectangle.
 
-*Height ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Height ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Height of the rectangle./
 
@@ -130,7 +130,7 @@ Height of the rectangle./
 procedure GetFormatAsText(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 A text containing the format value.
 ### GetFormat (Method) <a name="GetFormat"></a> 
@@ -165,7 +165,7 @@ procedure SetFormat(ImageFormat: Enum "Image Format")
 procedure FromBase64(Base64Text: Text)
 ```
 #### Parameters
-*Base64Text ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Base64Text ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A base64 encoded string the contains the image.
 
@@ -181,7 +181,7 @@ Stream do not contain valid image data
 procedure FromStream(InStream: InStream)
 ```
 #### Parameters
-*InStream ([InStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/instream/instream-data-type))* 
+*InStream ([InStream](https://go.microsoft.com/fwlink/?linkid=2210033))* 
 
 A Stream that contains the image data.
 
@@ -195,7 +195,7 @@ A Stream that contains the image data.
 procedure GetWidth(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The width in pixels.
 ### GetHeight (Method) <a name="GetHeight"></a> 
@@ -208,7 +208,7 @@ The width in pixels.
 procedure GetHeight(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The height in pixels.
 ### Resize (Method) <a name="Resize"></a> 
@@ -223,11 +223,11 @@ Width and Height is less than one.
 procedure Resize(Width: Integer; Height: Integer)
 ```
 #### Parameters
-*Width ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Width ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The resize width.
 
-*Height ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Height ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The resize height.
 
@@ -241,7 +241,7 @@ The resize height.
 procedure Save(OutStream: OutStream)
 ```
 #### Parameters
-*OutStream ([OutStream](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/outstream/outstream-data-type))* 
+*OutStream ([OutStream](https://go.microsoft.com/fwlink/?linkid=2210034))* 
 
 A Stream that will store the image data.
 
@@ -255,7 +255,7 @@ A Stream that will store the image data.
 procedure ToBase64(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 A string containing the image data encoded with base64.
 

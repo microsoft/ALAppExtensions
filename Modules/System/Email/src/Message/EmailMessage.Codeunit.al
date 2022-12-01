@@ -206,6 +206,15 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
+    /// Adds attachments from scenario to the email message.
+    /// </summary>
+    /// <param name="EmailAttachments">The reference to the email attachments </param>
+    procedure AddAttachmentFromScenario(var EmailAttachments: Record "Email Attachments")
+    begin
+        EmailMessageImpl.AddAttachmentsFromScenario(EmailAttachments);
+    end;
+
+    /// <summary>
     /// Deletes the contents of the currently selected attachment.
     /// </summary>
     /// <returns>Returns true if contents was successfully deleted, otherwise false.</returns>

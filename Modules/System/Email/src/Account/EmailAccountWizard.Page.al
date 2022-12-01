@@ -272,13 +272,14 @@ page 8886 "Email Account Wizard"
                     {
                         ApplicationArea = All;
                         Numeric = true;
-                        Caption = 'Rate limit per minute';
-                        ToolTip = 'Set the rate limit for the current account';
+                        Caption = 'Rate Limit per Minute';
+                        ToolTip = 'Specifies the maximum number of emails per minute the account can send. A rate limit of 0 indicates no limit.';
 
                         trigger OnValidate()
                         begin
-                            if (EmailRateLimitDisplay <> DefaultEmailRateLimitDisplay) then
-                                NotDefaultRateLimit := Evaluate(RateLimit, EmailRateLimitDisplay);
+                            Evaluate(RateLimit, EmailRateLimitDisplay);
+                            if RateLimit = 0 then
+                                EmailRateLimitDisplay := NoLimitTxt;
                         end;
                     }
                 }
@@ -355,7 +356,7 @@ page 8886 "Email Account Wizard"
                     if SetAsDefault then
                         EmailAccountImpl.MakeDefault(RegisteredAccount);
 
-                    EmailRateLimitImpl.RegisterRateLimit(RegisteredRateLimit, RegisteredAccount, RateLimit, NotDefaultRateLimit);
+                    EmailRateLimitImpl.RegisterRateLimit(RegisteredRateLimit, RegisteredAccount, RateLimit);
 
                     CurrPage.Close();
                 end;
@@ -409,7 +410,6 @@ page 8886 "Email Account Wizard"
         EmailAccountImpl.FindAllConnectors(Rec);
 
         EmailRateLimitDisplay := NoLimitTxt;
-        DefaultEmailRateLimitDisplay := NoLimitTxt;
 
         if not EmailScenario.GetDefaultEmailAccount(DefaultAccount) then
             SetAsDefault := true;
@@ -457,12 +457,22 @@ page 8886 "Email Account Wizard"
     local procedure ShowRegisterAccountStep()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        EmailRateLimitImpl: Codeunit "Email Rate Limit Impl.";
+        DefaultConnectorEmailRateLimit: Interface "Default Email Rate Limit";
+        DefaultEmailRateLimit: Integer;
         AccountWasRegistered: Boolean;
         ConnectorSucceeded: Boolean;
     begin
         ConnectorSucceeded := TryRegisterAccount(AccountWasRegistered);
 
         if AccountWasRegistered then begin
+            DefaultConnectorEmailRateLimit := Rec.Connector;
+            DefaultEmailRateLimit := DefaultConnectorEmailRateLimit.GetDefaultEmailRateLimit();
+            if not (DefaultEmailRateLimit = 0) then begin
+                EmailRateLimitDisplay := Format(DefaultEmailRateLimit);
+                RateLimit := DefaultEmailRateLimit
+            end;
+
             FeatureTelemetry.LogUptake('0000CTF', 'Emailing', Enum::"Feature Uptake Status"::"Set up");
             Session.LogMessage('0000CTH', Format(Rec.Connector) + ' account has been setup.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
             NextStep(false);
@@ -563,8 +573,6 @@ page 8886 "Email Account Wizard"
         AccountId: Guid;
         ConnectorsAvailable: Boolean;
         SetAsDefault: Boolean;
-        NotDefaultRateLimit: Boolean;
         StartTime: DateTime;
         EmailRateLimitDisplay: Text[250];
-        DefaultEmailRateLimitDisplay: Text[250];
 }

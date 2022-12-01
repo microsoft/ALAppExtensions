@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <DataExchDef Code="INTRA-2022-BE-RCPT-E" Name="Intrastat 2022 BE Receipt - Extended" Type="5" ExternalDataHandlingCodeunit="4813" FileType="0" ReadingWritingCodeunit="1283">
+    <DataExchLineDef LineType="1" Code="HEADER" ColumnCount="13" Namespace="http://www.onegate.eu/2010-01-01">
+      <DataExchColumnDef ColumnNo="1" Name="DeclarationReport" Show="false" DataType="0" Path="/DeclarationReport" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="2" Name="Administration" Show="false" DataType="0" Path="/DeclarationReport/Administration" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="3" Name="From" Show="false" DataType="0" Path="/DeclarationReport/Administration/From" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="4" Name="declarerType" Show="false" DataType="0" Path="/DeclarationReport/Administration/From[@declarerType]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="5" Name="To" Show="false" DataType="0" Path="/DeclarationReport/Administration/To" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="6" Name="Domain" Show="false" DataType="0" Path="/DeclarationReport/Administration/Domain" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="7" Name="Report" Show="false" DataType="0" Path="/DeclarationReport/Report" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="8" Name="action" Show="false" DataType="0" Path="/DeclarationReport/Report[@action]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="9" Name="date" Show="false" DataType="0" Path="/DeclarationReport/Report[@date]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="10" Name="code" Show="false" DataType="0" Path="/DeclarationReport/Report[@code]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="11" Name="Data" Show="false" DataType="0" Path="/DeclarationReport/Report/Data" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="12" Name="close" Show="false" DataType="0" Path="/DeclarationReport/Report/Data[@close]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="13" Name="form" Show="false" DataType="0" Path="/DeclarationReport/Report/Data[@form]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchMapping TableId="4812" Name="" KeyIndex="7" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="3" Optional="true" UseDefaultValue="true" DefaultValue="456" />
+        <DataExchFieldMapping ColumnNo="4" Optional="true" UseDefaultValue="true" DefaultValue="KBO" />
+        <DataExchFieldMapping ColumnNo="5" Optional="true" UseDefaultValue="true" DefaultValue="NBB" />
+        <DataExchFieldMapping ColumnNo="6" Optional="true" UseDefaultValue="true" DefaultValue="SXX" />
+        <DataExchFieldMapping ColumnNo="10" Optional="true" UseDefaultValue="true" DefaultValue="EX19E" />
+        <DataExchFieldMapping ColumnNo="12" Optional="true" UseDefaultValue="true" DefaultValue="true" />
+        <DataExchFieldMapping ColumnNo="13" Optional="true" UseDefaultValue="true" DefaultValue="EXF19E" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="0" Code="DETAIL" ColumnCount="11" DataLineTag="/DeclarationReport/Report/Data" ParentCode="HEADER">
+      <DataExchColumnDef ColumnNo="1" Name="Item" Show="false" DataType="0" Path="/Item" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="2" Name="EXTRF" Show="false" DataType="0" Path="/Item/Dim[@prop=&quot;EXTRF&quot;]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="3" Name="EXCNT" Show="false" DataType="0" Path="/Item/Dim[@prop=&quot;EXCNT&quot;]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="4" Name="EXTTA" Show="false" DataType="0" Path="/Item/Dim[@prop=&quot;EXTTA&quot;]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="5" Name="EXREG" Show="false" DataType="0" Path="/Item/Dim[@prop=&quot;EXREG&quot;]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="6" Name="EXTGO" Show="false" DataType="0" Path="/Item/Dim[@prop=&quot;EXTGO&quot;]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="7" Name="EXWEIGHT" Show="false" DataType="0" Path="/Item/Dim[@prop=&quot;EXWEIGHT&quot;]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="8" Name="EXUNITS" Show="false" DataType="2" Path="/Item/Dim[@prop=&quot;EXUNITS&quot;]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="9" Name="EXTXVAL" Show="false" DataType="0" Path="/Item/Dim[@prop=&quot;EXTXVAL&quot;]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="10" Name="EXTPC" Show="false" DataType="0" Path="/Item/Dim[@prop=&quot;EXTPC&quot;]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchColumnDef ColumnNo="11" Name="EXDELTRM" Show="false" DataType="0" Path="/Item/Dim[@prop=&quot;EXDELTRM&quot;]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
+      <DataExchMapping TableId="4812" Name="" KeyIndex="7" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="2" FieldID="3" Optional="true" />
+        <DataExchFieldMapping ColumnNo="3" FieldID="7" Optional="true" />
+        <DataExchFieldMapping ColumnNo="4" FieldID="8" Optional="true" />
+        <DataExchFieldMapping ColumnNo="5" FieldID="26" Optional="true" />
+        <DataExchFieldMapping ColumnNo="6" FieldID="5" Optional="true" TransformationRule="ALPHANUMERIC_ONLY" />
+        <DataExchFieldMapping ColumnNo="7" FieldID="21" Optional="true" TransformationRule="ROUNDTOINT">
+          <TransformationRules>
+            <Code>ALPHANUMERIC_ONLY</Code>
+            <Description>Alphanumeric Text Only</Description>
+            <TransformationType>7</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+          </TransformationRules>
+          <TransformationRules>
+            <Code>ROUNDTOINT</Code>
+            <Description>Round to integer</Description>
+            <TransformationType>14</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>1.00</Precision>
+            <Direction>=</Direction>
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="8" FieldID="35" Optional="true" />
+        <DataExchFieldMapping ColumnNo="9" FieldID="17" Optional="true" TransformationRule="ROUNDTOINT">
+          <TransformationRules>
+            <Code>ALPHANUMERIC_ONLY</Code>
+            <Description>Alphanumeric Text Only</Description>
+            <TransformationType>7</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+          </TransformationRules>
+          <TransformationRules>
+            <Code>ROUNDTOINT</Code>
+            <Description>Round to integer</Description>
+            <TransformationType>14</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>1.00</Precision>
+            <Direction>=</Direction>
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="10" FieldID="9" Optional="true" />
+        <DataExchFieldMapping ColumnNo="11" FieldID="27" Optional="true" />
+        <DataExchFieldGrouping FieldID="3" />
+        <DataExchFieldGrouping FieldID="5" />
+        <DataExchFieldGrouping FieldID="7" />
+        <DataExchFieldGrouping FieldID="8" />
+        <DataExchFieldGrouping FieldID="9" />
+        <DataExchFieldGrouping FieldID="26" />
+        <DataExchFieldGrouping FieldID="27" />
+      </DataExchMapping>
+    </DataExchLineDef>
+  </DataExchDef>
+</root>

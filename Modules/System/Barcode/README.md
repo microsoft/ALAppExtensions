@@ -26,7 +26,7 @@ Use this module to:
 procedure EncodeFont(InputText: Text; var BarcodeEncodeSettings: Record "Barcode Encode Settings"): Text
 ```
 #### Parameters
-*InputText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*InputText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text to encode.
 
@@ -35,7 +35,7 @@ The text to encode.
 Settings to use when encoding the input text.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The encoded barcode.
 ### IsValidInput (Method) <a name="IsValidInput"></a> 
@@ -50,7 +50,7 @@ The encoded barcode.
 procedure IsValidInput(InputText: Text; var BarcodeEncodeSettings: Record "Barcode Encode Settings"): Boolean
 ```
 #### Parameters
-*InputText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*InputText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text to validate.
 
@@ -59,7 +59,7 @@ The text to validate.
 
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the validation succeeds; otherwise - false.
 
@@ -92,7 +92,7 @@ A list of barcode symbologies.
 procedure EncodeFont(InputText: Text; BarcodeSymbology: Enum "Barcode Symbology"): Text
 ```
 #### Parameters
-*InputText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*InputText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text to encode.
 
@@ -101,7 +101,7 @@ The text to encode.
 The symbology to use for the encoding.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The encoded barcode.
 ### EncodeFont (Method) <a name="EncodeFont"></a> 
@@ -114,7 +114,7 @@ The encoded barcode.
 procedure EncodeFont(InputText: Text; BarcodeSymbology: Enum "Barcode Symbology"; BarcodeEncodeSettings: Record "Barcode Encode Settings"): Text
 ```
 #### Parameters
-*InputText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*InputText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text to encode.
 
@@ -127,7 +127,7 @@ The symbology to use for the encoding.
 The settings to use when encoding the text.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The encoded barcode.
 ### ValidateInput (Method) <a name="ValidateInput"></a> 
@@ -142,7 +142,7 @@ The function should throw an error if the input text is in invalid format or if 
 procedure ValidateInput(InputText: Text; BarcodeSymbology: Enum "Barcode Symbology")
 ```
 #### Parameters
-*InputText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*InputText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text to validate
 
@@ -162,7 +162,7 @@ The function should throw an error if the input text is in invalid format or if 
 procedure ValidateInput(InputText: Text; BarcodeSymbology: Enum "Barcode Symbology"; BarcodeEncodeSettings: Record "Barcode Encode Settings")
 ```
 #### Parameters
-*InputText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*InputText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text to validate
 

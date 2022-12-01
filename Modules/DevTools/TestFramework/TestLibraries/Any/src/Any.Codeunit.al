@@ -15,6 +15,15 @@ codeunit 130500 "Any"
         SeedSet: Boolean;
 
     /// <summary>
+    /// Provides a boolean.
+    /// </summary>
+    /// <returns>Pseudo-random boolean value</returns>
+    procedure Boolean(): Boolean
+    begin
+        exit(GetNextValue(2) = 2);
+    end;
+
+    /// <summary>
     /// Provides an integer between 1 and the given value
     /// </summary>
     /// <param name="MaxValue">Upper value for the number, if the number is negative 1 is returned.</param>

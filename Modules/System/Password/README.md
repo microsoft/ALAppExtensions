@@ -17,16 +17,16 @@ This module introduces a dialog for the user to enter a password.
 procedure OpenPasswordDialog(DisablePasswordValidation: Boolean; DisablePasswordConfirmation: Boolean): Text
 ```
 #### Parameters
-*DisablePasswordValidation ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*DisablePasswordValidation ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Disables the checks for the password validity. Default value is false.
 
-*DisablePasswordConfirmation ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*DisablePasswordConfirmation ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 If set to true the new password is only needed once. Default value is false.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The typed password, or empty text if the password validations fail.
 ### OpenPasswordDialog (Method) <a name="OpenPasswordDialog"></a> 
@@ -40,12 +40,12 @@ The typed password, or empty text if the password validations fail.
 procedure OpenPasswordDialog(DisablePasswordValidation: Boolean): Text
 ```
 #### Parameters
-*DisablePasswordValidation ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*DisablePasswordValidation ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Disables the checks for the password validity. Default value is false.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The typed password, or empty text if the password validations fail.
 ### OpenPasswordDialog (Method) <a name="OpenPasswordDialog"></a> 
@@ -59,7 +59,7 @@ The typed password, or empty text if the password validations fail.
 procedure OpenPasswordDialog(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The typed password, or empty text if the password validations fail.
 ### OpenChangePasswordDialog (Method) <a name="OpenChangePasswordDialog"></a> 
@@ -73,11 +73,11 @@ The typed password, or empty text if the password validations fail.
 procedure OpenChangePasswordDialog(var OldPassword: Text; var Password: Text)
 ```
 #### Parameters
-*OldPassword ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*OldPassword ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Out parameter, the old password user typed on the dialog.
 
-*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Password ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Out parameter, the new password user typed on the dialog.
 
@@ -93,7 +93,7 @@ Out parameter, the new password user typed on the dialog.
 internal procedure OnSetMinPasswordLength(var MinPasswordLength: Integer)
 ```
 #### Parameters
-*MinPasswordLength ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MinPasswordLength ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of characters to be set as minimum requirement.
 
@@ -116,7 +116,7 @@ The length is less than the minimum defined in [OnSetMinPasswordLength](#OnSetMi
 procedure GeneratePassword(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The generated password.
 ### GeneratePassword (Method) <a name="GeneratePassword"></a> 
@@ -131,12 +131,12 @@ The length is less than the minimum defined in [OnSetMinPasswordLength](#OnSetMi
 procedure GeneratePassword(Length: Integer): Text
 ```
 #### Parameters
-*Length ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Length ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of characters in the password. Passwords must contain at least eight characters.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The generated password.
 ### IsPasswordStrong (Method) <a name="IsPasswordStrong"></a> 
@@ -152,12 +152,12 @@ The generated password.
 procedure IsPasswordStrong(Password: Text): Boolean
 ```
 #### Parameters
-*Password ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Password ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The password to check.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the password meets the conditions for strong passwords.
 ### GetPasswordMinLength (Method) <a name="GetPasswordMinLength"></a> 
@@ -170,7 +170,7 @@ True if the password meets the conditions for strong passwords.
 procedure GetPasswordMinLength(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The minimum length of the password. Eight by default.
 
@@ -190,7 +190,7 @@ The minimum length of the password. Eight by default.
 procedure GetPasswordValue(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The password value typed on the page.
 ### GetOldPasswordValue (Method) <a name="GetOldPasswordValue"></a> 
@@ -204,7 +204,7 @@ The password value typed on the page.
 procedure GetOldPasswordValue(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The old password typed on the page.
 ### EnableChangePassword (Method) <a name="EnableChangePassword"></a> 

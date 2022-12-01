@@ -21,7 +21,7 @@ procedure Open(var SelectedUser: Record User): Boolean
 The variable to return the selected users. Any filters on this record will influence the page view.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 Returns true if a user was selected.
 ### ValidateUserName (Method) <a name="ValidateUserName"></a> 
@@ -34,7 +34,7 @@ Returns true if a user was selected.
 procedure ValidateUserName(UserName: Code[50])
 ```
 #### Parameters
-*UserName ([Code[50]](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/code/code-data-type))* 
+*UserName ([Code[50]](https://go.microsoft.com/fwlink/?linkid=2210241))* 
 
 The username to validate.
 

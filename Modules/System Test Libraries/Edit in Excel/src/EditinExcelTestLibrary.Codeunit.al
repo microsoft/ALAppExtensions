@@ -23,6 +23,22 @@ codeunit 132524 "Edit in Excel Test Library"
     end;
 
     /// <summary>    
+    /// Calls the AssembleFilter function of the Edit in Excel Impl. codeunit. This function exists purely 
+    /// for test purposes.
+    /// </summary>
+    /// <param name="EntityFilterCollectionNode">The main collection node that represents the whole filter</param>
+    /// <param name="ODataJsonFilter">Structured filter json object</param>
+    /// <param name="ODataJsonPayload">Structured filter payload</param>
+    /// <param name="PageNumber">The page number filtering applies to.</param>
+    [Scope('OnPrem')]
+    procedure AssembleFilter(var EntityFilterCollectionNode: DotNet FilterCollectionNode; ODataJsonFilter: JsonObject; ODataJsonPayload: JsonObject; PageNumber: Integer)
+    var
+        EditinExcelImpl: Codeunit "Edit in Excel Impl.";
+    begin
+        EditinExcelImpl.AssembleFilter(EntityFilterCollectionNode, ODataJsonFilter, ODataJsonPayload, PageNumber);
+    end;
+
+    /// <summary>    
     /// Calls the ExternalizeODataObjectName function of the Edit in Excel Impl. codeunit. This function exists purely 
     /// for test purposes.
     /// </summary>
@@ -41,14 +57,16 @@ codeunit 132524 "Edit in Excel Test Library"
     /// </summary>
     /// <param name="StructuredFilterObject">Filter json object</param>
     /// <param name="ODataJsonPayload">Payload json binding edm types with al names of fields</param>
-    /// <param name="EntityFilterCollectionNode">The main filter collection node to append to.</param>
     /// <param name="FieldFilterGroupingOperator">The dictionary of already used operators on fields</param>
+    /// <param name="PageNumber">Number of the filtered page</param>
+    /// <param name="Excel Filter Node Type">Type of filtered applied on the node</param>
+    /// <param name="FilterNodes">The dictionary of filtered field names and their filter collection nodes</param>
     [Scope('OnPrem')]
-    procedure ConvertStructuredFiltersToEntityFilterCollection(StructuredFilterObject: JsonObject; var ODataJsonPayload: JsonObject; var EntityFilterCollectionNode: DotNet FilterCollectionNode; var FieldFilterGroupingOperator: Dictionary of [Text, Text]; PageNumber: Integer)
+    procedure ConvertStructuredFiltersToEntityFilterCollection(StructuredFilterObject: JsonObject; var ODataJsonPayload: JsonObject; var EntityFilterCollectionNode: DotNet FilterCollectionNode; var FieldFilterGroupingOperator: Dictionary of [Text, Text]; PageNumber: Integer; ParentGroupingOperator: Enum "Excel Filter Node Type"; var FilterNodes: DotNet GenericDictionary2)
     var
         EditinExcelImpl: Codeunit "Edit in Excel Impl.";
     begin
-        EditinExcelImpl.ConvertStructuredFiltersToEntityFilterCollection(StructuredFilterObject, ODataJsonPayload, EntityFilterCollectionNode, FieldFilterGroupingOperator, PageNumber);
+        EditinExcelImpl.ConvertStructuredFiltersToEntityFilterCollection(StructuredFilterObject, ODataJsonPayload, FieldFilterGroupingOperator, PageNumber, ParentGroupingOperator, FilterNodes);
     end;
 
     /// <summary>

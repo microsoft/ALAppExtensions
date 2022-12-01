@@ -500,10 +500,13 @@ codeunit 4810 IntrastatReportManagement
             if not Confirm(PeriodAlreadyReportedQst) then
                 exit;
 
-        FileName := StrSubstNo(FileNameLbl, IntrastatReportHeader."Statistics Period");
-        ReceptFileName := StrSubstNo(ReceptFileNameLbl, IntrastatReportHeader."Statistics Period");
-        ShipmentFileName := StrSubstNo(ShipmentFileNameLbl, IntrastatReportHeader."Statistics Period");
-        ZipFileName := StrSubstNo(ZipFileNameLbl, IntrastatReportHeader."Statistics Period");
+        OnBeforeDefineFileNames(IntrastatReportHeader, FileName, ReceptFileName, ShipmentFileName, ZipFileName, IsHandled);
+        if not IsHandled then begin
+            FileName := StrSubstNo(FileNameLbl, IntrastatReportHeader."Statistics Period");
+            ReceptFileName := StrSubstNo(ReceptFileNameLbl, IntrastatReportHeader."Statistics Period");
+            ShipmentFileName := StrSubstNo(ShipmentFileNameLbl, IntrastatReportHeader."Statistics Period");
+            ZipFileName := StrSubstNo(ZipFileNameLbl, IntrastatReportHeader."Statistics Period");
+        end;
 
         IntrastatReportSetup.Get();
         if IntrastatReportSetup."Split Files" then begin
@@ -565,38 +568,42 @@ codeunit 4810 IntrastatReportManagement
         DataExchDef: Record "Data Exch. Def";
         RecordRefSrc: RecordRef;
         OutStreamFilters: OutStream;
+        IsHandled: Boolean;
     begin
-        DataExchMapping.SetRange("Data Exch. Def Code", DataExchDefCode);
-        DataExchMapping.SetRange("Table ID", Database::"Intrastat Report Line");
-        if not DataExchMapping.FindFirst() then
-            Error(NoDataExchMappingErr, DataExchMapping.TableCaption, DataExchDef.TableCaption, DataExchDefCode);
+        IsHandled := false;
+        OnBeforeExportOneDataExchangeDef(IntrastatReportHeader, DataExchDefCode, ExportType, DataExch, IsHandled);
+        if not IsHandled then begin
+            DataExchMapping.SetRange("Data Exch. Def Code", DataExchDefCode);
+            DataExchMapping.SetRange("Table ID", Database::"Intrastat Report Line");
+            if not DataExchMapping.FindFirst() then
+                Error(NoDataExchMappingErr, DataExchMapping.TableCaption, DataExchDef.TableCaption, DataExchDefCode);
 
-        if DataExchMapping."Key Index" <> 0 then begin
-            RecordRefSrc.GetTable(IntrastatReportLine);
-            RecordRefSrc.CurrentKeyIndex(DataExchMapping."Key Index");
-            RecordRefSrc.SetTable(IntrastatReportLine);
-        end;
+            if DataExchMapping."Key Index" <> 0 then begin
+                RecordRefSrc.GetTable(IntrastatReportLine);
+                RecordRefSrc.CurrentKeyIndex(DataExchMapping."Key Index");
+                RecordRefSrc.SetTable(IntrastatReportLine);
+            end;
 
-        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
-        if ExportType = 1 then // Receipt
-            IntrastatReportLine.SetRange(Type, IntrastatReportLine.Type::Receipt);
-        if ExportType = 2 then // Shipment
-            IntrastatReportLine.SetRange(Type, IntrastatReportLine.Type::Shipment);
+            IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
+            if ExportType = 1 then // Receipt
+                IntrastatReportLine.SetRange(Type, IntrastatReportLine.Type::Receipt);
+            if ExportType = 2 then // Shipment
+                IntrastatReportLine.SetRange(Type, IntrastatReportLine.Type::Shipment);
 
-        if not IntrastatReportLine.IsEmpty then begin
-            DataExchFieldGrouping.SetRange("Data Exch. Def Code", DataExchMapping."Data Exch. Def Code");
-            DataExchFieldGrouping.SetRange("Data Exch. Line Def Code", DataExchMapping."Data Exch. Line Def Code");
-            DataExchFieldGrouping.SetRange("Table ID", DataExchMapping."Table ID");
-            if not DataExchFieldGrouping.IsEmpty() then
+            if not IntrastatReportLine.IsEmpty then begin
+                DataExchFieldGrouping.SetRange("Data Exch. Def Code", DataExchMapping."Data Exch. Def Code");
+                DataExchFieldGrouping.SetRange("Data Exch. Line Def Code", DataExchMapping."Data Exch. Line Def Code");
+                DataExchFieldGrouping.SetRange("Table ID", DataExchMapping."Table ID");
                 SetInternalRefNo(IntrastatReportLine, DataExchFieldGrouping, IntrastatReportHeader);
 
-            DataExch.Init();
-            DataExch."Data Exch. Def Code" := DataExchMapping."Data Exch. Def Code";
-            DataExch."Data Exch. Line Def Code" := DataExchMapping."Data Exch. Line Def Code";
-            DataExch."Table Filters".CreateOutStream(OutStreamFilters);
-            OutStreamFilters.WriteText(IntrastatReportLine.GetView());
-            if DataExch.Insert(true) then
-                DataExch.ExportFromDataExch(DataExchMapping);
+                DataExch.Init();
+                DataExch."Data Exch. Def Code" := DataExchMapping."Data Exch. Def Code";
+                DataExch."Data Exch. Line Def Code" := DataExchMapping."Data Exch. Line Def Code";
+                DataExch."Table Filters".CreateOutStream(OutStreamFilters);
+                OutStreamFilters.WriteText(IntrastatReportLine.GetView());
+                if DataExch.Insert(true) then
+                    DataExch.ExportFromDataExch(DataExchMapping);
+            end;
         end;
     end;
 
@@ -662,25 +669,33 @@ codeunit 4810 IntrastatReportManagement
         PrevCompoundField: Text;
         IntraReferenceNo: Text[10];
         PrevType: Enum "Intrastat Report Line Type";
+        ProgressiveNo: Integer;
     begin
         if not IntrastatReportLine.FindSet() then
             exit;
-
+        ProgressiveNo := 0;
         IntraReferenceNo := PadStr(IntrastatReportHeader."Statistics Period", MaxStrLen(IntraReferenceNo), '0');
         repeat
             CompoundField := GetCompound(DataExchFieldGrouping, IntrastatReportLine);
-            // IntraReferenceNo is a group identifier string, consisting of statistic period + line type (shipment/receipt) + incremental value 01 + incremental value 001 (000 not allowed)
+            if CompoundField = '' then
+                CompoundField := Format(IntrastatReportLine."Line No.");
+            // IntraReferenceNo is a group identifier string, consisting of fields specified in data exchange field grouping
             if (PrevType <> IntrastatReportLine.Type) or (StrLen(PrevCompoundField) = 0) then begin
                 PrevType := IntrastatReportLine.Type;
                 IntraReferenceNo := CopyStr(IntraReferenceNo, 1, 4) + Format(IntrastatReportLine.Type, 1, 2) + '01001';
+                ProgressiveNo += 1;
             end else
-                if PrevCompoundField <> CompoundField then
+                if PrevCompoundField <> CompoundField then begin
                     if CopyStr(IntraReferenceNo, 8, 3) = '999' then
                         IntraReferenceNo := CopyStr(IncStr(CopyStr(IntraReferenceNo, 1, 7)), 1, 7) + '001'
                     else
                         IntraReferenceNo := IncStr(IntraReferenceNo);
+                    ProgressiveNo += 1;
+                end;
 
+            IntrastatReportLine."Progressive No." := Format(ProgressiveNo);
             IntrastatReportLine."Internal Ref. No." := IntraReferenceNo;
+            OnBeforeUpdateInternalRefNo(IntrastatReportLine, CompoundField, PrevCompoundField);
             IntrastatReportLine.Modify();
             PrevCompoundField := CompoundField;
         until IntrastatReportLine.Next() = 0;
@@ -841,6 +856,24 @@ codeunit 4810 IntrastatReportManagement
         end;
     end;
 
+    procedure UpdateItemUOM(var ItemUOM: Record "Item Unit of Measure"; TariffNumber: Record "Tariff Number")
+    var
+        Item: Record Item;
+        BaseItemUOM: Record "Item Unit of Measure";
+        RoundingPrecision: Decimal;
+    begin
+        Item.Get(ItemUOM."Item No.");
+        if BaseItemUOM.Get(Item."No.", Item."Base Unit of Measure") then
+            RoundingPrecision := BaseItemUOM."Qty. Rounding Precision";
+        if RoundingPrecision = 0 then
+            RoundingPrecision := 0.00001;
+        if TariffNumber."Suppl. Conversion Factor" <> 0 then
+            ItemUOM.Validate("Qty. per Unit of Measure", Round(1 / TariffNumber."Suppl. Conversion Factor", RoundingPrecision))
+        else
+            ItemUOM.Validate("Qty. per Unit of Measure", 1);
+        ItemUOM.Modify(true);
+    end;
+
     procedure IsFeatureEnabled() IsEnabled: Boolean
     var
         FeatureMgtFacade: Codeunit "Feature Management Facade";
@@ -852,10 +885,9 @@ codeunit 4810 IntrastatReportManagement
     procedure NotifyUserAboutIntrastatFeature()
     var
         MyNotifications: Record "My Notifications";
-        ExtensionManagement: Codeunit "Extension Management";
         IntrastatFeatureAwarenessNotification: Notification;
     begin
-        if ExtensionManagement.IsInstalledByAppId(GetAppId()) then
+        if IsInstalledByAppId(GetAppId()) then
             if MyNotifications.IsEnabled(GetIntrastatFeatureAwarenessNotificationId()) then begin
                 IntrastatFeatureAwarenessNotification.Id(GetIntrastatFeatureAwarenessNotificationId());
                 IntrastatFeatureAwarenessNotification.SetData('NotificationId', GetIntrastatFeatureAwarenessNotificationId());
@@ -895,6 +927,22 @@ codeunit 4810 IntrastatReportManagement
         Message(NewFeatureEnabledMessageTxt, OldPageCaption, NewPageCaption);
     end;
 
+    procedure IsCustomerPrivatePerson(Customer: Record Customer): Boolean;
+    begin
+        if Customer."Intrastat Partner Type" <> "Partner Type"::" " then
+            exit(Customer."Intrastat Partner Type" = "Partner Type"::Person)
+        else
+            exit(Customer."Partner Type" = "Partner Type"::Person);
+    end;
+
+    procedure IsVendorPrivatePerson(Vendor: Record Vendor): Boolean
+    begin
+        if Vendor."Intrastat Partner Type" <> "Partner Type"::" " then
+            exit(Vendor."Intrastat Partner Type" = "Partner Type"::Person)
+        else
+            exit(Vendor."Partner Type" = "Partner Type"::Person);
+    end;
+
     local procedure GetIntrastatFeatureKeyId(): Text[50]
     begin
         exit(IntrastatFeatureKeyIdTok);
@@ -908,6 +956,13 @@ codeunit 4810 IntrastatReportManagement
     local procedure GetAppId(): Guid;
     begin
         exit(IntrastatCoreAppIdTok);
+    end;
+
+    local procedure IsInstalledByAppId(AppID: Guid): Boolean
+    var
+        NAVAppInstalledApp: Record "NAV App Installed App";
+    begin
+        exit(NAVAppInstalledApp.Get(AppID));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnAfterFeatureEnableConfirmed', '', true, true)]
@@ -973,6 +1028,21 @@ codeunit 4810 IntrastatReportManagement
 
     [IntegrationEvent(true, false)]
     local procedure OnAfterCheckFeatureEnabled(var IsEnabled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeDefineFileNames(var IntrastatReportHeader: Record "Intrastat Report Header"; var FileName: Text; var ReceptFileName: Text; var ShipmentFileName: Text; var ZipFileName: Text; var IsHandled: Boolean)
+    begin
+    end;
+    
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeUpdateInternalRefNo(var IntrastatReportLine: Record "Intrastat Report Line"; var CompoundField: Text; var PrevCompoundField: Text);
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeExportOneDataExchangeDef(var IntrastatReportHeader: Record "Intrastat Report Header"; DataExchDefCode: Code[20]; ExportType: Integer; var DataExch: Record "Data Exch."; var IsHandled: Boolean)
     begin
     end;
 }

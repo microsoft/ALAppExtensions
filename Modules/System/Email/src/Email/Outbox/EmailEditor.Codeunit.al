@@ -56,6 +56,27 @@ codeunit 8906 "Email Editor"
         end;
     end;
 
+    procedure OpenWithScenario(EmailOutbox: Record "Email Outbox"; IsModal: Boolean; Scenario: Enum "Email Scenario"): Enum "Email Action"
+    var
+        EmailEditor: Page "Email Editor";
+    begin
+        CheckPermissions(EmailOutbox);
+
+        EmailEditor.SetRecord(EmailOutbox);
+        EmailEditor.SetEmailScenario(Scenario);
+
+        if IsNewOutbox then
+            EmailEditor.SetAsNew();
+
+        if IsModal then begin
+            Commit(); // Commit before opening modally
+            EmailEditor.RunModal();
+            exit(EmailEditor.GetAction());
+        end
+        else
+            EmailEditor.Run();
+    end;
+
     procedure CheckPermissions(EmailOutbox: Record "Email Outbox")
     var
         EmailImpl: Codeunit "Email Impl";

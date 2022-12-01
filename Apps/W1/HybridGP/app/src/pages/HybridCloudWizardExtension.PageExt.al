@@ -73,9 +73,28 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
         {
             trigger OnAfterAction()
             begin
-                if Rec."Product ID" = 'DynamicsGP' then
+                if Rec."Product ID" = 'DynamicsGP' then begin
+                    CleanupSettingsForCompaniesPreviouslyMigrated();
                     Page.Run(Page::"GP Migration Configuration");
+                end;
             end;
+
         }
     }
+
+    local procedure CleanupSettingsForCompaniesPreviouslyMigrated()
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        HybridCompany: Record "Hybrid Company";
+    begin
+        GPCompanyAdditionalSettings.SetFilter("Name", '<>%1', '');
+        if GPCompanyAdditionalSettings.FindSet() then
+            repeat
+                HybridCompany.SetRange(Name, GPCompanyAdditionalSettings.Name);
+                HybridCompany.SetRange(Replicate, false);
+
+                if not HybridCompany.IsEmpty() then
+                    GPCompanyAdditionalSettings.Delete();
+            until GPCompanyAdditionalSettings.Next() = 0;
+    end;
 }

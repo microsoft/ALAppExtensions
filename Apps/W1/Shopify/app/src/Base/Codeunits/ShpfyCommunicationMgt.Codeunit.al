@@ -124,12 +124,12 @@ codeunit 30103 "Shpfy Communication Mgt."
         NoJsonErr: Label 'The response from Shopify contains no JSON. \Requested: %1 \Response: %2', Comment = '%1 = The request = %2 = Received data';
     begin
         ShpfyGraphQLRateLimit.WaitForRequestAvailable(ExpectedCost);
-        ReceivedData := ExecuteWebRequest(CreateWebRequestURL('graphql.json'), 'POST', GraphQLQuery, ResponseHeaders, 0);
+        ReceivedData := ExecuteWebRequest(CreateWebRequestURL('graphql.json'), 'POST', GraphQLQuery, ResponseHeaders, 3);
         if JResponse.ReadFrom(ReceivedData) then begin
             ShpfyGraphQLRateLimit.SetQueryCost(ShpfyJsonHelper.GetJsonToken(JResponse, 'extensions.cost.throttleStatus'));
             while JResponse.AsObject().Contains('errors') and Format(JResponse).Contains('THROTTLED') do begin
                 ShpfyGraphQLRateLimit.WaitForRequestAvailable(ExpectedCost);
-                if JResponse.ReadFrom(ExecuteWebRequest(CreateWebRequestURL('graphql.json'), 'POST', GraphQLQuery, ResponseHeaders, 0)) then
+                if JResponse.ReadFrom(ExecuteWebRequest(CreateWebRequestURL('graphql.json'), 'POST', GraphQLQuery, ResponseHeaders, 3)) then
                     ShpfyGraphQLRateLimit.SetQueryCost(ShpfyJsonHelper.GetJsonToken(JResponse, 'extensions.cost.throttleStatus'));
             end;
             if JResponse.AsObject().Contains('errors') then
@@ -281,7 +281,10 @@ codeunit 30103 "Shpfy Communication Mgt."
     [TryFunction]
     local procedure GetContent(HttpResponseMsg: HttpResponseMessage; var Response: Text)
     begin
-        HttpResponseMsg.Content.ReadAs(Response);
+        if IsTestInProgress then
+            ShpfyCommunicationEvents.OnGetContent(HttpResponseMsg, Response)
+        else
+            HttpResponseMsg.Content.ReadAs(Response);
     end;
 
     /// <summary> 
@@ -464,9 +467,12 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// </summary>
     /// <param name="ShopCode">Parameter of type Code[20].</param>
     internal procedure SetShop(ShopCode: Code[20])
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         Clear(ShpfyShop);
         ShpfyShop.Get(ShopCode);
+        FeatureTelemetry.LogUsage('0000IU1', 'Shopify', ShpfyShop."Shopify URL");
     end;
 
     /// <summary>
@@ -477,6 +483,12 @@ codeunit 30103 "Shpfy Communication Mgt."
     internal procedure SetTestInProgress(TestInProgress: Boolean)
     begin
         IsTestInProgress := TestInProgress;
+    end;
+
+    [NonDebuggable]
+    internal procedure GetTestInProgress(): Boolean
+    begin
+        exit(IsTestInProgress);
     end;
 
     [NonDebuggable]

@@ -18,19 +18,19 @@ Use this module to convert encoded text to another encoding.
 procedure Convert(SourceCodepage: Integer; DestinationCodepage: Integer; Text: Text): Text
 ```
 #### Parameters
-*SourceCodepage ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*SourceCodepage ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Encoding code page identifier of the source text. Valid values are between 0 and 65535.
 
-*DestinationCodepage ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DestinationCodepage ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Encoding code page identifier for the result text. Valid values are between 0 and 65535.
 
-*Text ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Text ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text to convert.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The text in the destination encoding.

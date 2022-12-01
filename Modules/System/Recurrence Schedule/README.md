@@ -27,7 +27,7 @@ Use this module to do the following:
 procedure SetMinDateTime(DateTime: DateTime)
 ```
 #### Parameters
-*DateTime ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*DateTime ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 The minimum datetime.
 
@@ -46,16 +46,16 @@ The minimum datetime.
 procedure CalculateNextOccurrence(RecurrenceID: Guid; LastOccurrence: DateTime): DateTime
 ```
 #### Parameters
-*RecurrenceID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*RecurrenceID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The recurrence ID.
 
-*LastOccurrence ([DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type))* 
+*LastOccurrence ([DateTime](https://go.microsoft.com/fwlink/?linkid=2210239))* 
 
 The time of the last scheduled occurrence.
 
 #### Return Value
-*[DateTime](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/datetime/datetime-data-type)*
+*[DateTime](https://go.microsoft.com/fwlink/?linkid=2210239)*
 
 Returns the DateTime value for the next occurrence. If there is no next occurrence, it returns the default value 0DT.
 ### CreateDaily (Method) <a name="CreateDaily"></a> 
@@ -73,24 +73,24 @@ Returns the DateTime value for the next occurrence. If there is no next occurren
 procedure CreateDaily(StartTime: Time; StartDate: Date; EndDate: Date; DaysBetween: Integer): Guid
 ```
 #### Parameters
-*StartTime ([Time](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/time/time-data-type))* 
+*StartTime ([Time](https://go.microsoft.com/fwlink/?linkid=2209849))* 
 
 The start time of the recurrence.
 
-*StartDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*StartDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The start date of the recurrence.
 
-*EndDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*EndDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The end date of the recurrence.
 
-*DaysBetween ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DaysBetween ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of days between each occurrence, starting with 1.
 
 #### Return Value
-*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+*[Guid](https://go.microsoft.com/fwlink/?linkid=2210122)*
 
 The ID used to reference this recurrence.
 ### CreateWeekly (Method) <a name="CreateWeekly"></a> 
@@ -108,52 +108,52 @@ The ID used to reference this recurrence.
 procedure CreateWeekly(StartTime: Time; StartDate: Date; EndDate: Date; WeeksBetween: Integer; Monday: Boolean; Tuesday: Boolean; Wednesday: Boolean; Thursday: Boolean; Friday: Boolean; Saturday: Boolean; Sunday: Boolean): Guid
 ```
 #### Parameters
-*StartTime ([Time](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/time/time-data-type))* 
+*StartTime ([Time](https://go.microsoft.com/fwlink/?linkid=2209849))* 
 
 The start time of the recurrence.
 
-*StartDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*StartDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The start date of the recurrence.
 
-*EndDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*EndDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The end date of the recurrence.
 
-*WeeksBetween ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*WeeksBetween ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of weeks between each occurrence, starting with 1.
 
-*Monday ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Monday ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Occur on Mondays.
 
-*Tuesday ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Tuesday ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Occur on Tuesdays.
 
-*Wednesday ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Wednesday ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Occur on Wednesdays.
 
-*Thursday ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Thursday ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Occur on Thursdays.
 
-*Friday ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Friday ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Occur on Fridays.
 
-*Saturday ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Saturday ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Occur on Saturdays.
 
-*Sunday ([Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type))* 
+*Sunday ([Boolean](https://go.microsoft.com/fwlink/?linkid=2209954))* 
 
 Occur on Sundays.
 
 #### Return Value
-*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+*[Guid](https://go.microsoft.com/fwlink/?linkid=2210122)*
 
 The ID used to reference this recurrence.
 ### CreateMonthlyByDay (Method) <a name="CreateMonthlyByDay"></a> 
@@ -171,28 +171,28 @@ The ID used to reference this recurrence.
 procedure CreateMonthlyByDay(StartTime: Time; StartDate: Date; EndDate: Date; MonthsBetween: Integer; DayOfMonth: Integer): Guid
 ```
 #### Parameters
-*StartTime ([Time](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/time/time-data-type))* 
+*StartTime ([Time](https://go.microsoft.com/fwlink/?linkid=2209849))* 
 
 The start time of the recurrence.
 
-*StartDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*StartDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The start date of the recurrence.
 
-*EndDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*EndDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The end date of the recurrence.
 
-*MonthsBetween ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MonthsBetween ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of months between each occurrence, starting with 1.
 
-*DayOfMonth ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DayOfMonth ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The day of the month.
 
 #### Return Value
-*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+*[Guid](https://go.microsoft.com/fwlink/?linkid=2210122)*
 
 The ID used to reference this recurrence.
 ### CreateMonthlyByDayOfWeek (Method) <a name="CreateMonthlyByDayOfWeek"></a> 
@@ -210,19 +210,19 @@ The ID used to reference this recurrence.
 procedure CreateMonthlyByDayOfWeek(StartTime: Time; StartDate: Date; EndDate: Date; MonthsBetween: Integer; InWeek: Enum "Recurrence - Ordinal No."; DayOfWeek: Enum "Recurrence - Day of Week"): Guid
 ```
 #### Parameters
-*StartTime ([Time](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/time/time-data-type))* 
+*StartTime ([Time](https://go.microsoft.com/fwlink/?linkid=2209849))* 
 
 The start time of the recurrence.
 
-*StartDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*StartDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The start date of the recurrence.
 
-*EndDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*EndDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The end date of the recurrence.
 
-*MonthsBetween ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MonthsBetween ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of months between each occurrence, starting with 1.
 
@@ -235,7 +235,7 @@ The week of the month.
 The day of the week.
 
 #### Return Value
-*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+*[Guid](https://go.microsoft.com/fwlink/?linkid=2210122)*
 
 The ID used to reference this recurrence.
 ### CreateYearlyByDay (Method) <a name="CreateYearlyByDay"></a> 
@@ -253,23 +253,23 @@ The ID used to reference this recurrence.
 procedure CreateYearlyByDay(StartTime: Time; StartDate: Date; EndDate: Date; YearsBetween: Integer; DayOfMonth: Integer; Month: Enum "Recurrence - Month"): Guid
 ```
 #### Parameters
-*StartTime ([Time](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/time/time-data-type))* 
+*StartTime ([Time](https://go.microsoft.com/fwlink/?linkid=2209849))* 
 
 The start time of the recurrence.
 
-*StartDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*StartDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The start date of the recurrence.
 
-*EndDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*EndDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The end date of the recurrence.
 
-*YearsBetween ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*YearsBetween ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of years between each occurrence, starting with 1.
 
-*DayOfMonth ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DayOfMonth ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The day of the month.
 
@@ -278,7 +278,7 @@ The day of the month.
 The month of the year.
 
 #### Return Value
-*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+*[Guid](https://go.microsoft.com/fwlink/?linkid=2210122)*
 
 The ID used to reference this recurrence.
 ### CreateYearlyByDayOfWeek (Method) <a name="CreateYearlyByDayOfWeek"></a> 
@@ -296,19 +296,19 @@ The ID used to reference this recurrence.
 procedure CreateYearlyByDayOfWeek(StartTime: Time; StartDate: Date; EndDate: Date; YearsBetween: Integer; InWeek: Enum "Recurrence - Ordinal No."; DayOfWeek: Enum "Recurrence - Day of Week"; Month: Enum "Recurrence - Month"): Guid
 ```
 #### Parameters
-*StartTime ([Time](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/time/time-data-type))* 
+*StartTime ([Time](https://go.microsoft.com/fwlink/?linkid=2209849))* 
 
 The start time of the recurrence.
 
-*StartDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*StartDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The start date of the recurrence.
 
-*EndDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*EndDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 The end date of the recurrence.
 
-*YearsBetween ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*YearsBetween ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of years between each occurrence, starting with 1.
 
@@ -325,7 +325,7 @@ The day of the week.
 The month of the year.
 
 #### Return Value
-*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+*[Guid](https://go.microsoft.com/fwlink/?linkid=2210122)*
 
 The ID used to reference this recurrence.
 ### OpenRecurrenceSchedule (Method) <a name="OpenRecurrenceSchedule"></a> 
@@ -338,7 +338,7 @@ The ID used to reference this recurrence.
 procedure OpenRecurrenceSchedule(var RecurrenceID: Guid)
 ```
 #### Parameters
-*RecurrenceID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*RecurrenceID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The recurrence ID.
 
@@ -352,12 +352,12 @@ The recurrence ID.
 procedure RecurrenceDisplayText(RecurrenceID: Guid): Text
 ```
 #### Parameters
-*RecurrenceID ([Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type))* 
+*RecurrenceID ([Guid](https://go.microsoft.com/fwlink/?linkid=2210122))* 
 
 The recurrence ID.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The short text to display.
 

@@ -2,6 +2,11 @@ Param(
     [Hashtable] $parameters
 )
 
+if (!$parameters.ContainsKey("Features")) {
+    $parameters["Features"] = @()
+}
+$parameters["Features"] = @("lcgtranslationfile", "generateCaptions")
+
 $appFile = Compile-AppInBcContainer @parameters
 
 if ($appFile) {

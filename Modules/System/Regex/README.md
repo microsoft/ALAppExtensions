@@ -22,7 +22,7 @@ You can use this module to:
 procedure ReadValue()TextValue: Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031
 
 The value of the capture.
 
@@ -41,7 +41,7 @@ The value of the capture.
 procedure ReadValue()TextValue: Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The value of the group.
 
@@ -60,7 +60,7 @@ The value of the group.
 procedure ReadValue()TextValue: Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The value of the match.
 
@@ -79,7 +79,7 @@ The value of the match.
 procedure GetRegexOptions(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 An integer for the combined regex options.
 
@@ -98,7 +98,7 @@ An integer for the combined regex options.
 procedure GetCacheSize(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The maximum number of entries in the static cache.
 ### SetCacheSize (Method) <a name="SetCacheSize"></a> 
@@ -111,7 +111,7 @@ The maximum number of entries in the static cache.
 procedure SetCacheSize(CacheSize: Integer)
 ```
 #### Parameters
-*CacheSize ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*CacheSize ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The maximum number of entries in the static cache.
 
@@ -153,12 +153,12 @@ An array of group numbers.
 procedure GroupNameFromNumber(Number: Integer): Text
 ```
 #### Parameters
-*Number ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Number ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The group number to convert to the corresponding group name.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 A string that contains the group name associated with the specified group number. If there is no group name that corresponds to i, the method returns Empty.
 ### GroupNumberFromName (Method) <a name="GroupNumberFromName"></a> 
@@ -171,12 +171,12 @@ A string that contains the group name associated with the specified group number
 procedure GroupNumberFromName(Name: Text): Integer
 ```
 #### Parameters
-*Name ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Name ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The group name to convert to the corresponding group number.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The group number that corresponds to the specified group name, or -1 if name is not a valid group name.
 ### IsMatch (Method) <a name="IsMatch"></a> 
@@ -189,20 +189,20 @@ The group number that corresponds to the specified group name, or -1 if name is 
 procedure IsMatch(Input: Text; Pattern: Text; StartAt: Integer): Boolean
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*StartAt ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*StartAt ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The character position at which to start the search.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the regular expression finds a match; otherwise, false.
 ### IsMatch (Method) <a name="IsMatch"></a> 
@@ -215,15 +215,15 @@ True if the regular expression finds a match; otherwise, false.
 procedure IsMatch(Input: Text; Pattern: Text; StartAt: Integer; var RegexOptions: Record "Regex Options"): Boolean
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*StartAt ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*StartAt ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The character position at which to start the search.
 
@@ -232,7 +232,7 @@ The character position at which to start the search.
 A combination of the enumeration values that modify the regular expression.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the regular expression finds a match; otherwise, false.
 ### IsMatch (Method) <a name="IsMatch"></a> 
@@ -245,16 +245,16 @@ True if the regular expression finds a match; otherwise, false.
 procedure IsMatch(Input: Text; Pattern: Text): Boolean
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the regular expression finds a match; otherwise, false.
 ### IsMatch (Method) <a name="IsMatch"></a> 
@@ -267,11 +267,11 @@ True if the regular expression finds a match; otherwise, false.
 procedure IsMatch(Input: Text; Pattern: Text; var RegexOptions: Record "Regex Options"): Boolean
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
@@ -280,7 +280,7 @@ A regular expression pattern to match.
 A combination of the enumeration values that modify the regular expression.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the regular expression finds a match; otherwise, false.
 ### Match (Method) <a name="Match"></a> 
@@ -293,15 +293,15 @@ True if the regular expression finds a match; otherwise, false.
 procedure Match(Input: Text; Pattern: Text; StartAt: Integer; var Matches: Record Matches)
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*StartAt ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*StartAt ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The zero-based character position at which to start the search.
 
@@ -319,15 +319,15 @@ The Match object to write information about the match to.
 procedure Match(Input: Text; Pattern: Text; StartAt: Integer; var RegexOptions: Record "Regex Options"; var Matches: Record Matches)
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*StartAt ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*StartAt ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The zero-based character position at which to start the search.
 
@@ -349,19 +349,19 @@ The Match object to write information about the match to.
 procedure Match(Input: Text; Pattern: Text; Beginning: Integer; Length: Integer; var Matches: Record Matches)
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*Beginning ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Beginning ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The zero-based character position in the input string that defines the leftmost position to be searched.
 
-*Length ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Length ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of characters in the substring to include in the search.
 
@@ -379,19 +379,19 @@ The Match object to write information about the match to.
 procedure Match(Input: Text; Pattern: Text; Beginning: Integer; Length: Integer; var RegexOptions: Record "Regex Options"; var Matches: Record Matches)
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*Beginning ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Beginning ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The zero-based character position in the input string that defines the leftmost position to be searched.
 
-*Length ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Length ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The number of characters in the substring to include in the search.
 
@@ -413,11 +413,11 @@ The Match object to write information about the match to.
 procedure Match(Input: Text; Pattern: Text; var Matches: Record Matches)
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
@@ -435,11 +435,11 @@ The Match object to write information about the match to.
 procedure Match(Input: Text; Pattern: Text; var RegexOptions: Record "Regex Options"; var Matches: Record Matches)
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
@@ -461,24 +461,24 @@ The Match object to write information about the match to.
 procedure Replace(Input: Text; Pattern: Text; Replacement: Text; "Count": Integer): Text
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*Replacement ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Replacement ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The replacement string.
 
-*Count ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Count ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The maximum number of times the replacement can occur.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 A new string that is identical to the input string, except that the replacement string takes the place of each matched string. If the pattern is not matched the method returns the current instance unchanged
 ### Replace (Method) <a name="Replace"></a> 
@@ -491,19 +491,19 @@ A new string that is identical to the input string, except that the replacement 
 procedure Replace(Input: Text; Pattern: Text; Replacement: Text; "Count": Integer; var RegexOptions: Record "Regex Options"): Text
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*Replacement ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Replacement ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The replacement string.
 
-*Count ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Count ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The maximum number of times the replacement can occur.
 
@@ -512,7 +512,7 @@ The maximum number of times the replacement can occur.
 A combination of the enumeration values that provide options for matching.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 A new string that is identical to the input string, except that the replacement string takes the place of each matched string. If the pattern is not matched the method returns the current instance unchanged
 ### Replace (Method) <a name="Replace"></a> 
@@ -525,28 +525,28 @@ A new string that is identical to the input string, except that the replacement 
 procedure Replace(Input: Text; Pattern: Text; Replacement: Text; "Count": Integer; StartAt: Integer): Text
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*Replacement ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Replacement ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The replacement string.
 
-*Count ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Count ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The maximum number of times the replacement can occur.
 
-*StartAt ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*StartAt ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The character position in the input string where the search begins.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 A new string that is identical to the input string, except that the replacement string takes the place of each matched string. If the pattern is not matched the method returns the current instance unchanged
 ### Replace (Method) <a name="Replace"></a> 
@@ -559,23 +559,23 @@ A new string that is identical to the input string, except that the replacement 
 procedure Replace(Input: Text; Pattern: Text; Replacement: Text; "Count": Integer; StartAt: Integer; var RegexOptions: Record "Regex Options"): Text
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*Replacement ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Replacement ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The replacement string.
 
-*Count ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Count ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The maximum number of times the replacement can occur.
 
-*StartAt ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*StartAt ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The character position in the input string where the search begins.
 
@@ -584,7 +584,7 @@ The character position in the input string where the search begins.
 A combination of the enumeration values that provide options for matching.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 A new string that is identical to the input string, except that the replacement string takes the place of each matched string. If the pattern is not matched the method returns the current instance unchanged
 ### Replace (Method) <a name="Replace"></a> 
@@ -597,20 +597,20 @@ A new string that is identical to the input string, except that the replacement 
 procedure Replace(Input: Text; Pattern: Text; Replacement: Text): Text
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*Replacement ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Replacement ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The replacement string.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 A new string that is identical to the input string, except that the replacement string takes the place of each matched string. If the pattern is not matched the method returns the current instance unchanged
 ### Replace (Method) <a name="Replace"></a> 
@@ -623,15 +623,15 @@ A new string that is identical to the input string, except that the replacement 
 procedure Replace(Input: Text; Pattern: Text; Replacement: Text; var RegexOptions: Record "Regex Options"): Text
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to search for a match.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*Replacement ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Replacement ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The replacement string.
 
@@ -640,7 +640,7 @@ The replacement string.
 A combination of the enumeration values that provide options for matching.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 A new string that is identical to the input string, except that the replacement string takes the place of each matched string. If the pattern is not matched the method returns the current instance unchanged
 ### Split (Method) <a name="Split"></a> 
@@ -653,15 +653,15 @@ A new string that is identical to the input string, except that the replacement 
 procedure Split(Input: Text; Pattern: Text; "Count": Integer; var "Array": List of [Text])
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to split.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*Count ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Count ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The maximum number of times the split can occur.
 
@@ -679,15 +679,15 @@ An empty list that will be populated with the result of the split query.
 procedure Split(Input: Text; Pattern: Text; "Count": Integer; var RegexOptions: Record "Regex Options"; var "Array": List of [Text])
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to split.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*Count ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Count ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The maximum number of times the split can occur.
 
@@ -709,19 +709,19 @@ An empty list that will be populated with the result of the split query.
 procedure Split(Input: Text; Pattern: Text; "Count": Integer; StartAt: Integer; var "Array": List of [Text])
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to split.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*Count ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Count ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The maximum number of times the split can occur.
 
-*StartAt ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*StartAt ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The character position in the input string where the search will begin.
 
@@ -739,19 +739,19 @@ An empty list that will be populated with the result of the split query.
 procedure Split(Input: Text; Pattern: Text; "Count": Integer; StartAt: Integer; var RegexOptions: Record "Regex Options"; var "Array": List of [Text])
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to split.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
-*Count ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Count ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The maximum number of times the split can occur.
 
-*StartAt ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*StartAt ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The character position in the input string where the search will begin.
 
@@ -773,11 +773,11 @@ An empty list that will be populated with the result of the split query.
 procedure Split(Input: Text; Pattern: Text; var "Array": List of [Text])
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to split.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
@@ -795,11 +795,11 @@ An empty list that will be populated with the result of the split query.
 procedure Split(Input: Text; Pattern: Text; var RegexOptions: Record "Regex Options"; var "Array": List of [Text])
 ```
 #### Parameters
-*Input ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Input ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The string to split.
 
-*Pattern ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Pattern ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 A regular expression pattern to match.
 
@@ -821,7 +821,7 @@ An empty list that will be populated with the result of the split query.
 procedure GetHashCode(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 A hash code for the current object.
 ### Escape (Method) <a name="Escape"></a> 
@@ -834,12 +834,12 @@ A hash code for the current object.
 procedure Escape(String: Text): Text
 ```
 #### Parameters
-*String ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*String ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The input string that contains the text to convert.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 A string of characters with metacharacters converted to their escaped form.
 ### Unescape (Method) <a name="Unescape"></a> 
@@ -852,12 +852,12 @@ A string of characters with metacharacters converted to their escaped form.
 procedure Unescape(String: Text): Text
 ```
 #### Parameters
-*String ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*String ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The input string containing the text to convert.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 A string of characters with any escaped characters converted to their unescaped form.
 ### Groups (Method) <a name="Groups"></a> 
@@ -910,12 +910,12 @@ procedure MatchResult(var Matches: Record Matches; Replacement: Text): Text
 
 The Match Record to perform replacement on.
 
-*Replacement ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Replacement ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The replacement pattern to use.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The expanded version of the replacement parameter.
 

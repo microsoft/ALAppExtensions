@@ -32,6 +32,30 @@ table 5010 "Service Declaration Setup"
         {
             Caption = 'Enable VAT Registration No.';
         }
+        field(9; "Enable Serv. Trans. Types"; Boolean)
+        {
+            Caption = 'Enable Service Transaction Types';
+        }
+        field(10; "Show Serv. Decl. Overview"; Boolean)
+        {
+            Caption = 'Show Serv. Devl. Overview';
+        }
+        field(11; "Cust. VAT Reg. No. Type"; Enum "Serv. Decl. VAT Reg. No. Type")
+        {
+            Caption = 'Cust. VAT Reg. No. Type';
+        }
+        field(12; "Vend. VAT Reg. No. Type"; Enum "Serv. Decl. VAT Reg. No. Type")
+        {
+            Caption = 'Vend. VAT Reg. No. Type';
+        }
+        field(13; "Def. Private Person VAT No."; Text[50])
+        {
+            Caption = 'Def. Private Person VAT No.';
+        }
+        field(14; "Def. Customer/Vendor VAT No."; Text[50])
+        {
+            Caption = 'Def. Customer/Vendor VAT No.';
+        }
     }
 
     keys

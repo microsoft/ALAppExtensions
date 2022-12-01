@@ -1042,9 +1042,6 @@ table 11733 "Cash Document Line CZP"
                                 "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
 
         OnAfterCreateDim(Rec, xRec, CurrFieldNo, OldDimSetID);
-
-        if (OldDimSetID <> "Dimension Set ID") then
-            Modify();
     end;
 
     procedure ValidateShortcutDimCode(FieldNumber: Integer; var ShortcutDimCode: Code[20])

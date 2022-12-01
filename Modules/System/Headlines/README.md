@@ -28,17 +28,17 @@ Manage the standard greeting headline.
 procedure Truncate(TextToTruncate: Text; MaxLength: Integer): Text
 ```
 #### Parameters
-*TextToTruncate ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*TextToTruncate ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Text that be shortened in order to fit on the headline.
 
-*MaxLength ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MaxLength ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 The maximal length of the string. Usually obtained through
  [GetMaxQualifierLength](#GetMaxQualifierLength) or [GetMaxPayloadLength](#GetMaxPayloadLength) function.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The truncated text
 ### Emphasize (Method) <a name="Emphasize"></a> 
@@ -51,12 +51,12 @@ The truncated text
 procedure Emphasize(TextToEmphasize: Text): Text
 ```
 #### Parameters
-*TextToEmphasize ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*TextToEmphasize ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text that the style will be applied on.
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 Emphasized text (special tags are added to the input).
 ### GetHeadlineText (Method) <a name="GetHeadlineText"></a> 
@@ -70,23 +70,23 @@ Emphasized text (special tags are added to the input).
 procedure GetHeadlineText(Qualifier: Text; Payload: Text; var ResultText: Text): Boolean
 ```
 #### Parameters
-*Qualifier ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Qualifier ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text to be displayed on the qualifier (smaller text above the main one)
  of the headline (parts of it can be emphasized, see [Emphasize](#Emphasize)).
 
-*Payload ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*Payload ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 The text to be displayed on the payload (the main text of the headline)
  of the headline (parts of it can be emphasized, see [Emphasize](#Emphasize)).
 
-*ResultText ([Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type))* 
+*ResultText ([Text](https://go.microsoft.com/fwlink/?linkid=2210031))* 
 
 Output parameter. Contains the combined text, ready to be assigned to
  the Expression property, if the function returns 'true', the unchanged value otherwise.
 
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 'false' if payload is empty, or payload is too long, or qualifier is too long,
  'true' otherwise.
@@ -107,7 +107,7 @@ Output parameter. Contains the combined text, ready to be assigned to
 procedure GetUserGreetingText(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 The greeting text.
 ### ShouldUserGreetingBeVisible (Method) <a name="ShouldUserGreetingBeVisible"></a> 
@@ -120,7 +120,7 @@ The greeting text.
 procedure ShouldUserGreetingBeVisible(): Boolean
 ```
 #### Return Value
-*[Boolean](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/boolean/boolean-data-type)*
+*[Boolean](https://go.microsoft.com/fwlink/?linkid=2209954)*
 
 True if the user logged in less than 10 minutes ago, false otherwise.
 ### GetMaxQualifierLength (Method) <a name="GetMaxQualifierLength"></a> 
@@ -133,7 +133,7 @@ True if the user logged in less than 10 minutes ago, false otherwise.
 procedure GetMaxQualifierLength(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The number of characters, 50.
 ### GetMaxPayloadLength (Method) <a name="GetMaxPayloadLength"></a> 
@@ -146,6 +146,6 @@ The number of characters, 50.
 procedure GetMaxPayloadLength(): Integer
 ```
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 The number of characters, 75.

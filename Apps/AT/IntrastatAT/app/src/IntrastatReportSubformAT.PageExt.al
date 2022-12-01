@@ -6,10 +6,15 @@ pageextension 11150 "Intrastat Report Subform AT" extends "Intrastat Report Subf
         {
             Visible = true;
         }
-        
+
         modify("Transaction Specification")
         {
             Visible = true;
+        }
+
+        modify("Transport Method")
+        {
+            Visible = false;
         }
     }
 }

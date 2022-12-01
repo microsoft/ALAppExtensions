@@ -5,7 +5,7 @@
 
 /// <summary>
 /// Defines the possible permissions for account SAS.
-/// See: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas#account-sas-permissions-by-operation
+/// See: https://go.microsoft.com/fwlink/?linkid=2211413
 /// </summary>
 enum 9064 "SAS Permission"
 {

@@ -265,18 +265,38 @@ codeunit 13657 FIKSubscribers
         Handled := TRUE;
     end;
 
+#if not CLEAN22
     //rep 393
+    [Obsolete('Replaced by OnBeforeUpdateGnlJnlLineDimensionsFromTempVendorPaymentBuffer.', '22.0')]
     [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnBeforeUpdateGnlJnlLineDimensionsFromTempBuffer', '', false, false)]
     procedure OnBeforeUpdateGnlJnlLineDimensionsFromTempBuffer(VAR GenJournalLine: Record "Gen. Journal Line"; TempPaymentBuffer: Record "Payment Buffer" temporary);
     begin
         GenJournalLine.GiroAccNo := TempPaymentBuffer.GiroAccNo;
         GenJournalLine.UpdateVendorPaymentDetails();
     end;
+#endif
+
+    [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnBeforeUpdateGnlJnlLineDimensionsFromVendorPaymentBuffer', '', false, false)]
+    procedure OnBeforeUpdateGnlJnlLineDimensionsFromTempVendorPaymentBuffer(VAR GenJournalLine: Record "Gen. Journal Line"; TempVendorPaymentBuffer: Record "Vendor Payment Buffer" temporary);
+    begin
+        GenJournalLine.GiroAccNo := TempVendorPaymentBuffer.GiroAccNo;
+        GenJournalLine.UpdateVendorPaymentDetails();
+    end;
+
+#if not CLEAN22
     //rep 393
+    [Obsolete('Replaced by OnUpdateTempVendorPaymentBufferFromVendorLedgerEntry.', '22.0')]
     [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnUpdateTempBufferFromVendorLedgerEntry', '', false, false)]
     procedure OnUpdateTempBufferFromVendorLedgerEntry(VAR TempPaymentBuffer: Record "Payment Buffer" temporary; VendorLedgerEntry: Record "Vendor Ledger Entry");
     begin
         TempPaymentBuffer.GiroAccNo := VendorLedgerEntry.GiroAccNo;
+    end;
+#endif
+
+    [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnUpdateVendorPaymentBufferFromVendorLedgerEntry', '', false, false)]
+    procedure OnUpdateTempVendorPaymentBufferFromVendorLedgerEntry(VAR TempVendorPaymentBuffer: Record "Vendor Payment Buffer" temporary; VendorLedgerEntry: Record "Vendor Ledger Entry");
+    begin
+        TempVendorPaymentBuffer.GiroAccNo := VendorLedgerEntry.GiroAccNo;
     end;
 
     //table 25
