@@ -50,7 +50,7 @@ $testAppsFolder = $parameters.testAppsFolder
 $type = $parameters.type
 
 # Construct package ID
-$packageId = "$($env:GITHUB_REPOSITORY_OWNER).$($env:RepoName)"
+$packageId = "$($env:GITHUB_REPOSITORY_OWNER).Dynamics.BusinessCentral.$($env:RepoName)"
 
 if (-not $project -or ($project -ne '.')) {
     $packageId += ".$projectName"
