@@ -387,7 +387,7 @@ table 40102 "GP POPPOHeader"
             Caption = 'EXCHDATE';
             DataClassification = CustomerContent;
         }
-        field(77; TIME1; Date)
+        field(77; TIME1; DateTime)
         {
             Caption = 'TIME1';
             DataClassification = CustomerContent;
@@ -787,6 +787,7 @@ table 40102 "GP POPPOHeader"
         PostingDescriptionTxt: Label 'Migrated from GP';
         PostingGroupTxt: Label 'GP', Locked = true;
 
+    [Obsolete('Logic moved to GP PO Migrator codeunit')]
     procedure MoveStagingData()
     var
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
@@ -828,7 +829,10 @@ table 40102 "GP POPPOHeader"
                     end;
 
                     PurchaseHeader.Modify(true);
+
+#pragma warning disable AL0432
                     GPPOPPOLine.MoveStagingData(PONUMBER);
+#pragma warning restore AL0432
                 end;
             until Next() = 0;
         end;
