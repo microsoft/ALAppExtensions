@@ -2,11 +2,15 @@ Param(
     [Hashtable] $parameters
 )
 
-# Setup compiler features to generate captions and LCGs
-if (!$parameters.ContainsKey("Features")) {
-    $parameters["Features"] = @()
+# $app is a variable that determine whether the current app is a normal app (not test app, for instance)
+if($app)
+{
+    # Setup compiler features to generate captions and LCGs
+    if (!$parameters.ContainsKey("Features")) {
+        $parameters["Features"] = @()
+    }
+    $parameters["Features"] += @("lcgtranslationfile", "generateCaptions")    
 }
-$parameters["Features"] += @("lcgtranslationfile", "generateCaptions")
 
 $appFile = Compile-AppInBcContainer @parameters
 
@@ -21,10 +25,9 @@ if(($branchName -eq 'main') -or $branchName.StartsWith('release/')) {
 
     Write-Host "Current app name: $appName; app folder: $appProjectFolder"
 
-    # TODO Use Al-Go project settings to determine if the app is a test app or not.
-    $holderFolder = 'TestApps'
-    if($appName -eq "System Application") {
-        $holderFolder = 'Apps'
+    $holderFolder = 'Apps'
+    if(-not $app) {
+        $holderFolder = 'TestApps'
     }
 
     $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName" # manually construct the artifacts folder
