@@ -14,5 +14,6 @@
                     ],
     "artifact":  "//21.1/base/first",
     "enablePerTenantExtensionCop":  false,
-    "repoVersion":  "21.1"
+    "repoVersion":  "21.1",
+    "doNotRunTests": true
 }
