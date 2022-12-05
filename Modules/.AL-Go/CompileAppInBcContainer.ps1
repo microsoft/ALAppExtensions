@@ -37,7 +37,7 @@ if(-not (Test-Path $packageArtifactsFolder)) {
 
 Write-Host "Package artifacts folder: $packageArtifactsFolder"
 
-Copy-Item -Path $appProjectFolder -Destination $packageArtifactsFolder -Recurse -Force | Out-Null
+Copy-Item -Path $appProjectFolder -Destination "$packageArtifactsFolder/SourceCode" -Recurse -Force | Out-Null
 Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
 
 $appFile
