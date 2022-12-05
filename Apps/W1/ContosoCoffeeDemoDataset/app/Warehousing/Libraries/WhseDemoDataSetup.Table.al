@@ -14,11 +14,6 @@ table 4763 "Whse Demo Data Setup"
             DataClassification = SystemMetadata;
             Caption = 'Is DemoData Populated';
         }
-        field(3; "Auto Create Whse. Employees"; Boolean)
-        {
-            DataClassification = SystemMetadata;
-            Caption = 'Auto Create Whse. Employees';
-        }
         field(8; "Starting Year"; Integer)
         {
             DataClassification = CustomerContent;
