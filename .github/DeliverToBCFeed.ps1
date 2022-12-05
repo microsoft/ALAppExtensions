@@ -79,14 +79,15 @@ try {
     $outputDirectory = Join-Path $env:GITHUB_WORKSPACE 'out'
     New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
 
-    $appsPackage = Join-Path $appsFolder 'Package'
-    if(Test-Path -Path "$appsPackage") {
-        Copy-Item -Path "$appsPackage" -Destination "$packageFolder/Apps" -Recurse -Container -Force 
-    }
+    # Create folder to hold the apps
+    New-Item -Path "$packageFolder/Apps" -ItemType Directory -Force | Out-Null
 
-    $testAppsPackage = Join-Path $testAppsFolder 'Package'
-    if(Test-Path -Path "$testAppsPackage") {
-        Copy-Item -Path "$testAppsPackage" -Destination "$packageFolder/Apps" -Recurse -Container -Force
+    $appsFolder, $testAppsFolder | % { 
+        $appsToPackage = Join-Path $_ 'Package'
+        
+        if(Test-Path -Path $appsToPackage) {
+            Copy-Item -Path "$appsToPackage/*" -Destination "$packageFolder/Apps" -Recurse -Force
+        }
     }
     
     #Create .nuspec file
