@@ -21,7 +21,7 @@ if(($branchName -eq 'main') -or $branchName.StartsWith('release/')) {
     $appProjectFolder = $parameters.appProjectFolder
 
     # Extract app name from app.json
-    $appName = (gci -Path $appProjectFolder -Filter "app.json" | Get-Content | ConvertFrom-Json).name
+    $appName = (Get-ChildItem -Path $appProjectFolder -Filter "app.json" | Get-Content | ConvertFrom-Json).name
 
     Write-Host "Current app name: $appName; app folder: $appProjectFolder"
 

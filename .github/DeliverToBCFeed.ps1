@@ -2,7 +2,7 @@ Param(
     [Hashtable] $parameters
 )
 
-function GenerateNuspec
+function GenerateManifest
 (
     [Parameter(Mandatory=$true)]
     $PackageId,
@@ -24,24 +24,28 @@ function GenerateNuspec
     return $template
 }
 
-try {
-    $nuGetAccount = $parameters.Context | ConvertFrom-Json | ConvertTo-HashTable
-    $nuGetServerUrl = $nuGetAccount.ServerUrl
-    $nuGetToken = $nuGetAccount.Token
+try 
+{
+    $deliverContext = $parameters.Context | ConvertFrom-Json | ConvertTo-HashTable
+    $deliverServerUrl = $deliverContext.ServerUrl
+    $deliverAcountToken = $deliverContext.Token
 }
-catch {
-    throw "NuGetContext secret is malformed. Needs to be formatted as JSON, containing serverUrl and token."
+catch 
+{
+    throw "Deliver context is malformed. Needs to be formatted as JSON, containing serverUrl and token."
 }
 
-if (-not ($nuGetServerUrl)) {
-    throw "Cannot retrieve NuGet server URL from NuGetContext"
+if (-not ($deliverServerUrl)) 
+{
+    throw "Cannot retrieve server URL from the deliver context"
 } 
 
-if (-not $nuGetToken) {
-    throw "Cannot retrieve NuGet token  URL from NuGetContext"
+if (-not $deliverAcountToken) 
+{
+    throw "Cannot retrieve account token the deliver context"
 } 
 
-Write-Host "Successfully retrieved information from NuGetContext" -ForegroundColor Green
+Write-Host "Successfully retrieved information from the deliver context" -ForegroundColor Green
 
 $project = $parameters.project
 $projectName = $parameters.projectName
@@ -52,18 +56,20 @@ $type = $parameters.type
 # Construct package ID
 $packageId = "$($env:GITHUB_REPOSITORY_OWNER)-$($env:RepoName)"
 
-if (-not $project -or ($project -ne '.')) {
+if (-not $project -or ($project -ne '.')) 
+{
     $packageId += "-$projectName"
 }
 
-if ($type -eq 'CD') {
+if ($type -eq 'CD') 
+{
     $packageId += "-preview"
 }
 
 # Extract version from the published folders (naming convention)
-$packageVersion = $appsFolder.SubString($appsFolder.IndexOf("-Apps-") + "-Apps-".Length) #version is right after '-Apps-'
+$packageVersion = $appsFolder.SubString($appsFolder.LastIndexOf("-Apps-") + "-Apps-".Length) #version is right after '-Apps-'
 
-$nuspec = GenerateNuspec `
+$manifest = GenerateManifest `
             -PackageId $packageId `
             -Version $packageVersion `
             -Authors "$env:GITHUB_REPOSITORY_OWNER" `
@@ -75,51 +81,55 @@ New-Item -Path $packageFolder -ItemType Directory | Out-Null
 
 Write-Host "Package folder: $packageFolder" -ForegroundColor Magenta
 
-try {
+try 
+{
     $outputDirectory = Join-Path $env:GITHUB_WORKSPACE 'out'
     New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
 
     # Create folder to hold the apps
     New-Item -Path "$packageFolder/Apps" -ItemType Directory -Force | Out-Null
 
-    $appsFolder, $testAppsFolder | % { 
+    $appsFolder, $testAppsFolder | ForEach-Object { 
         $appsToPackage = Join-Path $_ 'Package'
         
-        if(Test-Path -Path $appsToPackage) {
+        if(Test-Path -Path $appsToPackage) 
+        {
             Copy-Item -Path "$appsToPackage/*" -Destination "$packageFolder/Apps" -Recurse -Force
         }
     }
     
     #Create .nuspec file
-    $nuspecFilePath = (Join-Path $packageFolder 'manifest.nuspec')
-    $nuspec.Save($nuspecFilePath)
+    $manifestFilePath = (Join-Path $packageFolder 'manifest.nuspec')
+    $manifest.Save($manifestFilePath)
 
     Write-Host "Download nuget CLI" -ForegroundColor Magenta
     Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile $outputDirectory/nuget.exe
     
-    $nugetOutput =  Invoke-Expression -Command "$outputDirectory/nuget.exe pack $nuspecFilePath -OutputDirectory $outputDirectory"
+    $deliverOutput =  Invoke-Expression -Command "$outputDirectory/nuget.exe pack $manifestFilePath -OutputDirectory $outputDirectory"
     
-    $nugetOutput | Write-Host -ForegroundColor Magenta
-    if ($LASTEXITCODE -or $null -eq $nugetOutput)
+    $deliverOutput | Write-Host -ForegroundColor Magenta
+    if ($LASTEXITCODE -or $null -eq $deliverOutput)
     {
-        throw "Generating the nuget pack failed with exit code $LASTEXITCODE"
+        throw "Generating the package failed with exit code $LASTEXITCODE"
     }
     
     # Get the newly created package
-    $nugetPackageFile = gci -Path $outputDirectory -Filter "$packageId*.nupkg"
+    $packageFile = Get-ChildItem -Path $outputDirectory -Filter "$packageId*.nupkg"
 
-    if(-not $nugetPackageFile) {
-        throw "Cannot find nupkg file in $outputDirectory"
+    if(-not $packageFile) 
+    {
+        throw "Cannot find the package file in $outputDirectory"
     }
 
-    Write-Host "Push package $($nugetPackageFile.FullName) to $nuGetServerUrl" -ForegroundColor Magenta
-    $nugetOutput =  Invoke-Expression -Command "$outputDirectory/nuget.exe push $($nugetPackageFile.FullName) -ApiKey $nuGetToken -Source $nuGetServerUrl"
+    Write-Host "Push package $($packageFile.FullName) to $deliverServerUrl" -ForegroundColor Magenta
+    $deliverOutput =  Invoke-Expression -Command "$outputDirectory/nuget.exe push $($packageFile.FullName) -ApiKey $deliverAcountToken -Source $deliverServerUrl"
 
-    if ($LASTEXITCODE -or $null -eq $nugetOutput)
+    if ($LASTEXITCODE -or $null -eq $deliverOutput)
     {
-        throw "Pushing nuget package $($nugetPackageFile.FullName) failed with exit code $LASTEXITCODE"
+        throw "Pushing package $($packageFile.FullName) failed with exit code $LASTEXITCODE"
     }
 }
-finally {
+finally 
+{
     Remove-Item $packageFolder -Recurse -Force
 }
