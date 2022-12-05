@@ -7,7 +7,7 @@
         <authors></authors>
         <owners></owners>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <licenseUrl>https://github.com/microsoft/ALAppExtensions/blob/main/LICENSE</licenseUrl>
+        <license>https://github.com/microsoft/ALAppExtensions/blob/main/LICENSE</license>
         <projectUrl>https://github.com/microsoft/ALAppExtensions</projectUrl>
         <description>System Application and Dev Tools for Dynamics 365 Business Central</description>
         <copyright>© Microsoft Corporation. All rights reserved.</copyright>
