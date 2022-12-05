@@ -16,31 +16,28 @@ $appFile = Compile-AppInBcContainer @parameters
 
 $branchName = $ENV:GITHUB_REF_NAME
 
-# Only add the source code to the build artifacts if the delivering is allowed on the branch 
-if(($branchName -eq 'main') -or $branchName.StartsWith('release/')) {
-    $appProjectFolder = $parameters.appProjectFolder
+$appProjectFolder = $parameters.appProjectFolder
 
-    # Extract app name from app.json
-    $appName = (gci -Path $appProjectFolder -Filter "app.json" | Get-Content | ConvertFrom-Json).name
+# Extract app name from app.json
+$appName = (gci -Path $appProjectFolder -Filter "app.json" | Get-Content | ConvertFrom-Json).name
 
-    Write-Host "Current app name: $appName; app folder: $appProjectFolder"
+Write-Host "Current app name: $appName; app folder: $appProjectFolder"
 
-    $holderFolder = 'Apps'
-    if(-not $app) {
-        $holderFolder = 'TestApps'
-    }
-
-    $packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName" # manually construct the artifacts folder
-
-    if(-not (Test-Path $packageArtifactsFolder)) {
-        Write-Host "Creating $packageArtifactsFolder"
-        New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/$holderFolder/Package/$appName" -ItemType Directory | Out-Null
-    }
-
-    Write-Host "Package artifacts folder: $packageArtifactsFolder"
-
-    Copy-Item -Path $appProjectFolder -Destination $packageArtifactsFolder -Recurse -Force | Out-Null
-    Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
+$holderFolder = 'Apps'
+if(-not $app) {
+    $holderFolder = 'TestApps'
 }
+
+$packageArtifactsFolder = "$env:GITHUB_WORKSPACE/Modules/.buildartifacts/$holderFolder/Package/$appName" # manually construct the artifacts folder
+
+if(-not (Test-Path $packageArtifactsFolder)) {
+    Write-Host "Creating $packageArtifactsFolder"
+    New-Item -Path "$env:GITHUB_WORKSPACE/Modules" -Name ".buildartifacts/$holderFolder/Package/$appName" -ItemType Directory | Out-Null
+}
+
+Write-Host "Package artifacts folder: $packageArtifactsFolder"
+
+Copy-Item -Path $appProjectFolder -Destination $packageArtifactsFolder -Recurse -Force | Out-Null
+Copy-Item -Path $appFile -Destination $packageArtifactsFolder -Force | Out-Null
 
 $appFile
