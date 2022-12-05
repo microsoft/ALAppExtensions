@@ -81,12 +81,12 @@ try {
 
     $appsPackage = Join-Path $appsFolder 'Package'
     if(Test-Path -Path "$appsPackage") {
-        Copy-Item -Path "$appsPackage" -Destination "$packageFolder" -Recurse -Container -Force 
+        Copy-Item -Path "$appsPackage" -Destination "$packageFolder/Apps" -Recurse -Container -Force 
     }
 
     $testAppsPackage = Join-Path $testAppsFolder 'Package'
     if(Test-Path -Path "$testAppsPackage") {
-        Copy-Item -Path "$testAppsPackage" -Destination "$packageFolder" -Recurse -Container -Force
+        Copy-Item -Path "$testAppsPackage" -Destination "$packageFolder/Apps" -Recurse -Container -Force
     }
     
     #Create .nuspec file
