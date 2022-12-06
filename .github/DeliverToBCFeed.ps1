@@ -67,7 +67,7 @@ if ($type -eq 'CD')
 }
 
 # Extract version from the published folders (naming convention)
-$packageVersion = $appsFolder.SubString($appsFolder.LastIndexOf("-Apps-") + "-Apps-".Length) #version is right after '-Apps-'
+$packageVersion = $appsFolder -replace ".*-Apps-","" #version is right after '-Apps-'
 
 $manifest = GenerateManifest `
             -PackageId $packageId `
