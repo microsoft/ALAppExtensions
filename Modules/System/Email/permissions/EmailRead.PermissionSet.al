@@ -23,6 +23,8 @@ PermissionSet 8900 "Email - Read"
                   tabledata "Email Recipient" = r,
                   tabledata "Email Related Record" = r,
                   tabledata "Email Scenario" = r,
+                  tabledata "Email Attachments" = r,
+                  tabledata "Email Scenario Attachments" = r,
                   tabledata "Email View Policy" = r,
                   tabledata Field = r,
                   tabledata Media = r, // Email Account Wizard requires this

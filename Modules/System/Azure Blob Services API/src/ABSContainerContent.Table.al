@@ -50,26 +50,26 @@ table 9043 "ABS Container Content"
         {
             DataClassification = SystemMetadata;
             Caption = 'Last-Modified', Locked = true;
-            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
+            Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210588#response-body';
         }
         field(13; "Content Length"; Integer)
         {
             DataClassification = SystemMetadata;
             Caption = 'Content-Length', Locked = true;
-            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
+            Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210588#response-body';
         }
         field(14; "Content Type"; Text[2048])
         {
             DataClassification = SystemMetadata;
             Caption = 'Content-Type', Locked = true;
-            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
+            Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210588#response-body';
         }
 #pragma warning disable AS0086
         field(15; "Blob Type"; Text[2048])
         {
             DataClassification = SystemMetadata;
             Caption = 'BlobType', Locked = true;
-            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#response-body';
+            Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210588#response-body';
         }
 #pragma warning restore AS0086
         field(100; "XML Value"; Blob)

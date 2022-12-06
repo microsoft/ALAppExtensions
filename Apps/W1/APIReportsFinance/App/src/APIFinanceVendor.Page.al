@@ -13,7 +13,7 @@ page 30308 "API Finance - Vendor"
     InsertAllowed = false;
     ModifyAllowed = false;
     DeleteAllowed = false;
-    SourceTable = "Customer";
+    SourceTable = Vendor;
     ODataKeyFields = SystemId;
 
     layout

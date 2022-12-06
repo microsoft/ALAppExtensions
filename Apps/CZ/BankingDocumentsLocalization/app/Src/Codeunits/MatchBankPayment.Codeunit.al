@@ -206,6 +206,7 @@ codeunit 31362 "Match Bank Payment CZB"
 
                         OnAfterValidateGenJournalLine(TempMatchBankPaymentBufferCZB, GenJournalLine, SearchRuleLineCZB);
                         GenJournalLine."Search Rule Line No. CZB" := SearchRuleLineCZB."Line No.";
+                        GenJournalLine.Modify();
                     end;
                 end;
             end;
@@ -250,9 +251,9 @@ codeunit 31362 "Match Bank Payment CZB"
             else
                 CustLedgerEntry.SetRange("Remaining Amount", MinAmount, MaxAmount);
         if SearchRuleLineCZB."Variable Symbol" then begin
-            if GenJournalLine."Variable Symbol CZL" = '' then
+            if GenJournalLine.GetVariableSymbolCZB() = '' then
                 exit;
-            CustLedgerEntry.SetRange("Variable Symbol CZL", GenJournalLine."Variable Symbol CZL");
+            CustLedgerEntry.SetRange("Variable Symbol CZL", GenJournalLine.GetVariableSymbolCZB());
         end;
         if SearchRuleLineCZB."Specific Symbol" then begin
             if GenJournalLine."Specific Symbol CZL" = '' then
@@ -314,9 +315,9 @@ codeunit 31362 "Match Bank Payment CZB"
             else
                 VendorLedgerEntry.SetRange("Remaining Amount", MinAmount, MaxAmount);
         if SearchRuleLineCZB."Variable Symbol" then begin
-            if GenJournalLine."Variable Symbol CZL" = '' then
+            if GenJournalLine.GetVariableSymbolCZB() = '' then
                 exit;
-            VendorLedgerEntry.SetRange("Variable Symbol CZL", GenJournalLine."Variable Symbol CZL");
+            VendorLedgerEntry.SetRange("Variable Symbol CZL", GenJournalLine.GetVariableSymbolCZB());
         end;
         if SearchRuleLineCZB."Specific Symbol" then begin
             if GenJournalLine."Specific Symbol CZL" = '' then
@@ -372,9 +373,9 @@ codeunit 31362 "Match Bank Payment CZB"
             else
                 EmployeeLedgerEntry.SetRange("Remaining Amount", MinAmount, MaxAmount);
         if SearchRuleLineCZB."Variable Symbol" then begin
-            if GenJournalLine."Variable Symbol CZL" = '' then
+            if GenJournalLine.GetVariableSymbolCZB() = '' then
                 exit;
-            EmployeeLedgerEntry.SetRange("Variable Symbol CZL", GenJournalLine."Variable Symbol CZL");
+            EmployeeLedgerEntry.SetRange("Variable Symbol CZL", GenJournalLine.GetVariableSymbolCZB());
         end;
         if SearchRuleLineCZB."Specific Symbol" then begin
             if GenJournalLine."Specific Symbol CZL" = '' then

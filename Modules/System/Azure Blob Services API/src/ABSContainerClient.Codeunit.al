@@ -47,7 +47,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// List all containers in specific Storage Account.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/list-containers2
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211410
     /// </summary>
     /// <param name="Container">Collection of the result (temporary record).</param>
     /// <returns>An operation reponse object</returns>
@@ -60,7 +60,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// List all containers in specific Storage Account.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/list-containers2
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211410
     /// </summary>
     /// <param name="Container">Collection of the result (temporary record).</param>
     /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
@@ -72,7 +72,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Creates a new container in the Storage Account.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/create-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211411
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <returns>An operation reponse object</returns>
@@ -85,7 +85,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Creates a new container in the Storage Account.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/create-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211411
     /// </summary>
     /// <param name="ContainerName">The name of the container to create.</param>
     /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
@@ -97,7 +97,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Deletes a container from the Storage Account.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/delete-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210393
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <returns>An operation reponse object</returns>
@@ -110,7 +110,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Deletes a container from the Storage Account.
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/delete-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210393
     /// </summary>
     /// <param name="ContainerName">The name of the container to delete.</param>
     /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
@@ -122,7 +122,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="LeaseId">Guid containing the response value from x-ms-lease-id HttpHeader</param>
@@ -137,7 +137,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="ABSOptionalParameters">Optional parameters to pass.</param>
@@ -152,7 +152,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>    
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
@@ -168,7 +168,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>    
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
@@ -184,7 +184,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
@@ -199,7 +199,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="ProposedLeaseId">Proposed lease ID, in a GUID string format</param>
@@ -213,7 +213,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Requests a new lease. If the container does not have an active lease, the blob service creates a lease on the container. The lease duration can be 15 to 60 seconds or can be infinite
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>     
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="DurationSeconds">Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires</param>
@@ -228,7 +228,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Releases a lease on a container if it is no longer needed so that another client may immediately acquire a lease against the blob
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="LeaseId">The Guid for the lease that should be released</param>
@@ -242,7 +242,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Releases a lease on a container if it is no longer needed so that another client may immediately acquire a lease against the blob
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="LeaseId">The Guid for the lease that should be released</param>
@@ -255,7 +255,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Renews a lease on a container to keep it locked again for the same amount of time as before
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
@@ -269,7 +269,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Renews a lease on a container to keep it locked again for the same amount of time as before
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="LeaseId">The Guid for the lease that should be renewed</param>
@@ -282,7 +282,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Breaks a lease on a container but ensures that another client cannot acquire a new lease until the current lease period has expired
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
@@ -296,7 +296,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Breaks a lease on a container but ensures that another client cannot acquire a new lease until the current lease period has expired
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
@@ -311,7 +311,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Breaks a lease on a container but ensures that another client cannot acquire a new lease until the current lease period has expired
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
@@ -324,7 +324,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Breaks a lease on a container but ensures that another client cannot acquire a new lease until the current lease period has expired
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="LeaseId">The Guid for the lease that should be broken</param>
@@ -338,7 +338,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Changes the lease ID of an active lease
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="LeaseId">The Guid for the lease that should be changed. Will contain the updated Guid after successful operation.</param>
@@ -353,7 +353,7 @@ codeunit 9052 "ABS Container Client"
 
     /// <summary>
     /// Changes the lease ID of an active lease
-    /// see: https://docs.microsoft.com/en-us/rest/api/storageservices/lease-container
+    /// see: https://go.microsoft.com/fwlink/?linkid=2211318
     /// </summary>
     /// <param name="ContainerName">The name of the container.</param>
     /// <param name="LeaseId">The Guid for the lease that should be changed</param>

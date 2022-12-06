@@ -1271,6 +1271,52 @@ codeunit 18001 "GST Base Validation"
         end;
     end;
 
+    procedure GetTaxComponentRoundingPrecision(var DetailedGSTEntryBuffer: Record "Detailed GST Entry Buffer"; TaxTransactionValue: Record "Tax Transaction value"): Decimal
+    var
+        TaxComponent: Record "Tax Component";
+    begin
+        if not TaxComponent.Get(TaxTransactionValue."Tax Type", TaxTransactionValue."Value ID") then
+            exit;
+
+        DetailedGSTEntryBuffer."GST Rounding Type" := TaxComponentDirections2DetailedGSTLedgerDirection(TaxComponent.Direction);
+        DetailedGSTEntryBuffer."GST Rounding Precision" := TaxComponent."Rounding Precision";
+        DetailedGSTEntryBuffer."GST Inv. Rounding Precision" := TaxComponent."Rounding Precision";
+        DetailedGSTEntryBuffer."GST Inv. Rounding Type" := TaxComponentDirections2DetailedGSTLedgerDirection(TaxComponent.Direction);
+    end;
+
+    procedure RoundGSTPrecisionThroughTaxComponent(ComponenetCode: Code[30]; GSTAmount: Decimal): Decimal
+    var
+        TaxComponent: Record "Tax Component";
+        GSTSetup: Record "GST Setup";
+        GSTRoundingDirection: Text[1];
+        GSTRoundingPrecision: Decimal;
+    begin
+        if not GSTSetup.Get() then
+            exit;
+
+        TaxComponent.SetRange("Tax Type", GSTSetup."GST Tax Type");
+        TaxComponent.SetRange(Name, ComponenetCode);
+        if TaxComponent.FindFirst() then begin
+            GSTRoundingDirection := GetRoundingPrecisionofTaxComponent(TaxComponent);
+            GSTRoundingDirection := GSTRoundingDirection;
+            GSTRoundingPrecision := TaxComponent."Rounding Precision";
+        end;
+
+        exit(Round(GSTAmount, GSTRoundingPrecision, GSTRoundingDirection));
+    end;
+
+    local procedure GetRoundingPrecisionofTaxComponent(TaxComponent: Record "Tax Component"): Text[1]
+    begin
+        case TaxComponent.Direction of
+            TaxComponent.Direction::Nearest:
+                exit('=');
+            TaxComponent.Direction::Up:
+                exit('>');
+            TaxComponent.Direction::Down:
+                exit('<');
+        end;
+    end;
+
     local procedure UpdateECommOperatorGSTRegNo(
             DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
             var DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info")

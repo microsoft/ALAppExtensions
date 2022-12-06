@@ -11,6 +11,7 @@ enumextension 4504 "Microsoft 365 Connector" extends "Email Connector"
     value(1; "Microsoft 365")
     {
         Caption = 'Microsoft 365';
-        Implementation = "Email Connector" = "Microsoft 365 Connector";
+        Implementation = "Email Connector" = "Microsoft 365 Connector",
+                         "Default Email Rate Limit" = "Microsoft 365 Connector";
     }
 }

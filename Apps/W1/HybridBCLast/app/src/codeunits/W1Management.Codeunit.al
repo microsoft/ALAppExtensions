@@ -454,6 +454,17 @@ codeunit 4026 "W1 Management"
         Handled := true;
     end;
 
+    [EventSubscriber(ObjectType::Page, Page::"Migration Table Mapping", 'OnIsBCMigration', '', false, false)]
+    local procedure OnIsBCMigration(var SourceBC: Boolean)
+    var
+        HybridBCLastManagement: Codeunit "Hybrid BC Last Management";
+    begin
+        if not HybridBCLastManagement.GetBCLastProductEnabled() then
+            exit;
+
+        SourceBC := true;
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterPopulateW1TableMappingForVersion(CountryCode: Text; TargetVersion: Decimal)
     begin

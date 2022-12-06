@@ -11,7 +11,7 @@ codeunit 8999 "Email Rate Limit Impl."
                     tabledata "Email Outbox" = r,
                     tabledata "Sent Email" = r;
 
-    procedure RegisterRateLimit(var EmailRateLimit: Record "Email Rate Limit"; RegisteredAccount: Record "Email Account"; RateLimit: Integer; NotDefaultRateLimit: Boolean)
+    procedure RegisterRateLimit(var EmailRateLimit: Record "Email Rate Limit"; RegisteredAccount: Record "Email Account"; RateLimit: Integer)
     var
         NewRateLimit: Record "Email Rate Limit";
     begin
@@ -22,12 +22,7 @@ codeunit 8999 "Email Rate Limit Impl."
             NewRateLimit."Account Id" := RegisteredAccount."Account Id";
             NewRateLimit.Connector := RegisteredAccount.Connector;
             NewRateLimit."Email Address" := RegisteredAccount."Email Address";
-
-            if NotDefaultRateLimit then
-                NewRateLimit."Rate Limit" := RateLimit
-            else
-                NewRateLimit."Rate Limit" := 0;
-
+            NewRateLimit."Rate Limit" := RateLimit;
             NewRateLimit.Insert();
         end;
 
@@ -37,25 +32,15 @@ codeunit 8999 "Email Rate Limit Impl."
         EmailRateLimit."Rate Limit" := NewRateLimit."Rate Limit";
     end;
 
-    procedure UpdateRateLimitForAccount(var CurrentRateLimit: Record "Email Rate Limit")
-    var
-        NewRateLimit: Record "Email Rate Limit";
-    begin
-        NewRateLimit.Get(CurrentRateLimit."Account Id", CurrentRateLimit.Connector);
-        NewRateLimit."Rate Limit" := CurrentRateLimit."Rate Limit";
-        NewRateLimit.Modify();
-    end;
-
     procedure UpdateRateLimit(RegisteredAccount: Record "Email Account")
     var
-        EmailRateLimitForAccount: Page "Email Rate Limit Wizard";
+        EmailRateLimit: Record "Email Rate Limit";
+        EmailRateLimitWizard: Page "Email Rate Limit Wizard";
     begin
-        EmailRateLimitForAccount.SetEmailAccountId(RegisteredAccount."Account Id");
-        EmailRateLimitForAccount.SetEmailConnector(RegisteredAccount.Connector);
-        EmailRateLimitForAccount.SetEmailAddress(RegisteredAccount."Email Address");
-        EmailRateLimitForAccount.SetEmailName(RegisteredAccount.Name);
-        EmailRateLimitForAccount.UpdateDefaultRateLimitDisplay();
-        EmailRateLimitForAccount.RunModal();
+        EmailRateLimit.Get(RegisteredAccount."Account Id", RegisteredAccount.Connector);
+        EmailRateLimitWizard.SetRecord(EmailRateLimit);
+        EmailRateLimitWizard.SetEmailAccount(RegisteredAccount);
+        EmailRateLimitWizard.RunModal();
     end;
 
     procedure IsRateLimitExceeded(AccountId: Guid; Connector: Enum "Email Connector"; EmailAddress: Text[250]; var RateLimitDuration: Duration): Boolean

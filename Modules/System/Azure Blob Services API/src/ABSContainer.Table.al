@@ -24,46 +24,46 @@ table 9044 "ABS Container"
         {
             DataClassification = SystemMetadata;
             Caption = 'Last-Modified', Locked = true;
-            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-containers2#response-body';
+            Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210590';
         }
         field(12; "Lease Status"; Text[15])
         {
             DataClassification = SystemMetadata;
             Caption = 'LeaseStatus', Locked = true;
-            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-containers2#response-body';
+            Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210590';
             Access = Internal;
         }
         field(13; "Lease State"; Text[15])
         {
             DataClassification = SystemMetadata;
             Caption = 'LeaseState', Locked = true;
-            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-containers2#response-body';
+            Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210590';
             Access = Internal;
         }
         field(14; "Default Encryption Scope"; Text[50])
         {
             DataClassification = SystemMetadata;
             Caption = 'DefaultEncryptionScope', Locked = true;
-            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-containers2#response-body';
+            Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210590';
             Access = Internal;
         }
         field(15; "Deny Encryption Scope Override"; Boolean)
         {
             DataClassification = SystemMetadata;
             Caption = 'DenyEncryptionScopeOverride', Locked = true;
-            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-containers2#response-body';
+            Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210590';
         }
         field(16; "Has Immutability Policy"; Boolean)
         {
             DataClassification = SystemMetadata;
             Caption = 'HasImmutabilityPolicy', Locked = true;
-            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-containers2#response-body';
+            Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210590';
         }
         field(17; "Has Legal Hold"; Boolean)
         {
             DataClassification = SystemMetadata;
             Caption = 'HasLegalHold', Locked = true;
-            Description = 'Caption matches the corresponding property as defined in https://docs.microsoft.com/en-us/rest/api/storageservices/list-containers2#response-body';
+            Description = 'Caption matches the corresponding property as defined in https://go.microsoft.com/fwlink/?linkid=2210590';
         }
         field(100; "XML Value"; Blob)
         {

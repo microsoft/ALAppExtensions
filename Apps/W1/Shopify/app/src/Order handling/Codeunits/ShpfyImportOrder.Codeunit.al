@@ -17,6 +17,7 @@ codeunit 30161 "Shpfy Import Order"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JHelper: Codeunit "Shpfy Json Helper";
         OrderEvents: Codeunit "Shpfy Order Events";
+        IsTestInProgress: Boolean;
 
     /// <summary> 
     /// Description for Import.
@@ -52,10 +53,21 @@ codeunit 30161 "Shpfy Import Order"
         end;
     end;
 
+    /// <summary>	
+    /// SetTestInProgress.	
+    /// </summary>	
+    /// <param name="TestInProgress">Boolean.</param>	
+    [NonDebuggable]
+    internal procedure SetTestInProgress(TestInProgress: Boolean)
+    begin
+        IsTestInProgress := TestInProgress;
+    end;
+
     local procedure GetLocationIds(var OrderHeader: Record "Shpfy Order Header"; JFulfillmentOrders: JsonArray)
     begin
         if not GetLocationIdsByFulfillment(OrderHeader, JFulfillmentOrders) then
-            GetLocationIdsByLineItems(OrderHeader);
+            if not IsTestInProgress then
+                GetLocationIdsByLineItems(OrderHeader);
     end;
 
     local procedure GetLocationIdsByLineItems(var OrderHeader: Record "Shpfy Order Header")
@@ -397,6 +409,13 @@ codeunit 30161 "Shpfy Import Order"
             exit(Enum::"Shpfy Target Type"::Unknown);
     end;
 
+    [NonDebuggable]
+    internal procedure SetShop(var Shpfyshop: Record "Shpfy Shop")
+    begin
+        Shop := Shpfyshop;
+        CommunicationMgt.SetShop(Shop);
+    end;
+
     local procedure ImportNewOrder(var OrderHeader: Record "Shpfy Order Header"; var RecRef: RecordRef; var JOrder: JsonObject; var PhoneNo: Text)
     var
         JAddress: JsonObject;
@@ -593,7 +612,7 @@ codeunit 30161 "Shpfy Import Order"
         OrderHeader."Processing Method" := ConvertToProcessingMethod(JHelper.GetValueAsText(JOrder, 'processing_method'));
     end;
 
-    local procedure ImportOrder(var OrdersToImport: Record "Shpfy Orders to Import"; var OrderHeader: Record "Shpfy Order Header"; var JOrder: JsonObject)
+    internal procedure ImportOrder(var OrdersToImport: Record "Shpfy Orders to Import"; var OrderHeader: Record "Shpfy Order Header"; var JOrder: JsonObject)
     var
         xOrderHeader: Record "Shpfy Order Header";
         FulFillments: Codeunit "Shpfy Order Fulfillments";

@@ -374,6 +374,101 @@ codeunit 139653 "Replication Mgt Page Tests"
     end;
 
     [Test]
+    procedure ProvideMappingForTableExtension()
+    var
+        MigrationTableMappingRec: Record "Migration Table Mapping";
+        AllObj: Record AllObj;
+        PublishedApplication: Record "Published Application";
+        LibraryRandom: Codeunit "Library - Random";
+        MigrationTableMapping: TestPage "Migration Table Mapping";
+        SourceTableName: Text;
+    begin
+        // [SCENARIO] User can choose to delete all mapping records for a given extension
+
+        // [GIVEN] The intelligent cloud is set up
+        Initialize(true);
+        MigrationTableMappingRec.DeleteAll();
+
+        // [GIVEN] A Table extension
+        AllObj.SetRange("Object Type", AllObj."Object Type"::"TableExtension");
+        if not AllObj.FindFirst() then
+            exit;
+
+        PublishedApplication.SetRange("Package ID", AllObj."App Package ID");
+        PublishedApplication.FindFirst();
+
+        // [WHEN] User defines a table mapping via Migration Table Page
+        MigrationTableMapping.OpenEdit();
+        MigrationTableMapping.New();
+        MigrationTableMapping.TargetTableType.SetValue(MigrationTableMappingRec."Target Table Type"::"Table Extension");
+        MigrationTableMapping."Extension Name".SetValue(PublishedApplication.Name);
+        MigrationTableMapping."Table Name".SetValue(AllObj.TableName);
+        SourceTableName := LibraryRandom.RandText(30);
+        MigrationTableMapping."Source Table Name".SetValue(SourceTableName);
+        MigrationTableMapping.Close();
+
+        // [THEN] A mapping record is created
+        VerifyTableMappingToExtension(MigrationTableMappingRec, PublishedApplication, SourceTableName);
+    end;
+
+    [Test]
+    procedure TestParsingOfTheCALSourceTableNameUnitTest()
+    var
+        DataPerCompany: Boolean;
+        DataPerDatabase: Boolean;
+    begin
+        DataPerCompany := true;
+        DataPerDatabase := false;
+
+        // [SCENARIO] Testing C/AL table parsing for per company tables
+        TestValidateSourceTableName('Customer', 'Customer', DataPerCompany);
+        TestValidateSourceTableName('CRONUS COMPANY$Customer', 'Customer', DataPerCompany);
+        TestValidateSourceTableName('[CRONUS COMPANY$Customer]', 'Customer', DataPerCompany);
+        TestValidateSourceTableName('[dbo].[CRONUS COMPANY$Customer]', 'Customer', DataPerCompany);
+
+        // [SCENARIO] Testing C/AL table parsing for per database tables
+        TestValidateSourceTableName('[My Per Database Table]', 'My Per Database Table', DataPerDatabase);
+        TestValidateSourceTableName('[dbo].[My Per Database Table]', 'My Per Database Table', DataPerDatabase);
+    end;
+
+    [Test]
+    procedure TestParsingOfTheALSourceTableNameUnitTest()
+    var
+        DataPerCompany: Boolean;
+        DataPerDatabase: Boolean;
+    begin
+        DataPerCompany := true;
+        DataPerDatabase := false;
+
+        // [SCENARIO] Testing C/AL table parsing for per company tables
+        TestValidateSourceTableName('Customer$437dbf0e-84ff-417a-965d-ed2bb9650972', 'Customer$437dbf0e-84ff-417a-965d-ed2bb9650972', DataPerCompany);
+        TestValidateSourceTableName('CRONUS COMPANY$Customer$437dbf0e-84ff-417a-965d-ed2bb9650972', 'Customer$437dbf0e-84ff-417a-965d-ed2bb9650972', DataPerCompany);
+        TestValidateSourceTableName('[CRONUS COMPANY$Customer$437dbf0e-84ff-417a-965d-ed2bb9650972]', 'Customer$437dbf0e-84ff-417a-965d-ed2bb9650972', DataPerCompany);
+        TestValidateSourceTableName('[dbo].[CRONUS COMPANY$Customer$437dbf0e-84ff-417a-965d-ed2bb9650972]', 'Customer$437dbf0e-84ff-417a-965d-ed2bb9650972', DataPerCompany);
+
+        // [SCENARIO] Testing C/AL table parsing for per database tables
+        TestValidateSourceTableName('[My Per Database Table$437dbf0e-84ff-417a-965d-ed2bb9650972]', 'My Per Database Table$437dbf0e-84ff-417a-965d-ed2bb9650972', DataPerDatabase);
+        TestValidateSourceTableName('[dbo].[My Per Database Table$437dbf0e-84ff-417a-965d-ed2bb9650972]', 'My Per Database Table$437dbf0e-84ff-417a-965d-ed2bb9650972', DataPerDatabase);
+    end;
+
+    local procedure TestValidateSourceTableName(SourceTableName: Text; ExpectedSourceTableName: Text; ExpectedIsDataPerCompany: Boolean)
+    var
+        MigrationTableMapping: Record "Migration Table Mapping";
+    begin
+        // [WHEN] We invoke the method to parse the name
+        MigrationTableMapping.Validate("Source Table Name", CopyStr(SourceTableName, 1, MaxStrLen(MigrationTableMapping."Source Table Name")));
+
+        // [THEN] The table is parsed correctly
+        VerifyParsingOfTheTable(MigrationTableMapping, ExpectedSourceTableName, ExpectedIsDataPerCompany);
+    end;
+
+    local procedure VerifyParsingOfTheTable(MigrationTableMapping: Record "Migration Table Mapping"; ExpectedSourceTableName: Text; ExpectedIsDataPerCompany: Boolean)
+    begin
+        Assert.AreEqual(ExpectedSourceTableName, MigrationTableMapping."Source Table Name", 'Incorrect Source Table Name');
+        Assert.AreEqual(ExpectedIsDataPerCompany, MigrationTableMapping."Data Per Company", 'Incorrect Data Per Company');
+    end;
+
+    [Test]
     procedure TestIntelligentCloudManagementPagewithUpdateNotification()
     var
         IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
@@ -709,6 +804,16 @@ codeunit 139653 "Replication Mgt Page Tests"
         Assert.IsTrue(IntelligentCloudDetails."Records Copied".Visible(), 'Record count should be visible for non-zero values.');
         Assert.IsTrue(IntelligentCloudDetails."Total Records".Visible(), 'Record count should be visible for non-zero values.');
         IntelligentCloudDetails.Close();
+    end;
+
+    local procedure VerifyTableMappingToExtension(MigrationTableMappingRec: Record "Migration Table Mapping"; PublishedApplication: Record "Published Application"; SourceTableName: Text)
+    begin
+        Assert.IsTrue(MigrationTableMappingRec.FindFirst(), 'The record was not created.');
+        Assert.AreEqual(MigrationTableMappingRec."Target Table Type"::"Table Extension", MigrationTableMappingRec."Target Table Type", 'Target table type is not correct.');
+        Assert.AreEqual(MigrationTableMappingRec."App ID", PublishedApplication.ID, 'App ID is not correct.');
+        Assert.AreEqual(MigrationTableMappingRec."Source Table Name", SourceTableName, 'Source Table name is not correct.');
+        Assert.AreEqual(MigrationTableMappingRec."Table Name", SourceTableName, 'Table Name is not correct.');
+        Assert.AreEqual(MigrationTableMappingRec."Data Per Company", true, 'Data per company  is not correct');
     end;
 
     [ConfirmHandler]

@@ -40,6 +40,6 @@ codeunit 139571 "Shpfy GraphQL Rate Limit Test"
         EndTime := CurrentDateTime;
         WaitTime := EndTime - StartTime;
         // [THEN] Waittime is about 2 sec.
-        LibraryAssert.AreNearlyEqual(2000, WaitTime, 100, 'currentlyAvailable = 50, WaitForRequestAvailable(150)');
+        LibraryAssert.AreNearlyEqual(2000, WaitTime, 200, 'currentlyAvailable = 50, WaitForRequestAvailable(150)');
     end;
 }

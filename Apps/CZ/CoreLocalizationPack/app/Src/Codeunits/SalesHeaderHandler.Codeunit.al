@@ -47,10 +47,7 @@ codeunit 11743 "Sales Header Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterSetFieldsBilltoCustomer', '', false, false)]
     local procedure UpdateBankInfoAndRegNosOnAfterSetFieldsBilltoCustomer(var SalesHeader: Record "Sales Header"; xSalesHeader: Record "Sales Header"; Customer: Record Customer)
     begin
-        if not SalesHeader.IsCreditDocType() and
-           ((SalesHeader."Currency Code" = xSalesHeader."Currency Code") or
-            (SalesHeader."Responsibility Center" <> xSalesHeader."Responsibility Center"))
-        then
+        if not SalesHeader.IsCreditDocType() then
             SalesHeader.Validate("Bank Account Code CZL", SalesHeader.GetDefaulBankAccountNoCZL())
         else
             SalesHeader.Validate("Bank Account Code CZL", Customer."Preferred Bank Account Code");

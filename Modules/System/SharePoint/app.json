@@ -2,7 +2,7 @@
     "id":  "1a7bfa64-c856-49ed-86b0-bb05eb5b2de4",
     "name":  "SharePoint",
     "publisher":  "Microsoft",
-    "version":  "21.2.0.0",
+    "version":  "21.3.0.0",
     "brief":  "Reproduces the SharePoint REST API",
     "description":  "Provides a set of AL functionality and Helper libraries to make use of SharePoint REST API",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -15,31 +15,31 @@
                              "id":  "6936a6a5-43a6-4904-855c-8dc268cd49dd",
                              "name":  "SharePoint Authorization",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "7e3b999e-1182-45d2-8b82-d5127ddba9b2",
                              "name":  "DotNet Aliases",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "1b2efb4b-8c44-4d74-a56f-60646645bb21",
                              "name":  "URI",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "3f95f4c2-037f-44d4-b089-b56ffc01693f",
                              "name":  "OAuth",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          },
                          {
                              "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                              "name":  "BLOB Storage",
                              "publisher":  "Microsoft",
-                             "version":  "21.2.0.0"
+                             "version":  "21.3.0.0"
                          }
                      ],
     "screenshots":  [

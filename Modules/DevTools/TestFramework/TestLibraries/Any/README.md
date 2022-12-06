@@ -32,12 +32,12 @@ This module must not be used outside the test code.
 procedure IntegerInRange(MaxValue: Integer): Integer
 ```
 #### Parameters
-*MaxValue ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MaxValue ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Upper value for the number, if the number is negative 1 is returned.
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 Pseudo-random integer value
 ### IntegerInRange (Method) <a name="IntegerInRange"></a> 
@@ -50,16 +50,16 @@ Pseudo-random integer value
 procedure IntegerInRange(MinValue: Integer; MaxValue: Integer): Integer
 ```
 #### Parameters
-*MinValue ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MinValue ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Lower value for the number
 
-*MaxValue ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MaxValue ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Upper value for the number
 
 #### Return Value
-*[Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type)*
+*[Integer](https://go.microsoft.com/fwlink/?linkid=2209956)*
 
 Pseudo-random integer value
 ### DecimalInRange (Method) <a name="DecimalInRange"></a> 
@@ -72,16 +72,16 @@ Pseudo-random integer value
 procedure DecimalInRange(MaxValue: Integer; DecimalPlaces: Integer): Decimal
 ```
 #### Parameters
-*MaxValue ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MaxValue ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Upper value for the number
 
-*DecimalPlaces ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DecimalPlaces ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Number of decimal places
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 Pseudo-random decimal value
 ### DecimalInRange (Method) <a name="DecimalInRange"></a> 
@@ -94,20 +94,20 @@ Pseudo-random decimal value
 procedure DecimalInRange(MinValue: Integer; MaxValue: Integer; DecimalPlaces: Integer): Decimal
 ```
 #### Parameters
-*MinValue ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MinValue ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Lower value for the number
 
-*MaxValue ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MaxValue ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Upper value for the number
 
-*DecimalPlaces ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DecimalPlaces ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Number of decimal places
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 Pseudo-random decimal value
 ### DecimalInRange (Method) <a name="DecimalInRange"></a> 
@@ -120,20 +120,20 @@ Pseudo-random decimal value
 procedure DecimalInRange(MinValue: Decimal; MaxValue: Decimal; DecimalPlaces: Integer): Decimal
 ```
 #### Parameters
-*MinValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*MinValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 Lower value for the number
 
-*MaxValue ([Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type))* 
+*MaxValue ([Decimal](https://go.microsoft.com/fwlink/?linkid=2210240))* 
 
 Upper value for the number
 
-*DecimalPlaces ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DecimalPlaces ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Number of decimal places
 
 #### Return Value
-*[Decimal](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/decimal/decimal-data-type)*
+*[Decimal](https://go.microsoft.com/fwlink/?linkid=2210240)*
 
 Pseudo-random decimal value
 ### DateInRange (Method) <a name="DateInRange"></a> 
@@ -146,12 +146,12 @@ Pseudo-random decimal value
 procedure DateInRange(MaxNumberOfDays: Integer): Date
 ```
 #### Parameters
-*MaxNumberOfDays ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MaxNumberOfDays ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Max number of days for date
 
 #### Return Value
-*[Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type)*
+*[Date](https://go.microsoft.com/fwlink/?linkid=2210124)*
 
 Pseudo-random Date in range
 ### DateInRange (Method) <a name="DateInRange"></a> 
@@ -164,16 +164,16 @@ Pseudo-random Date in range
 procedure DateInRange(StartingDate: Date; MaxNumberOfDays: Integer): Date
 ```
 #### Parameters
-*StartingDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*StartingDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 Date to calculate the values from
 
-*MaxNumberOfDays ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MaxNumberOfDays ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Max number of days for date
 
 #### Return Value
-*[Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type)*
+*[Date](https://go.microsoft.com/fwlink/?linkid=2210124)*
 
 Pseudo-random Date in range
 ### DateInRange (Method) <a name="DateInRange"></a> 
@@ -186,20 +186,20 @@ Pseudo-random Date in range
 procedure DateInRange(StartingDate: Date; MinNumberOfDays: Integer; MaxNumberOfDays: Integer): Date
 ```
 #### Parameters
-*StartingDate ([Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type))* 
+*StartingDate ([Date](https://go.microsoft.com/fwlink/?linkid=2210124))* 
 
 Date to calculate the values from
 
-*MinNumberOfDays ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MinNumberOfDays ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Minimum number of days from the StartingDate
 
-*MaxNumberOfDays ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*MaxNumberOfDays ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Max number of days from the StartingDate
 
 #### Return Value
-*[Date](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/date/date-data-type)*
+*[Date](https://go.microsoft.com/fwlink/?linkid=2210124)*
 
 Pseudo-random Date in range
 ### AlphabeticText (Method) <a name="AlphabeticText"></a> 
@@ -212,12 +212,12 @@ Pseudo-random Date in range
 procedure AlphabeticText(Length: Integer): Text
 ```
 #### Parameters
-*Length ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Length ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Desired length of the text
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 Pseudo-random alphabetic text
 ### AlphanumericText (Method) <a name="AlphanumericText"></a> 
@@ -230,12 +230,12 @@ Pseudo-random alphabetic text
 procedure AlphanumericText(Length: Integer): Text
 ```
 #### Parameters
-*Length ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Length ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Desired length of the text
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 A pseudo-random alphanumeric text
 ### UnicodeText (Method) <a name="UnicodeText"></a> 
@@ -248,12 +248,12 @@ A pseudo-random alphanumeric text
 procedure UnicodeText(Length: Integer)String: Text
 ```
 #### Parameters
-*Length ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*Length ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Desired length of the text
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 Pseudo-random Unicode text
 ### Email (Method) <a name="Email"></a> 
@@ -266,7 +266,7 @@ Pseudo-random Unicode text
 procedure Email(): Text
 ```
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 Pseudo-random Email
 ### Email (Method) <a name="Email"></a> 
@@ -279,16 +279,16 @@ Pseudo-random Email
 procedure Email(LocalPartLength: Integer; DomainLength: Integer): Text
 ```
 #### Parameters
-*LocalPartLength ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*LocalPartLength ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Desired length of the local-part
 
-*DomainLength ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*DomainLength ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 Desired length of the domain
 
 #### Return Value
-*[Text](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/text/text-data-type)*
+*[Text](https://go.microsoft.com/fwlink/?linkid=2210031)*
 
 Pseudo-random Email text
 ### GuidValue (Method) <a name="GuidValue"></a> 
@@ -302,7 +302,7 @@ Pseudo-random Email text
 procedure GuidValue(): Guid
 ```
 #### Return Value
-*[Guid](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/guid/guid-data-type)*
+*[Guid](https://go.microsoft.com/fwlink/?linkid=2210122)*
 
 Random Guid
 ### SetSeed (Method) <a name="SetSeed"></a> 
@@ -316,7 +316,7 @@ Random Guid
 procedure SetSeed(NewSeed: Integer)
 ```
 #### Parameters
-*NewSeed ([Integer](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/methods-auto/integer/integer-data-type))* 
+*NewSeed ([Integer](https://go.microsoft.com/fwlink/?linkid=2209956))* 
 
 New seed to be used.
 
