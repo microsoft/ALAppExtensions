@@ -12,8 +12,6 @@ if($app)
     $parameters["Features"] += @("lcgtranslationfile", "generateCaptions")    
 }
 
-$parameters["preProcessorSymbols"] += @("CLEAN15","CLEAN16","CLEAN17","CLEAN18","CLEAN19","CLEAN20","CLEAN21","CLEAN22")    
-
 $appFile = Compile-AppInBcContainer @parameters
 
 $branchName = $ENV:GITHUB_REF_NAME
