@@ -14,7 +14,7 @@ function GenerateManifest
     $Owners
 )
 {
-    [xml] $template = Get-Content "$PSScriptRoot\ALAppExtensions.nuspec"
+    [xml] $template = Get-Content "$PSScriptRoot\ALAppExtensions.template.nuspec"
 
     $template.package.metadata.id = $PackageId
     $template.package.metadata.version = $Version
