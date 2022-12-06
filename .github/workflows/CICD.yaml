@@ -261,7 +261,7 @@ jobs:
         project: ${{ fromJson(needs.Initialization.outputs.projects) }}
         buildMode: [Standard, CLEAN]
       fail-fast: false
-    name: Build ${{ matrix.project }}
+    name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
     outputs:
       AppsArtifactsName: ${{ steps.calculateArtifactNames.outputs.AppsArtifactsName }}
       TestAppsArtifactsName: ${{ steps.calculateArtifactNames.outputs.TestAppsArtifactsName }}
