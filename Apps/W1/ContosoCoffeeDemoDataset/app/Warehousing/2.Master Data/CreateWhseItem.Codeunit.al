@@ -110,7 +110,7 @@ codeunit 4793 "Create Whse Item"
         if GenProdPostingGr <> '' then
             Item.Validate("Gen. Prod. Posting Group", GenProdPostingGr)
         else
-            Item.Validate("Gen. Prod. Posting Group", WhseDemoDataSetup."Resale Code");
+            Item.Validate("Gen. Prod. Posting Group", WhseDemoDataSetup."Retail Code");
 
         Item."Costing Method" := CostingMethod;
 
@@ -141,11 +141,11 @@ codeunit 4793 "Create Whse Item"
         CreateUnitofMeasure(XPALLETTok, XPALLETDescTok, 'PF', '');
         CreateUnitofMeasure(XPCSTok, XPCSDescTok, 'EA', '');
 
-        InsertItem(WhseDemoDataSetup."Main Item No.", XBeansDesc1Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
-        InsertItem(WhseDemoDataSetup."Complex Item No.", XBeansDesc2Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
-        InsertItem('WRB-1010', XBeansDesc3Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
-        InsertItem('WRB-1011', XBeansDesc4Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
-        InsertItem('WRB-1012', XBeansDesc5Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Resale Code", WhseDemoDataSetup."Retail Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
+        InsertItem(WhseDemoDataSetup."Main Item No.", XBeansDesc1Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Retail Code", WhseDemoDataSetup."Resale Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
+        InsertItem(WhseDemoDataSetup."Complex Item No.", XBeansDesc2Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Retail Code", WhseDemoDataSetup."Resale Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
+        InsertItem('WRB-1010', XBeansDesc3Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Retail Code", WhseDemoDataSetup."Resale Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
+        InsertItem('WRB-1011', XBeansDesc4Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Retail Code", WhseDemoDataSetup."Resale Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
+        InsertItem('WRB-1012', XBeansDesc5Tok, AdjustWhseDemoData.AdjustPrice(15), AdjustWhseDemoData.AdjustPrice(10), WhseDemoDataSetup."Retail Code", WhseDemoDataSetup."Resale Code", Enum::"Costing Method"::FIFO, XPCSTok, XBEANSTok, WhseDemoDataFiles.GetNoPicture(), '');
 
         CreateItemUnitofMeasure(WhseDemoDataSetup."Main Item No.", XBAGTok, 176, 0, 16, 24, 24, 9216, 132);
         CreateItemUnitofMeasure(WhseDemoDataSetup."Main Item No.", XPALLETTok, 1763, 0, 48, 48, 40, 92160, 1323);

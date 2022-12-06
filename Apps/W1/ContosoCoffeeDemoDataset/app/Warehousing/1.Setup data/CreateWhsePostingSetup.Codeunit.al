@@ -12,6 +12,7 @@ codeunit 4788 "Create Whse Posting Setup"
         XDomesticTxt: Label 'Domestic customers and vendors', MaxLength = 50;
         XLargeGBGTxt: Label 'Large customers', MaxLength = 50;
         XRetailTxt: Label 'Retail Items', MaxLength = 50;
+        XResaleTxt: Label 'Resale Items', MaxLength = 50;
         XSeriesInternalMovementNosDescTok: Label 'Internal Movement', MaxLength = 100;
         XSeriesInternalMovementNosEndTok: Label 'RINTM999999', MaxLength = 20;
         XSeriesInternalMovementNosStartTok: Label 'RINTM000001', MaxLength = 20;
@@ -98,6 +99,7 @@ codeunit 4788 "Create Whse Posting Setup"
         XSeriesWhseShipNosTok: Label 'WMS-SHIP', MaxLength = 20;
         XSmallGBGTxt: Label 'Small customers', MaxLength = 50;
         XVATIdentifierTok: Label 'VAT25', MaxLength = 20;
+        XVATIdentifierDescTok: Label 'Standard VAT (25%)', MaxLength = 20;
         XVATSetupDescTok: Label 'Setup for %1 / %2', MaxLength = 100, Comment = '%1 is the VAT Bus. Posting Group Code, %2 is the VAT Prod. Posting Group Code';
 
 
@@ -143,8 +145,8 @@ codeunit 4788 "Create Whse Posting Setup"
         InsertGenBusPostingGroup(WhseDemoDataSetup."Vend. Gen. Bus. Posting Group", XDomesticTxt, WhseDemoDataSetup."Domestic Code");
 
         if WhseDemoDataSetup."Company Type" = WhseDemoDataSetup."Company Type"::VAT then
-            InsertVATProdPostingGroup(WhseDemoDataSetup."Retail Code", XRetailTxt);
-        InsertGenProdPostingGroup(WhseDemoDataSetup."Resale Code", XRetailTxt, WhseDemoDataSetup."Retail Code");
+            InsertVATProdPostingGroup(WhseDemoDataSetup."VAT Prod. Posting Group Code", XVATIdentifierDescTok);
+        InsertGenProdPostingGroup(WhseDemoDataSetup."Retail Code", XRetailTxt, WhseDemoDataSetup."VAT Prod. Posting Group Code");
 
         InsertCustomerPostingGroup(WhseDemoDataSetup."S. Cust. Posting Group", WhseDemoAccount.CustDomestic());
         InsertCustomerPostingGroup(WhseDemoDataSetup."L. Cust. Posting Group", WhseDemoAccount.CustDomestic());
@@ -154,9 +156,15 @@ codeunit 4788 "Create Whse Posting Setup"
 
     local procedure CreatePostingSetups()
     begin
+        InsertGeneralPostingSetup('', WhseDemoDataSetup."Retail Code", WhseDemoAccount.SalesDomestic(), WhseDemoAccount.PurchDomestic());
+
+        InsertGeneralPostingSetup(WhseDemoDataSetup."S. Cust. Posting Group", WhseDemoDataSetup."Retail Code", WhseDemoAccount.SalesDomestic(), WhseDemoAccount.PurchDomestic());
+        InsertGeneralPostingSetup(WhseDemoDataSetup."L. Cust. Posting Group", WhseDemoDataSetup."Retail Code", WhseDemoAccount.SalesDomestic(), WhseDemoAccount.PurchDomestic());
+
         InsertGeneralPostingSetup(WhseDemoDataSetup."Domestic Code", WhseDemoDataSetup."Retail Code", WhseDemoAccount.SalesDomestic(), WhseDemoAccount.PurchDomestic());
+
         if WhseDemoDataSetup."Company Type" = WhseDemoDataSetup."Company Type"::VAT then
-            InsertVATPostingSetup(WhseDemoDataSetup."Domestic Code", WhseDemoDataSetup."Retail Code");
+            InsertVATPostingSetup(WhseDemoDataSetup."Domestic Code", WhseDemoDataSetup."VAT Prod. Posting Group Code");
     end;
 
     local procedure InsertGLAccount("No.": Code[20]; AccountType: Enum "G/L Account Type"; "Income/Balance": Enum "G/L Account Income/Balance")
@@ -359,7 +367,7 @@ codeunit 4788 "Create Whse Posting Setup"
     local procedure CreateInventorySetups(ShouldRunInsertTriggers: Boolean)
     begin
         DoInsertTriggers := ShouldRunInsertTriggers;
-        CreateInventoryPostingGroup(WhseDemoDataSetup."Resale Code", 'Resale items');
+        CreateInventoryPostingGroup(WhseDemoDataSetup."Resale Code", XResaleTxt);
 
         CreateInventorySetup('', false, XSeriesItemNosTok, false, XSeriesTransferOrderNosTok, XSeriesPostedTransferShptNosTok, XSeriesPostedTransferRcptNosTok,
             XSeriesInventoryPutAwayNosTok, XSeriesInventoryPickNosTok, XSeriesPostedInvtPutAwayNosTok, XSeriesPostedInvtPickNosTok,
@@ -416,7 +424,7 @@ codeunit 4788 "Create Whse Posting Setup"
         VATBusinessPostingGroup.Insert(DoInsertTriggers);
     end;
 
-    local procedure InsertVATProdPostingGroup(ProductGroupCode: Code[10]; ProductGroupDescriptionText: Text[100])
+    local procedure InsertVATProdPostingGroup(ProductGroupCode: Code[20]; ProductGroupDescriptionText: Text[100])
     var
         VATProductPostingGroup: Record "VAT Product Posting Group";
     begin
@@ -430,22 +438,22 @@ codeunit 4788 "Create Whse Posting Setup"
         VATProductPostingGroup.Insert(DoInsertTriggers);
     end;
 
-    local procedure InsertVATPostingSetup(BusinessGroupCode: Code[10]; ProductGroupCode: Code[10])
+    local procedure InsertVATPostingSetup(VATBusinessGroupCode: Code[20]; VATProductGroupCode: Code[20])
     var
         VATPostingSetup: Record "VAT Posting Setup";
         IsHandled: Boolean;
     begin
-        if VATPostingSetup.Get(BusinessGroupCode, ProductGroupCode) then
+        if VATPostingSetup.Get(VATBusinessGroupCode, VATProductGroupCode) then
             exit;
 
-        OnBeforeCreateVATPostingSetup(BusinessGroupCode, ProductGroupCode, IsHandled);
+        OnBeforeCreateVATPostingSetup(VATBusinessGroupCode, VATProductGroupCode, IsHandled);
         if IsHandled then
             exit;
 
         VATPostingSetup.Init();
-        VATPostingSetup."VAT Bus. Posting Group" := BusinessGroupCode;
-        VATPostingSetup."VAT Prod. Posting Group" := ProductGroupCode;
-        VATPostingSetup.Description := StrSubstNo(XVATSetupDescTok, BusinessGroupCode, ProductGroupCode);
+        VATPostingSetup."VAT Bus. Posting Group" := VATBusinessGroupCode;
+        VATPostingSetup."VAT Prod. Posting Group" := VATProductGroupCode;
+        VATPostingSetup.Description := StrSubstNo(XVATSetupDescTok, VATBusinessGroupCode, VATProductGroupCode);
         VATPostingSetup."Sales VAT Account" := WhseDemoAccount.SalesVAT();
         VATPostingSetup."Purchase VAT Account" := WhseDemoAccount.PurchaseVAT();
         VATPostingSetup."VAT Identifier" := XVATIdentifierTok;
@@ -524,7 +532,7 @@ codeunit 4788 "Create Whse Posting Setup"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeCreateVATPostingSetup(var BusinessGroupCode: Code[10]; ProductGroupCode: Code[10]; var IsHandled: Boolean)
+    local procedure OnBeforeCreateVATPostingSetup(var BusinessGroupCode: Code[20]; ProductGroupCode: Code[20]; var IsHandled: Boolean)
     begin
     end;
 

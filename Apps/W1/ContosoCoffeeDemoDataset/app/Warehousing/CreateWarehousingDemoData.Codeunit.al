@@ -52,11 +52,11 @@ codeunit 4799 "Create Warehousing Demo Data"
 
         WhseDemoDataSetup.Init();
         WhseDemoDataSetup.Validate("Starting Year", Date2DMY(Today, 3) - 1);
-        WhseDemoDataSetup."Auto Create Whse. Employees" := true;
 
         WhseDemoDataSetup."Resale Code" := XRESALETok;
         WhseDemoDataSetup."Retail Code" := XRETAILTok;
         WhseDemoDataSetup."Domestic Code" := XDOMESTICTok;
+        WhseDemoDataSetup."VAT Prod. Posting Group Code" := XVATPRODUCTTok;
         WhseDemoDataSetup."S. Customer No." := XSMALLCUSTTok;
         WhseDemoDataSetup."S. Cust. Posting Group" := XSMALLCUSTPGTok;
         WhseDemoDataSetup."SCust. Gen. Bus. Posting Group" := XSMALLCUSTGBPGTok;
@@ -68,8 +68,8 @@ codeunit 4799 "Create Warehousing Demo Data"
         WhseDemoDataSetup."Vend. Gen. Bus. Posting Group" := XVENDORGBPGTok;
         WhseDemoDataSetup."Main Item No." := XMAINITEMTok;
         WhseDemoDataSetup."Complex Item No." := XCOMPLEXITEMTok;
-        WhseDemoDataSetup."Location Basic" := XLOCSIMPLETok;
-        WhseDemoDataSetup."Location Simple Logistics" := XLOCBASICTok;
+        WhseDemoDataSetup."Location Basic" := XLOCBASICTok;
+        WhseDemoDataSetup."Location Simple Logistics" := XLOCSIMPLETok;
         WhseDemoDataSetup."Location Advanced Logistics" := XLOCADVANCEDTok;
 
         WhseDemoDataSetup.Insert();
@@ -120,6 +120,7 @@ codeunit 4799 "Create Warehousing Demo Data"
         XRESALETok: Label 'RESALE', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         XRETAILTok: Label 'RETAIL', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         XDOMESTICTok: Label 'DOMESTIC', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
+        XVATPRODUCTTok: Label 'VAT25', MaxLength = 10, Comment = 'Must be the same as Standard and Eval demodata';
         XSMALLCUSTTok: Label '71000', MaxLength = 20;
         XSMALLCUSTPGTok: Label 'SMALL', MaxLength = 10;
         XSMALLCUSTGBPGTok: Label 'SMALL', MaxLength = 10;

@@ -57,6 +57,12 @@ table 4763 "Whse Demo Data Setup"
             Caption = 'Resale - Inventory Posting Group';
             TableRelation = "Inventory Posting Group";
         }
+        field(36; "VAT Prod. Posting Group Code"; code[20])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'VAT Prod. Posting Group Code';
+            TableRelation = "VAT Product Posting Group";
+        }
 
         field(38; "Price Factor"; Decimal)
         {
