@@ -14,7 +14,7 @@ function GenerateManifest
     $Owners
 )
 {
-    [xml] $template = Get-Content "$PSScriptRoot\ALAppExtensions.nuspec"
+    [xml] $template = Get-Content "$PSScriptRoot\ALAppExtensions.template.nuspec"
 
     $template.package.metadata.id = $PackageId
     $template.package.metadata.version = $Version
@@ -67,7 +67,7 @@ if ($type -eq 'CD')
 }
 
 # Extract version from the published folders (naming convention)
-$packageVersion = $appsFolder.SubString($appsFolder.LastIndexOf("-Apps-") + "-Apps-".Length) #version is right after '-Apps-'
+$packageVersion = $appsFolder -replace ".*-Apps-","" #version is right after '-Apps-'
 
 $manifest = GenerateManifest `
             -PackageId $packageId `
@@ -83,12 +83,9 @@ Write-Host "Package folder: $packageFolder" -ForegroundColor Magenta
 
 try 
 {
-    $outputDirectory = Join-Path $env:GITHUB_WORKSPACE 'out'
-    New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
-
     # Create folder to hold the apps
     New-Item -Path "$packageFolder/Apps" -ItemType Directory -Force | Out-Null
-
+    
     $appsFolder, $testAppsFolder | ForEach-Object { 
         $appsToPackage = Join-Path $_ 'Package'
         
@@ -97,10 +94,16 @@ try
             Copy-Item -Path "$appsToPackage/*" -Destination "$packageFolder/Apps" -Recurse -Force
         }
     }
+
+    # Copy over the license file
+    Copy-Item -Path "$env:GITHUB_WORKSPACE/LICENSE" -Destination "$packageFolder" -Force
     
     #Create .nuspec file
     $manifestFilePath = (Join-Path $packageFolder 'manifest.nuspec')
     $manifest.Save($manifestFilePath)
+    
+    $outputDirectory = Join-Path $env:GITHUB_WORKSPACE 'out'
+    New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
 
     Write-Host "Download nuget CLI" -ForegroundColor Magenta
     Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile $outputDirectory/nuget.exe
