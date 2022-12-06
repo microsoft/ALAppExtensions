@@ -15,7 +15,7 @@ codeunit 1922 "Camera Impl."
         UnsupportedFieldTypeErr: Label 'The field type %1 is not supported.', Comment = '%1 - The type of the field', Locked = true;
 #endif        
 
-    procedure GetPicture(PictureInStream: InStream; Quality: Integer; var PictureName: Text): Boolean
+    procedure GetPicture(Quality: Integer; PictureInStream: InStream; var PictureName: Text): Boolean
     var
         WasPictureTaken: Boolean;
     begin
@@ -55,7 +55,7 @@ codeunit 1922 "Camera Impl."
         if not (MediaFieldRef.Type in [FieldType::Media, FieldType::MediaSet]) then
             Error(UnsupportedFieldTypeErr, MediaFieldRef.Type);
 
-        if not GetPicture(PictureInStream, PictureName) then
+        if not GetPicture(100, PictureInStream, PictureName) then
             exit(false);
 
         if not IsNullGuid(MediaFieldRef.Value) then

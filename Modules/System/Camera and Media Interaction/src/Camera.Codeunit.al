@@ -24,7 +24,7 @@ codeunit 1907 Camera
         Quality: Decimal;
     begin
         Quality := 100; // 100%
-        exit(CameraImpl.GetPicture(PictureInStream, Quality, PictureName));
+        exit(CameraImpl.GetPicture(Quality, PictureInStream, PictureName));
     end;
 
     /// <summary>
@@ -37,7 +37,7 @@ codeunit 1907 Camera
     /// <error>The picture quality must be in the range from 0 to 100.</error>
     procedure GetPicture(Quality: Integer; PictureInStream: InStream; var PictureName: Text): Boolean
     begin
-        exit(CameraImpl.GetPicture(PictureInStream, Quality, PictureName));
+        exit(CameraImpl.GetPicture(Quality, PictureInStream, PictureName));
     end;
 
 #if not CLEAN20
