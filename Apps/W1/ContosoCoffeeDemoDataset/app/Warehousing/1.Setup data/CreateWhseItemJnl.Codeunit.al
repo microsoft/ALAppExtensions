@@ -13,9 +13,6 @@ codeunit 4789 "Create Whse Item Jnl"
 
         CreateItemJournal();
         OnAfterCreatedItemJournal();
-
-        CreateWhseItemJournal();
-        OnAfterCreatedWhseItemJournal();
     end;
 
     local procedure CreateItemJournal()
@@ -29,20 +26,6 @@ codeunit 4789 "Create Whse Item Jnl"
         ItemJnlManagement.TemplateSelection(PAGE::"Item Journal", 0, false, ItemJournalLine, JnlSelected);
         if ItemJournalTemplate.FindFirst() then
             ItemJnlManagement.CheckTemplateName(ItemJournalTemplate.Name, ItemJnlBatchName);
-    end;
-
-    local procedure CreateWhseItemJournal()
-    var
-        WarehouseJournalLine: Record "Warehouse Journal Line";
-        WarehouseJournalTemplate: Record "Warehouse Journal Template";
-        WhseJnlBatchName: Code[10];
-    begin
-        WarehouseJournalLine.TemplateSelection(PAGE::"Whse. Item Journal", "Warehouse Journal Template Type"::Item, WarehouseJournalLine);
-        if WarehouseJournalTemplate.FindFirst() then begin
-            WarehouseJournalLine.CheckTemplateName(WarehouseJournalTemplate.Name, WhseDemoDataSetup."Location Basic", WhseJnlBatchName);
-            WarehouseJournalLine.CheckTemplateName(WarehouseJournalTemplate.Name, WhseDemoDataSetup."Location Simple Logistics", WhseJnlBatchName);
-            WarehouseJournalLine.CheckTemplateName(WarehouseJournalTemplate.Name, WhseDemoDataSetup."Location Advanced Logistics", WhseJnlBatchName);
-        end;
     end;
 
     [IntegrationEvent(false, false)]
