@@ -425,7 +425,7 @@ jobs:
         if: env.WorkflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-Apps'
+          name: 'thisbuild-${{ matrix.project }}-Apps-${{ matrix.buildMode }}'
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -434,7 +434,7 @@ jobs:
         if: env.WorkflowDepth > 1
         uses: actions/upload-artifact@v3
         with:
-          name: 'thisbuild-${{ matrix.project }}-TestApps'
+          name: 'thisbuild-${{ matrix.project }}-TestApps-${{ matrix.buildMode }}'
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
           if-no-files-found: ignore
           retention-days: 1
@@ -465,7 +465,7 @@ jobs:
         uses: actions/upload-artifact@v3
         #if: github.ref_name == 'main' || startswith(github.ref_name, 'release/')
         with:
-          name: ${{ env.appsArtifactsName }}
+          name: '${{ env.appsArtifactsName }}-${{ matrix.buildMode }}'
           path: '${{ matrix.project }}/.buildartifacts/Apps/'
           if-no-files-found: ignore
 
@@ -473,7 +473,7 @@ jobs:
         uses: actions/upload-artifact@v3
         #if: github.ref_name == 'main' || startswith(github.ref_name, 'release/')
         with:
-          name: ${{ env.dependenciesArtifactsName }}
+          name: '${{ env.dependenciesArtifactsName }}-${{ matrix.buildMode }}'
           path: '${{ matrix.project }}/.buildartifacts/Dependencies/'
           if-no-files-found: ignore
 
@@ -481,7 +481,7 @@ jobs:
         uses: actions/upload-artifact@v3
         #if: github.ref_name == 'main' || startswith(github.ref_name, 'release/')
         with:
-          name: ${{ env.testAppsArtifactsName }}
+          name: '${{ env.testAppsArtifactsName }}-${{ matrix.buildMode }}'
           path: '${{ matrix.project }}/.buildartifacts/TestApps/'
           if-no-files-found: ignore
 
