@@ -15,7 +15,7 @@ codeunit 1922 "Camera Impl."
         UnsupportedFieldTypeErr: Label 'The field type %1 is not supported.', Comment = '%1 - The type of the field', Locked = true;
 #endif        
 
-    procedure GetPicture(PictureInStream: InStream; var PictureName: Text): Boolean
+    procedure GetPicture(PictureInStream: InStream; Quality: Integer; var PictureName: Text): Boolean
     var
         WasPictureTaken: Boolean;
     begin
@@ -24,7 +24,7 @@ codeunit 1922 "Camera Impl."
 
         Clear(Camera);
 
-        Camera.SetQuality(100); // 100%
+        Camera.SetQuality(Quality);
         Camera.RunModal();
         if Camera.HasPicture() then begin
             Camera.GetPicture(PictureInStream);
