@@ -4,5 +4,6 @@
     "bcContainerHelperVersion":  "dev",
     "runs-on":  "windows-latest",
     "cacheImageName":  "",
-    "UsePsSession":  false
+    "UsePsSession":  false,
+    "buildModes": ["Standard", "CLEAN"]
 }
