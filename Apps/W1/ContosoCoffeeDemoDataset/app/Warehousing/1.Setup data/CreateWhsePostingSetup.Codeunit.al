@@ -124,6 +124,8 @@ codeunit 4788 "Create Whse Posting Setup"
     begin
         WhseDemoAccount.ReturnAccountKey(true);
 
+        InsertGLAccount(WhseDemoAccount.Resale(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
+        InsertGLAccount(WhseDemoAccount.ResaleInterim(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
         InsertGLAccount(WhseDemoAccount.CustDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
         InsertGLAccount(WhseDemoAccount.VendDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Balance Sheet");
         InsertGLAccount(WhseDemoAccount.SalesDomestic(), Enum::"G/L Account Type"::Posting, Enum::"G/L Account Income/Balance"::"Income Statement");
@@ -212,9 +214,11 @@ codeunit 4788 "Create Whse Posting Setup"
         GenBusinessPostingGroup.Init();
         GenBusinessPostingGroup.Validate(Code, Code);
         GenBusinessPostingGroup.Validate(Description, Description);
-        GenBusinessPostingGroup."Def. VAT Bus. Posting Group" := DefVATBusPostingGroup;
-        if DefVATBusPostingGroup <> '' then
-            GenBusinessPostingGroup."Auto Insert Default" := true;
+        if WhseDemoDataSetup."Company Type" = WhseDemoDataSetup."Company Type"::VAT then begin
+            GenBusinessPostingGroup."Def. VAT Bus. Posting Group" := DefVATBusPostingGroup;
+            if DefVATBusPostingGroup <> '' then
+                GenBusinessPostingGroup."Auto Insert Default" := true;
+        end;
 
         OnBeforeGenBusinessPostingGroupInsert(GenBusinessPostingGroup);
         GenBusinessPostingGroup.Insert(DoInsertTriggers);
