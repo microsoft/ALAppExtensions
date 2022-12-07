@@ -260,7 +260,7 @@ jobs:
     strategy:
       matrix:
         project: ${{ fromJson(needs.Initialization.outputs.projects) }}
-        buildMode: [Standard, CLEAN]
+        buildMode: ${{ fromJson(needs.Initialization.outputs.buildMode) }}
       fail-fast: false
     name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
     outputs:
