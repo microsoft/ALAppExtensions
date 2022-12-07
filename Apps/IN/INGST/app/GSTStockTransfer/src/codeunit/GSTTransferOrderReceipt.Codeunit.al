@@ -188,6 +188,9 @@ codeunit 18390 "GST Transfer Order Receipt"
         CustomDutyBase: Boolean;
     begin
         FirstExecution := true;
+        if TransReceiptHeaderNo <> TransferReceiptHeader."No." then
+            TransReceiptHeaderNo := TransferReceiptHeader."No.";
+
         //Post GL Entries
         TempTransferBufferfinal.Reset();
         if TempTransferBufferfinal.FindLast() then
@@ -197,7 +200,7 @@ codeunit 18390 "GST Transfer Order Receipt"
                 GSTPostingBufferforTransferDocument(CustomDutyBase, TransferHeader);
                 // Post Unrealized Profit Account Entries
                 if not (TempTransferBufferfinal."Gen. Bus. Posting Group" <> '') then
-                    PostUnrealizedProfitAccountEntries(TransferHeader, TempTransferBufferfinal);
+                    PostUnrealizedProfitAccountEntries(TransferHeader, TempTransferBufferfinal, TransferReceiptHeader);
 
                 // Amount loaded on inventory
                 if (TempTransferBufferfinal."Amount Loaded on Inventory" <> 0) or (TempTransferBufferfinal."GST Amount Loaded on Inventory" <> 0) then
@@ -300,7 +303,7 @@ codeunit 18390 "GST Transfer Order Receipt"
             RunGenJnlPostLine(GenJnlLine);
     end;
 
-    local procedure PostUnrealizedProfitAccountEntries(TransferHeader: Record "Transfer Header"; TempTransferBufferfinal: Record "Transfer Buffer")
+    local procedure PostUnrealizedProfitAccountEntries(TransferHeader: Record "Transfer Header"; TempTransferBufferfinal: Record "Transfer Buffer"; TransferReceiptHeader: Record "Transfer Receipt Header")
     var
         InventoryPostingSetup: Record "Inventory Posting Setup";
         SourceCodeSetup: Record "Source Code Setup";
@@ -314,7 +317,7 @@ codeunit 18390 "GST Transfer Order Receipt"
         GenJnlLine.Init();
         GenJnlLine."Posting Date" := TransferHeader."Posting Date";
         GenJnlLine."Document Date" := TransferHeader."Posting Date";
-        GenJnlLine."Document No." := TransReceiptHeaderNo;
+        GenJnlLine."Document No." := TransferReceiptHeader."No.";
         GenJnlLine."Document Type" := GenJnlLine."Document Type"::Invoice;
         if (TempTransferBufferfinal."Gen. Bus. Posting Group" <> '') then
             GenJnlLine."Account No." := GetIGSTImportAccountNo(TempTransferBufferfinal."Location Code")

@@ -33,21 +33,15 @@ page 8897 "Email Scenario Attach Setup"
                     Caption = 'File Name';
                     ToolTip = 'Specifies the name of the attachment';
                     Editable = false;
-
-                    trigger OnDrillDown()
-                    var
-                        EmailEditor: Codeunit "Email Editor";
-                    begin
-                        EmailEditor.DownloadAttachment(Rec."Email Attachment".MediaId, Rec."Attachment Name");
-                        CurrPage.Update(false);
-                    end;
                 }
+
                 field("File Attachments Status"; Rec.AttachmentDefaultStatus)
                 {
                     ApplicationArea = All;
                     Caption = 'Attach by Default';
                     ToolTip = 'Specifies whether to automatically attach the file to emails sent from processes related to this scenario. You can manually attach files that are not default.';
                 }
+
                 field(Scenario; Rec.Scenario)
                 {
                     ApplicationArea = All;
@@ -88,6 +82,7 @@ page 8897 "Email Scenario Attach Setup"
                     FeatureTelemetry.LogUsage('0000CTF', 'Email Default Attachments', 'Set up attachments for scenarios');
                 end;
             }
+
             action(SetScenarioAndAddFile)
             {
                 ApplicationArea = All;
@@ -117,6 +112,26 @@ page 8897 "Email Scenario Attach Setup"
                         FeatureTelemetry.LogUsage('0000IQT', 'Email Default Attachments', 'Set up attachments for scenarios');
                         Rec.SetCurrentKey(Scenario);
                     end;
+                end;
+            }
+
+            action(Download)
+            {
+                ApplicationArea = All;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                Image = Download;
+                Caption = 'Download Attachment';
+                ToolTip = 'Download the selected attachment file.';
+                Scope = Repeater;
+                Enabled = DownloadActionEnabled;
+
+                trigger OnAction()
+                var
+                    EmailEditor: Codeunit "Email Editor";
+                begin
+                    EmailEditor.DownloadAttachment(Rec."Email Attachment".MediaId, Rec."Attachment Name");
                 end;
             }
 
@@ -159,6 +174,11 @@ page 8897 "Email Scenario Attach Setup"
             Rec.SetCurrentKey(Scenario);
     end;
 
+    trigger OnAfterGetCurrRecord()
+    begin
+        DownloadActionEnabled := not IsNullGuid(Rec."Email Attachment".MediaId);
+    end;
+
     internal procedure SetEmailScenario(CurrentScenario: Integer)
     begin
         EmailScenario := CurrentScenario;
@@ -176,6 +196,7 @@ page 8897 "Email Scenario Attach Setup"
         EmailScenarioAttachmentsImpl: Codeunit "Email Scenario Attach Impl.";
         EmailScenario: Integer;
         IsVisbile: Boolean;
+        DownloadActionEnabled: Boolean;
         IsUserEmailAdmin: Boolean;
         DeleteQst: Label 'Go ahead and delete?';
 }

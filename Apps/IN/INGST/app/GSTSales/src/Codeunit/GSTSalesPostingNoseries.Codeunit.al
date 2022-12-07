@@ -115,4 +115,14 @@ codeunit 18142 "GST Sales Posting No. Series"
         PostingNoSeries.GetPostingNoSeriesCode(Record);
         Rec := Record;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterCopyFieldsFromOldSalesHeader', '', false, false)]
+    local procedure OnAfterCopyFieldsFromOldSalesHeader(var ToSalesHeader: Record "Sales Header")
+    var
+        Record: Variant;
+    begin
+        Record := ToSalesHeader;
+        PostingNoSeries.GetPostingNoSeriesCode(Record);
+        ToSalesHeader := Record;
+    end;
 }
