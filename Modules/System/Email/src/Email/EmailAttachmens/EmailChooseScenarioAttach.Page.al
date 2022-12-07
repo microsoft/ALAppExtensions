@@ -33,16 +33,8 @@ page 8896 "Email Choose Scenario Attach"
                     Caption = 'File Name';
                     ToolTip = 'Specifies the name of the attachment';
                     Editable = false;
-
-                    trigger OnDrillDown()
-                    var
-                        EmailEditor: Codeunit "Email Editor";
-                    begin
-                        EmailEditor.DownloadAttachment(Rec."Email Attachment".MediaId, Rec."Attachment Name");
-                        CurrPage.Update(false);
-                    end;
-
                 }
+
                 field(Scenario; Rec.Scenario)
                 {
                     ApplicationArea = All;
@@ -50,6 +42,36 @@ page 8896 "Email Choose Scenario Attach"
                     ToolTip = 'Which Emails Scenario does the attachment come from';
                     Editable = false;
                 }
+            }
+        }
+    }
+
+    actions
+    {
+        area(Promoted)
+        {
+            actionref(Download_Promoted; Download)
+            {
+            }
+        }
+
+        area(Processing)
+        {
+            action(Download)
+            {
+                ApplicationArea = All;
+                Image = Download;
+                Caption = 'Download Attachment';
+                ToolTip = 'Download the selected attachment file.';
+                Scope = Repeater;
+                Enabled = DownloadActionEnabled;
+
+                trigger OnAction()
+                var
+                    EmailEditor: Codeunit "Email Editor";
+                begin
+                    EmailEditor.DownloadAttachment(Rec."Email Attachment".MediaId, Rec."Attachment Name");
+                end;
             }
         }
     }
@@ -64,6 +86,11 @@ page 8896 "Email Choose Scenario Attach"
 
         Rec.SetCurrentKey(Scenario);
         Rec.SetFilter(AttachmentDefaultStatus, '=%1', false);
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        DownloadActionEnabled := not IsNullGuid(Rec."Email Attachment".MediaId);
     end;
 
     procedure GetSelectedAttachments(var EmailAttachments: Record "Email Attachments")
@@ -82,4 +109,5 @@ page 8896 "Email Choose Scenario Attach"
     var
         EmailScenarioAttachmentsImpl: Codeunit "Email Scenario Attach Impl.";
         EmailScenario: Enum "Email Scenario";
+        DownloadActionEnabled: Boolean;
 }
