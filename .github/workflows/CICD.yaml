@@ -489,7 +489,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
         with:
-          name: ${{ env.buildOutputArtifactsName }}
+          name: '${{ env.buildOutputArtifactsName }}-${{ matrix.buildMode }}'
           path: '${{ matrix.project }}/BuildOutput.txt'
           if-no-files-found: ignore
 
@@ -497,7 +497,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',matrix.project)) != '')
         with:
-          name: ${{ env.ContainerEventLogArtifactsName }}
+          name: '${{ env.ContainerEventLogArtifactsName }}-${{ matrix.buildMode }}'
           path: '${{ matrix.project }}/ContainerEventLog.evtx'
           if-no-files-found: ignore
 
@@ -505,7 +505,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',matrix.project)) != '')
         with:
-          name: ${{ env.testResultsArtifactsName }}
+          name: '${{ env.testResultsArtifactsName }}-${{ matrix.buildMode }}'
           path: '${{ matrix.project }}/TestResults.xml'
           if-no-files-found: ignore
 
@@ -513,7 +513,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: (success() || failure()) && (hashFiles(format('{0}/bcptTestResults.json',matrix.project)) != '')
         with:
-          name: ${{ env.bcptTestResultsArtifactsName }}
+          name: '${{ env.bcptTestResultsArtifactsName }}-${{ matrix.buildMode }}'
           path: '${{ matrix.project }}/bcptTestResults.json'
           if-no-files-found: ignore
 
